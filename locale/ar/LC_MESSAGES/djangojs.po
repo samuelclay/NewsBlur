@@ -3585,6 +3585,9 @@ msgstr "عرض كامل"
 msgid "Full-Text Search"
 msgstr "بحث في النص الكامل"
 
+msgid "Full-screen list"
+msgstr "قائمة بملء الشاشة"
+
 msgid "Full-text search across all stories"
 msgstr "بحث بالنص الكامل في جميع القصص"
 
@@ -3980,6 +3983,9 @@ msgstr "قصص المواقع قليلة التحديث"
 msgid "Infrequent stories per month"
 msgstr "حد القصص الشهري للمواقع قليلة التحديث"
 
+msgid "Inline list"
+msgstr "قائمة مضمّنة"
+
 msgid "Insta-fetch stories"
 msgstr "جلب القصص فورًا"
 
@@ -4115,6 +4121,9 @@ msgstr "آخر تحديث"
 
 msgid "Last seen:"
 msgstr "آخر ظهور:"
+
+msgid "Layout"
+msgstr "التخطيط"
 
 msgid "Leave unread"
 msgstr "اتركها غير مقروءة"
@@ -5058,6 +5067,16 @@ msgstr "عذرًا، حدثت مشكلة أثناء جلب عنوان URL هذا
 
 msgid "Old password"
 msgstr "كلمة المرور القديمة"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "أقدم من %(count)s يومًا"
+msgstr[1] "أقدم من %(count)s يوم"
+msgstr[2] "أقدم من %(count)s يومين"
+msgstr[3] "أقدم من %(count)s أيام"
+msgstr[4] "أقدم من %(count)s يومًا"
+msgstr[5] "أقدم من %(count)s يوم"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6896,6 +6915,12 @@ msgstr "القصص الأقدم من %(date)s"
 msgid "Stories on %(date)s"
 msgstr "القصص في %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "تُفتح القصص داخل القائمة"
+
+msgid "Stories open on their own screen"
+msgstr "تُفتح القصص على شاشة مستقلة"
+
 msgid "Stories per day"
 msgstr "القصص يوميًا"
 
@@ -6946,6 +6971,9 @@ msgstr "تنسيق القصة"
 
 msgid "Story URL"
 msgstr "رابط القصة"
+
+msgid "Story cards open on their own screen"
+msgstr "تُفتح بطاقات القصص على شاشة مستقلة"
 
 msgid "Story clustering"
 msgstr "تجميع القصص"

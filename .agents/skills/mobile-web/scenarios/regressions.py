@@ -88,11 +88,15 @@ def check_regressions(ctx, feed_id):
         stuck,
     )
     ctx.set_layout("list")
+    check_layout_menu(ctx, feed_id)
+    check_inline_scrolls_to_story(ctx)
+    check_story_buttons(ctx)
     check_story_list_pills(ctx)
     check_story_iframe_sandbox(ctx, feed_id)
     check_story_toolbar_fits(ctx)
     check_cross_feed_back(ctx, feed_id)
     check_touch_hover(ctx, feed_id)
+    check_mark_read_menu(ctx, feed_id)
     check_discovery_back(ctx)
     check_folder_pills(ctx)
     check_dashboard_edge_to_edge(ctx)
@@ -289,9 +293,10 @@ PILL_BAR = """(() => {
   var pane = document.querySelector('.right-pane').getBoundingClientRect();
   var row = document.querySelector('.right-pane .NB-story-titles-header > .feed, .right-pane .NB-story-titles-header > .NB-folder');
   var names = ['NB-feedbar-discover-container', 'NB-feedbar-options-container', 'NB-search-container',
-               'NB-story-title-indicator', 'NB-feedbar-mark-feed-read-container'];
+               'NB-story-title-indicator', 'NB-taskbar-nav'];
   var pills = names.map(function (name) {
-    var el = row.querySelector('.' + name);
+    var el = name === 'NB-taskbar-nav' ? document.querySelector('.right-pane > .content-north > .NB-taskbar-nav') :
+      row.querySelector('.' + name);
     if (!el || !el.offsetWidth) return null;
     var r = el.getBoundingClientRect();
     return {name: name, left: r.left, right: r.right, top: Math.round(r.top), bottom: Math.round(r.bottom)};
@@ -328,7 +333,7 @@ def check_story_list_pills(ctx):
         at_bottom = pane["bottom"] - pills[0]["bottom"] <= 12
         ctx.check(
             f"the story list's pills sit in one row along the bottom at {width}px",
-            ordered and one_row and inside and at_bottom and pills[-1]["name"].startswith("NB-feedbar-mark"),
+            ordered and one_row and inside and at_bottom and pills[-1]["name"] == "NB-taskbar-nav",
             bar,
         )
         ctx.check(f"the story options pill never clips its label at {width}px", bar["options_fits"], bar)
@@ -344,8 +349,7 @@ def check_story_list_pills(ctx):
     clearance = ctx.evaluate(
         "(() => { var list = document.querySelector('#story_titles'); list.scrollTop = list.scrollHeight; "
         "var rows = list.querySelectorAll('.NB-story-title'); var last = rows[rows.length - 1].getBoundingClientRect(); "
-        "var bar = document.querySelector('.right-pane .NB-feedbar-mark-feed-read-container, "
-        ".right-pane .NB-search-container').getBoundingClientRect(); "
+        "var bar = document.querySelector('.right-pane .NB-search-container').getBoundingClientRect(); "
         "return {last_bottom: Math.round(last.bottom), bar_top: Math.round(bar.top)}; })()"
     )
     ctx.check(
@@ -378,20 +382,47 @@ def check_story_list_pills(ctx):
         ),
     )
 
-    page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
-    ctx.wait(300)
-    days = ctx.evaluate(
-        "(() => ({days: $('.right-pane .NB-feedbar-mark-feed-read-time:visible').length, "
-        "others: $('.right-pane .NB-feedbar-options-container:visible, .right-pane .NB-search-container:visible').length}))()"
+    nav = ctx.evaluate(
+        "(() => ({buttons: $('.right-pane .NB-taskbar-nav .NB-taskbar-button:visible').map(function () { "
+        "return this.className.match(/NB-task-story-[a-z-]+/)[0]; }).get(), "
+        "mark_read_in_bar: $('.right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container:visible').length, "
+        "mark_read_in_nav: $('.NB-mobile-titles-bar .NB-mobile-mark-read:visible').length}))()"
     )
-    page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
-    ctx.wait(300)
-    closed = ctx.evaluate("$('.right-pane .NB-feedbar-mark-feed-read-time:visible').length")
     ctx.check(
-        "+ lays the mark read day choices across the bar and closes them",
-        days["days"] == 4 and days["others"] == 0 and closed == 0,
-        (days, closed),
+        "the bar ends with Previous and Next unread, and mark read moves to the nav bar",
+        nav["buttons"] == ["NB-task-story-previous", "NB-task-story-next-unread"]
+        and not nav["mark_read_in_bar"]
+        and nav["mark_read_in_nav"] == 1,
+        nav,
     )
+
+    # A typed search closes from its x and from its pill. On an iPhone the keyboard moved the bar
+    # out from under the x before its click arrived, so the x now closes on touchend.
+    searching = (
+        "document.querySelector('.right-pane .NB-story-titles-header').classList.contains('NB-searching')"
+    )
+    for closer in (".right-pane .NB-search-close", ".right-pane .NB-search-container"):
+        page.locator(".right-pane .NB-search-container").tap()
+        ctx.wait(400)
+        page.keyboard.type("apple")
+        ctx.wait(2500)
+        opened = ctx.evaluate(searching)
+        if closer.endswith("container"):
+            box = page.locator(closer).bounding_box()
+            ctx.touch._send("touchStart", box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+            ctx.touch._send("touchEnd")
+        else:
+            page.locator(closer).tap()
+        ctx.wait(2000)
+        closed = ctx.evaluate(
+            "(() => ({searching: " + searching + ", query: NEWSBLUR.reader.flags.search || '', "
+            "value: $('.right-pane .NB-story-title-search-input').val()}))()"
+        )
+        ctx.check(
+            f"tapping {'the x' if 'close' in closer else 'the search pill'} closes a search",
+            opened and not closed["searching"] and not closed["query"] and not closed["value"],
+            (opened, closed),
+        )
 
 
 def check_folder_pills(ctx):
@@ -430,28 +461,33 @@ def check_folder_pills(ctx):
         )
     page.set_viewport_size({"width": ctx.viewport["width"], "height": ctx.viewport["height"]})
     ctx.wait(500)
-    page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
-    ctx.wait(300)
-    days = ctx.evaluate("$('.right-pane .NB-feedbar-mark-feed-read-time:visible').length")
-    page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
-    ctx.wait(300)
-    ctx.check("a folder's + shows its mark read day choices", days == 4, days)
-    # The confirmation depends on a preference, set here in the page only.
-    ctx.evaluate("(() => { NEWSBLUR.Preferences.mark_read_river_confirm = 'folders_only'; })()")
-    page.locator(".right-pane .NB-feedbar-mark-feed-read").tap()
-    ctx.wait(400)
-    confirm = ctx.evaluate(
-        "(() => ({yes: $('.right-pane .NB-confirm-yes:visible').length, no: $('.right-pane .NB-confirm-no:visible').length}))()"
+    # A folder marks read from the nav bar's menu. reader.js mark_folder_as_read is stubbed so the
+    # dev account keeps its unread stories, and the folder's confirmation is on to show the menu
+    # skips it.
+    ctx.evaluate(
+        "(() => { NEWSBLUR.Preferences.mark_read_river_confirm = 'folders_only'; window.__nb_marked = []; "
+        "NEWSBLUR.reader.mark_folder_as_read = function (folder, days) { window.__nb_marked.push(days || 0); }; })()"
     )
-    ctx.check("a folder's mark read confirmation shows Yes and No", confirm == {"yes": 1, "no": 1}, confirm)
-    if confirm["no"]:
-        page.locator(".right-pane .NB-confirm-no").tap()
-        ctx.wait(300)
+    page.locator(".NB-mobile-titles-bar .NB-mobile-mark-read").tap()
+    ctx.wait(500)
+    page.locator(".NB-mobile-mark-read-option[data-days='7']").tap()
+    ctx.wait(600)
+    marked = ctx.evaluate(
+        "(() => ({marked: window.__nb_marked, confirm: $('.NB-feedbar-mark-feed-read-confirm').length}))()"
+    )
+    ctx.check(
+        "a folder's mark read menu marks it read, already confirmed",
+        marked["marked"] == [7] and not marked["confirm"],
+        marked,
+    )
 
     ctx.evaluate("(() => { NEWSBLUR.reader.open_river_blurblogs_stories({global: true}); })()")
-    page.wait_for_function("NEWSBLUR.reader.active_feed == 'river:global'", timeout=30000)
-    ctx.wait(2000)
-    shown = ctx.evaluate("$('.right-pane .NB-feedbar-mark-feed-read-container:visible').length")
+    page.wait_for_function(
+        "NEWSBLUR.reader.active_feed == 'river:global' && $('.right-pane .NB-story-titles-header .NB-folder-fake').length",
+        timeout=30000,
+    )
+    ctx.wait(500)
+    shown = ctx.evaluate("$('.NB-mobile-titles-bar .NB-mobile-mark-read:visible').length")
     ctx.check("Global Shared Stories has no mark read button, as on desktop", shown == 0, shown)
     page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
     ctx.wait(1200)
@@ -493,6 +529,137 @@ def check_dashboard_edge_to_edge(ctx):
     ctx.check("no dashboard tile is squeezed out", not dash["squeezed_tiles"], dash)
     page.locator(".NB-mobile-dashboard-bar .NB-mobile-bar-back").tap()
     ctx.wait(900)
+
+
+def check_layout_menu(ctx, feed_id):
+    """The phone story list had a list/grid toggle, and whether a story opened inline or full
+    screen depended on the feed's desktop layout. The nav bar's layout menu now picks inline,
+    full screen or grid, saved as the feed's desktop layout. Expects to be on the story list."""
+    page = ctx.page
+    stored = f"(NEWSBLUR.Preferences.view_settings['{feed_id}'] || {{}}).l"
+    page.locator(".NB-mobile-layout-toggle").tap()
+    ctx.wait(500)
+    menu = ctx.evaluate(
+        "(() => ({options: $('.NB-mobile-layout-option:visible').map(function () { return $(this).data('layout'); }).get(), "
+        "active: $('.NB-mobile-layout-option.NB-active').data('layout'), current: NEWSBLUR.app.mobile.layout()}))()"
+    )
+    ctx.check(
+        "the layout menu offers inline, full screen and grid, and marks the current one",
+        menu["options"] == ["list", "page", "grid"] and menu["active"] == menu["current"],
+        menu,
+    )
+    page.locator(f".NB-mobile-layout-option[data-layout='{menu['current']}']").tap()
+    ctx.wait(600)
+
+    ctx.set_layout("page")
+    ctx.check("full screen saves a split or full desktop layout", ctx.evaluate(stored) in ("split", "full"))
+    ctx.tap_story(2)
+    state = ctx.state()
+    inline = ctx.evaluate("$('#story_titles .NB-story-detail .NB-feed-story-content').length")
+    ctx.check(
+        "a full-screen list opens a story on the story screen, not inline",
+        state["screen"] == "story" and state["entry"]["screen"] == "story" and not inline,
+        (state, inline),
+    )
+    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+
+    ctx.set_layout("list")
+    ctx.check("inline saves the list desktop layout", ctx.evaluate(stored) == "list")
+    ctx.tap_story(2)
+    ctx.check(
+        "an inline list expands a story in place",
+        ctx.state()["screen"] == "titles"
+        and ctx.evaluate(
+            "$('#story_titles .NB-selected .NB-story-detail .NB-feed-story-content').length == 1"
+        ),
+    )
+
+    ctx.set_layout("grid")
+    ctx.check("grid saves a grid or magazine desktop layout", ctx.evaluate(stored) in ("grid", "magazine"))
+    ctx.set_layout("list")
+
+
+def check_inline_scrolls_to_story(ctx):
+    """Tapping a story in a phone's inline list scrolled its title row to the top, with the story
+    below it. The story now starts at the top of the list. Expects an inline story list."""
+    ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
+    ctx.wait(300)
+    ctx.tap_story(4)
+    ctx.wait(600)
+    place = ctx.evaluate(
+        "(() => { var list = document.querySelector('#story_titles').getBoundingClientRect(); "
+        "var container = document.querySelector('#story_titles .NB-story-title.NB-selected').closest('.NB-story-title-container'); "
+        "var detail = container.querySelector('.NB-story-detail').getBoundingClientRect(); "
+        "var row = container.querySelector('.NB-story-title').getBoundingClientRect(); "
+        "return {detail_top: Math.round(detail.top - list.top), row_bottom: Math.round(row.bottom - list.top)}; })()"
+    )
+    ctx.check(
+        "an inline story scrolls to the top of the list, past its title row",
+        abs(place["detail_top"]) <= 2 and place["row_bottom"] <= 2,
+        place,
+    )
+
+
+def check_mark_read_menu(ctx, feed_id):
+    """Mark read moved from the bar to the nav bar, where it opens a menu of mark everything and
+    older than 1 to 14 days. reader.js mark_feed_as_read is stubbed so the dev account keeps its
+    unread stories. Expects to be on the story list."""
+    page = ctx.page
+    ctx.evaluate(
+        "(() => { NEWSBLUR.Preferences.mark_read_river_confirm = 'feeds_folders'; window.__nb_marked = []; "
+        "NEWSBLUR.reader.mark_feed_as_read = function (feed_id, days) { window.__nb_marked.push([feed_id, days || 0]); }; })()"
+    )
+    page.locator(".NB-mobile-titles-bar .NB-mobile-mark-read").tap()
+    ctx.wait(500)
+    options = ctx.evaluate(
+        "$('.NB-mobile-mark-read-option:visible').map(function () { return $(this).data('days'); }).get()"
+    )
+    ctx.check(
+        "the mark read menu offers everything and 1, 3, 7 and 14 days", options == [0, 1, 3, 7, 14], options
+    )
+    page.locator(".NB-mobile-mark-read-option[data-days='0']").tap()
+    ctx.wait(600)
+    marked = ctx.evaluate(
+        "(() => ({marked: window.__nb_marked, confirm: $('.NB-feedbar-mark-feed-read-confirm').length}))()"
+    )
+    ctx.check(
+        "Mark all as read marks the feed read without asking again",
+        marked["marked"] == [[feed_id, 0]] and not marked["confirm"],
+        marked,
+    )
+
+
+def check_story_buttons(ctx):
+    """The bar's Previous selects the story before the open one. A full-screen list opens it on
+    the story screen. Expects to be on the story list."""
+    page = ctx.page
+    ctx.set_layout("page")
+    ctx.tap_story(3)
+    third = ctx.state()["story"]
+    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+    page.locator(".right-pane .NB-taskbar-nav .NB-task-story-previous").tap()
+    ctx.wait(1300)
+    state = ctx.state()
+    ctx.check(
+        "Previous in a full-screen list opens the previous story on the story screen",
+        state["screen"] == "story" and state["story"] and state["story"] != third,
+        state,
+    )
+    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+    ctx.set_layout("list")
+    page.locator(".right-pane .NB-taskbar-nav .NB-task-story-previous").tap()
+    ctx.wait(1300)
+    ctx.check(
+        "Previous in an inline list expands the previous story in place",
+        ctx.state()["screen"] == "titles"
+        and ctx.evaluate(
+            "$('#story_titles .NB-selected .NB-story-detail .NB-feed-story-content').length == 1"
+        ),
+        ctx.state(),
+    )
 
 
 def check_story_iframe_sandbox(ctx, feed_id):

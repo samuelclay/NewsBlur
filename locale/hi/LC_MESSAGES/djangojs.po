@@ -3248,6 +3248,9 @@ msgstr "पूरी चौड़ाई"
 msgid "Full-Text Search"
 msgstr "पूर्ण-पाठ खोज"
 
+msgid "Full-screen list"
+msgstr "फ़ुल-स्क्रीन सूची"
+
 msgid "Full-text search across all stories"
 msgstr "सभी लेखों में पूर्ण-पाठ खोज"
 
@@ -3639,6 +3642,9 @@ msgstr "कम प्रकाशित होने वाली साइट�
 msgid "Infrequent stories per month"
 msgstr "प्रति माह कम आने वाले लेख"
 
+msgid "Inline list"
+msgstr "इनलाइन सूची"
+
 msgid "Insta-fetch stories"
 msgstr "लेख तुरंत फ़ेच करें"
 
@@ -3776,6 +3782,9 @@ msgstr "पिछला अपडेट"
 
 msgid "Last seen:"
 msgstr "आख़िरी बार देखा गया:"
+
+msgid "Layout"
+msgstr "लेआउट"
 
 msgid "Leave unread"
 msgstr "अपठित छोड़ें"
@@ -4687,6 +4696,12 @@ msgstr "अरे नहीं, उस URL को प्राप्त कर�
 
 msgid "Old password"
 msgstr "पुराना पासवर्ड"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "%(count)s दिन से पुराने"
+msgstr[1] "%(count)s दिनों से पुराने"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6469,6 +6484,12 @@ msgstr "%(date)s से पुराने लेख"
 msgid "Stories on %(date)s"
 msgstr "%(date)s के लेख"
 
+msgid "Stories open inside the list"
+msgstr "लेख सूची के भीतर खुलते हैं"
+
+msgid "Stories open on their own screen"
+msgstr "लेख अपनी अलग स्क्रीन पर खुलते हैं"
+
 msgid "Stories per day"
 msgstr "प्रतिदिन लेख"
 
@@ -6519,6 +6540,9 @@ msgstr "लेख की टाइपोग्राफ़ी"
 
 msgid "Story URL"
 msgstr "लेख URL"
+
+msgid "Story cards open on their own screen"
+msgstr "लेख कार्ड अपनी अलग स्क्रीन पर खुलते हैं"
 
 msgid "Story clustering"
 msgstr "लेख क्लस्टरिंग"

@@ -3125,6 +3125,9 @@ msgstr "全宽"
 msgid "Full-Text Search"
 msgstr "全文搜索"
 
+msgid "Full-screen list"
+msgstr "全屏列表"
+
 msgid "Full-text search across all stories"
 msgstr "全文搜索所有文章"
 
@@ -3507,6 +3510,9 @@ msgstr "低频网站文章"
 msgid "Infrequent stories per month"
 msgstr "低频网站的每月文章数上限"
 
+msgid "Inline list"
+msgstr "内嵌列表"
+
 msgid "Insta-fetch stories"
 msgstr "即时抓取文章"
 
@@ -3642,6 +3648,9 @@ msgstr "上次更新"
 
 msgid "Last seen:"
 msgstr "上次出现："
+
+msgid "Layout"
+msgstr "布局"
 
 msgid "Leave unread"
 msgstr "保持未读"
@@ -4534,6 +4543,11 @@ msgstr "糟糕，获取该 URL 时出了问题，而且无法明确解释原因�
 
 msgid "Old password"
 msgstr "旧密码"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "超过 %(count)s 天"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6272,6 +6286,12 @@ msgstr "早于 %(date)s 的文章"
 msgid "Stories on %(date)s"
 msgstr "%(date)s 的文章"
 
+msgid "Stories open inside the list"
+msgstr "文章在列表中打开"
+
+msgid "Stories open on their own screen"
+msgstr "文章在独立页面中打开"
+
 msgid "Stories per day"
 msgstr "每日文章数"
 
@@ -6322,6 +6342,9 @@ msgstr "文章字体排版"
 
 msgid "Story URL"
 msgstr "文章 URL"
+
+msgid "Story cards open on their own screen"
+msgstr "文章卡片在独立页面中打开"
 
 msgid "Story clustering"
 msgstr "文章聚类"

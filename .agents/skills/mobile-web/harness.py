@@ -221,11 +221,14 @@ class Context:
             self.wait(1200)
 
     def set_layout(self, layout):
-        """Switches the open feed to list or grid with the nav bar's toggle."""
-        current = self.evaluate("NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')")
-        if current != layout:
-            self.page.locator(".NB-mobile-layout-toggle").tap()
-            self.wait(1400)
+        """Picks the open feed's phone layout, list (inline), page (full screen) or grid, from the
+        nav bar's layout menu."""
+        if self.evaluate("NEWSBLUR.app.mobile.layout()") == layout:
+            return
+        self.page.locator(".NB-mobile-layout-toggle").tap()
+        self.wait(500)
+        self.page.locator(f".NB-mobile-layout-option[data-layout='{layout}']").tap()
+        self.wait(1400)
 
     def tap_story(self, index):
         titles = self.page.locator("#story_titles .NB-story-title")

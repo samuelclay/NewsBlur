@@ -20,7 +20,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'check_mode', 'handle_popstate', 'handle_touchstart', 'handle_touchmove',
             'handle_touchend', 'handle_touchcancel', 'handle_long_press_start', 'handle_long_press_cancel',
-            'handle_long_press_click', 'handle_mark_read_days', 'fit_pills');
+            'handle_long_press_click', 'fit_pills', 'handle_search_close', 'update_titles_actions',
+            'handle_story_button');
         this.utils = NEWSBLUR.mobile_utils;
         this.active = false;
         this.screen = null;
@@ -156,8 +157,15 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         }
     },
 
-    is_grid: function () {
-        return this.active && NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid';
+    // The open story list's phone layout: list, page or grid (common/mobile_utils.js).
+    layout: function () {
+        if (!this.active || !NEWSBLUR.reader.active_feed) return null;
+        return NEWSBLUR.assets.phone_layout(NEWSBLUR.reader.active_feed);
+    },
+
+    // Grid cards and full-screen lists open stories on the story screen instead of in the list.
+    opens_story_page: function () {
+        return _.contains(['page', 'grid'], this.layout());
     },
 
     // ============
@@ -557,7 +565,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // reader.js select_story_in_feed: a specific story was asked for, from the dashboard or a
     // link. A grid shows it on the story screen; a list has already expanded it in place.
     story_requested: function (story) {
-        if (!this.active || !this.is_grid() || this.screen === 'story') return;
+        if (!this.active || !this.opens_story_page() || this.screen === 'story') return;
         this.open_story(story);
     },
 
@@ -573,7 +581,15 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     },
 
     story_selected: function (story, selected) {
-        if (!this.active || !selected || !this.is_following_unread()) return;
+        if (!this.active || !selected) return;
+        // handle_story_button: Next unread may load the next feed first, hence the long wait.
+        var open_on_select = this.open_on_select && Date.now() - this.open_on_select < 20000;
+        this.open_on_select = null;
+        if (open_on_select && this.screen === 'titles') {
+            this.open_story(story);
+            return;
+        }
+        if (!this.is_following_unread()) return;
         this.following_unread = null;
         if (this.screen !== 'story') return;
         // Reading continues on the story screen even when the next feed is a list, whose own
@@ -613,6 +629,13 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
                 $.make('span', { className: 'NB-mobile-bar-title-text', dir: 'auto' })
             ]),
             $.make('div', { className: 'NB-mobile-bar-actions' }, [
+                $.make('div', {
+                    className: 'NB-mobile-bar-button NB-mobile-mark-read',
+                    role: 'button',
+                    'aria-label': gettext('Mark as read')
+                }, [
+                    $.make('div', { className: 'NB-mobile-icon NB-mobile-icon-markread' })
+                ]),
                 $.make('div', { className: 'NB-mobile-bar-button NB-mobile-layout-toggle', role: 'button' }, [
                     $.make('div', { className: 'NB-mobile-icon' })
                 ])
@@ -621,7 +644,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.$titles_bar.on('click', '.NB-mobile-bar-back', _.bind(function () {
             this.go_back();
         }, this));
-        this.$titles_bar.on('click', '.NB-mobile-layout-toggle', _.bind(this.toggle_layout, this));
+        this.$titles_bar.on('click', '.NB-mobile-layout-toggle', _.bind(this.open_layout_menu, this));
+        this.$titles_bar.on('click', '.NB-mobile-mark-read', _.bind(this.open_mark_read_menu, this));
         this.$screens.titles.prepend(this.$titles_bar);
     },
 
@@ -642,10 +666,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     update_titles_bar: function () {
         if (!this.$titles_bar) return;
-        // The pill bar's header element outlives the story list it controls, and the list's own
-        // controls render right after this.
-        $('.right-pane .NB-story-titles-header').removeClass('NB-mobile-mark-read-days');
-        _.defer(this.fit_pills);
+        // The story list's own controls render right after this.
+        _.defer(this.update_titles_actions);
         var feed_id = NEWSBLUR.reader.active_feed;
         var title = feed_id && NEWSBLUR.reader.feed_title(feed_id);
         this.$titles_bar.find('.NB-mobile-bar-title-text').text(title || '');
@@ -663,25 +685,31 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var back_label = this.titles_parent === 'dashboard' ? gettext('Dashboard') : gettext('Feeds');
         this.$titles_bar.find('.NB-mobile-bar-back-label').text(back_label);
 
-        var layout = feed_id && NEWSBLUR.assets.view_setting(feed_id, 'layout');
         this.$titles_bar.find('.NB-mobile-layout-toggle')
             .toggleClass('NB-hidden', !feed_id || !!NEWSBLUR.reader.flags.briefing_view)
-            .attr('aria-label', layout === 'grid' ? gettext('List') : gettext('Grid'))
+            .attr('aria-label', gettext('Layout'))
             .find('.NB-mobile-icon')
-            .removeClass('NB-mobile-icon-list NB-mobile-icon-grid')
-            .addClass(layout === 'grid' ? 'NB-mobile-icon-list' : 'NB-mobile-icon-grid');
+            .removeClass('NB-mobile-icon-layout-list NB-mobile-icon-layout-page NB-mobile-icon-layout-grid')
+            .addClass('NB-mobile-icon-layout-' + (this.layout() || 'list'));
     },
 
-    // List expands stories inline, grid pushes them full screen. The choice is the feed's own
-    // layout setting, so it follows the feed back to desktop.
-    toggle_layout: function () {
+    // views/mobile_layout_popover.js: the layout button opens a menu of the three phone layouts.
+    open_layout_menu: function () {
+        if (!NEWSBLUR.reader.active_feed) return;
+        NEWSBLUR.MobileLayoutPopover.create({ anchor: this.$titles_bar.find('.NB-mobile-layout-toggle') });
+    },
+
+    // The choice is the feed's own desktop layout (assetmodel.js save_phone_layout), so it follows
+    // the feed back to desktop. A full-screen list renders the same rows as an inline one, so the
+    // list re-renders either way to drop a story expanded in place.
+    set_layout: function (phone_layout) {
         var feed_id = NEWSBLUR.reader.active_feed;
-        if (!feed_id) return;
-        var layout = NEWSBLUR.assets.view_setting(feed_id, 'layout') === 'grid' ? 'list' : 'grid';
+        if (!feed_id || this.layout() === phone_layout) return;
         if (NEWSBLUR.reader.active_story) {
             NEWSBLUR.reader.active_story.set('selected', false);
         }
-        NEWSBLUR.reader.switch_story_layout(layout);
+        NEWSBLUR.assets.save_phone_layout(feed_id, phone_layout);
+        NEWSBLUR.reader.switch_story_layout(NEWSBLUR.assets.view_setting(feed_id, 'layout'), true);
         this.update_titles_bar();
     },
 
@@ -950,7 +978,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.$body.on('touchmove.mobile_long_press touchend.mobile_long_press ' +
             'touchcancel.mobile_long_press', this.handle_long_press_cancel);
         document.addEventListener('click', this.handle_long_press_click, true);
-        document.addEventListener('click', this.handle_mark_read_days, true);
+        document.addEventListener('click', this.handle_story_button, true);
+        document.addEventListener('touchend', this.handle_search_close, true);
         // Android Chrome fires its own contextmenu on a long press. The long press above already
         // opened the menu, and letting this through would toggle it shut again.
         document.addEventListener('contextmenu', _.bind(function (e) {
@@ -1042,8 +1071,12 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // Like StoryTitlesHeaderBar.swift relayoutPills in the iOS app: when the pills don't fit, the
     // story options pill drops its story order, then its words, before anything else gives way
     // (mobile.css NB-mobile-options-compact and NB-mobile-options-icon).
+    // The bar's Next unread drops its label after the story order and before the options' words
+    // (mobile.css NB-mobile-nav-compact).
     fit_pills: function () {
-        var $row = $('.right-pane .NB-story-titles-header').children('.feed, .NB-folder');
+        var $bar = $('.right-pane > .content-north');
+        var $row = $bar.find('.NB-story-titles-header').children('.feed, .NB-folder');
+        $bar.removeClass('NB-mobile-nav-compact');
         $row.removeClass('NB-mobile-options-compact NB-mobile-options-icon');
         var options = $row.find('.NB-feedbar-options')[0];
         if (!this.active || !options || !options.clientWidth) return;
@@ -1051,33 +1084,74 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         // can only give it when there's room.
         $row.addClass('NB-mobile-options-measure');
         var clipped = function () {
-            return options.offsetWidth > options.parentNode.clientWidth + 1;
+            return options.offsetWidth > options.parentNode.clientWidth + 1 ||
+                $row[0].scrollWidth > $row[0].clientWidth + 1;
         };
         if (clipped()) $row.addClass('NB-mobile-options-compact');
+        if (clipped()) $bar.addClass('NB-mobile-nav-compact');
         if (clipped()) $row.addClass('NB-mobile-options-icon');
         $row.removeClass('NB-mobile-options-measure');
     },
 
-    // The + beside the story list's mark read checkmark lays the 1d to 14d choices out across
-    // the pill bar (mobile.css NB-mobile-mark-read-days) instead of fanning them out the desktop
-    // way (feed_title_view.js expand_mark_read). It closes on a second tap, a choice or a tap
-    // anywhere else.
-    handle_mark_read_days: function (e) {
-        if (!this.active) return;
+    // The story list's search field closes from its x or from its pill. iOS dismisses the keyboard
+    // on the first touch outside the field, which moves the bar before a click arrives, so the
+    // close runs as the finger lifts and the touch's own click is cancelled.
+    handle_search_close: function (e) {
+        if (!this.active || !NEWSBLUR.app.active_search) return;
         var $target = $(e.target);
-        var $header = $target.closest('.right-pane .NB-story-titles-header');
-        if ($target.closest('.NB-feedbar-mark-feed-read-expand').length && $header.length) {
-            e.preventDefault();
-            e.stopPropagation();
-            $header.toggleClass('NB-mobile-mark-read-days');
-            return;
+        var $header = $target.closest('.right-pane .NB-story-titles-header.NB-searching');
+        if (!$header.length) return;
+        var on_close = $target.closest('.NB-search-close').length;
+        var on_pill = $target.closest('.NB-search-container').length &&
+            !$target.closest('.NB-story-title-search-input').length;
+        if (!on_close && !on_pill) return;
+        e.preventDefault();
+        // An empty field only needs the blur, which closes it (feed_search_view.js blur_search).
+        var $input = NEWSBLUR.app.active_search.$('input');
+        var has_query = !!$input.val();
+        $input.blur();
+        if (has_query) NEWSBLUR.app.active_search.close_search();
+    },
+
+    // The story list's mark read lives in the nav bar. It shows only for lists the reader can mark
+    // read, those whose header has its own mark read control (curated rivers like Global Shared
+    // Stories don't, as on desktop).
+    update_titles_actions: function () {
+        if (!this.$titles_bar) return;
+        var $header = $('.right-pane .NB-story-titles-header');
+        var can_mark_read = $header.find('.NB-feedbar-mark-feed-read').length > 0 &&
+            !$header.find('.NB-folder-fake').length;
+        this.$titles_bar.find('.NB-mobile-mark-read').toggleClass('NB-hidden', !can_mark_read);
+        this.fit_pills();
+    },
+
+    // views/mobile_mark_read_popover.js: mark everything or stories older than some days.
+    open_mark_read_menu: function () {
+        NEWSBLUR.MobileMarkReadPopover.create({ anchor: this.$titles_bar.find('.NB-mobile-mark-read') });
+    },
+
+    // Presses the list header's own hidden control, so feeds, folders and rivers each mark read
+    // their own way. Picking from the menu is the confirmation, so the inline one is skipped.
+    mark_list_read: function (days) {
+        var $header = $('.right-pane .NB-story-titles-header');
+        var $control = days ?
+            $header.find('.NB-feedbar-mark-feed-read-time[data-days="' + days + '"]') :
+            $header.find('.NB-feedbar-mark-feed-read');
+        if (!$control.length) return;
+        NEWSBLUR.reader.flags.mark_read_confirmed = true;
+        try {
+            $control.first().trigger('click');
+        } finally {
+            NEWSBLUR.reader.flags.mark_read_confirmed = false;
         }
-        var $open = $('.right-pane .NB-story-titles-header.NB-mobile-mark-read-days');
-        if (!$open.length) return;
-        // A choice still reaches its view, which marks the stories read, before this closes.
-        _.defer(function () {
-            $open.removeClass('NB-mobile-mark-read-days');
-        });
+    },
+
+    // The bar's Previous and Next unread select a story with the reader's own buttons. A list
+    // that opens stories full screen, or a grid, then shows it on the story screen.
+    handle_story_button: function (e) {
+        if (!this.active || this.screen !== 'titles' || !this.opens_story_page()) return;
+        if (!$(e.target).closest('.right-pane .NB-taskbar-nav .NB-taskbar-button').length) return;
+        this.open_on_select = Date.now();
     },
 
     // The feed, folder and story views already open their manage menu on contextmenu. The

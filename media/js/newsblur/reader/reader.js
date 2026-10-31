@@ -3760,6 +3760,9 @@
         },
 
         should_confirm_mark_read: function (type) {
+            // views/mobile_layout_view.js mark_list_read: a choice from the phone's mark read
+            // menu is already confirmed.
+            if (this.flags['mark_read_confirmed']) return false;
             var pref = NEWSBLUR.assets.preference('mark_read_river_confirm');
             // Backward compat with old boolean values
             if (pref === true) pref = 'folders_only';

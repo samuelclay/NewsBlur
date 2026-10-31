@@ -26,9 +26,22 @@
     // Fling speed in px/ms that completes a move no matter how far it got.
     var FLING_VELOCITY = 0.45;
 
-    function mobile_story_layout(layout) {
+    // A phone has three layouts, read from the desktop layout each feed stores and shares with
+    // desktop: list opens stories inline, page opens them full screen like desktop's split and
+    // full, and grid shows cards that open the same full-screen story.
+    var PHONE_LAYOUTS = ['list', 'page', 'grid'];
+    // The desktop layout saved for a phone layout the feed's stored one doesn't already read as.
+    var PHONE_LAYOUT_SAVES = { list: 'list', page: 'split', grid: 'grid' };
+
+    function phone_layout(layout) {
         if (layout === 'grid' || layout === 'magazine') return 'grid';
-        return 'list';
+        if (layout === 'list') return 'list';
+        return 'page';
+    }
+
+    // The story list the reader renders: page shows the same rows as list, so it renders a list.
+    function mobile_story_layout(layout) {
+        return phone_layout(layout) === 'grid' ? 'grid' : 'list';
     }
 
     // Opening a feed on a phone writes back the layout it shows. Skip the write when the stored
@@ -169,6 +182,9 @@
 
     return {
         MOBILE_LAYOUTS: MOBILE_LAYOUTS,
+        PHONE_LAYOUTS: PHONE_LAYOUTS,
+        PHONE_LAYOUT_SAVES: PHONE_LAYOUT_SAVES,
+        phone_layout: phone_layout,
         MAX_WIDTH: MAX_WIDTH,
         MEDIA_QUERY: MEDIA_QUERY,
         mobile_story_layout: mobile_story_layout,

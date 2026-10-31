@@ -48,7 +48,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (this.options.is_grid) template_name = "grid_template";
         if (this.options.is_magazine) template_name = "magazine_template";
         if (this.options.is_list || this.options.is_grid || this.options.is_magazine) {
-            if (this.model.get('selected') && !this.is_mobile_grid()) template_name = "list_template";
+            if (this.model.get('selected') && !this.opens_mobile_story_page()) template_name = "list_template";
         }
         // story_title_view.js: a phone list uses the compact rows of the desktop titles pane,
         // and still expands each story inline below its row.
@@ -303,8 +303,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         return !!(!this.options.override_layout && NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.is_active());
     },
 
-    is_mobile_grid: function () {
-        return !!(this.options.is_grid && this.is_mobile_layout());
+    // story_title_view.js: phone grids and full-screen lists show a story on its own screen
+    // (views/mobile_story_pager_view.js) instead of expanding it in the list.
+    opens_mobile_story_page: function () {
+        return this.is_mobile_layout() && (!!this.options.is_grid || NEWSBLUR.app.mobile.layout() === 'page');
     },
 
     render_inline_story_detail: function (temporary_text) {
@@ -602,9 +604,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
 
         if (!!this.model.get('selected')) {
-            if (this.is_mobile_grid()) {
-                // story_title_view.js: phone grids show the story on its own screen
-                // (views/mobile_story_pager_view.js), so the card stays a card.
+            if (this.opens_mobile_story_page()) {
+                // story_title_view.js: the story is on its own screen, so the row or card stays
+                // as it is.
                 this.destroy_inline_story_detail();
             } else if (_.contains(['list', 'grid'], story_layout)) {
                 this.render_inline_story_detail();
@@ -797,7 +799,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             return;
         }
 
-        if (this.is_mobile_grid()) {
+        if (this.opens_mobile_story_page()) {
             NEWSBLUR.app.mobile.open_story(this.model);
             return;
         }

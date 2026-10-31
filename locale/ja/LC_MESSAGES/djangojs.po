@@ -3125,6 +3125,9 @@ msgstr "全幅"
 msgid "Full-Text Search"
 msgstr "全文検索"
 
+msgid "Full-screen list"
+msgstr "全画面リスト"
+
 msgid "Full-text search across all stories"
 msgstr "すべての記事を全文検索"
 
@@ -3507,6 +3510,9 @@ msgstr "更新頻度の低いサイトの記事"
 msgid "Infrequent stories per month"
 msgstr "月あたりの記事が少ないフィード"
 
+msgid "Inline list"
+msgstr "インラインリスト"
+
 msgid "Insta-fetch stories"
 msgstr "記事をすぐに取得"
 
@@ -3642,6 +3648,9 @@ msgstr "最終更新"
 
 msgid "Last seen:"
 msgstr "最終確認："
+
+msgid "Layout"
+msgstr "レイアウト"
 
 msgid "Leave unread"
 msgstr "未読のままにする"
@@ -4534,6 +4543,11 @@ msgstr "あら、URLの取得中に問題が発生しました。原因を特定
 
 msgid "Old password"
 msgstr "古いパスワード"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "%(count)s日より前"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6272,6 +6286,12 @@ msgstr "%(date)sより古い記事"
 msgid "Stories on %(date)s"
 msgstr "%(date)sの記事"
 
+msgid "Stories open inside the list"
+msgstr "記事をリスト内で開く"
+
+msgid "Stories open on their own screen"
+msgstr "記事を個別の画面で開く"
+
 msgid "Stories per day"
 msgstr "1日あたりの記事数"
 
@@ -6322,6 +6342,9 @@ msgstr "記事の文字設定"
 
 msgid "Story URL"
 msgstr "記事のURL"
+
+msgid "Story cards open on their own screen"
+msgstr "記事カードを個別の画面で開く"
 
 msgid "Story clustering"
 msgstr "記事のグループ化"

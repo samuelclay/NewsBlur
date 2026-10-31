@@ -223,6 +223,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         if (NEWSBLUR.reader.flags.searching) {
             this.focus_search();
         }
+        // views/mobile_layout_view.js: the phone nav bar's mark read follows this header's controls.
+        if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.update_titles_actions();
 
         return this;
     },

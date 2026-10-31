@@ -1891,6 +1891,31 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    // assetmodel.js: the phone's layout menu (views/mobile_layout_popover.js) picks list, page or
+    // grid (common/mobile_utils.js phone_layout). view_setting's write path skips layouts that
+    // render the same list, which keeps the reader from turning a split feed into a list, so a
+    // pick saves here instead, as the desktop layout that reads as it.
+    phone_layout: function (feed_id) {
+        var feed = NEWSBLUR.Preferences.view_settings[feed_id + ''];
+        var stored_layout = feed && feed['l'] || NEWSBLUR.Preferences['story_layout'];
+        return NEWSBLUR.mobile_utils.phone_layout(stored_layout);
+    },
+
+    save_phone_layout: function (feed_id, phone_layout) {
+        if (this.phone_layout(feed_id) === phone_layout) return;
+        var layout = NEWSBLUR.mobile_utils.PHONE_LAYOUT_SAVES[phone_layout];
+        var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id + '']) || {};
+        if (_.isString(view_settings)) {
+            view_settings = { 'view': view_settings };
+        }
+        view_settings['l'] = layout;
+        NEWSBLUR.Preferences.view_settings[feed_id + ''] = view_settings;
+        this.make_request('/profile/set_view_setting', {
+            'feed_id': feed_id + '',
+            'feed_layout_setting': layout
+        }, null, null);
+    },
+
     clear_view_settings: function (view_setting_type, callback) {
         var pre_callback = _.bind(function (data) {
             if (data.view_settings) {

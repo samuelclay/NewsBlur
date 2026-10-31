@@ -275,6 +275,11 @@ body.NB-mobile .NB-mobile-bar-button {
     cursor: pointer;
 }
 
+/* .NB-hidden alone loses to the display above. */
+body.NB-mobile .NB-mobile-bar-button.NB-hidden {
+    display: none;
+}
+
 body.NB-mobile .NB-mobile-bar-button:active {
     background-color: var(--nb-mobile-tint-active);
 }
@@ -310,14 +315,94 @@ body.NB-mobile .NB-mobile-icon-search {
     mask-image: url('/media/img/icons/nouns/search.svg');
 }
 
-body.NB-mobile .NB-mobile-icon-list {
+body.NB-mobile .NB-mobile-icon-clock {
+    -webkit-mask-image: url('/media/img/icons/nouns/clock.svg');
+    mask-image: url('/media/img/icons/nouns/clock.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-layout-list {
     -webkit-mask-image: url('/media/img/icons/nouns/layout-list.svg');
     mask-image: url('/media/img/icons/nouns/layout-list.svg');
 }
 
-body.NB-mobile .NB-mobile-icon-grid {
+body.NB-mobile .NB-mobile-icon-layout-page {
+    -webkit-mask-image: url('/media/img/icons/nouns/layout-full.svg');
+    mask-image: url('/media/img/icons/nouns/layout-full.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-layout-grid {
     -webkit-mask-image: url('/media/img/icons/nouns/layout-grid.svg');
     mask-image: url('/media/img/icons/nouns/layout-grid.svg');
+}
+
+/* mobile.css: the story list's layout menu (views/mobile_layout_popover.js), a bottom sheet. */
+body.NB-mobile .NB-mobile-layout-menu {
+    padding: 4px 0 calc(8px + var(--nb-mobile-safe-bottom));
+}
+
+body.NB-mobile .NB-mobile-layout-menu-title {
+    padding: 4px 20px 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--nb-mobile-bar-text);
+}
+
+body.NB-mobile .NB-mobile-layout-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 60px;
+    padding: 8px 20px;
+    cursor: pointer;
+}
+
+/* The mark read menu (views/mobile_mark_read_popover.js) has one line per choice. */
+body.NB-mobile .NB-mobile-layout-option.NB-mobile-mark-read-option {
+    min-height: 36px;
+}
+
+body.NB-mobile .NB-mobile-layout-option:active {
+    background-color: var(--nb-mobile-tint-active);
+}
+
+body.NB-mobile .NB-mobile-layout-option .NB-mobile-icon {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    background-color: var(--nb-mobile-bar-subtext);
+}
+
+body.NB-mobile .NB-mobile-layout-option.NB-active .NB-mobile-icon {
+    background-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .NB-mobile-layout-option-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+body.NB-mobile .NB-mobile-layout-option-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--nb-mobile-bar-text);
+}
+
+body.NB-mobile .NB-mobile-layout-option-detail {
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--nb-mobile-bar-subtext);
+}
+
+body.NB-mobile .NB-mobile-layout-option-check {
+    flex: none;
+    width: 20px;
+    height: 20px;
+}
+
+body.NB-mobile .NB-mobile-layout-option.NB-active .NB-mobile-layout-option-check {
+    background-color: var(--nb-mobile-tint);
+    -webkit-mask: url('/media/img/icons/nouns/check-fat.svg') no-repeat center / contain;
+    mask: url('/media/img/icons/nouns/check-fat.svg') no-repeat center / contain;
 }
 
 /* ================= */
@@ -559,7 +644,9 @@ body.NB-mobile .right-pane > .content-north {
     inset: auto 0 0 0 !important;
     width: auto !important;
     height: auto !important;
-    display: block !important;
+    display: flex !important;
+    align-items: flex-end;
+    gap: 5px;
     z-index: 3 !important;
     overflow: visible !important;
     margin: 0 !important;
@@ -570,8 +657,7 @@ body.NB-mobile .right-pane > .content-north {
     pointer-events: none;
 }
 
-body.NB-mobile .right-pane > .content-south,
-body.NB-mobile .right-pane .NB-feedbar > .NB-taskbar-nav {
+body.NB-mobile .right-pane > .content-south {
     display: none !important;
 }
 
@@ -614,7 +700,11 @@ body.NB-mobile .content-pane > #ask_ai_pane {
    stories, and the mark read split button on the trailing edge. The nav bar above already shows
    the title and icon, so those go. The controls stay inside their views (feed_title_view.js,
    folder_view.js, story_titles_header_view.js) so their click handlers still apply. */
+/* The header and its row stay unpositioned, so the search field it opens spans the whole bar. */
 body.NB-mobile .right-pane .NB-story-titles-header {
+    position: static;
+    flex: 1 1 auto;
+    min-width: 0;
     padding: 0;
     margin: 0 !important;
     overflow: visible;
@@ -626,7 +716,7 @@ body.NB-mobile .right-pane .NB-story-titles-header {
 
 body.NB-mobile .right-pane .NB-story-titles-header > .feed,
 body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder {
-    position: relative;
+    position: static;
     display: flex;
     align-items: center;
     gap: 5px;
@@ -675,16 +765,18 @@ body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-containe
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options-container { order: 2; }
 body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container { order: 3; }
 body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator { order: 4; }
+
+/* Mark read moves up to the nav bar (mobile_layout_view.js open_mark_read_menu), whose menu
+   presses these hidden controls so each view still marks its own stories. */
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
-    order: 5;
-    margin-inline-start: auto !important;
+    display: none !important;
 }
 
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav {
     box-sizing: border-box;
     height: 44px;
     min-width: 44px;
@@ -711,8 +803,7 @@ body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-icon,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-icon,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container::before,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator::before,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-expand::before,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read .NB-icon {
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-image {
     flex: none;
     float: none;
     margin: 0;
@@ -894,7 +985,7 @@ body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-feedbar-disc
 }
 
 body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search-input {
-    inset: auto 0 calc(100% + 8px) 0;
+    inset: auto 10px calc(100% + 8px) 10px;
     width: auto;
     height: 40px;
     padding: 0 40px 0 38px;
@@ -928,14 +1019,14 @@ body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-
 }
 
 body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-icon {
-    inset-inline-start: 13px;
+    inset-inline-start: 23px;
     -webkit-mask-image: url('/media/img/icons/nouns/search.svg');
     mask-image: url('/media/img/icons/nouns/search.svg');
     pointer-events: none;
 }
 
 body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-close {
-    inset-inline-end: 12px;
+    inset-inline-end: 22px;
     -webkit-mask-image: url('/media/img/icons/nouns/close.svg');
     mask-image: url('/media/img/icons/nouns/close.svg');
 }
@@ -989,158 +1080,84 @@ body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .fe
     margin: 0;
 }
 
-/* Curated rivers like Global Shared Stories can't be marked read, as on desktop (reader.css). */
-body.NB-mobile .right-pane .NB-story-titles-header .NB-folder-fake .NB-feedbar-mark-feed-read-container {
-    display: none;
-}
-
-/* Mark read: a split button, + for the day options and the checkmark to mark everything. The +
-   lays the 1d to 14d choices out across the bar (mobile_layout_view.js toggle_mark_read_days). */
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
+/* Previous and Next unread, the reader's own story buttons (feeds_skeleton.xhtml NB-taskbar-nav),
+   on the trailing edge. A full-screen list or grid opens the story they pick on the story screen
+   (mobile_layout_view.js story_selected). */
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav {
+    order: 2;
     display: flex;
+    flex: none;
     align-items: stretch;
+    float: none;
     padding: 0;
     overflow: hidden;
-    font-size: 12px;
-    line-height: 44px;
+    pointer-events: auto;
+    list-style: none;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-expand,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-time {
-    position: relative;
-    inset: auto;
-    float: none;
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-taskbar-button {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
+    float: none;
+    width: auto;
     height: 44px;
     margin: 0;
-    padding: 0;
+    padding: 0 12px;
     border: 0;
     border-radius: 0;
     background: none;
-    opacity: 1;
-    z-index: auto;
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-expand {
-    order: 1;
-    box-sizing: border-box;
-    width: 30px;
-    padding-inline-start: 4px;
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-expand::before {
-    content: "";
-    width: 12px;
-    height: 12px;
-    -webkit-mask-image: url('/media/img/icons/nouns/add.svg');
-    mask-image: url('/media/img/icons/nouns/add.svg');
-}
-
-/* reader.js show_mark_read_confirm hides then shows the pill's buttons, and jQuery's show()
-   leaves the hidden day choices an inline display, so theirs is !important. */
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-time {
-    order: 2;
-    display: none !important;
-    width: 40px;
+    box-shadow: none;
     color: var(--nb-mobile-tint);
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read {
-    order: 3;
-    width: 48px;
-    border-inline-start: 0.5px solid var(--nb-mobile-glass-edge);
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read .NB-icon {
-    width: 22px;
-    height: 22px;
-    -webkit-mask-image: url('/media/img/icons/nouns/mark-read.svg');
-    mask-image: url('/media/img/icons/nouns/mark-read.svg');
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days :is(.NB-feedbar-discover-container, .NB-feedbar-options-container, .NB-search-container, .NB-story-title-indicator),
-body.NB-mobile .right-pane .NB-story-titles-header:has(.NB-feedbar-mark-feed-read-confirm) :is(.NB-feedbar-discover-container, .NB-feedbar-options-container, .NB-search-container, .NB-story-title-indicator) {
-    display: none !important;
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days .NB-feedbar-mark-feed-read-container,
-body.NB-mobile .right-pane .NB-story-titles-header:has(.NB-feedbar-mark-feed-read-confirm) .NB-feedbar-mark-feed-read-container {
-    flex: 1 1 auto;
-    margin-inline-start: 0 !important;
-}
-
-/* The mark read confirmation (reader.js show_mark_read_confirm) takes the whole bar. */
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container:has(.NB-feedbar-mark-feed-read-confirm) > :not(.NB-feedbar-mark-feed-read-confirm) {
-    display: none !important;
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm {
-    display: flex;
-    align-items: center;
-    flex: 1 1 auto;
-    gap: 8px;
-    min-width: 0;
-    height: 44px;
-    margin: 0;
-    padding: 0 6px 0 16px;
-    float: none;
     font-size: 13px;
-    line-height: 32px;
     text-transform: none;
     letter-spacing: normal;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-text {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--nb-mobile-bar-text);
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-story-previous {
+    width: 44px;
+    padding: 0;
+    border-inline-end: 0.5px solid var(--nb-mobile-glass-edge);
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-yes,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-no {
-    flex: none;
-    height: 32px;
-    padding: 0 14px;
-    border: 0;
-    border-radius: 16px;
-    font-size: 13px;
-    line-height: 32px;
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-yes {
-    background: var(--nb-mobile-tint);
-    color: #FFFFFF;
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-no {
-    background: var(--nb-mobile-tint-active);
-    color: var(--nb-mobile-tint);
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-shortcut {
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-story-next {
     display: none;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days .NB-feedbar-mark-feed-read-time {
-    display: flex !important;
-    flex: 1 1 0;
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-title {
+    display: inline;
+    float: none;
+    margin: 0;
+    padding: 0;
+    color: var(--nb-mobile-tint);
+    font-weight: 600;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days .NB-feedbar-mark-feed-read-expand {
+body.NB-mobile .right-pane > .content-north.NB-mobile-nav-compact > .NB-taskbar-nav .NB-task-title {
+    display: none;
+}
+
+body.NB-mobile .right-pane > .content-north.NB-mobile-nav-compact > .NB-taskbar-nav .NB-task-story-next-unread {
     width: 44px;
     padding: 0;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days .NB-feedbar-mark-feed-read-expand::before {
-    -webkit-mask-image: url('/media/img/icons/nouns/close.svg');
-    mask-image: url('/media/img/icons/nouns/close.svg');
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-image {
+    width: 20px;
+    height: 20px;
+    background-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-story-previous .NB-task-image {
+    -webkit-mask-image: url('/media/img/icons/nouns/up.svg');
+    mask-image: url('/media/img/icons/nouns/up.svg');
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-story-next-unread .NB-task-image {
+    order: 2;
+    -webkit-mask-image: url('/media/img/icons/nouns/down.svg');
+    mask-image: url('/media/img/icons/nouns/down.svg');
 }
 
 /* ================= */

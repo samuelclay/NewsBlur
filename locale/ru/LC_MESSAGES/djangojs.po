@@ -3353,6 +3353,9 @@ msgstr "На всю ширину"
 msgid "Full-Text Search"
 msgstr "Полнотекстовый поиск"
 
+msgid "Full-screen list"
+msgstr "Полноэкранный список"
+
 msgid "Full-text search across all stories"
 msgstr "Полнотекстовый поиск по всем статьям"
 
@@ -3749,6 +3752,9 @@ msgstr "Статьи с редко обновляемых сайтов"
 msgid "Infrequent stories per month"
 msgstr "Порог редко обновляемых сайтов"
 
+msgid "Inline list"
+msgstr "Встроенный список"
+
 msgid "Insta-fetch stories"
 msgstr "Мгновенно загружать статьи"
 
@@ -3886,6 +3892,9 @@ msgstr "Последнее обновление"
 
 msgid "Last seen:"
 msgstr "Последний раз в сети:"
+
+msgid "Layout"
+msgstr "Макет"
 
 msgid "Leave unread"
 msgstr "Оставлять непрочитанными"
@@ -4804,6 +4813,13 @@ msgstr "Не удалось получить данные по этому URL, �
 
 msgid "Old password"
 msgstr "Старый пароль"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Старше %(count)s дня"
+msgstr[1] "Старше %(count)s дней"
+msgstr[2] "Старше %(count)s дней"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6620,6 +6636,12 @@ msgstr "Статьи старше %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Статьи за %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Статьи открываются в списке"
+
+msgid "Stories open on their own screen"
+msgstr "Статьи открываются на отдельном экране"
+
 msgid "Stories per day"
 msgstr "Статей в день"
 
@@ -6670,6 +6692,9 @@ msgstr "Типографика статей"
 
 msgid "Story URL"
 msgstr "URL статьи"
+
+msgid "Story cards open on their own screen"
+msgstr "Карточки статей открываются на отдельном экране"
 
 msgid "Story clustering"
 msgstr "Группировка статей"

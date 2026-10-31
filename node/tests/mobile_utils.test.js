@@ -12,6 +12,20 @@ test('phone layouts fold desktop layouts into list or grid', function () {
     assert.equal(mobile_utils.mobile_story_layout(undefined), 'list');
 });
 
+test('each desktop layout reads as one of the three phone layouts', function () {
+    // Desktop's list expands stories in place, split and full show them in a pane of their own.
+    assert.equal(mobile_utils.phone_layout('list'), 'list');
+    assert.equal(mobile_utils.phone_layout('split'), 'page');
+    assert.equal(mobile_utils.phone_layout('full'), 'page');
+    assert.equal(mobile_utils.phone_layout(undefined), 'page');
+    assert.equal(mobile_utils.phone_layout('grid'), 'grid');
+    assert.equal(mobile_utils.phone_layout('magazine'), 'grid');
+    // A phone pick saves a desktop layout that reads back as the same pick.
+    mobile_utils.PHONE_LAYOUTS.forEach(function (layout) {
+        assert.equal(mobile_utils.phone_layout(mobile_utils.PHONE_LAYOUT_SAVES[layout]), layout);
+    });
+});
+
 test('opening a feed on a phone leaves the desktop layout alone unless it changes', function () {
     // A split feed shows as a list on a phone; writing "list" back would lose split on desktop.
     assert.equal(mobile_utils.should_save_mobile_layout('split', 'list'), false);

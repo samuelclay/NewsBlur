@@ -3270,6 +3270,9 @@ msgstr "Volle Breite"
 msgid "Full-Text Search"
 msgstr "Volltextsuche"
 
+msgid "Full-screen list"
+msgstr "Vollbildliste"
+
 msgid "Full-text search across all stories"
 msgstr "Volltextsuche in allen Artikeln"
 
@@ -3667,6 +3670,9 @@ msgstr "Artikel selten aktiver Websites"
 msgid "Infrequent stories per month"
 msgstr "Grenze für selten aktive Websites"
 
+msgid "Inline list"
+msgstr "Inline-Liste"
+
 msgid "Insta-fetch stories"
 msgstr "Artikel sofort abrufen"
 
@@ -3804,6 +3810,9 @@ msgstr "Letzte Aktualisierung"
 
 msgid "Last seen:"
 msgstr "Zuletzt gesehen:"
+
+msgid "Layout"
+msgstr "Layout"
 
 msgid "Leave unread"
 msgstr "Ungelesen lassen"
@@ -4720,6 +4729,12 @@ msgstr ""
 
 msgid "Old password"
 msgstr "Altes Passwort"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Älter als %(count)s Tag"
+msgstr[1] "Älter als %(count)s Tage"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6518,6 +6533,12 @@ msgstr "Artikel älter als %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Artikel am %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Artikel werden innerhalb der Liste geöffnet"
+
+msgid "Stories open on their own screen"
+msgstr "Artikel werden auf einem eigenen Bildschirm geöffnet"
+
 msgid "Stories per day"
 msgstr "Artikel pro Tag"
 
@@ -6568,6 +6589,9 @@ msgstr "Typografie der Artikel"
 
 msgid "Story URL"
 msgstr "Artikel-URL"
+
+msgid "Story cards open on their own screen"
+msgstr "Artikelkarten werden auf einem eigenen Bildschirm geöffnet"
 
 msgid "Story clustering"
 msgstr "Artikelgruppierung"
