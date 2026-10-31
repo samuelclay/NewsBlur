@@ -960,9 +960,6 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ עוד %(value_1)s אתר"
 msgstr[1] "+ עוד %(value_1)s אתרים"
 
-msgid "+ New Folder..."
-msgstr "+ תיקייה חדשה..."
-
 msgid "/day"
 msgstr "ליום"
 
@@ -1053,9 +1050,6 @@ msgstr "במעבר נוסף נעשה שימוש ברמז שלך כדי למצו�
 msgid "A single like overrides any number of dislikes"
 msgstr "לייק אחד גובר על כל מספר של סימוני לא אהבתי"
 
-msgid "A single super dislike overrides everything"
-msgstr "סלידה חזקה אחת גוברת על הכול"
-
 msgid "A story diff with additions and deletions"
 msgstr "השוואת כתבה עם תוספות ומחיקות"
 
@@ -1119,6 +1113,9 @@ msgstr "הוסף תיקייה"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "סימניית הוספת אתר &amp; שיתוף כתבה"
 
+msgid "Add a classifier"
+msgstr "הוספת מסווג"
+
 msgid "Add a forwarding address"
 msgstr "הוספת כתובת להעברה"
 
@@ -1179,6 +1176,9 @@ msgid ""
 msgstr ""
 "הוסיפו את שם החברה, מספר המע״מ, הכתובת או כל טקסט אחר. שמרו כדי לעדכן את כל חשבוניות המינוי, כולל תשלומים "
 "קודמים."
+
+msgid "Added"
+msgstr "נוסף"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1375,6 +1375,9 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "בוצעו %(succeeded)s מתוך %(count)s מיזוג (%(stories)s)"
 msgstr[1] "הוחלו %(succeeded)s מתוך %(count)s מיזוגים (%(stories)s)"
 
+msgid "Applies to"
+msgstr "חל על"
+
 msgid "Apply"
 msgstr "החל"
 
@@ -1482,6 +1485,9 @@ msgstr "מסנני המחברים לא מצאו כתבות ב-%(context)s."
 
 msgid "Author filters found no stories in this view."
 msgstr "מסנני מחברים לא מצאו כתבות בתצוגה הזו."
+
+msgid "Author name"
+msgstr "שם המחבר"
 
 msgid "Author: "
 msgstr "מחבר: "
@@ -1761,6 +1767,9 @@ msgstr "מסווג..."
 msgid "Category"
 msgstr "קטגוריה"
 
+msgid "Category or tag"
+msgstr "קטגוריה או תגית"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "קטגוריה: %(value_1)s"
@@ -1876,6 +1885,9 @@ msgstr "היקף מסנן המסווג"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "הגדרת תחום המסווג דורשת %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "סוג המסווג"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr "Claude (Anthropic),‏ GPT (OpenAI),‏ Gemini (Google) ו־Grok (SpaceXSI). אפשר לעבור ביניהם בכל עת."
@@ -2068,6 +2080,9 @@ msgstr "העתקת טקסט"
 
 msgid "Copy URL"
 msgstr "העתקת כתובת URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "לא ניתן להוסיף את המסווג הזה. נסו שוב."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "ניתוק החשבון הזה נכשל. נסה שוב."
@@ -3443,6 +3458,9 @@ msgstr "פנינים נסתרות"
 msgid "Hide"
 msgstr "הסתרה"
 
+msgid "Hide "
+msgstr "הסתרה "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "הסתרת כל תכונות השיתוף, התגובות והבלוג האישי"
 
@@ -3454,6 +3472,9 @@ msgstr "הסתרת ההיסטוריה"
 
 msgid "Hide matching stories"
 msgstr "הסתרת כתבות תואמות"
+
+msgid "Hide overrides everything, even likes"
+msgstr "״הסתרה״ גוברת על הכול, אפילו על ״אהבתי״"
 
 msgid "Hide sites"
 msgstr "הסתרת אתרים"
@@ -4059,6 +4080,15 @@ msgstr "זוהה באמצעות נושאים קשורים"
 msgid "Matches story titles containing all keywords"
 msgstr "התאמה לכותרות כתבות שמכילות את כל מילות המפתח"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "כתבות תואמות מוסתרות תמיד, גם כשאהבתי תואם"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "כתבות תואמות מוסתרות, אלא אם גם אהבתי תואם"
+
+msgid "Matching stories show in Focus"
+msgstr "כתבות תואמות מופיעות במיקוד"
+
 msgid "May"
 msgstr "מאי"
 
@@ -4462,6 +4492,9 @@ msgstr "אין התאמה בכותרת"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "אין תוצאות עבור „%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "אין תיקיות או אתרים תואמים"
 
 msgid "No merge suggestions"
 msgstr "אין הצעות למיזוג"
@@ -4934,6 +4967,9 @@ msgstr "ניתוח פיד ה-RSS/XML הזה"
 msgid "Parsing..."
 msgstr "מנתח..."
 
+msgid "Part of a story URL"
+msgstr "חלק מכתובת ה-URL של הכתבה"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "הדביקו כתובת URL כלשהי ו־NewsBlur ייצור מהעמוד פיד, גם ללא RSS."
 
@@ -4985,6 +5021,12 @@ msgstr "לפי אתר"
 
 msgid "Per-feed notification settings"
 msgstr "הגדרות התראות לכל פיד"
+
+msgid "Phrase to match in story text"
+msgstr "ביטוי להתאמה בטקסט הכתבה"
+
+msgid "Phrase to match in story titles"
+msgstr "ביטוי להתאמה בכותרות הכתבות"
 
 msgid "Pick a tier & pay."
 msgstr "בחרו מסלול ושלמו."
@@ -5789,6 +5831,9 @@ msgstr "חיפוש בפיד"
 
 msgid "Search folder"
 msgstr "חיפוש בתיקייה"
+
+msgid "Search folders and sites"
+msgstr "חיפוש בתיקיות ובאתרים"
 
 msgid "Search for friends"
 msgstr "חיפוש חברים"
@@ -6661,9 +6706,6 @@ msgstr "א׳"
 msgid "Sunday"
 msgstr "יום ראשון"
 
-msgid "Super Dislike "
-msgstr "סלידה חזקה במיוחד "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "בתוספת בדיקות כל %(value_1)s"
@@ -6769,6 +6811,10 @@ msgstr "ביטוי רגולרי בטקסט"
 
 msgid "Text View"
 msgstr "תצוגת טקסט"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "מסווגי טקסט דורשים %(tier_link)s"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7285,6 +7331,10 @@ msgid "URL Regex"
 msgstr "ביטוי רגולרי של כתובת URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "מסווגי כתובות URL דורשים %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "מסנני כתובות URL לא מצאו כתבות ב־%(context)s."
 
@@ -7642,6 +7692,9 @@ msgstr "שבועי"
 
 msgid "Welcome to NewsBlur"
 msgstr "ברוכים הבאים ל-NewsBlur"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "מה עושים אהבתי, לא אהבתי והסתרה"
 
 msgid "What are the main arguments?"
 msgstr "מהם הטיעונים העיקריים?"

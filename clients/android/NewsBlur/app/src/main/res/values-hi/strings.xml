@@ -712,14 +712,14 @@
     <string name="intel_author_header">लेख के लेखक</string>
     <string name="feed_intel_author_header">लेखक</string>
     <string name="intel_feed_header">प्रकाशक की सभी सामग्री</string>
-    <string name="intel_super_dislike">बहुत नापसंद</string>
-    <string name="explainer_super_dislike">सुपर नापसंद</string>
+    <string name="intel_super_dislike">मेल खाते लेख छिपाएँ</string>
+    <string name="explainer_super_dislike">छिपाएँ</string>
     <string name="explainer_like">पसंद करें</string>
     <string name="explainer_dislike">नापसंद</string>
     <string name="explainer_beats">&gt;</string>
     <string name="explainer_example1_header">एक पसंद कितनी भी नापसंद पर भारी पड़ती है</string>
     <string name="explainer_example1_result">लेख फ़ोकस दृश्य में दिखाई देता है</string>
-    <string name="explainer_example2_header">एक सुपर नापसंद बाकी सब पर भारी पड़ता है</string>
+    <string name="explainer_example2_header">“छिपाएँ” सब पर भारी पड़ता है, पसंद पर भी</string>
     <string name="explainer_example2_result">लेख हमेशा छिपा रहता है</string>
     <string name="auto">ऑटो</string>
     <string name="light">हल्का</string>

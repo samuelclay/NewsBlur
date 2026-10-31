@@ -84,6 +84,69 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Nov 1, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/11/01/type-a-classifier-into-the-trainer/">
+              Type a classifier straight into the trainer
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>The Intelligence Trainer has always worked from whatever is in front of you. You find a tag, an author, or a phrase on a story, and you train it from there. That’s fine when the story is right there, but someone on the forum <a href="https://forum.newsblur.com/t/global-classifiers-input-button/13907">asked a fair question</a>: what if you already know what you want? You’d like every title with “sponsored” in it hidden across all of your sites, and you’d rather not wait for one to show up first. There was no way to do that. Now there is.</p>
+
+<h3 id="add-a-classifier">Add a classifier</h3>
+
+<p>Open the Intelligence Trainer and switch to <strong>Manage Training</strong>. There’s a new panel at the top. Pick what to match (title, author, tag, text, or URL), type the phrase, choose where it applies, pick Like, Dislike, or Hide, and press <strong>Add</strong>. It saves right away, the new classifier lights up in its section below, and the field clears so you can type the next one.</p>
+
+<p><img src="/assets/add-classifier-panel.png" alt="The Add a classifier panel at the top of Manage Training, set to like the tag rust in the Code folder" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Enter in the phrase field does the same thing as Add, and the little ↵ on the button reminds you while you type. Your choices stick between adds, so putting a dozen tags into the same folder is just type, Enter, type, Enter.</p>
+
+<p>The same panel sits at the top of the site and story trainers, and on every Site by Site page. There it starts on the site you’re training, or on the folder you were reading if you opened the trainer from a folder. The new classifier shows up trained in its section right away, and the stories behind the dialog are rescored before you even close it.</p>
+
+<h3 id="where-it-applies">Where it applies</h3>
+
+<p><strong>Applies to</strong> sets the scope: one site, a folder, or all of your sites. It’s a new picker rather than a plain dropdown, so it shows your custom folder icons and each site’s favicon, and it has a search box at the top. With a few hundred subscriptions, typing three letters beats scrolling. While you search, nested folders show the folder they live in, so two folders called “Podcasts” don’t look identical.</p>
+
+<p><img src="/assets/add-classifier-scope-picker.png" alt="The Applies to picker open, listing folders with their custom icons and a search box at the top" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The rules are the same as everywhere else in the trainer. A single site works on every account. Folders and all sites need Premium Archive, and so do text classifiers. URL classifiers need Premium, and regex needs Premium Pro. If you pick something your account doesn’t include, the panel tells you and links to the upgrade instead of letting you save a classifier that won’t do anything.</p>
+
+<h3 id="regex">Regex</h3>
+
+<p>Title, author, text, and URL classifiers can be regular expressions. Click the <strong>.*</strong> at the end of the field to turn it on. The field gets a purple outline and a REGEX badge, the text switches to monospace, and the placeholder changes to an example for that type, so you always know which mode you’re in. Hover the <strong>.*</strong> and the same regex cheat sheet from the story trainer opens right there. A pattern that doesn’t compile is caught before it can be saved.</p>
+
+<p><img src="/assets/add-classifier-regex.png" alt="Regex mode in the add panel, hiding titles that start with [Sponsored], with the regex cheat sheet open below" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="super-dislike-is-now-hide">Super Dislike is now Hide</h3>
+
+<p>The third training level has been called Super Dislike since it launched, and I never loved the name. It says how strongly you feel, not what it does. What it does is hide the story, every time, even when the story also matches something you like. So it’s called <strong>Hide</strong> now, everywhere: on the web, on iOS and Mac, and on Android. Nothing about how it works has changed, and every super dislike you already have is a Hide.</p>
+
+<p>If you ever forget how the three fit together, there’s an ⓘ next to them in the panel that lays it out with a couple of examples.</p>
+
+<p><img src="/assets/add-classifier-opinions.png" alt="The explainer next to Like, Dislike, and Hide, describing each one and showing that Hide overrides everything, even likes" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="the-same-picker-everywhere">The same picker, everywhere</h3>
+
+<p>Once the scope picker existed, the plain folder dropdowns all over NewsBlur looked pretty sad next to it. So every folder chooser and every folder and site chooser on the web uses it now: adding a site, Add + Discover, the statistics, site settings, and notifications dialogs, Organize Sites, the default folder in Preferences, dashboard rivers, and the Daily Briefing. They all get the icons, the search, and the keyboard. Arrow keys, Enter, and Escape work the way you’d expect, or just start typing.</p>
+
+<p><img src="/assets/folder-picker-add-site.png" alt="Adding a site, with the folder picker open and filtered to folders matching bl" style="width: 70%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-few-fixes-along-the-way">A few fixes along the way</h3>
+
+<ul>
+  <li><strong>Back to trainer</strong> from a matching stories list now takes you back to exactly where you were: the same tab, the same filters, any changes you hadn’t saved yet, and scrolled to the same classifier. It used to drop you on Site by Site every time.</li>
+  <li>The <strong>View matching stories</strong> button sits next to the classifier it belongs to instead of leaning toward the next one, and its tooltip no longer hangs around after you click it.</li>
+  <li>In the matching stories banner, Back to trainer no longer squeezes the Train and Notify on controls on a narrow story list.</li>
+  <li>Jump to folder in Organize Sites actually jumps to the folder.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>Typing classifiers into Manage Training and the new folder and site picker are available now on the web. Hide is on the web now and comes to iOS, Mac, and Android with their next updates. Thanks to the forum for the nudge on this one. If there’s a classifier you want to type in that the panel can’t handle yet, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Oct 30, 2026</span>
           <h3>
             <a class="post-link" href="/2026/10/30/listen-to-your-stories/">
@@ -864,60 +927,6 @@
 <p>Matching Stories is available now on the web for everyone. Site scope, training, and highlighting work on every account. Folder and All scopes and the Notify on controls follow the existing rules for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro.</p>
 
 <p>If you find a tag or author that should match and doesn’t, or have an idea for where else this button belongs, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Jul 17, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/07/17/good-reads-and-a-redesigned-global-shared-stories/">
-              Good Reads and a redesigned Global Shared Stories
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>I’m announcing two new global feeds: a redesigned Global Shared Stories and a new feed called Good Reads.</p>
-
-<h3 id="redesigned-global-shared-stories">Redesigned Global Shared Stories</h3>
-
-<p>Global Shared Stories has been in the sidebar for years, and for years it worked in a way I never liked. It was not the shares of everybody on NewsBlur. It was the shares of the accounts that the @popular account happened to follow, a list I put together by hand a long time ago and rarely touched. If you were on that list and you shared a lot, you decided what everybody else saw. If you shared one story a month and wrote a paragraph about why it mattered, you were drowned out by someone who shared thirty without a word.</p>
-
-<p>So I rebuilt it. Every hour, NewsBlur now gathers every story shared across the whole site in the last few hours, caps each person at three so nobody can flood the pool, drops private blurblogs, and then picks a few worth reading. The picks accumulate, so the river stays deep enough to scroll back through.</p>
-
-<!-- SCREENSHOT: Global Shared Stories feed open in the reader, showing the new explainer banner at the top of the story list -->
-<p><img src="/assets/global-shared-stories.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The picking is done by Claude Haiku, once an hour, and it is worth being precise about what it does and does not do. It does not go looking for stories. It does not write anything. It only ranks stories that NewsBlur readers already chose to share, and the thing it weighs most heavily is the comment the sharer wrote, because a share with a few sentences attached is a share somebody thought about. It is allowed to pick nothing at all in a quiet hour, and in testing it regularly passes on half of what it is offered. If the API is ever unreachable, a plain heuristic takes over and the river keeps flowing.</p>
-
-<h3 id="good-reads">Good Reads</h3>
-
-<p>The new feed in the sidebar is <strong>Good Reads</strong>, and it asks a question the other feeds do not: which stories did somebody finish and then do something about?</p>
-
-<p>A story lands in Good Reads when at least two people read it closely, thirty seconds or more, and at least one of them then saved it, shared it, or trained it up. Finishing is not enough. Somebody has to have bothered to act. On top of that, the score is tilted toward feeds with few subscribers, so a story from a site with forty readers can beat a story from a site with forty thousand. That tilt is the whole point. The big sites do not need help getting seen.</p>
-
-<!-- SCREENSHOT: Good Reads feed with several stories from small, unfamiliar sites -->
-<p><img src="/assets/good-reads.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="four-feeds-four-questions">Four feeds, four questions</h3>
-
-<p>There are now four curated rivers sitting together in the sidebar, and the reason there are four and not one is that they each answer a different question.</p>
-
-<p><img src="/assets/feed-icon-global-shares.svg" style="width: 18px;height: 18px;vertical-align: -3px;margin-right: 8px;" /> <strong>Global Shared Stories</strong> asks what people chose to hand to someone else. It runs on sharing, a deliberate human act.</p>
-
-<p><img src="/assets/feed-icon-blaze.svg" style="width: 18px;height: 18px;vertical-align: -3px;margin-right: 8px;" /> <strong>Widely Read Stories</strong> asks what held the most attention across NewsBlur. It runs on reading time, not clicks, so a headline nobody read cannot buy its way in.</p>
-
-<p><img src="/assets/feed-icon-moon.svg" style="width: 18px;height: 18px;vertical-align: -3px;margin-right: 8px;" /> <strong>Long Reads</strong> asks what was worth an afternoon. Features and essays that readers gave real time to, rather than skimmed.</p>
-
-<p><img src="/assets/feed-icon-star.svg" style="width: 18px;height: 18px;vertical-align: -3px;margin-right: 8px;" /> <strong>Good Reads</strong> asks what somebody finished and then kept, and leans toward the small sites you have probably never heard of.</p>
-
-<p>Widely Read Stories and Long Reads have been around since April, and I wrote about how they work <a href="/2026/04/05/widely-read-stories-and-long-reads/">when they launched</a>. None of the four ranks by clicks, and none of them is trying to keep you scrolling. They are all built out of what NewsBlur readers actually did with their time.</p>
-
-<p>Because it was never obvious from looking at them which was which, each of the four now explains itself in a line at the top of its story list. It scrolls away with the stories, so it is there when you arrive and gone once you are reading.</p>
-
-<p><img src="/assets/banner-widely-read.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Your classifiers still apply to all four. If you have trained a tag, an author, or a site, those green and red scores carry through, including on stories from feeds you do not subscribe to. And all four work as dashboard rivers, so you can park any of them next to your regular feeds.</p>
-
-<p>Good Reads and the rebuilt Global Shared Stories are available now on the web. If a story shows up in one of these feeds that clearly should not have, I want to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
       </li></ul>

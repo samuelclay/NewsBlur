@@ -434,6 +434,8 @@
 "Hide Changes" = "変更を非表示";
 "Hide Sidebar" = "サイドバーを隠す";
 "Hide Story Titles" = "記事タイトルを非表示";
+"Hide [training level]" = "非表示";
+"Hide beats any number of likes:" = "「非表示」は「いいね」がいくつあっても優先されます：";
 "Hide hidden stories" = "非表示の記事を隠す";
 "Hide status bar" = "ステータスバーを非表示";
 "Hide toolbars when reading" = "記事を読むときにツールバーを非表示にする";
@@ -992,7 +994,7 @@
 "Story count" = "記事数";
 "Story detail" = "記事の詳細";
 "Story image" = "記事の画像";
-"Story is hidden (super dislike wins)" = "記事は非表示（「強い低評価」が優先）";
+"Story is always hidden" = "記事は常に非表示";
 "Story is shown (like wins)" = "記事は表示（「いいね」が優先）";
 "Story language" = "記事の言語";
 "Story list toolbar position" = "記事リストのツールバー位置";
@@ -1015,8 +1017,6 @@
 "Summarize" = "要約";
 "Sunday" = "日曜日";
 "Sunrise Gold" = "サンライズゴールド";
-"Super dislike" = "強い低評価";
-"Super dislike beats any number of likes:" = "「強い低評価」は「いいね」がいくつあっても優先されます：";
 "Support Forum" = "サポートフォーラム";
 "Swipe from left edge" = "画面左端からスワイプ";
 "Swipe from the left edge while reading" = "記事を読んでいるときに左端からスワイプ";

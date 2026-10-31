@@ -893,9 +893,6 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ ほか%(value_1)sサイト"
 
-msgid "+ New Folder..."
-msgstr "+ 新しいフォルダー..."
-
 msgid "/day"
 msgstr "/日"
 
@@ -983,9 +980,6 @@ msgstr "2回目の処理では、ヒントを使ってページ上の適切な�
 msgid "A single like overrides any number of dislikes"
 msgstr "「いいね」が1つあれば、「低評価」がいくつあっても優先されます"
 
-msgid "A single super dislike overrides everything"
-msgstr "「強い低評価」が1つあれば、ほかのすべてに優先します"
-
 msgid "A story diff with additions and deletions"
 msgstr "追加・削除箇所を表示する記事の差分"
 
@@ -1048,6 +1042,9 @@ msgstr "フォルダーを追加"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "サイト追加 &amp; 記事共有ブックマークレット"
 
+msgid "Add a classifier"
+msgstr "分類器を追加"
+
 msgid "Add a forwarding address"
 msgstr "転送先アドレスを追加"
 
@@ -1106,6 +1103,9 @@ msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
 "including past payments."
 msgstr "会社名、VAT番号、住所などを入力してください。保存すると、過去のお支払い分を含むすべての購読請求書が更新されます。"
+
+msgid "Added"
+msgstr "追加済み"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1287,6 +1287,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(count)s件中%(succeeded)s件の統合を適用しました（%(stories)s）"
 
+msgid "Applies to"
+msgstr "適用対象"
+
 msgid "Apply"
 msgstr "適用"
 
@@ -1394,6 +1397,9 @@ msgstr "著者フィルターにより、%(context)sの記事は見つかりま�
 
 msgid "Author filters found no stories in this view."
 msgstr "著者フィルターにより、この表示に記事が見つかりませんでした。"
+
+msgid "Author name"
+msgstr "著者名"
 
 msgid "Author: "
 msgstr "著者："
@@ -1669,6 +1675,9 @@ msgstr "分類中..."
 msgid "Category"
 msgstr "カテゴリ"
 
+msgid "Category or tag"
+msgstr "カテゴリまたはタグ"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "カテゴリ: %(value_1)s"
@@ -1782,6 +1791,9 @@ msgstr "分類フィルターの適用範囲"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "分類器の範囲には%(tier_link)sが必要です"
+
+msgid "Classifier type"
+msgstr "分類器の種類"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）、Grok（SpaceXSI）をいつでも切り替えられます。"
@@ -1969,6 +1981,9 @@ msgstr "テキストをコピー"
 
 msgid "Copy URL"
 msgstr "URLをコピー"
+
+msgid "Could not add this classifier. Try again."
+msgstr "この分類器を追加できませんでした。もう一度お試しください。"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "このアカウントを切断できませんでした。もう一度お試しください。"
@@ -3330,6 +3345,9 @@ msgstr "穴場"
 msgid "Hide"
 msgstr "非表示"
 
+msgid "Hide "
+msgstr "非表示 "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "共有、コメント、Blurblog機能をすべて非表示にする"
 
@@ -3341,6 +3359,9 @@ msgstr "履歴を隠す"
 
 msgid "Hide matching stories"
 msgstr "一致する記事を非表示"
+
+msgid "Hide overrides everything, even likes"
+msgstr "「非表示」は、「いいね」も含めてすべてに優先されます"
 
 msgid "Hide sites"
 msgstr "サイトを非表示"
@@ -3929,6 +3950,15 @@ msgstr "関連トピックから一致"
 msgid "Matches story titles containing all keywords"
 msgstr "すべてのキーワードを含む記事タイトルに一致"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "いいねに一致しても、一致する記事は常に非表示になります"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "いいねにも一致しない限り、一致する記事は非表示になります"
+
+msgid "Matching stories show in Focus"
+msgstr "一致する記事はフォーカスに表示されます"
+
 msgid "May"
 msgstr "5月"
 
@@ -4326,6 +4356,9 @@ msgstr "タイトルに一致するものがありません"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "「%(value_1)s」に一致するものはありません"
+
+msgid "No matching folders or sites"
+msgstr "一致するフォルダーまたはサイトはありません"
 
 msgid "No merge suggestions"
 msgstr "統合候補はありません"
@@ -4786,6 +4819,9 @@ msgstr "このRSS/XMLフィードを解析"
 msgid "Parsing..."
 msgstr "解析中…"
 
+msgid "Part of a story URL"
+msgstr "記事URLの一部"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "任意のURLを貼り付けると、NewsBlurがRSSのないページからもフィードを作成します。"
 
@@ -4837,6 +4873,12 @@ msgstr "サイトごと"
 
 msgid "Per-feed notification settings"
 msgstr "フィードごとの通知設定"
+
+msgid "Phrase to match in story text"
+msgstr "記事本文で一致させるフレーズ"
+
+msgid "Phrase to match in story titles"
+msgstr "記事タイトルで一致させるフレーズ"
 
 msgid "Pick a tier & pay."
 msgstr "プランを選んでお支払いください。"
@@ -5626,6 +5668,9 @@ msgstr "フィードを検索"
 
 msgid "Search folder"
 msgstr "フォルダーを検索"
+
+msgid "Search folders and sites"
+msgstr "フォルダーとサイトを検索"
 
 msgid "Search for friends"
 msgstr "友達を検索"
@@ -6490,9 +6535,6 @@ msgstr "日"
 msgid "Sunday"
 msgstr "日曜日"
 
-msgid "Super Dislike "
-msgstr "強い低評価 "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "%(value_1)sごとに行うチェックで補完"
@@ -6598,6 +6640,10 @@ msgstr "テキスト正規表現"
 
 msgid "Text View"
 msgstr "テキスト表示"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "テキスト分類器には%(tier_link)sが必要です"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7096,6 +7142,10 @@ msgid "URL Regex"
 msgstr "URL正規表現"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL分類器には%(tier_link)sが必要です"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "%(context)sにURLフィルターに一致する記事はありません。"
 
@@ -7447,6 +7497,9 @@ msgstr "毎週"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlurへようこそ"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "いいね、低評価、非表示の仕組み"
 
 msgid "What are the main arguments?"
 msgstr "主な論点は何ですか？"

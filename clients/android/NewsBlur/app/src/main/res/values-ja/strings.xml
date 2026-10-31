@@ -704,14 +704,14 @@
     <string name="intel_author_header">記事の著者</string>
     <string name="feed_intel_author_header">著者</string>
     <string name="intel_feed_header">この配信元のすべての記事</string>
-    <string name="intel_super_dislike">強い低評価</string>
-    <string name="explainer_super_dislike">強い低評価</string>
+    <string name="intel_super_dislike">一致する記事を非表示</string>
+    <string name="explainer_super_dislike">非表示</string>
     <string name="explainer_like">いいね</string>
     <string name="explainer_dislike">低評価</string>
     <string name="explainer_beats">＞</string>
     <string name="explainer_example1_header">「いいね」が1つあれば、「低評価」がいくつあっても優先されます</string>
     <string name="explainer_example1_result">記事がフォーカス表示に表示されます</string>
-    <string name="explainer_example2_header">強い低評価が1つあれば、すべてに優先します</string>
+    <string name="explainer_example2_header">「非表示」は、「いいね」も含めてすべてに優先されます</string>
     <string name="explainer_example2_result">記事は常に非表示</string>
     <string name="auto">自動</string>
     <string name="light">ライト</string>

@@ -720,14 +720,14 @@ les gens pour parler du monde.</string>
     <string name="intel_author_header">Auteurs des articles</string>
     <string name="feed_intel_author_header">Auteurs</string>
     <string name="intel_feed_header">Tous les articles de l’éditeur</string>
-    <string name="intel_super_dislike">Je déteste</string>
-    <string name="explainer_super_dislike">Je déteste</string>
+    <string name="intel_super_dislike">Masquer les articles correspondants</string>
+    <string name="explainer_super_dislike">Masquer</string>
     <string name="explainer_like">J’aime</string>
     <string name="explainer_dislike">Je n’aime pas</string>
     <string name="explainer_beats">l’emporte sur</string>
     <string name="explainer_example1_header">Un seul « J’aime » l’emporte sur n’importe quel nombre de « Je n’aime pas »</string>
     <string name="explainer_example1_result">L’article s’affiche parmi les articles prioritaires</string>
-    <string name="explainer_example2_header">Un seul « Je déteste » l’emporte sur tout</string>
+    <string name="explainer_example2_header">« Masquer » l’emporte sur tout, même sur « J’aime »</string>
     <string name="explainer_example2_result">L’article est toujours masqué</string>
     <string name="auto">Auto</string>
     <string name="light">Clair</string>

@@ -108,13 +108,23 @@
     },
     {
       "concept": "like dislike training",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Beğen / Beğenme; Super dislike → Hiç beğenme; liked/disliked → beğenilen/beğenilmeyen",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Beğen / Beğenme; Hide (the level above Like, formerly Super dislike) → Gizle; liked/disliked → beğenilen/beğenilmeyen",
       "avoid": [
         "Çok Beğenme (reads as 'like a lot')",
         "Süper Beğenmeme"
       ],
-      "note": "iOS past-tense state labels (Beğenmedim) are left alone. 'beats' and 'beats any' between the explainer pills → a bare '>' on every platform (not '> her', which produces the mixed 'Hiç Beğenme > her Beğen'); 'baskındır' in prose. '(like wins)' → '(beğeni baskın)'. The trainer question inserts finite verbs: like → beğeniyorsunuz, dislike → beğenmiyorsunuz, template 'Bu sitede/haberde neyi %(like)s, neyi %(dislike)s?'."
+      "note": "iOS past-tense state labels (Beğenmedim) are left alone. 'beats' and 'beats any' between the explainer pills → a bare '>' on every platform (not '> her', which produces the mixed 'Gizle > her Beğen'); 'baskındır' in prose. '(like wins)' → '(beğeni baskın)'. The trainer question inserts finite verbs: like → beğeniyorsunuz, dislike → beğenmiyorsunuz, template 'Bu sitede/haberde neyi %(like)s, neyi %(dislike)s?'."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Gizle",
+      "avoid": [
+        "Hiç beğenme",
+        "Hiç Beğenme"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (“Gizle” her şeyi geçersiz kılar). The old Super dislike names are retired."
     },
     {
       "concept": "classifier",

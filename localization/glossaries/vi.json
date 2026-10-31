@@ -157,13 +157,23 @@
       "note": "Consistent."
     },
     {
-      "concept": "Like / Dislike / Super Dislike",
-      "en": "\\b(super )?(dis)?lik(e|ed|es)\\b",
-      "use": "Thích / Không thích / Rất không thích",
+      "concept": "Like / Dislike / Hide",
+      "en": "\\b(dis)?lik(e|ed|es)\\b",
+      "use": "Thích / Không thích; Hide → Ẩn",
       "avoid": [
         "Không thích mạnh"
       ],
       "note": "«Không thích mạnh» → low. Neutral → trung lập."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Ẩn",
+      "avoid": [
+        "Rất không thích",
+        "rất không thích"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (“Ẩn” được ưu tiên hơn mọi thứ). The old Super dislike names are retired."
     },
     {
       "concept": "Premium plans",
@@ -327,7 +337,7 @@
     },
     {
       "concept": "beats / like wins",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
       "use": "thắng; beats any → thắng mọi; (like wins) → (thích được ưu tiên)",
       "avoid": [
         "nhịp",

@@ -960,9 +960,6 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s और साइट"
 msgstr[1] "+ %(value_1)s और साइटें"
 
-msgid "+ New Folder..."
-msgstr "+ नया फ़ोल्डर..."
-
 msgid "/day"
 msgstr "/दिन"
 
@@ -1053,9 +1050,6 @@ msgstr "दूसरे चरण में, पृष्ठ पर सही �
 msgid "A single like overrides any number of dislikes"
 msgstr "एक पसंद कितनी भी नापसंद पर भारी पड़ती है"
 
-msgid "A single super dislike overrides everything"
-msgstr "एक सुपर नापसंद बाकी सब पर भारी पड़ता है"
-
 msgid "A story diff with additions and deletions"
 msgstr "जोड़ और हटाव दिखाने वाला लेख अंतर"
 
@@ -1119,6 +1113,9 @@ msgstr "फ़ोल्डर जोड़ें"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "साइट जोड़ने &amp; लेख साझा करने का बुकमार्कलेट"
 
+msgid "Add a classifier"
+msgstr "एक क्लासिफ़ायर जोड़ें"
+
 msgid "Add a forwarding address"
 msgstr "एक फ़ॉरवर्डिंग पता जोड़ें"
 
@@ -1179,6 +1176,9 @@ msgid ""
 msgstr ""
 "अपनी कंपनी का नाम, VAT नंबर, पता या अन्य जानकारी जोड़ें। सभी सदस्यता इनवॉइस अपडेट करने के लिए सहेजें, "
 "जिनमें पिछले भुगतान भी शामिल हैं।"
+
+msgid "Added"
+msgstr "जोड़ा गया"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1375,6 +1375,9 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(count)s में से %(succeeded)s मर्ज लागू किया गया (%(stories)s)"
 msgstr[1] "%(count)s में से %(succeeded)s मर्ज लागू किए (%(stories)s)"
 
+msgid "Applies to"
+msgstr "इन पर लागू होता है"
+
 msgid "Apply"
 msgstr "लागू करें"
 
@@ -1486,6 +1489,9 @@ msgstr "लेखक फ़िल्टर को %(context)s में को�
 
 msgid "Author filters found no stories in this view."
 msgstr "लेखक फ़िल्टर को इस दृश्य में कोई लेख नहीं मिला।"
+
+msgid "Author name"
+msgstr "लेखक का नाम"
 
 msgid "Author: "
 msgstr "लेखक: "
@@ -1765,6 +1771,9 @@ msgstr "श्रेणीबद्ध किया जा रहा है..."
 msgid "Category"
 msgstr "श्रेणी"
 
+msgid "Category or tag"
+msgstr "श्रेणी या टैग"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "श्रेणी: %(value_1)s"
@@ -1880,6 +1889,9 @@ msgstr "क्लासिफ़ायर फ़िल्टर का दाय
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "क्लासिफ़ायर के दायरे के लिए %(tier_link)s आवश्यक है"
+
+msgid "Classifier type"
+msgstr "क्लासिफ़ायर का प्रकार"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) और Grok (SpaceXSI) के बीच कभी भी स्विच करें।"
@@ -2072,6 +2084,9 @@ msgstr "टेक्स्ट कॉपी करें"
 
 msgid "Copy URL"
 msgstr "URL कॉपी करें"
+
+msgid "Could not add this classifier. Try again."
+msgstr "यह क्लासिफ़ायर जोड़ा नहीं जा सका। फिर से कोशिश करें।"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "इस खाते का कनेक्शन नहीं हटाया जा सका। कृपया फिर से कोशिश करें।"
@@ -3457,6 +3472,9 @@ msgstr "छुपे हुए रत्न"
 msgid "Hide"
 msgstr "छिपाएँ"
 
+msgid "Hide "
+msgstr "छिपाएँ "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "सभी शेयरिंग, टिप्पणियाँ और Blurblog सुविधाएँ छिपाएँ"
 
@@ -3468,6 +3486,9 @@ msgstr "इतिहास छिपाएँ"
 
 msgid "Hide matching stories"
 msgstr "मेल खाते लेख छिपाएँ"
+
+msgid "Hide overrides everything, even likes"
+msgstr "“छिपाएँ” सब पर भारी पड़ता है, पसंद पर भी"
 
 msgid "Hide sites"
 msgstr "साइटें छिपाएँ"
@@ -4073,6 +4094,15 @@ msgstr "संबंधित विषयों के ज़रिए मे�
 msgid "Matches story titles containing all keywords"
 msgstr "उन लेखों से मेल खाता है जिनके शीर्षक में सभी कीवर्ड हों"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "मेल खाते लेख हमेशा छिपे रहते हैं, पसंद मेल खाने पर भी"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "मेल खाते लेख छिपे रहते हैं, जब तक पसंद भी मेल न खाए"
+
+msgid "Matching stories show in Focus"
+msgstr "मेल खाते लेख फ़ोकस में दिखते हैं"
+
 msgid "May"
 msgstr "मई"
 
@@ -4476,6 +4506,9 @@ msgstr "शीर्षक में कोई मेल नहीं"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "“%(value_1)s” से कोई मेल नहीं मिला"
+
+msgid "No matching folders or sites"
+msgstr "कोई मेल खाते फ़ोल्डर या साइटें नहीं"
 
 msgid "No merge suggestions"
 msgstr "मर्ज करने के लिए कोई सुझाव नहीं"
@@ -4954,6 +4987,9 @@ msgstr "इस RSS/XML फ़ीड को पार्स करें"
 msgid "Parsing..."
 msgstr "पार्स हो रहा है..."
 
+msgid "Part of a story URL"
+msgstr "लेख के URL का एक हिस्सा"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "कोई भी URL पेस्ट करें और NewsBlur पेज से फ़ीड बना देगा, भले ही उसमें RSS न हो।"
 
@@ -5005,6 +5041,12 @@ msgstr "प्रति साइट"
 
 msgid "Per-feed notification settings"
 msgstr "हर फ़ीड के लिए अलग सूचना सेटिंग"
+
+msgid "Phrase to match in story text"
+msgstr "लेख के टेक्स्ट में मिलाने के लिए वाक्यांश"
+
+msgid "Phrase to match in story titles"
+msgstr "लेख के शीर्षकों में मिलाने के लिए वाक्यांश"
 
 msgid "Pick a tier & pay."
 msgstr "एक प्लान चुनें और भुगतान करें।"
@@ -5813,6 +5855,9 @@ msgstr "फ़ीड खोजें"
 
 msgid "Search folder"
 msgstr "फ़ोल्डर खोजें"
+
+msgid "Search folders and sites"
+msgstr "फ़ोल्डर और साइटें खोजें"
 
 msgid "Search for friends"
 msgstr "दोस्तों को खोजें"
@@ -6691,9 +6736,6 @@ msgstr "रवि"
 msgid "Sunday"
 msgstr "रविवार"
 
-msgid "Super Dislike "
-msgstr "बहुत नापसंद "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "साथ ही हर %(value_1)s में जाँच भी होती है"
@@ -6799,6 +6841,10 @@ msgstr "टेक्स्ट रेगेक्स"
 
 msgid "Text View"
 msgstr "टेक्स्ट दृश्य"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "टेक्स्ट क्लासिफ़ायर के लिए %(tier_link)s आवश्यक है"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7329,6 +7375,10 @@ msgid "URL Regex"
 msgstr "URL रेगेक्स"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL क्लासिफ़ायर के लिए %(tier_link)s आवश्यक है"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL फ़िल्टर को %(context)s में कोई लेख नहीं मिला।"
 
@@ -7688,6 +7738,9 @@ msgstr "साप्ताहिक"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur में आपका स्वागत है"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "पसंद, नापसंद और छिपाएँ क्या करते हैं"
 
 msgid "What are the main arguments?"
 msgstr "मुख्य तर्क क्या हैं?"

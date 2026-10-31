@@ -434,6 +434,8 @@
 "Hide Changes" = "إخفاء التغييرات";
 "Hide Sidebar" = "إخفاء الشريط الجانبي";
 "Hide Story Titles" = "إخفاء عناوين القصص";
+"Hide [training level]" = "إخفاء";
+"Hide beats any number of likes:" = "«إخفاء» يتفوّق على أي عدد من الإعجابات:";
 "Hide hidden stories" = "إخفاء القصص المخفية";
 "Hide status bar" = "إخفاء شريط الحالة";
 "Hide toolbars when reading" = "إخفاء أشرطة الأدوات أثناء القراءة";
@@ -992,7 +994,7 @@
 "Story count" = "عدد القصص";
 "Story detail" = "تفاصيل القصة";
 "Story image" = "صورة القصة";
-"Story is hidden (super dislike wins)" = "القصة مخفية (تغلّب عدم الإعجاب الشديد)";
+"Story is always hidden" = "تُخفى القصة دائمًا";
 "Story is shown (like wins)" = "تُعرض القصة (الإعجاب له الأولوية)";
 "Story language" = "لغة القصة";
 "Story list toolbar position" = "موضع شريط أدوات قائمة القصص";
@@ -1015,8 +1017,6 @@
 "Summarize" = "لخّص";
 "Sunday" = "الأحد";
 "Sunrise Gold" = "ذهبي الشروق";
-"Super dislike" = "لا يعجبني إطلاقًا";
-"Super dislike beats any number of likes:" = "عدم الإعجاب الشديد يتغلب على أي عدد من الإعجابات:";
 "Support Forum" = "منتدى الدعم";
 "Swipe from left edge" = "اسحب من الحافة اليسرى";
 "Swipe from the left edge while reading" = "اسحب من الحافة اليسرى أثناء القراءة";

@@ -24,6 +24,14 @@ msgstr " - Thư mục: Bài viết từ mọi trang web"
 msgid " - Folder: Top Level"
 msgstr " - Thư mục: Cấp cao nhất"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr ""
+"\"%(value)s\" đã được huấn luyện cho tất cả trang web hoặc nằm trong thư mục khác. Thay vào đó, hãy đổi "
+"phạm vi của bộ phân loại đó."
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "100 USD/năm (Pro: không giới hạn nguồn)"
 

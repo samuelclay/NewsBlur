@@ -434,6 +434,8 @@
 "Hide Changes" = "Nascondi modifiche";
 "Hide Sidebar" = "Nascondi barra laterale";
 "Hide Story Titles" = "Nascondi i titoli degli articoli";
+"Hide [training level]" = "Nascondi";
+"Hide beats any number of likes:" = "Nascondi batte un numero qualsiasi di Mi piace:";
 "Hide hidden stories" = "Nascondi gli articoli nascosti";
 "Hide status bar" = "Nascondi la barra di stato";
 "Hide toolbars when reading" = "Nascondi le barre degli strumenti durante la lettura";
@@ -992,7 +994,7 @@
 "Story count" = "Numero di articoli";
 "Story detail" = "Dettagli dell'articolo";
 "Story image" = "Immagine dell'articolo";
-"Story is hidden (super dislike wins)" = "Articolo nascosto (prevale Non mi piace per niente)";
+"Story is always hidden" = "L’articolo è sempre nascosto";
 "Story is shown (like wins)" = "Articolo mostrato (prevale Mi piace)";
 "Story language" = "Lingua degli articoli";
 "Story list toolbar position" = "Posizione della barra degli strumenti dell'elenco articoli";
@@ -1015,8 +1017,6 @@
 "Summarize" = "Riassumi";
 "Sunday" = "Domenica";
 "Sunrise Gold" = "Oro dell’alba";
-"Super dislike" = "Non mi piace per niente";
-"Super dislike beats any number of likes:" = "Un Non mi piace per niente prevale su qualsiasi numero di Mi piace:";
 "Support Forum" = "Forum di assistenza";
 "Swipe from left edge" = "Scorri dal bordo sinistro";
 "Swipe from the left edge while reading" = "Scorri dal bordo sinistro mentre leggi";

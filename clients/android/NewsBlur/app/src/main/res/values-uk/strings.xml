@@ -728,14 +728,14 @@
     <string name="intel_author_header">Автори статей</string>
     <string name="feed_intel_author_header">Автори</string>
     <string name="intel_feed_header">Усе від видавця</string>
-    <string name="intel_super_dislike">Дуже не подобається</string>
-    <string name="explainer_super_dislike">Дуже не подобається</string>
+    <string name="intel_super_dislike">Приховати відповідні статті</string>
+    <string name="explainer_super_dislike">Приховати</string>
     <string name="explainer_like">Подобається</string>
     <string name="explainer_dislike">Не подобається</string>
     <string name="explainer_beats">переважає</string>
     <string name="explainer_example1_header">Одна вподобайка переважує будь-яку кількість дизлайків</string>
     <string name="explainer_example1_result">Стаття відображається в режимі «Фокус»</string>
-    <string name="explainer_example2_header">Одне «Дуже не подобається» переважає все</string>
+    <string name="explainer_example2_header">«Приховати» переважає все, навіть «Подобається»</string>
     <string name="explainer_example2_result">Стаття завжди прихована</string>
     <string name="auto">Автоматично</string>
     <string name="light">Світла</string>

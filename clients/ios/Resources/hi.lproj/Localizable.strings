@@ -434,6 +434,8 @@
 "Hide Changes" = "बदलाव छिपाएँ";
 "Hide Sidebar" = "साइडबार छिपाएँ";
 "Hide Story Titles" = "लेख के शीर्षक छिपाएँ";
+"Hide [training level]" = "छिपाएँ";
+"Hide beats any number of likes:" = "“छिपाएँ” कितनी भी पसंद पर भारी पड़ता है:";
 "Hide hidden stories" = "छिपे हुए लेख छिपाएँ";
 "Hide status bar" = "स्टेटस बार छिपाएँ";
 "Hide toolbars when reading" = "पढ़ते समय टूलबार छिपाएँ";
@@ -992,7 +994,7 @@
 "Story count" = "लेखों की संख्या";
 "Story detail" = "लेख का विवरण";
 "Story image" = "लेख की छवि";
-"Story is hidden (super dislike wins)" = "लेख छिपा हुआ है (सुपर नापसंद को प्राथमिकता मिलती है)";
+"Story is always hidden" = "लेख हमेशा छिपा रहता है";
 "Story is shown (like wins)" = "लेख दिखाया जाता है (पसंद को प्राथमिकता मिलती है)";
 "Story language" = "लेख की भाषा";
 "Story list toolbar position" = "लेख सूची टूलबार की स्थिति";
@@ -1015,8 +1017,6 @@
 "Summarize" = "सारांश बनाएँ";
 "Sunday" = "रविवार";
 "Sunrise Gold" = "सनराइज़ गोल्ड";
-"Super dislike" = "बहुत ज़्यादा नापसंद";
-"Super dislike beats any number of likes:" = "सुपर नापसंद किसी भी संख्या में पसंद पर भारी पड़ता है:";
 "Support Forum" = "सहायता फ़ोरम";
 "Swipe from left edge" = "बाएँ किनारे से स्वाइप करें";
 "Swipe from the left edge while reading" = "पढ़ते समय बाएँ किनारे से स्वाइप करें";

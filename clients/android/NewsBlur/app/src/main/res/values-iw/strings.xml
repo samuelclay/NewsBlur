@@ -720,14 +720,14 @@
     <string name="intel_author_header">כותבי הכתבה</string>
     <string name="feed_intel_author_header">מחברים</string>
     <string name="intel_feed_header">הכול מהמפרסם</string>
-    <string name="intel_super_dislike">סלידה חזקה</string>
-    <string name="explainer_super_dislike">סלידה חזקה</string>
+    <string name="intel_super_dislike">הסתרת כתבות תואמות</string>
+    <string name="explainer_super_dislike">הסתרה</string>
     <string name="explainer_like">אהבתי</string>
     <string name="explainer_dislike">לא אהבתי</string>
     <string name="explainer_beats">גובר על</string>
     <string name="explainer_example1_header">לייק אחד גובר על כל מספר של דיסלייקים</string>
     <string name="explainer_example1_result">הכתבה מופיעה בתצוגת המיקוד</string>
-    <string name="explainer_example2_header">סימון אחד של ״סלידה חזקה״ גובר על הכול</string>
+    <string name="explainer_example2_header">״הסתרה״ גוברת על הכול, אפילו על ״אהבתי״</string>
     <string name="explainer_example2_result">הכתבה תמיד מוסתרת</string>
     <string name="auto">אוטומטי</string>
     <string name="light">בהיר</string>

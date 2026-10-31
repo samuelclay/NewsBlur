@@ -434,6 +434,8 @@
 "Hide Changes" = "ซ่อนการเปลี่ยนแปลง";
 "Hide Sidebar" = "ซ่อนแถบด้านข้าง";
 "Hide Story Titles" = "ซ่อนชื่อเรื่อง";
+"Hide [training level]" = "ซ่อน";
+"Hide beats any number of likes:" = "“ซ่อน” มีน้ำหนักมากกว่าการกดชอบจำนวนเท่าใดก็ได้:";
 "Hide hidden stories" = "ซ่อนบทความที่ซ่อนไว้";
 "Hide status bar" = "ซ่อนแถบสถานะ";
 "Hide toolbars when reading" = "ซ่อนแถบเครื่องมือขณะอ่าน";
@@ -992,7 +994,7 @@
 "Story count" = "จำนวนบทความ";
 "Story detail" = "รายละเอียดบทความ";
 "Story image" = "รูปภาพของบทความ";
-"Story is hidden (super dislike wins)" = "บทความถูกซ่อน (ไม่ชอบอย่างยิ่งมีผลเหนือกว่า)";
+"Story is always hidden" = "บทความจะถูกซ่อนเสมอ";
 "Story is shown (like wins)" = "บทความจะแสดง (ชอบมีผลเหนือกว่า)";
 "Story language" = "ภาษาของบทความ";
 "Story list toolbar position" = "ตำแหน่งแถบเครื่องมือรายการบทความ";
@@ -1015,8 +1017,6 @@
 "Summarize" = "สรุป";
 "Sunday" = "วันอาทิตย์";
 "Sunrise Gold" = "ทองอรุณรุ่ง";
-"Super dislike" = "ไม่ชอบอย่างมาก";
-"Super dislike beats any number of likes:" = "ไม่ชอบอย่างมากมีน้ำหนักมากกว่าการกดถูกใจจำนวนเท่าใดก็ได้:";
 "Support Forum" = "ฟอรัมช่วยเหลือ";
 "Swipe from left edge" = "ปัดจากขอบซ้าย";
 "Swipe from the left edge while reading" = "ปัดจากขอบซ้ายขณะอ่าน";

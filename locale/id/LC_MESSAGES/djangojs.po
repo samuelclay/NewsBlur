@@ -964,9 +964,6 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s situs lainnya"
 msgstr[1] "+ %(value_1)s situs lainnya"
 
-msgid "+ New Folder..."
-msgstr "+ Folder Baru..."
-
 msgid "/day"
 msgstr "/hari"
 
@@ -1057,9 +1054,6 @@ msgstr "Tahap kedua menggunakan petunjuk Anda untuk menemukan pola yang tepat di
 msgid "A single like overrides any number of dislikes"
 msgstr "Satu suka mengalahkan jumlah tidak suka berapa pun"
 
-msgid "A single super dislike overrides everything"
-msgstr "Satu Sangat Tidak Suka mengalahkan semuanya"
-
 msgid "A story diff with additions and deletions"
 msgstr "Perbandingan artikel yang menampilkan penambahan dan penghapusan"
 
@@ -1123,6 +1117,9 @@ msgstr "Tambah Folder"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet Tambahkan Situs &amp; Bagikan Artikel"
 
+msgid "Add a classifier"
+msgstr "Tambahkan pengklasifikasi"
+
 msgid "Add a forwarding address"
 msgstr "Tambahkan alamat penerusan"
 
@@ -1183,6 +1180,9 @@ msgid ""
 msgstr ""
 "Tambahkan nama perusahaan, nomor PPN, alamat, atau teks lainnya. Simpan untuk memperbarui semua faktur "
 "langganan, termasuk pembayaran sebelumnya."
+
+msgid "Added"
+msgstr "Ditambahkan"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1379,6 +1379,9 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Menerapkan %(succeeded)s dari %(count)s penggabungan (%(stories)s)"
 msgstr[1] "Berhasil menerapkan %(succeeded)s dari %(count)s penggabungan (%(stories)s)"
 
+msgid "Applies to"
+msgstr "Berlaku untuk"
+
 msgid "Apply"
 msgstr "Terapkan"
 
@@ -1488,6 +1491,9 @@ msgstr "Filter penulis tidak menemukan artikel di %(context)s."
 
 msgid "Author filters found no stories in this view."
 msgstr "Filter penulis tidak menemukan artikel dalam tampilan ini."
+
+msgid "Author name"
+msgstr "Nama penulis"
 
 msgid "Author: "
 msgstr "Penulis: "
@@ -1767,6 +1773,9 @@ msgstr "Mengategorikan..."
 msgid "Category"
 msgstr "Kategori"
 
+msgid "Category or tag"
+msgstr "Kategori atau tag"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Kategori: %(value_1)s"
@@ -1882,6 +1891,9 @@ msgstr "Cakupan filter pengklasifikasi"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Cakupan pengklasifikasi memerlukan %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Jenis pengklasifikasi"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
@@ -2076,6 +2088,9 @@ msgstr "Salin Teks"
 
 msgid "Copy URL"
 msgstr "Salin URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Tidak dapat menambahkan pengklasifikasi ini. Coba lagi."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Tidak dapat memutuskan koneksi akun ini. Silakan coba lagi."
@@ -3470,6 +3485,9 @@ msgstr "Permata Tersembunyi"
 msgid "Hide"
 msgstr "Sembunyikan"
 
+msgid "Hide "
+msgstr "Sembunyikan "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Sembunyikan semua fitur berbagi, komentar, dan blurblog"
 
@@ -3481,6 +3499,9 @@ msgstr "Sembunyikan riwayat"
 
 msgid "Hide matching stories"
 msgstr "Sembunyikan artikel yang cocok"
+
+msgid "Hide overrides everything, even likes"
+msgstr "Sembunyikan mengesampingkan semuanya, bahkan Suka"
 
 msgid "Hide sites"
 msgstr "Sembunyikan situs"
@@ -4088,6 +4109,15 @@ msgstr "Cocok melalui topik terkait"
 msgid "Matches story titles containing all keywords"
 msgstr "Mencocokkan judul artikel yang memuat semua kata kunci"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Artikel yang cocok selalu disembunyikan, bahkan jika ada Suka"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Artikel yang cocok disembunyikan kecuali ada Suka yang juga cocok"
+
+msgid "Matching stories show in Focus"
+msgstr "Artikel yang cocok muncul di Fokus"
+
 msgid "May"
 msgstr "Mei"
 
@@ -4491,6 +4521,9 @@ msgstr "Tidak ada kecocokan pada judul"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Tidak ada hasil untuk “%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "Tidak ada folder atau situs yang cocok"
 
 msgid "No merge suggestions"
 msgstr "Tidak ada saran penggabungan"
@@ -4971,6 +5004,9 @@ msgstr "Uraikan Feed RSS/XML ini"
 msgid "Parsing..."
 msgstr "Mengurai..."
 
+msgid "Part of a story URL"
+msgstr "Bagian dari URL artikel"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Tempel URL apa pun dan NewsBlur akan membuat feed dari halamannya, bahkan tanpa RSS."
 
@@ -5022,6 +5058,12 @@ msgstr "Per Situs"
 
 msgid "Per-feed notification settings"
 msgstr "Pengaturan notifikasi per feed"
+
+msgid "Phrase to match in story text"
+msgstr "Frasa yang cocok dalam teks artikel"
+
+msgid "Phrase to match in story titles"
+msgstr "Frasa yang cocok dalam judul artikel"
 
 msgid "Pick a tier & pay."
 msgstr "Pilih paket & bayar."
@@ -5832,6 +5874,9 @@ msgstr "Cari feed"
 
 msgid "Search folder"
 msgstr "Cari folder"
+
+msgid "Search folders and sites"
+msgstr "Cari folder dan situs"
 
 msgid "Search for friends"
 msgstr "Cari teman"
@@ -6714,9 +6759,6 @@ msgstr "Min"
 msgid "Sunday"
 msgstr "Minggu"
 
-msgid "Super Dislike "
-msgstr "Sangat Tidak Suka "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "Dilengkapi dengan pemeriksaan setiap %(value_1)s"
@@ -6822,6 +6864,10 @@ msgstr "Regex teks"
 
 msgid "Text View"
 msgstr "Tampilan teks"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Pengklasifikasi teks memerlukan %(tier_link)s"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7359,6 +7405,10 @@ msgid "URL Regex"
 msgstr "Regex URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Pengklasifikasi URL memerlukan %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "Filter URL tidak menemukan artikel di %(context)s."
 
@@ -7724,6 +7774,9 @@ msgstr "Mingguan"
 
 msgid "Welcome to NewsBlur"
 msgstr "Selamat datang di NewsBlur"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "Fungsi Suka, Tidak suka, dan Sembunyikan"
 
 msgid "What are the main arguments?"
 msgstr "Apa argumen utamanya?"

@@ -434,6 +434,8 @@
 "Hide Changes" = "Wijzigingen verbergen";
 "Hide Sidebar" = "Zijbalk verbergen";
 "Hide Story Titles" = "Artikeltitels verbergen";
+"Hide [training level]" = "Verbergen";
+"Hide beats any number of likes:" = "‘Verbergen’ wint van elk aantal ‘Vind ik leuk’-beoordelingen:";
 "Hide hidden stories" = "Verborgen artikelen verbergen";
 "Hide status bar" = "Statusbalk verbergen";
 "Hide toolbars when reading" = "Werkbalken verbergen tijdens het lezen";
@@ -992,7 +994,7 @@
 "Story count" = "Aantal artikelen";
 "Story detail" = "Artikeldetails";
 "Story image" = "Artikelafbeelding";
-"Story is hidden (super dislike wins)" = "Artikel is verborgen (‘helemaal niet leuk’ wint)";
+"Story is always hidden" = "Artikel is altijd verborgen";
 "Story is shown (like wins)" = "Artikel wordt getoond (‘leuk’ wint)";
 "Story language" = "Taal van het artikel";
 "Story list toolbar position" = "Positie van de werkbalk in de artikellijst";
@@ -1015,8 +1017,6 @@
 "Summarize" = "Samenvatten";
 "Sunday" = "zondag";
 "Sunrise Gold" = "Zonsopganggoud";
-"Super dislike" = "Vind ik helemaal niet leuk";
-"Super dislike beats any number of likes:" = "‘Vind ik helemaal niet leuk’ weegt zwaarder dan hoeveel likes dan ook:";
 "Support Forum" = "Supportforum";
 "Swipe from left edge" = "Veeg vanaf de linkerrand";
 "Swipe from the left edge while reading" = "Veeg tijdens het lezen vanaf de linkerrand";

@@ -704,14 +704,14 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="intel_author_header">Tác giả bài viết</string>
     <string name="feed_intel_author_header">Tác giả</string>
     <string name="intel_feed_header">Tất cả nội dung từ nhà xuất bản</string>
-    <string name="intel_super_dislike">Rất không thích</string>
-    <string name="explainer_super_dislike">Rất không thích</string>
+    <string name="intel_super_dislike">Ẩn các bài viết khớp</string>
+    <string name="explainer_super_dislike">Ẩn</string>
     <string name="explainer_like">Thích</string>
     <string name="explainer_dislike">Không thích</string>
     <string name="explainer_beats">thắng</string>
     <string name="explainer_example1_header">Một lượt thích có thể lấn át bất kỳ số lượt không thích nào</string>
     <string name="explainer_example1_result">Bài viết hiển thị trong chế độ Tập trung</string>
-    <string name="explainer_example2_header">Một lượt rất không thích duy nhất sẽ lấn át mọi thứ</string>
+    <string name="explainer_example2_header">“Ẩn” được ưu tiên hơn mọi thứ, kể cả lượt thích</string>
     <string name="explainer_example2_result">Bài viết luôn bị ẩn</string>
     <string name="auto">Tự động</string>
     <string name="light">Sáng</string>

@@ -1816,6 +1816,9 @@
         //              banner shows the "Back to trainer" return link.
         //   feed_id  - fallback site when a dashboard trainer has no active
         //              story list to reload.
+        //   trainer_snapshot - where the reader was in the trainer, from
+        //              make_matching_view_snapshot in reader_classifier.js, so
+        //              "Back to trainer" can return there (reopen_trainer).
         open_classifier_filter: function (type, value, opts) {
             opts = opts || {};
             if (!type || !value) return;
@@ -1843,6 +1846,7 @@
             }
             var source_story_hash = Object.prototype.hasOwnProperty.call(opts, 'story_hash') ?
                 opts.story_hash : previous_filter.story_hash;
+            var origin = opts.origin || previous_filter.origin || 'pill';
 
             this.flags['classifier_filter'] = {
                 type: type,
@@ -1855,7 +1859,9 @@
                 story_hash: source_story_hash || null,
                 classifier_scope: classifier_scope,
                 classifier_folder_name: classifier_folder_name || null,
-                origin: opts.origin || previous_filter.origin || 'pill'
+                origin: origin,
+                trainer_snapshot: origin === 'trainer' ?
+                    (opts.trainer_snapshot || previous_filter.trainer_snapshot || null) : null
             };
             var classifier_filter = this.flags['classifier_filter'];
 
@@ -4573,6 +4579,21 @@
 
             // NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(feed_id, {'score': score});
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer({ 'score': score });
+        },
+
+        // reader.js: "Back to trainer" from the classifier filter banner. Reopens the
+        // trainer the reader left, opened the same way, and hands it the snapshot from
+        // make_matching_view_snapshot in reader_classifier.js to restore its tab and place.
+        reopen_trainer: function (snapshot) {
+            var options = _.extend({}, snapshot.options, { restore: snapshot });
+
+            if (snapshot.kind === 'story') {
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(snapshot.story_id, snapshot.feed_id, options);
+            } else if (snapshot.kind === 'feed') {
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(snapshot.feed_id, options);
+            } else {
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer(options);
+            }
         },
 
         open_friends_modal: function () {
