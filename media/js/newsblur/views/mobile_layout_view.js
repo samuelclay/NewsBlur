@@ -21,7 +21,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         _.bindAll(this, 'check_mode', 'handle_popstate', 'handle_touchstart', 'handle_touchmove',
             'handle_touchend', 'handle_touchcancel', 'handle_long_press_start', 'handle_long_press_cancel',
             'handle_long_press_click', 'fit_pills', 'handle_search_close', 'update_titles_actions',
-            'handle_story_button', 'handle_sheet_touchstart', 'handle_sheet_touchmove', 'handle_sheet_touchend');
+            'handle_story_button', 'handle_sheet_touchstart', 'handle_sheet_touchmove', 'handle_sheet_touchend',
+            'measure_browser_chrome', 'scroll_page_to_top');
         this.utils = NEWSBLUR.mobile_utils;
         this.active = false;
         this.screen = null;
@@ -65,6 +66,11 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         }
         window.addEventListener('popstate', this.handle_popstate);
         window.addEventListener('resize', _.debounce(this.fit_pills, 100));
+        window.addEventListener('resize', this.measure_browser_chrome);
+        window.addEventListener('scroll', this.scroll_page_to_top, { passive: true });
+        document.addEventListener('focusout', function () {
+            _.defer(this.scroll_page_to_top);
+        }.bind(this));
         document.addEventListener('touchstart', this.handle_touchstart, { passive: true });
         document.addEventListener('touchstart', this.handle_sheet_touchstart, { passive: true });
         document.addEventListener('touchmove', this.handle_sheet_touchmove, { passive: false });
@@ -103,6 +109,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.active = true;
         NEWSBLUR.reader.flags.mobile = true;
         this.$body.addClass('NB-mobile');
+        this.measure_browser_chrome();
         _.each(this.$screens, function ($screen) {
             $screen.addClass('NB-mobile-screen');
         });
@@ -133,6 +140,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         NEWSBLUR.reader.flags.mobile = false;
         this.$body.removeClass('NB-mobile NB-mobile-transitioning NB-mobile-sheet-open');
         this.$body.removeClass(this.screen_body_classes());
+        this.measure_browser_chrome();
         _.each(this.$screens, function ($screen) {
             $screen.removeClass('NB-mobile-screen NB-mobile-pos-center NB-mobile-pos-left ' +
                 'NB-mobile-pos-right NB-mobile-animating NB-mobile-dragging');
@@ -748,6 +756,41 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // navigator.standalone is iOS WebKit's, false in the browser and true from the home screen.
     browser_owns_edge_swipe: function () {
         return window.navigator.standalone === false;
+    },
+
+    // mobile.css (Under Safari's toolbar): iOS Safari draws a page beneath its floating toolbar
+    // only where the page isn't position: fixed, so in its browser mode the screens hang below
+    // the visible page by as much of the screen as lies beneath it, and lists scroll on under
+    // the toolbar. Measured against the whole screen, which also counts the status bar above
+    // the page, so the screens reach a little past the bottom of the glass, where no one sees.
+    measure_browser_chrome: function () {
+        var under_chrome = this.active && this.browser_owns_edge_swipe();
+        var chrome_bottom = 0;
+        if (under_chrome) {
+            var screen_sides = [window.screen.width, window.screen.height];
+            var landscape = window.innerWidth > window.innerHeight;
+            var screen_height = landscape ? _.min(screen_sides) : _.max(screen_sides);
+            chrome_bottom = Math.max(0, screen_height - window.innerHeight);
+        }
+        var style = this.$body[0].style;
+        this.$body.toggleClass('NB-mobile-under-chrome', under_chrome);
+        if (under_chrome) {
+            style.setProperty('--nb-mobile-chrome-bottom', chrome_bottom + 'px');
+            style.setProperty('--nb-mobile-screen-height', (window.innerHeight + chrome_bottom) + 'px');
+        } else {
+            style.removeProperty('--nb-mobile-chrome-bottom');
+            style.removeProperty('--nb-mobile-screen-height');
+        }
+    },
+
+    // The screens hanging under Safari's toolbar make the page taller than the window, so it
+    // scrolls when something asks it to: Safari lifting a focused field above the keyboard, or
+    // reader.js scrolling an element into view. Once nothing is being typed into, it goes back.
+    scroll_page_to_top: function () {
+        if (!this.$body.hasClass('NB-mobile-under-chrome')) return;
+        if (!window.scrollX && !window.scrollY) return;
+        if ($(document.activeElement).is('input, textarea, select, [contenteditable="true"]')) return;
+        window.scrollTo(0, 0);
     },
 
     is_browser_edge_touch: function (x) {

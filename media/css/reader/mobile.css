@@ -9,8 +9,13 @@
 
 body.NB-mobile {
     --nb-mobile-bar-height: 48px;
-    --nb-mobile-toolbar-height: 52px;
-    --nb-mobile-titles-bar-space: 64px;
+    --nb-mobile-toolbar-height: 48px;
+    /* The room the floating controls take at a screen's bottom: the feed list's and story
+       list's pills, and the story screen's toolbar, each 8px off the bottom. */
+    --nb-mobile-pill-bar-space: 64px;
+    --nb-mobile-toolbar-space: calc(var(--nb-mobile-toolbar-height) + 20px);
+    /* Set to 64px while the Listen player floats above those controls. */
+    --nb-mobile-player-space: 0px;
     --nb-mobile-bar-bg: #F3F3EE;
     --nb-mobile-bar-border: #dbdbda;
     --nb-mobile-bar-text: #303030;
@@ -31,6 +36,12 @@ body.NB-mobile {
     --nb-mobile-ease: cubic-bezier(0.2, 0.85, 0.25, 1);
     --nb-mobile-duration: 380ms;
     --nb-mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    /* How far a screen reaches below the visible page, under iOS Safari's toolbar. Set inline
+       by views/mobile_layout_view.js measure_browser_chrome; see Under Safari's toolbar. */
+    --nb-mobile-chrome-bottom: 0px;
+    /* What covers a screen's bottom edge: the home indicator and Safari's toolbar. Lists scroll
+       on beneath it and the controls at a screen's bottom sit above it. */
+    --nb-mobile-screen-bottom: calc(var(--nb-mobile-safe-bottom) + var(--nb-mobile-chrome-bottom));
     --nb-mobile-direction: 1;
 
     overflow: hidden;
@@ -79,6 +90,58 @@ body.NB-mobile .NB-layout {
     width: auto !important;
     height: auto !important;
     overflow: hidden;
+}
+
+/* ============================= */
+/* = Under Safari's toolbar    = */
+/* ============================= */
+
+/* mobile.css: iOS Safari draws a page under its floating toolbar only where the page isn't
+   position: fixed, so in its browser mode (views/mobile_layout_view.js measure_browser_chrome)
+   the screens are positioned absolutely, --nb-mobile-screen-height tall, reaching
+   --nb-mobile-chrome-bottom below the visible page. The page is that tall too, but only
+   scrolls when something asks it to, and the layout scrolls it back. */
+html:has(> body.NB-mobile.NB-mobile-under-chrome) {
+    overflow: hidden;
+    /* Safari tints its status bar with the page's own background once nothing fixed is there
+       to sample, so it matches the screens' nav bars. */
+    background-color: #F3F3EE;
+}
+
+html:has(> body.NB-mobile.NB-mobile-under-chrome.NB-dark) {
+    background-color: #393b3c;
+}
+
+/* The body holds the screens and clips them, so the ones parked off to the side don't widen
+   the page, which a phone would zoom out to fit. Clipped rather than hidden, so the body isn't
+   a scroller of its own. */
+body.NB-mobile.NB-mobile-under-chrome {
+    position: relative;
+    height: var(--nb-mobile-screen-height);
+    overflow: clip;
+}
+
+body.NB-mobile.NB-mobile-under-chrome .NB-layout,
+body.NB-mobile.NB-mobile-under-chrome .NB-mobile-screen {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: auto !important;
+    height: var(--nb-mobile-screen-height) !important;
+}
+
+/* Full-screen modals and the shades behind sheets cover the part under the toolbar as well.
+   The sheets themselves stay above it. */
+body.NB-mobile.NB-mobile-under-chrome #simplemodal-container,
+body.NB-mobile.NB-mobile-under-chrome.NB-mobile-sheet-open .NB-mobile-sheet-shade,
+body.NB-mobile.NB-mobile-under-chrome.NB-mobile-player-open .NB-mobile-player-shade {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: auto !important;
+    height: var(--nb-mobile-screen-height) !important;
+}
+
+body.NB-mobile.NB-mobile-under-chrome #simplemodal-container .NB-modal {
+    padding-bottom: calc(24px + var(--nb-mobile-screen-bottom)) !important;
 }
 
 /* ============= */
@@ -413,8 +476,7 @@ body.NB-mobile .NB-layout .left-pane {
     background-color: var(--nb-mobile-screen-bg);
 }
 
-body.NB-mobile .left-pane > .left-north,
-body.NB-mobile .left-pane > .left-south {
+body.NB-mobile .left-pane > .left-north {
     position: relative !important;
     inset: auto !important;
     width: auto !important;
@@ -446,19 +508,181 @@ body.NB-mobile .left-center > .left-center-content {
     display: block !important;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
+    padding-bottom: calc(var(--nb-mobile-pill-bar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom)) !important;
 }
 
 body.NB-mobile .left-center > .left-center-footer {
     position: absolute !important;
     left: 0 !important;
     right: 0 !important;
-    bottom: 0 !important;
+    bottom: calc(var(--nb-mobile-pill-bar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom)) !important;
     top: auto !important;
     width: auto !important;
 }
 
-body.NB-mobile .left-south {
-    padding-bottom: var(--nb-mobile-safe-bottom);
+/* mobile.css: the feed list's add and settings buttons and its All / Unread / Focus / Saved
+   filter float over the bottom of the list as glass pills, like the story list's, so the list
+   scrolls on beneath them and Safari's toolbar. Touches between the pills reach the list. */
+body.NB-mobile .left-pane > .left-south {
+    position: absolute !important;
+    inset: auto 0 0 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    z-index: 2 !important;
+    margin: 0 !important;
+    padding: 0 10px calc(8px + var(--nb-mobile-screen-bottom)) !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+body.NB-mobile .left-south > .NB-taskbar-container,
+body.NB-mobile .left-south .NB-feed-taskbar {
+    position: static;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    overflow: visible;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-button,
+body.NB-mobile .left-south .NB-intelligence-slider {
+    box-sizing: border-box;
+    height: 44px;
+    border-radius: 22px;
+    background: var(--nb-mobile-glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow: 0 0 0 0.5px var(--nb-mobile-glass-edge), 0 4px 16px rgba(0, 0, 0, 0.12);
+    pointer-events: auto;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    float: none;
+    width: 44px;
+    margin: 0;
+    padding: 0;
+    opacity: 1;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-button.NB-disabled {
+    opacity: 0.5;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-add {
+    order: 0;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-taskbar-intelligence {
+    order: 1;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-manage {
+    order: 2;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-button .NB-task-image {
+    width: 20px;
+    height: 20px;
+    background: var(--nb-mobile-pill-icon);
+    -webkit-mask: url('/media/embed/icons/nouns/add.svg') no-repeat center / contain;
+    mask: url('/media/embed/icons/nouns/add.svg') no-repeat center / contain;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-manage .NB-task-image {
+    -webkit-mask-image: url('/media/embed/icons/nouns/settings.svg');
+    mask-image: url('/media/embed/icons/nouns/settings.svg');
+}
+
+/* The filter takes the room between the buttons, and its sizing container hides the labels
+   of the filters not chosen when that room is short. */
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-taskbar-intelligence {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    overflow: visible;
+    container-type: inline-size;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider {
+    display: block;
+    padding: 4px;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider ul.segmented-control {
+    float: none;
+    display: flex;
+    gap: 2px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 18px;
+    background: none;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-control {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 36px;
+    margin: 0;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 18px;
+    background: none;
+    box-shadow: none;
+    color: var(--nb-mobile-bar-subtext);
+    text-shadow: none;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 36px;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-control.NB-active {
+    background: var(--nb-mobile-card-bg);
+    color: var(--nb-mobile-bar-text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-control img {
+    float: none;
+    flex: none;
+    width: 9px;
+    height: 9px;
+    margin: 0;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-blue img {
+    width: 13px;
+    height: 13px;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-label {
+    display: inline !important;
+}
+
+@container (max-width: 250px) {
+    body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-control:not(.NB-active):not(.NB-intelligence-slider-red) .NB-intelligence-label {
+        display: none !important;
+    }
 }
 
 body.NB-mobile .NB-feeds-header-collapse-sidebar,
@@ -495,7 +719,7 @@ body.NB-mobile #NB-splash > .NB-splash-modules {
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: var(--nb-mobile-safe-bottom);
+    padding-bottom: calc(var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom)) !important;
 }
 
 /* mobile.css: the dashboard runs edge to edge like the story list, its rivers stacked as flat
@@ -650,7 +874,7 @@ body.NB-mobile .right-pane > .content-north {
     z-index: 3 !important;
     overflow: visible !important;
     margin: 0 !important;
-    padding: 0 10px calc(8px + var(--nb-mobile-safe-bottom)) !important;
+    padding: 0 10px calc(8px + var(--nb-mobile-screen-bottom)) !important;
     border: 0 !important;
     background: none !important;
     box-shadow: none !important;
@@ -692,7 +916,7 @@ body.NB-mobile .content-pane > #story_titles {
     overflow-x: hidden !important;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: calc(var(--nb-mobile-titles-bar-space) + var(--nb-mobile-safe-bottom));
+    padding-bottom: calc(var(--nb-mobile-pill-bar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom)) !important;
     box-sizing: border-box;
 }
 
@@ -1304,7 +1528,7 @@ body.NB-mobile .NB-mobile-story-page {
     -webkit-overflow-scrolling: touch;
     background-color: var(--nb-mobile-story-bg);
     box-sizing: border-box;
-    padding-bottom: 24px;
+    padding-bottom: calc(var(--nb-mobile-toolbar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom));
     /* mobile.css: each page scrolls itself, so it has to opt out of horizontal panning too or
        the browser claims the swipe that pages between stories. */
     touch-action: pan-y pinch-zoom;
@@ -1336,9 +1560,10 @@ body.NB-mobile .NB-mobile-story-page .NB-mobile-story-iframe {
     background: #fff;
 }
 
+/* An original site scrolls inside its frame, which ends above the toolbar instead. */
 body.NB-mobile .NB-mobile-story-page.NB-mobile-story-page-iframe {
     overflow: hidden;
-    padding-bottom: 0;
+    padding-bottom: calc(var(--nb-mobile-toolbar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom));
 }
 
 body.NB-mobile .NB-mobile-story-loading {
@@ -1359,17 +1584,25 @@ body.NB-mobile .NB-mobile-story-position {
 /* = Toolbars      = */
 /* ================= */
 
+/* mobile.css: a screen's toolbar floats over its bottom as a glass capsule, so the story
+   scrolls on beneath it and Safari's toolbar. */
 body.NB-mobile .NB-mobile-toolbar {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: calc(8px + var(--nb-mobile-screen-bottom));
     display: flex;
-    flex: none;
     align-items: center;
     justify-content: space-between;
     gap: 4px;
     height: var(--nb-mobile-toolbar-height);
-    padding: 0 8px var(--nb-mobile-safe-bottom);
-    box-sizing: content-box;
-    background: var(--nb-mobile-bar-bg);
-    border-top: 1px solid var(--nb-mobile-bar-border);
+    padding: 0 8px;
+    box-sizing: border-box;
+    border-radius: calc(var(--nb-mobile-toolbar-height) / 2);
+    background: var(--nb-mobile-glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow: 0 0 0 0.5px var(--nb-mobile-glass-edge), 0 4px 16px rgba(0, 0, 0, 0.12);
     color: var(--nb-mobile-bar-text);
     user-select: none;
     -webkit-user-select: none;
@@ -2038,21 +2271,21 @@ body.NB-mobile {
 
 /* mobile.css: the bar sits above whichever bottom toolbar the screen has. */
 body.NB-mobile.NB-mobile-screen-is-feeds {
-    --nb-mobile-player-offset: 46px;
+    --nb-mobile-player-offset: var(--nb-mobile-pill-bar-space);
 }
 
 body.NB-mobile.NB-mobile-screen-is-story {
-    --nb-mobile-player-offset: calc(var(--nb-mobile-toolbar-height) + 8px);
+    --nb-mobile-player-offset: var(--nb-mobile-toolbar-space);
 }
 
 /* mobile.css: on the story list it clears the floating pills, except in Add + Discover, which
    replaces the list and its pills. */
 body.NB-mobile.NB-mobile-screen-is-titles {
-    --nb-mobile-player-offset: var(--nb-mobile-titles-bar-space);
+    --nb-mobile-player-offset: var(--nb-mobile-pill-bar-space);
 }
 
 body.NB-mobile.NB-mobile-screen-is-titles:has(.NB-story-titles-header.NB-searching) {
-    --nb-mobile-player-offset: calc(var(--nb-mobile-titles-bar-space) + 48px);
+    --nb-mobile-player-offset: calc(var(--nb-mobile-pill-bar-space) + 48px);
 }
 
 body.NB-mobile.NB-mobile-screen-is-titles:has(.NB-layout.NB-add-site-active) {
@@ -2178,15 +2411,8 @@ body.NB-mobile.NB-mobile-player-open .NB-mobile-player-shade {
 }
 
 /* mobile.css: lists scroll their last rows clear of the floating bar. */
-body.NB-mobile.NB-mobile-has-player .left-center > .left-center-content,
-body.NB-mobile.NB-mobile-has-player .content-pane > #story_titles,
-body.NB-mobile.NB-mobile-has-player .NB-mobile-story-page,
-body.NB-mobile.NB-mobile-has-player #NB-splash > .NB-splash-modules {
-    padding-bottom: 88px !important;
-}
-
-body.NB-mobile.NB-mobile-has-player .content-pane > #story_titles {
-    padding-bottom: calc(88px + var(--nb-mobile-titles-bar-space)) !important;
+body.NB-mobile.NB-mobile-has-player {
+    --nb-mobile-player-space: 64px;
 }
 
 /* ====================== */
