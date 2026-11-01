@@ -14,7 +14,9 @@ function harness() {
         const listeners = new Map();
         return {
             bounds, style: {}, parentElement: null, isConnected: true, textContent: '', className: '',
-            getAttribute() { return null; },
+            attributes: {},
+            getAttribute(name) { return this.attributes[name] || null; },
+            matches(selector) { return this.className.split(/\s+/).includes(selector.trim().split(/\s+/).at(-1).slice(1)); },
             getBoundingClientRect() { return this.bounds; },
             getClientRects() { return this.style.display === 'none' ? [] : [this.bounds]; },
             addEventListener(type, callback, options) { listeners.set(type, { callback, capture: options === true || !!options?.capture }); },
@@ -378,9 +380,11 @@ test('persistent controls animate only the changed action, not decorative class 
     h.animations.forEach(animation => animation.onfinish());
     save.el.className = 'NB-sideoption NB-hover';
     h.mutations[0].callback();
+    h.paint();
     assert.equal(h.animations.length, 2, 'Decorative classes must not replay action entrances');
     save.el.textContent = 'Saved';
     h.mutations[0].callback();
+    h.paint();
     assert.equal(h.animations.length, 3);
     assert.equal(h.animations[2].element, save.el);
     h.motion.watch_parts(root, '.NB-sideoption');
@@ -398,6 +402,7 @@ test('async comments and cluster rows cascade on first visibility without replay
     h.visible(second_comment, 120);
     nodes.push(comment.el, second_comment.el, cluster.el);
     h.mutations[0].callback();
+    h.paint();
     assert.deepEqual(h.animations.map(animation => animation.element), [action.el, comment.el, second_comment.el]);
     assert.ok(h.animations[2].options.delay > h.animations[1].options.delay, 'Async rows enter successively in screen order');
     h.visible(cluster, 160);
@@ -419,5 +424,50 @@ test('controls honor reduced motion and still remember their presented state', (
     assert.equal(h.animations.length, 0);
     h.preference.matches = false;
     h.mutations[0].callback();
+    h.paint();
     assert.equal(h.animations.length, 0, 'Enabling motion must not replay the current bar');
+});
+
+test('control mutations share one prepaint scan and disconnect cancels queued work', () => {
+    const h = harness(), root = h.root(), action = h.record('action');
+    let scans = 0;
+    h.visible(action);
+    root.querySelectorAll = () => { scans++; return [action.el]; };
+    h.motion.watch_parts(root, '.parts');
+    h.mutations[0].callback(); h.mutations[0].callback(); h.mutations[0].callback();
+    assert.equal(scans, 1, 'Several mutations must not synchronously rescan every comment and action');
+    h.paint();
+    assert.equal(scans, 2, 'Coalesced work runs before the next paint');
+    action.el.textContent = 'Changed';
+    h.mutations[0].callback();
+    h.motion.unwatch_parts(root);
+    h.paint();
+    h.observers[0].callback([{ target: action.el, isIntersecting: true }]);
+    h.mutations[0].callback(); h.paint();
+    assert.equal(scans, 2, 'A deselected/destroyed story must not retain pending observer work');
+    assert.equal(h.animations.length, 1);
+});
+
+test('identical rebuilt controls and comments keep presentation state while a changed replacement animates alone', () => {
+    const h = harness(), root = h.root();
+    function part(id, label, top) {
+        const record = h.record(id);
+        record.el.attributes['data-motion-key'] = id;
+        record.el.textContent = label;
+        h.visible(record, top);
+        return record.el;
+    }
+    let nodes = [part('save', 'Save', 0), part('comment:23', 'A comment', 80)];
+    root.querySelectorAll = () => nodes;
+    h.motion.watch_parts(root, '.parts');
+    assert.equal(h.animations.length, 2);
+    nodes = [part('save', 'Save', 0), part('comment:23', 'A comment', 80)];
+    h.mutations[0].callback(); h.paint();
+    assert.equal(h.animations.length, 2, 'Rebuilt identical markup must not replay the entire action or social section');
+    const changed = part('save', 'Saved', 0);
+    nodes = [changed, part('comment:23', 'A comment', 80)];
+    h.mutations[0].callback(); h.paint();
+    assert.equal(h.animations.length, 3);
+    assert.equal(h.animations[2].element, changed);
+    assert.equal(h.observers[0].targets.size, 2, 'Replaced elements must not accumulate in the visibility observer');
 });

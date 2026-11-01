@@ -6,6 +6,7 @@ const vm = require('node:vm');
 
 function harness() {
     const style_reads = new Map();
+    const property_reads = new Map();
     const animations = [];
     function style() {
         return { setProperty(name, value) { this[name] = value; } };
@@ -53,14 +54,18 @@ function harness() {
             overflow: element === pane ? 'hidden' : 'visible',
             ...element.style
         };
+        // test_departure_motion.cjs models the hundreds of computed properties exposed by a real browser.
+        for (let index = 0; index < 600; index++) values[`unused-property-${index}`] = 'initial';
         return { ...values, [Symbol.iterator]: function* () { yield* Object.keys(values).filter(key => typeof values[key] === 'string'); },
-            getPropertyValue: name => values[name], getPropertyPriority: () => '' };
+            getPropertyValue(name) { property_reads.set(element, (property_reads.get(element) || 0) + 1); return values[name] || ''; },
+            getPropertyPriority: () => '' };
     }
     const context = { NEWSBLUR: {}, document: { body }, getComputedStyle: computed,
         window: { innerWidth: 1200, innerHeight: 800, matchMedia: () => ({ matches: false, addEventListener() {} }) },
         $: () => ({ on() {} }) };
     vm.runInNewContext(fs.readFileSync('media/js/newsblur/common/motion.js', 'utf8'), context);
-    return { motion: context.NEWSBLUR.motion, body, pane, titles, row, headline, offscreen, offscreen_headline, computed, style_reads, animations };
+    return { motion: context.NEWSBLUR.motion, body, pane, titles, row, headline, offscreen, offscreen_headline,
+        computed, style_reads, property_reads, animations };
 }
 
 test('outgoing titles retain their rendered headline width and layout outside the original pane', () => {
@@ -78,6 +83,13 @@ test('outgoing titles retain their rendered headline width and layout outside th
     assert.equal(h.animations.length, 1, 'Keep the smooth outgoing fade');
     h.animations[0].onfinish();
     assert.equal(ghost.removed, true);
+});
+
+test('snapshot style work is bounded independently of the browser computed-property count', () => {
+    const h = harness();
+    h.motion.depart(h.titles, { snapshot_layout: true });
+    assert.ok([...h.property_reads.values()].every(count => count < 100),
+        'A visible node must not copy hundreds of unrelated browser properties on a feed-switch click');
 });
 
 test('a scrolled title snapshot keeps visible rows at their original positions without copying preceding rows', () => {

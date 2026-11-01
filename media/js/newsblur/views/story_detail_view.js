@@ -711,6 +711,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             });
             story_view.render();
             story_view.$el.addClass('NB-story-cluster-detail-item');
+            story_view.$el.attr('data-motion-key', 'cluster:' + story_data.story_hash);
             self._cluster_title_views.push(story_view);
             $container.append(story_view.$el);
         });
@@ -880,6 +881,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
         // story_detail_view.js observes individual actions and async social/cluster sections without moving their bars.
         if (selected) NEWSBLUR.motion.article_parts(this.el);
+        else NEWSBLUR.motion.unwatch_parts(this.el);
         if (selected && !options.selected_by_scrolling) {
             requestAnimationFrame(_.bind(function () {
                 if (this.model.get('selected') && this.el.isConnected) NEWSBLUR.motion.article(this.el);

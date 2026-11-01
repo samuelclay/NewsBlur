@@ -3,6 +3,16 @@ NEWSBLUR.motion = (function () {
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     var running = new Map();
     var part_observers = new WeakMap();
+    // motion.js snapshots rendered layout and paint, not hundreds of unrelated computed browser properties.
+    var snapshot_properties = ('display position top right bottom left box-sizing width height min-width min-height max-width max-height ' +
+        'margin-top margin-right margin-bottom margin-left padding-top padding-right padding-bottom padding-left ' +
+        'border-top-width border-right-width border-bottom-width border-left-width border-top-style border-right-style border-bottom-style border-left-style ' +
+        'border-top-color border-right-color border-bottom-color border-left-color border-radius ' +
+        'font-family font-size font-weight font-style line-height letter-spacing text-align text-indent text-transform text-decoration ' +
+        'white-space word-break overflow-wrap text-overflow overflow-x overflow-y color background-color background-image background-size ' +
+        'background-position background-repeat opacity visibility align-items align-self justify-content justify-self flex-grow flex-shrink flex-basis ' +
+        'flex-direction flex-wrap order row-gap column-gap grid-template-columns grid-template-rows grid-column grid-row ' +
+        'float clear vertical-align object-fit object-position box-shadow transform transform-origin').split(' ');
     function play(element, frames, duration, delay, complete) {
         if (!element || !element.animate) { if (complete) complete(); return; }
         var previous = running.get(element);
@@ -41,7 +51,10 @@ NEWSBLUR.motion = (function () {
         // motion.js freezes only visible title rows, so reparenting cannot lose the pane's layout selectors.
         function copy_style(source, target) {
             var style = getComputedStyle(source);
-            Array.from(style).forEach(function (name) { target.style.setProperty(name, style.getPropertyValue(name)); });
+            snapshot_properties.forEach(function (name) {
+                var value = style.getPropertyValue(name);
+                if (value) target.style.setProperty(name, value);
+            });
             target.style.animation = 'none';
             target.style.transition = 'none';
         }
@@ -130,8 +143,14 @@ NEWSBLUR.motion = (function () {
         var existing = part_observers.get(element);
         if (existing) { existing.refresh(); return existing; }
         var states = new Map();
+        var connected = true;
         var observer = typeof IntersectionObserver === 'function' ? new IntersectionObserver(refresh, { threshold: 0 }) : null;
-        var mutations = typeof MutationObserver === 'function' ? new MutationObserver(refresh) : null;
+        var frame = null;
+        var mutations = typeof MutationObserver === 'function' ? new MutationObserver(schedule) : null;
+        function schedule() {
+            if (!connected || frame !== null) return;
+            frame = requestAnimationFrame(function () { frame = null; refresh(); });
+        }
         function signature(node) {
             // motion.js tracks labels and semantic states, never hover, highlight, or layout-only class changes.
             var flags = (node.className || '').split(/\s+/).filter(function (name) {
@@ -140,18 +159,35 @@ NEWSBLUR.motion = (function () {
             return [node.textContent.trim(), flags, node.getAttribute('disabled'),
                 node.getAttribute('aria-pressed'), node.getAttribute('aria-expanded')].join('|');
         }
-        function refresh() {
-            var nodes = Array.from(element.querySelectorAll(selector));
-            var current = new Set(nodes);
-            states.forEach(function (_, node) {
-                if (!current.has(node)) { if (observer) observer.unobserve(node); states.delete(node); }
+        function identity(node, counts) {
+            var key = node.getAttribute('data-motion-key');
+            if (key) return key;
+            var control = (node.className || '').split(/\s+/).find(function (name) {
+                return /^(NB-feed-story-(email|train|save|share|discover|ask-ai|listen)|NB-sideoption-sharing-.+|NB-task-story-(previous|next|next-unread)|task_view_.+)$/.test(name);
             });
+            if (control) return control;
+            var kind = selector.split(',').find(function (part) { return node.matches(part.trim()); }) || selector;
+            var index = counts.get(kind) || 0;
+            counts.set(kind, index + 1);
+            return kind + ':' + index;
+        }
+        function refresh() {
+            if (!connected) return;
+            var nodes = Array.from(element.querySelectorAll(selector));
+            var current = new Set();
+            var counts = new Map();
             var arriving = [];
             nodes.forEach(function (node) {
-                var state = states.get(node);
+                var key = identity(node, counts);
+                current.add(key);
+                var state = states.get(key);
                 if (!state) {
-                    state = { shown: false, signature: null };
-                    states.set(node, state);
+                    state = { shown: false, signature: null, node: null };
+                    states.set(key, state);
+                }
+                if (state.node !== node) {
+                    if (observer && state.node) observer.unobserve(state.node);
+                    state.node = node;
                     if (observer) observer.observe(node);
                 }
                 // motion.js distinguishes a closed bar from controls merely outside the scroll viewport.
@@ -162,11 +198,17 @@ NEWSBLUR.motion = (function () {
                 state.shown = true;
                 state.signature = value;
             });
+            states.forEach(function (state, key) {
+                if (!current.has(key)) { if (observer) observer.unobserve(state.node); states.delete(key); }
+            });
             screen_order(arriving).forEach(function (node, index) {
                 enter(node, stagger_delay(index, arriving.length, 30, 150), 7);
             });
         }
         var controller = { refresh: refresh, disconnect: function () {
+            connected = false;
+            if (frame !== null) cancelAnimationFrame(frame);
+            frame = null;
             if (observer) observer.disconnect();
             if (mutations) mutations.disconnect();
             states.clear();
