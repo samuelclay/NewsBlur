@@ -9,11 +9,26 @@ import SwiftUI
     private var batchIndex = 0
     @Published private(set) var presentationReady = true
     @Published private(set) var visit = 0
+    @Published private(set) var entrancesStopped = false
+    private let rowViews = NSHashTable<UIView>.weakObjects()
     private var hasPresented = false
 
     func reset() {
         seen.removeAll(); starts.removeAll(); batchStart = 0; batchIndex = 0
-        hasPresented = false; presentationReady = true; visit += 1
+        hasPresented = false; presentationReady = true; entrancesStopped = false; visit += 1
+    }
+
+    func track(_ view: UIView) { rowViews.add(view) }
+
+    func stopEntrances() {
+        guard !entrancesStopped else { return }
+        entrancesStopped = true
+        starts.removeAll()
+        // ReaderMotion.swift cancels only entrance presentation, preserving read opacity and swipe transforms.
+        for view in rowViews.allObjects {
+            view.layer.removeAnimation(forKey: "readerEntrance")
+            view.layer.removeAnimation(forKey: "readerWaitingForAppearance")
+        }
     }
 
     func prepareForAppearance() { if !hasPresented { presentationReady = false } }
@@ -21,12 +36,12 @@ import SwiftUI
     func hasSeen(_ key: String) -> Bool { seen.contains(key) }
     func recordStart(_ start: CFTimeInterval, key: String) { starts[key] = start }
     func ongoingStart(for key: String) -> CFTimeInterval? {
-        guard let start = starts[key], CACurrentMediaTime() < start + 0.36 else { return nil }
+        guard !entrancesStopped, let start = starts[key], CACurrentMediaTime() < start + 0.36 else { return nil }
         return start
     }
 
     func delay(for key: String) -> Double? {
-        guard presentationReady, seen.insert(key).inserted else { return nil }
+        guard !entrancesStopped, presentationReady, seen.insert(key).inserted else { return nil }
         let now = CACurrentMediaTime()
         if now - batchStart > 0.1 { batchStart = now; batchIndex = 0 }
         defer { batchIndex += 1 }
@@ -44,7 +59,7 @@ import SwiftUI
     }
 
     private func start(for key: String, visualPosition: Double, maximumDelay: Double) -> CFTimeInterval? {
-        guard presentationReady, seen.insert(key).inserted else { return nil }
+        guard !entrancesStopped, presentationReady, seen.insert(key).inserted else { return nil }
         let now = CACurrentMediaTime()
         if now - batchStart > 0.1 { batchStart = now; batchIndex = 0 }
         // ReaderMotion.swift anchors the batch to screen order, never UIKit's willDisplay callback order.
@@ -107,6 +122,7 @@ import SwiftUI
 
     static func row(_ view: UIView, key: String, owner: NSObject, scrolling: Bool) {
         let session = session(owner)
+        if scrolling && owner is FeedDetailObjCViewController { session.stopEntrances() }
         guard prepareRow(view, key: key, owner: owner, session: session) else { return }
         if let delay = session.delay(for: key) {
             let start = CACurrentMediaTime() + (scrolling ? min(delay, 0.09) : delay)
@@ -119,6 +135,7 @@ import SwiftUI
 
     static func row(_ view: UIView, key: String, owner: NSObject, scrolling: Bool, position: Int) {
         let session = session(owner)
+        if scrolling && owner is FeedDetailObjCViewController { session.stopEntrances() }
         guard prepareRow(view, key: key, owner: owner, session: session) else { return }
         if session.hasSeen(key), view.layer.animation(forKey: "readerEntrance") != nil { return }
         guard let start = session.start(for: key, position: position, maximumDelay: scrolling ? 0.09 : 0.175)
@@ -127,6 +144,13 @@ import SwiftUI
     }
 
     private static func prepareRow(_ view: UIView, key: String, owner: NSObject, session: ReaderMotionSession) -> Bool {
+        session.track(view)
+        if session.entrancesStopped {
+            view.layer.removeAnimation(forKey: "readerEntrance")
+            view.layer.removeAnimation(forKey: "readerWaitingForAppearance")
+            waitingViews.remove(view)
+            return false
+        }
         guard view.window != nil, session.presentationReady else {
             // ReaderMotion.swift holds cached story content through preparation/push without changing reusable view alpha.
             if UIAccessibility.isReduceMotionEnabled {
@@ -306,10 +330,11 @@ struct ReaderEntrance: ViewModifier {
     @State private var appeared = false
     @State private var appearedVisit = -1
 
-    private var isVisible: Bool { reduceMotion || (appeared && appearedVisit == session.visit) }
+    private var isVisible: Bool { reduceMotion || session.entrancesStopped || (appeared && appearedVisit == session.visit) }
 
     func body(content: Content) -> some View {
-        content.opacity(isVisible ? 1 : 0).offset(y: isVisible ? 0 : 12)
+        content.modifier(ReaderEntranceEffect(progress: isVisible ? 1 : 0,
+                                             stopped: reduceMotion || session.entrancesStopped))
             .background(GeometryReader { geometry in
                 Color.clear
                     .onAppear { reveal(in: geometry.frame(in: .global)) }
@@ -332,5 +357,19 @@ struct ReaderEntrance: ViewModifier {
         guard !reduceMotion, let start = session.start(for: key, frame: frame, viewport: viewport) else { appeared = true; return }
         let delay = max(0, start - CACurrentMediaTime())
         withAnimation(.spring(response: 0.36, dampingFraction: 0.76).delay(delay)) { appeared = true }
+    }
+}
+
+private struct ReaderEntranceEffect: AnimatableModifier {
+    var progress: CGFloat
+    let stopped: Bool
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    func body(content: Content) -> some View {
+        // ReaderMotion.swift bypasses even an already scheduled SwiftUI spring as soon as scrolling starts.
+        content.opacity(stopped ? 1 : Double(progress)).offset(y: stopped ? 0 : 12 * (1 - progress))
     }
 }

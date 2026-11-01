@@ -5500,6 +5500,9 @@ finish_height_measurement:
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scroll {
+    if (scroll == self.storyTitlesTable && (scroll.dragging || scroll.decelerating)) {
+        [[ReaderMotion session:self] stopEntrances];
+    }
     BOOL isBottomPulling = scroll == self.storyTitlesTable &&
         [self isActivelyDraggingBottomNextFeedForScroll:scroll] &&
         [self bottomNextFeedRevealDistanceForScroll:scroll] > 0.0f &&
@@ -5514,6 +5517,7 @@ finish_height_measurement:
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scroll {
     if (scroll == self.storyTitlesTable) {
+        [[ReaderMotion session:self] stopEntrances];
         self.pendingNotificationAnchorHash = nil;
         self.notificationSelectionAnchorHash = nil;
     }
@@ -5522,6 +5526,7 @@ finish_height_measurement:
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scroll {
     if (scroll == self.storyTitlesTable) {
+        [[ReaderMotion session:self] stopEntrances];
         self.pendingNotificationAnchorHash = nil;
         self.notificationSelectionAnchorHash = nil;
         self.bottomNextFeedReady = NO;

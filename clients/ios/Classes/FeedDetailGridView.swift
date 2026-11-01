@@ -102,6 +102,9 @@ struct FeedDetailGridView: View {
                 }
             }
             .accessibilityIdentifier("story-titles-scroll")
+            .onScrollPhaseChange { _, phase in
+                if phase != .idle { cache.motionSession.stopEntrances() }
+            }
             .environment(\.readerMotionViewport, reader.frame(in: .global))
             .accessibilityElement(children: .contain)
             .modify({ view in

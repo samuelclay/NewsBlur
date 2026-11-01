@@ -68,6 +68,9 @@ struct FeedDetailDashboardView: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .onScrollPhaseChange { _, phase in
+            if phase != .idle { cache.motionSession.stopEntrances() }
+        }
         .padding(10)
         .background(Color.themed([0xE0E0E0, 0xE8DED0, 0x363636, 0x000000]))
         .lazyPop()

@@ -1,5 +1,6 @@
 import XCTest
 import UIKit
+import SwiftUI
 
 @testable import NewsBlur
 
@@ -651,6 +652,110 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor final class Test_ReaderMotion: XCTestCase {
+    func test_scrollingStoryRowsAreAlreadyVisibleAndDoNotReplayAfterScrollingStops() {
+        let owner = ReaderMotionThemeController()
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        window.rootViewController = UIViewController()
+        window.isHidden = false
+        defer { window.isHidden = true }
+        let row = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 80))
+        window.rootViewController?.view.addSubview(row)
+        ReaderMotion.row(row, key: "scrolled-story", owner: owner, scrolling: true, position: 0)
+        XCTAssertNil(row.layer.animation(forKey: "readerEntrance"), "Scrolling must never fade in newly visible story titles")
+        XCTAssertEqual(row.alpha, 1)
+        ReaderMotion.row(row, key: "scrolled-story", owner: owner, scrolling: false, position: 0)
+        XCTAssertNil(row.layer.animation(forKey: "readerEntrance"), "An idle callback must not replay a scrolled row")
+    }
+
+
+    func test_dragCancelsCurrentAndPreparedRowsPreservingReadOpacityAndFeedListMotion() throws {
+        let owner = ReaderMotionThemeController()
+        let visible = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 80))
+        visible.alpha = 0.4
+        let window = motionWindow(containing: [visible])
+        defer { window.isHidden = true }
+        let swipe = CABasicAnimation(keyPath: "transform.translation.x")
+        swipe.toValue = 20; swipe.duration = 1
+        visible.layer.add(swipe, forKey: "swipe")
+        ReaderMotion.row(visible, key: "opening", owner: owner, scrolling: false, position: 3)
+        XCTAssertNotNil(visible.layer.animation(forKey: "readerEntrance"))
+        let prepared = UIView()
+        prepared.alpha = 0.6
+        ReaderMotion.row(prepared, key: "prefetched", owner: owner, scrolling: false, position: 4)
+        XCTAssertNotNil(prepared.layer.animation(forKey: "readerWaitingForAppearance"))
+        owner.storyTitlesTable = UITableView()
+
+        owner.scrollViewWillBeginDragging(owner.storyTitlesTable)
+
+        XCTAssertNil(visible.layer.animation(forKey: "readerEntrance"))
+        XCTAssertNil(prepared.layer.animation(forKey: "readerWaitingForAppearance"))
+        XCTAssertNotNil(visible.layer.animation(forKey: "swipe"))
+        XCTAssertEqual(visible.alpha, 0.4, accuracy: 0.001)
+        XCTAssertEqual(prepared.alpha, 0.6, accuracy: 0.001)
+        ReaderMotion.row(visible, key: "later-page", owner: owner, scrolling: false, position: 0)
+        XCTAssertNil(visible.layer.animation(forKey: "readerEntrance"), "Pagination after scrolling must already be rendered")
+
+        let feedListOwner = NSObject()
+        ReaderMotion.row(visible, key: "feed", owner: feedListOwner, scrolling: true, position: 0)
+        XCTAssertNotNil(visible.layer.animation(forKey: "readerEntrance"), "Story scrolling must not disable feed-list choreography")
+        visible.layer.removeAnimation(forKey: "readerEntrance")
+        ReaderMotion.session(owner).reset()
+        ReaderMotion.row(visible, key: "opening", owner: owner, scrolling: false, position: 0)
+        XCTAssertNotNil(visible.layer.animation(forKey: "readerEntrance"), "Opening another feed restores the initial cascade")
+    }
+
+    func test_cardSessionStopsPendingAndFutureEntrancesUntilAnotherFeedOpens() {
+        let session = ReaderMotionSession()
+        let viewport = CGRect(x: 0, y: 0, width: 320, height: 600)
+        XCTAssertNotNil(session.start(for: "first", frame: viewport, viewport: viewport))
+        session.stopEntrances()
+        XCTAssertNil(session.ongoingStart(for: "first"))
+        XCTAssertNil(session.start(for: "prefetched", frame: viewport, viewport: viewport))
+        session.didAppear()
+        XCTAssertNil(session.start(for: "pagination", frame: viewport, viewport: viewport))
+        session.reset()
+        XCTAssertNotNil(session.start(for: "next-feed", frame: viewport, viewport: viewport))
+    }
+
+    func test_prefetchedSwiftUICardIsFullyRenderedWhenScrollingStarts() async throws {
+        let session = ReaderMotionSession()
+        let host = UIHostingController(rootView: ZStack {
+            Color.white
+            Color.red.frame(width: 80, height: 80)
+                .modifier(ReaderEntrance(session: session, key: "prefetched"))
+                .environment(\.readerMotionViewport, .zero)
+        }.ignoresSafeArea())
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = host
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil; previousKeyWindow?.makeKey() }
+        host.view.backgroundColor = .white
+        host.view.layoutIfNeeded()
+        func redCenter() -> Bool {
+            let format = UIGraphicsImageRendererFormat()
+            format.scale = 1
+            let image = UIGraphicsImageRenderer(bounds: host.view.bounds, format: format).image { _ in
+                host.view.drawHierarchy(in: host.view.bounds, afterScreenUpdates: true)
+            }
+            guard let cgImage = image.cgImage else { return false }
+            var pixel: [UInt8] = [0, 0, 0, 0]
+            let context = CGContext(data: &pixel, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4,
+                                    space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+            context.draw(cgImage, in: CGRect(x: -cgImage.width / 2, y: -cgImage.height / 2,
+                                           width: cgImage.width, height: cgImage.height))
+            return pixel[0] > 200 && pixel[1] < 100 && pixel[2] < 100
+        }
+        XCTAssertFalse(redCenter(), "A prefetched card starts outside the opening viewport")
+        session.stopEntrances()
+        let deadline = Date().addingTimeInterval(SimulatorTestTiming.realWorkTimeout)
+        while !redCenter(), Date() < deadline {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        XCTAssertTrue(redCenter(), "A prefetched card must be rendered before it scrolls into the viewport")
+    }
+
     func test_loadingDepartureDoesNotCreateOffscreenRowsOrTriggerDisplayCallbacks() {
         let table = UITableView(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
         let host = UIView(frame: table.frame)
