@@ -1,0 +1,112 @@
+{
+  "version": "16.0.2",
+  "platform": "macos",
+  "role": "independent_review",
+  "reviewer": "mac_patch_west",
+  "translation_author": "mac_patch_central",
+  "locales": [
+    {
+      "language": "tr",
+      "status": "passed",
+      "metadata_sha256": "1810c71cf8200da64293b2043003895a5f191787d84f95e90096d5f73b8869c3",
+      "release_sha256": "9f076e23973e24b22d4e22307e50c25645aa27af1901b600ea6906d8d7153704",
+      "product_sha256": "574ccd1b446a256f839dcfa1f93cae0d273f7c7633b33e6039327f42f6c28c93",
+      "description_characters": 2955,
+      "promotional_characters": 156,
+      "keywords_utf8_bytes": 78,
+      "rtl_text_review": "not applicable"
+    },
+    {
+      "language": "ru",
+      "status": "passed",
+      "metadata_sha256": "37a01b8be9e2eff3b79c9d25b3c99112f64806eb1908a1ba624a0e6357280573",
+      "release_sha256": "3f6d7f09b91f2a9937a16131c1d8801e68d2c1b9df7a771392f113e51eb18a03",
+      "product_sha256": "c251c9e429f5d95e0a721e6709fdea820352482580284460a1e92b78309addba",
+      "description_characters": 2941,
+      "promotional_characters": 161,
+      "keywords_utf8_bytes": 90,
+      "rtl_text_review": "not applicable"
+    },
+    {
+      "language": "uk",
+      "status": "passed",
+      "metadata_sha256": "7802021c0c210506e1c1fdd91e56941d4e31bc347d35ada3b65ad39f90ab01e8",
+      "release_sha256": "dcb8d1b210551c15817a8ec630c3f67a83ca75bcc0367a51665c7142dcf69177",
+      "product_sha256": "a3d5742298994afa7b2f9b915d0d4bc0515cdf28adbff44ad8f4228547be9d68",
+      "description_characters": 2965,
+      "promotional_characters": 156,
+      "keywords_utf8_bytes": 94,
+      "rtl_text_review": "not applicable"
+    },
+    {
+      "language": "ar",
+      "status": "passed",
+      "metadata_sha256": "cdc357fb94c60155e728a308042b7ef594d22c33563546d84e072f730a8ae331",
+      "release_sha256": "bed844182cf661620ef8512508c53e34a69352c3cba120ca01f1ce96e9a3f211",
+      "product_sha256": "55c13d691b36064feacb434c533f0adbe30df6a8be426e2c21a6662a11a4b3ba",
+      "description_characters": 2308,
+      "promotional_characters": 130,
+      "keywords_utf8_bytes": 82,
+      "rtl_text_review": "passed; logical text order, script, numerals, plan names and URLs reviewed; no rendered screenshot claim"
+    },
+    {
+      "language": "he",
+      "status": "passed",
+      "metadata_sha256": "079b2104cb246e30131312752aa50d80de8971f9406d323a5b8e4254ca95400f",
+      "release_sha256": "8a561f173a9f3d391b40854a7b8ba09479a5ba0d2fe254eac0aa92d824f3c6e0",
+      "product_sha256": "38d3f3d5a6b5e53b985523461aaee749914d2f7c81fee8aef62999a32ed9f3f4",
+      "description_characters": 2252,
+      "promotional_characters": 136,
+      "keywords_utf8_bytes": 86,
+      "rtl_text_review": "passed; logical text order, script, numerals, plan names and URLs reviewed; no rendered screenshot claim"
+    },
+    {
+      "language": "hi",
+      "status": "passed",
+      "metadata_sha256": "8f52c72d641a33f18ed96c86a9ad92715fdcf059e3df0e44f7d436e72945799c",
+      "release_sha256": "077a0c10d2d771f5580002bcfe19556f8e8531970720649ffd766b8db478f91e",
+      "product_sha256": "233fc6a623e6c09a39c1217d9bda1a6a77c1306074605633955d4e658094ca69",
+      "description_characters": 2790,
+      "promotional_characters": 148,
+      "keywords_utf8_bytes": 87,
+      "rtl_text_review": "not applicable"
+    },
+    {
+      "language": "id",
+      "status": "passed",
+      "metadata_sha256": "55ef87eb9d759da0fe63a82578d87a22dc87f0c75e3f50a863fcba4b3d5a2740",
+      "release_sha256": "7ffdce55a923598b0bab8171ef54b7a02d295de9aed9b350df209833f6793dcc",
+      "product_sha256": "fca59e73831a3dbbd464701396e7476e359f91d51017de1fb417d4b00684f76d",
+      "description_characters": 2888,
+      "promotional_characters": 169,
+      "keywords_utf8_bytes": 86,
+      "rtl_text_review": "not applicable"
+    }
+  ],
+  "english_metadata_sha256": "ca1f7dffaaa5e7f030c35208d9f89451f8bb5647c7817105375588d145732f2a",
+  "english_release_sha256": "cdc0468e8f1a585243041f3a500dabcb14d6470b446bcb192a7efc149e979059",
+  "reviewed_fields": [
+    "name",
+    "subtitle",
+    "description",
+    "promotional_text",
+    "keywords",
+    "whats_new",
+    "subscription_names",
+    "subscription_descriptions",
+    "subscription_group_names"
+  ],
+  "checks": [
+    "Complete English meaning and release facts",
+    "Mac click terminology and no lock-screen claim",
+    "21 languages and synced queue",
+    "Archive/Pro full listening and Free/Premium 30-second previews",
+    "Glossary register and terminology",
+    "RTL script and logical text order for Arabic and Hebrew",
+    "Field length and UTF-8 keyword limits",
+    "URLs, immutable product IDs, and other-platform preservation"
+  ],
+  "findings": [],
+  "corrections": [],
+  "status": "passed"
+}

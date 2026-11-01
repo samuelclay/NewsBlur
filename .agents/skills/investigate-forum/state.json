@@ -3,15 +3,15 @@
     "13907": {
       "title": "Global Classifiers Input Button",
       "url": "https://forum.newsblur.com/t/global-classifiers-input-button/13907",
-      "status": "pr-open",
+      "status": "merged",
       "tier": 2,
-      "handled_at": "2026-10-22T05:29:44.410Z",
+      "handled_at": "2026-10-31T18:23:16.245Z",
       "last_posted_at": "2026-10-22T04:21:45.205Z",
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2184",
       "branch": "forum-13907-add-classifier-input",
       "worktree": ".worktree/forum-13907-add-classifier-input",
-      "note": "Feature request, not a bug: nothing shipped let a reader type a classifier without a story. drabconcrete is Premium Archive (joined 2026-10-21) and already has scoped classifiers. Sam chose: build an add row in Manage Training (web only), save immediately, scopes global/folder/site, types title/author/tag/text/url plus regex for Pro; skip the classifier-weights idea in the reply. Review round 1 surfaced a pre-existing /classifier/save legacy fallback that merged same-value classifiers across scopes (folder save flipped the global one); fixed in the PR. Prod tag/author unique indexes ignore scope, so a tag/author can live in only one global/folder scope; Sam chose a clear error over an index migration. Reply assumes make deploy + make deploy_static.",
-      "reply": "You weren't missing anything, there was no way to do this until now. Open the Intelligence Trainer and switch to Manage Training. There's a new row at the top: pick the type (title, author, tag, text, or URL), type what you want to match, choose All sites, a folder, or a single site, then hit Enter. It saves right away and clears the box so you can type the next one.",
+      "note": "Feature request, not a bug: nothing shipped let a reader type a classifier without a story. drabconcrete is Premium Archive (joined 2026-10-21) and already has scoped classifiers. Sam chose: build an add row in Manage Training (web only), save immediately, scopes global/folder/site, types title/author/tag/text/url plus regex for Pro; skip the classifier-weights idea in the reply. Review round 1 surfaced a pre-existing /classifier/save legacy fallback that merged same-value classifiers across scopes (folder save flipped the global one); fixed in the PR. Prod tag/author unique indexes ignore scope, so a tag/author can live in only one global/folder scope; Sam chose a clear error over an index migration. Reply assumes make deploy + make deploy_static. Merged 2026-10-31 as c54f8f2603 and deployed to web (make deploy + make deploy_static; all app hosts failed=0; prod verified on c54f8f2603). Blog post 2026-11-01-type-a-classifier-into-the-trainer is on main but NOT deployed: Sam is testing for a couple of days and will run make blog himself (future: true, so it goes live whenever make blog runs). Forum reply not posted yet.",
+      "reply": "You weren't missing anything, there was no way to do this until now. Open the Intelligence Trainer and switch to Manage Training. There's a new panel at the top: pick the type (title, author, tag, text, or URL), type what you want to match, choose All sites, a folder, or a single site, pick Like, Dislike, or Hide, then hit Enter. It saves right away and clears the box so you can type the next one.",
       "question": null
     },
     "13905": {
@@ -398,6 +398,39 @@
       "note": "Checked 2026-10-16: full Discourse JSON includes Avi, steanne, sergiomarchesini. Both HTTPS RSS feeds HTTP 200 locally; NewsBlur FeedFinder discovers both homepages and direct RSS URLs; actual FetchFeed.fetch using unsaved feed objects returns FEED_OK/200, 25 entries, bozo=False in ~0.5s each. Upsilandre newest article 2025-01-31 Les Ghouls'n Ghosts; Djayesse newest 2026-10-11 L'Etranger. Production happ-web-01 and htask-celery-01 curl cannot establish TCP to either host. Production safe_requests_get also ConnectTimeout on HTTP/HTTPS and over-blog.com/overblog.com variants. Production FeedFinder returns [] for all three reported URLs due to connect timeouts. DNS resolves public IPs 185.128.239.39 and 185.128.239.66. Production Upsilandre feed 8404574 has repeated 505 Timeout, latest 2026-10-12; old HTTP feed 7814178 last updated 2020; no Djayesse feed row matched. Code utils/feed_fetcher.py maps TimeoutError to internal 505. Root failure is production-to-OverBlog reachability; who drops connections is unproven. No parser/discovery defect reproduced locally and no code fix, branch, PR or deployment made. No working alternate URL found; network restoration or a separately evaluated proxy workaround remains needed. Browser screenshots unavailable because neither iab nor chrome is exposed. MFetchHistory.feed helper used per skill; it may create empty analytics history if missing.",
       "reply": "Both RSS feeds are valid. I can fetch and parse them locally, but connections from NewsBlur’s servers to OverBlog time out before any response comes back. The 505 shown in NewsBlur means a timeout, not an HTTP error returned by the blog.\n\nUpsilandre’s latest post is January 31, 2025, but its feed still works. Djayesse is actively publishing, with a post from October 11, 2026. This is a connectivity problem between NewsBlur and OverBlog. It hasn’t been fixed yet, and changing the feed URL doesn’t appear to help.",
       "question": null
+    },
+    "13910": {
+      "title": "Change Folders picker on web: too small, no folder icons, and “add” instead of “move”",
+      "url": "https://forum.newsblur.com/t/change-folders-picker-on-web-too-small-no-folder-icons-and-add-instead-of-move/13910",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-10-25T19:35:27Z",
+      "last_posted_at": "2026-10-23T13:39:09.510Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2188",
+      "branch": "forum-13910-folder-picker",
+      "worktree": ".worktree/forum-13910-folder-picker",
+      "note": "Sam chose the design in two interview rounds: click name moves, check circle adds, fit all folders capped at window, check plus tinted row, sidebar font size, type to filter with arrows/Enter, open at current folder, and the same picker for a folder's Move to folder menu. Reply assumes make deploy plus make deploy_static. Merged as 0709f9282a on 2026-10-27 with the blog post (dated 2026-10-27 09:00 -0700); deployed with make deploy, deploy_static and blog.",
+      "reply": "Thanks for the detailed writeup, this was overdue. The Change Folders list now grows to show all your folders, as many as your window has room for, and it uses your custom folder icons. It also opens scrolled to the folder the site is in now, and the text follows your sidebar font size.\n\nThe bigger change is that clicking a folder's name now moves the site there, so there's no more going back to uncheck Newsletters. If you do want a site in two folders, click the circle next to the second folder to add it. There's also a filter box at the top, so you can type a few letters, press Enter to pick the folder and Enter again to move.",
+      "question": null
+    },
+    "13806": {
+      "title": "MCP access from LIttlebird ai",
+      "url": "https://forum.newsblur.com/t/mcp-access-from-littlebird-ai/13806",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-10-30T04:45:00Z",
+      "last_posted_at": "2026-10-29T14:15:58.377Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2200",
+      "branch": "forum-13806-wellknown-ua-ban",
+      "worktree": ".worktree/forum-13806-wellknown-ua-ban",
+      "note": "Follow-up after GraBird's post #11: #2194 and #2196 shipped but Littlebird still failed. Real cause: UserAgentBanMiddleware 403'd every /.well-known/ discovery doc for requests with no User-Agent, and the Python MCP SDK sends discovery with none. Littlebird discovers on its backend (H.mcp.discoverServer in their web bundle) and MCP logs showed it reaching the last fallback /mcp/.well-known/openid-configuration (404) at each retry. #2200 exempts /.well-known/ from the ban; merged 42fe495d36 and deployed with make deploy 2026-10-30. Python SDK probe on prod now registers and reaches /mcp/authorize. Littlebird link is strong but circumstantial (web logs from Oct 29 14:14 rotated). Earlier: #2194 root discovery and #2196 trailing slashes, both deployed. Token lifetime work Sam asked for is PR #2201 (separate, not a forum fix). Token lifetime PR #2201 merged as 13852d61a7 and deployed 2026-10-30 (make deploy, make push_mcp, make deploy_mcp): Django sends refresh_expires_in (10y), MCP keeps refresh mappings for the refresh token's life, and the verifier falls back to 30-day cached claims when Django can't answer.",
+      "reply": "Thanks for trying again, that helped me find the real problem. Littlebird checks for OAuth from its own servers, and those requests don't send a browser user agent. NewsBlur blocks requests with no user agent to keep scrapers out, and that block was also catching the OAuth discovery files. So Littlebird never saw that NewsBlur supports OAuth and fell back to asking for an API token.\n\nThose discovery files are now open to any client. Delete the server in Littlebird and add https://newsblur.com/mcp one more time. It should open a browser window to approve access this time. If it doesn't, let me know and I'll reach out to Littlebird directly.",
+      "question": null,
+      "follow_up_pr": "https://github.com/samuelclay/NewsBlur/pull/2196",
+      "earlier_prs": [
+        "https://github.com/samuelclay/NewsBlur/pull/2194",
+        "https://github.com/samuelclay/NewsBlur/pull/2196"
+      ]
     }
   }
 }

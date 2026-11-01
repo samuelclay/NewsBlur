@@ -98,6 +98,9 @@
 - (IBAction)showSendTo:(id)sender;
 - (IBAction)showTrain:(id)sender;
 - (IBAction)showShare:(id)sender;
+- (IBAction)toggleListen:(id)sender;
+- (IBAction)toggleListenPlayback:(id)sender;
+- (IBAction)toggleListenQueue:(id)sender;
 - (IBAction)nextUnreadStory:(id)sender;
 - (IBAction)nextStory:(id)sender;
 - (IBAction)previousStory:(id)sender;

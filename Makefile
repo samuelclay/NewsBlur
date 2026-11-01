@@ -603,6 +603,10 @@ staging: deploy_staging
 deploy_blog:
 	ansible-playbook ansible/deploy.yml -l blogs
 blog: deploy_blog
+# Makefile: regenerate the committed blog/_site. The fonts, analytics and comments in
+# blog/_includes/head.html and disqus_comments.html only render when JEKYLL_ENV=production.
+blog-build:
+	cd blog && bundle install --quiet && JEKYLL_ENV=production bundle exec jekyll build
 deploy_staging_static: staging_static
 staging_static:
 	ansible-playbook ansible/deploy.yml -l staging --tags static

@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premiumの全機能に加え、記事を永久にアーカイブ"
+        "description": "記事の永久アーカイブと週1時間の読み上げ"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "フィードを5〜15分ごとに取得"
+        "description": "頻繁なフィード更新と週10時間の読み上げ"
       }
     },
     "subscription_groups": {
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archiveのサブスクリプション",
-        "description": "Premiumの全機能に加え、すべての記事を永久保存して検索できるアーカイブを利用できます。記事を好きなだけ未読のまま残せます。",
+        "description": "Premiumの全機能、検索できる永久記事アーカイブ、週1時間の読み上げを利用できます。記事を好きなだけ未読のまま残せます。読み上げの利用枠は日曜日にリセットされます。",
         "benefits": [
           "Premiumのすべての機能",
           "記事をいつまでも未読のまま残せる",
-          "すべての記事を永久にアーカイブ",
-          "記事アーカイブ全体を検索"
+          "検索できる永久記事アーカイブ",
+          "週1時間の読み上げ"
         ]
       }
     }

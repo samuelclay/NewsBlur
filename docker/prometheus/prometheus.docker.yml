@@ -80,6 +80,15 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
+    - job_name: 'listen'
+      scrape_interval: 5m
+      scrape_timeout: 60s
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/listen
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
     - job_name: 'media_player'
       static_configs:
         - targets: ['haproxy']

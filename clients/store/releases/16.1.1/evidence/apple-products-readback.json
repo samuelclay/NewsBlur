@@ -1,0 +1,878 @@
+{
+  "mismatches": [],
+  "products": {
+    "newsblur_premium_archive": {
+      "version": {
+        "type": "subscriptionVersions",
+        "id": "ef976a61-e93e-4b3b-87ab-c5b1bd2fbd0f",
+        "attributes": {
+          "version": 3,
+          "state": "READY_FOR_REVIEW"
+        },
+        "relationships": {
+          "image": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/ef976a61-e93e-4b3b-87ab-c5b1bd2fbd0f/relationships/image",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/ef976a61-e93e-4b3b-87ab-c5b1bd2fbd0f/image"
+            }
+          },
+          "images": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/ef976a61-e93e-4b3b-87ab-c5b1bd2fbd0f/relationships/images",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/ef976a61-e93e-4b3b-87ab-c5b1bd2fbd0f/images"
+            }
+          },
+          "localizations": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/ef976a61-e93e-4b3b-87ab-c5b1bd2fbd0f/relationships/localizations",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/ef976a61-e93e-4b3b-87ab-c5b1bd2fbd0f/localizations"
+            }
+          }
+        },
+        "links": {
+          "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/ef976a61-e93e-4b3b-87ab-c5b1bd2fbd0f"
+        }
+      },
+      "localizations": [
+        {
+          "type": "subscriptionLocalizations",
+          "id": "7d15f249-85fa-4aac-a4f8-4fa494df62b4",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "ru",
+            "description": "Постоянный архив и 1 час прослушивания в неделю"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/7d15f249-85fa-4aac-a4f8-4fa494df62b4"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "95745a3e-616a-4a12-8702-56503acc8761",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "es-ES",
+            "description": "Archivo permanente y 1 hora de escucha semanal"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/95745a3e-616a-4a12-8702-56503acc8761"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "dec346ca-d485-40ab-93d5-cb2524691803",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "fr-FR",
+            "description": "Archive permanente et 1 h d’écoute par semaine"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/dec346ca-d485-40ab-93d5-cb2524691803"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "924ca146-7c94-4e5c-ac69-f242ad7af6cf",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "zh-Hans",
+            "description": "永久文章归档和每周 1 小时聆听"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/924ca146-7c94-4e5c-ac69-f242ad7af6cf"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "4983d0a0-06d3-439f-8565-1c7d99633643",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "zh-Hant",
+            "description": "永久文章封存及每週 1 小時聆聽"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/4983d0a0-06d3-439f-8565-1c7d99633643"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "3a4f4987-298f-47ed-b470-42aeb611493b",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "hi",
+            "description": "स्थायी लेख संग्रह और हर सप्ताह 1 घंटा सुनें"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/3a4f4987-298f-47ed-b470-42aeb611493b"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "869713c4-f3e7-4b06-8c4c-3262a0d1bfb2",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "it",
+            "description": "Archivio permanente e 1 ora di ascolto a settimana"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/869713c4-f3e7-4b06-8c4c-3262a0d1bfb2"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "25c77a6f-3784-45c1-a91c-03a6147877cc",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "pt-BR",
+            "description": "Arquivo permanente e 1 hora de áudio por semana"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/25c77a6f-3784-45c1-a91c-03a6147877cc"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "2a90b95a-1688-4977-83a8-b982c6d1278b",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "pl",
+            "description": "Trwałe archiwum i 1 godzina słuchania tygodniowo"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/2a90b95a-1688-4977-83a8-b982c6d1278b"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "b3640ca8-7d70-40e6-9827-e3a5275b15f5",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "uk",
+            "description": "Постійний архів і 1 година прослуховування на тиждень"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/b3640ca8-7d70-40e6-9827-e3a5275b15f5"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "bb78ef90-5b85-4c49-ac8e-b02129f97994",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "de-DE",
+            "description": "Dauerhaftes Archiv und 1 Stunde Hörzeit pro Woche"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/bb78ef90-5b85-4c49-ac8e-b02129f97994"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "dedcd8e8-4437-4950-a512-253e13dc8a94",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "en-US",
+            "description": "Permanent story archive and 1 hour of Listen per week"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/dedcd8e8-4437-4950-a512-253e13dc8a94"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "c4c017e1-2147-4fc1-972e-fa33d2f6b726",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "ko",
+            "description": "스토리 영구 보관과 주 1시간 듣기"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/c4c017e1-2147-4fc1-972e-fa33d2f6b726"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "587f2ac5-e27f-4157-b16c-2dee80beef64",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "he",
+            "description": "ארכיון כתבות קבוע ושעת האזנה בשבוע"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/587f2ac5-e27f-4157-b16c-2dee80beef64"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "b4010dba-8f22-4c90-b56c-dcddf9d64dd6",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "th",
+            "description": "คลังบทความถาวรและฟัง 1 ชั่วโมงต่อสัปดาห์"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/b4010dba-8f22-4c90-b56c-dcddf9d64dd6"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "7cbffacb-c46e-416e-bec1-6c859a6beb06",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "ja",
+            "description": "記事の永久アーカイブと週1時間の読み上げ"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/7cbffacb-c46e-416e-bec1-6c859a6beb06"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "bba653df-28d8-45a6-b87c-13c9726f4890",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "nl-NL",
+            "description": "Blijvend archief en 1 uur luistertijd per week"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/bba653df-28d8-45a6-b87c-13c9726f4890"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "85f16fa4-f0dc-4361-8d04-4215847890c2",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "vi",
+            "description": "Kho bài viết vĩnh viễn và 1 giờ Nghe mỗi tuần"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/85f16fa4-f0dc-4361-8d04-4215847890c2"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "6d30d202-3acb-4058-a6d3-ff0ec471197e",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "id",
+            "description": "Arsip artikel permanen dan 1 jam audio per minggu"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/6d30d202-3acb-4058-a6d3-ff0ec471197e"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "bea71cfc-e213-4747-b3ee-169026ba0db7",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "tr",
+            "description": "Kalıcı haber arşivi ve haftada 1 saat dinleme"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/bea71cfc-e213-4747-b3ee-169026ba0db7"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "ea4ce735-fa94-4546-a623-b0c2318f1a7c",
+          "attributes": {
+            "name": "NewsBlur Premium Archive",
+            "locale": "ar-SA",
+            "description": "أرشيف قصص دائم وساعة استماع أسبوعيًا"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/ea4ce735-fa94-4546-a623-b0c2318f1a7c"
+          }
+        }
+      ]
+    },
+    "newsblur_premium_pro": {
+      "version": {
+        "type": "subscriptionVersions",
+        "id": "5d08cc6d-8811-4cbb-a38a-697a4ce746b9",
+        "attributes": {
+          "version": 3,
+          "state": "READY_FOR_REVIEW"
+        },
+        "relationships": {
+          "image": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/5d08cc6d-8811-4cbb-a38a-697a4ce746b9/relationships/image",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/5d08cc6d-8811-4cbb-a38a-697a4ce746b9/image"
+            }
+          },
+          "images": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/5d08cc6d-8811-4cbb-a38a-697a4ce746b9/relationships/images",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/5d08cc6d-8811-4cbb-a38a-697a4ce746b9/images"
+            }
+          },
+          "localizations": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/5d08cc6d-8811-4cbb-a38a-697a4ce746b9/relationships/localizations",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/5d08cc6d-8811-4cbb-a38a-697a4ce746b9/localizations"
+            }
+          }
+        },
+        "links": {
+          "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/5d08cc6d-8811-4cbb-a38a-697a4ce746b9"
+        }
+      },
+      "localizations": [
+        {
+          "type": "subscriptionLocalizations",
+          "id": "ccf971dd-0939-481a-bff0-59c299c18ee3",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "ja",
+            "description": "頻繁なフィード更新と週10時間の読み上げ"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/ccf971dd-0939-481a-bff0-59c299c18ee3"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "2a67df69-6b57-41ea-a891-85ad9bb62be7",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "nl-NL",
+            "description": "Frequente feedupdates en 10 uur luistertijd per week"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/2a67df69-6b57-41ea-a891-85ad9bb62be7"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "6134561a-b261-4b54-8301-3f9a8237c61a",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "pl",
+            "description": "Częste aktualizacje kanałów i 10 h słuchania tygodniowo"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/6134561a-b261-4b54-8301-3f9a8237c61a"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "8b5feba7-33ec-4e60-9506-4ea160c2d1c1",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "ko",
+            "description": "잦은 피드 업데이트와 주 10시간 듣기"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/8b5feba7-33ec-4e60-9506-4ea160c2d1c1"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "16bc4393-a44e-4f07-a084-a79635127115",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "hi",
+            "description": "फ़ीड के नियमित अपडेट और हर सप्ताह 10 घंटे सुनें"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/16bc4393-a44e-4f07-a084-a79635127115"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "264c0c4c-6ce0-4bd3-bc2a-652086265cdc",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "id",
+            "description": "Feed sering diperbarui dan 10 jam audio per minggu"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/264c0c4c-6ce0-4bd3-bc2a-652086265cdc"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "ad1d4994-ba04-4292-99fb-c48fad05f141",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "vi",
+            "description": "Cập nhật nguồn cấp thường xuyên, 10 giờ Nghe mỗi tuần"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/ad1d4994-ba04-4292-99fb-c48fad05f141"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "f76919d4-127a-4675-ad5d-5f72f256af54",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "zh-Hant",
+            "description": "頻繁更新訂閱來源，每週 10 小時聆聽"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/f76919d4-127a-4675-ad5d-5f72f256af54"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "a57c9508-ab77-44fe-a2e9-f583f20aedb5",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "pt-BR",
+            "description": "Feeds atualizados com frequência e 10 h de áudio/semana"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/a57c9508-ab77-44fe-a2e9-f583f20aedb5"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "b30ec88d-9a4a-4a5c-bafd-f6e053785edb",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "th",
+            "description": "อัปเดตฟีดบ่อยขึ้นและฟัง 10 ชั่วโมงต่อสัปดาห์"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/b30ec88d-9a4a-4a5c-bafd-f6e053785edb"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "ef503a77-3948-41db-a880-cf950c8cc54b",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "de-DE",
+            "description": "Häufige Feedupdates und 10 Stunden Hörzeit pro Woche"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/ef503a77-3948-41db-a880-cf950c8cc54b"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "9bf2749a-78d6-4e92-b543-482a71874910",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "uk",
+            "description": "Часті оновлення стрічок і 10 годин аудіо на тиждень"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/9bf2749a-78d6-4e92-b543-482a71874910"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "dcf843ad-7c96-4f4a-bf8c-39bc97c60ff2",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "en-US",
+            "description": "Frequent feed updates and 10 hours of Listen per week"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/dcf843ad-7c96-4f4a-bf8c-39bc97c60ff2"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "9e2ee587-db8e-4f23-95af-9c75d6d8309e",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "tr",
+            "description": "Sık akış güncellemeleri ve haftada 10 saat dinleme"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/9e2ee587-db8e-4f23-95af-9c75d6d8309e"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "a822673d-6aec-4228-b4f8-0fd1ac73194f",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "zh-Hans",
+            "description": "频繁更新订阅源，每周 10 小时聆听"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/a822673d-6aec-4228-b4f8-0fd1ac73194f"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "2a6fcd19-ef16-4c1a-b933-89984c424c1d",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "it",
+            "description": "Feed aggiornati spesso e 10 ore di ascolto a settimana"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/2a6fcd19-ef16-4c1a-b933-89984c424c1d"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "f9f06fb5-0b67-4207-8d8c-68bd1b1a7832",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "ru",
+            "description": "Частые обновления лент и 10 часов аудио в неделю"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/f9f06fb5-0b67-4207-8d8c-68bd1b1a7832"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "24346105-c80e-4345-9047-21f118bb5c3a",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "he",
+            "description": "עדכוני פידים תכופים ו־10 שעות האזנה בשבוע"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/24346105-c80e-4345-9047-21f118bb5c3a"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "b1673858-411b-4d63-ab8d-52179ce04eb5",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "ar-SA",
+            "description": "تحديثات متكررة للخلاصات و10 ساعات استماع أسبوعيًا"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/b1673858-411b-4d63-ab8d-52179ce04eb5"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "e021fe2b-882d-4ec3-99d8-00d1a6ab1176",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "es-ES",
+            "description": "Actualizaciones frecuentes y 10 h de escucha semanal"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/e021fe2b-882d-4ec3-99d8-00d1a6ab1176"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "53bc255e-7875-4126-9b60-7e5ff971dbbb",
+          "attributes": {
+            "name": "NewsBlur Premium Pro",
+            "locale": "fr-FR",
+            "description": "Mises à jour fréquentes et 10 h d’écoute par semaine"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/53bc255e-7875-4126-9b60-7e5ff971dbbb"
+          }
+        }
+      ]
+    },
+    "newsblur_premium_auto_renew_36": {
+      "version": {
+        "type": "subscriptionVersions",
+        "id": "6e970882-5048-4cbd-aa3f-e0a47848626a",
+        "attributes": {
+          "version": 2,
+          "state": "APPROVED"
+        },
+        "relationships": {
+          "image": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/6e970882-5048-4cbd-aa3f-e0a47848626a/relationships/image",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/6e970882-5048-4cbd-aa3f-e0a47848626a/image"
+            }
+          },
+          "images": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/6e970882-5048-4cbd-aa3f-e0a47848626a/relationships/images",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/6e970882-5048-4cbd-aa3f-e0a47848626a/images"
+            }
+          },
+          "localizations": {
+            "links": {
+              "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/6e970882-5048-4cbd-aa3f-e0a47848626a/relationships/localizations",
+              "related": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/6e970882-5048-4cbd-aa3f-e0a47848626a/localizations"
+            }
+          }
+        },
+        "links": {
+          "self": "https://api.appstoreconnect.apple.com/v1/subscriptionVersions/6e970882-5048-4cbd-aa3f-e0a47848626a"
+        }
+      },
+      "localizations": [
+        {
+          "type": "subscriptionLocalizations",
+          "id": "d719b7e8-4ada-4468-8b1e-5d5fdc0c831b",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "zh-Hant",
+            "description": "資料夾閱讀、搜尋、為已儲存的文章加上標籤"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/d719b7e8-4ada-4468-8b1e-5d5fdc0c831b"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "04e584c1-fd87-4b8e-8f00-871bb7c08d20",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "zh-Hans",
+            "description": "文件夹阅读、搜索、为已保存的文章添加标签"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/04e584c1-fd87-4b8e-8f00-871bb7c08d20"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "3743608c-8c09-4818-90d0-b7779420ee6d",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "ko",
+            "description": "폴더 모아 읽기, 검색, 저장한 스토리에 태그 지정"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/3743608c-8c09-4818-90d0-b7779420ee6d"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "8923bcba-0ea1-4b4d-9ae4-fcb5b8006ca4",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "ja",
+            "description": "フォルダーをまとめて読む、検索、保存した記事へのタグ付け"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/8923bcba-0ea1-4b4d-9ae4-fcb5b8006ca4"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "3cf44667-82b2-4c9c-ade1-bff5efc33900",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "th",
+            "description": "อ่านโฟลเดอร์ ค้นหา แท็กบทความที่บันทึก"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/3cf44667-82b2-4c9c-ade1-bff5efc33900"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "c531ea5e-4600-4119-9257-98528c8868d4",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "vi",
+            "description": "Đọc thư mục, tìm kiếm, gắn thẻ bài đã lưu"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/c531ea5e-4600-4119-9257-98528c8868d4"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "ffc9d94b-408f-4eec-acbf-a460d9b60602",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "id",
+            "description": "Baca folder, cari, beri tag artikel tersimpan"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/ffc9d94b-408f-4eec-acbf-a460d9b60602"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "a37ae632-1e62-4864-8422-6974bc23c762",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "hi",
+            "description": "फ़ोल्डर पढ़ें, खोजें, सहेजे गए लेख टैग करें"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/a37ae632-1e62-4864-8422-6974bc23c762"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "8710fd0f-3cbb-4841-a410-718d4d30aa54",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "he",
+            "description": "קריאת תיקיות, חיפוש ותגיות לכתבות שמורות"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/8710fd0f-3cbb-4841-a410-718d4d30aa54"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "c38d82a0-7959-483f-8639-ffc298ad346f",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "ar-SA",
+            "description": "قراءة المجلدات والبحث ووسم القصص المحفوظة"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/c38d82a0-7959-483f-8639-ffc298ad346f"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "e6855f62-821e-4f66-b3e0-292ba197578b",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "uk",
+            "description": "Читання папок, пошук, теги збережених статей"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/e6855f62-821e-4f66-b3e0-292ba197578b"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "796c47a9-4ea0-4e33-be87-bd0d3823c36c",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "ru",
+            "description": "Чтение папок, поиск, теги сохранённых статей"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/796c47a9-4ea0-4e33-be87-bd0d3823c36c"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "09fa180c-1e53-4d9e-a598-6dab50caf52e",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "tr",
+            "description": "Klasör okuma, arama, kayıtlı haberlere etiket"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/09fa180c-1e53-4d9e-a598-6dab50caf52e"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "e9272ffa-f707-4095-a414-65debc0b8d0c",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "pl",
+            "description": "Foldery, szukanie, tagi zapisanych artykułów"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/e9272ffa-f707-4095-a414-65debc0b8d0c"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "a9b6b766-d6b4-4098-82d8-ef85669a2de4",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "nl-NL",
+            "description": "Mappen, zoeken, opgeslagen artikelen taggen"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/a9b6b766-d6b4-4098-82d8-ef85669a2de4"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "f7bd998e-74fb-441b-8fdd-b5cc71715981",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "it",
+            "description": "Cartelle, ricerca e tag per articoli salvati"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/f7bd998e-74fb-441b-8fdd-b5cc71715981"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "1c7b991a-f381-4375-ba91-8fb76c5100a4",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "pt-BR",
+            "description": "Pastas, busca e tags de artigos salvos"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/1c7b991a-f381-4375-ba91-8fb76c5100a4"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "44f4eaed-6aa1-4aba-bb83-459894bac5ad",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "de-DE",
+            "description": "Ordner, Suche, Tags für gespeicherte Artikel"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/44f4eaed-6aa1-4aba-bb83-459894bac5ad"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "e2d3c585-65a1-4762-837d-7c8853821fd0",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "fr-FR",
+            "description": "Dossiers, recherche, tags d’articles enregistrés"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/e2d3c585-65a1-4762-837d-7c8853821fd0"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "4e3b228b-91e8-484e-9fd6-a8246b877dfe",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "es-ES",
+            "description": "Carpetas, búsqueda y etiquetas de guardados"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/4e3b228b-91e8-484e-9fd6-a8246b877dfe"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "322e0a45-2680-4b0d-a72f-2211e3706ff6",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "en-GB",
+            "description": "Folder reading, search and saved story tags"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/322e0a45-2680-4b0d-a72f-2211e3706ff6"
+          }
+        },
+        {
+          "type": "subscriptionLocalizations",
+          "id": "6ae48882-ca29-45c1-b308-e0b7cee9c92c",
+          "attributes": {
+            "name": "NewsBlur Premium",
+            "locale": "en-US",
+            "description": "Folder reading, search and saved story tags"
+          },
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v2/subscriptionLocalizations/6ae48882-ca29-45c1-b308-e0b7cee9c92c"
+          }
+        }
+      ]
+    }
+  }
+}

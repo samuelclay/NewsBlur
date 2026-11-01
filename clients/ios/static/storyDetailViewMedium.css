@@ -260,6 +260,10 @@ del {
     background: rgba(255, 255, 255, 0.12);
     text-shadow: none;
 }
+/* storyDetailViewMedium.css: a story queued in Listen's Up Next shades its + like an active button. */
+.NB-button.NB-share-button a.NB-listen-queue.NB-listen-queued div {
+    background: rgba(255, 255, 255, 0.12);
+}
 
 /* Story Comments */
 
@@ -374,4 +378,17 @@ del {
 
 .NB-cluster-locked-upsell {
     background-color: rgba(255, 255, 255, .04);
+}
+
+/* Listen (Classes/Listen/ListenStoryBridge.swift) */
+.NB-listen-highlight {
+    background-color: rgba(255, 210, 90, 0.14);
+    box-shadow: 0 0 0 5px rgba(255, 210, 90, 0.14);
+}
+span.NB-listen-run.NB-listen-highlight {
+    box-shadow: none;
+}
+.NB-listen-pill {
+    background: rgba(190, 140, 242, 0.2);
+    color: rgba(215, 185, 248, 0.95);
 }

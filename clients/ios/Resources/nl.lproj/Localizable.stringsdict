@@ -194,6 +194,54 @@
 			<string>%@ focusartikelen</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Je hebt vandaag nog %@ gratis artikelpreview</string>
+			<key>other</key>
+			<string>Vandaag nog %@ gratis artikelvoorbeelden over</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ overeenkomst</string>
+			<key>other</key>
+			<string>%@ overeenkomsten</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Deze maand nog %@ minuut over</string>
+			<key>other</key>
+			<string>Nog %@ minuten over deze maand</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -352,6 +400,22 @@
 			<string>%@ ongelezen artikel</string>
 			<key>other</key>
 			<string>%@ ongelezen artikelen</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Nog %@ stemvoorbeeld beschikbaar</string>
+			<key>other</key>
+			<string>Nog %@ stemvoorbeelden beschikbaar</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>

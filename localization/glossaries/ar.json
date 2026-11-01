@@ -127,12 +127,21 @@
     },
     {
       "concept": "like / dislike (trainer)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "أعجبني / لا يعجبني; Super dislike → لا يعجبني إطلاقًا; Likes/Dislikes lists → الإعجابات / عدم الإعجاب",
-      "avoid": [
-        "عدم إعجاب شديد mixed with لا يعجبني إطلاقًا on the same screen"
-      ],
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "أعجبني / لا يعجبني; Hide (the level above Like, formerly Super dislike) → إخفاء; Likes/Dislikes lists → الإعجابات / عدم الإعجاب",
+      "avoid": [],
       "note": "beats → «>»-style comparison (يتفوّق على) never a rhythm/music beat; (like wins) → (الإعجاب له الأولوية)."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "إخفاء",
+      "avoid": [
+        "لا يعجبني إطلاقًا",
+        "عدم إعجاب شديد",
+        "عدم الإعجاب الشديد"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names («إخفاء» يتفوّق على كل شيء). The old Super dislike names are retired."
     },
     {
       "concept": "premium / plans",

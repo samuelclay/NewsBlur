@@ -290,6 +290,78 @@
 			<string>%@ قصة مركّز عليها</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>تبقّت لك معاينات مجانية لـ %@ قصص اليوم</string>
+			<key>many</key>
+			<string>تبقّى لك اليوم %@ معاينات مجانية للقصص</string>
+			<key>one</key>
+			<string>يتبقى اليوم %@ معاينة مجانية للقصة</string>
+			<key>other</key>
+			<string>تبقّت %@ معاينة مجانية للقصص اليوم</string>
+			<key>two</key>
+			<string>تبقّت لك معاينات مجانية لـ %@ قصص اليوم</string>
+			<key>zero</key>
+			<string>تبقّى %@ معاينة مجانية للقصص اليوم</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ تطابقات</string>
+			<key>many</key>
+			<string>%@ تطابقًا</string>
+			<key>one</key>
+			<string>مطابقة واحدة: %@</string>
+			<key>other</key>
+			<string>%@ تطابقات</string>
+			<key>two</key>
+			<string>%@ تطابقان</string>
+			<key>zero</key>
+			<string>%@ تطابق</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>تبقّت %@ دقيقة هذا الشهر</string>
+			<key>many</key>
+			<string>تبقّى %@ دقيقة هذا الشهر</string>
+			<key>one</key>
+			<string>تبقّت %@ دقيقة هذا الشهر</string>
+			<key>other</key>
+			<string>تبقّت %@ دقيقة هذا الشهر</string>
+			<key>two</key>
+			<string>تبقّى %@ دقيقة هذا الشهر</string>
+			<key>zero</key>
+			<string>تبقّت %@ دقيقة هذا الشهر</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -528,6 +600,30 @@
 			<string>%@ قصتين غير مقروءتين</string>
 			<key>zero</key>
 			<string>%@ قصة غير مقروءة</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>تبقّى %@ معاينات صوتية</string>
+			<key>many</key>
+			<string>تبقّى %@ من معاينات الصوت</string>
+			<key>one</key>
+			<string>تبقّت معاينة صوتية واحدة (%@)</string>
+			<key>other</key>
+			<string>تبقّى %@ معاينة صوتية</string>
+			<key>two</key>
+			<string>تبقّى %@ من معاينات الصوت</string>
+			<key>zero</key>
+			<string>تبقّى %@ معاينة صوتية</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>

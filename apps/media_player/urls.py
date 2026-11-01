@@ -3,6 +3,7 @@ from django.conf.urls import url
 from apps.media_player import views
 
 urlpatterns = [
+    url(r"^playback_state$", views.playback_state, name="playback-state"),
     url(r"^save_playback_state", views.save_playback_state, name="save-playback-state"),
     url(r"^add_to_media_queue", views.add_to_media_queue, name="add-to-media-queue"),
     url(r"^remove_from_media_queue", views.remove_from_media_queue, name="remove-from-media-queue"),

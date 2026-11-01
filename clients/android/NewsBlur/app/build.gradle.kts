@@ -28,8 +28,8 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 298
-        versionName = "16.0.6"
+        versionCode = 300
+        versionName = "16.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
@@ -121,6 +121,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.webkit)
     implementation(libs.androidx.window)
+    // app/build.gradle.kts: Media3 (Apache 2.0) plays Listen audio in both the Play and F-Droid builds.
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.session)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.profileinstaller)
 

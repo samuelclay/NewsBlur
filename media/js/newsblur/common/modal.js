@@ -48,6 +48,14 @@ NEWSBLUR.Modal.prototype = {
             },
             'onClose': function (dialog, callback) {
                 self.flags.open = false;
+                // modal.js: Optional per-modal cleanup, such as the trainer's deferred
+                // feed refresh in reader_classifier.js.
+                if (self.handle_modal_closed) {
+                    self.handle_modal_closed();
+                }
+                // modal.js: Hover tooltips live on body (bind_tooltip in reader_classifier.js),
+                // so one over a control that closes the dialog would outlive it.
+                $('.NB-scope-tooltip').remove();
                 if (self.section_motion_owner && self.section_motion_owner.motion_observer) self.section_motion_owner.motion_observer.disconnect();
                 var container = dialog.container[0];
                 container.inert = true;

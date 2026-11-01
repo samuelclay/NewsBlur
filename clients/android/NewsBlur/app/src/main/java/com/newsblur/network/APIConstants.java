@@ -95,6 +95,19 @@ public class APIConstants {
     public static final String PATH_BRIEFING_STORIES = "/briefing/stories";
     public static final String PATH_BRIEFING_PREFERENCES = "/briefing/preferences";
     public static final String PATH_BRIEFING_GENERATE = "/briefing/generate";
+    // APIConstants.java: ListenApiImpl.kt reads stories aloud through these endpoints.
+    public static final String PATH_LISTEN_VOICES = "/listen/voices";
+    public static final String PATH_LISTEN_LIBRARY = "/listen/library";
+    public static final String PATH_LISTEN_MANIFEST = "/listen/manifest";
+    public static final String PATH_LISTEN_SEGMENT = "/listen/segment";
+    public static final String PATH_LISTEN_PREVIEW = "/listen/preview";
+    public static final String PATH_LISTEN_USAGE = "/listen/usage";
+    public static final String PATH_LISTEN_PROGRESS = "/listen/progress";
+    public static final String PATH_MEDIA_PLAYBACK_STATE = "/media_player/playback_state";
+    public static final String PATH_MEDIA_ADD_TO_QUEUE = "/media_player/add_to_media_queue";
+    public static final String PATH_MEDIA_REMOVE_FROM_QUEUE = "/media_player/remove_from_media_queue";
+    public static final String PATH_MEDIA_REORDER_QUEUE = "/media_player/reorder_media_queue";
+    public static final String PATH_MEDIA_ADD_TO_HISTORY = "/media_player/add_to_media_history";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;

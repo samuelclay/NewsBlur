@@ -77,6 +77,9 @@
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/
     version: "{{ deploy_commit | default(git_branch) }}"
+    # Staging stays shallow (ansible/group_vars/staging.yml); other servers fetch normally.
+    depth: "{{ git_depth | default(omit) }}"
+    refspec: "{{ git_refspec | default(omit) }}"
   register: pulled
 
 - include_tasks: ../roles/web/tasks/container.yml

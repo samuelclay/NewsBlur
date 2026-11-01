@@ -218,6 +218,60 @@
 			<string>%@ כתבות ממוקדות</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נותרה %@ תצוגה מקדימה בחינם של כתבה להיום</string>
+			<key>other</key>
+			<string>נותרו היום %@ תצוגות מקדימות בחינם של כתבות</string>
+			<key>two</key>
+			<string>נותרו %@ תצוגות מקדימות של כתבות בחינם להיום</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>התאמה אחת: %@</string>
+			<key>other</key>
+			<string>%@ התאמות</string>
+			<key>two</key>
+			<string>%@ התאמות</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נותרה דקה אחת החודש: %@</string>
+			<key>other</key>
+			<string>נותרו %@ דקות החודש</string>
+			<key>two</key>
+			<string>נותרו %@ דקות החודש</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -396,6 +450,24 @@
 			<string>%@ כתבות שלא נקראו</string>
 			<key>two</key>
 			<string>%@ כתבות שלא נקראו</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נותרה %@ תצוגה מקדימה של קול</string>
+			<key>other</key>
+			<string>נותרו %@ תצוגות מקדימות של קול</string>
+			<key>two</key>
+			<string>נותרו %@ תצוגות מקדימות קוליות</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>

@@ -1,0 +1,82 @@
+{
+  "version": "16.0.2",
+  "platform": "macos",
+  "role": "translation",
+  "locales": [
+    {
+      "language": "es",
+      "status": "translated_and_self_reviewed",
+      "description_characters": 3034,
+      "promotional_characters": 149,
+      "keywords_utf8_bytes": 86,
+      "release_characters": 604
+    },
+    {
+      "language": "fr",
+      "status": "translated_and_self_reviewed",
+      "description_characters": 3287,
+      "promotional_characters": 147,
+      "keywords_utf8_bytes": 83,
+      "release_characters": 648
+    },
+    {
+      "language": "de",
+      "status": "translated_and_self_reviewed",
+      "description_characters": 3227,
+      "promotional_characters": 163,
+      "keywords_utf8_bytes": 80,
+      "release_characters": 659
+    },
+    {
+      "language": "pt-BR",
+      "status": "translated_and_self_reviewed",
+      "description_characters": 2889,
+      "promotional_characters": 147,
+      "keywords_utf8_bytes": 81,
+      "release_characters": 590
+    },
+    {
+      "language": "it",
+      "status": "translated_and_self_reviewed",
+      "description_characters": 3071,
+      "promotional_characters": 150,
+      "keywords_utf8_bytes": 80,
+      "release_characters": 598
+    },
+    {
+      "language": "nl",
+      "status": "translated_and_self_reviewed",
+      "description_characters": 2922,
+      "promotional_characters": 169,
+      "keywords_utf8_bytes": 78,
+      "release_characters": 582
+    },
+    {
+      "language": "pl",
+      "status": "translated_and_self_reviewed",
+      "description_characters": 2993,
+      "promotional_characters": 153,
+      "keywords_utf8_bytes": 82,
+      "release_characters": 584
+    }
+  ],
+  "source_sha256": "ca1f7dffaaa5e7f030c35208d9f89451f8bb5647c7817105375588d145732f2a",
+  "source_release_sha256": "cdc0468e8f1a585243041f3a500dabcb14d6470b446bcb192a7efc149e979059",
+  "reviewed_fields": [
+    "name",
+    "subtitle",
+    "description",
+    "promotional_text",
+    "keywords",
+    "whats_new"
+  ],
+  "products_reviewed": [
+    "newsblur_premium_auto_renew_36",
+    "newsblur_premium_archive",
+    "newsblur_premium_pro",
+    "20421002"
+  ],
+  "product_changes": [],
+  "findings": [],
+  "independent_review": "pending"
+}

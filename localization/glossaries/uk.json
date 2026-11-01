@@ -114,13 +114,22 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Like → Подобається; Dislike → Не подобається; Super dislike → Дуже не подобається; inserted trainer words like → подобається, dislike → не подобається",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Like → Подобається; Dislike → Не подобається; Hide (the level above Like, formerly Super dislike) → Приховати; inserted trainer words like → подобається, dislike → не подобається",
       "avoid": [
-        "Категорично не подобається (low; Android key also uses Дуже)",
         "вподобайка / дизлайк for the button names"
       ],
-      "note": "beats (trainer separator between two chips) → переважає (Android «переважає», iOS «ПЕРЕВАЖАЄ»); web «beats any» → «переважає будь-яке». Bare «сильніше» needs «за» and does not read as a separator; «переважає» also matches «Одне «Дуже не подобається» переважає все». Android «удари» and iOS «БІТИ» were high. (like wins) → («Подобається» важливіше)."
+      "note": "beats (trainer separator between two chips) → переважає (Android «переважає», iOS «ПЕРЕВАЖАЄ»); web «beats any» → «переважає будь-яке». Bare «сильніше» needs «за» and does not read as a separator; «переважає» also reads well in «„Приховати“ переважає все». Android «удари» and iOS «БІТИ» were high. (like wins) → («Подобається» важливіше)."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Приховати",
+      "avoid": [
+        "Дуже не подобається",
+        "дуже не подобається"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names («Приховати» переважає все). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

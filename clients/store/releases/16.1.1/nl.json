@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Luisteren is nu makkelijker te bedienen. Start via de leeswerkbalk en ga verder met Volgend artikel in de minispeler.\n\nAutomatisch doorgaan volgt nu je gekozen sortering in Opgeslagen artikelen en Gelezen artikelen, ook met de oudste eerst. Het afspelen gaat omlaag door de lijst zonder terug te springen naar eerdere artikelen.\n\nLuisteren leest een kop maar één keer voor als die aan het begin van een artikel wordt herhaald.\n\nJe luistertijd geldt nu per week: 1 uur met Premium Archive en 10 uur met Premium Pro, elke zondag vernieuwd. Instellingen en Wordt nu afgespeeld tonen je resterende tijd in uren en minuten."
+  },
+  "macos": {
+    "whats_new": "Luisteren is nu makkelijker te bedienen. Ga verder met Volgend artikel in de minispeler.\n\nAutomatisch doorgaan volgt nu je gekozen sortering in Opgeslagen artikelen en Gelezen artikelen, ook met de oudste eerst. Het afspelen gaat omlaag door de lijst zonder terug te springen naar eerdere artikelen.\n\nLuisteren leest een kop maar één keer voor als die aan het begin van een artikel wordt herhaald.\n\nJe luistertijd geldt nu per week: 1 uur met Premium Archive en 10 uur met Premium Pro, elke zondag vernieuwd. Instellingen en Wordt nu afgespeeld tonen je resterende tijd in uren en minuten."
+  },
+  "android": {
+    "release_notes": "Luisteren: start via de leeswerkbalk en ga verder met Volgend artikel in de minispeler. Automatisch doorgaan volgt je sortering in Opgeslagen artikelen en Gelezen artikelen omlaag door de lijst. Herhaalde koppen worden één keer gelezen. Luistertijd per week: 1 uur met Premium Archive, 10 uur met Premium Pro, vernieuwd op zondag. Instellingen toont resterende uren en minuten."
+  }
+}

@@ -77,6 +77,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         appDelegate.prepareViewControllers()
         connectionOptions.urlContexts.forEach { appDelegate.open($0.url) }
         handleNotificationResponse(connectionOptions.notificationResponse)
+#if targetEnvironment(macCatalyst)
+        // SceneDelegate.swift replays a response received while Command-W left the process without a reader window.
+        // A connection response already navigates through the same handler, so it must not be replayed twice.
+        if connectionOptions.notificationResponse == nil,
+           appDelegate.pendingNotificationStory != nil || appDelegate.pendingDailyBriefingStoryHash != nil {
+            appDelegate.backgroundLoadNotificationStory()
+        }
+#endif
 
         if #available(iOS 16.0, *) {
             Task { @MainActor in

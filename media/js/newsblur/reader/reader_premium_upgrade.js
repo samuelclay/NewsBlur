@@ -189,6 +189,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Ask AI questions about stories')
                         ]),
+                        $.make('li', { className: 'NB-19 NB-feature-listen' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Listen to 1 hour of stories read aloud a week')
+                        ]),
                         $.make('li', { className: 'NB-15 NB-feature-date-filter' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Filter stories by date range')
@@ -232,6 +236,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-3 NB-feature-regex' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Train stories with regular expressions')
+                        ]),
+                        $.make('li', { className: 'NB-5 NB-feature-listen' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Listen to 10 hours of stories read aloud a week')
                         ]),
                         $.make('li', { className: 'NB-4' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),

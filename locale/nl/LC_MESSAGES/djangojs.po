@@ -126,6 +126,11 @@ msgstr " — Twee of meer hoofdletters"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — Alleen het hele woord \"%(word)s\""
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "$29/maand"
 
@@ -240,6 +245,12 @@ msgstr[0] "%(count)s volger"
 msgstr[1] "%(count)s volgers"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "Vandaag nog %(count)s gratis artikelvoorbeeld over"
+msgstr[1] "Vandaag nog %(count)s gratis artikelvoorbeelden over"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s uur"
@@ -264,6 +275,12 @@ msgstr[0] "%(count)s keer leuk"
 msgstr[1] "%(count)s keer leuk"
 
 #, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s overeenkomst"
+msgstr[1] "%(count)s overeenkomsten"
+
+#, python-format
 msgid "%(count)s member"
 msgid_plural "%(count)s members"
 msgstr[0] "%(count)s lid"
@@ -274,6 +291,12 @@ msgid "%(count)s merge (%(categories)s categories into %(count)s)"
 msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "%(count)s samenvoeging (%(categories)s categorieën in %(count)s)"
 msgstr[1] "%(count)s samenvoegingen (%(categories)s categorieën naar %(count)s)"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minuut"
+msgstr[1] "%(count)s minuten"
 
 #, python-format
 msgid "%(count)s minute ago"
@@ -448,6 +471,12 @@ msgstr[0] "%(count)s video"
 msgstr[1] "%(count)s video's"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "%(count)s stemvoorbeeld over"
+msgstr[1] "%(count)s stemvoorbeelden over"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s week"
@@ -502,6 +531,10 @@ msgstr "%(date)s, %(time)s"
 #, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
+
+#, python-format
+msgid "%(duration)s left this week"
+msgstr "Nog %(duration)s over deze week"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
@@ -933,9 +966,6 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s extra site"
 msgstr[1] "+ %(value_1)s extra sites"
 
-msgid "+ New Folder..."
-msgstr "+ Nieuwe map..."
-
 msgid "/day"
 msgstr "/dag"
 
@@ -959,6 +989,12 @@ msgstr "Er zijn 28 tools beschikbaar voor lezen, acties, training en ontdekken."
 
 msgid "2x daily"
 msgstr "2 keer per dag"
+
+msgid "30 second preview"
+msgstr "Voorbeeld van 30 seconden"
+
+msgid "30s preview"
+msgstr "Preview van 30 s"
 
 msgid "3x daily"
 msgstr "3 keer per dag"
@@ -1001,6 +1037,9 @@ msgstr[1] "Nog <strong>%(count)s dagen</strong> over in je premiumproefperiode"
 msgid "A blurblog of shared stories"
 msgstr "Een blurblog met gedeelde artikelen"
 
+msgid "A clearer, closer sound"
+msgstr "Een helderder, warmer geluid"
+
 msgid "A folder of feeds read as one stream"
 msgstr "Een map met feeds die als één stroom worden gelezen"
 
@@ -1016,9 +1055,6 @@ msgstr "Bij een tweede poging wordt je aanwijzing gebruikt om het juiste patroon
 
 msgid "A single like overrides any number of dislikes"
 msgstr "Eén like weegt zwaarder dan een willekeurig aantal dislikes"
-
-msgid "A single super dislike overrides everything"
-msgstr "Eén ‘Vind ik helemaal niet leuk’ weegt zwaarder dan alles"
 
 msgid "A story diff with additions and deletions"
 msgstr "Een vergelijking van een artikel met toevoegingen en verwijderingen"
@@ -1049,6 +1085,10 @@ msgstr "ALLE CATEGORIEËN (%(value_1)s)"
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Zeker. Open de trainer en verwijder eventuele duimpjes omhoog of omlaag om deze opnieuw in te stellen."
 
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "Accent"
+
 msgid "Account"
 msgstr "Account"
 
@@ -1078,6 +1118,9 @@ msgstr "Map toevoegen"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet voor site toevoegen &amp; artikel delen"
+
+msgid "Add a classifier"
+msgstr "Een classifier toevoegen"
 
 msgid "Add a forwarding address"
 msgstr "Een doorstuuradres toevoegen"
@@ -1127,12 +1170,29 @@ msgstr "Toevoegen aan Chrome"
 msgid "Add to Firefox"
 msgstr "Toevoegen aan Firefox"
 
+msgid "Add to Up Next"
+msgstr "Toevoegen aan Hierna afspelen"
+
 msgid "Add to folder"
 msgstr "Toevoegen aan map"
+
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Voeg je bedrijfsnaam, btw-nummer, adres of andere tekst toe. Sla op om alle abonnementsfacturen bij te "
+"werken, ook die van eerdere betalingen."
+
+msgid "Added"
+msgstr "Toegevoegd"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s toegevoegd"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "Toegevoegd aan Hierna afspelen · %(position)s"
 
 msgid "Added!"
 msgstr "Toegevoegd!"
@@ -1154,6 +1214,10 @@ msgstr "Na het markeren van een feed/map als gelezen"
 
 msgid "Afternoon"
 msgstr "Middag"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "Leeftijd"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1317,6 +1381,9 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(succeeded)s van %(count)s samenvoeging toegepast (%(stories)s)"
 msgstr[1] "%(succeeded)s van de %(count)s samenvoegingen toegepast (%(stories)s)"
 
+msgid "Applies to"
+msgstr "Van toepassing op"
+
 msgid "Apply"
 msgstr "Toepassen"
 
@@ -1427,6 +1494,9 @@ msgstr "Auteurfilters hebben geen artikelen gevonden in %(context)s."
 msgid "Author filters found no stories in this view."
 msgstr "Auteursfilters hebben in deze weergave geen artikelen gevonden."
 
+msgid "Author name"
+msgstr "Naam van de auteur"
+
 msgid "Author: "
 msgstr "Auteur: "
 
@@ -1444,6 +1514,9 @@ msgstr "Automatisch als gelezen markeren"
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "Automatisch thema volgt het schema voor lichte en donkere weergave van je systeem."
+
+msgid "Auto-continue"
+msgstr "Automatisch doorgaan"
 
 msgid "Auto-follow<br>my friends"
 msgstr "Mijn vrienden<br>automatisch volgen"
@@ -1702,6 +1775,9 @@ msgstr "Categoriseren..."
 msgid "Category"
 msgstr "Categorie"
 
+msgid "Category or tag"
+msgstr "Categorie of tag"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Categorie: %(value_1)s"
@@ -1818,6 +1894,9 @@ msgstr "Filterbereik van de classifier"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Het bereik van de classifier vereist %(tier_link)s"
 
+msgid "Classifier type"
+msgstr "Type classifier"
+
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
 "Claude (Anthropic), GPT (OpenAI), Gemini (Google) en Grok (SpaceXSI). Je kunt er op elk moment tussen "
@@ -1846,6 +1925,9 @@ msgstr "Datumbereik wissen"
 
 msgid "Clear filter"
 msgstr "Filter wissen"
+
+msgid "Clear filters"
+msgstr "Filters wissen"
 
 msgid "Clear icon"
 msgstr "Pictogram wissen"
@@ -1876,6 +1958,9 @@ msgstr "Training sluiten en beginnen met lezen"
 
 msgid "Close player"
 msgstr "Speler sluiten"
+
+msgid "Closeness to the original voice"
+msgstr "Overeenkomst met de oorspronkelijke stem"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "Dubbele artikelen in al je feeds groeperen"
@@ -2008,6 +2093,9 @@ msgstr "Tekst kopiëren"
 msgid "Copy URL"
 msgstr "URL kopiëren"
 
+msgid "Could not add this classifier. Try again."
+msgstr "Deze classifier kan niet worden toegevoegd. Probeer het opnieuw."
+
 msgid "Could not disconnect this account. Please try again."
 msgstr "Kon dit account niet loskoppelen. Probeer het opnieuw."
 
@@ -2016,6 +2104,9 @@ msgstr "Kan geen RSS-feed vinden voor deze URL"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "Veelgestelde vragen konden niet worden geladen. Probeer het opnieuw."
+
+msgid "Couldn't load audio for this story."
+msgstr "Audio voor dit artikel laden is niet gelukt."
 
 msgid "Counting is difficult"
 msgstr "Tellen is lastig"
@@ -2049,6 +2140,10 @@ msgstr "Tegoed"
 
 msgid "Cursors"
 msgstr "Cursors"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "Aangepast"
 
 msgid "Custom Add Site URL"
 msgstr "Aangepaste URL voor site toevoegen"
@@ -2214,6 +2309,9 @@ msgstr "Verwijderd!"
 
 msgid "Deleting..."
 msgstr "Bezig met verwijderen..."
+
+msgid "Delivery"
+msgstr "Bezorging"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Beschrijf een artikel dat je zoekt, dan analyseren we de pagina opnieuw om het te vinden."
@@ -2624,6 +2722,9 @@ msgstr ""
 msgid "Exact phrase"
 msgstr "Exacte woordgroep"
 
+msgid "Exaggerates the voice's style"
+msgstr "Overdrijft de stijl van de stem"
+
 msgid "Examples"
 msgstr "Voorbeelden"
 
@@ -2659,6 +2760,10 @@ msgstr "Na 1 jaar verlopen"
 
 msgid "Export trained stories from folders"
 msgstr "Getrainde artikelen uit mappen exporteren"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "Expressief"
 
 msgid "Extras"
 msgstr "Extra's"
@@ -2900,6 +3005,9 @@ msgstr "Vrienden zoeken"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Vind je unieke NewsBlur-e-mailadres in het venster E-mailnieuwsbrieven"
 
+msgid "Fine-tune voice"
+msgstr "Stem verfijnen"
+
 msgid "Finish recording..."
 msgstr "Opname voltooien..."
 
@@ -2967,6 +3075,9 @@ msgstr "Volgen"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "Volg %(value_1)s"
+
+msgid "Follow along"
+msgstr "Volg mee"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "Volg elke website, ook websites die geen RSS-feed aanbieden."
@@ -3177,6 +3288,10 @@ msgstr "Games"
 msgid "Gaming"
 msgstr "Gamen"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "Geslacht"
+
 msgid "General"
 msgstr "Algemeen"
 
@@ -3343,6 +3458,9 @@ msgstr "Koppen"
 msgid "Health"
 msgstr "Gezondheid"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "Luister naar de eerste 30 seconden. Met Premium Archive kun je hele artikelen beluisteren."
+
 msgid "Hearts"
 msgstr "Hartjes"
 
@@ -3358,6 +3476,9 @@ msgstr "Verborgen pareltjes"
 msgid "Hide"
 msgstr "Verbergen"
 
+msgid "Hide "
+msgstr "Verbergen "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Alle functies voor delen, reacties en Blurblog verbergen"
 
@@ -3370,6 +3491,9 @@ msgstr "Geschiedenis verbergen"
 msgid "Hide matching stories"
 msgstr "Overeenkomende artikelen verbergen"
 
+msgid "Hide overrides everything, even likes"
+msgstr "‘Verbergen’ wint van alles, zelfs van ‘Vind ik leuk’"
+
 msgid "Hide sites"
 msgstr "Sites verbergen"
 
@@ -3381,6 +3505,9 @@ msgstr "Wijzigingen in artikelen verbergen"
 
 msgid "Highlight"
 msgstr "Markeren"
+
+msgid "Highlight the paragraph being read"
+msgstr "De voorgelezen alinea markeren"
 
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Markeer woorden in de titel om op specifieke woordgroepen te trainen."
@@ -3414,6 +3541,9 @@ msgstr "Hoe het werkt"
 
 msgid "How many stories can I save?"
 msgstr "Hoeveel artikelen kan ik bewaren?"
+
+msgid "How much emotion"
+msgstr "Hoeveel emotie"
 
 msgid "How often"
 msgstr "Hoe vaak"
@@ -3571,6 +3701,9 @@ msgstr "Ongeldige regex: %(error)s"
 msgid "Invoice"
 msgstr "Factuur"
 
+msgid "Invoice details"
+msgstr "Factuurgegevens"
+
 msgid "Is my data safe?"
 msgstr "Zijn mijn gegevens veilig?"
 
@@ -3726,6 +3859,24 @@ msgstr "Lijstweergave"
 msgid "List view"
 msgstr "Lijstweergave"
 
+msgid "Listen"
+msgstr "Luisteren"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "Luisteren duurde te lang. Probeer het zo opnieuw."
+
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Luister elke week 1 uur naar artikelen die worden voorgelezen"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Luister elke week 10 uur naar artikelen die worden voorgelezen"
+
+msgid "Listen to story"
+msgstr "Artikel voorlezen"
+
+msgid "Listen to this story"
+msgstr "Naar dit artikel luisteren"
+
 msgid "Loading PayPal..."
 msgstr "PayPal laden..."
 
@@ -3743,6 +3894,9 @@ msgstr "Feeds laden..."
 
 msgid "Loading more briefings..."
 msgstr "Meer briefings laden..."
+
+msgid "Loading voices..."
+msgstr "Stemmen laden..."
 
 msgid "Loading your blocklist settings..."
 msgstr "Je instellingen voor de blokkeerlijst laden..."
@@ -3940,6 +4094,15 @@ msgstr "Gevonden via verwante onderwerpen"
 msgid "Matches story titles containing all keywords"
 msgstr "Komt overeen met artikeltitels die alle trefwoorden bevatten"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Overeenkomende artikelen worden altijd verborgen, ook als er een Vind ik leuk overeenkomt"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Overeenkomende artikelen worden verborgen, tenzij er ook een Vind ik leuk overeenkomt"
+
+msgid "Matching stories show in Focus"
+msgstr "Overeenkomende artikelen verschijnen in Focus"
+
 msgid "May"
 msgstr "mei"
 
@@ -4010,6 +4173,9 @@ msgstr "Meer functies"
 
 msgid "More from Reddit"
 msgstr "Meer van Reddit"
+
+msgid "More voices"
+msgstr "Meer stemmen"
 
 msgid "Morning"
 msgstr "Ochtend"
@@ -4103,6 +4269,10 @@ msgstr "Naam"
 
 msgid "Native Apps"
 msgstr "Native apps"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "Natuurlijk"
 
 msgid "Natural Language Image Classifier"
 msgstr "Beeldclassifier voor natuurlijke taal"
@@ -4336,6 +4506,9 @@ msgstr "Geen overeenkomst in de titel"
 msgid "No matches for “%(value_1)s”"
 msgstr "Geen resultaten voor “%(value_1)s”"
 
+msgid "No matching folders or sites"
+msgstr "Geen overeenkomende mappen of sites"
+
 msgid "No merge suggestions"
 msgstr "Geen samenvoegsuggesties"
 
@@ -4435,6 +4608,9 @@ msgstr "Er is geen facturering op basis van gebruik ingesteld."
 
 msgid "No valid merge groups to apply"
 msgstr "Geen geldige samenvoeggroepen om toe te passen"
+
+msgid "No voices match these filters"
+msgstr "Geen stemmen komen overeen met deze filters"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "Niemand heeft zich tot nu toe geabonneerd op je gedeelde artikelen."
@@ -4806,6 +4982,9 @@ msgstr "Deze RSS/XML-feed parseren"
 msgid "Parsing..."
 msgstr "Bezig met verwerken..."
 
+msgid "Part of a story URL"
+msgstr "Deel van een artikel-URL"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Plak een URL en NewsBlur maakt een feed van de pagina, ook zonder RSS."
 
@@ -4818,6 +4997,15 @@ msgstr "Plak een website-URL..."
 #, python-format
 msgid "Pattern: %(value_1)s"
 msgstr "Patroon: %(value_1)s"
+
+msgid "Pause"
+msgstr "Pauzeren"
+
+msgid "Pause listening"
+msgstr "Luisteren pauzeren"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "Hardop voorlezen pauzeren of hervatten (y)"
 
 msgid "Payment history"
 msgstr "Betalingsgeschiedenis"
@@ -4849,6 +5037,12 @@ msgstr "Per site"
 msgid "Per-feed notification settings"
 msgstr "Meldingsinstellingen per feed"
 
+msgid "Phrase to match in story text"
+msgstr "Zin waarop wordt gezocht in de artikeltekst"
+
+msgid "Phrase to match in story titles"
+msgstr "Zin waarop wordt gezocht in de artikeltitels"
+
 msgid "Pick a tier & pay."
 msgstr "Kies een abonnement en betaal."
 
@@ -4869,6 +5063,9 @@ msgstr "Hierna afspelen"
 
 msgid "Play in Mini Media Player"
 msgstr "Afspelen in Mini Media Player"
+
+msgid "Play the next unread story"
+msgstr "Het volgende ongelezen artikel afspelen"
 
 msgid "Play/Pause"
 msgstr "Afspelen/pauzeren"
@@ -4954,6 +5151,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Met Premium Archive worden volledige artikelen voorgelezen."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4991,6 +5191,9 @@ msgstr "Premiumstatus"
 msgid "Premium users can make their blurblog private."
 msgstr "Premiumgebruikers kunnen hun blurblog privé maken."
 
+msgid "Preparing audio..."
+msgstr "Audio voorbereiden..."
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "Druk ergens op / om direct naar het zoekveld te gaan."
 
@@ -5011,6 +5214,15 @@ msgstr "Vorige site"
 
 msgid "Preview"
 msgstr "Voorbeeld"
+
+msgid "Preview this voice"
+msgstr "Deze stem beluisteren"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "Preview van %(seconds)s seconde. Met Premium Archive kun je volledige artikelen ontgrendelen"
+msgstr[1] "Preview van %(seconds)s seconden. Met Premium Archive kun je volledige artikelen ontgrendelen"
 
 msgid "Previous story"
 msgstr "Vorig artikel"
@@ -5112,6 +5324,9 @@ msgstr[1] ""
 "%(count)s artikelen in de wachtrij voor categorisering. Categorieën verschijnen terwijl artikelen worden "
 "verwerkt."
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "In de wachtrij. Klik om uit Hierna afspelen te verwijderen"
+
 msgid "Quick search for a site"
 msgstr "Snel zoeken naar een site"
 
@@ -5169,6 +5384,13 @@ msgstr ""
 "Lees alle feeds in een map als één doorlopende stroom, in chronologische volgorde. In combinatie met "
 "training toont de nieuwsstroom de beste artikelen uit al je abonnementen."
 
+msgid "Read aloud"
+msgstr "Voorlezen"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "Voorgelezen door %(voice)s"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "Lees meer op de NewsBlur-blog"
 
@@ -5183,6 +5405,9 @@ msgstr "Artikelen per map lezen"
 
 msgid "Read the whole story"
 msgstr "Lees het hele artikel"
+
+msgid "Read this story aloud (y)"
+msgstr "Dit artikel hardop voorlezen (y)"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "Lees ongelezen artikelen met: newsblur stories list"
@@ -5208,6 +5433,10 @@ msgstr "Opgeslagen artikel wordt gelezen..."
 
 msgid "Reading view"
 msgstr "Leesweergave"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "Leest je %(language)s artikelen voor"
 
 msgid "Real-time"
 msgstr "Realtime"
@@ -5241,6 +5470,10 @@ msgstr "Deze site aanbevelen"
 
 msgid "Recommended"
 msgstr "Aanbevolen"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "Aanbevolen voor %(language)s"
 
 msgid "Record voice question"
 msgstr "Spraakvraag opnemen"
@@ -5310,6 +5543,9 @@ msgstr "Afspeelpositie voor elke aflevering onthouden"
 msgid "Remove"
 msgstr "Verwijderen"
 
+msgid "Remove from Up Next"
+msgstr "Verwijderen uit Hierna afspelen"
+
 msgid "Remove this list"
 msgstr "Deze lijst verwijderen"
 
@@ -5318,6 +5554,9 @@ msgstr "Deze samenvoeggroep verwijderen"
 
 msgid "Removed"
 msgstr "Verwijderd"
+
+msgid "Removed from Up Next"
+msgstr "Verwijderd uit Hierna afspelen"
 
 msgid "Rename"
 msgstr "Naam wijzigen"
@@ -5377,6 +5616,10 @@ msgstr "Opnieuw instellen"
 
 msgid "Reset to original favicon"
 msgstr "Terugzetten naar het oorspronkelijke favicon"
+
+#, python-format
+msgid "Resets %(day)s"
+msgstr "Wordt opnieuw ingesteld %(day)s"
 
 msgid "Resetting..."
 msgstr "Wordt gereset..."
@@ -5616,6 +5859,9 @@ msgstr "Feed doorzoeken"
 msgid "Search folder"
 msgstr "Map doorzoeken"
 
+msgid "Search folders and sites"
+msgstr "Mappen en sites doorzoeken"
+
 msgid "Search for friends"
 msgstr "Vrienden zoeken"
 
@@ -5646,6 +5892,9 @@ msgstr "Subreddits zoeken (bijv. programming, news, gaming)..."
 
 msgid "Search the FAQ..."
 msgstr "Zoek in de veelgestelde vragen..."
+
+msgid "Search voices"
+msgstr "Stemmen zoeken"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "Zoek in één feed, een map of alles tegelijk"
@@ -5988,6 +6237,9 @@ msgstr "Meld je aan om je eigen feeds te lezen."
 msgid "Signup"
 msgstr "Registreren"
 
+msgid "Similarity"
+msgstr "Gelijkenis"
+
 msgid "Single Story"
 msgstr "Eén artikel"
 
@@ -6107,8 +6359,14 @@ msgstr "Ruimte tussen feeds en artikeltitels"
 msgid "Spanish"
 msgstr "Spaans"
 
+msgid "Speaker boost"
+msgstr "Stemversterking"
+
 msgid "Special Folders"
 msgstr "Speciale mappen"
+
+msgid "Speed"
+msgstr "Snelheid"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "Bestedingslimiet bereikt. Classifiers gepauzeerd tot de volgende cyclus."
@@ -6155,6 +6413,12 @@ msgstr ""
 "Geef de slogan van de site een opfrisbeurt. Als deze wordt gekozen, staat de site een week op het NewsBlur-"
 "dashboard."
 
+msgid "Stability"
+msgstr "Stabiliteit"
+
+msgid "Stability, similarity and style"
+msgstr "Stabiliteit, gelijkenis en stijl"
+
 #, python-format
 msgid "Stale %(date)s"
 msgstr "Inactief sinds %(date)s"
@@ -6196,12 +6460,22 @@ msgstr "Status"
 msgid "Stay on the same feed/folder"
 msgstr "Op dezelfde feed/map blijven"
 
+msgid "Steadier or more varied"
+msgstr "Gelijkmatiger of gevarieerder"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "Gelijkmatig"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "Stap %(step)s van %(count)s"
 
 msgid "Stop any time you like."
 msgstr "Je kunt op elk moment stoppen."
+
+msgid "Stop preview"
+msgstr "Voorbeeld stoppen"
 
 msgid "Stop recording"
 msgstr "Stop met opnemen"
@@ -6318,6 +6592,9 @@ msgstr "Voorbeeld van artikelinhoud"
 msgid "Story is always hidden"
 msgstr "Artikel is altijd verborgen"
 
+msgid "Story language"
+msgstr "Artikeltaal"
+
 msgid "Story layout"
 msgstr "Artikelindeling"
 
@@ -6344,6 +6621,13 @@ msgstr "Stream onderbroken. 10 seconden lang geen antwoord ontvangen."
 
 msgid "Stripe Id:"
 msgstr "Stripe-ID:"
+
+msgid "Style"
+msgstr "Stijl"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "Stijl"
 
 msgid "Submit Payment"
 msgstr "Betaling indienen"
@@ -6445,9 +6729,6 @@ msgstr "zo"
 
 msgid "Sunday"
 msgstr "zondag"
-
-msgid "Super Dislike "
-msgstr "Vind ik helemaal niet leuk "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
@@ -6556,6 +6837,10 @@ msgid "Text View"
 msgstr "Tekstweergave"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Voor tekstclassifiers is %(tier_link)s vereist"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "Tekstfilters hebben geen artikelen gevonden in %(context)s."
 
@@ -6611,6 +6896,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "De NewsBlur-blog"
 
+msgid "The audio stream was interrupted."
+msgstr "De audiostream is onderbroken."
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "De volledige %(icon)s-tekstweergave is een %(link_start)spremiumfunctie%(link_end)s."
@@ -6659,6 +6947,10 @@ msgstr ""
 
 msgid "Themes & Customization"
 msgstr "Thema's en aanpassingen"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "Daarna uit %(source)s"
 
 msgid "There are too many sites and stories to process. "
 msgstr "Er zijn te veel sites en artikelen om te verwerken. "
@@ -6714,6 +7006,9 @@ msgstr "Er is een fout opgetreden bij het uitloggen, au."
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Er is geen limiet. Bewaar zoveel artikelen als je wilt; ze blijven voor altijd bewaard."
+
+msgid "There's nothing to read aloud in this story."
+msgstr "Er staat niets in dit artikel om hardop voor te lezen."
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "Deze clusters zijn gevonden omdat andere abonnees deze feeds delen."
@@ -7081,6 +7376,10 @@ msgid "URL Regex"
 msgstr "URL-regex"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Voor URL-classifiers is %(tier_link)s vereist"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL-filters hebben geen artikelen gevonden in %(context)s."
 
@@ -7232,6 +7531,9 @@ msgstr[1] "Sites elke %(count)s seconden bijwerken..."
 msgid "Updating sites in real-time..."
 msgstr "Sites in realtime bijwerken..."
 
+msgid "Upgrade"
+msgstr "Upgraden"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "Upgrade naar %(value_1)s"
@@ -7376,8 +7678,14 @@ msgstr "Instellingen bekijken"
 msgid "Visual"
 msgstr "Visueel"
 
+msgid "Voice"
+msgstr "Stem"
+
 msgid "Voice recording failed. Please try again."
 msgstr "Spraakopname mislukt. Probeer het opnieuw."
+
+msgid "Voice settings"
+msgstr "Steminstellingen"
 
 msgid "Warning: This is actually permanent"
 msgstr "Waarschuwing: dit is echt permanent"
@@ -7435,6 +7743,9 @@ msgstr "Wekelijks"
 
 msgid "Welcome to NewsBlur"
 msgstr "Welkom bij NewsBlur"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "Wat Vind ik leuk, Vind ik niet leuk en Verbergen doen"
 
 msgid "What are the main arguments?"
 msgstr "Wat zijn de belangrijkste argumenten?"
@@ -7800,6 +8111,10 @@ msgstr "Je verwijzingsstatistieken"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "Je gearchiveerde artikelen blijven toegankelijk, maar voor nieuwe artikelen geldt het standaardbewaarbeleid."
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "Je gekozen stem is momenteel niet beschikbaar, dus %(voice)s leest dit artikel voor."
+
 msgid "Your cookie has expired — Please login again"
 msgstr "Je cookie is verlopen — log opnieuw in"
 
@@ -7974,6 +8289,10 @@ msgstr "vakbonden"
 msgid "like"
 msgstr "leuk"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "luisteren"
+
 msgid "local elections"
 msgstr "lokale verkiezingen"
 
@@ -8055,6 +8374,9 @@ msgstr "geabonneerd"
 
 msgid "supply chain"
 msgstr "toeleveringsketen"
+
+msgid "this list"
+msgstr "deze lijst"
 
 msgid "trade policy"
 msgstr "handelsbeleid"

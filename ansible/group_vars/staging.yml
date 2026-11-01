@@ -1,3 +1,8 @@
 ---
 git_branch: main
 disable_consul_services_ie_staging: yes
+# hstaging's disk is small and the repo's history holds gigabytes of store artwork, so staging keeps a
+# depth 1 checkout of just the branch it runs. Without the refspec, the git module answers a commit version
+# (deploy_migrate.yml's deploy_commit) with a full fetch of every branch and tag.
+git_depth: 1
+git_refspec: "+refs/heads/{{ git_branch }}:refs/remotes/origin/{{ git_branch }}"

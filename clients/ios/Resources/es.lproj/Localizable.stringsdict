@@ -218,6 +218,60 @@
 			<string>%@ artículos de Enfoque</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Te quedan %@ vistas previas gratuitas de artículos para hoy</string>
+			<key>one</key>
+			<string>Queda %@ vista previa gratuita de artículo hoy</string>
+			<key>other</key>
+			<string>Te quedan %@ vistas previas gratuitas de artículos para hoy</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ coincidencias</string>
+			<key>one</key>
+			<string>%@ coincidencia</string>
+			<key>other</key>
+			<string>%@ coincidencias</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Quedan %@ minutos este mes</string>
+			<key>one</key>
+			<string>Te queda %@ minuto este mes</string>
+			<key>other</key>
+			<string>Quedan %@ minutos este mes</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -396,6 +450,24 @@
 			<string>%@ artículo sin leer</string>
 			<key>other</key>
 			<string>%@ artículos sin leer</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Te quedan %@ vistas previas de voz</string>
+			<key>one</key>
+			<string>Queda %@ vista previa de voz</string>
+			<key>other</key>
+			<string>Quedan %@ vistas previas de voz</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>

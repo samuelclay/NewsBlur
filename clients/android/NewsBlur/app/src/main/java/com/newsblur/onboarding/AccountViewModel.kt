@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.BuildConfig
 import com.newsblur.discover.string
+import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
 import com.newsblur.network.AuthApi
 import com.newsblur.network.UserApi
@@ -159,6 +160,8 @@ class AccountViewModel
         fun theme() = prefs.getResolvedTheme(context)
 
         fun server(value: String) {
+            // A different server is a different account, so Listen's story can't keep playing (ListenManager.kt).
+            ListenManager.from(context).stopForAccountChange()
             if (value.isBlank()) {
                 APIConstants.unsetCustomServer()
                 prefs.clearCustomServer()

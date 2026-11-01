@@ -148,6 +148,16 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'listen'
+      scrape_interval: 5m
+      scrape_timeout: 60s
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/listen
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'media_player'
       static_configs:
         - targets: ['{{ monitor_server }}']

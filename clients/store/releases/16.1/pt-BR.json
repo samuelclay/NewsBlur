@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Conheça Ouvir, uma nova forma de aproveitar seus artigos.\n\nToque em Ouvir para escutar um artigo em um dos 21 idiomas. Acompanhe os parágrafos destacados, toque em um parágrafo para ir até ele e escolha uma voz para cada idioma. Ajuste a expressividade e a velocidade de reprodução de 0,5× a 3×.\n\nAdicione artigos à fila A seguir, reorganize a fila e continue ouvindo com a tela bloqueada ou enquanto usa outro app. Sua fila é sincronizada entre dispositivos. Continuar automaticamente passa para o próximo artigo não lido, e os artigos concluídos são marcados como lidos.\n\nOuvir está incluído no Premium Archive e no Premium Pro. Contas gratuitas e Premium podem experimentar prévias de 30 segundos dos artigos.\n\nEsta atualização também traz uma navegação mais fluida e corrige problemas de rolagem na grade de artigos."
+  },
+  "android": {
+    "release_notes": "Conheça Ouvir: artigos em áudio em 21 idiomas. Escolha vozes, acompanhe os parágrafos destacados, toque para avançar e ajuste a velocidade. Monte sua fila em A seguir, sincronizada entre dispositivos, e ouça com a tela bloqueada. A continuação automática reproduz o próximo artigo não lido. Escuta completa incluída no Premium Archive e no Premium Pro; prévias de 30 segundos para contas gratuitas e Premium."
+  },
+  "macos": {
+    "whats_new": "Esta atualização corrige um problema que podia deixar a lista de artigos carregando sem parar ao abrir uma notificação depois de fechar a janela do NewsBlur.\n\nOuvir agora está disponível no Mac. Ouça artigos em 21 idiomas, acompanhe os parágrafos destacados, escolha vozes, ajuste a velocidade de reprodução e coloque artigos na fila A seguir. Sua fila é sincronizada entre dispositivos. A escuta completa está incluída no Premium Archive e no Premium Pro; contas gratuitas e Premium podem experimentar prévias de 30 segundos.\n\nTambém inclui uma correção para a rolagem na grade de artigos."
+  }
+}

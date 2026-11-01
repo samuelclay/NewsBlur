@@ -1453,9 +1453,14 @@ import XCTest
         attachPanes("Landscape before Next: third article open and fourth title partly visible")
         titles.start()
         motion.start()
-        // StoryDetailLoadingTests.swift waits for the captured setup geometry to reach two displayed frames before starting a new UIKit animation.
-        for _ in 0..<100 where titles.sampleTimes.count < 3 { await delay(0.005) }
-        XCTAssertGreaterThanOrEqual(titles.sampleTimes.count, 3)
+        // StoryDetailLoadingTests.swift starts Next only once the captured setup geometry draws in a steady run of frames.
+        // Setup's WebKit work (WebContent launches and teardown run on the main thread) has stalled a CI runner for a
+        // second just after Next, swallowing the whole title and article animation; steady frames show the main thread
+        // is free before either animation starts.
+        try await requireState("Frames must arrive steadily before Next starts both animations; times=\(titles.sampleTimes)") {
+            let recent = titles.sampleTimes.suffix(8)
+            return recent.count == 8 && zip(recent, recent.dropFirst()).allSatisfy { $1 - $0 < 0.1 }
+        }
         XCTAssertEqual(pages.scrollView.layer.presentation()?.bounds.origin.x ?? -1, 2 * 660, accuracy: 0.5)
         XCTAssertEqual(pages.currentPage.pageIndex, 2)
         XCTAssertTrue(articlePages.allSatisfy(\.readyForPresentation))

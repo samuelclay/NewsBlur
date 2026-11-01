@@ -7203,6 +7203,81 @@ body {
     background-size: 16px;
 }
 
+/* Listen (apps/listen): reads the story aloud in the sidebar media player */
+.NB-sideoption.NB-feed-story-listen .NB-sideoption-icon-listen {
+    background-image: url("/media/embed/icons/nouns/listen.svg");
+    background-size: 15px;
+}
+
+.NB-sideoption.NB-feed-story-listen.NB-listen-current {
+    background-color: #dcdfd8;
+}
+
+.NB-sideoption.NB-feed-story-listen.NB-listen-current .NB-sideoption-title,
+.NB-sideoption.NB-feed-story-listen.NB-listen-current .NB-sideoption-icon {
+    color: #4a8530;
+    opacity: 1;
+}
+
+.NB-sideoption.NB-feed-story-listen.NB-listen-playing .NB-sideoption-icon-listen {
+    animation: NB-listen-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes NB-listen-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+
+/* The + beside Listen: shown while something else is loaded in the player */
+.NB-sideoption-listen-queue {
+    display: none;
+    order: 3;
+    width: 18px;
+    height: 18px;
+    margin: 0 6px 0 -2px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M7.25 3h1.5v4.25H13v1.5H8.75V13h-1.5V8.75H3v-1.5h4.25z' fill='%23808080'/%3E%3C/svg%3E") no-repeat center center;
+    background-size: 11px;
+    transition: background-color 0.14s;
+}
+
+.NB-sideoption.NB-listen-can-queue .NB-sideoption-listen-queue,
+.NB-sideoption.NB-listen-queued .NB-sideoption-listen-queue {
+    display: block;
+}
+
+.NB-sideoption-listen-queue:hover {
+    background-color: rgba(0, 0, 0, 0.14);
+}
+
+.NB-sideoption.NB-listen-queued .NB-sideoption-listen-queue {
+    background-color: rgba(107, 90, 214, 0.16);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M6.2 11.6L2.6 8l1.1-1.1 2.5 2.5 6.1-6.1 1.1 1.1z' fill='%236b5ad6'/%3E%3C/svg%3E");
+}
+
+.NB-sideoption.NB-listen-queued .NB-sideoption-listen-queue:hover {
+    background-color: rgba(107, 90, 214, 0.28);
+}
+
+.NB-sideoption-listen-preview-pill {
+    position: absolute;
+    top: -7px;
+    right: -4px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    font-size: 8px;
+    line-height: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    color: #fff;
+    text-shadow: none;
+    background-color: #8b5cf6;
+    pointer-events: none;
+}
+
+
 .NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
     background-image: url('/media/embed/icons/nouns/share.svg');
     background-size: 16px;
@@ -8671,12 +8746,17 @@ body {
 /* media/css/reader/reader.css — compact filter toolbar shown above story
    titles by media/js/newsblur/views/classifier_filter_banner_view.js. */
 
+/* The tools row spans under the actions as well, so "Back to trainer" only
+   shares the heading's row and never narrows the train and notify box. */
 .NB-classifier-filter-banner {
     --classifier-accent: #75628E;
     --classifier-tint: #F4F1F7;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "icon content actions"
+        "icon tools tools";
+    align-items: start;
     padding: 12px;
     border-bottom: 1px solid rgba(57, 51, 65, 0.16);
     box-shadow: inset 3px 0 0 var(--classifier-accent);
@@ -8716,11 +8796,13 @@ body {
 }
 
 .NB-classifier-filter-banner-icon {
+    grid-area: icon;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 30px;
     height: 30px;
+    margin-right: 10px;
     flex-shrink: 0;
     color: var(--classifier-accent);
     background: rgba(255, 255, 255, 0.58);
@@ -8734,7 +8816,7 @@ body {
 }
 
 .NB-classifier-filter-banner-content {
-    flex: 1;
+    grid-area: content;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -8780,11 +8862,13 @@ body {
 }
 
 .NB-classifier-filter-banner-tools {
+    grid-area: tools;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 7px;
-    margin-top: 4px;
+    margin-top: 7px;
     opacity: 1;
 }
 .NB-classifier-filter-view-section,
@@ -8823,8 +8907,12 @@ body {
     letter-spacing: 0.055em;
     text-transform: uppercase;
 }
+/* Wraps only as a last resort, when a pane or a translation is too narrow for
+   the container queries below, so no button ever hangs outside its box. */
 .NB-classifier-filter-segmented {
     display: inline-flex;
+    flex-wrap: wrap;
+    max-width: 100%;
     overflow: hidden;
     padding: 1px;
     border: 0;
@@ -9000,10 +9088,14 @@ body {
     outline: 0;
 }
 
+/* The negative margins center the 32px buttons on the heading's first line
+   without making the heading row any taller. */
 .NB-classifier-filter-banner-actions {
+    grid-area: actions;
     display: flex;
     align-items: center;
     gap: 4px;
+    margin: -7px 0 -7px 10px;
     flex-shrink: 0;
 }
 
@@ -9237,10 +9329,13 @@ body {
     .NB-classifier-filter-narrow-hint {
         display: block;
     }
+    /* No grid area, so the banner's padding box places it rather than the area */
     .NB-classifier-filter-banner-actions {
+        grid-area: auto;
         position: absolute;
         top: 6px;
         right: 4px;
+        margin: 0;
     }
     .NB-classifier-filter-banner-clear {
         width: 26px;
@@ -10631,7 +10726,7 @@ form.opml_import_form input {
 
 .NB-modal-classifiers .NB-classifier-container .NB-classifier-filter-view-btn {
     position: static;
-    margin: 0 0 0 2px;
+    margin: 0 4px 0 2px;
 }
 
 .NB-classifier-container .NB-classifier-count {
@@ -10858,6 +10953,770 @@ form.opml_import_form input {
 
 .NB-manage-training-content .NB-modal-submit-bottom {
     flex-shrink: 0;
+}
+
+.NB-manage-training-empty-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Manage tab add panel: type a classifier without finding it in a story (reader_classifier.js).
+   Row one is what to match (type, phrase, regex) fused into one field; row two is where it
+   applies and the Like / Dislike buttons that save it. */
+.NB-manage-add {
+    margin: 0 12px 14px;
+    padding: 10px 12px 12px;
+    background-color: #F7F6F1;
+    border: 1px solid #E4E2D8;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+/* Site by Site pages put the panel right under the site's title bar */
+.NB-tab-sitebyside .NB-manage-add {
+    margin-top: 12px;
+}
+
+.NB-manage-add-heading {
+    margin: 0 0 8px 2px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8C8A80;
+}
+
+.NB-manage-add-match {
+    display: flex;
+    align-items: stretch;
+    height: 34px;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.NB-manage-add-match:focus-within {
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
+}
+
+/* Regex on: the story trainer's regex input look (.NB-classifier-input-regex-mode) */
+.NB-manage-add-match.NB-regex-mode {
+    background-color: #fdfcff;
+    border-color: #b8b0ff;
+}
+
+.NB-manage-add-match.NB-regex-mode:focus-within {
+    border-color: #7B68EE;
+    box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-input {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+}
+
+.NB-manage-add-regex-badge {
+    display: none;
+    align-self: center;
+    margin-left: 10px;
+    padding: 3px 6px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: white;
+    background-color: #7B68EE;
+    border-radius: 3px;
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-regex-badge {
+    display: inline-block;
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-input {
+    padding-left: 8px;
+}
+
+.NB-manage-add-type {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23909088' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.NB-manage-add-type {
+    flex: 0 0 auto;
+    padding: 0 28px 0 12px;
+    font-weight: 600;
+    color: #505050;
+    background-color: #FAFAF7;
+    border: none;
+    border-right: 1px solid #E4E2D8;
+}
+
+.NB-manage-add-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 12px;
+    font-size: 13px;
+    color: #303030;
+    background: transparent;
+    border: none;
+}
+
+.NB-manage-add-type:focus,
+.NB-manage-add-input:focus {
+    outline: none;
+}
+
+.NB-manage-add-type:focus-visible {
+    background-color: #F0EFE8;
+}
+
+.NB-manage-add-input::placeholder {
+    color: #A8A69C;
+}
+
+.NB-manage-add-regex {
+    flex: 0 0 auto;
+    width: 40px;
+    padding: 0;
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    font-weight: bold;
+    color: #A8A69C;
+    background: transparent;
+    border: none;
+    border-left: 1px solid #E4E2D8;
+    cursor: pointer;
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.NB-manage-add-regex:hover {
+    color: #5C6BC0;
+    background-color: #F3F4FB;
+}
+
+.NB-manage-add-regex.NB-active {
+    color: white;
+    background-color: #7B68EE;
+    border-left-color: #7B68EE;
+}
+
+.NB-manage-add-regex:focus-visible {
+    outline: 2px solid #7986CB;
+    outline-offset: -2px;
+}
+
+.NB-manage-add-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 10px;
+}
+
+.NB-manage-add-scope-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.NB-manage-add-scope-label {
+    font-size: 12px;
+    color: #8C8A80;
+    white-space: nowrap;
+}
+
+.NB-manage-add-notice {
+    flex: 1 1 120px;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+/* Like / Dislike / Hide toggle, in the pill colors of the classifier it makes */
+.NB-manage-add-sentiments {
+    display: inline-flex;
+    height: 30px;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.NB-manage-add-sentiment {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
+    border-left: 1px solid #E4E2D8;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.NB-manage-add-sentiment:first-child {
+    border-left: none;
+    padding-left: 13px;
+}
+
+.NB-manage-add-sentiment:last-child {
+    padding-right: 13px;
+}
+
+.NB-manage-add-sentiment:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: -2px;
+}
+
+/* Thumbs are masks filled with the text color, so they follow every state and theme */
+.NB-manage-add-like .NB-manage-add-sentiment-icon,
+.NB-manage-add-dislike .NB-manage-add-sentiment-icon,
+.NB-manage-add-hide-icon > span {
+    width: 14px;
+    height: 14px;
+    background-color: currentColor;
+    -webkit-mask: url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat center / contain;
+    mask: url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat center / contain;
+}
+
+.NB-manage-add-like .NB-manage-add-sentiment-icon {
+    -webkit-mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
+    mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
+}
+
+/* Hide is the super dislike: two stacked thumbs down, like the filter banner's Hide button */
+.NB-manage-add-hide-icon {
+    position: relative;
+    width: 17px;
+    height: 15px;
+}
+
+.NB-manage-add-hide-icon > span {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+}
+
+.NB-manage-add-hide-icon-back {
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+}
+
+.NB-manage-add-hide-icon-front {
+    right: 0;
+    bottom: 0;
+}
+
+/* The pill colors: like green, dislike red, and the super dislike's deeper crimson */
+.NB-manage-add-like {
+    color: #2E8229;
+}
+
+.NB-manage-add-dislike {
+    color: #A90103;
+}
+
+.NB-manage-add-super-dislike {
+    color: #6B0001;
+}
+
+.NB-manage-add-like:hover {
+    background-color: #EEF6EC;
+}
+
+.NB-manage-add-dislike:hover {
+    background-color: #FBEDED;
+}
+
+.NB-manage-add-super-dislike:hover {
+    background-color: #F6EAEA;
+}
+
+.NB-manage-add-sentiment.NB-active {
+    color: white;
+}
+
+.NB-manage-add-like.NB-active {
+    background-color: #34912E;
+}
+
+.NB-manage-add-dislike.NB-active {
+    background-color: #A90103;
+}
+
+.NB-manage-add-super-dislike.NB-active {
+    background-color: #6B0001;
+}
+
+.NB-manage-add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 18px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background-color: #34912E;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, opacity 0.15s;
+}
+
+.NB-manage-add-button-dislike {
+    background-color: #A90103;
+}
+
+.NB-manage-add-button-super-dislike {
+    background-color: #6B0001;
+}
+
+.NB-manage-add-button-like:hover:not(:disabled) {
+    background-color: #2E8228;
+}
+
+.NB-manage-add-button-dislike:hover:not(:disabled) {
+    background-color: #960102;
+}
+
+.NB-manage-add-button-super-dislike:hover:not(:disabled) {
+    background-color: #5A0001;
+}
+
+.NB-manage-add-button:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: 2px;
+}
+
+.NB-manage-add-button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* Shows that Enter presses Add while the phrase field has focus */
+.NB-manage-add-enter-hint {
+    display: none;
+    font-weight: normal;
+    opacity: 0.75;
+}
+
+.NB-manage-add-match:focus-within ~ .NB-manage-add-actions .NB-manage-add-button:not(:disabled) .NB-manage-add-enter-hint {
+    display: inline;
+}
+
+/* The ⓘ beside Like / Dislike / Hide opens what each one does (make_manage_add_opinions_sheet) */
+.NB-manage-add-opinions-info {
+    margin-left: -6px;
+    padding: 0 2px;
+    font-size: 15px;
+    line-height: 30px;
+    color: #A8A69C;
+    background: transparent;
+    border: none;
+    cursor: help;
+}
+
+.NB-manage-add-opinions-info:hover {
+    color: #606060;
+}
+
+.NB-manage-add-opinions-info:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: 1px;
+    border-radius: 50%;
+}
+
+.NB-manage-add-opinion {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 6px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.NB-manage-add-opinion-name {
+    flex: 0 0 64px;
+    font-weight: bold;
+}
+
+.NB-manage-add-opinion-like .NB-manage-add-opinion-name {
+    color: #2E8229;
+}
+
+.NB-manage-add-opinion-dislike .NB-manage-add-opinion-name {
+    color: #A90103;
+}
+
+.NB-manage-add-opinion-super-dislike .NB-manage-add-opinion-name {
+    color: #6B0001;
+}
+
+.NB-manage-add-opinion-description {
+    color: #505050;
+}
+
+/* Folder and site picker (views/feed_folder_picker_view.js): a searchable list with folder
+   icons and favicons, used for every folder and site chooser. The select it wraps stays in
+   the page as the form field, hidden. */
+select.NB-feed-folder-picker-select {
+    display: none !important;
+}
+
+.NB-feed-folder-picker {
+    position: relative;
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+/* A select with no width from CSS: wide enough for a folder name */
+.NB-feed-folder-picker-fit {
+    min-width: 160px;
+}
+
+.NB-manage-add .NB-feed-folder-picker {
+    width: 260px;
+}
+
+.NB-feed-folder-picker-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    padding: 0 28px 0 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #303030;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23909088' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1px solid #D3D1C7;
+    border-radius: 6px;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-align: left;
+}
+
+.NB-feed-folder-picker-trigger:focus-visible,
+.NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
+    outline: none;
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
+}
+
+.NB-feed-folder-picker-trigger-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-feed-folder-picker-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.NB-feed-folder-picker-icon:empty {
+    display: none;
+}
+
+.NB-feed-folder-picker-icon svg,
+.NB-feed-folder-picker-icon img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border-radius: 2px;
+}
+
+.NB-feed-folder-picker-icon .NB-folder-icon-colored,
+.NB-feed-folder-picker-icon .NB-feed-icon-colored {
+    display: block;
+    width: 16px;
+    height: 16px;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+.NB-feed-folder-picker-icon-global svg {
+    color: #8B5CF6;
+}
+
+.NB-feed-folder-picker-popover {
+    z-index: 100002;
+    padding: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+}
+
+.NB-feed-folder-picker-search {
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin: 0 0 6px;
+    padding: 0 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #303030;
+    background-color: #FAFAF7;
+    border: 1px solid #E4E2D8;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.NB-feed-folder-picker-search:focus {
+    outline: none;
+    border-color: #50A050;
+}
+
+.NB-feed-folder-picker-search::placeholder {
+    color: #A8A69C;
+}
+
+/* Positioned so option offsetTop, used to keep the active option in view, is measured from the list */
+.NB-feed-folder-picker-list {
+    position: relative;
+    max-height: 300px;
+    overflow-y: auto;
+    outline: none;
+}
+
+.NB-feed-folder-picker-group {
+    padding: 8px 10px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8C8A80;
+}
+
+.NB-feed-folder-picker-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #303030;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.NB-feed-folder-picker-option.NB-hidden,
+.NB-feed-folder-picker-group.NB-hidden {
+    display: none;
+}
+
+.NB-feed-folder-picker-option.NB-active {
+    background-color: #EEF0E8;
+}
+
+.NB-feed-folder-picker-option[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* The title keeps its room; the parent path shown while searching gives way first */
+.NB-feed-folder-picker-option-title {
+    flex: 0 1 auto;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Parent folder, shown only while searching so same-named folders can be told apart */
+.NB-feed-folder-picker-option-path {
+    display: none;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    color: #A8A69C;
+}
+
+.NB-feed-folder-picker-popover.NB-searching .NB-feed-folder-picker-option-path {
+    display: inline;
+}
+
+.NB-feed-folder-picker-popover.NB-searching .NB-feed-folder-picker-option {
+    padding-inline-start: 10px !important;
+}
+
+.NB-feed-folder-picker-option[aria-selected="true"] {
+    font-weight: 600;
+}
+
+.NB-feed-folder-picker-option[aria-selected="true"]::after {
+    content: "\2713";
+    margin-left: auto;
+    padding-left: 8px;
+    font-weight: bold;
+    color: #34912E;
+}
+
+.NB-feed-folder-picker-empty {
+    padding: 10px;
+    font-size: 12px;
+    color: #8C8A80;
+}
+
+/* The picker in each place a folder or site select used to be, sized to its row.
+   Small: the add site popover, Organize Sites, Preferences and the briefing popover. */
+.NB-add-folder-row .NB-feed-folder-picker-trigger,
+.NB-modal-organizer .NB-feed-folder-picker-trigger,
+.NB-modal-preferences .NB-feed-folder-picker-trigger,
+.NB-briefing-popover .NB-feed-folder-picker-trigger,
+.NB-briefing-onboarding .NB-feed-folder-picker-trigger,
+.NB-badge-folders .NB-feed-folder-picker-trigger {
+    height: 26px;
+    gap: 6px;
+    padding: 0 24px 0 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    background-position: right 8px center;
+}
+
+.NB-add-folder-row .NB-feed-folder-picker-trigger {
+    height: 24px;
+    color: #555;
+    background-color: #FAFAFA;
+    border-color: #D8D8D8;
+}
+
+/* Add + Discover's own folder selects (views/add_site_view.js) */
+.NB-feed-folder-picker-for-NB-add-site-folder-select .NB-feed-folder-picker-trigger {
+    color: #333;
+    border-color: #D0D0D0;
+}
+
+.NB-add-site-webfeed-folder-row .NB-feed-folder-picker-trigger,
+.NB-feed-badge-actions-add-site > .NB-feed-folder-picker .NB-feed-folder-picker-trigger,
+.NB-trending-feed-card .NB-feed-badge-actions > .NB-feed-folder-picker .NB-feed-folder-picker-trigger {
+    height: 34px;
+    padding: 0 28px 0 12px;
+}
+
+.NB-add-site-google-news-input-row .NB-feed-folder-picker-trigger {
+    height: 40px;
+    padding: 0 28px 0 12px;
+    font-size: 14px;
+    border: 2px solid #D0D4D8;
+    border-radius: 8px;
+}
+
+/* Tiny: the manage menu's Move to folder row, and the folder half of Add + Discover's
+   folder-and-Add pills, which have no border of their own */
+.NB-menu-manage-confirm .NB-feed-folder-picker-trigger,
+.NB-add-site-card-add-group .NB-feed-folder-picker-trigger,
+.NB-badge-folder-add-group .NB-feed-folder-picker-trigger {
+    height: 20px;
+    gap: 5px;
+    padding: 0 18px 0 5px;
+    font-size: 11px;
+    border-radius: 3px;
+    background-position: right 6px center;
+}
+
+.NB-menu-manage-confirm .NB-feed-folder-picker-icon,
+.NB-add-site-card-add-group .NB-feed-folder-picker-icon,
+.NB-badge-folder-add-group .NB-feed-folder-picker-icon,
+.NB-menu-manage-confirm .NB-feed-folder-picker-icon > *,
+.NB-add-site-card-add-group .NB-feed-folder-picker-icon > *,
+.NB-badge-folder-add-group .NB-feed-folder-picker-icon > * {
+    flex-basis: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.NB-menu-manage-confirm .NB-feed-folder-picker-trigger {
+    border-color: #A0A0A0;
+}
+
+.NB-add-site-card-add-group .NB-feed-folder-picker-trigger,
+.NB-badge-folder-add-group .NB-feed-folder-picker-trigger {
+    height: 22px;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+/* Focused and open keep their green border in every one of those places */
+.NB-feed-folder-picker .NB-feed-folder-picker-trigger:focus-visible,
+.NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
+    border-color: #50A050;
+}
+
+.NB-manage-add-notice .NB-classifier-scope-notice,
+.NB-manage-add-notice .NB-classifier-archive-notice,
+.NB-manage-add-notice .NB-classifier-url-notice,
+.NB-manage-add-notice .NB-classifier-pro-notice {
+    display: inline;
+    opacity: 1;
+    transform: none;
+    animation: none;
+    color: #807060;
+    white-space: normal;
+}
+
+.NB-manage-add-notice .NB-classifier-url-notice a {
+    color: #d97706;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.NB-manage-add-notice .NB-classifier-url-notice a:hover {
+    text-decoration: underline;
+}
+
+.NB-manage-add-error {
+    color: #B91C1C;
+}
+
+.NB-manage-add-status {
+    color: #4a8f29;
+    font-weight: bold;
+}
+
+.NB-manage-classifier-item.NB-manage-classifier-item-added .NB-classifier,
+.NB-classifier-container.NB-classifier-container-added .NB-classifier {
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.45);
+    transition: box-shadow 0.3s ease-out;
 }
 
 /* Manage tab filter bar */
@@ -11209,14 +12068,18 @@ form.opml_import_form input {
     gap: 4px;
 }
 
+/* The pill's usual margins move to the item, so the matching-stories button
+   sits right beside its own pill and centered on it, with the row's spacing
+   after the button instead of between the pill and the button. */
 .NB-manage-classifier-item {
     display: inline-flex;
     align-items: center;
+    margin: 2px 6px 6px 0;
 }
 
-.NB-manage-classifier-item .NB-classifier {
+.NB-classifiers .NB-manage-classifier-item .NB-classifier {
     font-size: 12px;
-    margin-right: 0;
+    margin: 0;
 }
 
 /* Manage tab submit area */
@@ -11437,6 +12300,7 @@ form.opml_import_form input {
 /* ================ */
 
 .NB-media-player {
+    position: relative;
     border-bottom: 1px solid #dbdbda;
     background-color: #f6f7f5;
     background-image: linear-gradient(180deg, #f8f9f6, #f0f1ee);
@@ -11615,7 +12479,8 @@ form.opml_import_form input {
 
 .NB-media-player-play-pause,
 .NB-media-player-skip-back,
-.NB-media-player-skip-forward {
+.NB-media-player-skip-forward,
+.NB-media-player-next {
     width: 26px;
     height: 26px;
     cursor: pointer;
@@ -11634,17 +12499,27 @@ form.opml_import_form input {
 
 .NB-media-player-play-pause:hover,
 .NB-media-player-skip-back:hover,
-.NB-media-player-skip-forward:hover {
+.NB-media-player-skip-forward:hover,
+.NB-media-player-next:hover {
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.06);
 }
 
 .NB-media-player-play-pause svg,
 .NB-media-player-skip-back svg,
-.NB-media-player-skip-forward svg {
+.NB-media-player-skip-forward svg,
+.NB-media-player-next svg {
     width: 14px;
     height: 14px;
     fill: #404040;
+}
+
+/* reader.css: Next story (Listen only) dims when neither Up Next nor the list has another story. */
+.NB-media-player-next.NB-disabled,
+.NB-media-player-next.NB-disabled:hover {
+    opacity: 0.25;
+    cursor: default;
+    background-color: transparent;
 }
 
 .NB-media-player-play-pause svg {
@@ -11714,6 +12589,32 @@ form.opml_import_form input {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     flex: 1;
+}
+
+/* Listen: "Preparing audio..." reads in place of the times while a segment loads, on the same
+   one line, so the player keeps its height (media_player_view.js update_listen_loading_display) */
+.NB-media-player-time-loading {
+    display: none;
+}
+
+.NB-media-player-time.NB-listen-loading {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.NB-media-player-time.NB-listen-loading .NB-media-player-time-current,
+.NB-media-player-time.NB-listen-loading .NB-media-player-time-separator,
+.NB-media-player-time.NB-listen-loading .NB-media-player-time-duration {
+    display: none;
+}
+
+.NB-media-player-time.NB-listen-loading .NB-media-player-time-loading {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    animation: NB-listen-banner-in 0.25s ease-out;
 }
 
 .NB-media-player-speed {
@@ -12267,6 +13168,735 @@ form.opml_import_form input {
 .NB-media-settings-popover .segmented-control li {
     padding: 3px 8px;
     font-size: 11px;
+}
+
+/* ========== */
+/* = Listen = */
+/* ========== */
+
+/* Media player: stories read aloud (media_player_view.js) */
+.NB-media-player-icon.NB-media-player-icon-listen {
+    background: linear-gradient(135deg, #7c6be0, #5a48c4);
+}
+
+.NB-media-player-listen-voice {
+    font-size: 10px;
+    color: #8a8a8a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.NB-media-player-listen-voice:hover {
+    color: #505050;
+    text-decoration: underline;
+}
+
+.NB-media-player-listen-voice-settings {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0.4;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.NB-media-player-listen-voice-settings + .NB-media-player-settings {
+    margin-left: 0;
+}
+
+.NB-media-player-listen-voice-settings:hover {
+    opacity: 0.75;
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.NB-media-player-listen-voice-settings svg {
+    width: 15px;
+    height: 15px;
+    fill: #505050;
+}
+
+.NB-media-player-listen-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    line-height: 13px;
+    color: #5a5a5a;
+    background-color: rgba(0, 0, 0, 0.04);
+    animation: NB-listen-banner-in 0.25s ease-out;
+}
+
+.NB-media-player-listen-banner.NB-empty {
+    display: none;
+}
+
+@keyframes NB-listen-banner-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.NB-media-player-listen-banner.NB-listen-banner-preview,
+.NB-media-player-listen-banner.NB-listen-banner-upgrade {
+    color: #4b3ba8;
+    background-color: rgba(124, 107, 224, 0.11);
+}
+
+.NB-media-player-listen-banner.NB-listen-banner-error {
+    color: #a33a2a;
+    background-color: rgba(200, 70, 50, 0.09);
+}
+
+.NB-media-player-listen-message {
+    flex: 1 1 140px;
+    min-width: 0;
+}
+
+.NB-media-player-listen-countdown {
+    flex-shrink: 0;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-media-player-listen-upgrade,
+.NB-media-player-listen-retry {
+    flex-shrink: 0;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    background-color: #6b5ad6;
+    transition: background-color 0.15s;
+}
+
+.NB-media-player-listen-upgrade:hover {
+    background-color: #5a48c4;
+}
+
+.NB-media-player-listen-retry {
+    background-color: #b5523f;
+}
+
+.NB-media-player-listen-retry:hover {
+    background-color: #9c4433;
+}
+
+/* Up Next: what Listen auto-continues to, under your own queue */
+.NB-media-player-upcoming-header {
+    padding: 6px 10px 2px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #a8a8a8;
+}
+
+.NB-media-player-upcoming-list li {
+    padding-left: 8px;
+    color: #909090;
+}
+
+.NB-media-player-upcoming-list li .NB-queue-favicon {
+    opacity: 0.7;
+}
+
+.NB-media-player-upcoming-list li:hover {
+    color: #505050;
+}
+
+.NB-media-player-upcoming-list li:hover .NB-queue-favicon {
+    opacity: 1;
+}
+
+/* A short confirmation over the player, like "Added to Up Next · 2nd" */
+.NB-media-player-toast {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    z-index: 5;
+    padding: 5px 11px;
+    border-radius: 12px;
+    font-size: 11px;
+    line-height: 14px;
+    white-space: nowrap;
+    color: #fff;
+    background-color: rgba(48, 48, 48, 0.92);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    transform: translate(-50%, -4px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+}
+
+.NB-media-player-toast.NB-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* Follow along: the paragraph being read (listen_follow_along.js) */
+.NB-listen-highlight {
+    background-color: rgba(124, 107, 224, 0.12);
+    box-shadow: 0 0 0 4px rgba(124, 107, 224, 0.12);
+    border-radius: 3px;
+    transition: background-color 0.4s ease-out, box-shadow 0.4s ease-out;
+}
+
+a.NB-feed-story-title.NB-listen-highlight {
+    box-shadow: 0 0 0 3px rgba(124, 107, 224, 0.12);
+}
+
+.NB-listen-playing-story .NB-feed-story-content .NB-listen-paragraph {
+    cursor: pointer;
+}
+
+.NB-listen-playing-story .NB-feed-story-content .NB-listen-paragraph:not(.NB-listen-highlight):hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.03);
+    border-radius: 3px;
+}
+
+/* Voice settings popover (listen_settings_popover.js). It also carries the
+   .NB-media-settings-popover class, so sections, titles, descriptions and segmented
+   controls match the player settings popover. */
+.NB-listen-settings {
+    padding: 2px 0 8px;
+}
+
+/* reader.css: A wider label column than the player settings keeps titles like Auto-continue on
+   one line next to the wider Listen controls. */
+.NB-listen-settings-popover .NB-popover-section-label {
+    width: 124px;
+}
+
+/* reader.css: Delivery gains a fourth segment, Custom, after fine-tuning. */
+.NB-listen-settings-popover .NB-listen-control[data-setting="delivery"] li {
+    padding: 3px 6px;
+}
+
+.NB-listen-settings-popover .NB-popover-section.NB-listen-voice-section {
+    align-items: center;
+    border-bottom: none;
+    padding-bottom: 8px;
+}
+
+.NB-listen-voice-section .NB-popover-section-label {
+    width: auto;
+    flex: 1;
+}
+
+.NB-listen-voice-section .NB-popover-section-controls {
+    flex: 0 1 auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Dropdowns styled like the segmented controls: the language and the filters */
+.NB-listen-select {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.NB-listen-select select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 3px 20px 3px 8px;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 16px;
+    color: #61635e;
+    background-color: rgba(0, 0, 0, 0.04);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.14s ease-in-out, color 0.14s ease-in-out;
+}
+
+.NB-listen-select select:hover {
+    background-color: #e5e6e2;
+}
+
+.NB-listen-select select:focus {
+    outline: none;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.NB-listen-select:after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    margin-top: -2px;
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+    border-top: 4px solid #909090;
+    pointer-events: none;
+}
+
+.NB-listen-language select {
+    max-width: 170px;
+}
+
+.NB-listen-filter.NB-active select {
+    color: #131313;
+    background-color: #d5d6d2;
+    padding-right: 22px;
+}
+
+.NB-listen-filter.NB-active:after {
+    display: none;
+}
+
+.NB-listen-filter-clear {
+    position: absolute;
+    right: 3px;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.NB-listen-filter-clear svg {
+    width: 12px;
+    height: 12px;
+    fill: #606060;
+}
+
+.NB-listen-filter-clear:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Voice picker: search, one row of filters and a fixed-height list */
+.NB-listen-voice-browser {
+    margin: 0 16px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-listen-search {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 6px;
+    padding: 5px 9px;
+    font-family: inherit;
+    font-size: 12px;
+    color: #303030;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    outline: none;
+}
+
+.NB-listen-search:focus {
+    border-color: rgba(0, 0, 0, 0.22);
+}
+
+
+.NB-listen-filters {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.NB-listen-filter {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.NB-listen-filter select {
+    padding-left: 6px;
+    padding-right: 14px;
+}
+
+.NB-listen-filter:after {
+    right: 6px;
+}
+
+.NB-listen-voice-list {
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+.NB-listen-voice-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #a0a0a0;
+    background-color: #f7f7f5;
+}
+
+.NB-listen-voice-header-count {
+    font-weight: normal;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.NB-listen-voice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 8px;
+    cursor: pointer;
+    transition: background-color 0.12s;
+}
+
+.NB-listen-voice + .NB-listen-voice {
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.NB-listen-voice:hover {
+    background-color: rgba(0, 0, 0, 0.025);
+}
+
+.NB-listen-voice.NB-selected {
+    background-color: rgba(107, 90, 214, 0.07);
+}
+
+.NB-listen-voice-check {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.NB-listen-voice-check svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+    fill: #6b5ad6;
+}
+
+.NB-listen-voice-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-listen-voice-title {
+    font-size: 12px;
+    line-height: 16px;
+    color: #303030;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-listen-voice-name {
+    font-weight: 600;
+}
+
+.NB-listen-voice-description {
+    margin-left: 6px;
+    color: #8a8a8a;
+}
+
+.NB-listen-voice-traits {
+    font-size: 10px;
+    line-height: 14px;
+    color: #a0a0a0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-listen-voice-preview {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #808080;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.NB-listen-voice-preview svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+}
+
+.NB-listen-voice:hover .NB-listen-voice-preview,
+.NB-listen-voice-preview.NB-loading,
+.NB-listen-voice-preview.NB-playing {
+    opacity: 1;
+}
+
+.NB-listen-voice-preview:hover,
+.NB-listen-voice-preview.NB-playing {
+    color: #404040;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.NB-listen-spinner {
+    width: 11px;
+    height: 11px;
+    box-sizing: border-box;
+    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    border-top-color: #707070;
+    border-radius: 50%;
+    animation: NB-listen-spin 0.7s linear infinite;
+}
+
+@keyframes NB-listen-spin {
+    to { transform: rotate(360deg); }
+}
+
+.NB-listen-voice-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    font-size: 11px;
+    color: #a0a0a0;
+}
+
+.NB-listen-voice-empty {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #909090;
+    text-align: center;
+}
+
+.NB-listen-filters-reset,
+.NB-listen-usage-upgrade {
+    color: #707070;
+    text-decoration: underline;
+    text-decoration-color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.NB-listen-filters-reset {
+    font-size: 11px;
+}
+
+.NB-listen-filters-reset:hover,
+.NB-listen-usage-upgrade:hover {
+    color: #303030;
+    text-decoration-color: currentColor;
+}
+
+.NB-listen-status {
+    display: none;
+    margin-top: 6px;
+    font-size: 10px;
+    line-height: 14px;
+    color: #a0a0a0;
+}
+
+/* Speed: exact value, a slider over the speed stops, and presets */
+.NB-listen-settings-popover .NB-popover-section.NB-listen-speed-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+}
+
+.NB-listen-speed-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.NB-listen-speed-field {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 2px 7px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.04);
+    cursor: text;
+    transition: background-color 0.14s, border-color 0.14s;
+}
+
+.NB-listen-speed-field:hover {
+    background-color: #e5e6e2;
+}
+
+.NB-listen-speed-field:focus-within {
+    background-color: #fff;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.NB-listen-speed-input {
+    width: 34px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: right;
+    color: #303030;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-listen-speed-unit {
+    margin-left: 1px;
+    font-size: 12px;
+    color: #909090;
+}
+
+/* reader.css: The 1x mark sits under the thumb's center at that stop. The 16px assumes the
+   browser's range thumb width. */
+.NB-listen-speed-track {
+    position: relative;
+    padding-bottom: 13px;
+}
+
+.NB-listen-speed-slider {
+    display: block;
+    width: 100%;
+    margin: 0;
+    accent-color: #8a8c86;
+}
+
+.NB-listen-speed-one {
+    position: absolute;
+    top: 17px;
+    left: calc(8px + (100% - 16px) * var(--NB-listen-speed-one));
+    transform: translateX(-50%);
+    font-size: 9px;
+    line-height: 10px;
+    color: #a0a0a0;
+    pointer-events: none;
+}
+
+.NB-listen-speed-one:before {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 4px;
+    margin: 0 auto 1px;
+    background-color: #c0c0c0;
+}
+
+.NB-listen-settings-popover .NB-listen-control[data-setting="speed"] {
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.NB-listen-settings-popover .NB-listen-control[data-setting="speed"] li {
+    flex: 1 1 0;
+    padding: 3px 0;
+}
+
+/* Rows below the voice picker */
+.NB-listen-slider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.NB-listen-slider input {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    accent-color: #8a8c86;
+}
+
+.NB-listen-slider-value {
+    width: 32px;
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 11px;
+    color: #909090;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-listen-finetune-toggle {
+    cursor: pointer;
+}
+
+.NB-listen-finetune-toggle .NB-popover-section-controls {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.NB-listen-finetune-chevron {
+    width: 6px;
+    height: 6px;
+    margin: 6px 6px 0 0;
+    border-right: 1.5px solid #a0a0a0;
+    border-bottom: 1.5px solid #a0a0a0;
+    transform: rotate(-45deg);
+    transition: transform 0.15s;
+}
+
+.NB-listen-finetune-toggle.NB-open .NB-listen-finetune-chevron {
+    transform: rotate(45deg);
+}
+
+.NB-listen-finetune-toggle:hover .NB-popover-section-title {
+    color: #606060;
+}
+
+.NB-listen-finetune {
+    display: none;
+}
+
+/* reader.css: The usage line keeps its height while it loads, so the popover measured at open
+   (listen_settings_popover.js fit_list_height) doesn't grow afterward. */
+.NB-listen-usage {
+    min-height: 14px;
+    margin: 10px 16px 0;
+    font-size: 10px;
+    line-height: 14px;
+    color: #a0a0a0;
+}
+
+.NB-listen-usage-upgrade {
+    margin-left: 6px;
 }
 
 /* ===================== */
@@ -16532,6 +18162,17 @@ h5.NB-classifier-section-header {
     background-size: 36px;
 }
 
+.NB-module-premium-archive-icon.NB-10 {
+    background: transparent url('/media/embed/icons/icons8/icons8-calendar-100.png') no-repeat 0 0;
+    background-size: 36px;
+}
+
+.NB-module-premium-archive-icon.NB-11 {
+    background: transparent url('/media/embed/icons/nouns/listen.svg') no-repeat 0 0;
+    background-size: 36px;
+    filter: brightness(0.5);
+}
+
 .NB-module-premium-reason {
     padding: 0 24px;
 }
@@ -18500,6 +20141,16 @@ h5.NB-classifier-section-header {
     background: transparent url('/media/embed/icons/nouns/link.svg') no-repeat 0 0;
     background-size: 16px;
     filter: hue-rotate(168deg) saturate(18);
+}
+
+.NB-menu-manage .NB-menu-manage-story-listen-queue .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/nouns/listen-queue.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-menu-manage .NB-menu-manage-story-listen .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/nouns/listen.svg') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-menu-manage.NB-story-starred .NB-menu-manage-story-star .NB-menu-manage-image {
@@ -24463,6 +26114,12 @@ h5.NB-classifier-section-header {
     /* indigo */
 }
 
+.NB-premium-tier-features-archive li.NB-19 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/listen.svg');
+    filter: invert(40%) sepia(80%) saturate(1800%) hue-rotate(80deg) brightness(90%) contrast(100%);
+    /* green */
+}
+
 /* Pro tier icons with individual vivid colors */
 .NB-premium-tier-features-pro li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/stack.svg');
@@ -24488,10 +26145,11 @@ h5.NB-classifier-section-header {
     /* gold */
 }
 
+/* reader.css: Listen to 10 hours a week, the same icon as the Archive tier's Listen line */
 .NB-premium-tier-features-pro li.NB-5 .NB-premium-bullet-image {
-    background-image: url('/media/embed/icons/nouns/train.svg');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
-    /* gold */
+    background-image: url('/media/embed/icons/nouns/listen.svg');
+    filter: invert(40%) sepia(80%) saturate(1800%) hue-rotate(80deg) brightness(90%) contrast(100%);
+    /* green */
 }
 
 .NB-premium-tier-features-pro li.NB-6 .NB-premium-bullet-image {
@@ -26268,6 +27926,12 @@ h5.NB-classifier-section-header {
     filter: hue-rotate(134deg) saturate(16);
 }
 
+.NB-modal-preferences label[for=NB-preference-story-sideoption-listen] {
+    background: transparent url("/media/embed/icons/nouns/listen.svg") no-repeat center left;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
+}
+
 .NB-modal-preferences .NB-preference-keyboard-spacebar .NB-preference-keyboard-spacebaraction {
     margin-top: 12px;
 }
@@ -26490,6 +28154,16 @@ h5.NB-classifier-section-header {
     margin: 8px 0;
     display: block;
     overflow: hidden;
+}
+
+.NB-modal-account .NB-account-invoice-text {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 110px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 .NB-account-payments,

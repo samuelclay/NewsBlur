@@ -116,8 +116,8 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Gefällt mir / Gefällt mir nicht / Gefällt mir gar nicht",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Gefällt mir / Gefällt mir nicht; Hide → Ausblenden",
       "avoid": [
         "Stark ablehnen",
         "Dislike",
@@ -125,7 +125,16 @@
         "nicht mögen",
         "wie (for the verb like)"
       ],
-      "note": "Super dislike → Gefällt mir gar nicht (noun: ein „Gefällt mir gar nicht“). The trainer's 'beats' means Like outranks Dislike: schlägt / hat Vorrang vor. '(like wins)' → (Gefällt mir hat Vorrang). Thumbs up/down in marketing prose may stay Daumen hoch/runter."
+      "note": "Hide is the level above Like (formerly Super dislike, then Gefällt mir gar nicht): Ausblenden, quoted in sentences („Ausblenden“ hat Vorrang). The trainer's 'beats' means Like outranks Dislike: schlägt / hat Vorrang vor. '(like wins)' → (Gefällt mir hat Vorrang). Thumbs up/down in marketing prose may stay Daumen hoch/runter."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Ausblenden",
+      "avoid": [
+        "Gefällt mir gar nicht"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names („Ausblenden“ hat Vorrang vor allem). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

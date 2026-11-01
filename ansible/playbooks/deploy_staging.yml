@@ -11,6 +11,9 @@
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
         version: "{{ git_branch }}"
+        # Staging stays shallow (ansible/group_vars/staging.yml).
+        depth: "{{ git_depth | default(omit) }}"
+        refspec: "{{ git_refspec | default(omit) }}"
       register: pulled
 
     - name: Reload gunicorn

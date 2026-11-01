@@ -348,7 +348,7 @@ struct TrainerView: View {
 
     var explainerHierarchyChain: some View {
         HStack(spacing: 0) {
-            explainerPill(NBLocalization.text("Super dislike"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
+            explainerPill(NBLocalization.text("Hide", context: "training level"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
             explainerSeparator
             explainerPill(NBLocalization.text("Like"), color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9)
             explainerSeparator
@@ -417,7 +417,7 @@ struct TrainerView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(NBLocalization.text("Super dislike beats any number of likes:"))
+                Text(NBLocalization.text("Hide beats any number of likes:"))
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(textColor)
 
@@ -431,7 +431,7 @@ struct TrainerView: View {
                     Text("\u{2192}")
                         .font(.system(size: 12))
                         .foregroundColor(explainerBodyColor)
-                    Text(NBLocalization.text("Story is hidden (super dislike wins)"))
+                    Text(NBLocalization.text("Story is always hidden"))
                         .font(.system(size: 10, weight: .medium))
                         .italic()
                         .foregroundColor(superDislikeColor)

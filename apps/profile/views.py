@@ -81,6 +81,7 @@ SINGLE_FIELD_PREFS = (
     "has_trained_intelligence",
 )
 SPECIAL_PREFERENCES = (
+    "invoice_text",
     "old_password",
     "new_password",
     "autofollow_friends",
@@ -285,10 +286,18 @@ def set_account_settings(request):
     else:
         message = form.errors[list(form.errors.keys())[0]][0]
 
+    if "invoice_text" in form.errors:
+        code = -4
+        message = form.errors["invoice_text"][0]
+
+    preferences = json.decode(request.user.profile.preferences)
     payload = {
         "username": request.user.username,
         "email": request.user.email,
         "social_profile": MSocialProfile.profile(request.user.pk),
+        "invoice_text": preferences.get("invoice_text", ""),
+        "send_emails": request.user.profile.send_emails,
+        "notify_before_renewal": preferences.get("notify_before_renewal", False),
     }
     return dict(code=code, message=message, payload=payload)
 
@@ -1520,6 +1529,7 @@ def invoice(request, payment_id):
         {
             "payment": payment,
             "invoice_number": invoice_number,
+            "invoice_text": json.decode(payment.user.profile.preferences).get("invoice_text", ""),
             "user": payment.user,
             "coverage_start": coverage_start,
             "coverage_end": coverage_end,

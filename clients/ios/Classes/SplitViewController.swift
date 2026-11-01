@@ -145,6 +145,8 @@ class SplitViewController: UISplitViewController {
         headerView.backgroundColor = ThemeManager.color(fromRGB: [0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222])
         feedsDividerView.updateTheme()
         setNeedsStatusBarAppearanceUpdate()
+        // SplitViewController.swift carries theme changes to the Listen mini player and sheets.
+        ListenStoryBridge.themeDidChange()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

@@ -131,6 +131,17 @@ class UserApiImpl(
         return !response.isError
     }
 
+    override suspend fun setPreferences(values: Map<String, String>): Boolean {
+        if (values.isEmpty()) return true
+        val contentValues =
+            ContentValues().apply {
+                values.forEach { (key, value) -> put(key, value) }
+            }
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_SET_PREFERENCE)
+        val response: APIResponse = networkClient.post(urlString, contentValues)
+        return !response.isError
+    }
+
     override suspend fun importOpml(requestBody: RequestBody): NewsBlurResponse? {
         val urlString = APIConstants.buildUrl(APIConstants.PATH_IMPORT_OPML)
         val response: APIResponse = networkClient.post(urlString, requestBody)

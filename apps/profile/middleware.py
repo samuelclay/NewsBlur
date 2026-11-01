@@ -656,6 +656,11 @@ class UserAgentBanMiddleware:
             return
         if "push" in request.path:
             return
+        # Public OAuth discovery documents (apps/mcp/views.py). The Python MCP SDK
+        # fetches them without a User-Agent, so banning "missing" here made
+        # server-side MCP clients like Littlebird skip OAuth (forum #13806).
+        if request.path.startswith("/.well-known/"):
+            return
         if getattr(settings, "TEST_DEBUG"):
             return
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):

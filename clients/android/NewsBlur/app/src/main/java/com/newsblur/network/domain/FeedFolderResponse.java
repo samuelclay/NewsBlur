@@ -49,6 +49,8 @@ public class FeedFolderResponse {
     public String clusterMode;
     public boolean clusterMarkRead;
     public String language = "auto";
+    /** FeedFolderResponse.java keeps the raw preferences for ListenPreferences.kt's lenient parsing. */
+    public JsonObject preferences;
 
     public String shareExtToken;
 	
@@ -80,6 +82,7 @@ public class FeedFolderResponse {
             }
             if (profile.has("preferences")) {
                 JsonObject preferences = parsePreferences(profile.get("preferences"));
+                this.preferences = preferences;
                 if (preferences != null && preferences.has("language") && !preferences.get("language").isJsonNull()) {
                     this.language = preferences.get("language").getAsString();
                 }

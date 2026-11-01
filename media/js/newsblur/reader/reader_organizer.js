@@ -396,7 +396,8 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
     handle_change: function (elem, e) {
         $.targetIs(e, { tagSelector: '.NB-folders', childOf: '.NB-organizer-sidebar-folderjump' },
             _.bind(function ($t, $p) {
-                this.jump_to_folder($t.val());
+                // Folder values are "river:<folder title>" (make_folders in reader_utils.js)
+                this.jump_to_folder($t.val().replace(/^river:/, ''));
             }, this));
     },
 

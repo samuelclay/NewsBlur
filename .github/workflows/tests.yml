@@ -17,6 +17,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Set up Node.js for account dialog tests
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Test account settings request ordering
+        run: node --test node/tests/account_settings_save.test.js
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 

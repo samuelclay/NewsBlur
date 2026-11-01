@@ -3,6 +3,7 @@ package com.newsblur.util
 import android.content.res.Configuration
 import android.text.TextUtils
 import com.google.gson.Gson
+import com.newsblur.design.ListenPalette
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +77,14 @@ object StoryUtil {
                     }
             }
 
+            // StoryUtil.kt styles Listen's follow-along highlight from ListenPalette.kt's theme colors.
+            val highlightTheme =
+                when {
+                    themeValue != PrefConstants.ThemeValue.AUTO -> themeValue
+                    nightMask == Configuration.UI_MODE_NIGHT_YES -> PrefConstants.ThemeValue.DARK
+                    else -> PrefConstants.ThemeValue.LIGHT
+                }
+            sb.append("<style>").append(ListenPalette.highlightCss(highlightTheme)).append("</style>")
             sb.append("</head><body><div class=\"NB-story\" dir=\"auto\">")
             sb.append(storyHtml)
             sb.append("<script src=\"mark.min.js\"></script>")
@@ -89,6 +98,7 @@ object StoryUtil {
                 sb.append(");});</script>")
             }
             sb.append("<script type=\"text/javascript\" src=\"storyDetailView.js\"></script>")
+            sb.append("<script type=\"text/javascript\" src=\"listenFollowAlong.js\"></script>")
             sb.append("</div></body></html>")
             sb.toString()
         }

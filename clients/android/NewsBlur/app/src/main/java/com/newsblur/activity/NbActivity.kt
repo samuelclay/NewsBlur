@@ -3,6 +3,7 @@ package com.newsblur.activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnPreDraw
@@ -10,6 +11,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.listen.ListenManager
+import com.newsblur.listen.ListenMiniPlayerHost
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSync
 import com.newsblur.service.NbSyncManager
@@ -40,6 +43,11 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
     @Inject
     lateinit var syncServiceState: SyncServiceState
 
+    @Inject
+    lateinit var listenManager: ListenManager
+
+    private var listenMiniPlayerHost: ListenMiniPlayerHost? = null
+
     private var uniqueLoginKey: String? = null
     private var lastTheme: ThemeValue? = null
     private var themePreferences: SharedPreferences? = null
@@ -47,6 +55,16 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+        if (showsListenMiniPlayer() && !isFinishing) {
+            listenMiniPlayerHost =
+                ListenMiniPlayerHost(
+                    activity = this,
+                    listenManager = listenManager,
+                    prefsRepo = prefsRepo,
+                    anchor = ::listenMiniPlayerAnchor,
+                    onInsetChanged = ::onListenMiniPlayerInsetChanged,
+                ).also { it.attach() }
+        }
         if (com.newsblur.view.ThemeTransition.reveal(this, themeTransitionToken) { isThemeTransitionReady() }) {
             themeTransitionToken = null
             return
@@ -123,6 +141,7 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
         Log.d(this, "onResume" + UIUtils.getMemoryUsageDebug(this))
         super.onResume()
         finishIfNotLoggedIn()
+        listenMiniPlayerHost?.setShownInThisPane(showsListenMiniPlayerInThisPane())
 
         startObservingThemeChanges()
     }
@@ -166,6 +185,18 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
     protected open fun shouldUseTranslucentTheme(): Boolean = false
 
     protected open fun isThemeTransitionReady(): Boolean = true
+
+    /** NbActivity.kt floats Listen's mini player (ListenMiniPlayerHost.kt) on the main screens that opt in. */
+    protected open fun showsListenMiniPlayer(): Boolean = false
+
+    /** The bottom toolbar the mini player sits above, or null to sit above the navigation bar. */
+    protected open fun listenMiniPlayerAnchor(): View? = null
+
+    /** In a tablet split only one pane shows the mini player, so neighbors can decline it here. */
+    protected open fun showsListenMiniPlayerInThisPane(): Boolean = true
+
+    /** How much of the screen bottom the mini player covers, for screens that pad their lists to match. */
+    protected open fun onListenMiniPlayerInsetChanged(insetPx: Int) = Unit
 
     private fun readStartupTheme(): ThemeValue {
         val prefs = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)

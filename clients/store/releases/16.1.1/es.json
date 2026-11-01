@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Escuchar es más fácil de controlar. Inicia la escucha desde la barra de lectura y avanza con el botón Artículo siguiente del minirreproductor.\n\nLa reproducción automática ahora sigue el orden elegido en Artículos guardados y Artículos leídos, también del más antiguo al más reciente. Continúa hacia abajo en la lista sin volver a artículos anteriores.\n\nSi el título se repite al principio de un artículo, Escuchar lo lee una sola vez.\n\nLos límites de escucha ahora son semanales: 1 hora con Premium Archive y 10 horas con Premium Pro, y se restablecen cada domingo. Ajustes y Reproduciendo muestran el tiempo restante en horas y minutos."
+  },
+  "macos": {
+    "whats_new": "Escuchar es más fácil de controlar. Avanza con el botón Artículo siguiente del minirreproductor.\n\nLa reproducción automática ahora sigue el orden elegido en Artículos guardados y Artículos leídos, también del más antiguo al más reciente. Continúa hacia abajo en la lista sin volver a artículos anteriores.\n\nSi el título se repite al principio de un artículo, Escuchar lo lee una sola vez.\n\nLos límites de escucha ahora son semanales: 1 hora con Premium Archive y 10 horas con Premium Pro, y se restablecen cada domingo. Ajustes y Reproduciendo muestran el tiempo restante en horas y minutos."
+  },
+  "android": {
+    "release_notes": "Mejoras de Escuchar: inicia desde la barra de lectura y avanza con Artículo siguiente en el minirreproductor. La reproducción automática sigue el orden de Artículos guardados y Artículos leídos hacia abajo en la lista. Los títulos repetidos se leen una vez. Escucha semanal: 1 hora con Premium Archive y 10 con Premium Pro, con reinicio el domingo. Ajustes muestra las horas y minutos restantes."
+  }
+}

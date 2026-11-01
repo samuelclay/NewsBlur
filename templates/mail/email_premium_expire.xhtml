@@ -7,6 +7,7 @@
     <h2 style="color: #282F33; font-size: 18px; font-weight: bold;" align="center">
         {% blocktrans trimmed with username=user.username %}Hey {{ username }}, your premium account has just expired.{% endblocktrans %}
     </h2>
+    {% if pricing_cancellation %}<p style="line-height: 20px;">{% blocktrans trimmed with old_amount=pricing_cancellation.old_amount date=pricing_cancellation.paypal_canceled_date|language_date:"F j, Y" %}NewsBlur Premium has moved to $36 per year, and PayPal would not let NewsBlur move your older ${{ old_amount }}/year subscription to the new rate. So I cancelled it on {{ date }} instead of letting it renew at the old price. Nothing is wrong with your PayPal account. To keep Premium, resubscribe at the new $36/year rate.{% endblocktrans %}</p>{% endif %}
     <p style="line-height: 20px;">{% trans "You now have a free account with all the limitations of a free account. But that doesn't mean you can't renew your premium subscription and enjoy the many benefits of using NewsBlur." %}</p>
     <p style="line-height: 20px;">{% trans "Renew now:" %} <a href="https://{{ domain }}{{ user.profile.autologin_url }}?next=premium">https://{{ domain }}{{ user.profile.autologin_url }}?next=premium</a></p>
     <p style="line-height: 20px;">{% blocktrans trimmed with autologin_url=user.profile.autologin_url %}Spend a few days trying out <a href="https://{{ domain }}{{ autologin_url }}">NewsBlur</a> again. We hope you love it.{% endblocktrans %}</p>

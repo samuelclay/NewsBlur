@@ -100,10 +100,11 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             $account_section
         ]);
 
+        // The tools sit outside the content column so they run the banner's
+        // full width under the actions, instead of beside "Back to trainer".
         var $content = $.make('div', { className: 'NB-classifier-filter-banner-content' }, [
             $heading,
-            $narrow_hint,
-            $tools
+            $narrow_hint
         ]);
 
         var $actions = $.make('div', { className: 'NB-classifier-filter-banner-actions' });
@@ -132,6 +133,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         this.$el.append($icon);
         this.$el.append($content);
         this.$el.append($actions);
+        this.$el.append($tools);
 
         return this;
     },
@@ -387,10 +389,17 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     back_to_trainer: function (e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         // Close the banner first so the story list reflow happens before the
-        // trainer modal mounts. open_trainer_modal reads active_feed itself.
+        // trainer modal mounts. A filter opened from the trainer carries where
+        // the reader was in it; one restored from a URL has none, so it gets a
+        // fresh trainer.
+        var trainer_snapshot = this.filter && this.filter.trainer_snapshot;
         NEWSBLUR.reader.close_classifier_filter();
         _.defer(function () {
-            NEWSBLUR.reader.open_trainer_modal();
+            if (trainer_snapshot) {
+                NEWSBLUR.reader.reopen_trainer(trainer_snapshot);
+            } else {
+                NEWSBLUR.reader.open_trainer_modal();
+            }
         });
     },
 
@@ -473,6 +482,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             classifier_scope: this.filter.classifier_scope,
             classifier_folder_name: this.filter.classifier_folder_name,
             origin: this.filter.origin,
+            trainer_snapshot: this.filter.trainer_snapshot,
             navigate_to_scope: true
         });
     },

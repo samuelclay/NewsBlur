@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Écouter devient plus facile à contrôler. Lancez l’écoute depuis la barre de lecture et passez à la suite avec le bouton Article suivant du mini-lecteur.\n\nLa lecture automatique suit désormais votre ordre de tri dans Articles enregistrés et Articles lus, y compris du plus ancien au plus récent. Elle descend dans la liste sans revenir aux articles précédents.\n\nÉcouter ne lit le titre qu’une seule fois lorsqu’il est répété au début d’un article.\n\nLes quotas d’écoute sont désormais hebdomadaires : 1 heure avec Premium Archive et 10 heures avec Premium Pro, réinitialisées chaque dimanche. Paramètres et En cours de lecture affichent le temps restant en heures et minutes."
+  },
+  "macos": {
+    "whats_new": "Écouter devient plus facile à contrôler. Passez à la suite avec le bouton Article suivant du mini-lecteur.\n\nLa lecture automatique suit désormais votre ordre de tri dans Articles enregistrés et Articles lus, y compris du plus ancien au plus récent. Elle descend dans la liste sans revenir aux articles précédents.\n\nÉcouter ne lit le titre qu’une seule fois lorsqu’il est répété au début d’un article.\n\nLes quotas d’écoute sont désormais hebdomadaires : 1 heure avec Premium Archive et 10 heures avec Premium Pro, réinitialisées chaque dimanche. Paramètres et En cours de lecture affichent le temps restant en heures et minutes."
+  },
+  "android": {
+    "release_notes": "Écouter : lancez l’écoute depuis la barre de lecture et avancez avec Article suivant dans le mini-lecteur. La lecture automatique suit le tri des Articles enregistrés et Articles lus, en descendant dans la liste. Les titres répétés sont lus une seule fois. Écoute hebdomadaire : 1 h avec Premium Archive, 10 h avec Premium Pro, réinitialisées le dimanche. Les paramètres affichent les heures et minutes restantes."
+  }
+}

@@ -103,14 +103,23 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
       "use": "좋아요 / 싫어요",
       "avoid": [
         "별로예요",
         "싫어함",
         "비추천"
       ],
-      "note": "Super dislike → 매우 싫어요. Thumbs up/down in prose → 좋아요/싫어요."
+      "note": "Hide (the level above Like, formerly Super dislike, then 매우 싫어요) → 숨기기. Thumbs up/down in prose → 좋아요/싫어요."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "숨기기",
+      "avoid": [
+        "매우 싫어요"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (숨기기는 다른 모든 것보다 우선합니다). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

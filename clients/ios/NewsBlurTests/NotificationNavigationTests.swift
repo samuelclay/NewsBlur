@@ -5,6 +5,78 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_NotificationNavigation: XCTestCase {
+#if targetEnvironment(macCatalyst)
+    func test_notificationAfterClosingMacWindowWaitsForReplacementReader() throws {
+        for action in [UNNotificationDefaultActionIdentifier, "VIEW_STORY_IDENTIFIER"] {
+            let app = makeApp(phone: false)
+            let oldReader = DetailViewController()
+            app.detailViewController = oldReader
+            // NotificationNavigationTests.swift reproduces Command-W retaining the reader after SceneDelegate releases its window.
+            app.window = nil
+            app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: action)
+
+            XCTAssertNil(app.openedFeed, "The notification must not start a fetch on the disconnected reader")
+            XCTAssertEqual(app.pendingNotificationStory?["storyHash"] as? String, "42:older-story")
+            XCTAssertEqual(app.completions, 1, "The OS completion must not wait for a window or network response")
+
+            // NotificationNavigationTests.swift delivers the delegate response before a new scene without a connection response.
+            _ = try connectColdScene(content: nil, action: action, app: app)
+            XCTAssertEqual(app.openedFeed, "42")
+            XCTAssertEqual(app.openedHash, "42:older-story")
+            XCTAssertEqual(app.navigationPreparationCounts, [1], "Navigation must run once, after replacement views are prepared")
+        }
+    }
+
+    func test_feedRefreshCannotDrainNotificationWhileMacWindowIsClosed() {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.setValue(["feedId": "42", "storyHash": "42:older-story"], forKey: "pendingNotificationStory")
+
+        app.backgroundLoadNotificationStory()
+
+        XCTAssertNil(app.openedFeed, "A late feed refresh must not route into the disconnected reader")
+        XCTAssertEqual(app.pendingNotificationStory?["storyHash"] as? String, "42:older-story")
+    }
+
+    func test_reconnectingNotificationResponseRoutesOnceAndReplacesTheQueuedDestination() throws {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: UNNotificationDefaultActionIdentifier)
+
+        _ = try connectColdScene(content: ["story_feed_id": 42, "story_hash": "42:newer-story"],
+                                 action: UNNotificationDefaultActionIdentifier, app: app)
+
+        XCTAssertEqual(app.openedHash, "42:newer-story")
+        XCTAssertEqual(app.navigationPreparationCounts, [1])
+    }
+
+    func test_closedMacWindowQueuesBriefingAndKeepsBackgroundActionsImmediate() throws {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: UNNotificationDefaultActionIdentifier)
+        app.receive(["story_hash": "briefing:today", "is_daily_briefing": true], action: UNNotificationDefaultActionIdentifier)
+        app.backgroundLoadNotificationStory()
+
+        XCTAssertNil(app.openedBriefing)
+        XCTAssertNil(app.pendingNotificationStory)
+        XCTAssertEqual(app.pendingDailyBriefingStoryHash, "briefing:today")
+        XCTAssertEqual(app.completions, 2)
+        for action in ["MARK_READ_IDENTIFIER", "STAR_IDENTIFIER", "DISMISS_IDENTIFIER"] {
+            app.receive(["story_feed_id": 42, "story_hash": "42:background-story"], action: action)
+        }
+        XCTAssertEqual(app.markedRead, "42:background-story")
+        XCTAssertEqual(app.savedHash, "42:background-story")
+        XCTAssertEqual(app.completions, 5)
+        XCTAssertNil(app.openedFeed)
+
+        _ = try connectColdScene(content: nil, action: UNNotificationDefaultActionIdentifier, app: app)
+
+        XCTAssertEqual(app.openedBriefing, "briefing:today")
+        XCTAssertNil(app.pendingDailyBriefingStoryHash)
+        XCTAssertNil(app.openedFeed)
+    }
+#endif
+
     func test_coldSceneConnectionRoutesTheNotificationAfterPreparingItsViews() throws {
         for action in [UNNotificationDefaultActionIdentifier, "VIEW_STORY_IDENTIFIER"] {
             let app = try connectColdScene(content: ["story_feed_id": 42, "story_hash": "42:older-story"], action: action)
@@ -230,8 +302,9 @@ import XCTest
         XCTAssertEqual(reader.reloadCount, 1)
     }
 
-    private func connectColdScene(content: [String: Any]?, action: String) throws -> NotificationNavigationApp {
-        let app = makeApp()
+    private func connectColdScene(content: [String: Any]?, action: String, app existingApp: NotificationNavigationApp? = nil) throws -> NotificationNavigationApp {
+        let app = existingApp ?? makeApp()
+        app.window = nil
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let delegate = SceneDelegate()
         delegate.appDelegate = app
@@ -330,6 +403,7 @@ import XCTest
 
     private func makeApp(phone: Bool = true) -> NotificationNavigationApp {
         let app = NotificationNavigationApp()
+        app.window = UIWindow()
         app.phone = phone
         app.activeUsername = "notification-navigation-fixture"
         app.storiesCollection = StoriesCollection()

@@ -157,6 +157,16 @@
       'show_sideoption_share'   : true,
       'show_sideoption_related' : true,
       'show_sideoption_ask_ai'  : true,
+      'show_sideoption_listen'  : true,
+      'listen_voices'           : '{}',
+      'listen_delivery'         : 'natural',
+      'listen_stability'        : 0.5,
+      'listen_similarity'       : 0.75,
+      'listen_style'            : 0.0,
+      'listen_speaker_boost'    : true,
+      'listen_speed'            : 1.0,
+      'listen_auto_continue'    : true,
+      'listen_highlight'        : true,
       'theme'                   : 'auto',
       'highlights'              : true,
       'dashboard_columns'       : 2,
@@ -226,6 +236,10 @@
                       <a href="{% url "feature-ask-ai" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-ask-ai">
                         <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/prompt.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-coral">{% trans "Ask AI & Daily Briefing" %}</div>
                         <div class="NB-splash-dropdown-item-desc">{% trans "AI-powered story analysis and daily summaries" %}</div>
+                      </a>
+                      <a href="{% url "feature-listen" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-listen">
+                        <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/listen.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">{% trans "Listen" %}</div>
+                        <div class="NB-splash-dropdown-item-desc">{% trans "Have any story read aloud" %}</div>
                       </a>
                       <a href="{% url "feature-web-feeds" %}" class="NB-splash-dropdown-item NB-splash-dropdown-item-web-feeds">
                         <div class="NB-splash-dropdown-item-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">{% trans "Web Feeds" %}</div>
@@ -358,7 +372,7 @@
         {% include_javascripts "common" %}
       {% endblock head_js %}
       <script type="text/javascript" charset="utf-8">
-    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}JSON.parse('{{ user_profile.preferences|escapejs }}'){% else %}{}{% endif %});
     _.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
     _.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
     

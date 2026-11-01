@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premium i trwałe archiwum artykułów"
+        "description": "Trwałe archiwum i 1 godzina słuchania tygodniowo"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "Odświeżanie kanałów co 5–15 minut"
+        "description": "Częste aktualizacje kanałów i 10 h słuchania tygodniowo"
       }
     },
     "subscription_groups": {
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "Subskrypcja NewsBlur Premium Archive",
-        "description": "Zyskaj wszystkie funkcje Premium oraz trwałe archiwum każdego artykułu z możliwością wyszukiwania. Zachowuj artykuły jako nieprzeczytane tak długo, jak chcesz.",
+        "description": "Funkcje Premium, trwałe archiwum z wyszukiwaniem i 1 godzina słuchania tygodniowo. Zachowuj nieprzeczytane artykuły bez limitu czasu. Limit słuchania odnawia się w niedzielę.",
         "benefits": [
           "Wszystko z Premium",
           "Nieprzeczytane artykuły bez limitu czasu",
-          "Archiwizuj każdy artykuł na zawsze",
-          "Przeszukuj całe archiwum artykułów"
+          "Trwałe archiwum z wyszukiwaniem",
+          "1 godzina słuchania tygodniowo"
         ]
       }
     }

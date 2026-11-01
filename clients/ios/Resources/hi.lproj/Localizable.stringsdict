@@ -194,6 +194,54 @@
 			<string>%@ फ़ोकस लेख</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>आज %@ मुफ़्त लेख प्रीव्यू बाकी</string>
+			<key>other</key>
+			<string>आज %@ मुफ़्त लेख पूर्वावलोकन शेष</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ मेल</string>
+			<key>other</key>
+			<string>%@ मेल</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>इस महीने %@ मिनट शेष</string>
+			<key>other</key>
+			<string>इस महीने %@ मिनट शेष</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -352,6 +400,22 @@
 			<string>%@ अपठित लेख</string>
 			<key>other</key>
 			<string>%@ अपठित लेख</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ वॉइस प्रीव्यू बाकी</string>
+			<key>other</key>
+			<string>%@ वॉइस प्रीव्यू बाकी</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
