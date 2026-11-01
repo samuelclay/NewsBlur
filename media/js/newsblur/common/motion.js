@@ -140,6 +140,7 @@ NEWSBLUR.motion = (function () {
         if (!owner.motion_seen || owner.motion_scope !== scope) {
             if (owner.motion_observer) owner.motion_observer.disconnect();
             owner.motion_seen = new Set();
+            owner.motion_scrolled = false;
             owner.motion_scope = scope;
             owner.motion_observer = null;
         }
@@ -149,6 +150,7 @@ NEWSBLUR.motion = (function () {
         }
         if (!owner.motion_observer) {
             var pending = new Map();
+            var entered = new Set();
             var last_scroll_top = root ? root.scrollTop : window.scrollY;
             var scroll_target = root || window;
             var listening = false;
@@ -157,6 +159,15 @@ NEWSBLUR.motion = (function () {
                 var scroll_top = root ? root.scrollTop : window.scrollY;
                 scrolling = scrolling || scroll_top !== last_scroll_top;
                 last_scroll_top = scroll_top;
+                if (scrolling && options.animate_on_scroll === false) {
+                    // motion.js ends title entrances for this feed visit, including pages arriving after scrolling stops.
+                    owner.motion_scrolled = true;
+                    entered.forEach(function (element) {
+                        var animation = running.get(element);
+                        if (animation) animation.cancel();
+                    });
+                    entered.clear();
+                }
                 // motion.js reads the whole visible batch before animation writes can change its geometry.
                 var visible = screen_order(Array.from(pending.values()).filter(function (element) {
                     if (!element.isConnected) { controller.unobserve(element); return false; }
@@ -167,7 +178,9 @@ NEWSBLUR.motion = (function () {
                     controller.unobserve(element);
                     if (owner.motion_seen.has(key)) return;
                     owner.motion_seen.add(key);
+                    if (owner.motion_scrolled && options.animate_on_scroll === false) return;
                     enter(element, stagger_delay(index, visible.length, options.spacing || 35, scrolling ? 90 : (options.spread || 175)), scrolling ? 8 : (options.distance || 16));
+                    if (options.animate_on_scroll === false) entered.add(element);
                 });
             }
             function on_scroll() { reveal(true); }
@@ -191,6 +204,7 @@ NEWSBLUR.motion = (function () {
                 disconnect: function () {
                     observer.disconnect();
                     pending.clear();
+                    entered.clear();
                     scroll_target.removeEventListener('scroll', on_scroll, true);
                     listening = false;
                     if (frame !== null) cancelAnimationFrame(frame);

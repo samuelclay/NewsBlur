@@ -291,3 +291,24 @@ test('reduced motion cancels active effects and does not hide subsequent content
     h.motion.pop(row.el);
     assert.equal(h.animations.length, 1);
 });
+
+test('story title scrolling finishes opening effects and keeps later rows and pagination fully rendered', () => {
+    const h = harness(), owner = {}, root = h.root();
+    const first = h.record('opening'), later = h.record('later');
+    h.visible(first);
+    h.motion.watch(owner, [first, later], root, 'feed-one', { animate_on_scroll: false });
+    assert.equal(h.animations.length, 1, 'Opening a feed still animates its visible titles');
+    h.visible(later, 80);
+    root.scrollTop = 100;
+    root.dispatch('scroll');
+    assert.equal(h.animations.length, 1, 'Scrolling reveals titles without starting new effects');
+    assert.equal(h.animations[0].cancelled, true, 'Scrolling finishes the opening cascade immediately');
+    assert.equal(owner.motion_seen.has('later'), true);
+    const paginated = h.record('next-page');
+    h.visible(paginated);
+    h.motion.watch(owner, [paginated], root, 'feed-one', { animate_on_scroll: false });
+    h.paint();
+    assert.equal(h.animations.length, 1, 'A page arriving after scrolling stops must not fade in');
+    h.motion.watch(owner, [paginated], root, 'feed-two', { animate_on_scroll: false });
+    assert.equal(h.animations.length, 2, 'Opening another feed gets a new cascade');
+});
