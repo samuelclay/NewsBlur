@@ -546,6 +546,7 @@ abstract class Reading :
     }
 
     override fun onDestroy() {
+        if (::traverseBar.isInitialized) traverseBar.close()
         endControls?.close()
         endControls = null
         if (latestReaderRef.get() === this) latestReaderRef.clear()

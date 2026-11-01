@@ -104,9 +104,8 @@ object ReaderMotion {
     }
 
     @JvmStatic fun cascade(views: List<View>) {
-        views.filter { it.visibility == View.VISIBLE }.forEachIndexed { index, view ->
-            enter(view, index * 30L, 8f)
-        }
+        val controls = views.filter { it.visibility == View.VISIBLE }.map { ReaderControlMotion.Control(it) }
+        controls.firstOrNull()?.let { ReaderControlMotion(it.view, { controls }, once = true) }
     }
 
     @JvmStatic fun refreshFinished(container: android.view.ViewGroup) {

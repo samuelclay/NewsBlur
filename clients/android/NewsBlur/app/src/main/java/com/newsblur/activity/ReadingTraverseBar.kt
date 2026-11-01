@@ -49,6 +49,7 @@ class ReadingTraverseBar(
     private var textModeEnabled = true
     private var inTextView = false
     private var sendEnabled = true
+    private var controlMotion: com.newsblur.view.ReaderControlMotion? = null
 
     fun setup() {
         configureTextButton()
@@ -56,8 +57,18 @@ class ReadingTraverseBar(
         configureImageButtons()
         applyPalette()
         syncState()
-        binding.root.post { com.newsblur.view.ReaderMotion.cascade(listOf(binding.readingOverlayText, binding.readingOverlaySend, binding.readingOverlayLeft, binding.readingOverlayRight)) }
+        controlMotion?.close()
+        controlMotion = com.newsblur.view.ReaderControlMotion(binding.root, {
+            listOf(
+                com.newsblur.view.ReaderControlMotion.Control(binding.readingOverlayText, state = inTextView to textModeEnabled),
+                com.newsblur.view.ReaderControlMotion.Control(binding.readingOverlaySend, state = sendEnabled),
+                com.newsblur.view.ReaderControlMotion.Control(binding.readingOverlayLeft, state = previousEnabled),
+                com.newsblur.view.ReaderControlMotion.Control(binding.readingOverlayRight, state = nextShowsDone),
+            )
+        })
     }
+
+    fun close() { controlMotion?.close(); controlMotion = null }
 
     fun updateTheme(selectedTheme: ThemeValue) {
         resolvedTheme = resolveTheme(selectedTheme)
@@ -73,7 +84,6 @@ class ReadingTraverseBar(
     }
 
     fun updateNextShowDone(showDone: Boolean) {
-        if (showDone != nextShowsDone) com.newsblur.view.ReaderMotion.pop(binding.readingOverlayRight)
         nextShowsDone = showDone
         binding.readingOverlayRight.text = context.getString(if (showDone) R.string.overlay_done else R.string.overlay_next)
         binding.readingOverlayRight.contentDescription = binding.readingOverlayRight.text

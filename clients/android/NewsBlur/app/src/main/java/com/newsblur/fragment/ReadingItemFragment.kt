@@ -218,7 +218,7 @@ class ReadingItemFragment :
     private val isWebLoadFinished = AtomicBoolean(false)
     private var isWebVisualStateReady = false
     private var nativeHeaderStoryHash: String? = null
-    private var motionHeaderHash: String? = null
+    private var controlMotion: com.newsblur.view.ReaderControlMotion? = null
     private val articleReveal = ReaderArticleReveal {
         syncStoryLoadingUi()
         story?.storyHash?.let { hash ->
@@ -388,6 +388,8 @@ class ReadingItemFragment :
     }
 
     override fun onDestroyView() {
+        controlMotion?.close()
+        controlMotion = null
         clearBottomInsetListener?.run()
         clearBottomInsetListener = null
         // A photo host that never started must not keep this fragment, its WebView, or the preview alive.
@@ -450,7 +452,6 @@ class ReadingItemFragment :
         readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
         lastMetadataSnapshot = null
         nativeHeaderStoryHash = null
-        motionHeaderHash = null
         lastClusterSnapshot = null
         lastSocialSnapshot = null
 
@@ -1362,6 +1363,7 @@ class ReadingItemFragment :
         visibleClusterStories.forEachIndexed { index, clusterStory ->
             val clusterView =
                 layoutInflater.inflate(R.layout.view_story_cluster_item, binding.readingStoryClusterList, false)
+            clusterView.tag = clusterStory.storyHash
 
             bindClusterItemView(
                 clusterView = clusterView,
@@ -1903,11 +1905,37 @@ class ReadingItemFragment :
     }
 
     private fun animateHeaderEntrance() {
-        val hash = nativeHeaderStoryHash ?: return
-        if (!isResumed || motionHeaderHash == hash || !::binding.isInitialized) return
-        motionHeaderHash = hash
-        com.newsblur.view.ReaderMotion.cascade(listOf(binding.readingFeedTitle, binding.readingItemTitle,
-            binding.readingItemDate, binding.readingItemAuthors, readingItemActionsBinding.readerTraversalFooter))
+        if (nativeHeaderStoryHash == null || !isResumed || !::binding.isInitialized || controlMotion != null) return
+        controlMotion = com.newsblur.view.ReaderControlMotion(binding.root, ::readerMotionControls, { isResumed })
+    }
+
+    private fun readerMotionControls(): List<com.newsblur.view.ReaderControlMotion.Control> {
+        val actions = readingItemActionsBinding
+        val controls = mutableListOf<com.newsblur.view.ReaderControlMotion.Control>()
+        fun add(view: View, identity: Any = view.id, state: Any? = (view as? TextView)?.text?.toString()) {
+            controls.add(com.newsblur.view.ReaderControlMotion.Control(view, identity, state to view.isEnabled))
+        }
+        listOf(binding.readingFeedTitle, binding.readingItemTitle, binding.readingItemDate, binding.readingItemAuthors,
+            actions.trainStoryButton, actions.saveStoryButton, actions.shareStoryButton, actions.askAiStoryButton,
+            binding.readingStoryClusterTitle, binding.readingStoryClusterMore,
+            actions.readingFriendCommentHeader, actions.readingFriendEmptyshareHeader, actions.readingPublicCommentHeader,
+        ).forEach { add(it) }
+        add(actions.listenStoryButtonContainer, state = actions.listenStoryButton.text.toString())
+        add(actions.listenQueueButton)
+        for (id in listOf(R.id.shared_by, R.id.comment_by)) binding.root.findViewById<View>(id)?.let { add(it) }
+        // ReadingItemFragment.kt keys rebuilt social/cluster rows by content, so unchanged controls do not replay.
+        for (id in listOf(R.id.reading_social_shareimages, R.id.reading_social_commentimages,
+            R.id.reading_story_cluster_list, R.id.reading_friend_comment_container,
+            R.id.reading_friend_emptyshare_container, R.id.reading_public_comment_container)) {
+            val group = binding.root.findViewById<ViewGroup>(id) ?: continue
+            for (index in 0 until group.childCount) {
+                val child = group.getChildAt(index)
+                val identity = id to (child.tag ?: index)
+                val text = child.findViewById<TextView>(R.id.comment_text)?.text?.toString()
+                add(child, identity, text)
+            }
+        }
+        return controls
     }
 
     fun isNativeHeaderReady(storyHash: String): Boolean =
