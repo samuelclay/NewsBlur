@@ -98,6 +98,8 @@ class StoryViewAdapter(
     private val motionSeen = mutableSetOf<String>()
     private val motionRect = android.graphics.Rect()
     private var motionAwaitingFeedCommit = false
+    private var motionHasScrolled = false
+    private var motionScrollListener: RecyclerView.OnScrollListener? = null
     private var lastStoryOpenElapsedRealtime = 0L
 
     private val stories = mutableListOf<Story>()
@@ -237,6 +239,7 @@ class StoryViewAdapter(
     fun updateFeedSet(fs: FeedSet?) {
         if (fs != diffFeedSet) {
             motionSeen.clear()
+            motionHasScrolled = false
             // StoryViewAdapter.kt must not count the previous feed's rows while the new diff is pending.
             motionAwaitingFeedCommit = true
             invalidateStoryDiffs()
@@ -692,9 +695,29 @@ class StoryViewAdapter(
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
+        fun finishOpeningEntrances() {
+            if (motionHasScrolled) return
+            motionHasScrolled = true
+            // StoryViewAdapter.kt makes the opening cascade solid as soon as the reader starts scrolling.
+            for (index in 0 until recyclerView.childCount) {
+                val row = recyclerView.getChildAt(index)
+                val holder = recyclerView.getChildViewHolder(row)
+                if (holder is StoryViewHolder || holder is ClusterRowViewHolder) row.clearAnimation()
+            }
+        }
+        motionScrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(view: RecyclerView, newState: Int) {
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) finishOpeningEntrances()
+            }
+
+            override fun onScrolled(view: RecyclerView, dx: Int, dy: Int) {
+                if (dx != 0 || dy != 0) finishOpeningEntrances()
+            }
+        }.also(recyclerView::addOnScrollListener)
         returnObserver = recyclerView.viewTreeObserver
         returnPreDrawListener = ViewTreeObserver.OnPreDrawListener {
             if (pendingScrollStoryHash != null || pendingHighlightStoryHash != null) applyPendingStoryReturn(recyclerView, presentationFrame = true)
+            if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) finishOpeningEntrances()
             // StoryViewAdapter.kt checks actual visibility, so prefetched rows keep their first entrance.
             val entrances = mutableListOf<StoryEntrance>()
             for (index in 0 until recyclerView.childCount) {
@@ -708,15 +731,14 @@ class StoryViewAdapter(
                 } ?: continue
                 if (key !in motionSeen && recyclerView.getChildAdapterPosition(row) != RecyclerView.NO_POSITION &&
                     com.newsblur.view.ReaderMotion.canEnter(row) && row.getGlobalVisibleRect(motionRect)) {
-                    entrances.add(StoryEntrance(row, key, motionRect.top, motionRect.left))
+                    if (motionHasScrolled) motionSeen.add(key)
+                    else entrances.add(StoryEntrance(row, key, motionRect.top, motionRect.left))
                 }
             }
             val visible = entrances.distinctBy { it.key }.sortedWith(compareBy({ it.top }, { it.left }))
-            val scrolling = recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
-            val spread = if (scrolling) 90L else 175L
-            val step = if (visible.size > 1) minOf(35.0, spread.toDouble() / (visible.size - 1)) else 0.0
+            val step = if (visible.size > 1) minOf(35.0, 175.0 / (visible.size - 1)) else 0.0
             visible.forEachIndexed { index, entrance ->
-                if (com.newsblur.view.ReaderMotion.enter(entrance.row, (index * step).toLong(), if (scrolling) 9f else 16f)) {
+                if (com.newsblur.view.ReaderMotion.enter(entrance.row, (index * step).toLong(), 16f)) {
                     motionSeen.add(entrance.key)
                 }
             }
@@ -757,6 +779,8 @@ class StoryViewAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
+        motionScrollListener?.let(recyclerView::removeOnScrollListener)
+        motionScrollListener = null
         isFollowingReadingStory = false
         recyclerView.viewTreeObserver.takeIf { it.isAlive }?.let { observer ->
             returnPreDrawListener?.let(observer::removeOnPreDrawListener)

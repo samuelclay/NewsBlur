@@ -103,13 +103,15 @@ class Test_StoryMotionScope {
         every { it.parent } returns null
     }
 
-    private fun attach(adapter: StoryViewAdapter, rows: List<View>): ViewTreeObserver.OnPreDrawListener {
-        val rv = mockk<RecyclerView>(relaxed = true)
+    private fun attach(adapter: StoryViewAdapter, rows: List<View>,
+                       rv: RecyclerView = mockk(relaxed = true),
+                       scrollListeners: MutableList<RecyclerView.OnScrollListener> = mutableListOf()): ViewTreeObserver.OnPreDrawListener {
         val observer = mockk<ViewTreeObserver>(relaxed = true)
         val preDraw = slot<ViewTreeObserver.OnPreDrawListener>()
         every { rv.viewTreeObserver } returns observer
         every { rv.childCount } returns rows.size
         every { observer.addOnPreDrawListener(capture(preDraw)) } just Runs
+        every { rv.addOnScrollListener(capture(scrollListeners)) } just Runs
         rows.forEachIndexed { index, row ->
             val holder = mockk<StoryViewAdapter.StoryViewHolder>(relaxed = true)
             every { rv.getChildAt(index) } returns row
@@ -122,6 +124,54 @@ class Test_StoryMotionScope {
         }
         adapter.onAttachedToRecyclerView(rv)
         return preDraw.captured
+    }
+
+    @Test fun test_scrolling_rows_are_solid_and_do_not_start_entrances() {
+        val seen = mutableSetOf<String>()
+        val rv = mockk<RecyclerView>(relaxed = true)
+        val listeners = mutableListOf<RecyclerView.OnScrollListener>()
+        val row = row()
+        val preDraw = attach(adapter(seen), listOf(row), rv, listeners)
+        every { rv.scrollState } returns RecyclerView.SCROLL_STATE_DRAGGING
+        listeners.forEach { it.onScrollStateChanged(rv, RecyclerView.SCROLL_STATE_DRAGGING) }
+        every { row.isShown } returns false
+        preDraw.onPreDraw()
+        assertTrue("Hidden rows must not be marked presented", seen.isEmpty())
+        every { row.isShown } returns true
+        preDraw.onPreDraw()
+        verify(exactly = 0) { ReaderMotion.enter(any(), any(), any()) }
+        assertEquals(setOf("1:row0"), seen)
+    }
+
+    @Test fun test_late_rows_after_scroll_stops_stay_solid_until_opening_another_feed() {
+        val seen = mutableSetOf<String>()
+        val adapter = adapter(seen)
+        val rv = mockk<RecyclerView>(relaxed = true)
+        val listeners = mutableListOf<RecyclerView.OnScrollListener>()
+        val preDraw = attach(adapter, listOf(row()), rv, listeners)
+        // Test_StoryMotionScope.kt models pagination arriving only after the drag and fling are over.
+        listeners.forEach { it.onScrollStateChanged(rv, RecyclerView.SCROLL_STATE_DRAGGING) }
+        listeners.forEach { it.onScrollStateChanged(rv, RecyclerView.SCROLL_STATE_SETTLING) }
+        listeners.forEach { it.onScrollStateChanged(rv, RecyclerView.SCROLL_STATE_IDLE) }
+        adapter.updateFeedSet(FeedSet.singleFeed("1"))
+        preDraw.onPreDraw()
+        verify(exactly = 0) { ReaderMotion.enter(any(), any(), any()) }
+        assertEquals(setOf("1:row0"), seen)
+
+        adapter.updateFeedSet(FeedSet.allFeeds())
+        StoryViewAdapter::class.java.getDeclaredField("motionAwaitingFeedCommit").apply { isAccessible = true }.set(adapter, false)
+        preDraw.onPreDraw()
+        verify(exactly = 1) { ReaderMotion.enter(any(), any(), any()) }
+    }
+
+    @Test fun test_starting_to_scroll_finishes_active_opening_entrances_immediately() {
+        val row = row()
+        val rv = mockk<RecyclerView>(relaxed = true)
+        val listeners = mutableListOf<RecyclerView.OnScrollListener>()
+        attach(adapter(mutableSetOf()), listOf(row), rv, listeners).onPreDraw()
+        verify(exactly = 1) { ReaderMotion.enter(row, any(), any()) }
+        listeners.forEach { it.onScrollStateChanged(rv, RecyclerView.SCROLL_STATE_DRAGGING) }
+        verify(exactly = 1) { row.clearAnimation() }
     }
 
     @Test fun test_recycler_child_order_does_not_scramble_the_screen_order_or_merge_late_delays() {
