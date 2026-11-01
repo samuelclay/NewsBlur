@@ -420,7 +420,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
 
         if (feedCount < 1) {
-            if (setupQueue.isPending() || syncServiceState.isSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
+            if (setupQueue.isPending() || syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 binding.emptyViewImage.setVisibility(View.INVISIBLE);
                 binding.emptyViewText.setVisibility(View.INVISIBLE);
             } else {

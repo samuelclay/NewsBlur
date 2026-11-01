@@ -31,6 +31,53 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Test_SyncStatusMotion {
+    @Test fun test_empty_filter_message_remains_visible_after_background_sync_finishes() {
+        mockkStatic(com.newsblur.compose.LanguageChooserGate::class)
+        every { com.newsblur.compose.LanguageChooserGate.feedListLoaded(any()) } just Runs
+        try {
+            for (phase in listOf(com.newsblur.service.ServiceState.UnreadsSync, com.newsblur.service.ServiceState.CleanupSync)) {
+                for (filter in listOf(com.newsblur.util.StateFilter.SAVED, com.newsblur.util.StateFilter.BEST)) {
+                    val f = Fixture()
+                    val state = com.newsblur.service.DefaultSyncServiceState()
+                    f.useState(state)
+                    f.folder.currentState = filter
+                    every { f.main.updateFeedCount(any()) } answers { callOriginal() }
+                    every { f.main.handleUpdate(any()) } answers { callOriginal() }
+                    state.setServiceState(phase)
+                    f.main.updateFeedCount(0)
+                    state.setServiceState(com.newsblur.service.ServiceState.Idle)
+                    f.main.handleUpdate(NbSyncManager.UPDATE_STATUS)
+                    assertEquals("Empty $filter must not stay blank after $phase finishes", View.VISIBLE, f.emptyVisibility)
+                }
+            }
+        } finally {
+            unmockkStatic(com.newsblur.compose.LanguageChooserGate::class)
+        }
+    }
+
+    @Test fun test_empty_filter_waits_for_initial_feed_counts() {
+        mockkStatic(com.newsblur.compose.LanguageChooserGate::class)
+        every { com.newsblur.compose.LanguageChooserGate.feedListLoaded(any()) } just Runs
+        try {
+            for (phase in listOf(com.newsblur.service.ServiceState.Housekeeping,
+                                 com.newsblur.service.ServiceState.FolderFeedSync,
+                                 com.newsblur.service.ServiceState.RecountsSync)) {
+                val f = Fixture()
+                val state = com.newsblur.service.DefaultSyncServiceState()
+                f.useState(state)
+                every { f.main.updateFeedCount(any()) } answers { callOriginal() }
+                state.setServiceState(phase)
+                f.main.updateFeedCount(0)
+                assertEquals("Empty state must wait for $phase", View.INVISIBLE, f.emptyVisibility)
+                state.setServiceState(com.newsblur.service.ServiceState.Idle)
+                f.main.updateFeedCount(0)
+                assertEquals(View.VISIBLE, f.emptyVisibility)
+            }
+        } finally {
+            unmockkStatic(com.newsblur.compose.LanguageChooserGate::class)
+        }
+    }
+
     @Test fun test_unread_download_progress_is_visible_until_all_stories_are_synced() {
         val state = com.newsblur.service.DefaultSyncServiceState()
         val f = Fixture()
@@ -301,6 +348,9 @@ class Test_SyncStatusMotion {
         val main = mockk<Main>(relaxed = true)
         private val binding = mockk<ActivityMainBinding>(relaxed = true)
         private val container = mockk<LinearLayout>(relaxed = true)
+        val folder = FolderListFragment()
+        private val emptyText = mockk<TextView>(relaxed = true)
+        var emptyVisibility = View.GONE
         val text = mockk<TextView>(relaxed = true)
         val animator = mockk<ViewPropertyAnimator>(relaxed = true)
         val sync = mockk<SyncServiceState>(relaxed = true)
@@ -319,7 +369,9 @@ class Test_SyncStatusMotion {
             set("binding", binding)
             set("setupQueue", mockk<SetupQueue>(relaxed = true))
             set("keyboardManager", mockk<KeyboardManager>(relaxed = true))
-            val folder = FolderListFragment()
+            setBinding("emptyViewImage", mockk<android.widget.ImageView>(relaxed = true))
+            setBinding("emptyViewText", emptyText)
+            every { emptyText.visibility = any() } answers { emptyVisibility = firstArg() }
             FolderListFragment::class.java.getDeclaredField("firstCursorSeenYet").apply { isAccessible = true }.set(folder, true)
             set("folderFeedList", folder)
             NbActivity::class.java.getDeclaredField("syncServiceState").apply { isAccessible = true }.set(main, sync)
