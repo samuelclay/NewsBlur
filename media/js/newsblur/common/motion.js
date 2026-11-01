@@ -12,7 +12,7 @@ NEWSBLUR.motion = (function () {
         'white-space word-break overflow-wrap text-overflow overflow-x overflow-y color background-color background-image background-size ' +
         'background-position background-repeat opacity visibility align-items align-self justify-content justify-self flex-grow flex-shrink flex-basis ' +
         'flex-direction flex-wrap order row-gap column-gap grid-template-columns grid-template-rows grid-column grid-row ' +
-        'float clear vertical-align object-fit object-position box-shadow transform transform-origin').split(' ');
+        'float clear vertical-align object-fit object-position box-shadow transform transform-origin -webkit-line-clamp -webkit-box-orient').split(' ');
     function play(element, frames, duration, delay, complete) {
         if (!element || !element.animate) { if (complete) complete(); return; }
         var previous = running.get(element);
@@ -141,7 +141,7 @@ NEWSBLUR.motion = (function () {
     }
     function watch_parts(element, selector) {
         var existing = part_observers.get(element);
-        if (existing) { existing.refresh(); return existing; }
+        if (existing) { existing.resume(); existing.refresh(); return existing; }
         var states = new Map();
         var connected = true;
         var observer = typeof IntersectionObserver === 'function' ? new IntersectionObserver(refresh, { threshold: 0 }) : null;
@@ -205,19 +205,31 @@ NEWSBLUR.motion = (function () {
                 enter(node, stagger_delay(index, arriving.length, 30, 150), 7);
             });
         }
-        var controller = { refresh: refresh, disconnect: function () {
+        function pause() {
             connected = false;
             if (frame !== null) cancelAnimationFrame(frame);
             frame = null;
             if (observer) observer.disconnect();
             if (mutations) mutations.disconnect();
-            states.clear();
-        } };
+        }
+        function observe_mutations() {
+            if (mutations) mutations.observe(element, { childList: true, subtree: true, characterData: true,
+                attributes: true, attributeFilter: ['class', 'style', 'hidden', 'disabled', 'aria-pressed', 'aria-expanded'] });
+        }
+        var controller = { refresh: refresh, pause: pause, resume: function () {
+            if (connected) return;
+            connected = true;
+            states.forEach(function (state) { if (observer) observer.observe(state.node); });
+            observe_mutations();
+        }, disconnect: function () { pause(); states.clear(); } };
         part_observers.set(element, controller);
-        if (mutations) mutations.observe(element, { childList: true, subtree: true, characterData: true,
-            attributes: true, attributeFilter: ['class', 'style', 'hidden', 'disabled', 'aria-pressed', 'aria-expanded'] });
+        observe_mutations();
         refresh();
         return controller;
+    }
+    function pause_parts(element) {
+        var controller = part_observers.get(element);
+        if (controller) controller.pause();
     }
     function unwatch_parts(element) {
         var controller = part_observers.get(element);
@@ -373,6 +385,6 @@ NEWSBLUR.motion = (function () {
     });
     $(document).on('click.nb-motion', '.NB-feed-story-save, .NB-feedbar-mark-feed-read, .NB-taskbar .NB-taskbar-button, .NB-storytitles-sentiment, .NB-feedlist-collapse-icon, .NB-intelligence-slider-control, .NB-feed-story-train, .NB-search-icon', function () { pop(this); });
     return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, pop: pop, article: article,
-        article_parts: article_parts, watch_parts: watch_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
+        article_parts: article_parts, watch_parts: watch_parts, pause_parts: pause_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
         duration: function (milliseconds) { return reduced.matches ? 0 : milliseconds; } };
 })();

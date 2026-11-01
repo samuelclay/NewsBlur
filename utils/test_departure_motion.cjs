@@ -51,6 +51,7 @@ function harness() {
             width: element.name === 'headline' ? (in_pane ? '250px' : '120px') : '300px',
             'padding-right': element.name === 'row' ? (in_pane ? '10px' : '140px') : '0px',
             'font-size': in_pane ? '14px' : '12px',
+            '-webkit-line-clamp': in_pane ? '4' : '2',
             overflow: element === pane ? 'hidden' : 'visible',
             ...element.style
         };
@@ -77,6 +78,7 @@ test('outgoing titles retain their rendered headline width and layout outside th
     assert.equal(h.computed(copied_headline).width, width, 'Leaving #story_titles must not squeeze the visible headline');
     assert.equal(h.computed(copied_row)['padding-right'], '10px');
     assert.equal(h.computed(copied_headline)['font-size'], '14px');
+    assert.equal(h.computed(copied_headline)['-webkit-line-clamp'], '4', 'The west-pane preview must keep all four visible lines');
     assert.equal(ghost.children.length, 1, 'Only viewport rows belong in the outgoing snapshot');
     assert.equal(h.style_reads.has(h.offscreen), false, 'Offscreen rows must not incur style-copy work');
     assert.equal(h.style_reads.has(h.offscreen_headline), false);

@@ -471,3 +471,21 @@ test('identical rebuilt controls and comments keep presentation state while a ch
     assert.equal(h.animations[2].element, changed);
     assert.equal(h.observers[0].targets.size, 2, 'Replaced elements must not accumulate in the visibility observer');
 });
+
+test('deselecting and reselecting a story preserves unchanged actions and updates only a changed control', () => {
+    const h = harness(), root = h.root(), save = h.record('save'), share = h.record('share');
+    save.el.textContent = 'Save'; share.el.textContent = 'Share';
+    h.visible(save); h.visible(share, 80);
+    root.querySelectorAll = () => [save.el, share.el];
+    h.motion.watch_parts(root, '.parts');
+    assert.equal(h.animations.length, 2);
+    h.motion.pause_parts(root);
+    assert.equal(h.observers[0].targets.size, 0);
+    h.motion.watch_parts(root, '.parts');
+    assert.equal(h.animations.length, 2, 'Scrolling back over the same story must not replay all its controls');
+    h.motion.pause_parts(root);
+    save.el.textContent = 'Saved';
+    h.motion.watch_parts(root, '.parts');
+    assert.equal(h.animations.length, 3, 'A semantic change while paused still animates when the story resumes');
+    assert.equal(h.animations[2].element, save.el);
+});
