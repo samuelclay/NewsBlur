@@ -24,19 +24,10 @@ NEWSBLUR.motion = (function () {
         return play(element, [{ opacity: 1, transform: 'translateY(0)' },
             { opacity: 0, transform: 'translateY(-8px)' }], 220, 0, complete);
     }
-    function depart(element) {
+    function depart(element, options) {
         if (reduced.matches || !element || !element.getClientRects().length) return;
         var rect = element.getBoundingClientRect();
         if (!rect.width || !rect.height) return;
-        // motion.js removes live layout immediately; the inert copy cannot capture focus or clicks.
-        var ghost = element.cloneNode(true);
-        ghost.removeAttribute('id');
-        ghost.querySelectorAll('[id]').forEach(function (node) { node.removeAttribute('id'); });
-        ghost.setAttribute('aria-hidden', 'true');
-        ghost.inert = true;
-        Object.assign(ghost.style, { position: 'fixed', left: rect.left + 'px', top: rect.top + 'px',
-            width: rect.width + 'px', height: rect.height + 'px', margin: 0, boxSizing: 'border-box',
-            pointerEvents: 'none', overflow: 'hidden', zIndex: 1100 });
         // motion.js clips the outgoing drawing to the original scroll viewport.
         var clip = { top: 0, left: 0, right: window.innerWidth, bottom: window.innerHeight };
         for (var parent = element.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
@@ -46,6 +37,47 @@ NEWSBLUR.motion = (function () {
                 clip.right = Math.min(clip.right, bounds.right); clip.bottom = Math.min(clip.bottom, bounds.bottom);
             }
         }
+        // motion.js freezes only visible title rows, so reparenting cannot lose the pane's layout selectors.
+        function copy_style(source, target) {
+            var style = getComputedStyle(source);
+            Array.from(style).forEach(function (name) { target.style.setProperty(name, style.getPropertyValue(name)); });
+            target.style.animation = 'none';
+            target.style.transition = 'none';
+        }
+        function copy_rendered(source) {
+            var copy = source.cloneNode(false);
+            if (source.nodeType !== 1) return copy;
+            if (!source.getClientRects().length) { copy.style.display = 'none'; return copy; }
+            copy_style(source, copy);
+            Array.from(source.childNodes).forEach(function (child) { copy.appendChild(copy_rendered(child)); });
+            return copy;
+        }
+        var snapshot_layout = options && options.snapshot_layout;
+        var ghost = element.cloneNode(!snapshot_layout);
+        if (snapshot_layout) {
+            copy_style(element, ghost);
+            var border_left = parseFloat(ghost.style.borderLeftWidth) || 0;
+            var border_top = parseFloat(ghost.style.borderTopWidth) || 0;
+            Array.from(element.children).forEach(function (child) {
+                var bounds = child.getBoundingClientRect();
+                if (!child.getClientRects().length || bounds.bottom <= clip.top || bounds.top >= clip.bottom ||
+                    bounds.right <= clip.left || bounds.left >= clip.right) return;
+                var copy = copy_rendered(child);
+                // motion.js pins rows in place even when offscreen rows above them are omitted from the snapshot.
+                Object.assign(copy.style, { position: 'absolute', margin: 0, boxSizing: 'border-box',
+                    left: (bounds.left - rect.left - border_left) + 'px', top: (bounds.top - rect.top - border_top) + 'px',
+                    width: bounds.width + 'px', height: bounds.height + 'px', transform: 'none' });
+                ghost.appendChild(copy);
+            });
+        }
+        // motion.js removes live layout immediately; the inert copy cannot capture focus or clicks.
+        ghost.removeAttribute('id');
+        ghost.querySelectorAll('[id]').forEach(function (node) { node.removeAttribute('id'); });
+        ghost.setAttribute('aria-hidden', 'true');
+        ghost.inert = true;
+        Object.assign(ghost.style, { position: 'fixed', left: rect.left + 'px', top: rect.top + 'px',
+            width: rect.width + 'px', height: rect.height + 'px', margin: 0, boxSizing: 'border-box',
+            pointerEvents: 'none', overflow: 'hidden', zIndex: 1100 });
         ghost.style.clipPath = 'inset(' + [Math.max(0, clip.top - rect.top), Math.max(0, rect.right - clip.right),
             Math.max(0, rect.bottom - clip.bottom), Math.max(0, clip.left - rect.left)].map(function (n) { return n + 'px'; }).join(' ') + ')';
         document.body.appendChild(ghost);

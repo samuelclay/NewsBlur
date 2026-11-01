@@ -431,7 +431,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     clear: function () {
         // console.log(['clear story titles', this.stories.length, this.$el]);
-        NEWSBLUR.motion.depart(this.el);
+        NEWSBLUR.motion.depart(this.el, { snapshot_layout: true });
         if (this.motion_observer) this.motion_observer.disconnect();
         _.invoke(this.stories, 'destroy');
         this.cache = {};
