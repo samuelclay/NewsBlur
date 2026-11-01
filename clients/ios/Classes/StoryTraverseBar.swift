@@ -135,13 +135,14 @@ class StoryTraverseBar: NSObject {
 
     /// Builds the traverse bar inside the given container, replacing its existing subviews.
     func setup(in traverseView: UIView) {
+        container = traverseView
         traverseView.subviews.forEach { $0.removeFromSuperview() }
         traverseView.backgroundColor = .clear
 
         buildLeftGroup(in: traverseView)
         buildRightGroup(in: traverseView)
         buildLayout(in: traverseView)
-        ReaderMotion.cascade(traverseView.subviews)
+        updateMotion()
         installHighlightHandler(textButton)
         installHighlightHandler(sendButton)
         installHighlightHandler(previousButton)
@@ -436,12 +437,25 @@ class StoryTraverseBar: NSObject {
 
     // MARK: - State Updates
 
+    private weak var container: UIView?
+
+    func updateMotion() {
+        guard let container else { return }
+        var controls: [UIView] = [textButton, sendButton, previousButton, circularProgressView, nextButton]
+        // StoryTraverseBar.swift's Catalyst next label lives outside its transparent button.
+        if let nextLabelView { controls.append(nextLabelView) }
+        if let nextChevronView { controls.append(nextChevronView) }
+        ReaderMotion.controls(controls, in: container)
+    }
+
     func updatePreviousEnabled(_ enabled: Bool) {
+        defer { updateMotion() }
         previousButton.isEnabled = enabled
         previousButton.alpha = enabled ? 1.0 : 0.35
     }
 
     func updateNextShowDone(_ showDone: Bool) {
+        defer { updateMotion() }
         showsDone = showDone
         let tint = ThemeManager.shared?.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
         nextButton.accessibilityLabel = showDone ? NBLocalization.text("Done with stories") : NBLocalization.text("Next story")
@@ -467,6 +481,7 @@ class StoryTraverseBar: NSObject {
     }
 
     func updateTextInTextView(_ inTextView: Bool, enabled: Bool) {
+        defer { updateMotion() }
         textButton.isEnabled = enabled
         textButton.alpha = enabled ? 1.0 : 0.4
 
@@ -489,6 +504,7 @@ class StoryTraverseBar: NSObject {
     }
 
     func updateSendEnabled(_ enabled: Bool) {
+        defer { updateMotion() }
         sendButton.isEnabled = enabled
         sendButton.alpha = enabled ? 1.0 : 0.4
     }

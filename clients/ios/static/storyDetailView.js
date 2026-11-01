@@ -661,16 +661,69 @@ Zepto(function($) {
 });
 
 // storyDetailView.js starts motion only after the native paint/readiness gate opens.
+var newsblurMotionSeen = new WeakSet();
+var newsblurMotionObserver;
+var newsblurMotionMutationObserver;
+var newsblurMotionReady = false;
+function newsblurRefreshStoryMotion() {
+    if (newsblurMotionReady) newsblurAnimateStoryEntrance();
+}
 function newsblurAnimateStoryEntrance() {
+    newsblurMotionReady = true;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var elements = document.querySelectorAll('.NB-story-title, .NB-story-date, #NB-story-author, #NB-story');
-    Array.prototype.forEach.call(elements, function (element, index) {
-        if (!element.animate) return;
+    function animate(element, index) {
+        if (!element.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         element.animate([
             { opacity: 0, transform: 'translateY(10px)' },
             { opacity: 1, transform: 'translateY(-.5px)', offset: .8 },
             { opacity: 1, transform: 'translateY(0)' }
-        ], { duration: 320, delay: Math.min(index * 25, 75), easing: 'cubic-bezier(.2,.75,.3,1)', fill: 'backwards' });
+        ], { duration: 320, delay: Math.min(index * 25, 150), easing: 'cubic-bezier(.2,.75,.3,1)', fill: 'backwards' });
+    }
+    if (!newsblurMotionObserver && window.IntersectionObserver) {
+        newsblurMotionObserver = new IntersectionObserver(function(entries) {
+            var index = 0;
+            entries.sort(function(a, b) {
+                return a.boundingClientRect.top - b.boundingClientRect.top || a.boundingClientRect.left - b.boundingClientRect.left;
+            }).forEach(function(entry) {
+                if (!entry.isIntersecting) return;
+                newsblurMotionObserver.unobserve(entry.target);
+                animate(entry.target, index++);
+            });
+        });
+    }
+    if (!newsblurMotionMutationObserver && window.MutationObserver) {
+        var scheduled = false;
+        newsblurMotionMutationObserver = new MutationObserver(function() {
+            if (scheduled) return;
+            scheduled = true;
+            requestAnimationFrame(function() { scheduled = false; newsblurRefreshStoryMotion(); });
+        });
+        newsblurMotionMutationObserver.observe(document.body, { childList: true, subtree: true,
+            attributes: true, attributeFilter: ['class', 'style'] });
+    }
+    var elements = document.querySelectorAll('.NB-story-title, .NB-story-date, #NB-story-author, #NB-story, ' +
+        '.NB-share-button, .NB-story-shares, .NB-story-comment, .NB-story-comment-reply, ' +
+        '.NB-story-comments-friends-header, .NB-story-comments-public-header, ' +
+        '.NB-story-cluster-detail-header, .NB-story-cluster-detail-item');
+    var pending = Array.prototype.filter.call(elements, function(element) {
+        return !newsblurMotionSeen.has(element) && element.getClientRects().length;
+    });
+    var groups = new Map();
+    pending.forEach(function(element) {
+        if (newsblurMotionSeen.has(element)) return;
+        newsblurMotionSeen.add(element);
+        // storyDetailView.js lets a newly inserted comment carry its replies, avoiding nested double motion.
+        for (var parent = element.parentElement; parent; parent = parent.parentElement) {
+            if (pending.indexOf(parent) !== -1) return;
+        }
+        var bounds = element.getBoundingClientRect();
+        if (newsblurMotionObserver && (bounds.top >= window.innerHeight || bounds.bottom <= 0)) {
+            newsblurMotionObserver.observe(element);
+            return;
+        }
+        var index = groups.get(element.parentElement) || 0;
+        groups.set(element.parentElement, index + 1);
+        animate(element, index);
     });
 }
 

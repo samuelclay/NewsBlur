@@ -63,7 +63,25 @@ class StoryToolbar: UIView {
         buildSeparator()
         buildLayout()
         updateTheme()
-        ReaderMotion.cascade([backButton, settingsButton, browserButton])
+        updateMotion()
+    }
+
+    func updateMotion() {
+        ReaderMotion.controls([backButton, listenButton, settingsButton, browserButton], in: self)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateMotion()
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        updateMotion()
+    }
+
+    override var isHidden: Bool {
+        didSet { updateMotion() }
     }
 
     // MARK: - Back Button

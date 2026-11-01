@@ -278,10 +278,89 @@ import SwiftUI
         }
     }
 
+    private static var controlsKey: UInt8 = 0
+    private struct ControlState: Equatable {
+        let label: String
+        let enabled: Bool
+        let selected: Bool
+    }
+    private final class ControlPresentation: NSObject {
+        var states = [ObjectIdentifier: ControlState]()
+    }
+
+    private static func visible(_ view: UIView) -> Bool {
+        guard view.window != nil else { return false }
+        var ancestor: UIView? = view
+        while let current = ancestor {
+            if current.isHidden || current.alpha <= 0 { return false }
+            ancestor = current.superview
+        }
+        return true
+    }
+
+    // ReaderMotion.swift observes actual appearances, not setup time or the identity of the next story.
+    static func controls(_ views: [UIView], in container: UIView) {
+        let presentation = objc_getAssociatedObject(container, &controlsKey) as? ControlPresentation ?? ControlPresentation()
+        objc_setAssociatedObject(container, &controlsKey, presentation, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        guard visible(container) else {
+            presentation.states.removeAll()
+            views.forEach { $0.layer.removeAnimation(forKey: "readerEntrance") }
+            return
+        }
+        func label(_ view: UIView) -> String {
+            ([view.accessibilityLabel ?? "", (view as? UILabel)?.text ?? "",
+              (view as? UIButton)?.currentTitle ?? ""] + view.subviews.map(label)).joined(separator: "|")
+        }
+        var states = [ObjectIdentifier: ControlState]()
+        var entering = [UIView]()
+        for view in views where visible(view) {
+            let key = ObjectIdentifier(view)
+            let control = view as? UIControl
+            let state = ControlState(label: label(view), enabled: control?.isEnabled ?? true, selected: control?.isSelected ?? false)
+            states[key] = state
+            if let previous = presentation.states[key] {
+                if previous != state, view.layer.animation(forKey: "readerEntrance") == nil,
+                   !UIAccessibility.isReduceMotionEnabled {
+                    let fade = CABasicAnimation(keyPath: "opacity")
+                    fade.fromValue = view.layer.opacity * 0.6
+                    fade.toValue = view.layer.opacity
+                    fade.duration = 0.18
+                    let lift = CABasicAnimation(keyPath: "transform.translation.y")
+                    lift.isAdditive = true
+                    lift.fromValue = 2
+                    lift.toValue = 0
+                    lift.duration = 0.22
+                    let change = CAAnimationGroup()
+                    change.animations = [fade, lift]
+                    change.duration = 0.22
+                    view.layer.add(change, forKey: "readerControlChange")
+                }
+            } else {
+                entering.append(view)
+            }
+        }
+        presentation.states = states
+        cascade(entering)
+    }
+
+    // ReaderMotion.swift uses public view hierarchy APIs for UIKit's vertical and navigation bars.
+    static func toolbarControls(_ bar: UIView) {
+        func controlsIn(_ view: UIView) -> [UIView] {
+            if view is UIControl { return [view] }
+            return view.subviews.flatMap(controlsIn)
+        }
+        let controls = bar.subviews.flatMap(controlsIn).sorted {
+            let lhs = $0.convert($0.bounds, to: bar), rhs = $1.convert($1.bounds, to: bar)
+            return abs(lhs.minY - rhs.minY) > 8 ? lhs.minY < rhs.minY : lhs.minX < rhs.minX
+        }
+        self.controls(controls, in: bar)
+    }
+
     static func screen(_ controller: UIViewController) {
         // ReaderMotion.swift leaves the reader's identity-based row and article choreography to its own hooks.
         guard !(controller is FeedsObjCViewController), !(controller is FeedDetailObjCViewController),
-              !(controller is StoryDetailObjCViewController), !(controller is MenuViewController) else { return }
+              !(controller is StoryDetailObjCViewController), !(controller is StoryPagesObjCViewController),
+              !(controller is MenuViewController) else { return }
         func sections(_ view: UIView, depth: Int) -> [UIView] {
             guard !view.isHidden, view.alpha > 0 else { return [] }
             if let table = view as? UITableView { return table.visibleCells.sorted { $0.frame.minY < $1.frame.minY } }

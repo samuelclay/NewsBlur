@@ -652,6 +652,73 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor final class Test_ReaderMotion: XCTestCase {
+    func test_nativeToolbarFollowsVisualOrderAndReentersOnlyAfterBeingHidden() throws {
+        let bar = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 100))
+        let lower = UIButton(frame: CGRect(x: 0, y: 50, width: 40, height: 40))
+        let upper = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+        lower.isEnabled = false
+        lower.alpha = 0.35
+        bar.addSubview(lower)
+        bar.addSubview(upper)
+        let window = motionWindow(containing: [bar])
+        defer { window.isHidden = true }
+        ReaderMotion.toolbarControls(bar)
+        let first = try XCTUnwrap(upper.layer.animation(forKey: "readerEntrance"))
+        let second = try XCTUnwrap(lower.layer.animation(forKey: "readerEntrance"))
+        XCTAssertLessThan(first.beginTime, second.beginTime)
+        for button in [lower, upper] { button.layer.removeAllAnimations() }
+        ReaderMotion.toolbarControls(bar)
+        XCTAssertNil(upper.layer.animation(forKey: "readerEntrance"))
+        bar.isHidden = true
+        ReaderMotion.toolbarControls(bar)
+        bar.isHidden = false
+        ReaderMotion.toolbarControls(bar)
+        XCTAssertNotNil(upper.layer.animation(forKey: "readerEntrance"))
+        XCTAssertEqual(lower.alpha, 0.35, accuracy: 0.001)
+        XCTAssertFalse(lower.isEnabled)
+    }
+
+    func test_headerControlsWaitForAppearanceAndOnlyChangedControlsAnimate() throws {
+        let parent = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
+        let toolbar = StoryToolbar()
+        toolbar.setup(in: parent)
+        toolbar.listenButton.isHidden = false
+        XCTAssertNil(toolbar.backButton.layer.animation(forKey: "readerEntrance"))
+        let window = motionWindow(containing: [parent])
+        defer { window.isHidden = true }
+        parent.layoutIfNeeded()
+        let controls = [toolbar.backButton, toolbar.listenButton, toolbar.settingsButton, toolbar.browserButton]
+        for control in controls {
+            XCTAssertNotNil(control.layer.animation(forKey: "readerEntrance"))
+            control.layer.removeAllAnimations()
+        }
+        toolbar.setNeedsLayout()
+        toolbar.layoutIfNeeded()
+        XCTAssertTrue(controls.allSatisfy { $0.layer.animationKeys()?.isEmpty ?? true })
+        toolbar.listenButton.accessibilityLabel = "Pause listening"
+        toolbar.setNeedsLayout()
+        toolbar.layoutIfNeeded()
+        XCTAssertNotNil(toolbar.listenButton.layer.animation(forKey: "readerControlChange"))
+        XCTAssertNil(toolbar.backButton.layer.animation(forKey: "readerEntrance"))
+        XCTAssertNil(toolbar.settingsButton.layer.animation(forKey: "readerControlChange"))
+    }
+
+    func test_traversalEntranceCascadesIndividualControls() throws {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 60))
+        let window = motionWindow(containing: [container])
+        defer { window.isHidden = true }
+        let bar = StoryTraverseBar()
+        bar.setup(in: container)
+        container.layoutIfNeeded()
+        let controls = [bar.textButton, bar.sendButton, bar.previousButton, bar.nextButton]
+        let entrances = try controls.map { try XCTUnwrap($0.layer.animation(forKey: "readerEntrance")) }
+        for index in 1..<entrances.count {
+            XCTAssertGreaterThan(entrances[index].beginTime, entrances[index - 1].beginTime)
+        }
+        XCTAssertNil(bar.leftGroupView.layer.animation(forKey: "readerEntrance"))
+        XCTAssertNil(bar.rightGroupView.layer.animation(forKey: "readerEntrance"))
+    }
+
     func test_scrollingStoryRowsAreAlreadyVisibleAndDoNotReplayAfterScrollingStops() {
         let owner = ReaderMotionThemeController()
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
