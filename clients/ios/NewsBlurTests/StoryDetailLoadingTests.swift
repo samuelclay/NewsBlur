@@ -1031,7 +1031,6 @@ import XCTest
             (realPages[2].webView as? RealStoryLoadWebView)?.selectionLoadObserver = { html in
                 // StoryDetailLoadingTests.swift counts article documents, excluding the cleared spare page's empty HTML.
                 if html.contains("Prepared article 21") { destinationLoads += 1 }
-                print("RETAP_DESTINATION_DOCUMENT article=\(html.contains("Prepared article 21")) bytes=\(html.utf8.count)")
             }
             fixture.pages.isAnimatedIntoPlace = true
             fixture.pages.runsActualAppearanceCallbacks = true
