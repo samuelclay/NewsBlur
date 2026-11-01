@@ -438,6 +438,51 @@ import UIKit
         XCTAssertEqual(fixture.table.reloadCount, 0)
     }
 
+    func test_tappingSelectedStoryDoesNotReplayReaderAppearanceOrReloadBeforeNextSelection() {
+        for (grid, visible, compact) in [(false, true, false), (true, true, false), (true, false, false), (false, false, true)] {
+            let app = RepeatedStoryTapApp()
+            app.storiesCollection = StoriesCollection()
+            app.storiesCollection.appDelegate = app
+            let reader = RepeatedStoryTapPages()
+            reader.appDelegate = app
+            let detail = RepeatedStoryTapDetail()
+            detail.grid = grid
+            app.storyPagesViewController = reader
+            app.detailViewController = detail
+            let feed = RepeatedStoryTapFeed()
+            feed.compact = compact
+            feed.appDelegate = app
+            feed.storiesCollection = app.storiesCollection
+            let first: [AnyHashable: Any] = ["story_hash": "selected", "read_status": 1]
+            let second: [AnyHashable: Any] = ["story_hash": "next", "read_status": 1]
+            app.storiesCollection.activeFeedStories = [first, second]
+            app.storiesCollection.activeFeedStoryLocations = NSMutableArray(array: [0, 1])
+            app.storiesCollection.activeFeedStoryLocationIds = NSMutableArray(array: ["selected", "next"])
+            app.storiesCollection.storyLocationsCount = 2
+            app.activeStory = first
+            feed.setValue([["type": 0, "story_location": 0], ["type": 0, "story_location": 1]], forKey: "visibleStoryRows")
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 800, height: 600))
+            window.rootViewController = UIViewController()
+            if visible {
+                window.rootViewController?.view.addSubview(reader.view)
+                window.isHidden = false
+            }
+            defer { window.isHidden = true }
+            let expectedRepeatedLoads = compact || (grid && !visible) ? [0, 0] : []
+            let initialAppearances = reader.appearances
+
+            // StoryReadStateAnimationTests.swift uses the production title-selection entry point twice, then selects the next story.
+            feed.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 0, section: 0))
+            feed.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 0, section: 0))
+            XCTAssertEqual(reader.appearances, initialAppearances, "Reselecting a visible story must not re-enter reader appearance; grid=\(grid)")
+            XCTAssertEqual(feed.loadedRows, expectedRepeatedLoads, "Preserve a visible document, but reopen a compact or hidden grid reader; grid=\(grid), visible=\(visible), compact=\(compact)")
+            feed.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 1, section: 0))
+            XCTAssertEqual(feed.loadedRows, expectedRepeatedLoads + [1], "The following story should load exactly once; grid=\(grid)")
+            app.storyPagesViewController = nil
+            app.detailViewController = nil
+        }
+    }
+
     private func display(_ cell: FeedDetailTableCell) {
         cell.layer.displayIfNeeded()
         (cell.value(forKey: "cellContent") as? UIView)?.layer.displayIfNeeded()
@@ -883,4 +928,41 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
     override var standardAppearance: UINavigationBarAppearance {
         didSet { appearanceChanges += 1 }
     }
+}
+
+@MainActor private final class RepeatedStoryTapFeed: FeedDetailViewController {
+    var loadedRows: [Int] = []
+    var compact = false
+    override func viewDidLoad() {}
+    @objc(isPhoneOrCompact) func usesCompactLayout() -> Bool { compact }
+    override func markStoryReadIfNeeded(_ story: [AnyHashable: Any]!, isScrolling: Bool) -> Bool { false }
+    override func loadStory(atRow row: Int) { loadedRows.append(row) }
+    override func reload() {}
+}
+
+@MainActor private final class RepeatedStoryTapPages: StoryPagesViewController {
+    var appearances = 0
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 800, height: 600)) }
+    override func viewDidLoad() {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+    override func viewWillAppear(_ animated: Bool) { appearances += 1 }
+    override func viewDidAppear(_ animated: Bool) { appearances += 1 }
+}
+
+@MainActor private final class RepeatedStoryTapDetail: DetailViewController {
+    var grid = false
+    override var storyTitlesInGridView: Bool { grid }
+    override func dismissFullscreenSidebarOverlayAfterStorySelection() {}
+    override func restoreStoryKeyboardFocusIfNeeded() {}
+}
+
+@MainActor private final class RepeatedStoryTapApp: NewsBlurAppDelegate {
+    override var isPhone: Bool { false }
+    var testPages: StoryPagesViewController?
+    override var storyPagesViewController: StoryPagesViewController! {
+        get { testPages }
+        set { testPages = newValue }
+    }
+    override func show(_ column: UISplitViewController.Column, debugInfo: String!, animated: Bool) {}
 }

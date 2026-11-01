@@ -5222,18 +5222,18 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             appDelegate.activeStory &&
             [[story objectForKey:@"story_hash"]
              isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
-            if ([self markStoryReadIfNeeded:story isScrolling:NO] && !isGridView) {
-                [self reloadStoryRowsForLocation:location rowAnimation:UITableViewRowAnimationFade];
+            if ([self markStoryReadIfNeeded:story isScrolling:NO]) {
+                if (isGridView) [self reload];
+                else [self reloadStoryRowsForLocation:location rowAnimation:UITableViewRowAnimationFade];
             }
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row" animated:YES];
             
-            if (!appDelegate.isPhone) {
-                [appDelegate.storyPagesViewController viewWillAppear:NO];
-                [appDelegate.storyPagesViewController viewDidAppear:NO];
-            }
-            
-            if (!isGridView) {
+            // FeedDetailObjCViewController.m leaves appearance callbacks to UIKit: replaying them resets
+            // StoryPagesObjCViewController.m's entrance animation and restyles the already visible article.
+            StoryPagesViewController *reader = appDelegate.storyPagesViewController;
+            BOOL readerIsVisible = reader.viewIfLoaded.window && ![reader hasHiddenReaderAncestor];
+            if (!isGridView || readerIsVisible) {
                 [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
                 [appDelegate.detailViewController restoreStoryKeyboardFocusIfNeeded];
                 return;
