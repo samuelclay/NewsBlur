@@ -148,6 +148,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_cluster_stories();
         this.render_briefing_admin_badge();
         this.attach_handlers();
+        if (this.model.get('selected')) NEWSBLUR.motion.article_parts(this.el);
         // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
         // }
 
@@ -758,6 +759,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     destroy: function () {
         // console.log(["destroy story detail", this.model.get('story_title')]);
+        NEWSBLUR.motion.unwatch_parts(this.el);
         if (this._cluster_title_views) {
             _.each(this._cluster_title_views, function (view) { view.remove(); });
             this._cluster_title_views = null;
@@ -876,6 +878,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_selected: function (model, selected, options) {
         options = options || {};
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
+        // story_detail_view.js observes individual actions and async social/cluster sections without moving their bars.
+        if (selected) NEWSBLUR.motion.article_parts(this.el);
         if (selected && !options.selected_by_scrolling) {
             requestAnimationFrame(_.bind(function () {
                 if (this.model.get('selected') && this.el.isConnected) NEWSBLUR.motion.article(this.el);

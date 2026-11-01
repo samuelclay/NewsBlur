@@ -4826,6 +4826,9 @@
             }
 
             this.setup_mousemove_on_views();
+            // reader.js keeps persistent navigation still between stories, revealing only new or changed controls.
+            NEWSBLUR.motion.watch_parts(this.$s.$feedbar[0], '.NB-task-story-previous, .NB-task-story-next-unread, .NB-task-story-next');
+            NEWSBLUR.motion.watch_parts(this.$s.$story_taskbar[0], '.NB-taskbar-button, .NB-taskbar-options');
         },
 
         switch_taskbar_view_direction: function (direction) {

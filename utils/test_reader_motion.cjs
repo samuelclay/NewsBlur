@@ -6,13 +6,15 @@ const vm = require('node:vm');
 
 function harness() {
     const observers = [];
+    const mutations = [];
     const animations = [];
     const frames = new Map();
     let next_frame = 0;
     function element(bounds) {
         const listeners = new Map();
         return {
-            bounds, style: {}, parentElement: null, isConnected: true,
+            bounds, style: {}, parentElement: null, isConnected: true, textContent: '', className: '',
+            getAttribute() { return null; },
             getBoundingClientRect() { return this.bounds; },
             getClientRects() { return this.style.display === 'none' ? [] : [this.bounds]; },
             addEventListener(type, callback, options) { listeners.set(type, { callback, capture: options === true || !!options?.capture }); },
@@ -52,6 +54,11 @@ function harness() {
             observe(el) { this.targets.add(el); }
             unobserve(el) { this.targets.delete(el); }
             disconnect() { this.targets.clear(); }
+        },
+        MutationObserver: class {
+            constructor(callback) { this.callback = callback; mutations.push(this); }
+            observe() {}
+            disconnect() { this.disconnected = true; }
         }
     };
     vm.runInNewContext(fs.readFileSync('media/js/newsblur/common/motion.js', 'utf8'), context);
@@ -71,11 +78,38 @@ function harness() {
             }
         };
     }
-    return { motion: context.NEWSBLUR.motion, document: context.document, observers, animations, preference, record, visible,
+    return { motion: context.NEWSBLUR.motion, document: context.document, observers, mutations, animations, preference, record, visible,
         root: () => ({ ...element({ top: 0, bottom: 200, left: 0, right: 300, width: 300, height: 200 }), scrollTop: 0 }),
         paint: () => { const pending = [...frames.values()]; frames.clear(); pending.forEach(callback => callback()); }
     };
 }
+
+test('article actions enter individually rather than moving their entire bar', () => {
+    const h = harness();
+    const bar = h.record('bar');
+    bar.el.className = 'NB-feed-story-sideoptions';
+    h.visible(bar, 100);
+    const actions = ['train', 'save', 'share', 'ask-ai', 'listen'].map((name, index) => {
+        const action = h.record(name);
+        action.el.className = `NB-sideoption NB-feed-story-${name}`;
+        h.visible(action, 100);
+        action.el.bounds.left = index * 50;
+        action.el.bounds.right = index * 50 + 40;
+        action.el.parentElement = bar.el;
+        return action;
+    });
+    const nodes = [bar, ...actions].map(record => record.el);
+    const article = {
+        querySelectorAll(selector) {
+            // test_reader_motion.cjs uses the real selector against the action markup classes.
+            const classes = selector.split(',').map(part => part.trim().split(/\s+/).at(-1).slice(1));
+            return nodes.filter(node => classes.some(name => node.className.split(' ').includes(name)));
+        }
+    };
+    h.motion.article(article);
+    assert.deepEqual(h.animations.map(animation => animation.element), actions.map(action => action.el));
+    assert.ok(h.animations.every((animation, index) => index === 0 || animation.options.delay > h.animations[index - 1].options.delay));
+});
 
 test('dashboard without an active feed waits for visibility and only enters once', () => {
     const h = harness(), owner = {}, a = h.record('a');
@@ -331,4 +365,59 @@ test('a queued scroll reset from the previous feed does not cancel a new feed ca
     root.scrollTop = 40;
     root.dispatch('scroll');
     assert.equal(opening.cancelled, true, 'Actual scrolling must still finish the cascade');
+});
+
+test('persistent controls animate only the changed action, not decorative class updates or unchanged siblings', () => {
+    const h = harness(), root = h.root();
+    const save = h.record('save'), share = h.record('share');
+    save.el.textContent = 'Save'; share.el.textContent = 'Share';
+    h.visible(save); h.visible(share, 80);
+    root.querySelectorAll = () => [save.el, share.el];
+    h.motion.watch_parts(root, '.NB-sideoption');
+    assert.equal(h.animations.length, 2);
+    h.animations.forEach(animation => animation.onfinish());
+    save.el.className = 'NB-sideoption NB-hover';
+    h.mutations[0].callback();
+    assert.equal(h.animations.length, 2, 'Decorative classes must not replay action entrances');
+    save.el.textContent = 'Saved';
+    h.mutations[0].callback();
+    assert.equal(h.animations.length, 3);
+    assert.equal(h.animations[2].element, save.el);
+    h.motion.watch_parts(root, '.NB-sideoption');
+    assert.equal(h.animations.length, 3, 'Selecting another story must not replay unchanged persistent controls');
+});
+
+test('async comments and cluster rows cascade on first visibility without replaying existing actions', () => {
+    const h = harness(), root = h.root(), action = h.record('action');
+    h.visible(action);
+    const nodes = [action.el];
+    root.querySelectorAll = () => nodes;
+    h.motion.watch_parts(root, '.parts');
+    const comment = h.record('comment'), second_comment = h.record('second-comment'), cluster = h.record('cluster');
+    h.visible(comment, 80);
+    h.visible(second_comment, 120);
+    nodes.push(comment.el, second_comment.el, cluster.el);
+    h.mutations[0].callback();
+    assert.deepEqual(h.animations.map(animation => animation.element), [action.el, comment.el, second_comment.el]);
+    assert.ok(h.animations[2].options.delay > h.animations[1].options.delay, 'Async rows enter successively in screen order');
+    h.visible(cluster, 160);
+    h.observers[0].callback([{ target: cluster.el, isIntersecting: true }]);
+    assert.deepEqual(h.animations.map(animation => animation.element), [action.el, comment.el, second_comment.el, cluster.el]);
+    h.observers[0].callback([{ target: cluster.el, isIntersecting: true }]);
+    assert.equal(h.animations.length, 4);
+    h.motion.unwatch_parts(root);
+    assert.equal(h.observers[0].targets.size, 0);
+    assert.equal(h.mutations[0].disconnected, true);
+});
+
+test('controls honor reduced motion and still remember their presented state', () => {
+    const h = harness(), root = h.root(), action = h.record('action');
+    h.preference.matches = true;
+    h.visible(action);
+    root.querySelectorAll = () => [action.el];
+    h.motion.watch_parts(root, '.parts');
+    assert.equal(h.animations.length, 0);
+    h.preference.matches = false;
+    h.mutations[0].callback();
+    assert.equal(h.animations.length, 0, 'Enabling motion must not replay the current bar');
 });

@@ -2,6 +2,7 @@
 NEWSBLUR.motion = (function () {
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     var running = new Map();
+    var part_observers = new WeakMap();
     function play(element, frames, duration, delay, complete) {
         if (!element || !element.animate) { if (complete) complete(); return; }
         var previous = running.get(element);
@@ -116,7 +117,70 @@ NEWSBLUR.motion = (function () {
         ], 330);
     }
     function article(element) {
-        cascade(element.querySelectorAll('.NB-feed-story-title-container, .NB-feed-story-date, .NB-feed-story-author-wrapper, .NB-story-content-wrapper, .NB-feed-story-sideoptions'), 9);
+        cascade(element.querySelectorAll('.NB-feed-story-title-container, .NB-feed-story-date, .NB-feed-story-author-wrapper, .NB-feed-story-content'), 9);
+        article_parts(element);
+    }
+    function article_parts(element) {
+        return watch_parts(element, '.NB-sideoption, .NB-story-comments-label, .NB-story-share-label, ' +
+            '.NB-story-share-profiles .NB-user-avatar, .NB-story-comments-public-header, .NB-story-comments-public-teaser, ' +
+            '.NB-story-comment, .NB-story-cluster-detail-header, .NB-story-cluster-detail-item, .NB-cluster-locked-upsell, ' +
+            '.NB-sideoption-share-title, .NB-sideoption-share-comments, .NB-sideoption-share-save, .NB-sideoption-share-unshare');
+    }
+    function watch_parts(element, selector) {
+        var existing = part_observers.get(element);
+        if (existing) { existing.refresh(); return existing; }
+        var states = new Map();
+        var observer = typeof IntersectionObserver === 'function' ? new IntersectionObserver(refresh, { threshold: 0 }) : null;
+        var mutations = typeof MutationObserver === 'function' ? new MutationObserver(refresh) : null;
+        function signature(node) {
+            // motion.js tracks labels and semantic states, never hover, highlight, or layout-only class changes.
+            var flags = (node.className || '').split(/\s+/).filter(function (name) {
+                return /^(NB-disabled|NB-active|NB-listen-playing|NB-listen-queued)$/.test(name);
+            }).sort().join(' ');
+            return [node.textContent.trim(), flags, node.getAttribute('disabled'),
+                node.getAttribute('aria-pressed'), node.getAttribute('aria-expanded')].join('|');
+        }
+        function refresh() {
+            var nodes = Array.from(element.querySelectorAll(selector));
+            var current = new Set(nodes);
+            states.forEach(function (_, node) {
+                if (!current.has(node)) { if (observer) observer.unobserve(node); states.delete(node); }
+            });
+            var arriving = [];
+            nodes.forEach(function (node) {
+                var state = states.get(node);
+                if (!state) {
+                    state = { shown: false, signature: null };
+                    states.set(node, state);
+                    if (observer) observer.observe(node);
+                }
+                // motion.js distinguishes a closed bar from controls merely outside the scroll viewport.
+                if (!node.getClientRects().length) { state.shown = false; return; }
+                if (!visible_in_root(node, null, true)) return;
+                var value = signature(node);
+                if (!state.shown || state.signature !== value) arriving.push(node);
+                state.shown = true;
+                state.signature = value;
+            });
+            screen_order(arriving).forEach(function (node, index) {
+                enter(node, stagger_delay(index, arriving.length, 30, 150), 7);
+            });
+        }
+        var controller = { refresh: refresh, disconnect: function () {
+            if (observer) observer.disconnect();
+            if (mutations) mutations.disconnect();
+            states.clear();
+        } };
+        part_observers.set(element, controller);
+        if (mutations) mutations.observe(element, { childList: true, subtree: true, characterData: true,
+            attributes: true, attributeFilter: ['class', 'style', 'hidden', 'disabled', 'aria-pressed', 'aria-expanded'] });
+        refresh();
+        return controller;
+    }
+    function unwatch_parts(element) {
+        var controller = part_observers.get(element);
+        if (controller) controller.disconnect();
+        part_observers.delete(element);
     }
     function refresh_completed(element) {
         if (!element || reduced.matches) return;
@@ -133,7 +197,7 @@ NEWSBLUR.motion = (function () {
             { opacity: 1, transform: 'scale(1)', offset: .7 }, { opacity: 0 }], 600);
         setTimeout(function () { check.remove(); }, 650);
     }
-    function visible_in_root(element, root) {
+    function visible_in_root(element, root, ignore_motion_opacity) {
         if (!element.isConnected || !element.getClientRects().length) return false;
         var rect = element.getBoundingClientRect();
         var clip = { top: 0, left: 0, right: window.innerWidth, bottom: window.innerHeight };
@@ -141,11 +205,12 @@ NEWSBLUR.motion = (function () {
             return clip.right > clip.left && clip.bottom > clip.top && rect.width > 0 && rect.height > 0 && rect.bottom > clip.top && rect.top < clip.bottom &&
                 rect.right > clip.left && rect.left < clip.right;
         }
-        function hidden(style) {
-            return style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse' || style.opacity === '0';
+        function hidden(style, node) {
+            return style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse' ||
+                (style.opacity === '0' && !(ignore_motion_opacity && running.has(node)));
         }
         if (root) {
-            if (!root.getClientRects().length || hidden(getComputedStyle(root))) return false;
+            if (!root.getClientRects().length || hidden(getComputedStyle(root), root)) return false;
             var bounds = root.getBoundingClientRect();
             clip.top = Math.max(clip.top, bounds.top); clip.bottom = Math.min(clip.bottom, bounds.bottom);
             clip.left = Math.max(clip.left, bounds.left); clip.right = Math.min(clip.right, bounds.right);
@@ -153,7 +218,7 @@ NEWSBLUR.motion = (function () {
         if (!intersects()) return false;
         for (var node = element; node; node = node.parentElement) {
             var style = getComputedStyle(node);
-            if (hidden(style)) return false;
+            if (hidden(style, node)) return false;
             // motion.js already clips the document to the viewport; NewsBlur's absolute layout leaves body with zero height.
             if (node === element || node === document.body || node === document.documentElement) continue;
             var clips_x = /(auto|scroll|hidden|clip)/.test(style.overflowX);
@@ -265,6 +330,7 @@ NEWSBLUR.motion = (function () {
         if (reduced.matches) { running.forEach(function (animation) { animation.cancel(); }); running.clear(); }
     });
     $(document).on('click.nb-motion', '.NB-feed-story-save, .NB-feedbar-mark-feed-read, .NB-taskbar .NB-taskbar-button, .NB-storytitles-sentiment, .NB-feedlist-collapse-icon, .NB-intelligence-slider-control, .NB-feed-story-train, .NB-search-icon', function () { pop(this); });
-    return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, pop: pop, article: article, watch: watch, refresh_completed: refresh_completed,
+    return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, pop: pop, article: article,
+        article_parts: article_parts, watch_parts: watch_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
         duration: function (milliseconds) { return reduced.matches ? 0 : milliseconds; } };
 })();
