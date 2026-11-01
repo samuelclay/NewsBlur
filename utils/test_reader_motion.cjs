@@ -312,3 +312,23 @@ test('story title scrolling finishes opening effects and keeps later rows and pa
     h.motion.watch(owner, [paginated], root, 'feed-two', { animate_on_scroll: false });
     assert.equal(h.animations.length, 2, 'Opening another feed gets a new cascade');
 });
+
+test('a queued scroll reset from the previous feed does not cancel a new feed cascade', () => {
+    const h = harness(), owner = {}, root = h.root();
+    const previous = h.record('previous');
+    h.visible(previous);
+    h.motion.watch(owner, [previous], root, 'feed-one', { animate_on_scroll: false });
+    root.scrollTop = 200;
+    root.dispatch('scroll');
+    root.scrollTop = 0;
+    const next = h.record('next');
+    h.visible(next);
+    h.motion.watch(owner, [next], root, 'feed-two', { animate_on_scroll: false });
+    const opening = h.animations.at(-1);
+    root.dispatch('scroll');
+    assert.notEqual(opening.cancelled, true, 'The queued reset must preserve the new opening cascade');
+    assert.equal(owner.motion_scrolled, false);
+    root.scrollTop = 40;
+    root.dispatch('scroll');
+    assert.equal(opening.cancelled, true, 'Actual scrolling must still finish the cascade');
+});

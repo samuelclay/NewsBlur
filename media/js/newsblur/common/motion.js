@@ -157,9 +157,11 @@ NEWSBLUR.motion = (function () {
             var frame = null;
             function reveal(scrolling) {
                 var scroll_top = root ? root.scrollTop : window.scrollY;
-                scrolling = scrolling || scroll_top !== last_scroll_top;
+                var scroll_changed = scroll_top !== last_scroll_top;
+                scrolling = scrolling || scroll_changed;
                 last_scroll_top = scroll_top;
-                if (scrolling && options.animate_on_scroll === false) {
+                // motion.js ignores queued scroll-reset events already reflected when this feed's observer started.
+                if (scroll_changed && options.animate_on_scroll === false) {
                     // motion.js ends title entrances for this feed visit, including pages arriving after scrolling stops.
                     owner.motion_scrolled = true;
                     entered.forEach(function (element) {
