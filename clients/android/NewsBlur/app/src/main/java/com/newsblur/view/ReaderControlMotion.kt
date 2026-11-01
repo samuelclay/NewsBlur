@@ -15,14 +15,16 @@ class ReaderControlMotion(
 ) : AutoCloseable {
     data class Control(val view: View, val identity: Any = view, val state: Any? = null)
     private val presented = mutableMapOf<Any, Any?>()
+    private var pending = emptyList<Control>()
+    private var dirty = true
     private var observer: ViewTreeObserver? = null
     private var closed = false
     private val preDraw = ViewTreeObserver.OnPreDrawListener { reveal(); true }
+    private val layout = ViewTreeObserver.OnGlobalLayoutListener { invalidate() }
     private val attachment = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(view: View) { observe() }
         override fun onViewDetachedFromWindow(view: View) {
-            observer?.takeIf { it.isAlive }?.removeOnPreDrawListener(preDraw)
-            observer = null
+            unobserve()
         }
     }
 
@@ -33,19 +35,42 @@ class ReaderControlMotion(
     }
 
     private fun observe() {
-        observer?.takeIf { it.isAlive }?.removeOnPreDrawListener(preDraw)
+        unobserve()
         observer = root.viewTreeObserver.takeIf { it.isAlive }
         observer?.addOnPreDrawListener(preDraw)
+        observer?.addOnGlobalLayoutListener(layout)
+        invalidate()
     }
+
+    private fun unobserve() {
+        observer?.takeIf { it.isAlive }?.let {
+            it.removeOnPreDrawListener(preDraw)
+            it.removeOnGlobalLayoutListener(layout)
+        }
+        observer = null
+    }
+
+    /** ReaderControlMotion.kt rebuilds controls after rebinding or layout, never on ordinary animation frames. */
+    fun invalidate() { dirty = true }
 
     private fun reveal() {
         if (closed || !enabled()) return
-        val current = controls()
-        presented.keys.retainAll(current.map { it.identity }.toSet())
-        val visible = current.mapNotNull { control ->
+        if (dirty) {
+            dirty = false
+            val current = controls()
+            presented.keys.retainAll(current.map { it.identity }.toSet())
+            pending = current.filter { control ->
+                // ReaderControlMotion.kt retains one-shot history even when an earlier pill is subsequently hidden.
+                if (!once && !control.view.isShown) presented.remove(control.identity)
+                !presented.containsKey(control.identity) || presented[control.identity] != control.state
+            }
+        }
+        if (pending.isEmpty()) {
+            if (once) close()
+            return
+        }
+        val visible = pending.mapNotNull { control ->
             val view = control.view
-            if (!view.isShown) presented.remove(control.identity)
-            if (presented.containsKey(control.identity) && presented[control.identity] == control.state) return@mapNotNull null
             if (!view.isAttachedToWindow || !view.isShown || view.windowVisibility != View.VISIBLE) return@mapNotNull null
             var ancestor: View? = view
             while (ancestor != null) {
@@ -63,14 +88,15 @@ class ReaderControlMotion(
                 presented[control.identity] = control.state
             }
         }
-        if (once && current.all { presented.containsKey(it.identity) }) close()
+        pending = pending.filterNot { presented.containsKey(it.identity) && presented[it.identity] == it.state }
+        if (once && pending.isEmpty()) close()
     }
 
     override fun close() {
         closed = true
-        observer?.takeIf { it.isAlive }?.removeOnPreDrawListener(preDraw)
-        observer = null
+        unobserve()
         root.removeOnAttachStateChangeListener(attachment)
         presented.clear()
+        pending = emptyList()
     }
 }

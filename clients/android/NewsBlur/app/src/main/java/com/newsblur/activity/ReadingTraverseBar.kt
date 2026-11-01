@@ -78,12 +78,14 @@ class ReadingTraverseBar(
     }
 
     fun updatePreviousEnabled(enabled: Boolean) {
+        if (previousEnabled != enabled) controlMotion?.invalidate()
         previousEnabled = enabled
         binding.readingOverlayLeft.isEnabled = enabled
         binding.readingOverlayLeft.alpha = if (enabled) 1f else 0.35f
     }
 
     fun updateNextShowDone(showDone: Boolean) {
+        if (nextShowsDone != showDone) controlMotion?.invalidate()
         nextShowsDone = showDone
         binding.readingOverlayRight.text = context.getString(if (showDone) R.string.overlay_done else R.string.overlay_next)
         binding.readingOverlayRight.contentDescription = binding.readingOverlayRight.text
@@ -103,6 +105,7 @@ class ReadingTraverseBar(
         inTextView: Boolean,
         enabled: Boolean,
     ) {
+        if (this.inTextView != inTextView || textModeEnabled != enabled) controlMotion?.invalidate()
         this.inTextView = inTextView
         textModeEnabled = enabled
 
@@ -139,6 +142,7 @@ class ReadingTraverseBar(
     }
 
     fun updateSendEnabled(enabled: Boolean) {
+        if (sendEnabled != enabled) controlMotion?.invalidate()
         sendEnabled = enabled
         binding.readingOverlaySend.isEnabled = enabled
         binding.readingOverlaySend.alpha = if (enabled) 1f else 0.4f

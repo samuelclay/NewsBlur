@@ -59,12 +59,15 @@ class Test_ReaderControlMotion {
         repeat(10) { listeners.toList().forEach { it.onPreDraw() } }
         verify(exactly = 4) { ReaderMotion.enter(any(), any(), any()) }
         nextIsDone = true
+        motion.invalidate()
         listeners.toList().forEach { it.onPreDraw() }
         verify(exactly = 2) { ReaderMotion.enter(views[3], any(), any()) }
         views.take(3).forEach { verify(exactly = 1) { ReaderMotion.enter(it, any(), any()) } }
         every { views[1].isShown } returns false
+        motion.invalidate()
         listeners.toList().forEach { it.onPreDraw() }
         every { views[1].isShown } returns true
+        motion.invalidate()
         listeners.toList().forEach { it.onPreDraw() }
         verify(exactly = 2) { ReaderMotion.enter(views[1], any(), any()) }
         views.forEach { verify(exactly = 0) { it.alpha = any() } }
@@ -108,6 +111,59 @@ class Test_ReaderControlMotion {
         listeners.forEach { it.onPreDraw() }
         verify(exactly = 1) { ReaderMotion.enter(view, any(), any()) }
         motion.close()
+    }
+
+    @Test fun test_once_finishes_when_an_earlier_control_hides_before_the_last_one_appears() {
+        val first = control(0)
+        val last = control(40)
+        val listeners = mutableListOf<ViewTreeObserver.OnPreDrawListener>()
+        every { first.viewTreeObserver.addOnPreDrawListener(capture(listeners)) } just Runs
+        every { last.getGlobalVisibleRect(any()) } returns false
+        every { ReaderMotion.enter(any(), any(), any()) } returns true
+        ReaderMotion.cascade(listOf(first, last))
+        every { first.isShown } returns false
+        every { last.getGlobalVisibleRect(any()) } returns true
+        listeners.toList().forEach { it.onPreDraw() }
+        verify(exactly = 1) { first.viewTreeObserver.removeOnPreDrawListener(any()) }
+        every { first.isShown } returns true
+        listeners.toList().forEach { it.onPreDraw() }
+        verify(exactly = 1) { ReaderMotion.enter(first, any(), any()) }
+    }
+
+    @Test fun test_idle_frames_do_not_rebuild_controls_or_walk_presented_views() {
+        val view = control(0)
+        val listeners = mutableListOf<ViewTreeObserver.OnPreDrawListener>()
+        every { view.viewTreeObserver.addOnPreDrawListener(capture(listeners)) } just Runs
+        every { ReaderMotion.enter(any(), any(), any()) } returns true
+        var builds = 0
+        val motion = ReaderControlMotion(view, { builds++; listOf(ReaderControlMotion.Control(view)) })
+        clearMocks(view, answers = false)
+        repeat(60) { listeners.toList().forEach { it.onPreDraw() } }
+        assertEquals("Scrolling/animation frames must reuse the bound control list", 1, builds)
+        verify(exactly = 0) { view.isShown }
+        verify(exactly = 0) { view.getGlobalVisibleRect(any()) }
+        motion.close()
+    }
+
+    @Test fun test_layout_after_social_rebind_discovers_only_new_controls() {
+        val root = control(0)
+        val replacement = control(0)
+        val added = control(40)
+        val draws = mutableListOf<ViewTreeObserver.OnPreDrawListener>()
+        val layouts = mutableListOf<ViewTreeObserver.OnGlobalLayoutListener>()
+        every { root.viewTreeObserver.addOnPreDrawListener(capture(draws)) } just Runs
+        every { root.viewTreeObserver.addOnGlobalLayoutListener(capture(layouts)) } just Runs
+        every { ReaderMotion.enter(any(), any(), any()) } returns true
+        var controls = listOf(ReaderControlMotion.Control(root, "existing-comment", "unchanged text"))
+        val motion = ReaderControlMotion(root, { controls })
+        controls = listOf(ReaderControlMotion.Control(replacement, "existing-comment", "unchanged text"),
+            ReaderControlMotion.Control(added, "new-comment", "new text"))
+        layouts.forEach { it.onGlobalLayout() }
+        draws.forEach { it.onPreDraw() }
+        verify(exactly = 0) { ReaderMotion.enter(replacement, any(), any()) }
+        verify(exactly = 1) { ReaderMotion.enter(added, any(), any()) }
+        motion.close()
+        verify { root.viewTreeObserver.removeOnGlobalLayoutListener(any()) }
     }
 
     private fun control(top: Int): View = mockk<View>(relaxed = true).also { view ->

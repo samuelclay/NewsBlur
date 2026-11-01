@@ -924,6 +924,7 @@ class ReadingItemFragment :
         listenRowSize = rows.firstOrNull { actions.listenStoryButtonContainer in it }?.size ?: 0
         val signature = rows.map { row -> row.map { it.id } }
         if (signature == lastStoryButtonRows) return
+        controlMotion?.invalidate()
         lastStoryButtonRows = signature
 
         buttons.forEach { (_, view) -> (view.parent as? ViewGroup)?.removeView(view) }
@@ -989,6 +990,7 @@ class ReadingItemFragment :
     }
 
     private fun applyListenButtonLook(look: ListenButtonLook) {
+        controlMotion?.invalidate()
         val actions = readingItemActionsBinding
         val showsUpNext = look.upNext != UpNextButton.HIDDEN
         // A Listen cell sharing a four-button row is too narrow for its label beside the Up Next button.
@@ -1088,6 +1090,7 @@ class ReadingItemFragment :
     }
 
     private fun updateSaveButton() {
+        controlMotion?.invalidate()
         readingItemActionsBinding.saveStoryButton.setText(if (story!!.starred) R.string.unsave_this else R.string.save_this)
     }
 
@@ -1097,6 +1100,7 @@ class ReadingItemFragment :
     }
 
     private fun updateShareButton() {
+        controlMotion?.invalidate()
         for (userId in story!!.sharedUserIds) {
             if (userId == this@ReadingItemFragment.userId!!) {
                 readingItemActionsBinding.shareStoryButton.setText(R.string.already_shared)
@@ -1341,6 +1345,7 @@ class ReadingItemFragment :
             prefsRepo.getResolvedTheme(requireContext()),
         )
         if (snapshot == lastClusterSnapshot) return
+        controlMotion?.invalidate()
         lastClusterSnapshot = snapshot
         binding.readingStoryClusterList.removeAllViews()
 
@@ -1905,6 +1910,7 @@ class ReadingItemFragment :
     }
 
     private fun animateHeaderEntrance() {
+        controlMotion?.invalidate()
         if (nativeHeaderStoryHash == null || !isResumed || !::binding.isInitialized || controlMotion != null) return
         controlMotion = com.newsblur.view.ReaderControlMotion(binding.root, ::readerMotionControls, { isResumed })
     }
@@ -1913,14 +1919,17 @@ class ReadingItemFragment :
         val actions = readingItemActionsBinding
         val controls = mutableListOf<com.newsblur.view.ReaderControlMotion.Control>()
         fun add(view: View, identity: Any = view.id, state: Any? = (view as? TextView)?.text?.toString()) {
-            controls.add(com.newsblur.view.ReaderControlMotion.Control(view, identity, state to view.isEnabled))
+            controls.add(com.newsblur.view.ReaderControlMotion.Control(view, identity,
+                listOf(state, view.isEnabled, view.contentDescription?.toString())))
         }
         listOf(binding.readingFeedTitle, binding.readingItemTitle, binding.readingItemDate, binding.readingItemAuthors,
             actions.trainStoryButton, actions.saveStoryButton, actions.shareStoryButton, actions.askAiStoryButton,
             binding.readingStoryClusterTitle, binding.readingStoryClusterMore,
-            actions.readingFriendCommentHeader, actions.readingFriendEmptyshareHeader, actions.readingPublicCommentHeader,
         ).forEach { add(it) }
-        add(actions.listenStoryButtonContainer, state = actions.listenStoryButton.text.toString())
+        add(actions.readingFriendCommentHeader, state = actions.readingFriendCommentTotal.text.toString())
+        add(actions.readingFriendEmptyshareHeader, state = actions.readingFriendEmptyshareTotal.text.toString())
+        add(actions.readingPublicCommentHeader, state = actions.readingPublicCommentTotal.text.toString())
+        add(actions.listenStoryButtonContainer, state = actions.listenStoryButton.contentDescription?.toString())
         add(actions.listenQueueButton)
         for (id in listOf(R.id.shared_by, R.id.comment_by)) binding.root.findViewById<View>(id)?.let { add(it) }
         // ReadingItemFragment.kt keys rebuilt social/cluster rows by content, so unchanged controls do not replay.
@@ -1931,7 +1940,8 @@ class ReadingItemFragment :
             for (index in 0 until group.childCount) {
                 val child = group.getChildAt(index)
                 val identity = id to (child.tag ?: index)
-                val text = child.findViewById<TextView>(R.id.comment_text)?.text?.toString()
+                val text = (child.findViewById<TextView>(R.id.comment_text)
+                    ?: child.findViewById<TextView>(R.id.story_cluster_title))?.text?.toString()
                 add(child, identity, text)
             }
         }
@@ -1971,6 +1981,7 @@ class ReadingItemFragment :
 
     /** The social UI has finished loading from the DB.  */
     fun onSocialLoadFinished() {
+        controlMotion?.invalidate()
         isSocialLoadFinished = true
         checkLoadStatus()
     }
