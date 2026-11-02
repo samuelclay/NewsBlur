@@ -152,10 +152,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_briefing_admin_badge();
         this.attach_handlers();
         NEWSBLUR.motion.article_parts(this.el);
+        // story_detail_view.js preserves appearance state without observing every unselected article forever.
+        if (!this.model.get('selected')) NEWSBLUR.motion.pause_parts(this.el);
         if (animate_entrance && this._motion_entrance_frame == null) {
             this._motion_entrance_frame = requestAnimationFrame(_.bind(function () {
                 this._motion_entrance_frame = null;
-                if (this.el.isConnected) NEWSBLUR.motion.article(this.el);
+                if (this.el.isConnected) {
+                    NEWSBLUR.motion.article(this.el);
+                    if (!this.model.get('selected')) NEWSBLUR.motion.pause_parts(this.el);
+                }
             }, this));
         }
         // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
@@ -891,7 +896,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         options = options || {};
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
         // story_detail_view.js observes individual actions and async social/cluster sections without moving their bars.
-        if (selected) NEWSBLUR.motion.article_parts(this.el);
+        if (selected) NEWSBLUR.motion.article_parts(this.el, { animate: this._motion_entrance_frame != null });
         else NEWSBLUR.motion.pause_parts(this.el);
         _.defer(_.bind(this.update_sideoptions_sticky_state, this));
         NEWSBLUR.app.taskbar_info.hide_stories_error();

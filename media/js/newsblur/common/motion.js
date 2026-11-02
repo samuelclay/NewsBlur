@@ -130,11 +130,11 @@ NEWSBLUR.motion = (function () {
         cascade(element.querySelectorAll('.NB-feed-story-title-container, .NB-feed-story-date, .NB-feed-story-author-wrapper, .NB-feed-story-content'), 9);
         article_parts(element);
     }
-    function article_parts(element) {
+    function article_parts(element, options) {
         return watch_parts(element, '.NB-sideoption, .NB-story-comments-label, .NB-story-share-label, ' +
             '.NB-story-share-profiles .NB-user-avatar, .NB-story-comments-public-header, .NB-story-comments-public-teaser, ' +
             '.NB-story-comment, .NB-story-cluster-detail-header, .NB-story-cluster-detail-item, .NB-cluster-locked-upsell, ' +
-            '.NB-sideoption-share-title, .NB-sideoption-share-comments, .NB-sideoption-share-save, .NB-sideoption-share-unshare');
+            '.NB-sideoption-share-title, .NB-sideoption-share-comments, .NB-sideoption-share-save, .NB-sideoption-share-unshare', options);
     }
     function feedbar_parts(element) {
         // motion.js combines header rebuilds and view changes into one horizontal cascade before paint.
@@ -147,7 +147,7 @@ NEWSBLUR.motion = (function () {
         var existing = part_observers.get(element);
         if (existing) {
             existing.resume();
-            if (options.defer) existing.schedule(); else existing.refresh();
+            if (options.defer) existing.schedule(); else existing.refresh(options);
             return existing;
         }
         var states = new Map();
@@ -171,7 +171,8 @@ NEWSBLUR.motion = (function () {
             counts.set(kind, index + 1);
             return kind + ':' + index;
         }
-        function refresh() {
+        // motion.js can settle a resumed story's visible parts once; later observer refreshes still animate arrivals.
+        function refresh(refresh_options) {
             if (!connected) return;
             var nodes = Array.from(element.querySelectorAll(selector));
             var current = new Set();
@@ -194,7 +195,7 @@ NEWSBLUR.motion = (function () {
                 if (!node.getClientRects().length) { state.shown = false; return; }
                 if (!visible_in_root(node, null, true)) return;
                 // motion.js entrances belong to appearance, never updates to an already visible control.
-                if (!state.shown) arriving.push(node);
+                if (!state.shown && (!refresh_options || refresh_options.animate !== false)) arriving.push(node);
                 state.shown = true;
             });
             states.forEach(function (state, key) {
@@ -223,7 +224,7 @@ NEWSBLUR.motion = (function () {
         }, disconnect: function () { pause(); states.clear(); } };
         part_observers.set(element, controller);
         observe_mutations();
-        if (options.defer) schedule(); else refresh();
+        if (options.defer) schedule(); else refresh(options);
         return controller;
     }
     function pause_parts(element) {
