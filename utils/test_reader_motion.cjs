@@ -8,6 +8,7 @@ function harness() {
     const observers = [];
     const mutations = [];
     const animations = [];
+    const delegated_events = [];
     const frames = new Map();
     let next_frame = 0;
     function element(bounds) {
@@ -16,6 +17,7 @@ function harness() {
             bounds, style: {}, parentElement: null, isConnected: true, textContent: '', className: '',
             attributes: {},
             getAttribute(name) { return this.attributes[name] || null; },
+            setAttribute(name, value) { this.attributes[name] = value; },
             matches(selector) { return this.className.split(/\s+/).includes(selector.trim().split(/\s+/).at(-1).slice(1)); },
             getBoundingClientRect() { return this.bounds; },
             getClientRects() { return this.style.display === 'none' ? [] : [this.bounds]; },
@@ -46,7 +48,7 @@ function harness() {
         getComputedStyle: el => ({ display: 'block', visibility: 'visible', opacity: '1', overflowX: 'visible', overflowY: 'visible', ...el.style }),
         requestAnimationFrame: callback => { frames.set(++next_frame, callback); return next_frame; },
         cancelAnimationFrame: id => frames.delete(id),
-        $: () => ({ on() {} }),
+        $: () => ({ on(event, selector, callback) { delegated_events.push({ event, selector, callback }); } }),
         IntersectionObserver: class {
             constructor(callback) {
                 this.callback = callback;
@@ -80,11 +82,73 @@ function harness() {
             }
         };
     }
-    return { context, motion: context.NEWSBLUR.motion, document: context.document, observers, mutations, animations, preference, record, visible,
+    return { delegated_events, context, motion: context.NEWSBLUR.motion, document: context.document, observers, mutations, animations, preference, record, visible,
         root: () => ({ ...element({ top: 0, bottom: 200, left: 0, right: 300, width: 300, height: 200 }), scrollTop: 0 }),
         paint: () => { const pending = [...frames.values()]; frames.clear(); pending.forEach(callback => callback()); }
     };
 }
+
+
+test('clicking reader controls never starts a press movement', () => {
+    const h = harness();
+    const control = h.record('next-unread');
+    h.visible(control);
+    for (const handler of h.delegated_events.filter(handler => handler.event.startsWith('click'))) {
+        handler.callback.call(control.el);
+    }
+    assert.equal(h.animations.length, 0, 'Click feedback must not scale, rotate, or slide an existing control');
+});
+
+test('visible control labels and selection states update without replaying entrances', () => {
+    const h = harness(), control = h.record('save'), root = h.root();
+    h.visible(control);
+    control.el.className = 'NB-feed-story-save';
+    control.el.textContent = 'Save';
+    root.querySelectorAll = () => [control.el];
+    const watcher = h.motion.watch_parts(root, '.NB-feed-story-save');
+    assert.equal(h.animations.length, 1);
+    control.el.textContent = 'Saved';
+    control.el.attributes['aria-pressed'] = 'true';
+    watcher.refresh();
+    assert.equal(h.animations.length, 1, 'Already visible controls must stay still when their state changes');
+});
+
+test('classifier scope changes update selection without scaling the clicked toggle', () => {
+    const h = harness(), transforms = [], data = { scope: 'feed' };
+    const classifier = {
+        data(key, value) { if (value !== undefined) data[key] = value; return data[key]; },
+        hasClass() { return false; }, find() { return { length: 0 }; }, addClass() {}, removeClass() {}
+    };
+    let selected = false, saved = false;
+    const toggle = {
+        data() { return 'global'; }, closest() { return this; }, find() { return this; }, removeClass() { return this; },
+        addClass() { selected = true; return this; }, css(key, value) { if (key === 'transform') transforms.push(value); }
+    };
+    Object.assign(h.context, { gettext: value => value, _: { extend: Object.assign }, $: () => classifier, setTimeout() {} });
+    Object.assign(h.context.NEWSBLUR, { Globals: { is_archive: true }, Modal: function () {} });
+    vm.runInNewContext(fs.readFileSync('media/js/newsblur/reader/reader_classifier.js', 'utf8'), h.context);
+    h.context.NEWSBLUR.ReaderClassifierFeed.prototype.select_scope.call({ update_save_button() { saved = true; } }, toggle, {});
+    assert.equal(data.scope, 'global');
+    assert.ok(selected && saved, 'The actual scope action and save affordance still update');
+    assert.deepEqual(transforms, [], 'Scope selection must not resize or move the visible toggle');
+});
+
+test('archive voice input keeps recording feedback without scaling its button', () => {
+    const h = harness(), transforms = [], classes = new Set();
+    const control = {
+        addClass(name) { classes.add(name); return this; }, removeClass(name) { classes.delete(name); return this; },
+        attr() { return this; }, css(key, value) { if (key === 'transform') transforms.push(value); return this; }
+    };
+    Object.assign(h.context, { gettext: value => value, Backbone: { View: { extend: value => value } } });
+    Object.assign(h.context.NEWSBLUR, { Views: {}, VoiceRecorder: class {
+        constructor(callbacks) { this.callbacks = callbacks; }
+        start_recording() { this.callbacks.on_recording_start(); this.callbacks.on_audio_level?.(1); }
+    } });
+    vm.runInNewContext(fs.readFileSync('media/js/newsblur/views/archive_view.js', 'utf8'), h.context);
+    h.context.NEWSBLUR.Views.ArchiveView.start_voice_recording.call({ $: () => control });
+    assert.ok(classes.has('NB-recording'), 'Recording remains visibly indicated');
+    assert.deepEqual(transforms, [], 'Audio levels must not resize the visible recording button');
+});
 
 test('article actions enter individually rather than moving their entire bar', () => {
     const h = harness();
@@ -324,7 +388,6 @@ test('reduced motion cancels active effects and does not hide subsequent content
     h.preference.change();
     assert.equal(h.animations[0].cancelled, true);
     h.motion.enter(row.el);
-    h.motion.pop(row.el);
     assert.equal(h.animations.length, 1);
 });
 
@@ -369,7 +432,7 @@ test('a queued scroll reset from the previous feed does not cancel a new feed ca
     assert.equal(opening.cancelled, true, 'Actual scrolling must still finish the cascade');
 });
 
-test('persistent controls animate only the changed action, not decorative class updates or unchanged siblings', () => {
+test('persistent controls stay fixed across label and decorative class updates', () => {
     const h = harness(), root = h.root();
     const save = h.record('save'), share = h.record('share');
     save.el.textContent = 'Save'; share.el.textContent = 'Share';
@@ -385,10 +448,9 @@ test('persistent controls animate only the changed action, not decorative class 
     save.el.textContent = 'Saved';
     h.mutations[0].callback();
     h.paint();
-    assert.equal(h.animations.length, 3);
-    assert.equal(h.animations[2].element, save.el);
+    assert.equal(h.animations.length, 2, 'Saving updates the label without moving the visible action');
     h.motion.watch_parts(root, '.NB-sideoption');
-    assert.equal(h.animations.length, 3, 'Selecting another story must not replay unchanged persistent controls');
+    assert.equal(h.animations.length, 2, 'Selecting another story must not replay persistent controls');
 });
 
 test('async comments and cluster rows cascade on first visibility without replaying existing actions', () => {
@@ -448,7 +510,7 @@ test('control mutations share one prepaint scan and disconnect cancels queued wo
     assert.equal(h.animations.length, 1);
 });
 
-test('identical rebuilt controls and comments keep presentation state while a changed replacement animates alone', () => {
+test('rebuilt controls and comments retain their appearance history even when their content changes', () => {
     const h = harness(), root = h.root();
     function part(id, label, top) {
         const record = h.record(id);
@@ -467,12 +529,11 @@ test('identical rebuilt controls and comments keep presentation state while a ch
     const changed = part('save', 'Saved', 0);
     nodes = [changed, part('comment:23', 'A comment', 80)];
     h.mutations[0].callback(); h.paint();
-    assert.equal(h.animations.length, 3);
-    assert.equal(h.animations[2].element, changed);
+    assert.equal(h.animations.length, 2, 'Replacing a visible control with its updated state must not replay its entrance');
     assert.equal(h.observers[0].targets.size, 2, 'Replaced elements must not accumulate in the visibility observer');
 });
 
-test('deselecting and reselecting a story preserves unchanged actions and updates only a changed control', () => {
+test('deselecting and reselecting a story preserves visible actions even when their state changes', () => {
     const h = harness(), root = h.root(), save = h.record('save'), share = h.record('share');
     save.el.textContent = 'Save'; share.el.textContent = 'Share';
     h.visible(save); h.visible(share, 80);
@@ -486,15 +547,14 @@ test('deselecting and reselecting a story preserves unchanged actions and update
     h.motion.pause_parts(root);
     save.el.textContent = 'Saved';
     h.motion.watch_parts(root, '.parts');
-    assert.equal(h.animations.length, 3, 'A semantic change while paused still animates when the story resumes');
-    assert.equal(h.animations[2].element, save.el);
+    assert.equal(h.animations.length, 2, 'A state change while paused must not replay visible controls when the story resumes');
 });
 
 // test_reader_motion.cjs renders the real header against floated search markup and persistent traversal controls.
-function feed_toolbar_fixture() {
-    const h = harness(), bar = h.root();
+function feed_toolbar_fixture(with_identity = false) {
+    const h = harness(), bar = h.root(), header_element = h.root();
     bar.bounds = { top: 0, bottom: 40, left: 0, right: 1000, width: 1000, height: 40 };
-    let controls;
+    let controls, identities;
     function rebuild() {
         controls = ['NB-feedbar-options', 'NB-story-title-search', 'NB-feedbar-mark-feed-read-container', 'NB-task-story-next-unread'].map((name, index) => {
             const control = h.record(name).el;
@@ -509,24 +569,48 @@ function feed_toolbar_fixture() {
         wrapper.bounds = { top: 0, bottom: 0, left: 0, right: 1000, width: 1000, height: 0 };
         wrapper.parentElement = bar;
         controls[1].parentElement = wrapper;
+        identities = with_identity ? ['feed_favicon', 'feed_title'].map((name, index) => {
+            const record = h.record(name);
+            record.el.className = name;
+            h.visible(record);
+            record.el.bounds.left = index * 30;
+            record.el.parentElement = header_element;
+            return record.el;
+        }) : [];
         const match = (nodes, selector) => nodes.filter(node => selector.split(',').some(part => node.matches(part.trim())));
         bar.querySelectorAll = selector => match(controls, selector);
-        header.$el.find = selector => ({ toArray: () => match([...controls.slice(0, 3), wrapper], selector) });
+        header_element.querySelectorAll = selector => match([...controls.slice(0, 3), ...identities], selector);
+        header.$el.find = selector => ({ toArray: () => match([...controls.slice(0, 3), wrapper, ...identities], selector) });
     }
     h.context.Backbone = { View: { extend: definition => definition } };
     h.context._ = { extend: Object.assign, bind: (fn, receiver) => fn.bind(receiver) };
     Object.assign(h.context.NEWSBLUR, {
         Views: { FeedTitleView: class { render() { return { $el: {} }; } } },
-        reader: { flags: {}, active_feed: 1, $s: { $feedbar: [bar] } },
+        reader: { flags: {}, active_feed: 1, $s: { $feedbar: [bar], $story_titles_header: [header_element] } },
         assets: { get_feed: () => ({}) }
     });
     vm.runInNewContext(fs.readFileSync('media/js/newsblur/views/story_titles_header_view.js', 'utf8'), h.context);
     const header = Object.create(h.context.NEWSBLUR.Views.StoryTitlesHeader);
     header.options = {};
-    header.$el = { html() {}, closest: () => [bar] };
+    header.$el = { 0: header_element, html() {}, closest: () => [bar] };
     rebuild();
-    return { h, bar, header, rebuild, controls: () => controls, render: () => { header.render({ feed_id: 1 }); h.paint(); } };
+    return { h, bar, header, header_element, rebuild, controls: () => controls, identities: () => identities,
+        render: () => { header.render({ feed_id: h.context.NEWSBLUR.reader.active_feed }); h.paint(); } };
 }
+
+test('visible feed identity stays fixed on same-feed rebuilds but a new feed identity enters', () => {
+    const f = feed_toolbar_fixture(true);
+    f.render();
+    f.h.animations.length = 0;
+    f.rebuild();
+    f.render();
+    assert.equal(f.h.animations.length, 0, 'The visible title and favicon must not replay when the same feed reloads');
+    f.h.context.NEWSBLUR.reader.active_feed = 2;
+    f.rebuild();
+    f.render();
+    assert.deepEqual(f.h.animations.map(animation => animation.element), f.identities(),
+        'A newly opened feed may introduce its own title and favicon');
+});
 
 test('feed header cascades All/Newest, floated Search, Mark Read, and persistent Next Unread together', () => {
     const f = feed_toolbar_fixture();
@@ -536,7 +620,7 @@ test('feed header cascades All/Newest, floated Search, Mark Read, and persistent
     assert.ok(f.h.animations.every((animation, index, all) => index === 0 || animation.options.delay > all[index - 1].options.delay));
 });
 
-test('rebuilding a visible feed header keeps controls steady and animates only a changed filter', () => {
+test('rebuilding a visible feed header keeps controls steady even when the filter changes', () => {
     const f = feed_toolbar_fixture();
     f.render();
     f.h.animations.length = 0;
@@ -545,7 +629,7 @@ test('rebuilding a visible feed header keeps controls steady and animates only a
     assert.equal(f.h.animations.length, 0, 'Opening another feed must not replay an unchanged toolbar');
     f.controls()[0].textContent = 'Unread · Newest';
     f.render();
-    assert.deepEqual(f.h.animations.map(animation => animation.element), [f.controls()[0]]);
+    assert.equal(f.h.animations.length, 0, 'A filter change updates the label without moving it');
 });
 
 test('feed and folder template indentation does not replay unchanged filter and mark-read controls', () => {
@@ -563,8 +647,7 @@ test('feed and folder template indentation does not replay unchanged filter and 
     assert.equal(f.h.animations.length, 0, 'HTML indentation is not a visible control change');
     f.controls()[0].textContent = ['Unread', '·', 'Newest'].join(' '.repeat(32));
     f.render();
-    assert.deepEqual(f.h.animations.map(animation => animation.element), [f.controls()[0]],
-        'Normalizing whitespace must preserve actual filter label changes');
+    assert.equal(f.h.animations.length, 0, 'A visible filter stays fixed for whitespace and label changes alike');
 });
 
 test('feed toolbar uses RTL reading order and batches view switching with a later header rebuild', () => {
@@ -575,11 +658,11 @@ test('feed toolbar uses RTL reading order and batches view switching with a late
     f.render();
     assert.deepEqual(f.h.animations.map(animation => animation.element), [...f.controls()].reverse(),
         'Only the final visible controls animate, right to left, even when view switching runs first');
-    assert.equal(f.h.mutations.length, 1, 'Header and navigation share a single observer');
+    assert.equal(f.h.mutations.length, 2, 'Toolbar controls share one observer, separate from the header identity');
 });
 
 test('returning from the dashboard cascades the whole toolbar even before visibility observers fire', () => {
-    const f = feed_toolbar_fixture();
+    const f = feed_toolbar_fixture(true);
     f.render();
     f.h.animations.length = 0;
     f.h.context.Backbone.Router = { extend: definition => definition };
@@ -587,14 +670,15 @@ test('returning from the dashboard cascades the whole toolbar even before visibi
     vm.runInNewContext(fs.readFileSync('media/js/newsblur/reader/reader.js', 'utf8'), f.h.context);
     const reader = Object.assign(Object.create(f.h.context.NEWSBLUR.Reader), {
         reset_feed() {}, open_sidebar() {}, flags: {},
-        $s: { $feedbar: [f.bar], $body: { removeClass() { f.bar.style.display = 'none'; } },
+        $s: { $feedbar: [f.bar], $story_titles_header: [f.header_element],
+            $body: { removeClass() { f.bar.style.display = 'none'; } },
             $header_dashboard: { addClass() {} } }
     });
     reader.show_splash_page(true);
     f.bar.style.display = 'block';
     f.rebuild();
     f.render();
-    assert.deepEqual(f.h.animations.map(animation => animation.element), f.controls(),
+    assert.deepEqual(f.h.animations.map(animation => animation.element), [...f.identities(), ...f.controls()],
         'A real toolbar disappearance resets all controls, including the persistent Next Unread button');
 });
 

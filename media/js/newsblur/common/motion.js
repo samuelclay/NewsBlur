@@ -126,12 +126,6 @@ NEWSBLUR.motion = (function () {
         var visible = screen_order(Array.from(elements).filter(function (el) { return visible_in_root(el, null); }));
         visible.forEach(function (el, index) { enter(el, stagger_delay(index, visible.length, 30, 180), distance); });
     }
-    function pop(element) {
-        play(element, [
-            { transform: 'scale(1)' }, { transform: 'scale(.86)', offset: .2 },
-            { transform: 'scale(1.14) rotate(-4deg)', offset: .6 }, { transform: 'scale(1)' }
-        ], 330);
-    }
     function article(element) {
         cascade(element.querySelectorAll('.NB-feed-story-title-container, .NB-feed-story-date, .NB-feed-story-author-wrapper, .NB-feed-story-content'), 9);
         article_parts(element);
@@ -165,14 +159,6 @@ NEWSBLUR.motion = (function () {
             if (!connected || frame !== null) return;
             frame = requestAnimationFrame(function () { frame = null; refresh(); });
         }
-        function signature(node) {
-            // motion.js tracks labels and semantic states, never hover, highlight, or layout-only class changes.
-            var flags = (node.className || '').split(/\s+/).filter(function (name) {
-                return /^(NB-disabled|NB-active|NB-listen-playing|NB-listen-queued)$/.test(name);
-            }).sort().join(' ');
-            return [node.textContent.replace(/\s+/g, ' ').trim(), flags, node.getAttribute('disabled'),
-                node.getAttribute('aria-pressed'), node.getAttribute('aria-expanded')].join('|');
-        }
         function identity(node, counts) {
             var key = node.getAttribute('data-motion-key');
             if (key) return key;
@@ -196,7 +182,7 @@ NEWSBLUR.motion = (function () {
                 current.add(key);
                 var state = states.get(key);
                 if (!state) {
-                    state = { shown: false, signature: null, node: null };
+                    state = { shown: false, node: null };
                     states.set(key, state);
                 }
                 if (state.node !== node) {
@@ -207,10 +193,9 @@ NEWSBLUR.motion = (function () {
                 // motion.js distinguishes a closed bar from controls merely outside the scroll viewport.
                 if (!node.getClientRects().length) { state.shown = false; return; }
                 if (!visible_in_root(node, null, true)) return;
-                var value = signature(node);
-                if (!state.shown || state.signature !== value) arriving.push(node);
+                // motion.js entrances belong to appearance, never updates to an already visible control.
+                if (!state.shown) arriving.push(node);
                 state.shown = true;
-                state.signature = value;
             });
             states.forEach(function (state, key) {
                 if (!current.has(key)) { if (observer) observer.unobserve(state.node); states.delete(key); }
@@ -227,8 +212,8 @@ NEWSBLUR.motion = (function () {
             if (mutations) mutations.disconnect();
         }
         function observe_mutations() {
-            if (mutations) mutations.observe(element, { childList: true, subtree: true, characterData: true,
-                attributes: true, attributeFilter: ['class', 'style', 'hidden', 'disabled', 'aria-pressed', 'aria-expanded'] });
+            if (mutations) mutations.observe(element, { childList: true, subtree: true,
+                attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
         }
         var controller = { refresh: refresh, schedule: schedule, pause: pause, resume: function () {
             if (connected) return;
@@ -397,8 +382,7 @@ NEWSBLUR.motion = (function () {
     reduced.addEventListener('change', function () {
         if (reduced.matches) { running.forEach(function (animation) { animation.cancel(); }); running.clear(); }
     });
-    $(document).on('click.nb-motion', '.NB-feed-story-save, .NB-feedbar-mark-feed-read, .NB-taskbar .NB-taskbar-button, .NB-storytitles-sentiment, .NB-feedlist-collapse-icon, .NB-intelligence-slider-control, .NB-feed-story-train, .NB-search-icon', function () { pop(this); });
-    return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, pop: pop, article: article,
+    return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, article: article,
         article_parts: article_parts, feedbar_parts: feedbar_parts, watch_parts: watch_parts, pause_parts: pause_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
         duration: function (milliseconds) { return reduced.matches ? 0 : milliseconds; } };
 })();

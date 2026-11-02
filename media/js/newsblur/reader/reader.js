@@ -726,6 +726,7 @@
             this.$s.$body.removeClass('NB-show-reader');
             // reader.js resets the toolbar entrance only when the reader actually disappears.
             NEWSBLUR.motion.unwatch_parts(this.$s.$feedbar[0]);
+            NEWSBLUR.motion.unwatch_parts(this.$s.$story_titles_header[0]);
             this.$s.$header_dashboard.addClass('NB-selected');
             this.flags['splash_page_frontmost'] = true;
 
