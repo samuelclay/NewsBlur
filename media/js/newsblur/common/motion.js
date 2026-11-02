@@ -108,10 +108,13 @@ NEWSBLUR.motion = (function () {
             { opacity: 1, transform: 'translateY(0)' }
         ], 350, delay);
     }
-    function screen_order(elements) {
+    function screen_order(elements, horizontal_direction) {
         return elements.map(function (element, index) {
             return { element: element, rect: element.getBoundingClientRect(), index: index };
         }).sort(function (a, b) {
+            if (horizontal_direction) {
+                return (horizontal_direction === 'rtl' ? b.rect.right - a.rect.right : a.rect.left - b.rect.left) || a.index - b.index;
+            }
             return a.rect.top - b.rect.top || a.rect.left - b.rect.left || a.index - b.index;
         }).map(function (item) { return item.element; });
     }
@@ -139,9 +142,20 @@ NEWSBLUR.motion = (function () {
             '.NB-story-comment, .NB-story-cluster-detail-header, .NB-story-cluster-detail-item, .NB-cluster-locked-upsell, ' +
             '.NB-sideoption-share-title, .NB-sideoption-share-comments, .NB-sideoption-share-save, .NB-sideoption-share-unshare');
     }
-    function watch_parts(element, selector) {
+    function feedbar_parts(element) {
+        // motion.js combines header rebuilds and view changes into one horizontal cascade before paint.
+        return watch_parts(element, '.NB-feedbar-options, .NB-story-title-search, .NB-feedbar-mark-feed-read-container, ' +
+            '.NB-task-story-previous, .NB-task-story-next-unread, .NB-task-story-next', { horizontal: true, defer: true });
+    }
+    function watch_parts(element, selector, options) {
+        if (!element) return;
+        options = options || {};
         var existing = part_observers.get(element);
-        if (existing) { existing.resume(); existing.refresh(); return existing; }
+        if (existing) {
+            existing.resume();
+            if (options.defer) existing.schedule(); else existing.refresh();
+            return existing;
+        }
         var states = new Map();
         var connected = true;
         var observer = typeof IntersectionObserver === 'function' ? new IntersectionObserver(refresh, { threshold: 0 }) : null;
@@ -156,7 +170,7 @@ NEWSBLUR.motion = (function () {
             var flags = (node.className || '').split(/\s+/).filter(function (name) {
                 return /^(NB-disabled|NB-active|NB-listen-playing|NB-listen-queued)$/.test(name);
             }).sort().join(' ');
-            return [node.textContent.trim(), flags, node.getAttribute('disabled'),
+            return [node.textContent.replace(/\s+/g, ' ').trim(), flags, node.getAttribute('disabled'),
                 node.getAttribute('aria-pressed'), node.getAttribute('aria-expanded')].join('|');
         }
         function identity(node, counts) {
@@ -201,7 +215,7 @@ NEWSBLUR.motion = (function () {
             states.forEach(function (state, key) {
                 if (!current.has(key)) { if (observer) observer.unobserve(state.node); states.delete(key); }
             });
-            screen_order(arriving).forEach(function (node, index) {
+            screen_order(arriving, options.horizontal && (getComputedStyle(element).direction || 'ltr')).forEach(function (node, index) {
                 enter(node, stagger_delay(index, arriving.length, 30, 150), 7);
             });
         }
@@ -216,7 +230,7 @@ NEWSBLUR.motion = (function () {
             if (mutations) mutations.observe(element, { childList: true, subtree: true, characterData: true,
                 attributes: true, attributeFilter: ['class', 'style', 'hidden', 'disabled', 'aria-pressed', 'aria-expanded'] });
         }
-        var controller = { refresh: refresh, pause: pause, resume: function () {
+        var controller = { refresh: refresh, schedule: schedule, pause: pause, resume: function () {
             if (connected) return;
             connected = true;
             states.forEach(function (state) { if (observer) observer.observe(state.node); });
@@ -224,7 +238,7 @@ NEWSBLUR.motion = (function () {
         }, disconnect: function () { pause(); states.clear(); } };
         part_observers.set(element, controller);
         observe_mutations();
-        refresh();
+        if (options.defer) schedule(); else refresh();
         return controller;
     }
     function pause_parts(element) {
@@ -385,6 +399,6 @@ NEWSBLUR.motion = (function () {
     });
     $(document).on('click.nb-motion', '.NB-feed-story-save, .NB-feedbar-mark-feed-read, .NB-taskbar .NB-taskbar-button, .NB-storytitles-sentiment, .NB-feedlist-collapse-icon, .NB-intelligence-slider-control, .NB-feed-story-train, .NB-search-icon', function () { pop(this); });
     return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, pop: pop, article: article,
-        article_parts: article_parts, watch_parts: watch_parts, pause_parts: pause_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
+        article_parts: article_parts, feedbar_parts: feedbar_parts, watch_parts: watch_parts, pause_parts: pause_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
         duration: function (milliseconds) { return reduced.matches ? 0 : milliseconds; } };
 })();

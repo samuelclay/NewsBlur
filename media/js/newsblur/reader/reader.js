@@ -724,6 +724,8 @@
             this.reset_feed();
             this.open_sidebar();
             this.$s.$body.removeClass('NB-show-reader');
+            // reader.js resets the toolbar entrance only when the reader actually disappears.
+            NEWSBLUR.motion.unwatch_parts(this.$s.$feedbar[0]);
             this.$s.$header_dashboard.addClass('NB-selected');
             this.flags['splash_page_frontmost'] = true;
 
@@ -4827,7 +4829,7 @@
 
             this.setup_mousemove_on_views();
             // reader.js keeps persistent navigation still between stories, revealing only new or changed controls.
-            NEWSBLUR.motion.watch_parts(this.$s.$feedbar[0], '.NB-task-story-previous, .NB-task-story-next-unread, .NB-task-story-next');
+            NEWSBLUR.motion.feedbar_parts(this.$s.$feedbar[0]);
             NEWSBLUR.motion.watch_parts(this.$s.$story_taskbar[0], '.NB-taskbar-button, .NB-taskbar-options');
         },
 

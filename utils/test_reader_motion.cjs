@@ -80,7 +80,7 @@ function harness() {
             }
         };
     }
-    return { motion: context.NEWSBLUR.motion, document: context.document, observers, mutations, animations, preference, record, visible,
+    return { context, motion: context.NEWSBLUR.motion, document: context.document, observers, mutations, animations, preference, record, visible,
         root: () => ({ ...element({ top: 0, bottom: 200, left: 0, right: 300, width: 300, height: 200 }), scrollTop: 0 }),
         paint: () => { const pending = [...frames.values()]; frames.clear(); pending.forEach(callback => callback()); }
     };
@@ -488,4 +488,125 @@ test('deselecting and reselecting a story preserves unchanged actions and update
     h.motion.watch_parts(root, '.parts');
     assert.equal(h.animations.length, 3, 'A semantic change while paused still animates when the story resumes');
     assert.equal(h.animations[2].element, save.el);
+});
+
+// test_reader_motion.cjs renders the real header against floated search markup and persistent traversal controls.
+function feed_toolbar_fixture() {
+    const h = harness(), bar = h.root();
+    bar.bounds = { top: 0, bottom: 40, left: 0, right: 1000, width: 1000, height: 40 };
+    let controls;
+    function rebuild() {
+        controls = ['NB-feedbar-options', 'NB-story-title-search', 'NB-feedbar-mark-feed-read-container', 'NB-task-story-next-unread'].map((name, index) => {
+            const control = h.record(name).el;
+            control.className = name;
+            control.textContent = ['All · Newest', '', '', 'Next unread'][index];
+            control.bounds = { top: index === 3 ? 0 : 3, bottom: 25, left: 100 + index * 100, right: 180 + index * 100, width: 80, height: 22 };
+            control.parentElement = bar;
+            return control;
+        });
+        const wrapper = h.record('search-wrapper').el;
+        wrapper.className = 'NB-search-container';
+        wrapper.bounds = { top: 0, bottom: 0, left: 0, right: 1000, width: 1000, height: 0 };
+        wrapper.parentElement = bar;
+        controls[1].parentElement = wrapper;
+        const match = (nodes, selector) => nodes.filter(node => selector.split(',').some(part => node.matches(part.trim())));
+        bar.querySelectorAll = selector => match(controls, selector);
+        header.$el.find = selector => ({ toArray: () => match([...controls.slice(0, 3), wrapper], selector) });
+    }
+    h.context.Backbone = { View: { extend: definition => definition } };
+    h.context._ = { extend: Object.assign, bind: (fn, receiver) => fn.bind(receiver) };
+    Object.assign(h.context.NEWSBLUR, {
+        Views: { FeedTitleView: class { render() { return { $el: {} }; } } },
+        reader: { flags: {}, active_feed: 1, $s: { $feedbar: [bar] } },
+        assets: { get_feed: () => ({}) }
+    });
+    vm.runInNewContext(fs.readFileSync('media/js/newsblur/views/story_titles_header_view.js', 'utf8'), h.context);
+    const header = Object.create(h.context.NEWSBLUR.Views.StoryTitlesHeader);
+    header.options = {};
+    header.$el = { html() {}, closest: () => [bar] };
+    rebuild();
+    return { h, bar, header, rebuild, controls: () => controls, render: () => { header.render({ feed_id: 1 }); h.paint(); } };
+}
+
+test('feed header cascades All/Newest, floated Search, Mark Read, and persistent Next Unread together', () => {
+    const f = feed_toolbar_fixture();
+    f.render();
+    assert.deepEqual(f.h.animations.map(animation => animation.element), f.controls(),
+        'All visible toolbar controls enter together in horizontal reading order, despite differing top margins');
+    assert.ok(f.h.animations.every((animation, index, all) => index === 0 || animation.options.delay > all[index - 1].options.delay));
+});
+
+test('rebuilding a visible feed header keeps controls steady and animates only a changed filter', () => {
+    const f = feed_toolbar_fixture();
+    f.render();
+    f.h.animations.length = 0;
+    f.rebuild();
+    f.render();
+    assert.equal(f.h.animations.length, 0, 'Opening another feed must not replay an unchanged toolbar');
+    f.controls()[0].textContent = 'Unread · Newest';
+    f.render();
+    assert.deepEqual(f.h.animations.map(animation => animation.element), [f.controls()[0]]);
+});
+
+test('feed and folder template indentation does not replay unchanged filter and mark-read controls', () => {
+    const f = feed_toolbar_fixture();
+    // test_reader_motion.cjs models the text nodes from feed_title_view.js and story_titles_header_view.js,
+    // including the hidden mark-read day labels retained in textContent.
+    f.controls()[0].textContent = ['All', '·', 'Newest'].join(' '.repeat(22));
+    f.controls()[2].textContent = ['1d', '3d', '7d', '14d'].join(' '.repeat(19));
+    f.render();
+    f.h.animations.length = 0;
+    f.rebuild();
+    f.controls()[0].textContent = ['All', '·', 'Newest'].join(' '.repeat(32));
+    f.controls()[2].textContent = ['1d', '3d', '7d', '14d'].join(' '.repeat(24));
+    f.render();
+    assert.equal(f.h.animations.length, 0, 'HTML indentation is not a visible control change');
+    f.controls()[0].textContent = ['Unread', '·', 'Newest'].join(' '.repeat(32));
+    f.render();
+    assert.deepEqual(f.h.animations.map(animation => animation.element), [f.controls()[0]],
+        'Normalizing whitespace must preserve actual filter label changes');
+});
+
+test('feed toolbar uses RTL reading order and batches view switching with a later header rebuild', () => {
+    const f = feed_toolbar_fixture();
+    f.bar.style.direction = 'rtl';
+    f.h.motion.feedbar_parts(f.bar);
+    f.rebuild();
+    f.render();
+    assert.deepEqual(f.h.animations.map(animation => animation.element), [...f.controls()].reverse(),
+        'Only the final visible controls animate, right to left, even when view switching runs first');
+    assert.equal(f.h.mutations.length, 1, 'Header and navigation share a single observer');
+});
+
+test('returning from the dashboard cascades the whole toolbar even before visibility observers fire', () => {
+    const f = feed_toolbar_fixture();
+    f.render();
+    f.h.animations.length = 0;
+    f.h.context.Backbone.Router = { extend: definition => definition };
+    f.h.context.jQuery = f.h.context.$;
+    vm.runInNewContext(fs.readFileSync('media/js/newsblur/reader/reader.js', 'utf8'), f.h.context);
+    const reader = Object.assign(Object.create(f.h.context.NEWSBLUR.Reader), {
+        reset_feed() {}, open_sidebar() {}, flags: {},
+        $s: { $feedbar: [f.bar], $body: { removeClass() { f.bar.style.display = 'none'; } },
+            $header_dashboard: { addClass() {} } }
+    });
+    reader.show_splash_page(true);
+    f.bar.style.display = 'block';
+    f.rebuild();
+    f.render();
+    assert.deepEqual(f.h.animations.map(animation => animation.element), f.controls(),
+        'A real toolbar disappearance resets all controls, including the persistent Next Unread button');
+});
+
+test('a hidden toolbar waits for appearance and starts all controls before painting', () => {
+    const f = feed_toolbar_fixture();
+    f.bar.style.display = 'none';
+    f.render();
+    assert.equal(f.h.animations.length, 0);
+    f.bar.style.display = 'block';
+    f.h.mutations[0].callback();
+    f.h.paint();
+    assert.deepEqual(f.h.animations.map(animation => animation.element), f.controls());
+    assert.ok(f.h.animations.every(animation => animation.frames[0].opacity === 0 && animation.options.fill === 'backwards'),
+        'Delayed controls are already transparent throughout their stagger delay');
 });
