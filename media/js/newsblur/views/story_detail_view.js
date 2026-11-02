@@ -110,6 +110,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // =============
 
     render: function () {
+        // story_detail_view.js animates newly presented content, never a selection of content already on screen.
+        var animate_entrance = !this._motion_rendered || !this.el.isConnected || !this.el.getClientRects().length;
+        this._motion_rendered = true;
         var params = this.get_render_params();
         params['story_header'] = this.story_header_template(params);
         this.sideoptions_view = new NEWSBLUR.Views.StorySideoptionsView({
@@ -148,7 +151,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_cluster_stories();
         this.render_briefing_admin_badge();
         this.attach_handlers();
-        if (this.model.get('selected')) NEWSBLUR.motion.article_parts(this.el);
+        NEWSBLUR.motion.article_parts(this.el);
+        if (animate_entrance && this._motion_entrance_frame == null) {
+            this._motion_entrance_frame = requestAnimationFrame(_.bind(function () {
+                this._motion_entrance_frame = null;
+                if (this.el.isConnected) NEWSBLUR.motion.article(this.el);
+            }, this));
+        }
         // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
         // }
 
@@ -760,6 +769,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     destroy: function () {
         // console.log(["destroy story detail", this.model.get('story_title')]);
+        if (this._motion_entrance_frame != null) cancelAnimationFrame(this._motion_entrance_frame);
+        this._motion_entrance_frame = null;
         NEWSBLUR.motion.unwatch_parts(this.el);
         if (this._cluster_title_views) {
             _.each(this._cluster_title_views, function (view) { view.remove(); });
@@ -882,11 +893,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // story_detail_view.js observes individual actions and async social/cluster sections without moving their bars.
         if (selected) NEWSBLUR.motion.article_parts(this.el);
         else NEWSBLUR.motion.pause_parts(this.el);
-        if (selected && !options.selected_by_scrolling) {
-            requestAnimationFrame(_.bind(function () {
-                if (this.model.get('selected') && this.el.isConnected) NEWSBLUR.motion.article(this.el);
-            }, this));
-        }
         _.defer(_.bind(this.update_sideoptions_sticky_state, this));
         NEWSBLUR.app.taskbar_info.hide_stories_error();
 
