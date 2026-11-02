@@ -45,6 +45,7 @@ function harness() {
         NEWSBLUR: {},
         window: { ...element(), matchMedia: () => preference, IntersectionObserver: true, scrollY: 0, innerWidth: 1200, innerHeight: 800 },
         document: {}, Map, Set, Array,
+        performance: { now: () => 0 },
         getComputedStyle: el => ({ display: 'block', visibility: 'visible', opacity: '1', overflowX: 'visible', overflowY: 'visible', ...el.style }),
         requestAnimationFrame: callback => { frames.set(++next_frame, callback); return next_frame; },
         cancelAnimationFrame: id => frames.delete(id),
@@ -693,4 +694,91 @@ test('a hidden toolbar waits for appearance and starts all controls before paint
     assert.deepEqual(f.h.animations.map(animation => animation.element), f.controls());
     assert.ok(f.h.animations.every(animation => animation.frames[0].opacity === 0 && animation.options.fill === 'backwards'),
         'Delayed controls are already transparent throughout their stagger delay');
+});
+
+
+test('initial pagination continues one title cascade across arriving batches', () => {
+    const h = harness(), owner = {}, root = h.root();
+    root.bounds = { top: 0, bottom: 800, left: 0, right: 300, width: 300, height: 800 };
+    let now = 0;
+    h.context.performance = { now: () => now };
+    const starts = [];
+    for (let page = 0; page < 5; page++) {
+        now = page * 20;
+        const rows = Array.from({ length: 12 }, (_, index) => {
+            const row = h.record(page * 12 + index + 1);
+            const top = (page * 12 + index) * 12;
+            row.el.bounds = { top, bottom: top + 12, left: 0, right: 300, width: 300, height: 12 };
+            return row;
+        });
+        const before = h.animations.length;
+        h.motion.watch(owner, rows, root, 'feed', { animate_on_scroll: false });
+        starts.push(...h.animations.slice(before).map(animation => now + animation.options.delay));
+    }
+    assert.equal(starts.length, 60);
+    assert.ok(starts.every((start, index) => index === 0 || start > starts[index - 1]),
+        'A later page must continue below the previous page instead of starting another wave');
+    assert.ok(starts[12] < starts[11] + 350,
+        'The next page overlaps the previous row fade instead of waiting for the page to finish');
+    assert.ok(h.animations.every(animation => animation.options.fill === 'backwards'),
+        'Queued rows must already be hidden before their first paint, not flash before their turn');
+});
+
+test('switching feeds cancels every old opening effect and starts the new feed without its queue', () => {
+    const h = harness(), owner = {}, root = h.root();
+    const rows = ['old-first', 'old-last'].map(id => h.record(id));
+    rows.forEach((row, index) => h.visible(row, index * 80));
+    h.motion.watch(owner, rows, root, 'old-feed', { animate_on_scroll: false });
+    const old = h.animations.slice();
+    const next = h.record('new-first');
+    h.visible(next);
+    h.motion.watch(owner, [next], root, 'new-feed', { animate_on_scroll: false });
+    assert.ok(old.every(animation => animation.cancelled), 'Leaving a feed must cancel both active and delayed rows');
+    assert.equal(h.animations.at(-1).options.delay, 0, 'The new feed cannot inherit the previous opening backlog');
+});
+
+test('scrolling ends queued title pages and later pages remain fully visible', () => {
+    const h = harness(), owner = {}, root = h.root();
+    for (let page = 0; page < 3; page++) {
+        const rows = [h.record(page + '-a'), h.record(page + '-b')];
+        rows.forEach((row, index) => h.visible(row, index * 80));
+        h.motion.watch(owner, rows, root, 'feed', { animate_on_scroll: false });
+    }
+    assert.equal(h.animations.length, 6);
+    root.scrollTop = 20;
+    root.dispatch('scroll');
+    assert.ok(h.animations.every(animation => animation.cancelled), 'Scrolling reveals the entire queued opening immediately');
+    const next = h.record('later-page');
+    h.visible(next);
+    h.motion.watch(owner, [next], root, 'feed', { animate_on_scroll: false });
+    h.paint();
+    assert.equal(h.animations.length, 6, 'Pagination after scrolling must not hide new titles');
+});
+
+test('reduced motion clears an opening backlog without delaying later content when reenabled', () => {
+    const h = harness(), owner = {}, root = h.root();
+    const first = h.record('first'), second = h.record('second');
+    h.visible(first); h.visible(second, 80);
+    h.motion.watch(owner, [first, second], root, 'feed', { animate_on_scroll: false });
+    h.preference.matches = true;
+    h.preference.change();
+    assert.ok(h.animations.every(animation => animation.cancelled));
+    const reduced = h.record('reduced');
+    h.visible(reduced);
+    h.motion.watch(owner, [reduced], root, 'feed', { animate_on_scroll: false });
+    assert.equal(h.animations.length, 2, 'Reduced Motion presents arriving content immediately');
+    h.preference.matches = false;
+    const next = h.record('next');
+    h.visible(next);
+    h.motion.watch(owner, [next], root, 'feed', { animate_on_scroll: false });
+    assert.equal(h.animations.at(-1).options.delay, 0);
+});
+
+test('feed and dialog rows retain independent batch cascades', () => {
+    const h = harness(), owner = {}, root = h.root();
+    const first = h.record('first'), second = h.record('second'), next = h.record('next');
+    h.visible(first); h.visible(second, 80); h.visible(next);
+    h.motion.watch(owner, [first, second], root, 'dialog');
+    h.motion.watch(owner, [next], root, 'dialog');
+    assert.equal(h.animations.at(-1).options.delay, 0, 'Only initial story-title pagination shares an opening timeline');
 });

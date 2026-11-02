@@ -302,10 +302,19 @@ NEWSBLUR.motion = (function () {
         if (!owner.motion_observer) {
             var pending = new Map();
             var entered = new Set();
+            var last_title_start = null;
             var last_scroll_top = root ? root.scrollTop : window.scrollY;
             var scroll_target = root || window;
             var listening = false;
             var frame = null;
+            function finish_titles() {
+                entered.forEach(function (element) {
+                    var animation = running.get(element);
+                    if (animation) animation.cancel();
+                });
+                entered.clear();
+                last_title_start = null;
+            }
             function reveal(scrolling) {
                 var scroll_top = root ? root.scrollTop : window.scrollY;
                 var scroll_changed = scroll_top !== last_scroll_top;
@@ -315,25 +324,35 @@ NEWSBLUR.motion = (function () {
                 if (scroll_changed && options.animate_on_scroll === false) {
                     // motion.js ends title entrances for this feed visit, including pages arriving after scrolling stops.
                     owner.motion_scrolled = true;
-                    entered.forEach(function (element) {
-                        var animation = running.get(element);
-                        if (animation) animation.cancel();
-                    });
-                    entered.clear();
+                    finish_titles();
                 }
                 // motion.js reads the whole visible batch before animation writes can change its geometry.
                 var visible = screen_order(Array.from(pending.values()).filter(function (element) {
                     if (!element.isConnected) { controller.unobserve(element); return false; }
                     return visible_in_root(element, root);
                 }));
+                // motion.js continues one opening timeline across title pages, keeping their fades overlapping.
+                var opening_titles = options.animate_on_scroll === false;
+                var spacing = options.spacing || 35;
+                var spread = scrolling && !opening_titles ? 90 : (options.spread || 175);
+                var step = visible.length > 1 ? Math.min(spacing, spread / (visible.length - 1)) : spacing;
+                entered.forEach(function (element) { if (!running.has(element)) entered.delete(element); });
+                if (!entered.size) last_title_start = null;
+                var now = opening_titles ? performance.now() : 0;
+                var delay = opening_titles && last_title_start !== null && !reduced.matches ?
+                    Math.max(0, last_title_start + step - now) : 0;
                 visible.forEach(function (element, index) {
                     var key = element.nb_motion_key;
                     controller.unobserve(element);
                     if (owner.motion_seen.has(key)) return;
                     owner.motion_seen.add(key);
                     if (owner.motion_scrolled && options.animate_on_scroll === false) return;
-                    enter(element, stagger_delay(index, visible.length, options.spacing || 35, scrolling ? 90 : (options.spread || 175)), scrolling ? 8 : (options.distance || 16));
-                    if (options.animate_on_scroll === false) entered.add(element);
+                    var row_delay = delay + stagger_delay(index, visible.length, spacing, spread);
+                    enter(element, row_delay, scrolling && !opening_titles ? 8 : (options.distance || 16));
+                    if (opening_titles && !reduced.matches) {
+                        entered.add(element);
+                        last_title_start = now + row_delay;
+                    }
                 });
             }
             function on_scroll() { reveal(true); }
@@ -357,7 +376,7 @@ NEWSBLUR.motion = (function () {
                 disconnect: function () {
                     observer.disconnect();
                     pending.clear();
-                    entered.clear();
+                    finish_titles();
                     scroll_target.removeEventListener('scroll', on_scroll, true);
                     listening = false;
                     if (frame !== null) cancelAnimationFrame(frame);
