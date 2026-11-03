@@ -77,8 +77,8 @@ private final class RecalculatingPromptSaveAppDelegate: NewsBlurAppDelegate {
     }
 }
 
-/// AIClassifierTests.swift lets every classifier save succeed and holds each story refresh until the test answers it,
-/// and its fixture host can't reach a server.
+/// AIClassifierTests.swift answers every classifier save right away unless the test holds them, holds each story
+/// refresh until the test answers it, and its fixture host can't reach a server.
 private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     struct StoryRequest {
         let url: String
@@ -87,7 +87,15 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         let fail: () -> Void
     }
 
+    struct HeldSave {
+        let succeed: () -> Void
+        let fail: () -> Void
+    }
+
     var savesSucceed = true
+    /// Holds each save's answer in heldSaves until the test sends it, like a slow network.
+    var holdsSaves = false
+    var heldSaves: [HeldSave] = []
     var storyRequests: [StoryRequest] = []
     var pendingDebounces: [() -> Void] = []
     var pages: StoryPagesViewController?
@@ -96,10 +104,14 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     override var storyPagesViewController: StoryPagesViewController! { pages }
 
     override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
-        if savesSucceed {
-            success(nil, ["code": 1])
+        let save = HeldSave(succeed: { success(nil, ["code": 1]) },
+                            fail: { failure(nil, URLError(.badServerResponse)) })
+        if holdsSaves {
+            heldSaves.append(save)
+        } else if savesSucceed {
+            save.succeed()
         } else {
-            failure(nil, URLError(.badServerResponse))
+            save.fail()
         }
     }
 
@@ -866,10 +878,6 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
                        "Only the saved site's loaded stories")
         XCTAssertEqual(app.storyRequests.first?.parameters["include_hidden"] as? String, "true",
                        "Hidden stories need their new scores too")
-
-        app.savesSucceed = false
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
-        XCTAssertTrue(app.pendingDebounces.isEmpty, "A save that fails asks for nothing")
     }
 
     func test_everyKindOfClassifierSaveAsksForARefreshAndRapidSavesShareOne() {
@@ -1012,6 +1020,70 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?["prompt"] as? Int, -1, "The latest save's refresh lands")
     }
 
+    func test_aRefreshAskedForBeforeASaveIsDroppedAndTheSavesOwnRefreshLands() {
+        // The reader removes the AI focus prompt, and its refresh is still out when they like the sponsor URL regex.
+        let app = makeApp()
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: 0, includeImages: false,
+                                 scope: "feed", folderName: "")
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 1)
+
+        app.holdsSaves = true
+        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?["url_regex"] as? Int, 1, "Shown right away")
+
+        // The server scored the prompt removal before it heard of the URL regex.
+        app.storyRequests[0].succeed(scores(["author": -1, "url_regex": 0, "prompt": 0], for: "42:sponsor"))
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?["url_regex"] as? Int, 1,
+                       "Scores from before the save don't undo it while it's out")
+
+        app.heldSaves[0].succeed()
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 2, "The URL regex save asks for its own refresh")
+        app.storyRequests[1].succeed(scores(["author": -1, "url_regex": 1, "prompt": 0], for: "42:sponsor"))
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app) as NSDictionary?,
+                       ["author": -1, "url_regex": 1, "prompt": 0] as NSDictionary)
+    }
+
+    func test_aSaveThatFailsDropsOlderScoresAndAsksForTheServersOwn() {
+        let app = makeApp()
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: 0, includeImages: false,
+                                 scope: "feed", folderName: "")
+        app.endDebounces()
+
+        app.holdsSaves = true
+        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.heldSaves[0].fail()
+        let serverScores = ["author": -1, "url_regex": 0, "prompt": 0]
+        app.storyRequests[0].succeed(scores(serverScores, for: "42:sponsor"))
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?["url_regex"] as? Int, 1,
+                       "A refresh asked for before the failed save never lands")
+
+        // The failed save's start dropped the prompt removal's refresh, and the server's scores are right whether or
+        // not the URL regex reached it, so the failed save asks again.
+        XCTAssertEqual(app.pendingDebounces.count, 1)
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 2)
+        app.storyRequests[1].succeed(scores(serverScores, for: "42:sponsor"))
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app) as NSDictionary?, serverScores as NSDictionary,
+                       "The server never saved the URL regex, so its scores replace the local guess")
+    }
+
+    func test_noRefreshIsSentWhileAnotherSaveForTheSiteIsOut() {
+        let app = makeApp()
+        app.holdsSaves = true
+        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.toggleAuthorClassifier("Daring Fireball Department of Commerce", feedId: "42")
+
+        app.heldSaves[0].succeed()
+        app.endDebounces()
+        XCTAssertTrue(app.storyRequests.isEmpty, "The server may not have the author change yet")
+
+        app.heldSaves[1].succeed()
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 1, "Once both saves answer, one refresh goes out")
+    }
+
     func test_aRefreshIsDroppedOnceTheReaderLeavesTheSite() {
         let app = makeApp()
         app.toggleUrlRegexClassifier("sponsor", feedId: "42")
@@ -1104,6 +1176,10 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             ["story_hash": hash, "story_feed_id": 42, "intelligence": ["prompt": prompt], "score": prompt]
         }
         return ["stories": stories]
+    }
+
+    private func scores(_ intelligence: [String: Int], for hash: String) -> [String: Any] {
+        ["stories": [["story_hash": hash, "story_feed_id": 42, "intelligence": intelligence]]]
     }
 
     private func loadedStory(_ hash: String, in app: NewsBlurAppDelegate) -> [String: Any]? {

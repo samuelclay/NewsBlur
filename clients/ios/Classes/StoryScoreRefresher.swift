@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// StoryScoreRefresher.swift asks the server for the loaded stories' scores once a classifier save succeeds.
+/// StoryScoreRefresher.swift asks the server for the loaded stories' scores once a classifier save answers.
 /// NewsBlurAppDelegate.m's recalculateIntelligenceScores: shows the change right away, but it can't run AI prompts,
 /// and StoryClassifierScorer.swift keeps the server's old score wherever it can't tell. The refresh replaces those
 /// guesses with what apps/reader/views.py scores now, prompt scores included.
@@ -35,20 +35,45 @@ import Foundation
     }
 
     private weak var appDelegate: NewsBlurAppDelegate?
-    /// Every save moves its site to a new generation, so only the latest save's refresh is sent or lands.
+    /// Every save that starts and every refresh asked for moves its site to a new generation, so only the latest
+    /// refresh is sent or lands.
     private var generations: [String: Int] = [:]
+    /// Classifier saves for each site that haven't answered yet. The server may not have their change, so no refresh
+    /// is sent or lands while one is out. Each one asks for its own refresh when it answers.
+    private var savesInFlight: [String: Int] = [:]
 
     init(appDelegate: NewsBlurAppDelegate) {
         self.appDelegate = appDelegate
     }
 
-    func scheduleRefresh(forFeedId feedId: String) {
-        let generation = (generations[feedId] ?? 0) + 1
-        generations[feedId] = generation
+    /// NewsBlurAppDelegate.m calls this just before it sends a classifier save. A refresh asked for earlier knows
+    /// nothing of this change, so it's dropped rather than landing over the save's local recalculation.
+    func saveWillStart(forFeedId feedId: String) {
+        savesInFlight[feedId, default: 0] += 1
+        invalidateRefreshes(forFeedId: feedId)
+    }
+
+    /// NewsBlurAppDelegate.m calls this once a classifier save answers, whether it saved or failed. A failed save asks
+    /// too: its start dropped any refresh already out, and the server's scores are right whether or not the change
+    /// reached it, so they replace the local guess for a change the server may never have saved.
+    func saveDidEnd(forFeedId feedId: String) {
+        savesInFlight[feedId] = max((savesInFlight[feedId] ?? 0) - 1, 0)
+        scheduleRefresh(forFeedId: feedId)
+    }
+
+    private func scheduleRefresh(forFeedId feedId: String) {
+        let generation = invalidateRefreshes(forFeedId: feedId)
         guard let list = currentStoryList() else { return }
         afterDebounce(Self.debounce) { [weak self] in
             self?.refresh(feedId: feedId, generation: generation, list: list)
         }
+    }
+
+    @discardableResult
+    private func invalidateRefreshes(forFeedId feedId: String) -> Int {
+        let generation = (generations[feedId] ?? 0) + 1
+        generations[feedId] = generation
+        return generation
     }
 
     private func refresh(feedId: String, generation: Int, list: StoryList) {
@@ -99,7 +124,7 @@ import Foundation
     }
 
     private func isCurrent(feedId: String, generation: Int, list: StoryList) -> Bool {
-        generations[feedId] == generation && currentStoryList() == list
+        generations[feedId] == generation && (savesInFlight[feedId] ?? 0) == 0 && currentStoryList() == list
     }
 
     private func currentStoryList() -> StoryList? {

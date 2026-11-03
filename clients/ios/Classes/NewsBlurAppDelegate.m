@@ -5315,20 +5315,29 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 #pragma mark -
 #pragma mark Classifiers
 
-- (void)failedClassifierSave:(NSURLSessionDataTask *)task {
+// NewsBlurAppDelegate.m shows why a classifier save failed, and still asks the server for the site's loaded stories'
+// scores: StoryScoreRefresher.swift explains why a failed save refreshes too.
+- (void)failedClassifierSave:(NSURLSessionDataTask *)task feedId:(NSString *)feedId {
     BaseViewController *view;
     if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
         view = self.trainerViewController;
     } else {
         view = self.storyPagesViewController.currentPage;
     }
-    
+
     NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
     if (response.statusCode == 503) {
         [view informError:@"In maintenance mode"];
     } else {
         [view informError:@"The server barfed!"];
     }
+    [self.storyScoreRefresher saveDidEndForFeedId:feedId];
+}
+
+// NewsBlurAppDelegate.m calls this just before sending each classifier save, so a score refresh asked for before the
+// change can't land over its local recalculation.
+- (void)startingClassifierSave:(NSString *)feedId {
+    [self.storyScoreRefresher saveWillStartForFeedId:feedId];
 }
 
 // NewsBlurAppDelegate.m refreshes the site's unread counts once a classifier save lands, then asks the server for
@@ -5336,7 +5345,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 // wherever StoryClassifierScorer.swift can't tell.
 - (void)finishedClassifierSave:(NSString *)feedId {
     [self.feedsViewController refreshFeedList:feedId];
-    [self.storyScoreRefresher scheduleRefreshForFeedId:feedId];
+    [self.storyScoreRefresher saveDidEndForFeedId:feedId];
 }
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId {
@@ -5390,10 +5399,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5435,10 +5445,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5477,10 +5488,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5538,10 +5550,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5591,10 +5604,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5633,10 +5647,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                           @"remove_like_feed"];
     [params setObject:feedId forKey:@"feed_id"];
     
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedRequest:task.response];
+        [self.storyScoreRefresher saveDidEndForFeedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5679,10 +5695,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5721,10 +5738,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5766,10 +5784,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5808,10 +5827,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5853,10 +5873,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5895,10 +5916,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5940,10 +5962,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5985,10 +6008,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -6027,10 +6051,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -6069,10 +6094,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -6108,10 +6134,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self.trainerViewController reload];
 
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -6147,6 +6174,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:removeParams success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         // Step 2: Add classifier at new scope after remove succeeds
         NSMutableDictionary *addParams = [NSMutableDictionary dictionary];
@@ -6162,10 +6190,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self POST:urlString parameters:addParams success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [self finishedClassifierSave:feedId];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [self failedClassifierSave:task];
+            [self failedClassifierSave:task feedId:feedId];
         }];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
