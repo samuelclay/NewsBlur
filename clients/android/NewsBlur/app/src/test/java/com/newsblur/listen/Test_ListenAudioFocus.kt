@@ -49,6 +49,13 @@ class Test_ListenAudioFocus {
         override fun removeCallbacks(action: Runnable) {
             delayed -= action
         }
+
+        /** Lets every pending delay run, as if its time passed. */
+        fun runDelayed() {
+            val due = delayed.toList()
+            delayed.clear()
+            due.forEach(Runnable::run)
+        }
     }
 
     private val system = FakeFocusSystem()
@@ -72,6 +79,47 @@ class Test_ListenAudioFocus {
         publish(ListenFocusMode.DUCK_OTHERS, speaking = false)
         publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
         assertEquals("Playing again after a pause asks for focus again", 2, system.requests)
+    }
+
+    @Test
+    fun test_auto_continue_doesnt_take_focus_back_from_another_app() {
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        system.focusChange?.invoke(AudioManager.AUDIOFOCUS_LOSS)
+        // Test_ListenAudioFocus.kt: ListenManager.kt ends a story with a moment's grace, then starts the next one.
+        focus.update(ListenFocusMode.DUCK_OTHERS, speaking = false, abandonDelayMs = 2000L)
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        assertEquals("The next story shouldn't lower the podcast again", 1, system.requests)
+    }
+
+    @Test
+    fun test_playing_again_after_the_list_ends_is_a_new_play() {
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        system.focusChange?.invoke(AudioManager.AUDIOFOCUS_LOSS)
+        focus.update(ListenFocusMode.DUCK_OTHERS, speaking = false, abandonDelayMs = 2000L)
+        system.runDelayed()
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        assertEquals(2, system.requests)
+    }
+
+    @Test
+    fun test_a_call_still_pauses_listen_after_another_app_took_focus() {
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        system.focusChange?.invoke(AudioManager.AUDIOFOCUS_LOSS)
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        val watcher = system.modeWatcher
+        assertNotNull("Without focus there are no interruption callbacks, so Listen watches for calls", watcher)
+        watcher?.invoke(AudioManager.MODE_IN_COMMUNICATION)
+        assertEquals(1, pauses)
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = false)
+        assertNotNull("The paused story keeps watching for the call to end", system.modeWatcher)
+        watcher?.invoke(AudioManager.MODE_NORMAL)
+        assertEquals(1, resumes)
+    }
+
+    @Test
+    fun test_holding_focus_leaves_calls_to_the_focus_callbacks() {
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        assertNull(system.modeWatcher)
     }
 
     @Test
