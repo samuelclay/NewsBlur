@@ -45,7 +45,7 @@ class ListenAudioFocus(
     /** The voice stopped because a story ended, so starting again may be auto-continue rather than a new play. */
     private var stoppedAtStoryEnd = false
 
-    /** The call that paused Listen ended and Listen picked up again, which isn't a new play. */
+    /** Set while Listen picks up after the call that paused it, which isn't a new play. */
     private var resumedAfterCall = false
     private val forgetStoryEnd = Runnable { stoppedAtStoryEnd = false }
     private var abandonScheduled = false
@@ -172,8 +172,11 @@ class ListenAudioFocus(
             onPause()
         } else if (!inCall && pausedForCall) {
             pausedForCall = false
+            // ListenAudioFocus.kt: ListenManager.kt publishes inside onResume, so the flag covers only that resume
+            // and can't linger to a later, deliberate play when the resume doesn't get the voice speaking.
             resumedAfterCall = true
             onResume()
+            resumedAfterCall = false
         }
     }
 }

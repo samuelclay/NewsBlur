@@ -61,12 +61,23 @@ class Test_ListenAudioFocus {
     private val system = FakeFocusSystem()
     private var pauses = 0
     private var resumes = 0
-    private val focus = ListenAudioFocus(system, onPause = { pauses += 1 }, onResume = { resumes += 1 })
+
+    /** Like ListenManager.kt, a resume that works publishes the voice speaking before onResume returns. */
+    private var resumeMode: ListenFocusMode? = null
+    private val focus: ListenAudioFocus =
+        ListenAudioFocus(
+            system,
+            onPause = { pauses += 1 },
+            onResume = {
+                resumes += 1
+                resumeMode?.let { publish(it, speaking = true) }
+            },
+        )
 
     private fun publish(
         mode: ListenFocusMode,
         speaking: Boolean,
-    ) = focus.update(mode, speaking, abandonDelayMs = 0L)
+    ): Unit = focus.update(mode, speaking, abandonDelayMs = 0L)
 
     @Test
     fun test_another_apps_music_keeps_focus_until_listen_plays_again() {
@@ -103,6 +114,7 @@ class Test_ListenAudioFocus {
 
     @Test
     fun test_a_call_still_pauses_listen_after_another_app_took_focus() {
+        resumeMode = ListenFocusMode.DUCK_OTHERS
         publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
         system.focusChange?.invoke(AudioManager.AUDIOFOCUS_LOSS)
         publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
@@ -114,8 +126,21 @@ class Test_ListenAudioFocus {
         assertNotNull("The paused story keeps watching for the call to end", system.modeWatcher)
         watcher?.invoke(AudioManager.MODE_NORMAL)
         assertEquals(1, resumes)
-        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
         assertEquals("Picking up after the call leaves the other app's music up", 1, system.requests)
+    }
+
+    @Test
+    fun test_a_resume_after_a_call_that_doesnt_play_leaves_the_next_play_new() {
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        system.focusChange?.invoke(AudioManager.AUDIOFOCUS_LOSS)
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        system.modeWatcher?.invoke(AudioManager.MODE_IN_CALL)
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = false)
+        // Test_ListenAudioFocus.kt: the story failed during the call, so resuming doesn't get the voice speaking.
+        system.modeWatcher?.invoke(AudioManager.MODE_NORMAL)
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = false)
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        assertEquals("A deliberate play later asks for focus again", 2, system.requests)
     }
 
     @Test
