@@ -52,6 +52,7 @@
 @class WKWebView;
 @class BGAppRefreshTask;
 @class FeedIconPreparationRequest;
+@class StoryScoreRefresher;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -203,6 +204,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 
 @property (nonatomic) AFHTTPSessionManager *networkManager;
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
+/// NewsBlurAppDelegate.m asks StoryScoreRefresher.swift for the loaded stories' scores after each classifier save.
+@property (nonatomic, readonly) StoryScoreRefresher *storyScoreRefresher;
 @property (nonatomic, readwrite) PINCache *cachedFavicons;
 @property (nonatomic, readwrite) PINCache *cachedStoryImages;
 @property (nonatomic, readwrite) PINCache *cachedUserAvatars;
