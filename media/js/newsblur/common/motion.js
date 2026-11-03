@@ -100,13 +100,13 @@ NEWSBLUR.motion = (function () {
     function remove(elements) {
         Array.from(elements).forEach(function (element) { depart(element); element.remove(); });
     }
-    function enter(element, delay, distance) {
+    function enter(element, delay, distance, duration) {
         distance = distance === undefined ? 16 : distance;
         play(element, [
             { opacity: 0, transform: 'translateY(' + distance + 'px)' },
             { opacity: 1, transform: 'translateY(-1px)', offset: .75 },
             { opacity: 1, transform: 'translateY(0)' }
-        ], 350, delay);
+        ], duration === undefined ? 350 : duration, delay);
     }
     function screen_order(elements, horizontal_direction) {
         return elements.map(function (element, index) {
@@ -335,6 +335,8 @@ NEWSBLUR.motion = (function () {
                 var opening_titles = options.animate_on_scroll === false;
                 var spacing = options.spacing || 35;
                 var spread = scrolling && !opening_titles ? 90 : (options.spread || 175);
+                // motion.js gives opening titles twice the pace while retaining the shared pagination timeline.
+                if (opening_titles) { spacing /= 2; spread /= 2; }
                 var step = visible.length > 1 ? Math.min(spacing, spread / (visible.length - 1)) : spacing;
                 entered.forEach(function (element) { if (!running.has(element)) entered.delete(element); });
                 if (!entered.size) last_title_start = null;
@@ -348,7 +350,8 @@ NEWSBLUR.motion = (function () {
                     owner.motion_seen.add(key);
                     if (owner.motion_scrolled && options.animate_on_scroll === false) return;
                     var row_delay = delay + stagger_delay(index, visible.length, spacing, spread);
-                    enter(element, row_delay, scrolling && !opening_titles ? 8 : (options.distance || 16));
+                    enter(element, row_delay, scrolling && !opening_titles ? 8 : (options.distance || 16),
+                        opening_titles ? 175 : 350);
                     if (opening_titles && !reduced.matches) {
                         entered.add(element);
                         last_title_start = now + row_delay;
