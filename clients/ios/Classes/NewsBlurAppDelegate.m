@@ -3134,13 +3134,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [newStory setObject:[NSNumber numberWithBool:YES] forKey:@"sticky"];
         }
         
+        // NewsBlurAppDelegate.m only recomputes the author, feed, tags and title scores here. The server's other
+        // scores (the AI prompt, regexes, text and URL) stay as they arrived, so saving a classifier never drops
+        // an AI match that computeStoryScore ranks above likes and dislikes.
         NSNumber *zero = [NSNumber numberWithInt:0];
-        NSMutableDictionary *intelligence = [NSMutableDictionary
-                                             dictionaryWithObjects:[NSArray arrayWithObjects:
-                                                                    [zero copy], [zero copy],
-                                                                    [zero copy], [zero copy], nil]
-                                             forKeys:[NSArray arrayWithObjects:
-                                                      @"author", @"feed", @"tags", @"title", nil]];
+        id existingIntelligence = [story objectForKey:@"intelligence"];
+        NSMutableDictionary *intelligence = [existingIntelligence isKindOfClass:[NSDictionary class]] ?
+                                            [existingIntelligence mutableCopy] : [NSMutableDictionary dictionary];
+        for (NSString *recomputedKey in @[@"author", @"feed", @"tags", @"title"]) {
+            [intelligence setObject:[zero copy] forKey:recomputedKey];
+        }
         NSDictionary *classifiers = [storiesCollection.activeClassifiers objectForKey:feedIdStr];
         
         for (NSString *title in [classifiers objectForKey:@"titles"]) {

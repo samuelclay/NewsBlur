@@ -71,6 +71,12 @@ private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
     }
 }
 
+/// AIClassifierTests.swift keeps NewsBlurAppDelegate.m's real recalculateIntelligenceScores: and only stubs the network.
+private final class RecalculatingPromptSaveAppDelegate: NewsBlurAppDelegate {
+    override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error) -> Void)!) {
+    }
+}
+
 /// AIClassifierTests.swift checks English copy, so it pins the interface language while each test runs.
 @MainActor private func withEnglishInterface(_ body: () throws -> Void) rethrows {
     let defaults = UserDefaults.standard
@@ -215,6 +221,31 @@ private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
         let saves = app.savedParameters.count
         app.savePromptClassifier("Never saved", feedId: "42", score: 0, includeImages: false, scope: "feed", folderName: "")
         XCTAssertEqual(app.savedParameters.count, saves, "Removing a prompt that isn't saved sends nothing")
+    }
+
+    func test_savingAPromptKeepsTheServersAIAndRegexScoresOnLoadedStories() {
+        // The Daring Fireball sponsor post: a disliked author, but the AI focus prompt matched, so it shows green.
+        let app = RecalculatingPromptSaveAppDelegate()
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.activeClassifiers = ["42": ["prompts": ["Non-apple related news": 1],
+                                                          "authors": ["Daring Fireball Department of Commerce": -1]]]
+        app.storiesCollection.activeFeedStories = [[
+            "story_hash": "42:sponsor",
+            "story_feed_id": 42,
+            "story_title": "[Sponsor] WorkOS",
+            "story_authors": "Daring Fireball Department of Commerce",
+            "story_tags": [String](),
+            "intelligence": ["feed": 0, "author": -1, "tags": 0, "title": 0, "prompt": 1, "text_regex": 1],
+        ]]
+
+        app.savePromptClassifier("Charts", feedId: "42", score: 1, includeImages: true, scope: "feed", folderName: "")
+
+        let story = app.storiesCollection.activeFeedStories.first as? [String: Any]
+        let intelligence = story?["intelligence"] as? [String: Any]
+        XCTAssertEqual(intelligence?["prompt"] as? Int, 1, "The server's AI score survives the local recalculation")
+        XCTAssertEqual(intelligence?["text_regex"] as? Int, 1, "Scores the app can't recompute stay as the server sent them")
+        XCTAssertEqual(intelligence?["author"] as? Int, -1, "The author score is recomputed from the classifiers")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence), 1, "The AI match still outranks the disliked author")
     }
 
     func test_savedPromptsReadScopesFromClassifiers() {
