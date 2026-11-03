@@ -3117,7 +3117,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 - (void)recalculateIntelligenceScores:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     NSMutableArray *newFeedStories = [NSMutableArray array];
-    
+    NSDictionary *classifiers = [storiesCollection.activeClassifiers objectForKey:feedIdStr];
+    StoryClassifierScorer *scorer = [[StoryClassifierScorer alloc] initWithClassifiers:classifiers
+                                                                           isPremium:self.isPremium
+                                                                    isPremiumArchive:self.isPremiumArchive
+                                                                        isPremiumPro:self.isPremiumPro];
+
     for (NSDictionary *story in storiesCollection.activeFeedStories) {
         NSString *storyFeedId = [NSString stringWithFormat:@"%@",
                                  [story objectForKey:@"story_feed_id"]];
@@ -3134,8 +3139,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [newStory setObject:[NSNumber numberWithBool:YES] forKey:@"sticky"];
         }
         
-        // NewsBlurAppDelegate.m only recomputes the author, feed, tags and title scores here. The server's other
-        // scores (the AI prompt, regexes, text and URL) stay as they arrived, so saving a classifier never drops
+        // NewsBlurAppDelegate.m recomputes every score the app has the story's data for, the text, URL and regex
+        // scores in StoryClassifierScorer.swift, so a removed classifier stops counting on loaded stories. Only the
+        // AI prompt score stays as the server sent it: the app can't run the AI, so saving a classifier never drops
         // an AI match that computeStoryScore ranks above likes and dislikes.
         NSNumber *zero = [NSNumber numberWithInt:0];
         id existingIntelligence = [story objectForKey:@"intelligence"];
@@ -3144,8 +3150,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         for (NSString *recomputedKey in @[@"author", @"feed", @"tags", @"title"]) {
             [intelligence setObject:[zero copy] forKey:recomputedKey];
         }
-        NSDictionary *classifiers = [storiesCollection.activeClassifiers objectForKey:feedIdStr];
-        
+        [intelligence addEntriesFromDictionary:[scorer scoresForStory:story]];
+
         for (NSString *title in [classifiers objectForKey:@"titles"]) {
             int currentTitle = [[intelligence objectForKey:@"title"] intValue];
             if (currentTitle > -2 && currentTitle <= 0 &&

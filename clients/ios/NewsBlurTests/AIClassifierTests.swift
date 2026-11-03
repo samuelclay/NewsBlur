@@ -578,6 +578,141 @@ private final class RecalculatingPromptSaveAppDelegate: NewsBlurAppDelegate {
     }
 }
 
+// MARK: - Recalculating loaded stories
+
+/// AIClassifierTests.swift saves classifiers through NewsBlurAppDelegate.m and checks that its real
+/// recalculateIntelligenceScores: scores loaded stories the way apps/analyzer/models.py does.
+@MainActor final class Test_StoryClassifierRecalculation: XCTestCase {
+    private let sponsorPermalink = "https://daringfireball.net/linked/2026/10/27/sponsor-workos"
+    private let sponsorContent = "<p>Let agents sign up for <em>your</em> app without a browser.</p>"
+
+    func test_removingAMatchingURLRegexMakesTheStoryNeutral() {
+        // The server matched the sponsor URL regex, so the story arrives green.
+        let app = makeApp(classifiers: ["url_regex": ["sponsor": 1]],
+                          intelligence: ["feed": 0, "author": 0, "tags": 0, "title": 0, "url_regex": 1, "prompt": 0])
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 1)
+
+        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        XCTAssertEqual(intelligence(app)?["url_regex"] as? Int, 0, "The removed regex no longer counts")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 0)
+
+        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        XCTAssertEqual(intelligence(app)?["url_regex"] as? Int, 1, "Liking it again matches the permalink")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 1)
+    }
+
+    func test_addingAndRemovingATextClassifierScoresTheTextReadersSee() {
+        let app = makeApp(classifiers: [:], intelligence: ["feed": 0, "text": 0, "prompt": 0], content: sponsorContent)
+
+        app.toggleTextClassifier("Sign up for your app", feedId: "42")
+        XCTAssertEqual(intelligence(app)?["text"] as? Int, 1, "Text matches case insensitively across the <em> tag")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 1)
+
+        app.toggleTextClassifier("Sign up for your app", feedId: "42")
+        XCTAssertEqual(intelligence(app)?["text"] as? Int, 0, "The removed text classifier no longer counts")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 0)
+    }
+
+    func test_urlScoresNeedPremiumAndRegexScoresNeedProLikeTheServer() {
+        let classifiers: NSDictionary = [
+            "urls": ["daringfireball.net/linked": 1],
+            "url_regex": ["sponsor-\\w+": 1],
+            "title_regex": ["^\\[sponsor\\]": -1],
+            "author_regex": ["department of \\w+": -1],
+            "texts": ["without a browser": 1],
+            "text_regex": ["\\bagents?\\b": 1],
+        ]
+        let story: NSDictionary = [
+            "story_feed_id": 42,
+            "story_title": "[Sponsor] WorkOS",
+            "story_authors": "Daring Fireball Department of Commerce",
+            "story_permalink": sponsorPermalink,
+            "story_content": sponsorContent,
+        ]
+        func scores(premium: Bool, archive: Bool, pro: Bool) -> [String: Int] {
+            StoryClassifierScorer(classifiers: classifiers, isPremium: premium, isPremiumArchive: archive,
+                                  isPremiumPro: pro).scores(forStory: story)
+        }
+        let unscored = ["url": 0, "url_regex": 0, "title_regex": 0, "author_regex": 0, "text": 0, "text_regex": 0]
+
+        XCTAssertEqual(scores(premium: false, archive: false, pro: false), unscored)
+        XCTAssertEqual(scores(premium: true, archive: false, pro: false), unscored.merging(["url": 1]) { $1 })
+        XCTAssertEqual(scores(premium: true, archive: true, pro: false), unscored.merging(["url": 1, "text": 1]) { $1 })
+        XCTAssertEqual(scores(premium: true, archive: false, pro: true),
+                       ["url": 1, "url_regex": 1, "title_regex": -1, "author_regex": -1, "text": 1, "text_regex": 1])
+
+        // NewsBlurAppDelegate.m passes the account's own tiers: Premium without Archive or Pro.
+        let app = makeApp(classifiers: classifiers as! [String: Any],
+                          intelligence: ["url": 1, "url_regex": 1, "text": 1, "text_regex": 1], content: sponsorContent,
+                          isPremium: true, isPremiumArchive: false, isPremiumPro: false)
+        app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["url"] as? Int, 1)
+        XCTAssertEqual(intelligence(app)?["url_regex"] as? Int, 0)
+        XCTAssertEqual(intelligence(app)?["text"] as? Int, 0)
+        XCTAssertEqual(intelligence(app)?["text_regex"] as? Int, 0)
+    }
+
+    func test_aStoryLoadedWithoutContentKeepsTheServersTextScores() {
+        let app = makeApp(classifiers: ["texts": ["without a browser": 0], "url_regex": ["sponsor": 0]],
+                          intelligence: ["text": 1, "text_regex": -1, "url_regex": 1, "prompt": 1])
+
+        app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["text"] as? Int, 1, "Without the content there is nothing to match again")
+        XCTAssertEqual(intelligence(app)?["text_regex"] as? Int, -1)
+        XCTAssertEqual(intelligence(app)?["url_regex"] as? Int, 0, "The permalink is loaded, so its score is recomputed")
+        XCTAssertEqual(intelligence(app)?["prompt"] as? Int, 1, "The app can't run the AI, so its score stays")
+    }
+
+    func test_aRegexThatRunsOutOfTimeDoesNotMatchAndIsNotSearchedAgainThisPass() {
+        // (a+)+$ tries every way to split a run of a's before giving up, so this content would take years unbounded.
+        let classifiers: NSDictionary = ["text_regex": ["(a+)+$": 1]]
+        let longStory: NSDictionary = ["story_feed_id": 42,
+                                       "story_content": "<p>" + String(repeating: "a", count: 20_000) + "!</p>"]
+        let shortStory: NSDictionary = ["story_feed_id": 42, "story_content": "<p>aaaa</p>"]
+        let scorer = StoryClassifierScorer(classifiers: classifiers, isPremium: true, isPremiumArchive: true, isPremiumPro: true)
+
+        let started = ProcessInfo.processInfo.systemUptime
+        XCTAssertEqual(scorer.scores(forStory: longStory)["text_regex"], 0, "A timeout counts as no match, like safe_regex_match")
+        // The search checks its deadline every fraction of a millisecond. The margin only absorbs CI runner stalls.
+        XCTAssertLessThan(ProcessInfo.processInfo.systemUptime - started,
+                          TrainerRegexMatcher.drawingBudget + SimulatorTestTiming.realWorkTimeout)
+        XCTAssertEqual(scorer.scores(forStory: shortStory)["text_regex"], 0,
+                       "A slow pattern costs the main thread one budget per recalculation, not one per loaded story")
+
+        let nextPass = StoryClassifierScorer(classifiers: classifiers, isPremium: true, isPremiumArchive: true, isPremiumPro: true)
+        XCTAssertEqual(nextPass.scores(forStory: shortStory)["text_regex"], 1, "The next recalculation tries the pattern again")
+    }
+
+    private func makeApp(classifiers: [String: Any], intelligence: [String: Int], content: String? = nil,
+                         isPremium: Bool = true, isPremiumArchive: Bool = true,
+                         isPremiumPro: Bool = true) -> NewsBlurAppDelegate {
+        let app = RecalculatingPromptSaveAppDelegate()
+        app.isPremium = isPremium
+        app.isPremiumArchive = isPremiumArchive
+        app.isPremiumPro = isPremiumPro
+        app.storiesCollection = StoriesCollection()
+        app.storiesCollection.activeClassifiers = ["42": classifiers]
+        var story: [String: Any] = [
+            "story_hash": "42:sponsor",
+            "story_feed_id": 42,
+            "story_title": "[Sponsor] WorkOS",
+            "story_authors": "Daring Fireball Department of Commerce",
+            "story_permalink": sponsorPermalink,
+            "story_tags": [String](),
+            "intelligence": intelligence,
+        ]
+        if let content {
+            story["story_content"] = content
+        }
+        app.storiesCollection.activeFeedStories = [story]
+        return app
+    }
+
+    private func intelligence(_ app: NewsBlurAppDelegate) -> [String: Any]? {
+        (app.storiesCollection.activeFeedStories.first as? [String: Any])?["intelligence"] as? [String: Any]
+    }
+}
+
 // MARK: - Usage billing
 
 @MainActor final class Test_UsageBilling: XCTestCase {
