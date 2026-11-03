@@ -167,6 +167,7 @@ class ListenManager
         private val dbHelper: BlurDatabaseHelper,
         @param:IconFileCache private val iconCache: FileCache,
         private val storyRead: ListenStoryRead,
+        private val audioMix: ListenAudioMix,
     ) {
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         private val mutableState =
@@ -186,6 +187,13 @@ class ListenManager
         }
 
         private var exoPlayer: ExoPlayer? = null
+
+        // The Music section's boost past 100% and the focus Listen holds itself while playing over other audio.
+        private val voiceBoost = ListenVoiceBoost()
+        private var exoTakesAudioFocus = true
+        private val audioFocus by lazy {
+            ListenAudioFocus(context, onPause = { setPlayWhenReady(false) }, onResume = { setPlayWhenReady(true) })
+        }
         private var controllerFuture: ListenableFuture<MediaController>? = null
 
         // One story's playback. Every async result checks generation so a stale story can't touch a newer one.
@@ -258,6 +266,10 @@ class ListenManager
                     if (ListenSpeed.clamp(settings.speed) != speed) applySpeed(settings.speed, save = false)
                 }
             }
+            scope.launch {
+                // The Music section changed playing over other audio, lowering the music, or the balance.
+                audioMix.settings.collect { applyAudioMix() }
+            }
         }
 
         // region Commands
@@ -311,7 +323,7 @@ class ListenManager
             }
             playWhenReady = play
             exoPlayer?.let { player ->
-                if (play) player.volume = previewVolume()
+                if (play) player.volume = playerVolume()
                 // While a seek settles, ExoPlayer still holds the old position; playSegment starts the new one.
                 if (seekJob?.isActive != true) player.playWhenReady = play
             }
@@ -355,7 +367,7 @@ class ListenManager
             if (seekJob == null) player?.playWhenReady = playWhenReady
             currentSegment = location.segmentIndex
             lastOffsetMs = location.offsetMs
-            exoPlayer?.volume = previewVolume()
+            exoPlayer?.volume = playerVolume()
             publish()
         }
 
@@ -542,6 +554,7 @@ class ListenManager
             artworkPng = null
             exoPlayer?.release()
             exoPlayer = null
+            voiceBoost.release()
             publish()
             controllerFuture?.let { MediaController.releaseFuture(it) }
             controllerFuture = null
@@ -749,7 +762,7 @@ class ListenManager
                 val player = ensureExoPlayer()
                 player.setMediaItem(mediaItem(segmentIndex, url), offsetMs)
                 player.playbackParameters = PlaybackParameters(speed.toFloat())
-                player.volume = previewVolume()
+                player.volume = playerVolume()
                 player.prepare()
                 player.playWhenReady = playWhenReady
                 prefetch(segmentIndex + 1)
@@ -987,13 +1000,57 @@ class ListenManager
                             DefaultDataSource.Factory(context, http),
                             extractors,
                         ),
-                    ).setAudioAttributes(ListenSessionPlayer.AUDIO_ATTRIBUTES, true)
+                    ).setAudioAttributes(ListenSessionPlayer.AUDIO_ATTRIBUTES, takesAudioFocus.also { exoTakesAudioFocus = it })
                     .setHandleAudioBecomingNoisy(true)
                     .setWakeMode(C.WAKE_MODE_NETWORK)
                     .build()
             player.addListener(exoListener)
             exoPlayer = player
+            voiceBoost.attach(player.audioSessionId)
+            voiceBoost.setGain(ListenAudioMixMath.boostMillibels(audioMix.current().effectiveVoiceVolume))
             return player
+        }
+
+        /**
+         * Whether Listen's players take audio focus, pausing other apps. Not while Listen plays over other audio
+         * (ListenAudioMix.kt), where ListenAudioFocus.kt handles focus instead; the voice preview in
+         * ListenVoiceSettingsViewModel.kt follows the same rule.
+         */
+        val takesAudioFocus: Boolean
+            get() = audioMix.current().focusMode == ListenFocusMode.EXCLUSIVE
+
+        /** The Music section changed: ExoPlayer's focus handling, the voice's volume and its boost follow. */
+        private fun applyAudioMix() {
+            exoPlayer?.let { player ->
+                // The balance slider saves on every step, but focus handling only changes with Play over other audio.
+                if (takesAudioFocus != exoTakesAudioFocus) {
+                    exoTakesAudioFocus = takesAudioFocus
+                    player.setAudioAttributes(ListenSessionPlayer.AUDIO_ATTRIBUTES, takesAudioFocus)
+                }
+                player.volume = playerVolume()
+            }
+            voiceBoost.setGain(ListenAudioMixMath.boostMillibels(audioMix.current().effectiveVoiceVolume))
+            updateAudioFocus()
+        }
+
+        /** The preview fade times the balance's share of the voice volume (the boost does the rest). */
+        private fun playerVolume(): Float =
+            previewVolume() * ListenAudioMixMath.playerVolume(audioMix.current().effectiveVoiceVolume)
+
+        /** While Listen plays over other audio, ListenAudioFocus.kt lowers that audio only while the voice plays. */
+        private fun updateAudioFocus() {
+            val speaking =
+                story != null &&
+                    playWhenReady &&
+                    phase != ListenPhase.IDLE &&
+                    phase != ListenPhase.ENDED &&
+                    phase != ListenPhase.PREVIEW_ENDED &&
+                    phase != ListenPhase.ERROR
+            audioFocus.update(
+                mode = audioMix.current().focusMode,
+                speaking = speaking,
+                abandonDelayMs = if (phase == ListenPhase.ENDED) AUTO_CONTINUE_FOCUS_GRACE_MS else 0L,
+            )
         }
 
         private val exoListener =
@@ -1048,6 +1105,10 @@ class ListenManager
                     }
                     updateTicking()
                     publish()
+                }
+
+                override fun onAudioSessionIdChanged(audioSessionId: Int) {
+                    voiceBoost.attach(audioSessionId)
                 }
 
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -1298,7 +1359,7 @@ class ListenManager
             }
             if (manifest?.isPreview == true) {
                 val position = logicalPositionMs()
-                player.volume = previewVolume()
+                player.volume = playerVolume()
                 if (ListenPreviewFade.isFinished(position, previewLimitMs())) {
                     finishPreview()
                     return
@@ -1516,6 +1577,7 @@ class ListenManager
                     upNextSource = queueSource,
                 )
             sessionPlayer.refresh()
+            updateAudioFocus()
         }
 
         // endregion
@@ -1548,6 +1610,9 @@ class ListenManager
             private const val HTTP_TIMEOUT_MS = 30_000
             private const val DEFAULT_PREVIEW_SECONDS = 30.0
             private const val UP_NEXT_LIMIT = 10
+
+            // Auto-continue starts the next story within a moment, so the other app's music stays lowered between.
+            private const val AUTO_CONTINUE_FOCUS_GRACE_MS = 2_000L
 
             /** For classes Hilt doesn't build, like StoryViewAdapter.kt's gesture handler. */
             @JvmStatic

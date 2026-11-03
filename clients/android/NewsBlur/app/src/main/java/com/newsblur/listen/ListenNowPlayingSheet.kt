@@ -57,7 +57,8 @@ import kotlin.math.ceil
 
 /**
  * ListenNowPlayingSheet.kt is the expanded player: scrubber, skips, speed, voice settings, the preview
- * banner and upgrade button for people without Premium Archive, inline errors with Retry, Up Next and usage.
+ * banner and upgrade button for people without Premium Archive, inline errors with Retry, usage, the Music
+ * section for playing over other apps (ListenMusicSection.kt) and Up Next.
  */
 @Composable
 fun ListenNowPlayingSheet(
@@ -76,6 +77,11 @@ fun ListenNowPlayingSheet(
     onPlayQueued: (String) -> Unit,
     onRemoveQueued: (String) -> Unit,
     onMoveQueued: (Int, Int) -> Unit,
+    audioMix: ListenAudioMixSettings,
+    onMusicSectionCollapsed: (Boolean) -> Unit,
+    onPlayOverOtherAudio: (Boolean) -> Unit,
+    onLowerMusic: (Boolean) -> Unit,
+    onVoiceVolume: (Double) -> Unit,
 ) {
     val story = state.story ?: return
     var speedOpen by rememberSaveable { mutableStateOf(false) }
@@ -237,6 +243,16 @@ fun ListenNowPlayingSheet(
             }
 
             ListenUsageFooter(usage = state.usage, colors = colors, onUpgrade = onUpgrade)
+
+            Spacer(Modifier.height(8.dp))
+            ListenMusicSection(
+                settings = audioMix,
+                colors = colors,
+                onCollapsed = onMusicSectionCollapsed,
+                onPlayOverOtherAudio = onPlayOverOtherAudio,
+                onLowerMusic = onLowerMusic,
+                onVoiceVolume = onVoiceVolume,
+            )
 
             Spacer(Modifier.height(12.dp))
             ListenUpNextSection(
