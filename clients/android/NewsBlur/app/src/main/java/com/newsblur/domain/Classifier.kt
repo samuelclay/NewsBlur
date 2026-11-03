@@ -187,15 +187,44 @@ class Classifier : Serializable {
         return values
     }
 
-    /** One /classifier/save request per folder or global scope with changes, sent after the feed save. */
-    fun getScopedRequests(): List<ScopedClassifierRequest> = requests(changes.filter { !it.scope.isFeed && it.movedTo == null })
+    /**
+     * One /classifier/save request per folder or global scope with changes, sent after the feed
+     * save. A classifier moving between folder and global scopes goes out in getScopeMoves instead.
+     */
+    fun getScopedRequests(): List<ScopedClassifierRequest> =
+        requests(changes.filter { !it.scope.isFeed && it.movedTo == null && folderOrGlobalMoveOf(it) == null })
 
     /**
-     * The removals at their old scope of classifiers that moved to one of [savedScopes], sent last
-     * so a classifier whose new scope didn't save keeps its original instead of disappearing.
+     * The removals at their old scope of classifiers that moved to or from feed scope and now have
+     * a copy at one of [savedScopes], sent last so a classifier whose new scope didn't save keeps
+     * its original instead of disappearing.
      */
     fun getMoveRemovalRequests(savedScopes: Set<ClassifierScope>): List<ScopedClassifierRequest> =
-        requests(changes.filter { it.movedTo != null && it.movedTo in savedScopes })
+        requests(changes.filter { it.movedTo != null && !it.isFolderOrGlobalMove && it.movedTo in savedScopes })
+
+    /**
+     * The classifiers that moved between two folder or global scopes, one move each so its outcome
+     * is known. apps/analyzer/views.py saves both scopes at feed_id 0, where a tag or author can
+     * exist only once, so FeedApiImpl.kt removes the old copy before saving the new one, the way
+     * media/js/newsblur/reader/reader_classifier.js save() does, and puts it back if the move
+     * doesn't finish. A move from a folder scope without its folder stays put, see
+     * ClassifierScope.isValid.
+     */
+    fun getScopeMoves(): List<ScopeMoveRequests> =
+        changes
+            .filter { it.isFolderOrGlobalMove && it.scope.isValid }
+            .map { removal ->
+                val save = changes.first { it.movedTo == null && it.type == removal.type && it.key == removal.key }
+                ScopeMoveRequests(
+                    removal = request(removal),
+                    save = request(save),
+                    restore = request(removal.copy(value = clearedScore(removal.value), movedTo = null)),
+                )
+            }
+
+    // Classifier.kt: the removal half of the folder or global move that [save] is the new copy of.
+    private fun folderOrGlobalMoveOf(save: ClassifierChange): ClassifierChange? =
+        changes.firstOrNull { it.isFolderOrGlobalMove && it.type == save.type && it.key == save.key }
 
     // A folder scope without its folder never goes out, see ClassifierScope.isValid.
     private fun requests(changes: List<ClassifierChange>): List<ScopedClassifierRequest> =
@@ -203,6 +232,8 @@ class Classifier : Serializable {
             .filter { it.scope.isValid }
             .groupBy { it.scope }
             .map { (scope, scopeChanges) -> ScopedClassifierRequest(scope, tuples(scopeChanges)) }
+
+    private fun request(change: ClassifierChange): ScopedClassifierRequest = ScopedClassifierRequest(change.scope, tuples(listOf(change)))
 
     private fun tuples(changes: List<ClassifierChange>): ValueMultimap {
         val values = ValueMultimap()
@@ -248,8 +279,9 @@ class Classifier : Serializable {
             val originalScore = originalScores[key]
             val originalScope = if (originalScore == null) scope else original.scope(type, key)
             if (originalScope != scope) {
-                // The old copy goes once the new one saves. A classifier that moved and lost its
-                // opinion has no new copy, so its old one goes with the rest of the changes.
+                // The old copy goes once the new one saves, or first for a move between folder and
+                // global scopes (see getScopeMoves). A classifier that moved and lost its opinion
+                // has no new copy, so its old one goes with the rest of the changes.
                 if (isOpinion(originalScore)) {
                     val movedTo = if (isOpinion(score)) scope else null
                     changes.add(ClassifierChange(originalScope, type, key, clearValue(originalScore!!), movedTo))
@@ -268,6 +300,14 @@ class Classifier : Serializable {
             SUPER_DISLIKE -> CLEAR_SUPER_DISLIKE
             DISLIKE -> CLEAR_DISLIKE
             else -> CLEAR_LIKE
+        }
+
+    // The score a clearValue removal took away, which getScopeMoves restores.
+    private fun clearedScore(value: Int): Int =
+        when (value) {
+            CLEAR_SUPER_DISLIKE -> SUPER_DISLIKE
+            CLEAR_DISLIKE -> DISLIKE
+            else -> LIKE
         }
 
     private fun promptType(imagePrompt: Boolean): Int = if (imagePrompt) IMAGE_PROMPT else PROMPT

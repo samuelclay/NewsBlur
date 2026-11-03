@@ -57,9 +57,19 @@ data class ClassifierChange(
     // Classifier.LIKE, DISLIKE, SUPER_DISLIKE or one of the CLEAR values.
     @JvmField val value: Int = Classifier.LIKE,
     // ClassifierScope.kt: the scope a classifier moved to, set on the removal at its old scope.
-    // FeedApiImpl.kt sends that removal only once the new scope saved.
+    // FeedApiImpl.kt sends that removal only once the new scope saved, except for a move between
+    // folder and global scopes, see isFolderOrGlobalMove.
     @JvmField val movedTo: ClassifierScope? = null,
 ) : Serializable {
+    /**
+     * A removal of a classifier that moved between two folder or global scopes, such as folder to
+     * global or one folder to another. apps/analyzer/views.py saves both at feed_id 0, where its
+     * unique indexes keep a tag or author only once, so Classifier.getScopeMoves sends the
+     * removal before the save at the new scope.
+     */
+    val isFolderOrGlobalMove: Boolean
+        get() = movedTo != null && !scope.isFeed && !movedTo.isFeed
+
     companion object {
         private const val serialVersionUID = 1L
     }
@@ -69,4 +79,15 @@ data class ClassifierChange(
 data class ScopedClassifierRequest(
     val scope: ClassifierScope,
     val values: ValueMultimap,
+)
+
+/**
+ * The requests that move one classifier between folder and global scopes, see
+ * Classifier.getScopeMoves: the removal at its old scope, the save at its new one, and the
+ * original score at its old scope to put back if the move doesn't finish.
+ */
+data class ScopeMoveRequests(
+    val removal: ScopedClassifierRequest,
+    val save: ScopedClassifierRequest,
+    val restore: ScopedClassifierRequest,
 )

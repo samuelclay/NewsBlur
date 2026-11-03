@@ -17,7 +17,8 @@ import org.junit.Test
 // Test_ClassifierScopes.kt: titles, authors, tags, text and URLs carry the folder and global scopes
 // from apps/analyzer/models.py get_classifiers_for_user, like clients/ios/Classes/TrainerView.swift
 // shows them. A folder or global classifier is never sent at feed scope (which used to make the
-// server add a feed copy of it), and a scope move saves at the new scope before removing the old copy.
+// server add a feed copy of it). A move to or from feed scope saves at the new scope before removing
+// the old copy, while a move between folder and global scopes is its own removal, save and restore.
 class Test_ClassifierScopes {
     private val payload =
         """
@@ -113,6 +114,28 @@ class Test_ClassifierScopes {
             "A folder save that failed keeps the feed copy",
             classifier.getMoveRemovalRequests(setOf(ClassifierScope.FEED_SCOPE)).isEmpty(),
         )
+    }
+
+    @Test
+    fun test_moving_a_global_tag_to_a_folder_is_a_removal_a_save_and_a_restore() {
+        val classifier = classifier()
+        val original = classifier.snapshot()
+        classifier.setScope(Classifier.TAG, "tech", ClassifierScope.folder("Tech"))
+        classifier.tags["tech"] = Classifier.LIKE
+
+        classifier.recordChanges(original)
+
+        assertEquals("", form(classifier.getAPITuples()))
+        assertTrue("The folder save waits on the global removal", classifier.getScopedRequests().isEmpty())
+        val everyScope = setOf(ClassifierScope.FEED_SCOPE, ClassifierScope.GLOBAL_SCOPE, ClassifierScope.folder("Tech"))
+        assertTrue(classifier.getMoveRemovalRequests(everyScope).isEmpty())
+        val move = classifier.getScopeMoves().single()
+        assertEquals(ClassifierScope.GLOBAL_SCOPE, move.removal.scope)
+        assertEquals("remove_dislike_tag=tech", form(move.removal.values))
+        assertEquals(ClassifierScope.folder("Tech"), move.save.scope)
+        assertEquals("like_tag=tech", form(move.save.values))
+        assertEquals("The restore puts back the old score", ClassifierScope.GLOBAL_SCOPE, move.restore.scope)
+        assertEquals("dislike_tag=tech", form(move.restore.values))
     }
 
     @Test
