@@ -2,6 +2,7 @@ import XCTest
 import MetalKit
 import ImageIO
 import Combine
+import SwiftUI
 @testable import NewsBlur
 
 @MainActor final class Test_Onboarding: XCTestCase {
@@ -165,8 +166,188 @@ import Combine
         OnboardingAPI.session = URLSession(configuration: configuration)
     }
 
+    func test_newAppleSignupDoesNotRequireAnotherPersonalInformationForm() async throws {
+        var completionBody: [String: String] = [:]
+        var authenticated: [(String, Bool)] = []
+        network { request in
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            completionBody = Self.formBody(request)
+            // OnboardingTests.swift reproduces social_auth.py's empty-username continuation.
+            if completionBody["username", default: ""].isEmpty {
+                return (400, ["code": -1, "username_required": true, "ticket": "choose-username-ticket"])
+            }
+            return (200, ["code": 1, "created": true])
+        }
+        let model = OnboardingAccountModel { authenticated.append(($0, $1)) }
+        model.email = "unrelated-draft@example.com"
+        model.username = "unfinished-password-signup"
+        model.password = "stale-password"
+        _ = try await model.prepareSocial("apple")
+        try await model.complete(ticket: "verified-apple-ticket")
+        XCTAssertFalse(completionBody["username", default: ""].isEmpty,
+                       "Apple signup must provide an automatic username instead of requiring another form.")
+        XCTAssertNotEqual(completionBody["username"], "unfinished-password-signup")
+        XCTAssertNil(completionBody["email"], "The server must use Apple's verified email.")
+        XCTAssertEqual(completionBody["password"], "")
+        XCTAssertNotNil(completionBody["username"]?.range(of: "^reader_[a-f0-9]{22}$", options: .regularExpression))
+        XCTAssertEqual(authenticated.count, 1)
+        XCTAssertEqual(authenticated.first?.0, "apple")
+        XCTAssertEqual(authenticated.first?.1, true)
+        XCTAssertFalse(model.needsUsername)
+        XCTAssertFalse(model.needsLink)
+    }
+
+    func test_returningAppleIdentityStillFinishesWithoutSendingDraftCredentials() async throws {
+        var authenticated: [(String, Bool)] = []
+        network { request in
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            let body = Self.formBody(request)
+            XCTAssertEqual(body["password"], "")
+            XCTAssertNil(body["email"])
+            XCTAssertNil(body["action"])
+            // OnboardingTests.swift models the server finding an identity before considering signup names.
+            return (200, ["code": 1, "created": false, "username": "original-account"])
+        }
+        let model = OnboardingAccountModel { authenticated.append(($0, $1)) }
+        model.username = "unrelated-account"
+        model.password = "stale-password"
+        _ = try await model.prepareSocial("apple")
+        try await model.complete(ticket: "verified-returning-identity")
+        XCTAssertEqual(authenticated.count, 1)
+        XCTAssertEqual(authenticated.first?.1, false)
+        XCTAssertFalse(model.needsUsername)
+        XCTAssertFalse(model.needsLink)
+    }
+
+    func test_automaticAppleUsernameCollisionRetriesWithReplacementTicket() async throws {
+        var bodies: [[String: String]] = []
+        var authenticated = false
+        network { request in
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            bodies.append(Self.formBody(request))
+            if bodies.count == 1 {
+                return (400, ["link_required": true, "can_choose_username": true, "ticket": "collision-ticket"])
+            }
+            return (200, ["code": 1, "created": true])
+        }
+        let model = OnboardingAccountModel { _, _ in authenticated = true }
+        _ = try await model.prepareSocial("apple")
+        try await model.complete(ticket: "verified-apple-ticket")
+        XCTAssertTrue(authenticated)
+        XCTAssertEqual(bodies.count, 2)
+        guard bodies.count == 2 else { return }
+        XCTAssertNotEqual(bodies[0]["username"], bodies[1]["username"])
+        XCTAssertEqual(bodies[1]["ticket"], "collision-ticket")
+        XCTAssertEqual(bodies[1]["verifier"], bodies[0]["verifier"])
+        XCTAssertNil(bodies[1]["action"])
+        XCTAssertFalse(model.needsUsername)
+        XCTAssertFalse(model.needsLink)
+    }
+
+    func test_automaticAppleUsernameFailuresNeverRequireAnotherFormOrRetryForever() async throws {
+        for collision in [true, false] {
+            var requests = 0
+            network { request in
+                if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+                requests += 1
+                return collision
+                    ? (400, ["link_required": true, "can_choose_username": true, "ticket": "retry-\(requests)"])
+                    : (400, ["username_required": true, "ticket": "invalid-signup-ticket"])
+            }
+            let model = OnboardingAccountModel { _, _ in XCTFail("Failed signup must not authenticate.") }
+            _ = try await model.prepareSocial("apple")
+            do {
+                try await model.complete(ticket: "verified-apple-ticket")
+                XCTFail("Expected signup failure.")
+            } catch {}
+            XCTAssertEqual(requests, collision ? 3 : 1)
+            XCTAssertFalse(model.needsUsername)
+            XCTAssertFalse(model.needsLink)
+        }
+    }
+
+    func test_appleAuthenticationDismissesTheSignupForm() async throws {
+        network { request in
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            return (200, ["code": 1, "created": true])
+        }
+        var authenticated = false
+        let model = OnboardingAccountModel { _, _ in authenticated = true }
+        let account = UIHostingController(rootView: OnboardingAccountView(model: model))
+        account.view.backgroundColor = .black
+        model.controller = account
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive })
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
+        let reader = UIViewController()
+        reader.view.backgroundColor = .systemBackground
+        let destination = UILabel(frame: CGRect(x: 24, y: 100, width: 340, height: 80))
+        destination.text = "Authenticated reader destination"
+        reader.view.addSubview(destination)
+        window.rootViewController = reader
+        window.makeKeyAndVisible()
+        defer {
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+        }
+        // OnboardingTests.swift captures the original mandatory continuation as an isolated UI fixture.
+        model.needsUsername = true
+        let presented = expectation(description: "Account fixture presentation completed")
+        reader.present(account, animated: false) { presented.fulfill() }
+        await fulfillment(of: [presented], timeout: SimulatorTestTiming.realWorkTimeout)
+        func visibleUsernameField(in view: UIView) -> Bool {
+            if let field = view as? UITextField {
+                return field.window === window && !field.isHidden && field.bounds.width > 0 && field.bounds.height > 0
+            }
+            return view.subviews.contains { visibleUsernameField(in: $0) }
+        }
+        let formRendered = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            account.view.window === window && visibleUsernameField(in: account.view)
+        }, object: nil)
+        await fulfillment(of: [formRendered], timeout: SimulatorTestTiming.realWorkTimeout)
+        window.layoutIfNeeded()
+        account.view.layoutIfNeeded()
+        CATransaction.flush()
+        var capturedBefore = false
+        let before = UIGraphicsImageRenderer(bounds: account.view.bounds).image { _ in
+            capturedBefore = account.view.drawHierarchy(in: account.view.bounds, afterScreenUpdates: true)
+        }
+        XCTAssertTrue(capturedBefore, "The mandatory username fixture must render before its screenshot is accepted.")
+        let beforeAttachment = XCTAttachment(image: before)
+        beforeAttachment.name = "apple-signup-original-username-continuation-fixture"
+        beforeAttachment.lifetime = .keepAlways
+        add(beforeAttachment)
+        model.cancelContinuation()
+        _ = try await model.prepareSocial("apple")
+        try await model.complete(ticket: "verified-apple-ticket")
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in reader.presentedViewController == nil }, object: nil)
+        await fulfillment(of: [dismissed], timeout: SimulatorTestTiming.realWorkTimeout)
+        XCTAssertTrue(authenticated)
+        XCTAssertNil(reader.presentedViewController)
+        XCTAssertFalse(model.needsUsername)
+        XCTAssertFalse(model.needsLink)
+        let destinationRendered = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            reader.view.window === window && destination.window === window && !destination.isHidden
+                && destination.bounds.width > 0 && destination.bounds.height > 0
+        }, object: nil)
+        await fulfillment(of: [destinationRendered], timeout: SimulatorTestTiming.realWorkTimeout)
+        window.layoutIfNeeded()
+        CATransaction.flush()
+        var capturedAfter = false
+        let screenshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            capturedAfter = window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        XCTAssertTrue(capturedAfter, "The authenticated destination must render before its screenshot is accepted.")
+        let attachment = XCTAttachment(image: screenshot)
+        attachment.name = "apple-signup-authenticated-destination"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
     func test_socialExplicitLinkPreservesIdentityAndRetriesWithReplacementTicket() async throws {
-        for provider in ["apple", "google"] {
+        for provider in ["google"] {
             var bodies: [[String: String]] = []
             network { request in
                 if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
@@ -283,11 +464,11 @@ import Combine
         model.cancelContinuation()
         XCTAssertFalse(model.canChooseUsername)
 
-        _ = try await model.prepareSocial("apple")
+        _ = try await model.prepareSocial("google")
         try await model.complete(ticket: "another-provider-ticket")
         model.connectExistingAccount()
         XCTAssertTrue(model.canChooseUsername)
-        _ = try await model.prepareSocial("google")
+        _ = try await model.prepareSocial("apple")
         XCTAssertFalse(model.canChooseUsername)
     }
 
@@ -301,7 +482,7 @@ import Combine
             return (400, ["link_required": true, "can_choose_username": false, "ticket": "same-email-ticket"])
         }
         let model = OnboardingAccountModel()
-        _ = try await model.prepareSocial("apple")
+        _ = try await model.prepareSocial("google")
         try await model.complete(ticket: "provider-ticket")
         model.connectExistingAccount()
         XCTAssertTrue(model.canChooseUsername)
@@ -324,10 +505,13 @@ import Combine
                 return (400, ["code": -1, "link_required": true, "ticket": "same-email-ticket"])
             }
             let model = OnboardingAccountModel()
+            model.username = "unrelated-draft"
+            model.password = "stale-password"
             _ = try await model.prepareSocial(provider)
             try await model.complete(ticket: "provider-ticket")
             XCTAssertTrue(model.needsLink)
             XCTAssertFalse(model.needsUsername)
+            if provider == "apple" { XCTAssertEqual(model.username, "") }
             model.username = "reader@example.com"
             model.password = "newsblur-password"
             await submitAccount(model)
@@ -340,7 +524,7 @@ import Combine
     }
 
     func test_socialUsernameCollisionCanReturnToSignupWithRetainedTicket() async throws {
-        for provider in ["apple", "google"] {
+        for provider in ["google"] {
             var bodies: [[String: String]] = []
             network { request in
                 if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
