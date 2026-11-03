@@ -127,6 +127,7 @@ enum ClassifierScopeResolver {
         overrides[overrideKey(type: type, name: name)] ?? defaultScope
     }
 
+    /// apps/analyzer/models.py get_classifiers_for_user files a regex's scope with its plain classifiers' scopes.
     static func metadataKey(for classifierKey: String) -> String {
         switch classifierKey {
         case "titles", "title_regex":
@@ -135,7 +136,7 @@ enum ClassifierScopeResolver {
             return "texts_scope"
         case "urls", "url_regex":
             return "urls_scope"
-        case "authors":
+        case "authors", "author_regex":
             return "authors_scope"
         case "tags":
             return "tags_scope"

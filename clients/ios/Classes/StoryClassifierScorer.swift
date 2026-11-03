@@ -14,6 +14,10 @@ import Foundation
     private struct Classifier {
         let pattern: String
         let score: Int
+        /// apps/analyzer/models.py get_classifiers_for_user keeps one score per pattern, so when the pattern is also
+        /// trained for a folder or all sites, its scope metadata lists it and the score shown may hide this site's
+        /// classifier for the same pattern with another score. The server scores both.
+        let mayHideAnotherScore: Bool
     }
 
     private struct RegexSearch: Hashable {
@@ -45,10 +49,14 @@ import Foundation
         var classifiersByKey: [String: [Classifier]] = [:]
         for key in ["texts", "text_regex", "urls", "url_regex", "title_regex", "author_regex"] {
             let entries = feedClassifiers[key] as? [String: Any] ?? [:]
-            // A removed classifier stays in the dictionary at 0 until the next reload, and a 0 never changes a score.
+            let scopes = feedClassifiers[ClassifierScopeResolver.metadataKey(for: key)] as? [String: Any] ?? [:]
+            // A removed classifier stays in the dictionary at 0 until the next reload. A 0 never changes a score,
+            // unless it may hide another classifier for the same pattern that the server still scores.
             classifiersByKey[key] = entries.compactMap { pattern, value in
                 let score = (value as? NSNumber)?.intValue ?? 0
-                return score == 0 || pattern.isEmpty ? nil : Classifier(pattern: pattern, score: score)
+                let mayHideAnotherScore = scopes[pattern] != nil
+                guard !pattern.isEmpty, score != 0 || mayHideAnotherScore else { return nil }
+                return Classifier(pattern: pattern, score: score, mayHideAnotherScore: mayHideAnotherScore)
             }
         }
         self.classifiersByKey = classifiersByKey
@@ -84,9 +92,9 @@ import Foundation
     }
 
     /// The server's rule for one classifier type: a matching super dislike wins outright, then any like, then any
-    /// dislike. A story without the text it matches against scores 0. `matches` answers nil when the app can't
-    /// tell, and then only a super dislike that certainly matches settles the score; otherwise this returns nil
-    /// so the server's score stays.
+    /// dislike. A story without the text it matches against scores 0. The score is uncertain when `matches` answers
+    /// nil because the app can't tell, or when a matching pattern may hide another score. Then only a super dislike
+    /// that certainly matches settles it; otherwise this returns nil so the server's score stays.
     private func score(for key: String, in text: String, matches: (String) -> Bool?) -> Int? {
         guard !text.isEmpty else { return 0 }
         var score = 0
@@ -104,7 +112,9 @@ import Foundation
             if classifier.score <= -2 {
                 return classifier.score
             }
-            if classifier.score > 0 {
+            if classifier.mayHideAnotherScore {
+                isCertain = false
+            } else if classifier.score > 0 {
                 score = classifier.score
             } else if score <= 0 {
                 score = classifier.score

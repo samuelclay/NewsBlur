@@ -691,6 +691,41 @@ private final class RecalculatingPromptSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 1)
     }
 
+    func test_aPatternAlsoTrainedForAFolderOrAllSitesKeepsTheServersScore() {
+        // get_classifiers_for_user sends one score per pattern. This site's URL classifier is a -2 and the global one
+        // for the same pattern is a +1; the payload shows only the +1 and its scope, and the server scored -2.
+        let global = ["scope": "global", "folder_name": ""]
+        let appleFolder = ["scope": "folder", "folder_name": "Apple"]
+        let app = makeApp(classifiers: ["urls": ["daringfireball.net/linked": 1],
+                                        "url_regex": ["sponsor": 0],
+                                        "urls_scope": ["daringfireball.net/linked": global, "sponsor": global],
+                                        "author_regex": ["department of \\w+": 1],
+                                        "authors_scope": ["department of \\w+": appleFolder]],
+                          intelligence: ["url": -2, "url_regex": -1, "author_regex": -1, "prompt": 0])
+
+        app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["url"] as? Int, -2, "The +1 shown may hide this site's -2 for the same URL")
+        XCTAssertEqual(intelligence(app)?["url_regex"] as? Int, -1,
+                       "Removing the global copy of a pattern can leave this site's copy, which the server still scores")
+        XCTAssertEqual(intelligence(app)?["author_regex"] as? Int, -1, "Author regex scopes arrive in authors_scope")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), -2)
+    }
+
+    func test_aMatchingSuperDislikeOrAScopedPatternThatDoesntMatchStillLetsTheAppScore() {
+        let global = ["scope": "global", "folder_name": ""]
+        let app = makeApp(classifiers: ["urls": ["daringfireball.net/linked": 1, "sponsor-workos": -2],
+                                        "urls_scope": ["daringfireball.net/linked": global, "sponsor-workos": global],
+                                        "title_regex": ["^\\[sponsor\\]": -1, "giveaway": 1],
+                                        "titles_scope": ["giveaway": global]],
+                          intelligence: ["url": 1, "title_regex": 0, "prompt": 0])
+
+        app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["url"] as? Int, -2,
+                       "The server returns on the first matching super dislike, whatever the hidden classifier scores")
+        XCTAssertEqual(intelligence(app)?["title_regex"] as? Int, -1,
+                       "A scoped pattern that doesn't match the story can't change its score")
+    }
+
     func test_aPythonRegexThatICUCantCompileKeepsTheServersScore() {
         // apps/analyzer/views.py saved this because Python's re compiles it, but ICU has no (?P<name>...) groups.
         let pattern = "(?P<label>sponsor)"
