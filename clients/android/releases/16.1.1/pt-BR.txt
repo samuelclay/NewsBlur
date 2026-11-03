@@ -1,0 +1,1 @@
+Melhorias em Ouvir: comece pela barra de leitura e avance com Próximo artigo no miniplayer. A reprodução automática segue a ordem de Artigos salvos e Artigos lidos, avançando pela lista. Títulos repetidos são lidos uma vez. Áudio semanal: 1 hora com Premium Archive, 10 com Premium Pro, renovadas no domingo. Configurações mostra as horas e minutos restantes.

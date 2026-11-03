@@ -24,6 +24,14 @@ msgstr " - Thư mục: Bài viết từ mọi trang web"
 msgid " - Folder: Top Level"
 msgstr " - Thư mục: Cấp cao nhất"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr ""
+"\"%(value)s\" đã được huấn luyện cho tất cả trang web hoặc nằm trong thư mục khác. Thay vào đó, hãy đổi "
+"phạm vi của bộ phân loại đó."
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "100 USD/năm (Pro: không giới hạn nguồn)"
 
@@ -96,6 +104,11 @@ msgstr[0] "%(count)d giờ"
 msgid "%(count)d hour ago"
 msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d giờ trước"
+
+#, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d phút"
 
 #, python-format
 msgid "%(count)d minute ago"
@@ -3183,6 +3196,12 @@ msgstr "Nghe trên web, iPad, iPhone và Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Tính năng Nghe đang phát trên MacBook, iPad, iPhone và điện thoại Android"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Nghe bài viết được đọc thành tiếng 1 giờ mỗi tuần"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần"
+
 msgid "Listen to stories read aloud"
 msgstr "Nghe đọc bài viết thành tiếng"
 
@@ -4483,8 +4502,8 @@ msgid "Premium Archive subscription"
 msgstr "Gói đăng ký Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Premium Archive mở khóa tính năng đọc toàn bộ bài viết thành tiếng, tối đa %(limit)s mỗi tháng."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Premium Archive mở khóa tính năng đọc toàn bộ bài viết thành tiếng, tối đa %(limit)s mỗi tuần."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7224,15 +7243,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"Tháng này, bạn đã nghe %(limit)s bài viết. Thời lượng nghe sẽ được đặt lại vào %(date)s, hoặc nâng cấp lên "
-"Premium Pro với giá %(pro_limit)s mỗi tháng."
+"Bạn đã nghe %(limit)s bài viết trong tuần này. Thời lượng nghe sẽ được đặt lại vào %(day)s, hoặc nâng cấp "
+"lên Premium Pro để có %(pro_limit)s mỗi tuần."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "Tháng này, bạn đã nghe %(limit)s bài viết. Lượt nghe sẽ được đặt lại vào %(date)s."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "Bạn đã nghe %(limit)s bài viết trong tuần này. Thời lượng nghe sẽ được đặt lại vào %(day)s."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Bạn đã dùng hết lượt nghe thử giọng hôm nay. Lượt nghe sẽ được đặt lại vào lúc nửa đêm."

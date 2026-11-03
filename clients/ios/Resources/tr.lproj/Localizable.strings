@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ klasörü, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ klasörü, daraltılmış, %2$@";
 "%1$@ followed %2$@." = "%1$@, %2$@ kişisini takip etti.";
-"%1$@ of %2$@ of listening left this month" = "Bu ayki dinleme hakkınızdan %2$@ üzerinden %1$@ kaldı";
+"%1$@ of %2$@ of listening left this week" = "Bu hafta dinleme sürenizin %1$@ / %2$@ kadarı kaldı";
 "%1$@ of %2$@ sites indexed" = "%2$@ siteden %1$@ tanesi dizine eklendi";
 "%1$@ of %2$@ story previews used today" = "Bugün kullanılan haber önizlemelerinin %1$@ / %2$@ kadarı";
 "%1$@ on all sites (%2$@)" = "Tüm sitelerde %1$@ (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "%@ görsel filtresi";
 "%@ is now following you." = "%@ artık sizi takip ediyor.";
 "%@ left in this preview" = "Bu önizlemede %@ kaldı";
+"%@ left this week" = "Bu hafta %@ kaldı";
 "%@ match" = "%@ eşleşme";
-"%@ minutes left this month" = "Bu ay için %@ dakika kaldı";
 "%@ opens" = "%@ açılma";
 "%@ or search" = "%@ veya ara";
 "%@ public comments" = "%@ herkese açık yorum";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "Zaten hesabınız var mı? Giriş yapın";
 "Already have feeds?" = "Zaten akışlarınız var mı?";
 "Also published by %@ sites" = "%@ başka sitede de yayımlandı";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "Yapay zekâ filtresi beğenileri ve beğenmemeleri geçersiz kılar, ancak hiç beğenmeme kuralını geçersiz kılmaz";
+"An AI filter overrides likes and dislikes, but not Hide" = "Bir yapay zekâ filtresi beğenme ve beğenmeme tercihlerinizi geçersiz kılar, ancak Gizle'yi değil";
 "Analyze" = "Analiz et";
 "Analyzing images..." = "Görseller analiz ediliyor...";
 "App Badge" = "Uygulama rozeti";
@@ -262,6 +262,7 @@
 "Coral Rose" = "Mercan Gülü";
 "Could not completely clear the cache. Please try again." = "Önbellek tamamen temizlenemedi. Lütfen yeniden deneyin.";
 "Could not save your language. Please try again." = "Diliniz kaydedilemedi. Lütfen tekrar deneyin.";
+"Couldn't check story" = "Haber kontrol edilemedi";
 "Couldn't load usage billing history." = "Kullanım faturalandırma geçmişi yüklenemedi.";
 "Couldn't open billing. Please try again." = "Faturalandırma açılamadı. Lütfen tekrar deneyin.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur adresine ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.";
@@ -458,6 +459,8 @@
 "Hide Changes" = "Değişiklikleri gizle";
 "Hide Sidebar" = "Kenar çubuğunu gizle";
 "Hide Story Titles" = "Haber başlıklarını gizle";
+"Hide [training level]" = "Gizle";
+"Hide beats any number of likes:" = "“Gizle”, istediğiniz sayıda beğeninin önüne geçer:";
 "Hide hidden stories" = "Gizli haberleri gizle";
 "Hide status bar" = "Durum çubuğunu gizle";
 "Hide toolbars when reading" = "Okurken araç çubuklarını gizle";
@@ -522,7 +525,8 @@
 "List style" = "Liste stili";
 "Listen" = "Dinle";
 "Listen Settings" = "Dinleme Ayarları";
-"Listen to stories read aloud" = "Haberleri sesli dinleyin";
+"Listen to 1 hour of stories read aloud a week" = "Haftada 1 saat haberleri sesli dinleyin";
+"Listen to 10 hours of stories read aloud a week" = "Haftada 10 saat haberleri sesli dinleyin";
 "Listen to story" = "Haberi dinle";
 "Listening isn't available right now." = "Dinleme şu anda kullanılamıyor.";
 "Loading Google News topics..." = "Google Haberler konuları yükleniyor...";
@@ -1039,7 +1043,6 @@
 "Story detail" = "Haber ayrıntısı";
 "Story image" = "Haber görseli";
 "Story is always hidden" = "Haber her zaman gizli";
-"Story is hidden (super dislike wins)" = "Haber gizlenir (“Hiç beğenme” baskın)";
 "Story is shown (like wins)" = "Haber gösterilir (beğeni baskın)";
 "Story language" = "Haberin dili";
 "Story list toolbar position" = "Haber listesi araç çubuğu konumu";
@@ -1063,8 +1066,6 @@
 "Summarize" = "Özetle";
 "Sunday" = "Pazar";
 "Sunrise Gold" = "Gün Doğumu Altını";
-"Super dislike" = "Hiç beğenme";
-"Super dislike beats any number of likes:" = "“Hiç beğenme”, istediğiniz sayıda beğeninin önüne geçer:";
 "Support Forum" = "Destek Forumu";
 "Swipe from left edge" = "Sol kenardan kaydır";
 "Swipe from the left edge while reading" = "Okurken sol kenardan kaydırın";

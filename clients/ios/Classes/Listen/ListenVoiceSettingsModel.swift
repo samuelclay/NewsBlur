@@ -362,17 +362,18 @@ final class ListenVoiceSettingsModel: ObservableObject {
 
     // MARK: - Usage
 
-    /// The muted footer: listening left this month, or free previews left today.
+    /// The muted footer: listening left this week, or free previews left today. apps/listen/usage.py caps Listen
+    /// per week, from Sunday at midnight in the account's timezone, so the reset reads as a weekday.
     var usageText: String? {
         guard let usage = ListenPlayer.shared.usage ?? catalog?.usage else { return nil }
         var parts: [String] = []
         if usage.isArchiveTier {
             if let remaining = usage.secondsRemaining {
-                parts.append(NBLocalization.plural("%@ minutes left this month", groupedCount: Int(remaining / 60)))
+                parts.append(String(format: NBLocalization.text("%@ left this week"), ListenFormat.allowance(remaining)))
                 if let resets = usage.resetsAt {
                     let formatter = DateFormatter()
                     formatter.locale = Locale(identifier: NBLocalization.resolvedLanguage)
-                    formatter.setLocalizedDateFormatFromTemplate("MMMd")
+                    formatter.setLocalizedDateFormatFromTemplate("EEEE")
                     parts.append(String(format: NBLocalization.text("Resets %@"), formatter.string(from: resets)))
                 }
             }

@@ -43,6 +43,7 @@ from zebra.signals import (
 
 from apps.ask_ai.usage import AskAIUsageTracker
 from apps.feed_import.models import OPMLExporter
+from apps.listen.models import MListenDaily
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
@@ -3368,6 +3369,10 @@ class Profile(models.Model):
         starred_count = MStarredStory.objects.filter(user_id=user.pk).count()
         shared_count = MSharedStory.objects.filter(user_id=user.pk).count()
 
+        # Listen stats (apps/listen/models.py): wall-clock minutes spent hearing stories read aloud
+        listen_minutes_week = MListenDaily.minutes_listened(user.pk, days=7)
+        listen_minutes_total = MListenDaily.minutes_listened(user.pk)
+
         # Social stats
         following_count = 0
         follower_count = 0
@@ -3433,6 +3438,8 @@ class Profile(models.Model):
             "active_feed_count": active_feed_count,
             "feed_opens": feed_opens,
             "stories_read": stories_read,
+            "listen_minutes_week": listen_minutes_week,
+            "listen_minutes_total": listen_minutes_total,
             "starred_count": starred_count,
             "shared_count": shared_count,
             "following_count": following_count,

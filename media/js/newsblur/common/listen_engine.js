@@ -749,7 +749,7 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
             this.segment_index = position.index;
             if (this.wants_play) {
                 // listen_engine.js: Dragging the scrubber crosses many segments, and every segment
-                // asked for is generated and counted against the monthly cap, so only the one the
+                // asked for is generated and counted against the weekly cap, so only the one the
                 // scrubber settles on is requested.
                 this.discard_audio();
                 this.clear_seek_settle();

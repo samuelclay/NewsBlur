@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "مجلد %1$@، %2$@";
 "%1$@ folder, collapsed, %2$@" = "مجلد %1$@، مطوي، %2$@";
 "%1$@ followed %2$@." = "بدأ %1$@ بمتابعة %2$@.";
-"%1$@ of %2$@ of listening left this month" = "تبقّى %1$@ من %2$@ من وقت الاستماع هذا الشهر";
+"%1$@ of %2$@ of listening left this week" = "تبقّى %1$@ من %2$@ من وقت الاستماع هذا الأسبوع";
 "%1$@ of %2$@ sites indexed" = "تمت فهرسة %1$@ من أصل %2$@ موقعًا";
 "%1$@ of %2$@ story previews used today" = "تم استخدام %1$@ من أصل %2$@ معاينة قصة اليوم";
 "%1$@ on all sites (%2$@)" = "%1$@ على كل المواقع (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "%@ فلتر صورة";
 "%@ is now following you." = "يتابعك الآن %@.";
 "%@ left in this preview" = "تبقّى %@ في هذه المعاينة";
+"%@ left this week" = "تبقّى %@ هذا الأسبوع";
 "%@ match" = "%@ تطابق";
-"%@ minutes left this month" = "تبقّى %@ دقيقة هذا الشهر";
 "%@ opens" = "%@ مرة فتح";
 "%@ or search" = "%@ أو ابحث";
 "%@ public comments" = "%@ تعليقات عامة";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "لديك حساب بالفعل؟ سجّل الدخول";
 "Already have feeds?" = "لديك خلاصات بالفعل؟";
 "Also published by %@ sites" = "نُشر أيضًا على %@ مواقع";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "يتجاوز فلتر الذكاء الاصطناعي الإعجابات وعدم الإعجاب، لكنه لا يتجاوز «لا يعجبني إطلاقًا»";
+"An AI filter overrides likes and dislikes, but not Hide" = "يتجاوز فلتر الذكاء الاصطناعي الإعجاب وعدم الإعجاب، لكنه لا يتجاوز الإخفاء";
 "Analyze" = "تحليل";
 "Analyzing images..." = "جارٍ تحليل الصور...";
 "App Badge" = "شارة التطبيق";
@@ -262,6 +262,7 @@
 "Coral Rose" = "وردي مرجاني";
 "Could not completely clear the cache. Please try again." = "تعذّر مسح ذاكرة التخزين المؤقت بالكامل. يُرجى المحاولة مرة أخرى.";
 "Could not save your language. Please try again." = "تعذّر حفظ لغتك. يُرجى المحاولة مرة أخرى.";
+"Couldn't check story" = "تعذّر التحقق من القصة";
 "Couldn't load usage billing history." = "تعذّر تحميل سجل فوترة الاستخدام.";
 "Couldn't open billing. Please try again." = "تعذّر فتح صفحة الفوترة. يُرجى المحاولة مرة أخرى.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "تعذّر الاتصال بـ NewsBlur. تحقّق من اتصالك وحاول مجددًا.";
@@ -458,6 +459,8 @@
 "Hide Changes" = "إخفاء التغييرات";
 "Hide Sidebar" = "إخفاء الشريط الجانبي";
 "Hide Story Titles" = "إخفاء عناوين القصص";
+"Hide [training level]" = "إخفاء";
+"Hide beats any number of likes:" = "«إخفاء» يتفوّق على أي عدد من الإعجابات:";
 "Hide hidden stories" = "إخفاء القصص المخفية";
 "Hide status bar" = "إخفاء شريط الحالة";
 "Hide toolbars when reading" = "إخفاء أشرطة الأدوات أثناء القراءة";
@@ -522,7 +525,8 @@
 "List style" = "نمط القائمة";
 "Listen" = "استمع";
 "Listen Settings" = "إعدادات الاستماع";
-"Listen to stories read aloud" = "استمع إلى القصص بصوت مسموع";
+"Listen to 1 hour of stories read aloud a week" = "استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا";
+"Listen to 10 hours of stories read aloud a week" = "استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا";
 "Listen to story" = "استمع إلى القصة";
 "Listening isn't available right now." = "الاستماع غير متاح الآن.";
 "Loading Google News topics..." = "جارٍ تحميل مواضيع Google News...";
@@ -1038,8 +1042,7 @@
 "Story count" = "عدد القصص";
 "Story detail" = "تفاصيل القصة";
 "Story image" = "صورة القصة";
-"Story is always hidden" = "القصة مخفية دائمًا";
-"Story is hidden (super dislike wins)" = "القصة مخفية (تغلّب عدم الإعجاب الشديد)";
+"Story is always hidden" = "تُخفى القصة دائمًا";
 "Story is shown (like wins)" = "تُعرض القصة (الإعجاب له الأولوية)";
 "Story language" = "لغة القصة";
 "Story list toolbar position" = "موضع شريط أدوات قائمة القصص";
@@ -1063,8 +1066,6 @@
 "Summarize" = "لخّص";
 "Sunday" = "الأحد";
 "Sunrise Gold" = "ذهبي الشروق";
-"Super dislike" = "لا يعجبني إطلاقًا";
-"Super dislike beats any number of likes:" = "عدم الإعجاب الشديد يتغلب على أي عدد من الإعجابات:";
 "Support Forum" = "منتدى الدعم";
 "Swipe from left edge" = "اسحب من الحافة اليسرى";
 "Swipe from the left edge while reading" = "اسحب من الحافة اليسرى أثناء القراءة";

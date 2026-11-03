@@ -720,17 +720,17 @@ les gens pour parler du monde.</string>
     <string name="intel_author_header">Auteurs des articles</string>
     <string name="feed_intel_author_header">Auteurs</string>
     <string name="intel_feed_header">Tous les articles de l’éditeur</string>
-    <string name="intel_super_dislike">Je déteste</string>
-    <string name="explainer_super_dislike">Je déteste</string>
+    <string name="intel_super_dislike">Masquer les articles correspondants</string>
+    <string name="explainer_super_dislike">Masquer</string>
     <string name="explainer_ai_filter">Classificateur IA</string>
     <string name="explainer_like">J’aime</string>
     <string name="explainer_dislike">Je n’aime pas</string>
     <string name="explainer_beats">l’emporte sur</string>
     <string name="explainer_example1_header">Un seul « J’aime » l’emporte sur n’importe quel nombre de « Je n’aime pas »</string>
     <string name="explainer_example1_result">L’article s’affiche parmi les articles prioritaires</string>
-    <string name="explainer_example2_header">Un seul « Je déteste » l’emporte sur tout</string>
+    <string name="explainer_example2_header">« Masquer » l’emporte sur tout, même sur « J’aime »</string>
     <string name="explainer_example2_result">L’article est toujours masqué</string>
-    <string name="explainer_example3_header">Un filtre IA prime sur les J’aime et les Je n’aime pas, mais pas sur Je déteste</string>
+    <string name="explainer_example3_header">Un filtre IA l’emporte sur J’aime et Je n’aime pas, mais pas sur Masquer</string>
     <string name="trainer_question_story">Qu’aimez-vous 👍 %1$s et que n’aimez-vous pas 👎 %2$s dans cet article ?</string>
     <string name="trainer_question_site">Qu’aimez-vous 👍 %1$s et que n’aimez-vous pas 👎 %2$s sur ce site ?</string>
     <string name="trainer_question_like">J’aime</string>
@@ -769,6 +769,7 @@ les gens pour parler du monde.</string>
     <string name="trainer_regex_valid">✓ Valide</string>
     <string name="trainer_regex_matches_story">✓ Correspond à l’article</string>
     <string name="trainer_regex_no_match">Aucune correspondance dans l’article</string>
+    <string name="trainer_regex_not_checked">Impossible de vérifier l’article</string>
     <string name="trainer_regex_invalid">Non valide : %1$s</string>
     <string name="trainer_regex_invalid_pattern">Expression invalide</string>
     <string name="trainer_regex_requires_pro">Les expressions régulières nécessitent Premium Pro</string>
@@ -1462,11 +1463,18 @@ les gens pour parler du monde.</string>
     <string name="listen_style_summary">Accentue le style de la voix</string>
     <string name="listen_speaker_boost_summary">Un son plus clair et plus proche</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="many">%1$d minutes restantes ce mois-ci</item>
-        <item quantity="one">%1$d minute restante ce mois-ci</item>
-        <item quantity="other">Il vous reste %1$d minutes ce mois-ci</item>
+    <plurals name="listen_hours">
+        <item quantity="many">%1$d heures</item>
+        <item quantity="one">%1$d heure</item>
+        <item quantity="other">%1$d heures</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="many">%1$d minutes</item>
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">%1$s restant cette semaine</string>
     <string name="listen_resets_on">Réinitialisation le %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="many">%1$d aperçus gratuits d’articles restants aujourd’hui</item>
@@ -1492,5 +1500,6 @@ les gens pour parler du monde.</string>
     <string name="settings_listen_voices_summary">Choisissez une voix pour chaque langue et sa façon de lire</string>
     <string name="settings_listen_delivery">Lecture</string>
     <string name="settings_listen_speed">Vitesse de lecture</string>
-    <string name="archive_listen">Écouter les articles lus à voix haute</string>
+    <string name="archive_listen">Écoutez 1 heure d’articles lus à voix haute par semaine</string>
+    <string name="pro_listen">Écoutez 10 heures d’articles lus à voix haute par semaine</string>
 </resources>

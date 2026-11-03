@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@-map, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@-map, ingeklapt, %2$@";
 "%1$@ followed %2$@." = "%1$@ is %2$@ gaan volgen.";
-"%1$@ of %2$@ of listening left this month" = "%1$@ van %2$@ luisterminuten resterend deze maand";
+"%1$@ of %2$@ of listening left this week" = "Je hebt deze week nog %1$@ van de %2$@ luistertijd over";
 "%1$@ of %2$@ sites indexed" = "%1$@ van %2$@ sites geïndexeerd";
 "%1$@ of %2$@ story previews used today" = "Vandaag %1$@ van de %2$@ artikelvoorbeelden gebruikt";
 "%1$@ on all sites (%2$@)" = "%1$@ op alle sites (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "%@ afbeeldingsfilters";
 "%@ is now following you." = "%@ volgt je nu.";
 "%@ left in this preview" = "%@ over in deze preview";
+"%@ left this week" = "Nog %@ over deze week";
 "%@ match" = "%@ overeenkomst";
-"%@ minutes left this month" = "%@ minuten over deze maand";
 "%@ opens" = "%@ keer geopend";
 "%@ or search" = "%@ of zoeken";
 "%@ public comments" = "%@ openbare reacties";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "Heb je al een account? Log in";
 "Already have feeds?" = "Heb je al feeds?";
 "Also published by %@ sites" = "Ook gepubliceerd op %@ sites";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "Een AI-filter gaat voor op Vind ik leuk en Vind ik niet leuk, maar niet op Vind ik helemaal niet leuk";
+"An AI filter overrides likes and dislikes, but not Hide" = "Een AI-filter overschrijft Vind ik leuk en Vind ik niet leuk, maar niet Verbergen";
 "Analyze" = "Analyseren";
 "Analyzing images..." = "Afbeeldingen analyseren...";
 "App Badge" = "Appbadge";
@@ -262,6 +262,7 @@
 "Coral Rose" = "Koraalroze";
 "Could not completely clear the cache. Please try again." = "De cache kon niet volledig worden gewist. Probeer het opnieuw.";
 "Could not save your language. Please try again." = "Je taal kon niet worden opgeslagen. Probeer het opnieuw.";
+"Couldn't check story" = "Artikel kon niet worden gecontroleerd";
 "Couldn't load usage billing history." = "Kan de factureringsgeschiedenis niet laden.";
 "Couldn't open billing. Please try again." = "Facturering openen is niet gelukt. Probeer het opnieuw.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Kan NewsBlur niet bereiken. Controleer je verbinding en probeer het opnieuw.";
@@ -458,6 +459,8 @@
 "Hide Changes" = "Wijzigingen verbergen";
 "Hide Sidebar" = "Zijbalk verbergen";
 "Hide Story Titles" = "Artikeltitels verbergen";
+"Hide [training level]" = "Verbergen";
+"Hide beats any number of likes:" = "‘Verbergen’ wint van elk aantal ‘Vind ik leuk’-beoordelingen:";
 "Hide hidden stories" = "Verborgen artikelen verbergen";
 "Hide status bar" = "Statusbalk verbergen";
 "Hide toolbars when reading" = "Werkbalken verbergen tijdens het lezen";
@@ -522,7 +525,8 @@
 "List style" = "Lijststijl";
 "Listen" = "Luisteren";
 "Listen Settings" = "Luisterinstellingen";
-"Listen to stories read aloud" = "Laat artikelen voorlezen";
+"Listen to 1 hour of stories read aloud a week" = "Luister elke week 1 uur naar artikelen die worden voorgelezen";
+"Listen to 10 hours of stories read aloud a week" = "Luister elke week 10 uur naar artikelen die worden voorgelezen";
 "Listen to story" = "Artikel beluisteren";
 "Listening isn't available right now." = "Luisteren is nu niet beschikbaar.";
 "Loading Google News topics..." = "Google News-onderwerpen laden...";
@@ -1038,8 +1042,7 @@
 "Story count" = "Aantal artikelen";
 "Story detail" = "Artikeldetails";
 "Story image" = "Artikelafbeelding";
-"Story is always hidden" = "Artikel wordt altijd verborgen";
-"Story is hidden (super dislike wins)" = "Artikel is verborgen (‘helemaal niet leuk’ wint)";
+"Story is always hidden" = "Artikel is altijd verborgen";
 "Story is shown (like wins)" = "Artikel wordt getoond (‘leuk’ wint)";
 "Story language" = "Taal van het artikel";
 "Story list toolbar position" = "Positie van de werkbalk in de artikellijst";
@@ -1063,8 +1066,6 @@
 "Summarize" = "Samenvatten";
 "Sunday" = "zondag";
 "Sunrise Gold" = "Zonsopganggoud";
-"Super dislike" = "Vind ik helemaal niet leuk";
-"Super dislike beats any number of likes:" = "‘Vind ik helemaal niet leuk’ weegt zwaarder dan hoeveel likes dan ook:";
 "Support Forum" = "Supportforum";
 "Swipe from left edge" = "Veeg vanaf de linkerrand";
 "Swipe from the left edge while reading" = "Veeg tijdens het lezen vanaf de linkerrand";

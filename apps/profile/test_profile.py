@@ -2692,3 +2692,62 @@ class Test_UsageBillingAppMode(TestCase):
 
                 self.assertEqual(response.status_code, 302)
                 self.assertEqual(response["Location"], reverse("index"))
+
+
+class Test_StaffPremiumUpgradeEmail(TestCase):
+    """The staff notification sent on every paid upgrade (send_staff_premium_upgrade_email, apps/profile/models.py)."""
+
+    def setUp(self):
+        from django.core import mail
+
+        from apps.listen.models import MListenDaily
+
+        mail.outbox = []
+        MListenDaily.drop_collection()
+        self.user = User.objects.create_user(
+            username="staffupgrade", password="password", email="staffupgrade@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.is_premium = True
+        self.profile.is_pro = True
+        self.profile.last_seen_on = datetime.datetime.now()
+        self.profile.save()
+
+    def _listened(self, days_ago, listen_seconds, story_hash):
+        from apps.listen.models import MListenDaily
+
+        day = datetime.datetime.utcnow() - datetime.timedelta(days=days_ago)
+        MListenDaily.objects.create(
+            user_id=self.user.pk,
+            date=day.strftime("%Y-%m-%d"),
+            story_hash=story_hash,
+            feed_id=1,
+            audio_seconds=listen_seconds,
+            listen_seconds=listen_seconds,
+        )
+
+    def test_minutes_listened_past_week_and_all_time(self):
+        from django.core import mail
+
+        # 10 minutes last month only counts toward all time; 5 minutes today counts toward both.
+        self._listened(days_ago=30, listen_seconds=600, story_hash="1:old")
+        self._listened(days_ago=0, listen_seconds=300, story_hash="1:new")
+
+        self.profile.send_staff_premium_upgrade_email(tier="pro", previous_tier="premium")
+
+        self.assertEqual(len(mail.outbox), 1)
+        msg = mail.outbox[0]
+        self.assertIn("Premium → Premium Pro", msg.subject)
+        self.assertIn("Listened:      5 min past week, 15 min all time", msg.body)
+        html = msg.alternatives[0][0]
+        self.assertIn("Minutes listened", html)
+        self.assertIn("<strong>5</strong> past week, 15 all time", html)
+
+    def test_minutes_listened_are_zero_for_a_user_who_never_listened(self):
+        from django.core import mail
+
+        self.profile.send_staff_premium_upgrade_email(tier="pro", previous_tier="premium")
+
+        msg = mail.outbox[0]
+        self.assertIn("Listened:      0 min past week, 0 min all time", msg.body)
+        self.assertIn("<strong>0</strong> past week, 0 all time", msg.alternatives[0][0])

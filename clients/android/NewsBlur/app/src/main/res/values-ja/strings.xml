@@ -704,17 +704,17 @@
     <string name="intel_author_header">記事の著者</string>
     <string name="feed_intel_author_header">著者</string>
     <string name="intel_feed_header">この配信元のすべての記事</string>
-    <string name="intel_super_dislike">強い低評価</string>
-    <string name="explainer_super_dislike">強い低評価</string>
+    <string name="intel_super_dislike">一致する記事を非表示</string>
+    <string name="explainer_super_dislike">非表示</string>
     <string name="explainer_ai_filter">AIフィルター</string>
     <string name="explainer_like">いいね</string>
     <string name="explainer_dislike">低評価</string>
     <string name="explainer_beats">＞</string>
     <string name="explainer_example1_header">「いいね」が1つあれば、「低評価」がいくつあっても優先されます</string>
     <string name="explainer_example1_result">記事がフォーカス表示に表示されます</string>
-    <string name="explainer_example2_header">強い低評価が1つあれば、すべてに優先します</string>
+    <string name="explainer_example2_header">「非表示」は、「いいね」も含めてすべてに優先されます</string>
     <string name="explainer_example2_result">記事は常に非表示</string>
-    <string name="explainer_example3_header">AIフィルターは「いいね」と低評価より優先されますが、強い低評価よりは優先されません</string>
+    <string name="explainer_example3_header">AIフィルターは「いいね」と「低評価」を上書きしますが、「非表示」は上書きしません</string>
     <string name="trainer_question_story">この記事のどんなところが 👍 %1$s で、どんなところが 👎 %2$s ですか？</string>
     <string name="trainer_question_site">このサイトのどんなところが 👍 %1$s で、どんなところが 👎 %2$s ですか？</string>
     <string name="trainer_question_like">いいね</string>
@@ -753,6 +753,7 @@
     <string name="trainer_regex_valid">✓ 有効</string>
     <string name="trainer_regex_matches_story">✓ 記事に一致</string>
     <string name="trainer_regex_no_match">記事に一致するものがありません</string>
+    <string name="trainer_regex_not_checked">記事を確認できませんでした</string>
     <string name="trainer_regex_invalid">無効：%1$s</string>
     <string name="trainer_regex_invalid_pattern">無効なパターン</string>
     <string name="trainer_regex_requires_pro">正規表現にはプレミアム Pro が必要です</string>
@@ -1406,9 +1407,14 @@
     <string name="listen_style_summary">音声のスタイルを強調</string>
     <string name="listen_speaker_boost_summary">よりクリアで近くに聞こえる音</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">今月残り%1$d分</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d時間</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d分</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">今週の残り%1$s</string>
     <string name="listen_resets_on">%1$sにリセット</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">今日利用できる無料記事プレビューは残り%1$d件です</item>
@@ -1430,5 +1436,6 @@
     <string name="settings_listen_voices_summary">言語ごとに音声と読み上げ方を選択</string>
     <string name="settings_listen_delivery">話し方</string>
     <string name="settings_listen_speed">再生速度</string>
-    <string name="archive_listen">記事を音声で読み上げる</string>
+    <string name="archive_listen">読み上げ記事を週1時間聴取</string>
+    <string name="pro_listen">読み上げ記事を週10時間聴取</string>
 </resources>

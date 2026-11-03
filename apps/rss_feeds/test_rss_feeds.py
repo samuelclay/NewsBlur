@@ -22,6 +22,7 @@ from apps.profile.models import Profile
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MAX_STORY_CONTENT_BYTES, Feed, MFeedIcon, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
+from apps.search.models import SearchFeed
 from utils import json_functions as json
 from utils.feed_functions import (
     is_openrss_feed_address,
@@ -9204,3 +9205,27 @@ class Test_TrimOldSavedStories(TestCase):
         self.assertEqual({tuple(f) for f in filters}, {("_id",)})
         self.assertEqual(self._saved(0), 0)
         self.assertEqual(self._saved(gone), 0)
+
+
+class Test_FeedAutocomplete(TestCase):
+    """Feed.autocomplete runs the hybrid search unless the caller only needs text matching."""
+
+    def test_hybrid_search_by_default(self):
+        hits = [{"_source": {"feed_id": 7}}, {"_source": {"feed_id": 9}}]
+        with patch.object(SearchFeed, "hybrid_query", return_value=hits) as hybrid_query, patch.object(
+            SearchFeed, "query"
+        ) as query:
+            self.assertEqual(Feed.autocomplete("kottke"), [7, 9])
+
+        hybrid_query.assert_called_once_with("kottke", max_results=10)
+        query.assert_not_called()
+
+    def test_semantic_false_skips_the_embedding(self):
+        hits = [{"_source": {"feed_id": 7}}, {"_source": {"feed_id": 9}}]
+        with patch.object(SearchFeed, "hybrid_query") as hybrid_query, patch.object(
+            SearchFeed, "query", return_value=hits
+        ) as query:
+            self.assertEqual(Feed.autocomplete("kottke.org", limit=1, semantic=False), [7])
+
+        query.assert_called_once_with("kottke.org", max_results=1)
+        hybrid_query.assert_not_called()

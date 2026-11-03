@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premium e archivio permanente degli articoli"
+        "description": "Archivio permanente e 1 ora di ascolto a settimana"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "Feed aggiornati ogni 5-15 minuti"
+        "description": "Feed aggiornati spesso e 10 ore di ascolto a settimana"
       }
     },
     "subscription_groups": {
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "Abbonamento NewsBlur Premium Archive",
-        "description": "Ottieni tutte le funzioni Premium e un archivio permanente di ogni articolo in cui puoi cercare. Lascia gli articoli non letti per tutto il tempo che vuoi.",
+        "description": "Tutte le funzioni Premium, archivio permanente con ricerca e 1 ora di ascolto a settimana. Lascia gli articoli non letti quanto vuoi. Il tempo di ascolto si rinnova la domenica.",
         "benefits": [
           "Tutto ciò che offre Premium",
-          "Lascia gli articoli non letti per sempre",
-          "Archivia ogni articolo per sempre",
-          "Cerca in tutto il tuo archivio"
+          "Articoli non letti senza limiti di tempo",
+          "Archivio permanente con ricerca",
+          "1 ora di ascolto a settimana"
         ]
       }
     }

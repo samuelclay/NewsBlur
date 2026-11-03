@@ -268,6 +268,11 @@ msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "%(count)s birleştirme (%(categories)s kategori → %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s dakika"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s dakika önce"
@@ -467,6 +472,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Bu hafta %(duration)s kaldı"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s bildirimleri ayarlandı"
 
@@ -497,11 +506,6 @@ msgstr[0] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Arşivinizdeki ilgili haberleri görmek için yükseltin."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Bu ay %(minutes)s dakika kaldı"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -897,9 +901,6 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s site daha"
 
-msgid "+ New Folder..."
-msgstr "+ Yeni klasör..."
-
 msgid "/day"
 msgstr "/gün"
 
@@ -987,9 +988,6 @@ msgstr "İkinci geçişte, sayfadaki doğru deseni bulmak için verdiğiniz ipuc
 msgid "A single like overrides any number of dislikes"
 msgstr "Tek bir beğeni, istenen sayıda beğenmemeyi geçersiz kılar"
 
-msgid "A single super dislike overrides everything"
-msgstr "Tek bir “Hiç beğenme” her şeyi geçersiz kılar"
-
 msgid "A story diff with additions and deletions"
 msgstr "Eklemeleri ve silmeleri gösteren bir haber farkı"
 
@@ -1052,6 +1050,9 @@ msgstr "Klasör Ekle"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Site Ekle &amp; Haber Paylaş Yer İmi Uygulaması"
 
+msgid "Add a classifier"
+msgstr "Sınıflandırıcı ekle"
+
 msgid "Add a forwarding address"
 msgstr "Yönlendirme adresi ekle"
 
@@ -1112,6 +1113,9 @@ msgid ""
 msgstr ""
 "Şirket adınızı, KDV numaranızı, adresinizi veya başka bir metni ekleyin. Tüm abonelik faturalarını, geçmiş "
 "ödemeler dahil, güncellemek için Kaydet’e basın."
+
+msgid "Added"
+msgstr "Eklendi"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1230,8 +1234,8 @@ msgstr "Eğit/Kaydet/Paylaş düğmelerini haberlerin altında her zaman göster
 msgid "Always show unread counts on folders"
 msgstr "Klasörlerde okunmamış sayılarını her zaman göster"
 
-msgid "An AI filter overrides likes and dislikes, but not a super dislike"
-msgstr "Yapay zekâ filtresi beğenileri ve beğenmemeleri geçersiz kılar, ancak hiç beğenmemeyi değil"
+msgid "An AI filter overrides likes and dislikes, but not Hide"
+msgstr "Bir yapay zekâ filtresi beğenme ve beğenmeme tercihlerinizi geçersiz kılar, ancak Gizle'yi değil"
 
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
@@ -1303,6 +1307,9 @@ msgstr[0] "%(count)s birleştirme uygulandı (%(stories)s)"
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(succeeded)s / %(count)s birleştirme uygulandı (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Şunlar için geçerli"
 
 msgid "Apply"
 msgstr "Uygula"
@@ -1413,6 +1420,9 @@ msgstr "Yazar filtreleri %(context)s içinde haber bulamadı."
 
 msgid "Author filters found no stories in this view."
 msgstr "Yazar filtreleri bu görünümde hiç haber bulamadı."
+
+msgid "Author name"
+msgstr "Yazar adı"
 
 msgid "Author: "
 msgstr "Yazar: "
@@ -1690,6 +1700,9 @@ msgstr "Kategorilere ayrılıyor..."
 msgid "Category"
 msgstr "Kategori"
 
+msgid "Category or tag"
+msgstr "Kategori veya etiket"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Kategori: %(value_1)s"
@@ -1803,6 +1816,9 @@ msgstr "Sınıflandırıcı filtresinin kapsamı"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Sınıflandırıcı kapsamı %(tier_link)s gerektirir"
+
+msgid "Classifier type"
+msgstr "Sınıflandırıcı türü"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
@@ -2002,6 +2018,9 @@ msgstr "Metni kopyala"
 
 msgid "Copy URL"
 msgstr "URL'yi kopyala"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Bu sınıflandırıcı eklenemedi. Yeniden deneyin."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Bu hesabın bağlantısı kesilemedi. Lütfen tekrar deneyin."
@@ -3386,6 +3405,9 @@ msgstr "Gizli Cevherler"
 msgid "Hide"
 msgstr "Gizle"
 
+msgid "Hide "
+msgstr "Gizle "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Tüm paylaşım, yorum ve blurblog özelliklerini gizle"
 
@@ -3397,6 +3419,9 @@ msgstr "Geçmişi gizle"
 
 msgid "Hide matching stories"
 msgstr "Eşleşen haberleri gizle"
+
+msgid "Hide overrides everything, even likes"
+msgstr "“Gizle” her şeyi, beğenileri bile geçersiz kılar"
 
 msgid "Hide sites"
 msgstr "Siteleri gizle"
@@ -3768,8 +3793,11 @@ msgstr "Dinle"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Dinleme zaman aşımına uğradı. Birazdan yeniden deneyin."
 
-msgid "Listen to stories read aloud"
-msgstr "Haberleri sesli dinleyin"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Haftada 1 saat haberleri sesli dinleyin"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Haftada 10 saat haberleri sesli dinleyin"
 
 msgid "Listen to story"
 msgstr "Haberi dinle"
@@ -3989,6 +4017,15 @@ msgstr "İlgili konular üzerinden eşleşti"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Başlıkta tüm anahtar kelimeleri içeren haberlerle eşleşir"
+
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Beğeni eşleşse bile eşleşen haberler her zaman gizlenir"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Beğeni de eşleşmediği sürece eşleşen haberler gizlenir"
+
+msgid "Matching stories show in Focus"
+msgstr "Eşleşen haberler Odak'ta gösterilir"
 
 msgid "May"
 msgstr "Mayıs"
@@ -4386,6 +4423,9 @@ msgstr "Başlıkta eşleşme yok"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "“%(value_1)s” için eşleşme yok"
+
+msgid "No matching folders or sites"
+msgstr "Eşleşen klasör veya site yok"
 
 msgid "No merge suggestions"
 msgstr "Birleştirme önerisi yok"
@@ -4855,6 +4895,9 @@ msgstr "Bu RSS/XML akışını ayrıştır"
 msgid "Parsing..."
 msgstr "Ayrıştırılıyor..."
 
+msgid "Part of a story URL"
+msgstr "Haber URL'sinin bir bölümü"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Herhangi bir URL yapıştırın; RSS olmasa bile NewsBlur sayfadan bir akış oluşturur."
 
@@ -4906,6 +4949,12 @@ msgstr "Site başına"
 
 msgid "Per-feed notification settings"
 msgstr "Akış bazında bildirim ayarları"
+
+msgid "Phrase to match in story text"
+msgstr "Haber metninde eşleştirilecek ifade"
+
+msgid "Phrase to match in story titles"
+msgstr "Haber başlıklarında eşleştirilecek ifade"
 
 msgid "Pick a tier & pay."
 msgstr "Bir paket seçin ve ödeme yapın."
@@ -5471,8 +5520,8 @@ msgid "Reset to original favicon"
 msgstr "Orijinal site simgesine dön"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "%(date)s sıfırlanıyor"
+msgid "Resets %(day)s"
+msgstr "%(day)s tarihinde sıfırlanır"
 
 msgid "Resetting..."
 msgstr "Sıfırlanıyor..."
@@ -5709,6 +5758,9 @@ msgstr "Akışta ara"
 
 msgid "Search folder"
 msgstr "Klasörde ara"
+
+msgid "Search folders and sites"
+msgstr "Klasörlerde ve sitelerde ara"
 
 msgid "Search for friends"
 msgstr "Arkadaş ara"
@@ -6574,9 +6626,6 @@ msgstr "Paz"
 msgid "Sunday"
 msgstr "Pazar"
 
-msgid "Super Dislike "
-msgstr "Hiç Beğenme "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "Her %(value_1)s yapılan kontrollerle desteklenir"
@@ -6682,6 +6731,10 @@ msgstr "Metin Regex'i"
 
 msgid "Text View"
 msgstr "Metin görünümü"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Metin sınıflandırıcıları %(tier_link)s gerektirir"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7211,6 +7264,10 @@ msgid "URL Regex"
 msgstr "URL düzenli ifadesi"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL sınıflandırıcıları %(tier_link)s gerektirir"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL filtreleri %(context)s içinde hiç haber bulamadı."
 
@@ -7566,6 +7623,9 @@ msgstr "Haftalık"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur'a hoş geldiniz"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "Beğen, Beğenme ve Gizle ne işe yarar?"
 
 msgid "What are the main arguments?"
 msgstr "Başlıca savlar nelerdir?"

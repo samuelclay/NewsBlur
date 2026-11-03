@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premium và kho bài viết lưu vĩnh viễn"
+        "description": "Kho bài viết vĩnh viễn và 1 giờ Nghe mỗi tuần"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "Cập nhật nguồn cấp mỗi 5 đến 15 phút"
+        "description": "Cập nhật nguồn cấp thường xuyên, 10 giờ Nghe mỗi tuần"
       }
     },
     "subscription_groups": {
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "Đăng ký NewsBlur Premium Archive",
-        "description": "Nhận mọi tính năng của Premium cùng kho lưu trữ vĩnh viễn, có thể tìm kiếm cho mọi bài viết. Giữ bài viết chưa đọc bao lâu tùy thích.",
+        "description": "Mọi tính năng Premium, kho bài viết vĩnh viễn có thể tìm kiếm và 1 giờ Nghe mỗi tuần. Giữ bài viết chưa đọc bao lâu tùy thích. Hạn mức nghe đặt lại Chủ nhật.",
         "benefits": [
           "Mọi tính năng của Premium",
           "Giữ bài viết chưa đọc mãi mãi",
-          "Lưu trữ vĩnh viễn mọi bài viết",
-          "Tìm kiếm toàn bộ kho bài viết"
+          "Kho bài viết vĩnh viễn, có tìm kiếm",
+          "1 giờ Nghe mỗi tuần"
         ]
       }
     }

@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ 資料夾，%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 資料夾，已收合，%2$@";
 "%1$@ followed %2$@." = "%1$@ 追蹤了 %2$@。";
-"%1$@ of %2$@ of listening left this month" = "本月剩餘聆聽時間：%1$@／%2$@";
+"%1$@ of %2$@ of listening left this week" = "本週聆聽時間剩餘 %1$@／共 %2$@";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 個網站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@／%2$@ 次文章預覽";
 "%1$@ on all sites (%2$@)" = "%1$@ 個網站（%2$@）";
@@ -44,8 +44,8 @@
 "%@ image filters" = "%@ 個圖片篩選器";
 "%@ is now following you." = "%@ 現在開始追蹤你。";
 "%@ left in this preview" = "此預覽還剩 %@";
+"%@ left this week" = "本週剩餘 %@";
 "%@ match" = "符合 %@ 項";
-"%@ minutes left this month" = "%@ 分鐘剩餘（本月）";
 "%@ opens" = "%@ 次開啟";
 "%@ or search" = "%@ 或搜尋";
 "%@ public comments" = "%@ 則公開留言";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "已有帳戶？登入";
 "Already have feeds?" = "已經有訂閱來源了嗎？";
 "Also published by %@ sites" = "另有 %@ 個網站刊載";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "AI 篩選器會覆蓋喜歡和不喜歡的判斷，但不會覆蓋超級不喜歡";
+"An AI filter overrides likes and dislikes, but not Hide" = "AI 篩選器會覆蓋喜歡和不喜歡，但不會覆蓋隱藏";
 "Analyze" = "分析";
 "Analyzing images..." = "正在分析圖片…";
 "App Badge" = "App 圖示標記";
@@ -262,6 +262,7 @@
 "Coral Rose" = "珊瑚玫瑰";
 "Could not completely clear the cache. Please try again." = "無法完全清除快取。請再試一次。";
 "Could not save your language. Please try again." = "無法儲存語言設定，請再試一次。";
+"Couldn't check story" = "無法檢查文章";
 "Couldn't load usage billing history." = "無法載入按用量計費記錄。";
 "Couldn't open billing. Please try again." = "無法開啟帳單頁面。請再試一次。";
 "Couldn't reach NewsBlur. Check your connection and try again." = "無法連線至 NewsBlur。請檢查網路連線後再試一次。";
@@ -458,6 +459,8 @@
 "Hide Changes" = "隱藏變更";
 "Hide Sidebar" = "隱藏側邊欄";
 "Hide Story Titles" = "隱藏文章標題";
+"Hide [training level]" = "隱藏";
+"Hide beats any number of likes:" = "「隱藏」勝過任意數量的「喜歡」：";
 "Hide hidden stories" = "隱藏已隱藏的文章";
 "Hide status bar" = "隱藏狀態列";
 "Hide toolbars when reading" = "閱讀時隱藏工具列";
@@ -522,7 +525,8 @@
 "List style" = "清單樣式";
 "Listen" = "聆聽";
 "Listen Settings" = "聆聽設定";
-"Listen to stories read aloud" = "聆聽語音朗讀的文章";
+"Listen to 1 hour of stories read aloud a week" = "每週聆聽朗讀文章最多 1 小時";
+"Listen to 10 hours of stories read aloud a week" = "每週聆聽朗讀文章最多 10 小時";
 "Listen to story" = "聆聽文章";
 "Listening isn't available right now." = "目前無法使用聆聽功能。";
 "Loading Google News topics..." = "正在載入 Google 新聞主題…";
@@ -1039,7 +1043,6 @@
 "Story detail" = "文章詳細資料";
 "Story image" = "文章圖片";
 "Story is always hidden" = "文章一律隱藏";
-"Story is hidden (super dislike wins)" = "文章已隱藏（超級不喜歡優先）";
 "Story is shown (like wins)" = "顯示文章（喜歡優先）";
 "Story language" = "文章語言";
 "Story list toolbar position" = "文章清單工具列位置";
@@ -1063,8 +1066,6 @@
 "Summarize" = "摘要";
 "Sunday" = "星期日";
 "Sunrise Gold" = "日出金";
-"Super dislike" = "超級不喜歡";
-"Super dislike beats any number of likes:" = "超級不喜歡的權重勝過任何數量的喜歡：";
 "Support Forum" = "支援論壇";
 "Swipe from left edge" = "從左側邊緣滑動";
 "Swipe from the left edge while reading" = "閱讀時從左側邊緣滑動";

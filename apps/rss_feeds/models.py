@@ -670,11 +670,16 @@ class Feed(models.Model):
         return [f for f in feed_ids if f not in briefing_ids]
 
     @classmethod
-    def autocomplete(cls, prefix, limit=10):
+    def autocomplete(cls, prefix, limit=10, semantic=True):
         # Use hybrid search to combine text matching with semantic similarity
         # This returns both exact matches (e.g., "cooking" in title) and
-        # semantically related feeds (e.g., "smitten kitchen" for "cooking")
-        results = SearchFeed.hybrid_query(prefix, max_results=limit)
+        # semantically related feeds (e.g., "smitten kitchen" for "cooking").
+        # A hostname lookup (see apps/discover/views.py) only needs the text
+        # half, so semantic=False skips the embedding call.
+        if semantic:
+            results = SearchFeed.hybrid_query(prefix, max_results=limit)
+        else:
+            results = SearchFeed.query(prefix, max_results=limit)
 
         feed_ids = [result["_source"]["feed_id"] for result in results[:limit]]
         return feed_ids

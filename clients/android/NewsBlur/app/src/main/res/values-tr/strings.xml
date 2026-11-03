@@ -712,17 +712,17 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="intel_author_header">Haber yazarları</string>
     <string name="feed_intel_author_header">Yazarlar</string>
     <string name="intel_feed_header">Yayıncının tüm haberleri</string>
-    <string name="intel_super_dislike">Hiç beğenmeme</string>
-    <string name="explainer_super_dislike">Hiç Beğenme</string>
+    <string name="intel_super_dislike">Eşleşen haberleri gizle</string>
+    <string name="explainer_super_dislike">Gizle</string>
     <string name="explainer_ai_filter">Yapay zekâ filtresi</string>
     <string name="explainer_like">Beğen</string>
     <string name="explainer_dislike">Beğenme</string>
     <string name="explainer_beats">&gt;</string>
     <string name="explainer_example1_header">Tek bir beğeni, istediğiniz sayıda beğenmeme oyunu geçersiz kılar</string>
     <string name="explainer_example1_result">Haber, Odak görünümünde gösterilir</string>
-    <string name="explainer_example2_header">Tek bir “Hiç beğenme” her şeyi geçersiz kılar</string>
+    <string name="explainer_example2_header">“Gizle” her şeyi, beğenileri bile geçersiz kılar</string>
     <string name="explainer_example2_result">Haber her zaman gizli</string>
-    <string name="explainer_example3_header">Yapay zekâ filtresi beğenileri ve beğenmemeleri geçersiz kılar, ancak Hiç beğenme\'yi geçersiz kılmaz</string>
+    <string name="explainer_example3_header">Bir yapay zekâ filtresi beğenme ve beğenmeme tercihlerinizi geçersiz kılar, ancak Gizle\'yi değil</string>
     <string name="trainer_question_story">Bu haber hakkında neyi 👍 %1$s ve neyi 👎 %2$s buluyorsunuz?</string>
     <string name="trainer_question_site">Bu site hakkında neyi 👍 %1$s ve neyi 👎 %2$s buluyorsunuz?</string>
     <string name="trainer_question_like">beğeniyorsunuz</string>
@@ -761,6 +761,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="trainer_regex_valid">✓ Geçerli</string>
     <string name="trainer_regex_matches_story">✓ Haberle eşleşiyor</string>
     <string name="trainer_regex_no_match">Haberde eşleşme yok</string>
+    <string name="trainer_regex_not_checked">Haber kontrol edilemedi</string>
     <string name="trainer_regex_invalid">Geçersiz: %1$s</string>
     <string name="trainer_regex_invalid_pattern">Geçersiz desen</string>
     <string name="trainer_regex_requires_pro">Regex için Premium Pro gerekir</string>
@@ -1434,10 +1435,16 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="listen_style_summary">Sesin tarzını abartır</string>
     <string name="listen_speaker_boost_summary">Daha net ve yakından gelen bir ses</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="one">Bu ay %1$d dakika kaldı</item>
-        <item quantity="other">Bu ay %1$d dakika kaldı</item>
+    <plurals name="listen_hours">
+        <item quantity="one">%1$d saat</item>
+        <item quantity="other">%1$d saat</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="one">%1$d dakika</item>
+        <item quantity="other">%1$d dakika</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Bu hafta %1$s kaldı</string>
     <string name="listen_resets_on">Sıfırlanma tarihi: %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">Bugün %1$d ücretsiz haber önizleme hakkınız kaldı</item>
@@ -1461,5 +1468,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="settings_listen_voices_summary">Her dil için bir ses ve okuma biçimini seçin</string>
     <string name="settings_listen_delivery">Sunum</string>
     <string name="settings_listen_speed">Oynatma hızı</string>
-    <string name="archive_listen">Haberleri sesli dinle</string>
+    <string name="archive_listen">Haftada 1 saat haberleri sesli dinleyin</string>
+    <string name="pro_listen">Haftada 10 saat haberleri sesli dinleyin</string>
 </resources>

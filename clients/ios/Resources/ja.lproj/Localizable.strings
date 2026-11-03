@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@フォルダー、%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@フォルダー、折りたたみ済み、%2$@";
 "%1$@ followed %2$@." = "%1$@さんが%2$@さんをフォローしました。";
-"%1$@ of %2$@ of listening left this month" = "今月の読み上げ残り：%1$@ / %2$@";
+"%1$@ of %2$@ of listening left this week" = "今週の聴取可能時間は%1$@／%2$@です";
 "%1$@ of %2$@ sites indexed" = "%2$@件中%1$@件のサイトをインデックス済み";
 "%1$@ of %2$@ story previews used today" = "本日使用した記事のプレビュー：%1$@／%2$@";
 "%1$@ on all sites (%2$@)" = "すべてのサイトで%1$@（%2$@）";
@@ -44,8 +44,8 @@
 "%@ image filters" = "%@件の画像フィルター";
 "%@ is now following you." = "%@さんがあなたをフォローしました。";
 "%@ left in this preview" = "このプレビューの残り%@";
+"%@ left this week" = "今週の残り%@";
 "%@ match" = "%@件一致";
-"%@ minutes left this month" = "今月の残り%@分";
 "%@ opens" = "%@ 回開かれました";
 "%@ or search" = "%@または検索";
 "%@ public comments" = "公開コメント%@件";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "アカウントをお持ちですか？ログイン";
 "Already have feeds?" = "すでにフィードをお持ちですか？";
 "Also published by %@ sites" = "ほか%@サイトでも公開";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "AIフィルターは「いいね」と「低評価」を上書きしますが、「強い低評価」は上書きしません";
+"An AI filter overrides likes and dislikes, but not Hide" = "AIフィルターは「いいね」と「低評価」を上書きしますが、「非表示」は上書きしません";
 "Analyze" = "分析";
 "Analyzing images..." = "画像を分析中...";
 "App Badge" = "アプリアイコンのバッジ";
@@ -262,6 +262,7 @@
 "Coral Rose" = "コーラルローズ";
 "Could not completely clear the cache. Please try again." = "キャッシュを完全に消去できませんでした。もう一度お試しください。";
 "Could not save your language. Please try again." = "言語を保存できませんでした。もう一度お試しください。";
+"Couldn't check story" = "記事を確認できませんでした";
 "Couldn't load usage billing history." = "従量課金の履歴を読み込めませんでした。";
 "Couldn't open billing. Please try again." = "請求情報を開けませんでした。もう一度お試しください。";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlurに接続できませんでした。接続を確認して、もう一度お試しください。";
@@ -458,6 +459,8 @@
 "Hide Changes" = "変更を非表示";
 "Hide Sidebar" = "サイドバーを隠す";
 "Hide Story Titles" = "記事タイトルを非表示";
+"Hide [training level]" = "非表示";
+"Hide beats any number of likes:" = "「非表示」は「いいね」がいくつあっても優先されます：";
 "Hide hidden stories" = "非表示の記事を隠す";
 "Hide status bar" = "ステータスバーを非表示";
 "Hide toolbars when reading" = "記事を読むときにツールバーを非表示にする";
@@ -522,7 +525,8 @@
 "List style" = "リストのスタイル";
 "Listen" = "聴く";
 "Listen Settings" = "読み上げ設定";
-"Listen to stories read aloud" = "記事の読み上げを聴く";
+"Listen to 1 hour of stories read aloud a week" = "読み上げ記事を週1時間聴取";
+"Listen to 10 hours of stories read aloud a week" = "読み上げ記事を週10時間聴取";
 "Listen to story" = "記事を聴く";
 "Listening isn't available right now." = "現在、読み上げは利用できません。";
 "Loading Google News topics..." = "Google ニュースのトピックを読み込み中...";
@@ -1039,7 +1043,6 @@
 "Story detail" = "記事の詳細";
 "Story image" = "記事の画像";
 "Story is always hidden" = "記事は常に非表示";
-"Story is hidden (super dislike wins)" = "記事は非表示（「強い低評価」が優先）";
 "Story is shown (like wins)" = "記事は表示（「いいね」が優先）";
 "Story language" = "記事の言語";
 "Story list toolbar position" = "記事リストのツールバー位置";
@@ -1063,8 +1066,6 @@
 "Summarize" = "要約";
 "Sunday" = "日曜日";
 "Sunrise Gold" = "サンライズゴールド";
-"Super dislike" = "強い低評価";
-"Super dislike beats any number of likes:" = "「強い低評価」は「いいね」がいくつあっても優先されます：";
 "Support Forum" = "サポートフォーラム";
 "Swipe from left edge" = "画面左端からスワイプ";
 "Swipe from the left edge while reading" = "記事を読んでいるときに左端からスワイプ";

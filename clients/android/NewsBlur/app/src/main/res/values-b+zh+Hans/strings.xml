@@ -704,17 +704,17 @@
     <string name="intel_author_header">文章作者</string>
     <string name="feed_intel_author_header">作者</string>
     <string name="intel_feed_header">发布者的所有内容</string>
-    <string name="intel_super_dislike">强烈不喜欢</string>
-    <string name="explainer_super_dislike">强烈不喜欢</string>
+    <string name="intel_super_dislike">隐藏匹配的文章</string>
+    <string name="explainer_super_dislike">隐藏</string>
     <string name="explainer_ai_filter">AI 筛选器</string>
     <string name="explainer_like">喜欢</string>
     <string name="explainer_dislike">不喜欢</string>
     <string name="explainer_beats">胜过</string>
     <string name="explainer_example1_header">一次“喜欢”胜过任意数量的“不喜欢”</string>
     <string name="explainer_example1_result">文章会显示在聚焦视图中</string>
-    <string name="explainer_example2_header">一次“强烈不喜欢”胜过其他所有训练</string>
+    <string name="explainer_example2_header">“隐藏”优先于一切，即使是“喜欢”也不例外</string>
     <string name="explainer_example2_result">文章始终隐藏</string>
-    <string name="explainer_example3_header">AI 过滤器会覆盖喜欢和不喜欢，但不会覆盖强烈不喜欢</string>
+    <string name="explainer_example3_header">AI 筛选器会覆盖喜欢和不喜欢，但不会覆盖隐藏</string>
     <string name="trainer_question_story">你喜欢 👍 %1$s，不喜欢 👎 %2$s 这篇文章的哪些方面？</string>
     <string name="trainer_question_site">你喜欢 👍 %1$s，不喜欢 👎 %2$s 这个网站的哪些方面？</string>
     <string name="trainer_question_like">喜欢</string>
@@ -753,6 +753,7 @@
     <string name="trainer_regex_valid">✓ 有效</string>
     <string name="trainer_regex_matches_story">✓ 与文章匹配</string>
     <string name="trainer_regex_no_match">文章中没有匹配项</string>
+    <string name="trainer_regex_not_checked">无法检查文章</string>
     <string name="trainer_regex_invalid">无效：%1$s</string>
     <string name="trainer_regex_invalid_pattern">无效模式</string>
     <string name="trainer_regex_requires_pro">正则表达式需要专业版</string>
@@ -1406,9 +1407,14 @@
     <string name="listen_style_summary">夸大语音风格</string>
     <string name="listen_speaker_boost_summary">声音更清晰、更贴近</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">本月还剩 %1$d 分钟</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d 小时</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d 分钟</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">本周还剩 %1$s</string>
     <string name="listen_resets_on">重置日期：%1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">今天还剩 %1$d 次免费文章预览</item>
@@ -1430,5 +1436,6 @@
     <string name="settings_listen_voices_summary">为每种语言选择语音及朗读方式</string>
     <string name="settings_listen_delivery">表达方式</string>
     <string name="settings_listen_speed">播放速度</string>
-    <string name="archive_listen">收听文章朗读</string>
+    <string name="archive_listen">每周可收听 1 小时文章朗读</string>
+    <string name="pro_listen">每周可收听 10 小时文章朗读</string>
 </resources>

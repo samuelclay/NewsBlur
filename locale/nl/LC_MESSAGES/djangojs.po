@@ -293,6 +293,12 @@ msgstr[0] "%(count)s samenvoeging (%(categories)s categorieën in %(count)s)"
 msgstr[1] "%(count)s samenvoegingen (%(categories)s categorieën naar %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minuut"
+msgstr[1] "%(count)s minuten"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s minuut geleden"
@@ -527,6 +533,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Nog %(duration)s over deze week"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s-meldingen zijn ingesteld"
 
@@ -557,12 +567,6 @@ msgstr[1] "%(indexed)s van de %(count)s sites geïndexeerd. Indexeer de resteren
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Upgrade om verwante artikelen uit je volledige archief te bekijken."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "%(minutes)s minuut deze maand over"
-msgstr[1] "%(minutes)s minuten deze maand over"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -962,9 +966,6 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s extra site"
 msgstr[1] "+ %(value_1)s extra sites"
 
-msgid "+ New Folder..."
-msgstr "+ Nieuwe map..."
-
 msgid "/day"
 msgstr "/dag"
 
@@ -1055,9 +1056,6 @@ msgstr "Bij een tweede poging wordt je aanwijzing gebruikt om het juiste patroon
 msgid "A single like overrides any number of dislikes"
 msgstr "Eén like weegt zwaarder dan een willekeurig aantal dislikes"
 
-msgid "A single super dislike overrides everything"
-msgstr "Eén ‘Vind ik helemaal niet leuk’ weegt zwaarder dan alles"
-
 msgid "A story diff with additions and deletions"
 msgstr "Een vergelijking van een artikel met toevoegingen en verwijderingen"
 
@@ -1121,6 +1119,9 @@ msgstr "Map toevoegen"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet voor site toevoegen &amp; artikel delen"
 
+msgid "Add a classifier"
+msgstr "Een classifier toevoegen"
+
 msgid "Add a forwarding address"
 msgstr "Een doorstuuradres toevoegen"
 
@@ -1181,6 +1182,9 @@ msgid ""
 msgstr ""
 "Voeg je bedrijfsnaam, btw-nummer, adres of andere tekst toe. Sla op om alle abonnementsfacturen bij te "
 "werken, ook die van eerdere betalingen."
+
+msgid "Added"
+msgstr "Toegevoegd"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1303,8 +1307,8 @@ msgstr "Knoppen Trainen/Opslaan/Delen altijd onder artikelen weergeven"
 msgid "Always show unread counts on folders"
 msgstr "Altijd ongelezen aantallen tonen bij mappen"
 
-msgid "An AI filter overrides likes and dislikes, but not a super dislike"
-msgstr "Een AI-filter overschrijft Vind ik leuk en Vind ik niet leuk, maar niet Vind ik helemaal niet leuk."
+msgid "An AI filter overrides likes and dislikes, but not Hide"
+msgstr "Een AI-filter overschrijft Vind ik leuk en Vind ik niet leuk, maar niet Verbergen"
 
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
@@ -1379,6 +1383,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(succeeded)s van %(count)s samenvoeging toegepast (%(stories)s)"
 msgstr[1] "%(succeeded)s van de %(count)s samenvoegingen toegepast (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Van toepassing op"
 
 msgid "Apply"
 msgstr "Toepassen"
@@ -1489,6 +1496,9 @@ msgstr "Auteurfilters hebben geen artikelen gevonden in %(context)s."
 
 msgid "Author filters found no stories in this view."
 msgstr "Auteursfilters hebben in deze weergave geen artikelen gevonden."
+
+msgid "Author name"
+msgstr "Naam van de auteur"
 
 msgid "Author: "
 msgstr "Auteur: "
@@ -1768,6 +1778,9 @@ msgstr "Categoriseren..."
 msgid "Category"
 msgstr "Categorie"
 
+msgid "Category or tag"
+msgstr "Categorie of tag"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Categorie: %(value_1)s"
@@ -1883,6 +1896,9 @@ msgstr "Filterbereik van de classifier"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Het bereik van de classifier vereist %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Type classifier"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
@@ -2079,6 +2095,9 @@ msgstr "Tekst kopiëren"
 
 msgid "Copy URL"
 msgstr "URL kopiëren"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Deze classifier kan niet worden toegevoegd. Probeer het opnieuw."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Kon dit account niet loskoppelen. Probeer het opnieuw."
@@ -3460,6 +3479,9 @@ msgstr "Verborgen pareltjes"
 msgid "Hide"
 msgstr "Verbergen"
 
+msgid "Hide "
+msgstr "Verbergen "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Alle functies voor delen, reacties en Blurblog verbergen"
 
@@ -3471,6 +3493,9 @@ msgstr "Geschiedenis verbergen"
 
 msgid "Hide matching stories"
 msgstr "Overeenkomende artikelen verbergen"
+
+msgid "Hide overrides everything, even likes"
+msgstr "‘Verbergen’ wint van alles, zelfs van ‘Vind ik leuk’"
 
 msgid "Hide sites"
 msgstr "Sites verbergen"
@@ -3843,8 +3868,11 @@ msgstr "Luisteren"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Luisteren duurde te lang. Probeer het zo opnieuw."
 
-msgid "Listen to stories read aloud"
-msgstr "Artikelen laten voorlezen"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Luister elke week 1 uur naar artikelen die worden voorgelezen"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Luister elke week 10 uur naar artikelen die worden voorgelezen"
 
 msgid "Listen to story"
 msgstr "Artikel voorlezen"
@@ -4068,6 +4096,15 @@ msgstr "Gevonden via verwante onderwerpen"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Komt overeen met artikeltitels die alle trefwoorden bevatten"
+
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Overeenkomende artikelen worden altijd verborgen, ook als er een Vind ik leuk overeenkomt"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Overeenkomende artikelen worden verborgen, tenzij er ook een Vind ik leuk overeenkomt"
+
+msgid "Matching stories show in Focus"
+msgstr "Overeenkomende artikelen verschijnen in Focus"
 
 msgid "May"
 msgstr "mei"
@@ -4471,6 +4508,9 @@ msgstr "Geen overeenkomst in de titel"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Geen resultaten voor “%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "Geen overeenkomende mappen of sites"
 
 msgid "No merge suggestions"
 msgstr "Geen samenvoegsuggesties"
@@ -4945,6 +4985,9 @@ msgstr "Deze RSS/XML-feed parseren"
 msgid "Parsing..."
 msgstr "Bezig met verwerken..."
 
+msgid "Part of a story URL"
+msgstr "Deel van een artikel-URL"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Plak een URL en NewsBlur maakt een feed van de pagina, ook zonder RSS."
 
@@ -4996,6 +5039,12 @@ msgstr "Per site"
 
 msgid "Per-feed notification settings"
 msgstr "Meldingsinstellingen per feed"
+
+msgid "Phrase to match in story text"
+msgstr "Zin waarop wordt gezocht in de artikeltekst"
+
+msgid "Phrase to match in story titles"
+msgstr "Zin waarop wordt gezocht in de artikeltitels"
 
 msgid "Pick a tier & pay."
 msgstr "Kies een abonnement en betaal."
@@ -5572,8 +5621,8 @@ msgid "Reset to original favicon"
 msgstr "Terugzetten naar het oorspronkelijke favicon"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Wordt gereset op %(date)s"
+msgid "Resets %(day)s"
+msgstr "Wordt opnieuw ingesteld %(day)s"
 
 msgid "Resetting..."
 msgstr "Wordt gereset..."
@@ -5812,6 +5861,9 @@ msgstr "Feed doorzoeken"
 
 msgid "Search folder"
 msgstr "Map doorzoeken"
+
+msgid "Search folders and sites"
+msgstr "Mappen en sites doorzoeken"
 
 msgid "Search for friends"
 msgstr "Vrienden zoeken"
@@ -6681,9 +6733,6 @@ msgstr "zo"
 msgid "Sunday"
 msgstr "zondag"
 
-msgid "Super Dislike "
-msgstr "Vind ik helemaal niet leuk "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "Aangevuld met controles om de %(value_1)s"
@@ -6789,6 +6838,10 @@ msgstr "Tekstregex"
 
 msgid "Text View"
 msgstr "Tekstweergave"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Voor tekstclassifiers is %(tier_link)s vereist"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7326,6 +7379,10 @@ msgid "URL Regex"
 msgstr "URL-regex"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Voor URL-classifiers is %(tier_link)s vereist"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL-filters hebben geen artikelen gevonden in %(context)s."
 
@@ -7689,6 +7746,9 @@ msgstr "Wekelijks"
 
 msgid "Welcome to NewsBlur"
 msgstr "Welkom bij NewsBlur"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "Wat Vind ik leuk, Vind ik niet leuk en Verbergen doen"
 
 msgid "What are the main arguments?"
 msgstr "Wat zijn de belangrijkste argumenten?"

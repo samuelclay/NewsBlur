@@ -704,17 +704,17 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="intel_author_header">Penulis artikel</string>
     <string name="feed_intel_author_header">Penulis</string>
     <string name="intel_feed_header">Semua dari penerbit</string>
-    <string name="intel_super_dislike">Sangat tidak suka</string>
-    <string name="explainer_super_dislike">Sangat Tidak Suka</string>
+    <string name="intel_super_dislike">Sembunyikan artikel yang cocok</string>
+    <string name="explainer_super_dislike">Sembunyikan</string>
     <string name="explainer_ai_filter">Filter AI</string>
     <string name="explainer_like">Suka</string>
     <string name="explainer_dislike">Tidak suka</string>
     <string name="explainer_beats">mengalahkan</string>
     <string name="explainer_example1_header">Satu suka mengalahkan berapa pun jumlah tidak suka</string>
     <string name="explainer_example1_result">Artikel ditampilkan dalam tampilan Fokus</string>
-    <string name="explainer_example2_header">Satu Sangat Tidak Suka mengalahkan semuanya</string>
+    <string name="explainer_example2_header">Sembunyikan mengesampingkan semuanya, bahkan Suka</string>
     <string name="explainer_example2_result">Artikel selalu disembunyikan</string>
-    <string name="explainer_example3_header">Filter AI mengesampingkan Suka dan Tidak suka, tetapi tidak Sangat Tidak Suka</string>
+    <string name="explainer_example3_header">Filter AI mengesampingkan Suka dan Tidak suka, tetapi tidak Sembunyikan</string>
     <string name="trainer_question_story">Apa yang Anda 👍 %1$s dan 👎 %2$s tentang artikel ini?</string>
     <string name="trainer_question_site">Apa yang Anda 👍 %1$s dan 👎 %2$s tentang situs ini?</string>
     <string name="trainer_question_like">suka</string>
@@ -753,6 +753,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="trainer_regex_valid">✓ Valid</string>
     <string name="trainer_regex_matches_story">✓ Cocok dengan artikel</string>
     <string name="trainer_regex_no_match">Tidak ada kecocokan dalam artikel</string>
+    <string name="trainer_regex_not_checked">Tidak dapat memeriksa artikel</string>
     <string name="trainer_regex_invalid">Tidak valid: %1$s</string>
     <string name="trainer_regex_invalid_pattern">Pola tidak valid</string>
     <string name="trainer_regex_requires_pro">Regex memerlukan Premium Pro</string>
@@ -1406,9 +1407,14 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="listen_style_summary">Melebih-lebihkan gaya suara</string>
     <string name="listen_speaker_boost_summary">Suara yang lebih jernih dan dekat</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">Sisa %1$d menit bulan ini</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d jam</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d menit</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Sisa %1$s minggu ini</string>
     <string name="listen_resets_on">Diatur ulang %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">Sisa %1$d pratinjau artikel gratis hari ini</item>
@@ -1430,5 +1436,6 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_listen_voices_summary">Pilih suara untuk setiap bahasa dan cara membacakannya</string>
     <string name="settings_listen_delivery">Penyampaian</string>
     <string name="settings_listen_speed">Kecepatan pemutaran</string>
-    <string name="archive_listen">Dengarkan artikel dibacakan</string>
+    <string name="archive_listen">Dengarkan artikel yang dibacakan hingga 1 jam per minggu</string>
+    <string name="pro_listen">Dengarkan artikel yang dibacakan hingga 10 jam per minggu</string>
 </resources>

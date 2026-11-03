@@ -744,17 +744,17 @@
     <string name="intel_author_header">كتّاب القصص</string>
     <string name="feed_intel_author_header">الكتّاب</string>
     <string name="intel_feed_header">كل ما ينشره الناشر</string>
-    <string name="intel_super_dislike">لا يعجبني إطلاقًا</string>
-    <string name="explainer_super_dislike">عدم إعجاب شديد</string>
+    <string name="intel_super_dislike">إخفاء القصص المطابقة</string>
+    <string name="explainer_super_dislike">إخفاء</string>
     <string name="explainer_ai_filter">فلتر الذكاء الاصطناعي</string>
     <string name="explainer_like">أعجبني</string>
     <string name="explainer_dislike">لا يعجبني</string>
     <string name="explainer_beats">يتغلّب على</string>
     <string name="explainer_example1_header">إعجاب واحد يتغلب على أي عدد من حالات عدم الإعجاب</string>
     <string name="explainer_example1_result">تظهر القصة في عرض التركيز</string>
-    <string name="explainer_example2_header">عدم إعجاب شديد واحد يتغلّب على كل شيء</string>
+    <string name="explainer_example2_header">«إخفاء» يتفوّق على كل شيء، حتى الإعجابات</string>
     <string name="explainer_example2_result">تُخفى القصة دائمًا</string>
-    <string name="explainer_example3_header">يتجاوز فلتر الذكاء الاصطناعي الإعجابات وعدم الإعجاب، لكنه لا يتجاوز حالة لا يعجبني إطلاقًا</string>
+    <string name="explainer_example3_header">يتجاوز فلتر الذكاء الاصطناعي الإعجاب وعدم الإعجاب، لكنه لا يتجاوز الإخفاء</string>
     <string name="trainer_question_story">ما الذي يعجبك 👍 %1$s ولا يعجبك 👎 %2$s في هذه القصة؟</string>
     <string name="trainer_question_site">ما الذي يعجبك 👍 %1$s ولا يعجبك 👎 %2$s في هذا الموقع؟</string>
     <string name="trainer_question_like">أعجبني</string>
@@ -793,6 +793,7 @@
     <string name="trainer_regex_valid">✓ صالح</string>
     <string name="trainer_regex_matches_story">✓ يطابق القصة</string>
     <string name="trainer_regex_no_match">لا تطابق في القصة</string>
+    <string name="trainer_regex_not_checked">تعذّر التحقق من القصة</string>
     <string name="trainer_regex_invalid">غير صالح: %1$s</string>
     <string name="trainer_regex_invalid_pattern">نمط غير صالح</string>
     <string name="trainer_regex_requires_pro">يتطلب التعبير النمطي Premium Pro</string>
@@ -1546,14 +1547,24 @@
     <string name="listen_style_summary">يبالغ في أسلوب الصوت</string>
     <string name="listen_speaker_boost_summary">صوت أوضح وأقرب</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="few">تبقّت %1$d دقائق هذا الشهر</item>
-        <item quantity="many">تبقّى %1$d دقيقة هذا الشهر</item>
-        <item quantity="one">يتبقى %1$d دقيقة هذا الشهر</item>
-        <item quantity="other">تبقّت %1$d دقائق هذا الشهر</item>
-        <item quantity="two">تبقّى %1$d دقيقة هذا الشهر</item>
-        <item quantity="zero">تبقّى %1$d دقيقة هذا الشهر</item>
+    <plurals name="listen_hours">
+        <item quantity="few">%1$d ساعات</item>
+        <item quantity="many">%1$d ساعة</item>
+        <item quantity="one">%1$d ساعة</item>
+        <item quantity="other">%1$d ساعة</item>
+        <item quantity="two">%1$d ساعتان</item>
+        <item quantity="zero">%1$d ساعة</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="few">%1$d دقائق</item>
+        <item quantity="many">%1$d دقيقة</item>
+        <item quantity="one">%1$d دقيقة</item>
+        <item quantity="other">%1$d دقيقة</item>
+        <item quantity="two">%1$d دقيقة</item>
+        <item quantity="zero">%1$d دقيقة</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">%1$s متبقٍ هذا الأسبوع</string>
     <string name="listen_resets_on">تُعاد الضبط في %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">تبقّى %1$d معاينات مجانية للقصص اليوم</item>
@@ -1585,5 +1596,6 @@
     <string name="settings_listen_voices_summary">اختر صوتًا لكل لغة وطريقة قراءته</string>
     <string name="settings_listen_delivery">طريقة العرض</string>
     <string name="settings_listen_speed">سرعة التشغيل</string>
-    <string name="archive_listen">الاستماع إلى القصص بصوت عالٍ</string>
+    <string name="archive_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا</string>
+    <string name="pro_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا</string>
 </resources>

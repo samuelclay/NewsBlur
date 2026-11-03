@@ -712,17 +712,17 @@
     <string name="intel_author_header">लेख के लेखक</string>
     <string name="feed_intel_author_header">लेखक</string>
     <string name="intel_feed_header">प्रकाशक की सभी सामग्री</string>
-    <string name="intel_super_dislike">बहुत नापसंद</string>
-    <string name="explainer_super_dislike">सुपर नापसंद</string>
+    <string name="intel_super_dislike">मेल खाते लेख छिपाएँ</string>
+    <string name="explainer_super_dislike">छिपाएँ</string>
     <string name="explainer_ai_filter">AI फ़िल्टर</string>
     <string name="explainer_like">पसंद करें</string>
     <string name="explainer_dislike">नापसंद</string>
     <string name="explainer_beats">&gt;</string>
     <string name="explainer_example1_header">एक पसंद कितनी भी नापसंद पर भारी पड़ती है</string>
     <string name="explainer_example1_result">लेख फ़ोकस दृश्य में दिखाई देता है</string>
-    <string name="explainer_example2_header">एक सुपर नापसंद बाकी सब पर भारी पड़ता है</string>
+    <string name="explainer_example2_header">“छिपाएँ” सब पर भारी पड़ता है, पसंद पर भी</string>
     <string name="explainer_example2_result">लेख हमेशा छिपा रहता है</string>
-    <string name="explainer_example3_header">AI फ़िल्टर पसंद और नापसंद को दरकिनार करता है, लेकिन सुपर नापसंद को नहीं</string>
+    <string name="explainer_example3_header">एक AI फ़िल्टर पसंद और नापसंद को ओवरराइड करता है, लेकिन छिपाने को नहीं</string>
     <string name="trainer_question_story">आपको इस लेख के बारे में क्या 👍 %1$s पसंद है और क्या 👎 %2$s नापसंद है?</string>
     <string name="trainer_question_site">आपको इस साइट के बारे में क्या 👍 %1$s पसंद है और क्या 👎 %2$s नापसंद है?</string>
     <string name="trainer_question_like">पसंद</string>
@@ -761,6 +761,7 @@
     <string name="trainer_regex_valid">✓ मान्य</string>
     <string name="trainer_regex_matches_story">✓ लेख से मेल खाता है</string>
     <string name="trainer_regex_no_match">लेख में कोई मेल नहीं</string>
+    <string name="trainer_regex_not_checked">लेख की जाँच नहीं हो सकी</string>
     <string name="trainer_regex_invalid">अमान्य: %1$s</string>
     <string name="trainer_regex_invalid_pattern">अमान्य पैटर्न</string>
     <string name="trainer_regex_requires_pro">रेगेक्स के लिए Premium Pro आवश्यक है</string>
@@ -1434,10 +1435,16 @@
     <string name="listen_style_summary">आवाज़ की शैली को बढ़ा-चढ़ाकर प्रस्तुत करता है</string>
     <string name="listen_speaker_boost_summary">अधिक स्पष्ट और पास की आवाज़</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="one">इस महीने %1$d मिनट बाकी</item>
-        <item quantity="other">इस महीने %1$d मिनट बाकी</item>
+    <plurals name="listen_hours">
+        <item quantity="one">%1$d घंटा</item>
+        <item quantity="other">%1$d घंटे</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="one">%1$d मिनट</item>
+        <item quantity="other">%1$d मिनट</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">इस सप्ताह सुनने का %1$s समय शेष</string>
     <string name="listen_resets_on">%1$s को रीसेट होगा</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">आज %1$d मुफ़्त लेख पूर्वावलोकन बाकी</item>
@@ -1461,5 +1468,6 @@
     <string name="settings_listen_voices_summary">हर भाषा के लिए आवाज़ चुनें और तय करें कि वह कैसे पढ़े</string>
     <string name="settings_listen_delivery">डिलीवरी</string>
     <string name="settings_listen_speed">प्लेबैक गति</string>
-    <string name="archive_listen">लेखों को ज़ोर से पढ़कर सुनें</string>
+    <string name="archive_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें</string>
+    <string name="pro_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें</string>
 </resources>

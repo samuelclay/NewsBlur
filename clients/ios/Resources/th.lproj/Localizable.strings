@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "โฟลเดอร์ %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "โฟลเดอร์ %1$@ ยุบอยู่ %2$@";
 "%1$@ followed %2$@." = "%1$@ ติดตาม %2$@";
-"%1$@ of %2$@ of listening left this month" = "เหลือเวลาฟังเดือนนี้ %1$@ จาก %2$@";
+"%1$@ of %2$@ of listening left this week" = "สัปดาห์นี้เหลือเวลาฟัง %1$@ จาก %2$@";
 "%1$@ of %2$@ sites indexed" = "จัดทำดัชนีแล้ว %1$@ จาก %2$@ เว็บไซต์";
 "%1$@ of %2$@ story previews used today" = "ใช้ตัวอย่างบทความไปแล้ว %1$@ จาก %2$@ รายการในวันนี้";
 "%1$@ on all sites (%2$@)" = "%1$@ ในทุกเว็บไซต์ (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "ตัวกรองรูปภาพ %@ รายการ";
 "%@ is now following you." = "%@ กำลังติดตามคุณแล้ว";
 "%@ left in this preview" = "เหลือ %@ ในตัวอย่างนี้";
+"%@ left this week" = "เหลือ %@ ในสัปดาห์นี้";
 "%@ match" = "ตรงกัน %@ รายการ";
-"%@ minutes left this month" = "เหลือเวลาอีก %@ นาทีในเดือนนี้";
 "%@ opens" = "เปิด %@ ครั้ง";
 "%@ or search" = "%@ หรือค้นหา";
 "%@ public comments" = "%@ ความคิดเห็นสาธารณะ";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "มีบัญชีอยู่แล้วใช่ไหม? เข้าสู่ระบบ";
 "Already have feeds?" = "มีฟีดอยู่แล้วใช่ไหม";
 "Also published by %@ sites" = "เผยแพร่โดยเว็บไซต์อื่นอีก %@ แห่ง";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "ตัวกรอง AI มีผลเหนือการกดชอบและไม่ชอบ แต่ไม่มีผลเหนือการไม่ชอบอย่างยิ่ง";
+"An AI filter overrides likes and dislikes, but not Hide" = "ตัวกรอง AI มีผลเหนือการชอบและไม่ชอบ แต่ไม่เหนือการซ่อน";
 "Analyze" = "วิเคราะห์";
 "Analyzing images..." = "กำลังวิเคราะห์รูปภาพ...";
 "App Badge" = "ป้ายแอป";
@@ -262,6 +262,7 @@
 "Coral Rose" = "ชมพูกุหลาบปะการัง";
 "Could not completely clear the cache. Please try again." = "ล้างแคชได้ไม่หมด โปรดลองอีกครั้ง";
 "Could not save your language. Please try again." = "บันทึกภาษาของคุณไม่ได้ โปรดลองอีกครั้ง";
+"Couldn't check story" = "ตรวจสอบบทความไม่ได้";
 "Couldn't load usage billing history." = "โหลดประวัติการเรียกเก็บเงินตามการใช้งานไม่ได้";
 "Couldn't open billing. Please try again." = "เปิดหน้าการเรียกเก็บเงินไม่ได้ โปรดลองอีกครั้ง";
 "Couldn't reach NewsBlur. Check your connection and try again." = "เชื่อมต่อ NewsBlur ไม่ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง";
@@ -458,6 +459,8 @@
 "Hide Changes" = "ซ่อนการเปลี่ยนแปลง";
 "Hide Sidebar" = "ซ่อนแถบด้านข้าง";
 "Hide Story Titles" = "ซ่อนชื่อเรื่อง";
+"Hide [training level]" = "ซ่อน";
+"Hide beats any number of likes:" = "“ซ่อน” มีน้ำหนักมากกว่าการกดชอบจำนวนเท่าใดก็ได้:";
 "Hide hidden stories" = "ซ่อนบทความที่ซ่อนไว้";
 "Hide status bar" = "ซ่อนแถบสถานะ";
 "Hide toolbars when reading" = "ซ่อนแถบเครื่องมือขณะอ่าน";
@@ -522,7 +525,8 @@
 "List style" = "รูปแบบรายการ";
 "Listen" = "ฟัง";
 "Listen Settings" = "การตั้งค่าการฟัง";
-"Listen to stories read aloud" = "ฟังบทความที่อ่านออกเสียง";
+"Listen to 1 hour of stories read aloud a week" = "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์";
+"Listen to 10 hours of stories read aloud a week" = "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์";
 "Listen to story" = "ฟังบทความ";
 "Listening isn't available right now." = "ยังไม่สามารถฟังได้ในขณะนี้";
 "Loading Google News topics..." = "กำลังโหลดหัวข้อ Google News...";
@@ -1038,8 +1042,7 @@
 "Story count" = "จำนวนบทความ";
 "Story detail" = "รายละเอียดบทความ";
 "Story image" = "รูปภาพของบทความ";
-"Story is always hidden" = "ซ่อนบทความนี้เสมอ";
-"Story is hidden (super dislike wins)" = "บทความถูกซ่อน (ไม่ชอบอย่างยิ่งมีผลเหนือกว่า)";
+"Story is always hidden" = "บทความจะถูกซ่อนเสมอ";
 "Story is shown (like wins)" = "บทความจะแสดง (ชอบมีผลเหนือกว่า)";
 "Story language" = "ภาษาของบทความ";
 "Story list toolbar position" = "ตำแหน่งแถบเครื่องมือรายการบทความ";
@@ -1063,8 +1066,6 @@
 "Summarize" = "สรุป";
 "Sunday" = "วันอาทิตย์";
 "Sunrise Gold" = "ทองอรุณรุ่ง";
-"Super dislike" = "ไม่ชอบอย่างมาก";
-"Super dislike beats any number of likes:" = "ไม่ชอบอย่างมากมีน้ำหนักมากกว่าการกดถูกใจจำนวนเท่าใดก็ได้:";
 "Support Forum" = "ฟอรัมช่วยเหลือ";
 "Swipe from left edge" = "ปัดจากขอบซ้าย";
 "Swipe from the left edge while reading" = "ปัดจากขอบซ้ายขณะอ่าน";

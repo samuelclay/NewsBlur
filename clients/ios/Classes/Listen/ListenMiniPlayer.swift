@@ -284,9 +284,11 @@ private final class ListenMiniPlayerContainerView: UIView {
     }
 }
 
-/// The mini player bar: feed icon, story title, feed and status, play/pause and close (ListenMiniPlayer.swift).
+/// The mini player bar: feed icon, story title, feed and status, play/pause, next story and close (ListenMiniPlayer.swift).
 struct ListenMiniPlayerBar: View {
     @ObservedObject private var player = ListenPlayer.shared
+    /// ListenMiniPlayer.swift: Next story depends on Up Next too, so the bar redraws when the queue changes.
+    @ObservedObject private var queue = ListenQueue.shared
     @ObservedObject private var theme = ListenThemeObserver.shared
     let onOpen: () -> Void
 
@@ -313,19 +315,36 @@ struct ListenMiniPlayerBar: View {
             .accessibilityAddTraits(.isButton)
             .accessibilityHint(NBLocalization.text("Opens Now Playing"))
 
-            ListenPlayPauseButton(size: 34, filled: false)
+            HStack(spacing: 2) {
+                ListenPlayPauseButton(size: 34, filled: false)
 
-            Button {
-                player.stop()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(ListenColors.textSecondary)
-                    .frame(width: 30, height: 34)
-                    .contentShape(Rectangle())
+                // ListenMiniPlayer.swift: the first story in Up Next, else the next one in the list being read.
+                Button {
+                    player.playNextStory()
+                } label: {
+                    Image(systemName: "forward.end.fill")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(player.hasNextStory ? ListenColors.textPrimary : ListenColors.textSecondary.opacity(0.4))
+                        .frame(width: 30, height: 34)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(!player.hasNextStory)
+                .accessibilityLabel(NBLocalization.text("Next story"))
+                .accessibilityIdentifier("listen-next-story")
+
+                Button {
+                    player.stop()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(ListenColors.textSecondary)
+                        .frame(width: 30, height: 34)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(NBLocalization.text("Stop listening"))
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NBLocalization.text("Stop listening"))
         }
         .padding(.leading, 12)
         .padding(.trailing, 6)

@@ -1,6 +1,57 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-29T23:04:22-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-29T23:20:24-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android</title><link href="https://blog.newsblur.com/2026/10/30/listen-to-your-stories/" rel="alternate" type="text/html" title="Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android" /><published>2026-10-30T03:00:00-04:00</published><updated>2026-10-30T03:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/30/listen-to-your-stories</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/30/listen-to-your-stories/"><![CDATA[<p>Every story in NewsBlur now has a Listen button. Press it and NewsBlur reads the story to you, starting with the headline and going paragraph by paragraph, highlighting each one as it goes. When the story ends, the next one starts. It works on the web, iPhone, iPad, Mac, and Android starting today, and it can read stories in all 21 languages NewsBlur speaks.</p>
+</subtitle><entry><title type="html">Type a classifier straight into the trainer</title><link href="https://blog.newsblur.com/2026/11/01/type-a-classifier-into-the-trainer/" rel="alternate" type="text/html" title="Type a classifier straight into the trainer" /><published>2026-11-01T12:00:00-05:00</published><updated>2026-11-01T12:00:00-05:00</updated><id>https://blog.newsblur.com/2026/11/01/type-a-classifier-into-the-trainer</id><content type="html" xml:base="https://blog.newsblur.com/2026/11/01/type-a-classifier-into-the-trainer/"><![CDATA[<p>The Intelligence Trainer has always worked from whatever is in front of you. You find a tag, an author, or a phrase on a story, and you train it from there. That’s fine when the story is right there, but someone on the forum <a href="https://forum.newsblur.com/t/global-classifiers-input-button/13907">asked a fair question</a>: what if you already know what you want? You’d like every title with “sponsored” in it hidden across all of your sites, and you’d rather not wait for one to show up first. There was no way to do that. Now there is.</p>
+
+<h3 id="add-a-classifier">Add a classifier</h3>
+
+<p>Open the Intelligence Trainer and switch to <strong>Manage Training</strong>. There’s a new panel at the top. Pick what to match (title, author, tag, text, or URL), type the phrase, choose where it applies, pick Like, Dislike, or Hide, and press <strong>Add</strong>. It saves right away, the new classifier lights up in its section below, and the field clears so you can type the next one.</p>
+
+<p><img src="/assets/add-classifier-panel.png" alt="The Add a classifier panel at the top of Manage Training, set to like the tag rust in the Code folder" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Enter in the phrase field does the same thing as Add, and the little ↵ on the button reminds you while you type. Your choices stick between adds, so putting a dozen tags into the same folder is just type, Enter, type, Enter.</p>
+
+<p>The same panel sits at the top of the site and story trainers, and on every Site by Site page. There it starts on the site you’re training, or on the folder you were reading if you opened the trainer from a folder. The new classifier shows up trained in its section right away, and the stories behind the dialog are rescored before you even close it.</p>
+
+<h3 id="where-it-applies">Where it applies</h3>
+
+<p><strong>Applies to</strong> sets the scope: one site, a folder, or all of your sites. It’s a new picker rather than a plain dropdown, so it shows your custom folder icons and each site’s favicon, and it has a search box at the top. With a few hundred subscriptions, typing three letters beats scrolling. While you search, nested folders show the folder they live in, so two folders called “Podcasts” don’t look identical.</p>
+
+<p><img src="/assets/add-classifier-scope-picker.png" alt="The Applies to picker open, listing folders with their custom icons and a search box at the top" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The rules are the same as everywhere else in the trainer. A single site works on every account. Folders and all sites need Premium Archive, and so do text classifiers. URL classifiers need Premium, and regex needs Premium Pro. If you pick something your account doesn’t include, the panel tells you and links to the upgrade instead of letting you save a classifier that won’t do anything.</p>
+
+<h3 id="regex">Regex</h3>
+
+<p>Title, author, text, and URL classifiers can be regular expressions. Click the <strong>.*</strong> at the end of the field to turn it on. The field gets a purple outline and a REGEX badge, the text switches to monospace, and the placeholder changes to an example for that type, so you always know which mode you’re in. Hover the <strong>.*</strong> and the same regex cheat sheet from the story trainer opens right there. A pattern that doesn’t compile is caught before it can be saved.</p>
+
+<p><img src="/assets/add-classifier-regex.png" alt="Regex mode in the add panel, hiding titles that start with [Sponsored], with the regex cheat sheet open below" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="super-dislike-is-now-hide">Super Dislike is now Hide</h3>
+
+<p>The third training level has been called Super Dislike since it launched, and I never loved the name. It says how strongly you feel, not what it does. What it does is hide the story, every time, even when the story also matches something you like. So it’s called <strong>Hide</strong> now, everywhere: on the web, on iOS and Mac, and on Android. Nothing about how it works has changed, and every super dislike you already have is a Hide.</p>
+
+<p>If you ever forget how the three fit together, there’s an ⓘ next to them in the panel that lays it out with a couple of examples.</p>
+
+<p><img src="/assets/add-classifier-opinions.png" alt="The explainer next to Like, Dislike, and Hide, describing each one and showing that Hide overrides everything, even likes" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="the-same-picker-everywhere">The same picker, everywhere</h3>
+
+<p>Once the scope picker existed, the plain folder dropdowns all over NewsBlur looked pretty sad next to it. So every folder chooser and every folder and site chooser on the web uses it now: adding a site, Add + Discover, the statistics, site settings, and notifications dialogs, Organize Sites, the default folder in Preferences, dashboard rivers, and the Daily Briefing. They all get the icons, the search, and the keyboard. Arrow keys, Enter, and Escape work the way you’d expect, or just start typing.</p>
+
+<p><img src="/assets/folder-picker-add-site.png" alt="Adding a site, with the folder picker open and filtered to folders matching bl" style="width: 70%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-few-fixes-along-the-way">A few fixes along the way</h3>
+
+<ul>
+  <li><strong>Back to trainer</strong> from a matching stories list now takes you back to exactly where you were: the same tab, the same filters, any changes you hadn’t saved yet, and scrolled to the same classifier. It used to drop you on Site by Site every time.</li>
+  <li>The <strong>View matching stories</strong> button sits next to the classifier it belongs to instead of leaning toward the next one, and its tooltip no longer hangs around after you click it.</li>
+  <li>In the matching stories banner, Back to trainer no longer squeezes the Train and Notify on controls on a narrow story list.</li>
+  <li>Jump to folder in Organize Sites actually jumps to the folder.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>Typing classifiers into Manage Training and the new folder and site picker are available now on the web. Hide is on the web now and comes to iOS, Mac, and Android with their next updates. Thanks to the forum for the nudge on this one. If there’s a classifier you want to type in that the panel can’t handle yet, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[The Intelligence Trainer has always worked from whatever is in front of you. You find a tag, an author, or a phrase on a story, and you train it from there. That’s fine when the story is right there, but someone on the forum asked a fair question: what if you already know what you want? You’d like every title with “sponsored” in it hidden across all of your sites, and you’d rather not wait for one to show up first. There was no way to do that. Now there is.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/add-classifier-panel.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/add-classifier-panel.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android</title><link href="https://blog.newsblur.com/2026/10/30/listen-to-your-stories/" rel="alternate" type="text/html" title="Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android" /><published>2026-10-30T03:00:00-04:00</published><updated>2026-10-30T03:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/30/listen-to-your-stories</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/30/listen-to-your-stories/"><![CDATA[<p>Every story in NewsBlur now has a Listen button. Press it and NewsBlur reads the story to you, starting with the headline and going paragraph by paragraph, highlighting each one as it goes. When the story ends, the next one starts. It works on the web, iPhone, iPad, Mac, and Android starting today, and it can read stories in all 21 languages NewsBlur speaks.</p>
 
 <p>Here’s Jon, the default English voice, reading that paragraph:</p>
 
@@ -259,59 +310,7 @@ A new sound of an old instrument.
 
 <p>If you read NewsBlur in one of these languages, I’d love your help. If a button reads awkwardly, a term sounds wrong, or a phrase doesn’t fit, tell me on the <a href="https://forum.newsblur.com">NewsBlur forum</a>. Mention the language, where you saw it, and what it should say, and I’ll get it fixed.</p>
 
-<p>Native language support is available now on the web and coming in the next iOS and Android updates.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Since 2009, NewsBlur has only spoken English. Plenty of you read feeds in other languages every day, and you’ve still had to find your way around the reader in English. Starting today, NewsBlur’s interface is available in 21 languages on the web, iOS, and Android. Menus, buttons, settings, dialogs, and the first-time setup all appear in your language, picked up automatically from your browser or phone.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Sign in with Apple or Google on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/" rel="alternate" type="text/html" title="Sign in with Apple or Google on the web, iOS, and Android" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/"><![CDATA[<p>NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.</p>
-
-<h3 id="apple-and-google-sign-in-on-the-web">Apple and Google sign-in on the web</h3>
-
-<p>The welcome page, login page, and signup page now have Apple and Google buttons above the usual username and password fields. Choose either provider to sign in or create a NewsBlur account. For a new account, you’ll choose a NewsBlur username so you still have your own name when sharing stories and commenting.</p>
-
-<p><img src="/assets/apple-google-web-signin.png" alt="NewsBlur's welcome page with Sign in with Apple and Sign in with Google above the password form" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>If you already have a NewsBlur account, you can connect it instead of starting over. Choose <strong>Connect an existing account</strong> and enter your NewsBlur username and password. If you try to create an account with a username that’s already taken, NewsBlur brings you to that connection step and explains what to do.</p>
-
-<p>You only need to confirm your NewsBlur password when making that connection. Afterward, the Apple or Google button takes you back to the same feeds, saved stories, and subscription.</p>
-
-<h3 id="different-email-addresses-one-newsblur-account">Different email addresses, one NewsBlur account</h3>
-
-<p>Your Apple email doesn’t have to match your Google email, and neither has to match your NewsBlur email. You can connect a personal Apple account and a work Google account to the same NewsBlur username. Connecting them leaves your NewsBlur email address unchanged.</p>
-
-<p>Open <strong>Manage &gt; Account</strong> on the web and look under your email address. The new <strong>Connected accounts</strong> section lists each connected Apple or Google account and its email. Use <strong>Connect Apple</strong> or <strong>Connect Google</strong> to add another, or the little × beside a connection to remove it.</p>
-
-<p><img src="/assets/apple-google-connected-accounts.png" alt="NewsBlur Account settings listing connected Apple and Google email addresses, connection buttons, and disconnect controls" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>An Apple or Google account can belong to one NewsBlur account at a time. To move it, disconnect it from the old account first. NewsBlur also makes sure you keep a way to sign in before removing your last connection.</p>
-
-<h3 id="sign-in-on-ios">Sign in on iOS</h3>
-
-<p>The iPhone and iPad apps get the same Apple and Google sign-in choices. You can also create an account with an email, username, and password right on the welcome screen.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--iphone-17">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <img src="/assets/ios-ftux-signin.png" alt="NewsBlur on iPhone with Apple, Google, and password sign-in" loading="lazy" />
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="sign-in-on-android">Sign in on Android</h3>
-
-<p>Android gets both provider buttons as well, including Sign in with Apple. The account connection works across platforms: connect a provider on the web and use it to sign into that same NewsBlur account on your phone.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <img src="/assets/android-ftux-signin.png" alt="NewsBlur on a Samsung Galaxy phone with Apple, Google, and password sign-in" loading="lazy" />
-      
-    </div>
-  </div>
-</figure>
-
-<p>For new readers, both mobile apps also have a <a href="/2026/10/11/new-first-time-experience-ios-android/">new first-time experience</a> that helps you choose your first feeds and get reading.</p>
-
-<p>Apple and Google sign-in are available now on the web and coming in the next iOS and Android updates. If you have feedback, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A new first-time experience on iOS and Android: find your first feeds</title><link href="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/" rel="alternate" type="text/html" title="A new first-time experience on iOS and Android: find your first feeds" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/"><![CDATA[<p>An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.</p>
+<p>Native language support is available now on the web and coming in the next iOS and Android updates.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Since 2009, NewsBlur has only spoken English. Plenty of you read feeds in other languages every day, and you’ve still had to find your way around the reader in English. Starting today, NewsBlur’s interface is available in 21 languages on the web, iOS, and Android. Menus, buttons, settings, dialogs, and the first-time setup all appear in your language, picked up automatically from your browser or phone.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A new first-time experience on iOS and Android: find your first feeds</title><link href="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/" rel="alternate" type="text/html" title="A new first-time experience on iOS and Android: find your first feeds" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/"><![CDATA[<p>An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.</p>
 
 <p>I’ve rebuilt the first-time experience on iOS and Android around exploring interests, previewing feeds, and choosing what goes into your reader. You can put together a few folders of things you care about, or bring your existing collection from another app with an OPML import.</p>
 
@@ -377,7 +376,59 @@ A new sound of an old instrument.
 
 <p>You don’t need a new account to use the bundles. Existing readers can open <strong>Import or upload sites</strong> from the iOS menu or <strong>Import and feed bundles</strong> from the Android menu. It’s a way to explore a new interest whenever you want to add something to your reading.</p>
 
-<p>The new setup experience is coming in the next iOS and Android updates, alongside <a href="/2026/10/11/sign-in-with-apple-and-google/">Sign in with Apple and Google</a>. I’d love to hear how the first few minutes feel, whether you’re starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.]]></summary></entry><entry><title type="html">NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-android/" rel="alternate" type="text/html" title="NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-android/"><![CDATA[<p>I spent a lot of this release optimizing speed in the Android app. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at. Then I kept going.</p>
+<p>The new setup experience is coming in the next iOS and Android updates, alongside <a href="/2026/10/11/sign-in-with-apple-and-google/">Sign in with Apple and Google</a>. I’d love to hear how the first few minutes feel, whether you’re starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.]]></summary></entry><entry><title type="html">Sign in with Apple or Google on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/" rel="alternate" type="text/html" title="Sign in with Apple or Google on the web, iOS, and Android" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/"><![CDATA[<p>NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.</p>
+
+<h3 id="apple-and-google-sign-in-on-the-web">Apple and Google sign-in on the web</h3>
+
+<p>The welcome page, login page, and signup page now have Apple and Google buttons above the usual username and password fields. Choose either provider to sign in or create a NewsBlur account. For a new account, you’ll choose a NewsBlur username so you still have your own name when sharing stories and commenting.</p>
+
+<p><img src="/assets/apple-google-web-signin.png" alt="NewsBlur's welcome page with Sign in with Apple and Sign in with Google above the password form" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>If you already have a NewsBlur account, you can connect it instead of starting over. Choose <strong>Connect an existing account</strong> and enter your NewsBlur username and password. If you try to create an account with a username that’s already taken, NewsBlur brings you to that connection step and explains what to do.</p>
+
+<p>You only need to confirm your NewsBlur password when making that connection. Afterward, the Apple or Google button takes you back to the same feeds, saved stories, and subscription.</p>
+
+<h3 id="different-email-addresses-one-newsblur-account">Different email addresses, one NewsBlur account</h3>
+
+<p>Your Apple email doesn’t have to match your Google email, and neither has to match your NewsBlur email. You can connect a personal Apple account and a work Google account to the same NewsBlur username. Connecting them leaves your NewsBlur email address unchanged.</p>
+
+<p>Open <strong>Manage &gt; Account</strong> on the web and look under your email address. The new <strong>Connected accounts</strong> section lists each connected Apple or Google account and its email. Use <strong>Connect Apple</strong> or <strong>Connect Google</strong> to add another, or the little × beside a connection to remove it.</p>
+
+<p><img src="/assets/apple-google-connected-accounts.png" alt="NewsBlur Account settings listing connected Apple and Google email addresses, connection buttons, and disconnect controls" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>An Apple or Google account can belong to one NewsBlur account at a time. To move it, disconnect it from the old account first. NewsBlur also makes sure you keep a way to sign in before removing your last connection.</p>
+
+<h3 id="sign-in-on-ios">Sign in on iOS</h3>
+
+<p>The iPhone and iPad apps get the same Apple and Google sign-in choices. You can also create an account with an email, username, and password right on the welcome screen.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/ios-ftux-signin.png" alt="NewsBlur on iPhone with Apple, Google, and password sign-in" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="sign-in-on-android">Sign in on Android</h3>
+
+<p>Android gets both provider buttons as well, including Sign in with Apple. The account connection works across platforms: connect a provider on the web and use it to sign into that same NewsBlur account on your phone.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-ftux-signin.png" alt="NewsBlur on a Samsung Galaxy phone with Apple, Google, and password sign-in" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>For new readers, both mobile apps also have a <a href="/2026/10/11/new-first-time-experience-ios-android/">new first-time experience</a> that helps you choose your first feeds and get reading.</p>
+
+<p>Apple and Google sign-in are available now on the web and coming in the next iOS and Android updates. If you have feedback, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-android/" rel="alternate" type="text/html" title="NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-android/"><![CDATA[<p>I spent a lot of this release optimizing speed in the Android app. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at. Then I kept going.</p>
 
 <h3 id="its-faster">It’s faster</h3>
 
@@ -675,46 +726,4 @@ A new sound of an old instrument.
 
 <p>Matching Stories is available now on the web for everyone. Site scope, training, and highlighting work on every account. Folder and All scopes and the Notify on controls follow the existing rules for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro.</p>
 
-<p>If you find a tag or author that should match and doesn’t, or have an idea for where else this button belongs, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[The Intelligence Trainer has always asked you to decide blind. You see a tag or an author on a story and you can train it up or down, but you can’t see what else that decision would touch. Is this author a regular on this site or a one-time guest? Does the “review” tag mean product reviews or book reviews? How many stories does “sponsored” actually hit? Until now the only way to find out was to train it and watch the scores change across the feed.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/matching-stories-pill.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/matching-stories-pill.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Good Reads and a redesigned Global Shared Stories</title><link href="https://blog.newsblur.com/2026/07/17/good-reads-and-a-redesigned-global-shared-stories/" rel="alternate" type="text/html" title="Good Reads and a redesigned Global Shared Stories" /><published>2026-07-17T00:00:00-04:00</published><updated>2026-07-17T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/07/17/good-reads-and-a-redesigned-global-shared-stories</id><content type="html" xml:base="https://blog.newsblur.com/2026/07/17/good-reads-and-a-redesigned-global-shared-stories/"><![CDATA[<p>I’m announcing two new global feeds: a redesigned Global Shared Stories and a new feed called Good Reads.</p>
-
-<h3 id="redesigned-global-shared-stories">Redesigned Global Shared Stories</h3>
-
-<p>Global Shared Stories has been in the sidebar for years, and for years it worked in a way I never liked. It was not the shares of everybody on NewsBlur. It was the shares of the accounts that the @popular account happened to follow, a list I put together by hand a long time ago and rarely touched. If you were on that list and you shared a lot, you decided what everybody else saw. If you shared one story a month and wrote a paragraph about why it mattered, you were drowned out by someone who shared thirty without a word.</p>
-
-<p>So I rebuilt it. Every hour, NewsBlur now gathers every story shared across the whole site in the last few hours, caps each person at three so nobody can flood the pool, drops private blurblogs, and then picks a few worth reading. The picks accumulate, so the river stays deep enough to scroll back through.</p>
-
-<!-- SCREENSHOT: Global Shared Stories feed open in the reader, showing the new explainer banner at the top of the story list -->
-<p><img src="/assets/global-shared-stories.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The picking is done by Claude Haiku, once an hour, and it is worth being precise about what it does and does not do. It does not go looking for stories. It does not write anything. It only ranks stories that NewsBlur readers already chose to share, and the thing it weighs most heavily is the comment the sharer wrote, because a share with a few sentences attached is a share somebody thought about. It is allowed to pick nothing at all in a quiet hour, and in testing it regularly passes on half of what it is offered. If the API is ever unreachable, a plain heuristic takes over and the river keeps flowing.</p>
-
-<h3 id="good-reads">Good Reads</h3>
-
-<p>The new feed in the sidebar is <strong>Good Reads</strong>, and it asks a question the other feeds do not: which stories did somebody finish and then do something about?</p>
-
-<p>A story lands in Good Reads when at least two people read it closely, thirty seconds or more, and at least one of them then saved it, shared it, or trained it up. Finishing is not enough. Somebody has to have bothered to act. On top of that, the score is tilted toward feeds with few subscribers, so a story from a site with forty readers can beat a story from a site with forty thousand. That tilt is the whole point. The big sites do not need help getting seen.</p>
-
-<!-- SCREENSHOT: Good Reads feed with several stories from small, unfamiliar sites -->
-<p><img src="/assets/good-reads.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="four-feeds-four-questions">Four feeds, four questions</h3>
-
-<p>There are now four curated rivers sitting together in the sidebar, and the reason there are four and not one is that they each answer a different question.</p>
-
-<p><img src="/assets/feed-icon-global-shares.svg" style="width: 18px;height: 18px;vertical-align: -3px;margin-right: 8px;" /> <strong>Global Shared Stories</strong> asks what people chose to hand to someone else. It runs on sharing, a deliberate human act.</p>
-
-<p><img src="/assets/feed-icon-blaze.svg" style="width: 18px;height: 18px;vertical-align: -3px;margin-right: 8px;" /> <strong>Widely Read Stories</strong> asks what held the most attention across NewsBlur. It runs on reading time, not clicks, so a headline nobody read cannot buy its way in.</p>
-
-<p><img src="/assets/feed-icon-moon.svg" style="width: 18px;height: 18px;vertical-align: -3px;margin-right: 8px;" /> <strong>Long Reads</strong> asks what was worth an afternoon. Features and essays that readers gave real time to, rather than skimmed.</p>
-
-<p><img src="/assets/feed-icon-star.svg" style="width: 18px;height: 18px;vertical-align: -3px;margin-right: 8px;" /> <strong>Good Reads</strong> asks what somebody finished and then kept, and leans toward the small sites you have probably never heard of.</p>
-
-<p>Widely Read Stories and Long Reads have been around since April, and I wrote about how they work <a href="/2026/04/05/widely-read-stories-and-long-reads/">when they launched</a>. None of the four ranks by clicks, and none of them is trying to keep you scrolling. They are all built out of what NewsBlur readers actually did with their time.</p>
-
-<p>Because it was never obvious from looking at them which was which, each of the four now explains itself in a line at the top of its story list. It scrolls away with the stories, so it is there when you arrive and gone once you are reading.</p>
-
-<p><img src="/assets/banner-widely-read.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Your classifiers still apply to all four. If you have trained a tag, an author, or a site, those green and red scores carry through, including on stories from feeds you do not subscribe to. And all four work as dashboard rivers, so you can park any of them next to your regular feeds.</p>
-
-<p>Good Reads and the rebuilt Global Shared Stories are available now on the web. If a story shows up in one of these feeds that clearly should not have, I want to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[I’m announcing two new global feeds: a redesigned Global Shared Stories and a new feed called Good Reads.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/global-shared-stories.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/global-shared-stories.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>If you find a tag or author that should match and doesn’t, or have an idea for where else this button belongs, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[The Intelligence Trainer has always asked you to decide blind. You see a tag or an author on a story and you can train it up or down, but you can’t see what else that decision would touch. Is this author a regular on this site or a one-time guest? Does the “review” tag mean product reviews or book reviews? How many stories does “sponsored” actually hit? Until now the only way to find out was to train it and watch the scores change across the feed.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/matching-stories-pill.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/matching-stories-pill.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

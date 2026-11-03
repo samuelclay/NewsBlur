@@ -112,15 +112,24 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Gostei / Não gostei / Detestei",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Gostei / Não gostei; Hide → Ocultar",
       "avoid": [
         "Curtir (paired with Não gostei)",
         "Superdescurtir",
         "Não gosto muito / Não gosto nem um pouco",
         "como (for the verb like)"
       ],
-      "note": "Dislike is consistently Não gostei in the catalog, so Like → Gostei completes the familiar YouTube-style pair; Super dislike → Detestei (it always hides). The trainer's 'beats' means Like outranks Dislike: vence / tem prioridade sobre. '(like wins)' → (Gostei prevalece). Words inserted into 'What do you %(like)s and %(dislike)s about this…' must read as conjugated verbs in that sentence (check each template)."
+      "note": "Dislike is consistently Não gostei in the catalog, so Like → Gostei completes the familiar YouTube-style pair; Hide is the level above Gostei (formerly Super dislike, then Detestei): Ocultar; it always hides. The trainer's 'beats' means Like outranks Dislike: vence / tem prioridade sobre. '(like wins)' → (Gostei prevalece). Words inserted into 'What do you %(like)s and %(dislike)s about this…' must read as conjugated verbs in that sentence (check each template)."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Ocultar",
+      "avoid": [
+        "Detestei"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (“Ocultar” se sobrepõe a tudo). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

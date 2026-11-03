@@ -522,7 +522,7 @@ struct ListenNowPlayingView: View {
         guard let usage = player.usage else { return nil }
         if usage.isArchiveTier, let limit = usage.secondsLimit {
             let remaining = usage.secondsRemaining ?? max(0, limit - usage.secondsUsed)
-            return String(format: NBLocalization.text("%1$@ of %2$@ of listening left this month"),
+            return String(format: NBLocalization.text("%1$@ of %2$@ of listening left this week"),
                           ListenFormat.allowance(remaining), ListenFormat.allowance(limit))
         }
         if let samplesLimit = usage.samplesLimit {

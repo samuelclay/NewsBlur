@@ -720,17 +720,17 @@ a personas para hablar del mundo.</string>
     <string name="intel_author_header">Autores de artículos</string>
     <string name="feed_intel_author_header">Autores</string>
     <string name="intel_feed_header">Todo del editor</string>
-    <string name="intel_super_dislike">No me gusta nada</string>
-    <string name="explainer_super_dislike">No me gusta nada</string>
+    <string name="intel_super_dislike">Ocultar artículos coincidentes</string>
+    <string name="explainer_super_dislike">Ocultar</string>
     <string name="explainer_ai_filter">Filtro de IA</string>
     <string name="explainer_like">Me gusta</string>
     <string name="explainer_dislike">No me gusta</string>
     <string name="explainer_beats">gana a</string>
     <string name="explainer_example1_header">Un solo «Me gusta» anula cualquier cantidad de «No me gusta»</string>
     <string name="explainer_example1_result">El artículo se muestra en la vista de Enfoque</string>
-    <string name="explainer_example2_header">Un solo «No me gusta nada» lo anula todo</string>
+    <string name="explainer_example2_header">«Ocultar» gana a todo, incluso a «Me gusta»</string>
     <string name="explainer_example2_result">El artículo siempre está oculto</string>
-    <string name="explainer_example3_header">Un filtro de IA tiene prioridad sobre Me gusta y No me gusta, pero no sobre No me gusta nada</string>
+    <string name="explainer_example3_header">Un filtro de IA prevalece sobre Me gusta y No me gusta, pero no sobre Ocultar</string>
     <string name="trainer_question_story">¿Qué te 👍 %1$s y 👎 %2$s de este artículo?</string>
     <string name="trainer_question_site">¿Qué te 👍 %1$s y 👎 %2$s de este sitio?</string>
     <string name="trainer_question_like">Me gusta</string>
@@ -769,6 +769,7 @@ a personas para hablar del mundo.</string>
     <string name="trainer_regex_valid">✓ Válido</string>
     <string name="trainer_regex_matches_story">✓ Coincide con el artículo</string>
     <string name="trainer_regex_no_match">No hay coincidencias en el artículo</string>
+    <string name="trainer_regex_not_checked">No se pudo comprobar el artículo</string>
     <string name="trainer_regex_invalid">No válido: %1$s</string>
     <string name="trainer_regex_invalid_pattern">Patrón no válido</string>
     <string name="trainer_regex_requires_pro">Las expresiones regulares requieren Premium Pro</string>
@@ -1462,11 +1463,18 @@ a personas para hablar del mundo.</string>
     <string name="listen_style_summary">Exagera el estilo de la voz</string>
     <string name="listen_speaker_boost_summary">Un sonido más claro y cercano</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="many">Quedan %1$d minutos este mes</item>
-        <item quantity="one">Queda %1$d minuto este mes</item>
-        <item quantity="other">Quedan %1$d minutos este mes</item>
+    <plurals name="listen_hours">
+        <item quantity="many">%1$d horas</item>
+        <item quantity="one">%1$d hora</item>
+        <item quantity="other">%1$d horas</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="many">%1$d minutos</item>
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minutos</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Te queda %1$s esta semana</string>
     <string name="listen_resets_on">Se restablece %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="many">Quedan %1$d vistas previas gratuitas de artículos hoy</item>
@@ -1492,5 +1500,6 @@ a personas para hablar del mundo.</string>
     <string name="settings_listen_voices_summary">Elige una voz para cada idioma y cómo lo lee</string>
     <string name="settings_listen_delivery">Reproducción</string>
     <string name="settings_listen_speed">Velocidad de reproducción</string>
-    <string name="archive_listen">Escucha artículos en voz alta</string>
+    <string name="archive_listen">Escucha 1 hora de artículos en voz alta a la semana</string>
+    <string name="pro_listen">Escucha 10 horas de artículos en voz alta a la semana</string>
 </resources>

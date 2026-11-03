@@ -728,17 +728,17 @@
     <string name="intel_author_header">Автори статей</string>
     <string name="feed_intel_author_header">Автори</string>
     <string name="intel_feed_header">Усе від видавця</string>
-    <string name="intel_super_dislike">Дуже не подобається</string>
-    <string name="explainer_super_dislike">Дуже не подобається</string>
+    <string name="intel_super_dislike">Приховати відповідні статті</string>
+    <string name="explainer_super_dislike">Приховати</string>
     <string name="explainer_ai_filter">Фільтр ШІ</string>
     <string name="explainer_like">Подобається</string>
     <string name="explainer_dislike">Не подобається</string>
     <string name="explainer_beats">переважає</string>
     <string name="explainer_example1_header">Одна вподобайка переважує будь-яку кількість дизлайків</string>
     <string name="explainer_example1_result">Стаття відображається в режимі «Фокус»</string>
-    <string name="explainer_example2_header">Одне «Дуже не подобається» переважає все</string>
+    <string name="explainer_example2_header">«Приховати» переважає все, навіть «Подобається»</string>
     <string name="explainer_example2_result">Стаття завжди прихована</string>
-    <string name="explainer_example3_header">Фільтр ШІ має перевагу над оцінками «Подобається» та «Не подобається», але не над оцінкою «Дуже не подобається»</string>
+    <string name="explainer_example3_header">Фільтр ШІ має вищий пріоритет за «Подобається» й «Не подобається», але не за «Приховати»</string>
     <string name="trainer_question_story">Що вам 👍 %1$s і 👎 %2$s у цій статті?</string>
     <string name="trainer_question_site">Що вам 👍 %1$s і 👎 %2$s на цьому сайті?</string>
     <string name="trainer_question_like">подобається</string>
@@ -777,6 +777,7 @@
     <string name="trainer_regex_valid">✓ Правильно</string>
     <string name="trainer_regex_matches_story">✓ Збігається зі статтею</string>
     <string name="trainer_regex_no_match">У статті збігів немає</string>
+    <string name="trainer_regex_not_checked">Не вдалося перевірити статтю</string>
     <string name="trainer_regex_invalid">Недійсне значення: %1$s</string>
     <string name="trainer_regex_invalid_pattern">Недійсний шаблон</string>
     <string name="trainer_regex_requires_pro">Для регулярних виразів потрібен Premium Pro</string>
@@ -1490,12 +1491,20 @@
     <string name="listen_style_summary">Підкреслює особливості стилю голосу</string>
     <string name="listen_speaker_boost_summary">Чіткіше й об’ємніше звучання</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="few">Залишилося хвилин на цей місяць: %1$d</item>
-        <item quantity="many">Залишилося %1$d хвилин цього місяця</item>
-        <item quantity="one">%1$d хвилину залишилося цього місяця</item>
-        <item quantity="other">Цього місяця залишилося %1$d хвилин</item>
+    <plurals name="listen_hours">
+        <item quantity="few">%1$d години</item>
+        <item quantity="many">%1$d годин</item>
+        <item quantity="one">%1$d година</item>
+        <item quantity="other">%1$d годин</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="few">%1$d хвилини</item>
+        <item quantity="many">%1$d хвилин</item>
+        <item quantity="one">%1$d хвилина</item>
+        <item quantity="other">%1$d хвилин</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Залишилося на цей тиждень: %1$s</string>
     <string name="listen_resets_on">Скидається %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">Сьогодні залишилося безкоштовних попередніх переглядів статей: %1$d</item>
@@ -1523,5 +1532,6 @@
     <string name="settings_listen_voices_summary">Виберіть голос для кожної мови та спосіб читання</string>
     <string name="settings_listen_delivery">Подача</string>
     <string name="settings_listen_speed">Швидкість відтворення</string>
-    <string name="archive_listen">Слухати статті вголос</string>
+    <string name="archive_listen">Слухайте озвучення статей до 1 години на тиждень</string>
+    <string name="pro_listen">Слухайте озвучення статей до 10 годин на тиждень</string>
 </resources>

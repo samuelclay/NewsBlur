@@ -1,0 +1,1 @@
+Cải tiến Nghe: bắt đầu từ thanh công cụ đọc và chuyển bài bằng nút Bài viết tiếp theo trên trình phát thu nhỏ. Tự động phát tiếp xuống danh sách theo thứ tự bạn chọn trong Bài viết đã lưu và Bài viết đã đọc. Tiêu đề lặp lại chỉ được đọc một lần. Mỗi tuần: 1 giờ với Premium Archive, 10 giờ với Premium Pro, đặt lại Chủ nhật. Cài đặt hiển thị giờ và phút còn lại.

@@ -105,7 +105,7 @@ data class ListenUiState(
     val speed: Double = ListenSettings.DEFAULT_SPEED,
     val error: ListenError? = null,
     val usage: ListenUsage? = null,
-    /** The unread stories auto-continue plays from the list Listen started in, after Up Next. */
+    /** The stories auto-continue plays from the list Listen started in, after Up Next (ListenAutoContinue.kt). */
     val upNext: List<ListenStory> = emptyList(),
     /** Your Up Next queue, shared with the web and iOS (ListenUpNext.kt), in play order. */
     val queued: List<ListenStory> = emptyList(),
@@ -198,6 +198,9 @@ class ListenManager
         private var upNext: List<ListenStory> = emptyList()
         private var queueSource: String? = null
 
+        // Saved and Read Stories hold only read stories, so auto-continue follows their order instead of skipping reads.
+        private var queueFollowsListOrder = false
+
         // The last story played from the captured list, so auto-continue picks up there after queued stories.
         private var continueFromHash: String? = null
 
@@ -259,12 +262,17 @@ class ListenManager
 
         // region Commands
 
-        /** Starts this story, or toggles it when it's already the one loaded. */
+        /**
+         * Starts this story, or toggles it when it's already the one loaded. [queueStories] is the list it was
+         * opened from, which auto-continue follows: its next unread story, or with [followsListOrder] simply its next
+         * story (ListenAutoContinue.kt).
+         */
         @MainThread
         fun listen(
             story: Story,
             queueStories: List<Story>,
             sourceName: String? = null,
+            followsListOrder: Boolean = false,
         ) {
             if (this.story?.storyHash == story.storyHash) {
                 togglePlayPause()
@@ -274,6 +282,7 @@ class ListenManager
             val target = storyFor(story)
             queue = queueStories.ifEmpty { listOf(story) }
             queueSource = sourceName
+            queueFollowsListOrder = followsListOrder
             startStory(target, startParagraph = 0, language = null, voiceId = null)
         }
 
@@ -352,7 +361,7 @@ class ListenManager
 
         /**
          * A seek outside the segments ExoPlayer holds needs /listen/segment, and every segment asked for counts
-         * against the monthly cap, so scrubbing or skipping across the story asks only for where it settles.
+         * against the weekly cap, so scrubbing or skipping across the story asks only for where it settles.
          * The scrubber shows the new position right away while the old audio holds.
          */
         private fun seekToUnloaded(
@@ -525,6 +534,7 @@ class ListenManager
             queue = emptyList()
             upNext = emptyList()
             queueSource = null
+            queueFollowsListOrder = false
             continueFromHash = null
             phase = ListenPhase.IDLE
             playWhenReady = false
@@ -574,9 +584,9 @@ class ListenManager
             val current = story ?: return
             val expected = generation
             scope.launch {
-                val unread = withContext(Dispatchers.IO) { unreadAfter(current) }
+                val next = withContext(Dispatchers.IO) { continueAfter(current) }
                 if (expected != generation) return@launch
-                upNext = unread
+                upNext = next
                 publish()
             }
         }
@@ -1134,14 +1144,14 @@ class ListenManager
             stopTicking()
             publish()
             NBScope.launch(Dispatchers.IO) { storyRead.markFinished(finished) }
-            // Up Next plays first, whether or not auto-continue is on; then the next unread story in the list.
+            // Up Next plays first, whether or not auto-continue is on; then the list's next story (ListenAutoContinue.kt).
             val queuedNext = ListenUpNextQueue.next(upNextQueue)
             if (queuedNext == null && !listenPreferences.current().autoContinue) return
             val expected = generation
             scope.launch {
                 val next =
                     withContext(Dispatchers.IO) {
-                        if (queuedNext != null) storyForQueueItem(queuedNext) else unreadAfter(finished).firstOrNull()
+                        if (queuedNext != null) storyForQueueItem(queuedNext) else continueAfter(finished).firstOrNull()
                     } ?: return@launch
                 if (expected != generation) return@launch
                 startStory(next, startParagraph = 0, language = null, voiceId = null)
@@ -1392,32 +1402,31 @@ class ListenManager
 
         private fun seekableDurationMs(): Long = (displayDurationMs() - 1L).coerceAtLeast(0L)
 
-        /** Runs on a background thread: it reads read states and feeds from the database. */
-        private fun unreadAfter(current: ListenStory): List<ListenStory> {
-            val stories = queue
-            // A story played from Up Next may not be in the list, so the list continues after the last one that was.
-            val anchor = current.storyHash.takeIf { hash -> stories.any { it.storyHash == hash } } ?: continueFromHash
-            val index = stories.indexOfFirst { it.storyHash == anchor }
-            if (index < 0) return emptyList()
+        /**
+         * The stories auto-continue would play after this one (ListenAutoContinue.kt), with their feeds. Runs on a
+         * background thread: it reads read states and feeds from the database.
+         */
+        private fun continueAfter(current: ListenStory): List<ListenStory> {
             val queued = upNextQueue
             val feeds = mutableMapOf<String?, Feed?>()
-            return stories
-                .drop(index + 1)
-                .asSequence()
-                .filter { candidate ->
+            return ListenAutoContinue
+                .candidatesAfter(
+                    stories = queue,
+                    currentHash = current.storyHash,
+                    continueFromHash = continueFromHash,
+                    followsListOrder = queueFollowsListOrder,
+                    limit = UP_NEXT_LIMIT,
                     // The database knows about reads since the queue was captured; the captured copy is the fallback.
-                    val read = dbHelper.isStoryRead(candidate.storyHash) ?: candidate.read
-                    // Stories already in Up Next play from there, so they aren't listed twice.
-                    !read && candidate.storyHash != current.storyHash && !ListenUpNextQueue.isQueued(queued, candidate.storyHash)
-                }.take(UP_NEXT_LIMIT)
-                .map { candidate ->
+                    isRead = { candidate -> dbHelper.isStoryRead(candidate.storyHash) ?: candidate.read },
+                    isQueued = { hash -> ListenUpNextQueue.isQueued(queued, hash) },
+                ).map { candidate ->
                     storyFor(
                         candidate,
                         feeds.getOrPut(candidate.feedId) {
                             feedUtils.getFeed(candidate.feedId)
                         },
                     )
-                }.toList()
+                }
         }
 
         private fun storyFor(

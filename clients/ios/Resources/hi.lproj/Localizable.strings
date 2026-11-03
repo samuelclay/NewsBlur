@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ फ़ोल्डर, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ फ़ोल्डर, समेटा हुआ, %2$@";
 "%1$@ followed %2$@." = "%1$@ ने %2$@ को फ़ॉलो किया।";
-"%1$@ of %2$@ of listening left this month" = "इस महीने सुनने के शेष समय में से %1$@, %2$@";
+"%1$@ of %2$@ of listening left this week" = "इस सप्ताह सुनने के %2$@ में से %1$@ शेष";
 "%1$@ of %2$@ sites indexed" = "%2$@ में से %1$@ साइटें अनुक्रमित हुईं";
 "%1$@ of %2$@ story previews used today" = "आज %2$@ में से %1$@ लेख पूर्वावलोकन इस्तेमाल किए गए";
 "%1$@ on all sites (%2$@)" = "%1$@ सभी साइटों पर (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "%@ छवि फ़िल्टर";
 "%@ is now following you." = "अब %@ आपको फ़ॉलो कर रहे हैं।";
 "%@ left in this preview" = "इस प्रीव्यू में %@ बाकी";
+"%@ left this week" = "इस सप्ताह %@ शेष";
 "%@ match" = "%@ मिलान";
-"%@ minutes left this month" = "इस महीने %@ मिनट बाकी";
 "%@ opens" = "%@ बार खुलता है";
 "%@ or search" = "%@ या खोजें";
 "%@ public comments" = "%@ सार्वजनिक टिप्पणियाँ";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "क्या आपका खाता पहले से है? साइन इन करें";
 "Already have feeds?" = "क्या आपके पास पहले से फ़ीड हैं?";
 "Also published by %@ sites" = "%@ अन्य साइटों पर भी प्रकाशित";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "AI फ़िल्टर पसंद और नापसंद को प्राथमिकता देता है, लेकिन सुपर नापसंद को नहीं";
+"An AI filter overrides likes and dislikes, but not Hide" = "एक AI फ़िल्टर पसंद और नापसंद को ओवरराइड करता है, लेकिन छिपाने को नहीं";
 "Analyze" = "विश्लेषण करें";
 "Analyzing images..." = "छवियों का विश्लेषण हो रहा है…";
 "App Badge" = "ऐप बैज";
@@ -262,6 +262,7 @@
 "Coral Rose" = "कोरल रोज़";
 "Could not completely clear the cache. Please try again." = "कैश पूरी तरह साफ़ नहीं किया जा सका। कृपया फिर से कोशिश करें।";
 "Could not save your language. Please try again." = "आपकी भाषा सहेजी नहीं जा सकी। कृपया फिर कोशिश करें।";
+"Couldn't check story" = "लेख की जाँच नहीं हो सकी";
 "Couldn't load usage billing history." = "उपयोग की बिलिंग का इतिहास लोड नहीं हो सका।";
 "Couldn't open billing. Please try again." = "बिलिंग नहीं खुल सकी। कृपया फिर से कोशिश करें।";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur तक नहीं पहुँच सके। अपना कनेक्शन जाँचें और फिर से कोशिश करें।";
@@ -458,6 +459,8 @@
 "Hide Changes" = "बदलाव छिपाएँ";
 "Hide Sidebar" = "साइडबार छिपाएँ";
 "Hide Story Titles" = "लेख के शीर्षक छिपाएँ";
+"Hide [training level]" = "छिपाएँ";
+"Hide beats any number of likes:" = "“छिपाएँ” कितनी भी पसंद पर भारी पड़ता है:";
 "Hide hidden stories" = "छिपे हुए लेख छिपाएँ";
 "Hide status bar" = "स्टेटस बार छिपाएँ";
 "Hide toolbars when reading" = "पढ़ते समय टूलबार छिपाएँ";
@@ -522,7 +525,8 @@
 "List style" = "सूची शैली";
 "Listen" = "सुनें";
 "Listen Settings" = "सुनने की सेटिंग्स";
-"Listen to stories read aloud" = "ज़ोर से पढ़े जा रहे लेख सुनें";
+"Listen to 1 hour of stories read aloud a week" = "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें";
+"Listen to 10 hours of stories read aloud a week" = "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें";
 "Listen to story" = "लेख सुनें";
 "Listening isn't available right now." = "अभी सुनने की सुविधा उपलब्ध नहीं है।";
 "Loading Google News topics..." = "Google News के विषय लोड हो रहे हैं...";
@@ -1039,7 +1043,6 @@
 "Story detail" = "लेख का विवरण";
 "Story image" = "लेख की छवि";
 "Story is always hidden" = "लेख हमेशा छिपा रहता है";
-"Story is hidden (super dislike wins)" = "लेख छिपा हुआ है (सुपर नापसंद को प्राथमिकता मिलती है)";
 "Story is shown (like wins)" = "लेख दिखाया जाता है (पसंद को प्राथमिकता मिलती है)";
 "Story language" = "लेख की भाषा";
 "Story list toolbar position" = "लेख सूची टूलबार की स्थिति";
@@ -1063,8 +1066,6 @@
 "Summarize" = "सारांश बनाएँ";
 "Sunday" = "रविवार";
 "Sunrise Gold" = "सनराइज़ गोल्ड";
-"Super dislike" = "बहुत ज़्यादा नापसंद";
-"Super dislike beats any number of likes:" = "सुपर नापसंद किसी भी संख्या में पसंद पर भारी पड़ता है:";
 "Support Forum" = "सहायता फ़ोरम";
 "Swipe from left edge" = "बाएँ किनारे से स्वाइप करें";
 "Swipe from the left edge while reading" = "पढ़ते समय बाएँ किनारे से स्वाइप करें";

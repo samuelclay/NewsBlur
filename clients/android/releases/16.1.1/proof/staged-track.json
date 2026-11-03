@@ -1,0 +1,98 @@
+{
+  "track": "production",
+  "releases": [
+    {
+      "name": "16.1.1",
+      "versionCodes": [
+        "300"
+      ],
+      "releaseNotes": [
+        {
+          "language": "en-US",
+          "text": "Listen improvements: start from the reading toolbar and skip with the mini player’s Next story button. Auto-continue follows your sort order in Saved Stories and Read Stories, moving down the list. Repeated headlines are read once. Weekly listening: 1 hour with Premium Archive, 10 hours with Premium Pro, resetting Sunday. Settings show remaining hours and minutes."
+        },
+        {
+          "language": "es-ES",
+          "text": "Mejoras de Escuchar: inicia desde la barra de lectura y avanza con Artículo siguiente en el minirreproductor. La reproducción automática sigue el orden de Artículos guardados y Artículos leídos hacia abajo en la lista. Los títulos repetidos se leen una vez. Escucha semanal: 1 hora con Premium Archive y 10 con Premium Pro, con reinicio el domingo. Ajustes muestra las horas y minutos restantes."
+        },
+        {
+          "language": "fr-FR",
+          "text": "Écouter : lancez l’écoute depuis la barre de lecture et avancez avec Article suivant dans le mini-lecteur. La lecture automatique suit le tri des Articles enregistrés et Articles lus, en descendant dans la liste. Les titres répétés sont lus une seule fois. Écoute hebdomadaire : 1 h avec Premium Archive, 10 h avec Premium Pro, réinitialisées le dimanche. Les paramètres affichent les heures et minutes restantes."
+        },
+        {
+          "language": "de-DE",
+          "text": "Anhören: Starte über die Leseleiste und springe mit Nächster Artikel im Miniplayer weiter. Die automatische Wiedergabe folgt der Sortierung gespeicherter und gelesener Artikel nach unten durch die Liste. Doppelte Überschriften werden einmal gelesen. Hörzeit pro Woche: 1 Stunde mit Premium Archive, 10 mit Premium Pro, sonntags zurückgesetzt. Die Einstellungen zeigen verbleibende Stunden und Minuten."
+        },
+        {
+          "language": "pt-BR",
+          "text": "Melhorias em Ouvir: comece pela barra de leitura e avance com Próximo artigo no miniplayer. A reprodução automática segue a ordem de Artigos salvos e Artigos lidos, avançando pela lista. Títulos repetidos são lidos uma vez. Áudio semanal: 1 hora com Premium Archive, 10 com Premium Pro, renovadas no domingo. Configurações mostra as horas e minutos restantes."
+        },
+        {
+          "language": "it-IT",
+          "text": "Novità di Ascolta: avvia dalla barra di lettura e prosegui con Articolo successivo nel mini player. La riproduzione automatica segue l’ordine di Articoli salvati e Articoli letti, scorrendo l’elenco. I titoli ripetuti vengono letti una volta. Ascolto settimanale: 1 ora con Premium Archive, 10 con Premium Pro, rinnovate la domenica. Impostazioni mostra ore e minuti rimasti."
+        },
+        {
+          "language": "nl-NL",
+          "text": "Luisteren: start via de leeswerkbalk en ga verder met Volgend artikel in de minispeler. Automatisch doorgaan volgt je sortering in Opgeslagen artikelen en Gelezen artikelen omlaag door de lijst. Herhaalde koppen worden één keer gelezen. Luistertijd per week: 1 uur met Premium Archive, 10 uur met Premium Pro, vernieuwd op zondag. Instellingen toont resterende uren en minuten."
+        },
+        {
+          "language": "pl-PL",
+          "text": "Słuchaj: rozpocznij z paska czytania i przejdź dalej przyciskiem Następny artykuł w miniodtwarzaczu. Automatyczne odtwarzanie zachowuje sortowanie Zapisanych artykułów i Przeczytanych artykułów, idąc w dół listy. Powtórzone nagłówki są czytane raz. Tygodniowo: 1 godzina z Premium Archive, 10 z Premium Pro, odnawiane w niedzielę. Ustawienia pokazują pozostałe godziny i minuty."
+        },
+        {
+          "language": "tr-TR",
+          "text": "Dinle yenilikleri: okuma araç çubuğundan başlatın, mini oynatıcıdaki Sonraki haber ile geçin. Otomatik devam, Kaydedilen Haberler ve Okunmuş Haberler sıralamanızı izleyerek listede aşağı ilerler. Tekrarlanan başlıklar bir kez okunur. Haftalık dinleme: Premium Archive ile 1 saat, Premium Pro ile 10 saat; her pazar yenilenir. Ayarlar kalan saat ve dakikayı gösterir."
+        },
+        {
+          "language": "ru-RU",
+          "text": "Прослушивание: запуск с панели чтения и кнопка «Следующая статья» в мини-плеере. Автопродолжение идёт вниз по списку в выбранном порядке в «Сохранённых статьях» и «Прочитанных статьях». Повторяющиеся заголовки читаются один раз. На неделю: 1 час с Premium Archive, 10 часов с Premium Pro; обновление в воскресенье. В настройках показаны оставшиеся часы и минуты."
+        },
+        {
+          "language": "uk",
+          "text": "Прослуховування: запуск із панелі читання та кнопка «Наступна стаття» в мініплеєрі. Автопродовження йде вниз списком у вибраному порядку в «Збережених статтях» і «Прочитаних статтях». Повторені заголовки читаються раз. На тиждень: 1 година з Premium Archive, 10 годин із Premium Pro; поновлення щонеділі. Налаштування показують залишок годин і хвилин."
+        },
+        {
+          "language": "ar",
+          "text": "تحسينات الاستماع: ابدأ من شريط القراءة وانتقل بزر «القصة التالية» في المشغّل المصغّر. تتبع المتابعة التلقائية ترتيبك في القصص المحفوظة والمقروءة نزولًا في القائمة. تُقرأ العناوين المكررة مرة واحدة. الاستماع الأسبوعي: ساعة مع Premium Archive وعشر ساعات مع Premium Pro، تتجدد يوم الأحد. تعرض الإعدادات الساعات والدقائق المتبقية."
+        },
+        {
+          "language": "iw-IL",
+          "text": "שיפורי האזנה: התחלה מסרגל הקריאה ודילוג עם ״הכתבה הבאה״ בנגן הממוזער. ההמשך האוטומטי מתקדם ברשימה לפי סדר המיון בכתבות שמורות ובכתבות שנקראו. כותרות חוזרות מוקראות פעם אחת. האזנה שבועית: שעה עם Premium Archive ו־10 שעות עם Premium Pro, עם חידוש המכסה בכל יום ראשון. ההגדרות מציגות את השעות והדקות שנותרו."
+        },
+        {
+          "language": "hi-IN",
+          "text": "सुनने में सुधार: पठन टूलबार से शुरू करें और मिनी प्लेयर के ‘अगला लेख’ बटन से आगे जाएँ। सहेजे गए और पढ़े गए लेखों में अपने आप आगे बढ़ना आपके चुने क्रम में सूची में नीचे जाता है। दोहराए गए शीर्षक एक बार पढ़े जाते हैं। हर सप्ताह Premium Archive में 1 घंटा, Premium Pro में 10 घंटे; हर रविवार फिर से मिलते हैं। सेटिंग्स में बचे घंटे और मिनट दिखते हैं।"
+        },
+        {
+          "language": "id",
+          "text": "Peningkatan mendengarkan: mulai dari bilah baca dan lanjutkan dengan Artikel berikutnya di pemutar mini. Lanjut otomatis mengikuti urutan Artikel Tersimpan dan Artikel yang Sudah Dibaca, bergerak ke bawah daftar. Judul berulang dibaca sekali. Kuota mingguan: 1 jam dengan Premium Archive, 10 jam dengan Premium Pro, diperbarui hari Minggu. Pengaturan menampilkan sisa jam dan menit."
+        },
+        {
+          "language": "vi",
+          "text": "Cải tiến Nghe: bắt đầu từ thanh công cụ đọc và chuyển bài bằng nút Bài viết tiếp theo trên trình phát thu nhỏ. Tự động phát tiếp xuống danh sách theo thứ tự bạn chọn trong Bài viết đã lưu và Bài viết đã đọc. Tiêu đề lặp lại chỉ được đọc một lần. Mỗi tuần: 1 giờ với Premium Archive, 10 giờ với Premium Pro, đặt lại Chủ nhật. Cài đặt hiển thị giờ và phút còn lại."
+        },
+        {
+          "language": "th",
+          "text": "ปรับปรุงการฟัง: เริ่มจากแถบเครื่องมือขณะอ่าน และข้ามด้วยปุ่มบทความถัดไปในเครื่องเล่นขนาดเล็ก เล่นต่ออัตโนมัติไล่ลงตามลำดับที่เลือกในบทความที่บันทึกไว้และบทความที่อ่านแล้ว อ่านพาดหัวที่ซ้ำเพียงครั้งเดียว เวลาฟังต่อสัปดาห์: Premium Archive ได้ 1 ชั่วโมง Premium Pro ได้ 10 ชั่วโมง เริ่มนับใหม่วันอาทิตย์ การตั้งค่าแสดงชั่วโมงและนาทีที่เหลือ"
+        },
+        {
+          "language": "ja-JP",
+          "text": "「聴く」を改善しました。読書ツールバーから再生を始め、ミニプレーヤーの「次の記事」でスキップできます。「保存した記事」と「既読の記事」では選んだ並び順で一覧を下に進みながら自動再生します。重複する見出しは一度だけ読み上げます。利用枠はPremium Archiveが週1時間、Premium Proが週10時間で、日曜日にリセットされます。設定には残り時間が時間と分で表示されます。"
+        },
+        {
+          "language": "ko-KR",
+          "text": "듣기 개선: 읽기 도구 모음에서 시작하고 미니 플레이어의 ‘다음 스토리’ 버튼으로 건너뛰세요. 저장한 스토리와 읽은 스토리에서 선택한 정렬 순서를 따라 목록 아래로 자동 재생이 이어집니다. 반복된 제목은 한 번만 읽습니다. 프리미엄 아카이브는 주 1시간, 프리미엄 프로는 주 10시간을 제공하며 일요일에 초기화됩니다. 설정에 남은 시간과 분이 표시됩니다."
+        },
+        {
+          "language": "zh-CN",
+          "text": "“聆听”改进：从阅读工具栏开始，用迷你播放器的“下一篇文章”按钮跳过。自动继续会按“已保存的文章”和“已读文章”中选择的排序沿列表向下播放。重复的标题只读一次。每周收听时间：高级归档版 1 小时，高级专业版 10 小时，周日重置。设置中会显示剩余的小时和分钟。"
+        },
+        {
+          "language": "zh-TW",
+          "text": "「聆聽」改進：從閱讀工具列開始，用迷你播放器的「下一篇文章」按鈕跳過。自動繼續會依照「已儲存的文章」和「已讀文章」中選擇的排序沿清單往下播放。重複的標題只讀一次。每週聆聽時間：Premium Archive 1 小時，Premium Pro 10 小時，週日重設。設定中會顯示剩餘的小時和分鐘。"
+        }
+      ],
+      "status": "completed"
+    }
+  ]
+}

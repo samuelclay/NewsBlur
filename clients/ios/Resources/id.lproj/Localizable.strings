@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "Folder %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Folder %1$@, diciutkan, %2$@";
 "%1$@ followed %2$@." = "%1$@ mengikuti %2$@.";
-"%1$@ of %2$@ of listening left this month" = "%1$@ dari %2$@ waktu mendengarkan tersisa bulan ini";
+"%1$@ of %2$@ of listening left this week" = "Sisa waktu mendengarkan minggu ini: %1$@ dari %2$@";
 "%1$@ of %2$@ sites indexed" = "%1$@ dari %2$@ situs telah diindeks";
 "%1$@ of %2$@ story previews used today" = "%1$@ dari %2$@ pratinjau artikel digunakan hari ini";
 "%1$@ on all sites (%2$@)" = "%1$@ di semua situs (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "filter gambar %@";
 "%@ is now following you." = "%@ kini mengikuti Anda.";
 "%@ left in this preview" = "Sisa %@ dalam pratinjau ini";
+"%@ left this week" = "Sisa %@ minggu ini";
 "%@ match" = "%@ kecocokan";
-"%@ minutes left this month" = "Sisa %@ menit bulan ini";
 "%@ opens" = "%@ kali dibuka";
 "%@ or search" = "%@ atau cari";
 "%@ public comments" = "%@ komentar publik";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "Sudah punya akun? Masuk";
 "Already have feeds?" = "Sudah punya feed?";
 "Also published by %@ sites" = "Juga diterbitkan oleh %@ situs";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "Filter AI mengesampingkan Suka dan Tidak suka, tetapi tidak Sangat Tidak Suka";
+"An AI filter overrides likes and dislikes, but not Hide" = "Filter AI mengesampingkan Suka dan Tidak suka, tetapi tidak Sembunyikan";
 "Analyze" = "Analisis";
 "Analyzing images..." = "Menganalisis gambar...";
 "App Badge" = "Lencana Aplikasi";
@@ -262,6 +262,7 @@
 "Coral Rose" = "Mawar Koral";
 "Could not completely clear the cache. Please try again." = "Tidak dapat mengosongkan cache sepenuhnya. Silakan coba lagi.";
 "Could not save your language. Please try again." = "Bahasa Anda tidak dapat disimpan. Silakan coba lagi.";
+"Couldn't check story" = "Tidak dapat memeriksa artikel";
 "Couldn't load usage billing history." = "Tidak dapat memuat riwayat penagihan berdasarkan penggunaan.";
 "Couldn't open billing. Please try again." = "Tidak dapat membuka penagihan. Silakan coba lagi.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Tidak dapat terhubung ke NewsBlur. Periksa koneksi Anda dan coba lagi.";
@@ -458,6 +459,8 @@
 "Hide Changes" = "Sembunyikan Perubahan";
 "Hide Sidebar" = "Sembunyikan Sidebar";
 "Hide Story Titles" = "Sembunyikan Judul Artikel";
+"Hide [training level]" = "Sembunyikan";
+"Hide beats any number of likes:" = "Sembunyikan mengalahkan berapa pun jumlah Suka:";
 "Hide hidden stories" = "Sembunyikan artikel tersembunyi";
 "Hide status bar" = "Sembunyikan bilah status";
 "Hide toolbars when reading" = "Sembunyikan bilah alat saat membaca";
@@ -522,7 +525,8 @@
 "List style" = "Gaya daftar";
 "Listen" = "Dengarkan";
 "Listen Settings" = "Pengaturan Dengarkan";
-"Listen to stories read aloud" = "Dengarkan artikel yang dibacakan";
+"Listen to 1 hour of stories read aloud a week" = "Dengarkan artikel yang dibacakan hingga 1 jam per minggu";
+"Listen to 10 hours of stories read aloud a week" = "Dengarkan artikel yang dibacakan hingga 10 jam per minggu";
 "Listen to story" = "Dengarkan artikel";
 "Listening isn't available right now." = "Fitur mendengarkan sedang tidak tersedia.";
 "Loading Google News topics..." = "Memuat topik Google News...";
@@ -1039,7 +1043,6 @@
 "Story detail" = "Detail artikel";
 "Story image" = "Gambar artikel";
 "Story is always hidden" = "Artikel selalu disembunyikan";
-"Story is hidden (super dislike wins)" = "Artikel disembunyikan (sangat tidak suka menang)";
 "Story is shown (like wins)" = "Artikel ditampilkan (suka menang)";
 "Story language" = "Bahasa artikel";
 "Story list toolbar position" = "Posisi bilah alat daftar artikel";
@@ -1063,8 +1066,6 @@
 "Summarize" = "Buat ringkasan";
 "Sunday" = "Minggu";
 "Sunrise Gold" = "Sunrise Gold";
-"Super dislike" = "Sangat tidak suka";
-"Super dislike beats any number of likes:" = "Sangat tidak suka mengalahkan berapa pun jumlah suka:";
 "Support Forum" = "Forum Bantuan";
 "Swipe from left edge" = "Usap dari tepi kiri";
 "Swipe from the left edge while reading" = "Geser dari tepi kiri saat membaca";

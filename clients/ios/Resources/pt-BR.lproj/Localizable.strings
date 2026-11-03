@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "Pasta %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Pasta %1$@, recolhida, %2$@";
 "%1$@ followed %2$@." = "%1$@ começou a seguir %2$@.";
-"%1$@ of %2$@ of listening left this month" = "Restam %1$@ de %2$@ de tempo de escuta neste mês";
+"%1$@ of %2$@ of listening left this week" = "Restam %1$@ de %2$@ de escuta nesta semana";
 "%1$@ of %2$@ sites indexed" = "%1$@ de %2$@ sites indexados";
 "%1$@ of %2$@ story previews used today" = "%1$@ de %2$@ prévias de artigos usadas hoje";
 "%1$@ on all sites (%2$@)" = "%1$@ em todos os sites (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "%@ filtros de imagem";
 "%@ is now following you." = "%@ está seguindo você agora.";
 "%@ left in this preview" = "Restam %@ nesta prévia";
+"%@ left this week" = "Restam %@ nesta semana";
 "%@ match" = "%@ correspondência";
-"%@ minutes left this month" = "Restam %@ minutos neste mês";
 "%@ opens" = "%@ aberturas";
 "%@ or search" = "%@ ou pesquisar";
 "%@ public comments" = "%@ comentários públicos";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "Já tem uma conta? Entrar";
 "Already have feeds?" = "Já tem feeds?";
 "Also published by %@ sites" = "Também publicado por %@ sites";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "Um filtro de IA prevalece sobre Gostei e Não gostei, mas não sobre Detestei";
+"An AI filter overrides likes and dislikes, but not Hide" = "Um filtro de IA prevalece sobre Gostei e Não gostei, mas não sobre Ocultar";
 "Analyze" = "Analisar";
 "Analyzing images..." = "Analisando imagens...";
 "App Badge" = "Indicador do app";
@@ -262,6 +262,7 @@
 "Coral Rose" = "Rosa coral";
 "Could not completely clear the cache. Please try again." = "Não foi possível limpar o cache completamente. Tente novamente.";
 "Could not save your language. Please try again." = "Não foi possível salvar seu idioma. Tente novamente.";
+"Couldn't check story" = "Não foi possível verificar o artigo";
 "Couldn't load usage billing history." = "Não foi possível carregar o histórico de cobrança por uso.";
 "Couldn't open billing. Please try again." = "Não foi possível abrir a área de cobrança. Tente novamente.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Não foi possível acessar NewsBlur. Verifique sua conexão e tente novamente.";
@@ -458,6 +459,8 @@
 "Hide Changes" = "Ocultar alterações";
 "Hide Sidebar" = "Ocultar barra lateral";
 "Hide Story Titles" = "Ocultar títulos dos artigos";
+"Hide [training level]" = "Ocultar";
+"Hide beats any number of likes:" = "“Ocultar” vence qualquer número de “Gostei”:";
 "Hide hidden stories" = "Ocultar artigos ocultos";
 "Hide status bar" = "Ocultar barra de status";
 "Hide toolbars when reading" = "Ocultar barras de ferramentas durante a leitura";
@@ -522,7 +525,8 @@
 "List style" = "Estilo da lista";
 "Listen" = "Ouvir";
 "Listen Settings" = "Configurações de áudio";
-"Listen to stories read aloud" = "Ouça artigos em voz alta";
+"Listen to 1 hour of stories read aloud a week" = "Ouça artigos narrados por até 1 hora por semana";
+"Listen to 10 hours of stories read aloud a week" = "Ouça artigos narrados por até 10 horas por semana";
 "Listen to story" = "Ouvir artigo";
 "Listening isn't available right now." = "A leitura em voz alta não está disponível no momento.";
 "Loading Google News topics..." = "Carregando tópicos do Google News...";
@@ -1038,8 +1042,7 @@
 "Story count" = "Número de artigos";
 "Story detail" = "Detalhes do artigo";
 "Story image" = "Imagem do artigo";
-"Story is always hidden" = "O artigo está sempre oculto";
-"Story is hidden (super dislike wins)" = "O artigo fica oculto (Detestei prevalece)";
+"Story is always hidden" = "O artigo fica sempre oculto";
 "Story is shown (like wins)" = "O artigo é exibido (Gostei prevalece)";
 "Story language" = "Idioma do artigo";
 "Story list toolbar position" = "Posição da barra de ferramentas da lista de artigos";
@@ -1063,8 +1066,6 @@
 "Summarize" = "Resumir";
 "Sunday" = "Domingo";
 "Sunrise Gold" = "Dourado do nascer do sol";
-"Super dislike" = "Detestei";
-"Super dislike beats any number of likes:" = "Um “Detestei” vence qualquer número de “Gostei”:";
 "Support Forum" = "Fórum de suporte";
 "Swipe from left edge" = "Deslize a partir da borda esquerda";
 "Swipe from the left edge while reading" = "Deslize a partir da borda esquerda durante a leitura";

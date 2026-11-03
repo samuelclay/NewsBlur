@@ -23,7 +23,7 @@ class MListenUsage(mongo.Document):
     """One served Listen segment or voice preview, or a refused request, for caps, daily samples and analytics.
 
     `seconds` is the estimated audio length. Only freshly generated segments (`cached=False`) count against the
-    monthly cap; samples count stories, cached or not. Refusals (`kind="denied"`) record which limit was hit in
+    weekly cap; samples count stories, cached or not. Refusals (`kind="denied"`) record which limit was hit in
     `reason` and never count toward anything. See apps/listen/usage.py.
     """
 
@@ -90,3 +90,20 @@ class MListenDaily(mongo.Document):
         ],
         "allow_inheritance": False,
     }
+
+    @classmethod
+    def minutes_listened(cls, user_id, days=None):
+        """Whole minutes a user has spent listening, over the last `days` UTC days (today included) or, with
+        no `days`, all time. Wall-clock time, the same definition as the Listen dashboard's minutes listened
+        (apps/monitor/views/newsblur_listen.py). Shown on the staff premium upgrade email (apps/profile/models.py).
+        """
+        match = {"user_id": user_id}
+        if days is not None:
+            since = datetime.datetime.utcnow() - datetime.timedelta(days=days)
+            match["date"] = {"$gte": since.strftime("%Y-%m-%d")}
+        result = cls._get_collection().aggregate(
+            [{"$match": match}, {"$group": {"_id": None, "seconds": {"$sum": "$listen_seconds"}}}]
+        )
+        for row in result:
+            return int(round(row["seconds"] / 60))
+        return 0

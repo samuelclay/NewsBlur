@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "Папка %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Папка %1$@, свёрнута, %2$@";
 "%1$@ followed %2$@." = "%1$@ подписывается на обновления %2$@.";
-"%1$@ of %2$@ of listening left this month" = "Осталось %1$@ из %2$@ прослушивания в этом месяце";
+"%1$@ of %2$@ of listening left this week" = "На этой неделе осталось %1$@ из %2$@ прослушивания";
 "%1$@ of %2$@ sites indexed" = "Проиндексировано %1$@ из %2$@ сайтов";
 "%1$@ of %2$@ story previews used today" = "Сегодня использовано %1$@ из %2$@ предпрослушиваний статей";
 "%1$@ on all sites (%2$@)" = "%1$@ на всех сайтах (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "Фильтры изображений: %@";
 "%@ is now following you." = "%@ теперь следит за вашими обновлениями.";
 "%@ left in this preview" = "В этой демоверсии осталось %@";
+"%@ left this week" = "На этой неделе осталось %@";
 "%@ match" = "совпадение %@";
-"%@ minutes left this month" = "В этом месяце осталось %@ минут";
 "%@ opens" = "%@ открытий";
 "%@ or search" = "%@ или поиск";
 "%@ public comments" = "%@ публичных комментариев";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "Уже есть аккаунт? Войти";
 "Already have feeds?" = "У вас уже есть ленты?";
 "Also published by %@ sites" = "Также опубликовано на %@ сайтах";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "Фильтр ИИ имеет приоритет над отметками «Нравится» и «Не нравится», но не над отметкой «Очень не нравится»";
+"An AI filter overrides likes and dislikes, but not Hide" = "Фильтр на основе ИИ важнее отметок «Нравится» и «Не нравится», но не важнее «Скрыть»";
 "Analyze" = "Анализировать";
 "Analyzing images..." = "Анализ изображений...";
 "App Badge" = "Значок приложения";
@@ -262,6 +262,7 @@
 "Coral Rose" = "Коралловая роза";
 "Could not completely clear the cache. Please try again." = "Не удалось полностью очистить кэш. Повторите попытку.";
 "Could not save your language. Please try again." = "Не удалось сохранить язык. Попробуйте ещё раз.";
+"Couldn't check story" = "Не удалось проверить статью";
 "Couldn't load usage billing history." = "Не удалось загрузить историю оплаты по факту использования.";
 "Couldn't open billing. Please try again." = "Не удалось открыть раздел оплаты. Попробуйте ещё раз.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Не удалось подключиться к NewsBlur. Проверьте подключение и повторите попытку.";
@@ -458,6 +459,8 @@
 "Hide Changes" = "Скрыть изменения";
 "Hide Sidebar" = "Скрыть боковую панель";
 "Hide Story Titles" = "Скрыть заголовки статей";
+"Hide [training level]" = "Скрыть";
+"Hide beats any number of likes:" = "«Скрыть» важнее любого количества отметок «Нравится»:";
 "Hide hidden stories" = "Скрыть скрытые статьи";
 "Hide status bar" = "Скрыть строку состояния";
 "Hide toolbars when reading" = "Скрывать панели инструментов при чтении";
@@ -522,7 +525,8 @@
 "List style" = "Стиль списка";
 "Listen" = "Слушать";
 "Listen Settings" = "Настройки прослушивания";
-"Listen to stories read aloud" = "Слушать статьи вслух";
+"Listen to 1 hour of stories read aloud a week" = "Слушайте озвученные статьи до 1 часа в неделю";
+"Listen to 10 hours of stories read aloud a week" = "Слушайте озвученные статьи до 10 часов в неделю";
 "Listen to story" = "Прослушать статью";
 "Listening isn't available right now." = "Прослушивание сейчас недоступно.";
 "Loading Google News topics..." = "Загрузка тем Google News...";
@@ -1039,7 +1043,6 @@
 "Story detail" = "Подробности статьи";
 "Story image" = "Изображение статьи";
 "Story is always hidden" = "Статья всегда скрыта";
-"Story is hidden (super dislike wins)" = "Статья скрыта («Очень не нравится» важнее)";
 "Story is shown (like wins)" = "Статья показана («Нравится» важнее)";
 "Story language" = "Язык статьи";
 "Story list toolbar position" = "Расположение панели инструментов списка статей";
@@ -1063,8 +1066,6 @@
 "Summarize" = "Кратко изложить";
 "Sunday" = "Воскресенье";
 "Sunrise Gold" = "Золото рассвета";
-"Super dislike" = "Очень не нравится";
-"Super dislike beats any number of likes:" = "Одна отметка «очень не нравится» перевешивает любое количество отметок «нравится»:";
 "Support Forum" = "Форум поддержки";
 "Swipe from left edge" = "Проведите пальцем от левого края";
 "Swipe from the left edge while reading" = "Во время чтения проведите пальцем от левого края экрана";

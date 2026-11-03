@@ -376,7 +376,7 @@ struct TrainerView: View {
 
     func explainerHierarchyChain(compact: Bool) -> some View {
         HStack(spacing: 0) {
-            explainerPill(NBLocalization.text("Super dislike"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true, compact: compact)
+            explainerPill(NBLocalization.text("Hide", context: "training level"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true, compact: compact)
             explainerSeparator(compact: compact)
             explainerPill(NBLocalization.text("AI Filter"), color: aiFilterColor, bgOpacity: 0.1, icon: "sparkles", iconSize: 9, compact: compact)
             explainerSeparator(compact: compact)
@@ -454,7 +454,7 @@ struct TrainerView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(NBLocalization.text("Super dislike beats any number of likes:"))
+                Text(NBLocalization.text("Hide beats any number of likes:"))
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(textColor)
 
@@ -468,7 +468,7 @@ struct TrainerView: View {
                     Text("\u{2192}")
                         .font(.system(size: 12))
                         .foregroundColor(explainerBodyColor)
-                    Text(NBLocalization.text("Story is hidden (super dislike wins)"))
+                    Text(NBLocalization.text("Story is always hidden"))
                         .font(.system(size: 10, weight: .medium))
                         .italic()
                         .foregroundColor(superDislikeColor)
@@ -477,7 +477,7 @@ struct TrainerView: View {
 
             // TrainerView.swift uses the web's Daring Fireball sponsor example (reader_classifier.js).
             VStack(alignment: .leading, spacing: 4) {
-                Text(NBLocalization.text("An AI filter overrides likes and dislikes, but not a super dislike"))
+                Text(NBLocalization.text("An AI filter overrides likes and dislikes, but not Hide"))
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(textColor)
                     .fixedSize(horizontal: false, vertical: true)

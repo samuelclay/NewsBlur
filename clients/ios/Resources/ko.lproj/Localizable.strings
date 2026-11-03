@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ 폴더, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 폴더, 접힘, %2$@";
 "%1$@ followed %2$@." = "%1$@님이 %2$@님을 팔로우했습니다.";
-"%1$@ of %2$@ of listening left this month" = "이번 달 남은 듣기 시간 %1$@ / %2$@";
+"%1$@ of %2$@ of listening left this week" = "이번 주 청취 가능 시간 %1$@ 중 %2$@ 남음";
 "%1$@ of %2$@ sites indexed" = "%1$@ / %2$@개 사이트 색인 완료";
 "%1$@ of %2$@ story previews used today" = "오늘 사용한 스토리 미리보기 %1$@/%2$@회";
 "%1$@ on all sites (%2$@)" = "모든 사이트에서 %1$@ (%2$@)";
@@ -44,8 +44,8 @@
 "%@ image filters" = "%@개 이미지 필터";
 "%@ is now following you." = "%@님이 회원님을 팔로우하기 시작했습니다.";
 "%@ left in this preview" = "미리 보기에서 %@ 남음";
+"%@ left this week" = "이번 주에 %@ 남음";
 "%@ match" = "%@개 일치";
-"%@ minutes left this month" = "이번 달 남은 시간: %@분";
 "%@ opens" = "%@회 열림";
 "%@ or search" = "%@ 또는 검색";
 "%@ public comments" = "공개 댓글 %@개";
@@ -167,7 +167,7 @@
 "Already have an account? Sign in" = "이미 계정이 있으신가요? 로그인";
 "Already have feeds?" = "이미 피드가 있으신가요?";
 "Also published by %@ sites" = "%@개 사이트에도 게시됨";
-"An AI filter overrides likes and dislikes, but not a super dislike" = "AI 필터는 좋아요와 싫어요를 덮어쓰지만, 매우 싫어요는 덮어쓰지 않습니다";
+"An AI filter overrides likes and dislikes, but not Hide" = "AI 필터는 좋아요와 싫어요를 덮어쓰지만 숨기기는 덮어쓰지 않습니다";
 "Analyze" = "분석";
 "Analyzing images..." = "이미지 분석 중...";
 "App Badge" = "앱 배지";
@@ -262,6 +262,7 @@
 "Coral Rose" = "코럴 로즈";
 "Could not completely clear the cache. Please try again." = "캐시를 완전히 비우지 못했습니다. 다시 시도해 주세요.";
 "Could not save your language. Please try again." = "언어를 저장하지 못했습니다. 다시 시도해 주세요.";
+"Couldn't check story" = "스토리를 확인할 수 없습니다";
 "Couldn't load usage billing history." = "사용량 기반 결제 내역을 불러오지 못했습니다.";
 "Couldn't open billing. Please try again." = "결제 정보를 열 수 없습니다. 다시 시도하세요.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur에 연결할 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.";
@@ -458,6 +459,8 @@
 "Hide Changes" = "변경 사항 숨기기";
 "Hide Sidebar" = "사이드바 숨기기";
 "Hide Story Titles" = "스토리 제목 숨기기";
+"Hide [training level]" = "숨기기";
+"Hide beats any number of likes:" = "숨기기는 좋아요가 아무리 많아도 우선합니다:";
 "Hide hidden stories" = "숨긴 스토리 숨기기";
 "Hide status bar" = "상태 표시줄 숨기기";
 "Hide toolbars when reading" = "읽는 동안 도구 모음 숨기기";
@@ -522,7 +525,8 @@
 "List style" = "목록 스타일";
 "Listen" = "듣기";
 "Listen Settings" = "듣기 설정";
-"Listen to stories read aloud" = "스토리를 소리 내어 들어 보세요";
+"Listen to 1 hour of stories read aloud a week" = "일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용";
+"Listen to 10 hours of stories read aloud a week" = "일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용";
 "Listen to story" = "스토리 듣기";
 "Listening isn't available right now." = "현재 듣기 기능을 사용할 수 없습니다.";
 "Loading Google News topics..." = "Google 뉴스 주제 불러오는 중...";
@@ -1038,8 +1042,7 @@
 "Story count" = "스토리 수";
 "Story detail" = "스토리 세부 정보";
 "Story image" = "스토리 이미지";
-"Story is always hidden" = "스토리가 항상 숨김 처리됩니다";
-"Story is hidden (super dislike wins)" = "스토리가 숨겨짐(매우 싫어요가 우선)";
+"Story is always hidden" = "스토리는 항상 숨김 처리됩니다";
 "Story is shown (like wins)" = "스토리가 표시됨(좋아요가 우선)";
 "Story language" = "스토리 언어";
 "Story list toolbar position" = "스토리 목록 도구 모음 위치";
@@ -1063,8 +1066,6 @@
 "Summarize" = "요약";
 "Sunday" = "일요일";
 "Sunrise Gold" = "선라이즈 골드";
-"Super dislike" = "매우 싫어요";
-"Super dislike beats any number of likes:" = "매우 싫어요는 좋아요 수와 관계없이 우선합니다:";
 "Support Forum" = "지원 포럼";
 "Swipe from left edge" = "왼쪽 가장자리에서 스와이프";
 "Swipe from the left edge while reading" = "읽는 동안 왼쪽 가장자리에서 스와이프";

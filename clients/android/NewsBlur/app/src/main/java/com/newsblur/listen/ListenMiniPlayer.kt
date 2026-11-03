@@ -23,6 +23,7 @@ import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -45,8 +46,8 @@ import com.newsblur.design.ListenPalette
 
 /**
  * ListenMiniPlayer.kt is the bar that floats above the bottom toolbar on every main screen while a story is
- * loaded: the story, its feed, play or pause, how far along it is, and a close button. Tapping it opens
- * Now Playing (ListenNowPlayingFragment.kt).
+ * loaded: the story, its feed, play or pause, the next story, how far along it is, and a close button. Tapping
+ * it opens Now Playing (ListenNowPlayingFragment.kt).
  */
 @Composable
 fun ListenMiniPlayer(
@@ -55,6 +56,7 @@ fun ListenMiniPlayer(
     colors: ListenPalette.Colors,
     onOpen: () -> Unit,
     onPlayPause: () -> Unit,
+    onNext: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -106,6 +108,14 @@ fun ListenMiniPlayer(
                     colors = colors,
                     size = 38,
                     onClick = onPlayPause,
+                )
+                // The same next as Now Playing's: Up Next first, then auto-continue; greyed at the end of a list.
+                ListenIconButton(
+                    icon = Icons.Rounded.SkipNext,
+                    description = stringResource(R.string.listen_next_story),
+                    tint = colors.textPrimary,
+                    onClick = onNext,
+                    enabled = state.nextStory != null,
                 )
                 ListenIconButton(
                     icon = Icons.Rounded.Close,

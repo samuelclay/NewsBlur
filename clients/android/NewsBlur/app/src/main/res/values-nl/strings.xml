@@ -712,17 +712,17 @@ om over de wereld te praten.</string>
     <string name="intel_author_header">Auteurs van artikelen</string>
     <string name="feed_intel_author_header">Auteurs</string>
     <string name="intel_feed_header">Alles van deze uitgever</string>
-    <string name="intel_super_dislike">Vind ik helemaal niet leuk</string>
-    <string name="explainer_super_dislike">Vind ik helemaal niet leuk</string>
+    <string name="intel_super_dislike">Overeenkomende artikelen verbergen</string>
+    <string name="explainer_super_dislike">Verbergen</string>
     <string name="explainer_ai_filter">AI-filter</string>
     <string name="explainer_like">Vind ik leuk</string>
     <string name="explainer_dislike">Vind ik niet leuk</string>
     <string name="explainer_beats">wint van</string>
     <string name="explainer_example1_header">Eén like weegt zwaarder dan elk aantal dislikes</string>
     <string name="explainer_example1_result">Artikel wordt weergegeven in de focusweergave</string>
-    <string name="explainer_example2_header">Eén ‘Vind ik helemaal niet leuk’ weegt zwaarder dan alles</string>
+    <string name="explainer_example2_header">‘Verbergen’ wint van alles, zelfs van ‘Vind ik leuk’</string>
     <string name="explainer_example2_result">Artikel is altijd verborgen</string>
-    <string name="explainer_example3_header">Een AI-filter overschrijft Vind ik leuk en Vind ik niet leuk, maar niet Vind ik helemaal niet leuk</string>
+    <string name="explainer_example3_header">Een AI-filter overschrijft Vind ik leuk en Vind ik niet leuk, maar niet Verbergen</string>
     <string name="trainer_question_story">Wat vind je 👍 %1$s en 👎 %2$s aan dit artikel?</string>
     <string name="trainer_question_site">Wat vind je 👍 %1$s en 👎 %2$s aan deze site?</string>
     <string name="trainer_question_like">Vind ik leuk</string>
@@ -761,6 +761,7 @@ om over de wereld te praten.</string>
     <string name="trainer_regex_valid">✓ Geldig</string>
     <string name="trainer_regex_matches_story">✓ Komt overeen met artikel</string>
     <string name="trainer_regex_no_match">Geen overeenkomst in het artikel</string>
+    <string name="trainer_regex_not_checked">Artikel kon niet worden gecontroleerd</string>
     <string name="trainer_regex_invalid">Ongeldig: %1$s</string>
     <string name="trainer_regex_invalid_pattern">Ongeldig patroon</string>
     <string name="trainer_regex_requires_pro">Regex vereist Premium Pro</string>
@@ -1434,10 +1435,16 @@ om over de wereld te praten.</string>
     <string name="listen_style_summary">Overdrijft de stijl van de stem</string>
     <string name="listen_speaker_boost_summary">Een helderder, voller geluid</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="one">Nog %1$d minuut deze maand</item>
-        <item quantity="other">Deze maand nog %1$d minuten</item>
+    <plurals name="listen_hours">
+        <item quantity="one">%1$d uur</item>
+        <item quantity="other">%1$d uur</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="one">%1$d minuut</item>
+        <item quantity="other">%1$d minuten</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Nog %1$s over deze week</string>
     <string name="listen_resets_on">Wordt opnieuw ingesteld op %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">Je hebt vandaag nog %1$d gratis artikelvoorbeeld over</item>
@@ -1461,5 +1468,6 @@ om over de wereld te praten.</string>
     <string name="settings_listen_voices_summary">Kies per taal een stem en hoe die voorleest</string>
     <string name="settings_listen_delivery">Bezorging</string>
     <string name="settings_listen_speed">Afspeelsnelheid</string>
-    <string name="archive_listen">Artikelen laten voorlezen</string>
+    <string name="archive_listen">Luister elke week 1 uur naar artikelen die worden voorgelezen</string>
+    <string name="pro_listen">Luister elke week 10 uur naar artikelen die worden voorgelezen</string>
 </resources>

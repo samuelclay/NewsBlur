@@ -53,6 +53,10 @@
             <td><strong>{{ stories_read|commify }}</strong></td>
         </tr>
         <tr>
+            <td style="color: #999; padding: 2px 0;">Minutes listened</td>
+            <td><strong>{{ listen_minutes_week|commify }}</strong> past week, {{ listen_minutes_total|commify }} all time</td>
+        </tr>
+        <tr>
             <td style="color: #999; padding: 2px 0;">Feed opens</td>
             <td>{{ feed_opens|commify }}</td>
         </tr>
