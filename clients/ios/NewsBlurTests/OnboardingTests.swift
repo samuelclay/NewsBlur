@@ -276,7 +276,11 @@ import SwiftUI
         let account = UIHostingController(rootView: OnboardingAccountView(model: model))
         account.view.backgroundColor = .black
         model.controller = account
-        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive })
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
         let reader = UIViewController()
         reader.view.backgroundColor = .systemBackground
         let destination = UILabel(frame: CGRect(x: 24, y: 100, width: 340, height: 80))
@@ -284,14 +288,33 @@ import SwiftUI
         reader.view.addSubview(destination)
         window.rootViewController = reader
         window.makeKeyAndVisible()
-        defer { window.isHidden = true }
+        defer {
+            window.isHidden = true
+            previousKeyWindow?.makeKey()
+        }
         // OnboardingTests.swift captures the original mandatory continuation as an isolated UI fixture.
         model.needsUsername = true
-        reader.present(account, animated: false)
-        account.view.layoutIfNeeded()
-        let before = UIGraphicsImageRenderer(bounds: account.view.bounds).image { _ in
-            account.view.drawHierarchy(in: account.view.bounds, afterScreenUpdates: true)
+        let presented = expectation(description: "Account fixture presentation completed")
+        reader.present(account, animated: false) { presented.fulfill() }
+        await fulfillment(of: [presented], timeout: SimulatorTestTiming.realWorkTimeout)
+        func visibleUsernameField(in view: UIView) -> Bool {
+            if let field = view as? UITextField {
+                return field.window === window && !field.isHidden && field.bounds.width > 0 && field.bounds.height > 0
+            }
+            return view.subviews.contains { visibleUsernameField(in: $0) }
         }
+        let formRendered = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            account.view.window === window && visibleUsernameField(in: account.view)
+        }, object: nil)
+        await fulfillment(of: [formRendered], timeout: SimulatorTestTiming.realWorkTimeout)
+        window.layoutIfNeeded()
+        account.view.layoutIfNeeded()
+        CATransaction.flush()
+        var capturedBefore = false
+        let before = UIGraphicsImageRenderer(bounds: account.view.bounds).image { _ in
+            capturedBefore = account.view.drawHierarchy(in: account.view.bounds, afterScreenUpdates: true)
+        }
+        XCTAssertTrue(capturedBefore, "The mandatory username fixture must render before its screenshot is accepted.")
         let beforeAttachment = XCTAttachment(image: before)
         beforeAttachment.name = "apple-signup-original-username-continuation-fixture"
         beforeAttachment.lifetime = .keepAlways
@@ -305,9 +328,18 @@ import SwiftUI
         XCTAssertNil(reader.presentedViewController)
         XCTAssertFalse(model.needsUsername)
         XCTAssertFalse(model.needsLink)
+        let destinationRendered = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            reader.view.window === window && destination.window === window && !destination.isHidden
+                && destination.bounds.width > 0 && destination.bounds.height > 0
+        }, object: nil)
+        await fulfillment(of: [destinationRendered], timeout: SimulatorTestTiming.realWorkTimeout)
+        window.layoutIfNeeded()
+        CATransaction.flush()
+        var capturedAfter = false
         let screenshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
-            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+            capturedAfter = window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
         }
+        XCTAssertTrue(capturedAfter, "The authenticated destination must render before its screenshot is accepted.")
         let attachment = XCTAttachment(image: screenshot)
         attachment.name = "apple-signup-authenticated-destination"
         attachment.lifetime = .keepAlways
