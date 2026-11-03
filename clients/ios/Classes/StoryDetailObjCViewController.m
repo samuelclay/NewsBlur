@@ -1662,7 +1662,8 @@
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
         if (!error && regex) {
             int regexScore = [[titleRegexClassifiers objectForKey:pattern] intValue];
-            NSArray<NSTextCheckingResult *> *matches = [regex matchesInString:storyTitle options:0 range:NSMakeRange(0, storyTitle.length)];
+            // TrainerRegexInput.swift stops a pattern that backtracks past its budget, leaving the title unmarked.
+            NSArray<NSTextCheckingResult *> *matches = [TrainerRegexMatcher matchesOf:regex in:storyTitle budget:TrainerRegexMatcher.drawingBudget] ?: @[];
             NSString *regexIcon = [self scoreIconHtml:regexScore];
             // Apply replacements in reverse order to preserve indices
             for (NSTextCheckingResult *match in [matches reverseObjectEnumerator]) {
@@ -1703,7 +1704,8 @@
                 NSError *error = nil;
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
                 if (!error && regex) {
-                    NSTextCheckingResult *result = [regex firstMatchInString:storyPermalink options:0 range:NSMakeRange(0, storyPermalink.length)];
+                    // TrainerRegexInput.swift stops a pattern that backtracks past its budget, so it shows no URL match.
+                    NSTextCheckingResult *result = [TrainerRegexMatcher firstMatchOf:regex in:storyPermalink budget:TrainerRegexMatcher.drawingBudget];
                     if (result) {
                         matchScore = [[urlRegexClassifiers objectForKey:pattern] intValue];
                         matchedText = [storyPermalink substringWithRange:result.range];
