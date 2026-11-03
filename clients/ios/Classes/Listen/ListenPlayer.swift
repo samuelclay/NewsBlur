@@ -121,7 +121,12 @@ final class ListenPlayer: NSObject, ObservableObject {
         ListenVoiceBoost.gain = Float(max(1, ListenAudioMix.effectiveVoiceVolume))
     }
 
+    /// Playing over other audio or lowering the music changed: the queued segments gain or lose the voice boost tap
+    /// (ListenVoiceBoost.swift), and the session follows.
     @objc private func audioMixSettingsChanged() {
+        for item in player.items() {
+            ListenVoiceBoost.update(item)
+        }
         audioMixDidChange()
     }
 
@@ -660,7 +665,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private func makeItem(segment: Int, file: URL) -> AVPlayerItem {
         let item = AVPlayerItem(url: file)
         item.audioTimePitchAlgorithm = .timeDomain
-        ListenVoiceBoost.attach(to: item)
+        ListenVoiceBoost.update(item)
         let identifier = ObjectIdentifier(item)
         itemSegments[identifier] = segment
         itemObservations[identifier] = item.observe(\.status, options: [.new]) { [weak self] item, _ in

@@ -409,6 +409,8 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
     private var endObserver: NSObjectProtocol?
     private var generation = 0
     private var resumesStory = false
+    /// True once a sample has taken the audio session, until sampling ends; switching samples keeps it.
+    private var holdsSession = false
 
     func toggle(voice: ListenVoice, language: String, delivery: ListenDeliverySettings) {
         if playingVoiceId == voice.id || loadingVoiceId == voice.id {
@@ -437,6 +439,7 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
             case .failure(let error):
                 self.loadingVoiceId = nil
                 self.errorMessage = error.message
+                self.finishSampling()
             }
         }
     }
@@ -450,6 +453,7 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
             case .failure:
                 self.loadingVoiceId = nil
                 self.errorMessage = ListenAPIError.streamFailed.message
+                self.finishSampling()
             }
         }
     }
@@ -461,6 +465,7 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
             resumesStory = true
         }
         story.activateAudioSession()
+        holdsSession = true
         let item = AVPlayerItem(url: file)
         let player = AVPlayer(playerItem: item)
         self.player = player
@@ -487,15 +492,23 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
         }
         endObserver = nil
         loadingVoiceId = nil
-        let wasPlayingSample = playingVoiceId != nil
         playingVoiceId = nil
         Self.isPlayingSample = false
-        if resumeStory, resumesStory {
+        if resumeStory {
+            finishSampling()
+        }
+    }
+
+    /// The last sample ended, was stopped or couldn't load. The story picks up again if a sample paused it; if not,
+    /// the session a sample took is let go, so music lowered for it comes back up (ListenPlayer.swift
+    /// audioMixDidChange). This runs even when no sample is playing, since switching samples keeps the session.
+    private func finishSampling() {
+        let heldSession = holdsSession
+        holdsSession = false
+        if resumesStory {
             resumesStory = false
             ListenPlayer.shared.play()
-        } else if wasPlayingSample, resumeStory {
-            // ListenVoiceSettingsModel.swift: with the story staying paused, music lowered for the sample comes
-            // back up (ListenPlayer.swift audioMixDidChange).
+        } else if heldSession {
             ListenPlayer.shared.audioMixDidChange()
         }
     }

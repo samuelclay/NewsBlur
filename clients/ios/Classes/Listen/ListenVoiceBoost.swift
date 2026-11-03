@@ -27,12 +27,19 @@ enum ListenVoiceBoost {
         set { gainStorage.pointee = max(1, newValue.isFinite ? newValue : 1) }
     }
 
-    /// Gives a segment's player item the boosting tap. Segments are local files, so the audio track loads at once.
-    static func attach(to item: AVPlayerItem) {
+    /// Gives a segment's player item the boosting tap while Listen plays over other audio, the only time the balance
+    /// applies, and takes it off otherwise so the voice plays untouched. ListenPlayer.swift calls this for each new
+    /// segment and for the queued ones when the setting changes. Segments are local files, so the track loads at once.
+    static func update(_ item: AVPlayerItem) {
+        guard ListenAudioMix.playsOverOtherAudio else {
+            item.audioMix = nil
+            return
+        }
+        guard item.audioMix == nil else { return }
         let asset = item.asset
         Task { @MainActor in
             guard let track = try? await asset.loadTracks(withMediaType: .audio).first,
-                  let tap = makeTap() else { return }
+                  ListenAudioMix.playsOverOtherAudio, item.audioMix == nil, let tap = makeTap() else { return }
             let parameters = AVMutableAudioMixInputParameters(track: track)
             parameters.audioTapProcessor = tap
             let mix = AVMutableAudioMix()

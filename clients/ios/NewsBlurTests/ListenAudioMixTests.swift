@@ -141,3 +141,56 @@ final class Test_ListenVoiceLimiter: XCTestCase {
         }
     }
 }
+
+final class Test_ListenVoiceBoostTap: XCTestCase {
+    private var savedPlayOver: Any?
+
+    override func setUp() {
+        super.setUp()
+        savedPlayOver = UserDefaults.standard.object(forKey: ListenAudioMix.playOverOtherAudioKey)
+    }
+
+    override func tearDown() {
+        if let savedPlayOver {
+            UserDefaults.standard.set(savedPlayOver, forKey: ListenAudioMix.playOverOtherAudioKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: ListenAudioMix.playOverOtherAudioKey)
+        }
+        super.tearDown()
+    }
+
+    /// A tenth of a second of silence, standing in for a downloaded Listen segment.
+    private func segmentFile() throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("listen-boost-\(UUID().uuidString).caf")
+        let format = try XCTUnwrap(AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1))
+        let buffer = try XCTUnwrap(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 4410))
+        buffer.frameLength = 4410
+        let file = try AVAudioFile(forWriting: url, settings: format.settings)
+        try file.write(from: buffer)
+        return url
+    }
+
+    private func waitUntil(_ condition: @escaping () -> Bool) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in condition() }, object: nil)
+        wait(for: [expectation], timeout: SimulatorTestTiming.realWorkTimeout)
+    }
+
+    func test_the_voice_plays_untouched_unless_listen_plays_over_other_audio() throws {
+        let file = try segmentFile()
+        defer { try? FileManager.default.removeItem(at: file) }
+
+        ListenAudioMix.playsOverOtherAudio = false
+        let untouched = AVPlayerItem(url: file)
+        ListenVoiceBoost.update(untouched)
+        // ListenAudioMixTests.swift: give an attach that shouldn't happen the same chance as one that should.
+        let boosted = AVPlayerItem(url: file)
+        ListenAudioMix.playsOverOtherAudio = true
+        ListenVoiceBoost.update(boosted)
+        waitUntil { boosted.audioMix != nil }
+        XCTAssertNil(untouched.audioMix, "Without Play over other audio, no tap or limiter touches the voice")
+
+        ListenAudioMix.playsOverOtherAudio = false
+        ListenVoiceBoost.update(boosted)
+        XCTAssertNil(boosted.audioMix, "Turning Play over off takes the tap off queued segments")
+    }
+}
