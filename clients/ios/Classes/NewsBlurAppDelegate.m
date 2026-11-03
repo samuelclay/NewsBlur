@@ -3201,8 +3201,25 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [newStory setObject:intelligence forKey:@"intelligence"];
         [newFeedStories addObject:newStory];
     }
-    
-    storiesCollection.activeFeedStories = newFeedStories;
+
+    [self showRescoredStories:newFeedStories];
+}
+
+// NewsBlurAppDelegate.m puts the loaded stories back once recalculateIntelligenceScores: or StoryScoreRefresher.swift
+// has rescored them, and works out again which ones the list shows: a story whose score rose to the selected
+// intelligence level joins the list, and a sticky one stays though its score fell. When a story joins above the open
+// one, the open story's page moves with it, so paging forward doesn't show it again.
+- (void)showRescoredStories:(NSArray *)stories {
+    storiesCollection.activeFeedStories = stories;
+    storiesCollection.storyCount = (int)stories.count;
+    [storiesCollection calculateStoryLocations];
+
+    StoryPagesViewController *pages = self.storyPagesViewController;
+    if (pages.retainsDuoSourceArticle || [self.feedDetailViewController hasRetainedFirstPageStory]) return;
+    NSInteger openLocation = [storiesCollection locationOfStoryId:pages.currentPage.activeStoryId];
+    if (openLocation >= 0) {
+        [pages preserveCurrentPageAtLocation:openLocation];
+    }
 }
 
 - (void)changeActiveFeedDetailRow {

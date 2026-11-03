@@ -392,6 +392,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
 - (void)recalculateIntelligenceScores:(id)feedId;
+- (void)showRescoredStories:(NSArray *)stories;
 
 - (void)cancelRequests;
 - (void)resetNetworkManagerForTesting;

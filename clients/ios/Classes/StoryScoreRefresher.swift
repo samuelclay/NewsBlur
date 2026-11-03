@@ -93,7 +93,7 @@ import Foundation
         }
         guard changed else { return }
 
-        collection.activeFeedStories = updatedStories
+        appDelegate.showRescoredStories(updatedStories)
         appDelegate.feedDetailViewController?.reload()
         appDelegate.storyPagesViewController?.refreshHeaders()
     }

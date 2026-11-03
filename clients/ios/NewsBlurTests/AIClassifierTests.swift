@@ -90,8 +90,10 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     var savesSucceed = true
     var storyRequests: [StoryRequest] = []
     var pendingDebounces: [() -> Void] = []
+    var pages: StoryPagesViewController?
 
     override var url: String! { "https://refresh-fixture.invalid" }
+    override var storyPagesViewController: StoryPagesViewController! { pages }
 
     override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
         if savesSucceed {
@@ -113,6 +115,21 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         pendingDebounces = []
         pending.forEach { $0() }
     }
+}
+
+/// AIClassifierTests.swift records where NewsBlurAppDelegate.m moves the open story's page, without a real pager.
+@MainActor private final class RescoredStoryPages: StoryPagesViewController {
+    var preservedLocations: [Int] = []
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
+    override func viewDidLoad() {}
+    override func refreshHeaders() {}
+    override func preserveCurrentPage(atLocation location: Int) { preservedLocations.append(location) }
+}
+
+@MainActor private final class RescoredStoryPage: StoryDetailViewController {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {}
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
+    override func viewDidLoad() {}
 }
 
 /// AIClassifierTests.swift checks English copy, so it pins the interface language while each test runs.
@@ -787,6 +804,18 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(intelligence(app)?["text_regex"] as? Int, -2)
     }
 
+    func test_removingADislikedAuthorShowsTheHiddenStoryRightAway() {
+        let app = makeApp(classifiers: ["authors": ["Daring Fireball Department of Commerce": -1]],
+                          intelligence: ["author": -1, "prompt": 0])
+        XCTAssertEqual(app.storiesCollection.activeFeedStoryLocationIds as? [String], [], "Hidden at neutral")
+
+        app.toggleAuthorClassifier("Daring Fireball Department of Commerce", feedId: "42")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 0)
+        XCTAssertEqual(app.storiesCollection.activeFeedStoryLocationIds as? [String], ["42:sponsor"],
+                       "The list and paging show a story as soon as its score reaches the selected level")
+        XCTAssertEqual(app.storiesCollection.storyLocationsCount, 1)
+    }
+
     private func makeApp(classifiers: [String: Any], intelligence: [String: Int], content: String? = nil,
                          isPremium: Bool = true, isPremiumArchive: Bool = true,
                          isPremiumPro: Bool = true) -> NewsBlurAppDelegate {
@@ -794,7 +823,9 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         app.isPremium = isPremium
         app.isPremiumArchive = isPremiumArchive
         app.isPremiumPro = isPremiumPro
+        app.selectedIntelligence = 0
         app.storiesCollection = StoriesCollection()
+        app.storiesCollection.appDelegate = app
         app.storiesCollection.activeClassifiers = ["42": classifiers]
         var story: [String: Any] = [
             "story_hash": "42:sponsor",
@@ -808,7 +839,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         if let content {
             story["story_content"] = content
         }
-        app.storiesCollection.activeFeedStories = [story]
+        app.storiesCollection.setStories([story])
         return app
     }
 
@@ -907,11 +938,13 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         // Focus. Liking a URL regex shows the keynote locally, so the reader may be looking at it when the server's
         // lower score arrives. The sponsor post wasn't showing and isn't kept.
         let app = makeApp(selectedIntelligence: 1)
-        app.storiesCollection.activeFeedStories = [story("42:keynote", intelligence: ["prompt": 0]),
-                                                   story("42:sponsor", intelligence: ["author": -1])]
+        app.storiesCollection.setStories([story("42:keynote", intelligence: ["prompt": 0]),
+                                          story("42:sponsor", intelligence: ["author": -1])])
+        XCTAssertEqual(visibleHashes(in: app), [])
         app.toggleUrlRegexClassifier("keynote", feedId: "42")
         XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(of: "42:keynote", in: app)), 1)
         XCTAssertNil(loadedStory("42:keynote", in: app)?["sticky"], "It wasn't showing before the save")
+        XCTAssertEqual(visibleHashes(in: app), ["42:keynote"], "The local recalculation shows it in Focus")
         app.endDebounces()
 
         app.storyRequests[0].succeed(response(prompt: -1, for: ["42:keynote", "42:sponsor"]))
@@ -919,6 +952,47 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(loadedStory("42:keynote", in: app)?["sticky"] as? Bool, true,
                        "Like recalculateIntelligenceScores:, a story the reader can see stays until they leave")
         XCTAssertNil(loadedStory("42:sponsor", in: app)?["sticky"])
+        XCTAssertEqual(visibleHashes(in: app), ["42:keynote"])
+    }
+
+    func test_aStoryTheRefreshRaisesToTheSelectedLevelJoinsTheList() {
+        // The reader hid sponsor posts with an AI prompt and now removes it. The app can't run the AI, so the sponsor
+        // post stays hidden until the server's score arrives.
+        let app = makeApp()
+        app.storiesCollection.activeClassifiers = ["42": ["prompts": ["Sponsor posts": -1]]]
+        app.storiesCollection.setStories([story("42:sponsor", title: "[Sponsor] WorkOS", intelligence: ["prompt": -1]),
+                                          story("42:keynote", title: "Apple's October event", intelligence: ["prompt": 0])])
+        XCTAssertEqual(visibleHashes(in: app), ["42:keynote"])
+
+        app.savePromptClassifier("Sponsor posts", feedId: "42", score: 0, includeImages: false, scope: "feed",
+                                 folderName: "")
+        XCTAssertEqual(visibleHashes(in: app), ["42:keynote"], "The local recalculation keeps the AI's score")
+        app.endDebounces()
+
+        app.storyRequests[0].succeed(response(prompt: 0, for: ["42:sponsor", "42:keynote"]))
+        XCTAssertEqual(visibleHashes(in: app), ["42:sponsor", "42:keynote"],
+                       "Scored neutral by the server, the sponsor post shows in the list and paging")
+        XCTAssertEqual(app.storiesCollection.storyLocationsCount, 2)
+    }
+
+    func test_theOpenStoryKeepsItsPageWhenAStoryJoinsAboveIt() {
+        let app = makeApp()
+        let pages = RescoredStoryPages()
+        let openPage = RescoredStoryPage()
+        openPage.activeStoryId = "42:keynote"
+        pages.currentPage = openPage
+        app.pages = pages
+        app.storiesCollection.activeClassifiers = ["42": ["prompts": ["Sponsor posts": -1]]]
+        app.storiesCollection.setStories([story("42:sponsor", intelligence: ["prompt": -1]),
+                                          story("42:keynote", intelligence: ["prompt": 0])])
+
+        app.savePromptClassifier("Sponsor posts", feedId: "42", score: 0, includeImages: false, scope: "feed",
+                                 folderName: "")
+        XCTAssertEqual(pages.preservedLocations, [0], "Nothing joined above the open keynote yet")
+        app.endDebounces()
+        app.storyRequests[0].succeed(response(prompt: 0, for: ["42:sponsor"]))
+        XCTAssertEqual(pages.preservedLocations, [0, 1],
+                       "The keynote's page moves down one as the sponsor post joins above it")
     }
 
     func test_aLateRefreshIsDroppedOnceTheReaderSavesAgain() {
@@ -996,6 +1070,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         app.isPremiumPro = true
         app.selectedIntelligence = selectedIntelligence
         app.storiesCollection = StoriesCollection()
+        app.storiesCollection.appDelegate = app
         app.storiesCollection.activeFeed = ["id": 42]
         app.storiesCollection.activeClassifiers = ["42": ["feeds": [String: Int](),
                                                           "authors": ["Daring Fireball Department of Commerce": -1],
@@ -1033,6 +1108,11 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     private func loadedStory(_ hash: String, in app: NewsBlurAppDelegate) -> [String: Any]? {
         app.storiesCollection.activeFeedStories.compactMap { $0 as? [String: Any] }.first { $0["story_hash"] as? String == hash }
+    }
+
+    /// The stories the list shows and paging moves through, in order.
+    private func visibleHashes(in app: NewsBlurAppDelegate) -> [String]? {
+        app.storiesCollection.activeFeedStoryLocationIds as? [String]
     }
 
     private func intelligence(of hash: String, in app: NewsBlurAppDelegate) -> [String: Any]? {
