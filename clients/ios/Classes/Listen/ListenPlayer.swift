@@ -115,7 +115,27 @@ final class ListenPlayer: NSObject, ObservableObject {
         center.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         center.addObserver(self, selector: #selector(queueDidChange), name: ListenQueue.didChange, object: nil)
         center.addObserver(self, selector: #selector(preferencesDidChange(_:)), name: ListenPreferences.didChange, object: nil)
+        center.addObserver(self, selector: #selector(audioMixSettingsChanged), name: ListenAudioMix.didChange, object: nil)
+        center.addObserver(self, selector: #selector(voiceVolumeChanged), name: ListenAudioMix.voiceVolumeDidChange, object: nil)
         configureRemoteCommands()
+        ListenVoiceBoost.gain = Float(max(1, ListenAudioMix.effectiveVoiceVolume))
+    }
+
+    @objc private func audioMixSettingsChanged() {
+        audioMixDidChange()
+    }
+
+    /// The Music / Voice balance moved: only the volume changes, so the session isn't reconfigured on every step.
+    @objc private func voiceVolumeChanged() {
+        applyVoiceVolume()
+    }
+
+    /// Up to 100% the voice's volume is the player's; past it ListenVoiceBoost.swift boosts each segment.
+    private func applyVoiceVolume() {
+        ListenVoiceBoost.gain = Float(max(1, ListenAudioMix.effectiveVoiceVolume))
+        if status != .previewEnded {
+            player.volume = voiceVolume
+        }
     }
 
     /// A speed synced from another device (or reset to the default) applies to the story playing now.
@@ -212,7 +232,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         playbackError = nil
         voiceOverride = nil
         speed = ListenPreferences.speed
-        player.volume = 1
+        player.volume = voiceVolume
         wantsToPlay = true
         setStatus(.loading)
         setRemoteCommandsEnabled(true)
@@ -230,7 +250,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         case .finished, .previewEnded:
             // ListenPlayer.swift replays from the start with the audio it already downloaded.
             wantsToPlay = true
-            player.volume = 1
+            player.volume = voiceVolume
             setStatus(.buffering)
             move(to: 0, offset: 0)
             return
@@ -257,6 +277,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         guard isActive else { return }
         wantsToPlay = false
         player.pause()
+        yieldAudioSessionWhileMixing()
         reportProgress()
         if status == .playing || status == .buffering || status == .loading {
             setStatus(.paused)
@@ -567,7 +588,7 @@ final class ListenPlayer: NSObject, ObservableObject {
 
     private func move(to segment: Int, offset: TimeInterval) {
         lastPlayedPosition = nil
-        player.volume = 1
+        player.volume = voiceVolume
         if let item = player.currentItem, itemSegments[ObjectIdentifier(item)] == segment, pendingStart == nil {
             seek(item: item, to: offset)
             elapsed = segmentStart(segment) + offset
@@ -639,6 +660,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private func makeItem(segment: Int, file: URL) -> AVPlayerItem {
         let item = AVPlayerItem(url: file)
         item.audioTimePitchAlgorithm = .timeDomain
+        ListenVoiceBoost.attach(to: item)
         let identifier = ObjectIdentifier(item)
         itemSegments[identifier] = segment
         itemObservations[identifier] = item.observe(\.status, options: [.new]) { [weak self] item, _ in
@@ -801,7 +823,7 @@ final class ListenPlayer: NSObject, ObservableObject {
             endPreview()
         } else if remaining <= 1.5 {
             // ListenPlayer.swift fades the last moment of a preview instead of cutting it off.
-            player.volume = Float(max(0, remaining / 1.5))
+            player.volume = voiceVolume * Float(max(0, remaining / 1.5))
         }
     }
 
@@ -926,8 +948,9 @@ final class ListenPlayer: NSObject, ObservableObject {
     private func endPreview() {
         wantsToPlay = false
         player.pause()
+        yieldAudioSessionWhileMixing()
         reportProgress()
-        player.volume = 1
+        player.volume = voiceVolume
         elapsed = previewLimit ?? elapsed
         playbackError = nil
         setStatus(.previewEnded)
@@ -952,6 +975,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         } else if ListenPreferences.autoContinue, let next = upNextStories(limit: 1).first {
             continueTo(next)
         } else {
+            yieldAudioSessionWhileMixing()
             endBackgroundTask()
         }
     }
@@ -989,6 +1013,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private func fail(_ error: ListenAPIError) {
         wantsToPlay = false
         player.pause()
+        yieldAudioSessionWhileMixing()
         let upgrade: ListenPlaybackError.Upgrade
         if error.isUpgradeReason {
             let tierUsage = error.usage ?? usage
@@ -1082,13 +1107,46 @@ final class ListenPlayer: NSObject, ObservableObject {
     // MARK: - Audio session
 
     /// VoiceRecorder.swift (Ask AI) switches the session to recording, so every start restores spoken playback.
+    /// Listen plays over other audio, lowering it while the voice speaks, when ListenAudioMix.swift says it mixes.
     func activateAudioSession() {
         let session = AVAudioSession.sharedInstance()
+        let configuration = ListenAudioMix.sessionConfiguration(mixes: ListenAudioMix.playsOverOtherAudio,
+                                                                lowersMusic: ListenAudioMix.lowersMusicWhileSpeaking)
         do {
-            try session.setCategory(.playback, mode: .spokenAudio, policy: .longFormAudio, options: [])
+            try session.setCategory(.playback, mode: .spokenAudio, policy: configuration.policy,
+                                    options: configuration.options)
             try session.setActive(true)
         } catch {
             NSLog("Listen couldn't activate the audio session: %@", error as NSError)
+        }
+    }
+
+    /// The player's share of the voice's volume from the Music section's Music / Voice balance
+    /// (ListenAudioMix.swift), at most 1; ListenVoiceBoost.swift adds the rest.
+    private var voiceVolume: Float {
+        Float(min(1, ListenAudioMix.effectiveVoiceVolume))
+    }
+
+    /// Playing over other audio or lowering the music changed, or a voice sample ended: the voice takes its volume,
+    /// and the session switches between mixing and not while the voice plays, or lets go while it doesn't.
+    func audioMixDidChange() {
+        applyVoiceVolume()
+        if isActive, wantsToPlay {
+            activateAudioSession()
+        } else {
+            yieldAudioSessionWhileMixing()
+        }
+    }
+
+    /// While Listen mixes, music should only be lowered while the voice speaks, so a paused, finished or failed
+    /// story lets go of the audio session and the music comes back up. A voice sample playing in Listen Settings
+    /// keeps it (ListenVoiceSettingsModel.swift).
+    private func yieldAudioSessionWhileMixing() {
+        guard ListenAudioMix.playsOverOtherAudio, !ListenVoicePreviewPlayer.isPlayingSample else { return }
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            NSLog("Listen couldn't let go of the audio session: %@", error as NSError)
         }
     }
 

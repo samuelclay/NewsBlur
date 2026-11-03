@@ -398,6 +398,9 @@ final class ListenVoiceSettingsModel: ObservableObject {
 /// Plays a short sample of a voice reading the current article, or the voice's own sample when no article is
 /// open (ListenVoiceSettingsModel.swift). The story playing pauses for the sample and resumes after it.
 final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
+    /// True while any voice sample plays, so ListenPlayer.swift keeps the audio session for it.
+    private(set) static var isPlayingSample = false
+
     @Published private(set) var loadingVoiceId: String?
     @Published private(set) var playingVoiceId: String?
     @Published private(set) var errorMessage: String?
@@ -467,6 +470,7 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
         }
         loadingVoiceId = nil
         playingVoiceId = voice.id
+        Self.isPlayingSample = true
         player.play()
     }
 
@@ -483,10 +487,16 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
         }
         endObserver = nil
         loadingVoiceId = nil
+        let wasPlayingSample = playingVoiceId != nil
         playingVoiceId = nil
+        Self.isPlayingSample = false
         if resumeStory, resumesStory {
             resumesStory = false
             ListenPlayer.shared.play()
+        } else if wasPlayingSample, resumeStory {
+            // ListenVoiceSettingsModel.swift: with the story staying paused, music lowered for the sample comes
+            // back up (ListenPlayer.swift audioMixDidChange).
+            ListenPlayer.shared.audioMixDidChange()
         }
     }
 }
