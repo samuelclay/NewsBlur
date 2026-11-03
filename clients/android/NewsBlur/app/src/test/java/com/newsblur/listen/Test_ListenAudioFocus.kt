@@ -114,6 +114,8 @@ class Test_ListenAudioFocus {
         assertNotNull("The paused story keeps watching for the call to end", system.modeWatcher)
         watcher?.invoke(AudioManager.MODE_NORMAL)
         assertEquals(1, resumes)
+        publish(ListenFocusMode.DUCK_OTHERS, speaking = true)
+        assertEquals("Picking up after the call leaves the other app's music up", 1, system.requests)
     }
 
     @Test

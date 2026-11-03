@@ -16,8 +16,8 @@ import androidx.annotation.RequiresApi
  * With "Lower music while voice speaks" on, Listen holds AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK while the voice plays,
  * so the other app lowers its music, and gives it back when Listen pauses or finishes so the music comes back up.
  * Another app starting its own music doesn't pause Listen, and Listen doesn't take focus back from it until the
- * voice next starts from a pause (not when auto-continue moves to the next story); a phone call or alarm pauses
- * Listen, and it picks up again when the call ends.
+ * voice next starts from a pause (not when auto-continue moves to the next story or Listen picks up after a call);
+ * a phone call or alarm pauses Listen, and it picks up again when the call ends.
  *
  * Whenever Listen plays without focus, with lowering off or after another app took focus, it gets no interruption
  * callbacks, so it watches the audio mode for calls instead.
@@ -44,6 +44,9 @@ class ListenAudioFocus(
 
     /** The voice stopped because a story ended, so starting again may be auto-continue rather than a new play. */
     private var stoppedAtStoryEnd = false
+
+    /** The call that paused Listen ended and Listen picked up again, which isn't a new play. */
+    private var resumedAfterCall = false
     private val forgetStoryEnd = Runnable { stoppedAtStoryEnd = false }
     private var abandonScheduled = false
     private val abandonLater = Runnable { abandon() }
@@ -59,11 +62,13 @@ class ListenAudioFocus(
         abandonDelayMs: Long,
     ) {
         if (speaking) {
+            val resumingAfterCall = resumedAfterCall
+            resumedAfterCall = false
             pausedByFocusLoss = false
             pausedForCall = false
-            // ListenAudioFocus.kt: only a new play asks for focus again, not the 200 ms state ticks while speaking
-            // or auto-continue starting the next story.
-            if (!wasSpeaking && !stoppedAtStoryEnd) lostFocusToOtherApp = false
+            // ListenAudioFocus.kt: only a new play asks for focus again, not the 200 ms state ticks while speaking,
+            // auto-continue starting the next story, or picking up after a call.
+            if (!wasSpeaking && !stoppedAtStoryEnd && !resumingAfterCall) lostFocusToOtherApp = false
             stoppedAtStoryEnd = false
             system.removeCallbacks(forgetStoryEnd)
         } else if (wasSpeaking) {
@@ -100,6 +105,7 @@ class ListenAudioFocus(
         lostFocusToOtherApp = false
         wasSpeaking = false
         stoppedAtStoryEnd = false
+        resumedAfterCall = false
         system.removeCallbacks(forgetStoryEnd)
         stopWatchingCalls()
         abandon()
@@ -166,6 +172,7 @@ class ListenAudioFocus(
             onPause()
         } else if (!inCall && pausedForCall) {
             pausedForCall = false
+            resumedAfterCall = true
             onResume()
         }
     }
