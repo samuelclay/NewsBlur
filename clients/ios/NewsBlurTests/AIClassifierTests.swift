@@ -691,6 +691,19 @@ private final class RecalculatingPromptSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 1)
     }
 
+    func test_aPythonRegexThatICUCantCompileKeepsTheServersScore() {
+        // apps/analyzer/views.py saved this because Python's re compiles it, but ICU has no (?P<name>...) groups.
+        let pattern = "(?P<label>sponsor)"
+        XCTAssertThrowsError(try NSRegularExpression(pattern: pattern, options: [.caseInsensitive]))
+        let app = makeApp(classifiers: ["title_regex": [pattern: 1], "url_regex": [pattern: -1]],
+                          intelligence: ["title_regex": 1, "url_regex": -1, "prompt": 0])
+
+        app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["title_regex"] as? Int, 1, "The server matched [Sponsor] WorkOS")
+        XCTAssertEqual(intelligence(app)?["url_regex"] as? Int, -1, "The server matched the sponsor permalink")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 1)
+    }
+
     func test_aMatchingSuperDislikeSettlesAScoreTheAppCouldntOtherwiseTell() {
         // The server returns on the first matching super dislike, so whatever the slow pattern does can't matter.
         let classifiers: [String: Any] = ["text_regex": ["(a+)+$": 1, "a!": -2]]

@@ -113,13 +113,13 @@ import Foundation
         return isCertain ? score : nil
     }
 
-    /// Regexes are case insensitive, like the server's safe_regex_match. An invalid one doesn't match, and one that
-    /// runs out of time leaves the app unable to tell.
+    /// Regexes are case insensitive, like the server's safe_regex_match. The app can't tell whether a pattern matches
+    /// when the search runs out of time, or when NSRegularExpression rejects it: apps/analyzer/views.py only saves
+    /// patterns Python's re compiles, and some of those, like a (?P<name>...) group, aren't valid ICU.
     private func regexScore(for key: String, in text: String) -> Int? {
         score(for: key, in: text) { pattern in
             let search = RegexSearch(classifierKey: key, pattern: pattern)
-            guard !timedOutSearches.contains(search) else { return nil }
-            guard let regex = regex(for: pattern) else { return false }
+            guard !timedOutSearches.contains(search), let regex = regex(for: pattern) else { return nil }
             switch TrainerRegexMatcher.outcome(of: regex, in: text, budget: TrainerRegexMatcher.drawingBudget) {
             case .matches:
                 return true
