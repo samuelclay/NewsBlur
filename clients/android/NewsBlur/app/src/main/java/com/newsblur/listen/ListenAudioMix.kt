@@ -1,6 +1,7 @@
 package com.newsblur.listen
 
 import android.content.SharedPreferences
+import android.media.AudioManager
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -83,6 +84,18 @@ object ListenAudioMixMath {
         val volume = clampVoiceVolume(effectiveVoiceVolume)
         return if (volume > 1.0) (2000 * log10(volume)).roundToInt() else 0
     }
+
+    /**
+     * Whether an AudioManager mode means a call is ringing or under way, for ListenAudioFocus.kt's call watch. Call
+     * screening (4) only exists from Android 11, so earlier versions never report it.
+     */
+    fun isCallMode(mode: Int): Boolean =
+        mode == AudioManager.MODE_RINGTONE ||
+            mode == AudioManager.MODE_IN_CALL ||
+            mode == AudioManager.MODE_IN_COMMUNICATION ||
+            mode == MODE_CALL_SCREENING
+
+    private const val MODE_CALL_SCREENING = 4
 
     fun focusMode(
         playsOverOtherAudio: Boolean,

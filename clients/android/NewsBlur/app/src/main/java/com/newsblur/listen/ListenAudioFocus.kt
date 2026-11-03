@@ -15,24 +15,30 @@ import androidx.annotation.RequiresApi
  *
  * With "Lower music while voice speaks" on, Listen holds AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK while the voice plays,
  * so the other app lowers its music, and gives it back when Listen pauses or finishes so the music comes back up.
- * Another app starting its own music doesn't pause Listen; a phone call or alarm does, and Listen picks up again
- * when it ends.
+ * Another app starting its own music doesn't pause Listen, and Listen doesn't take focus back from it until the
+ * voice next starts from a pause; a phone call or alarm pauses Listen, and it picks up again when the call ends.
  *
- * With lowering off, Listen holds no focus at all, so it watches for calls instead (Android 12 and later).
+ * With lowering off, Listen holds no focus at all, so it watches the audio mode for calls instead.
  *
- * [onPause] and [onResume] are ListenManager.kt's own pause and play.
+ * [onPause] and [onResume] are ListenManager.kt's own pause and play. The Android calls go through
+ * [ListenFocusSystem], so these rules are tested without a device (Test_ListenAudioFocus.kt).
  */
 class ListenAudioFocus(
-    context: Context,
+    private val system: ListenFocusSystem,
     private val onPause: () -> Unit,
     private val onResume: () -> Unit,
 ) {
-    private val audioManager = context.getSystemService(AudioManager::class.java)
-    private val handler = Handler(Looper.getMainLooper())
-    private var request: AudioFocusRequest? = null
+    constructor(context: Context, onPause: () -> Unit, onResume: () -> Unit) :
+        this(AndroidListenFocusSystem(context), onPause, onResume)
+
+    private var holdsFocus = false
     private var pausedByFocusLoss = false
     private var pausedForCall = false
-    private var callWatcher: Any? = null
+    private var watchesCalls = false
+
+    /** Another app took focus for good; Listen waits for its own next play before asking again. */
+    private var lostFocusToOtherApp = false
+    private var wasSpeaking = false
     private var abandonScheduled = false
     private val abandonLater = Runnable { abandon() }
 
@@ -49,43 +55,41 @@ class ListenAudioFocus(
         if (speaking) {
             pausedByFocusLoss = false
             pausedForCall = false
+            // ListenAudioFocus.kt: only a new play, not the 200 ms state ticks while speaking, asks for focus again.
+            if (!wasSpeaking) lostFocusToOtherApp = false
         }
+        wasSpeaking = speaking
         if (mode == ListenFocusMode.DUCK_OTHERS && (speaking || pausedByFocusLoss)) {
             cancelAbandon()
-            if (request == null) requestFocus()
-        } else if (request != null) {
+            if (!holdsFocus && !lostFocusToOtherApp) requestFocus()
+        } else if (holdsFocus) {
             if (mode == ListenFocusMode.DUCK_OTHERS && abandonDelayMs > 0L) {
                 if (!abandonScheduled) {
                     abandonScheduled = true
-                    handler.postDelayed(abandonLater, abandonDelayMs)
+                    system.postDelayed(abandonDelayMs, abandonLater)
                 }
             } else {
                 abandon()
             }
         }
         if (mode != ListenFocusMode.DUCK_OTHERS) pausedByFocusLoss = false
-        val watchesCalls = mode == ListenFocusMode.NONE && (speaking || pausedForCall)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (watchesCalls) watchCalls() else stopWatchingCalls()
-        }
+        if (mode == ListenFocusMode.NONE && (speaking || pausedForCall)) watchCalls() else stopWatchingCalls()
         if (mode != ListenFocusMode.NONE) pausedForCall = false
     }
 
+    /** Listen closed: forget any interruption, stop watching for calls and give focus back right away. */
+    fun release() {
+        pausedByFocusLoss = false
+        pausedForCall = false
+        lostFocusToOtherApp = false
+        wasSpeaking = false
+        stopWatchingCalls()
+        abandon()
+    }
+
     private fun requestFocus() {
-        val focusRequest =
-            AudioFocusRequest
-                .Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
-                .setAudioAttributes(
-                    AudioAttributes
-                        .Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                        .build(),
-                ).setWillPauseWhenDucked(false)
-                .setOnAudioFocusChangeListener(::onFocusChange, handler)
-                .build()
-        if (audioManager.requestAudioFocus(focusRequest) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            request = focusRequest
+        if (system.requestFocus(::onFocusChange)) {
+            holdsFocus = true
         } else {
             // ListenAudioFocus.kt: focus is refused during a call, and the voice shouldn't play over one.
             onPause()
@@ -94,12 +98,12 @@ class ListenAudioFocus(
 
     private fun abandon() {
         cancelAbandon()
-        request?.let { audioManager.abandonAudioFocusRequest(it) }
-        request = null
+        if (holdsFocus) system.abandonFocus()
+        holdsFocus = false
     }
 
     private fun cancelAbandon() {
-        handler.removeCallbacks(abandonLater)
+        system.removeCallbacks(abandonLater)
         abandonScheduled = false
     }
 
@@ -116,34 +120,29 @@ class ListenAudioFocus(
                     onResume()
                 }
             // Another app started its own music: Listen keeps reading over it and asks again on its next play.
-            AudioManager.AUDIOFOCUS_LOSS -> request = null
+            AudioManager.AUDIOFOCUS_LOSS -> {
+                holdsFocus = false
+                lostFocusToOtherApp = true
+            }
             // A notification sound: Android lowers the voice for it on its own.
             else -> Unit
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun watchCalls() {
-        if (callWatcher != null) return
-        val listener = AudioManager.OnModeChangedListener(::onModeChanged)
-        audioManager.addOnModeChangedListener({ command -> handler.post(command) }, listener)
-        callWatcher = listener
+        if (watchesCalls) return
+        watchesCalls = true
+        system.watchMode(::onModeChanged)
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun stopWatchingCalls() {
-        val listener = callWatcher as? AudioManager.OnModeChangedListener ?: return
-        audioManager.removeOnModeChangedListener(listener)
-        callWatcher = null
+        if (!watchesCalls) return
+        watchesCalls = false
+        system.stopWatchingMode()
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun onModeChanged(mode: Int) {
-        val inCall =
-            mode == AudioManager.MODE_IN_CALL ||
-                mode == AudioManager.MODE_IN_COMMUNICATION ||
-                mode == AudioManager.MODE_RINGTONE ||
-                mode == AudioManager.MODE_CALL_SCREENING
+        val inCall = ListenAudioMixMath.isCallMode(mode)
         if (inCall && !pausedForCall) {
             pausedForCall = true
             onPause()
@@ -151,5 +150,113 @@ class ListenAudioFocus(
             pausedForCall = false
             onResume()
         }
+    }
+}
+
+/** The Android calls ListenAudioFocus.kt makes, behind an interface so its rules can be tested without a device. */
+interface ListenFocusSystem {
+    /** Asks for AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK and says whether it was granted; [onChange] gets focus changes. */
+    fun requestFocus(onChange: (Int) -> Unit): Boolean
+
+    fun abandonFocus()
+
+    /** Calls [onMode] with the audio mode whenever it changes, until [stopWatchingMode]. */
+    fun watchMode(onMode: (Int) -> Unit)
+
+    fun stopWatchingMode()
+
+    fun postDelayed(
+        delayMs: Long,
+        action: Runnable,
+    )
+
+    fun removeCallbacks(action: Runnable)
+}
+
+/**
+ * ListenAudioFocus.kt's [ListenFocusSystem] on a device. The audio mode has a change listener from Android 12;
+ * before that it's checked twice a second while Listen watches for calls.
+ */
+private class AndroidListenFocusSystem(
+    context: Context,
+) : ListenFocusSystem {
+    private val audioManager = context.getSystemService(AudioManager::class.java)
+    private val handler = Handler(Looper.getMainLooper())
+    private var request: AudioFocusRequest? = null
+    private var modeListener: Any? = null
+    private var pollMode: Runnable? = null
+
+    override fun requestFocus(onChange: (Int) -> Unit): Boolean {
+        val focusRequest =
+            AudioFocusRequest
+                .Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                .setAudioAttributes(
+                    AudioAttributes
+                        .Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build(),
+                ).setWillPauseWhenDucked(false)
+                .setOnAudioFocusChangeListener({ change -> onChange(change) }, handler)
+                .build()
+        val granted = audioManager.requestAudioFocus(focusRequest) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+        request = if (granted) focusRequest else null
+        return granted
+    }
+
+    override fun abandonFocus() {
+        request?.let { audioManager.abandonAudioFocusRequest(it) }
+        request = null
+    }
+
+    override fun watchMode(onMode: (Int) -> Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            watchModeChanges(onMode)
+            return
+        }
+        val poll =
+            object : Runnable {
+                override fun run() {
+                    onMode(audioManager.mode)
+                    handler.postDelayed(this, MODE_POLL_MS)
+                }
+            }
+        pollMode = poll
+        handler.post(poll)
+    }
+
+    override fun stopWatchingMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) stopWatchingModeChanges()
+        pollMode?.let(handler::removeCallbacks)
+        pollMode = null
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun watchModeChanges(onMode: (Int) -> Unit) {
+        val listener = AudioManager.OnModeChangedListener { mode -> onMode(mode) }
+        audioManager.addOnModeChangedListener({ command -> handler.post(command) }, listener)
+        modeListener = listener
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun stopWatchingModeChanges() {
+        val listener = modeListener as? AudioManager.OnModeChangedListener ?: return
+        audioManager.removeOnModeChangedListener(listener)
+        modeListener = null
+    }
+
+    override fun postDelayed(
+        delayMs: Long,
+        action: Runnable,
+    ) {
+        handler.postDelayed(action, delayMs)
+    }
+
+    override fun removeCallbacks(action: Runnable) {
+        handler.removeCallbacks(action)
+    }
+
+    private companion object {
+        const val MODE_POLL_MS = 500L
     }
 }

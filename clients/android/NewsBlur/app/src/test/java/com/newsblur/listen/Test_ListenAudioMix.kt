@@ -87,6 +87,16 @@ class Test_ListenAudioMix {
     }
 
     @Test
+    fun test_ringing_and_calls_count_as_calls_on_every_android_version() {
+        assertTrue(ListenAudioMixMath.isCallMode(android.media.AudioManager.MODE_RINGTONE))
+        assertTrue(ListenAudioMixMath.isCallMode(android.media.AudioManager.MODE_IN_CALL))
+        assertTrue(ListenAudioMixMath.isCallMode(android.media.AudioManager.MODE_IN_COMMUNICATION))
+        // Test_ListenAudioMix.kt: call screening is mode 4 from Android 11.
+        assertTrue(ListenAudioMixMath.isCallMode(4))
+        assertFalse(ListenAudioMixMath.isCallMode(android.media.AudioManager.MODE_NORMAL))
+    }
+
+    @Test
     fun test_defaults_match_ios() {
         val defaults = ListenAudioMixSettings()
         assertFalse(defaults.playsOverOtherAudio)

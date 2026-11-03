@@ -556,6 +556,8 @@ class ListenManager
             exoPlayer = null
             voiceBoost.release()
             publish()
+            // ListenManager.kt: an interruption can still hold focus or a call watch; closing gives both back.
+            audioFocus.release()
             controllerFuture?.let { MediaController.releaseFuture(it) }
             controllerFuture = null
             context.stopService(Intent(context, ListenPlaybackService::class.java))
