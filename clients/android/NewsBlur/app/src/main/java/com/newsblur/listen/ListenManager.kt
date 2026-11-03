@@ -1034,8 +1034,7 @@ class ListenManager
         }
 
         /** The preview fade times the balance's share of the voice volume (the boost does the rest). */
-        private fun playerVolume(): Float =
-            previewVolume() * ListenAudioMixMath.playerVolume(audioMix.current().effectiveVoiceVolume)
+        private fun playerVolume(): Float = previewVolume() * ListenAudioMixMath.playerVolume(audioMix.current().effectiveVoiceVolume)
 
         /** While Listen plays over other audio, ListenAudioFocus.kt lowers that audio only while the voice plays. */
         private fun updateAudioFocus() {

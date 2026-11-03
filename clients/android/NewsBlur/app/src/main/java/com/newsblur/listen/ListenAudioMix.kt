@@ -55,8 +55,7 @@ object ListenAudioMixMath {
     private val minimumDecibels = 20 * log10(MIN_VOICE_VOLUME)
     private val maximumDecibels = 20 * log10(MAX_VOICE_VOLUME)
 
-    fun clampVoiceVolume(volume: Double): Double =
-        if (volume.isFinite()) volume.coerceIn(MIN_VOICE_VOLUME, MAX_VOICE_VOLUME) else 1.0
+    fun clampVoiceVolume(volume: Double): Double = if (volume.isFinite()) volume.coerceIn(MIN_VOICE_VOLUME, MAX_VOICE_VOLUME) else 1.0
 
     fun balanceForVoiceVolume(volume: Double): Double {
         val decibels = 20 * log10(clampVoiceVolume(volume))
