@@ -1305,6 +1305,15 @@
     <string name="listen_up_next_move_up">نقل إلى الأعلى</string>
     <string name="listen_up_next_move_down">نقل إلى الأسفل</string>
     <string name="listen_up_next_empty_queue">انقر على + بجانب «استمع» في أي قصة لإضافتها إلى قائمة الانتظار هنا.</string>
+    <string name="listen_music">الموسيقى</string>
+    <string name="listen_music_expanded">موسّعة</string>
+    <string name="listen_music_collapsed">مطوية</string>
+    <string name="listen_play_over_other_audio">التشغيل فوق صوت آخر</string>
+    <string name="listen_play_over_other_audio_summary">ابدأ تشغيل الموسيقى في Spotify أو تطبيق آخر، وسيقرأ «استمع» فوقها.</string>
+    <string name="listen_lower_music">خفض صوت الموسيقى أثناء التحدث</string>
+    <string name="listen_balance_music">الموسيقى</string>
+    <string name="listen_balance_voice">الصوت</string>
+    <string name="listen_balance_description">موازنة الصوت والموسيقى</string>
     <string name="listen_speed">السرعة</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

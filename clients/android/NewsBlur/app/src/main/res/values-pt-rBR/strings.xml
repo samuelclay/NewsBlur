@@ -1239,6 +1239,15 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="listen_up_next_move_up">Mover para cima</string>
     <string name="listen_up_next_move_down">Mover para baixo</string>
     <string name="listen_up_next_empty_queue">Toque em + ao lado de Ouvir em qualquer artigo para adicioná-lo à fila aqui.</string>
+    <string name="listen_music">Música</string>
+    <string name="listen_music_expanded">Expandida</string>
+    <string name="listen_music_collapsed">Recolhida</string>
+    <string name="listen_play_over_other_audio">Reproduzir sobre outro áudio</string>
+    <string name="listen_play_over_other_audio_summary">Comece a tocar música no Spotify ou em outro app, e o Listen fará a leitura por cima.</string>
+    <string name="listen_lower_music">Diminuir o volume da música enquanto a voz fala</string>
+    <string name="listen_balance_music">Música</string>
+    <string name="listen_balance_voice">Voz</string>
+    <string name="listen_balance_description">Equilíbrio entre voz e música</string>
     <string name="listen_speed">Velocidade</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

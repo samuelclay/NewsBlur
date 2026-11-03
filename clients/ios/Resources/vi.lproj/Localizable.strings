@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "Nhóm các bài viết trùng lặp trên tất cả nguồn cấp dữ liệu của bạn";
 "Cluster matches" = "Các kết quả khớp trong cụm";
 "Cluster related stories" = "Nhóm các bài viết liên quan";
+"Collapsed" = "Đã thu gọn";
 "Column layout" = "Bố cục cột";
 "Columns" = "Cột";
 "Comfortable" = "Thoải mái";
@@ -336,6 +337,7 @@
 "Exact phrase" = "Cụm từ chính xác";
 "Exaggerates the voice's style" = "Phóng đại phong cách giọng đọc";
 "Exit Full Screen" = "Thoát toàn màn hình";
+"Expanded" = "Đã mở rộng";
 "Experimental" = "Thử nghiệm";
 "Explore interests" = "Khám phá chủ đề quan tâm";
 "Export Preferences" = "Xuất tùy chọn";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "Ẩn các bài viết đã bị ẩn";
 "Hide status bar" = "Ẩn thanh trạng thái";
 "Hide toolbars when reading" = "Ẩn thanh công cụ khi đọc";
+"Hides the music settings" = "Ẩn cài đặt nhạc";
 "Highlight the paragraph being read" = "Tô sáng đoạn văn đang được đọc";
 "How much emotion" = "Mức độ cảm xúc";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Nếu không lựa chọn nào phù hợp, hãy nhập tiêu đề bài viết bạn thấy trên trang để chúng tôi phân tích lại.";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "Nhấn giữ tiêu đề bài viết";
 "Long reads for later" = "Bài đọc dài để xem sau";
 "Longer articles worth setting time aside for" = "Bài viết dài đáng dành thời gian đọc";
+"Lower music while voice speaks" = "Giảm âm lượng nhạc khi giọng nói phát";
 "Magazine" = "Tạp chí";
 "Manage" = "Quản lý";
 "Manage Account on the Web" = "Quản lý tài khoản trên web";
@@ -604,6 +608,7 @@
 "Moving folder..." = "Đang chuyển thư mục...";
 "Moving site..." = "Đang di chuyển trang web...";
 "Moving..." = "Đang di chuyển...";
+"Music" = "Nhạc";
 "Mute %@ Sites" = "Tắt tiếng %@ trang web";
 "Mute 1 Site" = "Tắt tiếng 1 trang web";
 "Mute All" = "Tắt tiếng tất cả";
@@ -732,6 +737,7 @@
 "Play" = "Phát";
 "Play again" = "Phát lại";
 "Play now" = "Phát ngay";
+"Play over other audio" = "Phát cùng âm thanh khác";
 "Play the next unread story" = "Phát bài viết chưa đọc tiếp theo";
 "Play videos" = "Phát video";
 "Playback position" = "Vị trí phát";
@@ -929,6 +935,7 @@
 "Show unread count" = "Hiển thị số bài chưa đọc";
 "Show with feed icons" = "Hiển thị cùng biểu tượng nguồn cấp dữ liệu";
 "Show without icons" = "Hiển thị không có biểu tượng";
+"Shows the music settings" = "Hiện cài đặt nhạc";
 "Sidebar" = "Thanh bên";
 "Sign Up" = "Đăng ký";
 "Sign in" = "Đăng nhập";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "Độ ổn định, độ tương đồng và phong cách";
 "Stale — last story %@" = "Đã cũ — bài viết cuối cùng %@";
 "Standard" = "Tiêu chuẩn";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Phát nhạc bằng ứng dụng Nhạc hoặc Spotify, rồi Listen sẽ đọc đè lên nhạc. Các nút điều khiển của ứng dụng đó sẽ thay thế các nút trên màn hình khóa.";
 "Start reading" = "Bắt đầu đọc";
 "Statistics" = "Thống kê";
 "Statistics…" = "Thống kê…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "Xem hướng dẫn";
 "View mode" = "Chế độ xem";
 "Voice" = "Giọng đọc";
+"Voice and music balance" = "Cân bằng giọng nói và nhạc";
 "Voice settings" = "Cài đặt giọng đọc";
 "Warm" = "Ấm";
 "Web" = "Web";

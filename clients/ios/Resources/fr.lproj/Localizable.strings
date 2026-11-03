@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "Regrouper les articles en double de tous vos flux";
 "Cluster matches" = "Correspondances des groupes";
 "Cluster related stories" = "Regrouper les articles similaires";
+"Collapsed" = "Réduit";
 "Column layout" = "Disposition des colonnes";
 "Columns" = "Colonnes";
 "Comfortable" = "Confortable";
@@ -336,6 +337,7 @@
 "Exact phrase" = "Expression exacte";
 "Exaggerates the voice's style" = "Accentue le style de la voix";
 "Exit Full Screen" = "Quitter le plein écran";
+"Expanded" = "Développé";
 "Experimental" = "Expérimental";
 "Explore interests" = "Explorer les centres d’intérêt";
 "Export Preferences" = "Exporter les préférences";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "Masquer les articles masqués";
 "Hide status bar" = "Masquer la barre d’état";
 "Hide toolbars when reading" = "Masquer les barres d’outils pendant la lecture";
+"Hides the music settings" = "Masque les paramètres de musique";
 "Highlight the paragraph being read" = "Surligner le paragraphe en cours de lecture";
 "How much emotion" = "Niveau d’émotion";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Si aucune option ne convient, saisissez le titre d’un article visible sur la page et nous relancerons l’analyse.";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "Appui long sur les titres des articles";
 "Long reads for later" = "Lectures longues pour plus tard";
 "Longer articles worth setting time aside for" = "Des articles plus longs qui méritent qu’on leur consacre du temps";
+"Lower music while voice speaks" = "Baisser le volume de la musique pendant que la voix parle";
 "Magazine" = "Magazine";
 "Manage" = "Gérer";
 "Manage Account on the Web" = "Gérer le compte sur le Web";
@@ -604,6 +608,7 @@
 "Moving folder..." = "Déplacement du dossier…";
 "Moving site..." = "Déplacement du site...";
 "Moving..." = "Déplacement…";
+"Music" = "Musique";
 "Mute %@ Sites" = "Mettre %@ sites en sourdine";
 "Mute 1 Site" = "Mettre 1 site en sourdine";
 "Mute All" = "Tout mettre en sourdine";
@@ -732,6 +737,7 @@
 "Play" = "Lire";
 "Play again" = "Réécouter";
 "Play now" = "Lire maintenant";
+"Play over other audio" = "Lire par-dessus les autres contenus audio";
 "Play the next unread story" = "Lire l’article non lu suivant";
 "Play videos" = "Lire les vidéos";
 "Playback position" = "Position de lecture";
@@ -929,6 +935,7 @@
 "Show unread count" = "Afficher le nombre d’articles non lus";
 "Show with feed icons" = "Afficher avec les icônes des flux";
 "Show without icons" = "Afficher sans icônes";
+"Shows the music settings" = "Affiche les paramètres de musique";
 "Sidebar" = "Barre latérale";
 "Sign Up" = "S’inscrire";
 "Sign in" = "Se connecter";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "Stabilité, similarité et style";
 "Stale — last story %@" = "Inactif — dernier article %@";
 "Standard" = "Standard";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Lancez de la musique dans l’app Musique ou Spotify : Écoute la lit par-dessus. Les commandes de cette app prennent le contrôle de l’écran verrouillé.";
 "Start reading" = "Commencer la lecture";
 "Statistics" = "Statistiques";
 "Statistics…" = "Statistiques…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "Voir les instructions";
 "View mode" = "Mode d’affichage";
 "Voice" = "Voix";
+"Voice and music balance" = "Équilibre entre la voix et la musique";
 "Voice settings" = "Paramètres de la voix";
 "Warm" = "Chaud";
 "Web" = "Web";

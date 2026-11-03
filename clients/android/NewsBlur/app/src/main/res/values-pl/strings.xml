@@ -1261,6 +1261,15 @@
     <string name="listen_up_next_move_up">Przenieś w górę</string>
     <string name="listen_up_next_move_down">Przenieś w dół</string>
     <string name="listen_up_next_empty_queue">Dotknij + obok opcji Słuchaj przy dowolnym artykule, aby dodać go tutaj do kolejki.</string>
+    <string name="listen_music">Muzyka</string>
+    <string name="listen_music_expanded">Rozwinięte</string>
+    <string name="listen_music_collapsed">Zwinięte</string>
+    <string name="listen_play_over_other_audio">Odtwarzaj na tle innych dźwięków</string>
+    <string name="listen_play_over_other_audio_summary">Włącz muzykę w Spotify lub innej aplikacji, a funkcja Czytaj będzie odczytywać tekst na jej tle.</string>
+    <string name="listen_lower_music">Ściszaj muzykę podczas czytania na głos</string>
+    <string name="listen_balance_music">Muzyka</string>
+    <string name="listen_balance_voice">Głos</string>
+    <string name="listen_balance_description">Balans głosu i muzyki</string>
     <string name="listen_speed">Szybkość</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

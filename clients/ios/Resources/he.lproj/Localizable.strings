@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "קבץ כתבות כפולות מכל הפידים שלך";
 "Cluster matches" = "התאמות באשכול";
 "Cluster related stories" = "קיבוץ כתבות קשורות";
+"Collapsed" = "מכווץ";
 "Column layout" = "פריסת עמודות";
 "Columns" = "עמודות";
 "Comfortable" = "נוח";
@@ -336,6 +337,7 @@
 "Exact phrase" = "ביטוי מדויק";
 "Exaggerates the voice's style" = "מגזים בסגנון הקול";
 "Exit Full Screen" = "יציאה ממסך מלא";
+"Expanded" = "מורחב";
 "Experimental" = "ניסיוני";
 "Explore interests" = "גילוי תחומי עניין";
 "Export Preferences" = "ייצוא העדפות";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "הסתר כתבות מוסתרות";
 "Hide status bar" = "הסתרת שורת המצב";
 "Hide toolbars when reading" = "הסתרת סרגלי כלים בזמן הקריאה";
+"Hides the music settings" = "הסתרת הגדרות המוזיקה";
 "Highlight the paragraph being read" = "הדגשת הפסקה שמוקראת";
 "How much emotion" = "מידת הרגש";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "אם אף אחת מהאפשרויות לא מתאימה, הקלידו כותרת של כתבה שמופיעה בעמוד וננתח אותה מחדש.";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "לחיצה ממושכת על כותרות כתבות";
 "Long reads for later" = "כתבות ארוכות לקריאה מאוחר יותר";
 "Longer articles worth setting time aside for" = "כתבות ארוכות שכדאי לפנות להן זמן";
+"Lower music while voice speaks" = "הנמכת המוזיקה בזמן שהקריינות מדברת";
 "Magazine" = "מגזין";
 "Manage" = "ניהול";
 "Manage Account on the Web" = "ניהול החשבון באינטרנט";
@@ -604,6 +608,7 @@
 "Moving folder..." = "מעביר תיקייה...";
 "Moving site..." = "מעביר אתר...";
 "Moving..." = "מעביר...";
+"Music" = "מוזיקה";
 "Mute %@ Sites" = "השתקת %@ אתרים";
 "Mute 1 Site" = "השתקת אתר אחד";
 "Mute All" = "השתק הכול";
@@ -732,6 +737,7 @@
 "Play" = "הפעלה";
 "Play again" = "השמעה חוזרת";
 "Play now" = "הפעלה עכשיו";
+"Play over other audio" = "הפעלת מוזיקה מעל שמע אחר";
 "Play the next unread story" = "הפעלת הכתבה הבאה שלא נקראה";
 "Play videos" = "הפעלת סרטונים";
 "Playback position" = "מיקום ההשמעה";
@@ -929,6 +935,7 @@
 "Show unread count" = "הצגת מספר הכתבות שלא נקראו";
 "Show with feed icons" = "הצגה עם סמלי פידים";
 "Show without icons" = "הצג ללא סמלים";
+"Shows the music settings" = "הצגת הגדרות המוזיקה";
 "Sidebar" = "סרגל צד";
 "Sign Up" = "הרשמה";
 "Sign in" = "התחברות";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "יציבות, דמיון וסגנון";
 "Stale — last story %@" = "לא מעודכן — הכתבה האחרונה %@";
 "Standard" = "רגיל";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "הפעילו מוזיקה באפליקציית Music או ב-Spotify, ו-Listen יקרא מעליה. הפקדים של אותה אפליקציה ישתלטו על מסך הנעילה.";
 "Start reading" = "התחל לקרוא";
 "Statistics" = "סטטיסטיקה";
 "Statistics…" = "סטטיסטיקה…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "הצגת הוראות";
 "View mode" = "מצב תצוגה";
 "Voice" = "קול";
+"Voice and music balance" = "איזון בין קול למוזיקה";
 "Voice settings" = "הגדרות קול";
 "Warm" = "חם";
 "Web" = "אינטרנט";

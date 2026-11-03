@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "جمّع القصص المكررة عبر جميع خلاصاتك";
 "Cluster matches" = "تطابقات المجموعة";
 "Cluster related stories" = "تجميع القصص المرتبطة";
+"Collapsed" = "مطوي";
 "Column layout" = "تخطيط الأعمدة";
 "Columns" = "الأعمدة";
 "Comfortable" = "مريح";
@@ -336,6 +337,7 @@
 "Exact phrase" = "عبارة مطابقة تمامًا";
 "Exaggerates the voice's style" = "يبالغ في أسلوب الصوت";
 "Exit Full Screen" = "الخروج من وضع ملء الشاشة";
+"Expanded" = "موسّع";
 "Experimental" = "تجريبي";
 "Explore interests" = "استكشف الاهتمامات";
 "Export Preferences" = "تصدير التفضيلات";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "إخفاء القصص المخفية";
 "Hide status bar" = "إخفاء شريط الحالة";
 "Hide toolbars when reading" = "إخفاء أشرطة الأدوات أثناء القراءة";
+"Hides the music settings" = "إخفاء إعدادات الموسيقى";
 "Highlight the paragraph being read" = "تمييز الفقرة التي تقرؤها";
 "How much emotion" = "مقدار العاطفة";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "إذا لم يطابق أي من الخيارات، فاكتب عنوان قصة ظاهرًا على الصفحة وسنعيد التحليل.";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "اضغط مطولًا على عناوين القصص";
 "Long reads for later" = "قراءات طويلة لوقت لاحق";
 "Longer articles worth setting time aside for" = "مقالات أطول تستحق تخصيص وقت لقراءتها";
+"Lower music while voice speaks" = "خفض مستوى الموسيقى أثناء التحدث";
 "Magazine" = "مجلة";
 "Manage" = "إدارة";
 "Manage Account on the Web" = "إدارة الحساب عبر الويب";
@@ -604,6 +608,7 @@
 "Moving folder..." = "جارٍ نقل المجلد...";
 "Moving site..." = "جارٍ نقل الموقع...";
 "Moving..." = "جارٍ النقل...";
+"Music" = "الموسيقى";
 "Mute %@ Sites" = "كتم %@ موقعًا";
 "Mute 1 Site" = "كتم موقع واحد";
 "Mute All" = "كتم الكل";
@@ -732,6 +737,7 @@
 "Play" = "تشغيل";
 "Play again" = "التشغيل مجددًا";
 "Play now" = "تشغيل الآن";
+"Play over other audio" = "التشغيل فوق الصوت الآخر";
 "Play the next unread story" = "تشغيل القصة التالية غير المقروءة";
 "Play videos" = "تشغيل الفيديوهات";
 "Playback position" = "موضع التشغيل";
@@ -929,6 +935,7 @@
 "Show unread count" = "إظهار عدد غير المقروء";
 "Show with feed icons" = "عرض مع أيقونات الخلاصات";
 "Show without icons" = "عرض بلا أيقونات";
+"Shows the music settings" = "إظهار إعدادات الموسيقى";
 "Sidebar" = "الشريط الجانبي";
 "Sign Up" = "إنشاء حساب";
 "Sign in" = "تسجيل الدخول";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "الثبات والتشابه والنمط";
 "Stale — last story %@" = "قديم — آخر قصة %@";
 "Standard" = "قياسي";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "ابدأ تشغيل الموسيقى في تطبيق «الموسيقى» أو Spotify، وسيقرأ «استمع» فوقها. ستظهر عناصر التحكم الخاصة بهذا التطبيق على شاشة القفل.";
 "Start reading" = "ابدأ القراءة";
 "Statistics" = "الإحصاءات";
 "Statistics…" = "الإحصاءات…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "عرض التعليمات";
 "View mode" = "وضع العرض";
 "Voice" = "الصوت";
+"Voice and music balance" = "التوازن بين الصوت والموسيقى";
 "Voice settings" = "إعدادات الصوت";
 "Warm" = "دافئ";
 "Web" = "الويب";

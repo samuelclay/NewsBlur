@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "Groepeer dubbele artikelen in al je feeds";
 "Cluster matches" = "Overeenkomsten groeperen";
 "Cluster related stories" = "Verwante artikelen groeperen";
+"Collapsed" = "Ingeklapt";
 "Column layout" = "Kolomindeling";
 "Columns" = "Kolommen";
 "Comfortable" = "Comfortabel";
@@ -336,6 +337,7 @@
 "Exact phrase" = "Exacte woordgroep";
 "Exaggerates the voice's style" = "Overdrijft de stijl van de stem";
 "Exit Full Screen" = "Volledig scherm verlaten";
+"Expanded" = "Uitgeklapt";
 "Experimental" = "Experimenteel";
 "Explore interests" = "Interesses ontdekken";
 "Export Preferences" = "Voorkeuren exporteren";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "Verborgen artikelen verbergen";
 "Hide status bar" = "Statusbalk verbergen";
 "Hide toolbars when reading" = "Werkbalken verbergen tijdens het lezen";
+"Hides the music settings" = "Verbergt de muziekvoorkeuren";
 "Highlight the paragraph being read" = "Markeer de alinea die wordt voorgelezen";
 "How much emotion" = "Hoeveel emotie";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Als geen van de opties overeenkomt, typ dan een artikeltitel die je op de pagina ziet; dan analyseren we de pagina opnieuw.";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "Houd artikeltitels lang ingedrukt";
 "Long reads for later" = "Lange artikelen voor later";
 "Longer articles worth setting time aside for" = "Langere artikelen die het waard zijn om tijd voor vrij te maken";
+"Lower music while voice speaks" = "Muziek zachter zetten wanneer de stem spreekt";
 "Magazine" = "Tijdschrift";
 "Manage" = "Beheren";
 "Manage Account on the Web" = "Account beheren op het web";
@@ -604,6 +608,7 @@
 "Moving folder..." = "Map verplaatsen...";
 "Moving site..." = "Site wordt verplaatst...";
 "Moving..." = "Wordt verplaatst...";
+"Music" = "Muziek";
 "Mute %@ Sites" = "%@ sites dempen";
 "Mute 1 Site" = "1 site dempen";
 "Mute All" = "Alles dempen";
@@ -732,6 +737,7 @@
 "Play" = "Afspelen";
 "Play again" = "Opnieuw afspelen";
 "Play now" = "Nu afspelen";
+"Play over other audio" = "Afspelen over andere audio";
 "Play the next unread story" = "Volgende ongelezen artikel afspelen";
 "Play videos" = "Video’s afspelen";
 "Playback position" = "Afspeelpositie";
@@ -929,6 +935,7 @@
 "Show unread count" = "Ongelezen aantal weergeven";
 "Show with feed icons" = "Weergeven met feedpictogrammen";
 "Show without icons" = "Weergeven zonder pictogrammen";
+"Shows the music settings" = "Toont de muziekvoorkeuren";
 "Sidebar" = "Zijbalk";
 "Sign Up" = "Registreren";
 "Sign in" = "Inloggen";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "Stabiliteit, gelijkenis en stijl";
 "Stale — last story %@" = "Inactief — laatste artikel %@";
 "Standard" = "Standaard";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Start muziek in de Muziek-app of Spotify; Luisteren leest eroverheen. De bediening van die app verschijnt op het toegangsscherm.";
 "Start reading" = "Begin met lezen";
 "Statistics" = "Statistieken";
 "Statistics…" = "Statistieken…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "Instructies bekijken";
 "View mode" = "Weergavemodus";
 "Voice" = "Stem";
+"Voice and music balance" = "Balans tussen stem en muziek";
 "Voice settings" = "Steminstellingen";
 "Warm" = "Warm";
 "Web" = "Web";

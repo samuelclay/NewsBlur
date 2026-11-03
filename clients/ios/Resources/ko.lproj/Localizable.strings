@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "모든 피드에서 중복 스토리 묶기";
 "Cluster matches" = "클러스터 일치";
 "Cluster related stories" = "관련 스토리 묶기";
+"Collapsed" = "접힘";
 "Column layout" = "열 레이아웃";
 "Columns" = "열";
 "Comfortable" = "편안함";
@@ -336,6 +337,7 @@
 "Exact phrase" = "정확한 문구";
 "Exaggerates the voice's style" = "음성의 스타일을 과장합니다";
 "Exit Full Screen" = "전체 화면 종료";
+"Expanded" = "펼침";
 "Experimental" = "실험적";
 "Explore interests" = "관심사 둘러보기";
 "Export Preferences" = "환경설정 내보내기";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "숨긴 스토리 숨기기";
 "Hide status bar" = "상태 표시줄 숨기기";
 "Hide toolbars when reading" = "읽는 동안 도구 모음 숨기기";
+"Hides the music settings" = "음악 설정 숨기기";
 "Highlight the paragraph being read" = "읽는 단락 강조 표시";
 "How much emotion" = "감정 표현 정도";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "해당하는 항목이 없으면 페이지에서 스토리 제목을 입력하세요. 다시 분석해 드립니다.";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "스토리 제목을 길게 누르기";
 "Long reads for later" = "나중에 읽을 긴 글";
 "Longer articles worth setting time aside for" = "시간을 내어 읽을 만한 긴 기사";
+"Lower music while voice speaks" = "음성 안내 중 음악 음량 낮추기";
 "Magazine" = "매거진";
 "Manage" = "관리";
 "Manage Account on the Web" = "웹에서 계정 관리";
@@ -604,6 +608,7 @@
 "Moving folder..." = "폴더 이동 중...";
 "Moving site..." = "사이트 이동 중...";
 "Moving..." = "이동 중...";
+"Music" = "음악";
 "Mute %@ Sites" = "사이트 %@개 음소거";
 "Mute 1 Site" = "사이트 1개 음소거";
 "Mute All" = "모두 음소거";
@@ -732,6 +737,7 @@
 "Play" = "재생";
 "Play again" = "다시 재생";
 "Play now" = "지금 재생";
+"Play over other audio" = "다른 오디오 위에서 재생";
 "Play the next unread story" = "다음 읽지 않은 스토리 재생";
 "Play videos" = "동영상 재생";
 "Playback position" = "재생 위치";
@@ -929,6 +935,7 @@
 "Show unread count" = "읽지 않은 항목 수 표시";
 "Show with feed icons" = "피드 아이콘과 함께 표시";
 "Show without icons" = "아이콘 없이 표시";
+"Shows the music settings" = "음악 설정 표시";
 "Sidebar" = "사이드바";
 "Sign Up" = "가입하기";
 "Sign in" = "로그인";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "안정성, 유사성 및 스타일";
 "Stale — last story %@" = "오래됨 — 마지막 스토리 %@";
 "Standard" = "표준";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Music 앱 또는 Spotify에서 음악을 재생하면 Listen이 음악 위에 뉴스를 읽어 줍니다. 해당 앱의 컨트롤이 잠금 화면을 제어합니다.";
 "Start reading" = "읽기 시작";
 "Statistics" = "통계";
 "Statistics…" = "통계…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "안내 보기";
 "View mode" = "보기 모드";
 "Voice" = "음성";
+"Voice and music balance" = "음성과 음악의 균형";
 "Voice settings" = "음성 설정";
 "Warm" = "따뜻함";
 "Web" = "웹";

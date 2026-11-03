@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "Raggruppa gli articoli duplicati in tutti i tuoi feed";
 "Cluster matches" = "Corrispondenze del cluster";
 "Cluster related stories" = "Raggruppa gli articoli correlati";
+"Collapsed" = "Contratto";
 "Column layout" = "Disposizione delle colonne";
 "Columns" = "Colonne";
 "Comfortable" = "Confortevole";
@@ -336,6 +337,7 @@
 "Exact phrase" = "Frase esatta";
 "Exaggerates the voice's style" = "Esagera lo stile della voce";
 "Exit Full Screen" = "Esci da schermo intero";
+"Expanded" = "Espanso";
 "Experimental" = "Sperimentale";
 "Explore interests" = "Esplora gli interessi";
 "Export Preferences" = "Esporta preferenze";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "Nascondi gli articoli nascosti";
 "Hide status bar" = "Nascondi la barra di stato";
 "Hide toolbars when reading" = "Nascondi le barre degli strumenti durante la lettura";
+"Hides the music settings" = "Nasconde le impostazioni musicali";
 "Highlight the paragraph being read" = "Evidenzia il paragrafo letto";
 "How much emotion" = "Intensità delle emozioni";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Se nessuna delle opzioni corrisponde, inserisci il titolo di un articolo che vedi nella pagina e lo analizzeremo di nuovo.";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "Tieni premuto sui titoli degli articoli";
 "Long reads for later" = "Articoli lunghi da leggere più tardi";
 "Longer articles worth setting time aside for" = "Articoli più lunghi che meritano di essere letti con calma";
+"Lower music while voice speaks" = "Abbassa il volume della musica mentre la voce parla";
 "Magazine" = "Rivista";
 "Manage" = "Gestisci";
 "Manage Account on the Web" = "Gestisci account sul Web";
@@ -604,6 +608,7 @@
 "Moving folder..." = "Spostamento cartella...";
 "Moving site..." = "Spostamento del sito…";
 "Moving..." = "Spostamento...";
+"Music" = "Musica";
 "Mute %@ Sites" = "Silenzia %@ siti";
 "Mute 1 Site" = "Silenzia 1 sito";
 "Mute All" = "Silenzia tutto";
@@ -732,6 +737,7 @@
 "Play" = "Riproduci";
 "Play again" = "Riproduci di nuovo";
 "Play now" = "Riproduci ora";
+"Play over other audio" = "Riproduci sopra l'audio di altre app";
 "Play the next unread story" = "Riproduci l'articolo non letto successivo";
 "Play videos" = "Riproduci video";
 "Playback position" = "Posizione di riproduzione";
@@ -929,6 +935,7 @@
 "Show unread count" = "Mostra il conteggio dei non letti";
 "Show with feed icons" = "Mostra con le icone dei feed";
 "Show without icons" = "Mostra senza icone";
+"Shows the music settings" = "Mostra le impostazioni musicali";
 "Sidebar" = "Barra laterale";
 "Sign Up" = "Registrati";
 "Sign in" = "Accedi";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "Stabilità, somiglianza e stile";
 "Stale — last story %@" = "Inattivo — ultimo articolo %@";
 "Standard" = "Standard";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Avvia la musica nell'app Musica o su Spotify e Listen leggerà le notizie sopra la musica. I controlli di quell'app prenderanno il controllo della schermata di blocco.";
 "Start reading" = "Inizia a leggere";
 "Statistics" = "Statistiche";
 "Statistics…" = "Statistiche…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "Visualizza le istruzioni";
 "View mode" = "Modalità di visualizzazione";
 "Voice" = "Voce";
+"Voice and music balance" = "Bilanciamento tra voce e musica";
 "Voice settings" = "Impostazioni vocali";
 "Warm" = "Caldo";
 "Web" = "Web";

@@ -1217,6 +1217,15 @@
     <string name="listen_up_next_move_up">ऊपर ले जाएँ</string>
     <string name="listen_up_next_move_down">नीचे ले जाएँ</string>
     <string name="listen_up_next_empty_queue">किसी भी लेख पर “सुनें” के पास + टैप करके उसे यहाँ कतार में जोड़ें।</string>
+    <string name="listen_music">संगीत</string>
+    <string name="listen_music_expanded">विस्तारित</string>
+    <string name="listen_music_collapsed">संक्षिप्त</string>
+    <string name="listen_play_over_other_audio">अन्य ऑडियो के ऊपर चलाएँ</string>
+    <string name="listen_play_over_other_audio_summary">Spotify या किसी अन्य ऐप में संगीत शुरू करें और Listen उसके ऊपर पढ़ेगा।</string>
+    <string name="listen_lower_music">आवाज़ बोलते समय संगीत धीमा करें</string>
+    <string name="listen_balance_music">संगीत</string>
+    <string name="listen_balance_voice">आवाज़</string>
+    <string name="listen_balance_description">आवाज़ और संगीत का संतुलन</string>
     <string name="listen_speed">गति</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

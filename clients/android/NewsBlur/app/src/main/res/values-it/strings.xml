@@ -1239,6 +1239,15 @@ le persone per parlare del mondo.</string>
     <string name="listen_up_next_move_up">Sposta in alto</string>
     <string name="listen_up_next_move_down">Sposta in basso</string>
     <string name="listen_up_next_empty_queue">Tocca + accanto ad Ascolta su qualsiasi articolo per aggiungerlo qui in coda.</string>
+    <string name="listen_music">Musica</string>
+    <string name="listen_music_expanded">Espansa</string>
+    <string name="listen_music_collapsed">Compressa</string>
+    <string name="listen_play_over_other_audio">Riproduci sopra un altro audio</string>
+    <string name="listen_play_over_other_audio_summary">Avvia la musica su Spotify o in un\'altra app e Listen leggerà le notizie sopra la musica.</string>
+    <string name="listen_lower_music">Abbassa il volume della musica mentre la voce parla</string>
+    <string name="listen_balance_music">Musica</string>
+    <string name="listen_balance_voice">Voce</string>
+    <string name="listen_balance_description">Bilanciamento tra voce e musica</string>
     <string name="listen_speed">Velocità</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

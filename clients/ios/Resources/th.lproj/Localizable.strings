@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "จัดกลุ่มบทความซ้ำจากทุกฟีดของคุณ";
 "Cluster matches" = "การจับคู่กลุ่ม";
 "Cluster related stories" = "จัดกลุ่มบทความที่เกี่ยวข้อง";
+"Collapsed" = "ยุบแล้ว";
 "Column layout" = "เค้าโครงคอลัมน์";
 "Columns" = "คอลัมน์";
 "Comfortable" = "สบายตา";
@@ -336,6 +337,7 @@
 "Exact phrase" = "วลีที่ตรงกันทุกประการ";
 "Exaggerates the voice's style" = "เน้นลีลาการพูดของเสียงให้ชัดเจนขึ้น";
 "Exit Full Screen" = "ออกจากโหมดเต็มหน้าจอ";
+"Expanded" = "ขยายแล้ว";
 "Experimental" = "ทดลอง";
 "Explore interests" = "สำรวจความสนใจ";
 "Export Preferences" = "ส่งออกการตั้งค่า";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "ซ่อนบทความที่ซ่อนไว้";
 "Hide status bar" = "ซ่อนแถบสถานะ";
 "Hide toolbars when reading" = "ซ่อนแถบเครื่องมือขณะอ่าน";
+"Hides the music settings" = "ซ่อนการตั้งค่าเพลง";
 "Highlight the paragraph being read" = "ไฮไลต์ย่อหน้าที่กำลังอ่าน";
 "How much emotion" = "ระดับอารมณ์";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "หากไม่มีตัวเลือกใดตรงกัน ให้พิมพ์ชื่อบทความที่เห็นบนหน้า แล้วเราจะวิเคราะห์อีกครั้ง";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "กดชื่อบทความค้างไว้";
 "Long reads for later" = "บทความยาวไว้อ่านทีหลัง";
 "Longer articles worth setting time aside for" = "บทความยาวที่ควรหาเวลาอ่าน";
+"Lower music while voice speaks" = "ลดเสียงเพลงขณะเสียงพูด";
 "Magazine" = "นิตยสาร";
 "Manage" = "จัดการ";
 "Manage Account on the Web" = "จัดการบัญชีบนเว็บ";
@@ -604,6 +608,7 @@
 "Moving folder..." = "กำลังย้ายโฟลเดอร์...";
 "Moving site..." = "กำลังย้ายเว็บไซต์...";
 "Moving..." = "กำลังย้าย...";
+"Music" = "เพลง";
 "Mute %@ Sites" = "ปิดเสียงเว็บไซต์ %@ แห่ง";
 "Mute 1 Site" = "ปิดเสียง 1 เว็บไซต์";
 "Mute All" = "ปิดเสียงทั้งหมด";
@@ -732,6 +737,7 @@
 "Play" = "เล่น";
 "Play again" = "เล่นอีกครั้ง";
 "Play now" = "เล่นตอนนี้";
+"Play over other audio" = "เล่นทับเสียงจากแอปอื่น";
 "Play the next unread story" = "เล่นบทความถัดไปที่ยังไม่อ่าน";
 "Play videos" = "เล่นวิดีโอ";
 "Playback position" = "ตำแหน่งการเล่น";
@@ -929,6 +935,7 @@
 "Show unread count" = "แสดงจำนวนที่ยังไม่อ่าน";
 "Show with feed icons" = "แสดงพร้อมไอคอนฟีด";
 "Show without icons" = "แสดงโดยไม่มีไอคอน";
+"Shows the music settings" = "แสดงการตั้งค่าเพลง";
 "Sidebar" = "แถบด้านข้าง";
 "Sign Up" = "สมัครสมาชิก";
 "Sign in" = "ลงชื่อเข้าใช้";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "ความเสถียร ความคล้ายคลึง และสไตล์";
 "Stale — last story %@" = "ไม่มีการอัปเดต — บทความล่าสุดเมื่อ %@";
 "Standard" = "มาตรฐาน";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "เปิดเพลงในแอป Music หรือ Spotify แล้ว Listen จะอ่านทับเพลง แอปนั้นจะควบคุมหน้าจอล็อก";
 "Start reading" = "เริ่มอ่าน";
 "Statistics" = "สถิติ";
 "Statistics…" = "สถิติ…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "ดูวิธีใช้";
 "View mode" = "โหมดการแสดงผล";
 "Voice" = "เสียง";
+"Voice and music balance" = "ปรับสมดุลเสียงพูดและดนตรี";
 "Voice settings" = "การตั้งค่าเสียง";
 "Warm" = "โทนอุ่น";
 "Web" = "เว็บ";

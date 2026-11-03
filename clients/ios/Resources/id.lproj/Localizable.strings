@@ -226,6 +226,7 @@
 "Cluster duplicate stories across all your feeds" = "Kelompokkan artikel duplikat dari semua feed Anda";
 "Cluster matches" = "Kecocokan klaster";
 "Cluster related stories" = "Kelompokkan artikel terkait";
+"Collapsed" = "Diciutkan";
 "Column layout" = "Tata letak kolom";
 "Columns" = "Kolom";
 "Comfortable" = "Nyaman";
@@ -336,6 +337,7 @@
 "Exact phrase" = "Frasa persis";
 "Exaggerates the voice's style" = "Melebih-lebihkan gaya suara";
 "Exit Full Screen" = "Keluar dari Layar Penuh";
+"Expanded" = "Diperluas";
 "Experimental" = "Eksperimental";
 "Explore interests" = "Jelajahi minat";
 "Export Preferences" = "Ekspor Preferensi";
@@ -439,6 +441,7 @@
 "Hide hidden stories" = "Sembunyikan artikel tersembunyi";
 "Hide status bar" = "Sembunyikan bilah status";
 "Hide toolbars when reading" = "Sembunyikan bilah alat saat membaca";
+"Hides the music settings" = "Menyembunyikan pengaturan musik";
 "Highlight the paragraph being read" = "Sorot paragraf yang sedang dibacakan";
 "How much emotion" = "Seberapa banyak emosi";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Jika tidak ada opsi yang cocok, ketik judul artikel yang terlihat di halaman dan kami akan menganalisis ulang.";
@@ -527,6 +530,7 @@
 "Long press on story titles" = "Tekan lama judul artikel";
 "Long reads for later" = "Bacaan panjang untuk nanti";
 "Longer articles worth setting time aside for" = "Artikel panjang yang layak diluangkan waktu untuk membacanya";
+"Lower music while voice speaks" = "Kecilkan volume musik saat suara berbicara";
 "Magazine" = "Majalah";
 "Manage" = "Kelola";
 "Manage Account on the Web" = "Kelola Akun di Web";
@@ -604,6 +608,7 @@
 "Moving folder..." = "Memindahkan folder...";
 "Moving site..." = "Memindahkan situs...";
 "Moving..." = "Memindahkan...";
+"Music" = "Musik";
 "Mute %@ Sites" = "Bisukan %@ Situs";
 "Mute 1 Site" = "Bisukan 1 Situs";
 "Mute All" = "Bisukan Semua";
@@ -732,6 +737,7 @@
 "Play" = "Putar";
 "Play again" = "Putar lagi";
 "Play now" = "Putar sekarang";
+"Play over other audio" = "Putar di atas audio lain";
 "Play the next unread story" = "Putar artikel belum dibaca berikutnya";
 "Play videos" = "Putar video";
 "Playback position" = "Posisi pemutaran";
@@ -929,6 +935,7 @@
 "Show unread count" = "Tampilkan jumlah belum dibaca";
 "Show with feed icons" = "Tampilkan dengan ikon feed";
 "Show without icons" = "Tampilkan tanpa ikon";
+"Shows the music settings" = "Menampilkan pengaturan musik";
 "Sidebar" = "Bilah sisi";
 "Sign Up" = "Daftar";
 "Sign in" = "Masuk";
@@ -961,6 +968,7 @@
 "Stability, similarity and style" = "Stabilitas, kemiripan, dan gaya";
 "Stale — last story %@" = "Usang — artikel terakhir %@";
 "Standard" = "Standar";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Putar musik di aplikasi Musik atau Spotify, lalu Listen akan membacakan berita di atasnya. Kontrol aplikasi tersebut akan mengambil alih layar terkunci.";
 "Start reading" = "Mulai membaca";
 "Statistics" = "Statistik";
 "Statistics…" = "Statistik…";
@@ -1171,6 +1179,7 @@
 "View instructions" = "Lihat petunjuk";
 "View mode" = "Mode tampilan";
 "Voice" = "Suara";
+"Voice and music balance" = "Keseimbangan suara dan musik";
 "Voice settings" = "Pengaturan suara";
 "Warm" = "Hangat";
 "Web" = "Web";

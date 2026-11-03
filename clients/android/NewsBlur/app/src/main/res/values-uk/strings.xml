@@ -1261,6 +1261,15 @@
     <string name="listen_up_next_move_up">Перемістити вгору</string>
     <string name="listen_up_next_move_down">Перемістити вниз</string>
     <string name="listen_up_next_empty_queue">Торкніться + біля кнопки «Слухати» на будь-якій статті, щоб додати її до черги.</string>
+    <string name="listen_music">Музика</string>
+    <string name="listen_music_expanded">Розгорнуто</string>
+    <string name="listen_music_collapsed">Згорнуто</string>
+    <string name="listen_play_over_other_audio">Відтворювати поверх іншого аудіо</string>
+    <string name="listen_play_over_other_audio_summary">Увімкніть музику у Spotify або іншому застосунку — «Прослуховування» читатиме поверх неї.</string>
+    <string name="listen_lower_music">Зменшувати гучність музики під час озвучування</string>
+    <string name="listen_balance_music">Музика</string>
+    <string name="listen_balance_voice">Голос</string>
+    <string name="listen_balance_description">Баланс голосу й музики</string>
     <string name="listen_speed">Швидкість</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

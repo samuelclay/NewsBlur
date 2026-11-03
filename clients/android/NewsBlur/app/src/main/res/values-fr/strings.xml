@@ -1239,6 +1239,15 @@ les gens pour parler du monde.</string>
     <string name="listen_up_next_move_up">Déplacer vers le haut</string>
     <string name="listen_up_next_move_down">Déplacer vers le bas</string>
     <string name="listen_up_next_empty_queue">Touchez + à côté de « Écouter » sur un article pour l’ajouter à la file d’attente ici.</string>
+    <string name="listen_music">Musique</string>
+    <string name="listen_music_expanded">Développée</string>
+    <string name="listen_music_collapsed">Réduite</string>
+    <string name="listen_play_over_other_audio">Lire par-dessus un autre son</string>
+    <string name="listen_play_over_other_audio_summary">Lancez de la musique dans Spotify ou une autre app : Écoute la lit par-dessus.</string>
+    <string name="listen_lower_music">Baisser la musique pendant la lecture de la voix</string>
+    <string name="listen_balance_music">Musique</string>
+    <string name="listen_balance_voice">Voix</string>
+    <string name="listen_balance_description">Équilibre entre la voix et la musique</string>
     <string name="listen_speed">Vitesse</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>
