@@ -143,7 +143,8 @@ import Foundation
     }
 
     /// The scoring fields of each requested story. apps/clustering/models.py can fold a requested story into another
-    /// one's cluster_stories, which carry its intelligence and score too.
+    /// one's cluster_stories, which carry its intelligence, score and prompt_classifiers too, so an empty list clears
+    /// a folded story's AI pills. A member from a server that doesn't send prompt_classifiers leaves them as they were.
     private static func scoring(of stories: [[String: Any]], requestedHashes: Set<String>) -> [String: [String: Any]] {
         var scoring: [String: [String: Any]] = [:]
         for story in stories {

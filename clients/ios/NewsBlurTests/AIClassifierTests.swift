@@ -942,6 +942,39 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(intelligence(of: "7:other", in: app)?["prompt"] as? Int, 0, "Another site's story wasn't asked for")
     }
 
+    func test_aFoldedStoryTakesItsAIPillsFromItsClusterMember() {
+        // The reruns matched the AI focus prompt the reader removes, and the server folds both under the keynote.
+        let app = makeApp()
+        let prompt = "Non-apple related news"
+        let oldPill: [String: Any] = ["prompt": prompt, "score": 1, "include_images": false]
+        var rerun = story("42:rerun", title: "Apple's October event, again", intelligence: ["prompt": 1])
+        rerun["prompt_classifiers"] = [oldPill]
+        var recap = story("42:recap", title: "Apple's October event, recapped", intelligence: ["prompt": 1])
+        recap["prompt_classifiers"] = [oldPill]
+        app.storiesCollection.activeFeedStories = (app.storiesCollection.activeFeedStories ?? []) + [rerun, recap]
+        XCTAssertTrue(pillsHTML(of: "42:rerun", in: app).contains(prompt))
+        app.savePromptClassifier(prompt, feedId: "42", score: 0, includeImages: false, scope: "feed", folderName: "")
+        app.endDebounces()
+
+        let unmatched = ["prompt": 0]
+        app.storyRequests[0].succeed(["stories": [
+            ["story_hash": "42:keynote", "story_feed_id": 42, "intelligence": unmatched, "score": 0,
+             "prompt_classifiers": [Any](),
+             "cluster_stories": [
+                ["story_hash": "42:rerun", "story_feed_id": 42, "intelligence": unmatched, "score": 0,
+                 "prompt_classifiers": [Any]()],
+                // A server from before apps/clustering/models.py sent members' prompt_classifiers.
+                ["story_hash": "42:recap", "story_feed_id": 42, "intelligence": unmatched, "score": 0],
+             ]],
+        ]])
+
+        XCTAssertEqual(intelligence(of: "42:rerun", in: app)?["prompt"] as? Int, 0)
+        XCTAssertEqual(pillsHTML(of: "42:rerun", in: app), "", "The folded story's AI pill goes with the prompt")
+        XCTAssertEqual(intelligence(of: "42:recap", in: app)?["prompt"] as? Int, 0)
+        XCTAssertTrue(pillsHTML(of: "42:recap", in: app).contains(prompt),
+                      "A member without prompt_classifiers leaves the story's pills as they were")
+    }
+
     func test_aStoryShowingInFocusStaysWhenTheRefreshLowersItsScore() {
         // Focus. Liking a URL regex shows the keynote locally, so the reader may be looking at it when the server's
         // lower score arrives. The sponsor post wasn't showing and isn't kept.
@@ -1184,6 +1217,11 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     private func loadedStory(_ hash: String, in app: NewsBlurAppDelegate) -> [String: Any]? {
         app.storiesCollection.activeFeedStories.compactMap { $0 as? [String: Any] }.first { $0["story_hash"] as? String == hash }
+    }
+
+    /// The AI pills StoryDetailObjCViewController.m puts in a loaded story's header.
+    private func pillsHTML(of hash: String, in app: NewsBlurAppDelegate) -> String {
+        StoryAIClassifierPills.headerHTML(for: loadedStory(hash, in: app)?["prompt_classifiers"])
     }
 
     /// The stories the list shows and paging moves through, in order.
