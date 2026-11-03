@@ -466,6 +466,72 @@ private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(moves.last, "feed: -> folder:Apple", "A site in a folder scopes to it")
     }
 
+    func test_nestedFolderPromptFromTheAPICostsItsFolderAndSavesItsFullPath() {
+        let app = makeNestedFolderApp()
+        // apps/analyzer/models.py names a folder scope by its flatten_folders path.
+        let classifiers: AnyDictionary = [
+            "prompts": ["Swift evolution proposals": 1],
+            "prompts_scope": ["Swift evolution proposals": ["scope": "folder", "folder_name": "Tech - Swift"]],
+        ]
+        let saved = PromptClassifier.saved(in: classifiers, kind: .content)
+        XCTAssertEqual(saved.first?.folderName, "Tech - Swift")
+
+        let currentFolder = ClassifierFolderPath.serverPath(forFeed: "3", appDelegate: app)
+        XCTAssertEqual(currentFolder, "Tech - Swift", "A subfolder's site scopes to the subfolder's full path, not its parent or leaf name")
+        XCTAssertEqual(ClassifierFolderPath.serverPath(forFeed: "2", appDelegate: app), "Tech")
+        XCTAssertEqual(ClassifierFolderPath.serverPath(forFeed: "1", appDelegate: app), "", "A site outside any folder has no folder")
+
+        let volumes = AIClassifierStoryVolumes.live(appDelegate: app)
+        XCTAssertEqual(volumes.stories(scope: .folder, folderName: "Tech - Swift", feedId: "3"), 300,
+                       "Only the subfolder's sites count, not the top-level folder that is also called Swift")
+        XCTAssertEqual(volumes.stories(scope: .folder, folderName: "Tech", feedId: "2"), 320, "A folder covers its subfolders")
+        XCTAssertEqual(volumes.stories(scope: .folder, folderName: "Swift", feedId: "4"), 4_000)
+
+        let transport = RecordingAITransport()
+        transport.responses["/classifier/ai_classifier_usage"] = ["code": 0, "can_use_ai": true, "avg_cost_per_text": 0.001, "avg_cost_per_image": 0.01]
+        let model = makeModel(transport: transport, canUseAI: true)
+        model.storyVolumes = { volumes }
+        model.prepare(feedId: "3", storyHash: nil)
+        withEnglishInterface {
+            XCTAssertEqual(model.sectionCost(.content, saved: saved, feedId: "3", currentFolderName: currentFolder),
+                           AIClassifierSectionCost(monthly: "$0.30", daily: "$0.010",
+                                                   breakdown: "1 on folder (300 stories/mo) × $0.0010/story"))
+        }
+
+        model.savePrompt = { prompt, kind, feedId, score, scope, folderName in
+            app.savePromptClassifier(prompt, feedId: feedId, score: score, includeImages: kind.includesImages,
+                                     scope: scope.rawValue, folderName: folderName)
+        }
+        model.tapDislike(saved[0], feedId: "3", currentFolderName: currentFolder)
+        XCTAssertEqual(app.savedParameters.last as NSDictionary?,
+                       ["dislike_prompt": "Swift evolution proposals", "feed_id": "3", "scope": "folder", "folder_name": "Tech - Swift"])
+
+        var moves: [String] = []
+        model.changeScope = { _, _, _, _, oldScope, oldFolderName, scope, folderName in
+            moves.append("\(oldScope.rawValue):\(oldFolderName) -> \(scope.rawValue):\(folderName)")
+        }
+        let sitePrompt = PromptClassifier(prompt: "Server-side Swift", kind: .image, score: 1, scope: .feed, folderName: "")
+        model.changeScope(sitePrompt, to: .folder, feedId: "3", currentFolderName: currentFolder)
+        XCTAssertEqual(moves, ["feed: -> folder:Tech - Swift"], "Moving a site prompt to its folder names the full path too")
+        model.tap(sitePrompt, feedId: "3", currentFolderName: currentFolder)
+        XCTAssertEqual(app.savedParameters.last as NSDictionary?,
+                       ["dislike_image_prompt": "Server-side Swift", "feed_id": "3", "scope": "folder", "folder_name": "Tech - Swift"])
+    }
+
+    /// FeedsObjCViewController.m keys folders by native path, and FeedsViewController.swift addSubfolderFeeds lists a
+    /// subfolder's sites under its parent too. A top-level folder shares the subfolder's leaf name.
+    private func makeNestedFolderApp() -> PromptSaveAppDelegate {
+        let app = PromptSaveAppDelegate()
+        app.storiesCollection = StoriesCollection()
+        app.dictFolders = ["everything": [1], "Swift": [4], "Tech": [2, 3], "Tech ▸ Swift": [3], "saved_stories": [] as [Any]]
+        app.dictFoldersArray = NSMutableArray(array: ["everything", "Swift", "Tech", "Tech ▸ Swift", "saved_stories"])
+        app.dictFeeds = NSMutableDictionary(dictionary: [
+            "1": ["stories_last_month": 1], "2": ["stories_last_month": 20],
+            "3": ["stories_last_month": 300], "4": ["stories_last_month": 4_000],
+        ])
+        return app
+    }
+
     private func makeModel(transport: RecordingAITransport, canUseAI: Bool) -> TrainerAIPromptModel {
         TrainerAIPromptModel(api: AIClassifierAPI(transport: transport),
                              billingStatus: { UsageBillingStatus(isUsageBilling: canUseAI, isSelfHostedAI: false,

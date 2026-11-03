@@ -612,10 +612,10 @@ struct TrainerView: View {
         return cache.appDelegate.isPremiumArchive
     }
 
+    /// The folder every folder scope saves to, by the full path apps/reader/models.py flatten_folders gives it.
     var currentFolderName: String {
         guard let feedId = feed?.id else { return "" }
-        let folders = cache.appDelegate.parentFolders(forFeed: feedId) as? [String] ?? []
-        return folders.first ?? ""
+        return ClassifierFolderPath.serverPath(forFeed: feedId, appDelegate: cache.appDelegate)
     }
 
     // MARK: - Scope

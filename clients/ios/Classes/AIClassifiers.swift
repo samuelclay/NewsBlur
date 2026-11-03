@@ -329,12 +329,10 @@ struct AIClassifierStoryVolumes {
             storiesForFeed: feedStories,
             storiesForFolder: { folderName in
                 guard let appDelegate, let folders = appDelegate.dictFolders as? [String: Any] else { return 0 }
-                // NewsBlurAppDelegate.m stores folders by full path ("Tech ▸ Swift"); classifier scopes use the last name.
-                let roots = folders.keys.filter { appDelegate.extractFolderName($0) == folderName }
-                var feedIds = Set<String>()
-                for (path, feeds) in folders where roots.contains(where: { path == $0 || path.hasPrefix($0 + " ▸ ") }) {
-                    for feedId in feeds as? [Any] ?? [] { feedIds.insert("\(feedId)") }
-                }
+                // Classifier scopes name folders by the server's full path ("Tech - Swift"), and NewsBlurAppDelegate.m
+                // by its native one ("Tech ▸ Swift"), so ClassifierScope.swift translates between them.
+                let covered = ClassifierFolderPath.nativeFolders(coveredBy: folderName, in: Array(folders.keys))
+                let feedIds = Set(covered.flatMap { ClassifierFolderPath.feedIds(in: folders[$0]) })
                 return feedIds.reduce(0) { $0 + feedStories($1) }
             },
             storiesForAllSites: {

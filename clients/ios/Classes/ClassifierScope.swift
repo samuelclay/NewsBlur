@@ -69,6 +69,56 @@ struct ClassifierScopeInfo: Equatable {
     }
 }
 
+/// ClassifierScope.swift names a folder scope by the full path apps/reader/models.py flatten_folders gives the folder
+/// ("Tech - Swift"), since apps/analyzer/models.py matches folder classifiers to sites by that path. NewsBlurAppDelegate.m
+/// keys its folders differently: FeedsObjCViewController.m fixFolderNames turns "Tech - Swift" into "Tech ▸ Swift", and
+/// FeedsViewController.swift addSubfolderFeeds lists every subfolder's sites under each of its parents too.
+enum ClassifierFolderPath {
+    static let nativeSeparator = " ▸ "
+    static let serverSeparator = " - "
+
+    /// The dictFolders keys in NewsBlurAppDelegate.m that hold sites but aren't folders a classifier can scope to.
+    /// "everything" is the server's " " folder of sites outside any folder.
+    private static let nonFolderKeys: Set<String> = [
+        "everything", "dashboard", "infrequent", "daily_briefing", "read_stories", "saved_searches", "saved_stories",
+        "river_global", "river_blurblogs", "widget_stories",
+    ]
+
+    static func isFolder(_ nativePath: String) -> Bool {
+        !nativePath.isEmpty && !nonFolderKeys.contains(nativePath) && !nativePath.hasPrefix("trending:")
+    }
+
+    /// "Tech ▸ Swift" becomes "Tech - Swift".
+    static func serverPath(fromNative nativePath: String) -> String {
+        nativePath.replacingOccurrences(of: nativeSeparator, with: serverSeparator)
+    }
+
+    /// The server path of the folder holding the site itself, or "" for a site outside any folder. A parent folder
+    /// also lists its subfolders' sites, so it only counts when none of its subfolders hold the site.
+    static func serverPath(forFeed feedId: String, folderOrder: [String], folders: [String: Any]) -> String {
+        let holding = folderOrder.filter { isFolder($0) && feedIds(in: folders[$0]).contains(feedId) }
+        let innermost = holding.first { folder in !holding.contains { $0.hasPrefix(folder + nativeSeparator) } }
+        return innermost.map(serverPath(fromNative:)) ?? ""
+    }
+
+    /// TrainerView.swift's folder for the site being trained, which every folder scope it saves names.
+    @MainActor static func serverPath(forFeed feedId: String, appDelegate: NewsBlurAppDelegate) -> String {
+        serverPath(forFeed: feedId, folderOrder: appDelegate.dictFoldersArray as? [String] ?? [],
+                   folders: appDelegate.dictFolders as? [String: Any] ?? [:])
+    }
+
+    /// The native folders a folder scope covers: the folder its server path names and every subfolder inside it.
+    static func nativeFolders(coveredBy serverPath: String, in nativePaths: [String]) -> [String] {
+        let roots = nativePaths.filter { isFolder($0) && self.serverPath(fromNative: $0) == serverPath }
+        return nativePaths.filter { path in roots.contains { path == $0 || path.hasPrefix($0 + nativeSeparator) } }
+    }
+
+    /// A dictFolders entry's site ids, which arrive as numbers or strings.
+    static func feedIds(in folder: Any?) -> [String] {
+        (folder as? [Any] ?? []).map { "\($0)" }
+    }
+}
+
 enum ClassifierScopeResolver {
     static func overrideKey(type: String, name: String) -> String {
         "\(type):\(name)"
