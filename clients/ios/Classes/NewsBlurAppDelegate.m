@@ -3207,18 +3207,21 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 // NewsBlurAppDelegate.m puts the loaded stories back once recalculateIntelligenceScores: or StoryScoreRefresher.swift
 // has rescored them, and works out again which ones the list shows: a story whose score rose to the selected
-// intelligence level joins the list, and a sticky one stays though its score fell. When a story joins above the open
-// one, the open story's page moves with it, so paging forward doesn't show it again.
+// intelligence level joins the list, and a sticky one stays though its score fell. When the stories shown change, the
+// pager lays out the open story's neighbors and scroll size again around it, so paging shows the stories the list
+// does: the open story's page moves down when one joins above it, and the next page changes when one joins after it.
 - (void)showRescoredStories:(NSArray *)stories {
+    NSArray *shownStoryHashes = [storiesCollection.activeFeedStoryLocationIds copy];
     storiesCollection.activeFeedStories = stories;
     storiesCollection.storyCount = (int)stories.count;
     [storiesCollection calculateStoryLocations];
+    if ([storiesCollection.activeFeedStoryLocationIds isEqualToArray:shownStoryHashes]) return;
 
     StoryPagesViewController *pages = self.storyPagesViewController;
     if (pages.retainsDuoSourceArticle || [self.feedDetailViewController hasRetainedFirstPageStory]) return;
     NSInteger openLocation = [storiesCollection locationOfStoryId:pages.currentPage.activeStoryId];
     if (openLocation >= 0) {
-        [pages preserveCurrentPageAtLocation:openLocation];
+        [pages relayoutPagesKeepingCurrentPageAtLocation:openLocation];
     }
 }
 

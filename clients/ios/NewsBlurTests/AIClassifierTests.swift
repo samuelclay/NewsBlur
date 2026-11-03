@@ -129,19 +129,31 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     }
 }
 
-/// AIClassifierTests.swift records where NewsBlurAppDelegate.m moves the open story's page, without a real pager.
+/// AIClassifierTests.swift pages through rescored stories with the real StoryPagesObjCViewController.m, on plain
+/// views in place of the storyboard's, and counts each time it sizes its scroll view.
 @MainActor private final class RescoredStoryPages: StoryPagesViewController {
-    var preservedLocations: [Int] = []
+    var scrollViewResizes = 0
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
-    override func refreshHeaders() {}
-    override func preserveCurrentPage(atLocation location: Int) { preservedLocations.append(location) }
+    override func resizeScrollView() {
+        scrollViewResizes += 1
+        super.resizeScrollView()
+    }
 }
 
+/// AIClassifierTests.swift records the stories StoryPagesObjCViewController.m draws into a page instead of loading
+/// them into WebKit, and counts the page as showing its story the way a loaded web view would.
 @MainActor private final class RescoredStoryPage: StoryDetailViewController {
+    var drawnHashes: [String] = []
+    var storyDrawn: (() -> Void)?
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {}
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
+    override func drawStory() {
+        drawnHashes.append(activeStory?["story_hash"] as? String ?? "missing")
+        hasStory = true
+        storyDrawn?()
+    }
 }
 
 /// AIClassifierTests.swift checks English copy, so it pins the interface language while each test runs.
@@ -1018,22 +1030,87 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     func test_theOpenStoryKeepsItsPageWhenAStoryJoinsAboveIt() {
         let app = makeApp()
-        let pages = RescoredStoryPages()
-        let openPage = RescoredStoryPage()
-        openPage.activeStoryId = "42:keynote"
-        pages.currentPage = openPage
-        app.pages = pages
         app.storiesCollection.activeClassifiers = ["42": ["prompts": ["Sponsor posts": -1]]]
         app.storiesCollection.setStories([story("42:sponsor", intelligence: ["prompt": -1]),
-                                          story("42:keynote", intelligence: ["prompt": 0])])
+                                          story("42:keynote", intelligence: ["prompt": 0]),
+                                          story("42:review", intelligence: ["prompt": 0])])
+        let pages = openPager(at: "42:keynote", in: app)
+        let (previous, open, next) = (page(pages.previousPage), page(pages.currentPage), page(pages.nextPage))
 
         app.savePromptClassifier("Sponsor posts", feedId: "42", score: 0, includeImages: false, scope: "feed",
                                  folderName: "")
-        XCTAssertEqual(pages.preservedLocations, [0], "Nothing joined above the open keynote yet")
         app.endDebounces()
         app.storyRequests[0].succeed(response(prompt: 0, for: ["42:sponsor"]))
-        XCTAssertEqual(pages.preservedLocations, [0, 1],
-                       "The keynote's page moves down one as the sponsor post joins above it")
+        XCTAssertEqual(visibleHashes(in: app), ["42:sponsor", "42:keynote", "42:review"])
+
+        waitForDraw(of: "42:sponsor", into: previous)
+        XCTAssertEqual(open.pageIndex, 1, "The keynote's page moves down one as the sponsor post joins above it")
+        XCTAssertEqual(open.activeStoryId, "42:keynote")
+        XCTAssertEqual(open.drawnHashes, [], "The open article isn't drawn again")
+        XCTAssertEqual(shownPage(of: pages), 1, "The reader still sees the keynote")
+        XCTAssertEqual(previous.pageIndex, 0)
+        XCTAssertEqual(previous.activeStoryId, "42:sponsor", "Paging back shows the sponsor post")
+        XCTAssertEqual(next.pageIndex, 2)
+        XCTAssertEqual(next.activeStoryId, "42:review")
+        XCTAssertEqual(next.drawnHashes, ["42:review"], "The next page already showed the review")
+        XCTAssertEqual(pageCount(of: pages), 3)
+    }
+
+    func test_theNextPageShowsAStoryThatJoinsRightAfterTheOpenOne() {
+        // The keynote is open and the review is the next page, with the hidden sponsor post between them.
+        let app = makeApp()
+        app.storiesCollection.activeClassifiers = ["42": ["prompts": ["Sponsor posts": -1]]]
+        app.storiesCollection.setStories([story("42:keynote", intelligence: ["prompt": 0]),
+                                          story("42:sponsor", intelligence: ["prompt": -1]),
+                                          story("42:review", intelligence: ["prompt": 0])])
+        let pages = openPager(at: "42:keynote", in: app)
+        let (open, next) = (page(pages.currentPage), page(pages.nextPage))
+        XCTAssertEqual(next.activeStoryId, "42:review")
+        XCTAssertEqual(pageCount(of: pages), 2)
+
+        app.savePromptClassifier("Sponsor posts", feedId: "42", score: 0, includeImages: false, scope: "feed",
+                                 folderName: "")
+        app.endDebounces()
+        app.storyRequests[0].succeed(response(prompt: 0, for: ["42:sponsor"]))
+        XCTAssertEqual(visibleHashes(in: app), ["42:keynote", "42:sponsor", "42:review"])
+
+        XCTAssertEqual(next.activeStoryId, "42:sponsor", "Paging forward shows the sponsor post the list shows next")
+        XCTAssertEqual(next.pageIndex, 1)
+        XCTAssertEqual(pageCount(of: pages), 3, "The pager reaches the review on the third page")
+        waitForDraw(of: "42:sponsor", into: next)
+        XCTAssertEqual(open.pageIndex, 0)
+        XCTAssertEqual(open.activeStoryId, "42:keynote")
+        XCTAssertEqual(open.drawnHashes, [], "The open article isn't drawn again")
+        XCTAssertEqual(shownPage(of: pages), 0, "The reader still sees the keynote")
+    }
+
+    func test_aRescoreThatShowsTheSameStoriesLeavesThePagerAlone() {
+        let app = makeApp()
+        app.storiesCollection.activeClassifiers = ["42": ["prompts": ["Sponsor posts": -1]]]
+        app.storiesCollection.setStories([story("42:keynote", intelligence: ["prompt": 0]),
+                                          story("42:sponsor", intelligence: ["prompt": -1]),
+                                          story("42:review", intelligence: ["prompt": 0])])
+        let pages = openPager(at: "42:keynote", in: app)
+        let pagesShown = [pages.previousPage, pages.currentPage, pages.nextPage].map { page($0) }
+        let drawn = pagesShown.map(\.drawnHashes)
+        pages.scrollViewResizes = 0
+
+        // The local recalculation keeps the AI's score, and the server likes the review but still hides the sponsor
+        // post: the scores change, the stories shown don't.
+        app.savePromptClassifier("Sponsor posts", feedId: "42", score: 0, includeImages: false, scope: "feed",
+                                 folderName: "")
+        app.endDebounces()
+        app.storyRequests[0].succeed(["stories": [["story_hash": "42:review", "story_feed_id": 42,
+                                                   "intelligence": ["prompt": 1], "score": 1],
+                                                  ["story_hash": "42:sponsor", "story_feed_id": 42,
+                                                   "intelligence": ["prompt": -1], "score": -1]]])
+        XCTAssertEqual(intelligence(of: "42:review", in: app)?["prompt"] as? Int, 1)
+        XCTAssertEqual(visibleHashes(in: app), ["42:keynote", "42:review"])
+
+        XCTAssertEqual(pages.scrollViewResizes, 0, "The pager isn't laid out again")
+        XCTAssertEqual([pages.previousPage, pages.currentPage, pages.nextPage].map { page($0) }, pagesShown)
+        XCTAssertEqual(pagesShown.map(\.pageIndex), [-1, 0, 1])
+        XCTAssertEqual(pagesShown.map(\.drawnHashes), drawn, "No page is drawn again")
     }
 
     func test_aLateRefreshIsDroppedOnceTheReaderSavesAgain() {
@@ -1231,6 +1308,63 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     private func intelligence(of hash: String, in app: NewsBlurAppDelegate) -> [String: Any]? {
         loadedStory(hash, in: app)?["intelligence"] as? [String: Any]
+    }
+
+    /// Opens the story in a real pager that has settled on it, with its neighbors drawn the way paging leaves them.
+    private func openPager(at hash: String, in app: RefreshingClassifierSaveAppDelegate) -> RescoredStoryPages {
+        let pages = RescoredStoryPages()
+        pages.appDelegate = app
+        pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        pages.scrollingToPage = -1
+        let (previous, open, next) = (RescoredStoryPage(), RescoredStoryPage(), RescoredStoryPage())
+        for storyPage in [previous, open, next] {
+            storyPage.appDelegate = app
+        }
+        let location = app.storiesCollection.location(ofStoryId: hash)
+        open.activeStory = NSMutableDictionary(dictionary: loadedStory(hash, in: app) ?? [:])
+        open.activeStoryId = hash
+        open.pageIndex = location
+        open.hasStory = true
+        (pages.previousPage, pages.currentPage, pages.nextPage) = (previous, open, next)
+        app.pages = pages
+
+        pages.applyNewIndex(location, pageController: open, supressRedraw: true)
+        pages.applyNewIndex(location - 1, pageController: previous)
+        pages.applyNewIndex(location + 1, pageController: next)
+        let shown = visibleHashes(in: app) ?? []
+        if shown.indices.contains(location - 1) { waitForDraw(of: shown[location - 1], into: previous) }
+        if shown.indices.contains(location + 1) { waitForDraw(of: shown[location + 1], into: next) }
+        return pages
+    }
+
+    private func page(_ storyPage: StoryDetailViewController?) -> RescoredStoryPage {
+        storyPage as! RescoredStoryPage
+    }
+
+    /// Waits for StoryPagesObjCViewController.m's asynchronous draw of a story into a page.
+    private func waitForDraw(of hash: String, into storyPage: RescoredStoryPage) {
+        guard storyPage.drawnHashes.last != hash else { return }
+        let drawn = expectation(description: "\(hash) is drawn into its page")
+        drawn.assertForOverFulfill = false
+        storyPage.storyDrawn = { [unowned storyPage] in
+            if storyPage.drawnHashes.last == hash { drawn.fulfill() }
+        }
+        wait(for: [drawn], timeout: SimulatorTestTiming.realWorkTimeout)
+        storyPage.storyDrawn = nil
+    }
+
+    /// How many stories the pager's scroll view pages through.
+    private func pageCount(of pages: StoryPagesViewController) -> CGFloat {
+        let size = pages.scrollView.contentSize
+        let bounds = pages.scrollView.bounds.size
+        return pages.isHorizontal ? size.width / bounds.width : size.height / bounds.height
+    }
+
+    /// The page the pager's scroll view shows.
+    private func shownPage(of pages: StoryPagesViewController) -> CGFloat {
+        let offset = pages.scrollView.contentOffset
+        let bounds = pages.scrollView.bounds.size
+        return pages.isHorizontal ? offset.x / bounds.width : offset.y / bounds.height
     }
 }
 
