@@ -214,7 +214,14 @@
             Search for a keyword or phrase in the feed. Note that only premium users can search feeds.
           optional: true
           example: "pizza"
+        - key: limit
+          desc: "Number of stories per page. Clamped to 1-100, so 0 or a negative value gives 1 and a value above 100 gives 100. A non-integer value uses the default (6)."
+          optional: true
+          default: 6
+          example: 20
       tips:
+        - >
+          The response includes a boolean <code>has_more</code>. It is true when another page may exist. It is never false while a later page has stories, except that page 400 always answers false (page 401 is a 404). A full last page can give true, so the next page may be empty. Keep paging until it is false.
         - >
           The story score (red, neutral, green) can be computed by following 
           the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> <code>compute_story_score</code> in reader_utils.js on GitHub</a>. Alternatively, you can use the <code>score</code> parameter.
@@ -345,7 +352,14 @@
           optional: true
           default: "false"
           example: 30
+        - key: limit
+          desc: "Number of stories per page."
+          optional: true
+          default: 12
+          example: 20
       tips:
+        - >
+          The response includes a boolean <code>has_more</code>. It is true when another page may exist. It is never false while a later page has stories, except that page 400 always answers false and free-tier users get at most one page of 3 stories. A full last page can give true, so the next page may be empty. Keep paging until it is false.
         - >
           Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
           <ul>
@@ -401,6 +415,14 @@
           optional: true
           default: newest
           example: oldest
+        - key: limit
+          desc: "Number of stories per page."
+          optional: true
+          default: 10
+          example: 20
+      tips:
+        - >
+          The response includes a boolean <code>has_more</code>. It is true when another page may exist. It is never false while a later page has stories, but a full last page can give true, so the next page may be empty. Keep paging until it is false.
 
     - url: /reader/mark_story_hashes_as_read
       method: POST

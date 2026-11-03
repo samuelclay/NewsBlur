@@ -300,6 +300,8 @@ CLASSIFIER_FILTER_TYPES = ("tag", "author", "title", "url", "text")
 # raw stories to actually find every match. Some pages may still return
 # fewer than `limit` — deliberately dumb, pagination can keep going.
 CLASSIFIER_FILTER_SCAN_MULTIPLIER = 20
+# Story views 404 past this page.
+MAX_STORY_PAGE = 400
 
 
 def normalize_classifier_filter_params(type_value, raw_value, scope_value):
@@ -1154,9 +1156,7 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
 def load_single_feed(request, feed_id):
     start = time.time()
     user = get_user(request)
-    # offset                  = int(request.GET.get('offset', 0))
-    # limit                   = int(request.GET.get('limit', 6))
-    limit = 6
+    limit = min(max(int_or_default(request.GET.get("limit", 6), 6), 1), 100)
     page = int_or_default(request.GET.get("page", 1), 1)
     delay = int_or_default(request.GET.get("delay", 0), 0)
     (
@@ -1221,7 +1221,7 @@ def load_single_feed(request, feed_id):
         # This feed could be private so user must be subscribed in order to read it
         raise Http404
 
-    if page > 400:
+    if page > MAX_STORY_PAGE:
         logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
         raise Http404
 
@@ -1250,11 +1250,14 @@ def load_single_feed(request, feed_id):
                 feed.feed_title = pf.title
                 feed.save(update_fields=["feed_title"])
 
+    has_more = False
     if query:
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
             user_search.touch_search_date()
-            stories = feed.find_stories(query, order=order, offset=offset, limit=limit)
+            stories = feed.find_stories(query, order=order, offset=offset, limit=limit + 1)
+            has_more = len(stories) > limit
+            stories = stories[:limit]
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -1284,9 +1287,12 @@ def load_single_feed(request, feed_id):
         if read_filter == "starred":
             mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
                 "%sstarred_date" % ("-" if order == "newest" else "")
-            )[offset : offset + effective_limit]
+            )[offset : offset + effective_limit + 1]
             stories = Feed.format_stories(mstories)
+            has_more = len(stories) > effective_limit
         elif usersub and read_filter == "unread":
+            # No extra row: get_stories ranks in Redis, then sorts by story_date, so trimming
+            # a spare row could drop one story and repeat another across pages.
             stories = usersub.get_stories(
                 order=order,
                 read_filter=read_filter,
@@ -1297,16 +1303,21 @@ def load_single_feed(request, feed_id):
                 date_filter_end=date_filter_end_utc,
                 metrics_source="feed_request",
             )
+            has_more = len(stories) >= effective_limit
         else:
             stories = feed.get_stories(
                 offset,
-                effective_limit,
+                effective_limit + 1,
                 order=order,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
             )
+            has_more = len(stories) > effective_limit
+        stories = stories[:effective_limit]
 
+    has_more = has_more and page < MAX_STORY_PAGE
     if classifier_filter_type and classifier_filter_value:
+        # has_more still counts the unfiltered stories, so it may be true with no match left.
         stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
     checkpoint1 = time.time()
@@ -1642,6 +1653,7 @@ def load_single_feed(request, feed_id):
         feed_id=feed.pk,
         elapsed_time=round(float(timediff), 2),
         message=message,
+        has_more=has_more,
     )
 
     if include_feeds:
@@ -2353,19 +2365,27 @@ def load_read_stories(request):
                 RUserStory.get_read_stories(user.pk, offset=0, limit=1000, order=order)
             )
             stories = [s for s in search_stories if s["story_hash"] in read_story_hashes_set]
+            has_more = len(stories) > offset + limit
             stories = stories[offset : offset + limit]
         else:
             stories = []
+            has_more = False
             message = "You must be a premium subscriber to search."
     else:
+        # Ask for one story past the page: if it comes back, there is more. Oldest-first
+        # pages count back from the end of the list, where one more would shift the
+        # page, so there a full page means "maybe more".
+        extra = 0 if order == "oldest" else 1
         story_hashes = RUserStory.get_read_stories(
             user.pk,
             offset=offset,
-            limit=limit,
+            limit=limit + extra,
             order=order,
             date_filter_start=date_filter_start_utc,
             date_filter_end=date_filter_end_utc,
         )
+        has_more = len(story_hashes) >= limit + extra
+        story_hashes = story_hashes[:limit]
         mstories = MStory.objects(story_hash__in=story_hashes).order_by()
         stories = Feed.format_stories(mstories)
         stories = sorted(
@@ -2442,6 +2462,7 @@ def load_read_stories(request):
         "user_profiles": user_profiles,
         "feeds": unsub_feeds,
         "message": message,
+        "has_more": has_more,
     }
 
 
@@ -2536,7 +2557,7 @@ def load_river_stories__redis(request):
     page = int_or_default(get_post.get("page", 1), 1)
     order = get_post.get("order", "newest")
     read_filter = get_post.get("read_filter", "unread")
-    if page > 400 and not story_hashes:
+    if page > MAX_STORY_PAGE and not story_hashes:
         logging.user(request, "~BR~FK~SBOver page 400 on river stories: %s" % page)
         raise Http404
     date_filter_start = get_post.get("date_filter_start")
@@ -2617,6 +2638,7 @@ def load_river_stories__redis(request):
                 elapsed_time=round(float(time.time() - start), 2),
                 user_search=None,
                 user_profiles=[],
+                has_more=False,
             )
             if include_feeds:
                 data["feeds"] = []
@@ -2663,6 +2685,7 @@ def load_river_stories__redis(request):
     )
     offset = (page - 1) * effective_limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
+    has_more = False
 
     # Android app duplicate request deduplication - only kicks in when concurrent requests detected
     # The Android app has a bug where it fires multiple identical requests simultaneously
@@ -2696,7 +2719,9 @@ def load_river_stories__redis(request):
             feed_ids = Feed.exclude_briefing_feeds(feed_ids)
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
-            stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit)
+            stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit + 1)
+            has_more = len(stories) > limit
+            stories = stories[:limit]
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(
                 user.pk,
@@ -2753,10 +2778,17 @@ def load_river_stories__redis(request):
                 if date_filter_end_utc:
                     mstories = mstories.filter(story_date__lt=date_filter_end_utc)
                 mstories = mstories.order_by(story_date_order)
+                # A full page may have more.
+                has_more = len(indexed_tag_story_hashes) >= limit
             else:
-                mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
-                    "%sstarred_date" % ("-" if order == "newest" else "")
-                )[offset : offset + effective_limit]
+                # Ask for one story past the page: if it comes back, there is more.
+                mstories = list(
+                    MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
+                        "%sstarred_date" % ("-" if order == "newest" else "")
+                    )[offset : offset + effective_limit + 1]
+                )
+                has_more = len(mstories) > effective_limit
+                mstories = mstories[:effective_limit]
             stories = Feed.format_stories(mstories)
             unread_feed_story_hashes = None
         else:
@@ -2809,6 +2841,8 @@ def load_river_stories__redis(request):
                 if date_filter_end_utc:
                     mstories = mstories.filter(story_date__lt=date_filter_end_utc)
                 mstories = mstories.order_by(story_date_order)
+                # A full page may have more.
+                has_more = len(indexed_tag_story_hashes) >= limit
             elif feed_ids:
                 params = {
                     "user_id": user.pk,
@@ -2841,6 +2875,9 @@ def load_river_stories__redis(request):
                     effective_limit,
                     fetch_more=fetch_more_story_hashes,
                 )
+                # The river is merged from many feeds and cached, so one story past
+                # the page cannot ride along: a full page may have more.
+                has_more = len(story_hashes) >= effective_limit
             else:
                 story_hashes = []
                 unread_feed_story_hashes = []
@@ -2848,7 +2885,11 @@ def load_river_stories__redis(request):
 
             stories = Feed.format_stories(mstories)
 
+    # Free users cannot open page 2, and page 401 is a 404.
+    if is_free_river_user or page >= MAX_STORY_PAGE:
+        has_more = False
     if classifier_filter_type and classifier_filter_value:
+        # has_more still counts the unfiltered stories, so it may be true with no match left.
         stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
     checkpoint1 = time.time()
@@ -3176,6 +3217,7 @@ def load_river_stories__redis(request):
         elapsed_time=timediff,
         user_search=user_search,
         user_profiles=user_profiles,
+        has_more=has_more,
     )
 
     if include_feeds:
