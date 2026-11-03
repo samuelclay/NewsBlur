@@ -760,3 +760,12 @@ struct TrainerView: View {
 //#Preview {
 //    TrainerViewController()
 //}
+
+extension ClassifierFolderPath {
+    /// TrainerView.swift's folder for the site being trained, which every folder scope it saves names. It lives here,
+    /// not in ClassifierScope.swift, because Package.swift compiles that file without NewsBlurAppDelegate.
+    @MainActor static func serverPath(forFeed feedId: String, appDelegate: NewsBlurAppDelegate) -> String {
+        serverPath(forFeed: feedId, folderOrder: appDelegate.dictFoldersArray as? [String] ?? [],
+                   folders: appDelegate.dictFolders as? [String: Any] ?? [:])
+    }
+}

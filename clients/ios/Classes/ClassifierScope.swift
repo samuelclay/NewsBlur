@@ -101,12 +101,6 @@ enum ClassifierFolderPath {
         return innermost.map(serverPath(fromNative:)) ?? ""
     }
 
-    /// TrainerView.swift's folder for the site being trained, which every folder scope it saves names.
-    @MainActor static func serverPath(forFeed feedId: String, appDelegate: NewsBlurAppDelegate) -> String {
-        serverPath(forFeed: feedId, folderOrder: appDelegate.dictFoldersArray as? [String] ?? [],
-                   folders: appDelegate.dictFolders as? [String: Any] ?? [:])
-    }
-
     /// The native folders a folder scope covers: the folder its server path names and every subfolder inside it.
     static func nativeFolders(coveredBy serverPath: String, in nativePaths: [String]) -> [String] {
         let roots = nativePaths.filter { isFolder($0) && self.serverPath(fromNative: $0) == serverPath }
