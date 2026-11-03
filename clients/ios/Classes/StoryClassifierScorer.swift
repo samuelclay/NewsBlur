@@ -31,8 +31,9 @@ import Foundation
     private let classifiersByKey: [String: [Classifier]]
     private var compiledRegexes: [String: NSRegularExpression] = [:]
     private var invalidPatterns: Set<String> = []
-    /// A pattern that runs out of time on one story counts as no match on the rest of this pass, so a pattern
-    /// that backtracks costs the main thread one TrainerRegexMatcher.drawingBudget rather than one per loaded story.
+    /// A pattern that runs out of time on one story isn't searched again this pass, so a pattern that backtracks
+    /// costs the main thread one TrainerRegexMatcher.drawingBudget rather than one per loaded story. The server
+    /// gives each search twice that, so the app can't tell whether it matches and keeps the server's score.
     private var timedOutSearches: Set<RegexSearch> = []
 
     init(classifiers: NSDictionary?, isPremium: Bool, isPremiumArchive: Bool, isPremiumPro: Bool) {
@@ -53,20 +54,20 @@ import Foundation
         self.classifiersByKey = classifiersByKey
     }
 
-    /// The story's text, URL and regex scores, keyed like the server's intelligence dictionary. A story loaded
-    /// without its content gets no text or text_regex entry, so the server's scores for those stay.
+    /// The story's text, URL and regex scores, keyed like the server's intelligence dictionary. A score the app
+    /// can't work out is left out so the server's stays: text and text_regex on a story loaded without its content,
+    /// and any score that rests on a pattern the app couldn't search.
     func scores(forStory story: NSDictionary) -> [String: Int] {
         let title = Self.string(story["story_title"])
         let authors = Self.string(story["story_authors"])
         let permalink = Self.string(story["story_permalink"])
         let permalinkLowercased = permalink.lowercased()
 
-        var scores = [
-            "url": isPremium ? score(for: "urls", in: permalink) { permalinkLowercased.contains($0.lowercased()) } : 0,
-            "url_regex": isPremiumPro ? regexScore(for: "url_regex", in: permalink) : 0,
-            "title_regex": isPremiumPro ? regexScore(for: "title_regex", in: title) : 0,
-            "author_regex": isPremiumPro ? regexScore(for: "author_regex", in: authors) : 0,
-        ]
+        var scores: [String: Int] = [:]
+        scores["url"] = isPremium ? score(for: "urls", in: permalink) { permalinkLowercased.contains($0.lowercased()) } : 0
+        scores["url_regex"] = isPremiumPro ? regexScore(for: "url_regex", in: permalink) : 0
+        scores["title_regex"] = isPremiumPro ? regexScore(for: "title_regex", in: title) : 0
+        scores["author_regex"] = isPremiumPro ? regexScore(for: "author_regex", in: authors) : 0
 
         if let content = story["story_content"] as? String {
             let scoresText = canUseTextClassifiers && !(classifiersByKey["texts"] ?? []).isEmpty
@@ -83,11 +84,23 @@ import Foundation
     }
 
     /// The server's rule for one classifier type: a matching super dislike wins outright, then any like, then any
-    /// dislike. A story without the text it matches against scores 0.
-    private func score(for key: String, in text: String, matches: (String) -> Bool) -> Int {
+    /// dislike. A story without the text it matches against scores 0. `matches` answers nil when the app can't
+    /// tell, and then only a super dislike that certainly matches settles the score; otherwise this returns nil
+    /// so the server's score stays.
+    private func score(for key: String, in text: String, matches: (String) -> Bool?) -> Int? {
         guard !text.isEmpty else { return 0 }
         var score = 0
-        for classifier in classifiersByKey[key] ?? [] where matches(classifier.pattern) {
+        var isCertain = true
+        for classifier in classifiersByKey[key] ?? [] {
+            // Once the score is uncertain, only a super dislike can still settle it, so skip searching the rest.
+            if !isCertain && classifier.score > -2 {
+                continue
+            }
+            guard let matched = matches(classifier.pattern) else {
+                isCertain = false
+                continue
+            }
+            guard matched else { continue }
             if classifier.score <= -2 {
                 return classifier.score
             }
@@ -97,14 +110,16 @@ import Foundation
                 score = classifier.score
             }
         }
-        return score
+        return isCertain ? score : nil
     }
 
-    /// Regexes are case insensitive and an invalid or timed-out one doesn't match, like the server's safe_regex_match.
-    private func regexScore(for key: String, in text: String) -> Int {
+    /// Regexes are case insensitive, like the server's safe_regex_match. An invalid one doesn't match, and one that
+    /// runs out of time leaves the app unable to tell.
+    private func regexScore(for key: String, in text: String) -> Int? {
         score(for: key, in: text) { pattern in
             let search = RegexSearch(classifierKey: key, pattern: pattern)
-            guard !timedOutSearches.contains(search), let regex = regex(for: pattern) else { return false }
+            guard !timedOutSearches.contains(search) else { return nil }
+            guard let regex = regex(for: pattern) else { return false }
             switch TrainerRegexMatcher.outcome(of: regex, in: text, budget: TrainerRegexMatcher.drawingBudget) {
             case .matches:
                 return true
@@ -112,7 +127,7 @@ import Foundation
                 return false
             case .timedOut:
                 timedOutSearches.insert(search)
-                return false
+                return nil
             }
         }
     }

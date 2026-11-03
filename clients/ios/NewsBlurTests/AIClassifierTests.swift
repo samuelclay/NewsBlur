@@ -663,24 +663,42 @@ private final class RecalculatingPromptSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(intelligence(app)?["prompt"] as? Int, 1, "The app can't run the AI, so its score stays")
     }
 
-    func test_aRegexThatRunsOutOfTimeDoesNotMatchAndIsNotSearchedAgainThisPass() {
+    func test_aRegexThatRunsOutOfTimeKeepsTheServersScoreAndIsNotSearchedAgainThisPass() {
         // (a+)+$ tries every way to split a run of a's before giving up, so this content would take years unbounded.
         let classifiers: NSDictionary = ["text_regex": ["(a+)+$": 1]]
-        let longStory: NSDictionary = ["story_feed_id": 42,
-                                       "story_content": "<p>" + String(repeating: "a", count: 20_000) + "!</p>"]
+        let longContent = "<p>" + String(repeating: "a", count: 20_000) + "!</p>"
+        let longStory: NSDictionary = ["story_feed_id": 42, "story_content": longContent]
         let shortStory: NSDictionary = ["story_feed_id": 42, "story_content": "<p>aaaa</p>"]
         let scorer = StoryClassifierScorer(classifiers: classifiers, isPremium: true, isPremiumArchive: true, isPremiumPro: true)
 
         let started = ProcessInfo.processInfo.systemUptime
-        XCTAssertEqual(scorer.scores(forStory: longStory)["text_regex"], 0, "A timeout counts as no match, like safe_regex_match")
+        XCTAssertNil(scorer.scores(forStory: longStory)["text_regex"],
+                     "The server gives the search 100ms to the app's 50ms, so a timeout can't say it doesn't match")
         // The search checks its deadline every fraction of a millisecond. The margin only absorbs CI runner stalls.
         XCTAssertLessThan(ProcessInfo.processInfo.systemUptime - started,
                           TrainerRegexMatcher.drawingBudget + SimulatorTestTiming.realWorkTimeout)
-        XCTAssertEqual(scorer.scores(forStory: shortStory)["text_regex"], 0,
-                       "A slow pattern costs the main thread one budget per recalculation, not one per loaded story")
+        XCTAssertNil(scorer.scores(forStory: shortStory)["text_regex"],
+                     "A slow pattern costs the main thread one budget per recalculation, not one per loaded story")
 
         let nextPass = StoryClassifierScorer(classifiers: classifiers, isPremium: true, isPremiumArchive: true, isPremiumPro: true)
         XCTAssertEqual(nextPass.scores(forStory: shortStory)["text_regex"], 1, "The next recalculation tries the pattern again")
+
+        // The server matched the pattern within its budget, so the story arrives green and stays green.
+        let app = makeApp(classifiers: classifiers as! [String: Any], intelligence: ["text_regex": 1, "prompt": 0],
+                          content: longContent)
+        app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["text_regex"] as? Int, 1, "A search the app gave up on keeps the server's score")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 1)
+    }
+
+    func test_aMatchingSuperDislikeSettlesAScoreTheAppCouldntOtherwiseTell() {
+        // The server returns on the first matching super dislike, so whatever the slow pattern does can't matter.
+        let classifiers: [String: Any] = ["text_regex": ["(a+)+$": 1, "a!": -2]]
+        let app = makeApp(classifiers: classifiers, intelligence: ["text_regex": 1, "prompt": 0],
+                          content: "<p>" + String(repeating: "a", count: 20_000) + "!</p>")
+
+        app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["text_regex"] as? Int, -2)
     }
 
     private func makeApp(classifiers: [String: Any], intelligence: [String: Int], content: String? = nil,
