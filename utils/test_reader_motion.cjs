@@ -586,6 +586,7 @@ function feed_toolbar_fixture(with_identity = false) {
     h.context.Backbone = { View: { extend: definition => definition } };
     h.context._ = { extend: Object.assign, bind: (fn, receiver) => fn.bind(receiver) };
     Object.assign(h.context.NEWSBLUR, {
+        app: {},
         Views: { FeedTitleView: class { render() { return { $el: {} }; } } },
         reader: { flags: {}, active_feed: 1, $s: { $feedbar: [bar], $story_titles_header: [header_element] } },
         assets: { get_feed: () => ({}) }
