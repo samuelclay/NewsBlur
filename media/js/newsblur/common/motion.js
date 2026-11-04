@@ -127,7 +127,11 @@ NEWSBLUR.motion = (function () {
         visible.forEach(function (el, index) { enter(el, stagger_delay(index, visible.length, 30, 180), distance); });
     }
     function article(element) {
-        cascade(element.querySelectorAll('.NB-feed-story-title-container, .NB-feed-story-date, .NB-feed-story-author-wrapper, .NB-feed-story-content'), 9);
+        // motion.js enters every header item from story_detail_view.js without moving its nested children twice.
+        cascade(element.querySelectorAll('.NB-feed-story-header-feed, .NB-feed-story-title-container, ' +
+            '.NB-feed-story-show-changes, .NB-feed-story-date, .NB-feed-story-author-wrapper, ' +
+            '.NB-feed-story-tags, .NB-feed-story-url-match, .NB-feed-story-ai-classifiers, ' +
+            '.NB-feed-story-starred-date, .NB-feed-story-content'), 9);
         article_parts(element);
     }
     function article_parts(element, options) {
