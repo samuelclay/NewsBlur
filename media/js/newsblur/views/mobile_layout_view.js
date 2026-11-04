@@ -214,7 +214,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             if (options.complete) options.complete();
             return;
         }
-        if (!from || options.direction === 'none' || options.animate === false) {
+        if (!from || options.direction === 'none' || options.animate === false || !this.transition_duration()) {
             this.set_screen(screen);
             if (options.complete) options.complete();
             return;
@@ -278,7 +278,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     transition_duration: function () {
         var duration = parseFloat(getComputedStyle(document.body).getPropertyValue('--nb-mobile-duration'));
-        return _.isNaN(duration) ? 380 : duration;
+        return NEWSBLUR.motion.duration(_.isNaN(duration) ? 380 : duration);
     },
 
     // ============
@@ -942,13 +942,16 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         $both.removeClass('NB-mobile-dragging').addClass('NB-mobile-animating');
         this.clear_drag_styles($both);
         var self = this;
-        setTimeout(function () {
+        var finish = function () {
             $both.removeClass('NB-mobile-animating');
             if (self.screen !== self.back_target()) {
                 $under.removeClass('NB-mobile-pos-left');
             }
             self.$body.removeClass('NB-mobile-transitioning');
-        }, this.transition_duration() + 40);
+        };
+        var duration = this.transition_duration();
+        if (duration) setTimeout(finish, duration + 40);
+        else finish();
     },
 
     // ===================
@@ -1357,15 +1360,22 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             drag.$overlay.css('opacity', '');
         };
         if (drag.held || !this.utils.swipe_completes(drag.dy, velocity, drag.height)) {
-            el.style.transition = 'transform 260ms cubic-bezier(0.2, 0.85, 0.25, 1)';
+            var snap_duration = NEWSBLUR.motion.duration(260);
+            if (!snap_duration) { settle(); return; }
+            el.style.transition = 'transform ' + snap_duration + 'ms cubic-bezier(0.2, 0.85, 0.25, 1)';
             el.style.transform = 'translate3d(0, 0, 0)';
             drag.$overlay.css('opacity', '');
-            _.delay(settle, 280);
+            _.delay(settle, snap_duration + 20);
             return;
         }
         // A fling keeps its speed for the rest of the way down.
         var remaining = drag.height - drag.dy;
-        var duration = Math.round(Math.min(320, Math.max(120, remaining / Math.max(velocity, 1.2))));
+        var duration = NEWSBLUR.motion.duration(Math.round(Math.min(320, Math.max(120, remaining / Math.max(velocity, 1.2)))));
+        if (!duration) {
+            drag.sheet.close();
+            if (drag.sheet.reused) settle();
+            return;
+        }
         el.style.transition = 'transform ' + duration + 'ms cubic-bezier(0.25, 0.7, 0.35, 1)';
         el.style.transform = 'translate3d(0, ' + Math.round(drag.height + 24) + 'px, 0)';
         drag.$overlay.css({ transition: 'opacity ' + duration + 'ms', opacity: 0 });

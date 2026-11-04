@@ -684,6 +684,9 @@
         },
 
         add_body_classes: function () {
+            // reader.js shares the saved motion preference with mobile.css transitions.
+            var animations = this.model.preference('animations');
+            this.$s.$body.toggleClass('NB-no-animations', animations === false || animations === 0);
             this.$s.$body.toggleClass('NB-is-premium', NEWSBLUR.Globals.is_premium);
             this.$s.$body.toggleClass('NB-is-anonymous', NEWSBLUR.Globals.is_anonymous);
             this.$s.$body.toggleClass('NB-is-authenticated', NEWSBLUR.Globals.is_authenticated);

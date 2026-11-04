@@ -175,11 +175,21 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         };
     },
 
+    // mobile_story_pager_view.js matches reader.js active_story_view, using the pager's story
+    // because promote_page runs before the arriving story becomes reader.active_story.
+    story_view_feed_id: function () {
+        var feed_id = NEWSBLUR.reader.active_feed;
+        if (_.string.startsWith(feed_id, 'river:') && this.story) {
+            feed_id = this.story.get('story_feed_id') || feed_id;
+        }
+        return feed_id;
+    },
+
     // Feed, Text or Story for the story on screen. Read from the saved view setting because
     // reader.js switch_taskbar_view folds Story into Feed for list and grid layouts on desktop.
     // Original (page) has no single-story form, so it shows as Feed.
     story_view_mode: function () {
-        var view = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'view');
+        var view = NEWSBLUR.assets.view_setting(this.story_view_feed_id(), 'view');
         if (!_.contains(['feed', 'text', 'story'], view)) view = 'feed';
         if (view === 'story' && this.story && this.story_page_disabled(this.story)) view = 'text';
         return view;
@@ -368,6 +378,8 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
             self.finish_page(step, target);
         };
         this.page_turn = turn;
+        // mobile_story_pager_view.js: zero-duration CSS does not emit transitionend.
+        if (!NEWSBLUR.motion.duration(320)) { finish(); return; }
         this.$track.on('transitionend.pager', function (e) {
             if (e.target === self.$track[0]) finish();
         });
@@ -429,6 +441,10 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     },
 
     snap_back: function () {
+        if (!NEWSBLUR.motion.duration(320)) {
+            this.$track.removeClass('NB-mobile-animating').css('transform', '');
+            return;
+        }
         this.$track.addClass('NB-mobile-animating').css('transform', '');
         var $track = this.$track;
         setTimeout(function () {
@@ -519,7 +535,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         var view = $(e.currentTarget).data('view');
         if ($(e.currentTarget).hasClass('NB-disabled')) return;
         if (!this.story || view === this.story_view_mode()) return;
-        NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, { view: view });
+        NEWSBLUR.assets.view_setting(this.story_view_feed_id(), { view: view });
         // The reader itself only knows Feed and Text in a grid, keep it off the desktop story iframe.
         NEWSBLUR.reader.story_view = view === 'story' ? 'feed' : view;
         this.render_page(this.pages.current, this.story, true);

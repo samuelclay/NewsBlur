@@ -35,6 +35,8 @@ body.NB-mobile {
     --nb-mobile-card-border: rgba(0, 0, 0, 0.08);
     --nb-mobile-ease: cubic-bezier(0.2, 0.85, 0.25, 1);
     --nb-mobile-duration: 380ms;
+    --nb-mobile-motion-factor: 1;
+    --nb-mobile-spinner-animation: NB-mobile-spin 800ms linear infinite;
     --nb-mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
     /* How far a screen reaches below the visible page, under iOS Safari's toolbar. Set inline
        by views/mobile_layout_view.js measure_browser_chrome; see Under Safari's toolbar. */
@@ -75,9 +77,18 @@ html[dir="rtl"] body.NB-mobile {
     --nb-mobile-direction: -1;
 }
 
+/* mobile.css: reader.js keeps the app preference in sync; the system opt-out also applies immediately. */
+body.NB-mobile.NB-no-animations {
+    --nb-mobile-duration: 0ms;
+    --nb-mobile-motion-factor: 0;
+    --nb-mobile-spinner-animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
     body.NB-mobile {
-        --nb-mobile-duration: 1ms;
+        --nb-mobile-duration: 0ms;
+        --nb-mobile-motion-factor: 0;
+        --nb-mobile-spinner-animation: none;
     }
 }
 
@@ -699,7 +710,7 @@ body.NB-mobile .tipsy {
    the list is the only thing on screen, so it fades to a hint. */
 body.NB-mobile.NB-mobile-screen-is-feeds .NB-feedlist .feed.NB-selected,
 body.NB-mobile.NB-mobile-screen-is-feeds .NB-feeds-header.NB-selected {
-    transition: background-color 600ms ease;
+    transition: background-color calc(600ms * var(--nb-mobile-motion-factor)) ease;
 }
 
 /* ================= */
@@ -1442,7 +1453,7 @@ body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid {
     overflow: hidden;
     background-color: var(--nb-mobile-card-bg);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.06);
-    transition: transform 160ms ease;
+    transition: transform calc(160ms * var(--nb-mobile-motion-factor)) ease;
 }
 
 body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid.NB-mobile-pressed {
@@ -1520,7 +1531,7 @@ body.NB-mobile .NB-mobile-story-track {
 }
 
 body.NB-mobile .NB-mobile-story-track.NB-mobile-animating {
-    transition: transform 320ms var(--nb-mobile-ease);
+    transition: transform calc(320ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile .NB-mobile-story-page {
@@ -1667,7 +1678,7 @@ body.NB-mobile .NB-mobile-segmented-option {
     font-weight: 600;
     color: var(--nb-mobile-bar-subtext);
     cursor: pointer;
-    transition: background-color 160ms ease, color 160ms ease;
+    transition: background-color calc(160ms * var(--nb-mobile-motion-factor)) ease, color calc(160ms * var(--nb-mobile-motion-factor)) ease;
 }
 
 body.NB-mobile .NB-mobile-segmented-option.NB-disabled {
@@ -1812,11 +1823,11 @@ body.NB-mobile .NB-mobile-ptr-armed .NB-mobile-ptr-spinner {
 }
 
 body.NB-mobile .NB-mobile-ptr-spinning .NB-mobile-ptr-spinner {
-    animation: NB-mobile-spin 800ms linear infinite;
+    animation: var(--nb-mobile-spinner-animation);
 }
 
 body.NB-mobile .NB-mobile-ptr-settling {
-    transition: transform 280ms var(--nb-mobile-ease);
+    transition: transform calc(280ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile .left-center > .left-center-content,
@@ -1859,7 +1870,7 @@ body.NB-mobile #story_titles .NB-end-line.NB-load-line::before {
     border-radius: 50%;
     border: 3px solid var(--nb-mobile-bar-border);
     border-top-color: var(--nb-mobile-tint);
-    animation: NB-mobile-spin 800ms linear infinite;
+    animation: var(--nb-mobile-spinner-animation);
 }
 
 /* mobile.css: a phone hides the reader page until views/mobile_layout_view.js has laid out its
@@ -1891,7 +1902,7 @@ body.NB-mobile #simplemodal-container {
     padding: 0 !important;
     margin: 0 !important;
     box-sizing: border-box;
-    animation: NB-mobile-sheet-up 340ms var(--nb-mobile-ease);
+    animation: NB-mobile-sheet-up calc(340ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile #simplemodal-container .simplemodal-wrap {
@@ -2067,7 +2078,7 @@ body.NB-mobile .NB-popover.popover {
     flex-direction: column;
     transform: translate3d(0, 100%, 0);
     opacity: 1 !important;
-    transition: transform 320ms var(--nb-mobile-ease) !important;
+    transition: transform calc(320ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease) !important;
     z-index: 2000 !important;
 }
 
@@ -2133,7 +2144,7 @@ body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet {
     overflow-y: auto !important;
     overscroll-behavior-y: contain;
     z-index: 2001 !important;
-    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+    animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage-arrow {
@@ -2247,7 +2258,7 @@ body.NB-mobile .NB-menu-ask-ai-container {
     border-radius: 16px 16px 0 0 !important;
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25) !important;
     z-index: 2001 !important;
-    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+    animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile .NB-mobile-sheet-shade {
@@ -2308,7 +2319,7 @@ body.NB-mobile .NB-media-player.NB-mobile-player {
     border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12);
-    transition: bottom 300ms var(--nb-mobile-ease);
+    transition: bottom calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
     cursor: pointer;
 }
 
@@ -2404,7 +2415,7 @@ body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded {
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
     z-index: 2001;
     cursor: default;
-    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+    animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded::before {

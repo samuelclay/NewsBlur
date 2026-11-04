@@ -28,6 +28,9 @@ jobs:
       - name: Test reader motion lifecycles
         run: node --test utils/test_*motion.cjs
 
+      - name: Test mobile reader behavior
+        run: node --test node/tests/mobile*.test.js
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
