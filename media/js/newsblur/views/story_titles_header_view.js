@@ -219,6 +219,13 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         }
 
         this.$el.html($view);
+        NEWSBLUR.motion.feedbar_parts(this.$el.closest('.NB-feedbar')[0]);
+        // story_titles_header_view.js preserves visible identity on rebuilds while a different feed can enter.
+        var identity_selector = '.feed_favicon, .feed_title, .folder_title_text';
+        this.$el.find(identity_selector).toArray().forEach(function (node, index) {
+            node.setAttribute('data-motion-key', 'header:' + NEWSBLUR.reader.active_feed + ':' + index);
+        });
+        NEWSBLUR.motion.watch_parts(this.$el[0], identity_selector);
 
         if (NEWSBLUR.reader.flags.searching) {
             this.focus_search();

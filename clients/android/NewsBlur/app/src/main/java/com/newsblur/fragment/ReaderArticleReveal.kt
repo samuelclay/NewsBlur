@@ -35,6 +35,7 @@ internal class ReaderArticleReveal(private val onVisible: () -> Unit) {
         paused = true
         generation++
         view?.animate()?.cancel()
+        view?.clearAnimation()
         animating = false
         if (!isVisible) view?.alpha = 1f / 255f
     }
@@ -42,6 +43,7 @@ internal class ReaderArticleReveal(private val onVisible: () -> Unit) {
     fun release() {
         generation++
         view?.animate()?.cancel()
+        view?.clearAnimation()
         view = null
         animating = false
         ready = false
@@ -53,7 +55,8 @@ internal class ReaderArticleReveal(private val onVisible: () -> Unit) {
         if (paused || !ready || isVisible || animating) return
         val token = ++generation
         animating = true
-        target.animate().alpha(1f).setDuration(140L).withEndAction {
+        com.newsblur.view.ReaderMotion.enter(target, distance = 9f)
+        target.animate().alpha(1f).setDuration(180L).withEndAction {
             // ReaderArticleReveal.kt rejects callbacks queued before pause, replacement, or view destruction.
             if (token == generation && view === target && !paused) {
                 animating = false

@@ -240,18 +240,25 @@ static UIFont *indicatorFont = nil;
 - (void)setStoryHash:(NSString *)newStoryHash {
     if (storyHash != newStoryHash && ![storyHash isEqualToString:newStoryHash]) {
         [cellContent.layer removeAnimationForKey:kCATransition];
+        [self.contentView.layer removeAnimationForKey:@"readerEntrance"];
+        [self.contentView.layer removeAnimationForKey:@"readerWaitingForAppearance"];
     }
     storyHash = newStoryHash;
 }
 
 - (void)prepareForReuse {
     [cellContent.layer removeAnimationForKey:kCATransition];
+    [self.contentView.layer removeAnimationForKey:@"readerEntrance"];
+    [self.contentView.layer removeAnimationForKey:@"readerWaitingForAppearance"];
     [super prepareForReuse];
 }
 
 - (void)didMoveToWindow {
     [super didMoveToWindow];
-    if (!self.window) [cellContent.layer removeAnimationForKey:kCATransition];
+    if (!self.window) {
+        [cellContent.layer removeAnimationForKey:kCATransition];
+        [self.contentView.layer removeAnimationForKey:@"readerWaitingForAppearance"];
+    }
 }
 
 - (void)setSiteFavicon:(UIImage *)newSiteFavicon {

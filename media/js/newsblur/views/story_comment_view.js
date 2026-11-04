@@ -65,6 +65,8 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
             this.make_story_share_comment_replies()
         ]);
 
+        // story_comment_view.js preserves motion identity when social data rebuilds the comment markup.
+        this.$el.attr('data-motion-key', (this.options.friend_share ? 'share:' : 'comment:') + this.model.get('user_id'));
         this.$el.html($comment);
 
         return this;

@@ -63,6 +63,25 @@ class StoryToolbar: UIView {
         buildSeparator()
         buildLayout()
         updateTheme()
+        updateMotion()
+    }
+
+    func updateMotion() {
+        ReaderMotion.controls([backButton, listenButton, settingsButton, browserButton], in: self)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateMotion()
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        updateMotion()
+    }
+
+    override var isHidden: Bool {
+        didSet { updateMotion() }
     }
 
     // MARK: - Back Button
@@ -213,14 +232,17 @@ class StoryToolbar: UIView {
     // MARK: - Actions
 
     @objc private func backTapped() {
+        ReaderMotion.pop(backButton)
         delegate?.toolbarDidTapBack()
     }
 
     @objc private func settingsTapped() {
+        ReaderMotion.pop(settingsButton)
         delegate?.toolbarDidTapSettings()
     }
 
     @objc private func browserTapped() {
+        ReaderMotion.pop(browserButton)
         delegate?.toolbarDidTapBrowser()
     }
 }

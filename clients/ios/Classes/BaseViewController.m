@@ -58,6 +58,11 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 #pragma mark -
 #pragma mark View methods
 
+- (void)viewIsAppearing:(BOOL)animated {
+    [super viewIsAppearing:animated];
+    [ReaderMotion screen:self];
+}
+
 - (void)informError:(id)error {
     [self informError:error details:nil statusCode:0];
 }
