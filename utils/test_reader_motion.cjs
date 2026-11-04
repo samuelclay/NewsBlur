@@ -178,6 +178,46 @@ test('article actions enter individually rather than moving their entire bar', (
     assert.ok(h.animations.every((animation, index) => index === 0 || animation.options.delay > h.animations[index - 1].options.delay));
 });
 
+test('article entrance includes every visible header metadata item exactly once', () => {
+    const h = harness();
+    const classes = ['NB-feed-story-header-feed', 'NB-feed-story-title-container',
+        'NB-feed-story-show-changes', 'NB-feed-story-date', 'NB-feed-story-author-wrapper',
+        'NB-feed-story-tags', 'NB-feed-story-url-match', 'NB-feed-story-ai-classifiers',
+        'NB-feed-story-starred-date', 'NB-feed-story-content'];
+    const nodes = classes.map((name, index) => {
+        const row = h.record(name + index);
+        row.el.className = name;
+        h.visible(row, index * 40);
+        return row.el;
+    });
+    const children = ['NB-feed-story-tags', 'NB-feed-story-ai-classifiers'].flatMap((group_class, group_index) => {
+        const parent = nodes.find(node => node.className === group_class);
+        const child_class = group_index === 0 ? 'NB-feed-story-tag' : 'NB-feed-story-ai-classifier';
+        return ['NB-middot', child_class, child_class].map((name, index) => {
+            const child = h.record(group_class + index);
+            child.el.className = name;
+            h.visible(child, parent.bounds.top);
+            child.el.parentElement = parent;
+            return child.el;
+        });
+    });
+    const hidden_group = h.record('hidden-tags');
+    hidden_group.el.className = 'NB-feed-story-tags';
+    hidden_group.el.style.display = 'none';
+    const article = {
+        querySelectorAll(selector) {
+            return [...nodes, ...children, hidden_group.el].filter(node => selector.split(',').some(part => node.matches(part)));
+        }
+    };
+    h.motion.article(article);
+    assert.deepEqual(h.animations.map(animation => animation.element.className), classes,
+        'Header metadata must enter once, with tags and AI classifiers moving as groups including their separators');
+    assert.ok(h.animations.every(animation => !children.includes(animation.element)),
+        'Grouped tags and classifiers must not also animate their children separately');
+    assert.ok(h.animations.every((animation, index) => index === 0 ||
+        animation.options.delay > h.animations[index - 1].options.delay));
+});
+
 test('dashboard without an active feed waits for visibility and only enters once', () => {
     const h = harness(), owner = {}, a = h.record('a');
     h.motion.watch(owner, [a], null, undefined);
