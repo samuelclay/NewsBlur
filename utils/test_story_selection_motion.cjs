@@ -19,7 +19,7 @@ function harness(options = {}) {
                 pause_parts() {},
                 unwatch_parts() {}
             },
-            assets: { preference: () => false },
+            assets: { preference: name => name === 'animations' },
             reader: { story_view: 'feed', flags: {} },
             app: { taskbar_info: { hide_stories_error() {} }, story_list: { scroll_to_selected_story() {} } }
         },

@@ -90,6 +90,58 @@ function harness() {
 }
 
 
+test('reader animation preference disables entrances, exits, and duration helpers', () => {
+    const h = harness(), row = h.record('story');
+    let enabled = false, completed = 0;
+    h.context.NEWSBLUR.assets = { preference: name => name === 'animations' ? enabled : undefined };
+    h.visible(row);
+    h.motion.enter(row.el);
+    h.motion.cascade([row.el]);
+    h.motion.exit(row.el, () => completed++);
+    h.motion.depart(row.el);
+    h.motion.refresh_completed(row.el);
+    assert.equal(h.animations.length, 0, 'Jump immediately must not start Web Animations');
+    assert.equal(completed, 1, 'Disabled exits still complete their cleanup');
+    assert.equal(h.motion.duration(350), 0);
+    enabled = true;
+    h.motion.enter(row.el);
+    assert.equal(h.animations.length, 1, 'Changing the preference takes effect without a reload');
+    assert.equal(h.motion.duration(350), 350);
+    h.preference.matches = true;
+    assert.equal(h.motion.duration(350), 0, 'System Reduce Motion overrides an enabled app preference');
+});
+
+test('animation preference is respected before the assets model loads', () => {
+    const h = harness(), row = h.record('story');
+    h.context.NEWSBLUR.Preferences = { animations: false };
+    h.visible(row);
+    h.motion.enter(row.el);
+    assert.equal(h.animations.length, 0);
+    assert.equal(h.motion.duration(200), 0);
+    h.context.NEWSBLUR.Preferences.animations = true;
+    h.motion.enter(row.el);
+    assert.equal(h.animations.length, 1);
+});
+
+test('disabling reader animations settles queued titles and does not leave a backlog when reenabled', () => {
+    const h = harness(), owner = {}, root = h.root();
+    h.context.NEWSBLUR.Preferences = { animations: true };
+    const first = h.record('first'), second = h.record('second');
+    h.visible(first); h.visible(second, 80);
+    h.motion.watch(owner, [first, second], root, 'feed', { animate_on_scroll: false });
+    h.context.NEWSBLUR.Preferences.animations = false;
+    const immediate = h.record('immediate');
+    h.visible(immediate);
+    h.motion.watch(owner, [immediate], root, 'feed', { animate_on_scroll: false });
+    assert.ok(h.animations.every(animation => animation.cancelled));
+    assert.equal(h.animations.length, 2);
+    h.context.NEWSBLUR.Preferences.animations = true;
+    const next = h.record('next');
+    h.visible(next);
+    h.motion.watch(owner, [next], root, 'feed', { animate_on_scroll: false });
+    assert.equal(h.animations.at(-1).options.delay, 0);
+});
+
 test('clicking reader controls never starts a press movement', () => {
     const h = harness();
     const control = h.record('next-unread');

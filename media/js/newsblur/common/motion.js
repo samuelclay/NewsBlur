@@ -3,6 +3,14 @@ NEWSBLUR.motion = (function () {
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     var running = new Map();
     var part_observers = new WeakMap();
+    function animations_enabled() {
+        if (reduced.matches) return false;
+        // motion.js also runs before assetmodel.js initializes, when template preferences are already available.
+        var preference = NEWSBLUR.assets && typeof NEWSBLUR.assets.preference === 'function' ?
+            NEWSBLUR.assets.preference('animations') : undefined;
+        if (preference === undefined && NEWSBLUR.Preferences) preference = NEWSBLUR.Preferences.animations;
+        return preference !== false && preference !== 0;
+    }
     // motion.js snapshots rendered layout and paint, not hundreds of unrelated computed browser properties.
     var snapshot_properties = ('display position top right bottom left box-sizing width height min-width min-height max-width max-height ' +
         'margin-top margin-right margin-bottom margin-left padding-top padding-right padding-bottom padding-left ' +
@@ -17,7 +25,7 @@ NEWSBLUR.motion = (function () {
         if (!element || !element.animate) { if (complete) complete(); return; }
         var previous = running.get(element);
         if (previous) previous.cancel();
-        if (reduced.matches) { if (complete) complete(); return; }
+        if (!animations_enabled()) { if (complete) complete(); return; }
         var animation = element.animate(frames, {
             duration: duration, delay: delay || 0, fill: 'backwards',
             easing: 'cubic-bezier(.2,.75,.3,1)'
@@ -36,7 +44,7 @@ NEWSBLUR.motion = (function () {
             { opacity: 0, transform: 'translateY(-8px)' }], 220, 0, complete);
     }
     function depart(element, options) {
-        if (reduced.matches || !element || !element.getClientRects().length) return;
+        if (!animations_enabled() || !element || !element.getClientRects().length) return;
         var rect = element.getBoundingClientRect();
         if (!rect.width || !rect.height) return;
         // motion.js clips the outgoing drawing to the original scroll viewport.
@@ -241,7 +249,7 @@ NEWSBLUR.motion = (function () {
         part_observers.delete(element);
     }
     function refresh_completed(element) {
-        if (!element || reduced.matches) return;
+        if (!element || !animations_enabled()) return;
         var rect = element.getBoundingClientRect();
         var check = document.createElement('span');
         check.className = 'NB-motion-refresh-check';
@@ -337,6 +345,8 @@ NEWSBLUR.motion = (function () {
                 }));
                 // motion.js continues one opening timeline across title pages, keeping their fades overlapping.
                 var opening_titles = options.animate_on_scroll === false;
+                var animate = animations_enabled();
+                if (opening_titles && !animate) finish_titles();
                 var spacing = options.spacing || 35;
                 var spread = scrolling && !opening_titles ? 90 : (options.spread || 175);
                 // motion.js gives opening titles twice the pace while retaining the shared pagination timeline.
@@ -345,7 +355,7 @@ NEWSBLUR.motion = (function () {
                 entered.forEach(function (element) { if (!running.has(element)) entered.delete(element); });
                 if (!entered.size) last_title_start = null;
                 var now = opening_titles ? performance.now() : 0;
-                var delay = opening_titles && last_title_start !== null && !reduced.matches ?
+                var delay = opening_titles && last_title_start !== null && animate ?
                     Math.max(0, last_title_start + step - now) : 0;
                 visible.forEach(function (element, index) {
                     var key = element.nb_motion_key;
@@ -356,7 +366,7 @@ NEWSBLUR.motion = (function () {
                     var row_delay = delay + stagger_delay(index, visible.length, spacing, spread);
                     enter(element, row_delay, scrolling && !opening_titles ? 8 : (options.distance || 16),
                         opening_titles ? 175 : 350);
-                    if (opening_titles && !reduced.matches) {
+                    if (opening_titles && animate) {
                         entered.add(element);
                         last_title_start = now + row_delay;
                     }
@@ -407,9 +417,9 @@ NEWSBLUR.motion = (function () {
         owner.motion_observer.before_paint();
     }
     reduced.addEventListener('change', function () {
-        if (reduced.matches) { running.forEach(function (animation) { animation.cancel(); }); running.clear(); }
+        if (!animations_enabled()) { running.forEach(function (animation) { animation.cancel(); }); running.clear(); }
     });
     return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, article: article,
         article_parts: article_parts, feedbar_parts: feedbar_parts, watch_parts: watch_parts, pause_parts: pause_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
-        duration: function (milliseconds) { return reduced.matches ? 0 : milliseconds; } };
+        duration: function (milliseconds) { return animations_enabled() ? milliseconds : 0; } };
 })();
