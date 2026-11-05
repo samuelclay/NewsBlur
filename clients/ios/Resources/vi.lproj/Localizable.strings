@@ -262,6 +262,7 @@
 "Daily Briefing" = "Bản tin hằng ngày";
 "Daily Briefing Settings" = "Cài đặt bản tin hằng ngày";
 "Daily Briefing generation timed out. Please try again." = "Đã hết thời gian tạo Bản tin hằng ngày. Vui lòng thử lại.";
+"Daily briefing with your top stories and keywords" = "Bản tin hằng ngày với các bài viết hàng đầu và từ khóa của bạn";
 "Dark" = "Tối";
 "Dark appearance" = "Giao diện tối";
 "Dark theme below, light theme above" = "Giao diện tối ở dưới, giao diện sáng ở trên";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "Không có trong gói";
 "Not the stories you wanted?" = "Không phải những bài viết bạn muốn đọc?";
 "Notifications" = "Thông báo";
+"Notifications on trained intelligence classifiers" = "Thông báo về bộ phân loại trí tuệ đã được huấn luyện";
 "Notifications…" = "Thông báo…";
 "Now Playing" = "Đang phát";
 "Nowhere to go" = "Không có nơi nào để đến";

@@ -262,6 +262,7 @@
 "Daily Briefing" = "Resumo diário";
 "Daily Briefing Settings" = "Configurações do resumo diário";
 "Daily Briefing generation timed out. Please try again." = "A geração do Resumo diário excedeu o tempo limite. Tente novamente.";
+"Daily briefing with your top stories and keywords" = "Resumo diário com seus principais artigos e palavras-chave";
 "Dark" = "Escuro";
 "Dark appearance" = "Aparência escura";
 "Dark theme below, light theme above" = "Tema escuro abaixo, tema claro acima";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "Não incluído no pacote";
 "Not the stories you wanted?" = "Não eram os artigos que você queria?";
 "Notifications" = "Notificações";
+"Notifications on trained intelligence classifiers" = "Notificações sobre classificadores de inteligência treinados";
 "Notifications…" = "Notificações…";
 "Now Playing" = "Tocando agora";
 "Nowhere to go" = "Sem destino";

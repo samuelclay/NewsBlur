@@ -262,6 +262,7 @@
 "Daily Briefing" = "الموجز اليومي";
 "Daily Briefing Settings" = "إعدادات الموجز اليومي";
 "Daily Briefing generation timed out. Please try again." = "انتهت مهلة إنشاء الموجز اليومي. يُرجى المحاولة مرة أخرى.";
+"Daily briefing with your top stories and keywords" = "الموجز اليومي بأهم قصصك وكلماتك المفتاحية";
 "Dark" = "داكن";
 "Dark appearance" = "المظهر الداكن";
 "Dark theme below, light theme above" = "المظهر الداكن أدناه، والفاتح أعلاه";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "غير مشمول في الحزمة";
 "Not the stories you wanted?" = "ليست هذه القصص التي أردتها؟";
 "Notifications" = "الإشعارات";
+"Notifications on trained intelligence classifiers" = "إشعارات بشأن مصنّفات الذكاء المدرَّبة";
 "Notifications…" = "الإشعارات…";
 "Now Playing" = "قيد التشغيل";
 "Nowhere to go" = "لا يوجد مكان للذهاب إليه";

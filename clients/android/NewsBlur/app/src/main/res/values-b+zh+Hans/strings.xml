@@ -448,6 +448,11 @@
     <string name="archive_filter_by_date_range">按日期范围筛选文章</string>
     <string name="archive_train_folder">将训练应用于整个文件夹</string>
     <string name="archive_train_globally">全局应用训练</string>
+    <string name="archive_web_feeds">从任何网站获取网页订阅源，即使没有 RSS</string>
+    <string name="archive_daily_briefing">每日简报，汇总精选文章和关键词</string>
+    <string name="archive_cluster_stories">跨所有订阅源聚类重复文章</string>
+    <string name="archive_classifier_notifications">接收已训练分类器的通知</string>
+    <string name="archive_mcp">通过 MCP 服务器和 CLI 连接 AI 代理</string>
     <string name="pro_everything_archive">当然，也包含归档订阅中的所有功能</string>
     <string name="pro_enable_sites">最多关注 10,000 个网站</string>
     <string name="pro_all_feeds_fetched">所有订阅源每 5–15 分钟抓取一次</string>

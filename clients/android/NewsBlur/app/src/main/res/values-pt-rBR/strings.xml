@@ -454,6 +454,11 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="archive_filter_by_date_range">Filtrar artigos por período</string>
     <string name="archive_train_folder">Aplicar treinamento a uma pasta</string>
     <string name="archive_train_globally">Aplicar treinamento globalmente</string>
+    <string name="archive_web_feeds">Feeds da web de qualquer site, mesmo sem RSS</string>
+    <string name="archive_daily_briefing">Resumo diário com seus principais artigos e palavras-chave</string>
+    <string name="archive_cluster_stories">Agrupe artigos duplicados em todos os seus feeds</string>
+    <string name="archive_classifier_notifications">Notificações sobre classificadores de inteligência treinados</string>
+    <string name="archive_mcp">Conecte agentes de IA ao servidor MCP e à CLI</string>
     <string name="pro_everything_archive">Tudo o que está incluído na assinatura do Archive, é claro</string>
     <string name="pro_enable_sites">Acompanhe até 10.000 sites</string>
     <string name="pro_all_feeds_fetched">Todos os feeds são atualizados a cada 5–15 minutos</string>

@@ -454,6 +454,11 @@ les gens pour parler du monde.</string>
     <string name="archive_filter_by_date_range">Filtrer les articles par période</string>
     <string name="archive_train_folder">Appliquer l’entraînement à un dossier</string>
     <string name="archive_train_globally">Appliquer l’entraînement à tous les flux</string>
+    <string name="archive_web_feeds">Flux web de n’importe quel site, même sans RSS</string>
+    <string name="archive_daily_briefing">Briefing quotidien avec vos meilleurs articles et mots-clés</string>
+    <string name="archive_cluster_stories">Regrouper les articles en double dans tous vos flux</string>
+    <string name="archive_classifier_notifications">Notifications sur les classificateurs d’intelligence entraînés</string>
+    <string name="archive_mcp">Connectez des agents IA au serveur MCP et à la CLI</string>
     <string name="pro_everything_archive">Bien sûr, tout ce qui est inclus dans l’abonnement Archive</string>
     <string name="pro_enable_sites">Suivez jusqu’à 10 000 sites</string>
     <string name="pro_all_feeds_fetched">Tous les flux sont récupérés toutes les 5 à 15 minutes</string>

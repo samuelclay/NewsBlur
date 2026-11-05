@@ -262,6 +262,7 @@
 "Daily Briefing" = "สรุปข่าวประจำวัน";
 "Daily Briefing Settings" = "การตั้งค่าสรุปข่าวประจำวัน";
 "Daily Briefing generation timed out. Please try again." = "การสร้างสรุปข่าวประจำวันใช้เวลานานเกินกำหนด โปรดลองอีกครั้ง";
+"Daily briefing with your top stories and keywords" = "สรุปข่าวประจำวันพร้อมข่าวเด่นและคำสำคัญ";
 "Dark" = "มืด";
 "Dark appearance" = "รูปลักษณ์มืด";
 "Dark theme below, light theme above" = "ธีมมืดด้านล่าง ธีมสว่างด้านบน";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "ไม่รวมอยู่ในชุด";
 "Not the stories you wanted?" = "บทความไม่ตรงกับที่ต้องการใช่ไหม";
 "Notifications" = "การแจ้งเตือน";
+"Notifications on trained intelligence classifiers" = "การแจ้งเตือนเกี่ยวกับตัวจำแนกระบบอัจฉริยะที่ผ่านการฝึกแล้ว";
 "Notifications…" = "การแจ้งเตือน…";
 "Now Playing" = "กำลังเล่น";
 "Nowhere to go" = "ไม่มีที่ให้ไป";

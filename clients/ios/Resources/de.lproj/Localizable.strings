@@ -262,6 +262,7 @@
 "Daily Briefing" = "Tagesbriefing";
 "Daily Briefing Settings" = "Tagesbriefing-Einstellungen";
 "Daily Briefing generation timed out. Please try again." = "Die Erstellung des Tagesbriefings hat zu lange gedauert. Bitte versuche es erneut.";
+"Daily briefing with your top stories and keywords" = "Tagesbriefing mit deinen wichtigsten Artikeln und Stichwörtern";
 "Dark" = "Dunkel";
 "Dark appearance" = "Dunkles Erscheinungsbild";
 "Dark theme below, light theme above" = "Dunkles Design unten, helles Design oben";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "Nicht im Paket enthalten";
 "Not the stories you wanted?" = "Nicht die gewünschten Artikel?";
 "Notifications" = "Benachrichtigungen";
+"Notifications on trained intelligence classifiers" = "Benachrichtigungen zu trainierten Intelligenz-Klassifikatoren";
 "Notifications…" = "Benachrichtigungen…";
 "Now Playing" = "Wird gerade abgespielt";
 "Nowhere to go" = "Kein Weg führt weiter";

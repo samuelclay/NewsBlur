@@ -262,6 +262,7 @@
 "Daily Briefing" = "每日简报";
 "Daily Briefing Settings" = "每日简报设置";
 "Daily Briefing generation timed out. Please try again." = "生成每日简报超时。请重试。";
+"Daily briefing with your top stories and keywords" = "每日简报，汇总精选文章和关键词";
 "Dark" = "深色";
 "Dark appearance" = "深色外观";
 "Dark theme below, light theme above" = "下方为深色主题，上方为浅色主题";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "未加入合集";
 "Not the stories you wanted?" = "这些不是你想看的文章？";
 "Notifications" = "通知";
+"Notifications on trained intelligence classifiers" = "接收已训练分类器的通知";
 "Notifications…" = "通知…";
 "Now Playing" = "正在播放";
 "Nowhere to go" = "无处可去";

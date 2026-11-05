@@ -262,6 +262,7 @@
 "Daily Briefing" = "Ежедневная сводка";
 "Daily Briefing Settings" = "Настройки ежедневной сводки";
 "Daily Briefing generation timed out. Please try again." = "Время ожидания при создании ежедневной сводки истекло. Попробуйте ещё раз.";
+"Daily briefing with your top stories and keywords" = "Ежедневная сводка с главными статьями и ключевыми словами";
 "Dark" = "Тёмная";
 "Dark appearance" = "Тёмный режим";
 "Dark theme below, light theme above" = "Тёмная тема внизу, светлая — вверху";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "Не входит в подборку";
 "Not the stories you wanted?" = "Это не те статьи, которые вы искали?";
 "Notifications" = "Уведомления";
+"Notifications on trained intelligence classifiers" = "Уведомления об обученных интеллектуальных классификаторах";
 "Notifications…" = "Уведомления…";
 "Now Playing" = "Сейчас воспроизводится";
 "Nowhere to go" = "Дальше ничего нет";

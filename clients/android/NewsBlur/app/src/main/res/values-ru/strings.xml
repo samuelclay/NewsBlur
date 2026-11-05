@@ -457,6 +457,11 @@
     <string name="archive_filter_by_date_range">Фильтровать статьи по диапазону дат</string>
     <string name="archive_train_folder">Применить обучение ко всей папке</string>
     <string name="archive_train_globally">Применить обучение ко всем лентам</string>
+    <string name="archive_web_feeds">Веб-ленты с любых сайтов, даже без RSS</string>
+    <string name="archive_daily_briefing">Ежедневная сводка с главными статьями и ключевыми словами</string>
+    <string name="archive_cluster_stories">Группировка дублирующихся статей во всех ваших лентах</string>
+    <string name="archive_classifier_notifications">Уведомления об обученных интеллектуальных классификаторах</string>
+    <string name="archive_mcp">Подключайте ИИ-агентов через MCP-сервер и CLI</string>
     <string name="pro_everything_archive">Разумеется, всё, что входит в подписку Premium Archive</string>
     <string name="pro_enable_sites">Подписка на сайты — до 10 000</string>
     <string name="pro_all_feeds_fetched">Все ленты обновляются каждые 5–15 минут</string>

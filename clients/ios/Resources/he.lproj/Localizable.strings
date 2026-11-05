@@ -262,6 +262,7 @@
 "Daily Briefing" = "תדריך יומי";
 "Daily Briefing Settings" = "הגדרות התדריך היומי";
 "Daily Briefing generation timed out. Please try again." = "יצירת התדריך היומי חרגה ממגבלת הזמן. נא לנסות שוב.";
+"Daily briefing with your top stories and keywords" = "תדריך יומי עם הכתבות המובילות שלך ומילות מפתח";
 "Dark" = "כהה";
 "Dark appearance" = "מראה כהה";
 "Dark theme below, light theme above" = "ערכת נושא כהה למטה, בהירה למעלה";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "לא נכלל בחבילה";
 "Not the stories you wanted?" = "לא הכתבות שחיפשת?";
 "Notifications" = "התראות";
+"Notifications on trained intelligence classifiers" = "התראות על מסווגי מאמן הבינה שאומנו";
 "Notifications…" = "התראות…";
 "Now Playing" = "מושמע כעת";
 "Nowhere to go" = "אין לאן ללכת";

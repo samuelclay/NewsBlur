@@ -498,6 +498,16 @@ msgstr ""
 "por apenas US$ 36 por ano."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> mantém para sempre todos os artigos de todos os sites que você segue. Você recebe "
+"tudo do Premium, além de:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> foi feito para usuários avançados. Você recebe tudo do Archive, além de:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -795,6 +805,18 @@ msgstr ""
 "inteligência, buscas salvas e publicações do blurblog ficam em bancos de dados sob seu controle. Não há "
 "dependência de fornecedor em nenhuma camada. Se você usa o serviço hospedado, pode exportar seu OPML a "
 "qualquer momento e configurar sua própria instância com o mesmo código aberto que alimenta o newsblur.com."
+
+msgid "All of this for $29/month."
+msgstr "Tudo isso por US$ 29 por mês."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "Tudo isso por <b>US$ 29 por mês</b>."
+
+msgid "All of this for just $99/year."
+msgstr "Tudo isso por apenas US$ 99 por ano."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "Tudo isso por apenas <b>US$ 99 por ano</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -2008,9 +2030,6 @@ msgstr "Amplie sua rede"
 
 msgid "Explore Archive"
 msgstr "Conheça o Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "Explore o NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "Conheça o Premium"
@@ -3571,6 +3590,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Navegue pelo seu arquivo com filtros de data. Encontre artigos de qualquer período."
 
+msgid "Need the most? Meet Premium Pro."
+msgstr "Precisa de ainda mais? Conheça o Premium Pro."
+
 msgid "Neutral"
 msgstr "Neutra"
 
@@ -4535,6 +4557,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - Preços do NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"O Premium Archive mantém para sempre todos os artigos de todos os sites que você segue. Você recebe tudo do"
+" Premium, além de:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "O Premium Archive é necessário para notificações do classificador"
 
@@ -4563,6 +4590,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - Preços do NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "O Premium Pro foi feito para usuários avançados. Você recebe tudo do Archive, além de:"
 
 msgid "Premium Pro subscription"
 msgstr "Assinatura Premium Pro"
@@ -6381,12 +6411,18 @@ msgstr "Faça upgrade agora:"
 msgid "Upgrade to Premium"
 msgstr "Faça upgrade para o Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Faça upgrade para o Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Faça upgrade para o Premium Archive (US$ 99/ano) - Isso inclui até 4.096 sites, além de pesquisa no texto "
 "completo e acesso ao seu arquivo completo de artigos."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Faça upgrade para o Premium Archive:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "Faça upgrade para uma conta Premium por apenas US$ 36/ano"
@@ -6494,6 +6530,9 @@ msgstr "Treinamento visual (Gostei/Não gostei)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "Treinamento visual versus filtragem baseada em regras"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "Quer ainda mais? Conheça o Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "Quer mais recursos na CLI?"

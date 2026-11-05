@@ -262,6 +262,7 @@
 "Daily Briefing" = "Daily Briefing";
 "Daily Briefing Settings" = "Daily Briefing Settings";
 "Daily Briefing generation timed out. Please try again." = "Daily Briefing generation timed out. Please try again.";
+"Daily briefing with your top stories and keywords" = "Daily briefing with your top stories and keywords";
 "Dark" = "Dark";
 "Dark appearance" = "Dark appearance";
 "Dark theme below, light theme above" = "Dark theme below, light theme above";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "Not included in bundle";
 "Not the stories you wanted?" = "Not the stories you wanted?";
 "Notifications" = "Notifications";
+"Notifications on trained intelligence classifiers" = "Notifications on trained intelligence classifiers";
 "Notifications…" = "Notifications…";
 "Now Playing" = "Now Playing";
 "Nowhere to go" = "Nowhere to go";

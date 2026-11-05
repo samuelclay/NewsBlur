@@ -262,6 +262,7 @@
 "Daily Briefing" = "दैनिक ब्रीफ़िंग";
 "Daily Briefing Settings" = "दैनिक ब्रीफ़िंग सेटिंग्स";
 "Daily Briefing generation timed out. Please try again." = "दैनिक ब्रीफ़िंग बनाने में समय सीमा समाप्त हो गई। कृपया फिर से कोशिश करें।";
+"Daily briefing with your top stories and keywords" = "आपके सबसे अहम लेखों और कीवर्ड के साथ दैनिक ब्रीफ़िंग";
 "Dark" = "गहरा";
 "Dark appearance" = "डार्क रूप";
 "Dark theme below, light theme above" = "नीचे गहरी थीम, ऊपर हल्की थीम";
@@ -670,6 +671,7 @@
 "Not included in bundle" = "बंडल में शामिल नहीं";
 "Not the stories you wanted?" = "क्या ये वे लेख नहीं हैं जो आप चाहते थे?";
 "Notifications" = "सूचनाएँ";
+"Notifications on trained intelligence classifiers" = "प्रशिक्षित इंटेलिजेंस क्लासिफ़ायर पर सूचनाएँ";
 "Notifications…" = "सूचनाएँ…";
 "Now Playing" = "अभी चल रहा है";
 "Nowhere to go" = "जाने के लिए कोई जगह नहीं";

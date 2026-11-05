@@ -457,6 +457,11 @@
     <string name="archive_filter_by_date_range">Filtruj artykuły według zakresu dat</string>
     <string name="archive_train_folder">Zastosuj trenowanie do całego folderu</string>
     <string name="archive_train_globally">Zastosuj trenowanie globalnie</string>
+    <string name="archive_web_feeds">Kanały internetowe z dowolnej witryny, nawet bez RSS</string>
+    <string name="archive_daily_briefing">Codzienny przegląd najważniejszych artykułów i słów kluczowych</string>
+    <string name="archive_cluster_stories">Grupuj powtarzające się artykuły ze wszystkich kanałów</string>
+    <string name="archive_classifier_notifications">Powiadomienia o wytrenowanych klasyfikatorach inteligencji</string>
+    <string name="archive_mcp">Połącz agentów AI z serwerem MCP i interfejsem CLI</string>
     <string name="pro_everything_archive">Oczywiście wszystko, co obejmuje subskrypcja Premium Archive</string>
     <string name="pro_enable_sites">Obserwuj do 10 000 witryn</string>
     <string name="pro_all_feeds_fetched">Wszystkie kanały są pobierane co 5–15 minut</string>

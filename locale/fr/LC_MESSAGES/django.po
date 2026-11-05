@@ -498,6 +498,18 @@ msgstr ""
 "fonctionnalités pour seulement 36 $/an."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> conserve indéfiniment tous les articles de chacun des sites que vous suivez. Vous "
+"bénéficiez de tout ce qu’offre Premium, plus :"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr ""
+"<b>Premium Pro</b> est conçu pour les utilisateurs exigeants. Vous bénéficiez de tout ce qu’offre Archive, "
+"plus :"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -798,6 +810,18 @@ msgstr ""
 "stockés dans des bases de données que vous contrôlez. Vous n’êtes enfermé chez aucun fournisseur, à aucun "
 "niveau. Si vous utilisez le service hébergé, vous pouvez exporter votre OPML à tout moment et configurer "
 "votre propre instance avec le même code open source que celui qui fait fonctionner newsblur.com."
+
+msgid "All of this for $29/month."
+msgstr "Tout cela pour 29 $/mois."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "Tout cela pour <b>29 $/mois</b>."
+
+msgid "All of this for just $99/year."
+msgstr "Tout cela pour seulement 99 $/an."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "Tout cela pour seulement <b>99 $/an</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -2036,9 +2060,6 @@ msgstr "Élargissez votre réseau"
 
 msgid "Explore Archive"
 msgstr "Découvrir Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "Découvrez NewsBlur :"
 
 msgid "Explore Premium"
 msgstr "Découvrir Premium"
@@ -3634,6 +3655,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Parcourez votre archive à l’aide de filtres de date. Retrouvez des articles de n’importe quelle période."
 
+msgid "Need the most? Meet Premium Pro."
+msgstr "Vous avez besoin du maximum ? Découvrez Premium Pro."
+
 msgid "Neutral"
 msgstr "Neutre"
 
@@ -4624,6 +4648,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - Tarifs de NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"Premium Archive conserve indéfiniment tous les articles de chacun des sites que vous suivez. Vous "
+"bénéficiez de tout ce qu’offre Premium, plus :"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "L’offre Premium Archive est requise pour les notifications de classificateur"
 
@@ -4652,6 +4681,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - Tarifs de NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro est conçu pour les utilisateurs exigeants. Vous bénéficiez de tout ce qu’offre Archive, plus :"
 
 msgid "Premium Pro subscription"
 msgstr "Abonnement Premium Pro"
@@ -6491,12 +6523,18 @@ msgstr "Passez à une offre supérieure dès maintenant :"
 msgid "Upgrade to Premium"
 msgstr "Passer à Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Passer à Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Passez à Premium Archive (99 $/an) : jusqu’à 4 096 sites, ainsi que la recherche en texte intégral et "
 "l’accès à l’ensemble de vos archives d’articles."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Passer à Premium Archive :"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "Passez à un compte Premium pour seulement 36 $/an"
@@ -6609,6 +6647,9 @@ msgstr "Entraînement visuel (pouces levés/baissés)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "Entraînement visuel ou filtrage par règles"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "Vous en voulez encore plus ? Découvrez Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "Vous voulez plus de fonctionnalités en ligne de commande ?"

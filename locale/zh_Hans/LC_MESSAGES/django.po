@@ -459,6 +459,14 @@ msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying 
 msgstr "<b>无需信用卡。</b>30 天后，你只需每年支付 36 美元，即可继续享受这些功能。"
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr "<b>高级归档版</b>会永久保存你关注的每个网站上的所有文章。你可以享有高级版的所有功能，此外还包括："
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>高级专业版</b>专为高级用户打造。你可以享有归档版的所有功能，此外还包括："
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr "<b>升级到高级归档版（$99/年）</b>——包含最多 4,096 个网站、全文搜索，以及完整的文章归档访问权限。"
@@ -733,6 +741,18 @@ msgid ""
 msgstr ""
 "这四款阅读器都支持 OPML 导入和导出，因此你可以自由地在它们之间迁移订阅源列表。NewsBlur 更进一步，依据 MIT 许可证向你开放完整的应用程序源代码。自行托管时，你的文章、智能训练数据、已保存的搜索和 "
 "Blurblog 帖子都存储在由你控制的数据库中。各个层面都不存在供应商锁定。如果你使用托管服务，可以随时导出 OPML，并使用为 newsblur.com 提供支持的同一套开源代码搭建自己的实例。"
+
+msgid "All of this for $29/month."
+msgstr "以上这些每月只需 29 美元。"
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "这一切每月只需 <b>$29/month</b>。"
+
+msgid "All of this for just $99/year."
+msgstr "这一切每年只需 99 美元。"
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "这一切每年只需 <b>$99/year</b>。"
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1850,9 +1870,6 @@ msgstr "拓展你的社交网络"
 
 msgid "Explore Archive"
 msgstr "了解归档版"
-
-msgid "Explore NewsBlur:"
-msgstr "探索 NewsBlur："
 
 msgid "Explore Premium"
 msgstr "探索高级版"
@@ -3277,6 +3294,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "使用日期筛选浏览归档，查找任意时间段的文章。"
 
+msgid "Need the most? Meet Premium Pro."
+msgstr "想要更全面的功能？来看看高级专业版。"
+
 msgid "Neutral"
 msgstr "中性"
 
@@ -4113,6 +4133,9 @@ msgstr "高级归档版（每年 99 美元）可永久归档并搜索所有文�
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "高级归档版 - NewsBlur 价格"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr "高级归档版会永久保存你关注的每个网站上的所有文章。你可以享有高级版的所有功能，此外还包括："
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "分类器通知需要高级归档版"
 
@@ -4139,6 +4162,9 @@ msgstr "高级专业版（每月 29 美元）可让你每 5–15 分钟获取所
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "高级专业版 - NewsBlur 价格"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "高级专业版专为高级用户打造。你可以享有归档版的所有功能，此外还包括："
 
 msgid "Premium Pro subscription"
 msgstr "高级专业版订阅"
@@ -5821,10 +5847,16 @@ msgstr "立即升级："
 msgid "Upgrade to Premium"
 msgstr "升级到高级版"
 
+msgid "Upgrade to Premium Archive"
+msgstr "升级到高级归档版"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr "升级到高级归档版（$99/年）——包含最多 4,096 个网站、全文搜索，以及完整的文章归档访问权限。"
+
+msgid "Upgrade to Premium Archive:"
+msgstr "升级到高级归档版："
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "升级为高级版账户，每年仅需 36 美元"
@@ -5928,6 +5960,9 @@ msgstr "视觉训练（赞/踩）"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "视觉训练与基于规则的过滤"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "想要更多？来看看高级归档版。"
 
 msgid "Want more CLI features?"
 msgstr "想要更多 CLI 功能吗？"

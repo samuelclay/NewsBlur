@@ -448,6 +448,11 @@
     <string name="archive_filter_by_date_range">日付範囲で記事を絞り込む</string>
     <string name="archive_train_folder">フォルダー全体に学習内容を適用</string>
     <string name="archive_train_globally">学習内容を全体に適用</string>
+    <string name="archive_web_feeds">RSSがなくても、あらゆるウェブサイトのウェブフィードを利用</string>
+    <string name="archive_daily_briefing">注目の記事とキーワードをまとめたデイリーブリーフィング</string>
+    <string name="archive_cluster_stories">すべてのフィードの記事を記事のクラスタリングで重複排除</string>
+    <string name="archive_classifier_notifications">学習済みのインテリジェンス分類器に関する通知</string>
+    <string name="archive_mcp">MCPサーバーとCLIでAIエージェントを接続</string>
     <string name="pro_everything_archive">もちろん、アーカイブ購読のすべての機能</string>
     <string name="pro_enable_sites">最大10,000サイトをフォロー</string>
     <string name="pro_all_feeds_fetched">すべてのフィードを5～15分ごとに取得</string>
