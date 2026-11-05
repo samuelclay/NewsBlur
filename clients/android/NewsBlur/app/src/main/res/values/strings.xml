@@ -448,6 +448,11 @@ people together to talk about the world.</string>
     <string name="archive_filter_by_date_range">Filter stories by date range</string>
     <string name="archive_train_folder">Apply training across a folder</string>
     <string name="archive_train_globally">Apply training globally</string>
+    <string name="archive_web_feeds">Web Feeds from any website, even without RSS</string>
+    <string name="archive_daily_briefing">Daily briefing with your top stories and keywords</string>
+    <string name="archive_cluster_stories">Cluster duplicate stories across all your feeds</string>
+    <string name="archive_classifier_notifications">Notifications on trained intelligence classifiers</string>
+    <string name="archive_mcp">Connect AI agents with MCP server and CLI</string>
 
     <string name="pro_everything_archive">Everything in the archive subscription, of course</string>
     <string name="pro_enable_sites">Follow up to 10,000 sites</string>
