@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Type a classifier straight into the trainer"
-date: 2026-11-01 09:00:00 -0800
+date: 2026-11-05 00:00:00 -0800
 tags: ["web"]
 ---
 
