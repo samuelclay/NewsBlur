@@ -458,6 +458,11 @@
     <string name="archive_filter_by_date_range">Фільтрувати статті за діапазоном дат</string>
     <string name="archive_train_folder">Застосувати навчання до всієї папки</string>
     <string name="archive_train_globally">Застосувати навчання до всіх сайтів</string>
+    <string name="archive_web_feeds">Вебстрічки з будь-якого сайту, навіть без RSS</string>
+    <string name="archive_daily_briefing">Щоденний огляд найважливіших статей і ключових слів</string>
+    <string name="archive_cluster_stories">Групування дублікатів статей у всіх ваших стрічках</string>
+    <string name="archive_classifier_notifications">Сповіщення про навчені класифікатори інтелектуальних фільтрів</string>
+    <string name="archive_mcp">Підключайте AI-агентів через сервер MCP і CLI</string>
     <string name="pro_everything_archive">Звісно, усе, що входить до підписки Premium Archive</string>
     <string name="pro_enable_sites">Відстежуйте до 10 000 сайтів</string>
     <string name="pro_all_feeds_fetched">Усі стрічки оновлюються кожні 5–15 хвилин</string>

@@ -284,6 +284,7 @@
 "Daily Briefing" = "デイリーブリーフィング";
 "Daily Briefing Settings" = "デイリーブリーフィングの設定";
 "Daily Briefing generation timed out. Please try again." = "デイリーブリーフィングの生成がタイムアウトしました。もう一度お試しください。";
+"Daily briefing with your top stories and keywords" = "注目の記事とキーワードをまとめたデイリーブリーフィング";
 "Dark" = "ダーク";
 "Dark appearance" = "ダーク表示";
 "Dark theme below, light theme above" = "下がダークテーマ、上がライトテーマ";
@@ -712,6 +713,7 @@
 "Not included in bundle" = "バンドルに含まれていません";
 "Not the stories you wanted?" = "読みたい記事が表示されませんか？";
 "Notifications" = "通知";
+"Notifications on trained intelligence classifiers" = "学習済みのインテリジェンス分類器に関する通知";
 "Notifications…" = "通知…";
 "Now Playing" = "再生中";
 "Nowhere to go" = "行き先がありません";

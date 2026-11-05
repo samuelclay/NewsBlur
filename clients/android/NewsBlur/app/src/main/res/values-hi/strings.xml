@@ -452,6 +452,11 @@
     <string name="archive_filter_by_date_range">तारीख़ की सीमा के अनुसार लेख फ़िल्टर करें</string>
     <string name="archive_train_folder">किसी फ़ोल्डर पर प्रशिक्षण लागू करें</string>
     <string name="archive_train_globally">प्रशिक्षण सभी जगह लागू करें</string>
+    <string name="archive_web_feeds">किसी भी वेबसाइट से वेब फ़ीड पाएँ, भले ही उसमें RSS न हो</string>
+    <string name="archive_daily_briefing">आपके सबसे अहम लेखों और कीवर्ड के साथ दैनिक ब्रीफ़िंग</string>
+    <string name="archive_cluster_stories">अपने सभी फ़ीड में समान लेखों को क्लस्टर करें</string>
+    <string name="archive_classifier_notifications">प्रशिक्षित इंटेलिजेंस क्लासिफ़ायर पर सूचनाएँ</string>
+    <string name="archive_mcp">MCP सर्वर और CLI से AI एजेंट कनेक्ट करें</string>
     <string name="pro_everything_archive">बेशक, Archive सदस्यता की सभी सुविधाएँ</string>
     <string name="pro_enable_sites">10,000 साइटों तक फ़ॉलो करें</string>
     <string name="pro_all_feeds_fetched">सभी फ़ीड हर 5–15 मिनट में प्राप्त की जाती हैं</string>

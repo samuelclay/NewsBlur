@@ -477,6 +477,16 @@ msgstr ""
 "devam edebilirsiniz."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b>, takip ettiğiniz tüm sitelerdeki her haberi sonsuza dek saklar. Premium'daki her "
+"şeye ek olarak şunları sunar:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> ileri düzey kullanıcılar için tasarlandı. Archive'daki her şeye ek olarak şunları sunar:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -777,6 +787,18 @@ msgstr ""
 "katmanda sağlayıcıya bağımlılık yoktur. Barındırılan hizmeti kullanıyorsanız OPML dosyanızı dilediğiniz "
 "zaman dışa aktarabilir ve newsblur.com'a güç veren aynı açık kaynak koduyla kendi örneğinizi "
 "kurabilirsiniz."
+
+msgid "All of this for $29/month."
+msgstr "Tüm bunlar ayda 29 $."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "Tüm bunlar ayda <b>29 $</b>."
+
+msgid "All of this for just $99/year."
+msgstr "Tüm bunlar yılda yalnızca 99 $."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "Tüm bunlar yılda yalnızca <b>99 $</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -2000,9 +2022,6 @@ msgstr "Ağınızı genişletin"
 
 msgid "Explore Archive"
 msgstr "Archive'ı keşfet"
-
-msgid "Explore NewsBlur:"
-msgstr "NewsBlur'ı keşfedin:"
 
 msgid "Explore Premium"
 msgstr "Premium'u keşfet"
@@ -3549,6 +3568,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Tarih filtreleriyle arşivinizde gezinin. Herhangi bir zaman aralığındaki haberleri bulun."
 
+msgid "Need the most? Meet Premium Pro."
+msgstr "En fazlasına mı ihtiyacınız var? Premium Pro ile tanışın."
+
 msgid "Neutral"
 msgstr "Nötr"
 
@@ -4510,6 +4532,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - NewsBlur Fiyatlandırması"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"Premium Archive, takip ettiğiniz tüm sitelerdeki her haberi sonsuza dek saklar. Premium'daki her şeye ek "
+"olarak şunları sunar:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "Sınıflandırıcı bildirimleri için Premium Archive gerekir"
 
@@ -4538,6 +4565,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - NewsBlur Fiyatlandırması"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro ileri düzey kullanıcılar için tasarlandı. Archive'daki her şeye ek olarak şunları sunar:"
 
 msgid "Premium Pro subscription"
 msgstr "Premium Pro aboneliği"
@@ -6347,12 +6377,18 @@ msgstr "Şimdi yükseltin:"
 msgid "Upgrade to Premium"
 msgstr "Premium'a yükselt"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Premium Archive'a yükselt"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Premium Archive'a yükseltin (99 $/yıl) — Bu plan 4.096'ya kadar site, tam metin araması ve tüm haber "
 "arşivinize erişim sunar."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Premium Archive'a yükselt:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "Yalnızca yıllık 36 $ karşılığında Premium hesaba yükseltin"
@@ -6468,6 +6504,9 @@ msgstr "Görsel Eğitim (Beğen/Beğenme)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "Görsel eğitim ve kural tabanlı filtreleme"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "Daha fazlasını mı istiyorsunuz? Premium Archive ile tanışın."
 
 msgid "Want more CLI features?"
 msgstr "Daha fazla CLI özelliği mi istiyorsunuz?"

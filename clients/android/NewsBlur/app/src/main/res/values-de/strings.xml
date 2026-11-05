@@ -452,6 +452,11 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="archive_filter_by_date_range">Artikel nach Zeitraum filtern</string>
     <string name="archive_train_folder">Training auf einen Ordner anwenden</string>
     <string name="archive_train_globally">Training global anwenden</string>
+    <string name="archive_web_feeds">Web-Feeds von jeder Website, auch ohne RSS</string>
+    <string name="archive_daily_briefing">Tagesbriefing mit deinen wichtigsten Artikeln und Stichwörtern</string>
+    <string name="archive_cluster_stories">Doppelte Artikel in all deinen Feeds gruppieren</string>
+    <string name="archive_classifier_notifications">Benachrichtigungen zu trainierten Intelligenz-Klassifikatoren</string>
+    <string name="archive_mcp">KI-Agenten mit MCP-Server und CLI verbinden</string>
     <string name="pro_everything_archive">Natürlich alles aus dem Archive-Abo</string>
     <string name="pro_enable_sites">Bis zu 10.000 Websites folgen</string>
     <string name="pro_all_feeds_fetched">Alle Feeds werden alle 5–15 Minuten abgerufen</string>

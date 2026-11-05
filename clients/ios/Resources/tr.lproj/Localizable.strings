@@ -284,6 +284,7 @@
 "Daily Briefing" = "Günlük Özet";
 "Daily Briefing Settings" = "Günlük Özet Ayarları";
 "Daily Briefing generation timed out. Please try again." = "Günlük Özet oluşturma zaman aşımına uğradı. Lütfen tekrar deneyin.";
+"Daily briefing with your top stories and keywords" = "Öne çıkan haberleriniz ve anahtar kelimelerinizle Günlük Özet";
 "Dark" = "Koyu";
 "Dark appearance" = "Koyu görünüm";
 "Dark theme below, light theme above" = "Koyu tema altta, açık tema üstte";
@@ -712,6 +713,7 @@
 "Not included in bundle" = "Pakete dahil değil";
 "Not the stories you wanted?" = "Aradığınız haberler bunlar değil mi?";
 "Notifications" = "Bildirimler";
+"Notifications on trained intelligence classifiers" = "Eğitilmiş zekâ sınıflandırıcıları için bildirimler";
 "Notifications…" = "Bildirimler…";
 "Now Playing" = "Şimdi Çalıyor";
 "Nowhere to go" = "Gidecek yer yok";

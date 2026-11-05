@@ -284,6 +284,7 @@
 "Daily Briefing" = "Щоденний огляд";
 "Daily Briefing Settings" = "Налаштування щоденного огляду";
 "Daily Briefing generation timed out. Please try again." = "Час очікування під час створення щоденного огляду вичерпано. Спробуйте ще раз.";
+"Daily briefing with your top stories and keywords" = "Щоденний огляд найважливіших статей і ключових слів";
 "Dark" = "Темна";
 "Dark appearance" = "Темний режим";
 "Dark theme below, light theme above" = "Темна тема внизу, світла — вгорі";
@@ -712,6 +713,7 @@
 "Not included in bundle" = "Не включено до добірки";
 "Not the stories you wanted?" = "Не ті статті, які ви шукали?";
 "Notifications" = "Сповіщення";
+"Notifications on trained intelligence classifiers" = "Сповіщення про навчені класифікатори інтелектуальних фільтрів";
 "Notifications…" = "Сповіщення…";
 "Now Playing" = "Зараз відтворюється";
 "Nowhere to go" = "Нікуди йти";

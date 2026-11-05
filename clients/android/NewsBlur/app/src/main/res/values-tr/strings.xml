@@ -452,6 +452,11 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="archive_filter_by_date_range">Haberleri tarih aralığına göre filtrele</string>
     <string name="archive_train_folder">Eğitimi bir klasörün tamamına uygula</string>
     <string name="archive_train_globally">Eğitimi genel olarak uygula</string>
+    <string name="archive_web_feeds">RSS olmasa bile her web sitesinden Web Akışları</string>
+    <string name="archive_daily_briefing">Öne çıkan haberleriniz ve anahtar kelimelerinizle Günlük Özet</string>
+    <string name="archive_cluster_stories">Tüm akışlarınızdaki yinelenen haberleri kümeleyin</string>
+    <string name="archive_classifier_notifications">Eğitilmiş zekâ sınıflandırıcıları için bildirimler</string>
+    <string name="archive_mcp">Yapay zekâ ajanlarını MCP sunucusu ve CLI ile bağlayın</string>
     <string name="pro_everything_archive">Elbette Archive aboneliğindeki her şey</string>
     <string name="pro_enable_sites">10.000\'e kadar siteyi takip edin</string>
     <string name="pro_all_feeds_fetched">Tüm akışlar 5-15 dakikada bir alınır</string>

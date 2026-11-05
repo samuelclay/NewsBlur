@@ -449,6 +449,11 @@
     <string name="archive_filter_by_date_range">กรองเรื่องตามช่วงวันที่</string>
     <string name="archive_train_folder">ใช้การฝึกกับทั้งโฟลเดอร์</string>
     <string name="archive_train_globally">ใช้การฝึกกับทั้งหมด</string>
+    <string name="archive_web_feeds">ฟีดเว็บจากเว็บไซต์ใดก็ได้ แม้ไม่มี RSS</string>
+    <string name="archive_daily_briefing">สรุปข่าวประจำวันพร้อมข่าวเด่นและคำสำคัญ</string>
+    <string name="archive_cluster_stories">จัดกลุ่มบทความซ้ำจากทุกฟีด</string>
+    <string name="archive_classifier_notifications">การแจ้งเตือนเกี่ยวกับตัวจำแนกระบบอัจฉริยะที่ผ่านการฝึกแล้ว</string>
+    <string name="archive_mcp">เชื่อมต่อเอเจนต์ AI ด้วยเซิร์ฟเวอร์ MCP และ CLI</string>
     <string name="pro_everything_archive">แน่นอนว่าได้ทุกอย่างในแพ็กเกจ Archive</string>
     <string name="pro_enable_sites">ติดตามเว็บไซต์ได้สูงสุด 10,000 แห่ง</string>
     <string name="pro_all_feeds_fetched">ดึงข้อมูลทุกฟีดทุก 5-15 นาที</string>

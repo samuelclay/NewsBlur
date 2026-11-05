@@ -594,6 +594,14 @@ msgstr ""
 "فقط."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr "يحتفظ <b>Premium Archive</b> إلى الأبد بكل قصة من كل موقع تتابعه. ستحصل على كل ما في Premium، بالإضافة إلى:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "صُمم <b>Premium Pro</b> للمستخدمين المحترفين. ستحصل على كل ما في Archive، بالإضافة إلى:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -889,6 +897,18 @@ msgstr ""
 "استضافة التطبيق بنفسك، تبقى قصصك وبيانات تدريب الذكاء وعمليات البحث المحفوظة ومنشورات مدونتك على Blurblog "
 "في قواعد بيانات تتحكم بها. لا يوجد احتجاز لدى مورّد في أي مستوى. وإذا كنت تستخدم الخدمة المستضافة، يمكنك "
 "تصدير OPML في أي وقت وإعداد نسخة خاصة بك باستخدام الشيفرة مفتوحة المصدر نفسها التي تشغّل newsblur.com."
+
+msgid "All of this for $29/month."
+msgstr "كل هذا مقابل 29 دولارًا شهريًا."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "كل هذا مقابل <b>29 دولارًا شهريًا</b>."
+
+msgid "All of this for just $99/year."
+msgstr "كل هذا مقابل 99 دولارًا سنويًا فقط."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "كل هذا مقابل <b>99 دولارًا سنويًا فقط</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -2073,9 +2093,6 @@ msgstr "وسّع شبكتك"
 
 msgid "Explore Archive"
 msgstr "استكشف Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "استكشف NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "استكشف Premium"
@@ -3629,6 +3646,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "تصفّح أرشيفك باستخدام عوامل تصفية التاريخ. اعثر على القصص من أي فترة زمنية."
 
+msgid "Need the most? Meet Premium Pro."
+msgstr "هل تريد أقصى استفادة؟ تعرّف على Premium Pro."
+
 msgid "Neutral"
 msgstr "محايد"
 
@@ -4564,6 +4584,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - أسعار NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr "يحتفظ Premium Archive إلى الأبد بكل قصة من كل موقع تتابعه. ستحصل على كل ما في Premium، بالإضافة إلى:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "تتطلب إشعارات المصنّف Premium Archive"
 
@@ -4592,6 +4615,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - أسعار NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "صُمم Premium Pro للمستخدمين المحترفين. ستحصل على كل ما في Archive، بالإضافة إلى:"
 
 msgid "Premium Pro subscription"
 msgstr "اشتراك Premium Pro"
@@ -6400,12 +6426,18 @@ msgstr "رقِّ الآن:"
 msgid "Upgrade to Premium"
 msgstr "الترقية إلى Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "الترقية إلى Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "الترقية إلى Premium Archive (99 دولارًا سنويًا) - يشمل ذلك ما يصل إلى 4,096 موقعًا، بالإضافة إلى البحث في "
 "النص الكامل والوصول إلى أرشيف قصصك بالكامل."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "الترقية إلى Premium Archive:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "رقِّ حسابك إلى Premium مقابل 36 دولارًا سنويًا فقط"
@@ -6515,6 +6547,9 @@ msgstr "التدريب المرئي (إعجاب/عدم إعجاب)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "التدريب المرئي مقابل التصفية القائمة على القواعد"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "هل تريد المزيد؟ تعرّف على Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "هل تريد مزيدًا من ميزات سطر الأوامر؟"

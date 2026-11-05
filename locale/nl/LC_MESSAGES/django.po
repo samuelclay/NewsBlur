@@ -498,6 +498,16 @@ msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying 
 msgstr "<b>Geen creditcard nodig.</b> Na 30 dagen kun je deze functies blijven gebruiken voor slechts $36 per jaar."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> bewaart voor altijd elk artikel van elke site die je volgt. Je krijgt alles van "
+"Premium, plus:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> is gemaakt voor intensieve gebruikers. Je krijgt alles van Archive, plus:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -796,6 +806,18 @@ msgstr ""
 "databases waarover jij de controle hebt. Er is op geen enkel niveau sprake van vendor lock-in. Als je de "
 "gehoste dienst gebruikt, kun je op elk moment je OPML exporteren en met dezelfde opensourcesoftware als "
 "newsblur.com je eigen instantie opzetten."
+
+msgid "All of this for $29/month."
+msgstr "Dit alles voor $29 per maand."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "Dit alles voor <b>$29 per maand</b>."
+
+msgid "All of this for just $99/year."
+msgstr "Dit alles voor slechts $99 per jaar."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "Dit alles voor slechts <b>$99 per jaar</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -2010,9 +2032,6 @@ msgstr "Breid je netwerk uit"
 
 msgid "Explore Archive"
 msgstr "Ontdek Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "Ontdek NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "Ontdek Premium"
@@ -3575,6 +3594,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Navigeer door je archief met datumfilters. Vind artikelen uit elke periode."
 
+msgid "Need the most? Meet Premium Pro."
+msgstr "Wil je het maximale? Maak kennis met Premium Pro."
+
 msgid "Neutral"
 msgstr "Neutraal"
 
@@ -4536,6 +4558,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - prijzen van NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"Premium Archive bewaart voor altijd elk artikel van elke site die je volgt. Je krijgt alles van Premium, "
+"plus:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "Premium Archive vereist voor classifier-meldingen"
 
@@ -4564,6 +4591,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - prijzen van NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro is gemaakt voor intensieve gebruikers. Je krijgt alles van Archive, plus:"
 
 msgid "Premium Pro subscription"
 msgstr "Premium Pro-abonnement"
@@ -6380,12 +6410,18 @@ msgstr "Upgrade nu:"
 msgid "Upgrade to Premium"
 msgstr "Upgrade naar Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Upgraden naar Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Upgrade naar Premium Archive ($99/jaar) - Dit biedt ruimte voor maximaal 4.096 sites, plus zoeken in de "
 "volledige tekst en toegang tot je complete artikelarchief."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Upgraden naar Premium Archive:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "Upgrade naar een Premium-account voor slechts $36/jaar"
@@ -6495,6 +6531,9 @@ msgstr "Visuele training (duim omhoog/omlaag)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "Visuele training versus filteren op basis van regels"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "Wil je nog meer? Maak kennis met Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "Wil je meer CLI-functies?"

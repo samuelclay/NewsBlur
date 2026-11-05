@@ -455,6 +455,11 @@
     <string name="archive_filter_by_date_range">סנן כתבות לפי טווח תאריכים</string>
     <string name="archive_train_folder">החלת האימון על תיקייה</string>
     <string name="archive_train_globally">החלת האימון על כל האתרים</string>
+    <string name="archive_web_feeds">פידי אינטרנט מכל אתר, גם בלי RSS</string>
+    <string name="archive_daily_briefing">תדריך יומי עם הכתבות המובילות שלך ומילות מפתח</string>
+    <string name="archive_cluster_stories">קיבוץ כתבות כפולות בכל הפידים שלך</string>
+    <string name="archive_classifier_notifications">התראות על מסווגי מאמן הבינה שאומנו</string>
+    <string name="archive_mcp">חיבור סוכני AI לשרת MCP ול־CLI</string>
     <string name="pro_everything_archive">כמובן, כל מה שכלול במינוי Premium Archive</string>
     <string name="pro_enable_sites">עקוב אחר עד 10,000 אתרים</string>
     <string name="pro_all_feeds_fetched">כל הפידים נמשכים כל 5–15 דקות</string>

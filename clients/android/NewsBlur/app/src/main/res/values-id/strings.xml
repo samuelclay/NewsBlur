@@ -449,6 +449,11 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="archive_filter_by_date_range">Filter artikel berdasarkan rentang tanggal</string>
     <string name="archive_train_folder">Terapkan pelatihan ke seluruh folder</string>
     <string name="archive_train_globally">Terapkan pelatihan secara global</string>
+    <string name="archive_web_feeds">Feed Web dari situs web mana pun, bahkan tanpa RSS</string>
+    <string name="archive_daily_briefing">Ringkasan harian dengan artikel dan kata kunci pilihan Anda</string>
+    <string name="archive_cluster_stories">Kelompokkan artikel duplikat di semua feed Anda</string>
+    <string name="archive_classifier_notifications">Notifikasi untuk pengklasifikasi kecerdasan yang telah dilatih</string>
+    <string name="archive_mcp">Hubungkan agen AI dengan server MCP dan CLI</string>
     <string name="pro_everything_archive">Tentu saja, semua yang ada dalam langganan Archive</string>
     <string name="pro_enable_sites">Ikuti hingga 10.000 situs</string>
     <string name="pro_all_feeds_fetched">Semua feed diperbarui setiap 5–15 menit</string>

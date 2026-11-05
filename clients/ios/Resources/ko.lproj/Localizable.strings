@@ -284,6 +284,7 @@
 "Daily Briefing" = "데일리 브리핑";
 "Daily Briefing Settings" = "데일리 브리핑 설정";
 "Daily Briefing generation timed out. Please try again." = "데일리 브리핑 생성 시간이 초과되었습니다. 다시 시도해 주세요.";
+"Daily briefing with your top stories and keywords" = "주요 스토리와 키워드를 담은 데일리 브리핑";
 "Dark" = "다크";
 "Dark appearance" = "어두운 화면";
 "Dark theme below, light theme above" = "아래는 어두운 테마, 위는 밝은 테마";
@@ -712,6 +713,7 @@
 "Not included in bundle" = "번들에 포함되지 않음";
 "Not the stories you wanted?" = "원하던 스토리가 아닌가요?";
 "Notifications" = "알림";
+"Notifications on trained intelligence classifiers" = "학습된 인텔리전스 분류기 알림";
 "Notifications…" = "알림…";
 "Now Playing" = "재생 중";
 "Nowhere to go" = "갈 곳이 없습니다";

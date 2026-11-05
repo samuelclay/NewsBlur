@@ -455,6 +455,11 @@ le persone per parlare del mondo.</string>
     <string name="archive_filter_by_date_range">Filtra gli articoli per intervallo di date</string>
     <string name="archive_train_folder">Applica l\'addestramento a una cartella</string>
     <string name="archive_train_globally">Applica l\'addestramento globalmente</string>
+    <string name="archive_web_feeds">Feed web da qualsiasi sito, anche senza RSS</string>
+    <string name="archive_daily_briefing">Briefing quotidiano con i tuoi articoli più importanti e le parole chiave</string>
+    <string name="archive_cluster_stories">Raggruppa gli articoli duplicati in tutti i tuoi feed</string>
+    <string name="archive_classifier_notifications">Notifiche sui classificatori addestrati dell\'intelligenza</string>
+    <string name="archive_mcp">Collega gli agenti AI con un server MCP e una CLI</string>
     <string name="pro_everything_archive">Naturalmente, tutto ciò che è incluso nell\'abbonamento Archive</string>
     <string name="pro_enable_sites">Segui fino a 10.000 siti</string>
     <string name="pro_all_feeds_fetched">Tutti i feed vengono aggiornati ogni 5-15 minuti</string>

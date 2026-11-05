@@ -464,6 +464,11 @@
     <string name="archive_filter_by_date_range">تصفية القصص حسب النطاق الزمني</string>
     <string name="archive_train_folder">تطبيق التدريب على مجلد</string>
     <string name="archive_train_globally">طبّق التدريب على الكل</string>
+    <string name="archive_web_feeds">خلاصات ويب من أي موقع، حتى بدون RSS</string>
+    <string name="archive_daily_briefing">الموجز اليومي بأهم قصصك وكلماتك المفتاحية</string>
+    <string name="archive_cluster_stories">تجميع القصص المكررة عبر جميع خلاصاتك</string>
+    <string name="archive_classifier_notifications">إشعارات بشأن مصنّفات الذكاء المدرَّبة</string>
+    <string name="archive_mcp">ربط وكلاء الذكاء الاصطناعي بخادم MCP وواجهة CLI</string>
     <string name="pro_everything_archive">كل ما تتضمنه باقة Archive، بالطبع</string>
     <string name="pro_enable_sites">تابع ما يصل إلى 10,000 موقع</string>
     <string name="pro_all_feeds_fetched">يتم جلب جميع الخلاصات كل 5 إلى 15 دقيقة</string>

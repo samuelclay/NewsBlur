@@ -449,6 +449,11 @@
     <string name="archive_filter_by_date_range">날짜 범위로 스토리 필터링</string>
     <string name="archive_train_folder">폴더 전체에 학습 적용</string>
     <string name="archive_train_globally">학습 내용을 전체에 적용</string>
+    <string name="archive_web_feeds">RSS가 없는 웹사이트에서도 웹 피드 가져오기</string>
+    <string name="archive_daily_briefing">주요 스토리와 키워드를 담은 데일리 브리핑</string>
+    <string name="archive_cluster_stories">모든 피드에서 중복 스토리 묶기</string>
+    <string name="archive_classifier_notifications">학습된 인텔리전스 분류기 알림</string>
+    <string name="archive_mcp">MCP 서버 및 CLI로 AI 에이전트 연결</string>
     <string name="pro_everything_archive">물론 아카이브 구독의 모든 기능 포함</string>
     <string name="pro_enable_sites">최대 10,000개 사이트 팔로우</string>
     <string name="pro_all_feeds_fetched">모든 피드를 5~15분마다 가져옵니다</string>

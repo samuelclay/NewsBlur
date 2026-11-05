@@ -284,6 +284,7 @@
 "Daily Briefing" = "Ringkasan Harian";
 "Daily Briefing Settings" = "Pengaturan Ringkasan Harian";
 "Daily Briefing generation timed out. Please try again." = "Pembuatan Ringkasan Harian kehabisan waktu. Silakan coba lagi.";
+"Daily briefing with your top stories and keywords" = "Ringkasan harian dengan artikel dan kata kunci pilihan Anda";
 "Dark" = "Gelap";
 "Dark appearance" = "Tampilan gelap";
 "Dark theme below, light theme above" = "Tema gelap di bawah, tema terang di atas";
@@ -712,6 +713,7 @@
 "Not included in bundle" = "Tidak disertakan dalam bundel";
 "Not the stories you wanted?" = "Artikel yang Anda inginkan tidak muncul?";
 "Notifications" = "Notifikasi";
+"Notifications on trained intelligence classifiers" = "Notifikasi untuk pengklasifikasi kecerdasan yang telah dilatih";
 "Notifications…" = "Notifikasi…";
 "Now Playing" = "Sedang Diputar";
 "Nowhere to go" = "Tidak ada tujuan";
