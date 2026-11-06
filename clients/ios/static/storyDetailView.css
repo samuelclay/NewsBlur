@@ -2344,13 +2344,14 @@ html[dir="rtl"] .NB-cluster-feed-border-inner {
 
 /* storyDetailView.css: a story's audio as a card (storyDetailView.js newsblurPrepareMedia), played by
    Listen/ListenMediaPlayer.swift. Only the buttons take taps, so a tap elsewhere on the card is neither a
-   button press nor the reader's tap-to-hide-chrome (StoryDetailObjCViewController.m continueTapAtPoint:). */
-.NB-media-card {
+   button press nor the reader's tap-to-hide-chrome (StoryDetailObjCViewController.m continueTapAtPoint:).
+   Every rule starts at #NB-story to win over the story content rules (.NB-story span, .NB-story div). */
+#NB-story .NB-media-card {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px 12px;
-    margin: 14px 0;
+    margin: 14px 0 20px;
     padding: 10px 12px;
     border-radius: 14px;
     background: rgba(0, 0, 0, 0.035);
@@ -2361,19 +2362,19 @@ html[dir="rtl"] .NB-cluster-feed-border-inner {
     user-select: none;
     -webkit-touch-callout: none;
 }
-.NB-media-card * {
+#NB-story .NB-media-card * {
     pointer-events: none;
 }
-.NB-media-card a {
+#NB-story .NB-media-card a {
     pointer-events: auto;
     cursor: pointer;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
 }
-.NB-media-card a * {
+#NB-story .NB-media-card a * {
     pointer-events: none;
 }
-.NB-media-card-play {
+#NB-story .NB-media-card-play {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -2383,43 +2384,49 @@ html[dir="rtl"] .NB-cluster-feed-border-inner {
     font-size: 15px;
     font-weight: 600;
 }
-.NB-media-card-label {
+#NB-story .NB-media-card-actions {
+    margin: 0;
+}
+#NB-story .NB-media-card-label {
+    width: auto;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.NB-media-card-icon {
+#NB-story .NB-media-card-icon {
     display: flex;
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    width: 38px;
+    overflow: visible;
+    width: 38px !important;
+    min-width: 38px !important;
     height: 38px;
     border-radius: 19px;
     background: #709E5D;
     color: #FFFFFF;
 }
-.NB-media-card-icon svg {
+#NB-story .NB-media-card-icon svg {
     width: 17px;
     height: 17px;
     fill: currentColor;
 }
-.NB-media-card:not(.NB-media-playing) .NB-media-card-icon svg {
+#NB-story .NB-media-card:not(.NB-media-playing) .NB-media-card-icon svg {
     transform: translateX(1.5px);
 }
-.NB-media-loading .NB-media-card-icon {
+#NB-story .NB-media-loading .NB-media-card-icon {
     animation: NB-media-card-pulse 1.2s ease-in-out infinite;
 }
 @keyframes NB-media-card-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.55; }
 }
-.NB-media-card-actions {
+#NB-story .NB-media-card-actions {
     display: flex;
     flex: 0 0 auto;
     gap: 6px;
 }
-.NB-media-card-actions a {
+#NB-story .NB-media-card-actions a {
     display: none;
     padding: 7px 11px;
     border-radius: 15px;
@@ -2429,15 +2436,15 @@ html[dir="rtl"] .NB-cluster-feed-border-inner {
     font-weight: 600;
     white-space: nowrap;
 }
-.NB-media-can-queue .NB-media-card-next,
-.NB-media-can-queue .NB-media-card-last,
-.NB-media-queued .NB-media-card-queued {
+#NB-story .NB-media-can-queue .NB-media-card-next,
+#NB-story .NB-media-can-queue .NB-media-card-last,
+#NB-story .NB-media-queued .NB-media-card-queued {
     display: inline-block;
 }
-.NB-media-card-actions a.NB-media-card-queued {
+#NB-story .NB-media-card-actions a.NB-media-card-queued {
     background: rgba(112, 158, 93, 0.15);
     color: #4F7A3E;
 }
-.NB-media-card-queued::before {
+#NB-story .NB-media-card-queued::before {
     content: "\2713\00a0";
 }

@@ -175,13 +175,16 @@ struct ListenPlaybackState: Equatable {
     /// Listen put an episode when something else starts, is checked the same way. Nothing resumes while
     /// remember_position is off.
     func resumePosition(for item: ListenMediaItem) -> TimeInterval? {
-        guard settings.rememberPosition else { return nil }
-        let saved = Self.match(item, in: [current].compactMap { $0 }) ?? Self.match(item, in: history)
-        guard let saved, saved.position >= 1 else { return nil }
+        guard settings.rememberPosition, let saved = savedPosition(for: item), saved.position >= 1 else { return nil }
         if saved.duration > 0, saved.position >= saved.duration - Self.finishedMargin {
             return nil
         }
         return saved.position
+    }
+
+    /// The current item or History entry that is `item`, by the rules resumePosition(for:) describes.
+    func savedPosition(for item: ListenMediaItem) -> ListenSavedPosition? {
+        Self.match(item, in: [current].compactMap { $0 }) ?? Self.match(item, in: history)
     }
 
     private static func match(_ item: ListenMediaItem, in positions: [ListenSavedPosition]) -> ListenSavedPosition? {

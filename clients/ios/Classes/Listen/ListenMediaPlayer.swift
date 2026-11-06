@@ -208,6 +208,10 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         if let rate = state?.currentPlaybackRate {
             speed = rate
         }
+        if duration <= 0, let known = state?.savedPosition(for: item)?.duration, known > 0 {
+            // ListenMediaPlayer.swift shows the length another device saw until the stream reports its own.
+            duration = known
+        }
         elapsed = resume
         engine.load(url, startAt: resume)
         if wantsToPlay {

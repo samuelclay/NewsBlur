@@ -418,22 +418,22 @@ span.NB-listen-run.NB-listen-highlight {
 }
 
 /* storyDetailViewDark.css: story audio cards (storyDetailView.css .NB-media-card). */
-.NB-media-card {
+#NB-story .NB-media-card {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(255, 255, 255, 0.1);
 }
-.NB-media-card-play {
+#NB-story .NB-media-card-play {
     color: #E8E8E8;
 }
-.NB-media-card-icon {
+#NB-story .NB-media-card-icon {
     background: #8BBF74;
     color: #111111;
 }
-.NB-media-card-actions a {
+#NB-story .NB-media-card-actions a {
     background: rgba(255, 255, 255, 0.1);
     color: #C7C7CC;
 }
-.NB-media-card-actions a.NB-media-card-queued {
+#NB-story .NB-media-card-actions a.NB-media-card-queued {
     background: rgba(139, 191, 116, 0.18);
     color: #A5D48F;
 }
