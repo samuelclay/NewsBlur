@@ -233,8 +233,10 @@ import SwiftUI
 
     // MARK: Stripe
 
-    /// Self-hosted AI has nothing to bill; everyone else either sets billing up or manages it on Stripe.
+    /// Self-hosted AI has nothing to bill; everyone else either sets billing up or manages it on Stripe. Nothing
+    /// opens Stripe while UsageBillingFeature.swift holds billing out of the release.
     var stripeAction: UsageBillingStripeAction? {
+        guard UsageBillingFeature.isEnabled else { return nil }
         if status.isUsageBilling { return .manage }
         if status.isSelfHostedAI { return nil }
         return .setup

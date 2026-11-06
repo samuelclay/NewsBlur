@@ -377,6 +377,8 @@ final class NewsBlurUITestHarness {
             return
         }
         appDelegate.feedsViewController.loadWorkItem?.cancel()
+        // UsageBillingFeature.swift holds billing out of the release; this scenario exists to show the billing screen.
+        UsageBillingFeature.isEnabled = true
         appDelegate.showUsageBillingDialog()
     }
 

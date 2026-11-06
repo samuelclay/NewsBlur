@@ -1035,8 +1035,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 // NewsBlurAppDelegate.m opens natural language classifier billing (UsageBillingView.swift) from the settings menu,
-// the Premium screen and the trainer's billing banners, replacing whatever sheet or popover is showing.
+// the Premium screen and the trainer's billing banners, replacing whatever sheet or popover is showing. While
+// UsageBillingFeature.swift holds billing out of the release, nothing opens it, even a path that missed the switch.
 - (void)showUsageBillingDialog {
+    if (!UsageBillingFeature.isEnabled) return;
     UIViewController *usageBilling = [UsageBillingViewController makePresentable];
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
     [self.splitViewController presentViewController:usageBilling animated:YES completion:nil];

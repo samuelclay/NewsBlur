@@ -2032,10 +2032,13 @@ static BOOL NBBoolPreferenceValue(id value) {
         }];
     }
 
-    // FeedsObjCViewController.m offers natural language classifier billing beside the subscription (UsageBillingView.swift).
-    [viewController addFeedListTitle:[NBLocalization text:@"Usage Billing"] iconName:@"icons8-prompt-100" selectionShouldDismiss:YES handler:^{
-        [self.appDelegate showUsageBillingDialog];
-    }];
+    // FeedsObjCViewController.m offers natural language classifier billing beside the subscription (UsageBillingView.swift),
+    // unless UsageBillingFeature.swift holds it out of this release.
+    if (UsageBillingFeature.isEnabled) {
+        [viewController addFeedListTitle:[NBLocalization text:@"Usage Billing"] iconName:@"icons8-prompt-100" selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showUsageBillingDialog];
+        }];
+    }
     
     [viewController addFeedListTitle:[NBLocalization text:@"Support Forum"] iconName:@"feed-menu-feedback" selectionShouldDismiss:YES handler:^{
         NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];

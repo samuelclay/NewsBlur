@@ -274,8 +274,15 @@ import SwiftUI
         return saved.contains { $0.score != 0 } || !trimmedDraft(kind).isEmpty
     }
 
+    /// Whether the trainer offers billing at all. UsageBillingFeature.swift holds it out of this release, so readers
+    /// still see their cost estimates and why their filters aren't running, but no button or link to pay.
+    var offersBilling: Bool {
+        UsageBillingFeature.isEnabled
+    }
+
     /// The cost row's billing button: managing an active plan, or setting one up. Self-hosted AI has none.
     var billingButtonTitle: String? {
+        guard offersBilling else { return nil }
         let status = billingStatus()
         if status.isUsageBilling { return NBLocalization.text("Manage billing and limits") }
         if status.isSelfHostedAI { return nil }
@@ -558,24 +565,30 @@ struct TrainerAIPromptSection: View {
 
     // MARK: Banners
 
-    /// "AI filters are saved but won't run until you set up usage-based billing." from reader_classifier.js,
-    /// translated whole with the link phrase placed wherever the language puts it.
+    /// Tells a reader with prompts that they won't run. While UsageBillingFeature.swift holds billing out of the
+    /// release, the banner says so and opens nothing.
+    @ViewBuilder
     var billingBanner: some View {
-        Button(action: model.openBilling) {
-            Text(billingBannerText)
-                .font(fontBuilder("WhitneySSm-Medium", 12))
-                .foregroundColor(TrainerAIPalette.bannerText)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(10)
-                .background(RoundedRectangle(cornerRadius: 8).fill(TrainerAIPalette.bannerBackground))
+        let label = bannerLabel(billingBannerText, textColor: TrainerAIPalette.bannerText,
+                                background: TrainerAIPalette.bannerBackground)
+        if model.offersBilling {
+            Button(action: model.openBilling) { label }
+                .buttonStyle(BorderlessButtonStyle())
+                .accessibilityIdentifier("trainer-ai-billing-banner")
+        } else {
+            label.accessibilityIdentifier("trainer-ai-billing-banner")
         }
-        .buttonStyle(BorderlessButtonStyle())
-        .accessibilityIdentifier("trainer-ai-billing-banner")
     }
 
+    /// "AI filters are saved but won't run until you set up usage-based billing." from reader_classifier.js,
+    /// translated whole with the link phrase placed wherever the language puts it. Without billing on offer, a
+    /// neutral line that names no purchase or website.
     var billingBannerText: AttributedString {
+        guard model.offersBilling else {
+            var text = AttributedString(NBLocalization.text("Natural language filters aren't active on this account."))
+            text.font = .system(size: 12, weight: .bold)
+            return text
+        }
         let marker = "\u{E002}"
         var text = AttributedString(String(format: NBLocalization.text("AI filters are saved but won't run until you %@."), marker))
         text.font = .system(size: 12, weight: .bold)
@@ -589,21 +602,42 @@ struct TrainerAIPromptSection: View {
         return text
     }
 
+    @ViewBuilder
     var limitReachedBanner: some View {
-        Button(action: model.openBilling) {
-            (Text(NBLocalization.text("Monthly spending limit reached. ")).bold()
-                + Text(NBLocalization.text("Natural language classifiers are paused until next billing cycle. "))
-                + Text(NBLocalization.text("Increase or remove your limit")).underline().foregroundColor(TrainerAIPalette.bannerLink))
-                .font(fontBuilder("WhitneySSm-Medium", 12))
-                .foregroundColor(TrainerAIPalette.limitText)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(10)
-                .background(RoundedRectangle(cornerRadius: 8).fill(TrainerAIPalette.limitBackground))
+        let label = bannerLabel(limitReachedText, textColor: TrainerAIPalette.limitText,
+                                background: TrainerAIPalette.limitBackground)
+        if model.offersBilling {
+            Button(action: model.openBilling) { label }
+                .buttonStyle(BorderlessButtonStyle())
+                .accessibilityIdentifier("trainer-ai-limit-banner")
+        } else {
+            label.accessibilityIdentifier("trainer-ai-limit-banner")
         }
-        .buttonStyle(BorderlessButtonStyle())
-        .accessibilityIdentifier("trainer-ai-limit-banner")
+    }
+
+    /// The limit statement, with a link to raise the limit only while billing is on offer.
+    var limitReachedText: AttributedString {
+        var text = AttributedString(NBLocalization.text("Monthly spending limit reached. "))
+        text.inlinePresentationIntent = .stronglyEmphasized
+        text += AttributedString(NBLocalization.text("Natural language classifiers are paused until next billing cycle. "))
+        if model.offersBilling {
+            var link = AttributedString(NBLocalization.text("Increase or remove your limit"))
+            link.underlineStyle = .single
+            link.foregroundColor = TrainerAIPalette.bannerLink
+            text += link
+        }
+        return text
+    }
+
+    func bannerLabel(_ text: AttributedString, textColor: Color, background: Color) -> some View {
+        Text(text)
+            .font(fontBuilder("WhitneySSm-Medium", 12))
+            .foregroundColor(textColor)
+            .multilineTextAlignment(.leading)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(10)
+            .background(RoundedRectangle(cornerRadius: 8).fill(background))
     }
 }
 

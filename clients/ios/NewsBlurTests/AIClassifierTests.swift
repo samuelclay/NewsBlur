@@ -1370,7 +1370,19 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
 // MARK: - Usage billing
 
+/// AIClassifierTests.swift tests the billing screen with UsageBillingFeature.swift turned on, as it will be once the
+/// release hold lifts. Test_UsageBillingHold covers the release with it off.
 @MainActor final class Test_UsageBilling: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        UsageBillingFeature.isEnabled = true
+    }
+
+    override func tearDown() {
+        UsageBillingFeature.isEnabled = false
+        super.tearDown()
+    }
+
     func test_statusReadsProfileFlags() {
         withEnglishInterface {
             let billing = UsageBillingStatus(profile: ["is_usage_billing": true, "is_self_hosted_ai": false,
@@ -1645,5 +1657,145 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
                            refreshProfile: (() -> Void)? = nil) -> UsageBillingModel {
         UsageBillingModel(api: AIClassifierAPI(transport: transport), browser: browser,
                           readStatus: { status }, refreshProfile: refreshProfile ?? {}, locale: locale)
+    }
+}
+
+// MARK: - Usage billing held out of the release
+
+/// AIClassifierTests.swift checks that with UsageBillingFeature.swift off, as it ships in this release, no way into
+/// usage billing shows and nothing opens Stripe, while readers still see their costs and why filters aren't running.
+/// Each test turns the switch on once too, to show it finds the entry point it then checks is gone.
+@MainActor final class Test_UsageBillingHold: XCTestCase {
+    override func tearDown() {
+        UsageBillingFeature.isEnabled = false
+        super.tearDown()
+    }
+
+    func test_theReleaseShipsWithBillingHeld() {
+        XCTAssertFalse(UsageBillingFeature.isEnabled)
+    }
+
+    func test_theSettingsMenuOffersUsageBillingOnlyWhileTheSwitchIsOn() throws {
+        try withEnglishInterface {
+            UsageBillingFeature.isEnabled = false
+            XCTAssertFalse(try settingsMenuTitles().contains("Usage Billing"))
+            XCTAssertTrue(try settingsMenuTitles().contains("Support Forum"), "The rest of the menu is still there")
+
+            UsageBillingFeature.isEnabled = true
+            XCTAssertTrue(try settingsMenuTitles().contains("Usage Billing"))
+        }
+    }
+
+    func test_nothingOpensTheBillingScreenOrStripeWhileTheSwitchIsOff() {
+        let app = NewsBlurAppDelegate()
+        let split = BillingPresentationSplitController()
+        app.splitViewController = split
+        defer { app.splitViewController = nil }
+        app.showUsageBillingDialog()
+        XCTAssertNil(split.requestedPresentation, "The Premium screen and the trainer's banners open billing this way")
+
+        let transport = RecordingAITransport()
+        transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "url": "https://checkout.stripe.com/c/pay/cs_test_app"]
+        transport.responses["/profile/manage_usage_billing/"] = ["code": 0, "url": "https://billing.stripe.com/p/session/test_app"]
+        let browser = RecordingBillingBrowser()
+        for status in [freeStatus, activeStatus] {
+            let model = UsageBillingModel(api: AIClassifierAPI(transport: transport), browser: browser,
+                                          readStatus: { status }, refreshProfile: {})
+            XCTAssertNil(model.stripeAction, "The billing screen shows no Stripe button")
+            model.openStripe()
+        }
+        XCTAssertTrue(transport.requests.isEmpty)
+        XCTAssertNil(browser.openedURL)
+
+        UsageBillingFeature.isEnabled = true
+        app.showUsageBillingDialog()
+        XCTAssertNotNil(split.requestedPresentation)
+    }
+
+    func test_theTrainerShowsCostsAndWhyFiltersDontRunButNoWayToPay() {
+        withEnglishInterface {
+            let transport = RecordingAITransport()
+            transport.responses["/classifier/ai_classifier_usage"] = ["code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0004,
+                                                                      "avg_cost_per_image": 0.002]
+            let billing = makeModel(transport: transport, status: activeStatus)
+            billing.prepare(feedId: "42", storyHash: nil)
+            let saved = [PromptClassifier(prompt: "Non-apple related news", kind: .content, score: 1, scope: .feed, folderName: "")]
+            XCTAssertEqual(billing.sectionCost(.content, saved: saved, feedId: "42", currentFolderName: "")?.monthly, "$0.12",
+                           "A reader with billing still sees what their filters cost")
+            XCTAssertNil(billing.billingButtonTitle)
+            let free = makeModel(transport: RecordingAITransport(), status: freeStatus)
+            XCTAssertNil(free.billingButtonTitle)
+            XCTAssertTrue(free.showsBillingBanner(.content, saved: saved), "A reader without billing still learns why")
+
+            let banner = section(free)
+            XCTAssertEqual(String(banner.billingBannerText.characters), "Natural language filters aren't active on this account.")
+            XCTAssertEqual(banner.billingBannerText.runs.count, 1, "No phrase in it is styled as a link")
+            XCTAssertEqual(String(section(billing).limitReachedText.characters),
+                           "Monthly spending limit reached. Natural language classifiers are paused until next billing cycle. ")
+
+            UsageBillingFeature.isEnabled = true
+            XCTAssertEqual(billing.billingButtonTitle, "Manage billing and limits")
+            XCTAssertEqual(free.billingButtonTitle, "Set up billing")
+            XCTAssertEqual(String(section(free).billingBannerText.characters),
+                           "AI filters are saved but won't run until you set up usage-based billing.")
+            XCTAssertTrue(String(section(billing).limitReachedText.characters).hasSuffix("Increase or remove your limit"))
+        }
+    }
+
+    private var activeStatus: UsageBillingStatus {
+        UsageBillingStatus(isUsageBilling: true, isSelfHostedAI: false, canUseAIClassifiers: true, usageBillingLimit: nil)
+    }
+
+    private var freeStatus: UsageBillingStatus {
+        UsageBillingStatus(isUsageBilling: false, isSelfHostedAI: false, canUseAIClassifiers: false, usageBillingLimit: nil)
+    }
+
+    private func makeModel(transport: RecordingAITransport, status: UsageBillingStatus) -> TrainerAIPromptModel {
+        TrainerAIPromptModel(api: AIClassifierAPI(transport: transport), billingStatus: { status },
+                             storyVolumes: { AIClassifierStoryVolumes(storiesForFeed: { _ in 300 }, storiesForFolder: { _ in 0 },
+                                                                      storiesForAllSites: { 0 }) })
+    }
+
+    private func section(_ model: TrainerAIPromptModel) -> TrainerAIPromptSection {
+        TrainerAIPromptSection(kind: .content, model: model, feed: nil, story: nil, isPremiumArchive: true,
+                               currentFolderName: "", fontBuilder: { _, size in .system(size: size) })
+    }
+
+    /// The titles FeedsObjCViewController.m puts in the feed list's settings menu.
+    private func settingsMenuTitles() throws -> [String] {
+        let app = NewsBlurAppDelegate()
+        let feeds = BillingMenuFeedsController()
+        feeds.appDelegate = app
+        let navigation = BillingMenuNavigationController(rootViewController: feeds)
+        feeds.loadViewIfNeeded()
+        feeds.showSettingsPopover(nil)
+        let presented = try XCTUnwrap(navigation.requestedPresentation as? UINavigationController)
+        let menu = try XCTUnwrap(presented.viewControllers.first as? MenuViewController)
+        let items = try XCTUnwrap(menu.value(forKey: "items") as? [[String: Any]])
+        return items.compactMap { $0["title"] as? String }
+    }
+}
+
+/// AIClassifierTests.swift records what NewsBlurAppDelegate.m presents instead of showing it.
+@MainActor private final class BillingPresentationSplitController: SplitViewController {
+    var requestedPresentation: UIViewController?
+    override func dismiss(animated: Bool, completion: (() -> Void)? = nil) { completion?() }
+    override func present(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        requestedPresentation = viewControllerToPresent
+        completion?()
+    }
+}
+
+/// AIClassifierTests.swift builds the real settings menu from a feed list on a plain view.
+@MainActor private final class BillingMenuFeedsController: FeedsViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 780)) }
+    override func viewDidLoad() {}
+}
+
+@MainActor private final class BillingMenuNavigationController: UINavigationController {
+    var requestedPresentation: UIViewController?
+    override func present(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+        requestedPresentation = viewControllerToPresent
+        completion?()
     }
 }
