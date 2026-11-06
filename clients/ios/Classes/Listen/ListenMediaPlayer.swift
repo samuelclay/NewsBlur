@@ -85,6 +85,9 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     static let positionSaveInterval: TimeInterval = 10
     /// How long an episode waits for the server to say where it was left before starting from what's cached.
     static let playbackStateTimeout: TimeInterval = 4
+    /// A save that didn't make the episode current is tried again after 5, 10, 20 and 40 seconds, then every minute.
+    static let saveRetryDelay: TimeInterval = 5
+    static let saveRetryMaximumDelay: TimeInterval = 60
 
     @Published private(set) var item: ListenMediaItem?
     @Published private(set) var status: Status = .idle
@@ -116,6 +119,9 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     }
 
     private var positionSync = PositionSync.waitingForSave
+    /// Failed tries at making the episode current, for the retry backoff (retrySaveLater).
+    private var saveRetryAttempts = 0
+    private var isSaveRetryScheduled = false
     /// Whether the podcast speed was changed here, which is the only time a save carries current_playback_rate.
     private var speedChosenHere = false
     /// The file this app last saved as the server's current item. It went to History when it stopped here, so
@@ -207,6 +213,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         pendingSeek = nil
         lastPositionSave = nil
         positionSync = .waitingForSave
+        saveRetryAttempts = 0
         isWaitingForState = true
         status = .loading
         environment.showMiniPlayer()
@@ -498,9 +505,31 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         lastPositionSave = environment.now()
         let generation = self.generation
         save(item, position: elapsed, isPlaying: isPlaying) { [weak self] saved in
-            // ListenMediaPlayer.swift: the episode is the server's current item again, so its position may sync.
-            guard let self, saved, generation == self.generation else { return }
-            self.positionSync = .syncing
+            guard let self, generation == self.generation else { return }
+            if saved {
+                // ListenMediaPlayer.swift: the episode is the server's current item again, so its position may sync.
+                self.positionSync = .syncing
+                self.saveRetryAttempts = 0
+            } else if self.positionSync == .waitingForSave {
+                self.retrySaveLater(generation: generation)
+            }
+        }
+    }
+
+    /// The save that makes an episode current didn't reach the server (the phone was offline as it started, say), and
+    /// syncs only go out once it has. It's tried again with growing waits until it lands, saving the place the
+    /// episode has reached by then. A retry for an episode that was handed off, closed or replaced since
+    /// (`generation` moved on), or that a later save already made current, does nothing.
+    private func retrySaveLater(generation: Int) {
+        guard !isSaveRetryScheduled else { return }
+        isSaveRetryScheduled = true
+        let delay = min(Self.saveRetryMaximumDelay, Self.saveRetryDelay * pow(2, Double(saveRetryAttempts)))
+        saveRetryAttempts += 1
+        environment.schedule(delay) { [weak self] in
+            guard let self else { return }
+            self.isSaveRetryScheduled = false
+            guard generation == self.generation, self.isActive, self.positionSync == .waitingForSave else { return }
+            self.savePosition(isPlaying: self.wantsToPlay)
         }
     }
 

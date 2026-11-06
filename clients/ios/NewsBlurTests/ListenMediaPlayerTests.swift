@@ -54,6 +54,8 @@ private final class FakeMediaPlayerServer: ListenQueueTransport {
     private var heldReads: [(success: (Any?) -> Void, failure: (Error?) -> Void)] = []
     var holdsPosts = false
     private var heldPosts: [() -> Void] = []
+    /// How many of the next save_playback_state requests fail, as they would offline.
+    var failingSaves = 0
 
     var heldReadCount: Int { heldReads.count }
 
@@ -65,6 +67,11 @@ private final class FakeMediaPlayerServer: ListenQueueTransport {
     func post(_ path: String, parameters: [String: String], success: @escaping (Any?) -> Void,
               failure: @escaping (Error?) -> Void) {
         posts.append((path, parameters))
+        if path == "/media_player/save_playback_state", failingSaves > 0 {
+            failingSaves -= 1
+            failure(URLError(.notConnectedToInternet))
+            return
+        }
         if holdsPosts {
             heldPosts.append { [unowned self] in self.answer(path, parameters: parameters, success: success) }
         } else {
@@ -371,6 +378,52 @@ final class Test_ListenMediaPlayer: XCTestCase {
             engine.send(.time(TimeInterval(second)))
         }
         XCTAssertEqual(server.syncs.count, 2)
+    }
+
+    /// Runs the work the player scheduled (retries and the playback state timeout), as time passing would.
+    private func runScheduled() {
+        let work = scheduled
+        scheduled = []
+        work.forEach { $0() }
+    }
+
+    func test_startSaveThatFailedIsRetriedUntilSyncingCanBegin() {
+        server.failingSaves = 2
+        start()
+        engine.send(.ready(duration: 3600))
+        engine.send(.playing)
+        for second in 1...25 {
+            now = now.addingTimeInterval(1)
+            engine.send(.time(TimeInterval(second)))
+        }
+        XCTAssertTrue(server.syncs.isEmpty, "No syncs while the server doesn't know the episode is current")
+
+        runScheduled()
+        XCTAssertEqual(server.saves.count, 2, "First retry, still offline")
+        XCTAssertTrue(server.syncs.isEmpty)
+        runScheduled()
+        XCTAssertEqual(server.saves.count, 3, "Second retry lands")
+        XCTAssertEqual(server.saves.last?["current_media_url"], episodeURL)
+        XCTAssertEqual(server.saves.last?["current_position"], "25.0")
+        XCTAssertEqual(server.saves.last?["is_playing"], "true")
+
+        for second in 26...36 {
+            now = now.addingTimeInterval(1)
+            engine.send(.time(TimeInterval(second)))
+        }
+        XCTAssertEqual(server.syncs.count, 1, "Syncing begins once the episode is current")
+        runScheduled()
+        XCTAssertEqual(server.saves.count, 3, "Nothing retries after the save landed")
+    }
+
+    func test_retryForAnEpisodeHandedOffSinceDoesNothing() {
+        server.failingSaves = 1
+        start()
+        engine.send(.time(120))
+        player.stopForHandoff()
+        let saves = server.saves.count
+        runScheduled()
+        XCTAssertEqual(server.saves.count, saves, "A stale retry can't make the old episode current again")
     }
 
     func test_podcastRateIsSavedOnlyOnceItChangesHere() {
