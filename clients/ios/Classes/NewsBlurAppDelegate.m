@@ -3204,6 +3204,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [newFeedStories addObject:newStory];
     }
 
+    // StoryScoreRefresher.swift asks the server for the stories whose scores StoryClassifierScorer.swift couldn't settle.
+    [self.storyScoreRefresher noteUncertainStories:scorer.uncertainStoryHashes forFeedId:feedIdStr];
     [self showRescoredStories:newFeedStories];
 }
 
@@ -5336,18 +5338,24 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else {
         [view informError:@"The server barfed!"];
     }
-    [self.storyScoreRefresher saveDidEndForFeedId:feedId];
+    [self.storyScoreRefresher saveDidFailForFeedId:feedId];
 }
 
 // NewsBlurAppDelegate.m calls this just before sending each classifier save, so a score refresh asked for before the
 // change can't land over its local recalculation.
 - (void)startingClassifierSave:(NSString *)feedId {
-    [self.storyScoreRefresher saveWillStartForFeedId:feedId];
+    [self startingClassifierSave:feedId changesScoresOnlyTheServerKnows:NO];
+}
+
+// An AI prompt save or a scope move changes scores recalculateIntelligenceScores: can't work out, so
+// StoryScoreRefresher.swift asks the server for the stories near the screen once it lands.
+- (void)startingClassifierSave:(NSString *)feedId changesScoresOnlyTheServerKnows:(BOOL)serverOnly {
+    [self.storyScoreRefresher saveWillStartForFeedId:feedId changesScoresOnlyTheServerKnows:serverOnly];
 }
 
 // NewsBlurAppDelegate.m refreshes the site's unread counts once a classifier save lands, then asks the server for
-// its loaded stories' scores: recalculateIntelligenceScores: can't run AI prompts and keeps the server's old score
-// wherever StoryClassifierScorer.swift can't tell.
+// loaded stories' scores if the save changed any the app couldn't settle: recalculateIntelligenceScores: can't run
+// AI prompts and keeps the server's old score wherever StoryClassifierScorer.swift can't tell.
 - (void)finishedClassifierSave:(NSString *)feedId {
     [self.feedsViewController refreshFeedList:feedId];
     [self.storyScoreRefresher saveDidEndForFeedId:feedId];
@@ -5657,7 +5665,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedRequest:task.response];
-        [self.storyScoreRefresher saveDidEndForFeedId:feedId];
+        [self.storyScoreRefresher saveDidFailForFeedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -6139,7 +6147,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self.trainerViewController reload];
 
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
-    [self startingClassifierSave:feedId];
+    [self startingClassifierSave:feedId changesScoresOnlyTheServerKnows:YES];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -6179,7 +6187,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
-    [self startingClassifierSave:feedId];
+    [self startingClassifierSave:feedId changesScoresOnlyTheServerKnows:YES];
     [self POST:urlString parameters:removeParams success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         // Step 2: Add classifier at new scope after remove succeeds
         NSMutableDictionary *addParams = [NSMutableDictionary dictionary];

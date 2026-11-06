@@ -940,13 +940,15 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
 // MARK: - Refreshing scores from the server
 
-/// AIClassifierTests.swift checks that a classifier save asks apps/reader/views.py for the site's loaded stories'
-/// scores, and that they only land on the story list they were asked for.
+/// AIClassifierTests.swift checks that a classifier save asks apps/reader/views.py for loaded stories' scores only
+/// when it changed one the app couldn't settle, asks for the uncertain stories and those near the screen, and that
+/// the scores only land on the story list they were asked for.
 @MainActor final class Test_StoryScoreRefresh: XCTestCase {
-    func test_aSavedClassifierRefreshesTheSitesLoadedStoriesOnceSavesPause() {
+    func test_aPromptSaveRefreshesTheSitesStoriesNearTheScreenOnceSavesPause() {
         let app = makeApp()
 
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: -1, includeImages: false,
+                                 scope: "feed", folderName: "")
         XCTAssertTrue(app.storyRequests.isEmpty, "The refresh waits for the reader to stop saving")
         app.endDebounces()
 
@@ -956,23 +958,96 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
                        "Only the saved site's loaded stories")
         XCTAssertEqual(app.storyRequests.first?.parameters["include_hidden"] as? String, "true",
                        "Hidden stories need their new scores too")
+        XCTAssertEqual(app.storyRequests.first?.parameters["include_story_content"] as? String, "false",
+                       "Only the scores are needed, not each story's text again")
     }
 
-    func test_everyKindOfClassifierSaveAsksForARefreshAndRapidSavesShareOne() {
+    func test_savesTheAppCanScoreItselfSendNoRefresh() {
+        let app = makeApp()
+
+        app.toggleTitleClassifier("Sponsor", feedId: "42", score: 1)
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?["title"] as? Int, 1, "The recalculation shows it")
+        app.toggleAuthorClassifier("Daring Fireball Department of Commerce", feedId: "42")
+        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.toggleTextRegexClassifier("agents?", feedId: "42")
+        app.toggleFeedClassifier("42")
+        app.endDebounces()
+
+        XCTAssertTrue(app.storyRequests.isEmpty, "Nothing was left uncertain, so the server has nothing to add")
+    }
+
+    func test_aPromptSaveAndAScopeMoveEachAskForARefresh() {
+        let app = makeApp()
+
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: -1, includeImages: false,
+                                 scope: "feed", folderName: "")
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 1, "The app can't run the AI")
+        app.storyRequests[0].succeed(response(prompt: -1, for: ["42:sponsor", "42:keynote"]))
+
+        app.toggleTitleClassifier("Sponsor", feedId: "42", score: 1)
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 1, "A landed refresh isn't asked for again")
+
+        app.changeClassifierScope("url", value: "daringfireball.net", feedId: "42", score: 1,
+                                  oldScope: "feed", oldFolderName: "", scope: "global", folderName: "")
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 2, "Moving a classifier to all sites changes what the server matches")
+    }
+
+    func test_rapidSavesShareOneRefresh() {
         let app = makeApp()
 
         app.toggleAuthorClassifier("Daring Fireball Department of Commerce", feedId: "42")
         app.toggleTitleClassifier("Sponsor", feedId: "42", score: 1)
-        app.toggleTextRegexClassifier("agents?", feedId: "42")
-        app.toggleFeedClassifier("42")
         app.savePromptClassifier("Non-apple related news", feedId: "42", score: -1, includeImages: false,
                                  scope: "feed", folderName: "")
         app.changeClassifierScope("url", value: "daringfireball.net", feedId: "42", score: 1,
                                   oldScope: "feed", oldFolderName: "", scope: "global", folderName: "")
-        XCTAssertEqual(app.pendingDebounces.count, 6, "Each save that lands asks for a refresh")
+        XCTAssertEqual(app.pendingDebounces.count, 4, "Each save that lands checks for a refresh once saves pause")
 
         app.endDebounces()
         XCTAssertEqual(app.storyRequests.count, 1, "Saves made before the wait ends share one refresh")
+    }
+
+    func test_anUncertainRegexRefreshesOnlyTheAffectedStoriesAndThoseNearTheScreen() throws {
+        // The sponsor URL regex is also trained for all sites, so the app can't tell which score the server keeps for
+        // the two sponsor posts. The reader has the 150th story open.
+        let app = makeApp()
+        app.storiesCollection.activeClassifiers = ["42": ["url_regex": ["sponsor": 1],
+                                                          "urls_scope": ["sponsor": ["scope": "global", "folder_name": ""]]]]
+        let hashes = (0..<300).map { $0 == 10 || $0 == 290 ? "42:sponsor-\($0)" : "42:\($0)" }
+        app.storiesCollection.setStories(hashes.map { story($0) })
+        app.activeStory = loadedStory("42:150", in: app)
+
+        app.toggleTitleClassifier("Keynote", feedId: "42", score: 1)
+        app.endDebounces()
+
+        let requested = try XCTUnwrap(app.storyRequests.first?.parameters["h"] as? [String])
+        XCTAssertEqual(app.storyRequests.count, 1)
+        XCTAssertEqual(requested, ["42:sponsor-10"] + (125...175).map { "42:\($0)" } + ["42:sponsor-290"],
+                       "The uncertain stories, and those within a page of the open one, in list order")
+    }
+
+    func test_aRefreshAsksForAtMostOneBatchNearestTheScreen() throws {
+        // ICU can't compile this Python pattern, so every story's title regex score is uncertain.
+        let app = makeApp()
+        app.storiesCollection.activeClassifiers = ["42": ["title_regex": ["(?P<label>story)": 1]]]
+        app.storiesCollection.setStories((0..<300).map { story("42:\($0)") })
+        app.activeStory = loadedStory("42:150", in: app)
+
+        app.toggleTitleClassifier("Keynote", feedId: "42", score: 1)
+        app.endDebounces()
+
+        // apps/reader/views.py load_river_stories__redis reads the first 100 hashes of a request.
+        XCTAssertEqual(app.storyRequests.count, 1, "One request, however many stories are uncertain")
+        XCTAssertEqual(app.storyRequests.first?.parameters["h"] as? [String], (100...199).map { "42:\($0)" })
+
+        app.storiesCollection.activeFeedStories = [story("7:other", feedId: 7)]
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: -1, includeImages: false,
+                                 scope: "feed", folderName: "")
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 1, "A site with no loaded stories asks for nothing")
     }
 
     func test_theServersScoresReplaceTheLocalGuessIncludingAIPrompts() {
@@ -1054,12 +1129,14 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     }
 
     func test_aStoryShowingInFocusStaysWhenTheRefreshLowersItsScore() {
-        // Focus. Liking a URL regex shows the keynote locally, so the reader may be looking at it when the server's
-        // lower score arrives. The sponsor post wasn't showing and isn't kept.
+        // Focus. The reader adds an AI hide prompt, then likes a URL regex that shows the keynote locally, so they may
+        // be looking at it when the prompt's lower score arrives. The sponsor post wasn't showing and isn't kept.
         let app = makeApp(selectedIntelligence: 1)
         app.storiesCollection.setStories([story("42:keynote", intelligence: ["prompt": 0]),
                                           story("42:sponsor", intelligence: ["author": -1])])
         XCTAssertEqual(visibleHashes(in: app), [])
+        app.savePromptClassifier("Apple events", feedId: "42", score: -1, includeImages: false, scope: "feed",
+                                 folderName: "")
         app.toggleUrlRegexClassifier("keynote", feedId: "42")
         XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(of: "42:keynote", in: app)), 1)
         XCTAssertNil(loadedStory("42:keynote", in: app)?["sticky"], "It wasn't showing before the save")
@@ -1181,9 +1258,11 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     func test_aLateRefreshIsDroppedOnceTheReaderSavesAgain() {
         let app = makeApp()
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: -1, includeImages: false,
+                                 scope: "feed", folderName: "")
         app.endDebounces()
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: 0, includeImages: false,
+                                 scope: "feed", folderName: "")
         app.endDebounces()
         XCTAssertEqual(app.storyRequests.count, 2)
         let recalculated = intelligence(of: "42:sponsor", in: app) as NSDictionary?
@@ -1196,7 +1275,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?["prompt"] as? Int, -1, "The latest save's refresh lands")
     }
 
-    func test_aRefreshAskedForBeforeASaveIsDroppedAndTheSavesOwnRefreshLands() {
+    func test_aRefreshAskedForBeforeASaveIsDroppedAndAskedForAgainOnceTheSaveAnswers() {
         // The reader removes the AI focus prompt, and its refresh is still out when they like the sponsor URL regex.
         let app = makeApp()
         app.savePromptClassifier("Non-apple related news", feedId: "42", score: 0, includeImages: false,
@@ -1215,7 +1294,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
         app.heldSaves[0].succeed()
         app.endDebounces()
-        XCTAssertEqual(app.storyRequests.count, 2, "The URL regex save asks for its own refresh")
+        XCTAssertEqual(app.storyRequests.count, 2, "The prompt removal's scores never landed, so they're asked for again")
         app.storyRequests[1].succeed(scores(["author": -1, "url_regex": 1, "prompt": 0], for: "42:sponsor"))
         XCTAssertEqual(intelligence(of: "42:sponsor", in: app) as NSDictionary?,
                        ["author": -1, "url_regex": 1, "prompt": 0] as NSDictionary)
@@ -1248,7 +1327,8 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     func test_noRefreshIsSentWhileAnotherSaveForTheSiteIsOut() {
         let app = makeApp()
         app.holdsSaves = true
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: -1, includeImages: false,
+                                 scope: "feed", folderName: "")
         app.toggleAuthorClassifier("Daring Fireball Department of Commerce", feedId: "42")
 
         app.heldSaves[0].succeed()
@@ -1262,7 +1342,8 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     func test_aRefreshIsDroppedOnceTheReaderLeavesTheSite() {
         let app = makeApp()
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: -1, includeImages: false,
+                                 scope: "feed", folderName: "")
         app.endDebounces()
 
         // The reader opens the Apple folder, whose river loaded the same stories with their own scores.
@@ -1275,7 +1356,8 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         app.storiesCollection.isRiverView = false
         app.storiesCollection.activeFolder = nil
         app.storiesCollection.activeFeed = ["id": 42]
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: 1, includeImages: false,
+                                 scope: "feed", folderName: "")
         openAppleFolder(app)
         app.endDebounces()
         XCTAssertEqual(app.storyRequests.count, 1, "A refresh for a list the reader left is never sent")
@@ -1283,7 +1365,8 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     func test_aFailedRefreshChangesNothing() {
         let app = makeApp()
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: -1, includeImages: false,
+                                 scope: "feed", folderName: "")
         let recalculated = app.storiesCollection.activeFeedStories as NSArray
         app.endDebounces()
 
@@ -1295,20 +1378,6 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         app.endDebounces()
         app.storyRequests[1].succeed(["code": -1, "message": "Something went wrong"] as [String: Any])
         XCTAssertEqual(app.storiesCollection.activeFeedStories as NSArray, recalculatedAgain)
-    }
-
-    func test_aLongListIsRefreshedInBatchesTheServerAccepts() {
-        let app = makeApp()
-        app.storiesCollection.activeFeedStories = (0..<150).map { story("42:\($0)") }
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
-        app.endDebounces()
-        // apps/reader/views.py load_river_stories__redis reads the first 100 hashes of a request.
-        XCTAssertEqual(app.storyRequests.map { ($0.parameters["h"] as? [String])?.count }, [100, 50])
-
-        app.storiesCollection.activeFeedStories = [story("7:other", feedId: 7)]
-        app.toggleUrlRegexClassifier("sponsor", feedId: "42")
-        app.endDebounces()
-        XCTAssertEqual(app.storyRequests.count, 2, "A site with no loaded stories asks for nothing")
     }
 
     private func makeApp(selectedIntelligence: Int = 0) -> RefreshingClassifierSaveAppDelegate {
