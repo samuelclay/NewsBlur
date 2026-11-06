@@ -2560,30 +2560,48 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
         self.assertEqual(billed, [], "A Tech prompt must not bill for a site outside Tech")
         self.assertIsNone(self.cached_score(self.folder_prompt, self.other_feed))
 
-    def test_feed_fetcher_skips_a_folder_prompt_for_a_feed_outside_its_folder(self):
-        """The fetch-time path end to end: classify_stories_for_subscribers in utils/feed_fetcher.py."""
+    def fetch(self, feed):
+        """Classify one new story through the fetch-time path, classify_stories_for_subscribers
+        in utils/feed_fetcher.py. Returns (LLM calls, billing records)."""
         from utils.feed_fetcher import FeedFetcherWorker
 
         worker = FeedFetcherWorker.__new__(FeedFetcherWorker)
         worker.options = {"verbose": 0}
+        story = self.story(feed)
+        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
+            "utils.ai_functions.anthropic.Anthropic"
+        ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
+            block = MagicMock()
+            block.type = "tool_use"
+            block.name = "classify_stories"
+            block.input = {"classifications": [{"id": story["story_hash"], "classification": 1}]}
+            MockAnthropic.return_value.messages.create.return_value.content = [block]
+            worker.classify_stories_for_subscribers(
+                feed, [story], new_story_count=1, new_story_hashes=[story["story_hash"]]
+            )
+            return MockAnthropic.return_value.messages.create.call_count, record_usage.call_count
 
-        def fetch(feed):
-            story = self.story(feed)
-            with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
-                "utils.ai_functions.anthropic.Anthropic"
-            ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
-                block = MagicMock()
-                block.type = "tool_use"
-                block.name = "classify_stories"
-                block.input = {"classifications": [{"id": story["story_hash"], "classification": 1}]}
-                MockAnthropic.return_value.messages.create.return_value.content = [block]
-                worker.classify_stories_for_subscribers(
-                    feed, [story], new_story_count=1, new_story_hashes=[story["story_hash"]]
-                )
-                return MockAnthropic.return_value.messages.create.call_count, record_usage.call_count
+    def test_feed_fetcher_skips_a_folder_prompt_for_a_feed_outside_its_folder(self):
+        self.assertEqual(self.fetch(self.other_feed), (0, 0))
+        self.assertEqual(self.fetch(self.tech_feed), (1, 1))
 
-        self.assertEqual(fetch(self.other_feed), (0, 0))
-        self.assertEqual(fetch(self.tech_feed), (1, 1))
+    def test_feed_fetcher_skips_feeds_the_user_does_not_subscribe_to(self):
+        """A global prompt covers every feed the user subscribes to, not every feed NewsBlur
+        fetches. feed_has_prompt_subscribers used to return every user with a feed_id=0 prompt
+        for every feed, so their prompts ran and billed on strangers' feeds."""
+        unsubscribed_feed = Feed.objects.get(pk=4)
+        global_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=0, folder_id="", prompt="any new language", classifier_type="focus"
+        )
+        self.addCleanup(
+            MClassifierPrompt.invalidate_cache,
+            self.user.pk,
+            str(global_prompt.id),
+            feed_ids=[unsubscribed_feed.pk],
+        )
+
+        self.assertEqual(self.fetch(unsubscribed_feed), (0, 0))
+        self.assertEqual(self.fetch(self.other_feed), (1, 1))
 
     def test_folder_prompt_covers_the_same_sites_as_a_folder_title_classifier(self):
         """A folder covers only the sites filed directly in it, exactly like the folder-scoped

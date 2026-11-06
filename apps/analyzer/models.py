@@ -1011,13 +1011,28 @@ class MClassifierPrompt(mongo.Document):
 
     @classmethod
     def feed_has_prompt_subscribers(cls, feed_id):
-        """Quick check: do any users have prompt classifiers for this feed (or global)?
+        """Quick check: which of this feed's subscribers have prompt classifiers that could apply?
+
+        models.py: A prompt on this feed, or any global or folder prompt (feed_id=0), makes
+        a user a candidate, and only the feed's subscribers count. Every user with a
+        feed_id=0 prompt used to come back for every feed, so each fetch anywhere on
+        NewsBlur ran and billed their prompts against feeds they don't subscribe to.
+        classify_stories still checks each folder prompt against the user's folders.
 
         Returns set of user_ids with applicable prompts, or empty set.
         """
+        from apps.reader.models import UserSubscription
+
         feed_users = set(cls.objects.filter(feed_id=feed_id).distinct("user_id"))
         global_users = set(cls.objects.filter(feed_id=0).distinct("user_id"))
-        return feed_users | global_users
+        candidate_user_ids = feed_users | global_users
+        if not candidate_user_ids:
+            return set()
+        return set(
+            UserSubscription.objects.filter(feed_id=feed_id, user_id__in=candidate_user_ids).values_list(
+                "user_id", flat=True
+            )
+        )
 
     @classmethod
     def get_prompts_by_feed(cls, user_id, feed_ids, folder_feed_ids=None):
