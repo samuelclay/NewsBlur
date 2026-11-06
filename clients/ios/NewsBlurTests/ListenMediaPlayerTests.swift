@@ -416,6 +416,29 @@ final class Test_ListenMediaPlayer: XCTestCase {
         XCTAssertEqual(server.saves.count, 3, "Nothing retries after the save landed")
     }
 
+    func test_episodeStartedWhileAnotherEpisodesRetryWaitsGetsItsOwnRetry() {
+        // ListenMediaPlayerTests.swift: offline, episode 42's start save fails, then 43 starts: 42's paused save
+        // and 43's start save fail too.
+        server.failingSaves = 3
+        start()
+        engine.send(.time(60))
+        let other = ListenMediaItem(storyHash: "8:gggggg", mediaURL: "https://cdn.example.com/episodes/43.mp3",
+                                    title: "Episode 43", feedId: "1")
+        start(other)
+        engine.send(.ready(duration: 3600))
+        engine.send(.playing)
+
+        runScheduled()
+        let otherSaves = server.saves.filter { $0["current_media_url"] == other.mediaURL }
+        XCTAssertEqual(otherSaves.count, 2, "Episode 43's failed start save is retried")
+        XCTAssertEqual(server.saves.last?["current_media_url"], other.mediaURL, "42's stale retry stays quiet")
+        for second in 1...11 {
+            now = now.addingTimeInterval(1)
+            engine.send(.time(TimeInterval(second)))
+        }
+        XCTAssertEqual(server.syncs.map { $0["media_url"] }, [other.mediaURL])
+    }
+
     func test_retryForAnEpisodeHandedOffSinceDoesNothing() {
         server.failingSaves = 1
         start()

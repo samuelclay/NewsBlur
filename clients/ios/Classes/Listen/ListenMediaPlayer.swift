@@ -121,7 +121,9 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     private var positionSync = PositionSync.waitingForSave
     /// Failed tries at making the episode current, for the retry backoff (retrySaveLater).
     private var saveRetryAttempts = 0
-    private var isSaveRetryScheduled = false
+    /// The generation a save retry is waiting to run for, so an episode started after one whose retry is still
+    /// pending gets its own, and that stale retry can't cancel it.
+    private var saveRetryGeneration: Int?
     /// Whether the podcast speed was changed here, which is the only time a save carries current_playback_rate.
     private var speedChosenHere = false
     /// The file this app last saved as the server's current item. It went to History when it stopped here, so
@@ -214,6 +216,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         lastPositionSave = nil
         positionSync = .waitingForSave
         saveRetryAttempts = 0
+        saveRetryGeneration = nil
         isWaitingForState = true
         status = .loading
         environment.showMiniPlayer()
@@ -422,6 +425,8 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         pendingSeek = nil
         lastPositionSave = nil
         positionSync = .waitingForSave
+        saveRetryAttempts = 0
+        saveRetryGeneration = nil
         artwork = nil
     }
 
@@ -521,13 +526,13 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     /// episode has reached by then. A retry for an episode that was handed off, closed or replaced since
     /// (`generation` moved on), or that a later save already made current, does nothing.
     private func retrySaveLater(generation: Int) {
-        guard !isSaveRetryScheduled else { return }
-        isSaveRetryScheduled = true
+        guard saveRetryGeneration != generation else { return }
+        saveRetryGeneration = generation
         let delay = min(Self.saveRetryMaximumDelay, Self.saveRetryDelay * pow(2, Double(saveRetryAttempts)))
         saveRetryAttempts += 1
         environment.schedule(delay) { [weak self] in
-            guard let self else { return }
-            self.isSaveRetryScheduled = false
+            guard let self, self.saveRetryGeneration == generation else { return }
+            self.saveRetryGeneration = nil
             guard generation == self.generation, self.isActive, self.positionSync == .waitingForSave else { return }
             self.savePosition(isPlaying: self.wantsToPlay)
         }
