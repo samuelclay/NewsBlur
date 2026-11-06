@@ -104,12 +104,33 @@ class Test_SyncPlaybackPosition(TestCase):
 
     def test_an_item_switch_after_the_check_keeps_the_old_items_position_out(self):
         # Another device's save of a new item lands between this sync's MongoDB check and its Redis write.
-        self.redis.hset(
-            self.redis_key, mapping={"media_url": "https://example.com/next.mp3", "position": "5.0"}
-        )
-        response = self.sync(media_url="https://example.com/episode.mp3", position=900)
+        real_transaction = redis.Redis.transaction
+
+        def save_next_item_then_write(redis_client, *args, **kwargs):
+            self.client.post(
+                "/media_player/save_playback_state",
+                {"current_media_url": "https://example.com/next.mp3", "current_position": 5},
+            )
+            return real_transaction(redis_client, *args, **kwargs)
+
+        with patch.object(redis.Redis, "transaction", autospec=True, side_effect=save_next_item_then_write):
+            response = self.sync(media_url="https://example.com/episode.mp3", position=900)
         self.assertEqual(response["code"], -1)
         self.assertEqual(self.redis.hget(self.redis_key, "position"), "5.0")
+        state = MMediaPlaybackState.get_state_with_redis_position(self.user.pk)
+        self.assertEqual(state["current_position"], 5.0)
+
+    def test_a_stale_hash_left_by_a_failed_redis_write_does_not_stop_syncing(self):
+        # Episode B became current in MongoDB, but save_playback_state's Redis write failed, so the hash still
+        # names the episode before it. B's syncs must replace that hash, not be refused as a takeover.
+        self.redis.hset(
+            self.redis_key, mapping={"media_url": "https://example.com/older.mp3", "position": "500"}
+        )
+        response = self.sync(media_url="https://example.com/episode.mp3", position=42)
+        self.assertEqual(response["code"], 1)
+        self.assertEqual(self.redis.hget(self.redis_key, "media_url"), "https://example.com/episode.mp3")
+        state = MMediaPlaybackState.get_state_with_redis_position(self.user.pk)
+        self.assertEqual(state["current_position"], 42)
 
     def test_a_hash_naming_another_item_is_not_applied(self):
         self.redis.hset(

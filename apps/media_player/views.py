@@ -110,8 +110,12 @@ def sync_playback_position(request):
         return {"code": 0, "message": gettext("Use POST")}
 
     media_url = request.POST.get("media_url", "")
-    state = MMediaPlaybackState.objects(user_id=request.user.pk).only("current_media_url").first()
-    if not state or not media_url or state.current_media_url != media_url:
+
+    def is_current_item():
+        state = MMediaPlaybackState.objects(user_id=request.user.pk).only("current_media_url").first()
+        return bool(state and media_url and state.current_media_url == media_url)
+
+    if not is_current_item():
         return {"code": -1, "message": gettext("That item isn't playing")}
 
     redis_data = {}
@@ -132,13 +136,18 @@ def sync_playback_position(request):
     redis_key = f"media:playback:{request.user.pk}"
 
     def write_position(pipe):
-        # save_playback_state records the current item's media_url in the hash. If another item became
-        # current between the MongoDB check above and this write, the hash names it and this position is
-        # dropped instead of landing on it. WATCH retries the write if the hash changes underneath.
+        # save_playback_state records the current item's media_url in the hash. A hash naming another item
+        # means either that item became current after the check above, so this position is dropped instead of
+        # landing on it, or save_playback_state's Redis write failed when this item became current and left
+        # the old name behind. MongoDB, the record of what's current, tells them apart; a stale hash is
+        # replaced. WATCH retries the write if the hash changes underneath.
         stored_media_url = pipe.hget(redis_key, "media_url")
-        if stored_media_url and stored_media_url != media_url:
+        is_stale_hash = bool(stored_media_url and stored_media_url != media_url)
+        if is_stale_hash and not is_current_item():
             return False
         pipe.multi()
+        if is_stale_hash:
+            pipe.delete(redis_key)
         pipe.hset(redis_key, mapping=redis_data)
         pipe.expire(redis_key, 86400)  # 24h expiry, matching node/unread_counts.js media:sync
         return True
