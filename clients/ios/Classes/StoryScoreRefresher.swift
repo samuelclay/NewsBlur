@@ -11,14 +11,14 @@ import Foundation
 /// may have changed a score the app can't work out. NewsBlurAppDelegate.m's recalculateIntelligenceScores: shows the
 /// change right away, but it can't run AI prompts, and StoryClassifierScorer.swift keeps the server's old score
 /// wherever it can't tell. So an AI prompt save, a classifier moved to another scope, or a save that left any story's
-/// score uncertain asks apps/reader/views.py for the uncertain stories and the ones near the screen, in one request
-/// without their content. Any other save is settled by the recalculation alone.
+/// score uncertain asks apps/reader/views.py for the uncertain stories and the ones near the screen, without their
+/// content, one batch at a time. Any other save is settled by the recalculation alone.
 @MainActor @objcMembers final class StoryScoreRefresher: NSObject {
     /// Saves that follow each other this closely, like tapping through a story's classifiers in the trainer, share
     /// one refresh.
     static let debounce: TimeInterval = 1
-    /// apps/reader/views.py load_river_stories__redis reads at most 100 story hashes per request, and a refresh sends
-    /// one request.
+    /// apps/reader/views.py load_river_stories__redis reads at most 100 story hashes per request, so a refresh asks for
+    /// that many stories at a time and sends the next batch once one lands.
     static let batchSize = 100
     /// How many stories past the ones on screen a refresh asks for, in each direction.
     static let nearbyStoryCount = 25
@@ -44,6 +44,12 @@ import Foundation
         var uncertainStoryHashes: Set<String> = []
 
         var isNeeded: Bool { changesScoresOnlyTheServerKnows || !uncertainStoryHashes.isEmpty }
+    }
+
+    /// The stories one request asks for, and the ones it had no room for, which wait for the next batch.
+    private struct Batch {
+        let storyHashes: [String]
+        let unsentStoryHashes: Set<String>
     }
 
     /// Waits out the debounce before refreshing. NewsBlurTests replace it to end the wait by hand.
@@ -127,35 +133,58 @@ import Foundation
         pendingRefreshes[feedId] = pending
     }
 
-    private func refresh(feedId: String, generation: Int, list: StoryList) {
+    /// The refresh a save asks for takes in the stories near the screen as well as the uncertain ones. The batches
+    /// that follow it ask only for the stories the earlier ones had no room for.
+    private func refresh(feedId: String, generation: Int, list: StoryList, includesStoriesNearTheScreen: Bool = true) {
         guard let appDelegate, let host = appDelegate.url, isCurrent(feedId: feedId, generation: generation, list: list),
               let pending = pendingRefreshes[feedId] else {
             return
         }
-        let hashes = pending.list == list && pending.isNeeded ? storyHashes(forFeedId: feedId, pending: pending) : []
-        guard !hashes.isEmpty else {
+        let batch = pending.list == list && pending.isNeeded
+            ? nextBatch(forFeedId: feedId, pending: pending, includesStoriesNearTheScreen: includesStoriesNearTheScreen)
+            : nil
+        guard let batch, !batch.storyHashes.isEmpty else {
             pendingRefreshes[feedId] = nil
             return
         }
-        let parameters: [String: Any] = ["h": hashes, "include_hidden": "true", "include_story_content": "false",
-                                         "page": "0"]
+        let parameters: [String: Any] = ["h": batch.storyHashes, "include_hidden": "true",
+                                         "include_story_content": "false", "page": "0"]
         appDelegate.get("\(host)/reader/river_stories", parameters: parameters, success: { [weak self] _, response in
             MainActor.assumeIsolated {
-                self?.apply(response, requestedHashes: Set(hashes), feedId: feedId, generation: generation, list: list)
+                self?.apply(response, batch: batch, feedId: feedId, generation: generation, list: list)
             }
         }, failure: { _, _ in
-            // A failed refresh leaves the local recalculation in place and never shows an error. The next save's
-            // refresh asks again.
+            // A failed refresh leaves the local recalculation in place and never shows an error. Its stories stay
+            // pending, and the next save's refresh asks again.
         })
     }
 
-    private func apply(_ response: Any?, requestedHashes: Set<String>, feedId: String, generation: Int, list: StoryList) {
-        guard let appDelegate, let collection = appDelegate.storiesCollection,
-              isCurrent(feedId: feedId, generation: generation, list: list),
+    private func apply(_ response: Any?, batch: Batch, feedId: String, generation: Int, list: StoryList) {
+        guard isCurrent(feedId: feedId, generation: generation, list: list),
               let stories = (response as? [String: Any])?["stories"] as? [[String: Any]] else { return }
-        pendingRefreshes[feedId] = nil
-        let scoring = Self.scoring(of: stories, requestedHashes: requestedHashes)
-        guard !scoring.isEmpty else { return }
+        settle(batch, feedId: feedId)
+        show(Self.scoring(of: stories, requestedHashes: Set(batch.storyHashes)), feedId: feedId)
+
+        // One batch at a time. The next one goes through the same checks, so a save that starts while it's out drops
+        // it, and the save's own refresh asks again for every story still waiting.
+        if pendingRefreshes[feedId] != nil {
+            refresh(feedId: feedId, generation: invalidateRefreshes(forFeedId: feedId), list: list,
+                    includesStoriesNearTheScreen: false)
+        }
+    }
+
+    /// The batch's stories have the server's scores, and the ones it had no room for wait for the next batch. Those
+    /// are every story still pending that's loaded, since a story noted uncertain after the batch was sent came with
+    /// a save, which drops the batch before it lands. A story no longer loaded is dropped.
+    private func settle(_ batch: Batch, feedId: String) {
+        guard var pending = pendingRefreshes[feedId] else { return }
+        pending.changesScoresOnlyTheServerKnows = false
+        pending.uncertainStoryHashes = batch.unsentStoryHashes
+        pendingRefreshes[feedId] = pending.isNeeded ? pending : nil
+    }
+
+    private func show(_ scoring: [String: [String: Any]], feedId: String) {
+        guard !scoring.isEmpty, let appDelegate, let collection = appDelegate.storiesCollection else { return }
 
         var changed = false
         let updatedStories: [Any] = (collection.activeFeedStories ?? []).map { item in
@@ -199,10 +228,11 @@ import Foundation
 
     // MARK: Choosing stories
 
-    /// The site's loaded stories a refresh asks for: every uncertain one and those within a page of the screen,
-    /// nearest the screen first and at most one batch, sent in list order.
-    private func storyHashes(forFeedId feedId: String, pending: PendingRefresh) -> [String] {
-        guard let collection = appDelegate?.storiesCollection else { return [] }
+    /// The site's loaded stories the next request asks for: the pending ones, and for a save's refresh those within a
+    /// page of the screen, nearest the screen first and at most one batch, sent in list order. The rest wait for the
+    /// next batch.
+    private func nextBatch(forFeedId feedId: String, pending: PendingRefresh, includesStoriesNearTheScreen: Bool) -> Batch {
+        guard let collection = appDelegate?.storiesCollection else { return Batch(storyHashes: [], unsentStoryHashes: []) }
         let stories = collection.activeFeedStories ?? []
         let locations = (collection.activeFeedStoryLocations as? [NSNumber] ?? []).map(\.intValue)
             .filter { stories.indices.contains($0) }
@@ -213,18 +243,17 @@ import Foundation
         for (index, item) in stories.enumerated() {
             guard let story = item as? NSDictionary, Self.feedId(of: story) == feedId,
                   let hash = story["story_hash"] as? String else { continue }
-            if pending.uncertainStoryHashes.contains(hash) || windows.contains(where: { $0.indexes.contains(index) }) {
+            if pending.uncertainStoryHashes.contains(hash) ||
+                (includesStoriesNearTheScreen && windows.contains(where: { $0.indexes.contains(index) })) {
                 candidates.append((index, hash))
             }
         }
         func distance(_ index: Int) -> Int {
             anchors.map { abs($0 - index) }.min() ?? index
         }
-        return candidates
-            .sorted { (distance($0.index), $0.index) < (distance($1.index), $1.index) }
-            .prefix(Self.batchSize)
-            .sorted { $0.index < $1.index }
-            .map(\.hash)
+        let nearestFirst = candidates.sorted { (distance($0.index), $0.index) < (distance($1.index), $1.index) }
+        return Batch(storyHashes: nearestFirst.prefix(Self.batchSize).sorted { $0.index < $1.index }.map(\.hash),
+                     unsentStoryHashes: Set(nearestFirst.dropFirst(Self.batchSize).map(\.hash)))
     }
 
     /// The stories within nearbyStoryCount of each story on screen, counted along the list the reader sees, with the

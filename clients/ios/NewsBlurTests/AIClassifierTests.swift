@@ -1179,7 +1179,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         app.endDebounces()
 
         // apps/reader/views.py load_river_stories__redis reads the first 100 hashes of a request.
-        XCTAssertEqual(app.storyRequests.count, 1, "One request, however many stories are uncertain")
+        XCTAssertEqual(app.storyRequests.count, 1, "One request at a time, however many stories are uncertain")
         XCTAssertEqual(app.storyRequests.first?.parameters["h"] as? [String], (100...199).map { "42:\($0)" })
 
         app.storiesCollection.activeFeedStories = [story("7:other", feedId: 7)]
@@ -1187,6 +1187,55 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
                                  scope: "feed", folderName: "")
         app.endDebounces()
         XCTAssertEqual(app.storyRequests.count, 1, "A site with no loaded stories asks for nothing")
+    }
+
+    func test_storiesPastTheFirstBatchGetTheirScoresFromTheBatchesThatFollow() throws {
+        // ICU can't compile this Python pattern, so all 300 stories' title regex scores are uncertain. The reader has
+        // the 150th story open.
+        let app = makeApp()
+        app.storiesCollection.activeClassifiers = ["42": ["title_regex": ["(?P<label>story)": 1]]]
+        app.storiesCollection.setStories((0..<300).map { story("42:\($0)") })
+        app.activeStory = loadedStory("42:150", in: app)
+        app.toggleTitleClassifier("Keynote", feedId: "42", score: 1)
+        app.endDebounces()
+
+        XCTAssertEqual(try requestedHashes(0, in: app), hashes(100...199))
+        app.storyRequests[0].succeed(titleRegexScores(for: try requestedHashes(0, in: app)))
+        XCTAssertEqual(app.storyRequests.count, 2, "The next batch goes out once the first lands")
+        XCTAssertEqual(try requestedHashes(1, in: app), hashes(50...99) + hashes(200...249), "Nearest the screen first")
+
+        // The list loses its last 50 stories while the second batch is out.
+        app.storiesCollection.setStories(Array(app.storiesCollection.activeFeedStories.prefix(250)))
+        app.storyRequests[1].succeed(titleRegexScores(for: try requestedHashes(1, in: app)))
+        XCTAssertEqual(try requestedHashes(2, in: app), hashes(0...49), "Stories no longer loaded are dropped")
+        app.storyRequests[2].succeed(titleRegexScores(for: try requestedHashes(2, in: app)))
+
+        XCTAssertEqual(app.storyRequests.count, 3, "Nothing is left to ask for")
+        XCTAssertEqual((0..<250).filter { intelligence(of: "42:\($0)", in: app)?["title_regex"] as? Int != 1 }, [],
+                       "Every loaded story has the server's score")
+    }
+
+    func test_aSaveWhileABatchIsOutDropsItAndAsksAgainOnceTheSaveAnswers() throws {
+        let app = makeApp()
+        app.storiesCollection.activeClassifiers = ["42": ["title_regex": ["(?P<label>story)": 1]]]
+        app.storiesCollection.setStories((0..<300).map { story("42:\($0)") })
+        app.activeStory = loadedStory("42:150", in: app)
+        app.toggleTitleClassifier("Keynote", feedId: "42", score: 1)
+        app.endDebounces()
+        app.storyRequests[0].succeed(titleRegexScores(for: try requestedHashes(0, in: app)))
+        XCTAssertEqual(app.storyRequests.count, 2)
+
+        app.holdsSaves = true
+        app.toggleTitleClassifier("Keynote", feedId: "42", score: 0)
+        app.storyRequests[1].succeed(titleRegexScores(for: try requestedHashes(1, in: app)))
+        XCTAssertNil(intelligence(of: "42:99", in: app)?["title_regex"], "Scores from before the save never land")
+        XCTAssertEqual(app.storyRequests.count, 2, "No batch goes out while the save is out")
+
+        app.heldSaves[0].succeed()
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 3)
+        XCTAssertEqual(try requestedHashes(2, in: app), hashes(100...199),
+                       "The save left every story uncertain again, so its refresh starts nearest the screen")
     }
 
     func test_theServersScoresReplaceTheLocalGuessIncludingAIPrompts() {
@@ -1586,6 +1635,18 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     private func scores(_ intelligence: [String: Int], for hash: String) -> [String: Any] {
         ["stories": [["story_hash": hash, "story_feed_id": 42, "intelligence": intelligence]]]
+    }
+
+    private func titleRegexScores(for hashes: [String]) -> [String: Any] {
+        ["stories": hashes.map { ["story_hash": $0, "story_feed_id": 42, "intelligence": ["title_regex": 1]] }]
+    }
+
+    private func hashes(_ range: ClosedRange<Int>) -> [String] {
+        range.map { "42:\($0)" }
+    }
+
+    private func requestedHashes(_ request: Int, in app: RefreshingClassifierSaveAppDelegate) throws -> [String] {
+        try XCTUnwrap(app.storyRequests[request].parameters["h"] as? [String])
     }
 
     private func loadedStory(_ hash: String, in app: NewsBlurAppDelegate) -> [String: Any]? {
