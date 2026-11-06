@@ -1072,12 +1072,18 @@ def refresh_feed(request, feed_id):
     return load_single_feed(request, feed_id)
 
 
-def get_prompt_scores_or_queue(user, stories, feed_ids):
+def get_prompt_scores_or_queue(user, stories, feed_ids, folder_feed_ids=None):
     """Read cached AI prompt classifier scores (cache-read-only).
 
     Classification happens at FeedFetch time, not at read time.
     This function only reads from Redis cache and returns whatever
     scores are available. Uncached stories get no score.
+
+    A prompt's score is only read for feeds the prompt covers (its own feed, every
+    feed for a global prompt, the sites in its folder for a folder prompt), matching
+    MClassifierPrompt.classify_stories in apps/analyzer/models.py. Pass the view's
+    folder_feed_ids map when it has one; otherwise it's loaded only if a folder prompt
+    needs it.
 
     Returns dict with:
       "scores": {story_hash: prompt_score} - aggregate score per story
@@ -1095,16 +1101,19 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
     if not prompt_count:
         return empty_result
 
-    # Get applicable prompts
-    prompts = MClassifierPrompt.get_prompts_for_user(user.pk, feed_ids=feed_ids)
-    feed_prompts = prompts["feed_prompts"]
-    if not feed_prompts:
-        return empty_result
-
     # Group stories by feed
     stories_by_feed = defaultdict(list)
     for story in stories:
         stories_by_feed[story["story_feed_id"]].append(story)
+
+    # Get the prompts that apply to each story's feed (feed-specific, global, and folder
+    # prompts whose folder holds the feed). Keyed by the stories' own feed ids, which the
+    # fetcher caches scores under, even when the request named a duplicate feed id.
+    prompts_by_feed = MClassifierPrompt.get_prompts_by_feed(
+        user.pk, list(stories_by_feed.keys()), folder_feed_ids=folder_feed_ids
+    )
+    if not prompts_by_feed:
+        return empty_result
 
     # Check cache for all prompts
     prompt_scores = {}  # {story_hash: aggregated_score}
@@ -1113,14 +1122,7 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
     for feed_id, feed_stories in stories_by_feed.items():
         story_hashes = [s["story_hash"] for s in feed_stories]
 
-        # Collect prompts that apply to this feed (feed-specific + global)
-        applicable_prompts = []
-        if 0 in feed_prompts:
-            applicable_prompts.extend(feed_prompts[0])
-        if feed_id in feed_prompts:
-            applicable_prompts.extend(feed_prompts[feed_id])
-
-        for prompt in applicable_prompts:
+        for prompt in prompts_by_feed.get(feed_id, []):
             prompt_id = str(prompt.id)
             cached = MClassifierPrompt.get_cached_scores(user.pk, prompt_id, feed_id, story_hashes)
 
@@ -1421,7 +1423,9 @@ def load_single_feed(request, feed_id):
     user_is_pro = user.profile.is_pro
 
     # AI prompt classifiers (cached in Redis, async classification for uncached)
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=[feed_id])
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=[feed_id], folder_feed_ids=folder_feed_ids
+    )
 
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
@@ -2969,7 +2973,9 @@ def load_river_stories__redis(request):
     user_is_pro = user.profile.is_pro
 
     # AI prompt classifiers (cached in Redis, async classification for uncached)
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=found_feed_ids)
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=found_feed_ids, folder_feed_ids=folder_feed_ids
+    )
 
     # Look up actual read status for starred stories from Redis
     if read_filter == "starred":
@@ -6031,7 +6037,9 @@ def load_trending_stories(request):
     )
 
     user_is_pro = user.profile.is_pro
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=story_feed_ids)
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=story_feed_ids, folder_feed_ids=folder_feed_ids
+    )
 
     # Look up starred stories
     story_hash_list = [s["story_hash"] for s in stories]
