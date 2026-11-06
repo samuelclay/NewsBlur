@@ -1,0 +1,496 @@
+import MediaPlayer
+import XCTest
+
+@testable import NewsBlur
+
+/// ListenMediaPlayerTests.swift's stand-in for AVPlayer: it records what ListenMediaPlayer.swift asks for, and the
+/// test sends the events AVPlayer would.
+private final class FakeMediaEngine: ListenMediaEngine {
+    var onEvent: ((ListenMediaEngineEvent) -> Void)?
+    var currentTime: TimeInterval = 0
+    private(set) var loads: [(url: URL, startAt: TimeInterval)] = []
+    private(set) var plays: [Double] = []
+    private(set) var pauses = 0
+    private(set) var seeks: [TimeInterval] = []
+    private(set) var unloads = 0
+
+    func load(_ url: URL, startAt: TimeInterval) {
+        loads.append((url, startAt))
+        currentTime = startAt
+    }
+
+    func play(rate: Double) {
+        plays.append(rate)
+    }
+
+    func pause() {
+        pauses += 1
+    }
+
+    func seek(to time: TimeInterval) {
+        seeks.append(time)
+        currentTime = time
+    }
+
+    func setRate(_ rate: Double) {}
+
+    func unload() {
+        unloads += 1
+    }
+
+    func send(_ event: ListenMediaEngineEvent) {
+        onEvent?(event)
+    }
+}
+
+/// ListenMediaPlayerTests.swift's stand-in for apps/media_player. Reads of /media_player/playback_state wait for the
+/// test to answer them; every POST is answered at once, with queue edits applied the way
+/// apps/media_player/models.py applies them.
+private final class FakeMediaPlayerServer: ListenQueueTransport {
+    var state: [String: Any] = ["queue": [], "history": [], "skip_back_seconds": 15, "skip_forward_seconds": 30,
+                                "auto_play_next": true, "remember_position": true]
+    private(set) var posts: [(path: String, parameters: [String: String])] = []
+    private var heldReads: [(Any?) -> Void] = []
+
+    var heldReadCount: Int { heldReads.count }
+
+    func get(_ path: String, success: @escaping (Any?) -> Void, failure: @escaping (Error?) -> Void) {
+        XCTAssertEqual(path, "/media_player/playback_state")
+        heldReads.append(success)
+    }
+
+    func post(_ path: String, parameters: [String: String], success: @escaping (Any?) -> Void,
+              failure: @escaping (Error?) -> Void) {
+        posts.append((path, parameters))
+        var queue = state["queue"] as? [[String: Any]] ?? []
+        let sameItem: ([String: Any]) -> Bool = {
+            $0["story_hash"] as? String == parameters["story_hash"] && $0["media_url"] as? String == parameters["media_url"]
+        }
+        switch path {
+        case "/media_player/add_to_media_queue":
+            queue.removeAll(where: sameItem)
+            if let position = parameters["position"].flatMap(Int.init), position <= queue.count {
+                queue.insert(parameters, at: position)
+            } else {
+                queue.append(parameters)
+            }
+        case "/media_player/remove_from_media_queue":
+            queue.removeAll(where: sameItem)
+        default:
+            break
+        }
+        state["queue"] = queue
+        success(["playback_state": state])
+    }
+
+    func answerReads() {
+        let reads = heldReads
+        heldReads = []
+        reads.forEach { $0(["playback_state": state]) }
+    }
+
+    func posted(_ path: String) -> [[String: String]] {
+        posts.filter { $0.path == path }.map(\.parameters)
+    }
+
+    var saves: [[String: String]] { posted("/media_player/save_playback_state") }
+    var historyAdds: [[String: String]] { posted("/media_player/add_to_media_history") }
+
+    func queueEntry(hash: String, url: String, type: String = "audio") -> [String: Any] {
+        ["story_hash": hash, "media_url": url, "media_type": type, "media_title": hash, "feed_id": "1"]
+    }
+}
+
+/// ListenMediaPlayerTests.swift's stand-in for ListenPlayer.swift: starting a queued story stops the podcast, as
+/// ListenPlayer.start(story:) does.
+private final class FakeListenSession: ListenSessionHandoff {
+    var isActive = false
+    private(set) var handoffStops = 0
+    private(set) var playedQueued: [ListenQueueItem] = []
+    weak var media: ListenMediaPlayer?
+
+    func stopForHandoff() {
+        handoffStops += 1
+        isActive = false
+    }
+
+    func play(queued item: ListenQueueItem) {
+        media?.stopForHandoff()
+        playedQueued.append(item)
+        isActive = true
+    }
+}
+
+/// A Listen story playing, for the remote command router.
+private final class FakeRemoteSession: ListenRemoteControllable {
+    var isActive = false
+    var wantsToPlay = false
+    var canSeek = true
+    var hasNextTrack = false
+    private(set) var calls: [String] = []
+
+    func play() { calls.append("play") }
+    func pause() { calls.append("pause") }
+    func togglePlayPause() { calls.append("toggle") }
+    func skipBackward() { calls.append("back") }
+    func skipForward() { calls.append("forward") }
+    func seek(toRemotePosition time: TimeInterval) { calls.append("seek \(time)") }
+    func playNextTrack() { calls.append("next") }
+}
+
+/// ListenMediaPlayerTests.swift: podcast episodes played by ListenMediaPlayer.swift resume where the web or Android
+/// left them, save their place for those devices, follow the web's skip and auto-play settings, and hand over to
+/// Listen cleanly.
+final class Test_ListenMediaPlayer: XCTestCase {
+    private var engine: FakeMediaEngine!
+    private var server: FakeMediaPlayerServer!
+    private var queue: ListenQueue!
+    private var listen: FakeListenSession!
+    private var player: ListenMediaPlayer!
+    private var now = Date(timeIntervalSince1970: 1_000_000)
+    private var scheduled: [() -> Void] = []
+    private var miniPlayerHides = 0
+
+    private let episodeURL = "https://cdn.example.com/episodes/42.mp3"
+    private let episode = ListenMediaItem(storyHash: "1:aaaaaa", mediaURL: "https://cdn.example.com/episodes/42.mp3",
+                                          title: "Episode 42", feedId: "1")
+
+    override func setUp() {
+        super.setUp()
+        engine = FakeMediaEngine()
+        server = FakeMediaPlayerServer()
+        queue = ListenQueue(transport: server)
+        listen = FakeListenSession()
+        scheduled = []
+        miniPlayerHides = 0
+        let environment = ListenMediaPlayer.Environment(
+            now: { [unowned self] in self.now },
+            schedule: { [unowned self] _, work in self.scheduled.append(work) },
+            showMiniPlayer: {},
+            hideMiniPlayer: { [unowned self] in self.miniPlayerHides += 1 },
+            stateDidChange: {},
+            publishesNowPlaying: false,
+            listenSession: { [unowned self] in self.listen },
+            feedTitle: { _ in "The Feed" },
+            activateAudioSession: {},
+            deactivateAudioSession: {}
+        )
+        player = ListenMediaPlayer(engine: engine, queue: queue, environment: environment)
+        listen.media = player
+    }
+
+    override func tearDown() {
+        player = nil
+        queue = nil
+        super.tearDown()
+    }
+
+    /// Starts `item` and answers its playback state read with the server's state.
+    private func start(_ item: ListenMediaItem? = nil) {
+        player.start(item ?? episode)
+        server.answerReads()
+    }
+
+    private func savedCurrent(hash: String, url: String, type: String = "audio", position: Double, duration: Double) {
+        server.state["current_story_hash"] = hash
+        server.state["current_media_url"] = url
+        server.state["current_media_type"] = type
+        server.state["current_position"] = position
+        server.state["current_duration"] = duration
+    }
+
+    // MARK: - Resuming
+
+    func test_episodePausedOnAnotherDeviceResumesAtItsSavedPlace() {
+        savedCurrent(hash: episode.storyHash, url: episodeURL, position: 1234.5, duration: 3600)
+        start()
+        XCTAssertEqual(engine.loads.count, 1)
+        XCTAssertEqual(engine.loads.first?.url.absoluteString, episodeURL)
+        XCTAssertEqual(engine.loads.first?.startAt, 1234.5)
+        XCTAssertEqual(engine.plays.count, 1)
+        XCTAssertEqual(player.elapsed, 1234.5)
+    }
+
+    func test_currentItemMatchesOnStoryHashWhenTheEnclosureURLChanged() {
+        savedCurrent(hash: episode.storyHash, url: "http://cdn.example.com/episodes/42.mp3?tracking=1",
+                     position: 600, duration: 3600)
+        start()
+        XCTAssertEqual(engine.loads.first?.startAt, 600)
+    }
+
+    func test_anotherEpisodeAsTheCurrentItemStartsFromTheBeginning() {
+        savedCurrent(hash: "2:bbbbbb", url: "https://cdn.example.com/other.mp3", position: 900, duration: 3600)
+        start()
+        XCTAssertEqual(engine.loads.first?.startAt, 0)
+    }
+
+    func test_listenPlaceInTheSameStoryIsNotAPlaceInTheEpisode() {
+        savedCurrent(hash: episode.storyHash, url: "/listen/story/\(episode.storyHash)", type: "listen",
+                     position: 120, duration: 400)
+        start()
+        XCTAssertEqual(engine.loads.first?.startAt, 0)
+    }
+
+    func test_rememberPositionOffStartsFromTheBeginning() {
+        savedCurrent(hash: episode.storyHash, url: episodeURL, position: 1234, duration: 3600)
+        server.state["remember_position"] = false
+        start()
+        XCTAssertEqual(engine.loads.first?.startAt, 0)
+    }
+
+    func test_episodeReplacedByAnotherItemResumesFromHistory() {
+        savedCurrent(hash: "3:cccccc", url: "/listen/story/3:cccccc", type: "listen", position: 30, duration: 300)
+        server.state["history"] = [["story_hash": episode.storyHash, "media_url": episodeURL, "media_type": "audio",
+                                    "position": "845.0", "duration": "3600.0"]]
+        start()
+        XCTAssertEqual(engine.loads.first?.startAt, 845)
+    }
+
+    func test_episodeSavedAtItsEndStartsOver() {
+        savedCurrent(hash: episode.storyHash, url: episodeURL, position: 3598, duration: 3600)
+        start()
+        XCTAssertEqual(engine.loads.first?.startAt, 0)
+    }
+
+    func test_unansweredStateReadStartsFromTheLastKnownStateAndALateAnswerChangesNothing() {
+        savedCurrent(hash: episode.storyHash, url: episodeURL, position: 300, duration: 3600)
+        queue.refresh()
+        server.answerReads()
+        savedCurrent(hash: episode.storyHash, url: episodeURL, position: 999, duration: 3600)
+
+        player.start(episode)
+        XCTAssertTrue(engine.loads.isEmpty, "Nothing loads before the state or the timeout")
+        XCTAssertEqual(player.status, .loading)
+        scheduled.forEach { $0() }
+        XCTAssertEqual(engine.loads.map(\.startAt), [300])
+
+        server.answerReads()
+        XCTAssertEqual(engine.loads.count, 1)
+    }
+
+    // MARK: - Saving the place
+
+    func test_positionIsSavedEveryTenSecondsWhilePlaying() {
+        start()
+        XCTAssertEqual(server.saves.count, 1, "The new current item is saved as it starts")
+        engine.send(.playing)
+        let start = now
+        for second in 1...25 {
+            now = start.addingTimeInterval(TimeInterval(second))
+            engine.send(.time(TimeInterval(second)))
+        }
+        XCTAssertEqual(server.saves.count, 3)
+        let last = server.saves.last
+        XCTAssertEqual(last?["current_media_url"], episodeURL)
+        XCTAssertEqual(last?["current_story_hash"], episode.storyHash)
+        XCTAssertEqual(last?["current_media_type"], "audio")
+        XCTAssertEqual(last?["current_position"], "20.0")
+        XCTAssertEqual(last?["is_playing"], "true")
+        // ListenMediaPlayerTests.swift: iOS never sends a stale copy of the web's settings.
+        for key in ["skip_back_seconds", "skip_forward_seconds", "auto_play_next", "remember_position",
+                    "resume_on_load", "current_volume"] {
+            XCTAssertNil(last?[key], key)
+        }
+    }
+
+    func test_pausingSavesThePlaceAtOnce() {
+        start()
+        engine.send(.playing)
+        now = now.addingTimeInterval(2)
+        engine.send(.time(62))
+        player.pause()
+        XCTAssertEqual(server.saves.count, 2)
+        XCTAssertEqual(server.saves.last?["current_position"], "62.0")
+        XCTAssertEqual(server.saves.last?["is_playing"], "false")
+        XCTAssertEqual(engine.pauses, 1)
+    }
+
+    func test_backgroundingAndQuittingSaveThePlace() {
+        start()
+        engine.send(.playing)
+        engine.send(.time(75))
+        player.applicationDidEnterBackground()
+        XCTAssertEqual(server.saves.last?["current_position"], "75.0")
+        XCTAssertEqual(server.saves.last?["is_playing"], "true")
+        player.applicationWillTerminate()
+        XCTAssertEqual(server.saves.last?["is_playing"], "false")
+    }
+
+    func test_closingSavesThePlaceInsteadOfClearingTheSharedState() {
+        start()
+        engine.send(.time(40))
+        player.stop()
+        XCTAssertEqual(server.saves.last?["current_position"], "40.0")
+        XCTAssertEqual(server.saves.last?["is_playing"], "false")
+        XCTAssertTrue(server.posted("/media_player/clear_playback_state").isEmpty)
+        XCTAssertFalse(player.isActive)
+        XCTAssertEqual(miniPlayerHides, 1)
+    }
+
+    // MARK: - Skips and remote commands
+
+    func test_skipsUseTheIntervalsSavedInThePlayerSettings() {
+        server.state["skip_back_seconds"] = 10
+        server.state["skip_forward_seconds"] = 60
+        start()
+        engine.send(.ready(duration: 200))
+        engine.send(.time(100))
+        player.skipForward()
+        XCTAssertEqual(engine.seeks.last, 160)
+        player.skipBackward()
+        XCTAssertEqual(engine.seeks.last, 150)
+        engine.send(.time(5))
+        player.skipBackward()
+        XCTAssertEqual(engine.seeks.last, 0)
+        engine.send(.time(180))
+        player.skipForward()
+        XCTAssertEqual(engine.seeks.last, 200, "Never past the end")
+    }
+
+    func test_remoteCommandsControlWhicheverPlayerIsActive() {
+        server.state["skip_back_seconds"] = 5
+        server.state["skip_forward_seconds"] = 60
+        let story = FakeRemoteSession()
+        let commands = ListenRemoteCommands(sessions: { [unowned self] in [self.player, story] },
+                                            settings: { [unowned self] in self.queue.settings })
+        XCTAssertEqual(commands.handle(.togglePlayPause), .noActionableNowPlayingItem)
+
+        story.isActive = true
+        XCTAssertEqual(commands.handle(.skipForward), .success)
+        XCTAssertEqual(story.calls, ["forward"])
+        XCTAssertEqual(commands.handle(.nextTrack), .noSuchContent)
+
+        story.isActive = false
+        start()
+        XCTAssertEqual(commands.skipIntervals.backward, 5)
+        XCTAssertEqual(commands.skipIntervals.forward, 60)
+        engine.send(.ready(duration: 3000))
+        engine.send(.playing)
+        engine.send(.time(1000))
+        XCTAssertEqual(commands.handle(.skipForward), .success)
+        XCTAssertEqual(engine.seeks.last, 1060)
+        XCTAssertEqual(commands.handle(.skipBackward), .success)
+        XCTAssertEqual(engine.seeks.last, 1055)
+        let saves = server.saves.count
+        XCTAssertEqual(commands.handle(.changePosition(42)), .success)
+        XCTAssertEqual(engine.seeks.last, 42)
+        XCTAssertEqual(server.saves.count, saves + 1, "Scrubbing from the lock screen saves the place")
+        XCTAssertEqual(commands.handle(.togglePlayPause), .success)
+        XCTAssertFalse(player.wantsToPlay)
+        XCTAssertEqual(commands.handle(.play), .success)
+        XCTAssertTrue(player.wantsToPlay)
+        XCTAssertEqual(commands.handle(.nextTrack), .noSuchContent)
+        XCTAssertTrue(story.calls == ["forward"], "The story player hears nothing while the podcast plays")
+    }
+
+    // MARK: - Up Next
+
+    func test_finishedEpisodeGoesToHistoryAndAutoPlayStartsTheNextQueuedEpisode() {
+        let nextURL = "https://cdn.example.com/episodes/43.mp3"
+        server.state["queue"] = [server.queueEntry(hash: "4:video", url: "https://youtube.com/embed/x", type: "youtube"),
+                                 server.queueEntry(hash: "5:dddddd", url: nextURL)]
+        queue.refresh()
+        server.answerReads()
+        start()
+        engine.send(.ready(duration: 1800))
+        engine.send(.playing)
+        engine.send(.finished)
+
+        XCTAssertEqual(server.historyAdds.count, 1)
+        XCTAssertEqual(server.historyAdds.first?["media_url"], episodeURL)
+        XCTAssertEqual(server.historyAdds.first?["position"], "1800.0")
+        XCTAssertEqual(player.item?.mediaURL, nextURL)
+        XCTAssertEqual(server.posted("/media_player/remove_from_media_queue").map { $0["media_url"] }, [nextURL])
+        server.answerReads()
+        XCTAssertEqual(engine.loads.last?.url.absoluteString, nextURL)
+        XCTAssertEqual(queue.items.map(\.mediaType), ["youtube"], "The video waits for the web")
+        XCTAssertEqual(server.historyAdds.count, 1, "The finished episode is recorded once")
+    }
+
+    func test_autoPlayOffStaysOnTheFinishedEpisode() {
+        server.state["auto_play_next"] = false
+        server.state["queue"] = [server.queueEntry(hash: "5:dddddd", url: "https://cdn.example.com/episodes/43.mp3")]
+        queue.refresh()
+        server.answerReads()
+        start()
+        engine.send(.ready(duration: 1800))
+        engine.send(.playing)
+        engine.send(.finished)
+
+        XCTAssertEqual(player.status, .finished)
+        XCTAssertEqual(player.item?.mediaURL, episodeURL)
+        XCTAssertEqual(engine.loads.count, 1)
+        XCTAssertEqual(queue.items.count, 1)
+        XCTAssertEqual(server.saves.last?["is_playing"], "false")
+        XCTAssertEqual(server.saves.last?["current_position"], "1800.0")
+    }
+
+    func test_queuedStoryReadAloudIsHandedToListenWhenAnEpisodeEnds() {
+        server.state["queue"] = [server.queueEntry(hash: "6:eeeeee", url: "/listen/story/6:eeeeee", type: "listen")]
+        queue.refresh()
+        server.answerReads()
+        start()
+        engine.send(.ready(duration: 900))
+        engine.send(.finished)
+
+        XCTAssertEqual(listen.playedQueued.map(\.storyHash), ["6:eeeeee"])
+        XCTAssertFalse(player.isActive)
+        XCTAssertEqual(server.historyAdds.count, 1)
+    }
+
+    func test_playNextAndPlayLastQueueTheEpisodeLikeTheWeb() {
+        queue.add(media: ListenMediaItem(storyHash: "7:ffffff", mediaURL: "https://cdn.example.com/a.mp3",
+                                         title: "A", feedId: "1"))
+        let position = queue.add(media: episode, position: 0)
+        XCTAssertEqual(position, 1)
+        let adds = server.posted("/media_player/add_to_media_queue")
+        XCTAssertNil(adds.first?["position"])
+        XCTAssertEqual(adds.last?["position"], "0")
+        XCTAssertEqual(adds.last?["media_type"], "audio")
+        XCTAssertEqual(queue.playableItems.map(\.mediaURL), [episodeURL, "https://cdn.example.com/a.mp3"])
+
+        // ListenMediaPlayerTests.swift: an episode starting is taken off Up Next, as media_player_view.js does.
+        start()
+        XCTAssertEqual(queue.playableItems.map(\.mediaURL), ["https://cdn.example.com/a.mp3"])
+        XCTAssertTrue(player.hasNextTrack)
+    }
+
+    // MARK: - Handoff with Listen
+
+    func test_startingAnEpisodeStopsTheStoryBeingReadAloud() {
+        listen.isActive = true
+        start()
+        XCTAssertEqual(listen.handoffStops, 1)
+        XCTAssertTrue(player.isActive)
+    }
+
+    func test_listenStartingStopsTheEpisodeAndKeepsItsPlaceInHistory() {
+        start()
+        engine.send(.ready(duration: 3600))
+        engine.send(.playing)
+        engine.send(.time(300))
+        let saves = server.saves.count
+        player.stopForHandoff()
+
+        XCTAssertFalse(player.isActive)
+        XCTAssertEqual(server.historyAdds.last?["media_url"], episodeURL)
+        XCTAssertEqual(server.historyAdds.last?["position"], "300.0")
+        XCTAssertEqual(server.saves.count, saves, "Listen saves the new current item itself")
+        XCTAssertEqual(miniPlayerHides, 0, "The mini player stays up for Listen")
+        XCTAssertGreaterThanOrEqual(engine.unloads, 2)
+    }
+
+    // MARK: - Server state
+
+    func test_playbackStateReadsSettingsAndPositionsFromStringsOrNumbers() {
+        let state = ListenPlaybackState(json: ["skip_back_seconds": "0", "skip_forward_seconds": 45,
+                                               "auto_play_next": "false", "remember_position": 1,
+                                               "current_media_url": episodeURL, "current_story_hash": episode.storyHash,
+                                               "current_media_type": "audio", "current_position": "12.5",
+                                               "current_duration": 100, "current_playback_rate": "1.5"])
+        XCTAssertEqual(state.settings, ListenPlaybackSettings(skipBackSeconds: 15, skipForwardSeconds: 45,
+                                                              autoPlayNext: false, rememberPosition: true))
+        XCTAssertEqual(state.currentPlaybackRate, 1.5)
+        XCTAssertEqual(state.resumePosition(for: episode), 12.5)
+    }
+}

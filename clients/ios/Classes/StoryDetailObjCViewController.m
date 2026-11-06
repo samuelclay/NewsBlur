@@ -522,6 +522,10 @@
     [contentController removeScriptMessageHandlerForName:@"newsblurStoryImage"];
     [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
                                          name:@"newsblurStoryImage"];
+    // Listen/ListenMediaStoryBridge.swift plays the story's audio cards in the app's player.
+    [contentController removeScriptMessageHandlerForName:@"newsblurStoryMedia"];
+    [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
+                                         name:@"newsblurStoryMedia"];
     // Use HTTPS baseURL so YouTube embeds get a valid Referer header (fixes Error 153).
     // CSS/JS are inlined directly in the HTML to avoid custom scheme issues.
     static NSURL *baseURL;
@@ -924,6 +928,8 @@
     NSString *markJS = [assetCache textForResource:@"mark" ofType:@"js"];
     NSString *storyDetailJS = [assetCache textForResource:@"storyDetailView" ofType:@"js"];
     NSString *fastTouchJS = [assetCache textForResource:@"fastTouch" ofType:@"js"];
+    // Listen/ListenMediaStoryBridge.swift: labels and state for the audio cards storyDetailView.js draws.
+    NSString *mediaConfigJS = [ListenMediaStoryBridge configScriptForStory:self.activeStory];
 
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
@@ -936,8 +942,9 @@
                     "<script>%@</script>"
                     "<script>%@</script>"
                     "<script>%@</script>"
+                    "<script>%@</script>"
                     "<script>%@</script>",
-                    zeptoJS, fitvidJS, markJS, storyDetailJS, fastTouchJS];
+                    zeptoJS, fitvidJS, markJS, mediaConfigJS, storyDetailJS, fastTouchJS];
     
     sharingHtmlString = [self getSideOptions];
 

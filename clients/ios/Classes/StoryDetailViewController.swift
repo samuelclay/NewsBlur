@@ -23,6 +23,8 @@ final class StoryReadyMessageHandler: NSObject, WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "newsblurStoryImage" {
             (page as? StoryDetailViewController)?.receiveImageMessage(message)
+        } else if message.name == "newsblurStoryMedia" {
+            (page as? StoryDetailViewController)?.receiveMediaMessage(message)
         } else {
             page?.receiveStoryReadyMessage(message)
         }

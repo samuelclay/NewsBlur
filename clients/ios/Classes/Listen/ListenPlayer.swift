@@ -115,7 +115,6 @@ final class ListenPlayer: NSObject, ObservableObject {
         center.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         center.addObserver(self, selector: #selector(queueDidChange), name: ListenQueue.didChange, object: nil)
         center.addObserver(self, selector: #selector(preferencesDidChange(_:)), name: ListenPreferences.didChange, object: nil)
-        configureRemoteCommands()
     }
 
     /// A speed synced from another device (or reset to the default) applies to the story playing now.
@@ -187,6 +186,8 @@ final class ListenPlayer: NSObject, ObservableObject {
 
     func start(story: [String: Any], resumeParagraph: Int? = nil) {
         guard let hash = story["story_hash"] as? String, !hash.isEmpty else { return }
+        // ListenPlayer.swift: a podcast playing in ListenMediaPlayer.swift stops and goes to History first.
+        ListenMediaPlayer.shared.stopForHandoff()
         if let previous = self.story, let previousHash = storyHash, previousHash != hash, manifest != nil {
             // ListenPlayer.swift: Listen always plays now, and the story it replaces goes to History with its
             // place so it can be resumed (listen-spec "Up Next queue").
@@ -204,7 +205,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         feedId = ListenJSON.string(story["story_feed_id"])
         storyTitle = Self.decodedTitle(story["story_title"])
         feedTitle = feedTitle(forFeedId: feedId) ?? ""
-        artwork = makeArtwork()
+        artwork = ListenArtwork.make(feedId: feedId)
         manifest = nil
         segmentIndex = 0
         elapsed = 0
@@ -215,9 +216,9 @@ final class ListenPlayer: NSObject, ObservableObject {
         player.volume = 1
         wantsToPlay = true
         setStatus(.loading)
-        setRemoteCommandsEnabled(true)
         updateNowPlaying()
         ListenMiniPlayerController.shared.show()
+        saveCurrentItem(isPlaying: true)
         loadManifest(generation: generation, resumeParagraph: resumeParagraph, voiceId: nil, startsStory: true)
     }
 
@@ -258,6 +259,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         wantsToPlay = false
         player.pause()
         reportProgress()
+        saveCurrentItem(isPlaying: false)
         if status == .playing || status == .buffering || status == .loading {
             setStatus(.paused)
         } else {
@@ -271,8 +273,31 @@ final class ListenPlayer: NSObject, ObservableObject {
         wantsToPlay ? pause() : play()
     }
 
-    /// The close button: stops playback and hides the mini player.
-    func stop() {
+    /// The close button: stops playback and hides the mini player. The story stays the current item, paused, unless
+    /// the account is going away (`saving` false, ListenStoryBridge.swift stopForAccountChange).
+    func stop(saving: Bool = true) {
+        if saving, isActive {
+            saveCurrentItem(isPlaying: false)
+        }
+        clearSession()
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+        MPNowPlayingInfoCenter.default().playbackState = .stopped
+        ListenRemoteCommands.shared.refresh()
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        ListenMiniPlayerController.shared.hide()
+    }
+
+    /// ListenMediaPlayer.swift is starting a podcast: the story goes to History with its place, as when another
+    /// story replaces it, and Listen stops without hiding the mini player or releasing the audio session.
+    func stopForHandoff() {
+        guard isActive else { return }
+        if let story, manifest != nil {
+            ListenQueue.shared.addToHistory(story: story, position: elapsed, duration: duration)
+        }
+        clearSession()
+    }
+
+    private func clearSession() {
         reportProgress()
         generation += 1
         resetPlayback()
@@ -288,17 +313,35 @@ final class ListenPlayer: NSObject, ObservableObject {
         wantsToPlay = false
         artwork = nil
         setStatus(.idle)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
-        MPNowPlayingInfoCenter.default().playbackState = .stopped
-        setRemoteCommandsEnabled(false)
         ListenAudioDownloader.shared.removeFiles()
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        ListenMiniPlayerController.shared.hide()
         endBackgroundTask()
+    }
+
+    /// POST /media_player/save_playback_state with the story as the current item (media_type "listen"), as the web
+    /// does for a story it reads aloud, so the account's one current item is whatever iOS last played. The
+    /// playback rate is left out: the saved rate is the podcast speed (media_player_view.js saved_playback_rate).
+    private func saveCurrentItem(isPlaying: Bool) {
+        guard let story, storyHash != nil else { return }
+        let item = ListenQueueItem(story: story)
+        let media = ListenMediaItem(storyHash: item.storyHash, mediaURL: item.mediaURL, mediaType: item.mediaType,
+                                    title: storyTitle.isEmpty ? item.title : storyTitle, feedId: item.feedId,
+                                    imageURL: item.feedId.map { ListenAPI.shared.baseURL + "/rss_feeds/icon/" + $0 } ?? "")
+        ListenQueue.shared.savePlaybackState(media.stateParameters(position: elapsed, duration: duration,
+                                                                   isPlaying: isPlaying, playbackRate: nil))
     }
 
     func skip(by seconds: TimeInterval) {
         seek(to: elapsed + seconds)
+    }
+
+    /// Back by the skip_back_seconds chosen in the web's player settings (15 by default).
+    func skipBackward() {
+        skip(by: -TimeInterval(ListenQueue.shared.settings.skipBackSeconds))
+    }
+
+    /// Forward by skip_forward_seconds (30 by default).
+    func skipForward() {
+        skip(by: TimeInterval(ListenQueue.shared.settings.skipForwardSeconds))
     }
 
     func seek(to time: TimeInterval) {
@@ -1144,61 +1187,6 @@ final class ListenPlayer: NSObject, ObservableObject {
 
     // MARK: - Lock screen and media keys
 
-    private func configureRemoteCommands() {
-        let center = MPRemoteCommandCenter.shared()
-        center.playCommand.addTarget { [weak self] _ in
-            guard let self, self.isActive else { return .noActionableNowPlayingItem }
-            self.play()
-            return .success
-        }
-        center.pauseCommand.addTarget { [weak self] _ in
-            guard let self, self.isActive else { return .noActionableNowPlayingItem }
-            self.pause()
-            return .success
-        }
-        center.togglePlayPauseCommand.addTarget { [weak self] _ in
-            guard let self, self.isActive else { return .noActionableNowPlayingItem }
-            self.togglePlayPause()
-            return .success
-        }
-        center.skipBackwardCommand.preferredIntervals = [15]
-        center.skipBackwardCommand.addTarget { [weak self] _ in
-            guard let self, self.isActive else { return .noActionableNowPlayingItem }
-            self.skip(by: -15)
-            return .success
-        }
-        center.skipForwardCommand.preferredIntervals = [30]
-        center.skipForwardCommand.addTarget { [weak self] _ in
-            guard let self, self.isActive else { return .noActionableNowPlayingItem }
-            self.skip(by: 30)
-            return .success
-        }
-        center.nextTrackCommand.addTarget { [weak self] _ in
-            guard let self, self.isActive else { return .noActionableNowPlayingItem }
-            guard self.hasNextStory else { return .noSuchContent }
-            self.playNextStory()
-            return .success
-        }
-        center.changePlaybackPositionCommand.addTarget { [weak self] event in
-            guard let self, self.isActive, let event = event as? MPChangePlaybackPositionCommandEvent else {
-                return .commandFailed
-            }
-            self.seek(to: event.positionTime)
-            return .success
-        }
-        center.previousTrackCommand.isEnabled = false
-        setRemoteCommandsEnabled(false)
-    }
-
-    private func setRemoteCommandsEnabled(_ enabled: Bool) {
-        let center = MPRemoteCommandCenter.shared()
-        for command in [center.playCommand, center.pauseCommand, center.togglePlayPauseCommand,
-                        center.skipBackwardCommand, center.skipForwardCommand, center.nextTrackCommand,
-                        center.changePlaybackPositionCommand] {
-            command.isEnabled = enabled
-        }
-    }
-
     private func updateNowPlaying() {
         guard isActive else { return }
         var info: [String: Any] = [
@@ -1216,30 +1204,8 @@ final class ListenPlayer: NSObject, ObservableObject {
         }
         MPNowPlayingInfoCenter.default().nowPlayingInfo = info
         MPNowPlayingInfoCenter.default().playbackState = wantsToPlay ? .playing : .paused
-        MPRemoteCommandCenter.shared().nextTrackCommand.isEnabled = hasNextStory
-    }
-
-    /// The feed's favicon on its own color, sized for the lock screen and Control Center.
-    private func makeArtwork() -> MPMediaItemArtwork? {
-        guard let feedId, let appDelegate, let favicon = appDelegate.getFavicon(feedId) else { return nil }
-        let feed = appDelegate.getFeed(feedId) as? [String: Any]
-        let color = (feed?["favicon_color"] as? String).flatMap { NewsBlurAppDelegate.faviconColor($0) }
-            ?? UIColor(red: 0.89, green: 0.9, blue: 0.88, alpha: 1)
-        let size = CGSize(width: 600, height: 600)
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
-        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
-            UIColor.white.setFill()
-            context.fill(CGRect(origin: .zero, size: size))
-            color.withAlphaComponent(0.45).setFill()
-            context.fill(CGRect(origin: .zero, size: size))
-            let iconSide = size.width * 0.42
-            let iconRect = CGRect(x: (size.width - iconSide) / 2, y: (size.height - iconSide) / 2,
-                                  width: iconSide, height: iconSide)
-            context.cgContext.interpolationQuality = .high
-            favicon.draw(in: iconRect)
-        }
-        return MPMediaItemArtwork(boundsSize: size) { _ in image }
+        // ListenRemoteCommands.swift: the next-track button follows Up Next and the skips follow the web's settings.
+        ListenRemoteCommands.shared.refresh()
     }
 
     // MARK: - Helpers
@@ -1262,5 +1228,21 @@ final class ListenPlayer: NSObject, ObservableObject {
     static func decodedTitle(_ value: Any?) -> String {
         guard let title = value as? String else { return "" }
         return (title as NSString).decodingHTMLEntities() ?? title
+    }
+}
+
+/// ListenPlayer.swift answers the lock screen, Control Center and media keys through ListenRemoteCommands.swift, and
+/// hands over to ListenMediaPlayer.swift through ListenSessionHandoff.
+extension ListenPlayer: ListenRemoteControllable, ListenSessionHandoff {
+    var canSeek: Bool { manifest != nil }
+
+    var hasNextTrack: Bool { hasNextStory }
+
+    func seek(toRemotePosition time: TimeInterval) {
+        seek(to: time)
+    }
+
+    func playNextTrack() {
+        playNextStory()
     }
 }

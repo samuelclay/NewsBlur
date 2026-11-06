@@ -90,10 +90,8 @@ struct ListenNowPlayingView: View {
         .onReceive(queue.$items) { _ in
             DispatchQueue.main.async(execute: refreshUpNext)
         }
-        .onReceive(player.$storyHash) { hash in
-            if hash == nil {
-                ListenPresenter.dismissNowPlaying()
-            }
+        .onReceive(player.$storyHash) { _ in
+            // ListenMediaNowPlayingView.swift (ListenNowPlayingRoot) closes Now Playing once nothing is loaded.
             DispatchQueue.main.async(execute: refreshUpNext)
         }
         .onReceive(player.$status) { _ in
@@ -287,30 +285,19 @@ struct ListenNowPlayingView: View {
         }
     }
 
+    /// The skips use the intervals from the web's player settings, as for podcasts (ListenQueue.swift settings).
     private var transport: some View {
         HStack(spacing: 36) {
-            Button {
-                player.skip(by: -15)
-            } label: {
-                Image(systemName: "gobackward.15")
-                    .font(.system(size: 28, weight: .regular))
-                    .foregroundColor(ListenColors.textPrimary)
+            ListenSkipButton(direction: .backward, seconds: queue.settings.skipBackSeconds, pointSize: 28) {
+                player.skipBackward()
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NBLocalization.text("Back 15 seconds"))
             .disabled(player.manifest == nil)
 
             ListenPlayPauseButton(size: 68, filled: true)
 
-            Button {
-                player.skip(by: 30)
-            } label: {
-                Image(systemName: "goforward.30")
-                    .font(.system(size: 28, weight: .regular))
-                    .foregroundColor(ListenColors.textPrimary)
+            ListenSkipButton(direction: .forward, seconds: queue.settings.skipForwardSeconds, pointSize: 28) {
+                player.skipForward()
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NBLocalization.text("Forward 30 seconds"))
             .disabled(player.manifest == nil)
         }
         .padding(.vertical, 4)
@@ -344,6 +331,13 @@ struct ListenNowPlayingView: View {
                     .presentationDetents([.height(280)])
                     .presentationDragIndicator(.visible)
             }
+
+            Spacer()
+
+            // ListenMediaNowPlayingView.swift: AirPlay and the choice of speaker or headphones.
+            ListenRoutePicker()
+                .frame(width: 40, height: 36)
+                .background(Capsule().fill(ListenColors.card))
 
             Spacer()
 

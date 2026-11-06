@@ -284,16 +284,114 @@ private final class ListenMiniPlayerContainerView: UIView {
     }
 }
 
-/// The mini player bar: feed icon, story title, feed and status, play/pause, next story and close (ListenMiniPlayer.swift).
+/// The mini player bar: feed icon, story title, feed and status, play/pause, next story and close for a story
+/// read aloud; skip back, play/pause, skip forward and close for a podcast (ListenMiniPlayer.swift).
 struct ListenMiniPlayerBar: View {
     @ObservedObject private var player = ListenPlayer.shared
-    /// ListenMiniPlayer.swift: Next story depends on Up Next too, so the bar redraws when the queue changes.
+    @ObservedObject private var media = ListenMediaPlayer.shared
+    /// ListenMiniPlayer.swift: Next story and the skip intervals depend on Up Next's playback state, so the bar
+    /// redraws when the queue changes.
     @ObservedObject private var queue = ListenQueue.shared
     @ObservedObject private var theme = ListenThemeObserver.shared
     let onOpen: () -> Void
 
     var body: some View {
         let _ = theme.version
+        Group {
+            if media.isActive {
+                mediaContent
+            } else {
+                listenContent
+            }
+        }
+        .padding(.leading, 12)
+        .padding(.trailing, 6)
+        .frame(height: ListenMiniPlayerController.barHeight)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(ListenColors.miniBar)
+                .shadow(color: Color.black.opacity(ListenColors.isDark ? 0.5 : 0.16), radius: 10, x: 0, y: 3)
+        )
+        .overlay(alignment: .bottom) {
+            GeometryReader { geometry in
+                Capsule()
+                    .fill(ListenColors.accent)
+                    .frame(width: geometry.size.width * progress, height: 2)
+            }
+            .frame(height: 2)
+            .padding(.horizontal, 14)
+            .padding(.bottom, 1)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(ListenColors.border.opacity(0.6), lineWidth: 0.5)
+        )
+        .accessibilityElement(children: .contain)
+        .environment(\.colorScheme, ListenColors.colorScheme)
+        .environment(\.layoutDirection, NBLocalization.isRightToLeft ? .rightToLeft : .leftToRight)
+    }
+
+    /// ListenMediaPlayer.swift's episode: the skips use the web's intervals, as in Now Playing and on the lock screen.
+    private var mediaContent: some View {
+        HStack(spacing: 8) {
+            HStack(spacing: 10) {
+                ListenFeedIcon(feedId: media.item?.feedId, size: 28)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(media.item?.title ?? "")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(ListenColors.textPrimary)
+                        .lineLimit(1)
+                    Text(mediaSubtitle)
+                        .font(.system(size: 11))
+                        .foregroundColor(media.errorMessage != nil ? ListenColors.error : ListenColors.textSecondary)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture(perform: onOpen)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityHint(NBLocalization.text("Opens Now Playing"))
+
+            HStack(spacing: 0) {
+                ListenSkipButton(direction: .backward, seconds: queue.settings.skipBackSeconds, pointSize: 17) {
+                    media.skipBackward()
+                }
+                ListenPlayPauseButton(size: 34, filled: false)
+                ListenSkipButton(direction: .forward, seconds: queue.settings.skipForwardSeconds, pointSize: 17) {
+                    media.skipForward()
+                }
+                Button {
+                    media.stop()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(ListenColors.textSecondary)
+                        .frame(width: 28, height: 34)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(NBLocalization.text("Close"))
+                .accessibilityIdentifier("listen-media-close")
+            }
+        }
+    }
+
+    private var mediaSubtitle: String {
+        if let message = media.errorMessage {
+            return message
+        }
+        switch media.status {
+        case .loading, .buffering:
+            return media.wantsToPlay ? NBLocalization.text("Loading…") : media.feedTitle
+        case .finished:
+            return NBLocalization.text("Finished")
+        default:
+            return media.feedTitle
+        }
+    }
+
+    private var listenContent: some View {
         HStack(spacing: 10) {
             // ListenMiniPlayer.swift opens Now Playing from anywhere on the bar except its buttons.
             HStack(spacing: 10) {
@@ -346,34 +444,13 @@ struct ListenMiniPlayerBar: View {
                 .accessibilityLabel(NBLocalization.text("Stop listening"))
             }
         }
-        .padding(.leading, 12)
-        .padding(.trailing, 6)
-        .frame(height: ListenMiniPlayerController.barHeight)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(ListenColors.miniBar)
-                .shadow(color: Color.black.opacity(ListenColors.isDark ? 0.5 : 0.16), radius: 10, x: 0, y: 3)
-        )
-        .overlay(alignment: .bottom) {
-            GeometryReader { geometry in
-                Capsule()
-                    .fill(ListenColors.accent)
-                    .frame(width: geometry.size.width * progress, height: 2)
-            }
-            .frame(height: 2)
-            .padding(.horizontal, 14)
-            .padding(.bottom, 1)
-        }
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(ListenColors.border.opacity(0.6), lineWidth: 0.5)
-        )
-        .accessibilityElement(children: .contain)
-        .environment(\.colorScheme, ListenColors.colorScheme)
-        .environment(\.layoutDirection, NBLocalization.isRightToLeft ? .rightToLeft : .leftToRight)
     }
 
     private var progress: CGFloat {
+        if media.isActive {
+            guard media.duration > 0 else { return 0 }
+            return CGFloat(min(1, max(0, media.elapsed / media.duration)))
+        }
         let total = player.previewLimit.map { min($0, player.duration) } ?? player.duration
         guard total > 0 else { return 0 }
         return CGFloat(min(1, max(0, player.elapsed / total)))
@@ -406,15 +483,23 @@ struct ListenMiniPlayerBar: View {
     }
 }
 
-/// Play, pause or a spinner, shared by the mini player and Now Playing (ListenMiniPlayer.swift).
+/// Play, pause or a spinner, shared by the mini player and Now Playing, for whichever player is active: a podcast
+/// (ListenMediaPlayer.swift) or a story read aloud (ListenMiniPlayer.swift).
 struct ListenPlayPauseButton: View {
     @ObservedObject private var player = ListenPlayer.shared
+    @ObservedObject private var media = ListenMediaPlayer.shared
     let size: CGFloat
     let filled: Bool
 
+    private var wantsToPlay: Bool { media.isActive ? media.wantsToPlay : player.wantsToPlay }
+
     var body: some View {
         Button {
-            player.togglePlayPause()
+            if media.isActive {
+                media.togglePlayPause()
+            } else {
+                player.togglePlayPause()
+            }
         } label: {
             ZStack {
                 if filled {
@@ -437,20 +522,26 @@ struct ListenPlayPauseButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(player.wantsToPlay ? NBLocalization.text("Pause")
+        .accessibilityLabel(wantsToPlay ? NBLocalization.text("Pause")
                             : (symbolName == "play.fill" ? NBLocalization.text("Play") : NBLocalization.text("Play again")))
         .accessibilityIdentifier("listen-play-pause")
     }
 
     private var symbolName: String {
-        if player.wantsToPlay {
+        if wantsToPlay {
             return "pause.fill"
+        }
+        if media.isActive {
+            return media.status == .finished ? "arrow.counterclockwise" : "play.fill"
         }
         return player.status == .finished || player.status == .previewEnded ? "arrow.counterclockwise" : "play.fill"
     }
 
     private var isWaiting: Bool {
-        player.wantsToPlay && (player.status == .loading || player.status == .buffering)
+        if media.isActive {
+            return media.wantsToPlay && (media.status == .loading || media.status == .buffering)
+        }
+        return player.wantsToPlay && (player.status == .loading || player.status == .buffering)
     }
 }
 

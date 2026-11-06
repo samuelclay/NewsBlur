@@ -336,3 +336,23 @@ span.NB-listen-run.NB-listen-highlight {
 .NB-story-ai-classifier {
     border-color: rgba(255, 255, 255, .3) transparent rgba(60, 50, 38, .15);
 }
+
+/* storyDetailViewSepia.css: story audio cards (storyDetailView.css .NB-media-card). */
+.NB-media-card {
+    background: rgba(139, 123, 107, 0.08);
+    border-color: rgba(139, 123, 107, 0.2);
+}
+.NB-media-card-play {
+    color: #3C3226;
+}
+.NB-media-card-icon {
+    background: #6E865F;
+}
+.NB-media-card-actions a {
+    background: rgba(139, 123, 107, 0.12);
+    color: #5C4D3E;
+}
+.NB-media-card-actions a.NB-media-card-queued {
+    background: rgba(110, 134, 95, 0.16);
+    color: #56703F;
+}
