@@ -110,6 +110,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.regex.Pattern
@@ -173,6 +175,9 @@ class ReadingItemFragment :
     private var listenRowSize = 0
     private var scrollTouching = false
     private var listenShowedText = false
+
+    // The audio file Listen's player has loaded and how it's going, for storyMedia.js's cards in this story.
+    private var mediaCardState = MediaCardState(url = null, state = "")
     private var lastScrollTouchAt = 0L
 
     @JvmField
@@ -524,6 +529,13 @@ class ReadingItemFragment :
                         .map(::listenButtonLook)
                         .distinctUntilChanged()
                         .collect(::applyListenButtonLook)
+                }
+                launch {
+                    // Only the loaded file and whether it plays change the audio cards, not every 200ms tick.
+                    listenManager.state
+                        .map(::mediaCardStateOf)
+                        .distinctUntilChanged()
+                        .collect(::applyMediaCardState)
                 }
                 combine(listenManager.state, listenPreferences.settings) { state, settings -> state to settings.highlight }
                     .collect { (state, highlight) ->
@@ -1059,6 +1071,74 @@ class ReadingItemFragment :
             reading?.listenQueueName(),
             followsListOrder = reading?.listenFollowsListOrder() == true,
         )
+    }
+
+    /**
+     * A tap on an audio card from storyMedia.js, through NewsblurWebview.java: play the file in Listen's player, or
+     * queue it first or last in Up Next like the web's Play Next and Play Last.
+     */
+    fun onMediaMessage(
+        webview: NewsblurWebview,
+        json: String,
+    ) {
+        if (webview !== readingWebview) return
+        val currentStory = story ?: return
+        val (action, url) =
+            try {
+                val message = JSONObject(json)
+                if (message.optString("type") != "media") return
+                message.getString("action") to message.getString("url")
+            } catch (_: JSONException) {
+                return
+            }
+        // Only web addresses ever reach the player, whatever a story's own scripts might post.
+        val scheme = Uri.parse(url).scheme?.lowercase(Locale.ROOT)
+        if (scheme != "http" && scheme != "https") return
+        when (action) {
+            MEDIA_ACTION_PLAY -> listenManager.playMedia(currentStory, url)
+            MEDIA_ACTION_NEXT, MEDIA_ACTION_LAST -> {
+                val position = listenManager.queueMedia(currentStory, url, playNext = action == MEDIA_ACTION_NEXT) ?: return
+                // ICU's ordinal keeps "2nd" right in every language.
+                val message =
+                    MessageFormat(getString(R.string.listen_added_to_up_next), Locale.getDefault())
+                        .format(arrayOf<Any>(position))
+                showUpNextMessage(message)
+            }
+        }
+    }
+
+    /** The audio cards' labels, which storyMedia.js can't read from strings.xml itself. */
+    private fun mediaCardLabels(): Map<String, String> =
+        mapOf(
+            "play" to getString(R.string.listen_media_play),
+            "pause" to getString(R.string.listen_pause),
+            "resume" to getString(R.string.listen_resume),
+            "play_next" to getString(R.string.listen_media_play_next),
+            "play_last" to getString(R.string.listen_media_play_last),
+        )
+
+    /** Which file Listen's player has loaded and whether it's playing, paused or loading, for storyMedia.js. */
+    private data class MediaCardState(
+        val url: String?,
+        val state: String,
+    )
+
+    private fun mediaCardStateOf(state: ListenUiState): MediaCardState {
+        val url = state.story?.media?.url ?: return MediaCardState(url = null, state = "")
+        val look =
+            when {
+                state.isLoading && state.playWhenReady -> "loading"
+                state.showsPause -> "playing"
+                else -> "paused"
+            }
+        return MediaCardState(url, look)
+    }
+
+    private fun applyMediaCardState(cards: MediaCardState) {
+        mediaCardState = cards
+        if (isWebViewReleasedForBackground || !isWebLoadFinished.get()) return
+        val url = JSONObject.quote(cards.url.orEmpty())
+        readingWebview?.evaluateJavascript("window.NB_media_set_state && NB_media_set_state($url, '${cards.state}');", null)
     }
 
     /** A paragraph tap from listenFollowAlong.js, through NewsblurWebview.java. */
@@ -1830,6 +1910,7 @@ class ReadingItemFragment :
         if (activity == null || view == null) return
         if (isWebViewReleasedForBackground && !isRestoringReleasedWebView) return
         val size = prefsRepo.getReadingTextSize()
+        val mediaLabels = mediaCardLabels()
         val request =
             ReaderHtmlRequest(
                 content = content,
@@ -1863,6 +1944,7 @@ class ReadingItemFragment :
                                 enableHighlights = request.enableHighlights,
                                 classifier = bodyClassifier,
                                 interfaceRtl = request.interfaceRtl,
+                                mediaLabels = mediaLabels,
                             ),
                     )
                 }
@@ -1916,6 +1998,7 @@ class ReadingItemFragment :
         if (!isWebLoadFinished.getAndSet(true)) {
             ensureReadingWebview().evaluateJavascript("loadImages();", null)
             listenFollower?.onDocumentLoaded()
+            applyMediaCardState(mediaCardState)
         }
         maybeFinishInitialStoryRender()
         checkLoadStatus()
@@ -2542,6 +2625,11 @@ class ReadingItemFragment :
         private const val STORY_IMAGE_HOST_LAUNCH_GUARD_MS = 2_000L
 
         private const val LISTEN_TEXT_SOURCE_ORIGINAL = "original"
+
+        // storyMedia.js's card actions: the web's Play in Mini Media Player, Play Next and Play Last.
+        private const val MEDIA_ACTION_PLAY = "play"
+        private const val MEDIA_ACTION_NEXT = "next"
+        private const val MEDIA_ACTION_LAST = "last"
         private const val COMPACT_LISTEN_ROW_SIZE = 4
 
         // How long after the reader last touched the story Listen waits before scrolling it.
