@@ -24,6 +24,11 @@ struct ListenQueueItem: Identifiable, Equatable {
 
     var id: String { "\(storyHash)|\(mediaURL)" }
     var isListen: Bool { mediaType == ListenQueue.listenMediaType }
+
+    /// The id a story read aloud has in Up Next.
+    static func listenId(forStoryHash hash: String) -> String {
+        "\(hash)|\(ListenQueue.mediaURL(forStoryHash: hash))"
+    }
     var isAudio: Bool { mediaType == ListenMediaItem.audioType && !mediaURL.isEmpty }
     /// Whether iOS plays it: a story read aloud or audio. Videos stay in the web view, so they wait in the queue.
     var isPlayable: Bool { isListen || isAudio }
@@ -295,14 +300,6 @@ final class ListenQueue: NSObject, ObservableObject {
         write("/media_player/remove_from_media_queue", parameters: ["story_hash": storyHash, "media_url": mediaURL])
     }
 
-    /// Now Playing's swipe to delete, with offsets into `listenItems`.
-    func removeListenItems(atOffsets offsets: IndexSet) {
-        let listen = listenItems
-        for offset in offsets where offset < listen.count {
-            remove(storyHash: listen[offset].storyHash)
-        }
-    }
-
     /// Now Playing's drag to reorder, with offsets into `listenItems`. Items other platforms queued keep their
     /// places, and the server gets the whole queue because /media_player/reorder_media_queue drops anything left out.
     func moveListenItems(fromOffsets source: IndexSet, toOffset destination: Int) {
@@ -330,13 +327,6 @@ final class ListenQueue: NSObject, ObservableObject {
         let order = updated.map { ["story_hash": $0.storyHash, "media_url": $0.mediaURL] }
         guard let data = try? JSONSerialization.data(withJSONObject: order) else { return }
         write("/media_player/reorder_media_queue", parameters: ["queue_order": String(decoding: data, as: UTF8.self)])
-    }
-
-    /// The first Listen story in Up Next, taken off the queue as it starts playing (ListenPlayer.swift).
-    func takeFirstListenItem() -> ListenQueueItem? {
-        guard let first = listenItems.first else { return nil }
-        remove(storyHash: first.storyHash)
-        return first
     }
 
     // MARK: - Podcasts and other audio
@@ -393,13 +383,10 @@ final class ListenQueue: NSObject, ObservableObject {
         sendOrder(updated)
     }
 
-    /// What plays after an episode ends or on the next-track command (media_player_view.js play_next): the first
-    /// audio or Listen story in Up Next that isn't `current`, taken off the queue. Videos are skipped and stay
-    /// queued for the web.
-    func takeFirstPlayableItem(excluding current: ListenMediaItem?) -> ListenQueueItem? {
-        guard let first = playableItems.first(where: { item in
-            !(current.map { $0.storyHash == item.storyHash && $0.mediaURL == item.mediaURL } ?? false)
-        }) else { return nil }
+    /// What plays next from Up Next (media_player_view.js play_next): the first audio or Listen story that isn't the
+    /// item playing (`excludingId`), taken off the queue. Videos are skipped and stay queued for the web.
+    func takeFirstPlayableItem(excludingId playingId: String?) -> ListenQueueItem? {
+        guard let first = playableItems.first(where: { $0.id != playingId }) else { return nil }
         remove(item: first)
         return first
     }

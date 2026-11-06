@@ -391,7 +391,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
 
     /// The next-track command and Now Playing's Next: the first audio or Listen story in Up Next.
     func playNextTrack() {
-        guard let next = queue.takeFirstPlayableItem(excluding: item) else { return }
+        guard let next = queue.takeFirstPlayableItem(excludingId: item.map { ListenQueueItem(media: $0).id }) else { return }
         play(queued: next)
     }
 
@@ -491,7 +491,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         elapsed = length
         status = .finished
         queue.addToHistory(media: finished, position: length, duration: length)
-        if settings.autoPlayNext, let next = queue.takeFirstPlayableItem(excluding: finished) {
+        if settings.autoPlayNext, let next = queue.takeFirstPlayableItem(excludingId: ListenQueueItem(media: finished).id) {
             play(queued: next)
             return
         }

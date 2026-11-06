@@ -437,11 +437,11 @@ final class ListenPlayer: NSObject, ObservableObject {
         loadManifest(generation: generation, resumeParagraph: paragraph, voiceId: voiceOverride, startsStory: false)
     }
 
-    /// The next-track command and Now Playing's Next story: the first story in Up Next, else the following unread
-    /// story in the current list.
+    /// The next-track command and Now Playing's Next story: the first story or episode in Up Next, else the
+    /// following unread story in the current list.
     func playNextStory() {
-        if let queued = takeQueuedStory() {
-            continueTo(queued)
+        if let queued = Self.takeNextQueued(from: ListenQueue.shared, playingStoryHash: storyHash) {
+            playQueued(queued)
         } else if let next = upNextStories(limit: 1).first {
             continueTo(next)
         }
@@ -449,7 +449,7 @@ final class ListenPlayer: NSObject, ObservableObject {
 
     /// Whether Next story has anything to play.
     var hasNextStory: Bool {
-        ListenQueue.shared.listenItems.contains { $0.storyHash != storyHash } || !upNextStories(limit: 1).isEmpty
+        Self.hasNextQueued(in: ListenQueue.shared, playingStoryHash: storyHash) || !upNextStories(limit: 1).isEmpty
     }
 
     /// A story from the "Then from" list in Now Playing.
@@ -457,19 +457,36 @@ final class ListenPlayer: NSObject, ObservableObject {
         continueTo(story)
     }
 
-    /// A story tapped in Up Next plays now; ListenPlayer.swift start(story:) takes it off the queue.
+    /// A story or episode tapped in Up Next plays now. ListenPlayer.swift start(story:) and ListenMediaPlayer.swift
+    /// start(_:) take it off the queue.
     func play(queued item: ListenQueueItem) {
-        continueTo(item.story)
+        playQueued(item)
     }
 
-    /// Takes the first queued story that isn't the one already playing off Up Next.
-    private func takeQueuedStory() -> [String: Any]? {
-        while let item = ListenQueue.shared.takeFirstListenItem() {
-            if item.storyHash != storyHash {
-                return item.story
-            }
+    private func playQueued(_ item: ListenQueueItem) {
+        Self.route(item, playStory: { [weak self] story in self?.continueTo(story) }, media: ListenMediaPlayer.shared)
+    }
+
+    /// The first entry in Up Next that isn't the story being read, taken off the queue. Up Next plays strictly in
+    /// queue order, as on Android, whether that's a story read aloud or a podcast episode; videos are passed over
+    /// and stay queued for the web (ListenQueue.swift playableItems).
+    static func takeNextQueued(from queue: ListenQueue, playingStoryHash: String?) -> ListenQueueItem? {
+        queue.takeFirstPlayableItem(excludingId: playingStoryHash.map(ListenQueueItem.listenId(forStoryHash:)))
+    }
+
+    static func hasNextQueued(in queue: ListenQueue, playingStoryHash: String?) -> Bool {
+        let playing = playingStoryHash.map(ListenQueueItem.listenId(forStoryHash:))
+        return queue.playableItems.contains { $0.id != playing }
+    }
+
+    /// Plays an Up Next entry: a story read aloud here (`playStory`), an episode in ListenMediaPlayer.swift, which
+    /// stops the story first (stopForHandoff saves it paused and puts it in History).
+    static func route(_ item: ListenQueueItem, playStory: ([String: Any]) -> Void, media: ListenMediaPlayer) {
+        if let episode = ListenMediaItem(queueItem: item) {
+            media.start(episode)
+        } else if item.isListen {
+            playStory(item.story)
         }
-        return nil
     }
 
     /// The name of the story list auto-continue reads from, for Now Playing's "Then from" heading.
@@ -991,9 +1008,9 @@ final class ListenPlayer: NSObject, ObservableObject {
             markRead(finishedStory)
         }
         updateNowPlaying()
-        // ListenPlayer.swift plays Up Next first, then auto-continues through the story list.
-        if let queued = takeQueuedStory() {
-            continueTo(queued)
+        // ListenPlayer.swift plays Up Next first, in queue order, then auto-continues through the story list.
+        if let queued = Self.takeNextQueued(from: ListenQueue.shared, playingStoryHash: storyHash) {
+            playQueued(queued)
         } else if ListenPreferences.autoContinue, let next = upNextStories(limit: 1).first {
             continueTo(next)
         } else {

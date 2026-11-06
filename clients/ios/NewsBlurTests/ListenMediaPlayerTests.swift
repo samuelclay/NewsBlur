@@ -661,6 +661,44 @@ final class Test_ListenMediaPlayer: XCTestCase {
         XCTAssertEqual(server.historyAdds.count, 1)
     }
 
+    func test_episodeQueuedBehindAStoryReadAloudPlaysInTheEpisodePlayerNext() {
+        let podcastURL = "https://cdn.example.com/episodes/44.mp3"
+        server.state["queue"] = [server.queueEntry(hash: "4:video", url: "https://youtube.com/embed/x", type: "youtube"),
+                                 server.queueEntry(hash: "10:podcast", url: podcastURL),
+                                 server.queueEntry(hash: "11:story", url: "/listen/story/11:story", type: "listen")]
+        queue.refresh()
+        server.answerReads()
+        // ListenMediaPlayerTests.swift: story "1:story" is being read aloud, and Up Next is a video, an episode
+        // played as the Play Last pill queued it, and another story.
+        listen.isActive = true
+        XCTAssertTrue(ListenPlayer.hasNextQueued(in: queue, playingStoryHash: "1:story"))
+
+        var storiesRead: [String] = []
+        let first = ListenPlayer.takeNextQueued(from: queue, playingStoryHash: "1:story")
+        XCTAssertEqual(first?.mediaURL, podcastURL, "Queue order, with the video passed over")
+        ListenPlayer.route(try! XCTUnwrap(first), playStory: { storiesRead.append($0["story_hash"] as? String ?? "") },
+                           media: player)
+        XCTAssertEqual(player.item?.mediaURL, podcastURL)
+        XCTAssertEqual(listen.handoffStops, 1, "The story stops before the episode plays")
+        XCTAssertTrue(storiesRead.isEmpty)
+        XCTAssertEqual(queue.items.map(\.mediaType), ["youtube", "listen"], "The video stays queued for the web")
+
+        let second = ListenPlayer.takeNextQueued(from: queue, playingStoryHash: nil)
+        ListenPlayer.route(try! XCTUnwrap(second), playStory: { storiesRead.append($0["story_hash"] as? String ?? "") },
+                           media: player)
+        XCTAssertEqual(storiesRead, ["11:story"])
+        XCTAssertFalse(ListenPlayer.hasNextQueued(in: queue, playingStoryHash: "11:story"))
+    }
+
+    func test_storyBeingReadIsNotItsOwnNextItem() {
+        server.state["queue"] = [server.queueEntry(hash: "1:story", url: "/listen/story/1:story", type: "listen")]
+        queue.refresh()
+        server.answerReads()
+        XCTAssertFalse(ListenPlayer.hasNextQueued(in: queue, playingStoryHash: "1:story"))
+        XCTAssertNil(ListenPlayer.takeNextQueued(from: queue, playingStoryHash: "1:story"))
+        XCTAssertEqual(queue.items.count, 1)
+    }
+
     func test_playNextAndPlayLastQueueTheEpisodeLikeTheWeb() {
         queue.add(media: ListenMediaItem(storyHash: "7:ffffff", mediaURL: "https://cdn.example.com/a.mp3",
                                          title: "A", feedId: "1"))
