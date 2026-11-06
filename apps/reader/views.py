@@ -2568,6 +2568,10 @@ def load_river_stories__redis(request):
         classifier_filter_scope = "feed"
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
+    # views.py: include_story_content=false returns stories without their content, like
+    # load_single_feed's flag. The iOS score refresh after a classifier save
+    # (clients/ios StoryScoreRefresher.swift) only needs each story's scores.
+    include_story_content = is_true(get_post.get("include_story_content", True))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
     infrequent = is_true(get_post.get("infrequent", False))
     if infrequent:
@@ -2673,6 +2677,7 @@ def load_river_stories__redis(request):
         feeds_hash = hashlib.md5(",".join(str(f) for f in sorted(feed_ids)).encode()).hexdigest()[:12]
         cache_key = (
             f"river:{user.pk}:{feeds_hash}:{page}:{order}:{read_filter}:{date_filter_start}:{date_filter_end}"
+            f":{int(include_story_content)}"
         )
         deduper = RequestDeduplicator(request, cache_key)
         cached = deduper.check_for_duplicate()
@@ -3167,6 +3172,13 @@ def load_river_stories__redis(request):
         if hasattr(request, "start_time"):
             seconds = time.time() - request.start_time
             RStats.add("page_load", duration=seconds)
+
+    if not include_story_content:
+        # views.py drops content only now, after clustering has read it for member previews.
+        for story in stories:
+            story.pop("story_content", None)
+            for member in story.get("cluster_stories", []):
+                member.pop("story_content", None)
 
     data = dict(
         code=code,

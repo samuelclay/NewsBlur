@@ -826,6 +826,36 @@ class Test_RiverStories(TransactionTestCase):
         self.assertEqual(response.status_code, 404)
         feed_stories.assert_not_called()
 
+    def test_river_stories__scores_without_content(self):
+        """include_story_content=false keeps each story's scores and drops its content, the way
+        load_single_feed's flag does, for the iOS score refresh after a classifier save."""
+        self.client.login(username="conesus", password="test")
+        if not self.test_story_hashes:
+            self.skipTest("No test stories created in setUp")
+        hashes = self.test_story_hashes[:3]
+
+        with_content = json.decode(
+            self.client.post(reverse("load-river-stories"), {"h": hashes, "include_hidden": "true"}).content
+        )
+        without_content = json.decode(
+            self.client.post(
+                reverse("load-river-stories"),
+                {"h": hashes, "include_hidden": "true", "include_story_content": "false"},
+            ).content
+        )
+
+        self.assertTrue(with_content["stories"])
+        self.assertTrue(all("story_content" in story for story in with_content["stories"]))
+        self.assertEqual(
+            sorted(story["story_hash"] for story in without_content["stories"]),
+            sorted(story["story_hash"] for story in with_content["stories"]),
+        )
+        for story in without_content["stories"]:
+            self.assertNotIn("story_content", story)
+            self.assertIn("intelligence", story)
+            self.assertIn("score", story)
+            self.assertIn("prompt_classifiers", story)
+
     def test_river_stories__specific_story_hashes(self):
         """
         Test loading specific story hashes - THIS IS THE BUG WE FIXED.
