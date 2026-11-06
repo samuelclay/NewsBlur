@@ -1,5 +1,7 @@
 import json
 
+import redis
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
@@ -42,3 +44,60 @@ class Test_SharedListenQueue(TestCase):
     def test_no_state_yet_reads_as_none(self):
         response = json.loads(self.client.get("/media_player/playback_state").content)
         self.assertIsNone(response["playback_state"])
+
+
+class Test_SyncPlaybackPosition(TestCase):
+    """The mobile apps' 10 second position updates write Redis only, like the web's media:sync websocket."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("syncer", "syncer@example.com", "password")
+        self.client = Client(HTTP_USER_AGENT=USER_AGENT)
+        self.client.login(username="syncer", password="password")
+        MMediaPlaybackState.drop_collection()
+        self.redis = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        self.redis_key = f"media:playback:{self.user.pk}"
+        self.redis.delete(self.redis_key)
+        self.addCleanup(self.redis.delete, self.redis_key)
+        self.client.post(
+            "/media_player/save_playback_state",
+            {
+                "current_story_hash": "900:pod",
+                "current_media_url": "https://example.com/episode.mp3",
+                "current_media_type": "podcast",
+                "current_position": 0,
+                "is_playing": "true",
+            },
+        )
+
+    def sync(self, **fields):
+        return json.loads(self.client.post("/media_player/sync_playback_position", fields).content)
+
+    def test_position_reaches_the_shared_state_without_touching_mongo(self):
+        response = self.sync(media_url="https://example.com/episode.mp3", position=125.5, duration=3600)
+        self.assertEqual(response["code"], 1)
+
+        state = MMediaPlaybackState.get_state_with_redis_position(self.user.pk)
+        self.assertEqual(state["current_position"], 125.5)
+        self.assertEqual(state["current_duration"], 3600.0)
+        self.assertEqual(MMediaPlaybackState.get_user(self.user.pk).current_position, 0)
+
+    def test_a_stale_item_cannot_move_the_current_items_position(self):
+        response = self.sync(media_url="https://example.com/older-episode.mp3", position=900)
+        self.assertEqual(response["code"], -1)
+        state = MMediaPlaybackState.get_state_with_redis_position(self.user.pk)
+        self.assertEqual(state["current_position"], 0)
+
+    def test_requires_a_post_and_a_number(self):
+        self.assertEqual(
+            json.loads(self.client.get("/media_player/sync_playback_position").content)["code"], -1
+        )
+        response = self.sync(media_url="https://example.com/episode.mp3", position="soon")
+        self.assertEqual(response["code"], -1)
+
+    def test_requires_login(self):
+        anonymous = Client(HTTP_USER_AGENT=USER_AGENT)
+        response = anonymous.post(
+            "/media_player/sync_playback_position",
+            {"media_url": "https://example.com/episode.mp3", "position": 10},
+        )
+        self.assertEqual(response.status_code, 403)

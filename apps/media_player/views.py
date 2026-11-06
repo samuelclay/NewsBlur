@@ -89,6 +89,48 @@ def save_playback_state(request):
 
 @ajax_login_required
 @json.json_view
+def sync_playback_position(request):
+    """The mobile apps' lightweight position update while an item plays, the HTTP twin of the web's
+    media:sync websocket message (node/unread_counts.js). It writes only the Redis hash that
+    get_state_with_redis_position reads, so frequent updates never touch MongoDB, and only while media_url is
+    still the current item that save_playback_state recorded, so a stale or racing client can't move another
+    item's position. Unlike the websocket it doesn't broadcast to open web tabs.
+    """
+    if request.method != "POST":
+        return {"code": -1, "message": gettext("Use POST")}
+
+    media_url = request.POST.get("media_url", "")
+    state = MMediaPlaybackState.objects(user_id=request.user.pk).only("current_media_url").first()
+    if not state or not media_url or state.current_media_url != media_url:
+        return {"code": -1, "message": gettext("That item isn't playing")}
+
+    redis_data = {}
+    try:
+        for field, redis_field in (("position", "position"), ("duration", "duration")):
+            if field in request.POST:
+                redis_data[redis_field] = str(max(0.0, float(request.POST[field])))
+        if "playback_rate" in request.POST:
+            redis_data["playback_rate"] = str(float(request.POST["playback_rate"]))
+    except ValueError:
+        return {"code": -1, "message": gettext("Invalid position")}
+    if "is_playing" in request.POST:
+        redis_data["is_playing"] = "true" if request.POST["is_playing"] in ("true", "True", "1") else "false"
+    if not redis_data:
+        return {"code": -1, "message": gettext("No fields to update")}
+
+    try:
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        redis_key = f"media:playback:{request.user.pk}"
+        r.hmset(redis_key, redis_data)
+        r.expire(redis_key, 86400)  # 24h expiry, matching node/unread_counts.js media:sync
+    except redis.RedisError:
+        return {"code": -1, "message": gettext("Couldn't save the position")}
+
+    return {"code": 1}
+
+
+@ajax_login_required
+@json.json_view
 def add_to_media_queue(request):
     """Add a media item to the playback queue."""
     user = request.user

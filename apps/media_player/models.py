@@ -249,18 +249,19 @@ class MMediaPlaybackState(mongo.Document):
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             redis_key = f"media:playback:{user_id}"
+            # REDIS_PUBSUB_POOL decodes responses (newsblur_web/settings.py), so keys and values are str.
             redis_data = r.hgetall(redis_key)
             if redis_data:
-                if b"position" in redis_data:
-                    canonical["current_position"] = float(redis_data[b"position"])
-                if b"duration" in redis_data:
-                    canonical["current_duration"] = float(redis_data[b"duration"])
-                if b"is_playing" in redis_data:
-                    canonical["is_playing"] = redis_data[b"is_playing"] == b"true"
-                if b"playback_rate" in redis_data:
-                    canonical["current_playback_rate"] = float(redis_data[b"playback_rate"])
-                if b"volume" in redis_data:
-                    canonical["current_volume"] = float(redis_data[b"volume"])
+                if "position" in redis_data:
+                    canonical["current_position"] = float(redis_data["position"])
+                if "duration" in redis_data:
+                    canonical["current_duration"] = float(redis_data["duration"])
+                if "is_playing" in redis_data:
+                    canonical["is_playing"] = redis_data["is_playing"] == "true"
+                if "playback_rate" in redis_data:
+                    canonical["current_playback_rate"] = float(redis_data["playback_rate"])
+                if "volume" in redis_data:
+                    canonical["current_volume"] = float(redis_data["volume"])
         except Exception:
             pass  # Fall back to MongoDB data if Redis is unavailable
         return canonical
