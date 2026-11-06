@@ -1308,6 +1308,7 @@ om over de wereld te praten.</string>
     <string name="ai_limit_reached_title">Maandelijkse bestedingslimiet bereikt.</string>
     <string name="ai_limit_reached_body">Classifiers in natuurlijke taal voor tekst zijn gepauzeerd tot de volgende factureringsperiode.</string>
     <string name="ai_limit_reached_link">Je limiet verhogen of verwijderen</string>
+    <string name="ai_filters_not_active">Filters in natuurlijke taal zijn niet actief voor dit account.</string>
     <string name="ai_scope_feed">Alleen deze site</string>
     <string name="ai_scope_folder">Alle sites in map</string>
     <string name="ai_scope_global">Alle sites</string>

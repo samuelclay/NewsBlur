@@ -1282,6 +1282,7 @@
     <string name="ai_limit_reached_title">ถึงวงเงินใช้จ่ายรายเดือนแล้ว</string>
     <string name="ai_limit_reached_body">ตัวจำแนกภาษาธรรมชาติหยุดทำงานชั่วคราวจนกว่าจะถึงรอบเรียกเก็บเงินถัดไป</string>
     <string name="ai_limit_reached_link">เพิ่มหรือนำขีดจำกัดออก</string>
+    <string name="ai_filters_not_active">ตัวกรองภาษาธรรมชาติยังไม่เปิดใช้งานในบัญชีนี้</string>
     <string name="ai_scope_feed">เว็บไซต์นี้เท่านั้น</string>
     <string name="ai_scope_folder">ทุกเว็บไซต์ในโฟลเดอร์</string>
     <string name="ai_scope_global">เว็บไซต์ทั้งหมด</string>

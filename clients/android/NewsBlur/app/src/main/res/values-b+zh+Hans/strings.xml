@@ -1282,6 +1282,7 @@
     <string name="ai_limit_reached_title">已达到每月支出上限。</string>
     <string name="ai_limit_reached_body">自然语言分类器已暂停，将于下一个计费周期恢复。</string>
     <string name="ai_limit_reached_link">提高或移除你的限额</string>
+    <string name="ai_filters_not_active">此账户未启用自然语言筛选器。</string>
     <string name="ai_scope_feed">仅此网站</string>
     <string name="ai_scope_folder">文件夹中的所有网站</string>
     <string name="ai_scope_global">所有网站</string>

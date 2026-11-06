@@ -1282,6 +1282,7 @@
     <string name="ai_limit_reached_title">월간 지출 한도에 도달했습니다.</string>
     <string name="ai_limit_reached_body">자연어 분류기가 다음 결제 주기까지 일시 중지되었습니다.</string>
     <string name="ai_limit_reached_link">한도 늘리기 또는 삭제</string>
+    <string name="ai_filters_not_active">이 계정에서는 자연어 필터가 활성화되어 있지 않습니다.</string>
     <string name="ai_scope_feed">이 사이트만</string>
     <string name="ai_scope_folder">폴더의 모든 사이트</string>
     <string name="ai_scope_global">모든 사이트</string>

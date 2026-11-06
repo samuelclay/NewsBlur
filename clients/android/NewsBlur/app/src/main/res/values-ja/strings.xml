@@ -1282,6 +1282,7 @@
     <string name="ai_limit_reached_title">月間利用上限に達しました。</string>
     <string name="ai_limit_reached_body">自然言語分類器は、次の請求サイクルまで一時停止されています。</string>
     <string name="ai_limit_reached_link">上限を引き上げる、または削除</string>
+    <string name="ai_filters_not_active">このアカウントでは自然言語フィルターが有効になっていません。</string>
     <string name="ai_scope_feed">このサイトのみ</string>
     <string name="ai_scope_folder">フォルダー内のすべてのサイト</string>
     <string name="ai_scope_global">すべてのサイト</string>

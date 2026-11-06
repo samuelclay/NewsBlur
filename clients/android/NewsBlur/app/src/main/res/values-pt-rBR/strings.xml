@@ -1334,6 +1334,7 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="ai_limit_reached_title">Limite mensal de gastos atingido.</string>
     <string name="ai_limit_reached_body">Os classificadores de linguagem natural estão pausados até o próximo ciclo de cobrança.</string>
     <string name="ai_limit_reached_link">Aumente ou remova seu limite</string>
+    <string name="ai_filters_not_active">Os filtros em linguagem natural não estão ativos nesta conta.</string>
     <string name="ai_scope_feed">Somente este site</string>
     <string name="ai_scope_folder">Todos os sites da pasta</string>
     <string name="ai_scope_global">Todos os sites</string>

@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "Thanh toán cho bộ phân loại ngôn ngữ tự nhiên";
 "Natural language classifiers are paused until next billing cycle. " = "Bộ phân loại ngôn ngữ tự nhiên đã tạm dừng cho đến chu kỳ thanh toán tiếp theo. ";
 "Natural language classifiers are using your instance's API keys." = "Các bộ phân loại ngôn ngữ tự nhiên đang sử dụng khóa API của máy chủ bạn.";
+"Natural language filters aren't active on this account." = "Bộ lọc ngôn ngữ tự nhiên chưa được bật cho tài khoản này.";
 "Natural language text and image classifiers" = "Bộ phân loại văn bản và hình ảnh bằng ngôn ngữ tự nhiên";
 "Nested" = "Lồng nhau";
 "Never" = "Không bao giờ";

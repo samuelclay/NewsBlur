@@ -1308,6 +1308,7 @@
     <string name="ai_limit_reached_title">मासिक खर्च की सीमा पूरी हो गई।</string>
     <string name="ai_limit_reached_body">प्राकृतिक भाषा क्लासिफ़ायर अगले बिलिंग चक्र तक रुके हुए हैं।</string>
     <string name="ai_limit_reached_link">अपनी सीमा बढ़ाएँ या हटाएँ</string>
+    <string name="ai_filters_not_active">इस खाते पर प्राकृतिक भाषा वाले फ़िल्टर सक्रिय नहीं हैं।</string>
     <string name="ai_scope_feed">केवल यह साइट</string>
     <string name="ai_scope_folder">फ़ोल्डर की सभी साइटें</string>
     <string name="ai_scope_global">सभी साइटें</string>

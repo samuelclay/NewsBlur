@@ -1360,6 +1360,7 @@
     <string name="ai_limit_reached_title">Достигнут месячный лимит расходов.</string>
     <string name="ai_limit_reached_body">Работа классификаторов естественного языка приостановлена до следующего расчётного периода.</string>
     <string name="ai_limit_reached_link">Увеличить или снять лимит</string>
+    <string name="ai_filters_not_active">Фильтры на естественном языке не активны в этом аккаунте.</string>
     <string name="ai_scope_feed">Только этот сайт</string>
     <string name="ai_scope_folder">Все сайты в папке</string>
     <string name="ai_scope_global">Все сайты</string>

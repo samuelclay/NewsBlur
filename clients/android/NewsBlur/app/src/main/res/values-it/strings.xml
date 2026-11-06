@@ -1334,6 +1334,7 @@ le persone per parlare del mondo.</string>
     <string name="ai_limit_reached_title">Limite di spesa mensile raggiunto.</string>
     <string name="ai_limit_reached_body">I classificatori con prompt sono in pausa fino al prossimo ciclo di fatturazione.</string>
     <string name="ai_limit_reached_link">Aumenta o rimuovi il tuo limite</string>
+    <string name="ai_filters_not_active">I filtri in linguaggio naturale non sono attivi su questo account.</string>
     <string name="ai_scope_feed">Solo questo sito</string>
     <string name="ai_scope_folder">Tutti i siti nella cartella</string>
     <string name="ai_scope_global">Tutti i siti</string>

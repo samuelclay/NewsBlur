@@ -1412,6 +1412,7 @@
     <string name="ai_limit_reached_title">تم بلوغ حد الإنفاق الشهري.</string>
     <string name="ai_limit_reached_body">تم إيقاف المصنّفات باللغة الطبيعية مؤقتًا حتى دورة الفوترة التالية.</string>
     <string name="ai_limit_reached_link">زيادة الحد أو إزالته</string>
+    <string name="ai_filters_not_active">فلاتر اللغة الطبيعية غير مفعّلة في هذا الحساب.</string>
     <string name="ai_scope_feed">هذا الموقع فقط</string>
     <string name="ai_scope_folder">جميع المواقع في المجلد</string>
     <string name="ai_scope_global">كل المواقع</string>

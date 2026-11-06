@@ -1308,6 +1308,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="ai_limit_reached_title">Aylık harcama sınırına ulaşıldı.</string>
     <string name="ai_limit_reached_body">Doğal dil sınıflandırıcıları, sonraki faturalandırma dönemine kadar duraklatıldı.</string>
     <string name="ai_limit_reached_link">Sınırınızı artırın veya kaldırın</string>
+    <string name="ai_filters_not_active">Bu hesapta doğal dil filtreleri etkin değil.</string>
     <string name="ai_scope_feed">Yalnızca bu site</string>
     <string name="ai_scope_folder">Klasördeki tüm siteler</string>
     <string name="ai_scope_global">Tüm siteler</string>

@@ -1282,6 +1282,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="ai_limit_reached_title">Batas pengeluaran bulanan tercapai.</string>
     <string name="ai_limit_reached_body">Pengklasifikasi bahasa alami dijeda hingga siklus penagihan berikutnya.</string>
     <string name="ai_limit_reached_link">Tingkatkan atau hapus batas Anda</string>
+    <string name="ai_filters_not_active">Filter bahasa alami tidak aktif di akun ini.</string>
     <string name="ai_scope_feed">Hanya situs ini</string>
     <string name="ai_scope_folder">Semua situs dalam folder</string>
     <string name="ai_scope_global">Semua situs</string>

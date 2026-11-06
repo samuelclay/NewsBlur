@@ -1308,6 +1308,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="ai_limit_reached_title">Monatliches Ausgabenlimit erreicht.</string>
     <string name="ai_limit_reached_body">Klassifikatoren in natürlicher Sprache sind bis zum nächsten Abrechnungszeitraum pausiert.</string>
     <string name="ai_limit_reached_link">Limit erhöhen oder entfernen</string>
+    <string name="ai_filters_not_active">Auf diesem Konto sind keine Filter in natürlicher Sprache aktiv.</string>
     <string name="ai_scope_feed">Nur diese Website</string>
     <string name="ai_scope_folder">Alle Websites im Ordner</string>
     <string name="ai_scope_global">Alle Websites</string>

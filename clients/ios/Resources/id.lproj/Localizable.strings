@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "Penagihan pengklasifikasi bahasa alami";
 "Natural language classifiers are paused until next billing cycle. " = "Pengklasifikasi bahasa alami dijeda hingga siklus penagihan berikutnya. ";
 "Natural language classifiers are using your instance's API keys." = "Pengklasifikasi bahasa alami menggunakan kunci API instans Anda.";
+"Natural language filters aren't active on this account." = "Filter bahasa alami tidak aktif di akun ini.";
 "Natural language text and image classifiers" = "Pengklasifikasi teks dan gambar berbasis bahasa alami";
 "Nested" = "Bertingkat";
 "Never" = "Tidak pernah";

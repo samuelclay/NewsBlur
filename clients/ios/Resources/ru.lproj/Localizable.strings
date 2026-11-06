@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "Оплата классификатора на естественном языке";
 "Natural language classifiers are paused until next billing cycle. " = "Классификаторы на естественном языке приостановлены до следующего расчётного периода. ";
 "Natural language classifiers are using your instance's API keys." = "Классификаторы естественного языка используют ключи API вашего экземпляра.";
+"Natural language filters aren't active on this account." = "Фильтры на естественном языке не активны в этом аккаунте.";
 "Natural language text and image classifiers" = "Классификаторы текста на естественном языке и изображений";
 "Nested" = "Вложенный";
 "Never" = "Никогда";

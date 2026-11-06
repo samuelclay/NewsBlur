@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "自然語言分類器計費";
 "Natural language classifiers are paused until next billing cycle. " = "自然語言分類器已暫停使用，直到下一個計費週期。";
 "Natural language classifiers are using your instance's API keys." = "自然語言分類器正在使用你執行個體的 API 金鑰。";
+"Natural language filters aren't active on this account." = "此帳戶尚未啟用自然語言篩選器。";
 "Natural language text and image classifiers" = "自然語言文字與影像分類器";
 "Nested" = "巢狀";
 "Never" = "永不";

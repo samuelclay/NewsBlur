@@ -1360,6 +1360,7 @@
     <string name="ai_limit_reached_title">Osiągnięto miesięczny limit wydatków.</string>
     <string name="ai_limit_reached_body">Klasyfikatory języka naturalnego są wstrzymane do następnego cyklu rozliczeniowego.</string>
     <string name="ai_limit_reached_link">Zwiększ lub usuń swój limit</string>
+    <string name="ai_filters_not_active">Filtry w języku naturalnym nie są aktywne na tym koncie.</string>
     <string name="ai_scope_feed">Tylko ta witryna</string>
     <string name="ai_scope_folder">Wszystkie witryny w folderze</string>
     <string name="ai_scope_global">Wszystkie witryny</string>

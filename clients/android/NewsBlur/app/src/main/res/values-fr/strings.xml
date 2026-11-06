@@ -1334,6 +1334,7 @@ les gens pour parler du monde.</string>
     <string name="ai_limit_reached_title">Limite mensuelle de dépenses atteinte.</string>
     <string name="ai_limit_reached_body">Les classificateurs en langage naturel sont suspendus jusqu’au prochain cycle de facturation.</string>
     <string name="ai_limit_reached_link">Augmentez ou supprimez votre limite</string>
+    <string name="ai_filters_not_active">Les filtres en langage naturel ne sont pas activés sur ce compte.</string>
     <string name="ai_scope_feed">Ce site uniquement</string>
     <string name="ai_scope_folder">Tous les sites du dossier</string>
     <string name="ai_scope_global">Tous les sites</string>

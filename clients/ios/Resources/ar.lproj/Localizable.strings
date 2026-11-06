@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "فوترة مصنّف اللغة الطبيعية";
 "Natural language classifiers are paused until next billing cycle. " = "توقفت مصنّفات اللغة الطبيعية مؤقتًا حتى دورة الفوترة التالية. ";
 "Natural language classifiers are using your instance's API keys." = "تستخدم المصنّفات باللغة الطبيعية مفاتيح API الخاصة بنسختك.";
+"Natural language filters aren't active on this account." = "فلاتر اللغة الطبيعية غير مفعّلة في هذا الحساب.";
 "Natural language text and image classifiers" = "مصنفات النصوص والصور باللغة الطبيعية";
 "Nested" = "متداخل";
 "Never" = "أبدًا";

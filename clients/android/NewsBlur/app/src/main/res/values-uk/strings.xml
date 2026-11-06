@@ -1360,6 +1360,7 @@
     <string name="ai_limit_reached_title">Досягнуто місячного ліміту витрат.</string>
     <string name="ai_limit_reached_body">Класифікатори природної мови призупинено до наступного платіжного циклу.</string>
     <string name="ai_limit_reached_link">Збільшити або зняти ліміт</string>
+    <string name="ai_filters_not_active">Фільтри природною мовою не активні для цього облікового запису.</string>
     <string name="ai_scope_feed">Лише цей сайт</string>
     <string name="ai_scope_folder">Усі сайти в папці</string>
     <string name="ai_scope_global">Усі сайти</string>

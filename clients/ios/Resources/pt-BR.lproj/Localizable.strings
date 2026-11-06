@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "Cobrança do classificador de linguagem natural";
 "Natural language classifiers are paused until next billing cycle. " = "Os classificadores de linguagem natural estão pausados até o próximo ciclo de cobrança. ";
 "Natural language classifiers are using your instance's API keys." = "Os classificadores de linguagem natural estão usando as chaves de API da sua instância.";
+"Natural language filters aren't active on this account." = "Os filtros em linguagem natural não estão ativos nesta conta.";
 "Natural language text and image classifiers" = "Classificadores de texto e imagem em linguagem natural";
 "Nested" = "Aninhado";
 "Never" = "Nunca";

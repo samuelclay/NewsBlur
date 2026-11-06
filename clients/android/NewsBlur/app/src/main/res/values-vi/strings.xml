@@ -1282,6 +1282,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="ai_limit_reached_title">Đã đạt giới hạn chi tiêu hàng tháng.</string>
     <string name="ai_limit_reached_body">Các bộ phân loại ngôn ngữ tự nhiên đã tạm dừng cho đến chu kỳ thanh toán tiếp theo.</string>
     <string name="ai_limit_reached_link">Tăng hoặc xóa giới hạn của bạn</string>
+    <string name="ai_filters_not_active">Bộ lọc ngôn ngữ tự nhiên chưa được bật cho tài khoản này.</string>
     <string name="ai_scope_feed">Chỉ trang web này</string>
     <string name="ai_scope_folder">Mọi trang web trong thư mục</string>
     <string name="ai_scope_global">Mọi trang web</string>

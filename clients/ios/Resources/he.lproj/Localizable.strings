@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "חיוב עבור מסווג שפה טבעית";
 "Natural language classifiers are paused until next billing cycle. " = "המסווגים בשפה טבעית מושהים עד למחזור החיוב הבא. ";
 "Natural language classifiers are using your instance's API keys." = "המסווגים בשפה טבעית משתמשים במפתחות ה-API של המערכת שלך.";
+"Natural language filters aren't active on this account." = "מסנני שפה טבעית אינם פעילים בחשבון הזה.";
 "Natural language text and image classifiers" = "מסווגי טקסט ותמונות בשפה טבעית";
 "Nested" = "מקונן";
 "Never" = "אף פעם";

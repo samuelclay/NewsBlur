@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "Doğal dil sınıflandırıcısı faturalandırması";
 "Natural language classifiers are paused until next billing cycle. " = "Doğal dil sınıflandırıcıları bir sonraki faturalandırma dönemine kadar duraklatıldı. ";
 "Natural language classifiers are using your instance's API keys." = "Doğal dil sınıflandırıcıları, sunucunuzun API anahtarlarını kullanıyor.";
+"Natural language filters aren't active on this account." = "Bu hesapta doğal dil filtreleri etkin değil.";
 "Natural language text and image classifiers" = "Doğal dil metin ve görsel sınıflandırıcıları";
 "Nested" = "İç içe";
 "Never" = "Asla";

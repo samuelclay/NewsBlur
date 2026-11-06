@@ -1334,6 +1334,7 @@
     <string name="ai_limit_reached_title">הגעתם למגבלת ההוצאות החודשית.</string>
     <string name="ai_limit_reached_body">המסווגים בשפה טבעית מושהים עד למחזור החיוב הבא.</string>
     <string name="ai_limit_reached_link">הגדלת המגבלה או הסרתה</string>
+    <string name="ai_filters_not_active">מסנני שפה טבעית אינם פעילים בחשבון הזה.</string>
     <string name="ai_scope_feed">האתר הזה בלבד</string>
     <string name="ai_scope_folder">כל האתרים שבתיקייה</string>
     <string name="ai_scope_global">כל האתרים</string>

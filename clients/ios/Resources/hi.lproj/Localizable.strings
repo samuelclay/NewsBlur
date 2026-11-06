@@ -659,6 +659,7 @@
 "Natural language classifier billing" = "प्राकृतिक भाषा क्लासिफ़ायर की बिलिंग";
 "Natural language classifiers are paused until next billing cycle. " = "प्राकृतिक भाषा के क्लासिफ़ायर अगले बिलिंग चक्र तक रुके हुए हैं। ";
 "Natural language classifiers are using your instance's API keys." = "प्राकृतिक भाषा क्लासिफ़ायर आपके इंस्टेंस की API कुंजियों का उपयोग कर रहे हैं।";
+"Natural language filters aren't active on this account." = "इस खाते पर प्राकृतिक भाषा वाले फ़िल्टर सक्रिय नहीं हैं।";
 "Natural language text and image classifiers" = "प्राकृतिक भाषा के टेक्स्ट और छवि क्लासिफ़ायर";
 "Nested" = "नेस्टेड";
 "Never" = "कभी नहीं";
