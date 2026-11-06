@@ -15,6 +15,12 @@ struct FeedDetailDashboardView: View {
     @ObservedObject var cache: StoryCache
     
     var body: some View {
+        GeometryReader { reader in
+            dashboard.environment(\.readerMotionViewport, reader.frame(in: .global))
+        }
+    }
+
+    private var dashboard: some View {
         ScrollView {
             if cache.dashboardAll.isEmpty {
                 VStack(alignment: .center) {
@@ -62,6 +68,9 @@ struct FeedDetailDashboardView: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .onScrollPhaseChange { _, phase in
+            if phase != .idle { cache.motionSession.stopEntrances() }
+        }
         .padding(10)
         .background(Color.themed([0xE0E0E0, 0xE8DED0, 0x363636, 0x000000]))
         .lazyPop()

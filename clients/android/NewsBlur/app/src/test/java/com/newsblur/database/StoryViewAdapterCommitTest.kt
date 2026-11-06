@@ -565,6 +565,7 @@ class StoryViewAdapterCommitTest {
         var onBuild: (List<Story>) -> Unit = {}
 
         init {
+            setField("motionSeen", mutableSetOf<String>())
             setField("returnPresentationReady", true)
             setField("adapterScope", scope.backgroundScope)
             setField("diffDispatcher", StandardTestDispatcher(scope.testScheduler))

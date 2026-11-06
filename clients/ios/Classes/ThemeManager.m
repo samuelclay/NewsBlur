@@ -44,6 +44,7 @@ NSString * const ThemeStyleDark = @"dark";
 @property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) BOOL justToggledViaGesture;
 @property (nonatomic) BOOL isAutoDark;
+@property (nonatomic, copy) NSString *lastAppliedTheme;
 
 @end
 
@@ -508,6 +509,10 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateTheme {
+    NSString *nextTheme = self.effectiveTheme;
+    BOOL animateChange = self.lastAppliedTheme && ![self.lastAppliedTheme isEqualToString:nextTheme];
+    self.lastAppliedTheme = nextTheme;
+    UIView *themeSnapshot = animateChange ? [ReaderMotion beginThemeTransition:self.appDelegate.window] : nil;
     // Keep the dark & light themes in sync, so toggling uses the most recent themes for each
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSString *theme = self.theme;
@@ -534,6 +539,7 @@ NSString * const ThemeStyleDark = @"dark";
     [appDelegate.originalStoryViewController updateTheme];
     
     [self updatePreferencesTheme];
+    if (themeSnapshot) [ReaderMotion finishThemeTransition:themeSnapshot];
 }
 
 - (void)updatePreferencesTheme {

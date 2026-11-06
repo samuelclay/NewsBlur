@@ -873,7 +873,7 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .NB-welcome-header .NB-welcome-header-actions .NB-button-tryout:hover {
@@ -884,7 +884,6 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
 
 .NB-welcome-header .NB-welcome-header-actions .NB-button-tryout:active {
     background: rgba(255, 255, 255, 0.5);
-    transform: scale(0.96);
 }
 
 .NB-welcome-header .NB-welcome-header-actions .NB-button-tryout img {
@@ -1405,12 +1404,11 @@ a.NB-fgi img {
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.04),
         0 8px 24px rgba(0, 0, 0, 0.06);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
 }
 
 .NB-pricing-tier:hover {
-    transform: translateY(-4px);
     box-shadow:
         0 4px 8px rgba(0, 0, 0, 0.06),
         0 16px 40px rgba(0, 0, 0, 0.1);
@@ -1953,23 +1951,15 @@ a.NB-fgi img {
     border-radius: 12px;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .NB-welcome-banner-button:hover {
     text-decoration: none;
 }
 
-.NB-welcome-banner-button:active {
-    transform: scale(0.96);
-}
-
 .NB-banner-arrow {
     transition: transform 0.2s ease;
-}
-
-.NB-welcome-banner-button:hover .NB-banner-arrow {
-    transform: translateX(3px);
 }
 
 /* Features banner */
@@ -2258,11 +2248,6 @@ a.NB-fgi img {
 }
 
 .NB-welcome-faq-compare-link .NB-banner-arrow {
-    transition: transform 0.15s ease;
-}
-
-.NB-welcome-faq-compare-link:hover .NB-banner-arrow {
-    transform: translateX(3px);
 }
 
 .NB-welcome-faq .NB-welcome-banner-button-wrap {
@@ -2346,7 +2331,6 @@ a.NB-fgi img {
 
 .NB-testimonials-nav-btn:active {
     background: rgba(0, 0, 0, 0.12);
-    transform: scale(0.96);
 }
 
 .NB-testimonials-nav-btn svg {

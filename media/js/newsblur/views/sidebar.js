@@ -174,6 +174,8 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     // ==========
 
     show_splash_page: function () {
+        // sidebar.js: on a phone the Dashboard row pushes the dashboard as its own screen.
+        if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.open_dashboard()) return;
         NEWSBLUR.reader.show_splash_page();
     },
 
