@@ -3,6 +3,7 @@ package com.newsblur.network
 import com.newsblur.listen.ListenLibraryResponse
 import com.newsblur.listen.ListenManifest
 import com.newsblur.listen.ListenPlaybackState
+import com.newsblur.listen.ListenPositionSync
 import com.newsblur.listen.ListenQueueItem
 import com.newsblur.listen.ListenResult
 import com.newsblur.listen.ListenSegmentResponse
@@ -101,7 +102,7 @@ interface ListenApi {
 
     /**
      * The frequent position update while an episode plays (sync_playback_position), which only touches Redis and only
-     * while mediaUrl is still the server's current item. Returns whether the server took it.
+     * while mediaUrl is still the server's current item; NOT_CURRENT means another device took over.
      */
     suspend fun syncPlaybackPosition(
         mediaUrl: String,
@@ -109,7 +110,7 @@ interface ListenApi {
         durationSeconds: Double,
         playbackRate: Double,
         isPlaying: Boolean,
-    ): Boolean
+    ): ListenPositionSync
 
     /** Segment and preview URLs may be relative to the NewsBlur server the app is signed in to. */
     fun resolveAudioUrl(url: String): String

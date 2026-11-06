@@ -1351,7 +1351,9 @@ class ListenManager
                     if (pendingQueueChanges == 0) applyServerQueue(state.queue)
                 }
                 speed = mediaSync.speed
-                if (!episodePositionChosen) episodeStartMs = ListenMediaResume.startPositionMs(state, target.storyHash, media.url)
+                if (!episodePositionChosen) {
+                    episodeStartMs = ListenMediaResume.startPositionMs(state, target.storyHash, media.url, media.type)
+                }
                 val player = ensureExoPlayer()
                 player.setMediaItem(episodeItem(media), episodeStartMs)
                 player.playbackParameters = PlaybackParameters(speed.toFloat())

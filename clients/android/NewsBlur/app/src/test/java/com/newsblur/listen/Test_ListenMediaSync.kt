@@ -14,8 +14,9 @@ import org.junit.Test
 
 /**
  * Test_ListenMediaSync.kt checks how ListenMediaSync.kt keeps the web media player's state in step with a podcast
- * episode: saved as it starts and pauses, its position sent at most every ten seconds while it plays, History when
- * it stops or finishes, and the skip intervals and podcast rate taken from the server.
+ * episode: saved as it starts, pauses and seeks, its position sent at most every ten seconds while it plays and not
+ * at all once another device takes over, History when it stops or finishes, the skip intervals and podcast rate taken
+ * from the server, and the rate sent back only once it was changed here.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class Test_ListenMediaSync {
@@ -25,7 +26,7 @@ class Test_ListenMediaSync {
 
     private fun TestScope.sync(): ListenMediaSync {
         coEvery { api.savePlaybackState(any(), any(), any(), any(), any()) } returns ListenPlaybackState()
-        coEvery { api.syncPlaybackPosition(any(), any(), any(), any(), any()) } returns true
+        coEvery { api.syncPlaybackPosition(any(), any(), any(), any(), any()) } returns ListenPositionSync.SYNCED
         coEvery { api.addToHistory(any(), any(), any()) } returns true
         return ListenMediaSync(api, backgroundScope) { now }
     }
@@ -36,7 +37,7 @@ class Test_ListenMediaSync {
             val sync = sync()
             sync.started(episode, positionMs = 754_200L, durationMs = 0L)
             runCurrent()
-            coVerify(exactly = 1) { api.savePlaybackState(episode, 754.2, 0.0, 1.0, true) }
+            coVerify(exactly = 1) { api.savePlaybackState(episode, 754.2, 0.0, null, true) }
         }
 
     @Test
@@ -68,8 +69,8 @@ class Test_ListenMediaSync {
             sync.paused(episode, positionMs = 3_000L, durationMs = 3_600_000L)
             runCurrent()
             coVerifyOrder {
-                api.savePlaybackState(episode, 0.0, 0.0, 1.0, true)
-                api.savePlaybackState(episode, 3.0, 3600.0, 1.0, false)
+                api.savePlaybackState(episode, 0.0, 0.0, null, true)
+                api.savePlaybackState(episode, 3.0, 3600.0, null, false)
             }
             // Playing again right after the pause waits a full interval before the next position.
             now += 5_000L
@@ -86,7 +87,7 @@ class Test_ListenMediaSync {
             now += 1_000L
             sync.saveNow(episode, positionMs = 1_000L, durationMs = 3_600_000L, isPlaying = true)
             runCurrent()
-            coVerify(exactly = 1) { api.savePlaybackState(episode, 1.0, 3600.0, 1.0, true) }
+            coVerify(exactly = 1) { api.savePlaybackState(episode, 1.0, 3600.0, null, true) }
         }
 
     @Test
@@ -96,7 +97,7 @@ class Test_ListenMediaSync {
             sync.stopped(episode, positionMs = 61_500L, durationMs = 3_600_000L)
             runCurrent()
             coVerifyOrder {
-                api.savePlaybackState(episode, 61.5, 3600.0, 1.0, false)
+                api.savePlaybackState(episode, 61.5, 3600.0, null, false)
                 api.addToHistory(episode, 61.5, 3600.0)
             }
         }
@@ -107,7 +108,7 @@ class Test_ListenMediaSync {
             val sync = sync()
             sync.finished(episode, durationMs = 3_600_000L)
             runCurrent()
-            coVerify { api.savePlaybackState(episode, 3600.0, 3600.0, 1.0, false) }
+            coVerify { api.savePlaybackState(episode, 3600.0, 3600.0, null, false) }
             coVerify { api.addToHistory(episode, 3600.0, 3600.0) }
         }
 
@@ -126,9 +127,11 @@ class Test_ListenMediaSync {
             assertEquals(10_000L, sync.settings.skipBackMs)
             assertEquals(60_000L, sync.settings.skipForwardMs)
             assertEquals(false, sync.settings.autoPlayNext)
+            assertEquals(1.5, sync.speed, 0.0)
             sync.started(episode, positionMs = 0L, durationMs = 0L)
             runCurrent()
-            coVerify { api.savePlaybackState(episode, 0.0, 0.0, 1.5, true) }
+            // The rate came from the web, so it isn't sent back over a newer one chosen there.
+            coVerify { api.savePlaybackState(episode, 0.0, 0.0, null, true) }
         }
 
     @Test
@@ -136,9 +139,17 @@ class Test_ListenMediaSync {
         runTest {
             val sync = sync()
             sync.changeSpeed(1.25, episode, positionMs = 20_000L, durationMs = 3_600_000L, isPlaying = true)
+            now += 2_000L
+            sync.paused(episode, positionMs = 22_000L, durationMs = 3_600_000L)
             runCurrent()
             assertEquals(1.25, sync.speed, 0.0)
             coVerify { api.savePlaybackState(episode, 20.0, 3600.0, 1.25, true) }
+            // Once changed here, later saves keep carrying it, until the server's own state is read again.
+            coVerify { api.savePlaybackState(episode, 22.0, 3600.0, 1.25, false) }
+            sync.applyState(ListenPlaybackState(mediaSpeed = 1.25))
+            sync.paused(episode, positionMs = 23_000L, durationMs = 3_600_000L)
+            runCurrent()
+            coVerify { api.savePlaybackState(episode, 23.0, 3600.0, null, false) }
         }
 
     @Test
@@ -173,19 +184,60 @@ class Test_ListenMediaSync {
         }
 
     @Test
-    fun test_a_seek_sends_the_new_position_right_away() =
+    fun test_a_seek_saves_where_it_landed_right_away() =
         runTest {
             val sync = sync()
             sync.started(episode, positionMs = 0L, durationMs = 0L)
             now += 1_000L
             sync.seeked(episode, positionMs = 31_000L, durationMs = 3_600_000L, isPlaying = true)
             runCurrent()
-            coVerify(exactly = 1) { api.syncPlaybackPosition(episode.mediaUrl, 31.0, 3600.0, 1.0, true) }
+            coVerify(exactly = 1) { api.savePlaybackState(episode, 31.0, 3600.0, null, true) }
             // The seek counts as the latest position, so the next tick waits a full interval.
             now += 5_000L
             sync.playing(episode, positionMs = 36_000L, durationMs = 3_600_000L)
             runCurrent()
+            coVerify(exactly = 0) { api.syncPlaybackPosition(any(), any(), any(), any(), any()) }
+        }
+
+    @Test
+    fun test_positions_stop_once_another_device_takes_over() =
+        runTest {
+            val sync = sync()
+            coEvery { api.syncPlaybackPosition(any(), any(), any(), any(), any()) } returns ListenPositionSync.NOT_CURRENT
+            sync.started(episode, positionMs = 0L, durationMs = 0L)
+            now += 10_000L
+            sync.playing(episode, positionMs = 10_000L, durationMs = 3_600_000L)
+            runCurrent()
             coVerify(exactly = 1) { api.syncPlaybackPosition(any(), any(), any(), any(), any()) }
+            // Code -1 is never retried, however long it keeps playing.
+            repeat(5) {
+                now += 10_000L
+                sync.playing(episode, positionMs = 20_000L + it * 10_000L, durationMs = 3_600_000L)
+            }
+            runCurrent()
+            coVerify(exactly = 1) { api.syncPlaybackPosition(any(), any(), any(), any(), any()) }
+            // Pausing here saves it as the current item again, so positions count once more.
+            coEvery { api.syncPlaybackPosition(any(), any(), any(), any(), any()) } returns ListenPositionSync.SYNCED
+            sync.paused(episode, positionMs = 70_000L, durationMs = 3_600_000L)
+            runCurrent()
+            now += 10_000L
+            sync.playing(episode, positionMs = 80_000L, durationMs = 3_600_000L)
+            runCurrent()
+            coVerify(exactly = 2) { api.syncPlaybackPosition(any(), any(), any(), any(), any()) }
+        }
+
+    @Test
+    fun test_a_failed_position_update_tries_again_next_interval() =
+        runTest {
+            val sync = sync()
+            coEvery { api.syncPlaybackPosition(any(), any(), any(), any(), any()) } returns ListenPositionSync.FAILED
+            sync.started(episode, positionMs = 0L, durationMs = 0L)
+            repeat(3) {
+                now += 10_000L
+                sync.playing(episode, positionMs = (it + 1) * 10_000L, durationMs = 3_600_000L)
+                runCurrent()
+            }
+            coVerify(exactly = 3) { api.syncPlaybackPosition(any(), any(), any(), any(), any()) }
         }
 
     @Test

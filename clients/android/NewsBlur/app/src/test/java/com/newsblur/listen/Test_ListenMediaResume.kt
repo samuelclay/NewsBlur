@@ -71,6 +71,9 @@ class Test_ListenMediaResume {
         assertEquals(0L, ListenMediaResume.startPositionMs(state(listening), storyHash, url))
         assertFalse(ListenMediaResume.isSameMedia(storyHash, ListenUpNextQueue.mediaUrl(storyHash), "listen", storyHash, url))
         assertTrue(ListenMediaResume.isSameMedia(storyHash, url, "audio", "9:other", url))
+        // The story's video is other media too: the story_hash fallback needs the same media type.
+        val video = current(mediaUrl = "https://cdn.example.com/show/ep1.mp4", mediaType = "video")
+        assertEquals(0L, ListenMediaResume.startPositionMs(state(video), storyHash, url))
     }
 
     @Test

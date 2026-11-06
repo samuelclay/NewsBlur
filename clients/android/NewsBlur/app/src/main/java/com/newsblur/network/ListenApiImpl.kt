@@ -9,6 +9,7 @@ import com.newsblur.listen.ListenError
 import com.newsblur.listen.ListenLibraryResponse
 import com.newsblur.listen.ListenManifest
 import com.newsblur.listen.ListenPlaybackState
+import com.newsblur.listen.ListenPositionSync
 import com.newsblur.listen.ListenPlayedTime
 import com.newsblur.listen.ListenProgressResponse
 import com.newsblur.listen.ListenQueueItem
@@ -217,7 +218,7 @@ class ListenApiImpl(
         durationSeconds: Double,
         playbackRate: Double,
         isPlaying: Boolean,
-    ): Boolean {
+    ): ListenPositionSync {
         val form =
             mapOf(
                 "media_url" to mediaUrl,
@@ -232,9 +233,13 @@ class ListenApiImpl(
                 .apply { form.forEach { (key, value) -> add(key, value) } }
                 .build()
         val url = APIConstants.buildUrl(APIConstants.PATH_MEDIA_SYNC_PLAYBACK_POSITION)
-        val json = mediaPlayerJson(Request.Builder().url(url).post(body)) ?: return false
+        val json = mediaPlayerJson(Request.Builder().url(url).post(body)) ?: return ListenPositionSync.FAILED
         // The endpoint answers {"code": 1}, or code -1 when another item has become current since.
-        return json.get("code")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asInt == 1
+        return when (json.get("code")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asInt) {
+            1 -> ListenPositionSync.SYNCED
+            -1 -> ListenPositionSync.NOT_CURRENT
+            else -> ListenPositionSync.FAILED
+        }
     }
 
     private fun mediaItemForm(item: ListenQueueItem): Map<String, String> =

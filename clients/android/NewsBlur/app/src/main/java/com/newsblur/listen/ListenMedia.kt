@@ -38,6 +38,18 @@ data class ListenMediaSettings(
     }
 }
 
+/** What sync_playback_position said about a position update. */
+enum class ListenPositionSync {
+    /** {"code": 1}: the position is in Redis for the web and iOS to resume from. */
+    SYNCED,
+
+    /** Code -1: another device made something else the current item, so this one stops sending positions. */
+    NOT_CURRENT,
+
+    /** Nothing usable came back (offline, or a server without the endpoint); the next update tries again. */
+    FAILED,
+}
+
 /** What playback_state says the web, iOS or this app last played, and where it was. */
 data class ListenCurrentMedia(
     val storyHash: String,
@@ -66,19 +78,20 @@ object ListenMediaResume {
         state: ListenPlaybackState?,
         storyHash: String,
         mediaUrl: String,
+        mediaType: String = ListenUpNextQueue.MEDIA_TYPE_AUDIO,
     ): Long {
         if (state == null || !state.settings.rememberPosition) return 0L
         val current = state.current
         val (positionSeconds, durationSeconds) =
             when {
-                current != null && isSameMedia(current.storyHash, current.mediaUrl, current.mediaType, storyHash, mediaUrl) ->
+                current != null && isSameMedia(current.storyHash, current.mediaUrl, current.mediaType, storyHash, mediaUrl, mediaType) ->
                     current.positionSeconds to current.durationSeconds
                 else ->
                     // The exact file first: a story's other enclosure only counts when this one was never played.
                     (
                         state.history.firstOrNull { it.item.mediaUrl == mediaUrl }
                             ?: state.history.firstOrNull {
-                                isSameMedia(it.item.storyHash, it.item.mediaUrl, it.item.mediaType, storyHash, mediaUrl)
+                                isSameMedia(it.item.storyHash, it.item.mediaUrl, it.item.mediaType, storyHash, mediaUrl, mediaType)
                             }
                     )?.let { it.positionSeconds to it.durationSeconds } ?: return 0L
             }
@@ -90,8 +103,9 @@ object ListenMediaResume {
     }
 
     /**
-     * The same media: the same file, or failing that the same story, so a file URL that changed between visits
-     * still resumes. A story read aloud never counts, since its position is in Listen's audio, not the file's.
+     * The same media: the same file, or failing that the same story with the same media type, so a file URL that
+     * changed between visits still resumes. The story read aloud, or its video, never counts, since its position is
+     * in other audio.
      */
     fun isSameMedia(
         savedStoryHash: String,
@@ -99,9 +113,10 @@ object ListenMediaResume {
         savedMediaType: String,
         storyHash: String,
         mediaUrl: String,
+        mediaType: String = ListenUpNextQueue.MEDIA_TYPE_AUDIO,
     ): Boolean {
         if (savedMediaUrl == mediaUrl) return true
-        return savedMediaType != ListenUpNextQueue.MEDIA_TYPE_LISTEN &&
+        return savedMediaType == mediaType &&
             savedStoryHash.isNotEmpty() &&
             savedStoryHash == storyHash
     }
