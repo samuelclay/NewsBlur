@@ -350,11 +350,14 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
 
     /// The mini player's close button. The place is saved as paused rather than cleared: the web's close wipes the
     /// whole state (apps/media_player clear_playback_state), queue and History included, which would lose the
-    /// place this player exists to keep.
+    /// place this player exists to keep. The episode also goes to History, as Android does when it stops one: once
+    /// the next episode replaces it as the current item, History is the only place left that remembers where it
+    /// stopped (ListenPlaybackState.replacedItem skips an item this app saved, expecting it there).
     func stop(saving: Bool = true) {
-        guard isActive else { return }
-        if saving {
+        guard let media = item else { return }
+        if saving, !isWaitingForState, status != .finished {
             savePosition(isPlaying: false)
+            queue.addToHistory(media: media, position: elapsed, duration: duration)
         }
         clearSession()
         environment.hideMiniPlayer()

@@ -103,6 +103,12 @@ private final class FakeMediaPlayerServer: ListenQueueTransport {
             }
         case "/media_player/remove_from_media_queue":
             queue.removeAll(where: sameItem)
+        case "/media_player/add_to_media_history":
+            // apps/media_player/models.py add_to_history: most recent first, one entry per item.
+            var history = state["history"] as? [[String: Any]] ?? []
+            history.removeAll(where: sameItem)
+            history.insert(parameters, at: 0)
+            state["history"] = history
         default:
             break
         }
@@ -460,6 +466,24 @@ final class Test_ListenMediaPlayer: XCTestCase {
         XCTAssertEqual(server.saves.last?["is_playing"], "true")
         player.applicationWillTerminate()
         XCTAssertEqual(server.saves.last?["is_playing"], "false")
+    }
+
+    func test_closedEpisodeResumesAfterAnotherEpisodeTakesItsPlace() {
+        start()
+        engine.send(.ready(duration: 3600))
+        engine.send(.playing)
+        engine.send(.time(300))
+        player.stop()
+        XCTAssertEqual(server.historyAdds.last?["media_url"], episodeURL)
+        XCTAssertEqual(server.historyAdds.last?["position"], "300.0")
+
+        let other = ListenMediaItem(storyHash: "8:gggggg", mediaURL: "https://cdn.example.com/episodes/43.mp3",
+                                    title: "Episode 43", feedId: "1")
+        start(other)
+        XCTAssertEqual(server.state["current_media_url"] as? String, other.mediaURL, "Episode 43 replaced 42 as current")
+        start()
+        XCTAssertEqual(engine.loads.last?.url.absoluteString, episodeURL)
+        XCTAssertEqual(engine.loads.last?.startAt, 300, "History still has where episode 42 was closed")
     }
 
     func test_closingSavesThePlaceInsteadOfClearingTheSharedState() {
