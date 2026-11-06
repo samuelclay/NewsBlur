@@ -412,6 +412,15 @@ final class NewsBlurUITestHarness {
         if appDelegate.activeStory?["story_hash"] as? String == "ui-story-swift-1",
            page?.readyForPresentation == true, let webView = page?.webView, webView.window != nil {
             webView.evaluateJavaScript("document.querySelector('.NB-media-card-play').click()")
+            let arguments = ProcessInfo.processInfo.arguments
+            if let index = arguments.firstIndex(of: "-newsblur-ui-test-podcast-show"), index + 1 < arguments.count {
+                // NewsBlurUITestHarness.swift pages to another episode's story while the first one plays, to show
+                // its card's Up Next pills.
+                let location = appDelegate.storiesCollection.location(ofStoryId: arguments[index + 1])
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    appDelegate.storyPagesViewController?.changePage(location, animated: false)
+                }
+            }
             if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-now-playing") {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     ListenPresenter.presentNowPlaying()
@@ -1120,13 +1129,20 @@ private enum ReaderUITestFixtures {
         }
     }
 
+    /// Swift Weekly's first three stories become episodes 42 (playing), 41 (in Up Next) and 40 (neither).
     private static func addingPodcastEpisode(_ story: [String: Any]) -> [String: Any] {
-        guard story["story_hash"] as? String == "ui-story-swift-1" else { return story }
+        let episodes: [String: (title: String, url: URL)] = [
+            "ui-story-swift-1": ("Episode 42: Shipping a podcast player in a news reader", podcastEpisodeURL),
+            "ui-story-swift-2": ("Episode 41: The year in Swift concurrency", podcastNextEpisodeURL),
+            "ui-story-swift-3": ("Episode 40: Listening on the go",
+                                 FileManager.default.temporaryDirectory.appendingPathComponent("ui-test-episode-40.wav")),
+        ]
+        guard let hash = story["story_hash"] as? String, let details = episodes[hash] else { return story }
         var episode = story
-        episode["story_title"] = "Episode 42: Shipping a podcast player in a news reader"
+        episode["story_title"] = details.title
         episode["story_content"] = "<p>This week we talk about resuming episodes across devices, lock screen controls "
             + "and why skip intervals matter more than you think.</p>"
-            + "<br><br><audio controls=\"controls\" preload=\"none\"><source src=\"\(podcastEpisodeURL.absoluteString)\" "
+            + "<br><br><audio controls=\"controls\" preload=\"none\"><source src=\"\(details.url.absoluteString)\" "
             + "type=\"audio/wav\" /></audio>"
             + "<p>Show notes: chapters, links and a transcript are on the episode page.</p>"
         return episode
