@@ -1378,9 +1378,10 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         app.heldSaves[0].succeed()
         app.endDebounces()
         XCTAssertEqual(app.storyRequests.count, 2, "The prompt removal's scores never landed, so they're asked for again")
-        app.storyRequests[1].succeed(scores(["author": -1, "url_regex": 1, "prompt": 0], for: "42:sponsor"))
-        XCTAssertEqual(intelligence(of: "42:sponsor", in: app) as NSDictionary?,
-                       ["author": -1, "url_regex": 1, "prompt": 0] as NSDictionary)
+        let serverScores = ["author": -1, "url_regex": 1, "prompt": 0]
+        app.storyRequests[1].succeed(scores(serverScores, for: "42:sponsor"))
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?.filter { serverScores.keys.contains($0.key) } as NSDictionary?,
+                       serverScores as NSDictionary)
     }
 
     func test_aSaveThatFailsDropsOlderScoresAndAsksForTheServersOwn() {
@@ -1403,8 +1404,29 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         app.endDebounces()
         XCTAssertEqual(app.storyRequests.count, 2)
         app.storyRequests[1].succeed(scores(serverScores, for: "42:sponsor"))
-        XCTAssertEqual(intelligence(of: "42:sponsor", in: app) as NSDictionary?, serverScores as NSDictionary,
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?.filter { serverScores.keys.contains($0.key) } as NSDictionary?,
+                       serverScores as NSDictionary,
                        "The server never saved the URL regex, so its scores replace the local guess")
+    }
+
+    func test_aScoreTheServerLeavesOutKeepsTheAppsOwn() {
+        // A server from before /reader/river_stories scored author regexes sends no author_regex at all. The reader
+        // hides the Department of Commerce with an author regex, then removes the AI focus prompt.
+        let app = makeApp()
+        app.toggleAuthorRegexClassifier("department of \\w+", feedId: "42", score: -2, scope: "feed", folderName: "")
+        XCTAssertEqual(intelligence(of: "42:sponsor", in: app)?["author_regex"] as? Int, -2)
+        app.savePromptClassifier("Non-apple related news", feedId: "42", score: 0, includeImages: false,
+                                 scope: "feed", folderName: "")
+        app.endDebounces()
+        XCTAssertEqual(app.storyRequests.count, 1)
+
+        app.storyRequests[0].succeed(scores(["feed": 0, "author": -1, "tags": 0, "title": 0, "title_regex": 0, "text": 0,
+                                             "text_regex": 0, "url": 0, "url_regex": 0, "prompt": 0], for: "42:sponsor"))
+
+        let refreshed = intelligence(of: "42:sponsor", in: app)
+        XCTAssertEqual(refreshed?["author_regex"] as? Int, -2, "The app's own author regex score stays")
+        XCTAssertEqual(refreshed?["prompt"] as? Int, 0, "Every score the server sends wins, 0s included")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(refreshed), -2, "The story stays hidden")
     }
 
     func test_noRefreshIsSentWhileAnotherSaveForTheSiteIsOut() {

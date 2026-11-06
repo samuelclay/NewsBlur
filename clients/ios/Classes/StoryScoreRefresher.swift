@@ -163,6 +163,12 @@ import Foundation
                   let hash = story["story_hash"] as? String, let fields = scoring[hash],
                   let updatedStory = story.mutableCopy() as? NSMutableDictionary else { return item }
             updatedStory.addEntries(from: fields)
+            // Every key the server sends wins, 0s included, and a key it leaves out keeps the score the app worked
+            // out, like an author regex from a server that didn't score one yet.
+            if let refreshed = fields["intelligence"] as? [String: Any] {
+                let local = story["intelligence"] as? [String: Any] ?? [:]
+                updatedStory["intelligence"] = local.merging(refreshed) { $1 }
+            }
             guard !updatedStory.isEqual(story) else { return item }
             // Like recalculateIntelligenceScores:, a story the reader can see stays in the list if its score drops.
             let score = NewsBlurAppDelegate.computeStoryScore(story["intelligence"] as? [AnyHashable: Any])
