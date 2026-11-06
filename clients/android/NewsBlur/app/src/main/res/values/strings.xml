@@ -1601,6 +1601,21 @@ people together to talk about the world.</string>
     <string name="listen_voice_settings">Voice settings</string>
     <string name="listen_skip_back">Back 15 seconds</string>
     <string name="listen_skip_forward">Forward 30 seconds</string>
+    <!-- The skip intervals chosen in the web media player's settings: 5, 10, 15, 30 or 60 seconds. -->
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="one">Back %1$d second</item>
+        <item quantity="other">Back %1$d seconds</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="one">Forward %1$d second</item>
+        <item quantity="other">Forward %1$d seconds</item>
+    </plurals>
+    <!-- strings.xml: a story's audio file, like a podcast episode, playing in Listen's player (storyMedia.js, ListenMedia.kt). -->
+    <string name="listen_media_play">Play audio</string>
+    <string name="listen_media_play_next">Play Next</string>
+    <string name="listen_media_play_last">Play Last</string>
+    <string name="listen_media_loading">Loading audio…</string>
+    <string name="listen_media_error">This audio couldn\'t play. Check your connection and try again.</string>
     <string name="listen_next_story">Next story</string>
     <string name="listen_up_next">Up next</string>
     <string name="listen_up_next_empty">No more unread stories in this list.</string>

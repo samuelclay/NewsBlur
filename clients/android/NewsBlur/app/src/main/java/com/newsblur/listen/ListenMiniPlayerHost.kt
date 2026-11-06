@@ -87,6 +87,8 @@ class ListenMiniPlayerHost(
                                     ListenNowPlayingFragment.show(activity.supportFragmentManager)
                                 },
                                 onPlayPause = listenManager::togglePlayPause,
+                                onSkipBack = listenManager::skipBack,
+                                onSkipForward = listenManager::skipForward,
                                 onNext = listenManager::playNext,
                                 onClose = listenManager::close,
                                 modifier =

@@ -114,6 +114,8 @@ public class APIConstants {
     public static final String PATH_MEDIA_REMOVE_FROM_QUEUE = "/media_player/remove_from_media_queue";
     public static final String PATH_MEDIA_REORDER_QUEUE = "/media_player/reorder_media_queue";
     public static final String PATH_MEDIA_ADD_TO_HISTORY = "/media_player/add_to_media_history";
+    public static final String PATH_MEDIA_SAVE_PLAYBACK_STATE = "/media_player/save_playback_state";
+    public static final String PATH_MEDIA_SYNC_PLAYBACK_POSITION = "/media_player/sync_playback_position";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;

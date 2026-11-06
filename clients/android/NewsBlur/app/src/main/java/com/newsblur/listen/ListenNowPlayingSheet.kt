@@ -22,9 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Forward30
 import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material3.Icon
@@ -58,6 +56,7 @@ import kotlin.math.ceil
 /**
  * ListenNowPlayingSheet.kt is the expanded player: scrubber, skips, speed, voice settings, the preview
  * banner and upgrade button for people without Premium Archive, inline errors with Retry, Up Next and usage.
+ * A podcast episode (ListenMedia.kt) has no voice, preview or usage, so those stay hidden for it.
  */
 @Composable
 fun ListenNowPlayingSheet(
@@ -131,22 +130,24 @@ fun ListenNowPlayingSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                ListenChip(
-                    text =
-                        state.voice?.name?.let { stringResource(R.string.listen_voice_label, it) }
-                            ?: stringResource(R.string.listen_voice_settings),
-                    icon = {
-                        Icon(
-                            Icons.Rounded.GraphicEq,
-                            null,
-                            tint = colors.textPrimary,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    },
-                    colors = colors,
-                    onClick = onVoiceSettings,
-                    modifier = Modifier.weight(1f, fill = false),
-                )
+                if (!state.isMedia) {
+                    ListenChip(
+                        text =
+                            state.voice?.name?.let { stringResource(R.string.listen_voice_label, it) }
+                                ?: stringResource(R.string.listen_voice_settings),
+                        icon = {
+                            Icon(
+                                Icons.Rounded.GraphicEq,
+                                null,
+                                tint = colors.textPrimary,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        },
+                        colors = colors,
+                        onClick = onVoiceSettings,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                }
                 ListenSpeedChip(
                     speed = state.speed,
                     open = speedOpen,
@@ -194,32 +195,23 @@ fun ListenNowPlayingSheet(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    ListenIconButton(
-                        icon = Icons.Rounded.Replay,
-                        description = stringResource(R.string.listen_skip_back),
-                        tint = colors.textPrimary,
-                        onClick = onSkipBack,
-                        size = 52,
-                        iconSize = 34,
-                    )
-                    Text(
-                        text = "15",
-                        color = colors.textPrimary,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 3.dp),
-                    )
-                }
+                ListenSkipButton(
+                    seconds = state.skipBackSeconds,
+                    forward = false,
+                    tint = colors.textPrimary,
+                    onClick = onSkipBack,
+                    size = 52,
+                    iconSize = 34,
+                )
                 ListenPlayPauseButton(
                     state = state,
                     colors = colors,
                     size = 68,
                     onClick = onPlayPause,
                 )
-                ListenIconButton(
-                    icon = Icons.Rounded.Forward30,
-                    description = stringResource(R.string.listen_skip_forward),
+                ListenSkipButton(
+                    seconds = state.skipForwardSeconds,
+                    forward = true,
                     tint = colors.textPrimary,
                     onClick = onSkipForward,
                     size = 52,
@@ -236,7 +228,7 @@ fun ListenNowPlayingSheet(
                 )
             }
 
-            ListenUsageFooter(usage = state.usage, colors = colors, onUpgrade = onUpgrade)
+            if (!state.isMedia) ListenUsageFooter(usage = state.usage, colors = colors, onUpgrade = onUpgrade)
 
             Spacer(Modifier.height(12.dp))
             ListenUpNextSection(
@@ -443,7 +435,7 @@ private fun ListenErrorCard(
                 .background(colors.cardBackground)
                 .padding(14.dp),
     ) {
-        Text(text = listenErrorMessage(error), color = colors.error, fontSize = 14.sp)
+        Text(text = listenErrorMessage(error, isMedia = state.isMedia), color = colors.error, fontSize = 14.sp)
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             if (error?.isUpgradeReason != true) {
