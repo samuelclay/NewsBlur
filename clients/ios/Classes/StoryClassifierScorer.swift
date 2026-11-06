@@ -7,9 +7,10 @@
 
 import Foundation
 
-/// StoryClassifierScorer.swift recomputes a loaded story's text, URL and regex classifier scores with the rules in
-/// apps/analyzer/models.py, so NewsBlurAppDelegate.m's recalculateIntelligenceScores: shows a classifier change on
-/// stories that are already loaded, and a removed classifier stops counting there without waiting for a reload.
+/// StoryClassifierScorer.swift recomputes a loaded story's title, author, tag, text, URL and regex classifier scores
+/// with the rules in apps/analyzer/models.py, so NewsBlurAppDelegate.m's recalculateIntelligenceScores: shows a
+/// classifier change on stories that are already loaded, and a removed classifier stops counting there without
+/// waiting for a reload.
 @objcMembers final class StoryClassifierScorer: NSObject {
     private struct Classifier {
         let pattern: String
@@ -38,6 +39,8 @@ import Foundation
     private let canUseTextClassifiers: Bool
     private let isPremiumPro: Bool
     private let classifiersByKey: [String: [Classifier]]
+    /// Each title classifier lowercased once for the whole pass, the way classifier_title_matches compares it.
+    private let lowercasedTitlePatterns: [String: [Unicode.Scalar]]
     private var compiledRegexes: [String: NSRegularExpression] = [:]
     private var invalidPatterns: Set<String> = []
     /// A pattern that runs out of time on one story isn't searched again this pass, so a pattern that backtracks
@@ -72,7 +75,7 @@ import Foundation
 
         let feedClassifiers = classifiers as? [String: Any] ?? [:]
         var classifiersByKey: [String: [Classifier]] = [:]
-        for key in ["texts", "text_regex", "urls", "url_regex", "title_regex", "author_regex"] {
+        for key in ["titles", "authors", "tags", "texts", "text_regex", "urls", "url_regex", "title_regex", "author_regex"] {
             let entries = feedClassifiers[key] as? [String: Any] ?? [:]
             let scopes = feedClassifiers[ClassifierScopeResolver.metadataKey(for: key)] as? [String: Any] ?? [:]
             // A removed classifier stays in the dictionary at 0 until the next reload. A 0 never changes a score,
@@ -85,19 +88,35 @@ import Foundation
             }
         }
         self.classifiersByKey = classifiersByKey
+        lowercasedTitlePatterns = Dictionary(uniqueKeysWithValues: (classifiersByKey["titles"] ?? []).map { classifier in
+            (classifier.pattern, ClassifierTextMatching.pythonLowercased(classifier.pattern))
+        })
     }
 
-    /// The story's text, URL and regex scores, keyed like the server's intelligence dictionary. A score the app
-    /// can't work out is left out so the server's stays: text and text_regex on a story loaded without its content,
-    /// any score that rests on a pattern the app couldn't search, and text and regex scores once the pass's budget
-    /// is spent. Leaving out a score that may have changed adds the story to uncertainStoryHashes.
+    /// The story's title, author, tag, text, URL and regex scores, keyed like the server's intelligence dictionary.
+    /// A score the app can't work out is left out so the server's stays: text and text_regex on a story loaded
+    /// without its content, any score that rests on a pattern the app couldn't search or that may hide another
+    /// score, and text and regex scores once the pass's budget is spent. Leaving out a score that may have changed
+    /// adds the story to uncertainStoryHashes.
     func scores(forStory story: NSDictionary) -> [String: Int] {
         let title = Self.string(story["story_title"])
         let authors = Self.string(story["story_authors"])
+        let tags = (story["story_tags"] as? [Any] ?? []).compactMap { $0 as? String }
         let permalink = Self.string(story["story_permalink"])
         let permalinkLowercased = permalink.lowercased()
 
         var scores: [String: Int?] = [:]
+        // Titles, authors and tags score for every account. ClassifierTextMatching compares them the way
+        // apps/analyzer/models.py does, so a match the server wouldn't make never shows.
+        let lowercasedTitle = (classifiersByKey["titles"] ?? []).isEmpty ? [] : ClassifierTextMatching.pythonLowercased(title)
+        scores["title"] = score(for: "titles", in: title) { pattern in
+            ClassifierTextMatching.titleMatches(lowercasedTitle: lowercasedTitle,
+                                                lowercasedClassifier: self.lowercasedTitlePatterns[pattern] ?? [])
+        }
+        scores["author"] = score(for: "authors", in: authors) { ClassifierTextMatching.isSameText($0, authors) }
+        scores["tags"] = tags.isEmpty ? 0 : score(for: "tags") { pattern in
+            tags.contains { ClassifierTextMatching.isSameText($0, pattern) }
+        }
         scores["url"] = isPremium ? score(for: "urls", in: permalink) { permalinkLowercased.contains($0.lowercased()) } : 0
         scores["url_regex"] = isPremiumPro ? regexScore(for: "url_regex", in: permalink) : 0
         scores["title_regex"] = isPremiumPro ? regexScore(for: "title_regex", in: title) : 0
@@ -137,6 +156,10 @@ import Foundation
     /// that certainly matches settles it; otherwise this returns nil so the server's score stays.
     private func score(for key: String, in text: String, matches: (String) -> Bool?) -> Int? {
         guard !text.isEmpty else { return 0 }
+        return score(for: key, matches: matches)
+    }
+
+    private func score(for key: String, matches: (String) -> Bool?) -> Int? {
         var score = 0
         var isCertain = true
         for classifier in classifiersByKey[key] ?? [] {
@@ -245,6 +268,88 @@ import Foundation
 
     private static func int(_ value: Any?) -> Int {
         (value as? NSNumber)?.intValue ?? 0
+    }
+}
+
+/// StoryClassifierScorer.swift matches title, author and tag classifiers the way apps/analyzer/models.py does. Python
+/// compares code points, so these compare Unicode scalars, never Swift's characters or canonically equivalent text.
+enum ClassifierTextMatching {
+    /// classifier_title_matches: case insensitive, and a classifier that starts with a word character must match at
+    /// the start of a word, so "apple" matches "Apple launch" but not "Pineapple prices".
+    static func titleMatches(_ storyTitle: String, classifier: String) -> Bool {
+        titleMatches(lowercasedTitle: pythonLowercased(storyTitle), lowercasedClassifier: pythonLowercased(classifier))
+    }
+
+    static func titleMatches(lowercasedTitle title: [Unicode.Scalar], lowercasedClassifier classifier: [Unicode.Scalar]) -> Bool {
+        guard let first = classifier.first, !title.isEmpty else { return false }
+        let mustStartAWord = isWordCharacter(first)
+        var start = 0
+        while let index = firstIndex(of: classifier, in: title, from: start) {
+            if !mustStartAWord || index == 0 || !isWordCharacter(title[index - 1]) {
+                return true
+            }
+            start = index + 1
+        }
+        return false
+    }
+
+    /// apply_classifier_authors and apply_classifier_tags need the exact text, the way Python's == and `in` compare
+    /// strings: no other case, no part of a longer name, and no accent written another way.
+    static func isSameText(_ text: String, _ other: String) -> Bool {
+        text.unicodeScalars.elementsEqual(other.unicodeScalars)
+    }
+
+    /// _is_unicode_word_character: an underscore, a letter or number the way Python's isalnum counts them, or a
+    /// combining mark.
+    static func isWordCharacter(_ scalar: Unicode.Scalar) -> Bool {
+        if scalar == "_" {
+            return true
+        }
+        switch scalar.properties.generalCategory {
+        case .uppercaseLetter, .lowercaseLetter, .titlecaseLetter, .modifierLetter, .otherLetter,
+             .nonspacingMark, .spacingMark, .enclosingMark:
+            return true
+        default:
+            return scalar.properties.numericType != nil
+        }
+    }
+
+    /// Python's str.lower(): each code point's full lowercase mapping, so İ becomes i and a combining dot, and a
+    /// capital sigma that ends a word becomes ς.
+    static func pythonLowercased(_ text: String) -> [Unicode.Scalar] {
+        let scalars = Array(text.unicodeScalars)
+        var lowercased: [Unicode.Scalar] = []
+        lowercased.reserveCapacity(scalars.count)
+        for (index, scalar) in scalars.enumerated() {
+            if scalar.isASCII {
+                lowercased.append(("A"..."Z").contains(scalar) ? Unicode.Scalar(UInt8(scalar.value + 32)) : scalar)
+            } else if scalar == "\u{03A3}" {
+                lowercased.append(isFinalSigma(at: index, in: scalars) ? "\u{03C2}" : "\u{03C3}")
+            } else {
+                lowercased.append(contentsOf: scalar.properties.lowercaseMapping.unicodeScalars)
+            }
+        }
+        return lowercased
+    }
+
+    /// Python's handle_capital_sigma: a cased letter comes before the sigma and none after it, skipping case
+    /// ignorable ones like apostrophes and accents.
+    private static func isFinalSigma(at index: Int, in scalars: [Unicode.Scalar]) -> Bool {
+        guard let before = scalars[..<index].last(where: { !$0.properties.isCaseIgnorable }),
+              before.properties.isCased else { return false }
+        let after = scalars[(index + 1)...].first { !$0.properties.isCaseIgnorable }
+        return !(after?.properties.isCased ?? false)
+    }
+
+    /// Python's str.find on code points.
+    private static func firstIndex(of needle: [Unicode.Scalar], in haystack: [Unicode.Scalar], from start: Int) -> Int? {
+        guard !needle.isEmpty, start <= haystack.count - needle.count else { return nil }
+        for index in start...(haystack.count - needle.count) where haystack[index] == needle[0] {
+            if haystack[index..<(index + needle.count)].elementsEqual(needle) {
+                return index
+            }
+        }
+        return nil
     }
 }
 

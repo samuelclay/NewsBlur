@@ -795,13 +795,15 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             StoryClassifierScorer(classifiers: classifiers, isPremium: premium, isPremiumArchive: archive,
                                   isPremiumPro: pro).scores(forStory: story)
         }
-        let unscored = ["url": 0, "url_regex": 0, "title_regex": 0, "author_regex": 0, "text": 0, "text_regex": 0]
+        let unscored = ["title": 0, "author": 0, "tags": 0, "url": 0, "url_regex": 0, "title_regex": 0, "author_regex": 0,
+                        "text": 0, "text_regex": 0]
 
         XCTAssertEqual(scores(premium: false, archive: false, pro: false), unscored)
         XCTAssertEqual(scores(premium: true, archive: false, pro: false), unscored.merging(["url": 1]) { $1 })
         XCTAssertEqual(scores(premium: true, archive: true, pro: false), unscored.merging(["url": 1, "text": 1]) { $1 })
         XCTAssertEqual(scores(premium: true, archive: false, pro: true),
-                       ["url": 1, "url_regex": 1, "title_regex": -1, "author_regex": -1, "text": 1, "text_regex": 1])
+                       unscored.merging(["url": 1, "url_regex": 1, "title_regex": -1, "author_regex": -1, "text": 1,
+                                         "text_regex": 1]) { $1 })
 
         // NewsBlurAppDelegate.m passes the account's own tiers: Premium without Archive or Pro.
         let app = makeApp(classifiers: classifiers as! [String: Any],
@@ -862,10 +864,13 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
                                         "url_regex": ["sponsor": 0],
                                         "urls_scope": ["daringfireball.net/linked": global, "sponsor": global],
                                         "author_regex": ["department of \\w+": 1],
-                                        "authors_scope": ["department of \\w+": appleFolder]],
-                          intelligence: ["url": -2, "url_regex": -1, "author_regex": -1, "prompt": 0])
+                                        "authors_scope": ["department of \\w+": appleFolder],
+                                        "titles": ["WorkOS": 1],
+                                        "titles_scope": ["WorkOS": global]],
+                          intelligence: ["url": -2, "url_regex": -1, "author_regex": -1, "title": -2, "prompt": 0])
 
         app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["title"] as? Int, -2, "Title classifiers too")
         XCTAssertEqual(intelligence(app)?["url"] as? Int, -2, "The +1 shown may hide this site's -2 for the same URL")
         XCTAssertEqual(intelligence(app)?["url_regex"] as? Int, -1,
                        "Removing the global copy of a pattern can leave this site's copy, which the server still scores")
@@ -909,6 +914,57 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
         app.recalculateIntelligenceScores("42")
         XCTAssertEqual(intelligence(app)?["text_regex"] as? Int, -2)
+    }
+
+    func test_titleClassifiersMatchLikeTheServer() {
+        // apps/analyzer/models.py classifier_title_matches, each checked against Python 3's str.lower and isalnum.
+        let cases: [(title: String, classifier: String, matches: Bool)] = [
+            ("Apple launches a new iPad", "apple", true),
+            ("APPLE LAUNCH", "Apple", true),
+            ("Pineapple prices fall", "apple", false),
+            ("Pineapple and Apple", "apple", true),
+            ("iPhone 17 review", "Phone", false),
+            // A classifier that doesn't start with a word character can match inside one.
+            ("ASP.NET Core", ".net", true),
+            ("my_tag cloud", "tag", false),
+            ("4K TVs", "k tv", false),
+            ("\u{0663}D printing", "d printing", false),
+            ("\u{65B0}iPhone", "iphone", false),
+            // A combining accent is a word character, so "clair" doesn't start a word in éclair written that way.
+            ("e\u{0301}clair recipes", "clair", false),
+            ("Caf\u{00E9} cr\u{00E8}me", "cr\u{00E8}me", true),
+            // Python lowercases İ to i and a combining dot, and a word's last capital sigma to ς.
+            ("\u{0130}stanbul guide", "istanbul", false),
+            ("\u{0130}stanbul guide", "\u{0130}stanbul", true),
+            ("\u{039F}\u{0394}\u{039F}\u{03A3} \u{03A0}\u{0391}\u{039D}", "\u{03BF}\u{03B4}\u{03BF}\u{03C3}", false),
+            ("\u{039F}\u{0394}\u{039F}\u{03A3} \u{03A0}\u{0391}\u{039D}", "\u{039F}\u{0394}\u{039F}\u{03A3}", true),
+            ("", "apple", false),
+            ("Apple", "", false),
+        ]
+        for (title, classifier, matches) in cases {
+            XCTAssertEqual(ClassifierTextMatching.titleMatches(title, classifier: classifier), matches,
+                           "\(classifier) in \(title)")
+        }
+    }
+
+    func test_authorAndTagClassifiersNeedTheExactTextLikeTheServer() {
+        let author = "Daring Fireball Department of Commerce"
+        XCTAssertTrue(ClassifierTextMatching.isSameText(author, "Daring Fireball Department of Commerce"))
+        XCTAssertFalse(ClassifierTextMatching.isSameText(author, "daring fireball department of commerce"))
+        XCTAssertFalse(ClassifierTextMatching.isSameText(author, "Department of Commerce"))
+        XCTAssertFalse(ClassifierTextMatching.isSameText("Jos\u{00E9} Valim", "Jose\u{0301} Valim"),
+                       "Python compares code points, so an accent written another way is another author")
+
+        let app = makeApp(classifiers: ["titles": ["sponsor": 1, "os": -1],
+                                        "authors": ["Department of Commerce": -1],
+                                        "tags": ["sponsored": -1, "Apple": 1]],
+                          intelligence: ["title": 0, "author": -1, "tags": 0, "prompt": 0], tags: ["Sponsored", "Apple"])
+        app.recalculateIntelligenceScores("42")
+        XCTAssertEqual(intelligence(app)?["title"] as? Int, 1,
+                       "\"sponsor\" matches [Sponsor] in any case, and \"os\" inside WorkOS doesn't start a word")
+        XCTAssertEqual(intelligence(app)?["author"] as? Int, 0, "Part of the author's name isn't the author")
+        XCTAssertEqual(intelligence(app)?["tags"] as? Int, 1, "A tag matches only in its own case")
+        XCTAssertEqual(NewsBlurAppDelegate.computeStoryScore(intelligence(app)), 1)
     }
 
     func test_removingADislikedAuthorShowsTheHiddenStoryRightAway() {
@@ -990,7 +1046,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     }
 
     private func makeApp(classifiers: [String: Any], intelligence: [String: Int], content: String? = nil,
-                         isPremium: Bool = true, isPremiumArchive: Bool = true,
+                         tags: [String] = [], isPremium: Bool = true, isPremiumArchive: Bool = true,
                          isPremiumPro: Bool = true) -> NewsBlurAppDelegate {
         let app = RecalculatingPromptSaveAppDelegate()
         app.isPremium = isPremium
@@ -1006,7 +1062,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             "story_title": "[Sponsor] WorkOS",
             "story_authors": "Daring Fireball Department of Commerce",
             "story_permalink": sponsorPermalink,
-            "story_tags": [String](),
+            "story_tags": tags,
             "intelligence": intelligence,
         ]
         if let content {

@@ -3149,47 +3149,18 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [newStory setObject:[NSNumber numberWithBool:YES] forKey:@"sticky"];
         }
         
-        // NewsBlurAppDelegate.m recomputes every score the app has the story's data for, the text, URL and regex
-        // scores in StoryClassifierScorer.swift, so a removed classifier stops counting on loaded stories. Only the
-        // AI prompt score stays as the server sent it: the app can't run the AI, so saving a classifier never drops
-        // an AI match that computeStoryScore ranks above likes and dislikes.
+        // NewsBlurAppDelegate.m recomputes every score the app has the story's data for: the title, author, tag,
+        // text, URL and regex scores in StoryClassifierScorer.swift, which matches them the way apps/analyzer/models.py
+        // does, and the site score below. So a removed classifier stops counting on loaded stories. A score
+        // StoryClassifierScorer.swift can't settle is left as the server sent it, and so is the AI prompt score: the
+        // app can't run the AI, so saving a classifier never drops an AI match that computeStoryScore ranks above
+        // likes and dislikes.
         NSNumber *zero = [NSNumber numberWithInt:0];
         id existingIntelligence = [story objectForKey:@"intelligence"];
         NSMutableDictionary *intelligence = [existingIntelligence isKindOfClass:[NSDictionary class]] ?
                                             [existingIntelligence mutableCopy] : [NSMutableDictionary dictionary];
-        for (NSString *recomputedKey in @[@"author", @"feed", @"tags", @"title"]) {
-            [intelligence setObject:[zero copy] forKey:recomputedKey];
-        }
+        [intelligence setObject:[zero copy] forKey:@"feed"];
         [intelligence addEntriesFromDictionary:[scorer scoresForStory:story]];
-
-        for (NSString *title in [classifiers objectForKey:@"titles"]) {
-            int currentTitle = [[intelligence objectForKey:@"title"] intValue];
-            if (currentTitle > -2 && currentTitle <= 0 &&
-                [[story objectForKey:@"story_title"] containsString:title]) {
-                int score = [[[classifiers objectForKey:@"titles"] objectForKey:title] intValue];
-                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"title"];
-            }
-        }
-
-        for (NSString *author in [classifiers objectForKey:@"authors"]) {
-            int currentAuthor = [[intelligence objectForKey:@"author"] intValue];
-            if (currentAuthor > -2 && currentAuthor <= 0 &&
-                [[story objectForKey:@"story_authors"] class] != [NSNull class] &&
-                [[story objectForKey:@"story_authors"] containsString:author]) {
-                int score = [[[classifiers objectForKey:@"authors"] objectForKey:author] intValue];
-                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"author"];
-            }
-        }
-
-        for (NSString *tag in [classifiers objectForKey:@"tags"]) {
-            int currentTags = [[intelligence objectForKey:@"tags"] intValue];
-            if (currentTags > -2 && currentTags <= 0 &&
-                [[story objectForKey:@"story_tags"] class] != [NSNull class] &&
-                [[story objectForKey:@"story_tags"] containsObject:tag]) {
-                int score = [[[classifiers objectForKey:@"tags"] objectForKey:tag] intValue];
-                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"tags"];
-            }
-        }
 
         for (NSString *feed in [classifiers objectForKey:@"feeds"]) {
             int currentFeed = [[intelligence objectForKey:@"feed"] intValue];
