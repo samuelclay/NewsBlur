@@ -65,6 +65,8 @@ import SwiftUI
     @objc func resetForAccountChange() {
         retainedStoryContext = nil
         retainedStoryCache?.reloadForTraining(story: nil)
+        // TrainerAIPromptSection.swift's drafts, prompt tests and scope choices belong to the account that made them.
+        aiPrompts.resetForAccountChange()
     }
 
     @objc func restoreRetainedStoryClassifiers() {

@@ -25,10 +25,27 @@ import SwiftUI
     @Published private(set) var isLimitReached = false
     @Published var scopeOverrides: [String: ClassifierScope] = [:]
 
-    private(set) var contextKey: String?
+    /// The site or story being trained, and the account and server it's trained on. Drafts, test results and scope
+    /// overrides belong to one context, so another account's trainer for the same site never shows them.
+    struct Context: Equatable {
+        let account: String
+        let host: String
+        let feedId: String
+        let storyHash: String
+    }
+
+    private(set) var context: Context?
+    /// Moves on with every new context and every account change, so a usage fetch or prompt test answered for an
+    /// earlier one is dropped, even once the reader is back on the same site and story.
+    private var contextGeneration = 0
+    /// The context generation a usage fetch is out for. Opening the trainer prepares it more than once, and those
+    /// calls share the fetch already out.
+    private var usageFetchGeneration: Int?
 
     let api: AIClassifierAPI
     var billingStatus: () -> UsageBillingStatus
+    /// The signed in account and the server it's on.
+    var signedInAccount: () -> (username: String, host: String)
     var storyVolumes: () -> AIClassifierStoryVolumes
     /// Saves through NewsBlurAppDelegate.m savePromptClassifier, like every other trainer classifier.
     var savePrompt: (_ prompt: String, _ kind: PromptClassifierKind, _ feedId: String, _ score: Int,
@@ -44,9 +61,13 @@ import SwiftUI
     init(api: AIClassifierAPI? = nil,
          billingStatus: (() -> UsageBillingStatus)? = nil,
          storyVolumes: (() -> AIClassifierStoryVolumes)? = nil,
-         openBilling: (() -> Void)? = nil) {
+         openBilling: (() -> Void)? = nil,
+         signedInAccount: (() -> (username: String, host: String))? = nil) {
         self.api = api ?? AIClassifierAPI()
         self.billingStatus = billingStatus ?? { UsageBillingStatus.current }
+        self.signedInAccount = signedInAccount ?? {
+            (NewsBlurAppDelegate.shared?.activeUsername ?? "", NewsBlurAppDelegate.shared?.url ?? "")
+        }
         self.storyVolumes = storyVolumes ?? { AIClassifierStoryVolumes.live(appDelegate: NewsBlurAppDelegate.shared) }
         self.openBilling = openBilling ?? { NewsBlurAppDelegate.shared?.showUsageBillingDialog() }
         savePrompt = { prompt, kind, feedId, score, scope, folderName in
@@ -63,24 +84,46 @@ import SwiftUI
 
     // MARK: Context
 
-    /// Clears drafts and results when the trainer opens for another site or story, then loads cost estimates.
+    /// Clears drafts and results when the trainer opens for another site or story, or for another account, and loads
+    /// cost estimates again every time, so the cost row and limit banner never stay as an earlier visit left them.
     func prepare(feedId: String?, storyHash: String?) {
-        let key = "\(feedId ?? ""):\(storyHash ?? "")"
-        guard key != contextKey else { return }
-        contextKey = key
+        let account = signedInAccount()
+        let context = Context(account: account.username, host: account.host, feedId: feedId ?? "",
+                              storyHash: storyHash ?? "")
+        if context != self.context {
+            start(context)
+        }
+        fetchUsage(feedId: feedId)
+    }
+
+    /// TrainerViewController.swift clears the trainer when the reader signs in to another account.
+    func resetForAccountChange() {
+        start(nil)
+    }
+
+    private func start(_ context: Context?) {
+        self.context = context
+        contextGeneration += 1
+        usageFetchGeneration = nil
         drafts = [:]
         draftScores = [:]
         tests = [:]
         scopeOverrides = [:]
         estimate = nil
         isLimitReached = false
+    }
 
+    private func fetchUsage(feedId: String?) {
         // reader_classifier.js only asks for cost estimates when the reader can run AI classifiers.
-        guard billingStatus().canUseAIClassifiers else { return }
+        guard billingStatus().canUseAIClassifiers, usageFetchGeneration != contextGeneration else { return }
+        let generation = contextGeneration
+        usageFetchGeneration = generation
         api.fetchUsage(feedId: feedId) { [weak self] usage in
-            guard let self, self.contextKey == key, let usage, usage.canUseAI else { return }
+            guard let self, self.contextGeneration == generation else { return }
+            self.usageFetchGeneration = nil
+            guard let usage else { return }
             if let estimate = usage.estimate { self.estimate = estimate }
-            self.isLimitReached = usage.isLimitReached
+            self.isLimitReached = usage.canUseAI && usage.isLimitReached
         }
     }
 
@@ -192,11 +235,11 @@ import SwiftUI
         let prompt = trimmedDraft(kind)
         guard !prompt.isEmpty, let storyHash, !storyHash.isEmpty, test(kind) != .testing else { return }
         tests[kind] = .testing
-        let key = contextKey
+        let generation = contextGeneration
         let classifierType = testClassifierType(kind)
         api.testPrompt(prompt, kind: kind, storyHash: storyHash, feedId: feedId ?? "0",
                        classifierType: classifierType) { [weak self] result in
-            guard let self, self.contextKey == key else { return }
+            guard let self, self.contextGeneration == generation else { return }
             if let estimate = result.costEstimate { self.estimate = estimate }
             // A newer draft or a flipped focus/hide direction replaces the result, matching reader_classifier.js
             // clearing it on input, since the result answered a different filter.

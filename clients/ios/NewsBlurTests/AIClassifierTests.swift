@@ -460,11 +460,91 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
         let billingModel = makeModel(transport: transport, canUseAI: true)
         billingModel.prepare(feedId: "42", storyHash: nil)
-        billingModel.prepare(feedId: "42", storyHash: nil)
-        XCTAssertEqual(transport.requests.map(\.path), ["/classifier/ai_classifier_usage"], "Reloading the same site doesn't refetch")
+        XCTAssertEqual(transport.requests.map(\.path), ["/classifier/ai_classifier_usage"])
         XCTAssertEqual(transport.requests.first?.parameters["feed_id"] as? String, "42")
         XCTAssertEqual(billingModel.estimate?.averageCostPerImage, 0.002)
         XCTAssertTrue(billingModel.isLimitReached)
+    }
+
+    func test_reopeningTheTrainerLoadsCostsAgainAndKeepsTheDraft() {
+        let transport = RecordingAITransport()
+        transport.responses["/classifier/ai_classifier_usage"] = [
+            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0004, "avg_cost_per_image": 0.002, "is_limit_reached": true,
+        ]
+        transport.holdsResponses = true
+        let model = makeModel(transport: transport, canUseAI: true)
+
+        // TrainerViewController.swift and TrainerView.swift both prepare the model as the trainer opens.
+        model.prepare(feedId: "42", storyHash: "42:abc")
+        model.prepare(feedId: "42", storyHash: "42:abc")
+        XCTAssertEqual(transport.requests(to: "/classifier/ai_classifier_usage").count, 1, "One open shares one fetch")
+        transport.releaseHeldResponses()
+        XCTAssertTrue(model.isLimitReached)
+        model.setDraft("Apple earnings coverage", for: .content)
+
+        // The reader raises their limit on the web, then opens the trainer on the same story again.
+        transport.responses["/classifier/ai_classifier_usage"] = [
+            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0005, "avg_cost_per_image": 0.003, "is_limit_reached": false,
+        ]
+        model.prepare(feedId: "42", storyHash: "42:abc")
+        XCTAssertEqual(transport.requests(to: "/classifier/ai_classifier_usage").count, 2, "Reopening asks again")
+        transport.releaseHeldResponses()
+        XCTAssertFalse(model.isLimitReached, "The limit banner doesn't stay as the last visit left it")
+        XCTAssertEqual(model.estimate, AIClassifierCostEstimate(averageCostPerText: 0.0005, averageCostPerImage: 0.003))
+        XCTAssertEqual(model.draft(.content), "Apple earnings coverage", "The same story keeps its draft")
+    }
+
+    func test_anotherAccountsTrainerForTheSameSiteStartsEmpty() {
+        var account = (username: "samuel", host: "https://www.newsblur.com")
+        let transport = RecordingAITransport()
+        transport.responses["/classifier/test_prompt"] = [
+            "code": 0, "classification": 1,
+            "cost_estimate": ["avg_cost_per_text": 0.0004, "avg_cost_per_image": 0.002],
+        ]
+        transport.responses["/classifier/ai_classifier_usage"] = [
+            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0009, "avg_cost_per_image": 0.009, "is_limit_reached": true,
+        ]
+        let model = makeModel(transport: transport, canUseAI: true, signedInAccount: { account })
+        let trainer = TrainerViewController()
+        trainer.aiPrompts = model
+        let saved = PromptClassifier(prompt: "Sponsored posts", kind: .content, score: -1, scope: .feed, folderName: "")
+
+        model.prepare(feedId: "42", storyHash: "42:abc")
+        model.setDraft("Non-apple related news", for: .content)
+        model.runTest(.content, storyHash: "42:abc", feedId: "42")
+        XCTAssertEqual(model.test(.content), .finished(.classified(matches: true, imageMatches: [])))
+        model.scopeBinding(for: saved, currentFolderName: "Apple").wrappedValue = .global
+        // A second test and a usage fetch are still out when the reader signs in to another account.
+        transport.holdsResponses = true
+        model.setDraft("Apple earnings coverage", for: .image)
+        model.runTest(.image, storyHash: "42:abc", feedId: "42")
+        model.prepare(feedId: "42", storyHash: "42:abc")
+
+        account = (username: "family", host: "https://www.newsblur.com")
+        trainer.resetForAccountChange()
+        transport.holdsResponses = false
+        transport.releaseHeldResponses()
+        XCTAssertEqual(model.draft(.content), "", "TrainerViewController.swift clears the last account's drafts")
+        XCTAssertEqual(model.draft(.image), "")
+        XCTAssertEqual(model.test(.content), .idle, "The last account's test result is gone")
+        XCTAssertEqual(model.test(.image), .idle, "Its test answered after the switch never lands")
+        XCTAssertNil(model.estimate, "Nor does its usage")
+        XCTAssertFalse(model.isLimitReached)
+        XCTAssertEqual(model.scope(for: saved), .feed, "Its scope choice is gone")
+
+        transport.responses["/classifier/ai_classifier_usage"] = [
+            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0007, "avg_cost_per_image": 0.007, "is_limit_reached": false,
+        ]
+        model.prepare(feedId: "42", storyHash: "42:abc")
+        XCTAssertEqual(model.estimate, AIClassifierCostEstimate(averageCostPerText: 0.0007, averageCostPerImage: 0.007),
+                       "This account's own usage loads")
+        XCTAssertEqual(model.draft(.content), "")
+
+        // Even without the reset, the same site on another server is another trainer.
+        model.setDraft("Charts", for: .image)
+        account = (username: "family", host: "https://newsblur.example.com")
+        model.prepare(feedId: "42", storyHash: "42:abc")
+        XCTAssertEqual(model.draft(.image), "")
     }
 
     func test_sectionCostFollowsWebFormula() {
@@ -642,13 +722,16 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         return app
     }
 
-    private func makeModel(transport: RecordingAITransport, canUseAI: Bool) -> TrainerAIPromptModel {
+    private func makeModel(transport: RecordingAITransport, canUseAI: Bool,
+                           signedInAccount: @escaping () -> (username: String, host: String) = { ("samuel", "https://www.newsblur.com") })
+        -> TrainerAIPromptModel {
         TrainerAIPromptModel(api: AIClassifierAPI(transport: transport),
                              billingStatus: { UsageBillingStatus(isUsageBilling: canUseAI, isSelfHostedAI: false,
                                                                  canUseAIClassifiers: canUseAI, usageBillingLimit: nil) },
                              storyVolumes: { AIClassifierStoryVolumes(storiesForFeed: { _ in 300 }, storiesForFolder: { _ in 0 },
                                                                       storiesForAllSites: { 0 }) },
-                             openBilling: {})
+                             openBilling: {},
+                             signedInAccount: signedInAccount)
     }
 
     private func promptScore(_ app: NewsBlurAppDelegate, key: String, prompt: String) -> Int? {
