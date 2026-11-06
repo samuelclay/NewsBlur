@@ -1534,6 +1534,8 @@ people together to talk about the world.</string>
     <string name="ai_limit_reached_title">Monthly spending limit reached.</string>
     <string name="ai_limit_reached_body">Natural language classifiers are paused until next billing cycle.</string>
     <string name="ai_limit_reached_link">Increase or remove your limit</string>
+    <!-- AiClassifierSections.kt: shown instead of ai_billing_banner while UsageBillingFeature.kt holds billing, so it names no purchase path. -->
+    <string name="ai_filters_not_active">Natural language filters aren’t active on this account.</string>
     <string name="ai_scope_feed">This site only</string>
     <string name="ai_scope_folder">All sites in folder</string>
     <string name="ai_scope_global">All sites</string>

@@ -30,6 +30,7 @@ import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
 import com.newsblur.util.UsageBillingAction
+import com.newsblur.util.UsageBillingFeature
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.Currency
@@ -260,8 +261,11 @@ class SubscriptionActivity : NbActivity() {
     }
 
     // SubscriptionActivity.kt: natural language classifier billing is usage based through Stripe,
-    // separate from the Play subscriptions above, so it gets its own screen.
+    // separate from the Play subscriptions above, so it gets its own screen. UsageBillingFeature.kt
+    // holds it for this release, and the card stays hidden.
     private fun setupUsageBillingCard() {
+        binding.containerUsageBilling.isVisible = UsageBillingFeature.showsPremiumCard()
+        if (!binding.containerUsageBilling.isVisible) return
         val billing = prefsRepo.getUsageBillingState()
         binding.containerUsageBilling.setCardBackgroundColor(palette.cardBackground)
         binding.containerUsageBilling.strokeColor = palette.border

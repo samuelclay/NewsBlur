@@ -44,6 +44,8 @@ import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UsageBillingAction
+import com.newsblur.util.UsageBillingBanner
+import com.newsblur.util.UsageBillingFeature
 import com.newsblur.view.TrainerCapsuleView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -119,6 +121,8 @@ class AiClassifierSections(
     }
 
     private fun openBilling() {
+        // UsageBillingFeature.kt holds billing for this release, and nothing here links to it then.
+        if (!UsageBillingFeature.opensBillingScreen()) return
         context.startActivity(Intent(context, UsageBillingActivity::class.java))
     }
 
@@ -426,31 +430,41 @@ class AiClassifierSections(
             if (summary == null) return
             binding.aiCostAmounts.text = AiClassifierCost.amounts(context.resources, summary)
             binding.aiCostBreakdown.text = AiClassifierCost.breakdown(context.resources, summary, imagePrompt)
-            when (billing.action) {
+            // UsageBillingFeature.kt: while billing is held the estimate stays, without a button.
+            val action = UsageBillingFeature.costBoxAction(billing)
+            when (action) {
                 UsageBillingAction.MANAGE -> binding.aiCostBillingButton.setText(R.string.ai_billing_manage_limits)
                 UsageBillingAction.SET_UP -> binding.aiCostBillingButton.setText(R.string.ai_billing_set_up)
                 UsageBillingAction.NONE -> Unit
             }
-            binding.aiCostBillingButton.isVisible = billing.action != UsageBillingAction.NONE
+            binding.aiCostBillingButton.isVisible = action != UsageBillingAction.NONE
         }
 
         /** reader_classifier.js show_limit_reached_banner and make_ai_billing_banner. */
         private fun renderBanner() {
             val banner = binding.aiBanner
             val hasPrompts = scores.values.any(::isActive) || typedPrompt.isNotEmpty()
-            when {
-                limitReached -> {
+            when (val kind = UsageBillingFeature.banner(limitReached, hasPrompts, billing.canUseAiClassifiers)) {
+                UsageBillingBanner.LIMIT_REACHED, UsageBillingBanner.LIMIT_REACHED_WITH_LINK -> {
                     banner.background = rounded(colors.limitBannerBackground, colors.limitBannerBorder)
                     banner.setTextColor(colors.limitBannerText)
                     val builder = SpannableStringBuilder()
                     val title = context.getString(R.string.ai_limit_reached_title)
                     builder.append(title)
                     builder.setSpan(StyleSpan(Typeface.BOLD), 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    builder.append(" ").append(context.getString(R.string.ai_limit_reached_body)).append(" ")
-                    appendLink(builder, context.getString(R.string.ai_limit_reached_link), colors.limitBannerText)
-                    showBanner(builder)
+                    builder.append(" ").append(context.getString(R.string.ai_limit_reached_body))
+                    if (kind.linksToBilling) {
+                        builder.append(" ")
+                        appendLink(builder, context.getString(R.string.ai_limit_reached_link), colors.limitBannerText)
+                    }
+                    showBanner(builder, linked = kind.linksToBilling)
                 }
-                hasPrompts && !billing.canUseAiClassifiers -> {
+                UsageBillingBanner.NOT_ACTIVE -> {
+                    banner.background = rounded(colors.billingBannerBackground, colors.billingBannerBorder)
+                    banner.setTextColor(colors.billingBannerText)
+                    showBanner(context.getString(R.string.ai_filters_not_active))
+                }
+                UsageBillingBanner.SET_UP_BILLING -> {
                     banner.background = rounded(colors.billingBannerBackground, colors.billingBannerBorder)
                     banner.setTextColor(colors.billingBannerText)
                     val link = context.getString(R.string.ai_billing_banner_link)
@@ -461,15 +475,18 @@ class AiClassifierSections(
                         builder.setSpan(linkSpan(colors.billingBannerLink), start, start + link.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         builder.setSpan(StyleSpan(Typeface.BOLD), start, start + link.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     }
-                    showBanner(builder)
+                    showBanner(builder, linked = true)
                 }
-                else -> banner.isVisible = false
+                UsageBillingBanner.NONE -> banner.isVisible = false
             }
         }
 
-        private fun showBanner(text: CharSequence) {
+        private fun showBanner(
+            text: CharSequence,
+            linked: Boolean = false,
+        ) {
             binding.aiBanner.text = text
-            binding.aiBanner.movementMethod = LinkMovementMethod.getInstance()
+            binding.aiBanner.movementMethod = if (linked) LinkMovementMethod.getInstance() else null
             binding.aiBanner.isVisible = true
         }
 

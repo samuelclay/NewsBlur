@@ -41,12 +41,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp" />
 
-            <!-- SubscriptionActivity.kt links to activity/UsageBillingActivity.kt from here. -->
+            <!-- SubscriptionActivity.kt links to activity/UsageBillingActivity.kt from here, and shows the card only
+                 while util/UsageBillingFeature.kt allows billing. -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/container_usage_billing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:visibility="gone"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp">

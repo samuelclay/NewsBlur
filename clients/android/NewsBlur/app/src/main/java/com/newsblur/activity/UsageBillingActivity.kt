@@ -30,6 +30,7 @@ import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.UIUtils
 import com.newsblur.util.UsageBilling
 import com.newsblur.util.UsageBillingAction
+import com.newsblur.util.UsageBillingFeature
 import com.newsblur.util.UsageBillingReturn
 import com.newsblur.util.UsageBillingState
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,6 +80,14 @@ class UsageBillingActivity : NbActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // UsageBillingFeature.kt holds billing for this release. The activity and its
+        // <socialCallbackScheme>://usage-billing deep link stay registered so the switch alone turns
+        // billing back on, but while it's off the screen closes before it draws or calls Stripe, so a
+        // link from a browser or another app can't reach it either.
+        if (!UsageBillingFeature.opensBillingScreen()) {
+            finish()
+            return
+        }
         binding = ActivityUsageBillingBinding.inflate(layoutInflater)
         applyView(binding)
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.usage_billing_title), true)
