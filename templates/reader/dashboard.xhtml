@@ -42,6 +42,12 @@
   {% if preferences.theme == "dark" %}NB-dark{% endif %}
 {% endblock %}
 
+{% block header %}
+  {% if user.is_authenticated %}{# dashboard.xhtml: a phone hides the page until media/js/newsblur/views/mobile_layout_view.js lays out its screens, so the desktop layout never flashes. The query matches common/mobile_utils.js MEDIA_QUERY. #}
+  <script>(function(){try{if(window.matchMedia&&window.matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)').matches){document.body.classList.add('NB-mobile-booting');setTimeout(function(){document.body.classList.remove('NB-mobile-booting')},6000)}}catch(e){}})()</script>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
 <h1 class="NB-splash-heading">NewsBlur</h1>

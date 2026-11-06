@@ -116,8 +116,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                                   &middot;\
                                 <% } %>\
                                 <%- setting_label(read_filter) %>\
-                                &middot;\
-                                <%- setting_label(folder_id ? NEWSBLUR.assets.view_setting(folder_id, "order") : "newest") %>\
+                                <span class="NB-feedbar-options-order">&middot;\
+                                <%- setting_label(folder_id ? NEWSBLUR.assets.view_setting(folder_id, "order") : "newest") %></span>\
                                 <% if (infrequent_stories) { %>\
                                     &middot;\
                                     <%- interpolate(ngettext("< %(count)s story/month", "< %(count)s stories/month", infrequent_freq), {count: infrequent_freq}, true) %>\
@@ -223,6 +223,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         if (NEWSBLUR.reader.flags.searching) {
             this.focus_search();
         }
+        // views/mobile_layout_view.js: the phone nav bar's mark read follows this header's controls.
+        if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.update_titles_actions();
 
         return this;
     },
@@ -290,11 +292,13 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         var hidden_stories = unread_hidden_stories || !!NEWSBLUR.assets.stories.hidden().length;
         if (!hidden_stories) {
             $indicator.hide();
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.fit_pills();
             return;
         }
 
         if (is_feed_load) {
             $indicator.css({ 'display': 'block', 'opacity': 0 });
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.fit_pills();
             _.delay(function () {
                 $indicator.animate({ 'opacity': 1 }, { 'duration': 1000, 'easing': 'easeOutCubic' });
             }, 500);

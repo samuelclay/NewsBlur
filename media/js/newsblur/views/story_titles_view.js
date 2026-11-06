@@ -705,6 +705,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // = Bindings =
     // ============
 
+    is_mobile_inline_list: function () {
+        return !this.options.override_layout && !!NEWSBLUR.app.mobile &&
+            NEWSBLUR.app.mobile.layout() === 'list';
+    },
+
     scroll_to_selected_story: function (story, options) {
         options = options || {};
         var story_title_view = (story && story.story_title_view) ||
@@ -730,6 +735,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (!$selected_story.length) return;
 
         var scroll = $selected_story.position().top;
+        // story_titles_view.js: a phone's inline list has little height to spare, so it scrolls
+        // past the title row, which the expanded story repeats, to the story itself.
+        var $story_detail = !options.scroll_to_comments && this.is_mobile_inline_list() &&
+            story_title_view.$el.find('.NB-story-detail').first();
+        if ($story_detail && $story_detail.find('.NB-feed-story').length) {
+            $selected_story = $story_detail;
+            scroll = $story_detail.offset().top - this.$story_titles.offset().top;
+        }
         var position = NEWSBLUR.story_titles_scroll_utils &&
             NEWSBLUR.story_titles_scroll_utils.compute_selected_story_scroll_position({
                 element_top: scroll,

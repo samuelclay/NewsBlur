@@ -49,7 +49,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         NEWSBLUR.assets.starred_feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.searches_feeds.bind('change:selected', this.scroll_to_selected, this);
         if (!NEWSBLUR.assets.folders.size()) {
-            NEWSBLUR.assets.load_feeds(null, _.bind(this.handle_error, this));
+            NEWSBLUR.assets.load_feeds(null, _.bind(this.handle_error, this), { from_cache: true });
         }
         NEWSBLUR.assets.feeds.bind('add', this.update_dashboard_count, this);
         NEWSBLUR.assets.feeds.bind('remove', this.update_dashboard_count, this);
@@ -137,8 +137,11 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
             this.toggle_filter_feeds();
 
+            // feed_list_view.js: a list redrawn after its cached draw (common/assetmodel.js
+            // load_feeds) already had its page load dialog.
+            var refreshed_from_cache = NEWSBLUR.assets.flags['feed_list_refreshed_from_cache'];
             _.defer(_.bind(function () {
-                NEWSBLUR.reader.open_dialog_after_feeds_loaded();
+                if (!refreshed_from_cache) NEWSBLUR.reader.open_dialog_after_feeds_loaded();
                 NEWSBLUR.reader.toggle_focus_in_slider();
                 this.scroll_to_selected();
                 if (NEWSBLUR.reader.socket) {
