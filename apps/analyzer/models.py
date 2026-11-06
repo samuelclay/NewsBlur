@@ -1014,10 +1014,11 @@ class MClassifierPrompt(mongo.Document):
         """Quick check: which of this feed's subscribers have prompt classifiers that could apply?
 
         models.py: A prompt on this feed, or any global or folder prompt (feed_id=0), makes
-        a user a candidate, and only the feed's subscribers count. Every user with a
-        feed_id=0 prompt used to come back for every feed, so each fetch anywhere on
-        NewsBlur ran and billed their prompts against feeds they don't subscribe to.
-        classify_stories still checks each folder prompt against the user's folders.
+        a user a candidate, and only the feed's active subscribers count, the same active
+        filter count_unreads_for_subscribers in utils/feed_fetcher.py scores with, so a
+        muted feed isn't classified either. Every user with a feed_id=0 prompt used to come
+        back for every feed, so each fetch anywhere on NewsBlur ran and billed their prompts
+        against feeds they don't subscribe to.
 
         Returns set of user_ids with applicable prompts, or empty set.
         """
@@ -1029,9 +1030,9 @@ class MClassifierPrompt(mongo.Document):
         if not candidate_user_ids:
             return set()
         return set(
-            UserSubscription.objects.filter(feed_id=feed_id, user_id__in=candidate_user_ids).values_list(
-                "user_id", flat=True
-            )
+            UserSubscription.objects.filter(
+                feed_id=feed_id, active=True, user_id__in=candidate_user_ids
+            ).values_list("user_id", flat=True)
         )
 
     @classmethod

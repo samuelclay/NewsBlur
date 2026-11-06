@@ -2348,7 +2348,7 @@ class Test_AIPromptClassifierCoverage(TransactionTestCase):
             username="coverageuser", password="testpass", email="coverage@test.com"
         )
         self.feed = Feed.objects.get(pk=1)
-        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=True)
+        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=True, active=True)
         self.prompt = MClassifierPrompt.objects.create(
             user_id=self.user.pk,
             feed_id=self.feed.pk,
@@ -2450,6 +2450,79 @@ class Test_AIPromptClassifierCoverage(TransactionTestCase):
         )
 
 
+class Test_AIPromptClassifierSubscribers(TransactionTestCase):
+    """AI prompts only run and bill on feeds the user actively subscribes to.
+
+    apps/analyzer/tests.py: MClassifierPrompt.feed_has_prompt_subscribers returned every
+    user with a feed_id=0 (global or folder) prompt for every feed, so each fetch anywhere
+    on NewsBlur ran and billed their prompts against feeds they don't subscribe to.
+    """
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="promptsubscriber", password="testpass", email="promptsubscriber@test.com"
+        )
+        self.user.profile.is_usage_billing = True
+        self.user.profile.save()
+        self.subscribed_feed = Feed.objects.get(pk=1)
+        self.unsubscribed_feed = Feed.objects.get(pk=4)
+        self.muted_feed = Feed.objects.get(pk=5)
+        UserSubscription.objects.create(user=self.user, feed=self.subscribed_feed, active=True)
+        UserSubscription.objects.create(user=self.user, feed=self.muted_feed, active=False)
+        self.global_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=0, folder_id="", prompt="any new language", classifier_type="focus"
+        )
+
+    def tearDown(self):
+        MClassifierPrompt.invalidate_cache(
+            self.user.pk,
+            str(self.global_prompt.id),
+            feed_ids=[self.subscribed_feed.pk, self.unsubscribed_feed.pk, self.muted_feed.pk],
+        )
+        MClassifierPrompt.objects(user_id=self.user.pk).delete()
+
+    def fetch(self, feed):
+        """Classify one new story through classify_stories_for_subscribers in
+        utils/feed_fetcher.py. Returns (LLM calls, billing records)."""
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        worker = FeedFetcherWorker.__new__(FeedFetcherWorker)
+        worker.options = {"verbose": 0}
+        story = {
+            "story_hash": "%s:promptsubscriber" % feed.pk,
+            "story_feed_id": feed.pk,
+            "story_title": "Rust 2.0 ships a new borrow checker",
+            "story_content": "A story about a programming language.",
+            "image_urls": [],
+        }
+        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
+            "utils.ai_functions.anthropic.Anthropic"
+        ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
+            block = MagicMock()
+            block.type = "tool_use"
+            block.name = "classify_stories"
+            block.input = {"classifications": [{"id": story["story_hash"], "classification": 1}]}
+            MockAnthropic.return_value.messages.create.return_value.content = [block]
+            worker.classify_stories_for_subscribers(
+                feed, [story], new_story_count=1, new_story_hashes=[story["story_hash"]]
+            )
+            return MockAnthropic.return_value.messages.create.call_count, record_usage.call_count
+
+    def test_global_prompt_runs_and_bills_on_a_subscribed_feed(self):
+        self.assertEqual(self.fetch(self.subscribed_feed), (1, 1))
+
+    def test_global_prompt_neither_runs_nor_bills_on_an_unsubscribed_feed(self):
+        self.assertEqual(self.fetch(self.unsubscribed_feed), (0, 0))
+
+    def test_global_prompt_neither_runs_nor_bills_on_a_muted_feed(self):
+        self.assertEqual(self.fetch(self.muted_feed), (0, 0))
+
+
 class Test_AIPromptClassifierFolderScope(TransactionTestCase):
     """Folder-scoped AI prompts only run, bill and score on the sites in their folder.
 
@@ -2476,7 +2549,7 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
         self.other_feed = Feed.objects.get(pk=3)
         self.feeds = [self.tech_feed, self.swift_feed, self.other_feed]
         for feed in self.feeds:
-            UserSubscription.objects.create(user=self.user, feed=feed, is_trained=True)
+            UserSubscription.objects.create(user=self.user, feed=feed, is_trained=True, active=True)
         # Tech holds tech_feed directly and swift_feed in its Swift subfolder.
         # other_feed sits at the top level, outside every folder.
         UserSubscriptionFolders.objects.create(
@@ -2584,24 +2657,6 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
     def test_feed_fetcher_skips_a_folder_prompt_for_a_feed_outside_its_folder(self):
         self.assertEqual(self.fetch(self.other_feed), (0, 0))
         self.assertEqual(self.fetch(self.tech_feed), (1, 1))
-
-    def test_feed_fetcher_skips_feeds_the_user_does_not_subscribe_to(self):
-        """A global prompt covers every feed the user subscribes to, not every feed NewsBlur
-        fetches. feed_has_prompt_subscribers used to return every user with a feed_id=0 prompt
-        for every feed, so their prompts ran and billed on strangers' feeds."""
-        unsubscribed_feed = Feed.objects.get(pk=4)
-        global_prompt = MClassifierPrompt.objects.create(
-            user_id=self.user.pk, feed_id=0, folder_id="", prompt="any new language", classifier_type="focus"
-        )
-        self.addCleanup(
-            MClassifierPrompt.invalidate_cache,
-            self.user.pk,
-            str(global_prompt.id),
-            feed_ids=[unsubscribed_feed.pk],
-        )
-
-        self.assertEqual(self.fetch(unsubscribed_feed), (0, 0))
-        self.assertEqual(self.fetch(self.other_feed), (1, 1))
 
     def test_folder_prompt_covers_the_same_sites_as_a_folder_title_classifier(self):
         """A folder covers only the sites filed directly in it, exactly like the folder-scoped
