@@ -1432,6 +1432,11 @@ def load_single_feed(request, feed_id):
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, feed),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -2181,6 +2186,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -3015,6 +3025,11 @@ def load_river_stories__redis(request):
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (

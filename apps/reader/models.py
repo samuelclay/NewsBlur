@@ -33,6 +33,7 @@ from apps.analyzer.models import (
     MClassifierText,
     MClassifierTitle,
     MClassifierUrl,
+    apply_classifier_author_regex,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
@@ -2163,6 +2164,13 @@ class UserSubscription(models.Model):
                         "author": apply_classifier_authors(
                             classifier_authors, story, folder_feed_ids=folder_feed_map
                         ),
+                        "author_regex": (
+                            apply_classifier_author_regex(
+                                classifier_authors, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
+                        ),
                         "tags": apply_classifier_tags(
                             classifier_tags, story, folder_feed_ids=folder_feed_map
                         ),
@@ -2204,6 +2212,7 @@ class UserSubscription(models.Model):
 
                 max_score = max(
                     scores["author"],
+                    scores["author_regex"],
                     scores["tags"],
                     scores["title"],
                     scores["title_regex"],
@@ -2214,6 +2223,7 @@ class UserSubscription(models.Model):
                 )
                 min_score = min(
                     scores["author"],
+                    scores["author_regex"],
                     scores["tags"],
                     scores["title"],
                     scores["title_regex"],
