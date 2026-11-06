@@ -1555,6 +1555,9 @@ msgstr "Não foi possível remover o artigo dos salvos; ele não foi encontrado"
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Não foi possível acessar o Stripe. Tente novamente."
 
+msgid "Couldn't save the position"
+msgstr "Não foi possível salvar a posição"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Período de cobertura: %(start)s &ndash; %(end)s"
@@ -3079,6 +3082,9 @@ msgstr "Arquivo de imagem inválido"
 
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days inválido"
+
+msgid "Invalid position"
+msgstr "Posição inválida"
 
 msgid "Invalid request identifier"
 msgstr "Identificador de solicitação inválido"
@@ -5876,6 +5882,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Obrigado!"
 
+msgid "That item isn't playing"
+msgstr "Esse item não está sendo reproduzido"
+
 msgid "That part of the story doesn't exist."
 msgstr "Essa parte do artigo não existe."
 
@@ -6467,6 +6476,9 @@ msgstr ""
 "Unread, lire, Fiery Feeds, Newsify e muitos outros. Seu status de leitura, artigos salvos e treinamento são"
 " sincronizados em todos os aplicativos. A API aberta do NewsBlur alimenta dezenas de aplicativos de "
 "terceiros."
+
+msgid "Use POST"
+msgstr "Usar POST"
 
 msgid "Use prompt templates"
 msgstr "Usar modelos de prompt"

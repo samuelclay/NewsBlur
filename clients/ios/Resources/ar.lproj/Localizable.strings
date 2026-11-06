@@ -196,7 +196,7 @@
 "BEATS" = "يتغلّب على";
 "BRIEFING SETTINGS" = "إعدادات الموجز";
 "Back" = "رجوع";
-"Back 15 seconds" = "للخلف 15 ثانية";
+"Back %@ seconds" = "رجوع %@ ثانية";
 "Back to story titles" = "العودة إلى عناوين القصص";
 "Based on your interests" = "بناءً على اهتماماتك";
 "Black" = "أسود";
@@ -428,7 +428,7 @@
 "Font…" = "الخط…";
 "Forgot Password?" = "هل نسيت كلمة المرور؟";
 "Forgot your password?" = "هل نسيت كلمة المرور؟";
-"Forward 30 seconds" = "تقديم 30 ثانية";
+"Forward %@ seconds" = "تقديم %@ ثانية";
 "Frequency" = "التكرار";
 "Friday" = "الجمعة";
 "Friends" = "الأصدقاء";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "تظل طبقة الصوت طبيعية مهما كانت السرعة.";
 "Place the story list controls above or below the stories" = "ضع عناصر التحكم بقائمة القصص أعلى القصص أو أسفلها";
 "Play" = "تشغيل";
+"Play Last" = "تشغيل الأخير";
+"Play Next" = "تشغيل التالي";
 "Play again" = "التشغيل مجددًا";
+"Play audio" = "تشغيل الصوت";
 "Play now" = "تشغيل الآن";
 "Play the next unread story" = "تشغيل القصة التالية غير المقروءة";
 "Play videos" = "تشغيل الفيديوهات";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "تنويعة السمة للوضع الفاتح";
 "Then from %@" = "ثم من %@";
 "Then from this list" = "ثم من هذه القائمة";
+"This audio couldn't be played." = "تعذّر تشغيل هذا الصوت.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "سيؤدي هذا إلى حذف المجلد وإلغاء الاشتراك في المواقع غير الموجودة في مجلد آخر.";
 "This feature requires iOS 15 or later." = "تتطلب هذه الميزة iOS 15 أو أحدث.";
 "This might take a minute.\nFeel free to continue..." = "قد يستغرق هذا دقيقة.\nيمكنك المتابعة أثناء ذلك...";

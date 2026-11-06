@@ -1415,8 +1415,23 @@
     <string name="listen_error_rate_limited">Rozpoczynasz odtwarzanie artykułów szybciej, niż funkcja Listen jest w stanie nadążyć. Spróbuj ponownie za minutę.</string>
     <string name="listen_voice_label">Głos: %1$s</string>
     <string name="listen_voice_settings">Ustawienia głosu</string>
-    <string name="listen_skip_back">Cofnij o 15 sekund</string>
-    <string name="listen_skip_forward">Przewiń o 30 sekund do przodu</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="few">Wstecz o %1$d sekundy</item>
+        <item quantity="many">Wstecz o %1$d sekund</item>
+        <item quantity="one">Wstecz o %1$d sekundę</item>
+        <item quantity="other">Wstecz o %1$d sekund</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="few">Do przodu o %1$d sekundy</item>
+        <item quantity="many">Do przodu o %1$d sekund</item>
+        <item quantity="one">Do przodu o %1$d sekundę</item>
+        <item quantity="other">Do przodu o %1$d sekund</item>
+    </plurals>
+    <string name="listen_media_play">Odtwórz dźwięk</string>
+    <string name="listen_media_play_next">Odtwórz następny</string>
+    <string name="listen_media_play_last">Odtwórz ostatni</string>
+    <string name="listen_media_loading">Wczytywanie dźwięku…</string>
+    <string name="listen_media_error">Nie udało się odtworzyć dźwięku. Sprawdź połączenie i spróbuj ponownie.</string>
     <string name="listen_next_story">Następny artykuł</string>
     <string name="listen_up_next">Następny</string>
     <string name="listen_up_next_empty">Nie ma już nieprzeczytanych artykułów na tej liście.</string>

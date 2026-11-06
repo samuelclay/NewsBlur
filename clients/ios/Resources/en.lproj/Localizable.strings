@@ -196,7 +196,7 @@
 "BEATS" = "BEATS";
 "BRIEFING SETTINGS" = "BRIEFING SETTINGS";
 "Back" = "Back";
-"Back 15 seconds" = "Back 15 seconds";
+"Back %@ seconds" = "Back %@ seconds";
 "Back to story titles" = "Back to story titles";
 "Based on your interests" = "Based on your interests";
 "Black" = "Black";
@@ -428,7 +428,7 @@
 "Font…" = "Font…";
 "Forgot Password?" = "Forgot Password?";
 "Forgot your password?" = "Forgot your password?";
-"Forward 30 seconds" = "Forward 30 seconds";
+"Forward %@ seconds" = "Forward %@ seconds";
 "Frequency" = "Frequency";
 "Friday" = "Friday";
 "Friends" = "Friends";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "Pitch stays natural at every speed.";
 "Place the story list controls above or below the stories" = "Place the story list controls above or below the stories";
 "Play" = "Play";
+"Play Last" = "Play Last";
+"Play Next" = "Play Next";
 "Play again" = "Play again";
+"Play audio" = "Play audio";
 "Play now" = "Play now";
 "Play the next unread story" = "Play the next unread story";
 "Play videos" = "Play videos";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Theme variant for light mode";
 "Then from %@" = "Then from %@";
 "Then from this list" = "Then from this list";
+"This audio couldn't be played." = "This audio couldn't be played.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "This deletes the folder and unsubscribes from sites that are not in another folder.";
 "This feature requires iOS 15 or later." = "This feature requires iOS 15 or later.";
 "This might take a minute.\nFeel free to continue..." = "This might take a minute.\nFeel free to continue...";

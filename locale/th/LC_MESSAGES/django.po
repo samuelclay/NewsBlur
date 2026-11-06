@@ -1512,6 +1512,9 @@ msgstr "ยกเลิกการบันทึกบทความไม่
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "เชื่อมต่อ Stripe ไม่ได้ โปรดลองอีกครั้ง"
 
+msgid "Couldn't save the position"
+msgstr "บันทึกตำแหน่งไม่สำเร็จ"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "ช่วงเวลาที่ครอบคลุม: %(start)s &ndash; %(end)s"
@@ -3009,6 +3012,9 @@ msgstr "ไฟล์รูปภาพไม่ถูกต้อง"
 
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days ไม่ถูกต้อง"
+
+msgid "Invalid position"
+msgstr "ตำแหน่งไม่ถูกต้อง"
 
 msgid "Invalid request identifier"
 msgstr "รหัสคำขอไม่ถูกต้อง"
@@ -5727,6 +5733,9 @@ msgstr "ขอบคุณที่ทดลองใช้ NewsBlur! หวั�
 msgid "Thanks!"
 msgstr "ขอบคุณ!"
 
+msgid "That item isn't playing"
+msgstr "รายการนี้ไม่ได้กำลังเล่นอยู่"
+
 msgid "That part of the story doesn't exist."
 msgstr "ไม่มีส่วนนี้ในบทความ"
 
@@ -6297,6 +6306,9 @@ msgstr ""
 "ใช้ NewsBlur กับแอปอ่านข่าวที่คุณชื่นชอบ ซิงค์ข้อมูลได้เต็มรูปแบบกับ Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify และอีกมากมาย สถานะการอ่าน บทความที่บันทึกไว้ และการฝึกฝนของคุณจะซิงค์กันในทุกแอป API "
 "แบบเปิดของ NewsBlur รองรับแอปจากผู้พัฒนาภายนอกหลายสิบแอป"
+
+msgid "Use POST"
+msgstr "ใช้ POST"
 
 msgid "Use prompt templates"
 msgstr "ใช้เทมเพลตพรอมต์"

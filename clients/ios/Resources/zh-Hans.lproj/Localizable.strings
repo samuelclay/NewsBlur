@@ -196,7 +196,7 @@
 "BEATS" = "胜过";
 "BRIEFING SETTINGS" = "简报设置";
 "Back" = "返回";
-"Back 15 seconds" = "后退 15 秒";
+"Back %@ seconds" = "后退 %@ 秒";
 "Back to story titles" = "返回文章标题";
 "Based on your interests" = "根据你的兴趣";
 "Black" = "黑色";
@@ -428,7 +428,7 @@
 "Font…" = "字体…";
 "Forgot Password?" = "忘记密码？";
 "Forgot your password?" = "忘记密码？";
-"Forward 30 seconds" = "快进 30 秒";
+"Forward %@ seconds" = "前进 %@ 秒";
 "Frequency" = "频率";
 "Friday" = "星期五";
 "Friends" = "好友";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "任何速度下，音调都保持自然。";
 "Place the story list controls above or below the stories" = "将文章列表控件放在文章上方或下方";
 "Play" = "播放";
+"Play Last" = "播放最后一首";
+"Play Next" = "播放下一首";
 "Play again" = "再播放一次";
+"Play audio" = "播放音频";
 "Play now" = "立即播放";
 "Play the next unread story" = "播放下一篇未读文章";
 "Play videos" = "播放视频";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "浅色模式的主题变体";
 "Then from %@" = "然后从 %@ 开始";
 "Then from this list" = "然后从此列表";
+"This audio couldn't be played." = "无法播放此音频。";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "这将删除此文件夹，并取消订阅不在其他文件夹中的网站。";
 "This feature requires iOS 15 or later." = "此功能需要 iOS 15 或更高版本。";
 "This might take a minute.\nFeel free to continue..." = "这可能需要一分钟。\n请随意继续……";

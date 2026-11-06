@@ -1363,8 +1363,19 @@
     <string name="listen_error_rate_limited">आप लेख उतनी तेज़ी से शुरू कर रहे हैं, जितनी तेज़ी से Listen उन्हें चला नहीं सकता। एक मिनट बाद फिर कोशिश करें।</string>
     <string name="listen_voice_label">आवाज़: %1$s</string>
     <string name="listen_voice_settings">आवाज़ की सेटिंग्स</string>
-    <string name="listen_skip_back">15 सेकंड पीछे जाएँ</string>
-    <string name="listen_skip_forward">30 सेकंड आगे बढ़ाएँ</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="one">%1$d सेकंड पीछे जाएँ</item>
+        <item quantity="other">%1$d सेकंड पीछे जाएँ</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="one">%1$d सेकंड आगे बढ़ें</item>
+        <item quantity="other">%1$d सेकंड आगे बढ़ें</item>
+    </plurals>
+    <string name="listen_media_play">ऑडियो चलाएँ</string>
+    <string name="listen_media_play_next">अगला चलाएँ</string>
+    <string name="listen_media_play_last">आख़िरी चलाएँ</string>
+    <string name="listen_media_loading">ऑडियो लोड हो रहा है…</string>
+    <string name="listen_media_error">यह ऑडियो नहीं चल पाया। अपना कनेक्शन जाँचें और फिर से कोशिश करें।</string>
     <string name="listen_next_story">अगला लेख</string>
     <string name="listen_up_next">इसके बाद</string>
     <string name="listen_up_next_empty">इस सूची में अब कोई अपठित लेख नहीं है।</string>

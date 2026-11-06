@@ -1572,6 +1572,9 @@ msgstr "Impossible de retirer l’article des éléments enregistrés : introuv
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Impossible de joindre Stripe. Veuillez réessayer."
 
+msgid "Couldn't save the position"
+msgstr "Impossible d’enregistrer la position"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Période couverte : %(start)s &ndash; %(end)s"
@@ -3132,6 +3135,9 @@ msgstr "Fichier image invalide"
 
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days non valide"
+
+msgid "Invalid position"
+msgstr "Position invalide"
 
 msgid "Invalid request identifier"
 msgstr "Identifiant de requête invalide"
@@ -5980,6 +5986,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Merci !"
 
+msgid "That item isn't playing"
+msgstr "Cet élément n’est pas en cours de lecture"
+
 msgid "That part of the story doesn't exist."
 msgstr "Cette partie de l’article n’existe pas."
 
@@ -6579,6 +6588,9 @@ msgstr ""
 "charge par Reeder, ReadKit, Unread, lire, Fiery Feeds, Newsify et bien d’autres. Votre statut de lecture, "
 "vos articles enregistrés et votre entraînement sont synchronisés dans toutes les applications. L’API "
 "ouverte de NewsBlur alimente des dizaines d’applications tierces."
+
+msgid "Use POST"
+msgstr "Utiliser POST"
 
 msgid "Use prompt templates"
 msgstr "Utiliser des modèles de prompts"

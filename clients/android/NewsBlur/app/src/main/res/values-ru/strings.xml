@@ -1415,8 +1415,23 @@
     <string name="listen_error_rate_limited">Вы запускаете статьи быстрее, чем функция прослушивания успевает их обработать. Повторите попытку через минуту.</string>
     <string name="listen_voice_label">Голос: %1$s</string>
     <string name="listen_voice_settings">Настройки голоса</string>
-    <string name="listen_skip_back">Назад на 15 секунд</string>
-    <string name="listen_skip_forward">Перемотать вперёд на 30 секунд</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="few">Назад на %1$d секунды</item>
+        <item quantity="many">Назад на %1$d секунд</item>
+        <item quantity="one">Назад на %1$d секунду</item>
+        <item quantity="other">Назад на %1$d секунд</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="few">Вперёд на %1$d секунды</item>
+        <item quantity="many">Вперёд на %1$d секунд</item>
+        <item quantity="one">Вперёд на %1$d секунду</item>
+        <item quantity="other">Вперёд на %1$d секунд</item>
+    </plurals>
+    <string name="listen_media_play">Воспроизвести аудио</string>
+    <string name="listen_media_play_next">Воспроизвести следующим</string>
+    <string name="listen_media_play_last">Воспроизвести последним</string>
+    <string name="listen_media_loading">Загрузка аудио…</string>
+    <string name="listen_media_error">Не удалось воспроизвести аудио. Проверьте подключение и попробуйте ещё раз.</string>
     <string name="listen_next_story">Следующая статья</string>
     <string name="listen_up_next">Далее</string>
     <string name="listen_up_next_empty">В этом списке больше нет непрочитанных статей.</string>

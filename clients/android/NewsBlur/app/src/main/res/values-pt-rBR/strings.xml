@@ -1389,8 +1389,21 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="listen_error_rate_limited">Você está iniciando artigos mais rápido do que o Listen consegue acompanhar. Tente novamente em um minuto.</string>
     <string name="listen_voice_label">Voz: %1$s</string>
     <string name="listen_voice_settings">Configurações de voz</string>
-    <string name="listen_skip_back">Voltar 15 segundos</string>
-    <string name="listen_skip_forward">Avançar 30 segundos</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="many">Voltar %1$d segundos</item>
+        <item quantity="one">Voltar %1$d segundo</item>
+        <item quantity="other">Voltar %1$d segundos</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="many">Avançar %1$d segundos</item>
+        <item quantity="one">Avançar %1$d segundo</item>
+        <item quantity="other">Avançar %1$d segundos</item>
+    </plurals>
+    <string name="listen_media_play">Reproduzir áudio</string>
+    <string name="listen_media_play_next">Reproduzir próximo</string>
+    <string name="listen_media_play_last">Reproduzir último</string>
+    <string name="listen_media_loading">Carregando áudio…</string>
+    <string name="listen_media_error">Não foi possível reproduzir este áudio. Verifique sua conexão e tente novamente.</string>
     <string name="listen_next_story">Próximo artigo</string>
     <string name="listen_up_next">A seguir</string>
     <string name="listen_up_next_empty">Não há mais artigos não lidos nesta lista.</string>

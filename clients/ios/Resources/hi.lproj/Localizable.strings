@@ -196,7 +196,7 @@
 "BEATS" = ">";
 "BRIEFING SETTINGS" = "ब्रीफ़िंग सेटिंग्स";
 "Back" = "वापस";
-"Back 15 seconds" = "15 सेकंड पीछे जाएँ";
+"Back %@ seconds" = "%@ सेकंड पीछे जाएँ";
 "Back to story titles" = "लेख शीर्षकों पर वापस जाएँ";
 "Based on your interests" = "आपकी रुचियों के आधार पर";
 "Black" = "काला";
@@ -428,7 +428,7 @@
 "Font…" = "फ़ॉन्ट…";
 "Forgot Password?" = "पासवर्ड भूल गए?";
 "Forgot your password?" = "पासवर्ड भूल गए?";
-"Forward 30 seconds" = "30 सेकंड आगे जाएँ";
+"Forward %@ seconds" = "%@ सेकंड आगे बढ़ें";
 "Frequency" = "आवृत्ति";
 "Friday" = "शुक्रवार";
 "Friends" = "मित्र";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "हर गति पर आवाज़ का उतार-चढ़ाव स्वाभाविक रहता है।";
 "Place the story list controls above or below the stories" = "लेख सूची के नियंत्रण लेखों के ऊपर या नीचे रखें";
 "Play" = "चलाएँ";
+"Play Last" = "आख़िरी चलाएँ";
+"Play Next" = "अगला चलाएँ";
 "Play again" = "फिर से चलाएँ";
+"Play audio" = "ऑडियो चलाएँ";
 "Play now" = "अभी चलाएँ";
 "Play the next unread story" = "अगला अपठित लेख चलाएँ";
 "Play videos" = "वीडियो चलाएँ";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "लाइट मोड के लिए थीम विकल्प";
 "Then from %@" = "फिर %@ से";
 "Then from this list" = "फिर इस सूची से";
+"This audio couldn't be played." = "यह ऑडियो नहीं चलाया जा सका।";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "इससे फ़ोल्डर हट जाएगा और उन साइटों की सदस्यता समाप्त हो जाएगी जो किसी अन्य फ़ोल्डर में नहीं हैं।";
 "This feature requires iOS 15 or later." = "इस फ़ीचर के लिए iOS 15 या उसके बाद का संस्करण आवश्यक है।";
 "This might take a minute.\nFeel free to continue..." = "इसमें एक मिनट लग सकता है।\nआप चाहें तो आगे काम जारी रख सकते हैं...";

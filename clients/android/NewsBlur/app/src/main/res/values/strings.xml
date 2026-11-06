@@ -1599,8 +1599,6 @@ people together to talk about the world.</string>
     <string name="listen_error_rate_limited">You\'re starting stories faster than Listen can keep up. Try again in a minute.</string>
     <string name="listen_voice_label">Voice: %1$s</string>
     <string name="listen_voice_settings">Voice settings</string>
-    <string name="listen_skip_back">Back 15 seconds</string>
-    <string name="listen_skip_forward">Forward 30 seconds</string>
     <!-- The skip intervals chosen in the web media player's settings: 5, 10, 15, 30 or 60 seconds. -->
     <plurals name="listen_skip_back_seconds">
         <item quantity="one">Back %1$d second</item>

@@ -682,6 +682,26 @@
 			<string>Також опубліковано на %@ сайтах</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Перемотати назад на %@ секунди</string>
+			<key>many</key>
+			<string>Перемотати назад на %@ секунд</string>
+			<key>one</key>
+			<string>Перемотати назад на %@ секунду</string>
+			<key>other</key>
+			<string>Перемотати назад на %@ секунд</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -720,6 +740,26 @@
 			<string>Підписник</string>
 			<key>other</key>
 			<string>Підписники</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Перемотати вперед на %@ секунди</string>
+			<key>many</key>
+			<string>Перемотати вперед на %@ секунд</string>
+			<key>one</key>
+			<string>Перемотати вперед на %@ секунду</string>
+			<key>other</key>
+			<string>Перемотати вперед на %@ секунд</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

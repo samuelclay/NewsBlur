@@ -196,7 +196,7 @@
 "BEATS" = "THẮNG";
 "BRIEFING SETTINGS" = "CÀI ĐẶT BẢN TIN";
 "Back" = "Quay lại";
-"Back 15 seconds" = "Lùi 15 giây";
+"Back %@ seconds" = "Lùi %@ giây";
 "Back to story titles" = "Quay lại tiêu đề bài viết";
 "Based on your interests" = "Dựa trên sở thích của bạn";
 "Black" = "Đen";
@@ -428,7 +428,7 @@
 "Font…" = "Phông chữ…";
 "Forgot Password?" = "Quên mật khẩu?";
 "Forgot your password?" = "Bạn quên mật khẩu?";
-"Forward 30 seconds" = "Tua tới 30 giây";
+"Forward %@ seconds" = "Tiến %@ giây";
 "Frequency" = "Tần suất";
 "Friday" = "Thứ Sáu";
 "Friends" = "Bạn bè";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "Cao độ giọng nói vẫn tự nhiên ở mọi tốc độ.";
 "Place the story list controls above or below the stories" = "Đặt các nút điều khiển danh sách bài viết ở phía trên hoặc phía dưới các bài viết";
 "Play" = "Phát";
+"Play Last" = "Phát cuối cùng";
+"Play Next" = "Phát tiếp theo";
 "Play again" = "Phát lại";
+"Play audio" = "Phát âm thanh";
 "Play now" = "Phát ngay";
 "Play the next unread story" = "Phát bài viết chưa đọc tiếp theo";
 "Play videos" = "Phát video";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Biến thể giao diện cho chế độ sáng";
 "Then from %@" = "Tiếp theo từ %@";
 "Then from this list" = "Tiếp theo từ danh sách này";
+"This audio couldn't be played." = "Không thể phát âm thanh này.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Thao tác này sẽ xóa thư mục và hủy đăng ký các trang web không nằm trong thư mục nào khác.";
 "This feature requires iOS 15 or later." = "Tính năng này yêu cầu iOS 15 trở lên.";
 "This might take a minute.\nFeel free to continue..." = "Việc này có thể mất một phút.\nBạn cứ tiếp tục nhé...";

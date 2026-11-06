@@ -614,6 +614,24 @@
 			<string>פורסם גם ב־%@ אתרים</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>אחורה %@ שנייה</string>
+			<key>other</key>
+			<string>אחורה %@ שניות</string>
+			<key>two</key>
+			<string>אחורה %@ שניות</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -648,6 +666,24 @@
 			<string>עוקבים</string>
 			<key>two</key>
 			<string>עוקבים</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>קדימה %@ שנייה</string>
+			<key>other</key>
+			<string>קדימה %@ שניות</string>
+			<key>two</key>
+			<string>קדימה %@ שניות</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

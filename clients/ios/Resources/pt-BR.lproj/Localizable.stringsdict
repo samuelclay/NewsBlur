@@ -614,6 +614,24 @@
 			<string>Também publicado por %@ sites</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Voltar %@ segundos</string>
+			<key>one</key>
+			<string>Voltar %@ segundo</string>
+			<key>other</key>
+			<string>Voltar %@ segundos</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -648,6 +666,24 @@
 			<string>Seguidor</string>
 			<key>other</key>
 			<string>Seguidores</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Avançar %@ segundos</string>
+			<key>one</key>
+			<string>Avançar %@ segundo</string>
+			<key>other</key>
+			<string>Avançar %@ segundos</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

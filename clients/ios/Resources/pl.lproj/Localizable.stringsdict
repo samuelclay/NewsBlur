@@ -682,6 +682,26 @@
 			<string>Opublikowano również w %@ witrynach</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Wstecz o %@ sekundy</string>
+			<key>many</key>
+			<string>Wstecz o %@ sekund</string>
+			<key>one</key>
+			<string>Wstecz o %@ sekundę</string>
+			<key>other</key>
+			<string>Wstecz o %@ sekund</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -720,6 +740,26 @@
 			<string>Obserwujący</string>
 			<key>other</key>
 			<string>Obserwujący</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Do przodu o %@ sekundy</string>
+			<key>many</key>
+			<string>Do przodu o %@ sekund</string>
+			<key>one</key>
+			<string>Do przodu o %@ sekundę</string>
+			<key>other</key>
+			<string>Do przodu o %@ sekund</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

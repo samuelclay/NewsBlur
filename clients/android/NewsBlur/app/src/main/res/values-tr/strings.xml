@@ -1363,8 +1363,19 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="listen_error_rate_limited">Haberleri, Dinleme\'nin yetişebileceğinden daha hızlı başlatıyorsunuz. Bir dakika sonra tekrar deneyin.</string>
     <string name="listen_voice_label">Ses: %1$s</string>
     <string name="listen_voice_settings">Ses ayarları</string>
-    <string name="listen_skip_back">15 saniye geri</string>
-    <string name="listen_skip_forward">30 saniye ileri sar</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="one">%1$d saniye geri</item>
+        <item quantity="other">%1$d saniye geri</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="one">%1$d saniye ileri</item>
+        <item quantity="other">%1$d saniye ileri</item>
+    </plurals>
+    <string name="listen_media_play">Ses çal</string>
+    <string name="listen_media_play_next">Sonrakini oynat</string>
+    <string name="listen_media_play_last">Sonuncuyu oynat</string>
+    <string name="listen_media_loading">Ses yükleniyor…</string>
+    <string name="listen_media_error">Bu ses çalınamadı. Bağlantınızı kontrol edip tekrar deneyin.</string>
     <string name="listen_next_story">Sonraki haber</string>
     <string name="listen_up_next">Sıradaki</string>
     <string name="listen_up_next_empty">Bu listedeki okunmamış haber kalmadı.</string>

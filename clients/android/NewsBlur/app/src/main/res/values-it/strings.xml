@@ -1389,8 +1389,21 @@ le persone per parlare del mondo.</string>
     <string name="listen_error_rate_limited">Stai avviando articoli più velocemente di quanto Ascolta riesca a gestirli. Riprova tra un minuto.</string>
     <string name="listen_voice_label">Voce: %1$s</string>
     <string name="listen_voice_settings">Impostazioni della voce</string>
-    <string name="listen_skip_back">Indietro di 15 secondi</string>
-    <string name="listen_skip_forward">Avanti di 30 secondi</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="many">Indietro di %1$d secondi</item>
+        <item quantity="one">Indietro di %1$d secondo</item>
+        <item quantity="other">Indietro di %1$d secondi</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="many">Avanti di %1$d secondi</item>
+        <item quantity="one">Avanti di %1$d secondo</item>
+        <item quantity="other">Avanti di %1$d secondi</item>
+    </plurals>
+    <string name="listen_media_play">Riproduci l\'audio</string>
+    <string name="listen_media_play_next">Riproduci il prossimo</string>
+    <string name="listen_media_play_last">Riproduci l\'ultimo</string>
+    <string name="listen_media_loading">Caricamento audio…</string>
+    <string name="listen_media_error">Impossibile riprodurre l\'audio. Controlla la connessione e riprova.</string>
     <string name="listen_next_story">Articolo successivo</string>
     <string name="listen_up_next">A seguire</string>
     <string name="listen_up_next_empty">Non ci sono altri articoli non letti in questo elenco.</string>

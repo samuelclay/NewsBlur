@@ -1337,8 +1337,17 @@
     <string name="listen_error_rate_limited">Listenの処理が追いつかないほど速く記事を開始しています。1分後にもう一度お試しください。</string>
     <string name="listen_voice_label">音声：%1$s</string>
     <string name="listen_voice_settings">音声設定</string>
-    <string name="listen_skip_back">15秒戻る</string>
-    <string name="listen_skip_forward">30秒早送り</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="other">%1$d秒戻る</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="other">%1$d秒進む</item>
+    </plurals>
+    <string name="listen_media_play">音声を再生</string>
+    <string name="listen_media_play_next">次を再生</string>
+    <string name="listen_media_play_last">最後を再生</string>
+    <string name="listen_media_loading">音声を読み込み中…</string>
+    <string name="listen_media_error">この音声を再生できませんでした。接続を確認して、もう一度お試しください。</string>
     <string name="listen_next_story">次の記事</string>
     <string name="listen_up_next">次に再生</string>
     <string name="listen_up_next_empty">このリストに未読記事はありません。</string>

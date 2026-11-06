@@ -1557,6 +1557,9 @@ msgstr "No se pudo quitar de guardados el artículo; no se encontró"
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "No se pudo conectar con Stripe. Inténtalo de nuevo."
 
+msgid "Couldn't save the position"
+msgstr "No se pudo guardar la posición"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periodo de cobertura: %(start)s &ndash; %(end)s"
@@ -3094,6 +3097,9 @@ msgstr "Archivo de imagen no válido"
 
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days no es válido"
+
+msgid "Invalid position"
+msgstr "Posición no válida"
 
 msgid "Invalid request identifier"
 msgstr "Identificador de solicitud no válido"
@@ -5897,6 +5903,9 @@ msgstr "¡Gracias por probar NewsBlur! Espero que NewsBlur haga que tu lectura d
 msgid "Thanks!"
 msgstr "¡Gracias!"
 
+msgid "That item isn't playing"
+msgstr "Ese elemento no se está reproduciendo"
+
 msgid "That part of the story doesn't exist."
 msgstr "Esa parte del artículo no existe."
 
@@ -6488,6 +6497,9 @@ msgstr ""
 "ReadKit, Unread, lire, Fiery Feeds, Newsify y muchas más. Tu estado de lectura, artículos guardados y "
 "entrenamiento se sincronizan en todas las aplicaciones. La API abierta de NewsBlur potencia docenas de "
 "clientes de terceros."
+
+msgid "Use POST"
+msgstr "Usar POST"
 
 msgid "Use prompt templates"
 msgstr "Usar plantillas de indicaciones"

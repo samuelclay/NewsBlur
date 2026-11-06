@@ -1565,6 +1565,9 @@ msgstr "Artikel konnte nicht aus den gespeicherten entfernt werden: nicht gefund
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Stripe konnte nicht erreicht werden. Bitte versuche es erneut."
 
+msgid "Couldn't save the position"
+msgstr "Position konnte nicht gespeichert werden"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Abdeckungszeitraum: %(start)s &ndash; %(end)s"
@@ -3107,6 +3110,9 @@ msgstr "Ungültige Bilddatei"
 
 msgid "Invalid mute_duration_days"
 msgstr "Ungültige mute_duration_days"
+
+msgid "Invalid position"
+msgstr "Ungültige Position"
 
 msgid "Invalid request identifier"
 msgstr "Ungültige Anfrage-ID"
@@ -5926,6 +5932,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Danke!"
 
+msgid "That item isn't playing"
+msgstr "Dieser Eintrag wird nicht abgespielt"
+
 msgid "That part of the story doesn't exist."
 msgstr "Dieser Teil des Artikels ist nicht vorhanden."
 
@@ -6524,6 +6533,9 @@ msgstr ""
 " lire, Fiery Feeds, Newsify und vielen weiteren Apps. Gelesen-Status, gespeicherte Artikel und "
 "Trainingsdaten werden in allen Apps synchronisiert. Die offene API von NewsBlur ermöglicht Dutzende Clients"
 " von Drittanbietern."
+
+msgid "Use POST"
+msgstr "POST verwenden"
 
 msgid "Use prompt templates"
 msgstr "Prompt-Vorlagen verwenden"

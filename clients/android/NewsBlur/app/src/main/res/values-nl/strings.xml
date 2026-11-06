@@ -1363,8 +1363,19 @@ om over de wereld te praten.</string>
     <string name="listen_error_rate_limited">Je start artikelen sneller dan Listen kan bijhouden. Probeer het over een minuut opnieuw.</string>
     <string name="listen_voice_label">Stem: %1$s</string>
     <string name="listen_voice_settings">Steminstellingen</string>
-    <string name="listen_skip_back">15 seconden terug</string>
-    <string name="listen_skip_forward">30 seconden vooruitspoelen</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="one">%1$d seconde terug</item>
+        <item quantity="other">%1$d seconden terug</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="one">%1$d seconde vooruit</item>
+        <item quantity="other">%1$d seconden vooruit</item>
+    </plurals>
+    <string name="listen_media_play">Audio afspelen</string>
+    <string name="listen_media_play_next">Hierna afspelen</string>
+    <string name="listen_media_play_last">Als laatste afspelen</string>
+    <string name="listen_media_loading">Audio wordt geladen…</string>
+    <string name="listen_media_error">Deze audio kan niet worden afgespeeld. Controleer je verbinding en probeer het opnieuw.</string>
     <string name="listen_next_story">Volgend artikel</string>
     <string name="listen_up_next">Hierna</string>
     <string name="listen_up_next_empty">Geen ongelezen artikelen meer in deze lijst.</string>

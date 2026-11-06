@@ -1630,6 +1630,9 @@ msgstr "تعذّر إلغاء حفظ القصة؛ لم يتم العثور عل�
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "تعذّر الاتصال بـ Stripe. يُرجى المحاولة مجددًا."
 
+msgid "Couldn't save the position"
+msgstr "تعذّر حفظ الموضع"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "الفترة المشمولة: %(start)s &ndash; %(end)s"
@@ -3115,6 +3118,9 @@ msgstr "ملف الصورة غير صالح"
 
 msgid "Invalid mute_duration_days"
 msgstr "قيمة mute_duration_days غير صالحة"
+
+msgid "Invalid position"
+msgstr "موضع غير صالح"
 
 msgid "Invalid request identifier"
 msgstr "معرّف الطلب غير صالح"
@@ -5879,6 +5885,9 @@ msgstr "شكرًا لتجربة NewsBlur! آمل أن يساعدك NewsBlur عل
 msgid "Thanks!"
 msgstr "شكرًا!"
 
+msgid "That item isn't playing"
+msgstr "هذا العنصر لا يعمل الآن"
+
 msgid "That part of the story doesn't exist."
 msgstr "هذا الجزء من القصة غير موجود."
 
@@ -6472,6 +6481,9 @@ msgstr ""
 "استخدم NewsBlur مع تطبيقات القراءة المفضلة لديك. دعم مزامنة كامل مع Reeder وReadKit وUnread وlire وFiery "
 "Feeds وNewsify وغيرها الكثير. تتم مزامنة حالة القراءة والقصص المحفوظة والتدريب عبر جميع التطبيقات. تتيح "
 "واجهة NewsBlur البرمجية المفتوحة عشرات التطبيقات التابعة لجهات خارجية."
+
+msgid "Use POST"
+msgstr "استخدم POST"
 
 msgid "Use prompt templates"
 msgstr "استخدام قوالب المطالبات"

@@ -196,7 +196,7 @@
 "BEATS" = "WYGRYWA Z";
 "BRIEFING SETTINGS" = "USTAWIENIA PRZEGLĄDU";
 "Back" = "Wstecz";
-"Back 15 seconds" = "Cofnij o 15 sekund";
+"Back %@ seconds" = "Wstecz o %@ sekund";
 "Back to story titles" = "Wróć do tytułów artykułów";
 "Based on your interests" = "Na podstawie Twoich zainteresowań";
 "Black" = "Czarny";
@@ -428,7 +428,7 @@
 "Font…" = "Czcionka…";
 "Forgot Password?" = "Nie pamiętasz hasła?";
 "Forgot your password?" = "Nie pamiętasz hasła?";
-"Forward 30 seconds" = "Przewiń o 30 sekund do przodu";
+"Forward %@ seconds" = "Do przodu o %@ sekund";
 "Frequency" = "Częstotliwość";
 "Friday" = "Piątek";
 "Friends" = "Znajomi";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "Wysokość głosu pozostaje naturalna przy każdej prędkości.";
 "Place the story list controls above or below the stories" = "Umieść elementy sterujące listą artykułów nad artykułami lub pod nimi";
 "Play" = "Odtwórz";
+"Play Last" = "Odtwórz ostatni";
+"Play Next" = "Odtwórz następny";
 "Play again" = "Odtwórz ponownie";
+"Play audio" = "Odtwórz dźwięk";
 "Play now" = "Odtwórz teraz";
 "Play the next unread story" = "Odtwórz następny nieprzeczytany artykuł";
 "Play videos" = "Odtwarzaj filmy";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Wariant motywu dla jasnego trybu";
 "Then from %@" = "Następnie z %@";
 "Then from this list" = "Następnie z tej listy";
+"This audio couldn't be played." = "Nie udało się odtworzyć tego dźwięku.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Spowoduje to usunięcie folderu i anulowanie subskrypcji witryn, które nie znajdują się w innym folderze.";
 "This feature requires iOS 15 or later." = "Ta funkcja wymaga systemu iOS 15 lub nowszego.";
 "This might take a minute.\nFeel free to continue..." = "To może chwilę potrwać.\nMożesz w tym czasie kontynuować...";

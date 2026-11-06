@@ -1544,6 +1544,9 @@ msgstr "Haber kaydedilmişlerden çıkarılamadı; bulunamadı"
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Stripe'a ulaşılamadı. Lütfen tekrar deneyin."
 
+msgid "Couldn't save the position"
+msgstr "Konum kaydedilemedi"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Hizmet dönemi: %(start)s &ndash; %(end)s"
@@ -3059,6 +3062,9 @@ msgstr "Geçersiz görsel dosyası"
 
 msgid "Invalid mute_duration_days"
 msgstr "Geçersiz mute_duration_days"
+
+msgid "Invalid position"
+msgstr "Geçersiz konum"
 
 msgid "Invalid request identifier"
 msgstr "Geçersiz istek tanımlayıcısı"
@@ -5841,6 +5847,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Teşekkürler!"
 
+msgid "That item isn't playing"
+msgstr "Bu öğe çalmıyor"
+
 msgid "That part of the story doesn't exist."
 msgstr "Haberin bu bölümü mevcut değil."
 
@@ -6424,6 +6433,9 @@ msgstr ""
 "daha birçok uygulamayla tam senkronizasyon desteği. Okunma durumunuz, kaydedilen haberleriniz ve eğitim "
 "tercihleriniz tüm uygulamalarda eşitlenir. NewsBlur'ın açık API'si onlarca üçüncü taraf uygulamaya güç "
 "verir."
+
+msgid "Use POST"
+msgstr "POST kullan"
 
 msgid "Use prompt templates"
 msgstr "İstem şablonlarını kullan"

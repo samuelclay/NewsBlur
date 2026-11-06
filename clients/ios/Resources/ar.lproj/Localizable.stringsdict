@@ -818,6 +818,30 @@
 			<string>نُشر أيضًا على %@ موقع</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>رجوع %@ ثوانٍ</string>
+			<key>many</key>
+			<string>رجوع %@ ثانية</string>
+			<key>one</key>
+			<string>رجوع %@ ثانية</string>
+			<key>other</key>
+			<string>رجوع %@ ثانية</string>
+			<key>two</key>
+			<string>رجوع %@ ثانيتين</string>
+			<key>zero</key>
+			<string>رجوع %@ ثانية</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -864,6 +888,30 @@
 			<string>متابعان</string>
 			<key>zero</key>
 			<string>متابعون</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>تقديم %@ ثوانٍ</string>
+			<key>many</key>
+			<string>تقديم %@ ثانية</string>
+			<key>one</key>
+			<string>تقديم %@ ثانية</string>
+			<key>other</key>
+			<string>تقديم %@ ثانية</string>
+			<key>two</key>
+			<string>تقديم %@ ثانيتين</string>
+			<key>zero</key>
+			<string>تقديم %@ ثانية</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

@@ -196,7 +196,7 @@
 "BEATS" = "ชนะ";
 "BRIEFING SETTINGS" = "การตั้งค่าสรุปข่าว";
 "Back" = "ย้อนกลับ";
-"Back 15 seconds" = "ย้อนกลับ 15 วินาที";
+"Back %@ seconds" = "ย้อนกลับ %@ วินาที";
 "Back to story titles" = "กลับไปยังชื่อเรื่อง";
 "Based on your interests" = "อิงตามความสนใจของคุณ";
 "Black" = "สีดำ";
@@ -428,7 +428,7 @@
 "Font…" = "แบบอักษร…";
 "Forgot Password?" = "ลืมรหัสผ่าน?";
 "Forgot your password?" = "ลืมรหัสผ่านใช่ไหม?";
-"Forward 30 seconds" = "กรอไปข้างหน้า 30 วินาที";
+"Forward %@ seconds" = "ข้ามไปข้างหน้า %@ วินาที";
 "Frequency" = "ความถี่";
 "Friday" = "วันศุกร์";
 "Friends" = "เพื่อน";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "ระดับเสียงยังคงเป็นธรรมชาติในทุกความเร็ว";
 "Place the story list controls above or below the stories" = "วางตัวควบคุมรายการบทความไว้เหนือหรือใต้บทความ";
 "Play" = "เล่น";
+"Play Last" = "เล่นต่อท้าย";
+"Play Next" = "เล่นถัดไป";
 "Play again" = "เล่นอีกครั้ง";
+"Play audio" = "เล่นเสียง";
 "Play now" = "เล่นตอนนี้";
 "Play the next unread story" = "เล่นบทความถัดไปที่ยังไม่อ่าน";
 "Play videos" = "เล่นวิดีโอ";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "รูปแบบธีมสำหรับโหมดสว่าง";
 "Then from %@" = "จากนั้นจาก %@";
 "Then from this list" = "จากนั้นจากรายการนี้";
+"This audio couldn't be played." = "เล่นเสียงนี้ไม่ได้";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "การดำเนินการนี้จะลบโฟลเดอร์และยกเลิกการติดตามเว็บไซต์ที่ไม่ได้อยู่ในโฟลเดอร์อื่น";
 "This feature requires iOS 15 or later." = "ฟีเจอร์นี้ต้องใช้ iOS 15 ขึ้นไป";
 "This might take a minute.\nFeel free to continue..." = "อาจใช้เวลาสักครู่\nทำอย่างอื่นต่อได้เลย...";

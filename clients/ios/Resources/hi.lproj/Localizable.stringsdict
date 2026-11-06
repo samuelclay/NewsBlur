@@ -546,6 +546,22 @@
 			<string>%@ अन्य साइटों पर भी प्रकाशित</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ सेकंड पीछे जाएँ</string>
+			<key>other</key>
+			<string>%@ सेकंड पीछे जाएँ</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -576,6 +592,22 @@
 			<string>फ़ॉलोअर</string>
 			<key>other</key>
 			<string>फ़ॉलोअर</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ सेकंड आगे बढ़ें</string>
+			<key>other</key>
+			<string>%@ सेकंड आगे बढ़ें</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

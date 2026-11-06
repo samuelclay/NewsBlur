@@ -1389,8 +1389,21 @@
     <string name="listen_error_rate_limited">אתה מתחיל כתבות מהר יותר ממה שההאזנה מסוגלת לעמוד בקצב. נסו שוב בעוד דקה.</string>
     <string name="listen_voice_label">קול: %1$s</string>
     <string name="listen_voice_settings">הגדרות קול</string>
-    <string name="listen_skip_back">אחורה 15 שניות</string>
-    <string name="listen_skip_forward">דילוג קדימה ב־30 שניות</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="one">אחורה %1$d שנייה</item>
+        <item quantity="other">אחורה %1$d שניות</item>
+        <item quantity="two">אחורה %1$d שניות</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="one">קדימה %1$d שנייה</item>
+        <item quantity="other">קדימה %1$d שניות</item>
+        <item quantity="two">קדימה %1$d שניות</item>
+    </plurals>
+    <string name="listen_media_play">הפעלת שמע</string>
+    <string name="listen_media_play_next">הפעל כבא בתור</string>
+    <string name="listen_media_play_last">הפעל בסוף התור</string>
+    <string name="listen_media_loading">השמע נטען…</string>
+    <string name="listen_media_error">אי אפשר להפעיל את השמע. בדקו את החיבור ונסו שוב.</string>
     <string name="listen_next_story">הכתבה הבאה</string>
     <string name="listen_up_next">הבא בתור</string>
     <string name="listen_up_next_empty">אין עוד כתבות שלא נקראו ברשימה הזו.</string>

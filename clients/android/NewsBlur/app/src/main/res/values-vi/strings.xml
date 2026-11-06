@@ -1337,8 +1337,17 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="listen_error_rate_limited">Bạn đang bắt đầu bài viết nhanh hơn tốc độ Listen có thể xử lý. Hãy thử lại sau một phút.</string>
     <string name="listen_voice_label">Giọng đọc: %1$s</string>
     <string name="listen_voice_settings">Cài đặt giọng đọc</string>
-    <string name="listen_skip_back">Lùi 15 giây</string>
-    <string name="listen_skip_forward">Tua tới 30 giây</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="other">Lùi %1$d giây</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="other">Tiến %1$d giây</item>
+    </plurals>
+    <string name="listen_media_play">Phát âm thanh</string>
+    <string name="listen_media_play_next">Phát tiếp theo</string>
+    <string name="listen_media_play_last">Phát cuối cùng</string>
+    <string name="listen_media_loading">Đang tải âm thanh…</string>
+    <string name="listen_media_error">Không thể phát âm thanh này. Hãy kiểm tra kết nối rồi thử lại.</string>
     <string name="listen_next_story">Bài viết tiếp theo</string>
     <string name="listen_up_next">Tiếp theo</string>
     <string name="listen_up_next_empty">Không còn bài viết chưa đọc nào trong danh sách này.</string>

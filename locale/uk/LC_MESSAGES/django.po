@@ -1584,6 +1584,9 @@ msgstr "Не вдалося прибрати статтю зі збережен�
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Не вдалося зв’язатися зі Stripe. Спробуйте ще раз."
 
+msgid "Couldn't save the position"
+msgstr "Не вдалося зберегти позицію"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Період дії: %(start)s &ndash; %(end)s"
@@ -3120,6 +3123,9 @@ msgstr "Недійсний файл зображення"
 
 msgid "Invalid mute_duration_days"
 msgstr "Недійсне значення mute_duration_days"
+
+msgid "Invalid position"
+msgstr "Неприпустима позиція"
 
 msgid "Invalid request identifier"
 msgstr "Недійсний ідентифікатор запиту"
@@ -5918,6 +5924,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Дякуємо!"
 
+msgid "That item isn't playing"
+msgstr "Цей елемент не відтворюється"
+
 msgid "That part of the story doesn't exist."
 msgstr "Цієї частини статті не існує."
 
@@ -6521,6 +6530,9 @@ msgstr ""
 "Користуйтеся NewsBlur у своїх улюблених застосунках для читання. Повна синхронізація з Reeder, ReadKit, "
 "Unread, lire, Fiery Feeds, Newsify та багатьма іншими. Статус прочитання, збережені статті та навчання "
 "синхронізуються в усіх застосунках. Відкритий API NewsBlur дає змогу працювати десяткам сторонніх клієнтів."
+
+msgid "Use POST"
+msgstr "Використати POST"
 
 msgid "Use prompt templates"
 msgstr "Використовувати шаблони запитів"

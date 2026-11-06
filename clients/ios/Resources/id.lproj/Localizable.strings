@@ -196,7 +196,7 @@
 "BEATS" = "MENGALAHKAN";
 "BRIEFING SETTINGS" = "PENGATURAN RINGKASAN";
 "Back" = "Kembali";
-"Back 15 seconds" = "Mundur 15 detik";
+"Back %@ seconds" = "Mundur %@ detik";
 "Back to story titles" = "Kembali ke judul artikel";
 "Based on your interests" = "Berdasarkan minat Anda";
 "Black" = "Hitam";
@@ -428,7 +428,7 @@
 "Font…" = "Font…";
 "Forgot Password?" = "Lupa Kata Sandi?";
 "Forgot your password?" = "Lupa kata sandi?";
-"Forward 30 seconds" = "Maju 30 detik";
+"Forward %@ seconds" = "Maju %@ detik";
 "Frequency" = "Frekuensi";
 "Friday" = "Jumat";
 "Friends" = "Teman";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "Nada suara tetap alami pada setiap kecepatan.";
 "Place the story list controls above or below the stories" = "Letakkan kontrol daftar artikel di atas atau di bawah artikel";
 "Play" = "Putar";
+"Play Last" = "Putar Terakhir";
+"Play Next" = "Putar Berikutnya";
 "Play again" = "Putar lagi";
+"Play audio" = "Putar audio";
 "Play now" = "Putar sekarang";
 "Play the next unread story" = "Putar artikel belum dibaca berikutnya";
 "Play videos" = "Putar video";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Varian tema untuk mode terang";
 "Then from %@" = "Lalu dari %@";
 "Then from this list" = "Lalu dari daftar ini";
+"This audio couldn't be played." = "Audio ini tidak dapat diputar.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Ini akan menghapus folder dan berhenti berlangganan dari situs yang tidak ada di folder lain.";
 "This feature requires iOS 15 or later." = "Fitur ini memerlukan iOS 15 atau lebih baru.";
 "This might take a minute.\nFeel free to continue..." = "Ini mungkin memerlukan waktu sebentar.\nSilakan lanjutkan...";

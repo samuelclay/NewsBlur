@@ -1531,6 +1531,9 @@ msgstr "Không thể bỏ lưu bài viết, không tìm thấy bài viết"
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Không thể kết nối với Stripe. Vui lòng thử lại."
 
+msgid "Couldn't save the position"
+msgstr "Không thể lưu vị trí"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Khoảng thời gian: %(start)s &ndash; %(end)s"
@@ -3044,6 +3047,9 @@ msgstr "Tệp hình ảnh không hợp lệ"
 
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days không hợp lệ"
+
+msgid "Invalid position"
+msgstr "Vị trí không hợp lệ"
 
 msgid "Invalid request identifier"
 msgstr "Mã định danh yêu cầu không hợp lệ"
@@ -5812,6 +5818,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Cảm ơn!"
 
+msgid "That item isn't playing"
+msgstr "Mục đó không phát"
+
 msgid "That part of the story doesn't exist."
 msgstr "Phần đó của bài viết không tồn tại."
 
@@ -6394,6 +6403,9 @@ msgstr ""
 "Dùng NewsBlur với các ứng dụng đọc yêu thích của bạn. Hỗ trợ đồng bộ đầy đủ cho Reeder, ReadKit, Unread, "
 "lire, Fiery Feeds, Newsify và nhiều ứng dụng khác. Trạng thái đã đọc, bài viết đã lưu và dữ liệu huấn luyện"
 " của bạn được đồng bộ trên mọi ứng dụng. API mở của NewsBlur hỗ trợ hàng chục ứng dụng bên thứ ba."
+
+msgid "Use POST"
+msgstr "Dùng POST"
 
 msgid "Use prompt templates"
 msgstr "Sử dụng mẫu câu lệnh"

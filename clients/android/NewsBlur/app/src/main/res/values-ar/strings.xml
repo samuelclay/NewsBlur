@@ -1467,8 +1467,27 @@
     <string name="listen_error_rate_limited">تبدأ القصص بوتيرة أسرع مما يستطيع الاستماع مواكبته. حاول مرة أخرى بعد دقيقة.</string>
     <string name="listen_voice_label">الصوت: %1$s</string>
     <string name="listen_voice_settings">إعدادات الصوت</string>
-    <string name="listen_skip_back">رجوع 15 ثانية</string>
-    <string name="listen_skip_forward">تقديم 30 ثانية</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="few">رجوع %1$d ثوانٍ</item>
+        <item quantity="many">رجوع %1$d ثانية</item>
+        <item quantity="one">رجوع %1$d ثانية</item>
+        <item quantity="other">رجوع %1$d ثانية</item>
+        <item quantity="two">رجوع %1$d ثانيتين</item>
+        <item quantity="zero">رجوع %1$d ثانية</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="few">تقديم %1$d ثوانٍ</item>
+        <item quantity="many">تقديم %1$d ثانية</item>
+        <item quantity="one">تقديم %1$d ثانية</item>
+        <item quantity="other">تقديم %1$d ثانية</item>
+        <item quantity="two">تقديم %1$d ثانيتين</item>
+        <item quantity="zero">تقديم %1$d ثانية</item>
+    </plurals>
+    <string name="listen_media_play">تشغيل الصوت</string>
+    <string name="listen_media_play_next">تشغيل التالي</string>
+    <string name="listen_media_play_last">تشغيل الأخير</string>
+    <string name="listen_media_loading">جارٍ تحميل الصوت…</string>
+    <string name="listen_media_error">تعذّر تشغيل هذا الصوت. تحقق من اتصالك وحاول مرة أخرى.</string>
     <string name="listen_next_story">القصة التالية</string>
     <string name="listen_up_next">التالي</string>
     <string name="listen_up_next_empty">لا مزيد من القصص غير المقروءة في هذه القائمة.</string>

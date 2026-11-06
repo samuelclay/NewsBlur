@@ -1425,6 +1425,9 @@ msgstr "找不到文章，無法取消儲存"
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "無法連線至 Stripe。請再試一次。"
 
+msgid "Couldn't save the position"
+msgstr "無法儲存播放位置"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "涵蓋期間：%(start)s &ndash; %(end)s"
@@ -2821,6 +2824,9 @@ msgstr "圖片檔案無效"
 
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days 無效"
+
+msgid "Invalid position"
+msgstr "播放位置無效"
 
 msgid "Invalid request identifier"
 msgstr "無效的請求識別碼"
@@ -5370,6 +5376,9 @@ msgstr "感謝你試用 NewsBlur！希望 NewsBlur 能讓你的日常閱讀更�
 msgid "Thanks!"
 msgstr "謝謝！"
 
+msgid "That item isn't playing"
+msgstr "該項目目前未播放"
+
 msgid "That part of the story doesn't exist."
 msgstr "文章的這個部分不存在。"
 
@@ -5893,6 +5902,9 @@ msgid ""
 msgstr ""
 "在你最喜愛的閱讀應用程式中使用 NewsBlur。完整支援與 Reeder、ReadKit、Unread、lire、Fiery Feeds、Newsify "
 "等眾多應用程式同步。你的已讀狀態、已儲存文章和訓練資料會在所有應用程式間同步。NewsBlur 的開放 API 為數十款第三方用戶端提供支援。"
+
+msgid "Use POST"
+msgstr "使用 POST"
 
 msgid "Use prompt templates"
 msgstr "使用提示範本"

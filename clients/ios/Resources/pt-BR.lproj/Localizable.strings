@@ -196,7 +196,7 @@
 "BEATS" = "VENCE";
 "BRIEFING SETTINGS" = "CONFIGURAÇÕES DO RESUMO";
 "Back" = "Voltar";
-"Back 15 seconds" = "Voltar 15 segundos";
+"Back %@ seconds" = "Voltar %@ segundos";
 "Back to story titles" = "Voltar aos títulos dos artigos";
 "Based on your interests" = "Com base nos seus interesses";
 "Black" = "Preto";
@@ -428,7 +428,7 @@
 "Font…" = "Fonte…";
 "Forgot Password?" = "Esqueceu a senha?";
 "Forgot your password?" = "Esqueceu sua senha?";
-"Forward 30 seconds" = "Avançar 30 segundos";
+"Forward %@ seconds" = "Avançar %@ segundos";
 "Frequency" = "Frequência";
 "Friday" = "Sexta-feira";
 "Friends" = "Amigos";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "A entonação permanece natural em qualquer velocidade.";
 "Place the story list controls above or below the stories" = "Posicione os controles da lista de artigos acima ou abaixo dos artigos";
 "Play" = "Reproduzir";
+"Play Last" = "Reproduzir último";
+"Play Next" = "Reproduzir próximo";
 "Play again" = "Reproduzir novamente";
+"Play audio" = "Reproduzir áudio";
 "Play now" = "Reproduzir agora";
 "Play the next unread story" = "Reproduzir o próximo artigo não lido";
 "Play videos" = "Reproduzir vídeos";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Variante de tema para o modo claro";
 "Then from %@" = "Depois, de %@";
 "Then from this list" = "Depois, desta lista";
+"This audio couldn't be played." = "Não foi possível reproduzir este áudio.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Isso exclui a pasta e cancela a assinatura dos sites que não estejam em outra pasta.";
 "This feature requires iOS 15 or later." = "Este recurso requer o iOS 15 ou posterior.";
 "This might take a minute.\nFeel free to continue..." = "Isso pode levar um minuto.\nEnquanto isso, pode continuar...";

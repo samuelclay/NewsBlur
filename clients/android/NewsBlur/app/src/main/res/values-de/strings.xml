@@ -1363,8 +1363,19 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="listen_error_rate_limited">Du startest Artikel schneller, als Listen mithalten kann. Versuch es in einer Minute noch einmal.</string>
     <string name="listen_voice_label">Stimme: %1$s</string>
     <string name="listen_voice_settings">Stimmeinstellungen</string>
-    <string name="listen_skip_back">15 Sekunden zurück</string>
-    <string name="listen_skip_forward">30 Sekunden vorspulen</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="one">%1$d Sekunde zurück</item>
+        <item quantity="other">%1$d Sekunden zurück</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="one">%1$d Sekunde vorspulen</item>
+        <item quantity="other">%1$d Sekunden vorspulen</item>
+    </plurals>
+    <string name="listen_media_play">Audio abspielen</string>
+    <string name="listen_media_play_next">Als Nächstes abspielen</string>
+    <string name="listen_media_play_last">Zuletzt abspielen</string>
+    <string name="listen_media_loading">Audio wird geladen…</string>
+    <string name="listen_media_error">Audio konnte nicht abgespielt werden. Überprüfe deine Verbindung und versuche es erneut.</string>
     <string name="listen_next_story">Nächster Artikel</string>
     <string name="listen_up_next">Als Nächstes</string>
     <string name="listen_up_next_empty">Keine ungelesenen Artikel mehr in dieser Liste.</string>

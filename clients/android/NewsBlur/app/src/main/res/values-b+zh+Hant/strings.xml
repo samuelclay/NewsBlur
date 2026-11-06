@@ -1337,8 +1337,17 @@
     <string name="listen_error_rate_limited">你開始文章的速度超過 Listen 的處理速度。請一分鐘後再試。</string>
     <string name="listen_voice_label">語音：%1$s</string>
     <string name="listen_voice_settings">語音設定</string>
-    <string name="listen_skip_back">倒退 15 秒</string>
-    <string name="listen_skip_forward">快轉 30 秒</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="other">往回 %1$d 秒</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="other">往前 %1$d 秒</item>
+    </plurals>
+    <string name="listen_media_play">播放音訊</string>
+    <string name="listen_media_play_next">播放下一首</string>
+    <string name="listen_media_play_last">播放最後一首</string>
+    <string name="listen_media_loading">正在載入音訊…</string>
+    <string name="listen_media_error">無法播放這段音訊。請檢查網路連線後再試一次。</string>
     <string name="listen_next_story">下一篇文章</string>
     <string name="listen_up_next">接下來播放</string>
     <string name="listen_up_next_empty">此清單中沒有更多未讀文章。</string>

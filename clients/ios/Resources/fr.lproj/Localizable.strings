@@ -196,7 +196,7 @@
 "BEATS" = "L’EMPORTE SUR";
 "BRIEFING SETTINGS" = "PARAMÈTRES DU BRIEFING";
 "Back" = "Retour";
-"Back 15 seconds" = "Reculer de 15 secondes";
+"Back %@ seconds" = "Reculer de %@ secondes";
 "Back to story titles" = "Retour aux titres des articles";
 "Based on your interests" = "Selon vos centres d’intérêt";
 "Black" = "Noir";
@@ -428,7 +428,7 @@
 "Font…" = "Police…";
 "Forgot Password?" = "Mot de passe oublié ?";
 "Forgot your password?" = "Mot de passe oublié ?";
-"Forward 30 seconds" = "Avancer de 30 secondes";
+"Forward %@ seconds" = "Avancer de %@ secondes";
 "Frequency" = "Fréquence";
 "Friday" = "Vendredi";
 "Friends" = "Amis";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "La hauteur reste naturelle à toutes les vitesses.";
 "Place the story list controls above or below the stories" = "Placer les commandes de la liste des articles au-dessus ou en dessous des articles";
 "Play" = "Lire";
+"Play Last" = "Lire le dernier";
+"Play Next" = "Lire le suivant";
 "Play again" = "Réécouter";
+"Play audio" = "Lire l’audio";
 "Play now" = "Lire maintenant";
 "Play the next unread story" = "Lire l’article non lu suivant";
 "Play videos" = "Lire les vidéos";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Variante de thème pour le mode clair";
 "Then from %@" = "Puis depuis %@";
 "Then from this list" = "Puis depuis cette liste";
+"This audio couldn't be played." = "Impossible de lire cet audio.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Cette action supprime le dossier et désabonne des sites qui ne se trouvent dans aucun autre dossier.";
 "This feature requires iOS 15 or later." = "Cette fonctionnalité nécessite iOS 15 ou une version ultérieure.";
 "This might take a minute.\nFeel free to continue..." = "Cela peut prendre une minute.\nVous pouvez continuer en attendant…";

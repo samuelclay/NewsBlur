@@ -196,7 +196,7 @@
 "BEATS" = "גובר על";
 "BRIEFING SETTINGS" = "הגדרות תדריך";
 "Back" = "חזרה";
-"Back 15 seconds" = "חזרה 15 שניות אחורה";
+"Back %@ seconds" = "אחורה %@ שניות";
 "Back to story titles" = "חזרה לכותרות הכתבות";
 "Based on your interests" = "על סמך תחומי העניין שלך";
 "Black" = "שחור";
@@ -428,7 +428,7 @@
 "Font…" = "גופן…";
 "Forgot Password?" = "שכחתם את הסיסמה?";
 "Forgot your password?" = "שכחת את הסיסמה?";
-"Forward 30 seconds" = "דילוג קדימה ב־30 שניות";
+"Forward %@ seconds" = "קדימה %@ שניות";
 "Frequency" = "תדירות";
 "Friday" = "יום שישי";
 "Friends" = "חברים";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "גובה הצליל נשאר טבעי בכל מהירות.";
 "Place the story list controls above or below the stories" = "הצג את הפקדים של רשימת הכתבות מעל הכתבות או מתחתיהן";
 "Play" = "הפעלה";
+"Play Last" = "הפעל בסוף התור";
+"Play Next" = "הפעל כבא בתור";
 "Play again" = "השמעה חוזרת";
+"Play audio" = "הפעלת שמע";
 "Play now" = "הפעלה עכשיו";
 "Play the next unread story" = "הפעלת הכתבה הבאה שלא נקראה";
 "Play videos" = "הפעלת סרטונים";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "וריאנט ערכת נושא למצב בהיר";
 "Then from %@" = "ואז מ־%@";
 "Then from this list" = "ואז מהרשימה הזו";
+"This audio couldn't be played." = "אי אפשר להפעיל את השמע הזה.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "מחיקת התיקייה תבטל את המינוי לאתרים שאינם נמצאים בתיקייה אחרת.";
 "This feature requires iOS 15 or later." = "התכונה הזו דורשת iOS 15 ואילך.";
 "This might take a minute.\nFeel free to continue..." = "זה עשוי לקחת דקה.\nאפשר להמשיך בינתיים...";

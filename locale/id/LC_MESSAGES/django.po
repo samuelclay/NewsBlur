@@ -1556,6 +1556,9 @@ msgstr "Tidak dapat membatalkan penyimpanan artikel, artikel tidak ditemukan"
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Tidak dapat terhubung ke Stripe. Silakan coba lagi."
 
+msgid "Couldn't save the position"
+msgstr "Posisi tidak dapat disimpan"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periode cakupan: %(start)s &ndash; %(end)s"
@@ -3082,6 +3085,9 @@ msgstr "Berkas gambar tidak valid"
 
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days tidak valid"
+
+msgid "Invalid position"
+msgstr "Posisi tidak valid"
 
 msgid "Invalid request identifier"
 msgstr "ID permintaan tidak valid"
@@ -5870,6 +5876,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Terima kasih!"
 
+msgid "That item isn't playing"
+msgstr "Item itu tidak sedang diputar"
+
 msgid "That part of the story doesn't exist."
 msgstr "Bagian artikel tersebut tidak ada."
 
@@ -6463,6 +6472,9 @@ msgstr ""
 "Gunakan NewsBlur dengan aplikasi membaca favorit Anda. Dukungan sinkronisasi penuh untuk Reeder, ReadKit, "
 "Unread, lire, Fiery Feeds, Newsify, dan banyak lagi. Status baca, artikel tersimpan, dan pelatihan Anda "
 "disinkronkan di semua aplikasi. API terbuka NewsBlur mendukung puluhan aplikasi pihak ketiga."
+
+msgid "Use POST"
+msgstr "Gunakan POST"
 
 msgid "Use prompt templates"
 msgstr "Gunakan templat prompt"

@@ -196,7 +196,7 @@
 "BEATS" = "＞";
 "BRIEFING SETTINGS" = "ブリーフィング設定";
 "Back" = "戻る";
-"Back 15 seconds" = "15秒戻る";
+"Back %@ seconds" = "%@秒戻る";
 "Back to story titles" = "記事タイトルに戻る";
 "Based on your interests" = "興味に基づく";
 "Black" = "黒";
@@ -428,7 +428,7 @@
 "Font…" = "フォント…";
 "Forgot Password?" = "パスワードをお忘れですか？";
 "Forgot your password?" = "パスワードをお忘れですか？";
-"Forward 30 seconds" = "30秒早送り";
+"Forward %@ seconds" = "%@秒進む";
 "Frequency" = "頻度";
 "Friday" = "金曜日";
 "Friends" = "友達";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "どの速度でも自然な高さの声で再生されます。";
 "Place the story list controls above or below the stories" = "記事リストの操作ボタンを記事の上または下に配置";
 "Play" = "再生";
+"Play Last" = "最後を再生";
+"Play Next" = "次を再生";
 "Play again" = "もう一度再生";
+"Play audio" = "音声を再生";
 "Play now" = "今すぐ再生";
 "Play the next unread story" = "次の未読記事を再生";
 "Play videos" = "動画の再生";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "ライトモードのテーマバリエーション";
 "Then from %@" = "%@から次に";
 "Then from this list" = "次にこのリストから";
+"This audio couldn't be played." = "この音声を再生できませんでした。";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "このフォルダーを削除すると、別のフォルダーに入っていないサイトの購読も解除されます。";
 "This feature requires iOS 15 or later." = "この機能にはiOS 15以降が必要です。";
 "This might take a minute.\nFeel free to continue..." = "1分ほどかかる場合があります。\nそのまま続けてご利用いただけます...";

@@ -1596,6 +1596,9 @@ msgstr "Nie udało się cofnąć zapisania artykułu — nie znaleziono go"
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Nie udało się połączyć ze Stripe. Spróbuj ponownie."
 
+msgid "Couldn't save the position"
+msgstr "Nie udało się zapisać pozycji"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Okres rozliczeniowy: %(start)s &ndash; %(end)s"
@@ -3133,6 +3136,9 @@ msgstr "Nieprawidłowy plik obrazu"
 
 msgid "Invalid mute_duration_days"
 msgstr "Nieprawidłowa wartość mute_duration_days"
+
+msgid "Invalid position"
+msgstr "Nieprawidłowa pozycja"
 
 msgid "Invalid request identifier"
 msgstr "Nieprawidłowy identyfikator żądania"
@@ -5953,6 +5959,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Dziękujemy!"
 
+msgid "That item isn't playing"
+msgstr "Ten element nie jest odtwarzany"
+
 msgid "That part of the story doesn't exist."
 msgstr "Ta część artykułu nie istnieje."
 
@@ -6548,6 +6557,9 @@ msgstr ""
 "ReadKit, Unread, lire, Fiery Feeds, Newsify i wieloma innymi. Stan przeczytania, zapisane artykuły i "
 "trening synchronizują się we wszystkich aplikacjach. Otwarty interfejs API NewsBlur obsługuje dziesiątki "
 "aplikacji innych firm."
+
+msgid "Use POST"
+msgstr "Użyj POST"
 
 msgid "Use prompt templates"
 msgstr "Użyj szablonów promptów"

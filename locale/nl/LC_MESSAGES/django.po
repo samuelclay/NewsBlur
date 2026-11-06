@@ -1554,6 +1554,9 @@ msgstr "Kan artikel niet uit opgeslagen artikelen verwijderen: niet gevonden"
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Er kon geen verbinding worden gemaakt met Stripe. Probeer het opnieuw."
 
+msgid "Couldn't save the position"
+msgstr "De positie kon niet worden opgeslagen"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periode: %(start)s &ndash; %(end)s"
@@ -3079,6 +3082,9 @@ msgstr "Ongeldig afbeeldingsbestand"
 
 msgid "Invalid mute_duration_days"
 msgstr "Ongeldige mute_duration_days"
+
+msgid "Invalid position"
+msgstr "Ongeldige positie"
 
 msgid "Invalid request identifier"
 msgstr "Ongeldige aanvraag-ID"
@@ -5868,6 +5874,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Bedankt!"
 
+msgid "That item isn't playing"
+msgstr "Dit item wordt niet afgespeeld"
+
 msgid "That part of the story doesn't exist."
 msgstr "Dat deel van het artikel bestaat niet."
 
@@ -6456,6 +6465,9 @@ msgstr ""
 "Gebruik NewsBlur met je favoriete leesapps. Volledige synchronisatie met Reeder, ReadKit, Unread, lire, "
 "Fiery Feeds, Newsify en nog veel meer. Je leesstatus, opgeslagen artikelen en training worden in al je apps"
 " gesynchroniseerd. De open API van NewsBlur ondersteunt tientallen apps van derden."
+
+msgid "Use POST"
+msgstr "POST gebruiken"
 
 msgid "Use prompt templates"
 msgstr "Promptsjablonen gebruiken"

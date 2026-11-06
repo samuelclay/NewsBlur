@@ -196,7 +196,7 @@
 "BEATS" = "WINT VAN";
 "BRIEFING SETTINGS" = "BRIEFINGINSTELLINGEN";
 "Back" = "Terug";
-"Back 15 seconds" = "15 seconden terug";
+"Back %@ seconds" = "%@ seconden terug";
 "Back to story titles" = "Terug naar de artikeltitels";
 "Based on your interests" = "Op basis van je interesses";
 "Black" = "Zwart";
@@ -428,7 +428,7 @@
 "Font…" = "Lettertype…";
 "Forgot Password?" = "Wachtwoord vergeten?";
 "Forgot your password?" = "Wachtwoord vergeten?";
-"Forward 30 seconds" = "30 seconden vooruit";
+"Forward %@ seconds" = "%@ seconden vooruit";
 "Frequency" = "Frequentie";
 "Friday" = "vrijdag";
 "Friends" = "Vrienden";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "De toonhoogte blijft bij elke snelheid natuurlijk.";
 "Place the story list controls above or below the stories" = "Plaats de bedieningselementen voor de artikellijst boven of onder de artikelen";
 "Play" = "Afspelen";
+"Play Last" = "Als laatste afspelen";
+"Play Next" = "Hierna afspelen";
 "Play again" = "Opnieuw afspelen";
+"Play audio" = "Audio afspelen";
 "Play now" = "Nu afspelen";
 "Play the next unread story" = "Volgende ongelezen artikel afspelen";
 "Play videos" = "Video’s afspelen";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Themavariant voor lichte modus";
 "Then from %@" = "Daarna uit %@";
 "Then from this list" = "Daarna uit deze lijst";
+"This audio couldn't be played." = "Deze audio kan niet worden afgespeeld.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Hiermee verwijder je de map en zeg je het abonnement op van sites die niet in een andere map staan.";
 "This feature requires iOS 15 or later." = "Voor deze functie is iOS 15 of hoger vereist.";
 "This might take a minute.\nFeel free to continue..." = "Dit kan een minuut duren.\nGa gerust verder...";

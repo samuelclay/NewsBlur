@@ -1337,8 +1337,17 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="listen_error_rate_limited">Anda memulai artikel lebih cepat daripada kemampuan Dengarkan untuk memprosesnya. Coba lagi dalam satu menit.</string>
     <string name="listen_voice_label">Suara: %1$s</string>
     <string name="listen_voice_settings">Pengaturan suara</string>
-    <string name="listen_skip_back">Mundur 15 detik</string>
-    <string name="listen_skip_forward">Maju 30 detik</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="other">Mundur %1$d detik</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="other">Maju %1$d detik</item>
+    </plurals>
+    <string name="listen_media_play">Putar audio</string>
+    <string name="listen_media_play_next">Putar Berikutnya</string>
+    <string name="listen_media_play_last">Putar Terakhir</string>
+    <string name="listen_media_loading">Memuat audio…</string>
+    <string name="listen_media_error">Audio ini tidak dapat diputar. Periksa koneksi Anda dan coba lagi.</string>
     <string name="listen_next_story">Artikel berikutnya</string>
     <string name="listen_up_next">Berikutnya</string>
     <string name="listen_up_next_empty">Tidak ada lagi artikel belum dibaca dalam daftar ini.</string>

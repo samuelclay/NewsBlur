@@ -196,7 +196,7 @@
 "BEATS" = "СИЛЬНЕЕ";
 "BRIEFING SETTINGS" = "НАСТРОЙКИ СВОДКИ";
 "Back" = "Назад";
-"Back 15 seconds" = "Назад на 15 секунд";
+"Back %@ seconds" = "Назад на %@ секунд";
 "Back to story titles" = "Вернуться к заголовкам статей";
 "Based on your interests" = "На основе ваших интересов";
 "Black" = "Чёрная";
@@ -428,7 +428,7 @@
 "Font…" = "Шрифт…";
 "Forgot Password?" = "Забыли пароль?";
 "Forgot your password?" = "Забыли пароль?";
-"Forward 30 seconds" = "Перемотать вперёд на 30 секунд";
+"Forward %@ seconds" = "Вперёд на %@ секунд";
 "Frequency" = "Частота";
 "Friday" = "Пятница";
 "Friends" = "Друзья";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "Тембр остаётся естественным на любой скорости.";
 "Place the story list controls above or below the stories" = "Разместить панель управления списком статей над статьями или под ними";
 "Play" = "Воспроизвести";
+"Play Last" = "Воспроизвести последним";
+"Play Next" = "Воспроизвести следующим";
 "Play again" = "Воспроизвести ещё раз";
+"Play audio" = "Воспроизвести аудио";
 "Play now" = "Воспроизвести сейчас";
 "Play the next unread story" = "Включить следующую непрочитанную статью";
 "Play videos" = "Воспроизведение видео";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Вариант темы для светлого режима";
 "Then from %@" = "Затем из %@";
 "Then from this list" = "Затем из этого списка";
+"This audio couldn't be played." = "Не удалось воспроизвести это аудио.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Папка будет удалена, а подписки на сайты, которые не входят в другие папки, будут отменены.";
 "This feature requires iOS 15 or later." = "Для этой функции требуется iOS 15 или новее.";
 "This might take a minute.\nFeel free to continue..." = "Это может занять минуту.\nМожете пока продолжить…";

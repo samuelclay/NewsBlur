@@ -1337,8 +1337,17 @@
     <string name="listen_error_rate_limited">Listen이 따라갈 수 있는 속도보다 스토리를 더 빠르게 시작하고 있습니다. 1분 후에 다시 시도하세요.</string>
     <string name="listen_voice_label">음성: %1$s</string>
     <string name="listen_voice_settings">음성 설정</string>
-    <string name="listen_skip_back">15초 뒤로</string>
-    <string name="listen_skip_forward">30초 앞으로 건너뛰기</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="other">%1$d초 뒤로</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="other">%1$d초 앞으로</item>
+    </plurals>
+    <string name="listen_media_play">오디오 재생</string>
+    <string name="listen_media_play_next">다음 재생</string>
+    <string name="listen_media_play_last">마지막 재생</string>
+    <string name="listen_media_loading">오디오를 불러오는 중…</string>
+    <string name="listen_media_error">오디오를 재생할 수 없습니다. 연결을 확인하고 다시 시도하세요.</string>
     <string name="listen_next_story">다음 스토리</string>
     <string name="listen_up_next">다음 재생</string>
     <string name="listen_up_next_empty">이 목록에 읽지 않은 스토리가 더 이상 없습니다.</string>

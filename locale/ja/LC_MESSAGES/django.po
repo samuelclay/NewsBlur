@@ -1420,6 +1420,9 @@ msgstr "記事を保存解除できませんでした。見つかりません。
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Stripeに接続できませんでした。もう一度お試しください。"
 
+msgid "Couldn't save the position"
+msgstr "位置を保存できませんでした"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "対象期間: %(start)s &ndash; %(end)s"
@@ -2806,6 +2809,9 @@ msgstr "無効な画像ファイル"
 
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days が無効です"
+
+msgid "Invalid position"
+msgstr "無効な位置です"
 
 msgid "Invalid request identifier"
 msgstr "無効なリクエスト識別子"
@@ -5321,6 +5327,9 @@ msgstr "NewsBlurをお試しいただきありがとうございます！NewsBlu
 msgid "Thanks!"
 msgstr "ありがとうございます！"
 
+msgid "That item isn't playing"
+msgstr "その項目は再生中ではありません"
+
 msgid "That part of the story doesn't exist."
 msgstr "記事のその部分は存在しません。"
 
@@ -5846,6 +5855,9 @@ msgid ""
 msgstr ""
 "お気に入りの読書アプリでNewsBlurを使いましょう。Reeder、ReadKit、Unread、lire、Fiery "
 "Feeds、Newsifyなど、多数のアプリと完全に同期できます。既読状態、保存した記事、学習内容はすべてのアプリ間で同期されます。NewsBlurのオープンAPIを使ったサードパーティ製クライアントは数十種類あります。"
+
+msgid "Use POST"
+msgstr "POSTを使用"
 
 msgid "Use prompt templates"
 msgstr "プロンプトテンプレートを使用"

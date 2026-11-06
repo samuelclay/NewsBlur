@@ -196,7 +196,7 @@
 "BEATS" = "ПЕРЕВАЖАЄ";
 "BRIEFING SETTINGS" = "НАЛАШТУВАННЯ ОГЛЯДУ";
 "Back" = "Назад";
-"Back 15 seconds" = "Назад на 15 секунд";
+"Back %@ seconds" = "Перемотати назад на %@ секунд";
 "Back to story titles" = "Назад до заголовків статей";
 "Based on your interests" = "На основі ваших інтересів";
 "Black" = "Чорна";
@@ -428,7 +428,7 @@
 "Font…" = "Шрифт…";
 "Forgot Password?" = "Забули пароль?";
 "Forgot your password?" = "Забули пароль?";
-"Forward 30 seconds" = "Перемотати вперед на 30 секунд";
+"Forward %@ seconds" = "Перемотати вперед на %@ секунд";
 "Frequency" = "Частота";
 "Friday" = "П’ятниця";
 "Friends" = "Друзі";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "Висота тону залишається природною на будь-якій швидкості.";
 "Place the story list controls above or below the stories" = "Розмістити елементи керування списком статей над статтями або під ними";
 "Play" = "Відтворити";
+"Play Last" = "Відтворити останнє";
+"Play Next" = "Відтворити наступне";
 "Play again" = "Відтворити ще раз";
+"Play audio" = "Відтворити аудіо";
 "Play now" = "Відтворити зараз";
 "Play the next unread story" = "Відтворити наступну непрочитану статтю";
 "Play videos" = "Відтворення відео";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Варіант теми для світлого режиму";
 "Then from %@" = "Потім із %@";
 "Then from this list" = "Потім із цього списку";
+"This audio couldn't be played." = "Не вдалося відтворити це аудіо.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Це видалить папку й скасує підписку на сайти, які не містяться в інших папках.";
 "This feature requires iOS 15 or later." = "Для цієї функції потрібна iOS 15 або новіша версія.";
 "This might take a minute.\nFeel free to continue..." = "Це може зайняти хвилину.\nМожете поки продовжити…";

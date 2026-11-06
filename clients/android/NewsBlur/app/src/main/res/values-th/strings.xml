@@ -1337,8 +1337,17 @@
     <string name="listen_error_rate_limited">คุณกำลังเริ่มบทความเร็วกว่าที่ฟังก์ชันฟังจะตามทัน โปรดลองอีกครั้งในอีกหนึ่งนาที</string>
     <string name="listen_voice_label">เสียง: %1$s</string>
     <string name="listen_voice_settings">การตั้งค่าเสียง</string>
-    <string name="listen_skip_back">ย้อนกลับ 15 วินาที</string>
-    <string name="listen_skip_forward">กรอไปข้างหน้า 30 วินาที</string>
+    <plurals name="listen_skip_back_seconds">
+        <item quantity="other">ย้อนกลับ %1$d วินาที</item>
+    </plurals>
+    <plurals name="listen_skip_forward_seconds">
+        <item quantity="other">ข้ามไปข้างหน้า %1$d วินาที</item>
+    </plurals>
+    <string name="listen_media_play">เล่นเสียง</string>
+    <string name="listen_media_play_next">เล่นถัดไป</string>
+    <string name="listen_media_play_last">เล่นต่อท้าย</string>
+    <string name="listen_media_loading">กำลังโหลดเสียง…</string>
+    <string name="listen_media_error">เล่นเสียงนี้ไม่ได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</string>
     <string name="listen_next_story">บทความถัดไป</string>
     <string name="listen_up_next">ถัดไป</string>
     <string name="listen_up_next_empty">ไม่มีบทความที่ยังไม่อ่านเหลือในรายการนี้</string>

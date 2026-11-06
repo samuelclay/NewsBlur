@@ -196,7 +196,7 @@
 "BEATS" = ">";
 "BRIEFING SETTINGS" = "브리핑 설정";
 "Back" = "뒤로";
-"Back 15 seconds" = "15초 뒤로";
+"Back %@ seconds" = "%@초 뒤로";
 "Back to story titles" = "스토리 제목으로 돌아가기";
 "Based on your interests" = "관심사 기반";
 "Black" = "검정";
@@ -428,7 +428,7 @@
 "Font…" = "글꼴…";
 "Forgot Password?" = "비밀번호를 잊으셨나요?";
 "Forgot your password?" = "비밀번호를 잊으셨나요?";
-"Forward 30 seconds" = "30초 앞으로";
+"Forward %@ seconds" = "%@초 앞으로";
 "Frequency" = "빈도";
 "Friday" = "금요일";
 "Friends" = "친구";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "모든 속도에서 음높이가 자연스럽게 유지됩니다.";
 "Place the story list controls above or below the stories" = "스토리 목록 컨트롤을 스토리 위나 아래에 배치";
 "Play" = "재생";
+"Play Last" = "마지막 재생";
+"Play Next" = "다음 재생";
 "Play again" = "다시 재생";
+"Play audio" = "오디오 재생";
 "Play now" = "지금 재생";
 "Play the next unread story" = "다음 읽지 않은 스토리 재생";
 "Play videos" = "동영상 재생";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "라이트 모드 테마 변형";
 "Then from %@" = "%@에서 이어서";
 "Then from this list" = "그런 다음 이 목록에서";
+"This audio couldn't be played." = "이 오디오를 재생할 수 없습니다.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "이 작업을 수행하면 폴더가 삭제되고 다른 폴더에 없는 사이트의 구독이 취소됩니다.";
 "This feature requires iOS 15 or later." = "이 기능을 사용하려면 iOS 15 이상이 필요합니다.";
 "This might take a minute.\nFeel free to continue..." = "1분 정도 걸릴 수 있습니다.\n계속 이용하셔도 됩니다...";

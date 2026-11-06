@@ -196,7 +196,7 @@
 "BEATS" = ">";
 "BRIEFING SETTINGS" = "GÜNLÜK ÖZET AYARLARI";
 "Back" = "Geri";
-"Back 15 seconds" = "15 saniye geri";
+"Back %@ seconds" = "%@ saniye geri";
 "Back to story titles" = "Haber başlıklarına dön";
 "Based on your interests" = "İlgi alanlarınıza göre";
 "Black" = "Siyah";
@@ -428,7 +428,7 @@
 "Font…" = "Yazı tipi…";
 "Forgot Password?" = "Şifrenizi mi unuttunuz?";
 "Forgot your password?" = "Şifrenizi mi unuttunuz?";
-"Forward 30 seconds" = "30 saniye ileri sar";
+"Forward %@ seconds" = "%@ saniye ileri";
 "Frequency" = "Sıklık";
 "Friday" = "Cuma";
 "Friends" = "Arkadaşlar";
@@ -776,7 +776,10 @@
 "Pitch stays natural at every speed." = "Her hızda ses perdesi doğal kalır.";
 "Place the story list controls above or below the stories" = "Haber listesi denetimlerini haberlerin üstüne veya altına yerleştir";
 "Play" = "Oynat";
+"Play Last" = "Sonuncuyu oynat";
+"Play Next" = "Sonrakini oynat";
 "Play again" = "Yeniden oynat";
+"Play audio" = "Ses çal";
 "Play now" = "Şimdi oynat";
 "Play the next unread story" = "Sonraki okunmamış haberi oynat";
 "Play videos" = "Videoları oynat";
@@ -1117,6 +1120,7 @@
 "Theme variant for light mode" = "Açık mod için tema çeşidi";
 "Then from %@" = "Ardından %@";
 "Then from this list" = "Ardından bu listeden";
+"This audio couldn't be played." = "Bu ses çalınamadı.";
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Bu işlem klasörü siler ve başka bir klasörde bulunmayan sitelerin aboneliğini iptal eder.";
 "This feature requires iOS 15 or later." = "Bu özellik için iOS 15 veya üzeri gerekir.";
 "This might take a minute.\nFeel free to continue..." = "Bu işlem bir dakika sürebilir.\nBu sırada devam edebilirsiniz...";
