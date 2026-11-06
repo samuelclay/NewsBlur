@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 import redis
 from django.conf import settings
@@ -87,12 +88,46 @@ class Test_SyncPlaybackPosition(TestCase):
         state = MMediaPlaybackState.get_state_with_redis_position(self.user.pk)
         self.assertEqual(state["current_position"], 0)
 
-    def test_requires_a_post_and_a_number(self):
+    def test_bad_requests_are_retryable_not_a_takeover(self):
+        # Code -1 tells the apps another device took over and stops their syncing, so it's kept for that.
         self.assertEqual(
-            json.loads(self.client.get("/media_player/sync_playback_position").content)["code"], -1
+            json.loads(self.client.get("/media_player/sync_playback_position").content)["code"], 0
         )
         response = self.sync(media_url="https://example.com/episode.mp3", position="soon")
+        self.assertEqual(response["code"], 0)
+
+    def test_a_redis_failure_is_retryable_not_a_takeover(self):
+        with patch("redis.Redis.transaction", side_effect=redis.ConnectionError("down")):
+            response = self.sync(media_url="https://example.com/episode.mp3", position=125.5)
+        self.assertEqual(response["code"], 0)
+        self.assertEqual(self.sync(media_url="https://example.com/episode.mp3", position=130)["code"], 1)
+
+    def test_an_item_switch_after_the_check_keeps_the_old_items_position_out(self):
+        # Another device's save of a new item lands between this sync's MongoDB check and its Redis write.
+        self.redis.hset(
+            self.redis_key, mapping={"media_url": "https://example.com/next.mp3", "position": "5.0"}
+        )
+        response = self.sync(media_url="https://example.com/episode.mp3", position=900)
         self.assertEqual(response["code"], -1)
+        self.assertEqual(self.redis.hget(self.redis_key, "position"), "5.0")
+
+    def test_a_hash_naming_another_item_is_not_applied(self):
+        self.redis.hset(
+            self.redis_key, mapping={"media_url": "https://example.com/older.mp3", "position": "500"}
+        )
+        state = MMediaPlaybackState.get_state_with_redis_position(self.user.pk)
+        self.assertEqual(state["current_position"], 0)
+
+    def test_a_new_item_does_not_inherit_the_previous_items_position(self):
+        self.sync(media_url="https://example.com/episode.mp3", position=125.5, duration=3600)
+        self.client.post(
+            "/media_player/save_playback_state",
+            {"current_media_url": "https://example.com/next.mp3", "current_media_type": "podcast"},
+        )
+        state = MMediaPlaybackState.get_state_with_redis_position(self.user.pk)
+        self.assertEqual(state["current_media_url"], "https://example.com/next.mp3")
+        self.assertEqual(state["current_position"], 0)
+        self.assertEqual(self.redis.hget(self.redis_key, "media_url"), "https://example.com/next.mp3")
 
     def test_requires_login(self):
         anonymous = Client(HTTP_USER_AGENT=USER_AGENT)

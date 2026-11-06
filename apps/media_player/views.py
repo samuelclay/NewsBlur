@@ -66,6 +66,13 @@ def save_playback_state(request):
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         redis_key = f"media:playback:{user.pk}"
         redis_data = {}
+        if "current_media_url" in state_fields:
+            # sync_playback_position only writes positions for the item named here, and
+            # MMediaPlaybackState.get_state_with_redis_position ignores a hash naming another item. A new item
+            # starts the hash fresh so the previous item's position can't carry over to it.
+            redis_data["media_url"] = state_fields["current_media_url"]
+            if r.hget(redis_key, "media_url") != state_fields["current_media_url"]:
+                r.delete(redis_key)
         if "current_position" in state_fields:
             redis_data["position"] = str(state_fields["current_position"])
         if "current_duration" in state_fields:
@@ -93,11 +100,14 @@ def sync_playback_position(request):
     """The mobile apps' lightweight position update while an item plays, the HTTP twin of the web's
     media:sync websocket message (node/unread_counts.js). It writes only the Redis hash that
     get_state_with_redis_position reads, so frequent updates never touch MongoDB, and only while media_url is
-    still the current item that save_playback_state recorded, so a stale or racing client can't move another
-    item's position. Unlike the websocket it doesn't broadcast to open web tabs.
+    still the current item, so a stale or racing client can't move another item's position. Unlike the
+    websocket it doesn't broadcast to open web tabs.
+
+    Code -1 means only that another device made something else current, and the apps stop syncing that item
+    (ListenMediaSync.kt, ListenMediaPlayer.swift). Every other failure is code 0, which they retry next time.
     """
     if request.method != "POST":
-        return {"code": -1, "message": gettext("Use POST")}
+        return {"code": 0, "message": gettext("Use POST")}
 
     media_url = request.POST.get("media_url", "")
     state = MMediaPlaybackState.objects(user_id=request.user.pk).only("current_media_url").first()
@@ -112,19 +122,34 @@ def sync_playback_position(request):
         if "playback_rate" in request.POST:
             redis_data["playback_rate"] = str(float(request.POST["playback_rate"]))
     except ValueError:
-        return {"code": -1, "message": gettext("Invalid position")}
+        return {"code": 0, "message": gettext("Invalid position")}
     if "is_playing" in request.POST:
         redis_data["is_playing"] = "true" if request.POST["is_playing"] in ("true", "True", "1") else "false"
     if not redis_data:
-        return {"code": -1, "message": gettext("No fields to update")}
+        return {"code": 0, "message": gettext("No fields to update")}
+    redis_data["media_url"] = media_url
+
+    redis_key = f"media:playback:{request.user.pk}"
+
+    def write_position(pipe):
+        # save_playback_state records the current item's media_url in the hash. If another item became
+        # current between the MongoDB check above and this write, the hash names it and this position is
+        # dropped instead of landing on it. WATCH retries the write if the hash changes underneath.
+        stored_media_url = pipe.hget(redis_key, "media_url")
+        if stored_media_url and stored_media_url != media_url:
+            return False
+        pipe.multi()
+        pipe.hset(redis_key, mapping=redis_data)
+        pipe.expire(redis_key, 86400)  # 24h expiry, matching node/unread_counts.js media:sync
+        return True
 
     try:
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        redis_key = f"media:playback:{request.user.pk}"
-        r.hmset(redis_key, redis_data)
-        r.expire(redis_key, 86400)  # 24h expiry, matching node/unread_counts.js media:sync
+        written = r.transaction(write_position, redis_key, value_from_callable=True)
     except redis.RedisError:
-        return {"code": -1, "message": gettext("Couldn't save the position")}
+        return {"code": 0, "message": gettext("Couldn't save the position")}
+    if not written:
+        return {"code": -1, "message": gettext("That item isn't playing")}
 
     return {"code": 1}
 

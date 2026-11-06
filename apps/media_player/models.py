@@ -251,6 +251,11 @@ class MMediaPlaybackState(mongo.Document):
             redis_key = f"media:playback:{user_id}"
             # REDIS_PUBSUB_POOL decodes responses (newsblur_web/settings.py), so keys and values are str.
             redis_data = r.hgetall(redis_key)
+            # A hash naming another item (views.py save_playback_state records it) belongs to that item, not
+            # this one. A hash naming none, as the web's media:sync websocket alone writes it, still applies.
+            redis_media_url = redis_data.get("media_url")
+            if redis_media_url and redis_media_url != canonical.get("current_media_url"):
+                redis_data = {}
             if redis_data:
                 if "position" in redis_data:
                     canonical["current_position"] = float(redis_data["position"])
