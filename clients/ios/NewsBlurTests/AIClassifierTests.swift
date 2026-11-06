@@ -840,6 +840,72 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(app.storiesCollection.storyLocationsCount, 1)
     }
 
+    func test_aPassStopsMatchingOnceItsBudgetIsSpentAndTheRestKeepTheServersScores() {
+        // Every look at the clock costs 10ms of the 100ms budget, like a regex slow enough to take that long.
+        var now: TimeInterval = 0
+        let scorer = StoryClassifierScorer(classifiers: ["text_regex": ["agents?": 1], "title_regex": ["sponsor": -1]],
+                                           isPremium: true, isPremiumArchive: true, isPremiumPro: true,
+                                           budget: StoryClassifierScorer.passBudget,
+                                           clock: { now += 0.01; return now }, textCache: StoryVisibleTextCache())
+        let stories: [NSDictionary] = (0..<50).map { index in
+            ["story_hash": "42:\(index)", "story_feed_id": 42, "story_title": "[Sponsor] WorkOS \(index)",
+             "story_permalink": sponsorPermalink, "story_content": sponsorContent,
+             "intelligence": ["text_regex": -1, "title_regex": 0]]
+        }
+
+        let scores = stories.map { scorer.scores(forStory: $0) }
+        XCTAssertEqual(scores.first?["text_regex"], 1)
+        XCTAssertEqual(scores.first?["title_regex"], -1)
+        XCTAssertNil(scores.last?["text_regex"], "Past the budget, the server's score stays")
+        XCTAssertNil(scores.last?["title_regex"])
+        XCTAssertEqual(scores.last?["url"], 0, "Matching a URL without a regex is cheap and keeps going")
+        let scored = scores.prefix { $0["text_regex"] != nil }.count
+        XCTAssertGreaterThan(scored, 0)
+        XCTAssertLessThan(scored, 10, "The pass stopped matching long before the end of the list")
+        XCTAssertTrue(scores.dropFirst(scored).allSatisfy { $0["text_regex"] == nil }, "Once spent, it stays spent")
+        XCTAssertEqual(scorer.uncertainStoryHashes, Set(stories.dropFirst(scored).compactMap { $0["story_hash"] as? String }),
+                       "Every story it stopped on is left for StoryScoreRefresher.swift to ask the server about")
+    }
+
+    func test_aStorysTextIsStrippedOnceAndOnlyReusedForTheSameContent() {
+        let cache = StoryVisibleTextCache()
+        let content = sponsorContent as NSString
+        func score(_ content: NSString) -> Int? {
+            let scorer = StoryClassifierScorer(classifiers: ["texts": ["sign up for your app": 1]], isPremium: true,
+                                               isPremiumArchive: true, isPremiumPro: false,
+                                               budget: StoryClassifierScorer.passBudget,
+                                               clock: StoryClassifierScorer.threadTime, textCache: cache)
+            return scorer.scores(forStory: ["story_hash": "42:sponsor", "story_feed_id": 42, "story_content": content])["text"]
+        }
+
+        XCTAssertEqual(score(content), 1)
+        let stripped = StoryVisibleTextCache.Text(text: "Let agents sign up for your app without a browser.",
+                                                  lowercased: "let agents sign up for your app without a browser.")
+        XCTAssertEqual(cache.text(forStoryHash: "42:sponsor", content: content), stripped)
+        XCTAssertEqual(cache.text(forStoryHash: "42:sponsor", content: NSString(string: sponsorContent)), stripped,
+                       "A copy of the same content finds it too")
+
+        // The next pass matches the cached text instead of stripping the HTML again.
+        cache.store(StoryVisibleTextCache.Text(text: "Cached", lowercased: "cached"), forStoryHash: "42:sponsor", content: content)
+        XCTAssertEqual(score(content), 0)
+        XCTAssertEqual(score("<p>Now you can sign up for your app.</p>"), 1, "Changed content is stripped again")
+    }
+
+    func test_aStoryWithoutContentIsUncertainOnlyWhenItsTextScoresMayHaveChanged() {
+        func isUncertain(_ classifiers: NSDictionary, _ intelligence: [String: Int]) -> Bool {
+            let scorer = StoryClassifierScorer(classifiers: classifiers, isPremium: true, isPremiumArchive: true, isPremiumPro: true)
+            _ = scorer.scores(forStory: ["story_hash": "42:sponsor", "story_feed_id": 42, "story_permalink": sponsorPermalink,
+                                         "intelligence": intelligence])
+            return scorer.uncertainStoryHashes.contains("42:sponsor")
+        }
+
+        XCTAssertFalse(isUncertain([:], ["text": 0, "text_regex": 0]), "No classifier could score it")
+        XCTAssertTrue(isUncertain(["texts": ["without a browser": 1]], ["text": 0]), "A text classifier the app can't match")
+        XCTAssertTrue(isUncertain(["texts": ["without a browser": 0]], ["text": 1]),
+                      "The server's match came from a classifier since removed")
+        XCTAssertTrue(isUncertain(["text_regex": ["agents?": 1]], [:]))
+    }
+
     private func makeApp(classifiers: [String: Any], intelligence: [String: Int], content: String? = nil,
                          isPremium: Bool = true, isPremiumArchive: Bool = true,
                          isPremiumPro: Bool = true) -> NewsBlurAppDelegate {
