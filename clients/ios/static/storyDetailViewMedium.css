@@ -405,23 +405,17 @@ span.NB-listen-run.NB-listen-highlight {
     border-color: rgba(255, 255, 255, .15) transparent rgba(0, 0, 0, .4);
 }
 
-/* storyDetailViewMedium.css: story audio cards (storyDetailView.css .NB-media-card). */
-#NB-story .NB-media-card {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.1);
-}
+/* storyDetailViewMedium.css: story audio pills (storyDetailView.css .NB-media-card), shaded like this theme's
+   .NB-story-tag and .NB-story-tag-positive. */
 #NB-story .NB-media-card-play {
-    color: #F2F2F7;
-}
-#NB-story .NB-media-card-icon {
-    background: #8BBF74;
-    color: #111111;
+    border-color: rgba(255, 255, 255, .2) transparent rgba(0, 0, 0, .1);
 }
 #NB-story .NB-media-card-actions a {
-    background: rgba(255, 255, 255, 0.1);
-    color: #D1D1D6;
+    background-color: rgba(40, 40, 40, .2);
+    border-color: rgba(186, 186, 186, .2) transparent rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-shadow: 0 1px 0 #505050;
 }
-#NB-story .NB-media-card-actions a.NB-media-card-queued {
-    background: rgba(139, 191, 116, 0.18);
-    color: #A5D48F;
+#NB-story .NB-media-card-actions a:active {
+    background-color: rgba(40, 40, 40, .4);
 }

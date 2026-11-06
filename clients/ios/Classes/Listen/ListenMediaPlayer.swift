@@ -23,9 +23,12 @@ protocol ListenSessionHandoff: AnyObject {
 /// lock screen and Control Center controls, instead of inside the story's web view. It shares the account's
 /// playback state with the web (media_player_view.js) and Android through apps/media_player:
 /// - an episode starts where any device left it, read from /media_player/playback_state when it starts;
+/// - it becomes the current item as it starts (save_playback_state with the place it starts from), and is saved
+///   paused again on pause, scrubbing, speed changes, going to the background, quitting, closing and when another
+///   episode or a story read aloud takes over;
 /// - while it plays, its place is synced every 10 seconds (media_player_view.js POSITION_SYNC_INTERVAL) through
-///   sync_playback_position, which writes only Redis like the web's websocket, and saved for good on start, pause,
-///   scrubbing, speed changes, going to the background, quitting and closing;
+///   sync_playback_position, which writes only Redis like the web's websocket. Once the server says another item is
+///   current (code -1), syncing stops until this player saves the episode as current again;
 /// - a finished episode goes to History and, with auto-play on, the first audio or Listen story in Up Next plays.
 final class ListenMediaPlayer: NSObject, ObservableObject {
     static let shared: ListenMediaPlayer = ListenMediaPlayer(engine: ListenAVMediaEngine(), queue: .shared,
@@ -104,6 +107,21 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     private var artwork: MPMediaItemArtwork?
     private var resumeAfterInterruption = false
 
+    private enum PositionSync {
+        /// Until the start save lands, the server would refuse a sync for an item it doesn't know is current.
+        case waitingForSave
+        case syncing
+        /// Another device made something else current; sync_playback_position answered code -1.
+        case stopped
+    }
+
+    private var positionSync = PositionSync.waitingForSave
+    /// Whether the podcast speed was changed here, which is the only time a save carries current_playback_rate.
+    private var speedChosenHere = false
+    /// The file this app last saved as the server's current item. It went to History when it stopped here, so
+    /// ListenPlaybackState.replacedItem leaves it alone.
+    private var lastSavedMediaURL: String?
+
     /// The app uses `shared`; Test_ListenMediaPlayer makes its own player in front of a fake engine and server.
     init(engine: ListenMediaEngine, queue: ListenQueue, environment: Environment) {
         self.engine = engine
@@ -164,7 +182,9 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     func start(_ media: ListenMediaItem) {
         guard media.url != nil else { return }
         if let previous = item, !previous.isSame(as: media), status != .finished {
-            // media_player_view.js play_media: what was playing goes to History with its place.
+            // media_player_view.js play_media: what was playing is saved paused and goes to History with its place,
+            // both before the new episode becomes current (ListenQueue.swift sends them in order).
+            save(previous, position: currentPosition, isPlaying: false)
             queue.addToHistory(media: previous, position: currentPosition, duration: duration)
         }
         if let listen = environment.listenSession(), listen.isActive {
@@ -186,6 +206,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         wantsToPlay = true
         pendingSeek = nil
         lastPositionSave = nil
+        positionSync = .waitingForSave
         isWaitingForState = true
         status = .loading
         environment.showMiniPlayer()
@@ -216,6 +237,9 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
             duration = known
         }
         elapsed = resume
+        if let replaced = state?.replacedItem(by: item, savedHere: lastSavedMediaURL) {
+            queue.addToHistory(media: replaced.mediaItem, position: replaced.position, duration: replaced.duration)
+        }
         engine.load(url, startAt: resume)
         if wantsToPlay {
             environment.activateAudioSession()
@@ -303,6 +327,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     func setSpeed(_ newSpeed: Double) {
         guard isActive else { return }
         speed = ListenSpeed.clamped(newSpeed)
+        speedChosenHere = true
         engine.setRate(speed)
         // media_player_view.js set_playback_rate saves the podcast speed as current_playback_rate.
         savePosition(isPlaying: wantsToPlay)
@@ -341,12 +366,13 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         stateChanged()
     }
 
-    /// Listen is starting a story (ListenPlayer.swift start(story:)). The episode goes to History with its place,
-    /// where ListenPlaybackState.resumePosition finds it next time. The current item isn't saved here: Listen saves
-    /// itself as the current item, and two saves racing could leave the episode there instead.
+    /// Listen is starting a story (ListenPlayer.swift start(story:)). The episode is saved paused and goes to
+    /// History with its place, where ListenPlaybackState.resumePosition finds it next time. Listen's own save as the
+    /// current item follows these in ListenQueue.swift's order, so the story ends up current.
     func stopForHandoff() {
         guard let media = item else { return }
         if status != .finished {
+            save(media, position: currentPosition, isPlaying: false)
             queue.addToHistory(media: media, position: currentPosition, duration: duration)
         }
         clearSession()
@@ -385,6 +411,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         isWaitingForState = false
         pendingSeek = nil
         lastPositionSave = nil
+        positionSync = .waitingForSave
         artwork = nil
     }
 
@@ -431,13 +458,19 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     /// The throttled update while playing: one sync_playback_position per positionSaveInterval since the last
     /// sync or save.
     private func saveIfDue() {
-        guard wantsToPlay, status == .playing, let item, !isWaitingForState else { return }
+        guard wantsToPlay, status == .playing, positionSync == .syncing, let item, !isWaitingForState else { return }
         if let last = lastPositionSave, environment.now().timeIntervalSince(last) < Self.positionSaveInterval {
             return
         }
         lastPositionSave = environment.now()
+        let generation = self.generation
         queue.syncPlaybackPosition(mediaURL: item.mediaURL, position: elapsed, duration: duration, playbackRate: speed,
-                                   isPlaying: true)
+                                   isPlaying: true) { [weak self] result in
+            guard let self, generation == self.generation, result == .rejected else { return }
+            // ListenMediaPlayer.swift: another device took over, so this one stops moving its position.
+            NSLog("Listen stopped syncing: another item is current")
+            self.positionSync = .stopped
+        }
     }
 
     /// media_player_view.js play_next: History gets the finished episode, then Up Next plays on when auto-play is
@@ -460,8 +493,22 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
     private func savePosition(isPlaying: Bool) {
         guard let item, !isWaitingForState else { return }
         lastPositionSave = environment.now()
-        queue.savePlaybackState(item.stateParameters(position: elapsed, duration: duration, isPlaying: isPlaying,
-                                                     playbackRate: speed))
+        let generation = self.generation
+        save(item, position: elapsed, isPlaying: isPlaying) { [weak self] saved in
+            // ListenMediaPlayer.swift: the episode is the server's current item again, so its position may sync.
+            guard let self, saved, generation == self.generation else { return }
+            self.positionSync = .syncing
+        }
+    }
+
+    /// save_playback_state for `media`, with the podcast rate only once it was changed here.
+    private func save(_ media: ListenMediaItem, position: TimeInterval, isPlaying: Bool,
+                      completion: ((Bool) -> Void)? = nil) {
+        lastSavedMediaURL = media.mediaURL
+        queue.savePlaybackState(media.stateParameters(position: position, duration: media.isSame(as: item) ? duration : 0,
+                                                      isPlaying: isPlaying,
+                                                      playbackRate: speedChosenHere ? speed : nil),
+                                completion: completion)
     }
 
     // MARK: - App lifecycle

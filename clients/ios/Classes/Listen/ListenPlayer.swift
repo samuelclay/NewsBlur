@@ -287,10 +287,12 @@ final class ListenPlayer: NSObject, ObservableObject {
         ListenMiniPlayerController.shared.hide()
     }
 
-    /// ListenMediaPlayer.swift is starting a podcast: the story goes to History with its place, as when another
-    /// story replaces it, and Listen stops without hiding the mini player or releasing the audio session.
+    /// ListenMediaPlayer.swift is starting a podcast: the story is saved paused and goes to History with its place,
+    /// as when another story replaces it, before the podcast becomes the current item (ListenQueue.swift sends them
+    /// in order). Listen stops without hiding the mini player or releasing the audio session.
     func stopForHandoff() {
         guard isActive else { return }
+        saveCurrentItem(isPlaying: false)
         if let story, manifest != nil {
             ListenQueue.shared.addToHistory(story: story, position: elapsed, duration: duration)
         }

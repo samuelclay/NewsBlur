@@ -52,10 +52,12 @@ import WebKit
         return String(decoding: data, as: UTF8.self).replacingOccurrences(of: "</", with: "<\\/")
     }
 
-    /// A card's button for the audio at `url` in `story`.
-    static func perform(_ action: String, url: String, story: [AnyHashable: Any]) {
+    /// A card's button for the audio at `url` in `story`. Returns false when the app's player can't take it (no
+    /// usable URL), so the story puts its own inline player back.
+    @discardableResult
+    static func perform(_ action: String, url: String, story: [AnyHashable: Any]) -> Bool {
         let media = ListenMediaItem(story: ListenPlayer.stringKeyed(story), mediaURL: url)
-        guard media.url != nil else { return }
+        guard media.url?.scheme != nil else { return false }
         let player = ListenMediaPlayer.shared
         let queue = ListenQueue.shared
         switch action {
@@ -65,9 +67,9 @@ import WebKit
             // media_player_view.js add_to_queue: with nothing loaded the episode just plays.
             guard player.isActive || ListenPlayer.shared.isActive else {
                 player.start(media)
-                return
+                return true
             }
-            guard !player.isLoaded(media) else { return }
+            guard !player.isLoaded(media) else { return true }
             let position = queue.add(media: media, position: action == "next" ? 0 : nil)
             ListenToast.show(String(format: NBLocalization.text("Added to Up Next · %@"), ListenFormat.ordinal(position)))
         case "unqueue":
@@ -76,6 +78,7 @@ import WebKit
         default:
             break
         }
+        return true
     }
 }
 
@@ -84,9 +87,12 @@ extension StoryDetailViewController {
     /// storyDetailView.js posts {action, url} to newsblurStoryMedia (StoryDetailObjCViewController.m).
     func receiveMediaMessage(_ message: WKScriptMessage) {
         guard let body = message.body as? [String: Any], let action = body["action"] as? String,
-              let url = body["url"] as? String, !url.isEmpty,
-              let story = activeStory as? [AnyHashable: Any] else { return }
-        ListenMediaStoryBridge.perform(action, url: url, story: story)
+              let url = body["url"] as? String, !url.isEmpty else { return }
+        if let story = activeStory as? [AnyHashable: Any], ListenMediaStoryBridge.perform(action, url: url, story: story) {
+            return
+        }
+        // ListenMediaStoryBridge.swift: the app's player can't take this audio, so it plays in the story instead.
+        webView?.evaluateJavaScript("typeof newsblurMediaFallback === 'function' && newsblurMediaFallback(\(ListenMediaStoryBridge.json([url]))[0])")
     }
 
     /// Redraws the cards after the player or Up Next changed (ListenStoryBridge.swift listenStateChanged).

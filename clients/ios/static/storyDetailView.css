@@ -2342,21 +2342,18 @@ html[dir="rtl"] .NB-cluster-feed-border-inner {
     right: 4px;
 }
 
-/* storyDetailView.css: a story's audio as a card (storyDetailView.js newsblurPrepareMedia), played by
-   Listen/ListenMediaPlayer.swift. Only the buttons take taps, so a tap elsewhere on the card is neither a
-   button press nor the reader's tap-to-hide-chrome (StoryDetailObjCViewController.m continueTapAtPoint:).
-   Every rule starts at #NB-story to win over the story content rules (.NB-story span, .NB-story div). */
+/* storyDetailView.css: a story's audio as a row of pills (storyDetailView.js newsblurPrepareMedia), played by
+   Listen/ListenMediaPlayer.swift. The pills follow the story header's tag and AI classifier pills: the story
+   font, 4px corners, the same bevel, the neutral tag shade, and the positive green for Play. Only the pills take
+   taps, so a tap beside them is neither a press nor the reader's tap-to-hide-chrome
+   (StoryDetailObjCViewController.m continueTapAtPoint:). Every rule starts at #NB-story to win over the story
+   content rules (.NB-story span, .NB-story div). */
 #NB-story .NB-media-card {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px 12px;
+    gap: 8px;
     margin: 14px 0 20px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: rgba(0, 0, 0, 0.035);
-    border: 0.5px solid rgba(0, 0, 0, 0.08);
-    font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, sans-serif;
     line-height: 1.2;
     -webkit-user-select: none;
     user-select: none;
@@ -2374,76 +2371,82 @@ html[dir="rtl"] .NB-cluster-feed-border-inner {
 #NB-story .NB-media-card a * {
     pointer-events: none;
 }
-#NB-story .NB-media-card-play {
-    display: flex;
+#NB-story .NB-media-card-play,
+#NB-story .NB-media-card-actions a {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    flex: 1 1 auto;
-    min-width: 0;
-    color: #1C1C1E;
-    font-size: 15px;
-    font-weight: 600;
+    box-sizing: border-box;
+    min-height: 34px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    white-space: nowrap;
 }
-#NB-story .NB-media-card-actions {
-    margin: 0;
+#NB-story .NB-media-card-play {
+    gap: 8px;
+    padding: 7px 14px 7px 11px;
+    max-width: 100%;
+    background-color: #88B383;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    color: #FFFFFF;
+    text-shadow: 0 1px 0 #588353;
+    font-size: .8em;
+    font-weight: bold;
+}
+#NB-story .NB-media-playing .NB-media-card-play {
+    background-color: #6F9D69;
+}
+#NB-story .NB-media-card-play:active {
+    background-color: #34912E;
 }
 #NB-story .NB-media-card-label {
     width: auto;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 #NB-story .NB-media-card-icon {
-    display: flex;
+    display: inline-flex;
     flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
     overflow: visible;
-    width: 38px !important;
-    min-width: 38px !important;
-    height: 38px;
-    border-radius: 19px;
-    background: #709E5D;
-    color: #FFFFFF;
+    width: 14px !important;
+    min-width: 14px !important;
+    height: 14px;
 }
 #NB-story .NB-media-card-icon svg {
-    width: 17px;
-    height: 17px;
+    width: 14px;
+    height: 14px;
     fill: currentColor;
-}
-#NB-story .NB-media-card:not(.NB-media-playing) .NB-media-card-icon svg {
-    transform: translateX(1.5px);
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .2));
 }
 #NB-story .NB-media-loading .NB-media-card-icon {
     animation: NB-media-card-pulse 1.2s ease-in-out infinite;
 }
 @keyframes NB-media-card-pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.55; }
+    50% { opacity: 0.45; }
 }
 #NB-story .NB-media-card-actions {
     display: flex;
     flex: 0 0 auto;
-    gap: 6px;
+    gap: 8px;
+    margin: 0;
 }
 #NB-story .NB-media-card-actions a {
     display: none;
     padding: 7px 11px;
-    border-radius: 15px;
-    background: rgba(0, 0, 0, 0.06);
-    color: #3C3C43;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
+    background-color: rgba(0, 0, 0, .1);
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    font-size: .75em;
+    font-weight: normal;
 }
 #NB-story .NB-media-can-queue .NB-media-card-next,
 #NB-story .NB-media-can-queue .NB-media-card-last,
 #NB-story .NB-media-queued .NB-media-card-queued {
-    display: inline-block;
+    display: inline-flex;
 }
-#NB-story .NB-media-card-actions a.NB-media-card-queued {
-    background: rgba(112, 158, 93, 0.15);
-    color: #4F7A3E;
+#NB-story .NB-media-card-actions a:active {
+    background-color: rgba(0, 0, 0, .18);
 }
 #NB-story .NB-media-card-queued::before {
     content: "\2713\00a0";

@@ -146,6 +146,21 @@ final class ListenQueue: NSObject, ObservableObject {
 
     private var hasPendingWrites: Bool { isSendingWrite || !waitingWrites.isEmpty }
 
+    /// A playback state request (save, History, position sync) waiting for the one before it. They go out one at a
+    /// time, in order, as Android's ListenMediaSync.kt sends them, so an item handed off is saved paused before the
+    /// next one becomes the current item, and a read for a resume sees both.
+    private struct StateRequest {
+        let path: String
+        let parameters: [String: String]
+        /// The server's answer, or nil when the request failed.
+        let completion: (Any?) -> Void
+    }
+
+    private var waitingStateRequests: [StateRequest] = []
+    private var isSendingStateRequest = false
+    /// Reads waiting for the state requests before them to land (fetchPlaybackState).
+    private var stateRequestDrainWaiters: [() -> Void] = []
+
     private let transport: ListenQueueTransport
 
     /// The app uses `shared`; Test_ListenQueue makes its own queue in front of a fake server.
@@ -201,8 +216,17 @@ final class ListenQueue: NSObject, ObservableObject {
     }
 
     /// GET /media_player/playback_state for an episode about to start (ListenMediaPlayer.swift): the queue is
-    /// applied as refresh() would, and `completion` gets the state, or nil when the request failed.
+    /// applied as refresh() would, and `completion` gets the state, or nil when the request failed. It waits for
+    /// any save or History request already on its way, so it reads the place an item handed off just now was left.
     func fetchPlaybackState(completion: @escaping (ListenPlaybackState?) -> Void) {
+        let session = accountSession
+        whenStateRequestsLand { [weak self] in
+            guard let self, session == self.accountSession else { return }
+            self.readPlaybackState(completion: completion)
+        }
+    }
+
+    private func readPlaybackState(completion: @escaping (ListenPlaybackState?) -> Void) {
         let edits = editCount
         let session = accountSession
         transport.get("/media_player/playback_state", success: { [weak self] response in
@@ -238,6 +262,10 @@ final class ListenQueue: NSObject, ObservableObject {
         isSendingWrite = false
         hasLoaded = false
         playbackState = nil
+        // ListenQueue.swift drops what hasn't gone out rather than send it under whoever signs in next.
+        waitingStateRequests = []
+        isSendingStateRequest = false
+        stateRequestDrainWaiters = []
         replaceItems([])
     }
 
@@ -382,22 +410,28 @@ final class ListenQueue: NSObject, ObservableObject {
         var parameters = media.queueParameters
         parameters["position"] = String(format: "%.1f", max(0, position))
         parameters["duration"] = String(format: "%.1f", max(0, duration))
-        transport.post("/media_player/add_to_media_history", parameters: parameters, success: { _ in }, failure: { error in
-            NSLog("Listen couldn't save media history: %@", (error as NSError?) ?? NSError())
-        })
+        sendState("/media_player/add_to_media_history", parameters: parameters) { response in
+            if response == nil {
+                NSLog("Listen couldn't save media history")
+            }
+        }
     }
 
-    /// POST /media_player/save_playback_state (ListenMediaPlayer.swift and ListenPlayer.swift). It never touches
-    /// the queue, so it skips the edit line; the answer refreshes the player settings, so a skip interval changed
-    /// on the web reaches iOS at the next pause or start.
-    func savePlaybackState(_ parameters: [String: String]) {
+    /// POST /media_player/save_playback_state (ListenMediaPlayer.swift and ListenPlayer.swift), in order with the
+    /// other state requests. The answer refreshes the player settings, so a skip interval changed on the web
+    /// reaches iOS at the next pause or start. `completion` says whether the server took it.
+    func savePlaybackState(_ parameters: [String: String], completion: ((Bool) -> Void)? = nil) {
         let session = accountSession
-        transport.post("/media_player/save_playback_state", parameters: parameters, success: { [weak self] response in
+        sendState("/media_player/save_playback_state", parameters: parameters) { [weak self] response in
             guard let self, session == self.accountSession else { return }
-            self.applyState(response)
-        }, failure: { error in
-            NSLog("Listen couldn't save the playback state: %@", (error as NSError?) ?? NSError())
-        })
+            let saved = Self.state(from: response) != nil
+            if saved {
+                self.applyState(response)
+            } else {
+                NSLog("Listen couldn't save the playback state")
+            }
+            completion?(saved)
+        }
     }
 
     /// POST /media_player/add_to_media_history for the story that was playing when another one started, so the
@@ -412,9 +446,11 @@ final class ListenQueue: NSObject, ObservableObject {
         if let feedId = item.feedId {
             parameters["image_url"] = ListenAPI.shared.baseURL + "/rss_feeds/icon/" + feedId
         }
-        transport.post("/media_player/add_to_media_history", parameters: parameters, success: { _ in }, failure: { error in
-            NSLog("Listen couldn't save history: %@", (error as NSError?) ?? NSError())
-        })
+        sendState("/media_player/add_to_media_history", parameters: parameters) { response in
+            if response == nil {
+                NSLog("Listen couldn't save history")
+            }
+        }
     }
 
     // MARK: - Transport
@@ -461,20 +497,77 @@ final class ListenQueue: NSObject, ObservableObject {
         replaceItems(ListenJSON.array(state?["queue"]).compactMap { ListenQueueItem(json: $0) })
     }
 
+    /// What sync_playback_position said: taken, refused because another item is current now (code -1), or lost.
+    enum PositionSync: Equatable {
+        case accepted
+        case rejected
+        case failed
+    }
+
     /// POST /media_player/sync_playback_position, ListenMediaPlayer.swift's position every 10 seconds while an
     /// episode plays. Like the web's media:sync websocket it writes only Redis, never MongoDB, and the server
-    /// ignores it once `mediaURL` stops being the current item, so a phone left playing can't move whatever
-    /// another device started since.
+    /// refuses it with code -1 once `mediaURL` stops being the current item, so a phone left playing can't move
+    /// whatever another device started since. The duration goes only when it's known.
     func syncPlaybackPosition(mediaURL: String, position: TimeInterval, duration: TimeInterval, playbackRate: Double,
-                              isPlaying: Bool) {
-        let parameters = ["media_url": mediaURL,
+                              isPlaying: Bool, completion: @escaping (PositionSync) -> Void) {
+        var parameters = ["media_url": mediaURL,
                           "position": String(format: "%.1f", max(0, position)),
-                          "duration": String(format: "%.1f", max(0, duration)),
                           "playback_rate": String(format: "%.2f", playbackRate),
                           "is_playing": isPlaying ? "true" : "false"]
-        transport.post("/media_player/sync_playback_position", parameters: parameters, success: { _ in }, failure: { error in
-            NSLog("Listen couldn't sync the playback position: %@", (error as NSError?) ?? NSError())
+        if duration > 0 {
+            parameters["duration"] = String(format: "%.1f", duration)
+        }
+        let session = accountSession
+        sendState("/media_player/sync_playback_position", parameters: parameters) { [weak self] response in
+            guard let self, session == self.accountSession else { return }
+            guard let json = ListenJSON.dictionary(response) else {
+                NSLog("Listen couldn't sync the playback position")
+                completion(.failed)
+                return
+            }
+            completion(ListenJSON.int(json["code"]) == -1 ? .rejected : .accepted)
+        }
+    }
+
+    // MARK: - Playback state line
+
+    private func sendState(_ path: String, parameters: [String: String], completion: @escaping (Any?) -> Void) {
+        waitingStateRequests.append(StateRequest(path: path, parameters: parameters, completion: completion))
+        sendNextStateRequest()
+    }
+
+    private func sendNextStateRequest() {
+        guard !isSendingStateRequest else { return }
+        guard !waitingStateRequests.isEmpty else {
+            let waiters = stateRequestDrainWaiters
+            stateRequestDrainWaiters = []
+            waiters.forEach { $0() }
+            return
+        }
+        let request = waitingStateRequests.removeFirst()
+        let session = accountSession
+        isSendingStateRequest = true
+        let finish: (Any?) -> Void = { [weak self] response in
+            guard let self, session == self.accountSession else { return }
+            self.isSendingStateRequest = false
+            request.completion(response)
+            self.sendNextStateRequest()
+        }
+        transport.post(request.path, parameters: request.parameters, success: { response in
+            finish(response)
+        }, failure: { error in
+            NSLog("Listen's %@ failed: %@", request.path, (error as NSError?) ?? NSError())
+            finish(nil)
         })
+    }
+
+    /// Runs `work` once every state request sent so far has been answered.
+    private func whenStateRequestsLand(_ work: @escaping () -> Void) {
+        if !isSendingStateRequest && waitingStateRequests.isEmpty {
+            work()
+        } else {
+            stateRequestDrainWaiters.append(work)
+        }
     }
 
     /// Takes the settings, current item and History from an answer without touching the queue. Only a change to

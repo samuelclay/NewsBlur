@@ -73,15 +73,18 @@ struct ListenMediaItem: Equatable {
     /// POST /media_player/save_playback_state for this episode. Like media_player_view.js save_durable_state it
     /// names the whole current item, so a position never lands on whatever another device played last. The
     /// player settings (skips, auto-play, remember position) and volume are left out: iOS doesn't change them, and
-    /// sending a stale copy would undo a change made on the web.
+    /// sending a stale copy would undo a change made on the web. The duration goes only when it's known, and the
+    /// rate only when the caller passes one.
     func stateParameters(position: TimeInterval, duration: TimeInterval, isPlaying: Bool,
                          playbackRate: Double?) -> [String: String] {
         var parameters = ["current_story_hash": storyHash, "current_media_url": mediaURL,
                           "current_media_type": mediaType, "current_media_title": title,
                           "current_feed_id": feedId ?? "0", "current_image_url": imageURL,
                           "current_position": String(format: "%.1f", max(0, position)),
-                          "current_duration": String(format: "%.1f", max(0, duration)),
                           "is_playing": isPlaying ? "true" : "false"]
+        if duration > 0 {
+            parameters["current_duration"] = String(format: "%.1f", duration)
+        }
         if let playbackRate {
             parameters["current_playback_rate"] = String(format: "%.2f", playbackRate)
         }
@@ -124,6 +127,15 @@ struct ListenSavedPosition: Equatable {
     let mediaType: String
     let position: TimeInterval
     let duration: TimeInterval
+    var title = ""
+    var feedId: String?
+    var imageURL = ""
+
+    /// The saved item, to put in History when an episode started here replaces it.
+    var mediaItem: ListenMediaItem {
+        ListenMediaItem(storyHash: storyHash, mediaURL: mediaURL, mediaType: mediaType, title: title, feedId: feedId,
+                        imageURL: imageURL, duration: duration)
+    }
 }
 
 /// GET /media_player/playback_state, as the media player needs it (ListenMediaModels.swift).
@@ -155,7 +167,10 @@ struct ListenPlaybackState: Equatable {
                                           mediaURL: url,
                                           mediaType: ListenJSON.string(json["current_media_type"]) ?? "",
                                           position: ListenJSON.double(json["current_position"]) ?? 0,
-                                          duration: ListenJSON.double(json["current_duration"]) ?? 0)
+                                          duration: ListenJSON.double(json["current_duration"]) ?? 0,
+                                          title: ListenPlayer.decodedTitle(json["current_media_title"]),
+                                          feedId: ListenJSON.string(json["current_feed_id"]),
+                                          imageURL: ListenJSON.string(json["current_image_url"]) ?? "")
         }
         let rate = ListenJSON.double(json["current_playback_rate"]) ?? 0
         currentPlaybackRate = rate > 0 ? ListenSpeed.clamped(rate) : nil
@@ -185,6 +200,16 @@ struct ListenPlaybackState: Equatable {
     /// The current item or History entry that is `item`, by the rules resumePosition(for:) describes.
     func savedPosition(for item: ListenMediaItem) -> ListenSavedPosition? {
         Self.match(item, in: [current].compactMap { $0 }) ?? Self.match(item, in: history)
+    }
+
+    /// The current item another device left part way through, when `item` is about to replace it: the place it
+    /// had goes to History first, as media_player_view.js add_to_history_from_current and Android's
+    /// keepReplacedInHistory do. Stories read aloud and items saved by this app (`savedHere`, which went to History
+    /// when they stopped here) are left alone.
+    func replacedItem(by item: ListenMediaItem, savedHere: String?) -> ListenSavedPosition? {
+        guard let current, current.position > 0, current.mediaType != ListenQueue.listenMediaType,
+              current.mediaURL != savedHere, Self.match(item, in: [current]) == nil else { return nil }
+        return current
     }
 
     private static func match(_ item: ListenMediaItem, in positions: [ListenSavedPosition]) -> ListenSavedPosition? {

@@ -732,14 +732,30 @@ function newsblurPrepareMedia() {
             event.preventDefault();
             event.stopPropagation();
             var button = event.target.closest('[data-nb-media-action]');
+            if (!button) return;
             var bridge = newsblurMediaBridge();
-            if (!button || !bridge) return;
-            bridge.postMessage({action: button.getAttribute('data-nb-media-action'), url: url});
+            try {
+                bridge.postMessage({action: button.getAttribute('data-nb-media-action'), url: url});
+            } catch (e) {
+                newsblurMediaFallback(url);
+            }
         });
         audio.parentNode.insertBefore(card, audio);
         audio.style.display = 'none';
     });
     newsblurMediaSetState(config.state);
+}
+
+// storyDetailView.js puts the story's own player back when the app's player can't take the audio
+// (Listen/ListenMediaStoryBridge.swift calls this too), so the episode still plays inline.
+function newsblurMediaFallback(url) {
+    var cards = document.querySelectorAll('.NB-media-card');
+    Array.prototype.forEach.call(cards, function (card) {
+        if (card.getAttribute('data-nb-media-url') !== url) return;
+        var audio = card.nextElementSibling;
+        if (audio && audio.tagName === 'AUDIO') audio.style.display = '';
+        card.parentNode.removeChild(card);
+    });
 }
 
 // Listen/ListenMediaStoryBridge.swift cardState: {current, status: playing|loading|paused, queued: [urls], loaded}.
