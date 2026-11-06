@@ -389,7 +389,7 @@ final class ListenQueue: NSObject, ObservableObject {
 
     /// POST /media_player/save_playback_state (ListenMediaPlayer.swift and ListenPlayer.swift). It never touches
     /// the queue, so it skips the edit line; the answer refreshes the player settings, so a skip interval changed
-    /// on the web reaches iOS while something plays.
+    /// on the web reaches iOS at the next pause or start.
     func savePlaybackState(_ parameters: [String: String]) {
         let session = accountSession
         transport.post("/media_player/save_playback_state", parameters: parameters, success: { [weak self] response in
@@ -459,6 +459,22 @@ final class ListenQueue: NSObject, ObservableObject {
         let state = ListenJSON.dictionary(json["playback_state"])
         applyState(response)
         replaceItems(ListenJSON.array(state?["queue"]).compactMap { ListenQueueItem(json: $0) })
+    }
+
+    /// POST /media_player/sync_playback_position, ListenMediaPlayer.swift's position every 10 seconds while an
+    /// episode plays. Like the web's media:sync websocket it writes only Redis, never MongoDB, and the server
+    /// ignores it once `mediaURL` stops being the current item, so a phone left playing can't move whatever
+    /// another device started since.
+    func syncPlaybackPosition(mediaURL: String, position: TimeInterval, duration: TimeInterval, playbackRate: Double,
+                              isPlaying: Bool) {
+        let parameters = ["media_url": mediaURL,
+                          "position": String(format: "%.1f", max(0, position)),
+                          "duration": String(format: "%.1f", max(0, duration)),
+                          "playback_rate": String(format: "%.2f", playbackRate),
+                          "is_playing": isPlaying ? "true" : "false"]
+        transport.post("/media_player/sync_playback_position", parameters: parameters, success: { _ in }, failure: { error in
+            NSLog("Listen couldn't sync the playback position: %@", (error as NSError?) ?? NSError())
+        })
     }
 
     /// Takes the settings, current item and History from an answer without touching the queue. Only a change to

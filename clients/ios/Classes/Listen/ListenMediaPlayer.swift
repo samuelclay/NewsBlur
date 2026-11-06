@@ -23,8 +23,9 @@ protocol ListenSessionHandoff: AnyObject {
 /// lock screen and Control Center controls, instead of inside the story's web view. It shares the account's
 /// playback state with the web (media_player_view.js) and Android through apps/media_player:
 /// - an episode starts where any device left it, read from /media_player/playback_state when it starts;
-/// - while it plays, its place is saved every 10 seconds (media_player_view.js POSITION_SYNC_INTERVAL), and again on
-///   pause, scrubbing, speed changes, going to the background and quitting;
+/// - while it plays, its place is synced every 10 seconds (media_player_view.js POSITION_SYNC_INTERVAL) through
+///   sync_playback_position, which writes only Redis like the web's websocket, and saved for good on start, pause,
+///   scrubbing, speed changes, going to the background, quitting and closing;
 /// - a finished episode goes to History and, with auto-play on, the first audio or Listen story in Up Next plays.
 final class ListenMediaPlayer: NSObject, ObservableObject {
     static let shared: ListenMediaPlayer = ListenMediaPlayer(engine: ListenAVMediaEngine(), queue: .shared,
@@ -190,7 +191,9 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         environment.showMiniPlayer()
         stateChanged()
         queue.fetchPlaybackState { [weak self] state in
-            self?.playbackStateArrived(state, generation: generation)
+            // ListenMediaPlayer.swift: a failed read falls back to the state cached from the last one.
+            guard let self else { return }
+            self.playbackStateArrived(state ?? self.queue.playbackState, generation: generation)
         }
         environment.schedule(Self.playbackStateTimeout) { [weak self] in
             guard let self, generation == self.generation, self.isWaitingForState else { return }
@@ -425,13 +428,16 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
         }
     }
 
-    /// The throttled save while playing: one request per positionSaveInterval.
+    /// The throttled update while playing: one sync_playback_position per positionSaveInterval since the last
+    /// sync or save.
     private func saveIfDue() {
-        guard wantsToPlay, status == .playing else { return }
+        guard wantsToPlay, status == .playing, let item, !isWaitingForState else { return }
         if let last = lastPositionSave, environment.now().timeIntervalSince(last) < Self.positionSaveInterval {
             return
         }
-        savePosition(isPlaying: true)
+        lastPositionSave = environment.now()
+        queue.syncPlaybackPosition(mediaURL: item.mediaURL, position: elapsed, duration: duration, playbackRate: speed,
+                                   isPlaying: true)
     }
 
     /// media_player_view.js play_next: History gets the finished episode, then Up Next plays on when auto-play is

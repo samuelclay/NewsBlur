@@ -475,8 +475,12 @@ struct ListenSkipButton: View {
     }
 
     private var label: String {
-        NBLocalization.plural(direction == .backward ? "Back %@ seconds" : "Forward %@ seconds",
-                              count: NSNumber(value: seconds))
+        switch direction {
+        case .backward:
+            return NBLocalization.plural("Back %@ seconds", count: NSNumber(value: seconds))
+        case .forward:
+            return NBLocalization.plural("Forward %@ seconds", count: NSNumber(value: seconds))
+        }
     }
 }
 
