@@ -1,6 +1,7 @@
 package com.newsblur.fragment
 
 import com.newsblur.domain.Classifier
+import com.newsblur.domain.Story
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.RejectedExecutionException
@@ -153,4 +154,50 @@ object TrainerPhrase {
         phrase: String,
         text: String?,
     ): Boolean = phrase.isNotEmpty() && text.orEmpty().contains(phrase, ignoreCase = true)
+
+    /** TrainerRegexInput.swift storyMatchResult: the part of [story] a [kind] section classifies. */
+    @JvmStatic
+    fun storyText(
+        kind: TrainerPhraseKind,
+        story: Story,
+    ): String? =
+        when (kind) {
+            TrainerPhraseKind.TITLE -> story.title
+            TrainerPhraseKind.AUTHOR -> story.authors
+            TrainerPhraseKind.TEXT -> story.content
+            TrainerPhraseKind.URL -> story.permalink
+        }
+
+    /**
+     * The phrases the story trainer lists in a [kind] section, as TrainerView.swift does with the
+     * story's own classifiers: the [saved] phrases [story] matches. A story has a single author,
+     * trained or not.
+     */
+    @JvmStatic
+    fun storyPhrases(
+        kind: TrainerPhraseKind,
+        saved: Collection<String>,
+        story: Story,
+    ): List<String> =
+        when (kind) {
+            TrainerPhraseKind.AUTHOR -> listOfNotNull(story.authors?.takeIf { it.isNotBlank() })
+            else -> saved.filter { phraseMatches(it, storyText(kind, story)) }
+        }
+
+    /**
+     * [story] with its text, for StoryIntelTrainerFragment.java's Story Text section. The story
+     * list's and reader's stories leave the text out (Story.fromCursor, Story.copyForBundle), so
+     * [loadContent] reads it by story hash. The copy keeps the text out of the fragment's
+     * arguments, which the saved state parcels.
+     */
+    @JvmStatic
+    fun withStoryContent(
+        story: Story,
+        loadContent: (String?) -> String?,
+    ): Story {
+        if (story.content != null) return story
+        val copy = story.copyForBundle()
+        copy.content = loadContent(story.storyHash)
+        return copy
+    }
 }

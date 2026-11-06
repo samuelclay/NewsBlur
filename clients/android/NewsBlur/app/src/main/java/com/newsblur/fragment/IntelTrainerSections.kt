@@ -319,11 +319,7 @@ class IntelTrainerSections(
         val story =
             story
                 ?: return if (kind == TrainerPhraseKind.AUTHOR) (dbHelper.getAuthorsForFeed(feedId) + saved).distinct() else saved.toList()
-        return when (kind) {
-            // A story has a single author, trained or not.
-            TrainerPhraseKind.AUTHOR -> listOfNotNull(story.authors?.takeIf { it.isNotBlank() })
-            else -> saved.filter { TrainerPhrase.phraseMatches(it, storyText(kind, story)) }
-        }
+        return TrainerPhrase.storyPhrases(kind, saved, story)
     }
 
     /**
@@ -338,7 +334,7 @@ class IntelTrainerSections(
     ) {
         val saved = kind.regexes(classifier).keys.toList()
         if (saved.isEmpty()) return
-        val text = storyText(kind, story)
+        val text = TrainerPhrase.storyText(kind, story)
         fragment.lifecycleScope.launch {
             val matched =
                 withContext(Dispatchers.Default) {
@@ -347,17 +343,6 @@ class IntelTrainerSections(
             if (matched.isNotEmpty()) onFound(matched)
         }
     }
-
-    private fun storyText(
-        kind: TrainerPhraseKind,
-        story: Story,
-    ): String? =
-        when (kind) {
-            TrainerPhraseKind.TITLE -> story.title
-            TrainerPhraseKind.AUTHOR -> story.authors
-            TrainerPhraseKind.TEXT -> story.content
-            TrainerPhraseKind.URL -> story.permalink
-        }
 
     private fun sectionTitle(kind: TrainerPhraseKind): Int =
         when (kind) {

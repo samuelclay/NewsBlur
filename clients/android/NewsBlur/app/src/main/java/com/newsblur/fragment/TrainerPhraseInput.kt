@@ -264,13 +264,7 @@ class TrainerPhraseInput(
     }
 
     /** TrainerRegexInput.swift storyMatchResult: the part of the story this section classifies. */
-    private fun storyText(): String? =
-        when (kind) {
-            TrainerPhraseKind.TITLE -> story?.title
-            TrainerPhraseKind.AUTHOR -> story?.authors
-            TrainerPhraseKind.TEXT -> story?.content
-            TrainerPhraseKind.URL -> story?.permalink
-        }
+    private fun storyText(): String? = story?.let { TrainerPhrase.storyText(kind, it) }
 
     private enum class Badge { VALID, NO_MATCH, ERROR }
 

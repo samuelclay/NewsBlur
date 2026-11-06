@@ -97,7 +97,9 @@ public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        story = (Story) getArguments().getSerializable("story");
+        // The Story Text section matches saved phrases against the story's text, which the list's and
+        // reader's stories leave out, so it's read here: one row on the main thread, like the classifier.
+        story = TrainerPhrase.withStoryContent((Story) getArguments().getSerializable("story"), dbHelper::getStoryContent);
         fs = (FeedSet) getArguments().getSerializable("feedset");
         classifier = dbHelper.getClassifierForFeed(story.feedId);
         PrefConstants.ThemeValue theme = prefsRepo.getResolvedTheme(requireContext());
