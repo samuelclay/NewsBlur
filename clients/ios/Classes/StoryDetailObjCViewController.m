@@ -928,7 +928,8 @@
     NSString *markJS = [assetCache textForResource:@"mark" ofType:@"js"];
     NSString *storyDetailJS = [assetCache textForResource:@"storyDetailView" ofType:@"js"];
     NSString *fastTouchJS = [assetCache textForResource:@"fastTouch" ofType:@"js"];
-    // Listen/ListenMediaStoryBridge.swift: labels and state for the audio cards storyDetailView.js draws.
+    // Listen/ListenMediaStoryBridge.swift: labels and state for the audio cards storyDetailView.js draws. It goes
+    // ahead of the bundled scripts so those stay one unchanged run (StoryDetailAssetPerformanceTests.swift).
     NSString *mediaConfigJS = [ListenMediaStoryBridge configScriptForStory:self.activeStory];
 
     // set up layout values based on iPad/iPhone
@@ -944,7 +945,7 @@
                     "<script>%@</script>"
                     "<script>%@</script>"
                     "<script>%@</script>",
-                    zeptoJS, fitvidJS, markJS, mediaConfigJS, storyDetailJS, fastTouchJS];
+                    mediaConfigJS, zeptoJS, fitvidJS, markJS, storyDetailJS, fastTouchJS];
     
     sharingHtmlString = [self getSideOptions];
 
