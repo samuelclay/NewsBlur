@@ -1,0 +1,38 @@
+{
+  "version": "16.2",
+  "validated_at": "2026-11-07T17:26:41.729Z",
+  "toolchain": "Xcode 27.2\nBuild version 27B52",
+  "ios": {
+    "build": "355",
+    "tag": "iOS_16.2",
+    "artifact": "NewsBlur.ipa",
+    "sha256": "fc2909007627de5fd897e322ea659967b2f2be01f0adfbbc4d8c79f494ec1f31",
+    "delivery_uuid": "c921a085-c54f-4aa9-9763-3f9f290dff8d",
+    "processing_state": "VALID",
+    "build_audience_type": "APP_STORE_ELIGIBLE"
+  },
+  "macos": {
+    "build": "355",
+    "tag": "macOS_16.2",
+    "architectures": [
+      "arm64",
+      "x86_64"
+    ],
+    "artifact": "NewsBlur.pkg",
+    "sha256": "6ddf424a13283e15cc178ebd5be94eb300252afcdccb9957b2e9745dd52ada71",
+    "delivery_uuid": "8c8439b1-4c1c-41fe-8144-b390f561ff56",
+    "processing_state": "VALID",
+    "build_audience_type": "APP_STORE_ELIGIBLE"
+  },
+  "android": {
+    "version_code": 301,
+    "tag": "Android_16.2",
+    "artifact": "app-release.aab",
+    "sha256": "5fc4956a973946bd4d6d526e9bb71fd65200606c910219b63ebb8b9fd159755d"
+  },
+  "validation": {
+    "archive_signature_verification": "codesign --verify --deep --strict passed for iOS and macOS archives",
+    "focused_ios_tests": "13 passed after the final toolbar and test changes",
+    "store_notes": "21 languages validated and exported for iOS, Android, and macOS"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "See which AI content and image filters matched a story, and manage your filters in the trainer. Hide now overrides AI filter matches.\n\nPlay podcasts in NewsBlur's Listen player with skip controls, AirPlay, and a queue that mixes podcasts with stories read aloud. Resume where you left off across devices.\n\nListen can now read over music from other apps. Turn on Play over other audio in Now Playing, choose whether to lower the music while the voice speaks, and adjust the Music / Voice balance."
+  },
+  "android": {
+    "release_notes": "See AI filter matches and manage filters in the redesigned trainer. Hide overrides AI filter matches. Play podcasts in Listen with skip controls, a mixed podcast and story queue, and playback position synced across devices. Listen can read over other apps' music, with optional music lowering and a Music / Voice balance."
+  },
+  "macos": {
+    "whats_new": "See which AI content and image filters matched a story, and manage your filters in the trainer. Hide now overrides AI filter matches.\n\nPlay podcasts in NewsBlur's Listen player with skip controls, AirPlay, and a queue that mixes podcasts with stories read aloud. Resume where you left off across devices."
+  }
+}
