@@ -224,6 +224,7 @@ class ReadingItemFragment :
     private val isWebLoadFinished = AtomicBoolean(false)
     private var isWebVisualStateReady = false
     private var nativeHeaderStoryHash: String? = null
+    private var controlMotion: com.newsblur.view.ReaderControlMotion? = null
     private val articleReveal = ReaderArticleReveal {
         syncStoryLoadingUi()
         story?.storyHash?.let { hash ->
@@ -393,6 +394,8 @@ class ReadingItemFragment :
     }
 
     override fun onDestroyView() {
+        controlMotion?.close()
+        controlMotion = null
         clearBottomInsetListener?.run()
         clearBottomInsetListener = null
         // A photo host that never started must not keep this fragment, its WebView, or the preview alive.
@@ -442,6 +445,7 @@ class ReadingItemFragment :
         ensureReadingWebview().resumeTimers()
         ensureReadingWebview().onResume()
         articleReveal.resume()
+        animateHeaderEntrance()
         story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
     }
 
@@ -513,10 +517,10 @@ class ReadingItemFragment :
             story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
         }
 
-        readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
-        readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
-        readingItemActionsBinding.shareStoryButton.setOnClickListener { openShareDialog() }
-        readingItemActionsBinding.askAiStoryButton.setOnClickListener { openAskAiDialog() }
+        readingItemActionsBinding.trainStoryButton.setOnClickListener { com.newsblur.view.ReaderMotion.pop(it); openStoryTrainer() }
+        readingItemActionsBinding.saveStoryButton.setOnClickListener { com.newsblur.view.ReaderMotion.pop(it); switchStorySavedState() }
+        readingItemActionsBinding.shareStoryButton.setOnClickListener { com.newsblur.view.ReaderMotion.pop(it); openShareDialog() }
+        readingItemActionsBinding.askAiStoryButton.setOnClickListener { com.newsblur.view.ReaderMotion.pop(it); openAskAiDialog() }
         readingItemActionsBinding.listenStoryButton.setOnClickListener { listenToStory() }
         readingItemActionsBinding.listenQueueButton.setOnClickListener { toggleUpNext() }
 
@@ -933,6 +937,7 @@ class ReadingItemFragment :
         listenRowSize = rows.firstOrNull { actions.listenStoryButtonContainer in it }?.size ?: 0
         val signature = rows.map { row -> row.map { it.id } }
         if (signature == lastStoryButtonRows) return
+        controlMotion?.invalidate()
         lastStoryButtonRows = signature
 
         buttons.forEach { (_, view) -> (view.parent as? ViewGroup)?.removeView(view) }
@@ -998,6 +1003,7 @@ class ReadingItemFragment :
     }
 
     private fun applyListenButtonLook(look: ListenButtonLook) {
+        controlMotion?.invalidate()
         val actions = readingItemActionsBinding
         val showsUpNext = look.upNext != UpNextButton.HIDDEN
         // A Listen cell sharing a four-button row is too narrow for its label beside the Up Next button.
@@ -1165,6 +1171,7 @@ class ReadingItemFragment :
     }
 
     private fun updateSaveButton() {
+        controlMotion?.invalidate()
         readingItemActionsBinding.saveStoryButton.setText(if (story!!.starred) R.string.unsave_this else R.string.save_this)
     }
 
@@ -1174,6 +1181,7 @@ class ReadingItemFragment :
     }
 
     private fun updateShareButton() {
+        controlMotion?.invalidate()
         for (userId in story!!.sharedUserIds) {
             if (userId == this@ReadingItemFragment.userId!!) {
                 readingItemActionsBinding.shareStoryButton.setText(R.string.already_shared)
@@ -1295,6 +1303,7 @@ class ReadingItemFragment :
 
         setupTagsAndIntel()
         nativeHeaderStoryHash = story?.storyHash
+        animateHeaderEntrance()
     }
 
     private fun setupTagsAndIntel() {
@@ -1422,6 +1431,7 @@ class ReadingItemFragment :
             prefsRepo.getResolvedTheme(requireContext()),
         )
         if (snapshot == lastClusterSnapshot) return
+        controlMotion?.invalidate()
         lastClusterSnapshot = snapshot
         binding.readingStoryClusterList.removeAllViews()
 
@@ -1444,6 +1454,7 @@ class ReadingItemFragment :
         visibleClusterStories.forEachIndexed { index, clusterStory ->
             val clusterView =
                 layoutInflater.inflate(R.layout.view_story_cluster_item, binding.readingStoryClusterList, false)
+            clusterView.tag = clusterStory.storyHash
 
             bindClusterItemView(
                 clusterView = clusterView,
@@ -2012,6 +2023,45 @@ class ReadingItemFragment :
         story?.storyHash?.let { (activity as? Reading)?.onReaderPageVisualReady(it) }
     }
 
+    private fun animateHeaderEntrance() {
+        controlMotion?.invalidate()
+        if (nativeHeaderStoryHash == null || !isResumed || !::binding.isInitialized || controlMotion != null) return
+        controlMotion = com.newsblur.view.ReaderControlMotion(binding.root, ::readerMotionControls, { isResumed })
+    }
+
+    private fun readerMotionControls(): List<com.newsblur.view.ReaderControlMotion.Control> {
+        val actions = readingItemActionsBinding
+        val controls = mutableListOf<com.newsblur.view.ReaderControlMotion.Control>()
+        fun add(view: View, identity: Any = view.id, state: Any? = (view as? TextView)?.text?.toString()) {
+            controls.add(com.newsblur.view.ReaderControlMotion.Control(view, identity,
+                listOf(state, view.isEnabled, view.contentDescription?.toString())))
+        }
+        listOf(binding.readingFeedTitle, binding.readingItemTitle, binding.readingItemDate, binding.readingItemAuthors,
+            actions.trainStoryButton, actions.saveStoryButton, actions.shareStoryButton, actions.askAiStoryButton,
+            binding.readingStoryClusterTitle, binding.readingStoryClusterMore,
+        ).forEach { add(it) }
+        add(actions.readingFriendCommentHeader, state = actions.readingFriendCommentTotal.text.toString())
+        add(actions.readingFriendEmptyshareHeader, state = actions.readingFriendEmptyshareTotal.text.toString())
+        add(actions.readingPublicCommentHeader, state = actions.readingPublicCommentTotal.text.toString())
+        add(actions.listenStoryButtonContainer, state = actions.listenStoryButton.contentDescription?.toString())
+        add(actions.listenQueueButton)
+        for (id in listOf(R.id.shared_by, R.id.comment_by)) binding.root.findViewById<View>(id)?.let { add(it) }
+        // ReadingItemFragment.kt keys rebuilt social/cluster rows by content, so unchanged controls do not replay.
+        for (id in listOf(R.id.reading_social_shareimages, R.id.reading_social_commentimages,
+            R.id.reading_story_cluster_list, R.id.reading_friend_comment_container,
+            R.id.reading_friend_emptyshare_container, R.id.reading_public_comment_container)) {
+            val group = binding.root.findViewById<ViewGroup>(id) ?: continue
+            for (index in 0 until group.childCount) {
+                val child = group.getChildAt(index)
+                val identity = id to (child.tag ?: index)
+                val text = (child.findViewById<TextView>(R.id.comment_text)
+                    ?: child.findViewById<TextView>(R.id.story_cluster_title))?.text?.toString()
+                add(child, identity, text)
+            }
+        }
+        return controls
+    }
+
     fun isNativeHeaderReady(storyHash: String): Boolean =
         ::binding.isInitialized && nativeHeaderStoryHash == storyHash &&
             binding.readingItemTitle.let { it.width > 0 && it.height > 0 && !it.isLayoutRequested }
@@ -2045,6 +2095,7 @@ class ReadingItemFragment :
 
     /** The social UI has finished loading from the DB.  */
     fun onSocialLoadFinished() {
+        controlMotion?.invalidate()
         isSocialLoadFinished = true
         checkLoadStatus()
     }

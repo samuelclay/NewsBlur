@@ -2948,18 +2948,11 @@ var classifier_prototype = {
 
         // Archive gating: non-Archive users can't use folder/global
         if (!is_archive && new_scope !== 'feed') {
-            // 1. Shake the scope badge to signal "denied"
-            var $badge = $toggle.closest('.NB-classifier-scope-badge');
-            $badge.removeClass('NB-shake');
-            $badge[0].offsetWidth; // force reflow
-            $badge.addClass('NB-shake');
-            setTimeout(function () { $badge.removeClass('NB-shake'); }, 500);
-
-            // 2. Flash the clicked toggle amber to connect it to the notice
+            // reader_classifier.js signals a denied action with color while keeping the toggle fixed.
             $toggle.addClass('NB-scope-toggle-denied');
             setTimeout(function () { $toggle.removeClass('NB-scope-toggle-denied'); }, 800);
 
-            // 3. Show a brief "Requires Pro" tooltip on the blocked toggle
+            // reader_classifier.js explains the unavailable scope above the blocked toggle.
             $('.NB-scope-tooltip').remove();
             var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(gettext('Requires Premium Archive'), 'NB-scope-tooltip-denied');
             $('body').append($tip);
@@ -2970,7 +2963,7 @@ var classifier_prototype = {
             });
             setTimeout(function () { $tip.fadeOut(300, function () { $tip.remove(); }); }, 1500);
 
-            // 4. Animate in the header notice and keep it visible
+            // reader_classifier.js introduces the header notice and keeps it visible.
             var $section = $classifier_container.closest('.NB-fieldset');
             var $notice = $section.find('.NB-classifier-scope-notice');
             if ($notice.length && !$notice.hasClass('NB-visible')) {
@@ -3005,12 +2998,6 @@ var classifier_prototype = {
         // Update toggle active states
         $toggle.closest('.NB-classifier-scope-toggles').find('.NB-scope-toggle').removeClass('NB-active');
         $toggle.addClass('NB-active');
-
-        // Brief scale animation on the clicked toggle
-        $toggle.css('transform', 'scale(1.3)');
-        setTimeout(function () {
-            $toggle.css('transform', '');
-        }, 150);
 
         // Compare scope + like/dislike + notifications to original state to determine if changed
         var original_scope = $cl.data('original-scope') || 'feed';

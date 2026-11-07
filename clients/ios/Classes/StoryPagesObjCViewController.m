@@ -787,6 +787,13 @@
 
 - (void)viewDidLayoutSubviews {
     [self updateReaderToolbarPresentation];
+    // StoryPagesObjCViewController.m starts individual controls once their persistent bars are visible.
+    [self.traverseBar updateMotion];
+    [self.storyToolbar updateMotion];
+    if (![self hasHiddenReaderAncestor] && self.view.window && self.navigationController.topViewController == (self.isPhoneOrCompact ? self : appDelegate.detailViewController)) {
+        [ReaderMotion toolbarControls:self.navigationController.navigationBar];
+        [ReaderMotion toolbarControls:self.navigationController.toolbar];
+    }
     if ([self hasHiddenReaderAncestor]) {
         [super viewDidLayoutSubviews];
         return;

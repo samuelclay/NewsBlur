@@ -546,6 +546,7 @@ abstract class Reading :
     }
 
     override fun onDestroy() {
+        if (::traverseBar.isInitialized) traverseBar.close()
         endControls?.close()
         endControls = null
         if (latestReaderRef.get() === this) latestReaderRef.clear()
@@ -1278,6 +1279,11 @@ abstract class Reading :
         val timeout = Runnable { showPreparedEntranceLoading() }
         preparedEntranceTimeout = timeout
         interactiveBackSurface().postDelayed(timeout, 1000L)
+    }
+
+    override fun isThemeTransitionReady(): Boolean {
+        val position = pager?.currentStoryPosition ?: return false
+        return readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true
     }
 
     private fun navigateToStory(position: Int, isHistoryBack: Boolean = false) {

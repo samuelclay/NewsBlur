@@ -1753,13 +1753,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 on_recording_stop: function () {
                     $voice_button.removeClass('NB-recording');
                     $voice_button.addClass('NB-transcribing');
-                    $voice_button.css('transform', '');
                     $input.attr('placeholder', gettext('Transcribing...'));
                     $voice_button.attr('title', gettext('Transcribing audio'));
                 },
                 on_recording_cancel: function () {
                     $voice_button.removeClass('NB-recording NB-transcribing');
-                    $voice_button.css('transform', '');
                     $voice_button.attr('title', gettext('Record voice question'));
                     $input.attr('placeholder', gettext('Ask about your browsing history...'));
                 },
@@ -1768,7 +1766,6 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 },
                 on_transcription_complete: function (text) {
                     $voice_button.removeClass('NB-transcribing');
-                    $voice_button.css('transform', '');
                     $voice_button.attr('title', gettext('Record voice question'));
                     $input.attr('placeholder', gettext('Ask about your browsing history...'));
 
@@ -1782,7 +1779,6 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 },
                 on_transcription_error: function (error) {
                     $voice_button.removeClass('NB-recording NB-transcribing');
-                    $voice_button.css('transform', '');
 
                     // Check error type
                     var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
@@ -1806,11 +1802,6 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                             $input.attr('placeholder', gettext('Ask about your browsing history...'));
                         }, 3000);
                     }
-                },
-                on_audio_level: function (level) {
-                    // Scale button based on audio level (1.0 to 1.3)
-                    var scale = 1 + (level * 0.3);
-                    $voice_button.css('transform', 'scale(' + scale + ')');
                 }
             });
         }

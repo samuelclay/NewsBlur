@@ -724,6 +724,9 @@
             this.reset_feed();
             this.open_sidebar();
             this.$s.$body.removeClass('NB-show-reader');
+            // reader.js resets the toolbar entrance only when the reader actually disappears.
+            NEWSBLUR.motion.unwatch_parts(this.$s.$feedbar[0]);
+            NEWSBLUR.motion.unwatch_parts(this.$s.$story_titles_header[0]);
             this.$s.$header_dashboard.addClass('NB-selected');
             this.flags['splash_page_frontmost'] = true;
 
@@ -4826,6 +4829,9 @@
             }
 
             this.setup_mousemove_on_views();
+            // reader.js keeps persistent navigation still between stories, revealing only new or changed controls.
+            NEWSBLUR.motion.feedbar_parts(this.$s.$feedbar[0]);
+            NEWSBLUR.motion.watch_parts(this.$s.$story_taskbar[0], '.NB-taskbar-button, .NB-taskbar-options');
         },
 
         switch_taskbar_view_direction: function (direction) {
@@ -6012,8 +6018,8 @@
             // reader.js: $.fn.align only knows LTR placements, so flip the menu around its anchor in RTL.
             NEWSBLUR.utils.mirror_aligned_element($manage_menu_container, $menu_anchor);
 
-            // Constrain menu height to viewport and enable scrolling if needed
-            _.defer(function () {
+            // reader.js commits the final menu geometry before its first animated frame.
+            (function () {
                 var container_offset = $manage_menu_container.offset();
                 var container_height = $manage_menu_container.outerHeight();
                 var window_height = $(window).height();
@@ -6045,7 +6051,7 @@
                         'overflow-x': ''
                     });
                 }
-            });
+            })();
 
             // Create and position the arrow tab
             if (type == 'feed' || type == 'folder' || type == 'story' ||
@@ -6063,6 +6069,9 @@
                     $manage_menu_container.removeClass('NB-inverse');
                 }
             }
+
+            NEWSBLUR.motion.cascade($manage_menu.children('li').not('.NB-menu-separator').toArray(), 7);
+            NEWSBLUR.motion.enter($manage_menu_container[0], 0, 8);
 
             // Hide menu on click outside menu.
             _.defer(function () {
@@ -8031,6 +8040,7 @@
             new_feed_id = _.isNumber(new_feed_id) && new_feed_id || feed_id;
             console.log(["force_feed_refresh", feed_id, new_feed_id]);
             this.force_feeds_refresh(function () {
+                NEWSBLUR.motion.refresh_completed(NEWSBLUR.reader.$s.$story_titles_header[0]);
                 // Open the feed back up if it is being refreshed and is still open.
                 if (NEWSBLUR.reader.active_feed == feed_id || NEWSBLUR.reader.active_feed == new_feed_id) {
                     NEWSBLUR.reader.open_feed(new_feed_id, { force: true });
