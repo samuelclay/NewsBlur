@@ -1362,6 +1362,15 @@
     <string name="listen_up_next_move_up">위로 이동</string>
     <string name="listen_up_next_move_down">아래로 이동</string>
     <string name="listen_up_next_empty_queue">아무 스토리에서나 듣기 옆의 +를 탭하면 여기에 대기열에 추가됩니다.</string>
+    <string name="listen_music">음악</string>
+    <string name="listen_music_expanded">펼침</string>
+    <string name="listen_music_collapsed">접힘</string>
+    <string name="listen_play_over_other_audio">다른 오디오 위에 재생</string>
+    <string name="listen_play_over_other_audio_summary">Spotify 또는 다른 앱에서 음악을 재생하면 Listen이 음악 위에 뉴스를 읽어 줍니다.</string>
+    <string name="listen_lower_music">음성이 나올 때 음악 음량 낮추기</string>
+    <string name="listen_balance_music">음악</string>
+    <string name="listen_balance_voice">음성</string>
+    <string name="listen_balance_description">음성과 음악 밸런스</string>
     <string name="listen_speed">속도</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

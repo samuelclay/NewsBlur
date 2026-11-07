@@ -242,6 +242,7 @@
 "Cluster duplicate stories across all your feeds" = "Объединять дублирующиеся статьи во всех лентах";
 "Cluster matches" = "Совпадения в группах";
 "Cluster related stories" = "Группировать похожие статьи";
+"Collapsed" = "Свёрнуто";
 "Column layout" = "Расположение колонок";
 "Columns" = "Колонки";
 "Comfortable" = "Комфортный";
@@ -362,6 +363,7 @@
 "Exact phrase" = "Точная фраза";
 "Exaggerates the voice's style" = "Преувеличивает особенности голоса";
 "Exit Full Screen" = "Выйти из полноэкранного режима";
+"Expanded" = "Развёрнуто";
 "Experimental" = "Экспериментальная функция";
 "Explore interests" = "Интересы";
 "Export Preferences" = "Экспорт настроек";
@@ -465,6 +467,7 @@
 "Hide hidden stories" = "Скрыть скрытые статьи";
 "Hide status bar" = "Скрыть строку состояния";
 "Hide toolbars when reading" = "Скрывать панели инструментов при чтении";
+"Hides the music settings" = "Скрывает настройки музыки";
 "Highlight the paragraph being read" = "Подсвечивать читаемый абзац";
 "How much emotion" = "Насколько эмоционально";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Если ни один вариант не подходит, введите заголовок статьи, который видите на странице, и мы проанализируем её ещё раз.";
@@ -557,6 +560,7 @@
 "Long press on story titles" = "Нажмите и удерживайте заголовки статей";
 "Long reads for later" = "Длинные статьи на потом";
 "Longer articles worth setting time aside for" = "Длинные статьи, на которые стоит выделить время";
+"Lower music while voice speaks" = "Уменьшать громкость музыки, когда звучит голос";
 "Magazine" = "Журнал";
 "Manage" = "Управление";
 "Manage Account on the Web" = "Управление аккаунтом в веб-версии";
@@ -638,6 +642,7 @@
 "Moving folder..." = "Перемещение папки...";
 "Moving site..." = "Перемещение сайта...";
 "Moving..." = "Перемещение…";
+"Music" = "Музыка";
 "Mute %@ Sites" = "Заглушить сайты %@";
 "Mute 1 Site" = "Отключить 1 сайт";
 "Mute All" = "Отключить всё";
@@ -781,6 +786,7 @@
 "Play again" = "Воспроизвести ещё раз";
 "Play audio" = "Воспроизвести аудио";
 "Play now" = "Воспроизвести сейчас";
+"Play over other audio" = "Воспроизводить поверх других аудио";
 "Play the next unread story" = "Включить следующую непрочитанную статью";
 "Play videos" = "Воспроизведение видео";
 "Playback position" = "Позиция воспроизведения";
@@ -981,6 +987,7 @@
 "Show unread count" = "Показывать количество непрочитанных";
 "Show with feed icons" = "Показывать значки лент";
 "Show without icons" = "Показывать без значков";
+"Shows the music settings" = "Показывает настройки музыки";
 "Sidebar" = "Боковая панель";
 "Sign Up" = "Зарегистрироваться";
 "Sign in" = "Войти";
@@ -1014,6 +1021,7 @@
 "Stability, similarity and style" = "Стабильность, сходство и стиль";
 "Stale — last story %@" = "Неактивен — последняя публикация %@";
 "Standard" = "Стандартный";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Включите музыку в приложении «Музыка» или Spotify — Listen будет читать поверх неё. Элементы управления этого приложения появятся на экране блокировки.";
 "Start reading" = "Начать чтение";
 "Statistics" = "Статистика";
 "Statistics…" = "Статистика…";
@@ -1236,6 +1244,7 @@
 "View instructions" = "Посмотреть инструкции";
 "View mode" = "Режим просмотра";
 "Voice" = "Голос";
+"Voice and music balance" = "Баланс голоса и музыки";
 "Voice settings" = "Настройки голоса";
 "Warm" = "Тёплый";
 "Web" = "Веб";

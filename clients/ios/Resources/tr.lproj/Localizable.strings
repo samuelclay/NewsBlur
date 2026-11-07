@@ -242,6 +242,7 @@
 "Cluster duplicate stories across all your feeds" = "Tüm akışlarınızdaki yinelenen haberleri kümeleyin";
 "Cluster matches" = "Küme eşleşmeleri";
 "Cluster related stories" = "İlgili haberleri kümelendir";
+"Collapsed" = "Daraltıldı";
 "Column layout" = "Sütun düzeni";
 "Columns" = "Sütunlar";
 "Comfortable" = "Rahat";
@@ -362,6 +363,7 @@
 "Exact phrase" = "Tam ifade";
 "Exaggerates the voice's style" = "Sesin stilini abartır";
 "Exit Full Screen" = "Tam ekrandan çık";
+"Expanded" = "Genişletildi";
 "Experimental" = "Deneysel";
 "Explore interests" = "İlgi alanlarını keşfet";
 "Export Preferences" = "Tercihleri Dışa Aktar";
@@ -465,6 +467,7 @@
 "Hide hidden stories" = "Gizli haberleri gizle";
 "Hide status bar" = "Durum çubuğunu gizle";
 "Hide toolbars when reading" = "Okurken araç çubuklarını gizle";
+"Hides the music settings" = "Müzik ayarlarını gizler";
 "Highlight the paragraph being read" = "Okunan paragrafı vurgula";
 "How much emotion" = "Duygu yoğunluğu";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Seçeneklerden hiçbiri uymuyorsa sayfada gördüğünüz bir haber başlığını yazın; yeniden analiz edelim.";
@@ -557,6 +560,7 @@
 "Long press on story titles" = "Haber başlıklarına uzun basın";
 "Long reads for later" = "Daha sonra okunacak uzun yazılar";
 "Longer articles worth setting time aside for" = "Zaman ayırmaya değer uzun makaleler";
+"Lower music while voice speaks" = "Ses konuşurken müziğin sesini kıs";
 "Magazine" = "Dergi";
 "Manage" = "Yönet";
 "Manage Account on the Web" = "Hesabınızı web'de yönetin";
@@ -638,6 +642,7 @@
 "Moving folder..." = "Klasör taşınıyor...";
 "Moving site..." = "Site taşınıyor...";
 "Moving..." = "Taşınıyor...";
+"Music" = "Müzik";
 "Mute %@ Sites" = "%@ Sitelerini Sessize Al";
 "Mute 1 Site" = "1 siteyi sessize al";
 "Mute All" = "Tümünü sessize al";
@@ -781,6 +786,7 @@
 "Play again" = "Yeniden oynat";
 "Play audio" = "Ses çal";
 "Play now" = "Şimdi oynat";
+"Play over other audio" = "Diğer seslerin üzerine çal";
 "Play the next unread story" = "Sonraki okunmamış haberi oynat";
 "Play videos" = "Videoları oynat";
 "Playback position" = "Oynatma konumu";
@@ -981,6 +987,7 @@
 "Show unread count" = "Okunmamış sayısını göster";
 "Show with feed icons" = "Akış simgeleriyle göster";
 "Show without icons" = "Simgeler olmadan göster";
+"Shows the music settings" = "Müzik ayarlarını gösterir";
 "Sidebar" = "Kenar çubuğu";
 "Sign Up" = "Kaydol";
 "Sign in" = "Oturum aç";
@@ -1014,6 +1021,7 @@
 "Stability, similarity and style" = "Kararlılık, benzerlik ve stil";
 "Stale — last story %@" = "Eski — son haber %@";
 "Standard" = "Standart";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Music uygulamasında veya Spotify'da müzik başlatın; Dinle özelliği müziğin üzerine haberleri okur. Kilit ekranındaki kontrolleri o uygulama yönetir.";
 "Start reading" = "Okumaya başla";
 "Statistics" = "İstatistikler";
 "Statistics…" = "İstatistikler…";
@@ -1236,6 +1244,7 @@
 "View instructions" = "Talimatları görüntüle";
 "View mode" = "Görünüm modu";
 "Voice" = "Ses";
+"Voice and music balance" = "Ses ve müzik dengesi";
 "Voice settings" = "Ses ayarları";
 "Warm" = "Sıcak";
 "Web" = "Web";

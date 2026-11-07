@@ -1362,6 +1362,15 @@
     <string name="listen_up_next_move_up">上移</string>
     <string name="listen_up_next_move_down">下移</string>
     <string name="listen_up_next_empty_queue">在任何文章的「聆聽」旁點選 +，即可將文章加入這裡的播放佇列。</string>
+    <string name="listen_music">音樂</string>
+    <string name="listen_music_expanded">展開</string>
+    <string name="listen_music_collapsed">收合</string>
+    <string name="listen_play_over_other_audio">在其他音訊上方播放</string>
+    <string name="listen_play_over_other_audio_summary">在 Spotify 或其他 App 播放音樂，Listen 會在音樂上方朗讀。</string>
+    <string name="listen_lower_music">語音播放時降低音樂音量</string>
+    <string name="listen_balance_music">音樂</string>
+    <string name="listen_balance_voice">語音</string>
+    <string name="listen_balance_description">語音與音樂音量平衡</string>
     <string name="listen_speed">速度</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

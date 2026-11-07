@@ -1362,6 +1362,15 @@
     <string name="listen_up_next_move_up">上に移動</string>
     <string name="listen_up_next_move_down">下に移動</string>
     <string name="listen_up_next_empty_queue">記事の「聴く」の横にある + をタップすると、ここにキューへ追加できます。</string>
+    <string name="listen_music">音楽</string>
+    <string name="listen_music_expanded">展開</string>
+    <string name="listen_music_collapsed">折りたたむ</string>
+    <string name="listen_play_over_other_audio">ほかの音声の上から再生</string>
+    <string name="listen_play_over_other_audio_summary">Spotifyなどのアプリで音楽を再生すると、Listenがその上から読み上げます。</string>
+    <string name="listen_lower_music">音声の読み上げ中に音楽を小さくする</string>
+    <string name="listen_balance_music">音楽</string>
+    <string name="listen_balance_voice">音声</string>
+    <string name="listen_balance_description">音声と音楽のバランス</string>
     <string name="listen_speed">速度</string>
     <string name="listen_speed_value">%1$s倍</string>
     <string name="listen_speed_unit">×</string>

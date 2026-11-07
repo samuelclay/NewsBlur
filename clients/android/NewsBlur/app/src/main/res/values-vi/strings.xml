@@ -1362,6 +1362,15 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="listen_up_next_move_up">Chuyển lên</string>
     <string name="listen_up_next_move_down">Chuyển xuống</string>
     <string name="listen_up_next_empty_queue">Chạm vào dấu + bên cạnh mục Nghe trên bất kỳ bài viết nào để thêm bài vào đây.</string>
+    <string name="listen_music">Nhạc</string>
+    <string name="listen_music_expanded">Đã mở rộng</string>
+    <string name="listen_music_collapsed">Đã thu gọn</string>
+    <string name="listen_play_over_other_audio">Phát đè lên âm thanh khác</string>
+    <string name="listen_play_over_other_audio_summary">Phát nhạc bằng Spotify hoặc ứng dụng khác, rồi Listen sẽ đọc đè lên nhạc.</string>
+    <string name="listen_lower_music">Giảm âm lượng nhạc khi giọng đọc phát</string>
+    <string name="listen_balance_music">Nhạc</string>
+    <string name="listen_balance_voice">Giọng đọc</string>
+    <string name="listen_balance_description">Cân bằng giọng đọc và nhạc</string>
     <string name="listen_speed">Tốc độ</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

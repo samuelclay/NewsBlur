@@ -242,6 +242,7 @@
 "Cluster duplicate stories across all your feeds" = "Cluster duplicate stories across all your feeds";
 "Cluster matches" = "Cluster matches";
 "Cluster related stories" = "Cluster related stories";
+"Collapsed" = "Collapsed";
 "Column layout" = "Column layout";
 "Columns" = "Columns";
 "Comfortable" = "Comfortable";
@@ -362,6 +363,7 @@
 "Exact phrase" = "Exact phrase";
 "Exaggerates the voice's style" = "Exaggerates the voice's style";
 "Exit Full Screen" = "Exit Full Screen";
+"Expanded" = "Expanded";
 "Experimental" = "Experimental";
 "Explore interests" = "Explore interests";
 "Export Preferences" = "Export Preferences";
@@ -465,6 +467,7 @@
 "Hide hidden stories" = "Hide hidden stories";
 "Hide status bar" = "Hide status bar";
 "Hide toolbars when reading" = "Hide toolbars when reading";
+"Hides the music settings" = "Hides the music settings";
 "Highlight the paragraph being read" = "Highlight the paragraph being read";
 "How much emotion" = "How much emotion";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "If none of the options match, type a story title you see on the page and we'll re-analyze.";
@@ -557,6 +560,7 @@
 "Long press on story titles" = "Long press on story titles";
 "Long reads for later" = "Long reads for later";
 "Longer articles worth setting time aside for" = "Longer articles worth setting time aside for";
+"Lower music while voice speaks" = "Lower music while voice speaks";
 "Magazine" = "Magazine";
 "Manage" = "Manage";
 "Manage Account on the Web" = "Manage Account on the Web";
@@ -638,6 +642,7 @@
 "Moving folder..." = "Moving folder...";
 "Moving site..." = "Moving site...";
 "Moving..." = "Moving...";
+"Music" = "Music";
 "Mute %@ Sites" = "Mute %@ Sites";
 "Mute 1 Site" = "Mute 1 Site";
 "Mute All" = "Mute All";
@@ -781,6 +786,7 @@
 "Play again" = "Play again";
 "Play audio" = "Play audio";
 "Play now" = "Play now";
+"Play over other audio" = "Play over other audio";
 "Play the next unread story" = "Play the next unread story";
 "Play videos" = "Play videos";
 "Playback position" = "Playback position";
@@ -981,6 +987,7 @@
 "Show unread count" = "Show unread count";
 "Show with feed icons" = "Show with feed icons";
 "Show without icons" = "Show without icons";
+"Shows the music settings" = "Shows the music settings";
 "Sidebar" = "Sidebar";
 "Sign Up" = "Sign Up";
 "Sign in" = "Sign in";
@@ -1014,6 +1021,7 @@
 "Stability, similarity and style" = "Stability, similarity and style";
 "Stale — last story %@" = "Stale — last story %@";
 "Standard" = "Standard";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen.";
 "Start reading" = "Start reading";
 "Statistics" = "Statistics";
 "Statistics…" = "Statistics…";
@@ -1236,6 +1244,7 @@
 "View instructions" = "View instructions";
 "View mode" = "View mode";
 "Voice" = "Voice";
+"Voice and music balance" = "Voice and music balance";
 "Voice settings" = "Voice settings";
 "Warm" = "Warm";
 "Web" = "Web";

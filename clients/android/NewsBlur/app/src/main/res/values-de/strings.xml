@@ -1390,6 +1390,15 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="listen_up_next_move_up">Nach oben verschieben</string>
     <string name="listen_up_next_move_down">Nach unten verschieben</string>
     <string name="listen_up_next_empty_queue">Tippe bei einem beliebigen Artikel neben „Anhören“ auf +, um ihn hier in die Warteschlange zu stellen.</string>
+    <string name="listen_music">Musik</string>
+    <string name="listen_music_expanded">Ausgeklappt</string>
+    <string name="listen_music_collapsed">Eingeklappt</string>
+    <string name="listen_play_over_other_audio">Über andere Audiowiedergabe abspielen</string>
+    <string name="listen_play_over_other_audio_summary">Starte Musik in Spotify oder einer anderen App. Listen liest darüber.</string>
+    <string name="listen_lower_music">Musik leiser stellen, während die Stimme spricht</string>
+    <string name="listen_balance_music">Musik</string>
+    <string name="listen_balance_voice">Stimme</string>
+    <string name="listen_balance_description">Lautstärke von Stimme und Musik</string>
     <string name="listen_speed">Geschwindigkeit</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

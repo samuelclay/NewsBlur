@@ -1629,6 +1629,15 @@ people together to talk about the world.</string>
     <string name="listen_up_next_move_up">Move up</string>
     <string name="listen_up_next_move_down">Move down</string>
     <string name="listen_up_next_empty_queue">Tap + beside Listen on any story to queue it here.</string>
+    <string name="listen_music">Music</string>
+    <string name="listen_music_expanded">Expanded</string>
+    <string name="listen_music_collapsed">Collapsed</string>
+    <string name="listen_play_over_other_audio">Play over other audio</string>
+    <string name="listen_play_over_other_audio_summary">Start music in Spotify or another app and Listen reads over it.</string>
+    <string name="listen_lower_music">Lower music while voice speaks</string>
+    <string name="listen_balance_music">Music</string>
+    <string name="listen_balance_voice">Voice</string>
+    <string name="listen_balance_description">Voice and music balance</string>
     <string name="listen_speed">Speed</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

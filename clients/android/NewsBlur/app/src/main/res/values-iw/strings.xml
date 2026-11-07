@@ -1418,6 +1418,15 @@
     <string name="listen_up_next_move_up">העברה למעלה</string>
     <string name="listen_up_next_move_down">העברה למטה</string>
     <string name="listen_up_next_empty_queue">הקישו על + לצד ״האזנה״ בכל כתבה כדי להוסיף אותה לתור כאן.</string>
+    <string name="listen_music">מוזיקה</string>
+    <string name="listen_music_expanded">מורחב</string>
+    <string name="listen_music_collapsed">מכווץ</string>
+    <string name="listen_play_over_other_audio">הפעלה מעל שמע אחר</string>
+    <string name="listen_play_over_other_audio_summary">הפעילו מוזיקה ב-Spotify או באפליקציה אחרת, ו-Listen יקרא מעליה.</string>
+    <string name="listen_lower_music">הנמכת המוזיקה בזמן הדיבור</string>
+    <string name="listen_balance_music">מוזיקה</string>
+    <string name="listen_balance_voice">קריינות</string>
+    <string name="listen_balance_description">איזון בין קריינות למוזיקה</string>
     <string name="listen_speed">מהירות</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

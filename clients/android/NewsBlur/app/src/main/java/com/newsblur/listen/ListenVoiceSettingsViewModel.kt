@@ -477,6 +477,8 @@ class ListenVoiceSettingsViewModel
             url: String,
         ) {
             val player = previewPlayer ?: createPreviewPlayer().also { previewPlayer = it }
+            // ListenVoiceSettingsViewModel.kt: while Listen plays over other audio, a sample doesn't pause that app.
+            player.setAudioAttributes(ListenSessionPlayer.AUDIO_ATTRIBUTES, listenManager.previewTakesAudioFocus)
             player.setMediaItem(MediaItem.fromUri(url))
             player.prepare()
             player.play()

@@ -1390,6 +1390,15 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="listen_up_next_move_up">Yukarı taşı</string>
     <string name="listen_up_next_move_down">Aşağı taşı</string>
     <string name="listen_up_next_empty_queue">Bir haberi sıraya eklemek için yanındaki Dinle seçeneğine dokunun.</string>
+    <string name="listen_music">Müzik</string>
+    <string name="listen_music_expanded">Genişletildi</string>
+    <string name="listen_music_collapsed">Daraltıldı</string>
+    <string name="listen_play_over_other_audio">Diğer seslerin üzerine çal</string>
+    <string name="listen_play_over_other_audio_summary">Spotify\'da veya başka bir uygulamada müzik başlatın; Dinle özelliği müziğin üzerine haberleri okur.</string>
+    <string name="listen_lower_music">Sesli okuma sırasında müziği kıs</string>
+    <string name="listen_balance_music">Müzik</string>
+    <string name="listen_balance_voice">Ses</string>
+    <string name="listen_balance_description">Ses ve müzik dengesi</string>
     <string name="listen_speed">Hız</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>

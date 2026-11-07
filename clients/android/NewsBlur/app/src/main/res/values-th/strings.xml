@@ -1362,6 +1362,15 @@
     <string name="listen_up_next_move_up">เลื่อนขึ้น</string>
     <string name="listen_up_next_move_down">เลื่อนลง</string>
     <string name="listen_up_next_empty_queue">แตะ + ข้าง «ฟัง» ในบทความใดก็ได้เพื่อเพิ่มเข้าคิวนี้</string>
+    <string name="listen_music">เพลง</string>
+    <string name="listen_music_expanded">ขยายแล้ว</string>
+    <string name="listen_music_collapsed">ยุบแล้ว</string>
+    <string name="listen_play_over_other_audio">เล่นทับเสียงจากแอปอื่น</string>
+    <string name="listen_play_over_other_audio_summary">เปิดเพลงใน Spotify หรือแอปอื่น แล้ว Listen จะอ่านทับเพลง</string>
+    <string name="listen_lower_music">ลดเสียงเพลงขณะเสียงพูด</string>
+    <string name="listen_balance_music">เพลง</string>
+    <string name="listen_balance_voice">เสียงพูด</string>
+    <string name="listen_balance_description">ปรับสมดุลเสียงพูดและเพลง</string>
     <string name="listen_speed">ความเร็ว</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>
