@@ -26,7 +26,7 @@ import UIKit
     }
 
     private static let idleSymbol = "headphones"
-    private static let buttonSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 19, weight: .medium)
+    private static let buttonSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 15, weight: .medium)
 
     private let story: () -> [AnyHashable: Any]?
     private var barItems: [UIBarButtonItem] = []
@@ -83,7 +83,7 @@ import UIKit
     func update() {
         let state = currentState
         let hidden = !Self.isShown
-        let image = UIImage(systemName: state.symbol)
+        let image = UIImage(systemName: state.symbol, withConfiguration: Self.buttonSymbolConfiguration)
         let tint = state.isActive ? Self.activeTint : Self.idleTint
         for item in barItems {
             item.image = image
@@ -93,7 +93,7 @@ import UIKit
             item.isHidden = hidden
         }
         for button in buttons {
-            button.setImage(image?.withConfiguration(Self.buttonSymbolConfiguration), for: .normal)
+            button.setImage(image, for: .normal)
             button.accessibilityLabel = state.title
             button.tintColor = tint
             button.isHidden = hidden

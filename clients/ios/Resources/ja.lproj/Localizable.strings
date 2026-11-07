@@ -242,6 +242,7 @@
 "Cluster duplicate stories across all your feeds" = "すべてのフィードで重複する記事をまとめる";
 "Cluster matches" = "クラスターの一致";
 "Cluster related stories" = "関連記事をまとめる";
+"Collapsed" = "折りたたみ";
 "Column layout" = "列のレイアウト";
 "Columns" = "列";
 "Comfortable" = "ゆったり";
@@ -362,6 +363,7 @@
 "Exact phrase" = "完全一致";
 "Exaggerates the voice's style" = "声のスタイルを強調します";
 "Exit Full Screen" = "全画面表示を終了";
+"Expanded" = "展開";
 "Experimental" = "実験的";
 "Explore interests" = "興味のある項目を探す";
 "Export Preferences" = "設定をエクスポート";
@@ -465,6 +467,7 @@
 "Hide hidden stories" = "非表示の記事を隠す";
 "Hide status bar" = "ステータスバーを非表示";
 "Hide toolbars when reading" = "記事を読むときにツールバーを非表示にする";
+"Hides the music settings" = "音楽の設定を非表示";
 "Highlight the paragraph being read" = "読み上げ中の段落をハイライト";
 "How much emotion" = "感情の強さ";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "どの選択肢も当てはまらない場合は、ページ上に表示されている記事のタイトルを入力してください。再分析します。";
@@ -557,6 +560,7 @@
 "Long press on story titles" = "記事のタイトルを長押し";
 "Long reads for later" = "あとで読む長文記事";
 "Longer articles worth setting time aside for" = "時間を取って読む価値のある長い記事";
+"Lower music while voice speaks" = "音声の再生中は音楽の音量を下げる";
 "Magazine" = "マガジン";
 "Manage" = "管理";
 "Manage Account on the Web" = "ウェブでアカウントを管理";
@@ -638,6 +642,7 @@
 "Moving folder..." = "フォルダーを移動中...";
 "Moving site..." = "サイトを移動しています...";
 "Moving..." = "移動中…";
+"Music" = "ミュージック";
 "Mute %@ Sites" = "%@サイトをミュート";
 "Mute 1 Site" = "1つのサイトをミュート";
 "Mute All" = "すべてミュート";
@@ -781,6 +786,7 @@
 "Play again" = "もう一度再生";
 "Play audio" = "音声を再生";
 "Play now" = "今すぐ再生";
+"Play over other audio" = "ほかのオーディオに重ねて再生";
 "Play the next unread story" = "次の未読記事を再生";
 "Play videos" = "動画の再生";
 "Playback position" = "再生位置";
@@ -981,6 +987,7 @@
 "Show unread count" = "未読数を表示";
 "Show with feed icons" = "フィードアイコンと一緒に表示";
 "Show without icons" = "アイコンなしで表示";
+"Shows the music settings" = "音楽の設定を表示";
 "Sidebar" = "サイドバー";
 "Sign Up" = "登録";
 "Sign in" = "ログイン";
@@ -1014,6 +1021,7 @@
 "Stability, similarity and style" = "安定性、類似性、スタイル";
 "Stale — last story %@" = "更新停止 — 最後の記事は%@";
 "Standard" = "標準";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "MusicアプリまたはSpotifyで音楽を再生すると、Listenがその上から読み上げます。ロック画面の操作は、そのアプリのコントロールに切り替わります。";
 "Start reading" = "読み始める";
 "Statistics" = "統計";
 "Statistics…" = "統計…";
@@ -1236,6 +1244,7 @@
 "View instructions" = "手順を表示";
 "View mode" = "表示モード";
 "Voice" = "音声";
+"Voice and music balance" = "音声と音楽のバランス";
 "Voice settings" = "音声設定";
 "Warm" = "暖色";
 "Web" = "ウェブ";

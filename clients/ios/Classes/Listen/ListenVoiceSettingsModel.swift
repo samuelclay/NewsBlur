@@ -398,6 +398,9 @@ final class ListenVoiceSettingsModel: ObservableObject {
 /// Plays a short sample of a voice reading the current article, or the voice's own sample when no article is
 /// open (ListenVoiceSettingsModel.swift). The story playing pauses for the sample and resumes after it.
 final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
+    /// True while any voice sample plays, so ListenPlayer.swift keeps the audio session for it.
+    private(set) static var isPlayingSample = false
+
     @Published private(set) var loadingVoiceId: String?
     @Published private(set) var playingVoiceId: String?
     @Published private(set) var errorMessage: String?
@@ -406,6 +409,14 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
     private var endObserver: NSObjectProtocol?
     private var generation = 0
     private var resumesStory = false
+    private let mediaPlayer: ListenMediaPlayer
+
+    init(mediaPlayer: ListenMediaPlayer = .shared) {
+        self.mediaPlayer = mediaPlayer
+        super.init()
+    }
+    /// True once a sample has taken the audio session, until sampling ends; switching samples keeps it.
+    private var holdsSession = false
 
     func toggle(voice: ListenVoice, language: String, delivery: ListenDeliverySettings) {
         if playingVoiceId == voice.id || loadingVoiceId == voice.id {
@@ -434,6 +445,7 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
             case .failure(let error):
                 self.loadingVoiceId = nil
                 self.errorMessage = error.message
+                self.finishSampling()
             }
         }
     }
@@ -447,17 +459,20 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
             case .failure:
                 self.loadingVoiceId = nil
                 self.errorMessage = ListenAPIError.streamFailed.message
+                self.finishSampling()
             }
         }
     }
 
-    private func play(_ file: URL, voice: ListenVoice) {
+    func play(_ file: URL, voice: ListenVoice) {
         let story = ListenPlayer.shared
         if story.wantsToPlay {
             story.pause()
             resumesStory = true
         }
-        story.activateAudioSession()
+        // ListenVoiceSettingsModel.swift shares the session with podcasts, so a sample cannot make one mix.
+        story.activateAudioSession(forNarration: !mediaPlayer.wantsToPlay)
+        holdsSession = true
         let item = AVPlayerItem(url: file)
         let player = AVPlayer(playerItem: item)
         self.player = player
@@ -467,6 +482,7 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
         }
         loadingVoiceId = nil
         playingVoiceId = voice.id
+        Self.isPlayingSample = true
         player.play()
     }
 
@@ -484,9 +500,30 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
         endObserver = nil
         loadingVoiceId = nil
         playingVoiceId = nil
-        if resumeStory, resumesStory {
+        Self.isPlayingSample = false
+        if resumeStory {
+            finishSampling()
+        }
+    }
+
+    /// The last sample ended, was stopped or couldn't load. The story picks up again if a sample paused it; if not,
+    /// the session a sample took is let go, so music lowered for it comes back up (ListenPlayer.swift
+    /// audioMixDidChange). This runs even when no sample is playing, since switching samples keeps the session.
+    private func finishSampling() {
+        let heldSession = holdsSession
+        holdsSession = false
+        if resumesStory {
             resumesStory = false
             ListenPlayer.shared.play()
+        } else if heldSession {
+            if mediaPlayer.wantsToPlay {
+                ListenPlayer.shared.activateAudioSession(forNarration: false)
+            } else if mediaPlayer.isActive {
+                // A paused podcast must not keep a sample's ducking session (ListenMediaPlayer.swift).
+                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } else {
+                ListenPlayer.shared.audioMixDidChange()
+            }
         }
     }
 }

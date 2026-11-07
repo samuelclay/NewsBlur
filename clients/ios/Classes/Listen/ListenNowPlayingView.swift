@@ -8,8 +8,8 @@
 
 import SwiftUI
 
-/// ListenNowPlayingView.swift is the expanded player: scrubber, skips, speed, voice settings, Up Next, the
-/// preview banner and upgrade button, inline errors with Retry, and the listening allowance.
+/// ListenNowPlayingView.swift is the expanded player: scrubber, skips, speed, voice settings, playing over other
+/// apps' music, Up Next, the preview banner and upgrade button, inline errors with Retry, and the listening allowance.
 struct ListenNowPlayingView: View {
     @ObservedObject private var player = ListenPlayer.shared
     @ObservedObject private var queue = ListenQueue.shared
@@ -38,6 +38,11 @@ struct ListenNowPlayingView: View {
                 scrubber
                 transport
                 secondaryControls
+                // ListenNowPlayingView.swift: Listen can read over music from other apps (iPhone and iPad only,
+                // since a Mac mixes apps on its own).
+                if ListenAudioMix.isAvailable {
+                    ListenMusicCard()
+                }
                 if !queue.playableItems.isEmpty {
                     queueSection
                 }

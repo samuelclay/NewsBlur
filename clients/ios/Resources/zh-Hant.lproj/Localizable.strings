@@ -242,6 +242,7 @@
 "Cluster duplicate stories across all your feeds" = "在所有訂閱來源中將重複文章分群";
 "Cluster matches" = "分群比對";
 "Cluster related stories" = "將相關文章分群";
+"Collapsed" = "已收合";
 "Column layout" = "分欄版面配置";
 "Columns" = "欄";
 "Comfortable" = "舒適";
@@ -362,6 +363,7 @@
 "Exact phrase" = "完全符合的詞組";
 "Exaggerates the voice's style" = "強化語音風格";
 "Exit Full Screen" = "結束全螢幕";
+"Expanded" = "已展開";
 "Experimental" = "實驗性";
 "Explore interests" = "探索興趣";
 "Export Preferences" = "匯出偏好設定";
@@ -465,6 +467,7 @@
 "Hide hidden stories" = "隱藏已隱藏的文章";
 "Hide status bar" = "隱藏狀態列";
 "Hide toolbars when reading" = "閱讀時隱藏工具列";
+"Hides the music settings" = "隱藏音樂設定";
 "Highlight the paragraph being read" = "醒目標示正在朗讀的段落";
 "How much emotion" = "情感表現程度";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "如果這些選項都不符合，請輸入你在頁面上看到的文章標題，我們會重新分析。";
@@ -557,6 +560,7 @@
 "Long press on story titles" = "長按文章標題";
 "Long reads for later" = "留待稍後閱讀的長篇文章";
 "Longer articles worth setting time aside for" = "值得預留時間閱讀的長篇文章";
+"Lower music while voice speaks" = "語音播放時降低音樂音量";
 "Magazine" = "雜誌";
 "Manage" = "管理";
 "Manage Account on the Web" = "在網頁上管理帳戶";
@@ -638,6 +642,7 @@
 "Moving folder..." = "正在移動資料夾…";
 "Moving site..." = "正在移動網站…";
 "Moving..." = "正在移動…";
+"Music" = "音樂";
 "Mute %@ Sites" = "靜音 %@ 個網站";
 "Mute 1 Site" = "靜音 1 個網站";
 "Mute All" = "全部靜音";
@@ -781,6 +786,7 @@
 "Play again" = "再播放一次";
 "Play audio" = "播放音訊";
 "Play now" = "立即播放";
+"Play over other audio" = "在其他音訊上播放";
 "Play the next unread story" = "播放下一篇未讀文章";
 "Play videos" = "播放影片";
 "Playback position" = "播放位置";
@@ -981,6 +987,7 @@
 "Show unread count" = "顯示未讀數量";
 "Show with feed icons" = "顯示訂閱來源圖示";
 "Show without icons" = "不顯示圖示";
+"Shows the music settings" = "顯示音樂設定";
 "Sidebar" = "側邊欄";
 "Sign Up" = "註冊";
 "Sign in" = "登入";
@@ -1014,6 +1021,7 @@
 "Stability, similarity and style" = "穩定度、相似度和風格";
 "Stale — last story %@" = "已停更 — 最後一篇文章發布於 %@";
 "Standard" = "標準";
+"Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "在「音樂」App 或 Spotify 播放音樂，Listen 會在音樂上方朗讀。該 App 的控制項會接管鎖定畫面。";
 "Start reading" = "開始閱讀";
 "Statistics" = "統計資料";
 "Statistics…" = "統計資料…";
@@ -1236,6 +1244,7 @@
 "View instructions" = "查看說明";
 "View mode" = "檢視模式";
 "Voice" = "語音";
+"Voice and music balance" = "語音與音樂平衡";
 "Voice settings" = "語音設定";
 "Warm" = "暖色";
 "Web" = "網頁";

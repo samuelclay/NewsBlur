@@ -74,7 +74,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
                 guard let feedId, let feed = NewsBlurAppDelegate.shared()?.getFeed(feedId) as? [String: Any] else { return nil }
                 return feed["feed_title"] as? String
             },
-            activateAudioSession: { ListenPlayer.shared.activateAudioSession() },
+            activateAudioSession: { ListenPlayer.shared.activateAudioSession(forNarration: false) },
             deactivateAudioSession: {
                 try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
             }

@@ -1390,6 +1390,15 @@ om over de wereld te praten.</string>
     <string name="listen_up_next_move_up">Omhoog verplaatsen</string>
     <string name="listen_up_next_move_down">Omlaag verplaatsen</string>
     <string name="listen_up_next_empty_queue">Tik op + naast Luisteren bij een artikel om het hier in de wachtrij te zetten.</string>
+    <string name="listen_music">Muziek</string>
+    <string name="listen_music_expanded">Uitgeklapt</string>
+    <string name="listen_music_collapsed">Ingeklapt</string>
+    <string name="listen_play_over_other_audio">Afspelen over andere audio</string>
+    <string name="listen_play_over_other_audio_summary">Start muziek in Spotify of een andere app; Luisteren leest eroverheen.</string>
+    <string name="listen_lower_music">Muziek zachter zetten tijdens het voorlezen</string>
+    <string name="listen_balance_music">Muziek</string>
+    <string name="listen_balance_voice">Stem</string>
+    <string name="listen_balance_description">Balans tussen stem en muziek</string>
     <string name="listen_speed">Snelheid</string>
     <string name="listen_speed_value">%1$s×</string>
     <string name="listen_speed_unit">×</string>
