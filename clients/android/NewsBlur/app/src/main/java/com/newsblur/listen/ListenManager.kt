@@ -1164,6 +1164,10 @@ class ListenManager
         private val playbackAudioMix: ListenAudioMixSettings
             get() = audioMix.current().forPlayback(isMedia = story?.media != null)
 
+        /** ListenVoiceSettingsViewModel.kt samples always follow narration preferences, even with a podcast loaded. */
+        val previewTakesAudioFocus: Boolean
+            get() = audioMix.current().focusMode == ListenFocusMode.EXCLUSIVE
+
         val takesAudioFocus: Boolean
             get() = playbackAudioMix.focusMode == ListenFocusMode.EXCLUSIVE
 

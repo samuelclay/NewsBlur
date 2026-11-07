@@ -1,3 +1,4 @@
+import AVFoundation
 import MediaPlayer
 import XCTest
 
@@ -244,6 +245,28 @@ final class Test_ListenMediaPlayer: XCTestCase {
         server.state["current_media_type"] = type
         server.state["current_position"] = position
         server.state["current_duration"] = duration
+    }
+
+    func test_voice_sample_does_not_leave_a_playing_podcast_mixing_with_other_apps() throws {
+        let key = ListenAudioMix.playOverOtherAudioKey
+        let previous = UserDefaults.standard.object(forKey: key)
+        defer {
+            if let previous { UserDefaults.standard.set(previous, forKey: key) }
+            else { UserDefaults.standard.removeObject(forKey: key) }
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
+        UserDefaults.standard.set(true, forKey: key)
+        start()
+        let preview = ListenVoicePreviewPlayer(mediaPlayer: player)
+        let voice = try XCTUnwrap(ListenVoice(json: ["voice_id": "test"]))
+        // ListenMediaPlayerTests.swift drives the same local-file preview entry point as a completed download.
+        preview.play(URL(fileURLWithPath: "/tmp/newsblur-preview-test.caf"), voice: voice)
+        XCTAssertEqual(AVAudioSession.sharedInstance().routeSharingPolicy, .longFormAudio)
+        XCTAssertFalse(AVAudioSession.sharedInstance().categoryOptions.contains(.mixWithOthers))
+        preview.stop()
+        XCTAssertTrue(player.wantsToPlay)
+        XCTAssertEqual(AVAudioSession.sharedInstance().routeSharingPolicy, .longFormAudio)
+        XCTAssertFalse(AVAudioSession.sharedInstance().categoryOptions.contains(.mixWithOthers))
     }
 
     // MARK: - Resuming

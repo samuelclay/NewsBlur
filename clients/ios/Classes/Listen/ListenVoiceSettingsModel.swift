@@ -409,6 +409,12 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
     private var endObserver: NSObjectProtocol?
     private var generation = 0
     private var resumesStory = false
+    private let mediaPlayer: ListenMediaPlayer
+
+    init(mediaPlayer: ListenMediaPlayer = .shared) {
+        self.mediaPlayer = mediaPlayer
+        super.init()
+    }
     /// True once a sample has taken the audio session, until sampling ends; switching samples keeps it.
     private var holdsSession = false
 
@@ -458,13 +464,14 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
         }
     }
 
-    private func play(_ file: URL, voice: ListenVoice) {
+    func play(_ file: URL, voice: ListenVoice) {
         let story = ListenPlayer.shared
         if story.wantsToPlay {
             story.pause()
             resumesStory = true
         }
-        story.activateAudioSession()
+        // ListenVoiceSettingsModel.swift shares the session with podcasts, so a sample cannot make one mix.
+        story.activateAudioSession(forNarration: !mediaPlayer.wantsToPlay)
         holdsSession = true
         let item = AVPlayerItem(url: file)
         let player = AVPlayer(playerItem: item)
@@ -509,7 +516,14 @@ final class ListenVoicePreviewPlayer: NSObject, ObservableObject {
             resumesStory = false
             ListenPlayer.shared.play()
         } else if heldSession {
-            ListenPlayer.shared.audioMixDidChange()
+            if mediaPlayer.wantsToPlay {
+                ListenPlayer.shared.activateAudioSession(forNarration: false)
+            } else if mediaPlayer.isActive {
+                // A paused podcast must not keep a sample's ducking session (ListenMediaPlayer.swift).
+                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } else {
+                ListenPlayer.shared.audioMixDidChange()
+            }
         }
     }
 }
