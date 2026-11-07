@@ -61,7 +61,8 @@ final class Test_ListenAudioMix: XCTestCase {
         ListenAudioMix.voiceVolume = 0.2
         XCTAssertEqual(ListenAudioMix.effectiveVoiceVolume, 1, "A hidden slider can't leave the voice quiet")
         ListenAudioMix.playsOverOtherAudio = true
-        XCTAssertEqual(ListenAudioMix.effectiveVoiceVolume, 0.2, accuracy: 0.0001)
+        XCTAssertEqual(ListenAudioMix.effectiveVoiceVolume, ListenAudioMix.isAvailable ? 0.2 : 1, accuracy: 0.0001,
+                       "ListenAudioMix.swift keeps the voice unmodified on Mac, where mixing controls are unavailable")
     }
 
     func test_the_music_section_starts_expanded_and_remembers_collapsing() {
@@ -198,6 +199,12 @@ final class Test_ListenVoiceBoostTap: XCTestCase {
         let boosted = AVPlayerItem(url: file)
         ListenAudioMix.playsOverOtherAudio = true
         ListenVoiceBoost.update(boosted)
+        if !ListenAudioMix.isAvailable {
+            // ListenAudioMixTests.swift: Mac mixes apps itself, so the iOS boost must never attach there.
+            XCTAssertNil(untouched.audioMix)
+            XCTAssertNil(boosted.audioMix)
+            return
+        }
         waitUntil { boosted.audioMix != nil }
         XCTAssertNil(untouched.audioMix, "Without Play over other audio, no tap or limiter touches the voice")
 
