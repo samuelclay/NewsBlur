@@ -469,6 +469,14 @@ msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying 
 msgstr "<b>ไม่ต้องใช้บัตรเครดิต</b> หลังจาก 30 วัน ใช้ฟีเจอร์เหล่านี้ต่อได้ในราคาเพียง $36/ปี"
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr "<b>Premium Archive</b> เก็บบทความทั้งหมดจากทุกเว็บไซต์ที่คุณติดตามไว้ตลอดไป รับทุกอย่างจาก Premium พร้อมกับ:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> สร้างมาเพื่อผู้ใช้ระดับสูง รับทุกอย่างจาก Archive พร้อมกับ:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -765,6 +773,18 @@ msgstr ""
 "ข้อมูลการฝึกระบบอัจฉริยะ การค้นหาที่บันทึกไว้ และโพสต์ blurblog ของคุณจะอยู่ในฐานข้อมูลที่คุณควบคุมได้ "
 "ไม่มีการผูกขาดกับผู้ให้บริการในทุกระดับ หากคุณใช้บริการโฮสต์ คุณสามารถส่งออก OPML ได้ทุกเมื่อ "
 "และตั้งค่าอินสแตนซ์ของคุณเองด้วยซอร์สโค้ดโอเพนซอร์สเดียวกับที่ใช้ขับเคลื่อน newsblur.com"
+
+msgid "All of this for $29/month."
+msgstr "ทั้งหมดนี้ในราคา $29/เดือน"
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "ทั้งหมดนี้ในราคา <b>$29/เดือน</b>"
+
+msgid "All of this for just $99/year."
+msgstr "ทั้งหมดนี้ในราคาเพียง $99/ปี"
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "ทั้งหมดนี้ในราคาเพียง <b>$99/ปี</b>"
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1489,6 +1509,12 @@ msgstr "บันทึกบทความไม่ได้ ไม่พบ�
 msgid "Could not unsave story, not found"
 msgstr "ยกเลิกการบันทึกบทความไม่ได้ ไม่พบบทความ"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "เชื่อมต่อ Stripe ไม่ได้ โปรดลองอีกครั้ง"
+
+msgid "Couldn't save the position"
+msgstr "บันทึกตำแหน่งไม่สำเร็จ"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "ช่วงเวลาที่ครอบคลุม: %(start)s &ndash; %(end)s"
@@ -1963,9 +1989,6 @@ msgstr "ขยายเครือข่ายของคุณ"
 
 msgid "Explore Archive"
 msgstr "สำรวจ Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "สำรวจ NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "สำรวจ Premium"
@@ -2990,6 +3013,9 @@ msgstr "ไฟล์รูปภาพไม่ถูกต้อง"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days ไม่ถูกต้อง"
 
+msgid "Invalid position"
+msgstr "ตำแหน่งไม่ถูกต้อง"
+
 msgid "Invalid request identifier"
 msgstr "รหัสคำขอไม่ถูกต้อง"
 
@@ -3487,6 +3513,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "ค้นหาในคลังด้วยตัวกรองวันที่ ค้นหาบทความจากช่วงเวลาใดก็ได้"
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "ต้องการที่สุดใช่ไหม? พบกับ Premium Pro"
 
 msgid "Neutral"
 msgstr "เป็นกลาง"
@@ -4107,6 +4136,9 @@ msgstr "ไม่มีระบบฝึก"
 msgid "No uncategorized archives found"
 msgstr "ไม่พบคลังที่ไม่มีหมวดหมู่"
 
+msgid "No usage billing set up."
+msgstr "ยังไม่ได้ตั้งค่าการเรียกเก็บเงินตามการใช้งาน"
+
 msgid "No user has that email address."
 msgstr "ไม่มีผู้ใช้ที่ใช้ที่อยู่อีเมลนี้"
 
@@ -4344,6 +4376,9 @@ msgstr "โปรดป้อนคำค้นหา"
 msgid "Please enter in an email address."
 msgstr "โปรดป้อนที่อยู่อีเมล"
 
+msgid "Please log in to NewsBlur again."
+msgstr "โปรดเข้าสู่ระบบ NewsBlur อีกครั้ง"
+
 msgid "Please login to continue."
 msgstr "โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ"
 
@@ -4421,6 +4456,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - ราคา NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr "Premium Archive เก็บบทความทั้งหมดจากทุกเว็บไซต์ที่คุณติดตามไว้ตลอดไป รับทุกอย่างจาก Premium พร้อมกับ:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "ต้องมี Premium Archive เพื่อรับการแจ้งเตือนจากตัวจัดประเภท"
 
@@ -4449,6 +4487,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - ราคา NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro สร้างมาเพื่อผู้ใช้ระดับสูง รับทุกอย่างจาก Archive พร้อมกับ:"
 
 msgid "Premium Pro subscription"
 msgstr "การสมัครสมาชิก Premium Pro"
@@ -5692,6 +5733,9 @@ msgstr "ขอบคุณที่ทดลองใช้ NewsBlur! หวั�
 msgid "Thanks!"
 msgstr "ขอบคุณ!"
 
+msgid "That item isn't playing"
+msgstr "รายการนี้ไม่ได้กำลังเล่นอยู่"
+
 msgid "That part of the story doesn't exist."
 msgstr "ไม่มีส่วนนี้ในบทความ"
 
@@ -6216,12 +6260,18 @@ msgstr "อัปเกรดเลย:"
 msgid "Upgrade to Premium"
 msgstr "อัปเกรดเป็น Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "อัปเกรดเป็น Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "อัปเกรดเป็น Premium Archive ($99/ปี) - รวมเว็บไซต์ได้สูงสุด 4,096 แห่ง "
 "พร้อมการค้นหาข้อความเต็มและสิทธิ์เข้าถึงคลังบทความทั้งหมดของคุณ"
+
+msgid "Upgrade to Premium Archive:"
+msgstr "อัปเกรดเป็น Premium Archive:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "อัปเกรดเป็นบัญชี Premium ในราคาเพียง $36/ปี"
@@ -6241,6 +6291,9 @@ msgstr "ยังไม่ได้เปิดใช้การเรียก
 msgid "Usage billing required for AI classifiers"
 msgstr "ต้องเปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนก AI"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "ขณะนี้ยังไม่มีบริการเรียกเก็บเงินตามการใช้งาน"
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "ใช้"
@@ -6253,6 +6306,9 @@ msgstr ""
 "ใช้ NewsBlur กับแอปอ่านข่าวที่คุณชื่นชอบ ซิงค์ข้อมูลได้เต็มรูปแบบกับ Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify และอีกมากมาย สถานะการอ่าน บทความที่บันทึกไว้ และการฝึกฝนของคุณจะซิงค์กันในทุกแอป API "
 "แบบเปิดของ NewsBlur รองรับแอปจากผู้พัฒนาภายนอกหลายสิบแอป"
+
+msgid "Use POST"
+msgstr "ใช้ POST"
 
 msgid "Use prompt templates"
 msgstr "ใช้เทมเพลตพรอมต์"
@@ -6328,6 +6384,9 @@ msgstr "การฝึกด้วยภาพ (ถูกใจ/ไม่ถู
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "การฝึกด้วยภาพเทียบกับการกรองตามกฎ"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "ต้องการมากกว่านี้ไหม? พบกับ Premium Archive"
 
 msgid "Want more CLI features?"
 msgstr "ต้องการฟีเจอร์ CLI เพิ่มเติมไหม?"

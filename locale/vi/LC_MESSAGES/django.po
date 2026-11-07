@@ -472,6 +472,16 @@ msgstr ""
 "USD/năm."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> lưu giữ vĩnh viễn mọi bài viết từ tất cả trang web bạn theo dõi. Bạn có mọi thứ "
+"trong Premium, cùng với:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> dành cho người dùng chuyên sâu. Bạn có mọi thứ trong Archive, cùng với:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -769,6 +779,18 @@ msgstr ""
 "những cơ sở dữ liệu do bạn kiểm soát. Không có sự phụ thuộc vào nhà cung cấp ở bất kỳ lớp nào. Nếu sử dụng "
 "dịch vụ lưu trữ của chúng tôi, bạn có thể xuất OPML bất cứ lúc nào và tự thiết lập phiên bản riêng bằng "
 "cùng mã nguồn mở đang vận hành newsblur.com."
+
+msgid "All of this for $29/month."
+msgstr "Tất cả những điều này với $29/tháng."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "Tất cả những điều này với <b>$29/tháng</b>."
+
+msgid "All of this for just $99/year."
+msgstr "Tất cả những điều này chỉ với $99/năm."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "Tất cả những điều này chỉ với <b>$99/năm</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1506,6 +1528,12 @@ msgstr "Không thể lưu bài viết, không tìm thấy"
 msgid "Could not unsave story, not found"
 msgstr "Không thể bỏ lưu bài viết, không tìm thấy bài viết"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Không thể kết nối với Stripe. Vui lòng thử lại."
+
+msgid "Couldn't save the position"
+msgstr "Không thể lưu vị trí"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Khoảng thời gian: %(start)s &ndash; %(end)s"
@@ -1980,9 +2008,6 @@ msgstr "Mở rộng mạng lưới của bạn"
 
 msgid "Explore Archive"
 msgstr "Khám phá Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "Khám phá NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "Khám phá Premium"
@@ -3023,6 +3048,9 @@ msgstr "Tệp hình ảnh không hợp lệ"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days không hợp lệ"
 
+msgid "Invalid position"
+msgstr "Vị trí không hợp lệ"
+
 msgid "Invalid request identifier"
 msgstr "Mã định danh yêu cầu không hợp lệ"
 
@@ -3535,6 +3563,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Điều hướng kho lưu trữ bằng bộ lọc ngày. Tìm bài viết từ bất kỳ khoảng thời gian nào."
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "Cần nhiều nhất? Hãy khám phá Premium Pro."
 
 msgid "Neutral"
 msgstr "Trung tính"
@@ -4166,6 +4197,9 @@ msgstr "Không có hệ thống huấn luyện"
 msgid "No uncategorized archives found"
 msgstr "Không tìm thấy mục lưu trữ nào chưa phân loại"
 
+msgid "No usage billing set up."
+msgstr "Chưa thiết lập thanh toán theo mức sử dụng."
+
 msgid "No user has that email address."
 msgstr "Không có người dùng nào có địa chỉ email đó."
 
@@ -4403,6 +4437,9 @@ msgstr "Vui lòng nhập truy vấn tìm kiếm từ khóa."
 msgid "Please enter in an email address."
 msgstr "Vui lòng nhập địa chỉ email."
 
+msgid "Please log in to NewsBlur again."
+msgstr "Vui lòng đăng nhập lại vào NewsBlur."
+
 msgid "Please login to continue."
 msgstr "Vui lòng đăng nhập để tiếp tục."
 
@@ -4480,6 +4517,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Gói Premium Archive - Bảng giá NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"Premium Archive lưu giữ vĩnh viễn mọi bài viết từ tất cả trang web bạn theo dõi. Bạn có mọi thứ trong "
+"Premium, cùng với:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "Cần có Premium Archive để nhận thông báo về bộ phân loại"
 
@@ -4508,6 +4550,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - Bảng giá NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro dành cho người dùng chuyên sâu. Bạn có mọi thứ trong Archive, cùng với:"
 
 msgid "Premium Pro subscription"
 msgstr "Gói đăng ký Premium Pro"
@@ -5773,6 +5818,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Cảm ơn!"
 
+msgid "That item isn't playing"
+msgstr "Mục đó không phát"
+
 msgid "That part of the story doesn't exist."
 msgstr "Phần đó của bài viết không tồn tại."
 
@@ -6309,12 +6357,18 @@ msgstr "Nâng cấp ngay:"
 msgid "Upgrade to Premium"
 msgstr "Nâng cấp lên Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Nâng cấp lên Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Nâng cấp lên Premium Archive (99 USD/năm) - Gói này bao gồm tối đa 4.096 trang web, cùng tính năng tìm kiếm"
 " toàn văn và quyền truy cập toàn bộ kho lưu trữ bài viết của bạn."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Nâng cấp lên Premium Archive:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "Nâng cấp lên tài khoản Premium chỉ với 36 USD/năm"
@@ -6334,6 +6388,9 @@ msgstr "Tính phí theo mức sử dụng chưa được bật"
 msgid "Usage billing required for AI classifiers"
 msgstr "Cần tính phí theo mức sử dụng cho bộ phân loại AI"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "Hiện không thể thanh toán theo mức sử dụng."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Sử dụng"
@@ -6346,6 +6403,9 @@ msgstr ""
 "Dùng NewsBlur với các ứng dụng đọc yêu thích của bạn. Hỗ trợ đồng bộ đầy đủ cho Reeder, ReadKit, Unread, "
 "lire, Fiery Feeds, Newsify và nhiều ứng dụng khác. Trạng thái đã đọc, bài viết đã lưu và dữ liệu huấn luyện"
 " của bạn được đồng bộ trên mọi ứng dụng. API mở của NewsBlur hỗ trợ hàng chục ứng dụng bên thứ ba."
+
+msgid "Use POST"
+msgstr "Dùng POST"
 
 msgid "Use prompt templates"
 msgstr "Sử dụng mẫu câu lệnh"
@@ -6421,6 +6481,9 @@ msgstr "Huấn luyện trực quan (Thích/Không thích)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "Huấn luyện trực quan so với lọc dựa trên quy tắc"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "Muốn nhiều hơn nữa? Hãy khám phá Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "Muốn có thêm tính năng CLI?"

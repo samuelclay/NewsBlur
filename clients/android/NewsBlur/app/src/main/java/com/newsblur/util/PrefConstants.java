@@ -30,6 +30,11 @@ public class PrefConstants {
 	public static final String IS_ARCHIVE = "is_archive";
     public static final String IS_PRO = "is_pro";
     public static final String IS_STAFF = "is_staff";
+    // Natural language classifier billing from /reader/feeds user_profile, see UsageBilling.kt.
+    public static final String IS_USAGE_BILLING = "is_usage_billing";
+    public static final String IS_SELF_HOSTED_AI = "is_self_hosted_ai";
+    public static final String CAN_USE_AI_CLASSIFIERS = "can_use_ai_classifiers";
+    public static final String USAGE_BILLING_LIMIT = "usage_billing_limit";
     // don't update key value for backward compat
 	public static final String SUBSCRIPTION_EXPIRE = "premium_expire";
 

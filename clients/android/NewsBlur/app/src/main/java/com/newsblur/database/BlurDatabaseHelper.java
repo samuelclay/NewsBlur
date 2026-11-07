@@ -464,6 +464,35 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
+    /** One story's image URLs in API order, which apps/analyzer/views.py test_prompt_classifier answers in. */
+    @NonNull
+    public List<String> getStoryImageUrls(@Nullable String storyHash) {
+        List<String> urls = new ArrayList<>();
+        if (storyHash == null) return urls;
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_IMAGE_URLS},
+                DatabaseConstants.STORY_HASH + " = ?", new String[]{storyHash}, null, null, null, "1");
+        if (c.moveToFirst()) {
+            for (String url : TextUtils.split(c.getString(0) == null ? "" : c.getString(0), ",")) {
+                if (!TextUtils.isEmpty(url)) urls.add(url);
+            }
+        }
+        c.close();
+        return urls;
+    }
+
+    /** Each feed's stories_last_month, for the trainer's AI cost estimates in AiClassifierSections.kt. */
+    @NonNull
+    public Map<String, Integer> getStoriesLastMonthByFeed() {
+        Map<String, Integer> stories = new HashMap<>();
+        Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE,
+                new String[]{DatabaseConstants.FEED_ID, DatabaseConstants.FEED_STORIES_LAST_MONTH}, null, null, null, null, null);
+        while (c.moveToNext()) {
+            stories.put(c.getString(0), c.getInt(1));
+        }
+        c.close();
+        return stories;
+    }
+
     @NonNull
     public Set<String> getAllStoryThumbnails() {
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_THUMBNAIL_URL}, null, null, null, null, null);

@@ -502,6 +502,16 @@ msgstr ""
 "a soli 36 $/anno."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> conserva per sempre tutti gli articoli di tutti i siti che segui. Include tutto ciò "
+"che offre Premium, più:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> è pensato per gli utenti più esigenti. Include tutto ciò che offre Archive, più:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -800,6 +810,18 @@ msgstr ""
 "sotto il tuo controllo. Non c’è vincolo con il fornitore a nessun livello. Se usi il servizio ospitato, "
 "puoi esportare il tuo OPML in qualsiasi momento e avviare una tua istanza con lo stesso codice open source "
 "alla base di newsblur.com."
+
+msgid "All of this for $29/month."
+msgstr "Tutto questo a 29 $/mese."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "Tutto questo a <b>29 $/mese</b>."
+
+msgid "All of this for just $99/year."
+msgstr "Tutto questo a soli 99 $/anno."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "Tutto questo a soli <b>99 $/anno</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1540,6 +1562,12 @@ msgstr "Impossibile salvare l'articolo: non trovato"
 msgid "Could not unsave story, not found"
 msgstr "Impossibile rimuovere l’articolo dai salvati: non è stato trovato"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Impossibile raggiungere Stripe. Riprova."
+
+msgid "Couldn't save the position"
+msgstr "Impossibile salvare la posizione"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periodo di copertura: %(start)s &ndash; %(end)s"
@@ -2020,9 +2048,6 @@ msgstr "Espandi la tua rete"
 
 msgid "Explore Archive"
 msgstr "Scopri Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "Esplora NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "Scopri Premium"
@@ -3078,6 +3103,9 @@ msgstr "File immagine non valido"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days non valido"
 
+msgid "Invalid position"
+msgstr "Posizione non valida"
+
 msgid "Invalid request identifier"
 msgstr "Identificatore della richiesta non valido"
 
@@ -3595,6 +3623,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Esplora l'archivio con i filtri per data. Trova articoli di qualsiasi periodo."
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "Vuoi il massimo? Scopri Premium Pro."
 
 msgid "Neutral"
 msgstr "Neutra"
@@ -4240,6 +4271,9 @@ msgstr "Nessun sistema di addestramento"
 msgid "No uncategorized archives found"
 msgstr "Nessun archivio non categorizzato trovato"
 
+msgid "No usage billing set up."
+msgstr "La fatturazione a consumo non è configurata."
+
 msgid "No user has that email address."
 msgstr "Nessun utente ha questo indirizzo email."
 
@@ -4477,6 +4511,9 @@ msgstr "Inserisci una ricerca per parola chiave."
 msgid "Please enter in an email address."
 msgstr "Inserisci un indirizzo email."
 
+msgid "Please log in to NewsBlur again."
+msgstr "Accedi di nuovo a NewsBlur."
+
 msgid "Please login to continue."
 msgstr "Accedi per continuare."
 
@@ -4556,6 +4593,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - Prezzi di NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"Premium Archive conserva per sempre tutti gli articoli di tutti i siti che segui. Include tutto ciò che "
+"offre Premium, più:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "È necessario Premium Archive per ricevere le notifiche dei classificatori"
 
@@ -4584,6 +4626,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - Prezzi di NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro è pensato per gli utenti più esigenti. Include tutto ciò che offre Archive, più:"
 
 msgid "Premium Pro subscription"
 msgstr "Abbonamento Premium Pro"
@@ -5856,6 +5901,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Grazie!"
 
+msgid "That item isn't playing"
+msgstr "Questo elemento non è in riproduzione"
+
 msgid "That part of the story doesn't exist."
 msgstr "Quella parte dell’articolo non esiste."
 
@@ -6400,12 +6448,18 @@ msgstr "Passa a un piano superiore:"
 msgid "Upgrade to Premium"
 msgstr "Passa a Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Passa a Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Passa a Premium Archive (99 $/anno) - Include fino a 4.096 siti, oltre alla ricerca nel testo completo e "
 "all'accesso al tuo archivio completo di articoli."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Passa a Premium Archive:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "Passa a un account Premium per soli 36 $/anno"
@@ -6425,6 +6479,9 @@ msgstr "La fatturazione a consumo non è attiva"
 msgid "Usage billing required for AI classifiers"
 msgstr "La fatturazione a consumo è necessaria per i classificatori IA"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "La fatturazione in base all'utilizzo non è al momento disponibile."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Usa"
@@ -6437,6 +6494,9 @@ msgstr ""
 "Usa NewsBlur con le tue app di lettura preferite. Sincronizzazione completa con Reeder, ReadKit, Unread, "
 "lire, Fiery Feeds, Newsify e molte altre. Lo stato di lettura, gli articoli salvati e l'addestramento "
 "vengono sincronizzati in tutte le app. L'API aperta di NewsBlur alimenta decine di client di terze parti."
+
+msgid "Use POST"
+msgstr "Usa POST"
 
 msgid "Use prompt templates"
 msgstr "Usa modelli di prompt"
@@ -6512,6 +6572,9 @@ msgstr "Addestramento visivo (pollice su/giù)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "Addestramento visivo o filtri basati su regole"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "Vuoi ancora di più? Scopri Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "Vuoi più funzionalità CLI?"

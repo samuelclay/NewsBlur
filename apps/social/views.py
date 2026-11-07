@@ -29,6 +29,7 @@ from apps.analyzer.models import (
     MClassifierText,
     MClassifierTitle,
     MClassifierUrl,
+    apply_classifier_author_regex,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
@@ -297,6 +298,9 @@ def load_social_stories(request, user_id, username=None):
                 classifier_feeds, story["story_feed_id"], social_user_ids=social_user_id
             ),
             "author": apply_classifier_authors(classifier_authors, story),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story) if user.profile.is_pro else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
             "title_regex": (
@@ -565,6 +569,9 @@ def load_river_blurblog(request):
                 classifier_feeds, story["story_feed_id"], social_user_ids=story["friend_user_ids"]
             ),
             "author": apply_classifier_authors(classifier_authors, story),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story) if user.profile.is_pro else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
             "title_regex": (

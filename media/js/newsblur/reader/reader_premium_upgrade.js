@@ -141,13 +141,41 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Web Feeds from any website, even without RSS')
                         ]),
-                        $.make('li', { className: 'NB-3 NB-feature-clustering' }, [
+                        $.make('li', { className: 'NB-19 NB-feature-listen' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Cluster duplicate stories across all your feeds')
+                            gettext('Listen to 1 hour of stories read aloud a week')
+                        ]),
+                        $.make('li', { className: 'NB-14 NB-feature-ask-ai' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Ask AI questions about stories')
+                        ]),
+                        $.make('li', { className: 'NB-16 NB-feature-training-scope' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Apply training across a folder')
+                        ]),
+                        $.make('li', { className: 'NB-17 NB-feature-training-scope' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Apply training globally')
                         ]),
                         $.make('li', { className: 'NB-4 NB-feature-briefing' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Daily briefing with your top stories and keywords')
+                        ]),
+                        $.make('li', { className: 'NB-7 NB-feature-archive-forever' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Every story archived and searchable forever')
+                        ]),
+                        $.make('li', { className: 'NB-3 NB-feature-clustering' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Cluster duplicate stories across all your feeds')
+                        ]),
+                        $.make('li', { className: 'NB-9 NB-feature-text-training' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Train stories on full text content')
+                        ]),
+                        $.make('li', { className: 'NB-10 NB-feature-notifications' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Notifications on trained intelligence classifiers')
                         ]),
                         $.make('li', { className: 'NB-5 NB-feature-choose-mark-read' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
@@ -157,21 +185,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Customize auto-read by site or folder')
                         ]),
-                        $.make('li', { className: 'NB-7 NB-feature-archive-forever' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Every story archived and searchable forever')
-                        ]),
                         $.make('li', { className: 'NB-8 NB-feature-backfill' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Feeds back-filled for complete archive')
-                        ]),
-                        $.make('li', { className: 'NB-9 NB-feature-text-training' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Train stories on full text content')
-                        ]),
-                        $.make('li', { className: 'NB-10 NB-feature-notifications' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Notifications on trained intelligence classifiers')
                         ]),
                         $.make('li', { className: 'NB-11 NB-feature-discover' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
@@ -185,25 +201,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Stories can stay unread forever')
                         ]),
-                        $.make('li', { className: 'NB-14 NB-feature-ask-ai' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Ask AI questions about stories')
-                        ]),
-                        $.make('li', { className: 'NB-19 NB-feature-listen' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Listen to 1 hour of stories read aloud a week')
-                        ]),
                         $.make('li', { className: 'NB-15 NB-feature-date-filter' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Filter stories by date range')
-                        ]),
-                        $.make('li', { className: 'NB-16 NB-feature-training-scope' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Apply training across a folder')
-                        ]),
-                        $.make('li', { className: 'NB-17 NB-feature-training-scope' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Apply training globally')
                         ]),
                         $.make('li', { className: 'NB-18 NB-feature-mcp' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),

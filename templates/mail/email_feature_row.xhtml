@@ -1,0 +1,7 @@
+{% load utils_tags %}{# One icon + label row for the feature tables in templates/mail/email_premium_trial_welcome.xhtml. Both cells are top-aligned with fixed offsets so the icon's center and the text line's center both sit 13px down, because Apple Mail drew vertical-align: middle rows with the icon half a line low. font-size: 0 and line-height: 0 keep the icon cell exactly as tall as the image even if a client drops display: block. #}
+        <tr>
+            <td valign="top" width="18" style="padding: {% bidi "4px 8px 0 0" "4px 0 0 8px" %}; vertical-align: top; width: 18px; font-size: 0; line-height: 0;">
+                <img src="https://{% current_domain %}{{ icon }}" width="18" height="18" style="width:18px;height:18px;display:block;margin:0;border:0;" alt="">
+            </td>
+            <td valign="top" style="padding: 2px 0; vertical-align: top; font-size: 15px; line-height: 22px;">{{ label }}</td>
+        </tr>

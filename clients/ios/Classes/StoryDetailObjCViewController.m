@@ -522,6 +522,10 @@
     [contentController removeScriptMessageHandlerForName:@"newsblurStoryImage"];
     [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
                                          name:@"newsblurStoryImage"];
+    // Listen/ListenMediaStoryBridge.swift plays the story's audio cards in the app's player.
+    [contentController removeScriptMessageHandlerForName:@"newsblurStoryMedia"];
+    [contentController addScriptMessageHandler:[[StoryReadyMessageHandler alloc] initWithPage:self]
+                                         name:@"newsblurStoryMedia"];
     // Use HTTPS baseURL so YouTube embeds get a valid Referer header (fixes Error 153).
     // CSS/JS are inlined directly in the HTML to avoid custom scheme issues.
     static NSURL *baseURL;
@@ -924,6 +928,9 @@
     NSString *markJS = [assetCache textForResource:@"mark" ofType:@"js"];
     NSString *storyDetailJS = [assetCache textForResource:@"storyDetailView" ofType:@"js"];
     NSString *fastTouchJS = [assetCache textForResource:@"fastTouch" ofType:@"js"];
+    // Listen/ListenMediaStoryBridge.swift: labels and state for the audio cards storyDetailView.js draws. It goes
+    // ahead of the bundled scripts so those stay one unchanged run (StoryDetailAssetPerformanceTests.swift).
+    NSString *mediaConfigJS = [ListenMediaStoryBridge configScriptForStory:self.activeStory];
 
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
@@ -936,8 +943,9 @@
                     "<script>%@</script>"
                     "<script>%@</script>"
                     "<script>%@</script>"
+                    "<script>%@</script>"
                     "<script>%@</script>",
-                    zeptoJS, fitvidJS, markJS, storyDetailJS, fastTouchJS];
+                    mediaConfigJS, zeptoJS, fitvidJS, markJS, storyDetailJS, fastTouchJS];
     
     sharingHtmlString = [self getSideOptions];
 
@@ -1662,7 +1670,8 @@
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
         if (!error && regex) {
             int regexScore = [[titleRegexClassifiers objectForKey:pattern] intValue];
-            NSArray<NSTextCheckingResult *> *matches = [regex matchesInString:storyTitle options:0 range:NSMakeRange(0, storyTitle.length)];
+            // TrainerRegexInput.swift stops a pattern that backtracks past its budget, leaving the title unmarked.
+            NSArray<NSTextCheckingResult *> *matches = [TrainerRegexMatcher matchesOf:regex in:storyTitle budget:TrainerRegexMatcher.drawingBudget] ?: @[];
             NSString *regexIcon = [self scoreIconHtml:regexScore];
             // Apply replacements in reverse order to preserve indices
             for (NSTextCheckingResult *match in [matches reverseObjectEnumerator]) {
@@ -1703,7 +1712,8 @@
                 NSError *error = nil;
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
                 if (!error && regex) {
-                    NSTextCheckingResult *result = [regex firstMatchInString:storyPermalink options:0 range:NSMakeRange(0, storyPermalink.length)];
+                    // TrainerRegexInput.swift stops a pattern that backtracks past its budget, so it shows no URL match.
+                    NSTextCheckingResult *result = [TrainerRegexMatcher firstMatchOf:regex in:storyPermalink budget:TrainerRegexMatcher.drawingBudget];
                     if (result) {
                         matchScore = [[urlRegexClassifiers objectForKey:pattern] intValue];
                         matchedText = [storyPermalink substringWithRange:result.range];
@@ -1744,6 +1754,9 @@
         }
     }
 
+    // StoryDetailObjCViewController.m shows matched natural language prompts like the web's story header (AIClassifiers.swift).
+    NSString *storyAIClassifiers = [StoryAIClassifierPills headerHTMLFor:[self.activeStory objectForKey:@"prompt_classifiers"]];
+
     NSString *storyToggleChanges = [self.activeStory[@"has_modifications"] boolValue] ? [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/togglechanges\" "
                                                                            "class=\"NB-story-toggle-changes\" id=\"NB-story-toggle-changes\">%@</a><span class=\"NB-middot\">&middot;</span>", [(self.activeStory[@"story_changes"] != nil ? [NBLocalization text:@"Hide Changes"] : [NBLocalization text:@"Show Changes"]) stringByEncodingHTMLEntities]] : @"";
     
@@ -1763,6 +1776,7 @@
                              "%@"
                              "%@"
                              "%@"
+                             "%@"
                              "</div></div>",
                              [self contentDirectionAttribute],
                              storyUnread,
@@ -1773,6 +1787,7 @@
                              storyAuthor,
                              storyTags,
                              storyUrlMatch,
+                             storyAIClassifiers,
                              storyStarred,
                              storyUserTags];
     return storyHeader;
@@ -2876,6 +2891,11 @@
                          yCoordinate:[[urlComponents objectAtIndex:3] intValue]
                                width:[[urlComponents objectAtIndex:4] intValue]
                               height:[[urlComponents objectAtIndex:5] intValue]];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"train"]) {
+            // StoryDetailObjCViewController.m still opens the trainer if a header pill's tap arrives without coordinates.
+            [self openTrainingDialog:0 yCoordinate:0 width:0 height:0];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
         } else if ([action isEqualToString:@"save"]) {

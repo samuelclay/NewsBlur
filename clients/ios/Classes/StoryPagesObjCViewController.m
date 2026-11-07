@@ -1805,8 +1805,14 @@
 }
 
 - (void)preserveCurrentPageAtLocation:(NSInteger)location {
-    if (location < 0 || location >= appDelegate.storiesCollection.storyLocationsCount || !self.currentPage) return;
     if (self.currentPage.pageIndex == location) return;
+    [self relayoutPagesKeepingCurrentPageAtLocation:location];
+}
+
+// StoryPagesObjCViewController.m lays the neighbors and scroll size out again for a story list that changed around
+// the open article, even when the article's own location didn't move, and keeps the article as it is.
+- (void)relayoutPagesKeepingCurrentPageAtLocation:(NSInteger)location {
+    if (location < 0 || location >= appDelegate.storiesCollection.storyLocationsCount || !self.currentPage) return;
     self.isRepositioningFirstPage = YES;
     // StoryPagesObjCViewController.m moves the existing rendered page without invoking its story-loading path.
     self.currentPage.pageIndex = location;

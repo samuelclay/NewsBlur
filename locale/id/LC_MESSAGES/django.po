@@ -498,6 +498,16 @@ msgstr ""
 "dengan $36/tahun."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> menyimpan setiap artikel dari semua situs yang Anda ikuti, selamanya. Anda "
+"mendapatkan semua fitur Premium, plus:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> dirancang untuk pengguna tingkat lanjut. Anda mendapatkan semua fitur Archive, plus:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -795,6 +805,18 @@ msgstr ""
 "tersimpan di basis data yang Anda kendalikan saat menghosting sendiri. Tidak ada ketergantungan pada vendor"
 " di lapisan mana pun. Jika menggunakan layanan yang dihosting, Anda dapat mengekspor OPML kapan saja dan "
 "menjalankan instans sendiri dengan kode sumber terbuka yang sama seperti yang digunakan newsblur.com."
+
+msgid "All of this for $29/month."
+msgstr "Semua ini seharga $29/bulan."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "Semua ini seharga <b>$29/bulan</b>."
+
+msgid "All of this for just $99/year."
+msgstr "Semua ini hanya $99/tahun."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "Semua ini hanya seharga <b>$99/tahun</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1531,6 +1553,12 @@ msgstr "Tidak dapat menyimpan artikel, tidak ditemukan"
 msgid "Could not unsave story, not found"
 msgstr "Tidak dapat membatalkan penyimpanan artikel, artikel tidak ditemukan"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Tidak dapat terhubung ke Stripe. Silakan coba lagi."
+
+msgid "Couldn't save the position"
+msgstr "Posisi tidak dapat disimpan"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periode cakupan: %(start)s &ndash; %(end)s"
@@ -2008,9 +2036,6 @@ msgstr "Perluas jaringan Anda"
 
 msgid "Explore Archive"
 msgstr "Jelajahi Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "Jelajahi NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "Jelajahi Premium"
@@ -3061,6 +3086,9 @@ msgstr "Berkas gambar tidak valid"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days tidak valid"
 
+msgid "Invalid position"
+msgstr "Posisi tidak valid"
+
 msgid "Invalid request identifier"
 msgstr "ID permintaan tidak valid"
 
@@ -3573,6 +3601,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Jelajahi arsip Anda dengan filter tanggal. Temukan artikel dari periode waktu mana pun."
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "Butuh yang paling lengkap? Kenali Premium Pro."
 
 msgid "Neutral"
 msgstr "Netral"
@@ -4216,6 +4247,9 @@ msgstr "Tanpa sistem pelatihan"
 msgid "No uncategorized archives found"
 msgstr "Tidak ditemukan arsip tanpa kategori"
 
+msgid "No usage billing set up."
+msgstr "Penagihan berdasarkan penggunaan belum disiapkan."
+
 msgid "No user has that email address."
 msgstr "Tidak ada pengguna dengan alamat email tersebut."
 
@@ -4453,6 +4487,9 @@ msgstr "Masukkan kueri pencarian kata kunci."
 msgid "Please enter in an email address."
 msgstr "Masukkan alamat email."
 
+msgid "Please log in to NewsBlur again."
+msgstr "Silakan masuk kembali ke NewsBlur."
+
 msgid "Please login to continue."
 msgstr "Silakan masuk untuk melanjutkan."
 
@@ -4531,6 +4568,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - Harga NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"Premium Archive menyimpan setiap artikel dari semua situs yang Anda ikuti, selamanya. Anda mendapatkan "
+"semua fitur Premium, plus:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "Premium Archive diperlukan untuk notifikasi pengklasifikasi"
 
@@ -4559,6 +4601,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - Harga NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro dirancang untuk pengguna tingkat lanjut. Anda mendapatkan semua fitur Archive, plus:"
 
 msgid "Premium Pro subscription"
 msgstr "Langganan Premium Pro"
@@ -5831,6 +5876,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Terima kasih!"
 
+msgid "That item isn't playing"
+msgstr "Item itu tidak sedang diputar"
+
 msgid "That part of the story doesn't exist."
 msgstr "Bagian artikel tersebut tidak ada."
 
@@ -6378,12 +6426,18 @@ msgstr "Tingkatkan sekarang:"
 msgid "Upgrade to Premium"
 msgstr "Upgrade ke Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Tingkatkan ke Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Tingkatkan ke Premium Archive ($99/tahun) - Paket ini mencakup hingga 4.096 situs, serta pencarian teks "
 "lengkap dan akses ke seluruh arsip artikel Anda."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Tingkatkan ke Premium Archive:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "Upgrade ke akun premium hanya dengan $36/tahun"
@@ -6403,6 +6457,9 @@ msgstr "Penagihan berdasarkan pemakaian tidak diaktifkan"
 msgid "Usage billing required for AI classifiers"
 msgstr "Penagihan penggunaan diperlukan untuk pengklasifikasi AI"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "Penagihan berdasarkan penggunaan tidak tersedia saat ini."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Penggunaan"
@@ -6415,6 +6472,9 @@ msgstr ""
 "Gunakan NewsBlur dengan aplikasi membaca favorit Anda. Dukungan sinkronisasi penuh untuk Reeder, ReadKit, "
 "Unread, lire, Fiery Feeds, Newsify, dan banyak lagi. Status baca, artikel tersimpan, dan pelatihan Anda "
 "disinkronkan di semua aplikasi. API terbuka NewsBlur mendukung puluhan aplikasi pihak ketiga."
+
+msgid "Use POST"
+msgstr "Gunakan POST"
 
 msgid "Use prompt templates"
 msgstr "Gunakan templat prompt"
@@ -6491,6 +6551,9 @@ msgstr "Pelatihan Visual (Jempol ke Atas/Bawah)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "Pelatihan visual vs. pemfilteran berbasis aturan"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "Ingin lebih banyak lagi? Kenali Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "Ingin fitur CLI lainnya?"

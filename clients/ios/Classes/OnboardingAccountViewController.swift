@@ -69,8 +69,18 @@ import SwiftUI
     private var ticket = ""
     private var webSession: ASWebAuthenticationSession?
     private var appleController: ASAuthorizationController?
+    private var automaticAppleUsername: String?
+    private let authenticationFinished: (String, Bool) -> Void
     var deletionSession: AccountDeletionSession?
     var onReauthenticated: ((String) -> Void)?
+
+    init(authenticationFinished: @escaping (String, Bool) -> Void = { method, _ in
+        UserDefaults.standard.set(method, forKey: "last_auth_method")
+        NewsBlurAppDelegate.shared()?.finishAuthentication()
+    }) {
+        self.authenticationFinished = authenticationFinished
+        super.init()
+    }
 
     func emailSignIn() {
         guard !busy else { return }
@@ -144,6 +154,12 @@ import SwiftUI
         needsLink = false
         needsUsername = false
         canChooseUsername = false
+        automaticAppleUsername = nil
+        if name == "apple", deletionSession == nil {
+            // OnboardingAccountViewController.swift never reuses a draft password signup's identity fields.
+            username = ""
+            password = ""
+        }
         // OnboardingAccountViewController.swift binds the callback ticket to this app session.
         verifier = UUID().uuidString + UUID().uuidString
         let challenge = SHA256.hash(data: Data(verifier.utf8)).map { String(format: "%02x", $0) }.joined()
@@ -221,10 +237,34 @@ import SwiftUI
 
     private func complete() async throws {
         try deletionSession?.validate()
-        var body = ["ticket": ticket, "verifier": verifier,
-                    "username": needsUsername || needsLink ? username : "", "password": needsLink ? password : ""]
-        if needsLink { body["action"] = "link" }
-        let result = try await OnboardingAPI.request("/api/social/complete", body: body)
+        let automaticAppleSignup = provider == "apple" && deletionSession == nil && !needsLink
+        var result: [String: Any] = [:]
+        for attempt in 0..<3 {
+            if automaticAppleSignup && automaticAppleUsername == nil {
+                // OnboardingAccountViewController.swift supplies an opaque username; social_auth.py uses Apple's verified email.
+                let suffix = UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased().prefix(22)
+                automaticAppleUsername = "reader_" + String(suffix)
+            }
+            var body = ["ticket": ticket, "verifier": verifier,
+                        "username": automaticAppleSignup ? (automaticAppleUsername ?? "") : (needsUsername || needsLink ? username : ""),
+                        "password": needsLink ? password : ""]
+            if needsLink { body["action"] = "link" }
+            result = try await OnboardingAPI.request("/api/social/complete", body: body)
+            if automaticAppleSignup && result["link_required"] as? Bool == true
+                && result["can_choose_username"] as? Bool == true {
+                // OnboardingAccountViewController.swift retries only random-name collisions, never same-email account linking.
+                guard attempt < 2, let replacementTicket = result["ticket"] as? String, !replacementTicket.isEmpty else {
+                    throw OnboardingAPI.error(NBLocalization.text("The request failed. Please try again."))
+                }
+                ticket = replacementTicket
+                automaticAppleUsername = nil
+                continue
+            }
+            if automaticAppleSignup && result["username_required"] as? Bool == true {
+                throw OnboardingAPI.error(NBLocalization.text("The request failed. Please try again."))
+            }
+            break
+        }
         if let deletionSession {
             try deletionSession.validate()
             guard let token = result["delete_token"] as? String, !token.isEmpty else {
@@ -260,16 +300,16 @@ import SwiftUI
         needsUsername = false
         canChooseUsername = false
         ticket = ""
+        automaticAppleUsername = nil
         password = ""
         message = nil
     }
 
     private func finish(method: String, created: Bool) {
-        UserDefaults.standard.set(method, forKey: "last_auth_method")
         lastUsed = method
         password = ""
         cancelContinuation()
-        NewsBlurAppDelegate.shared()?.finishAuthentication()
+        authenticationFinished(method, created)
         controller?.dismiss(animated: true)
     }
 }
@@ -489,7 +529,7 @@ private struct AccountDeletionView: View {
     }
 }
 
-private struct OnboardingAccountView: View {
+struct OnboardingAccountView: View {
     @State private var language = NBLocalization.language
     @ObservedObject var model: OnboardingAccountModel
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency

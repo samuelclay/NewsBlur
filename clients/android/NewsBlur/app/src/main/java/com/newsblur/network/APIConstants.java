@@ -67,6 +67,12 @@ public class APIConstants {
 	public static final String PATH_ADD_FEED = "/reader/add_url";
 	public static final String PATH_DELETE_FEED = "/reader/delete_feed";
 	public static final String PATH_CLASSIFIER_SAVE = "/classifier/save";
+    public static final String PATH_CLASSIFIER_TEST_PROMPT = "/classifier/test_prompt";
+    public static final String PATH_CLASSIFIER_AI_USAGE = "/classifier/ai_classifier_usage";
+    public static final String PATH_SETUP_USAGE_BILLING = "/profile/setup_usage_billing/";
+    public static final String PATH_MANAGE_USAGE_BILLING = "/profile/manage_usage_billing/";
+    public static final String PATH_USAGE_BILLING_HISTORY = "/profile/usage_billing_history";
+    public static final String PATH_SAVE_USAGE_BILLING_LIMIT = "/profile/save_usage_billing_limit";
 	public static final String PATH_STORY_TEXT = "/rss_feeds/original_text";
 	public static final String PATH_STORY_CHANGES = "/rss_feeds/story_changes";
 	public static final String PATH_UNREAD_HASHES = "/reader/unread_story_hashes";
@@ -108,6 +114,8 @@ public class APIConstants {
     public static final String PATH_MEDIA_REMOVE_FROM_QUEUE = "/media_player/remove_from_media_queue";
     public static final String PATH_MEDIA_REORDER_QUEUE = "/media_player/reorder_media_queue";
     public static final String PATH_MEDIA_ADD_TO_HISTORY = "/media_player/add_to_media_history";
+    public static final String PATH_MEDIA_SAVE_PLAYBACK_STATE = "/media_player/save_playback_state";
+    public static final String PATH_MEDIA_SYNC_PLAYBACK_POSITION = "/media_player/sync_playback_position";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -132,6 +140,12 @@ public class APIConstants {
     public static final String PARAMETER_REPLY_ID = "reply_id";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
+    public static final String PARAMETER_SCOPE = "scope";
+    public static final String PARAMETER_FOLDER_NAME = "folder_name";
+    public static final String PARAMETER_PROMPT = "prompt";
+    public static final String PARAMETER_INCLUDE_IMAGES = "include_images";
+    public static final String PARAMETER_CLASSIFIER_TYPE = "classifier_type";
+    public static final String PARAMETER_PLATFORM = "platform";
 	public static final String PARAMETER_MUTE = "mute";
 	public static final String PARAMETER_REPLY_TEXT = "reply_comments";
 	public static final String PARAMETER_STORY_FEEDID = "story_feed_id";

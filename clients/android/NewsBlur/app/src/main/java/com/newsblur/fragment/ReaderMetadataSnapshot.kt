@@ -1,5 +1,6 @@
 package com.newsblur.fragment
 
+import com.newsblur.domain.PromptClassifierMatch
 import com.newsblur.domain.Story
 import com.newsblur.util.PrefConstants.ThemeValue
 
@@ -18,7 +19,7 @@ internal data class ReaderClusterSnapshot(
     )
 }
 
-/** Fields that require rebuilding ReadingItemFragment.kt's title, tags, and related-story section. */
+/** Fields that require rebuilding ReadingItemFragment.kt's title, tags, AI filter chips, and related-story section. */
 internal data class ReaderMetadataSnapshot(
     val title: String?,
     val authors: String?,
@@ -29,6 +30,7 @@ internal data class ReaderMetadataSnapshot(
     val starredTimestamp: Long,
     val hasModifications: Boolean,
     val clusters: List<List<Any?>>,
+    val promptClassifiers: List<PromptClassifierMatch>,
 ) {
     constructor(story: Story) : this(
         title = story.title,
@@ -54,5 +56,6 @@ internal data class ReaderMetadataSnapshot(
                     cluster.secureImageThumbnails?.toMap(),
                 )
             },
+        promptClassifiers = story.promptClassifiers.orEmpty().toList(),
     )
 }

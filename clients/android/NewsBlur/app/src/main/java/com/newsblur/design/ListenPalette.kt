@@ -160,6 +160,36 @@ object ListenPalette {
             ".NB-story .NB-listen-highlight *{background-color:$color !important;}"
     }
 
+    /**
+     * The audio card storyMedia.js puts in place of a story's <audio> elements. The dark and black reading CSS force
+     * a background on every div and span, so the card and its parts claim theirs with !important.
+     */
+    @JvmStatic
+    fun mediaCardCss(theme: ThemeValue): String {
+        val colors = colors(theme)
+        val card = cssColor(colors.cardBackground)
+        val border = cssColor(colors.barBorder)
+        val text = cssColor(colors.textPrimary)
+        val accent = cssColor(colors.accent)
+        val onAccent = cssColor(colors.onAccent)
+        val chip = cssColor(colors.chipBackground)
+        return ".NB-story .NB-media-card{display:flex !important;flex-wrap:wrap;align-items:center;gap:10px 8px;" +
+            "margin:18px 0;padding:10px 12px;border-radius:16px;border:1px solid $border;background-color:$card !important;}" +
+            ".NB-story .NB-media-card *{background-color:transparent !important;}" +
+            ".NB-story .NB-media-card button{font:inherit;margin:0;border:0;cursor:pointer;" +
+            "-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;}" +
+            ".NB-story .NB-media-card .NB-media-card-main{display:flex;align-items:center;gap:10px;flex:1 1 auto;" +
+            "min-width:0;padding:0;color:$text !important;font-size:15px;font-weight:600;text-align:start;}" +
+            ".NB-story .NB-media-card .NB-media-card-icon{flex:none;display:flex;align-items:center;justify-content:center;" +
+            "width:40px;height:40px;border-radius:50%;background-color:$accent !important;color:$onAccent !important;}" +
+            ".NB-story .NB-media-card .NB-media-card-icon svg{width:20px;height:20px;fill:currentColor;}" +
+            ".NB-story .NB-media-card .NB-media-card-actions{display:flex;gap:6px;flex:none;margin-inline-start:auto;}" +
+            ".NB-story .NB-media-card .NB-media-card-queue{padding:7px 12px;border-radius:999px;" +
+            "background-color:$chip !important;color:$text !important;font-size:13px;font-weight:500;white-space:nowrap;}" +
+            ".NB-story .NB-media-card .NB-media-card-spinner{animation:NB-media-card-spin 0.9s linear infinite;}" +
+            "@keyframes NB-media-card-spin{to{transform:rotate(360deg);}}"
+    }
+
     private fun cssColor(color: Color): String {
         val argb = color.toArgb()
         return String.format("#%06X", argb and 0xFFFFFF)

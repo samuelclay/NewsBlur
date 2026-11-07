@@ -74,6 +74,24 @@
 			<string>%@ תגובות</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ מסנן תוכן</string>
+			<key>other</key>
+			<string>מסנני תוכן מסוג %@</string>
+			<key>two</key>
+			<string>%@ מסנני תוכן</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -234,6 +252,24 @@
 			<string>נותרו היום %@ תצוגות מקדימות בחינם של כתבות</string>
 			<key>two</key>
 			<string>נותרו %@ תצוגות מקדימות של כתבות בחינם להיום</string>
+		</dict>
+	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>מסנן תמונות מסוג %@</string>
+			<key>other</key>
+			<string>מסנני תמונות מסוג %@</string>
+			<key>two</key>
+			<string>%@ מסנני תמונה</string>
 		</dict>
 	</dict>
 	<key>%@ match</key>
@@ -398,6 +434,24 @@
 			<string>נותרו %@ כתבות</string>
 		</dict>
 	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ כתבה בחודש</string>
+			<key>other</key>
+			<string>%@ כתבות בחודש</string>
+			<key>two</key>
+			<string>%@ כתבות בחודש</string>
+		</dict>
+	</dict>
 	<key>%@ stories/month</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -560,6 +614,24 @@
 			<string>פורסם גם ב־%@ אתרים</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>אחורה %@ שנייה</string>
+			<key>other</key>
+			<string>אחורה %@ שניות</string>
+			<key>two</key>
+			<string>אחורה %@ שניות</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -594,6 +666,24 @@
 			<string>עוקבים</string>
 			<key>two</key>
 			<string>עוקבים</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>קדימה %@ שנייה</string>
+			<key>other</key>
+			<string>קדימה %@ שניות</string>
+			<key>two</key>
+			<string>קדימה %@ שניות</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
@@ -864,6 +954,24 @@
 			<string>אתם מנויים ל-%@ אתרים</string>
 			<key>two</key>
 			<string>אתה רשום כמנוי ל-%@ אתרים</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>✓ %2$@ מתוך %1$@ תמונות תואמת למסנן הזה</string>
+			<key>other</key>
+			<string>✓ %2$@ מתוך %1$@ תמונות תואמות למסנן הזה</string>
+			<key>two</key>
+			<string>✓ %2$@ מתוך %1$@ תמונות תואמות למסנן הזה</string>
 		</dict>
 	</dict>
 </dict>
