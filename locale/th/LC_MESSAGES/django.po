@@ -1509,6 +1509,12 @@ msgstr "บันทึกบทความไม่ได้ ไม่พบ�
 msgid "Could not unsave story, not found"
 msgstr "ยกเลิกการบันทึกบทความไม่ได้ ไม่พบบทความ"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "เชื่อมต่อ Stripe ไม่ได้ โปรดลองอีกครั้ง"
+
+msgid "Couldn't save the position"
+msgstr "บันทึกตำแหน่งไม่สำเร็จ"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "ช่วงเวลาที่ครอบคลุม: %(start)s &ndash; %(end)s"
@@ -3007,6 +3013,9 @@ msgstr "ไฟล์รูปภาพไม่ถูกต้อง"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days ไม่ถูกต้อง"
 
+msgid "Invalid position"
+msgstr "ตำแหน่งไม่ถูกต้อง"
+
 msgid "Invalid request identifier"
 msgstr "รหัสคำขอไม่ถูกต้อง"
 
@@ -4127,6 +4136,9 @@ msgstr "ไม่มีระบบฝึก"
 msgid "No uncategorized archives found"
 msgstr "ไม่พบคลังที่ไม่มีหมวดหมู่"
 
+msgid "No usage billing set up."
+msgstr "ยังไม่ได้ตั้งค่าการเรียกเก็บเงินตามการใช้งาน"
+
 msgid "No user has that email address."
 msgstr "ไม่มีผู้ใช้ที่ใช้ที่อยู่อีเมลนี้"
 
@@ -4363,6 +4375,9 @@ msgstr "โปรดป้อนคำค้นหา"
 
 msgid "Please enter in an email address."
 msgstr "โปรดป้อนที่อยู่อีเมล"
+
+msgid "Please log in to NewsBlur again."
+msgstr "โปรดเข้าสู่ระบบ NewsBlur อีกครั้ง"
 
 msgid "Please login to continue."
 msgstr "โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ"
@@ -5718,6 +5733,9 @@ msgstr "ขอบคุณที่ทดลองใช้ NewsBlur! หวั�
 msgid "Thanks!"
 msgstr "ขอบคุณ!"
 
+msgid "That item isn't playing"
+msgstr "รายการนี้ไม่ได้กำลังเล่นอยู่"
+
 msgid "That part of the story doesn't exist."
 msgstr "ไม่มีส่วนนี้ในบทความ"
 
@@ -6273,6 +6291,9 @@ msgstr "ยังไม่ได้เปิดใช้การเรียก
 msgid "Usage billing required for AI classifiers"
 msgstr "ต้องเปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนก AI"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "ขณะนี้ยังไม่มีบริการเรียกเก็บเงินตามการใช้งาน"
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "ใช้"
@@ -6285,6 +6306,9 @@ msgstr ""
 "ใช้ NewsBlur กับแอปอ่านข่าวที่คุณชื่นชอบ ซิงค์ข้อมูลได้เต็มรูปแบบกับ Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify และอีกมากมาย สถานะการอ่าน บทความที่บันทึกไว้ และการฝึกฝนของคุณจะซิงค์กันในทุกแอป API "
 "แบบเปิดของ NewsBlur รองรับแอปจากผู้พัฒนาภายนอกหลายสิบแอป"
+
+msgid "Use POST"
+msgstr "ใช้ POST"
 
 msgid "Use prompt templates"
 msgstr "ใช้เทมเพลตพรอมต์"

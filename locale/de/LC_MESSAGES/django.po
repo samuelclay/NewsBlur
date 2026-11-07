@@ -1562,6 +1562,12 @@ msgstr "Artikel konnte nicht gespeichert werden: nicht gefunden"
 msgid "Could not unsave story, not found"
 msgstr "Artikel konnte nicht aus den gespeicherten entfernt werden: nicht gefunden"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe konnte nicht erreicht werden. Bitte versuche es erneut."
+
+msgid "Couldn't save the position"
+msgstr "Position konnte nicht gespeichert werden"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Abdeckungszeitraum: %(start)s &ndash; %(end)s"
@@ -3105,6 +3111,9 @@ msgstr "Ungültige Bilddatei"
 msgid "Invalid mute_duration_days"
 msgstr "Ungültige mute_duration_days"
 
+msgid "Invalid position"
+msgstr "Ungültige Position"
+
 msgid "Invalid request identifier"
 msgstr "Ungültige Anfrage-ID"
 
@@ -4276,6 +4285,9 @@ msgstr "Kein Trainingssystem"
 msgid "No uncategorized archives found"
 msgstr "Keine nicht kategorisierten Archive gefunden"
 
+msgid "No usage billing set up."
+msgstr "Keine nutzungsbasierte Abrechnung eingerichtet."
+
 msgid "No user has that email address."
 msgstr "Es gibt keinen Benutzer mit dieser E-Mail-Adresse."
 
@@ -4518,6 +4530,9 @@ msgstr "Bitte gib eine Suchanfrage mit Stichworten ein."
 
 msgid "Please enter in an email address."
 msgstr "Bitte gib eine E-Mail-Adresse ein."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Bitte melde dich erneut bei NewsBlur an."
 
 msgid "Please login to continue."
 msgstr "Bitte melde dich an, um fortzufahren."
@@ -5917,6 +5932,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Danke!"
 
+msgid "That item isn't playing"
+msgstr "Dieser Eintrag wird nicht abgespielt"
+
 msgid "That part of the story doesn't exist."
 msgstr "Dieser Teil des Artikels ist nicht vorhanden."
 
@@ -6499,6 +6517,9 @@ msgstr "Nutzungsabhängige Abrechnung nicht aktiviert"
 msgid "Usage billing required for AI classifiers"
 msgstr "Nutzungsabrechnung für KI-Klassifikatoren erforderlich"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "Nutzungsbasierte Abrechnung ist derzeit nicht verfügbar."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Verwenden"
@@ -6512,6 +6533,9 @@ msgstr ""
 " lire, Fiery Feeds, Newsify und vielen weiteren Apps. Gelesen-Status, gespeicherte Artikel und "
 "Trainingsdaten werden in allen Apps synchronisiert. Die offene API von NewsBlur ermöglicht Dutzende Clients"
 " von Drittanbietern."
+
+msgid "Use POST"
+msgstr "POST verwenden"
 
 msgid "Use prompt templates"
 msgstr "Prompt-Vorlagen verwenden"

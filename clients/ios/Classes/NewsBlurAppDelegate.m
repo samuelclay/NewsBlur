@@ -139,6 +139,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic) NSUInteger faviconWriteGeneration;
 @property (nonatomic, strong) FeedIconRenderer *feedIconRenderer;
 @property (nonatomic, copy) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
+@property (nonatomic, strong, readwrite) StoryScoreRefresher *storyScoreRefresher;
 
 - (void)presentFeedDetailAfterFeedSelection;
 
@@ -1031,6 +1032,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
     [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];
     [self.premiumViewController.view setNeedsLayout];
+}
+
+// NewsBlurAppDelegate.m opens natural language classifier billing (UsageBillingView.swift) from the settings menu,
+// the Premium screen and the trainer's billing banners, replacing whatever sheet or popover is showing. While
+// UsageBillingFeature.swift holds billing out of the release, nothing opens it, even a path that missed the switch.
+- (void)showUsageBillingDialog {
+    if (!UsageBillingFeature.isEnabled) return;
+    UIViewController *usageBilling = [UsageBillingViewController makePresentable];
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    [self.splitViewController presentViewController:usageBilling animated:YES completion:nil];
 }
 
 - (void)updateSplitBehavior:(BOOL)refresh {
@@ -3106,10 +3117,22 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
 }
 
+- (StoryScoreRefresher *)storyScoreRefresher {
+    if (!_storyScoreRefresher) {
+        _storyScoreRefresher = [[StoryScoreRefresher alloc] initWithAppDelegate:self];
+    }
+    return _storyScoreRefresher;
+}
+
 - (void)recalculateIntelligenceScores:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     NSMutableArray *newFeedStories = [NSMutableArray array];
-    
+    NSDictionary *classifiers = [storiesCollection.activeClassifiers objectForKey:feedIdStr];
+    StoryClassifierScorer *scorer = [[StoryClassifierScorer alloc] initWithClassifiers:classifiers
+                                                                           isPremium:self.isPremium
+                                                                    isPremiumArchive:self.isPremiumArchive
+                                                                        isPremiumPro:self.isPremiumPro];
+
     for (NSDictionary *story in storiesCollection.activeFeedStories) {
         NSString *storyFeedId = [NSString stringWithFormat:@"%@",
                                  [story objectForKey:@"story_feed_id"]];
@@ -3126,43 +3149,18 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             [newStory setObject:[NSNumber numberWithBool:YES] forKey:@"sticky"];
         }
         
+        // NewsBlurAppDelegate.m recomputes every score the app has the story's data for: the title, author, tag,
+        // text, URL and regex scores in StoryClassifierScorer.swift, which matches them the way apps/analyzer/models.py
+        // does, and the site score below. So a removed classifier stops counting on loaded stories. A score
+        // StoryClassifierScorer.swift can't settle is left as the server sent it, and so is the AI prompt score: the
+        // app can't run the AI, so saving a classifier never drops an AI match that computeStoryScore ranks above
+        // likes and dislikes.
         NSNumber *zero = [NSNumber numberWithInt:0];
-        NSMutableDictionary *intelligence = [NSMutableDictionary
-                                             dictionaryWithObjects:[NSArray arrayWithObjects:
-                                                                    [zero copy], [zero copy],
-                                                                    [zero copy], [zero copy], nil]
-                                             forKeys:[NSArray arrayWithObjects:
-                                                      @"author", @"feed", @"tags", @"title", nil]];
-        NSDictionary *classifiers = [storiesCollection.activeClassifiers objectForKey:feedIdStr];
-        
-        for (NSString *title in [classifiers objectForKey:@"titles"]) {
-            int currentTitle = [[intelligence objectForKey:@"title"] intValue];
-            if (currentTitle > -2 && currentTitle <= 0 &&
-                [[story objectForKey:@"story_title"] containsString:title]) {
-                int score = [[[classifiers objectForKey:@"titles"] objectForKey:title] intValue];
-                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"title"];
-            }
-        }
-
-        for (NSString *author in [classifiers objectForKey:@"authors"]) {
-            int currentAuthor = [[intelligence objectForKey:@"author"] intValue];
-            if (currentAuthor > -2 && currentAuthor <= 0 &&
-                [[story objectForKey:@"story_authors"] class] != [NSNull class] &&
-                [[story objectForKey:@"story_authors"] containsString:author]) {
-                int score = [[[classifiers objectForKey:@"authors"] objectForKey:author] intValue];
-                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"author"];
-            }
-        }
-
-        for (NSString *tag in [classifiers objectForKey:@"tags"]) {
-            int currentTags = [[intelligence objectForKey:@"tags"] intValue];
-            if (currentTags > -2 && currentTags <= 0 &&
-                [[story objectForKey:@"story_tags"] class] != [NSNull class] &&
-                [[story objectForKey:@"story_tags"] containsObject:tag]) {
-                int score = [[[classifiers objectForKey:@"tags"] objectForKey:tag] intValue];
-                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"tags"];
-            }
-        }
+        id existingIntelligence = [story objectForKey:@"intelligence"];
+        NSMutableDictionary *intelligence = [existingIntelligence isKindOfClass:[NSDictionary class]] ?
+                                            [existingIntelligence mutableCopy] : [NSMutableDictionary dictionary];
+        [intelligence setObject:[zero copy] forKey:@"feed"];
+        [intelligence addEntriesFromDictionary:[scorer scoresForStory:story]];
 
         for (NSString *feed in [classifiers objectForKey:@"feeds"]) {
             int currentFeed = [[intelligence objectForKey:@"feed"] intValue];
@@ -3176,8 +3174,30 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [newStory setObject:intelligence forKey:@"intelligence"];
         [newFeedStories addObject:newStory];
     }
-    
-    storiesCollection.activeFeedStories = newFeedStories;
+
+    // StoryScoreRefresher.swift asks the server for the stories whose scores StoryClassifierScorer.swift couldn't settle.
+    [self.storyScoreRefresher noteUncertainStories:scorer.uncertainStoryHashes forFeedId:feedIdStr];
+    [self showRescoredStories:newFeedStories];
+}
+
+// NewsBlurAppDelegate.m puts the loaded stories back once recalculateIntelligenceScores: or StoryScoreRefresher.swift
+// has rescored them, and works out again which ones the list shows: a story whose score rose to the selected
+// intelligence level joins the list, and a sticky one stays though its score fell. When the stories shown change, the
+// pager lays out the open story's neighbors and scroll size again around it, so paging shows the stories the list
+// does: the open story's page moves down when one joins above it, and the next page changes when one joins after it.
+- (void)showRescoredStories:(NSArray *)stories {
+    NSArray *shownStoryHashes = [storiesCollection.activeFeedStoryLocationIds copy];
+    storiesCollection.activeFeedStories = stories;
+    storiesCollection.storyCount = (int)stories.count;
+    [storiesCollection calculateStoryLocations];
+    if ([storiesCollection.activeFeedStoryLocationIds isEqualToArray:shownStoryHashes]) return;
+
+    StoryPagesViewController *pages = self.storyPagesViewController;
+    if (pages.retainsDuoSourceArticle || [self.feedDetailViewController hasRetainedFirstPageStory]) return;
+    NSInteger openLocation = [storiesCollection locationOfStoryId:pages.currentPage.activeStoryId];
+    if (openLocation >= 0) {
+        [pages relayoutPagesKeepingCurrentPageAtLocation:openLocation];
+    }
 }
 
 - (void)changeActiveFeedDetailRow {
@@ -4533,14 +4553,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int urlRegex = [[intelligence objectForKey:@"url_regex"] intValue];
     int prompt = [[intelligence objectForKey:@"prompt"] intValue];
 
-    // AI prompt classifier takes absolute priority
-    if (prompt != 0) return prompt;
-
     int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(authorRegex, MAX(tags, MAX(text, MAX(textRegex, MAX(url, urlRegex))))))));
     int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(authorRegex, MIN(tags, MIN(text, MIN(textRegex, MIN(url, urlRegex))))))));
 
-    if (score_min <= -2) score = score_min;
-    else if (score_max > 0)      score = score_max;
+    // A super dislike on any manual classifier always wins, even over an AI prompt match
+    if (score_min <= -2) return score_min;
+
+    // Otherwise an AI prompt classifier match outranks the other manual classifiers
+    if (prompt != 0) return prompt;
+
+    if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
 
     if (score == 0) score = [[intelligence objectForKey:@"feed"] intValue];
@@ -5271,20 +5293,43 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 #pragma mark -
 #pragma mark Classifiers
 
-- (void)failedClassifierSave:(NSURLSessionDataTask *)task {
+// NewsBlurAppDelegate.m shows why a classifier save failed, and still asks the server for the site's loaded stories'
+// scores: StoryScoreRefresher.swift explains why a failed save refreshes too.
+- (void)failedClassifierSave:(NSURLSessionDataTask *)task feedId:(NSString *)feedId {
     BaseViewController *view;
     if (self.trainerViewController.isViewLoaded && self.trainerViewController.view.window) {
         view = self.trainerViewController;
     } else {
         view = self.storyPagesViewController.currentPage;
     }
-    
+
     NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
     if (response.statusCode == 503) {
         [view informError:@"In maintenance mode"];
     } else {
         [view informError:@"The server barfed!"];
     }
+    [self.storyScoreRefresher saveDidFailForFeedId:feedId];
+}
+
+// NewsBlurAppDelegate.m calls this just before sending each classifier save, so a score refresh asked for before the
+// change can't land over its local recalculation.
+- (void)startingClassifierSave:(NSString *)feedId {
+    [self startingClassifierSave:feedId changesScoresOnlyTheServerKnows:NO];
+}
+
+// An AI prompt save or a scope move changes scores recalculateIntelligenceScores: can't work out, so
+// StoryScoreRefresher.swift asks the server for the stories near the screen once it lands.
+- (void)startingClassifierSave:(NSString *)feedId changesScoresOnlyTheServerKnows:(BOOL)serverOnly {
+    [self.storyScoreRefresher saveWillStartForFeedId:feedId changesScoresOnlyTheServerKnows:serverOnly];
+}
+
+// NewsBlurAppDelegate.m refreshes the site's unread counts once a classifier save lands, then asks the server for
+// loaded stories' scores if the save changed any the app couldn't settle: recalculateIntelligenceScores: can't run
+// AI prompts and keeps the server's old score wherever StoryClassifierScorer.swift can't tell.
+- (void)finishedClassifierSave:(NSString *)feedId {
+    [self.feedsViewController refreshFeedList:feedId];
+    [self.storyScoreRefresher saveDidEndForFeedId:feedId];
 }
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId {
@@ -5338,10 +5383,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5383,10 +5429,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5425,10 +5472,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5486,10 +5534,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5539,10 +5588,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5581,10 +5631,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                           @"remove_like_feed"];
     [params setObject:feedId forKey:@"feed_id"];
     
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedRequest:task.response];
+        [self.storyScoreRefresher saveDidFailForFeedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5627,10 +5679,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5669,10 +5722,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5714,10 +5768,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5756,10 +5811,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5801,10 +5857,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5843,10 +5900,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5888,10 +5946,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5933,10 +5992,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -5975,10 +6035,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -6017,10 +6078,51 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self.feedsViewController refreshFeedList:feedId];
+        [self finishedClassifierSave:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
+// NewsBlurAppDelegate.m saves a natural language prompt from TrainerAIPromptSection.swift. A score of 0 removes it,
+// but the trainer keeps showing it as neutral until the classifiers reload so it can be turned back on.
+- (void)savePromptClassifier:(NSString *)prompt feedId:(NSString *)feedId score:(NSInteger)score includeImages:(BOOL)includeImages scope:(NSString *)scope folderName:(NSString *)folderName {
+    if (!prompt.length || !feedId.length) return;
+    [self.trainerViewController restoreRetainedStoryClassifiers];
+    NSString *classifierKey = includeImages ? @"image_prompts" : @"prompts";
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *prompts = [[feedClassifiers objectForKey:classifierKey] mutableCopy];
+    if (!prompts) prompts = [NSMutableDictionary dictionary];
+    NSInteger previousScore = [[prompts objectForKey:prompt] integerValue];
+    NSDictionary *params = [PromptClassifierSave parametersWithPrompt:prompt
+                                                               feedId:feedId
+                                                                score:score
+                                                        previousScore:previousScore
+                                                        includeImages:includeImages
+                                                                scope:scope
+                                                           folderName:folderName];
+    if (!params) return;
+
+    [prompts setObject:[NSNumber numberWithInteger:score] forKey:prompt];
+    [feedClassifiers setObject:prompts forKey:classifierKey];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.trainerViewController captureRetainedStoryContext];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    [self startingClassifierSave:feedId changesScoresOnlyTheServerKnows:YES];
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self finishedClassifierSave:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];
@@ -6056,6 +6158,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self startingClassifierSave:feedId changesScoresOnlyTheServerKnows:YES];
     [self POST:urlString parameters:removeParams success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         // Step 2: Add classifier at new scope after remove succeeds
         NSMutableDictionary *addParams = [NSMutableDictionary dictionary];
@@ -6069,12 +6172,12 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
 
         [self POST:urlString parameters:addParams success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            [self.feedsViewController refreshFeedList:feedId];
+            [self finishedClassifierSave:feedId];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [self failedClassifierSave:task];
+            [self failedClassifierSave:task feedId:feedId];
         }];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self failedClassifierSave:task];
+        [self failedClassifierSave:task feedId:feedId];
     }];
 
     [self recalculateIntelligenceScores:feedId];

@@ -1417,6 +1417,12 @@ msgstr "記事を保存できませんでした。見つかりません。"
 msgid "Could not unsave story, not found"
 msgstr "記事を保存解除できませんでした。見つかりません。"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripeに接続できませんでした。もう一度お試しください。"
+
+msgid "Couldn't save the position"
+msgstr "位置を保存できませんでした"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "対象期間: %(start)s &ndash; %(end)s"
@@ -2804,6 +2810,9 @@ msgstr "無効な画像ファイル"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days が無効です"
 
+msgid "Invalid position"
+msgstr "無効な位置です"
+
 msgid "Invalid request identifier"
 msgstr "無効なリクエスト識別子"
 
@@ -3782,6 +3791,9 @@ msgstr "学習システムなし"
 msgid "No uncategorized archives found"
 msgstr "未分類のアーカイブは見つかりませんでした"
 
+msgid "No usage billing set up."
+msgstr "従量課金は設定されていません。"
+
 msgid "No user has that email address."
 msgstr "そのメールアドレスのユーザーはいません。"
 
@@ -4010,6 +4022,9 @@ msgstr "キーワード検索のクエリを入力してください。"
 
 msgid "Please enter in an email address."
 msgstr "メールアドレスを入力してください。"
+
+msgid "Please log in to NewsBlur again."
+msgstr "もう一度NewsBlurにログインしてください。"
 
 msgid "Please login to continue."
 msgstr "続行するにはログインしてください。"
@@ -5312,6 +5327,9 @@ msgstr "NewsBlurをお試しいただきありがとうございます！NewsBlu
 msgid "Thanks!"
 msgstr "ありがとうございます！"
 
+msgid "That item isn't playing"
+msgstr "その項目は再生中ではありません"
+
 msgid "That part of the story doesn't exist."
 msgstr "記事のその部分は存在しません。"
 
@@ -5823,6 +5841,9 @@ msgstr "従量課金は有効になっていません"
 msgid "Usage billing required for AI classifiers"
 msgstr "AI分類器の利用には従量課金の設定が必要です"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "従量課金は現在ご利用いただけません。"
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "使用方法"
@@ -5834,6 +5855,9 @@ msgid ""
 msgstr ""
 "お気に入りの読書アプリでNewsBlurを使いましょう。Reeder、ReadKit、Unread、lire、Fiery "
 "Feeds、Newsifyなど、多数のアプリと完全に同期できます。既読状態、保存した記事、学習内容はすべてのアプリ間で同期されます。NewsBlurのオープンAPIを使ったサードパーティ製クライアントは数十種類あります。"
+
+msgid "Use POST"
+msgstr "POSTを使用"
 
 msgid "Use prompt templates"
 msgstr "プロンプトテンプレートを使用"

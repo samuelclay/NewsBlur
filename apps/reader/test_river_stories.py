@@ -826,6 +826,36 @@ class Test_RiverStories(TransactionTestCase):
         self.assertEqual(response.status_code, 404)
         feed_stories.assert_not_called()
 
+    def test_river_stories__scores_without_content(self):
+        """include_story_content=false keeps each story's scores and drops its content, the way
+        load_single_feed's flag does, for the iOS score refresh after a classifier save."""
+        self.client.login(username="conesus", password="test")
+        if not self.test_story_hashes:
+            self.skipTest("No test stories created in setUp")
+        hashes = self.test_story_hashes[:3]
+
+        with_content = json.decode(
+            self.client.post(reverse("load-river-stories"), {"h": hashes, "include_hidden": "true"}).content
+        )
+        without_content = json.decode(
+            self.client.post(
+                reverse("load-river-stories"),
+                {"h": hashes, "include_hidden": "true", "include_story_content": "false"},
+            ).content
+        )
+
+        self.assertTrue(with_content["stories"])
+        self.assertTrue(all("story_content" in story for story in with_content["stories"]))
+        self.assertEqual(
+            sorted(story["story_hash"] for story in without_content["stories"]),
+            sorted(story["story_hash"] for story in with_content["stories"]),
+        )
+        for story in without_content["stories"]:
+            self.assertNotIn("story_content", story)
+            self.assertIn("intelligence", story)
+            self.assertIn("score", story)
+            self.assertIn("prompt_classifiers", story)
+
     def test_river_stories__specific_story_hashes(self):
         """
         Test loading specific story hashes - THIS IS THE BUG WE FIXED.
@@ -1002,6 +1032,63 @@ class Test_RiverStories(TransactionTestCase):
 
         # Should not increase significantly with date filter
         self.assertLess(counts["total"], 30, "Single feed with date filter should be reasonable")
+
+    def train_author_regex(self, is_pro):
+        """Like the "^Author 0$" author regex on the first test feed. Returns that feed's
+        three test stories' hashes, the first by "Author 0"."""
+        feed_id = self.test_feeds[0]
+        self.user.profile.is_pro = is_pro
+        self.user.profile.save()
+        MClassifierAuthor.objects(user_id=self.user.pk, feed_id=feed_id).delete()
+        self.addCleanup(lambda: MClassifierAuthor.objects(user_id=self.user.pk, feed_id=feed_id).delete())
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=feed_id,
+            social_user_id=0,
+            author="^Author 0$",
+            is_regex=True,
+            score=1,
+        )
+        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).update(is_trained=True)
+        return self.test_story_hashes[:3]
+
+    def author_regex_intelligence(self, stories, story_hashes):
+        by_hash = {story["story_hash"]: story for story in stories}
+        return [(by_hash[h]["intelligence"]["author_regex"], by_hash[h]["score"]) for h in story_hashes]
+
+    def river_author_regex(self, story_hashes):
+        response = self.client.post(
+            reverse("load-river-stories"), {"h": story_hashes, "include_hidden": "true"}
+        )
+        self.assertEqual(response.status_code, 200)
+        return self.author_regex_intelligence(json.decode(response.content)["stories"], story_hashes)
+
+    def single_feed_author_regex(self, story_hashes):
+        response = self.client.get(
+            reverse("load-single-feed", kwargs={"feed_id": self.test_feeds[0]}),
+            {"read_filter": "all", "include_hidden": "true"},
+        )
+        self.assertEqual(response.status_code, 200)
+        return self.author_regex_intelligence(json.decode(response.content)["stories"], story_hashes)
+
+    def test_river_and_single_feed__pro_author_regex_scores_the_story(self):
+        """/reader/river_stories and /reader/feed used to leave author_regex out of each story's
+        intelligence, so a Pro user's author regex never scored a story and the clients'
+        scorers read it as 0."""
+        self.client.login(username="conesus", password="test")
+        story_hashes = self.train_author_regex(is_pro=True)
+
+        expected = [(1, 1), (0, 0), (0, 0)]
+        self.assertEqual(self.river_author_regex(story_hashes), expected)
+        self.assertEqual(self.single_feed_author_regex(story_hashes), expected)
+
+    def test_river_and_single_feed__author_regex_needs_pro(self):
+        self.client.login(username="conesus", password="test")
+        story_hashes = self.train_author_regex(is_pro=False)
+
+        expected = [(0, 0), (0, 0), (0, 0)]
+        self.assertEqual(self.river_author_regex(story_hashes), expected)
+        self.assertEqual(self.single_feed_author_regex(story_hashes), expected)
 
     def test_starred_stories__normal_load(self):
         """Test loading starred stories."""

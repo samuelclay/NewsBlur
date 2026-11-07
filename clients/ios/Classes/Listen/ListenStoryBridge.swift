@@ -54,11 +54,11 @@ import WebKit
         """
     }
 
-    /// The small + beside Listen: shown only while another story is loaded in the player, it adds this story to Up
-    /// Next, and shows a checkmark once the story is queued (tapping it again takes the story back off).
+    /// The small + beside Listen: shown only while another story or a podcast is loaded in the player, it adds this
+    /// story to Up Next, and shows a checkmark once the story is queued (tapping it again takes the story back off).
     private static func queueButtonHTML(forStoryHash hash: String?) -> String {
         let player = ListenPlayer.shared
-        guard let hash, player.isActive, !player.isLoaded(storyHash: hash) else { return "" }
+        guard let hash, isPlayerActive, !player.isLoaded(storyHash: hash) else { return "" }
         let isQueued = ListenQueue.shared.contains(storyHash: hash)
         let label = isQueued ? NBLocalization.text("Queued") : NBLocalization.text("Add to Up Next")
         let classes = isQueued ? "NB-listen-queue NB-listen-queued" : "NB-listen-queue"
@@ -96,9 +96,9 @@ import WebKit
         return ListenPreferences.showsStoryButton("listen") && !ListenPlayer.shared.isLoaded(storyHash: hash)
     }
 
-    /// Whether a story is loaded in the player (BaseViewController.m toolbar validation).
+    /// Whether a story or a podcast is loaded in the player (BaseViewController.m toolbar validation).
     static var isPlayerActive: Bool {
-        ListenPlayer.shared.isActive
+        ListenPlayer.shared.isActive || ListenMediaPlayer.shared.isActive
     }
 
     /// Bottom inset a list needs while the mini player covers its column (FeedsObjCViewController.m).
@@ -111,14 +111,15 @@ import WebKit
     /// lock screen (NewsBlurAppDelegate.m).
     static func stopForAccountChange() {
         if ListenPlayer.shared.isActive {
-            ListenPlayer.shared.stop()
+            ListenPlayer.shared.stop(saving: false)
         }
+        ListenMediaPlayer.shared.stop(saving: false)
         ListenQueue.shared.reset()
     }
 
-    /// The Mac toolbar's play/pause and media keys for whatever is loaded.
+    /// The Mac toolbar's play/pause and media keys for whatever is loaded: a story read aloud or a podcast.
     static func togglePlayback() {
-        ListenPlayer.shared.togglePlayPause()
+        ListenRemoteCommands.shared.activeSession?.togglePlayPause()
     }
 
     static func isPlayingStory(_ story: [AnyHashable: Any]?) -> Bool {
@@ -217,14 +218,15 @@ extension StoryDetailViewController {
         listenMappedManifestId = nil
         listenButtonState = listenCurrentButtonState
         listenUpdateHighlight(scroll: false)
+        mediaUpdateCards()
     }
 
     private var listenCurrentButtonState: String {
         let hash = activeStory?["story_hash"] as? String
         let player = ListenPlayer.shared
         guard player.isLoaded(storyHash: hash) else {
-            // ListenStoryBridge.swift: the + beside Listen depends on another story playing and on Up Next.
-            guard player.isActive else { return "none" }
+            // ListenStoryBridge.swift: the + beside Listen depends on another story or a podcast playing and on Up Next.
+            guard ListenStoryBridge.isPlayerActive else { return "none" }
             return ListenQueue.shared.contains(storyHash: hash) ? "queued" : "can-queue"
         }
         return player.wantsToPlay ? "playing" : (player.status == .paused ? "paused" : "loaded")
@@ -237,6 +239,8 @@ extension StoryDetailViewController {
             refreshSideOptions()
         }
         listenUpdateHighlight(scroll: false)
+        // ListenMediaStoryBridge.swift: the story's audio cards follow the podcast player and Up Next.
+        mediaUpdateCards()
     }
 
     func listenUpdateHighlight(scroll: Bool) {

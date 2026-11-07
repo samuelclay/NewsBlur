@@ -8,6 +8,86 @@
 
 import SwiftUI
 
+/// TrainerRegexInput.swift runs readers' regex classifiers against story text within a time budget. A valid pattern
+/// like (a+)+$ backtracks for minutes on a long story it doesn't match, so each search asks NSRegularExpression for
+/// progress callbacks and stops once its budget runs out, reporting that it couldn't tell rather than a wrong answer.
+@objcMembers final class TrainerRegexMatcher: NSObject {
+    enum Outcome: Equatable {
+        case matches
+        case noMatch
+        /// The search ran past its budget, so whether the pattern matches is unknown.
+        case timedOut
+    }
+
+    /// For the pattern being typed, which TrainerRegexInput.swift checks off the main thread.
+    static let typingBudget: TimeInterval = 0.25
+    /// For saved patterns checked on the main thread while the trainer or a story header draws.
+    static let drawingBudget: TimeInterval = 0.05
+    /// How long typing pauses before TrainerRegexInput.swift checks the pattern against the story.
+    static let typingDebounce: TimeInterval = 0.3
+
+    static func outcome(of regex: NSRegularExpression, in text: String, budget: TimeInterval) -> Outcome {
+        let deadline = ProcessInfo.processInfo.systemUptime + budget
+        var outcome = Outcome.noMatch
+        regex.enumerateMatches(in: text, options: [.reportProgress], range: NSRange(text.startIndex..., in: text)) { result, _, stop in
+            if result != nil {
+                outcome = .matches
+                stop.pointee = true
+            } else if ProcessInfo.processInfo.systemUptime > deadline {
+                outcome = .timedOut
+                stop.pointee = true
+            }
+        }
+        return outcome
+    }
+
+    /// The pattern's outcome, or nil when it isn't a valid regex. Patterns are case insensitive, like the server's.
+    static func outcome(of pattern: String, in text: String, budget: TimeInterval) -> Outcome? {
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return nil }
+        return outcome(of: regex, in: text, budget: budget)
+    }
+
+    /// Searches on a background queue so a slow pattern never holds up typing.
+    static func outcomeOffMainThread(of pattern: String, in text: String,
+                                     budget: TimeInterval = typingBudget) async -> Outcome? {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                continuation.resume(returning: outcome(of: pattern, in: text, budget: budget))
+            }
+        }
+    }
+
+    /// Every match, for StoryDetailObjCViewController.m's story header, or nil when the budget ran out first.
+    static func matches(of regex: NSRegularExpression, in text: String, budget: TimeInterval) -> [NSTextCheckingResult]? {
+        let deadline = ProcessInfo.processInfo.systemUptime + budget
+        var matches: [NSTextCheckingResult] = []
+        var timedOut = false
+        regex.enumerateMatches(in: text, options: [.reportProgress], range: NSRange(text.startIndex..., in: text)) { result, _, stop in
+            if let result { matches.append(result) }
+            if ProcessInfo.processInfo.systemUptime > deadline {
+                timedOut = true
+                stop.pointee = true
+            }
+        }
+        return timedOut ? nil : matches
+    }
+
+    /// The first match for StoryDetailObjCViewController.m's story header, or nil when there is none in the budget.
+    static func firstMatch(of regex: NSRegularExpression, in text: String, budget: TimeInterval) -> NSTextCheckingResult? {
+        let deadline = ProcessInfo.processInfo.systemUptime + budget
+        var match: NSTextCheckingResult?
+        regex.enumerateMatches(in: text, options: [.reportProgress], range: NSRange(text.startIndex..., in: text)) { result, _, stop in
+            if let result {
+                match = result
+                stop.pointee = true
+            } else if ProcessInfo.processInfo.systemUptime > deadline {
+                stop.pointee = true
+            }
+        }
+        return match
+    }
+}
+
 struct TrainerRegexInput: View {
     enum SectionType {
         case title, text, url, author
@@ -25,6 +105,8 @@ struct TrainerRegexInput: View {
 
     @State private var isRegex = false
     @State private var pattern = ""
+    /// Whether the pattern matches the story, once the search for the current pattern has finished.
+    @State private var storyMatch: TrainerRegexMatcher.Outcome?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -100,6 +182,44 @@ struct TrainerRegexInput: View {
         .onChange(of: pattern) { newValue in
             syncToCache()
         }
+        .task(id: storyMatchRequest) {
+            await checkStoryMatch(storyMatchRequest)
+        }
+    }
+
+    // MARK: - Story Match
+
+    /// What TrainerRegexInput.swift searches the story for, so a new pattern cancels the search for the last one.
+    struct StoryMatchRequest: Hashable {
+        let pattern: String
+        let text: String
+    }
+
+    var storyMatchRequest: StoryMatchRequest? {
+        guard isRegex, let story else { return nil }
+        let trimmed = pattern.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return nil }
+        return StoryMatchRequest(pattern: trimmed, text: Self.matchText(for: sectionType, in: story))
+    }
+
+    static func matchText(for sectionType: SectionType, in story: Story) -> String {
+        switch sectionType {
+        case .title: return story.title
+        case .text: return story.contentHTML
+        case .url: return story.permalink
+        case .author: return story.author
+        }
+    }
+
+    /// Waits for typing to pause, then searches off the main thread. A result for an older pattern never shows.
+    private func checkStoryMatch(_ request: StoryMatchRequest?) async {
+        storyMatch = nil
+        guard let request else { return }
+        try? await Task.sleep(nanoseconds: UInt64(TrainerRegexMatcher.typingDebounce * 1_000_000_000))
+        guard !Task.isCancelled else { return }
+        let outcome = await TrainerRegexMatcher.outcomeOffMainThread(of: request.pattern, in: request.text)
+        guard !Task.isCancelled else { return }
+        storyMatch = outcome
     }
 
     // MARK: - Cache Sync
@@ -180,12 +300,15 @@ struct TrainerRegexInput: View {
             switch validationResult {
             case .valid:
                 badge(text: "\u{2713} " + NBLocalization.text("Valid"), style: .valid)
-                if let matchResult = storyMatchResult {
-                    if matchResult {
-                        badge(text: "\u{2713} " + NBLocalization.text("Matches story"), style: .valid)
-                    } else {
-                        badge(text: NBLocalization.text("No match in story"), style: .noMatch)
-                    }
+                switch storyMatch {
+                case .matches:
+                    badge(text: "\u{2713} " + NBLocalization.text("Matches story"), style: .valid)
+                case .noMatch:
+                    badge(text: NBLocalization.text("No match in story"), style: .noMatch)
+                case .timedOut:
+                    badge(text: NBLocalization.text("Couldn't check story"), style: .noMatch)
+                case nil:
+                    EmptyView()
                 }
             case .invalid(let error):
                 badge(text: String(format: NBLocalization.text("Invalid: %@"), error), style: .error)
@@ -214,29 +337,6 @@ struct TrainerRegexInput: View {
                 .trimmingCharacters(in: .whitespaces)
             return .invalid(message.isEmpty ? "Invalid pattern" : message)
         }
-    }
-
-    var storyMatchResult: Bool? {
-        guard let story else { return nil }
-        guard case .valid = validationResult else { return nil }
-
-        let trimmed = pattern.trimmingCharacters(in: .whitespaces)
-        guard let regex = try? NSRegularExpression(pattern: trimmed, options: [.caseInsensitive]) else { return nil }
-
-        let textToMatch: String
-        switch sectionType {
-        case .title:
-            textToMatch = story.title
-        case .text:
-            textToMatch = story.contentHTML
-        case .url:
-            textToMatch = story.permalink
-        case .author:
-            textToMatch = story.author
-        }
-
-        let range = NSRange(textToMatch.startIndex..<textToMatch.endIndex, in: textToMatch)
-        return regex.firstMatch(in: textToMatch, options: [], range: range) != nil
     }
 
     enum BadgeStyle {

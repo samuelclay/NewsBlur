@@ -78,7 +78,7 @@ class ListenNowPlayingFragment : BottomSheetDialogFragment() {
                         onRetry = listenManager::retry,
                         onUpgrade = { UIUtils.startSubscriptionActivity(requireContext()) },
                         onPlayQueued = listenManager::playQueued,
-                        onRemoveQueued = listenManager::removeFromUpNext,
+                        onRemoveQueued = listenManager::removeQueued,
                         onMoveQueued = listenManager::moveInUpNext,
                     )
                 }

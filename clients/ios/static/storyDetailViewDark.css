@@ -404,3 +404,30 @@ span.NB-listen-run.NB-listen-highlight {
     background: rgba(190, 140, 242, 0.18);
     color: rgba(205, 170, 245, 0.95);
 }
+
+
+/* AI Classifier Pills: storyDetailViewDark.css deepens the fills so white text stays readable on the dark header */
+.NB-story-ai-classifier.NB-score-1 {
+    background-color: #4F8040;
+    border-color: rgba(255, 255, 255, .15) transparent rgba(0, 0, 0, .4);
+}
+
+.NB-story-ai-classifier.NB-score--1 {
+    background-color: #9A4C4E;
+    border-color: rgba(255, 255, 255, .15) transparent rgba(0, 0, 0, .4);
+}
+
+/* storyDetailViewDark.css: story audio pills (storyDetailView.css .NB-media-card), shaded like this theme's
+   .NB-story-tag and .NB-story-tag-positive. */
+#NB-story .NB-media-card-play {
+    border-color: rgba(255, 255, 255, .2) transparent rgba(0, 0, 0, .4);
+}
+#NB-story .NB-media-card-actions a {
+    background-color: rgba(30, 30, 30, .2);
+    border-color: rgba(186, 186, 186, .1) transparent rgba(0, 0, 0, .4);
+    color: #959B8B;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+}
+#NB-story .NB-media-card-actions a:active {
+    background-color: rgba(60, 60, 60, .4);
+}

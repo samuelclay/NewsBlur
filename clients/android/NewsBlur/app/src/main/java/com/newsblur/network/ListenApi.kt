@@ -3,6 +3,7 @@ package com.newsblur.network
 import com.newsblur.listen.ListenLibraryResponse
 import com.newsblur.listen.ListenManifest
 import com.newsblur.listen.ListenPlaybackState
+import com.newsblur.listen.ListenPositionSync
 import com.newsblur.listen.ListenQueueItem
 import com.newsblur.listen.ListenResult
 import com.newsblur.listen.ListenSegmentResponse
@@ -65,8 +66,14 @@ interface ListenApi {
     /** The shared Up Next queue and history (apps/media_player); null when the request failed. */
     suspend fun getPlaybackState(): ListenPlaybackState?
 
-    /** Adds to the end of Up Next and returns the queue as the server now has it, or null on failure. */
-    suspend fun addToUpNext(item: ListenQueueItem): ListenPlaybackState?
+    /**
+     * Adds to Up Next and returns the queue as the server now has it, or null on failure: at the end, or at
+     * [position] in the whole queue, like the web's Play Next with 0.
+     */
+    suspend fun addToUpNext(
+        item: ListenQueueItem,
+        position: Int? = null,
+    ): ListenPlaybackState?
 
     suspend fun removeFromUpNext(item: ListenQueueItem): ListenPlaybackState?
 
@@ -79,6 +86,31 @@ interface ListenApi {
         positionSeconds: Double,
         durationSeconds: Double,
     ): Boolean
+
+    /**
+     * Records the current item with its position (save_playback_state), so the web and iOS resume it there. Only the
+     * current_* fields and is_playing go out, never the player settings. playbackRate is the podcast rate, and null
+     * for a story read aloud, which leaves the saved podcast rate alone as the web does.
+     */
+    suspend fun savePlaybackState(
+        item: ListenQueueItem,
+        positionSeconds: Double,
+        durationSeconds: Double,
+        playbackRate: Double?,
+        isPlaying: Boolean,
+    ): ListenPlaybackState?
+
+    /**
+     * The frequent position update while an episode plays (sync_playback_position), which only touches Redis and only
+     * while mediaUrl is still the server's current item; NOT_CURRENT means another device took over.
+     */
+    suspend fun syncPlaybackPosition(
+        mediaUrl: String,
+        positionSeconds: Double,
+        durationSeconds: Double,
+        playbackRate: Double,
+        isPlaying: Boolean,
+    ): ListenPositionSync
 
     /** Segment and preview URLs may be relative to the NewsBlur server the app is signed in to. */
     fun resolveAudioUrl(url: String): String

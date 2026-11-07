@@ -330,3 +330,24 @@ html[dir="rtl"] .NB-story blockquote:dir(rtl) {
 span.NB-listen-run.NB-listen-highlight {
     box-shadow: none;
 }
+
+
+/* AI Classifier Pills: storyDetailViewSepia.css warms the pill edge to match the sepia tags */
+.NB-story-ai-classifier {
+    border-color: rgba(255, 255, 255, .3) transparent rgba(60, 50, 38, .15);
+}
+
+/* storyDetailViewSepia.css: story audio pills (storyDetailView.css .NB-media-card), shaded like this theme's
+   .NB-story-tag and .NB-story-tag-positive. */
+#NB-story .NB-media-card-play {
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+}
+#NB-story .NB-media-card-actions a {
+    background-color: rgba(0, 0, 0, .08);
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    color: #8B7B6B;
+    text-shadow: 0 1px 0 rgba(245, 230, 211, .9);
+}
+#NB-story .NB-media-card-actions a:active {
+    background-color: rgba(0, 0, 0, .14);
+}

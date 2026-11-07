@@ -1554,6 +1554,12 @@ msgstr "No se pudo guardar el artículo; no se encontró"
 msgid "Could not unsave story, not found"
 msgstr "No se pudo quitar de guardados el artículo; no se encontró"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "No se pudo conectar con Stripe. Inténtalo de nuevo."
+
+msgid "Couldn't save the position"
+msgstr "No se pudo guardar la posición"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periodo de cobertura: %(start)s &ndash; %(end)s"
@@ -3092,6 +3098,9 @@ msgstr "Archivo de imagen no válido"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days no es válido"
 
+msgid "Invalid position"
+msgstr "Posición no válida"
+
 msgid "Invalid request identifier"
 msgstr "Identificador de solicitud no válido"
 
@@ -4262,6 +4271,9 @@ msgstr "Sin sistema de entrenamiento"
 msgid "No uncategorized archives found"
 msgstr "No se encontraron páginas archivadas sin categoría"
 
+msgid "No usage billing set up."
+msgstr "No hay facturación por uso configurada."
+
 msgid "No user has that email address."
 msgstr "Ningún usuario tiene esa dirección de correo electrónico."
 
@@ -4498,6 +4510,9 @@ msgstr "Introduce una consulta de búsqueda por palabras clave."
 
 msgid "Please enter in an email address."
 msgstr "Introduce una dirección de correo electrónico."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Vuelve a iniciar sesión en NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Por favor, inicia sesión para continuar."
@@ -5888,6 +5903,9 @@ msgstr "¡Gracias por probar NewsBlur! Espero que NewsBlur haga que tu lectura d
 msgid "Thanks!"
 msgstr "¡Gracias!"
 
+msgid "That item isn't playing"
+msgstr "Ese elemento no se está reproduciendo"
+
 msgid "That part of the story doesn't exist."
 msgstr "Esa parte del artículo no existe."
 
@@ -6463,6 +6481,9 @@ msgstr "La facturación por uso no está habilitada"
 msgid "Usage billing required for AI classifiers"
 msgstr "Se requiere la facturación por uso para los clasificadores de IA"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "La facturación según el uso no está disponible en este momento."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Uso"
@@ -6476,6 +6497,9 @@ msgstr ""
 "ReadKit, Unread, lire, Fiery Feeds, Newsify y muchas más. Tu estado de lectura, artículos guardados y "
 "entrenamiento se sincronizan en todas las aplicaciones. La API abierta de NewsBlur potencia docenas de "
 "clientes de terceros."
+
+msgid "Use POST"
+msgstr "Usar POST"
 
 msgid "Use prompt templates"
 msgstr "Usar plantillas de indicaciones"

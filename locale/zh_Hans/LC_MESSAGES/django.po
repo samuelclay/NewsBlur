@@ -1421,6 +1421,12 @@ msgstr "无法保存文章，未找到该文章"
 msgid "Could not unsave story, not found"
 msgstr "无法取消保存文章，未找到该文章"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "无法连接到 Stripe。请重试。"
+
+msgid "Couldn't save the position"
+msgstr "无法保存播放位置"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "涵盖时段：%(start)s &ndash; %(end)s"
@@ -2816,6 +2822,9 @@ msgstr "图片文件无效"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days 无效"
 
+msgid "Invalid position"
+msgstr "位置无效"
+
 msgid "Invalid request identifier"
 msgstr "请求标识符无效"
 
@@ -3831,6 +3840,9 @@ msgstr "无训练系统"
 msgid "No uncategorized archives found"
 msgstr "未找到未分类的归档"
 
+msgid "No usage billing set up."
+msgstr "尚未设置按用量计费。"
+
 msgid "No user has that email address."
 msgstr "没有使用该电子邮件地址的用户。"
 
@@ -4059,6 +4071,9 @@ msgstr "请输入关键词搜索查询。"
 
 msgid "Please enter in an email address."
 msgstr "请输入电子邮件地址。"
+
+msgid "Please log in to NewsBlur again."
+msgstr "请重新登录 NewsBlur。"
 
 msgid "Please login to continue."
 msgstr "请登录以继续。"
@@ -5364,6 +5379,9 @@ msgstr "感谢试用 NewsBlur！希望 NewsBlur 能让你的日常阅读更加�
 msgid "Thanks!"
 msgstr "谢谢！"
 
+msgid "That item isn't playing"
+msgstr "该项目未在播放"
+
 msgid "That part of the story doesn't exist."
 msgstr "文章的这一部分不存在。"
 
@@ -5876,6 +5894,9 @@ msgstr "用量计费未启用"
 msgid "Usage billing required for AI classifiers"
 msgstr "AI 分类器需要按用量计费"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "目前无法使用按用量计费。"
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "使用"
@@ -5887,6 +5908,9 @@ msgid ""
 msgstr ""
 "在你喜爱的阅读应用中使用 NewsBlur。全面同步支持 Reeder、ReadKit、Unread、lire、Fiery Feeds、Newsify "
 "等众多应用。你的已读状态、已保存的文章和训练数据会在所有应用间同步。NewsBlur 的开放 API 为数十款第三方客户端提供支持。"
+
+msgid "Use POST"
+msgstr "使用 POST"
 
 msgid "Use prompt templates"
 msgstr "使用提示词模板"

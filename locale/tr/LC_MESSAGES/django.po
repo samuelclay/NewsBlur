@@ -1541,6 +1541,12 @@ msgstr "Haber kaydedilemedi, bulunamadı"
 msgid "Could not unsave story, not found"
 msgstr "Haber kaydedilmişlerden çıkarılamadı; bulunamadı"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe'a ulaşılamadı. Lütfen tekrar deneyin."
+
+msgid "Couldn't save the position"
+msgstr "Konum kaydedilemedi"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Hizmet dönemi: %(start)s &ndash; %(end)s"
@@ -3057,6 +3063,9 @@ msgstr "Geçersiz görsel dosyası"
 msgid "Invalid mute_duration_days"
 msgstr "Geçersiz mute_duration_days"
 
+msgid "Invalid position"
+msgstr "Geçersiz konum"
+
 msgid "Invalid request identifier"
 msgstr "Geçersiz istek tanımlayıcısı"
 
@@ -4206,6 +4215,9 @@ msgstr "Eğitim sistemi yok"
 msgid "No uncategorized archives found"
 msgstr "Kategorilendirilmemiş arşiv bulunamadı"
 
+msgid "No usage billing set up."
+msgstr "Kullanım faturalandırması ayarlanmamış."
+
 msgid "No user has that email address."
 msgstr "Bu e-posta adresine sahip bir kullanıcı yok."
 
@@ -4444,6 +4456,9 @@ msgstr "Lütfen bir anahtar kelime arama sorgusu girin."
 
 msgid "Please enter in an email address."
 msgstr "Lütfen bir e-posta adresi girin."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Lütfen NewsBlur hesabınıza tekrar giriş yapın."
 
 msgid "Please login to continue."
 msgstr "Devam etmek için lütfen giriş yapın."
@@ -5832,6 +5847,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Teşekkürler!"
 
+msgid "That item isn't playing"
+msgstr "Bu öğe çalmıyor"
+
 msgid "That part of the story doesn't exist."
 msgstr "Haberin bu bölümü mevcut değil."
 
@@ -6399,6 +6417,9 @@ msgstr "Kullanım ücretlendirmesi etkin değil"
 msgid "Usage billing required for AI classifiers"
 msgstr "Yapay zekâ sınıflandırıcıları için kullanıma dayalı faturalandırma gerekir"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "Kullanıma dayalı faturalandırma şu anda kullanılamıyor."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Kullanım"
@@ -6412,6 +6433,9 @@ msgstr ""
 "daha birçok uygulamayla tam senkronizasyon desteği. Okunma durumunuz, kaydedilen haberleriniz ve eğitim "
 "tercihleriniz tüm uygulamalarda eşitlenir. NewsBlur'ın açık API'si onlarca üçüncü taraf uygulamaya güç "
 "verir."
+
+msgid "Use POST"
+msgstr "POST kullan"
 
 msgid "Use prompt templates"
 msgstr "İstem şablonlarını kullan"

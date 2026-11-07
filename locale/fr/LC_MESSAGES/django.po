@@ -1569,6 +1569,12 @@ msgstr "Impossible d'enregistrer l'article : introuvable"
 msgid "Could not unsave story, not found"
 msgstr "Impossible de retirer l’article des éléments enregistrés : introuvable"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Impossible de joindre Stripe. Veuillez réessayer."
+
+msgid "Couldn't save the position"
+msgstr "Impossible d’enregistrer la position"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Période couverte : %(start)s &ndash; %(end)s"
@@ -3130,6 +3136,9 @@ msgstr "Fichier image invalide"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days non valide"
 
+msgid "Invalid position"
+msgstr "Position invalide"
+
 msgid "Invalid request identifier"
 msgstr "Identifiant de requête invalide"
 
@@ -4321,6 +4330,9 @@ msgstr "Aucun système d’entraînement"
 msgid "No uncategorized archives found"
 msgstr "Aucune archive sans catégorie trouvée"
 
+msgid "No usage billing set up."
+msgstr "La facturation à l’usage n’est pas configurée."
+
 msgid "No user has that email address."
 msgstr "Aucun utilisateur ne possède cette adresse e-mail."
 
@@ -4567,6 +4579,9 @@ msgstr "Veuillez saisir une requête de recherche par mot-clé."
 
 msgid "Please enter in an email address."
 msgstr "Veuillez saisir une adresse e-mail."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Veuillez vous reconnecter à NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Veuillez vous connecter pour continuer."
@@ -5971,6 +5986,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Merci !"
 
+msgid "That item isn't playing"
+msgstr "Cet élément n’est pas en cours de lecture"
+
 msgid "That part of the story doesn't exist."
 msgstr "Cette partie de l’article n’existe pas."
 
@@ -6554,6 +6572,9 @@ msgstr "Facturation à l’usage non activée"
 msgid "Usage billing required for AI classifiers"
 msgstr "La facturation à l’usage est requise pour les classificateurs IA"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "La facturation à l’usage n’est pas disponible pour le moment."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Utilisation"
@@ -6567,6 +6588,9 @@ msgstr ""
 "charge par Reeder, ReadKit, Unread, lire, Fiery Feeds, Newsify et bien d’autres. Votre statut de lecture, "
 "vos articles enregistrés et votre entraînement sont synchronisés dans toutes les applications. L’API "
 "ouverte de NewsBlur alimente des dizaines d’applications tierces."
+
+msgid "Use POST"
+msgstr "Utiliser POST"
 
 msgid "Use prompt templates"
 msgstr "Utiliser des modèles de prompts"

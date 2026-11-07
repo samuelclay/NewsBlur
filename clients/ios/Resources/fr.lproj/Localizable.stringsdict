@@ -74,6 +74,24 @@
 			<string>%@ commentaires</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ filtres de contenu</string>
+			<key>one</key>
+			<string>%@ filtre de contenu</string>
+			<key>other</key>
+			<string>%@ filtres de contenu</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -234,6 +252,24 @@
 			<string>%@ aperçu gratuit d’article restant aujourd’hui</string>
 			<key>other</key>
 			<string>%@ aperçu gratuit d’article restant aujourd’hui</string>
+		</dict>
+	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ filtres d’image</string>
+			<key>one</key>
+			<string>%@ filtre d’image</string>
+			<key>other</key>
+			<string>%@ filtre d’image</string>
 		</dict>
 	</dict>
 	<key>%@ match</key>
@@ -398,6 +434,24 @@
 			<string>Il reste %@ articles</string>
 		</dict>
 	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ articles/mois</string>
+			<key>one</key>
+			<string>%@ article/mois</string>
+			<key>other</key>
+			<string>%@ article/mois</string>
+		</dict>
+	</dict>
 	<key>%@ stories/month</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -560,6 +614,24 @@
 			<string>Également publié par %@ sites</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Reculer de %@ secondes</string>
+			<key>one</key>
+			<string>Reculer de %@ seconde</string>
+			<key>other</key>
+			<string>Reculer de %@ secondes</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -594,6 +666,24 @@
 			<string>Abonné</string>
 			<key>other</key>
 			<string>Abonnés</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Avancer de %@ secondes</string>
+			<key>one</key>
+			<string>Avancer de %@ seconde</string>
+			<key>other</key>
+			<string>Avancer de %@ secondes</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
@@ -864,6 +954,24 @@
 			<string>Vous êtes abonné à %@ site</string>
 			<key>other</key>
 			<string>Vous êtes abonné à %@ sites</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>✓ %2$@ images sur %1$@ correspondent à ce filtre</string>
+			<key>one</key>
+			<string>✓ %2$@ image sur %1$@ correspond à ce filtre</string>
+			<key>other</key>
+			<string>✓ %2$@ image sur %1$@ correspond à ce filtre</string>
 		</dict>
 	</dict>
 </dict>

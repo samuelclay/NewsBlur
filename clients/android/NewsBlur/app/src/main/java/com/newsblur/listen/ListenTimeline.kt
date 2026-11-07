@@ -136,9 +136,6 @@ object ListenPreviewFade {
 
 /** ListenTimeline.kt's skip and scrub targets, kept inside the story. */
 object ListenSeek {
-    const val SKIP_BACK_MS = 15_000L
-    const val SKIP_FORWARD_MS = 30_000L
-
     fun target(
         currentMs: Long,
         deltaMs: Long,

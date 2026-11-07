@@ -91,6 +91,11 @@ public class Story implements Serializable {
 	@SerializedName("intelligence")
 	public Intelligence intelligence = new Intelligence();
 
+    // AI prompt classifiers that matched this story. Saved with the story so the reading header
+    // can show them offline, see PromptClassifierMatch.kt.
+    @SerializedName("prompt_classifiers")
+    public PromptClassifierMatch[] promptClassifiers = PromptClassifierMatch.EMPTY;
+
     @SerializedName("story_hash")
     public String storyHash;
 
@@ -178,6 +183,7 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_INFREQUENT, infrequent);
         values.put(DatabaseConstants.STORY_HAS_MODIFICATIONS, hasModifications);
         values.put(DatabaseConstants.STORY_CLUSTER_STORIES, DatabaseConstants.JsonHelper.toJson(clusterStories));
+        values.put(DatabaseConstants.STORY_PROMPT_CLASSIFIERS, PromptClassifierMatch.toJson(promptClassifiers));
 		return values;
 	}
 
@@ -214,6 +220,10 @@ public class Story implements Serializable {
 		story.hasModifications = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_HAS_MODIFICATIONS)) > 0;
         String clusterStoriesJson = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CLUSTER_STORIES));
         story.clusterStories = ClusterStory.fromJson(clusterStoriesJson);
+        int promptClassifiersIndex = cursor.getColumnIndex(DatabaseConstants.STORY_PROMPT_CLASSIFIERS);
+        story.promptClassifiers = promptClassifiersIndex < 0
+                ? PromptClassifierMatch.EMPTY
+                : PromptClassifierMatch.fromJson(cursor.getString(promptClassifiersIndex));
 		return story;
 	}
 
@@ -248,6 +258,7 @@ public class Story implements Serializable {
         copy.authors = authors;
         copy.feedId = feedId;
         copy.intelligence = intelligence;
+        copy.promptClassifiers = promptClassifiers;
         copy.storyHash = storyHash;
         copy.hasModifications = hasModifications;
         copy.lastReadTimestamp = lastReadTimestamp;
@@ -315,7 +326,20 @@ public class Story implements Serializable {
 		public int intelligencePrompt = 0;
 
         public int calcTotalIntel() {
-            // AI prompt classifier takes absolute priority
+            // Mirrors apps/analyzer/models.py:compute_story_score. A manual super dislike (-2)
+            // outranks everything, then an AI prompt match outranks the remaining manual scores.
+            int min = 0;
+            min = Math.min(min, intelligenceAuthors);
+            min = Math.min(min, intelligenceAuthorRegex);
+            min = Math.min(min, intelligenceTags);
+            min = Math.min(min, intelligenceTitle);
+            min = Math.min(min, intelligenceTitleRegex);
+            min = Math.min(min, intelligenceText);
+            min = Math.min(min, intelligenceTextRegex);
+            min = Math.min(min, intelligenceUrl);
+            min = Math.min(min, intelligenceUrlRegex);
+
+            if (min <= -2) return min;
             if (intelligencePrompt != 0) return intelligencePrompt;
 
             int max = 0;
@@ -329,18 +353,6 @@ public class Story implements Serializable {
             max = Math.max(max, intelligenceUrl);
             max = Math.max(max, intelligenceUrlRegex);
 
-            int min = 0;
-            min = Math.min(min, intelligenceAuthors);
-            min = Math.min(min, intelligenceAuthorRegex);
-            min = Math.min(min, intelligenceTags);
-            min = Math.min(min, intelligenceTitle);
-            min = Math.min(min, intelligenceTitleRegex);
-            min = Math.min(min, intelligenceText);
-            min = Math.min(min, intelligenceTextRegex);
-            min = Math.min(min, intelligenceUrl);
-            min = Math.min(min, intelligenceUrlRegex);
-
-            if (min <= -2) return min;
             if (max > 0) return max;
             if (min < 0) return min;
 
@@ -406,6 +418,7 @@ public class Story implements Serializable {
         if (!Arrays.deepEquals(s.friendsComments, friendsComments)) return false;
         if (!Arrays.deepEquals(s.friendsShares, friendsShares)) return false;
         if (!Arrays.deepEquals(s.clusterStories, clusterStories)) return false;
+        if (!Arrays.deepEquals(s.promptClassifiers, promptClassifiers)) return false;
         if (s.intelligence.calcTotalIntel() != intelligence.calcTotalIntel()) return false;
         return true;
     }

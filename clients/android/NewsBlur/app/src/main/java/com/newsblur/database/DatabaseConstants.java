@@ -52,6 +52,8 @@ public class DatabaseConstants {
     public static final String FEED_NOTIFICATION_TYPES = "notification_types";
     public static final String FEED_NOTIFICATION_FILTER = "notification_filter";
     public static final String FEED_FETCH_PENDING = "fetch_pending";
+    // Feed.java stories_last_month drives the AI classifier cost estimates, added in BlurDatabase.java version 12.
+    public static final String FEED_STORIES_LAST_MONTH = "stories_last_month";
 
 	public static final String SOCIALFEED_TABLE = "social_feeds";
 	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
@@ -111,6 +113,8 @@ public class DatabaseConstants {
     public static final String STORY_INFREQUENT = "infrequent";
     public static final String STORY_HAS_MODIFICATIONS = "has_modifications";
     public static final String STORY_CLUSTER_STORIES = "cluster_stories";
+    // JSON list of PromptClassifierMatch.kt entries, added in BlurDatabase.java version 12.
+    public static final String STORY_PROMPT_CLASSIFIERS = "prompt_classifiers";
 
     public static final String READING_SESSION_TABLE = "reading_session";
     public static final String READING_SESSION_STORY_HASH = "session_story_hash";
@@ -213,7 +217,8 @@ public class DatabaseConstants {
 		FEED_UPDATED_SECONDS + INTEGER + ", " +
         FEED_NOTIFICATION_TYPES + TEXT + ", " +
         FEED_NOTIFICATION_FILTER + TEXT + ", " +
-        FEED_FETCH_PENDING + TEXT +
+        FEED_FETCH_PENDING + TEXT + ", " +
+        FEED_STORIES_LAST_MONTH + INTEGER +
 		")";
 	
 	static final String USER_SQL = "CREATE TABLE " + USER_TABLE + " (" + 
@@ -289,7 +294,8 @@ public class DatabaseConstants {
         STORY_SEARCH_HIT + TEXT + ", " +
         STORY_THUMBNAIL_URL + TEXT + ", " +
         STORY_HAS_MODIFICATIONS + INTEGER + ", " +
-        STORY_CLUSTER_STORIES + TEXT +
+        STORY_CLUSTER_STORIES + TEXT + ", " +
+        STORY_PROMPT_CLASSIFIERS + TEXT +
         ")";
 
     static final String READING_SESSION_SQL = "CREATE TABLE " + READING_SESSION_TABLE + " (" +
@@ -372,6 +378,7 @@ public class DatabaseConstants {
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_HIGHLIGHTS, STORY_USER_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_HASH,
         STORY_LAST_READ_DATE, STORY_THUMBNAIL_URL, STORY_HAS_MODIFICATIONS, STORY_CLUSTER_STORIES,
+        STORY_PROMPT_CLASSIFIERS,
 	};
 
     private static final String STORY_COLUMNS = 

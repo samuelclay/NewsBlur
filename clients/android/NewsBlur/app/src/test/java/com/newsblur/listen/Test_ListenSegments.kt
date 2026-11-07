@@ -60,8 +60,8 @@ class Test_ListenSegments {
 
     @Test
     fun test_skips_stay_inside_the_story() {
-        assertEquals(0L, ListenSeek.target(5_000L, -ListenSeek.SKIP_BACK_MS, 60_000L))
-        assertEquals(35_000L, ListenSeek.target(5_000L, ListenSeek.SKIP_FORWARD_MS, 60_000L))
-        assertEquals(60_000L, ListenSeek.target(50_000L, ListenSeek.SKIP_FORWARD_MS, 60_000L))
+        assertEquals(0L, ListenSeek.target(5_000L, -ListenMediaSettings().skipBackMs, 60_000L))
+        assertEquals(35_000L, ListenSeek.target(5_000L, ListenMediaSettings().skipForwardMs, 60_000L))
+        assertEquals(60_000L, ListenSeek.target(50_000L, ListenMediaSettings().skipForwardMs, 60_000L))
     }
 }

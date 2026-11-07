@@ -80,6 +80,9 @@ class VoiceRecorder: NSObject, ObservableObject {
         if ListenPlayer.shared.wantsToPlay {
             ListenPlayer.shared.pause()
         }
+        if ListenMediaPlayer.shared.wantsToPlay {
+            ListenMediaPlayer.shared.pause()
+        }
 
         // Reset state
         error = nil

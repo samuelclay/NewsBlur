@@ -118,6 +118,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignTop="@id/reading_item_date"
                         android:layout_toEndOf="@id/reading_item_date"
+                        android:layout_marginEnd="16dp"
+                        android:ellipsize="end"
                         android:maxLines="1"
                         android:minWidth="80dp"
                         android:textSize="12sp"

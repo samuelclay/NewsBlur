@@ -33,6 +33,7 @@ from apps.analyzer.models import (
     MClassifierText,
     MClassifierTitle,
     MClassifierUrl,
+    apply_classifier_author_regex,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
@@ -2163,6 +2164,13 @@ class UserSubscription(models.Model):
                         "author": apply_classifier_authors(
                             classifier_authors, story, folder_feed_ids=folder_feed_map
                         ),
+                        "author_regex": (
+                            apply_classifier_author_regex(
+                                classifier_authors, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
+                        ),
                         "tags": apply_classifier_tags(
                             classifier_tags, story, folder_feed_ids=folder_feed_map
                         ),
@@ -2204,6 +2212,7 @@ class UserSubscription(models.Model):
 
                 max_score = max(
                     scores["author"],
+                    scores["author_regex"],
                     scores["tags"],
                     scores["title"],
                     scores["title_regex"],
@@ -2214,6 +2223,7 @@ class UserSubscription(models.Model):
                 )
                 min_score = min(
                     scores["author"],
+                    scores["author_regex"],
                     scores["tags"],
                     scores["title"],
                     scores["title_regex"],
@@ -2328,11 +2338,9 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
-        # AI prompt classifier takes absolute priority
-        prompt = scores.get("prompt", 0)
-        if prompt != 0:
-            return prompt
-
+        # models.py: Same order as apps/analyzer/models.py compute_story_score. A manual
+        # super dislike (-2) beats everything, the AI prompt included. Otherwise a
+        # non-zero AI prompt score beats every manual like and dislike.
         max_score = max(
             scores["author"],
             scores.get("author_regex", 0),
@@ -2358,7 +2366,12 @@ class UserSubscription(models.Model):
 
         if min_score <= -2:
             return min_score  # super downvote wins; keep -2 so clients can tell it from a -1 dislike
-        elif max_score > 0:
+
+        prompt = scores.get("prompt", 0)
+        if prompt != 0:
+            return prompt
+
+        if max_score > 0:
             return 1
         elif min_score < 0:
             return -1

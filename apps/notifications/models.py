@@ -1029,10 +1029,13 @@ class MUserClassifierNotification(mongo.Document):
                     # classify_stories is cache-aware: cheap cache reads when the
                     # feed fetch already classified these stories, real AI work
                     # only if that step was skipped or raced ahead of this task.
-                    MClassifierPrompt.classify_stories(user_id, stories, feed_ids=[feed_id])
+                    # It skips folder prompts whose folder doesn't hold this feed.
+                    MClassifierPrompt.classify_stories(
+                        user_id, stories, feed_ids=[feed_id], folder_feed_ids=folder_feed_ids
+                    )
                     for notif in prompt_notifs:
                         prompt = notif.resolve_prompt_classifier()
-                        if not prompt:
+                        if not prompt or not prompt.applies_to_feed(feed_id, folder_feed_ids):
                             continue
                         prompt_scores[notif.pk] = MClassifierPrompt.get_cached_scores(
                             user_id, str(prompt.id), feed_id, story_hashes

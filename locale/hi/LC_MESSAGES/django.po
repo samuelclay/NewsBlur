@@ -1550,6 +1550,12 @@ msgstr "लेख सहेजा नहीं जा सका, नहीं �
 msgid "Could not unsave story, not found"
 msgstr "लेख को सहेजे गए लेखों से हटाया नहीं जा सका; लेख नहीं मिला"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe से संपर्क नहीं हो सका। कृपया फिर से कोशिश करें।"
+
+msgid "Couldn't save the position"
+msgstr "स्थिति सहेजी नहीं जा सकी"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "कवरेज अवधि: %(start)s &ndash; %(end)s"
@@ -3062,6 +3068,9 @@ msgstr "अमान्य छवि फ़ाइल"
 msgid "Invalid mute_duration_days"
 msgstr "अमान्य mute_duration_days"
 
+msgid "Invalid position"
+msgstr "अमान्य स्थिति"
+
 msgid "Invalid request identifier"
 msgstr "अनुरोध पहचानकर्ता अमान्य है"
 
@@ -4205,6 +4214,9 @@ msgstr "कोई प्रशिक्षण प्रणाली नहीं
 msgid "No uncategorized archives found"
 msgstr "कोई अवर्गीकृत संग्रह नहीं मिला"
 
+msgid "No usage billing set up."
+msgstr "उपयोग-आधारित बिलिंग सेट अप नहीं है।"
+
 msgid "No user has that email address."
 msgstr "इस ईमेल पते से कोई उपयोगकर्ता जुड़ा नहीं है।"
 
@@ -4443,6 +4455,9 @@ msgstr "कृपया कीवर्ड खोज क्वेरी दर�
 
 msgid "Please enter in an email address."
 msgstr "कृपया ईमेल पता दर्ज करें।"
+
+msgid "Please log in to NewsBlur again."
+msgstr "कृपया NewsBlur में फिर से लॉग इन करें।"
 
 msgid "Please login to continue."
 msgstr "जारी रखने के लिए कृपया लॉग इन करें।"
@@ -5821,6 +5836,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "धन्यवाद!"
 
+msgid "That item isn't playing"
+msgstr "वह आइटम चल नहीं रहा है"
+
 msgid "That part of the story doesn't exist."
 msgstr "लेख का यह हिस्सा मौजूद नहीं है।"
 
@@ -6394,6 +6412,9 @@ msgstr "उपयोग बिलिंग सक्षम नहीं है"
 msgid "Usage billing required for AI classifiers"
 msgstr "AI क्लासिफ़ायर के लिए उपयोग-आधारित बिलिंग आवश्यक है"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "उपयोग-आधारित बिलिंग अभी उपलब्ध नहीं है।"
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "उपयोग"
@@ -6406,6 +6427,9 @@ msgstr ""
 "अपने पसंदीदा रीडिंग ऐप्स के साथ NewsBlur का उपयोग करें। Reeder, ReadKit, Unread, lire, Fiery Feeds, Newsify"
 " और कई अन्य ऐप्स के लिए पूर्ण सिंक समर्थन। आपकी पढ़ने की स्थिति, सहेजे गए लेख और प्रशिक्षण सभी ऐप्स में "
 "सिंक होते हैं। NewsBlur का ओपन API दर्जनों तृतीय-पक्ष क्लाइंट को शक्ति देता है।"
+
+msgid "Use POST"
+msgstr "POST का उपयोग करें"
 
 msgid "Use prompt templates"
 msgstr "प्रॉम्प्ट टेम्पलेट इस्तेमाल करें"

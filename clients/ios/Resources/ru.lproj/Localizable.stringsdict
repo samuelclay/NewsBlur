@@ -82,6 +82,26 @@
 			<string>%@ комментариев</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ фильтра содержимого</string>
+			<key>many</key>
+			<string>%@ фильтров содержимого</string>
+			<key>one</key>
+			<string>%@ фильтр содержимого</string>
+			<key>other</key>
+			<string>Фильтры содержимого: %@</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -260,6 +280,26 @@
 			<string>Сегодня осталось %@ бесплатное предварительное прослушивание статьи</string>
 			<key>other</key>
 			<string>Сегодня осталось бесплатных предпросмотров статей: %@</string>
+		</dict>
+	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ фильтра изображений</string>
+			<key>many</key>
+			<string>%@ фильтра изображений</string>
+			<key>one</key>
+			<string>Фильтр изображений: %@</string>
+			<key>other</key>
+			<string>Фильтры изображений: %@</string>
 		</dict>
 	</dict>
 	<key>%@ match</key>
@@ -442,6 +482,26 @@
 			<string>Осталось %@ статей</string>
 		</dict>
 	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ статьи/мес.</string>
+			<key>many</key>
+			<string>%@ статей/мес.</string>
+			<key>one</key>
+			<string>%@ статья/мес.</string>
+			<key>other</key>
+			<string>%@ статей/мес.</string>
+		</dict>
+	</dict>
 	<key>%@ stories/month</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -622,6 +682,26 @@
 			<string>Также опубликовано на %@ других сайтах</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Назад на %@ секунды</string>
+			<key>many</key>
+			<string>Назад на %@ секунд</string>
+			<key>one</key>
+			<string>Назад на %@ секунду</string>
+			<key>other</key>
+			<string>Назад на %@ секунд</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -660,6 +740,26 @@
 			<string>Подписчик</string>
 			<key>other</key>
 			<string>Подписчики</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Вперёд на %@ секунды</string>
+			<key>many</key>
+			<string>Вперёд на %@ секунд</string>
+			<key>one</key>
+			<string>Вперёд на %@ секунду</string>
+			<key>other</key>
+			<string>Вперёд на %@ секунд</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
@@ -960,6 +1060,26 @@
 			<string>Вы подписаны на %@ сайт</string>
 			<key>other</key>
 			<string>Вы подписаны на %@ сайтов</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>✓ Под фильтр подходят %2$@ из %1$@ изображений</string>
+			<key>many</key>
+			<string>✓ Под фильтр подходят %2$@ из %1$@ изображений</string>
+			<key>one</key>
+			<string>✓ %2$@ из %1$@ изображения соответствует этому фильтру</string>
+			<key>other</key>
+			<string>✓ %2$@ из %1$@ изображений соответствуют этому фильтру</string>
 		</dict>
 	</dict>
 </dict>

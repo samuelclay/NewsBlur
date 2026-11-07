@@ -1553,6 +1553,12 @@ msgstr "Tidak dapat menyimpan artikel, tidak ditemukan"
 msgid "Could not unsave story, not found"
 msgstr "Tidak dapat membatalkan penyimpanan artikel, artikel tidak ditemukan"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Tidak dapat terhubung ke Stripe. Silakan coba lagi."
+
+msgid "Couldn't save the position"
+msgstr "Posisi tidak dapat disimpan"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periode cakupan: %(start)s &ndash; %(end)s"
@@ -3080,6 +3086,9 @@ msgstr "Berkas gambar tidak valid"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days tidak valid"
 
+msgid "Invalid position"
+msgstr "Posisi tidak valid"
+
 msgid "Invalid request identifier"
 msgstr "ID permintaan tidak valid"
 
@@ -4238,6 +4247,9 @@ msgstr "Tanpa sistem pelatihan"
 msgid "No uncategorized archives found"
 msgstr "Tidak ditemukan arsip tanpa kategori"
 
+msgid "No usage billing set up."
+msgstr "Penagihan berdasarkan penggunaan belum disiapkan."
+
 msgid "No user has that email address."
 msgstr "Tidak ada pengguna dengan alamat email tersebut."
 
@@ -4474,6 +4486,9 @@ msgstr "Masukkan kueri pencarian kata kunci."
 
 msgid "Please enter in an email address."
 msgstr "Masukkan alamat email."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Silakan masuk kembali ke NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Silakan masuk untuk melanjutkan."
@@ -5861,6 +5876,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Terima kasih!"
 
+msgid "That item isn't playing"
+msgstr "Item itu tidak sedang diputar"
+
 msgid "That part of the story doesn't exist."
 msgstr "Bagian artikel tersebut tidak ada."
 
@@ -6439,6 +6457,9 @@ msgstr "Penagihan berdasarkan pemakaian tidak diaktifkan"
 msgid "Usage billing required for AI classifiers"
 msgstr "Penagihan penggunaan diperlukan untuk pengklasifikasi AI"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "Penagihan berdasarkan penggunaan tidak tersedia saat ini."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Penggunaan"
@@ -6451,6 +6472,9 @@ msgstr ""
 "Gunakan NewsBlur dengan aplikasi membaca favorit Anda. Dukungan sinkronisasi penuh untuk Reeder, ReadKit, "
 "Unread, lire, Fiery Feeds, Newsify, dan banyak lagi. Status baca, artikel tersimpan, dan pelatihan Anda "
 "disinkronkan di semua aplikasi. API terbuka NewsBlur mendukung puluhan aplikasi pihak ketiga."
+
+msgid "Use POST"
+msgstr "Gunakan POST"
 
 msgid "Use prompt templates"
 msgstr "Gunakan templat prompt"

@@ -16,8 +16,9 @@ import com.google.common.util.concurrent.ListenableFuture
 /**
  * ListenSessionPlayer.kt is the player ListenPlaybackService.kt hands to the media session. It shows the lock
  * screen, notification and Bluetooth controls one story with its whole duration, while ListenManager.kt plays
- * the story's segments back to back on an ExoPlayer underneath. The next playlist item is the next unread
- * story, so "next" continues the list just like auto-continue does.
+ * the story's segments back to back on an ExoPlayer underneath, or a podcast episode's file straight through.
+ * The next playlist item is the first in Up Next, else the next unread story, so "next" continues the list just
+ * like auto-continue does.
  */
 @OptIn(UnstableApi::class)
 class ListenSessionPlayer(
@@ -41,8 +42,9 @@ class ListenSessionPlayer(
                     snapshot.playWhenReady,
                     Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST,
                 ).setPlaybackParameters(PlaybackParameters(snapshot.speed))
-                .setSeekBackIncrementMs(ListenSeek.SKIP_BACK_MS)
-                .setSeekForwardIncrementMs(ListenSeek.SKIP_FORWARD_MS)
+                // The web media player's skip intervals, for Bluetooth and car controls that seek back and forward.
+                .setSeekBackIncrementMs(snapshot.skipBackMs)
+                .setSeekForwardIncrementMs(snapshot.skipForwardMs)
                 .setAudioAttributes(AUDIO_ATTRIBUTES)
 
         val story = snapshot.story
@@ -54,11 +56,12 @@ class ListenSessionPlayer(
         }
 
         val playlist = mutableListOf(storyItem(story, snapshot))
-        // SimpleBasePlayer.java rejects a playlist that holds the same story twice.
-        snapshot.next?.takeIf { it.storyHash != story.storyHash }?.let { next ->
+        // SimpleBasePlayer.java rejects a playlist that holds the same entry twice; a story read aloud and its own
+        // podcast episode are different entries.
+        snapshot.next?.takeIf { it.entryId != story.entryId }?.let { next ->
             playlist +=
                 MediaItemData
-                    .Builder(next.storyHash)
+                    .Builder(next.entryId)
                     .setMediaItem(
                         MediaItem
                             .Builder()
@@ -107,13 +110,14 @@ class ListenSessionPlayer(
                 .setAlbumTitle(story.feedTitle)
                 .setIsPlayable(true)
                 .setIsBrowsable(false)
+                .apply { if (story.media != null) setMediaType(MediaMetadata.MEDIA_TYPE_PODCAST_EPISODE) }
                 .apply {
                     snapshot.artwork?.let {
                         setArtworkData(it, MediaMetadata.PICTURE_TYPE_FRONT_COVER)
                     }
                 }.build()
         return MediaItemData
-            .Builder(story.storyHash)
+            .Builder(story.entryId)
             .setMediaItem(
                 MediaItem
                     .Builder()
@@ -213,6 +217,8 @@ class ListenSessionSnapshot(
     val speed: Float,
     val artwork: ByteArray?,
     val discontinuity: Int,
+    val skipBackMs: Long,
+    val skipForwardMs: Long,
 ) {
     val hasNext: Boolean
         get() = next != null
