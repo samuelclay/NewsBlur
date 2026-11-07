@@ -7,6 +7,7 @@
 //
 
 import AVFoundation
+import CoreAudio
 import MediaToolbox
 
 /// ListenVoiceBoost.swift makes Listen's voice louder than 100% when the Music / Voice balance (ListenMusicCard.swift)
