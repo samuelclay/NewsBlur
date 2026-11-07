@@ -1,6 +1,10 @@
 package com.newsblur.listen
 
+import android.content.Context
 import android.media.AudioManager
+import android.os.Handler
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -14,6 +18,7 @@ import org.junit.Test
  */
 class Test_ListenAudioFocus {
     private class FakeFocusSystem : ListenFocusSystem {
+        var grantsFocus = true
         var holdsFocus = false
         var requests = 0
         var focusChange: ((Int) -> Unit)? = null
@@ -23,8 +28,8 @@ class Test_ListenAudioFocus {
         override fun requestFocus(onChange: (Int) -> Unit): Boolean {
             requests += 1
             focusChange = onChange
-            holdsFocus = true
-            return true
+            holdsFocus = grantsFocus
+            return grantsFocus
         }
 
         override fun abandonFocus() {
@@ -190,5 +195,34 @@ class Test_ListenAudioFocus {
         system.modeWatcher?.invoke(AudioManager.MODE_IN_CALL)
         focus.release()
         assertNull(system.modeWatcher)
+    }
+
+    @Test
+    fun test_refused_focus_does_not_restart_call_watching_after_reentrant_pause() {
+        system.grantsFocus = false
+        lateinit var reentrant: ListenAudioFocus
+        reentrant =
+            ListenAudioFocus(
+                system,
+                onPause = { reentrant.update(ListenFocusMode.DUCK_OTHERS, false, 0L) },
+                onResume = { resumes += 1 },
+            )
+        reentrant.update(ListenFocusMode.DUCK_OTHERS, true, 0L)
+        assertNull("A refused play stays paused without a call-end resume", system.modeWatcher)
+        assertEquals(0, resumes)
+    }
+
+    @Test
+    fun test_android_mode_listener_delivers_an_already_active_call() {
+        // Test_ListenAudioFocus.kt exercises the Android 12+ adapter, whose listener only reports later changes.
+        val context = mockk<Context>()
+        val manager = mockk<AudioManager>(relaxed = true)
+        val handler = mockk<Handler>(relaxed = true)
+        every { context.getSystemService(AudioManager::class.java) } returns manager
+        every { manager.mode } returns AudioManager.MODE_IN_COMMUNICATION
+        val adapter = AndroidListenFocusSystem(context, handler)
+        val modes = mutableListOf<Int>()
+        adapter.watchModeChanges { modes += it }
+        assertEquals(listOf(AudioManager.MODE_IN_COMMUNICATION), modes)
     }
 }

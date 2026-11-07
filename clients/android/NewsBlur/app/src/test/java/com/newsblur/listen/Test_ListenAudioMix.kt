@@ -11,6 +11,18 @@ import kotlin.math.log10
  * iOS's ListenAudioMix.swift.
  */
 class Test_ListenAudioMix {
+    @Test
+    fun test_podcasts_keep_exclusive_focus_and_normal_volume_without_changing_narration_settings() {
+        for (volume in listOf(0.01, 10.0)) {
+            val saved = ListenAudioMixSettings(playsOverOtherAudio = true, voiceVolume = volume)
+            val podcast = saved.forPlayback(isMedia = true)
+            assertEquals(ListenFocusMode.EXCLUSIVE, podcast.focusMode)
+            assertEquals(1.0, podcast.effectiveVoiceVolume, 0.0)
+            assertEquals(ListenFocusMode.DUCK_OTHERS, saved.forPlayback(isMedia = false).focusMode)
+            assertEquals(volume, saved.forPlayback(isMedia = false).effectiveVoiceVolume, 0.0)
+        }
+    }
+
     private fun decibels(volume: Double): Double = 20 * log10(volume)
 
     @Test

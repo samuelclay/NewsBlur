@@ -1175,9 +1175,9 @@ final class ListenPlayer: NSObject, ObservableObject {
 
     /// VoiceRecorder.swift (Ask AI) switches the session to recording, so every start restores spoken playback.
     /// Listen plays over other audio, lowering it while the voice speaks, when ListenAudioMix.swift says it mixes.
-    func activateAudioSession() {
+    func activateAudioSession(forNarration: Bool = true) {
         let session = AVAudioSession.sharedInstance()
-        let configuration = ListenAudioMix.sessionConfiguration(mixes: ListenAudioMix.playsOverOtherAudio,
+        let configuration = ListenAudioMix.sessionConfiguration(mixes: forNarration && ListenAudioMix.playsOverOtherAudio,
                                                                 lowersMusic: ListenAudioMix.lowersMusicWhileSpeaking)
         do {
             try session.setCategory(.playback, mode: .spokenAudio, policy: configuration.policy,
@@ -1197,6 +1197,8 @@ final class ListenPlayer: NSObject, ObservableObject {
     /// Playing over other audio or lowering the music changed, or a voice sample ended: the voice takes its volume,
     /// and the session switches between mixing and not while the voice plays, or lets go while it doesn't.
     func audioMixDidChange() {
+        // ListenMediaPlayer.swift owns the session while a podcast is active. Mixing belongs to narration only.
+        guard !ListenMediaPlayer.shared.isActive else { return }
         applyVoiceVolume()
         if isActive, wantsToPlay {
             activateAudioSession()
@@ -1209,7 +1211,8 @@ final class ListenPlayer: NSObject, ObservableObject {
     /// story lets go of the audio session and the music comes back up. A voice sample playing in Listen Settings
     /// keeps it (ListenVoiceSettingsModel.swift).
     private func yieldAudioSessionWhileMixing() {
-        guard ListenAudioMix.playsOverOtherAudio, !ListenVoicePreviewPlayer.isPlayingSample else { return }
+        guard ListenAudioMix.playsOverOtherAudio, !ListenMediaPlayer.shared.isActive,
+              !ListenVoicePreviewPlayer.isPlayingSample else { return }
         do {
             try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         } catch {

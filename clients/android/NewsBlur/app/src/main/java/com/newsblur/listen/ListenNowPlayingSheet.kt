@@ -236,15 +236,17 @@ fun ListenNowPlayingSheet(
 
             if (!state.isMedia) ListenUsageFooter(usage = state.usage, colors = colors, onUpgrade = onUpgrade)
 
-            Spacer(Modifier.height(8.dp))
-            ListenMusicSection(
-                settings = audioMix,
-                colors = colors,
-                onCollapsed = onMusicSectionCollapsed,
-                onPlayOverOtherAudio = onPlayOverOtherAudio,
-                onLowerMusic = onLowerMusic,
-                onVoiceVolume = onVoiceVolume,
-            )
+            if (!state.isMedia) {
+                Spacer(Modifier.height(8.dp))
+                ListenMusicSection(
+                    settings = audioMix,
+                    colors = colors,
+                    onCollapsed = onMusicSectionCollapsed,
+                    onPlayOverOtherAudio = onPlayOverOtherAudio,
+                    onLowerMusic = onLowerMusic,
+                    onVoiceVolume = onVoiceVolume,
+                )
+            }
 
             Spacer(Modifier.height(12.dp))
             ListenUpNextSection(

@@ -36,6 +36,18 @@ final class Test_ListenAudioMix: XCTestCase {
         XCTAssertEqual(alone.options, [])
     }
 
+    func test_podcasts_keep_an_exclusive_session_after_narration_mixing_is_enabled() {
+        // ListenAudioMixTests.swift checks the real podcast session entry point after the narration preference changes.
+        UserDefaults.standard.set(true, forKey: ListenAudioMix.playOverOtherAudioKey)
+        UserDefaults.standard.set(true, forKey: ListenAudioMix.lowersMusicKey)
+        ListenMediaPlayer.Environment.app.activateAudioSession()
+        let session = AVAudioSession.sharedInstance()
+        XCTAssertEqual(session.routeSharingPolicy, .longFormAudio)
+        XCTAssertFalse(session.categoryOptions.contains(.duckOthers))
+        XCTAssertFalse(session.categoryOptions.contains(.mixWithOthers))
+        try? session.setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
     func test_playing_over_other_audio_lowers_it_under_the_voice_only_when_asked() {
         XCTAssertTrue(ListenAudioMix.lowersMusicWhileSpeaking, "Lowering the music is on by default")
         let lowering = ListenAudioMix.sessionConfiguration(mixes: true, lowersMusic: true)

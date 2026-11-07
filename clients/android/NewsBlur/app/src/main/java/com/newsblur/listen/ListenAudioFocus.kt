@@ -80,7 +80,7 @@ class ListenAudioFocus(
         wasSpeaking = speaking
         if (mode == ListenFocusMode.DUCK_OTHERS && (speaking || pausedByFocusLoss)) {
             cancelAbandon()
-            if (!holdsFocus && !lostFocusToOtherApp) requestFocus()
+            if (!holdsFocus && !lostFocusToOtherApp && !requestFocus()) return
         } else if (holdsFocus) {
             if (mode == ListenFocusMode.DUCK_OTHERS && abandonDelayMs > 0L) {
                 if (!abandonScheduled) {
@@ -111,13 +111,14 @@ class ListenAudioFocus(
         abandon()
     }
 
-    private fun requestFocus() {
+    private fun requestFocus(): Boolean {
         if (system.requestFocus(::onFocusChange)) {
             holdsFocus = true
         } else {
             // ListenAudioFocus.kt: focus is refused during a call, and the voice shouldn't play over one.
             onPause()
         }
+        return holdsFocus
     }
 
     private fun abandon() {
@@ -205,11 +206,11 @@ interface ListenFocusSystem {
  * ListenAudioFocus.kt's [ListenFocusSystem] on a device. The audio mode has a change listener from Android 12;
  * before that it's checked twice a second while Listen watches for calls.
  */
-private class AndroidListenFocusSystem(
+internal class AndroidListenFocusSystem(
     context: Context,
+    private val handler: Handler = Handler(Looper.getMainLooper()),
 ) : ListenFocusSystem {
     private val audioManager = context.getSystemService(AudioManager::class.java)
-    private val handler = Handler(Looper.getMainLooper())
     private var request: AudioFocusRequest? = null
     private var modeListener: Any? = null
     private var pollMode: Runnable? = null
@@ -260,10 +261,11 @@ private class AndroidListenFocusSystem(
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    private fun watchModeChanges(onMode: (Int) -> Unit) {
+    internal fun watchModeChanges(onMode: (Int) -> Unit) {
         val listener = AudioManager.OnModeChangedListener { mode -> onMode(mode) }
         audioManager.addOnModeChangedListener({ command -> handler.post(command) }, listener)
         modeListener = listener
+        onMode(audioManager.mode)
     }
 
     @RequiresApi(Build.VERSION_CODES.S)

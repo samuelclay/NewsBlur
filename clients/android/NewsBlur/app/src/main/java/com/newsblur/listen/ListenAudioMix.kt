@@ -32,6 +32,9 @@ data class ListenAudioMixSettings(
     val voiceVolume: Double = 1.0,
     val isMusicSectionCollapsed: Boolean = false,
 ) {
+    /** ListenManager.kt applies music mixing to narration only, preserving normal podcast focus and volume. */
+    fun forPlayback(isMedia: Boolean): ListenAudioMixSettings = if (isMedia) copy(playsOverOtherAudio = false) else this
+
     /** The balance only applies while Listen plays over other audio, where its slider is shown. */
     val effectiveVoiceVolume: Double
         get() = ListenAudioMixMath.effectiveVoiceVolume(playsOverOtherAudio, voiceVolume)

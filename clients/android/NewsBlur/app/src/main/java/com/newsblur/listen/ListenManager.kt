@@ -823,6 +823,7 @@ class ListenManager
                 it.stop()
                 it.clearMediaItems()
             }
+            applyAudioMix()
             // A queued story or episode leaves Up Next as it starts playing.
             if (ListenUpNextQueue.containsEntry(upNextQueue, target.entryId)) removeQueued(target.entryId)
             // An episode reads the playback state itself, for where to resume (loadEpisode).
@@ -1151,7 +1152,7 @@ class ListenManager
             player.addListener(exoListener)
             exoPlayer = player
             voiceBoost.attach(player.audioSessionId)
-            voiceBoost.setGain(ListenAudioMixMath.boostMillibels(audioMix.current().effectiveVoiceVolume))
+            voiceBoost.setGain(ListenAudioMixMath.boostMillibels(playbackAudioMix.effectiveVoiceVolume))
             return player
         }
 
@@ -1160,8 +1161,11 @@ class ListenManager
          * (ListenAudioMix.kt), where ListenAudioFocus.kt handles focus instead; the voice preview in
          * ListenVoiceSettingsViewModel.kt follows the same rule.
          */
+        private val playbackAudioMix: ListenAudioMixSettings
+            get() = audioMix.current().forPlayback(isMedia = story?.media != null)
+
         val takesAudioFocus: Boolean
-            get() = audioMix.current().focusMode == ListenFocusMode.EXCLUSIVE
+            get() = playbackAudioMix.focusMode == ListenFocusMode.EXCLUSIVE
 
         /** The Music section changed: ExoPlayer's focus handling, the voice's volume and its boost follow. */
         private fun applyAudioMix() {
@@ -1173,12 +1177,12 @@ class ListenManager
                 }
                 player.volume = playerVolume()
             }
-            voiceBoost.setGain(ListenAudioMixMath.boostMillibels(audioMix.current().effectiveVoiceVolume))
+            voiceBoost.setGain(ListenAudioMixMath.boostMillibels(playbackAudioMix.effectiveVoiceVolume))
             updateAudioFocus()
         }
 
         /** The preview fade times the balance's share of the voice volume (the boost does the rest). */
-        private fun playerVolume(): Float = previewVolume() * ListenAudioMixMath.playerVolume(audioMix.current().effectiveVoiceVolume)
+        private fun playerVolume(): Float = previewVolume() * ListenAudioMixMath.playerVolume(playbackAudioMix.effectiveVoiceVolume)
 
         /** While Listen plays over other audio, ListenAudioFocus.kt lowers that audio only while the voice plays. */
         private fun updateAudioFocus() {
@@ -1190,7 +1194,7 @@ class ListenManager
                     phase != ListenPhase.PREVIEW_ENDED &&
                     phase != ListenPhase.ERROR
             audioFocus.update(
-                mode = audioMix.current().focusMode,
+                mode = playbackAudioMix.focusMode,
                 speaking = speaking,
                 abandonDelayMs = if (phase == ListenPhase.ENDED) AUTO_CONTINUE_FOCUS_GRACE_MS else 0L,
             )
