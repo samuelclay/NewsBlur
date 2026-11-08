@@ -154,7 +154,7 @@ NEWSBLUR.ReaderClassifierTrainer = function (options) {
     this.all_classifiers_data = null;
     this.manage_dirty_feeds = {};
     // Manage tab filter state
-    this.manage_filter_sentiment = 'all'; // 'all', 'like', 'dislike'
+    this.manage_filter_sentiment = 'all'; // 'all', 'like', 'dislike', 'hide'
     this.manage_filter_types = 'all'; // 'all' or specific type: 'title', 'text', 'tag', 'author', 'feed', 'url'
     this.manage_filter_scope = 'all'; // 'all', 'feed', 'folder', 'global'
     this.manage_filter_feed = null; // null = all feeds/folders, or specific feed_id/folder path
@@ -5521,6 +5521,7 @@ var classifier_prototype = {
             all: 0,
             likes: 0,
             dislikes: 0,
+            hides: 0,
             title: 0,
             author: 0,
             tag: 0,
@@ -5541,9 +5542,12 @@ var classifier_prototype = {
 
         var countItems = function (items, type, feed_id) {
             _.each(items || [], function (item) {
+                // Hide is the super dislike (score <= -2) and gets its own bucket, so
+                // Likes + Dislikes + Hide add up to All in the sentiment filter
                 var is_like = item.score > 0;
-                var is_dislike = item.score < 0;
-                var sentiment = is_like ? 'like' : (is_dislike ? 'dislike' : 'neutral');
+                var is_hide = item.score <= -2;
+                var is_dislike = item.score < 0 && !is_hide;
+                var sentiment = is_like ? 'like' : (is_hide ? 'hide' : (is_dislike ? 'dislike' : 'neutral'));
                 var item_scope = item.scope || 'feed';
 
                 var sentiment_match = !sentiment_filter || sentiment_filter === 'all' || sentiment_filter === sentiment;
@@ -5585,6 +5589,7 @@ var classifier_prototype = {
                     counts[type]++;
                     if (is_like) counts.likes++;
                     if (is_dislike) counts.dislikes++;
+                    if (is_hide) counts.hides++;
                 }
                 // Scope counts: filtered by sentiment, type, feed, search (but NOT scope)
                 if (sentiment_match && type_match && feed_match && search_match) {
@@ -5665,6 +5670,7 @@ var classifier_prototype = {
             sentiment_all: sentiment_counts.all,
             sentiment_likes: sentiment_counts.likes,
             sentiment_dislikes: sentiment_counts.dislikes,
+            sentiment_hides: sentiment_counts.hides,
             // Type control counts (filtered by sentiment + scope)
             type_all: type_counts.all,
             type_title: type_counts.title,
@@ -5698,6 +5704,7 @@ var classifier_prototype = {
         updateCount('.NB-manage-filter-sentiment-all', counts.sentiment_all);
         updateCount('.NB-manage-filter-sentiment-like', counts.sentiment_likes);
         updateCount('.NB-manage-filter-sentiment-dislike', counts.sentiment_dislikes);
+        updateCount('.NB-manage-filter-sentiment-hide', counts.sentiment_hides);
 
         // Update type control counts
         updateCount('.NB-manage-filter-type-all', counts.type_all);
@@ -5834,6 +5841,18 @@ var classifier_prototype = {
                             $.make('span', { className: 'NB-manage-filter-icon NB-icon-dislike' }),
                             $.make('span', { className: 'NB-type-label' }, gettext('Dislikes')),
                             $.make('span', { className: 'NB-type-count' }, counts.sentiment_dislikes)
+                        ]),
+                        $.make('li', {
+                            className: 'NB-manage-filter-sentiment-hide' + (this.manage_filter_sentiment === 'hide' ? ' NB-active' : '') + (counts.sentiment_hides === 0 ? ' NB-zero-count' : ''),
+                            'data-sentiment': 'hide'
+                        }, [
+                            // Two stacked thumbs down, the same hide icon the Add form and filter banner use
+                            $.make('span', { className: 'NB-manage-filter-icon NB-icon-hide' }, [
+                                $.make('span', { className: 'NB-icon-hide-back' }),
+                                $.make('span', { className: 'NB-icon-hide-front' })
+                            ]),
+                            $.make('span', { className: 'NB-type-label' }, gettext('Hide')),
+                            $.make('span', { className: 'NB-type-count' }, counts.sentiment_hides)
                         ])
                     ])
                 ]),
@@ -5987,7 +6006,8 @@ var classifier_prototype = {
             var feed_id = $item.data('feed-id');
             var item_scope = $item.data('scope') || 'feed';
             var value = String($item.data('value') || '').toLowerCase();
-            var sentiment = score > 0 ? 'like' : 'dislike';
+            // Mirrors count_classifiers: hide is score <= -2, dislike is -1, like is positive
+            var sentiment = score > 0 ? 'like' : (score <= -2 ? 'hide' : 'dislike');
 
             var type_match = self.manage_filter_types === 'all' || self.manage_filter_types === type;
             var sentiment_match = self.manage_filter_sentiment === 'all' || self.manage_filter_sentiment === sentiment;
