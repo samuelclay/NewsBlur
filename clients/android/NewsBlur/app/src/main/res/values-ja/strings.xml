@@ -711,7 +711,6 @@
     <string name="intel_feed_header">この配信元のすべての記事</string>
     <string name="intel_super_dislike">一致する記事を非表示</string>
     <string name="explainer_super_dislike">非表示</string>
-    <string name="explainer_ai_filter">AIフィルター</string>
     <string name="explainer_like">いいね</string>
     <string name="explainer_dislike">低評価</string>
     <string name="explainer_beats">＞</string>
@@ -719,7 +718,6 @@
     <string name="explainer_example1_result">記事がフォーカス表示に表示されます</string>
     <string name="explainer_example2_header">「非表示」は、「いいね」も含めてすべてに優先されます</string>
     <string name="explainer_example2_result">記事は常に非表示</string>
-    <string name="explainer_example3_header">AIフィルターは「いいね」と「低評価」を上書きしますが、「非表示」は上書きしません</string>
     <string name="trainer_question_story">この記事のどんなところが 👍 %1$s で、どんなところが 👎 %2$s ですか？</string>
     <string name="trainer_question_site">このサイトのどんなところが 👍 %1$s で、どんなところが 👎 %2$s ですか？</string>
     <string name="trainer_question_like">いいね</string>

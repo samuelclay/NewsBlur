@@ -719,7 +719,6 @@ om over de wereld te praten.</string>
     <string name="intel_feed_header">Alles van deze uitgever</string>
     <string name="intel_super_dislike">Overeenkomende artikelen verbergen</string>
     <string name="explainer_super_dislike">Verbergen</string>
-    <string name="explainer_ai_filter">AI-filter</string>
     <string name="explainer_like">Vind ik leuk</string>
     <string name="explainer_dislike">Vind ik niet leuk</string>
     <string name="explainer_beats">wint van</string>
@@ -727,7 +726,6 @@ om over de wereld te praten.</string>
     <string name="explainer_example1_result">Artikel wordt weergegeven in de focusweergave</string>
     <string name="explainer_example2_header">‘Verbergen’ wint van alles, zelfs van ‘Vind ik leuk’</string>
     <string name="explainer_example2_result">Artikel is altijd verborgen</string>
-    <string name="explainer_example3_header">Een AI-filter overschrijft Vind ik leuk en Vind ik niet leuk, maar niet Verbergen</string>
     <string name="trainer_question_story">Wat vind je 👍 %1$s en 👎 %2$s aan dit artikel?</string>
     <string name="trainer_question_site">Wat vind je 👍 %1$s en 👎 %2$s aan deze site?</string>
     <string name="trainer_question_like">Vind ik leuk</string>

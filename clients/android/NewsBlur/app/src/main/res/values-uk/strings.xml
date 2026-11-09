@@ -735,7 +735,6 @@
     <string name="intel_feed_header">Усе від видавця</string>
     <string name="intel_super_dislike">Приховати відповідні статті</string>
     <string name="explainer_super_dislike">Приховати</string>
-    <string name="explainer_ai_filter">Фільтр ШІ</string>
     <string name="explainer_like">Подобається</string>
     <string name="explainer_dislike">Не подобається</string>
     <string name="explainer_beats">переважає</string>
@@ -743,7 +742,6 @@
     <string name="explainer_example1_result">Стаття відображається в режимі «Фокус»</string>
     <string name="explainer_example2_header">«Приховати» переважає все, навіть «Подобається»</string>
     <string name="explainer_example2_result">Стаття завжди прихована</string>
-    <string name="explainer_example3_header">Фільтр ШІ має вищий пріоритет за «Подобається» й «Не подобається», але не за «Приховати»</string>
     <string name="trainer_question_story">Що вам 👍 %1$s і 👎 %2$s у цій статті?</string>
     <string name="trainer_question_site">Що вам 👍 %1$s і 👎 %2$s на цьому сайті?</string>
     <string name="trainer_question_like">подобається</string>

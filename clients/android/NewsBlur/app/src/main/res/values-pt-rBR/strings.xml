@@ -727,7 +727,6 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="intel_feed_header">Tudo deste site</string>
     <string name="intel_super_dislike">Ocultar artigos correspondentes</string>
     <string name="explainer_super_dislike">Ocultar</string>
-    <string name="explainer_ai_filter">Filtro de IA</string>
     <string name="explainer_like">Gostei</string>
     <string name="explainer_dislike">Não gostei</string>
     <string name="explainer_beats">vence</string>
@@ -735,7 +734,6 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="explainer_example1_result">O artigo aparece na visualização Foco</string>
     <string name="explainer_example2_header">“Ocultar” se sobrepõe a tudo, até a “Gostei”</string>
     <string name="explainer_example2_result">O artigo fica sempre oculto</string>
-    <string name="explainer_example3_header">Um filtro de IA prevalece sobre Gostei e Não gostei, mas não sobre Ocultar</string>
     <string name="trainer_question_story">Do que você gosta 👍 %1$s e não gosta 👎 %2$s neste artigo?</string>
     <string name="trainer_question_site">Do que você gosta 👍 %1$s e não gosta 👎 %2$s neste site?</string>
     <string name="trainer_question_like">Gostei</string>

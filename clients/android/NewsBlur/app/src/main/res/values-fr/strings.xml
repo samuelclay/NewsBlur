@@ -727,7 +727,6 @@ les gens pour parler du monde.</string>
     <string name="intel_feed_header">Tous les articles de l’éditeur</string>
     <string name="intel_super_dislike">Masquer les articles correspondants</string>
     <string name="explainer_super_dislike">Masquer</string>
-    <string name="explainer_ai_filter">Classificateur IA</string>
     <string name="explainer_like">J’aime</string>
     <string name="explainer_dislike">Je n’aime pas</string>
     <string name="explainer_beats">l’emporte sur</string>
@@ -735,7 +734,6 @@ les gens pour parler du monde.</string>
     <string name="explainer_example1_result">L’article s’affiche parmi les articles prioritaires</string>
     <string name="explainer_example2_header">« Masquer » l’emporte sur tout, même sur « J’aime »</string>
     <string name="explainer_example2_result">L’article est toujours masqué</string>
-    <string name="explainer_example3_header">Un filtre IA l’emporte sur J’aime et Je n’aime pas, mais pas sur Masquer</string>
     <string name="trainer_question_story">Qu’aimez-vous 👍 %1$s et que n’aimez-vous pas 👎 %2$s dans cet article ?</string>
     <string name="trainer_question_site">Qu’aimez-vous 👍 %1$s et que n’aimez-vous pas 👎 %2$s sur ce site ?</string>
     <string name="trainer_question_like">J’aime</string>

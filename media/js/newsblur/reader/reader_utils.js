@@ -146,9 +146,11 @@ NEWSBLUR.utils = {
         if (!intelligence) return score;
 
         // reader_utils.js: Same order as apps/analyzer/models.py compute_story_score.
-        // A manual super dislike (-2) beats everything, the AI prompt included.
-        // Otherwise a non-zero AI prompt score beats every manual like and dislike.
-        var score_max = Math.max(intelligence['title'],
+        // The AI prompt score is a classifier like any other: +1 for a focus match,
+        // -1 for a hidden match, 0 when it didn't match. A manual Hide (-2) beats
+        // everything, then the strongest like, then the strongest dislike, then the feed.
+        var classifier_scores = [
+            intelligence['title'],
             intelligence['title_regex'] || 0,
             intelligence['author'],
             intelligence['author_regex'] || 0,
@@ -156,20 +158,12 @@ NEWSBLUR.utils = {
             intelligence['text'] || 0,
             intelligence['text_regex'] || 0,
             intelligence['url'] || 0,
-            intelligence['url_regex'] || 0);
-        var score_min = Math.min(intelligence['title'],
-            intelligence['title_regex'] || 0,
-            intelligence['author'],
-            intelligence['author_regex'] || 0,
-            intelligence['tags'],
-            intelligence['text'] || 0,
-            intelligence['text_regex'] || 0,
-            intelligence['url'] || 0,
-            intelligence['url_regex'] || 0);
-        if (score_min <= -2) return score_min;        // super downvote beats everything, AI prompt included
-
-        var prompt = intelligence['prompt'] || 0;
-        if (prompt != 0) return prompt;
+            intelligence['url_regex'] || 0,
+            intelligence['prompt'] || 0
+        ];
+        var score_max = Math.max.apply(Math, classifier_scores);
+        var score_min = Math.min.apply(Math, classifier_scores);
+        if (score_min <= -2) return score_min;        // a Hide beats any like; keep -2 so it reads as a Hide
 
         if (score_max > 0) score = score_max;
         else if (score_min < 0) score = score_min;

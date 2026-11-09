@@ -1865,10 +1865,12 @@ class Test_SuperDownvote(TransactionTestCase):
 
 
 class Test_AIPromptScorePriority(TransactionTestCase):
-    """An AI prompt match outranks manual likes and dislikes, but a manual super
-    dislike (-2) outranks the AI. Mirrors the Daring Fireball sponsor post: the
-    publisher is liked, the sponsor author is disliked, and a "Non-apple related
-    news" focus prompt matched, so the story was green."""
+    """An AI prompt match scores like any other classifier: a focus match is a +1
+    like, a hidden match is a -1 dislike, and a prompt that didn't match changes
+    nothing. So a like beats it or wins with it, and only a manual Hide (-2)
+    beats a like. Mirrors the Daring Fireball sponsor post: the publisher is
+    liked, the sponsor author is disliked, and a "Non-apple related news" focus
+    prompt matched, so the story was green."""
 
     fixtures = [
         "apps/rss_feeds/fixtures/initial_data.json",
@@ -1944,17 +1946,32 @@ class Test_AIPromptScorePriority(TransactionTestCase):
         score = self.score(-1, authors=[self.make_author_classifier(-2)])
         self.assertEqual(score, -2)
 
-    def test_ai_hidden_beats_manual_like(self):
-        """An AI hidden match still outranks a liked title."""
-        title_like = MClassifierTitle.objects.create(
+    def make_title_classifier(self, score):
+        return MClassifierTitle.objects.create(
             user_id=self.user.pk,
             feed_id=self.feed.pk,
             social_user_id=0,
             title="WorkOS",
-            score=1,
+            score=score,
             creation_date=datetime.datetime.now(),
         )
-        self.assertEqual(self.score(-1, titles=[title_like]), -1)
+
+    def test_manual_like_beats_ai_hidden(self):
+        """An AI hidden match is a dislike like any other, so a liked title wins."""
+        self.assertEqual(self.score(-1, titles=[self.make_title_classifier(1)]), 1)
+
+    def test_ai_hidden_alone_hides(self):
+        """With nothing else trained, an AI hidden match is the story's dislike."""
+        self.assertEqual(self.score(-1), -1)
+
+    def test_ai_hidden_and_manual_dislike_stay_a_dislike(self):
+        self.assertEqual(self.score(-1, authors=[self.make_author_classifier(-1)]), -1)
+
+    def test_unmatched_ai_prompt_changes_nothing(self):
+        """A prompt that didn't match (0) or never ran (None) leaves the manual score alone."""
+        self.assertEqual(self.score(0, authors=[self.make_author_classifier(-1)]), -1)
+        self.assertEqual(self.score(None, titles=[self.make_title_classifier(1)]), 1)
+        self.assertEqual(self.score(0, feeds=[self.make_feed_classifier(1)]), 1)
 
     def test_score_story_super_dislike_beats_ai_focus(self):
         """UserSubscription.score_story() builds the API score field with the same rule."""
@@ -1964,6 +1981,14 @@ class Test_AIPromptScorePriority(TransactionTestCase):
     def test_score_story_ai_focus_beats_plain_dislike(self):
         scores = {"author": -1, "tags": 0, "title": 0, "feed": 1, "prompt": 1}
         self.assertEqual(UserSubscription.score_story(scores), 1)
+
+    def test_score_story_manual_like_beats_ai_hidden(self):
+        scores = {"author": 0, "tags": 0, "title": 1, "feed": 0, "prompt": -1}
+        self.assertEqual(UserSubscription.score_story(scores), 1)
+
+    def test_score_story_ai_hidden_alone_hides(self):
+        scores = {"author": 0, "tags": 0, "title": 0, "feed": 1, "prompt": -1}
+        self.assertEqual(UserSubscription.score_story(scores), -1)
 
 
 class Test_ScopedClassifiersParity(TransactionTestCase):
@@ -2766,3 +2791,31 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
                 },
             )
             self.assertEqual(set(data["scores"].values()), {1})
+
+    def test_focus_match_beats_hidden_match_from_another_prompt(self):
+        """apps/reader/views.py get_prompt_scores_or_queue folds every matching prompt into
+        one score per story the way likes and dislikes combine: a focus match wins."""
+        from apps.reader.views import get_prompt_scores_or_queue
+
+        hidden_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=0, folder_id="", prompt="anything at all", classifier_type="hidden"
+        )
+        tech_story = self.story(self.tech_feed)
+        swift_story = self.story(self.swift_feed)
+        for story in (tech_story, swift_story):
+            MClassifierPrompt.set_cached_scores(
+                self.user.pk, str(hidden_prompt.id), story["story_feed_id"], {story["story_hash"]: -1}
+            )
+        # Only the Tech folder's focus prompt matched the tech story.
+        MClassifierPrompt.set_cached_scores(
+            self.user.pk, str(self.folder_prompt.id), self.tech_feed.pk, {tech_story["story_hash"]: 1}
+        )
+
+        data = get_prompt_scores_or_queue(
+            self.user,
+            [tech_story, swift_story],
+            [self.tech_feed.pk, self.swift_feed.pk],
+            folder_feed_ids=load_folder_feed_ids(self.user.pk),
+        )
+        self.assertEqual(data["scores"][tech_story["story_hash"]], 1)
+        self.assertEqual(data["scores"][swift_story["story_hash"]], -1)

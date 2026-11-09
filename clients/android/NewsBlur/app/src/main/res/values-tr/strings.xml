@@ -719,7 +719,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="intel_feed_header">Yayıncının tüm haberleri</string>
     <string name="intel_super_dislike">Eşleşen haberleri gizle</string>
     <string name="explainer_super_dislike">Gizle</string>
-    <string name="explainer_ai_filter">Yapay zekâ filtresi</string>
     <string name="explainer_like">Beğen</string>
     <string name="explainer_dislike">Beğenme</string>
     <string name="explainer_beats">&gt;</string>
@@ -727,7 +726,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="explainer_example1_result">Haber, Odak görünümünde gösterilir</string>
     <string name="explainer_example2_header">“Gizle” her şeyi, beğenileri bile geçersiz kılar</string>
     <string name="explainer_example2_result">Haber her zaman gizli</string>
-    <string name="explainer_example3_header">Bir yapay zekâ filtresi beğenme ve beğenmeme tercihlerinizi geçersiz kılar, ancak Gizle\'yi değil</string>
     <string name="trainer_question_story">Bu haber hakkında neyi 👍 %1$s ve neyi 👎 %2$s buluyorsunuz?</string>
     <string name="trainer_question_site">Bu site hakkında neyi 👍 %1$s ve neyi 👎 %2$s buluyorsunuz?</string>
     <string name="trainer_question_like">beğeniyorsunuz</string>

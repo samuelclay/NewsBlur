@@ -711,7 +711,6 @@
     <string name="intel_feed_header">发布者的所有内容</string>
     <string name="intel_super_dislike">隐藏匹配的文章</string>
     <string name="explainer_super_dislike">隐藏</string>
-    <string name="explainer_ai_filter">AI 筛选器</string>
     <string name="explainer_like">喜欢</string>
     <string name="explainer_dislike">不喜欢</string>
     <string name="explainer_beats">胜过</string>
@@ -719,7 +718,6 @@
     <string name="explainer_example1_result">文章会显示在聚焦视图中</string>
     <string name="explainer_example2_header">“隐藏”优先于一切，即使是“喜欢”也不例外</string>
     <string name="explainer_example2_result">文章始终隐藏</string>
-    <string name="explainer_example3_header">AI 筛选器会覆盖喜欢和不喜欢，但不会覆盖隐藏</string>
     <string name="trainer_question_story">你喜欢 👍 %1$s，不喜欢 👎 %2$s 这篇文章的哪些方面？</string>
     <string name="trainer_question_site">你喜欢 👍 %1$s，不喜欢 👎 %2$s 这个网站的哪些方面？</string>
     <string name="trainer_question_like">喜欢</string>

@@ -93,7 +93,6 @@
 "< 90/month" = "< 90/माह";
 "A clearer, closer sound" = "ज़्यादा साफ़ और करीब की आवाज़";
 "A personal news reader bringing\npeople together to talk about the world." = "एक व्यक्तिगत न्यूज़ रीडर, जो\nलोगों को दुनिया पर बात करने के लिए साथ लाता है।";
-"AI Filter" = "AI फ़िल्टर";
 "AI filters are saved but won't run until you %@." = "AI फ़िल्टर सहेजे गए हैं, लेकिन तब तक नहीं चलेंगे जब तक आप %@।";
 "AI finds the stories" = "AI लेख ढूँढता है";
 "ALL" = "सभी";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "क्या आपका खाता पहले से है? साइन इन करें";
 "Already have feeds?" = "क्या आपके पास पहले से फ़ीड हैं?";
 "Also published by %@ sites" = "%@ अन्य साइटों पर भी प्रकाशित";
-"An AI filter overrides likes and dislikes, but not Hide" = "एक AI फ़िल्टर पसंद और नापसंद को ओवरराइड करता है, लेकिन छिपाने को नहीं";
 "Analyze" = "विश्लेषण करें";
 "Analyzing images..." = "छवियों का विश्लेषण हो रहा है…";
 "App Badge" = "ऐप बैज";
@@ -1063,7 +1061,6 @@
 "Story options" = "लेख के विकल्प";
 "Story order" = "लेखों का क्रम";
 "Story settings" = "लेख की सेटिंग";
-"Story shows in Focus view" = "लेख फ़ोकस दृश्य में दिखाई देता है";
 "Story title preview" = "लेख के शीर्षक का पूर्वावलोकन";
 "Story titles" = "लेख के शीर्षक";
 "Story titles layout" = "लेख शीर्षक लेआउट";

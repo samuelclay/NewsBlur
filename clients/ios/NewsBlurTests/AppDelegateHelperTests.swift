@@ -1733,8 +1733,8 @@ private final class FeedFadeSelectionTable: UITableView {
 }
 
 // AppDelegateHelperTests.swift: NewsBlurAppDelegate.computeStoryScore must combine AI prompt
-// matches the same way apps/analyzer/models.py:compute_story_score does. An AI match outranks
-// manual likes and dislikes, and a manual super dislike (-2) outranks the AI.
+// matches the same way apps/analyzer/models.py:compute_story_score does. An AI match is a like
+// or a dislike like any other, and a manual super dislike (-2) beats every like.
 final class Test_StoryScoreAIPriority: XCTestCase {
     private func score(_ intelligence: [String: Int]) -> Int32 {
         var scores: [String: Int] = ["feed": 0, "author": 0, "tags": 0, "title": 0]
@@ -1754,7 +1754,16 @@ final class Test_StoryScoreAIPriority: XCTestCase {
         XCTAssertEqual(score(["author": -2, "prompt": -1]), -2)
     }
 
-    func test_aiHiddenMatchOutranksLikedTitle() {
-        XCTAssertEqual(score(["title": 1, "prompt": -1]), -1)
+    func test_likedTitleBeatsAIHiddenMatch() {
+        XCTAssertEqual(score(["title": 1, "prompt": -1]), 1)
+    }
+
+    func test_aiHiddenMatchAloneHidesTheStory() {
+        XCTAssertEqual(score(["feed": 1, "prompt": -1]), -1)
+    }
+
+    func test_unmatchedPromptChangesNothing() {
+        XCTAssertEqual(score(["author": -1, "prompt": 0]), -1)
+        XCTAssertEqual(score(["feed": 1]), 1)
     }
 }

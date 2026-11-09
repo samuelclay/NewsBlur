@@ -1139,7 +1139,10 @@ def get_prompt_scores_or_queue(user, stories, feed_ids, folder_feed_ids=None):
                     elif prompt.classifier_type == "hidden" and score == -1:
                         effective_score = -1
                     if effective_score != 0:
-                        prompt_scores[sh] = effective_score
+                        # views.py: Several prompts can match one story. A focus match is a
+                        # like and a hidden match is a dislike, and as with any other pair of
+                        # classifiers the like wins, so the story keeps the strongest score.
+                        prompt_scores[sh] = max(prompt_scores.get(sh, effective_score), effective_score)
                         prompt_details[sh].append(
                             {
                                 "prompt": prompt.prompt,

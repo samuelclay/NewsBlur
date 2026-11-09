@@ -93,7 +93,6 @@
 "< 90/month" = "每月少於 90 篇";
 "A clearer, closer sound" = "聲音更清晰、更貼近";
 "A personal news reader bringing\npeople together to talk about the world." = "一款個人新聞閱讀器，讓人們\n齊聚一堂，暢談世界。";
-"AI Filter" = "AI 篩選器";
 "AI filters are saved but won't run until you %@." = "AI 篩選器已儲存，但在你 %@ 之前不會執行。";
 "AI finds the stories" = "由 AI 找出文章";
 "ALL" = "全部";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "已有帳戶？登入";
 "Already have feeds?" = "已經有訂閱來源了嗎？";
 "Also published by %@ sites" = "另有 %@ 個網站刊載";
-"An AI filter overrides likes and dislikes, but not Hide" = "AI 篩選器會覆蓋喜歡和不喜歡，但不會覆蓋隱藏";
 "Analyze" = "分析";
 "Analyzing images..." = "正在分析圖片…";
 "App Badge" = "App 圖示標記";
@@ -1063,7 +1061,6 @@
 "Story options" = "文章選項";
 "Story order" = "文章排序";
 "Story settings" = "文章設定";
-"Story shows in Focus view" = "文章會顯示在焦點檢視中";
 "Story title preview" = "文章標題預覽";
 "Story titles" = "文章標題";
 "Story titles layout" = "文章標題版面";

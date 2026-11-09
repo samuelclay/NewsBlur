@@ -751,7 +751,6 @@
     <string name="intel_feed_header">كل ما ينشره الناشر</string>
     <string name="intel_super_dislike">إخفاء القصص المطابقة</string>
     <string name="explainer_super_dislike">إخفاء</string>
-    <string name="explainer_ai_filter">فلتر الذكاء الاصطناعي</string>
     <string name="explainer_like">أعجبني</string>
     <string name="explainer_dislike">لا يعجبني</string>
     <string name="explainer_beats">يتغلّب على</string>
@@ -759,7 +758,6 @@
     <string name="explainer_example1_result">تظهر القصة في عرض التركيز</string>
     <string name="explainer_example2_header">«إخفاء» يتفوّق على كل شيء، حتى الإعجابات</string>
     <string name="explainer_example2_result">تُخفى القصة دائمًا</string>
-    <string name="explainer_example3_header">يتجاوز فلتر الذكاء الاصطناعي الإعجاب وعدم الإعجاب، لكنه لا يتجاوز الإخفاء</string>
     <string name="trainer_question_story">ما الذي يعجبك 👍 %1$s ولا يعجبك 👎 %2$s في هذه القصة؟</string>
     <string name="trainer_question_site">ما الذي يعجبك 👍 %1$s ولا يعجبك 👎 %2$s في هذا الموقع؟</string>
     <string name="trainer_question_like">أعجبني</string>

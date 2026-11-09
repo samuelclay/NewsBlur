@@ -93,7 +93,6 @@
 "< 90/month" = "< 90/เดือน";
 "A clearer, closer sound" = "เสียงชัดใสและใกล้ชิดยิ่งขึ้น";
 "A personal news reader bringing\npeople together to talk about the world." = "โปรแกรมอ่านข่าวส่วนตัวที่เชื่อมโยงผู้คน\nให้มาพูดคุยเกี่ยวกับโลกใบนี้";
-"AI Filter" = "ตัวกรอง AI";
 "AI filters are saved but won't run until you %@." = "บันทึกตัวกรอง AI แล้ว แต่จะยังไม่ทำงานจนกว่าคุณจะ %@";
 "AI finds the stories" = "AI ค้นหาบทความให้";
 "ALL" = "ทั้งหมด";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "มีบัญชีอยู่แล้วใช่ไหม? เข้าสู่ระบบ";
 "Already have feeds?" = "มีฟีดอยู่แล้วใช่ไหม";
 "Also published by %@ sites" = "เผยแพร่โดยเว็บไซต์อื่นอีก %@ แห่ง";
-"An AI filter overrides likes and dislikes, but not Hide" = "ตัวกรอง AI มีผลเหนือการชอบและไม่ชอบ แต่ไม่เหนือการซ่อน";
 "Analyze" = "วิเคราะห์";
 "Analyzing images..." = "กำลังวิเคราะห์รูปภาพ...";
 "App Badge" = "ป้ายแอป";
@@ -1063,7 +1061,6 @@
 "Story options" = "ตัวเลือกบทความ";
 "Story order" = "ลำดับบทความ";
 "Story settings" = "การตั้งค่าบทความ";
-"Story shows in Focus view" = "บทความจะแสดงในมุมมองโฟกัส";
 "Story title preview" = "ตัวอย่างชื่อเรื่อง";
 "Story titles" = "ชื่อเรื่อง";
 "Story titles layout" = "รูปแบบชื่อบทความ";

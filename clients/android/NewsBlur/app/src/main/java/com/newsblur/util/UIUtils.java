@@ -467,10 +467,6 @@ public class UIUtils {
         int bodyColor = isDark ? 0xFFAAAAAA : 0xFF777777;
         int dividerColor = isDark ? 0xFF555555 : 0xFFDDDDDD;
         int infoColor = isDark ? 0xFF777777 : 0xFFBBBBBB;
-        // The AI Filter level shares its colors with the trainer's AI sections, see AiClassifierPalette.kt.
-        com.newsblur.design.AiClassifierPalette.Colors aiColors = com.newsblur.design.AiClassifierPalette.colors(theme);
-        int aiBg = aiColors.getLegendBackground();
-        int aiColor = aiColors.getLegendText();
 
         float density = root.getResources().getDisplayMetrics().density;
         float pillRadius = 6f * density;
@@ -482,14 +478,10 @@ public class UIUtils {
 
         // Style the hierarchy pills
         stylePill(root.findViewById(R.id.explainer_pill_super), superBg, pillRadius);
-        stylePill(root.findViewById(R.id.explainer_pill_ai), aiBg, pillRadius);
         stylePill(root.findViewById(R.id.explainer_pill_like), likeBg, pillRadius);
         stylePill(root.findViewById(R.id.explainer_pill_dislike), dislikeBg, pillRadius);
 
         ((TextView) root.findViewById(R.id.explainer_label_super)).setTextColor(superColor);
-        ((TextView) root.findViewById(R.id.explainer_label_ai)).setTextColor(aiColor);
-        ((android.widget.ImageView) root.findViewById(R.id.explainer_pill_ai_icon))
-                .setImageTintList(android.content.res.ColorStateList.valueOf(aiColors.getLegendIcon()));
         ((TextView) root.findViewById(R.id.explainer_label_like)).setTextColor(likeColor);
         ((TextView) root.findViewById(R.id.explainer_label_dislike)).setTextColor(dislikeColor);
         // The level icons take their label's color, as in TrainerView.swift, so the crimson super
@@ -504,13 +496,10 @@ public class UIUtils {
         // Separator text and lines
         ((TextView) root.findViewById(R.id.explainer_sep_1)).setTextColor(separatorColor);
         ((TextView) root.findViewById(R.id.explainer_sep_2)).setTextColor(separatorColor);
-        ((TextView) root.findViewById(R.id.explainer_sep_3)).setTextColor(separatorColor);
         root.findViewById(R.id.explainer_line_1a).setBackgroundColor(lineColor);
         root.findViewById(R.id.explainer_line_1b).setBackgroundColor(lineColor);
         root.findViewById(R.id.explainer_line_2a).setBackgroundColor(lineColor);
         root.findViewById(R.id.explainer_line_2b).setBackgroundColor(lineColor);
-        root.findViewById(R.id.explainer_line_3a).setBackgroundColor(lineColor);
-        root.findViewById(R.id.explainer_line_3b).setBackgroundColor(lineColor);
 
         // Info toggle - entire hierarchy bar and root are clickable
         TextView infoToggle = root.findViewById(R.id.explainer_info_toggle);
@@ -532,15 +521,10 @@ public class UIUtils {
 
         ((TextView) root.findViewById(R.id.explainer_example1_header)).setTextColor(headerColor);
         ((TextView) root.findViewById(R.id.explainer_example2_header)).setTextColor(headerColor);
-        ((TextView) root.findViewById(R.id.explainer_example3_header)).setTextColor(headerColor);
         ((TextView) root.findViewById(R.id.explainer_ex1_arrow)).setTextColor(bodyColor);
         ((TextView) root.findViewById(R.id.explainer_ex2_arrow)).setTextColor(bodyColor);
-        ((TextView) root.findViewById(R.id.explainer_ex3_arrow)).setTextColor(bodyColor);
-        ((TextView) root.findViewById(R.id.explainer_ex3_arrow2)).setTextColor(bodyColor);
         ((TextView) root.findViewById(R.id.explainer_ex1_result)).setTextColor(likeColor);
         ((TextView) root.findViewById(R.id.explainer_ex2_result)).setTextColor(superColor);
-        ((TextView) root.findViewById(R.id.explainer_ex3_result)).setTextColor(likeColor);
-        ((TextView) root.findViewById(R.id.explainer_ex3_result2)).setTextColor(superColor);
 
         int iconSize = (int) (12 * density);
 
@@ -553,20 +537,6 @@ public class UIUtils {
         styleExamplePill(root.findViewById(R.id.explainer_ex2_pill1), likeBg, likeColor, pillRadius, R.drawable.ic_thumb_up_green, iconSize);
         styleExamplePill(root.findViewById(R.id.explainer_ex2_pill2), likeBg, likeColor, pillRadius, R.drawable.ic_thumb_up_green, iconSize);
         styleExamplePill(root.findViewById(R.id.explainer_ex2_pill3), superBg, superColor, pillRadius, R.drawable.ic_thumb_down_double_crimson, iconSize);
-
-        // Example 3: an AI focus match beats a disliked author, but a super-disliked author still hides it.
-        // The match is a focus green like the story header's AI chip; the legend's blue is only for its level.
-        styleExamplePill(root.findViewById(R.id.explainer_ex3_pill1), likeBg, likeColor, pillRadius, R.drawable.ic_ai_text_filter, iconSize);
-        tintExamplePillIcon(root.findViewById(R.id.explainer_ex3_pill1), likeColor);
-        styleExamplePill(root.findViewById(R.id.explainer_ex3_pill2), dislikeBg, dislikeColor, pillRadius, R.drawable.ic_thumb_down_red, iconSize);
-        styleExamplePill(root.findViewById(R.id.explainer_ex3_pill3), likeBg, likeColor, pillRadius, R.drawable.ic_ai_text_filter, iconSize);
-        tintExamplePillIcon(root.findViewById(R.id.explainer_ex3_pill3), likeColor);
-        styleExamplePill(root.findViewById(R.id.explainer_ex3_pill4), superBg, superColor, pillRadius, R.drawable.ic_thumb_down_double_crimson, iconSize);
-    }
-
-    private static void tintExamplePillIcon(TextView pill, int color) {
-        Drawable icon = pill.getCompoundDrawablesRelative()[2];
-        if (icon != null) icon.mutate().setTint(color);
     }
 
     private static void stylePill(View pill, int bgColor, float radius) {

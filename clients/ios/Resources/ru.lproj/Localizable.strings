@@ -93,7 +93,6 @@
 "< 90/month" = "< 90 в месяц";
 "A clearer, closer sound" = "Более чистый и близкий звук";
 "A personal news reader bringing\npeople together to talk about the world." = "Персональная программа для чтения новостей, которая объединяет людей,\nчтобы обсуждать происходящее в мире.";
-"AI Filter" = "Фильтр ИИ";
 "AI filters are saved but won't run until you %@." = "Фильтры ИИ сохранены, но не будут работать, пока вы не %@.";
 "AI finds the stories" = "ИИ находит статьи";
 "ALL" = "ВСЁ";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "Уже есть аккаунт? Войти";
 "Already have feeds?" = "У вас уже есть ленты?";
 "Also published by %@ sites" = "Также опубликовано на %@ сайтах";
-"An AI filter overrides likes and dislikes, but not Hide" = "Фильтр на основе ИИ важнее отметок «Нравится» и «Не нравится», но не важнее «Скрыть»";
 "Analyze" = "Анализировать";
 "Analyzing images..." = "Анализ изображений...";
 "App Badge" = "Значок приложения";
@@ -1063,7 +1061,6 @@
 "Story options" = "Параметры статьи";
 "Story order" = "Порядок статей";
 "Story settings" = "Настройки статьи";
-"Story shows in Focus view" = "Статья отображается в режиме «Фокус»";
 "Story title preview" = "Предпросмотр заголовка статьи";
 "Story titles" = "Заголовки статей";
 "Story titles layout" = "Отображение заголовков статей";

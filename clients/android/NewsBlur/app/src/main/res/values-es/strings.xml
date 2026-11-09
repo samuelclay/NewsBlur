@@ -727,7 +727,6 @@ a personas para hablar del mundo.</string>
     <string name="intel_feed_header">Todo del editor</string>
     <string name="intel_super_dislike">Ocultar artículos coincidentes</string>
     <string name="explainer_super_dislike">Ocultar</string>
-    <string name="explainer_ai_filter">Filtro de IA</string>
     <string name="explainer_like">Me gusta</string>
     <string name="explainer_dislike">No me gusta</string>
     <string name="explainer_beats">gana a</string>
@@ -735,7 +734,6 @@ a personas para hablar del mundo.</string>
     <string name="explainer_example1_result">El artículo se muestra en la vista de Enfoque</string>
     <string name="explainer_example2_header">«Ocultar» gana a todo, incluso a «Me gusta»</string>
     <string name="explainer_example2_result">El artículo siempre está oculto</string>
-    <string name="explainer_example3_header">Un filtro de IA prevalece sobre Me gusta y No me gusta, pero no sobre Ocultar</string>
     <string name="trainer_question_story">¿Qué te 👍 %1$s y 👎 %2$s de este artículo?</string>
     <string name="trainer_question_site">¿Qué te 👍 %1$s y 👎 %2$s de este sitio?</string>
     <string name="trainer_question_like">Me gusta</string>

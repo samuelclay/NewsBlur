@@ -528,13 +528,14 @@ def compute_story_score(
 
     score = 0
 
-    # models.py: Scoring order. A manual super dislike (-2) beats everything, the AI
-    # prompt included. Otherwise a non-zero AI prompt score beats every manual
-    # like and dislike. Otherwise the strongest manual like, then the strongest
-    # manual dislike, then the feed classifier. Mirrored in
-    # apps/reader/models.py UserSubscription.score_story and
+    # models.py: Scoring order. The AI prompt is a classifier like any other: a
+    # matching focus prompt is a +1 like, a matching hidden prompt is a -1 dislike,
+    # and a prompt that didn't match is 0 and changes nothing. A manual Hide (-2)
+    # beats everything, then the strongest like, then the strongest dislike, then
+    # the feed classifier. Mirrored in apps/reader/models.py
+    # UserSubscription.score_story and
     # media/js/newsblur/reader/reader_utils.js compute_story_score.
-    score_max = max(
+    classifier_scores = [
         intelligence["title"],
         intelligence["title_regex"],
         intelligence["author"],
@@ -544,23 +545,12 @@ def compute_story_score(
         intelligence["text_regex"],
         intelligence["url"],
         intelligence["url_regex"],
-    )
-    score_min = min(
-        intelligence["title"],
-        intelligence["title_regex"],
-        intelligence["author"],
-        intelligence["author_regex"],
-        intelligence["tags"],
-        intelligence["text"],
-        intelligence["text_regex"],
-        intelligence["url"],
-        intelligence["url_regex"],
-    )
+        intelligence.get("prompt") or 0,
+    ]
+    score_max = max(classifier_scores)
+    score_min = min(classifier_scores)
     if score_min <= -2:
-        return score_min  # super downvote beats any positive, including the AI prompt
-
-    if "prompt" in intelligence and intelligence["prompt"] != 0:
-        return intelligence["prompt"]
+        return score_min  # a Hide beats any like; keep -2 so clients can tell it from a -1 dislike
 
     if score_max > 0:
         score = score_max

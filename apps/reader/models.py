@@ -2338,10 +2338,11 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
-        # models.py: Same order as apps/analyzer/models.py compute_story_score. A manual
-        # super dislike (-2) beats everything, the AI prompt included. Otherwise a
-        # non-zero AI prompt score beats every manual like and dislike.
-        max_score = max(
+        # models.py: Same order as apps/analyzer/models.py compute_story_score. The AI
+        # prompt score is a classifier like any other (+1 focus match, -1 hidden match,
+        # 0 when it didn't match), so a manual Hide (-2) beats everything, then the
+        # strongest like, then the strongest dislike, then the feed.
+        classifier_scores = [
             scores["author"],
             scores.get("author_regex", 0),
             scores["tags"],
@@ -2351,25 +2352,13 @@ class UserSubscription(models.Model):
             scores.get("text_regex", 0),
             scores.get("url", 0),
             scores.get("url_regex", 0),
-        )
-        min_score = min(
-            scores["author"],
-            scores.get("author_regex", 0),
-            scores["tags"],
-            scores["title"],
-            scores.get("title_regex", 0),
-            scores.get("text", 0),
-            scores.get("text_regex", 0),
-            scores.get("url", 0),
-            scores.get("url_regex", 0),
-        )
+            scores.get("prompt") or 0,
+        ]
+        max_score = max(classifier_scores)
+        min_score = min(classifier_scores)
 
         if min_score <= -2:
             return min_score  # super downvote wins; keep -2 so clients can tell it from a -1 dislike
-
-        prompt = scores.get("prompt", 0)
-        if prompt != 0:
-            return prompt
 
         if max_score > 0:
             return 1

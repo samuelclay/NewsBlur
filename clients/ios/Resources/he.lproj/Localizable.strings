@@ -93,7 +93,6 @@
 "< 90/month" = "פחות מ־90 לחודש";
 "A clearer, closer sound" = "צליל ברור וקרוב יותר";
 "A personal news reader bringing\npeople together to talk about the world." = "קורא חדשות אישי שמחבר בין\nאנשים כדי לדבר על העולם.";
-"AI Filter" = "מסנן AI";
 "AI filters are saved but won't run until you %@." = "מסנני AI נשמרו, אך לא יפעלו עד %@.";
 "AI finds the stories" = "הבינה המלאכותית מוצאת את הכתבות";
 "ALL" = "הכול";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "כבר יש לך חשבון? התחברות";
 "Already have feeds?" = "כבר יש לך פידים?";
 "Also published by %@ sites" = "פורסם גם ב־%@ אתרים";
-"An AI filter overrides likes and dislikes, but not Hide" = "מסנן AI גובר על אהבתי ולא אהבתי, אך לא על הסתרה";
 "Analyze" = "ניתוח";
 "Analyzing images..." = "מתבצע ניתוח של התמונות...";
 "App Badge" = "תג אפליקציה";
@@ -1063,7 +1061,6 @@
 "Story options" = "אפשרויות הכתבה";
 "Story order" = "סדר הכתבות";
 "Story settings" = "הגדרות כתבה";
-"Story shows in Focus view" = "הכתבה מופיעה בתצוגת מיקוד";
 "Story title preview" = "תצוגה מקדימה של כותרת הכתבה";
 "Story titles" = "כותרות כתבות";
 "Story titles layout" = "פריסת כותרות הכתבות";

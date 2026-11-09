@@ -3153,8 +3153,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         // text, URL and regex scores in StoryClassifierScorer.swift, which matches them the way apps/analyzer/models.py
         // does, and the site score below. So a removed classifier stops counting on loaded stories. A score
         // StoryClassifierScorer.swift can't settle is left as the server sent it, and so is the AI prompt score: the
-        // app can't run the AI, so saving a classifier never drops an AI match that computeStoryScore ranks above
-        // likes and dislikes.
+        // app can't run the AI, so saving a classifier never drops an AI match, which computeStoryScore counts as
+        // the like or dislike it is.
         NSNumber *zero = [NSNumber numberWithInt:0];
         id existingIntelligence = [story objectForKey:@"intelligence"];
         NSMutableDictionary *intelligence = [existingIntelligence isKindOfClass:[NSDictionary class]] ?
@@ -4553,14 +4553,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int urlRegex = [[intelligence objectForKey:@"url_regex"] intValue];
     int prompt = [[intelligence objectForKey:@"prompt"] intValue];
 
-    int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(authorRegex, MAX(tags, MAX(text, MAX(textRegex, MAX(url, urlRegex))))))));
-    int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(authorRegex, MIN(tags, MIN(text, MIN(textRegex, MIN(url, urlRegex))))))));
+    // NewsBlurAppDelegate.m: Same order as compute_story_score in apps/analyzer/models.py. The AI prompt score
+    // is a classifier like any other: +1 for a focus match, -1 for a hidden match, 0 when it didn't match.
+    int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(authorRegex, MAX(tags, MAX(text, MAX(textRegex, MAX(url, MAX(urlRegex, prompt)))))))));
+    int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(authorRegex, MIN(tags, MIN(text, MIN(textRegex, MIN(url, MIN(urlRegex, prompt)))))))));
 
-    // A super dislike on any manual classifier always wins, even over an AI prompt match
+    // A Hide (-2) on any classifier always wins, even over likes
     if (score_min <= -2) return score_min;
-
-    // Otherwise an AI prompt classifier match outranks the other manual classifiers
-    if (prompt != 0) return prompt;
 
     if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;

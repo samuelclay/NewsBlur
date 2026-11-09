@@ -735,7 +735,6 @@
     <string name="intel_feed_header">Wszystko od wydawcy</string>
     <string name="intel_super_dislike">Ukryj pasujące artykuły</string>
     <string name="explainer_super_dislike">Ukryj</string>
-    <string name="explainer_ai_filter">Filtr AI</string>
     <string name="explainer_like">Lubię</string>
     <string name="explainer_dislike">Nie lubię</string>
     <string name="explainer_beats">wygrywa z</string>
@@ -743,7 +742,6 @@
     <string name="explainer_example1_result">Artykuł wyświetla się w widoku Wyróżnione</string>
     <string name="explainer_example2_header">„Ukryj” ma pierwszeństwo przed wszystkim, nawet przed „Lubię”</string>
     <string name="explainer_example2_result">Artykuł jest zawsze ukryty</string>
-    <string name="explainer_example3_header">Filtr AI zastępuje oceny Lubię i Nie lubię, ale nie Ukryj</string>
     <string name="trainer_question_story">Co podoba Ci się 👍 %1$s, a co nie 👎 %2$s w tym artykule?</string>
     <string name="trainer_question_site">Co podoba Ci się 👍 %1$s, a co nie 👎 %2$s w tej witrynie?</string>
     <string name="trainer_question_like">lubisz</string>

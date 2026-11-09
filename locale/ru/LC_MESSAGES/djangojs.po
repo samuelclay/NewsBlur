@@ -1391,9 +1391,6 @@ msgstr "Всегда показывать кнопки «Обучить», «С�
 msgid "Always show unread counts on folders"
 msgstr "Всегда показывать число непрочитанных статей в папках"
 
-msgid "An AI filter overrides likes and dislikes, but not Hide"
-msgstr "Фильтр на основе ИИ важнее отметок «Нравится» и «Не нравится», но не важнее «Скрыть»"
-
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
 "topics, and custom sections you define."
