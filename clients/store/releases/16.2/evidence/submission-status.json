@@ -1,23 +1,27 @@
 {
-  "checked_at": "2026-11-07T17:51:49.271Z",
+  "checked_at": "2026-11-09T04:46:28.000Z",
   "release_version": "16.2",
-  "release_commit": "ac6897a8c3699350f8c37d442508d52d56dcb0ef",
+  "release_commit": "40b791e012",
   "requested_release_mode": "Automatically release after approval",
   "ios": {
-    "build": "355",
-    "upload_processing_state": "VALID",
+    "build": "356",
+    "uploaded_by_this_task": true,
+    "upload_delivery_uuid": "e4ca4c9d-485c-410a-a47c-f2a013de7e4d",
+    "app_store_version_created": false,
     "submitted_for_review_by_this_task": false
   },
   "macos": {
-    "build": "355",
-    "upload_processing_state": "VALID",
+    "build": "356",
+    "uploaded_by_this_task": true,
+    "upload_delivery_uuid": "81a7b17e-3dc0-4498-9cdd-d6e36a3bbd34",
+    "app_store_version_created": false,
     "submitted_for_review_by_this_task": false
   },
   "android": {
-    "version_code": 301,
+    "version_code": 302,
     "signed_bundle_built": true,
     "uploaded_by_this_task": false,
     "submitted_for_review_by_this_task": false
   },
-  "blocker": "Native computer use returns cgWindowNotFound when selecting Edge. Store review submission is not verified. Playwriter is disabled at the user's request; continue through native computer use when its connection is restored."
+  "blocker": "App Store Connect API key 9B5G83A7P5 now gets 403 'The API key in use does not allow this request' on POST /v1/appStoreVersions and is refused for cloud-managed distribution signing, both of which worked for 16.1.1 and the first 16.2 builds. No 16.2 App Store version exists yet for iOS or macOS. The Play Developer API is still disabled for the service account's project, so the bundle has to go through the Play Console."
 }
