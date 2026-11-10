@@ -158,12 +158,12 @@ body.NB-mobile.NB-mobile-under-chrome #simplemodal-container .NB-modal {
 /* ==================== */
 
 /* mobile.css: a phone browser shrinks its own toolbar only when the page itself scrolls, never
-   for a list scrolling inside the page. So while the feed list or story list is at rest
-   (mobile_layout_view.js sync_page_scroll sets NB-mobile-page-scroll), that screen is laid out
-   in the page's flow, its list is as tall as its rows, and the page scrolls in its place. The
-   screen's bars stick to the top. Slides between screens, edge swipes, sheets and modals take
-   the screen back to the fixed layout above and below this section, with the list scrolled to
-   the same place, so nothing on screen moves when the two trade. */
+   for a list scrolling inside the page. So while the feed list, the story list or an open story
+   is at rest (mobile_layout_view.js sync_page_scroll sets NB-mobile-page-scroll), that screen is
+   laid out in the page's flow, its list or story is as tall as its content, and the page scrolls
+   in its place. The screen's bars stick to the top. Slides between screens, edge swipes, swipes
+   between stories, sheets and modals take the screen back to the fixed layout above and below
+   this section, scrolled to the same place, so nothing on screen moves when the two trade. */
 html:has(> body.NB-mobile.NB-mobile-page-scroll) {
     height: auto !important;
     overflow: visible !important;
@@ -213,7 +213,8 @@ body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-nor
 }
 
 body.NB-mobile.NB-mobile-page-scroll .right-pane.NB-mobile-pos-center > .content-north,
-body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-south {
+body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-south,
+body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-center > .NB-mobile-toolbar {
     position: sticky !important;
     top: var(--nb-mobile-page-bar-top, 48px) !important;
     z-index: 49 !important;
@@ -241,6 +242,27 @@ body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-cen
     bottom: auto !important;
     height: auto !important;
     overflow: visible !important;
+}
+
+/* The open story is in the page's flow. Its neighbors stay parked either side of it, out of
+   sight until a swipe, which goes back to the fixed layout first (mobile_story_pager_view.js
+   is_paging). The pager still clips them, so they don't widen the page. */
+body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-center > .NB-mobile-story-pager {
+    flex: none;
+}
+
+body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-center .NB-mobile-story-track {
+    position: relative;
+    height: auto;
+}
+
+/* The story runs to the bottom of the screen under the browser's toolbar, with room beneath
+   its last line to rest above it. */
+body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-center .NB-mobile-story-page-current {
+    position: relative;
+    height: auto;
+    overflow: visible;
+    padding-bottom: calc(56px + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom));
 }
 
 /* ============= */
@@ -985,7 +1007,7 @@ body.NB-mobile .right-pane > .content-north {
 
 /* mobile.css: while a list loads, the bar keeps its row but not its half-drawn pills
    (mobile_layout_view.js set_pills_pending), so they first appear at their final size. */
-body.NB-mobile .right-pane > .content-north.NB-mobile-pills-pending > * {
+body.NB-mobile .right-pane > .content-north.NB-mobile-pills-pending:not(:has(.NB-searching)) > * {
     visibility: hidden;
 }
 

@@ -122,6 +122,19 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.render_all_pages();
         this.update_chrome();
         this.load_more_if_near_end();
+        this.mobile.sync_page_scroll();
+    },
+
+    // mobile_layout_view.js (Page scroll): the page scrolls in place of the story on screen while
+    // it sits still. A swipe between stories shows its neighbors beside it, which are only lined
+    // up with it in the fixed layout, and an original site scrolls inside its own frame.
+    is_paging: function () {
+        return !!(this.drag && this.drag.axis === 'horizontal') || !!this.animating || !!this.snapping;
+    },
+
+    can_page_scroll: function () {
+        return !!this.story && !this.is_paging() &&
+            !this.pages.current.$el.hasClass('NB-mobile-story-page-iframe');
     },
 
     close: function () {
@@ -144,7 +157,9 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         var comments = page.querySelector('.NB-feed-story-comments-container');
         if (!comments) return;
         var offset = comments.getBoundingClientRect().top - page.getBoundingClientRect().top;
-        page.scrollTop += offset - 50;
+        // A page the page scrolls for moves with its comments, so the offset is from its top.
+        var scrolled = this.mobile.page_scrolls(page) ? 0 : page.scrollTop;
+        page.scrollTop = scrolled + offset - 50;
     },
 
     // Shown while Next unread opens another feed.
@@ -162,6 +177,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.pages.current.$el.removeClass('NB-mobile-story-page-empty').html($.make('div', {
             className: 'NB-mobile-story-loading'
         }, message));
+        this.mobile.sync_page_scroll();
     },
 
     neighbors: function (story) {
@@ -365,6 +381,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         }
         var direction = NEWSBLUR.utils.is_rtl() ? -1 : 1;
         this.animating = true;
+        this.mobile.sync_page_scroll();
         this.$track.addClass('NB-mobile-animating')
             .css('transform', 'translate3d(' + (-step * 100 * direction) + '%, 0, 0)');
 
@@ -394,6 +411,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.page_turn = null;
         this.animating = false;
         this.$track.off('transitionend.pager').removeClass('NB-mobile-animating').css('transform', '');
+        this.mobile.sync_page_scroll();
     },
 
     finish_page: function (step, target) {
@@ -438,6 +456,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.update_chrome();
         this.load_more_if_near_end();
         this.mobile.story_paged(target);
+        this.mobile.sync_page_scroll();
     },
 
     snap_back: function () {
@@ -447,8 +466,14 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         }
         this.$track.addClass('NB-mobile-animating').css('transform', '');
         var $track = this.$track;
+        var self = this;
+        var snap = this.snapping = {};
+        this.mobile.sync_page_scroll();
         setTimeout(function () {
             $track.removeClass('NB-mobile-animating');
+            if (self.snapping !== snap) return;
+            self.snapping = null;
+            self.mobile.sync_page_scroll();
         }, 340);
     },
 
@@ -486,6 +511,8 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
                 return;
             }
             this.$track.removeClass('NB-mobile-animating');
+            // The neighbors come into view from here on, so the screen goes back to the fixed layout.
+            this.mobile.sync_page_scroll();
             try {
                 this.$pager[0].setPointerCapture(e.pointerId);
             } catch (err) {
@@ -540,6 +567,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         NEWSBLUR.reader.story_view = view === 'story' ? 'feed' : view;
         this.render_page(this.pages.current, this.story, true);
         this.update_chrome();
+        this.mobile.sync_page_scroll();
     },
 
     toggle_unread: function () {

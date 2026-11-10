@@ -1,8 +1,8 @@
 """
 page_scroll.py: a phone browser shrinks its own toolbar only when the page itself scrolls, so
-the feed list and the story list scroll the page while they are at rest (mobile.css Page
-scrolling, mobile_layout_view.js Page scroll). A slide, a sheet or a modal puts the screen back in
-the fixed layout with the list at the same place.
+the feed list, the story list and an open story scroll the page while they are at rest
+(mobile.css Page scrolling, mobile_layout_view.js Page scroll). A slide, a swipe between stories,
+a sheet or a modal puts the screen back in the fixed layout, scrolled to the same place.
 
 Emulated Chromium has no toolbar to shrink, so this checks what makes Safari shrink its own: the
 page, not the list, is what a swipe scrolls.
@@ -24,6 +24,10 @@ STATE = """(() => {
     feeds_top: Math.round(feeds.scrollTop),
     nav: box('.NB-mobile-titles-bar'), pills: box('.right-pane > .content-north'),
     header: box('.left-north'), taskbar: box('.left-south'),
+    story_nav: box('.NB-mobile-story-bar'), story_toolbar: box('.NB-mobile-story-toolbar'),
+    story_top: Math.round(document.querySelector('.NB-mobile-story-page-current').scrollTop),
+    story_bottom: Math.round(document.querySelector('.NB-mobile-story-page-current').getBoundingClientRect().bottom),
+    story: NEWSBLUR.app.mobile.story_pager.story_hash(),
     stories: NEWSBLUR.assets.stories.length
   };
 })()"""
@@ -115,6 +119,9 @@ def run(ctx):
         state,
     )
 
+    check_story_screen(ctx)
+    titles_top = ctx.evaluate(STATE)["page_y"]
+
     page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
     ctx.wait(250)
     state = ctx.evaluate(STATE)
@@ -134,3 +141,69 @@ def run(ctx):
         state,
     )
     ctx.check_no_page_errors()
+
+
+def check_story_screen(ctx):
+    """An open story scrolled inside the story screen, so Safari's toolbar stayed up over it and
+    the story stopped short of the bottom of the phone. The page now scrolls in its place, and a
+    swipe to the next story lines the stories up in the fixed layout first. Expects the story
+    list, and leaves it there."""
+    page = ctx.page
+    width = ctx.viewport["width"]
+    ctx.set_layout("grid")
+    ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
+    ctx.wait(300)
+    ctx.tap_story(1)
+    ctx.wait(800)
+    state = ctx.evaluate(STATE)
+    first_story = state["story"]
+    ctx.check(
+        "an open story is laid out in the page, from its top",
+        state["page"] and state["page_screen"] == "story" and state["page_y"] == 0,
+        state,
+    )
+    ctx.touch.swipe(width / 2, 650, width / 2, 250, steps=10)
+    ctx.wait(1200)
+    state = ctx.evaluate(STATE)
+    story_top = state["page_y"]
+    ctx.check(
+        "swiping an open story scrolls the page, with its nav bar and toolbar stuck to the top",
+        story_top > 100
+        and state["story_top"] == story_top
+        and state["story_nav"]["top"] == 0
+        and state["story_toolbar"]["top"] == state["story_nav"]["bottom"],
+        state,
+    )
+    ctx.evaluate("(() => { var p = document.querySelector('.NB-mobile-story-page-current'); p.scrollTop = p.scrollHeight; })()")
+    ctx.wait(500)
+    state = ctx.evaluate(STATE)
+    ctx.check(
+        "an open story ends above the bottom of the window, with room beneath its last line",
+        state["story_bottom"] <= state["window_height"] and state["page_height"] > state["window_height"],
+        state,
+    )
+    ctx.shot("03-story-end")
+    ctx.evaluate("(() => { document.querySelector('.NB-mobile-story-page-current').scrollTop = %d; })()" % story_top)
+    ctx.wait(300)
+
+    ctx.touch.swipe(width - 60, 500, 60, 505, steps=10)
+    ctx.wait(1200)
+    state = ctx.evaluate(STATE)
+    ctx.check(
+        "a swipe to the next story turns the page and gives the new story to the page at its top",
+        state["story"] != first_story and state["page"] and state["page_screen"] == "story" and state["page_y"] == 0,
+        (first_story, state),
+    )
+    ctx.touch.swipe(60, 500, width - 60, 505, steps=10)
+    ctx.wait(1200)
+    state = ctx.evaluate(STATE)
+    ctx.check(
+        "swiping back returns to the first story where it was left",
+        state["story"] == first_story and state["page"] and abs(state["page_y"] - story_top) <= 2,
+        (first_story, story_top, state),
+    )
+    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+    ctx.wait(1300)
+    state = ctx.evaluate(STATE)
+    ctx.check("back from a story returns the story list to the page", state["page_screen"] == "titles", state)
+    ctx.set_layout("list")

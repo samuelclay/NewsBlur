@@ -176,31 +176,20 @@ def check_under_toolbar(ctx, feed_id):
     ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
     ctx.tap_story(1)
     ctx.wait(1500)
-    ctx.check(
-        "the fixed story screen reaches under Safari's toolbar",
-        ctx.evaluate(
-            "document.body.classList.contains('NB-mobile-under-chrome') && "
-            "getComputedStyle(document.body).getPropertyValue('--nb-mobile-chrome-bottom').trim()"
-        )
-        == f"{SAFARI_CHROME}px",
-    )
     story = ctx.evaluate(
         GEOMETRY
         + "('.NB-mobile-story-screen', '.NB-mobile-story-bar', '.NB-mobile-story-toolbar', '.NB-mobile-story-page-current')"
     )
     ctx.shot("under-toolbar-story")
     ctx.check(
-        "the story runs under the toolbar and scrolls its last row clear of it, its own toolbar under the nav bar",
-        story["screen"] == story["window"] + SAFARI_CHROME
+        "an open story is laid out in the page, which scrolls its last row clear of the window's end",
+        story["page_scroll"]
+        and not story["under_chrome"]
+        and story["nav_top"] == 0
         and story["controls_top"] == story["nav_bottom"]
         and story["last_row"] <= story["window"],
         story,
     )
-
-    # Something scrolling the taller page itself, here a script, is put back.
-    ctx.evaluate("window.scrollTo(0, 80)")
-    ctx.wait(200)
-    ctx.check("the page scrolls back to the top", ctx.evaluate("window.scrollY") == 0)
     page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
     ctx.wait(900)
 
@@ -209,12 +198,24 @@ def check_under_toolbar(ctx, feed_id):
     ctx.evaluate("NEWSBLUR.reader.open_preferences_modal()")
     page.wait_for_selector("#simplemodal-container .NB-modal", timeout=15000)
     ctx.wait(600)
+    ctx.check(
+        "a screen under a modal is fixed, and reaches under Safari's toolbar",
+        ctx.evaluate(
+            "document.body.classList.contains('NB-mobile-under-chrome') && "
+            "getComputedStyle(document.body).getPropertyValue('--nb-mobile-chrome-bottom').trim()"
+        )
+        == f"{SAFARI_CHROME}px",
+    )
     modal_bottom = ctx.evaluate("document.querySelector('#simplemodal-container').getBoundingClientRect().bottom")
     ctx.check(
         "a modal reaches under the toolbar",
         modal_bottom == ctx.evaluate("window.innerHeight") + SAFARI_CHROME,
         modal_bottom,
     )
+    # Something scrolling the taller fixed page itself, here a script, is put back.
+    ctx.evaluate("window.scrollTo(0, 80)")
+    ctx.wait(200)
+    ctx.check("the fixed page scrolls back to the top", ctx.evaluate("window.scrollY") == 0)
     ctx.close_overlays()
 
     # Add + Discover scrolls in its own tab panes, which kept their desktop padding and left the
