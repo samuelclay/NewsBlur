@@ -870,6 +870,8 @@ body.NB-mobile .right-pane > .content-north {
     display: flex !important;
     align-items: center;
     gap: 5px;
+    /* A pill's height, so the bar holds its row before the list's header renders. */
+    min-height: 44px;
     z-index: 3 !important;
     overflow: visible !important;
     margin: 0 !important;
@@ -878,6 +880,12 @@ body.NB-mobile .right-pane > .content-north {
     border-bottom: 1px solid var(--nb-mobile-bar-border) !important;
     background: var(--nb-mobile-bar-bg) !important;
     box-shadow: none !important;
+}
+
+/* mobile.css: while a list loads, the bar keeps its row but not its half-drawn pills
+   (mobile_layout_view.js set_pills_pending), so they first appear at their final size. */
+body.NB-mobile .right-pane > .content-north.NB-mobile-pills-pending > * {
+    visibility: hidden;
 }
 
 /* The open search field takes a row of its own at the bottom of the bar. */

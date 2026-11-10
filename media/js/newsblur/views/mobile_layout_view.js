@@ -16,6 +16,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     BROWSER_SWIPE_MS: 8000,
     PRESS_DELAY_MS: 120,
     PRESS_FLASH_MS: 160,
+    PILLS_PENDING_MS: 4000,
 
     initialize: function () {
         _.bindAll(this, 'check_mode', 'handle_popstate', 'handle_touchstart', 'handle_touchmove',
@@ -418,7 +419,9 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // NEWSBLUR.assets.stories reset: a story list finished loading. reader.js reset_feed empties
     // the collection with a bare reset first, which passes no count of added stories.
     stories_reset: function (stories, options) {
-        if (!this.awaiting_story || !options || options.added === undefined) return;
+        var loaded = !!options && options.added !== undefined;
+        this.set_pills_pending(!loaded);
+        if (!this.awaiting_story || !loaded) return;
         var story_hash = this.awaiting_story;
         this.awaiting_story = null;
         clearTimeout(this.awaiting_story_timer);
@@ -436,6 +439,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // on it gives up after 15 seconds too, offline requests can take that long to fail, and so
     // does a Next unread waiting on the next feed's list.
     stories_failed: function () {
+        this.set_pills_pending(false);
         var waiting = !!this.awaiting_story || this.is_following_unread();
         this.awaiting_story = null;
         this.following_unread = null;
@@ -1177,6 +1181,26 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (clipped()) $bar.addClass('NB-mobile-nav-compact');
         if (clipped()) $row.addClass('NB-mobile-options-icon');
         $row.removeClass('NB-mobile-options-measure');
+    },
+
+    // The story list's pills are drawn in stages while a list loads: the header renders, the
+    // layout decides whether Previous and Next unread show, then fit_pills sizes the options
+    // pill. mobile.css NB-mobile-pills-pending keeps the bar's row but hides those stages, so
+    // the pills first appear at their final size. A list that never reports back (a dashboard
+    // river handed over without a count) shows them after PILLS_PENDING_MS.
+    set_pills_pending: function (pending) {
+        var $bar = $('.right-pane > .content-north');
+        clearTimeout(this.pills_pending_timer);
+        if (pending) {
+            $bar.addClass('NB-mobile-pills-pending');
+            this.pills_pending_timer = setTimeout(_.bind(this.set_pills_pending, this, false), this.PILLS_PENDING_MS);
+            return;
+        }
+        // story_titles_header_view.js renders the list's header right after its stories arrive.
+        _.defer(_.bind(function () {
+            this.fit_pills();
+            $bar.removeClass('NB-mobile-pills-pending');
+        }, this));
     },
 
     // The story list's search field closes from its x or from its pill. iOS dismisses the keyboard
