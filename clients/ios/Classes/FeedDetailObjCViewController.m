@@ -327,6 +327,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         [weakSelf markReadShowMenu:MarkReadShowMenuBasedOnPref sender:weakSelf.storyTitlesHeaderBar.markReadContainer];
     };
     self.storyTitlesHeaderBar.markReadHandler = ^(NSInteger days) {
+        if (days > 0) {
+            // FeedDetailObjCViewController.m applies age cutoffs to cached stories and refreshes the list after success.
+            NSInteger cutoffTimestamp = (NSInteger)[[NSDate date] timeIntervalSince1970] - days * 24 * 60 * 60;
+            [weakSelf markFeedsReadFromTimestamp:cutoffTimestamp andOlder:YES queueOffline:YES];
+            return;
+        }
         NSArray *feedIds = weakSelf.storiesCollection.isRiverView ?
             [weakSelf.appDelegate feedIdsForFolderTitle:weakSelf.storiesCollection.activeFolder] :
             @[weakSelf.storiesCollection.activeFeed[@"id"]];
@@ -6279,9 +6285,14 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
+    [self markFeedsReadFromTimestamp:cutoffTimestamp andOlder:older queueOffline:NO];
+}
+
+- (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older queueOffline:(BOOL)queueOffline {
     NSString *account = [appDelegate.activeUsername copy] ?: @"";
     NSString *host = [appDelegate.url copy] ?: @"";
     NSUInteger generation = self.fetchRequestId;
+    BOOL infrequent = [storiesCollection.activeFolder isEqualToString:@"infrequent"];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
                            self.appDelegate.url];
     NSMutableArray *feedIds = [NSMutableArray array];
@@ -6297,39 +6308,58 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                 }
             }
         } else {
-            for (id feedId in [appDelegate.dictFolders objectForKey:storiesCollection.activeFolder]) {
-                [feedIds addObject:feedId];
-            }
+            [feedIds addObjectsFromArray:[appDelegate feedIdsForFolderTitle:storiesCollection.activeFolder] ?: @[]];
         }
     } else {
-        [feedIds addObject:[storiesCollection.activeFeed objectForKey:@"id"]];
+        id feedId = [storiesCollection.activeFeed objectForKey:@"id"];
+        if (feedId) [feedIds addObject:feedId];
     }
+    if (!feedIds.count) return;
     
     [params setObject:feedIds forKey:@"feed_id"];
     [params setObject:@(cutoffTimestamp) forKey:@"cutoff_timestamp"];
     NSString *direction = older ? @"older" : @"newest";
     [params setObject:direction forKey:@"direction"];
     
-    if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+    if (infrequent) {
         NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
         NSString *infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
         [params setObject:infrequent forKey:@"infrequent"];
     }
     
+    // FeedDetailObjCViewController.m owns one progress view per request, including replies after navigation or account changes.
+    MBProgressHUD *progressHUD = self.viewIfLoaded ? [MBProgressHUD showHUDAddedTo:self.viewIfLoaded animated:YES] : nil;
+    progressHUD.removeFromSuperViewOnHide = YES;
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionTask *task, id responseObject) {
+        [progressHUD hide:NO];
         [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:account host:host];
         if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
             ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
-        [self.appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
+        // FeedDetailObjCViewController.m leaves infrequent-feed filtering to the server; the reply does not identify the filtered feeds.
+        if (!infrequent) [self.appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
+        if (queueOffline) {
+            self.appDelegate.feedsViewController.isOffline = NO;
+            [self.appDelegate.storyPagesViewController reloadWidget];
+        }
         [self.appDelegate.feedsViewController reloadFeedTitlesTable];
         [self.appDelegate.feedsViewController refreshHeaderCounts];
         // FeedDetailObjCViewController.m reconciles badges with the server because offline stories may cover only part of a feed.
         [self.appDelegate.feedsViewController refreshFeedList:feedIds.count == 1 ? feedIds.firstObject : nil];
         if (self.fetchRequestId == generation) [self reloadStories];
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [progressHUD hide:NO];
         if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
             ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
-        [self requestFailed:error];
+        if (queueOffline) {
+            if (!infrequent) [self.appDelegate markStoriesRead:nil inFeeds:feedIds cutoffTimestamp:cutoffTimestamp];
+            self.appDelegate.feedsViewController.isOffline = YES;
+            [self.appDelegate.feedsViewController showOfflineNotifier];
+            [self.appDelegate.feedsViewController reloadFeedTitlesTable];
+            [self.appDelegate.feedsViewController refreshHeaderCounts];
+            if (self.fetchRequestId == generation) [self reloadStories];
+        } else {
+            [self requestFailed:error];
+        }
     }];
 }
 
