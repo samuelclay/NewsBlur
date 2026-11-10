@@ -203,7 +203,9 @@ class MDescribeSearch(mongo.Document):
         """A search that failed does not count against the daily quota in apps/describe/usage.py."""
         if self.usage_id and ObjectId.is_valid(self.usage_id):
             MDescribeUsage.objects(id=ObjectId(self.usage_id), user_id=self.user_id).delete()
-            self.__class__.objects(id=self.id).update_one(unset__usage_id=True)
+            # apps/describe/models.py: only forget the row just refunded. "Search again" can reset this
+            # document and charge a new run while this refund is in flight; that run's row must stay.
+            self.__class__.objects(id=self.id, usage_id=self.usage_id).update_one(unset__usage_id=True)
             self.usage_id = None
 
     def charge(self, usage_entry):

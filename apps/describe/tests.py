@@ -590,6 +590,57 @@ class Test_DescribeOutagesAndDeletion(Test_DescribePipeline):
         self.assertEqual(len(self.events_of("error")), 1)
         self.assertEqual(tracker.daily_count(), 0)
 
+    def test_one_failed_call_among_working_ones_is_still_a_real_no_matches(self):
+        tracker = DescribeUsageTracker(self.user)
+        self.search.charge(tracker.record_usage(search_id=self.search.id, request_id="request-0001"))
+        calls = {"embed": 0}
+
+        def flaky_embed(text):
+            calls["embed"] += 1
+            if calls["embed"] == 2:
+                self.pipeline.stats["model_errors"] += 1
+                return None
+            self.pipeline.stats["embeddings"] += 1
+            return [0.1] * 4
+
+        def reject_everything(system, user_text, max_tokens, step, tools=None):
+            self.pipeline.stats["llm_calls"] += 1
+            if step == "expand":
+                return '{"sub_queries": ["iOS app reviews"]}'
+            if step == "judge":
+                ids = [int(found) for found in re.findall(r"feed_id=(-?\d+)", user_text)]
+                return json.encode([{"feed_id": feed_id, "score": 0, "reason": "no"} for feed_id in ids])
+            return "[]"
+
+        with patch.object(self.pipeline, "call_model", side_effect=reject_everything), patch.object(
+            self.pipeline, "embed", side_effect=flaky_embed
+        ), patch("apps.describe.pipeline.SearchFeed.vector_query", return_value=[es_hit(self.feeds[0], 0.8)]):
+            self.pipeline.run()
+
+        self.search.reload()
+        self.assertEqual(self.search.status, STATUS_COMPLETE)
+        self.assertEqual(self.search.results, [])
+        self.assertEqual(self.search.stats["model_errors"], 1)
+        self.assertEqual(tracker.daily_count(), 1)
+
+    def test_an_old_refund_does_not_forget_the_rerun_that_replaced_it(self):
+        tracker = DescribeUsageTracker(self.user)
+        self.search.charge(tracker.record_usage(search_id=self.search.id, request_id="request-0001"))
+        stale_copy = MDescribeSearch.objects.get(id=self.search.id)
+
+        # "Search again" resets the same document and charges a new run before the old refund lands.
+        rerun = MDescribeSearch.start(
+            self.user.pk, self.search.prompt, "request-0002", search_id=self.search.id
+        )
+        rerun.charge(tracker.record_usage(search_id=rerun.id, request_id="request-0002"))
+        stale_copy.refund_usage()
+
+        rerun.reload()
+        self.assertTrue(rerun.usage_id)
+        self.assertEqual(tracker.daily_count(), 1)
+        rerun.mark_error("boom")
+        self.assertEqual(tracker.daily_count(), 0)
+
     def test_a_search_deleted_mid_run_stops_before_the_web_hunt(self):
         def delete_then_judge(system, user_text, max_tokens, step, tools=None):
             if step == "judge":
