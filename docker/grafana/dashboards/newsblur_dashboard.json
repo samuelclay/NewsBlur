@@ -23236,6 +23236,342 @@
     }
    ],
    "description": "Subreddits and users polled, how many got a capped share instead of every post, and how many feeds gained posts."
+  },
+  {
+   "id": 394,
+   "type": "timeseries",
+   "title": "Requests spent today by kind",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "h": 9,
+    "w": 12,
+    "x": 0,
+    "y": 829
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineInterpolation": "linear",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "gradientMode": "none",
+      "showPoints": "never",
+      "pointSize": 5,
+      "spanNulls": true,
+      "stacking": {
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      },
+      "axisPlacement": "auto",
+      "scaleDistribution": {
+       "type": "linear"
+      }
+     },
+     "mappings": [],
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "redlisten{metric=\"today_requests\"}",
+     "legendFormat": "{{kind}}",
+     "refId": "A",
+     "interval": "5m"
+    }
+   ],
+   "description": "Requests since midnight UTC by the hourly poller, scheduled comment-thread and search feeds, and readers' one-off fetches. Requests can be the tighter quota. See utils/redlisten.py."
+  },
+  {
+   "id": 395,
+   "type": "timeseries",
+   "title": "Projected month end (99% = background cap)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "h": 9,
+    "w": 12,
+    "x": 12,
+    "y": 829
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineInterpolation": "linear",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "gradientMode": "none",
+      "showPoints": "never",
+      "pointSize": 5,
+      "spanNulls": true,
+      "stacking": {
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "line"
+      },
+      "axisPlacement": "auto",
+      "scaleDistribution": {
+       "type": "linear"
+      }
+     },
+     "mappings": [],
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 99
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "100 * redlisten{metric=\"projected_month_requests\"} / ignoring(metric) redlisten{metric=\"requests_limit\"}",
+     "legendFormat": "requests",
+     "refId": "A",
+     "interval": "5m"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "100 * redlisten{metric=\"projected_month_results\"} / ignoring(metric) redlisten{metric=\"results_limit\"}",
+     "legendFormat": "results",
+     "refId": "B",
+     "interval": "5m"
+    }
+   ],
+   "description": "Where each quota ends the month if every kind keeps its last 24 hours' pace. The poller paces itself to stay under 99%; a line above it means comment/search feeds or one-offs are outrunning the plan."
+  },
+  {
+   "id": 396,
+   "type": "timeseries",
+   "title": "Hourly poll: requests spent vs budget",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "h": 9,
+    "w": 12,
+    "x": 0,
+    "y": 838
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineInterpolation": "linear",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "gradientMode": "none",
+      "showPoints": "never",
+      "pointSize": 5,
+      "spanNulls": true,
+      "stacking": {
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      },
+      "axisPlacement": "auto",
+      "scaleDistribution": {
+       "type": "linear"
+      }
+     },
+     "mappings": [],
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "redlisten{metric=\"poll_spent_requests\"}",
+     "legendFormat": "spent",
+     "refId": "A",
+     "interval": "5m"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "redlisten{metric=\"poll_request_budget\"}",
+     "legendFormat": "budget",
+     "refId": "B",
+     "interval": "5m"
+    }
+   ],
+   "description": "Requests each hourly poll could spend after setting aside comment/search feeds and one-offs, and what it spent. See utils/redlisten_poller.py."
+  },
+  {
+   "id": 397,
+   "type": "timeseries",
+   "title": "Requests over the last 24 hours by kind",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "h": 9,
+    "w": 12,
+    "x": 12,
+    "y": 838
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineInterpolation": "linear",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "gradientMode": "none",
+      "showPoints": "never",
+      "pointSize": 5,
+      "spanNulls": true,
+      "stacking": {
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      },
+      "axisPlacement": "auto",
+      "scaleDistribution": {
+       "type": "linear"
+      }
+     },
+     "mappings": [],
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "redlisten{metric=\"last_day_requests\"}",
+     "legendFormat": "{{kind}}",
+     "refId": "A",
+     "interval": "5m"
+    }
+   ],
+   "description": "Rolling 24-hour requests per kind. The poller sets aside the scheduled and one-off pace through month end before budgeting each hour."
   }
  ],
  "refresh": "5s",

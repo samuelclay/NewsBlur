@@ -338,6 +338,25 @@ class RedListenBudget:
             for unit in ("requests", "results")
         )
 
+    def days_left(self):
+        """Days until RedListen's quotas reset at the next UTC month."""
+        return max(0.0, (month_end(self.now()) - self.now()).total_seconds() / 86400)
+
+    def projected_month(self):
+        """(requests, results) the month ends at if every kind keeps spending at its pace
+        over the last 24 hours. Charted against the plan by /monitor/redlisten."""
+        usage = self.usage()
+        days_left = self.days_left()
+        requests_per_day = results_per_day = 0.0
+        for kind in SPEND_KINDS:
+            kind_requests, kind_results = self.last_day_spend(kind)
+            requests_per_day += kind_requests
+            results_per_day += kind_results
+        return (
+            usage["requests"] + requests_per_day * days_left,
+            usage["results"] + results_per_day * days_left,
+        )
+
     def reserve_minute_slot(self):
         """Fixed one-minute window under RedListen's per-minute limit (120 on Pro)."""
         count = self.r.incr(RATE_LIMIT_KEY)

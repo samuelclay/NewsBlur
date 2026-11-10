@@ -3735,8 +3735,8 @@ class Feed(models.Model):
         # Subreddit and user feeds read the hourly poller's cache, which schedules them as
         # soon as new posts land, so fetching them faster than the poll only re-reads it.
         # Comment-thread and search feeds spend their own requests, so they fetch at most
-        # twice a day, overriding the Pro boost above.
-        reddit_floor = reddit_fetch_floor_minutes(self.feed_address)
+        # twice a day, overriding the Pro boost above, and back off further while quiet.
+        reddit_floor = reddit_fetch_floor_minutes(self.feed_address, self.pk)
         if reddit_floor and total < reddit_floor:
             adjustments.append("Reddit via RedListen minimum: %s min -> %s min" % (total, reddit_floor))
             total = reddit_floor
