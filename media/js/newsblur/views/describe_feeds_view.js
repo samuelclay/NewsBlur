@@ -111,6 +111,11 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         this.autosize_input();
         if (this.search && this.rendered_layout !== this.current_layout()) {
             this.pending_scroll_top = this.scroll_top();
+            // describe_feeds_view.js: streamed and polled updates change this.rows and the card order, not
+            // the payload the search was opened with, so rebuild from what is on screen now.
+            this.search.results = _.compact(_.map(this.card_order || [], _.bind(function (feed_id) {
+                return this.rows[feed_id];
+            }, this)));
             this.show_search(this.search);
         }
         if (!this.search) {
@@ -193,7 +198,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
                 'data-search-id': entry.id,
                 role: 'button'
             }, [
-                $.make('div', { className: 'NB-describe-history-prompt', dir: 'auto' }, entry.prompt),
+                $.make('div', { className: 'NB-describe-history-prompt', dir: 'auto' }, self.plain(entry.prompt)),
                 $.make('div', { className: 'NB-describe-history-meta' }, [
                     $.make('span', { className: 'NB-describe-history-count' }, meta),
                     $.make('span', { className: 'NB-describe-history-date' }, self.relative_date(entry.created_date))
@@ -602,6 +607,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
     order_cards: function (order) {
         var $results = this.$('.NB-describe-results');
         if (!$results.length || !order) return;
+        this.card_order = order;
         _.each(order, _.bind(function (feed_id) {
             var $card = this.cards[feed_id];
             if ($card) $results.append($card);
@@ -629,6 +635,13 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         return $card;
     },
 
+    // describe_feeds_view.js: $.make inserts its text argument as HTML (jquery.newsblur.js). Everything the
+    // server sends here was written by a model that read feed and web content, or typed by the user, so it is
+    // escaped to plain text before it reaches $.make.
+    plain: function (value) {
+        return _.escape(value === null || value === undefined ? '' : String(value));
+    },
+
     make_card_tags: function (row) {
         var tags = [];
         if (row.judged && row.score !== null && row.score !== undefined) {
@@ -654,10 +667,10 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
 
     make_reason: function (row) {
         if (row.judged && row.reason) {
-            return $.make('div', { className: 'NB-describe-reason', dir: 'auto' }, row.reason);
+            return $.make('div', { className: 'NB-describe-reason', dir: 'auto' }, this.plain(row.reason));
         }
         return $.make('div', { className: 'NB-describe-reason NB-describe-reason-pending' },
-            row.matched_query ? interpolate(gettext('Matched “%(query)s”'), {query: row.matched_query}, true) : gettext('Waiting for a verdict…'));
+            row.matched_query ? interpolate(gettext('Matched “%(query)s”'), {query: this.plain(row.matched_query)}, true) : gettext('Waiting for a verdict…'));
     },
 
     // ==========
@@ -665,6 +678,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
     // ==========
 
     render_status: function () {
+        var self = this;
         var search = this.search;
         var $status = this.$('.NB-describe-status');
         if (!search) {
@@ -711,21 +725,21 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
             $extra.push($.make('div', { className: 'NB-describe-queries' }, [
                 $.make('span', { className: 'NB-describe-queries-label' }, gettext('Searching for'))
             ].concat(_.map(search.sub_queries, function (query) {
-                return $.make('span', { className: 'NB-describe-query', dir: 'auto' }, query);
+                return $.make('span', { className: 'NB-describe-query', dir: 'auto' }, self.plain(query));
             }))));
         }
         if (search.usage_message) {
-            $extra.push($.make('div', { className: 'NB-describe-usage-message' }, search.usage_message));
+            $extra.push($.make('div', { className: 'NB-describe-usage-message' }, this.plain(search.usage_message)));
         }
         if (search.stats && search.stats.note) {
-            $extra.push($.make('div', { className: 'NB-describe-usage-message' }, search.stats.note));
+            $extra.push($.make('div', { className: 'NB-describe-usage-message' }, this.plain(search.stats.note)));
         }
 
         $status.removeClass('NB-hidden').toggleClass('NB-running', is_running).toggleClass('NB-error', search.status === 'error').html([
             $.make('div', { className: 'NB-describe-status-row' }, [
                 $.make('div', { className: 'NB-describe-status-message' }, [
                     is_running ? $.make('span', { className: 'NB-describe-spinner' }) : null,
-                    $.make('span', { className: 'NB-describe-status-text' }, message),
+                    $.make('span', { className: 'NB-describe-status-text' }, this.plain(message)),
                     $counter
                 ].filter(Boolean)),
                 is_running ? null : $.make('div', { className: 'NB-describe-search-again NB-modal-submit-button NB-modal-submit-grey', role: 'button' }, gettext('Search again'))
