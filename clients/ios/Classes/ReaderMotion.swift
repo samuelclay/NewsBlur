@@ -11,7 +11,7 @@ import SwiftUI
     @Published private(set) var visit = 0
     @Published private(set) var entrancesStopped = false
     private let rowViews = NSHashTable<UIView>.weakObjects()
-    private var hasPresented = false
+    fileprivate private(set) var hasPresented = false
 
     func reset() {
         seen.removeAll(); starts.removeAll(); batchStart = 0; batchIndex = 0
@@ -153,7 +153,8 @@ import SwiftUI
         }
         guard view.window != nil, session.presentationReady else {
             // ReaderMotion.swift holds cached story content through preparation/push without changing reusable view alpha.
-            if UIAccessibility.isReduceMotionEnabled {
+            // ReaderMotion.swift keeps rows prepared behind the article visible when returning to an already presented list.
+            if UIAccessibility.isReduceMotionEnabled || session.hasPresented {
                 view.layer.removeAnimation(forKey: "readerWaitingForAppearance")
                 waitingViews.remove(view)
             } else if owner is FeedDetailObjCViewController, !session.hasSeen(key) {

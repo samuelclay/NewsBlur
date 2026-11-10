@@ -652,6 +652,25 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor final class Test_ReaderMotion: XCTestCase {
+    func test_returningToPreviouslyPresentedListDoesNotHideNewlyPreparedRows() {
+        let owner = FeedDetailObjCViewController()
+        let session = ReaderMotion.session(owner)
+        session.didAppear()
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: "returning-story")
+        cell.storyHash = "story-reached-while-reading"
+        cell.frame = CGRect(x: 0, y: 0, width: 320, height: 100)
+
+        // StoryReadStateAnimationTests.swift models next-story navigation preparing rows while the list is detached.
+        ReaderMotion.row(cell.contentView, key: cell.storyHash!, owner: owner, scrolling: false, position: 0)
+        let window = motionWindow(containing: [cell])
+        defer { window.isHidden = true }
+        window.layoutIfNeeded()
+
+        XCTAssertNil(cell.contentView.layer.animation(forKey: "readerWaitingForAppearance"),
+                     "Returning to an already presented list must show prepared rows without waiting for another display callback.")
+        XCTAssertEqual(cell.contentView.layer.opacity, 1)
+    }
+
     func test_nativeToolbarFollowsVisualOrderAndReentersOnlyAfterBeingHidden() throws {
         let bar = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 100))
         let lower = UIButton(frame: CGRect(x: 0, y: 50, width: 40, height: 40))
