@@ -2068,6 +2068,15 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     networkManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
     networkManager.responseSerializer = [AFJSONResponseSerializer serializer];
     [networkManager.requestSerializer setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+
+    // NewsBlurAppDelegate.m: a simulator build pointed at a local stack accepts its self-signed certificate
+    // (DevelopmentServerTrust.swift answers no for every other host and outside the simulator).
+    if ([DevelopmentServerTrust allowsUntrustedCertificatesForHost:self.host]) {
+        AFSecurityPolicy *developmentPolicy = [AFSecurityPolicy defaultPolicy];
+        developmentPolicy.allowInvalidCertificates = YES;
+        developmentPolicy.validatesDomainName = NO;
+        networkManager.securityPolicy = developmentPolicy;
+    }
     
     NSString *currentVersion = [[[NSBundle mainBundle] infoDictionary]
                                 objectForKey:@"CFBundleVersion"];

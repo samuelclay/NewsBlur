@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
@@ -27,6 +28,7 @@ class DiscoverSitesViewModel: ObservableObject {
     @Published var newslettersState = CategoryTabState()
     @Published var podcastsState = CategoryTabState()
     @Published var googleNewsState = GoogleNewsTabState()
+    @Published var describeState = DescribeTabState()
 
     @Published var addedFeedURLs: Set<String> = []
     @Published var addedFeedUrl: String?
@@ -45,11 +47,18 @@ class DiscoverSitesViewModel: ObservableObject {
     private var pollingGeneration = UUID()
     private var pollingSuspended = false
     private var lifecycleGeneration = UUID()
+    // DiscoverSitesViewModel.swift keeps a Describe search polling across tab changes and feed previews until it finishes.
+    private var describePollTask: Task<Void, Never>?
+    private var describeRequestToken = UUID()
+    private var describePollingStartedAt: Date?
+    // DescribeSearchTests.swift shortens the interval; the web polls every 2.5 seconds as well.
+    static var describePollInterval: TimeInterval = 2.5
+    static let describePollTimeout: TimeInterval = 10 * 60
     @Published var isAdding = false
     @Published var isPreparingPreview = false
 
     init(appEnvironment: AddSiteViewModelAppEnvironment = DefaultAddSiteViewModelAppEnvironment(),
-         session: URLSession = .shared) {
+         session: URLSession = DevelopmentServerTrust.session) {
         self.appEnvironment = appEnvironment
         self.session = session
     }
@@ -114,6 +123,10 @@ class DiscoverSitesViewModel: ObservableObject {
             if !searchState.isTrendingLoaded {
                 loadTrendingFeeds()
             }
+        case .describe:
+            if !describeState.isHistoryLoaded {
+                loadDescribeHistory()
+            }
         case .popular:
             if !popularState.isCategoriesLoaded {
                 loadPopularFeeds(type: "all", category: nil, subcategory: nil, offset: 0)
@@ -176,6 +189,18 @@ class DiscoverSitesViewModel: ObservableObject {
     }
 
     private func performRequest(_ request: URLRequest) async throws -> [String: Any] {
+        let json = try await performRawRequest(request)
+        if let code = json["code"] as? Int, code < 0,
+           !(request.url?.path == "/webfeed/status" && json["status"] as? String == "unknown") {
+            throw NSError(domain: "DiscoverSites", code: code,
+                          userInfo: [NSLocalizedDescriptionKey: json["message"] as? String ?? json["error"] as? String ?? "The request could not be completed. Please try again."])
+        }
+        return json
+    }
+
+    // DiscoverSitesViewModel.swift returns a decoded body even when its code is negative: Describe answers a denied
+    // start with code -1 plus the upgrade flag and usage snapshot the tab still has to show.
+    private func performRawRequest(_ request: URLRequest) async throws -> [String: Any] {
         let (data, response) = try await session.data(for: request)
         let decoded = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
         if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
@@ -187,11 +212,6 @@ class DiscoverSitesViewModel: ObservableObject {
         }
         guard let json = decoded else {
             throw NSError(domain: "DiscoverSites", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
-        }
-        if let code = json["code"] as? Int, code < 0,
-           !(request.url?.path == "/webfeed/status" && json["status"] as? String == "unknown") {
-            throw NSError(domain: "DiscoverSites", code: code,
-                          userInfo: [NSLocalizedDescriptionKey: json["message"] as? String ?? json["error"] as? String ?? "The request could not be completed. Please try again."])
         }
         return json
     }
@@ -853,6 +873,249 @@ class DiscoverSitesViewModel: ObservableObject {
         }
     }
 
+    // MARK: - 11. Describe Feeds
+
+    // DiscoverSitesViewModel.swift mirrors describe_feeds_view.js against /discover/describe/* (apps/describe/views.py):
+    // start a search, replay one from history, poll its status every 2.5 seconds and reconcile results by feed id.
+
+    func loadDescribeHistory() {
+        guard !describeState.isHistoryLoading else { return }
+        guard let request = makeRequest(path: "/discover/describe/history") else { return }
+        describeState.isHistoryLoading = true
+        describeState.historyErrorMessage = nil
+        let generation = lifecycleGeneration
+        Task {
+            defer { if lifecycleGeneration == generation { describeState.isHistoryLoading = false } }
+            do {
+                let json = try await performRequest(request)
+                guard lifecycleGeneration == generation else { return }
+                var history = (json["searches"] as? [[String: Any]] ?? []).compactMap { DescribeSearchSummary(dict: $0) }
+                // DiscoverSitesViewModel.swift keeps a search started while this request was in flight at the top.
+                if let current = describeState.search, !history.contains(where: { $0.id == current.id }) {
+                    history.insert(current.summary, at: 0)
+                }
+                describeState.history = history
+                if let usage = DescribeUsage(dict: json["usage"]) { describeState.usage = usage }
+                describeState.isHistoryLoaded = true
+            } catch {
+                guard lifecycleGeneration == generation else { return }
+                describeState.isHistoryLoaded = true
+                describeState.historyErrorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    func startDescribeSearch(prompt rawPrompt: String, searchID: String? = nil) {
+        let prompt = rawPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !prompt.isEmpty, !describeState.isStarting else { return }
+        stopDescribePolling()
+        let token = UUID()
+        describeRequestToken = token
+        describeState.prompt = prompt
+        describeState.isStarting = true
+        describeState.isOpening = false
+        describeState.errorMessage = nil
+        describeState.upgradeMessage = nil
+        var body = ["prompt": prompt, "request_id": UUID().uuidString]
+        if let searchID { body["search_id"] = searchID }
+        guard let request = makeRequest(path: "/discover/describe/start", method: "POST", body: body) else {
+            describeState.isStarting = false
+            describeState.errorMessage = NBLocalization.text("The search could not be started.")
+            return
+        }
+        let generation = lifecycleGeneration
+        Task {
+            do {
+                let json = try await performRawRequest(request)
+                guard lifecycleGeneration == generation, describeRequestToken == token else { return }
+                describeState.isStarting = false
+                if let usage = DescribeUsage(dict: json["usage"]) { describeState.usage = usage }
+                let code = (json["code"] as? NSNumber)?.intValue ?? 0
+                if code > 0, let search = DescribeSearch(dict: json["search"] as? [String: Any] ?? [:]) {
+                    showDescribeSearch(search, promote: true)
+                    beginDescribePolling()
+                } else if (json["upgrade"] as? NSNumber)?.boolValue == true {
+                    describeState.upgradeMessage = json["message"] as? String
+                        ?? NBLocalization.text("Describing the feeds you want is a premium feature. Upgrade to search by description.")
+                } else {
+                    describeState.errorMessage = json["message"] as? String ?? NBLocalization.text("The search could not be started.")
+                }
+            } catch {
+                guard lifecycleGeneration == generation, describeRequestToken == token else { return }
+                describeState.isStarting = false
+                describeState.errorMessage = String(format: NBLocalization.text("The search could not be started: %@"),
+                                                    error.localizedDescription)
+            }
+        }
+    }
+
+    func searchDescribeAgain() {
+        guard let search = describeState.search else { return }
+        startDescribeSearch(prompt: search.prompt, searchID: search.id)
+    }
+
+    func useDescribeExample(_ prompt: String) {
+        describeState.prompt = prompt
+        startDescribeSearch(prompt: prompt)
+    }
+
+    // DiscoverSitesViewModel.swift replays a history entry from the server cache; an unfinished one resumes polling.
+    func openDescribeSearch(id searchID: String) {
+        if let current = describeState.search, current.id == searchID { return }
+        stopDescribePolling()
+        let token = UUID()
+        describeRequestToken = token
+        describeState.search = nil
+        describeState.isOpening = true
+        describeState.isStarting = false
+        describeState.errorMessage = nil
+        describeState.upgradeMessage = nil
+        guard let request = makeRequest(path: "/discover/describe/status", params: ["search_id": searchID]) else {
+            describeState.isOpening = false
+            return
+        }
+        let generation = lifecycleGeneration
+        Task {
+            do {
+                let json = try await performRequest(request)
+                guard lifecycleGeneration == generation, describeRequestToken == token else { return }
+                describeState.isOpening = false
+                guard let search = DescribeSearch(dict: json["search"] as? [String: Any] ?? [:]) else {
+                    describeState.errorMessage = NBLocalization.text("That search could not be loaded.")
+                    return
+                }
+                showDescribeSearch(search, promote: false)
+                if !search.isFinished { beginDescribePolling() }
+            } catch {
+                guard lifecycleGeneration == generation, describeRequestToken == token else { return }
+                describeState.isOpening = false
+                let failure = error as NSError
+                describeState.errorMessage = failure.domain == "DiscoverSites"
+                    ? error.localizedDescription : NBLocalization.text("That search could not be loaded.")
+            }
+        }
+    }
+
+    func deleteDescribeSearch(id searchID: String) {
+        guard !describeState.deletingSearchIDs.contains(searchID) else { return }
+        guard let request = makeRequest(path: "/discover/describe/delete", method: "POST", body: ["search_id": searchID]) else { return }
+        describeState.deletingSearchIDs.insert(searchID)
+        describeState.historyErrorMessage = nil
+        let generation = lifecycleGeneration
+        Task {
+            defer { if lifecycleGeneration == generation { describeState.deletingSearchIDs.remove(searchID) } }
+            do {
+                let json = try await performRequest(request)
+                guard lifecycleGeneration == generation else { return }
+                if let searches = json["searches"] as? [[String: Any]] {
+                    describeState.history = searches.compactMap { DescribeSearchSummary(dict: $0) }
+                } else {
+                    describeState.history.removeAll { $0.id == searchID }
+                }
+                if describeState.search?.id == searchID { startNewDescribeSearch() }
+            } catch {
+                guard lifecycleGeneration == generation else { return }
+                describeState.historyErrorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    func startNewDescribeSearch() {
+        stopDescribePolling()
+        describeRequestToken = UUID()
+        describeState.search = nil
+        describeState.prompt = ""
+        describeState.isStarting = false
+        describeState.isOpening = false
+        describeState.errorMessage = nil
+        describeState.upgradeMessage = nil
+    }
+
+    // DiscoverSitesViewModel.swift promotes a search the server just started or re-ran, which bumps its created date
+    // to the top of the history; replaying or polling an entry updates it in place.
+    private func showDescribeSearch(_ search: DescribeSearch, promote: Bool) {
+        describeState.search = search
+        describeState.prompt = search.prompt
+        updateDescribeHistoryEntry(search, promote: promote)
+    }
+
+    private func updateDescribeHistoryEntry(_ search: DescribeSearch, promote: Bool = false) {
+        var history = describeState.history
+        if !promote, let index = history.firstIndex(where: { $0.id == search.id }) {
+            history[index] = search.summary
+        } else {
+            history.removeAll { $0.id == search.id }
+            history.insert(search.summary, at: 0)
+        }
+        describeState.history = history
+    }
+
+    private func beginDescribePolling() {
+        stopDescribePolling()
+        guard let search = describeState.search, !search.isFinished else { return }
+        let searchID = search.id
+        describePollingStartedAt = Date()
+        describePollTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do { try await Task.sleep(nanoseconds: UInt64(Self.describePollInterval * 1_000_000_000)) } catch { return }
+                guard let self, !Task.isCancelled else { return }
+                await self.pollDescribeStatus(searchID: searchID)
+                guard !Task.isCancelled, let current = self.describeState.search, current.id == searchID,
+                      !current.isFinished else { return }
+            }
+        }
+    }
+
+    func stopDescribePolling() {
+        describePollTask?.cancel()
+        describePollTask = nil
+        describePollingStartedAt = nil
+    }
+
+    private func pollDescribeStatus(searchID: String) async {
+        guard let current = describeState.search, current.id == searchID, !current.isFinished else { return }
+        if let started = describePollingStartedAt, Date().timeIntervalSince(started) >= Self.describePollTimeout {
+            // DiscoverSitesViewModel.swift gives up on a search the worker never finished instead of polling forever.
+            stopDescribePolling()
+            var timedOut = current
+            timedOut.summary.status = "error"
+            timedOut.summary.phase = "error"
+            timedOut.error = NBLocalization.text("The search is taking too long. Try searching again.")
+            applyDescribePayload(timedOut)
+            return
+        }
+        guard let request = makeRequest(path: "/discover/describe/status", params: ["search_id": searchID]) else { return }
+        let generation = lifecycleGeneration
+        do {
+            let json = try await performRequest(request)
+            guard lifecycleGeneration == generation, describeState.search?.id == searchID else { return }
+            if let search = DescribeSearch(dict: json["search"] as? [String: Any] ?? [:]), search.id == searchID {
+                applyDescribePayload(search)
+            }
+        } catch {
+            guard lifecycleGeneration == generation, describeState.search?.id == searchID else { return }
+            let failure = error as NSError
+            // DiscoverSitesViewModel.swift keeps polling through dropped connections; a refusal from the server ends it.
+            guard failure.domain == "DiscoverSites" else { return }
+            stopDescribePolling()
+            var refused = current
+            refused.summary.status = "error"
+            refused.summary.phase = "error"
+            refused.error = error.localizedDescription
+            applyDescribePayload(refused)
+        }
+    }
+
+    // DiscoverSitesViewModel.swift replaces the search only when something changed, so SwiftUI updates cards in
+    // place by feed id (new candidates appear, verdicts fill in, pruned feeds leave) without rebuilding the list.
+    private func applyDescribePayload(_ search: DescribeSearch) {
+        guard let current = describeState.search, current.id == search.id, search.differs(from: current) else { return }
+        withAnimation(.easeInOut(duration: 0.25)) {
+            describeState.search = search
+        }
+        updateDescribeHistoryEntry(search)
+    }
+
     // MARK: - Feed Parsing Helper
 
     static func parsePopularFeedEntry(_ entry: [String: Any]) -> DiscoverPopularFeed? {
@@ -918,6 +1181,8 @@ class DiscoverSitesViewModel: ObservableObject {
 
     func reset() {
         stopPolling()
+        stopDescribePolling()
+        describeRequestToken = UUID()
         searchDebounceTimer?.invalidate()
         searchCache = [:]
         categoryRequests = [:]
@@ -940,6 +1205,7 @@ class DiscoverSitesViewModel: ObservableObject {
         newslettersState = CategoryTabState()
         podcastsState = CategoryTabState()
         googleNewsState = GoogleNewsTabState()
+        describeState = DescribeTabState()
 
         addedFeedURLs = []
         addedFeedUrl = nil

@@ -68,7 +68,7 @@ class AddSiteViewModel: ObservableObject {
 
     init(
         appEnvironment: AddSiteViewModelAppEnvironment = DefaultAddSiteViewModelAppEnvironment(),
-        session: URLSession = .shared,
+        session: URLSession = DevelopmentServerTrust.session,
         cookieStorage: HTTPCookieStorage = .shared
     ) {
         self.appEnvironment = appEnvironment
@@ -133,6 +133,20 @@ class AddSiteViewModel: ObservableObject {
         searchText = result.value
         autocompleteResults = []
         onResultsCleared?()
+    }
+
+    // AddSiteViewModel.swift offers the Describe search for words with spaces that are not an address, matching
+    // is_describable in reader_add_feed.js: at least three characters, some whitespace, and no URL scheme.
+    nonisolated static func describePrompt(for text: String) -> String? {
+        let prompt = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard prompt.count >= 3, prompt.rangeOfCharacter(from: .whitespacesAndNewlines) != nil else { return nil }
+        guard !prompt.contains("://"),
+              prompt.range(of: "^https?:", options: [.regularExpression, .caseInsensitive]) == nil else { return nil }
+        return prompt
+    }
+
+    var describePrompt: String? {
+        Self.describePrompt(for: searchText)
     }
 
     func reset() {
