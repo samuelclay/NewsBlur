@@ -121,6 +121,16 @@ msgid_plural "%(count)s days"
 msgstr[0] "%(count)s gün"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s saat"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s dakika"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s ay"
@@ -1315,6 +1325,10 @@ msgstr "En Ucuz Ücretli Plan"
 msgid "Check the FAQ"
 msgstr "SSS'yi inceleyin"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "Akış bulmak için %(site)s kontrol ediliyor"
+
 msgid "Chief Morale Officer"
 msgstr "Baş Moral Sorumlusu"
 
@@ -1688,8 +1702,18 @@ msgstr "Varsayılan"
 msgid "Delete"
 msgstr "Sil"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "Okumak istediklerinizi birkaç kelimeyle tarif edin."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "İstediğiniz akışları tarif etme özelliği Premium'a özeldir. Açıklamaya göre arama yapmak için yükseltin."
+
 msgid "Description"
 msgstr "Açıklama"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "Açıklamalar %(limit)d karakterle sınırlıdır"
 
 msgid "Developer"
 msgstr "Geliştirici"
@@ -3129,6 +3153,10 @@ msgstr[0] ""
 "%(counter)s aydır NewsBlur'ı görmediniz. O zamandan beri çok şey değişti. Paylaşılan haberler "
 "(Blurblog'lar) ve yerel iOS/Android uygulamalarıyla birlikte kapsamlı bir yeniden tasarımı kullanıma "
 "sunduk. Eski Google Reader özelliklerini özlediyseniz, yeni NewsBlur'ı çok seveceksiniz."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "Açıklamanıza göre %(count)s akış değerlendiriliyor"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4859,6 +4887,9 @@ msgstr "Haberleri arkadaşlarla okumak daha güzel. Haberleri herkese açık blu
 msgid "Reading stories across folders with River of News"
 msgstr "Haber Akışı ile klasörlerdeki haberleri bir arada okuma"
 
+msgid "Reading your description"
+msgstr "Açıklamanız okunuyor"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5240,6 +5271,12 @@ msgstr "Okuma Arşivinizde arayın"
 msgid "Search your entire archive with full-text search"
 msgstr "Tam metin aramayla tüm arşivinizde arama yapın"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "NewsBlur akışları aranıyor"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "NewsBlur henüz görmediği akışlar için web'de aranıyor"
+
 msgid "Searching your sites and saved stories"
 msgstr "Sitelerinizde ve kaydedilen haberlerinizde arama"
 
@@ -5512,6 +5549,9 @@ msgstr "Bu e-posta adresi zaten kullanılıyor."
 
 msgid "Someone is already using that username."
 msgstr "Bu kullanıcı adını başka biri kullanıyor."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "Arama sırasında bir sorun oluştu. Lütfen yeniden deneyin."
 
 msgid "Something went wrong..."
 msgstr "Bir şeyler ters gitti..."
@@ -5853,6 +5893,12 @@ msgstr "Bu öğe çalmıyor"
 msgid "That part of the story doesn't exist."
 msgstr "Haberin bu bölümü mevcut değil."
 
+msgid "That search is no longer in your history."
+msgstr "Bu arama artık geçmişinizde yok."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "Bu arama hâlâ sürüyor. Önce tamamlanmasını bekleyin."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Bu haber akıştan kaldırılmış; okunmadı olarak işaretlemenize gerek yok."
 
@@ -6000,6 +6046,9 @@ msgstr "Kısaltılmış RSS akışlarındaki özgün haber, kesintisiz biçimde 
 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Normal akışlarla aynıdır. Premium ve Pro kullanıcıları daha sık güncelleme alır."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "Arama zaman aşımına uğradı; şu ana kadar bulunanlar bunlar."
 
 msgid "The shared comment cannot be found."
 msgstr "Paylaşılan yorum bulunamıyor."
@@ -7076,6 +7125,11 @@ msgstr ""
 "<span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span> kişisini takip ettiniz."
 
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "Bugün %(count)s arama açıklama hakkınız kaldı ( %(time)s tarihinde sıfırlanır)."
+
 msgid "You have a follow request:"
 msgstr "Bir takip isteğiniz var:"
 
@@ -7353,6 +7407,10 @@ msgid ""
 msgstr ""
 "Yakın zamanda NewsBlur'ı kullandınız; belki de ücretsiz hesaba geri dönmek istememiştiniz? Belki de "
 "yalnızca Premium hesabınızı yenilemeniz gerekiyor. Bunu yapmanıza yardımcı olalım."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "Bugün için tüm %(limit)s açıklama arama hakkınızı kullandınız. Hakkınız %(time)s içinde sıfırlanacak."
 
 msgid "YouTube search request failed."
 msgstr "YouTube arama isteği başarısız oldu."

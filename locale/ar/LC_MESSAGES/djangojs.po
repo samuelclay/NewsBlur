@@ -302,6 +302,16 @@ msgstr[4] "%(count)s خلاصة"
 msgstr[5] "%(count)s خلاصة"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "%(count)s من الخلاصات حتى الآن"
+msgstr[1] "خلاصة واحدة حتى الآن (%(count)s)"
+msgstr[2] "خلاصتان حتى الآن (%(count)s)"
+msgstr[3] "%(count)s خلاصات حتى الآن"
+msgstr[4] "%(count)s خلاصة حتى الآن"
+msgstr[5] "%(count)s خلاصة حتى الآن"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s متابع"
@@ -834,6 +844,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone وiPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "تبقّى لك %(remaining)s من أصل %(limit)s عملية بحث اليوم"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1574,6 +1592,9 @@ msgstr "النطاقات المسموح بها"
 
 msgid "Alphabetical"
 msgstr "أبجديًا"
+
+msgid "Already in NewsBlur’s feed index"
+msgstr "موجودة بالفعل في فهرس خلاصات NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -2639,17 +2660,29 @@ msgstr "جارٍ الحذف..."
 msgid "Delivery"
 msgstr "الإلقاء"
 
+msgid "Describe"
+msgstr "وصف"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "صِف القصة التي تبحث عنها، وسنعيد تحليل الصفحة للعثور عليها."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "صف موضوعًا، وسيقيّم الذكاء الاصطناعي كل قصة وفقًا لوصفك لتمييز القصص المطابقة أو إخفائها."
 
+msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
+msgstr "صِف الخلاصات التي تبحث عنها، مثل «مراجعات لتطبيقات iOS جديدة مع لقطات شاشة»"
+
 msgid "Describe what to focus or hide"
 msgstr "صف ما تريد التركيز عليه أو إخفاءه"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "صف ما تريد البحث عنه، وسيحلل الذكاء الاصطناعي صور كل قصة وفقًا لوصفك."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "صِف ما تريد قراءته ودع NewsBlur يعثر على الخلاصات المناسبة"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "وصف الخلاصات التي تريدها ميزة مدفوعة. رقِّ للبحث باستخدام الوصف."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2765,6 +2798,9 @@ msgstr "لا تعرض معاينة، واعرض عنوان القصة فقط"
 
 msgid "Don't show a thumbnail"
 msgstr "لا تعرض صورة مصغّرة"
+
+msgid "Done"
+msgstr "تم"
 
 msgid "Done!"
 msgstr "تم!"
@@ -3103,6 +3139,9 @@ msgstr "الوجوه"
 msgid "Fact check this story"
 msgstr "تحقّق من صحة هذه القصة"
 
+msgid "Failed"
+msgstr "فشل"
+
 msgid "Failed to connect to server"
 msgstr "تعذّر الاتصال بالخادم"
 
@@ -3328,6 +3367,16 @@ msgstr "العثور على أصدقاء من %(value_1)s"
 msgid "Find Friends"
 msgstr "البحث عن أصدقاء"
 
+msgid "Find feeds"
+msgstr "العثور على خلاصات"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "اعثر على خلاصات عن «%(term)s»"
+
+msgid "Find feeds by describing them"
+msgstr "اعثر على الخلاصات بوصفها"
+
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "اعثر على عنوان بريدك الإلكتروني الفريد في NewsBlur ضمن نافذة «النشرات الإخبارية عبر البريد الإلكتروني»"
 
@@ -3482,6 +3531,16 @@ msgid "Forwarding email address"
 msgstr "عنوان البريد الإلكتروني لإعادة التوجيه"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "عُثر على %(count)s من الخلاصات المطابقة لوصفك"
+msgstr[1] "عُثر على خلاصة واحدة (%(count)s) مطابقة لوصفك"
+msgstr[2] "عُثر على خلاصتين (%(count)s) مطابقتين لوصفك"
+msgstr[3] "عُثر على %(count)s خلاصات مطابقة لوصفك"
+msgstr[4] "عُثر على %(count)s خلاصة مطابقة لوصفك"
+msgstr[5] "عُثر على %(count)s خلاصة مطابقة لوصفك"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "عُثر على %(count)s نمط. اختر النمط الذي يطابق القصص التي تريدها بأفضل شكل."
@@ -3493,6 +3552,12 @@ msgstr[5] "عُثر على %(count)s نمط. اختر النمط الذي يطا
 
 msgid "Found in the Account dialog"
 msgstr "تجد هذا الخيار في نافذة الحساب"
+
+msgid "Found on the web"
+msgstr "عُثر عليه على الويب"
+
+msgid "Found on the web during this search"
+msgstr "عُثر عليه على الويب أثناء هذا البحث"
 
 msgid "Free"
 msgstr "مجاني"
@@ -3882,6 +3947,9 @@ msgstr "مقدار التعبير العاطفي"
 msgid "How often"
 msgstr "عدد المرات"
 
+msgid "How well this feed matches your description"
+msgstr "مدى تطابق هذه الخلاصة مع وصفك"
+
 msgid "I'm Following"
 msgstr "أتابع"
 
@@ -3999,6 +4067,9 @@ msgstr "جارٍ فهرسة خلاصاتك للبحث"
 msgid "Indexing..."
 msgstr "جارٍ الفهرسة..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "مطورو الألعاب المستقلون الذين يكتبون عن أعمالهم قيد التطوير"
+
 msgid "Infrequent Site Stories"
 msgstr "قصص المواقع قليلة التحديث"
 
@@ -4055,6 +4126,12 @@ msgstr "يناير"
 
 msgid "Japanese"
 msgstr "اليابانية"
+
+msgid "Judging"
+msgstr "التقييم"
+
+msgid "Judging…"
+msgstr "جارٍ التقييم…"
 
 msgid "July"
 msgstr "يوليو"
@@ -4235,8 +4312,14 @@ msgstr "جارٍ تحميل الأصوات..."
 msgid "Loading your blocklist settings..."
 msgstr "جارٍ تحميل إعدادات قائمة الحظر..."
 
+msgid "Loading your search…"
+msgstr "جارٍ تحميل بحثك…"
+
 msgid "Loading..."
 msgstr "جارٍ التحميل..."
+
+msgid "Loading…"
+msgstr "جارٍ التحميل…"
 
 msgid "Location"
 msgstr "الموقع"
@@ -4258,6 +4341,9 @@ msgstr "قراءات طويلة"
 
 msgid "Long Reads on NewsBlur"
 msgstr "قراءات طويلة على NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "مقالات مطوّلة عن المدن والإسكان ووسائل النقل العام"
 
 msgid "Long reads for later"
 msgstr "مقالات طويلة لقراءتها لاحقًا"
@@ -4438,6 +4524,10 @@ msgstr "تمت المطابقة عبر عنوان مكرر"
 
 msgid "Matched via related topics"
 msgstr "تم التطابق عبر مواضيع ذات صلة"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "تمت مطابقة «%(query)s»"
 
 msgid "Matches story titles containing all keywords"
 msgstr "يطابق عناوين القصص التي تتضمن جميع الكلمات المفتاحية"
@@ -4687,6 +4777,9 @@ msgstr "لا تنتهي صلاحيتها أبدًا"
 msgid "Never gonna expire. Congrats!"
 msgstr "لن تنتهي صلاحيتها أبدًا. تهانينا!"
 
+msgid "New"
+msgstr "جديد"
+
 msgid "New Arrivals"
 msgstr "الإضافات الجديدة"
 
@@ -4743,6 +4836,9 @@ msgstr "يتصل NewsBlur بخدمات أخرى"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "اكتشف NewsBlur أن لغة متصفحك هي %(language)s."
 
+msgid "NewsBlur index"
+msgstr "فهرس NewsBlur"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur متوقف حاليًا. <br> حاول مرة أخرى قريبًا."
 
@@ -4754,6 +4850,13 @@ msgstr "يراقب NewsBlur الصفحة تلقائيًا لاكتشاف الت�
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur على iOS بكامل الميزات"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"يقرأ NewsBlur وصفك، ويبحث في فهرسه للخلاصات وعلى الويب المفتوح، ثم يقيّم كل نتيجة مطابقة. قد يستغرق ذلك "
+"دقيقة."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "سيعثر NewsBlur تلقائيًا على خلاصة RSS لهذا الموقع."
@@ -4829,6 +4932,9 @@ msgstr "لم يتم العثور على خلاصات"
 
 msgid "No feeds found in this category."
 msgstr "لم يتم العثور على خلاصات في هذه الفئة."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "لم تطابق أي خلاصة هذا الوصف. جرّب وصفها بطريقة أخرى."
 
 msgid "No folders match"
 msgstr "لا توجد مجلدات مطابقة"
@@ -5559,6 +5665,9 @@ msgstr[5] "تجربة Premium (%(count)s يوم)"
 msgid "Premium details"
 msgstr "تفاصيل Premium"
 
+msgid "Premium feature"
+msgstr "ميزة مدفوعة"
+
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "خطوط Premium تتطلب %(link_start)sحساب Premium%(link_end)s"
@@ -5934,6 +6043,9 @@ msgstr "إزالة"
 msgid "Remove from Up Next"
 msgstr "إزالة من التالي"
 
+msgid "Remove from history"
+msgstr "إزالة من السجل"
+
 msgid "Remove this list"
 msgstr "إزالة هذه القائمة"
 
@@ -6040,6 +6152,9 @@ msgstr "إعادة المحاولة"
 
 msgid "Retry fetching and parsing"
 msgstr "أعِد محاولة الجلب والتحليل"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "مراجعات لتطبيقات iOS الجديدة مع الكثير من لقطات الشاشة"
 
 msgid "Rewinding..."
 msgstr "جارٍ الرجوع..."
@@ -6235,6 +6350,9 @@ msgstr "ابحث في جميع القصص والوسوم المحفوظة"
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "ابحث في جميع اشتراكاتك باستخدام البحث في النص الكامل المدعوم بـ Elasticsearch."
 
+msgid "Search again"
+msgstr "البحث مجددًا"
+
 msgid "Search archives..."
 msgstr "البحث في الأرشيف..."
 
@@ -6303,6 +6421,9 @@ msgstr "ابحث في قصصك"
 msgid "Search: \"%(value_1)s\""
 msgstr "بحث: \"%(value_1)s\""
 
+msgid "Searches you run will be kept here."
+msgstr "ستُحفظ عمليات البحث التي تجريها هنا."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "جارٍ البحث في <b>%(feed_title)s</b> عن \"<b>%(query)s</b>\""
@@ -6310,11 +6431,23 @@ msgstr "جارٍ البحث في <b>%(feed_title)s</b> عن \"<b>%(query)s</b>\"
 msgid "Searching RSS feeds..."
 msgstr "جارٍ البحث عن خلاصات RSS..."
 
+msgid "Searching feeds"
+msgstr "جارٍ البحث عن الخلاصات"
+
+msgid "Searching for"
+msgstr "البحث عن"
+
 msgid "Searching saved stories..."
 msgstr "جارٍ البحث في القصص المحفوظة..."
 
+msgid "Searching the web"
+msgstr "جارٍ البحث على الويب"
+
 msgid "Searching your archive..."
 msgstr "جارٍ البحث في أرشيفك..."
+
+msgid "Searching…"
+msgstr "جارٍ البحث…"
 
 msgid "Seconds to skip backward"
 msgstr "الثواني للتخطي إلى الخلف"
@@ -6699,6 +6832,9 @@ msgstr "اجتماعي"
 msgid "Social Connections"
 msgstr "الاتصالات الاجتماعية"
 
+msgid "Something went wrong while searching."
+msgstr "حدث خطأ أثناء البحث."
+
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
 msgstr "عذرًا، لا أحد يطابق \"%(value_1)s\"."
@@ -6850,6 +6986,12 @@ msgstr "جارٍ بدء التصنيف..."
 
 msgid "Starting trial..."
 msgstr "جارٍ بدء الفترة التجريبية..."
+
+msgid "Starting your search…"
+msgstr "جارٍ بدء البحث…"
+
+msgid "Starting…"
+msgstr "جارٍ البدء…"
 
 msgid "Statistics"
 msgstr "الإحصاءات"
@@ -7274,6 +7416,12 @@ msgstr "شكرًا لك! لديك %(bold_start)sحساب Premium Archive%(bold_e
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "شكرًا لك! لديك %(bold_start)sحساب Premium Pro%(bold_end)s."
 
+msgid "That search could not be loaded."
+msgstr "تعذّر تحميل هذا البحث."
+
+msgid "That search is no longer in your history."
+msgstr "لم يعد هذا البحث في سجلك."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "استغرق رد خدمة الذكاء الاصطناعي وقتًا طويلًا. يُرجى المحاولة مرة أخرى."
 
@@ -7351,6 +7499,9 @@ msgstr "عطّل الناشر الصفحة الأصلية."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "يُجلب HTML الصفحة ويُحلل لاستخراج بنية المحتوى."
+
+msgid "The search could not be started."
+msgstr "تعذّر بدء البحث."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "يُحفظ العرض الذي تختاره لكل موقع، لذا يمكن ضبط الخلاصات التي تعرض الملخصات فقط على عرض النص افتراضيًا."
@@ -7741,6 +7892,9 @@ msgstr "جرّب عبارة بحث مختلفة أو الصق عنوان URL م�
 msgid "Try again"
 msgstr "حاول مرة أخرى"
 
+msgid "Try describing something like"
+msgstr "جرّب وصف شيء مثل"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "جرّب كلمات مفتاحية مختلفة، أو امسح البحث لعرض كل شيء."
 
@@ -7837,6 +7991,9 @@ msgstr "خطأ غير معروف"
 
 msgid "Unknown question"
 msgstr "سؤال غير معروف"
+
+msgid "Unlimited searches"
+msgstr "عمليات بحث غير محدودة"
 
 msgid "Unlock"
 msgstr "إلغاء القفل"
@@ -8121,6 +8278,9 @@ msgstr "فشل التسجيل الصوتي. يُرجى المحاولة مرة �
 
 msgid "Voice settings"
 msgstr "إعدادات الصوت"
+
+msgid "Waiting for a verdict…"
+msgstr "بانتظار النتيجة…"
 
 msgid "Warning: This is actually permanent"
 msgstr "تحذير: هذا الإجراء نهائي بالفعل"
@@ -8581,6 +8741,9 @@ msgstr "سيتم تخفيض مستوى حساب Premium الخاص بك في:"
 
 msgid "Your profile"
 msgstr "ملفك الشخصي"
+
+msgid "Your searches"
+msgstr "عمليات البحث الخاصة بك"
 
 msgid "Your subscription is no longer active."
 msgstr "لم يعد اشتراكك نشطًا."

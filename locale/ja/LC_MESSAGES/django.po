@@ -119,6 +119,16 @@ msgid_plural "%(count)s days"
 msgstr[0] "%(count)s日"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s時間"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s分"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)sか月"
@@ -1205,6 +1215,10 @@ msgstr "最安の有料プラン"
 msgid "Check the FAQ"
 msgstr "よくある質問を見る"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "%(site)sでフィードを確認中"
+
 msgid "Chief Morale Officer"
 msgstr "チーフ・モラル・オフィサー"
 
@@ -1560,8 +1574,18 @@ msgstr "デフォルト"
 msgid "Delete"
 msgstr "削除"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "読みたい内容を簡単に説明してください。"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "希望するフィードを説明して検索する機能はプレミアム機能です。アップグレードすると、説明から検索できます。"
+
 msgid "Description"
 msgstr "説明"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "説明は%(limit)d文字以内で入力してください"
 
 msgid "Developer"
 msgstr "開発者"
@@ -2875,6 +2899,10 @@ msgid_plural ""
 msgstr[0] ""
 "最後にNewsBlurをご覧になってから%(counter)sか月が経ちました。その間に大きく変わりました。共有記事（Blurblog）やiOS／Androidのネイティブアプリを備えた、大規模なリニューアルを行いました。以前のGoogle"
 " Readerの機能が懐かしい方にも、新しいNewsBlurをきっと気に入っていただけます。"
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "%(count)s件のフィードを説明に照らして評価中"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4397,6 +4425,9 @@ msgstr "ニュースは友達と読むともっと楽しい。公開Blurblogで�
 msgid "Reading stories across folders with River of News"
 msgstr "ニュースの流れでフォルダーをまたいで記事を読む"
 
+msgid "Reading your description"
+msgstr "説明を読み取っています"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -4754,6 +4785,12 @@ msgstr "閲覧履歴アーカイブを検索"
 msgid "Search your entire archive with full-text search"
 msgstr "全文検索でアーカイブ全体を検索"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "NewsBlurのフィードを検索中"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "NewsBlurがまだ見つけていないフィードをウェブで検索中"
+
 msgid "Searching your sites and saved stories"
 msgstr "サイトと保存した記事を検索"
 
@@ -5012,6 +5049,9 @@ msgstr "このメールアドレスはすでに使用されています。"
 
 msgid "Someone is already using that username."
 msgstr "そのユーザー名はすでに使用されています。"
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "検索中に問題が発生しました。もう一度お試しください。"
 
 msgid "Something went wrong..."
 msgstr "問題が発生しました..."
@@ -5333,6 +5373,12 @@ msgstr "その項目は再生中ではありません"
 msgid "That part of the story doesn't exist."
 msgstr "記事のその部分は存在しません。"
 
+msgid "That search is no longer in your history."
+msgstr "その検索は履歴にありません。"
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "検索はまだ実行中です。完了するまでお待ちください。"
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "この記事はフィードから削除されているため、未読にする必要はありません。"
 
@@ -5458,6 +5504,9 @@ msgstr "省略されたRSSフィードの記事を、元の記事からシーム
 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "通常のフィードと同じです。プレミアムおよびProユーザーは、より短い間隔で更新されます。"
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "検索がタイムアウトしたため、現時点で見つかった結果を表示しています。"
 
 msgid "The shared comment cannot be found."
 msgstr "共有されたコメントが見つかりません。"
@@ -6425,6 +6474,11 @@ msgstr ""
 "<span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>をフォローしました。"
 
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "本日あと%(count)s回、検索内容の説明を検索できます（%(time)sにリセット）。"
+
 msgid "You have a follow request:"
 msgstr "フォローリクエストがあります："
 
@@ -6662,6 +6716,10 @@ msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
 msgstr "最近NewsBlurをご利用だったようですので、無料アカウントへの切り替えは意図したものではないかもしれません。プレミアムアカウントを更新するだけでよい場合もあります。お手続きをご案内します。"
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "本日利用できる説明検索 %(limit)s 回をすべて使い切りました。上限は %(time)s にリセットされます。"
 
 msgid "YouTube search request failed."
 msgstr "YouTubeの検索リクエストに失敗しました。"

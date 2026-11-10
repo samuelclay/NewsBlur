@@ -239,6 +239,12 @@ msgstr[0] "%(count)s Feed"
 msgstr[1] "%(count)s Feeds"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "Bisher %(count)s Feed"
+msgstr[1] "Bisher %(count)s Feeds"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s Follower"
@@ -587,6 +593,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "Heute noch %(remaining)s von %(limit)s Suchanfragen"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1295,6 +1309,9 @@ msgstr "Zulässige Domains"
 
 msgid "Alphabetical"
 msgstr "Alphabetisch"
+
+msgid "Already in NewsBlur’s feed index"
+msgstr "Bereits im Feed-Index von NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -2327,6 +2344,9 @@ msgstr "Wird gelöscht …"
 msgid "Delivery"
 msgstr "Sprechweise"
 
+msgid "Describe"
+msgstr "Beschreiben"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Beschreibe einen Artikel, nach dem du suchst, und wir analysieren die Seite erneut, um ihn zu finden."
 
@@ -2335,6 +2355,9 @@ msgstr ""
 "Beschreibe ein Thema. Die KI bewertet jeden Artikel anhand deiner Vorgabe, damit passende Inhalte "
 "hervorgehoben oder ausgeblendet werden."
 
+msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
+msgstr "Beschreibe die Feeds, nach denen du suchst, zum Beispiel „Rezensionen zu neuen iOS-Apps mit Screenshots“"
+
 msgid "Describe what to focus or hide"
 msgstr "Beschreibe, worauf du dich konzentrieren oder was du ausblenden möchtest"
 
@@ -2342,6 +2365,14 @@ msgid "Describe what to look for and AI will analyze each story’s images again
 msgstr ""
 "Beschreibe, wonach gesucht werden soll, und die KI analysiert die Bilder jedes Artikels anhand deiner "
 "Vorgabe."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "Beschreibe, was du lesen möchtest, und lass NewsBlur passende Feeds finden"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr ""
+"Feeds nach deinen Wünschen zu beschreiben, ist eine Premium-Funktion. Führe ein Upgrade durch, um per "
+"Beschreibung zu suchen."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2457,6 +2488,9 @@ msgstr "Keine Vorschau anzeigen, nur den Artikeltitel"
 
 msgid "Don't show a thumbnail"
 msgstr "Kein Vorschaubild anzeigen"
+
+msgid "Done"
+msgstr "Fertig"
 
 msgid "Done!"
 msgstr "Fertig!"
@@ -2796,6 +2830,9 @@ msgstr "Gesichter"
 msgid "Fact check this story"
 msgstr "Diesen Artikel auf Fakten prüfen"
 
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
 msgid "Failed to connect to server"
 msgstr "Verbindung zum Server fehlgeschlagen"
 
@@ -3021,6 +3058,16 @@ msgstr "%(value_1)s Freunde finden"
 msgid "Find Friends"
 msgstr "Freunde finden"
 
+msgid "Find feeds"
+msgstr "Feeds finden"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "Feeds zu „%(term)s“ finden"
+
+msgid "Find feeds by describing them"
+msgstr "Feeds durch Beschreibung finden"
+
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Deine individuelle NewsBlur-E-Mail-Adresse findest du im Dialog „E-Mail-Newsletter“"
 
@@ -3171,6 +3218,12 @@ msgid "Forwarding email address"
 msgstr "Weiterleitungs-E-Mail-Adresse"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "%(count)s Feed gefunden, der zu deiner Beschreibung passt"
+msgstr[1] "%(count)s Feeds gefunden, die zu deiner Beschreibung passen"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "%(count)s Muster gefunden. Wähle das aus, das am besten zu den gewünschten Artikeln passt."
@@ -3178,6 +3231,12 @@ msgstr[1] "%(count)s Muster gefunden. Wähle das Muster aus, das am besten zu de
 
 msgid "Found in the Account dialog"
 msgstr "Im Kontodialog zu finden"
+
+msgid "Found on the web"
+msgstr "Im Web gefunden"
+
+msgid "Found on the web during this search"
+msgstr "Bei dieser Suche im Web gefunden"
 
 msgid "Free"
 msgstr "Kostenlos"
@@ -3569,6 +3628,9 @@ msgstr "Wie viel Emotion"
 msgid "How often"
 msgstr "Wie oft"
 
+msgid "How well this feed matches your description"
+msgstr "Wie gut dieser Feed zu deiner Beschreibung passt"
+
 msgid "I'm Following"
 msgstr "Ich folge"
 
@@ -3686,6 +3748,9 @@ msgstr "Feeds für die Suche werden indexiert"
 msgid "Indexing..."
 msgstr "Wird indexiert ..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "Indie-Spieleentwickler, die über ihre laufenden Projekte schreiben"
+
 msgid "Infrequent Site Stories"
 msgstr "Artikel selten aktiver Websites"
 
@@ -3744,6 +3809,12 @@ msgstr "Januar"
 
 msgid "Japanese"
 msgstr "Japanisch"
+
+msgid "Judging"
+msgstr "Wird bewertet"
+
+msgid "Judging…"
+msgstr "Wird bewertet…"
 
 msgid "July"
 msgstr "Juli"
@@ -3924,8 +3995,14 @@ msgstr "Stimmen werden geladen…"
 msgid "Loading your blocklist settings..."
 msgstr "Einstellungen für deine Sperrliste werden geladen …"
 
+msgid "Loading your search…"
+msgstr "Deine Suche wird geladen…"
+
 msgid "Loading..."
 msgstr "Wird geladen …"
+
+msgid "Loading…"
+msgstr "Wird geladen…"
 
 msgid "Location"
 msgstr "Standort"
@@ -3947,6 +4024,9 @@ msgstr "Lange Artikel"
 
 msgid "Long Reads on NewsBlur"
 msgstr "Lange Artikel auf NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "Lange Essays über Städte, Wohnraum und öffentlichen Nahverkehr"
 
 msgid "Long reads for later"
 msgstr "Lange Artikel für später"
@@ -4114,6 +4194,10 @@ msgstr "Über einen doppelten Titel gefunden"
 
 msgid "Matched via related topics"
 msgstr "Über verwandte Themen gefunden"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "„%(query)s“ gefunden"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Findet Artikeltitel, die alle Stichwörter enthalten"
@@ -4347,6 +4431,9 @@ msgstr "Läuft nie ab"
 msgid "Never gonna expire. Congrats!"
 msgstr "Läuft nie ab. Glückwunsch!"
 
+msgid "New"
+msgstr "Neu"
+
 msgid "New Arrivals"
 msgstr "Neu eingetroffen"
 
@@ -4403,6 +4490,9 @@ msgstr "NewsBlur mit anderen Diensten verbunden"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur hat %(language)s in deinem Browser erkannt."
 
+msgid "NewsBlur index"
+msgstr "NewsBlur-Index"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur ist derzeit nicht erreichbar. <br> Versuch es bald erneut."
 
@@ -4414,6 +4504,13 @@ msgstr "NewsBlur überwacht die Seite automatisch auf Änderungen"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur für iOS mit vollem Funktionsumfang"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"NewsBlur liest deine Beschreibung, durchsucht seinen Feed-Index und das offene Web und bewertet dann jeden "
+"Treffer. Das kann eine Minute dauern."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur findet automatisch den RSS-Feed für diese Website."
@@ -4491,6 +4588,9 @@ msgstr "Keine Feeds gefunden"
 
 msgid "No feeds found in this category."
 msgstr "In dieser Kategorie wurden keine Feeds gefunden."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "Zu dieser Beschreibung wurden keine passenden Feeds gefunden. Beschreibe es anders."
 
 msgid "No folders match"
 msgstr "Keine passenden Ordner"
@@ -5203,6 +5303,9 @@ msgstr[1] "Premium-Testversion (%(count)s Tage)"
 msgid "Premium details"
 msgstr "Premium-Details"
 
+msgid "Premium feature"
+msgstr "Premium-Funktion"
+
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Premium-Schriftarten erfordern ein %(link_start)sPremium-Konto%(link_end)s"
@@ -5574,6 +5677,9 @@ msgstr "Entfernen"
 msgid "Remove from Up Next"
 msgstr "Aus der Wiedergabeliste entfernen"
 
+msgid "Remove from history"
+msgstr "Aus dem Verlauf entfernen"
+
 msgid "Remove this list"
 msgstr "Diese Liste entfernen"
 
@@ -5676,6 +5782,9 @@ msgstr "Erneut versuchen"
 
 msgid "Retry fetching and parsing"
 msgstr "Abruf und Parsing erneut versuchen"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "Rezensionen zu neuen iOS-Apps mit vielen Screenshots"
 
 msgid "Rewinding..."
 msgstr "Wird zurückgespult …"
@@ -5869,6 +5978,9 @@ msgstr "Alle gespeicherten Artikel und Tags durchsuchen"
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Durchsuche alle deine Abonnements mit der Elasticsearch-basierten Volltextsuche."
 
+msgid "Search again"
+msgstr "Erneut suchen"
+
 msgid "Search archives..."
 msgstr "Archive durchsuchen..."
 
@@ -5937,6 +6049,9 @@ msgstr "Deine Artikel durchsuchen"
 msgid "Search: \"%(value_1)s\""
 msgstr "Suche: „%(value_1)s“"
 
+msgid "Searches you run will be kept here."
+msgstr "Deine Suchanfragen werden hier gespeichert."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "<b>%(feed_title)s</b> wird nach „<b>%(query)s</b>“ durchsucht"
@@ -5944,11 +6059,23 @@ msgstr "<b>%(feed_title)s</b> wird nach „<b>%(query)s</b>“ durchsucht"
 msgid "Searching RSS feeds..."
 msgstr "RSS-Feeds werden durchsucht …"
 
+msgid "Searching feeds"
+msgstr "Feeds werden durchsucht"
+
+msgid "Searching for"
+msgstr "Suche nach"
+
 msgid "Searching saved stories..."
 msgstr "Gespeicherte Artikel werden durchsucht..."
 
+msgid "Searching the web"
+msgstr "Das Web wird durchsucht"
+
 msgid "Searching your archive..."
 msgstr "Dein Archiv wird durchsucht..."
+
+msgid "Searching…"
+msgstr "Suche läuft…"
 
 msgid "Seconds to skip backward"
 msgstr "Sekunden zum Zurückspringen"
@@ -6335,6 +6462,9 @@ msgstr "Soziales"
 msgid "Social Connections"
 msgstr "Soziale Kontakte"
 
+msgid "Something went wrong while searching."
+msgstr "Bei der Suche ist ein Fehler aufgetreten."
+
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
 msgstr "Entschuldigung, niemand passt zu „%(value_1)s“."
@@ -6476,6 +6606,12 @@ msgstr "Kategorisierung wird gestartet …"
 
 msgid "Starting trial..."
 msgstr "Testphase wird gestartet …"
+
+msgid "Starting your search…"
+msgstr "Deine Suche wird gestartet…"
+
+msgid "Starting…"
+msgstr "Wird gestartet…"
 
 msgid "Statistics"
 msgstr "Statistiken"
@@ -6892,6 +7028,12 @@ msgstr "Vielen Dank! Du hast ein %(bold_start)sPremium-Archive-Konto%(bold_end)s
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Vielen Dank! Du hast ein %(bold_start)sPremium-Pro-Konto%(bold_end)s."
 
+msgid "That search could not be loaded."
+msgstr "Diese Suche konnte nicht geladen werden."
+
+msgid "That search is no longer in your history."
+msgstr "Diese Suche ist nicht mehr in deinem Verlauf."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Der KI-Dienst hat zu lange für eine Antwort gebraucht. Bitte versuche es erneut."
 
@@ -6972,6 +7114,9 @@ msgstr "Die Originalseite wurde vom Herausgeber deaktiviert."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "Der HTML-Code der Seite wird abgerufen und analysiert, um die Inhaltsstruktur zu ermitteln."
+
+msgid "The search could not be started."
+msgstr "Die Suche konnte nicht gestartet werden."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
@@ -7368,6 +7513,9 @@ msgstr "Versuche einen anderen Suchbegriff oder füge direkt eine URL ein."
 msgid "Try again"
 msgstr "Erneut versuchen"
 
+msgid "Try describing something like"
+msgstr "Versuche, etwas in dieser Art zu beschreiben"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "Versuche es mit anderen Suchbegriffen oder lösche die Suche, um alles anzuzeigen."
 
@@ -7461,6 +7609,9 @@ msgstr "Unbekannter Fehler"
 
 msgid "Unknown question"
 msgstr "Unbekannte Frage"
+
+msgid "Unlimited searches"
+msgstr "Unbegrenzte Suchanfragen"
 
 msgid "Unlock"
 msgstr "Freischalten"
@@ -7721,6 +7872,9 @@ msgstr "Die Sprachaufnahme ist fehlgeschlagen. Bitte versuche es erneut."
 
 msgid "Voice settings"
 msgstr "Spracheinstellungen"
+
+msgid "Waiting for a verdict…"
+msgstr "Warte auf eine Bewertung…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Warnung: Das ist tatsächlich dauerhaft"
@@ -8177,6 +8331,9 @@ msgstr "Dein Premium-Konto wird herabgestuft am:"
 
 msgid "Your profile"
 msgstr "Dein Profil"
+
+msgid "Your searches"
+msgstr "Deine Suchanfragen"
 
 msgid "Your subscription is no longer active."
 msgstr "Dein Abonnement ist nicht mehr aktiv."

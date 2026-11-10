@@ -119,6 +119,16 @@ msgid_plural "%(count)s days"
 msgstr[0] "%(count)s 天"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s 小时"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s 分钟"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s 个月"
@@ -1209,6 +1219,10 @@ msgstr "最便宜的付费套餐"
 msgid "Check the FAQ"
 msgstr "查看常见问题"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "正在检查 %(site)s 是否有订阅源"
+
 msgid "Chief Morale Officer"
 msgstr "首席士气官"
 
@@ -1564,8 +1578,18 @@ msgstr "默认"
 msgid "Delete"
 msgstr "删除"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "用几个词描述你想读的内容。"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "描述你想要的订阅源是高级版功能。升级后即可按描述搜索。"
+
 msgid "Description"
 msgstr "描述"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "描述最多可包含 %(limit)d 个字符"
 
 msgid "Developer"
 msgstr "开发者"
@@ -2887,6 +2911,10 @@ msgid_plural ""
 msgstr[0] ""
 "你上次查看 NewsBlur 已经过去 %(counter)s 个月了。这段时间变化很大。我们刚刚推出了全面重新设计的版本，新增了文章分享（Blurblog）功能，以及原生 iOS/Android "
 "应用。如果你怀念旧版 Google Reader 的功能，一定会喜欢新版 NewsBlur。"
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "正在根据你的描述评估 %(count)s 个订阅源"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4444,6 +4472,9 @@ msgstr "和朋友一起读新闻更有趣。在你的公开 Blurblog 上分享�
 msgid "Reading stories across folders with River of News"
 msgstr "通过新闻流跨文件夹阅读文章"
 
+msgid "Reading your description"
+msgstr "正在读取你的描述"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -4802,6 +4833,12 @@ msgstr "搜索浏览时保存的阅读归档"
 msgid "Search your entire archive with full-text search"
 msgstr "通过全文搜索查找整个归档"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "正在搜索 NewsBlur 的订阅源"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "正在网页上搜索 NewsBlur 尚未发现的订阅源"
+
 msgid "Searching your sites and saved stories"
 msgstr "搜索你的网站和已保存的文章"
 
@@ -5062,6 +5099,9 @@ msgstr "该电子邮件地址已被使用。"
 
 msgid "Someone is already using that username."
 msgstr "此用户名已有人使用。"
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "搜索时出了点问题。请重试。"
 
 msgid "Something went wrong..."
 msgstr "出了点问题……"
@@ -5385,6 +5425,12 @@ msgstr "该项目未在播放"
 msgid "That part of the story doesn't exist."
 msgstr "文章的这一部分不存在。"
 
+msgid "That search is no longer in your history."
+msgstr "该搜索已不在你的历史记录中。"
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "该搜索仍在运行。请先等待它完成。"
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "该文章已从订阅源中移除，无需将其标记为未读。"
 
@@ -5509,6 +5555,9 @@ msgstr "无缝展开 RSS 订阅源截断的原文"
 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "与常规订阅源相同。高级版和专业版用户可享受更快的更新频率。"
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "搜索超时了，以下是目前找到的结果。"
 
 msgid "The shared comment cannot be found."
 msgstr "找不到此分享评论。"
@@ -6477,6 +6526,11 @@ msgstr ""
 "你已关注 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>。"
 
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "你今天还可以进行 %(count)s 次描述搜索（将在 %(time)s 后重置）。"
+
 msgid "You have a follow request:"
 msgstr "你收到了一条关注请求："
 
@@ -6716,6 +6770,10 @@ msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
 msgstr "你最近使用过 NewsBlur，所以你可能并不是想转为免费账户？也许只需要续订高级版账户。我们来帮你办理。"
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "你今天已用完 %(limit)s 次描述搜索额度。额度将在 %(time)s 后重置。"
 
 msgid "YouTube search request failed."
 msgstr "YouTube 搜索请求失败。"

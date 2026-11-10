@@ -254,6 +254,13 @@ msgstr[1] "%(count)s ленты"
 msgstr[2] "%(count)s лент"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "Пока найдена %(count)s лента"
+msgstr[1] "Пока найдены %(count)s ленты"
+msgstr[2] "Пока найдено %(count)s лент"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s подписчик"
@@ -651,6 +658,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "Сегодня осталось поисков: %(remaining)s из %(limit)s"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1367,6 +1382,9 @@ msgstr "Разрешённые домены"
 
 msgid "Alphabetical"
 msgstr "По алфавиту"
+
+msgid "Already in NewsBlur’s feed index"
+msgstr "Уже есть в индексе лент NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -2408,17 +2426,29 @@ msgstr "Удаление…"
 msgid "Delivery"
 msgstr "Подача"
 
+msgid "Describe"
+msgstr "Описать"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Опишите нужную вам статью, и мы повторно проанализируем страницу, чтобы найти её."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "Опишите тему, и ИИ будет оценивать каждую статью по вашему запросу, чтобы выделять или скрывать подходящие."
 
+msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
+msgstr "Опишите, какие ленты вы ищете, например: «обзоры новых приложений для iOS со скриншотами»"
+
 msgid "Describe what to focus or hide"
 msgstr "Опишите, что выделять, а что скрывать"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Опишите, что нужно найти, и ИИ проанализирует изображения в каждой статье с учетом вашего запроса."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "Опишите, что вы хотите читать, и NewsBlur найдёт подходящие ленты"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Поиск нужных вам лент по описанию — функция Premium. Перейдите на Premium, чтобы искать ленты по описанию."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2534,6 +2564,9 @@ msgstr "Не показывать предварительный просмот�
 
 msgid "Don't show a thumbnail"
 msgstr "Не показывать миниатюру"
+
+msgid "Done"
+msgstr "Готово"
 
 msgid "Done!"
 msgstr "Готово!"
@@ -2875,6 +2908,9 @@ msgstr "Лица"
 msgid "Fact check this story"
 msgstr "Проверить факты в этой статье"
 
+msgid "Failed"
+msgstr "Не удалось"
+
 msgid "Failed to connect to server"
 msgstr "Не удалось подключиться к серверу"
 
@@ -3100,6 +3136,16 @@ msgstr "Найти друзей из %(value_1)s"
 msgid "Find Friends"
 msgstr "Найти друзей"
 
+msgid "Find feeds"
+msgstr "Найти ленты"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "Найти ленты о «%(term)s»"
+
+msgid "Find feeds by describing them"
+msgstr "Находите ленты, описывая их"
+
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Найдите свой уникальный адрес электронной почты NewsBlur в окне «Рассылки по электронной почте»"
 
@@ -3253,6 +3299,13 @@ msgid "Forwarding email address"
 msgstr "Адрес для пересылки писем"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "Найдена %(count)s лента, соответствующая вашему описанию"
+msgstr[1] "Найдено %(count)s ленты, соответствующих вашему описанию"
+msgstr[2] "Найдено %(count)s лент, соответствующих вашему описанию"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "Найден %(count)s шаблон. Выберите тот, который лучше всего соответствует нужным вам статьям."
@@ -3261,6 +3314,12 @@ msgstr[2] "Найдено %(count)s шаблонов. Выберите тот, �
 
 msgid "Found in the Account dialog"
 msgstr "Находится в окне «Аккаунт»"
+
+msgid "Found on the web"
+msgstr "Найдено в интернете"
+
+msgid "Found on the web during this search"
+msgstr "Найдено в интернете в ходе этого поиска"
 
 msgid "Free"
 msgstr "Бесплатно"
@@ -3650,6 +3709,9 @@ msgstr "Насколько выразительно"
 msgid "How often"
 msgstr "Как часто"
 
+msgid "How well this feed matches your description"
+msgstr "Насколько эта лента соответствует вашему описанию"
+
 msgid "I'm Following"
 msgstr "Мои подписки"
 
@@ -3768,6 +3830,9 @@ msgstr "Индексация лент для поиска"
 msgid "Indexing..."
 msgstr "Индексация..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "Независимые разработчики игр, рассказывающие о работе над своими проектами"
+
 msgid "Infrequent Site Stories"
 msgstr "Статьи с редко обновляемых сайтов"
 
@@ -3826,6 +3891,12 @@ msgstr "Январь"
 
 msgid "Japanese"
 msgstr "Японский"
+
+msgid "Judging"
+msgstr "Оценка"
+
+msgid "Judging…"
+msgstr "Оцениваем…"
 
 msgid "July"
 msgstr "Июль"
@@ -4006,8 +4077,14 @@ msgstr "Загрузка голосов..."
 msgid "Loading your blocklist settings..."
 msgstr "Загрузка настроек списка блокировки..."
 
+msgid "Loading your search…"
+msgstr "Загрузка поиска…"
+
 msgid "Loading..."
 msgstr "Загрузка..."
+
+msgid "Loading…"
+msgstr "Загрузка…"
 
 msgid "Location"
 msgstr "Местоположение"
@@ -4029,6 +4106,9 @@ msgstr "Длинные статьи"
 
 msgid "Long Reads on NewsBlur"
 msgstr "Длинные статьи в NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "Большие эссе о городах, жилье и общественном транспорте"
 
 msgid "Long reads for later"
 msgstr "Длинные статьи на потом"
@@ -4199,6 +4279,10 @@ msgstr "Совпадение найдено по дублирующемуся з
 
 msgid "Matched via related topics"
 msgstr "Подобрано по связанным темам"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "Совпадение: «%(query)s»"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Находит заголовки статей, содержащие все ключевые слова"
@@ -4436,6 +4520,9 @@ msgstr "Сделать бессрочной"
 msgid "Never gonna expire. Congrats!"
 msgstr "Срок действия никогда не истечёт. Поздравляем!"
 
+msgid "New"
+msgstr "Новая"
+
 msgid "New Arrivals"
 msgstr "Новинки"
 
@@ -4492,6 +4579,9 @@ msgstr "Сервисы, связанные с NewsBlur"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur определил язык вашего браузера: %(language)s."
 
+msgid "NewsBlur index"
+msgstr "NewsBlur индекс"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur сейчас недоступен. <br> Повторите попытку позже."
 
@@ -4503,6 +4593,13 @@ msgstr "NewsBlur автоматически отслеживает измене�
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur для iOS со всеми функциями"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"NewsBlur анализирует ваше описание, ищет ленты в своём индексе и в открытом интернете, а затем оценивает "
+"каждое совпадение. Это может занять минуту."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur автоматически найдёт RSS-ленту этого сайта."
@@ -4578,6 +4675,9 @@ msgstr "Ленты не найдены"
 
 msgid "No feeds found in this category."
 msgstr "В этой категории нет лент."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "По вашему описанию ничего не найдено. Попробуйте описать иначе."
 
 msgid "No folders match"
 msgstr "Подходящих папок нет"
@@ -5296,6 +5396,9 @@ msgstr[2] "Пробный период Premium (%(count)s дней)"
 msgid "Premium details"
 msgstr "Подробности о Premium"
 
+msgid "Premium feature"
+msgstr "Функция Premium"
+
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Премиум-шрифты доступны с %(link_start)sпремиум-подпиской%(link_end)s"
@@ -5670,6 +5773,9 @@ msgstr "Удалить"
 msgid "Remove from Up Next"
 msgstr "Убрать из очереди «Далее»"
 
+msgid "Remove from history"
+msgstr "Удалить из истории"
+
 msgid "Remove this list"
 msgstr "Удалить этот список"
 
@@ -5773,6 +5879,9 @@ msgstr "Повторить"
 
 msgid "Retry fetching and parsing"
 msgstr "Повторить загрузку и обработку"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "Обзоры новых приложений для iOS с множеством скриншотов"
 
 msgid "Rewinding..."
 msgstr "Перемотка назад..."
@@ -5966,6 +6075,9 @@ msgstr "Поиск по всем сохранённым статьям и тег
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Ищите во всех подписках с помощью полнотекстового поиска на базе Elasticsearch."
 
+msgid "Search again"
+msgstr "Повторить поиск"
+
 msgid "Search archives..."
 msgstr "Поиск в архивах..."
 
@@ -6034,6 +6146,9 @@ msgstr "Поиск по вашим статьям"
 msgid "Search: \"%(value_1)s\""
 msgstr "Поиск: «%(value_1)s»"
 
+msgid "Searches you run will be kept here."
+msgstr "Выполненные вами поисковые запросы будут сохранены здесь."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "Поиск в <b>%(feed_title)s</b> по запросу «<b>%(query)s</b>»"
@@ -6041,11 +6156,23 @@ msgstr "Поиск в <b>%(feed_title)s</b> по запросу «<b>%(query)s</
 msgid "Searching RSS feeds..."
 msgstr "Поиск RSS-лент..."
 
+msgid "Searching feeds"
+msgstr "Поиск лент"
+
+msgid "Searching for"
+msgstr "Поиск"
+
 msgid "Searching saved stories..."
 msgstr "Поиск сохранённых статей..."
 
+msgid "Searching the web"
+msgstr "Ищем в интернете"
+
 msgid "Searching your archive..."
 msgstr "Поиск в архиве..."
+
+msgid "Searching…"
+msgstr "Поиск…"
 
 msgid "Seconds to skip backward"
 msgstr "Секунд для перемотки назад"
@@ -6435,6 +6562,9 @@ msgstr "Общение"
 msgid "Social Connections"
 msgstr "Социальные связи"
 
+msgid "Something went wrong while searching."
+msgstr "При поиске произошла ошибка."
+
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
 msgstr "Извините, никого не найдено по запросу «%(value_1)s»."
@@ -6577,6 +6707,12 @@ msgstr "Начинаем распределение по категориям...
 
 msgid "Starting trial..."
 msgstr "Запуск пробного периода..."
+
+msgid "Starting your search…"
+msgstr "Запускаем поиск…"
+
+msgid "Starting…"
+msgstr "Запуск…"
 
 msgid "Statistics"
 msgstr "Статистика"
@@ -6997,6 +7133,12 @@ msgstr "Спасибо! У вас %(bold_start)sаккаунт Premium Archive%(
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Спасибо! У вас %(bold_start)sаккаунт Premium Pro%(bold_end)s."
 
+msgid "That search could not be loaded."
+msgstr "Не удалось загрузить этот поиск."
+
+msgid "That search is no longer in your history."
+msgstr "Этого поиска больше нет в вашей истории."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Служба ИИ слишком долго отвечала. Попробуйте ещё раз."
 
@@ -7077,6 +7219,9 @@ msgstr "Издатель отключил исходную страницу."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "HTML-код страницы загружается и анализируется для извлечения структуры содержимого."
+
+msgid "The search could not be started."
+msgstr "Не удалось запустить поиск."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
@@ -7468,6 +7613,9 @@ msgstr "Попробуйте другой поисковый запрос или
 msgid "Try again"
 msgstr "Попробовать снова"
 
+msgid "Try describing something like"
+msgstr "Попробуйте описать, например:"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "Попробуйте другие ключевые слова или очистите поиск, чтобы увидеть всё."
 
@@ -7562,6 +7710,9 @@ msgstr "Неизвестная ошибка"
 
 msgid "Unknown question"
 msgstr "Неизвестный вопрос"
+
+msgid "Unlimited searches"
+msgstr "Неограниченное количество поисков"
 
 msgid "Unlock"
 msgstr "Открепить"
@@ -7830,6 +7981,9 @@ msgstr "Не удалось записать голос. Попробуйте е
 
 msgid "Voice settings"
 msgstr "Настройки голоса"
+
+msgid "Waiting for a verdict…"
+msgstr "Ожидание вердикта…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Внимание: это действие необратимо"
@@ -8289,6 +8443,9 @@ msgstr "Срок действия вашего премиум-аккаунта �
 
 msgid "Your profile"
 msgstr "Ваш профиль"
+
+msgid "Your searches"
+msgstr "Ваши поисковые запросы"
 
 msgid "Your subscription is no longer active."
 msgstr "Ваша подписка больше не активна."

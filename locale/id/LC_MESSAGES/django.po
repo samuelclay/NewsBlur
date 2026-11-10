@@ -129,6 +129,18 @@ msgstr[0] "%(count)s hari"
 msgstr[1] "%(count)s hari"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s jam"
+msgstr[1] "%(count)s jam"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s menit"
+msgstr[1] "%(count)s menit"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s bulan"
@@ -1330,6 +1342,10 @@ msgstr "Paket Berbayar Termurah"
 msgid "Check the FAQ"
 msgstr "Lihat FAQ"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "Memeriksa %(site)s untuk mencari feed"
+
 msgid "Chief Morale Officer"
 msgstr "Kepala Petugas Semangat Kerja"
 
@@ -1700,8 +1716,18 @@ msgstr "Default"
 msgid "Delete"
 msgstr "Hapus"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "Jelaskan dengan beberapa kata apa yang ingin Anda baca."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Menjelaskan feed yang Anda inginkan adalah fitur premium. Upgrade ke fitur pencarian berdasarkan deskripsi."
+
 msgid "Description"
 msgstr "Deskripsi"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "Deskripsi dibatasi hingga %(limit)d karakter"
 
 msgid "Developer"
 msgstr "Pengembang"
@@ -3160,6 +3186,10 @@ msgstr[1] ""
 "Kami baru saja meluncurkan desain ulang besar-besaran, lengkap dengan artikel yang dibagikan (Blurblog) dan"
 " aplikasi iOS/Android asli. Jika Anda merindukan fitur Google Reader yang lama, Anda akan menyukai NewsBlur"
 " yang baru."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "Menilai %(count)s feed berdasarkan deskripsi Anda"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4888,6 +4918,9 @@ msgstr "Membaca berita lebih menyenangkan bersama teman. Bagikan artikel di blur
 msgid "Reading stories across folders with River of News"
 msgstr "Membaca artikel dari berbagai folder dengan Aliran Berita"
 
+msgid "Reading your description"
+msgstr "Membaca deskripsi Anda"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5269,6 +5302,12 @@ msgstr "Cari Arsip Bacaan dari penjelajahan Anda"
 msgid "Search your entire archive with full-text search"
 msgstr "Cari seluruh arsip Anda dengan pencarian teks lengkap"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "Menelusuri feed milik NewsBlur"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "Mencari di web feed yang belum pernah dilihat oleh NewsBlur"
+
 msgid "Searching your sites and saved stories"
 msgstr "Menelusuri situs dan artikel tersimpan"
 
@@ -5546,6 +5585,9 @@ msgstr "Alamat email tersebut sudah digunakan."
 
 msgid "Someone is already using that username."
 msgstr "Nama pengguna tersebut sudah digunakan."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "Terjadi kesalahan saat mencari. Silakan coba lagi."
 
 msgid "Something went wrong..."
 msgstr "Terjadi kesalahan..."
@@ -5882,6 +5924,12 @@ msgstr "Item itu tidak sedang diputar"
 msgid "That part of the story doesn't exist."
 msgstr "Bagian artikel tersebut tidak ada."
 
+msgid "That search is no longer in your history."
+msgstr "Pencarian tersebut tidak lagi ada dalam riwayat Anda."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "Pencarian tersebut masih berjalan. Tunggu hingga selesai terlebih dahulu."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Artikel tersebut telah dihapus dari feed, jadi tidak perlu ditandai sebagai belum dibaca."
 
@@ -6032,6 +6080,9 @@ msgstr "Artikel asli dari feed RSS yang terpotong diperluas dengan mulus"
 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Sama seperti feed biasa. Pengguna Premium dan Pro mendapatkan frekuensi pembaruan yang lebih cepat."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "Pencarian kehabisan waktu, jadi inilah hasil yang ditemukan sejauh ini."
 
 msgid "The shared comment cannot be found."
 msgstr "Komentar yang dibagikan tidak dapat ditemukan."
@@ -7108,6 +7159,12 @@ msgstr ""
 "Anda mengikuti <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>."
 
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "Anda masih memiliki %(count)s pencarian Deskripsikan hari ini (direset dalam %(time)s)."
+msgstr[1] "Anda masih memiliki %(count)s pencarian Deskripsikan hari ini (direset dalam %(time)s)."
+
 msgid "You have a follow request:"
 msgstr "Anda mendapat permintaan mengikuti dari:"
 
@@ -7392,6 +7449,12 @@ msgid ""
 msgstr ""
 "Anda baru-baru ini menggunakan NewsBlur, jadi mungkin Anda tidak bermaksud kembali ke akun gratis? Mungkin "
 "Anda hanya perlu memperpanjang akun premium Anda. Mari kami bantu melakukannya."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr ""
+"Anda telah menggunakan semua %(limit)s pencarian Deskripsikan hari ini. Batas Anda diatur ulang dalam "
+"%(time)s."
 
 msgid "YouTube search request failed."
 msgstr "Permintaan penelusuran YouTube gagal."

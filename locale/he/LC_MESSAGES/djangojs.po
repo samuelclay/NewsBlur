@@ -237,6 +237,12 @@ msgstr[0] "%(count)s פיד"
 msgstr[1] "%(count)s פידים"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "%(count)s פיד עד כה"
+msgstr[1] "%(count)s פידים עד כה"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s עוקב"
@@ -581,6 +587,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "%(remaining)s מתוך %(limit)s חיפושים שנותרו להיום"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1283,6 +1297,9 @@ msgstr "דומיינים מותרים"
 
 msgid "Alphabetical"
 msgstr "לפי סדר אלפביתי"
+
+msgid "Already in NewsBlur’s feed index"
+msgstr "כבר נמצא באינדקס הפידים של NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -2304,17 +2321,29 @@ msgstr "מוחק..."
 msgid "Delivery"
 msgstr "הקראה"
 
+msgid "Describe"
+msgstr "תיאור"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "תארו את הכתבה שאתם מחפשים, וננתח מחדש את הדף כדי למצוא אותה."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "תארו נושא, והבינה המלאכותית תדרג כל כתבה לפי ההנחיה שלכם כדי למקד את התוצאות או להסתיר התאמות."
 
+msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
+msgstr "תארו את הפידים שאתם מחפשים, למשל ״ביקורות על אפליקציות iOS חדשות עם צילומי מסך״"
+
 msgid "Describe what to focus or hide"
 msgstr "תארו במה להתמקד או מה להסתיר"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "תאר מה לחפש, וה-AI ינתח את התמונות בכל כתבה בהתאם להנחיה שלך."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "תארו מה מעניין אתכם לקרוא ותנו ל־NewsBlur למצוא פידים מתאימים"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "תיאור הפידים הרצויים הוא תכונת Premium. שדרגו כדי לחפש לפי תיאור."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2430,6 +2459,9 @@ msgstr "אל תציג תצוגה מקדימה, הצג רק את כותרת הכ�
 
 msgid "Don't show a thumbnail"
 msgstr "אל תציג תמונה ממוזערת"
+
+msgid "Done"
+msgstr "סיום"
 
 msgid "Done!"
 msgstr "בוצע!"
@@ -2760,6 +2792,9 @@ msgstr "פרצופים"
 msgid "Fact check this story"
 msgstr "בדיקת עובדות בכתבה הזו"
 
+msgid "Failed"
+msgstr "נכשל"
+
 msgid "Failed to connect to server"
 msgstr "התחברות לשרת נכשלה"
 
@@ -2985,6 +3020,16 @@ msgstr "מציאת חברים ב־%(value_1)s"
 msgid "Find Friends"
 msgstr "איתור חברים"
 
+msgid "Find feeds"
+msgstr "מציאת פידים"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "מציאת פידים בנושא ״%(term)s״"
+
+msgid "Find feeds by describing them"
+msgstr "מציאת פידים באמצעות תיאור"
+
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "מצאו את כתובת האימייל הייחודית שלכם ב-NewsBlur בחלונית הניוזלטרים באימייל"
 
@@ -3135,6 +3180,12 @@ msgid "Forwarding email address"
 msgstr "כתובת להעברת אימיילים"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "נמצא %(count)s פיד שמתאים לתיאור שלך"
+msgstr[1] "נמצאו %(count)s פידים שמתאימים לתיאור שלך"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "נמצאה %(count)s תבנית. בחרו את התבנית המתאימה ביותר לכתבות הרצויות."
@@ -3142,6 +3193,12 @@ msgstr[1] "נמצאו %(count)s תבניות. בחר את התבנית שהכי 
 
 msgid "Found in the Account dialog"
 msgstr "נמצא בחלון החשבון"
+
+msgid "Found on the web"
+msgstr "נמצא באינטרנט"
+
+msgid "Found on the web during this search"
+msgstr "נמצא באינטרנט במהלך החיפוש הזה"
 
 msgid "Free"
 msgstr "חינם"
@@ -3531,6 +3588,9 @@ msgstr "מידת הרגש"
 msgid "How often"
 msgstr "באיזו תדירות"
 
+msgid "How well this feed matches your description"
+msgstr "מידת ההתאמה של הפיד לתיאור שלך"
+
 msgid "I'm Following"
 msgstr "אני עוקב/ת"
 
@@ -3646,6 +3706,9 @@ msgstr "מתבצע אינדוקס של הפידים שלך לצורך חיפוש
 msgid "Indexing..."
 msgstr "מתבצעת יצירת אינדקס..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "מפתחי משחקים עצמאיים שכותבים על העבודה שלהם בתהליך"
+
 msgid "Infrequent Site Stories"
 msgstr "כתבות מאתרים שמתעדכנים לעיתים רחוקות"
 
@@ -3704,6 +3767,12 @@ msgstr "ינואר"
 
 msgid "Japanese"
 msgstr "יפנית"
+
+msgid "Judging"
+msgstr "מדרג"
+
+msgid "Judging…"
+msgstr "מכריעים…"
 
 msgid "July"
 msgstr "יולי"
@@ -3884,8 +3953,14 @@ msgstr "הקולות נטענים..."
 msgid "Loading your blocklist settings..."
 msgstr "הגדרות רשימת החסימה נטענות..."
 
+msgid "Loading your search…"
+msgstr "טוען את החיפוש שלך…"
+
 msgid "Loading..."
 msgstr "טוען..."
+
+msgid "Loading…"
+msgstr "טוען…"
 
 msgid "Location"
 msgstr "מיקום"
@@ -3907,6 +3982,9 @@ msgstr "כתבות ארוכות"
 
 msgid "Long Reads on NewsBlur"
 msgstr "כתבות ארוכות ב-NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "מאמרים ארוכים על ערים, דיור ותחבורה ציבורית"
 
 msgid "Long reads for later"
 msgstr "כתבות ארוכות לקריאה מאוחר יותר"
@@ -4071,6 +4149,10 @@ msgstr "נמצאה התאמה באמצעות כותרת כפולה"
 
 msgid "Matched via related topics"
 msgstr "זוהה באמצעות נושאים קשורים"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "התאמה ל־״%(query)s״"
 
 msgid "Matches story titles containing all keywords"
 msgstr "התאמה לכותרות כתבות שמכילות את כל מילות המפתח"
@@ -4304,6 +4386,9 @@ msgstr "לעולם לא יפוג"
 msgid "Never gonna expire. Congrats!"
 msgstr "המינוי לעולם לא יפוג. כל הכבוד!"
 
+msgid "New"
+msgstr "חדש"
+
 msgid "New Arrivals"
 msgstr "חדשים שהגיעו"
 
@@ -4360,6 +4445,9 @@ msgstr "NewsBlur מחובר לשירותים אחרים"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur זיהה בדפדפן שלכם את השפה %(language)s."
 
+msgid "NewsBlur index"
+msgstr "אינדקס NewsBlur"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur לא זמין כרגע. <br> כדאי לנסות שוב בקרוב."
 
@@ -4371,6 +4459,13 @@ msgstr "NewsBlur עוקב אוטומטית אחר שינויים בדף"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur ב-iOS עם כל מגוון התכונות"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"NewsBlur קורא את התיאור שלך, מחפש באינדקס הפידים שלו ובאינטרנט הפתוח, ואז מעריך כל התאמה. התהליך עשוי "
+"להימשך דקה."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur יאתר אוטומטית את פיד ה-RSS של האתר הזה."
@@ -4446,6 +4541,9 @@ msgstr "לא נמצאו פידים"
 
 msgid "No feeds found in this category."
 msgstr "לא נמצאו פידים בקטגוריה הזו."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "לא נמצאו פידים שמתאימים לתיאור הזה. נסו לתאר אותו בדרך אחרת."
 
 msgid "No folders match"
 msgstr "אין תיקיות תואמות"
@@ -5144,6 +5242,9 @@ msgstr[1] "תקופת ניסיון Premium (%(count)s ימים)"
 msgid "Premium details"
 msgstr "פרטי Premium"
 
+msgid "Premium feature"
+msgstr "תכונת Premium"
+
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "גופני Premium דורשים %(link_start)sחשבון Premium%(link_end)s"
@@ -5507,6 +5608,9 @@ msgstr "הסר"
 msgid "Remove from Up Next"
 msgstr "הסרה מהתור הבא"
 
+msgid "Remove from history"
+msgstr "הסרה מההיסטוריה"
+
 msgid "Remove this list"
 msgstr "הסרת הרשימה הזו"
 
@@ -5609,6 +5713,9 @@ msgstr "ניסיון חוזר"
 
 msgid "Retry fetching and parsing"
 msgstr "ניסיון חוזר לאחזר ולנתח"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "ביקורות על אפליקציות iOS חדשות עם הרבה צילומי מסך"
 
 msgid "Rewinding..."
 msgstr "חוזר אחורה..."
@@ -5800,6 +5907,9 @@ msgstr "חפשו בכל הכתבות והתגים השמורים"
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "חפשו בכל המינויים שלכם בחיפוש טקסט מלא המבוסס על Elasticsearch."
 
+msgid "Search again"
+msgstr "חיפוש מחדש"
+
 msgid "Search archives..."
 msgstr "חיפוש בארכיונים..."
 
@@ -5868,6 +5978,9 @@ msgstr "חיפוש בכתבות שלכם"
 msgid "Search: \"%(value_1)s\""
 msgstr "חיפוש: \"%(value_1)s\""
 
+msgid "Searches you run will be kept here."
+msgstr "החיפושים שתבצע יישמרו כאן."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "מחפש ב־<b>%(feed_title)s</b> את \"<b>%(query)s</b>\""
@@ -5875,11 +5988,23 @@ msgstr "מחפש ב־<b>%(feed_title)s</b> את \"<b>%(query)s</b>\""
 msgid "Searching RSS feeds..."
 msgstr "מחפש בפידי RSS..."
 
+msgid "Searching feeds"
+msgstr "מחפש פידים"
+
+msgid "Searching for"
+msgstr "מחפשים"
+
 msgid "Searching saved stories..."
 msgstr "מחפש בכתבות השמורות..."
 
+msgid "Searching the web"
+msgstr "מחפשים באינטרנט"
+
 msgid "Searching your archive..."
 msgstr "מחפש בארכיון שלך..."
+
+msgid "Searching…"
+msgstr "מחפשים…"
 
 msgid "Seconds to skip backward"
 msgstr "מספר השניות לדילוג לאחור"
@@ -6260,6 +6385,9 @@ msgstr "חברתי"
 msgid "Social Connections"
 msgstr "חיבורים חברתיים"
 
+msgid "Something went wrong while searching."
+msgstr "משהו השתבש במהלך החיפוש."
+
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
 msgstr "מצטערים, אין משתמשים התואמים ל-\"%(value_1)s\"."
@@ -6399,6 +6527,12 @@ msgstr "מתחיל בסיווג..."
 
 msgid "Starting trial..."
 msgstr "מתחילים תקופת ניסיון..."
+
+msgid "Starting your search…"
+msgstr "מתחיל את החיפוש שלך…"
+
+msgid "Starting…"
+msgstr "מתחיל…"
 
 msgid "Statistics"
 msgstr "סטטיסטיקה"
@@ -6815,6 +6949,12 @@ msgstr "תודה! יש לך %(bold_start)sחשבון Premium Archive%(bold_end)s
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "תודה! יש לך חשבון %(bold_start)sPremium Pro%(bold_end)s."
 
+msgid "That search could not be loaded."
+msgstr "לא ניתן היה לטעון את החיפוש הזה."
+
+msgid "That search is no longer in your history."
+msgstr "החיפוש הזה כבר לא מופיע בהיסטוריה שלך."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "שירות הבינה המלאכותית השתהה בתגובה. נסו שוב."
 
@@ -6888,6 +7028,9 @@ msgstr "הדף המקורי הושבת על ידי המפרסם."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "קוד ה-HTML של הדף נטען ומנותח כדי לחלץ את מבנה התוכן."
+
+msgid "The search could not be started."
+msgstr "לא ניתן היה להתחיל את החיפוש."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "התצוגה שתבחרו נשמרת לכל אתר, כך שפידים שמציגים תקצירים בלבד יכולים להציג טקסט כברירת מחדל."
@@ -7264,6 +7407,9 @@ msgstr "נסו מונח חיפוש אחר או הדביקו כתובת URL יש�
 msgid "Try again"
 msgstr "נסה שוב"
 
+msgid "Try describing something like"
+msgstr "נסו לתאר משהו כמו"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "נסו מילות מפתח אחרות או נקו את החיפוש כדי לראות הכול."
 
@@ -7356,6 +7502,9 @@ msgstr "שגיאה לא ידועה"
 
 msgid "Unknown question"
 msgstr "שאלה לא ידועה"
+
+msgid "Unlimited searches"
+msgstr "חיפושים ללא הגבלה"
 
 msgid "Unlock"
 msgstr "פתיחה"
@@ -7616,6 +7765,9 @@ msgstr "הקלטת הקול נכשלה. נסו שוב."
 
 msgid "Voice settings"
 msgstr "הגדרות קול"
+
+msgid "Waiting for a verdict…"
+msgstr "ממתינים להכרעה…"
 
 msgid "Warning: This is actually permanent"
 msgstr "אזהרה: הפעולה הזו בלתי הפיכה"
@@ -8054,6 +8206,9 @@ msgstr "החשבון שלך יועבר לתוכנית נמוכה יותר בתא
 
 msgid "Your profile"
 msgstr "הפרופיל שלך"
+
+msgid "Your searches"
+msgstr "החיפושים שלך"
 
 msgid "Your subscription is no longer active."
 msgstr "המינוי שלך אינו פעיל עוד."

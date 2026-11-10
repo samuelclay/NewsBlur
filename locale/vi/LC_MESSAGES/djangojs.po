@@ -221,6 +221,11 @@ msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s nguồn cấp dữ liệu"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "%(count)s nguồn cấp"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s người theo dõi"
@@ -520,6 +525,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "Hôm nay bạn còn %(remaining)s trên %(limit)s lượt tìm kiếm"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1214,6 +1227,9 @@ msgstr "Tên miền được phép"
 
 msgid "Alphabetical"
 msgstr "Theo thứ tự bảng chữ cái"
+
+msgid "Already in NewsBlur’s feed index"
+msgstr "Đã có trong chỉ mục nguồn cấp của NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -2229,6 +2245,9 @@ msgstr "Đang xóa..."
 msgid "Delivery"
 msgstr "Cách đọc"
 
+msgid "Describe"
+msgstr "Mô tả"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Hãy mô tả bài viết bạn đang tìm, chúng tôi sẽ phân tích lại trang để tìm bài đó."
 
@@ -2237,11 +2256,20 @@ msgstr ""
 "Mô tả một chủ đề để AI chấm điểm từng bài viết dựa trên lời nhắc của bạn, giúp tập trung vào hoặc ẩn các "
 "bài khớp."
 
+msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
+msgstr "Mô tả các nguồn cấp bạn đang tìm, chẳng hạn “đánh giá ứng dụng iOS mới kèm ảnh chụp màn hình”"
+
 msgid "Describe what to focus or hide"
 msgstr "Mô tả nội dung cần tập trung hoặc ẩn"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Mô tả những gì cần tìm, AI sẽ phân tích hình ảnh trong từng bài viết dựa trên lời nhắc của bạn."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "Mô tả nội dung bạn muốn đọc để NewsBlur tìm các nguồn cấp phù hợp"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Mô tả nguồn cấp bạn muốn tìm là một tính năng Premium. Nâng cấp để tìm kiếm bằng mô tả."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2357,6 +2385,9 @@ msgstr "Không hiển thị bản xem trước, chỉ hiển thị tiêu đề b
 
 msgid "Don't show a thumbnail"
 msgstr "Không hiển thị ảnh thu nhỏ"
+
+msgid "Done"
+msgstr "Xong"
 
 msgid "Done!"
 msgstr "Xong!"
@@ -2694,6 +2725,9 @@ msgstr "Khuôn mặt"
 msgid "Fact check this story"
 msgstr "Kiểm chứng thông tin trong bài viết này"
 
+msgid "Failed"
+msgstr "Thất bại"
+
 msgid "Failed to connect to server"
 msgstr "Không thể kết nối với máy chủ"
 
@@ -2921,6 +2955,16 @@ msgstr "Tìm bạn bè %(value_1)s"
 msgid "Find Friends"
 msgstr "Tìm bạn bè"
 
+msgid "Find feeds"
+msgstr "Tìm nguồn cấp"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "Tìm nguồn cấp về “%(term)s”"
+
+msgid "Find feeds by describing them"
+msgstr "Tìm nguồn cấp bằng cách mô tả"
+
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Tìm địa chỉ email NewsBlur riêng của bạn trong hộp thoại Bản tin qua email"
 
@@ -3070,12 +3114,23 @@ msgid "Forwarding email address"
 msgstr "Địa chỉ email chuyển tiếp"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "Tìm thấy %(count)s nguồn cấp phù hợp với mô tả của bạn"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "Tìm thấy %(count)s mẫu. Hãy chọn mẫu phù hợp nhất với những bài viết bạn muốn."
 
 msgid "Found in the Account dialog"
 msgstr "Xuất hiện trong hộp thoại Tài khoản"
+
+msgid "Found on the web"
+msgstr "Tìm thấy trên web"
+
+msgid "Found on the web during this search"
+msgstr "Tìm thấy trên web trong lần tìm kiếm này"
 
 msgid "Free"
 msgstr "Miễn phí"
@@ -3465,6 +3520,9 @@ msgstr "Mức độ cảm xúc"
 msgid "How often"
 msgstr "Tần suất"
 
+msgid "How well this feed matches your description"
+msgstr "Nguồn cấp này phù hợp với mô tả của bạn đến mức nào"
+
 msgid "I'm Following"
 msgstr "Tôi đang theo dõi"
 
@@ -3579,6 +3637,9 @@ msgstr "Đang lập chỉ mục nguồn cấp để tìm kiếm"
 msgid "Indexing..."
 msgstr "Đang lập chỉ mục..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "Nhà phát triển game indie viết về các dự án đang thực hiện"
+
 msgid "Infrequent Site Stories"
 msgstr "Bài viết từ trang ít cập nhật"
 
@@ -3637,6 +3698,12 @@ msgstr "Tháng Một"
 
 msgid "Japanese"
 msgstr "Tiếng Nhật"
+
+msgid "Judging"
+msgstr "Đang đánh giá"
+
+msgid "Judging…"
+msgstr "Đang đánh giá…"
 
 msgid "July"
 msgstr "Tháng Bảy"
@@ -3817,8 +3884,14 @@ msgstr "Đang tải giọng đọc..."
 msgid "Loading your blocklist settings..."
 msgstr "Đang tải cài đặt danh sách chặn của bạn..."
 
+msgid "Loading your search…"
+msgstr "Đang tải tìm kiếm của bạn…"
+
 msgid "Loading..."
 msgstr "Đang tải..."
+
+msgid "Loading…"
+msgstr "Đang tải…"
 
 msgid "Location"
 msgstr "Vị trí"
@@ -3840,6 +3913,9 @@ msgstr "Bài đọc dài"
 
 msgid "Long Reads on NewsBlur"
 msgstr "Bài đọc dài trên NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "Các bài luận dài về thành phố, nhà ở và giao thông công cộng"
 
 msgid "Long reads for later"
 msgstr "Bài đọc dài để xem sau"
@@ -4002,6 +4078,10 @@ msgstr "Khớp nhờ tiêu đề trùng lặp"
 
 msgid "Matched via related topics"
 msgstr "Được khớp qua các chủ đề liên quan"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "Khớp với “%(query)s”"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Khớp với tiêu đề bài viết chứa tất cả từ khóa"
@@ -4231,6 +4311,9 @@ msgstr "Không bao giờ hết hạn"
 msgid "Never gonna expire. Congrats!"
 msgstr "Sẽ không bao giờ hết hạn. Chúc mừng!"
 
+msgid "New"
+msgstr "Mới"
+
 msgid "New Arrivals"
 msgstr "Mới thêm"
 
@@ -4287,6 +4370,9 @@ msgstr "NewsBlur kết nối với các dịch vụ khác"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur phát hiện trình duyệt của bạn đang dùng %(language)s."
 
+msgid "NewsBlur index"
+msgstr "Chỉ mục NewsBlur"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur hiện không hoạt động. <br> Hãy thử lại sau."
 
@@ -4298,6 +4384,13 @@ msgstr "NewsBlur tự động theo dõi trang để phát hiện thay đổi"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur trên iOS với đầy đủ tính năng"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"NewsBlur đọc mô tả của bạn, tìm kiếm trong chỉ mục nguồn cấp và trên web, rồi đánh giá từng kết quả. Quá "
+"trình này có thể mất một phút."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur sẽ tự động tìm nguồn cấp RSS cho trang này."
@@ -4375,6 +4468,9 @@ msgstr "Không tìm thấy nguồn cấp dữ liệu"
 
 msgid "No feeds found in this category."
 msgstr "Không tìm thấy nguồn cấp dữ liệu nào trong danh mục này."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "Không tìm thấy nguồn cấp nào khớp với mô tả đó. Hãy thử mô tả theo cách khác."
 
 msgid "No folders match"
 msgstr "Không có thư mục nào phù hợp"
@@ -5071,6 +5167,9 @@ msgstr[0] "Dùng thử Premium (%(count)s ngày)"
 msgid "Premium details"
 msgstr "Thông tin gói Premium"
 
+msgid "Premium feature"
+msgstr "Tính năng Premium"
+
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Phông chữ Premium yêu cầu %(link_start)stài khoản Premium%(link_end)s"
@@ -5433,6 +5532,9 @@ msgstr "Xóa"
 msgid "Remove from Up Next"
 msgstr "Xóa khỏi danh sách phát tiếp theo"
 
+msgid "Remove from history"
+msgstr "Xóa khỏi lịch sử"
+
 msgid "Remove this list"
 msgstr "Xóa danh sách này"
 
@@ -5534,6 +5636,9 @@ msgstr "Thử lại"
 
 msgid "Retry fetching and parsing"
 msgstr "Thử tải và phân tích lại"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "Đánh giá các ứng dụng iOS mới với nhiều ảnh chụp màn hình"
 
 msgid "Rewinding..."
 msgstr "Đang tua lại..."
@@ -5723,6 +5828,9 @@ msgstr "Tìm kiếm trong tất cả bài viết và thẻ đã lưu"
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Tìm kiếm toàn văn trên mọi đăng ký của bạn với Elasticsearch."
 
+msgid "Search again"
+msgstr "Tìm kiếm lại"
+
 msgid "Search archives..."
 msgstr "Tìm kiếm trong kho lưu trữ..."
 
@@ -5791,6 +5899,9 @@ msgstr "Tìm kiếm bài viết của bạn"
 msgid "Search: \"%(value_1)s\""
 msgstr "Tìm kiếm: \"%(value_1)s\""
 
+msgid "Searches you run will be kept here."
+msgstr "Các lượt tìm kiếm bạn thực hiện sẽ được lưu ở đây."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "Đang tìm kiếm <b>%(feed_title)s</b> với từ khóa \"<b>%(query)s</b>\""
@@ -5798,11 +5909,23 @@ msgstr "Đang tìm kiếm <b>%(feed_title)s</b> với từ khóa \"<b>%(query)s<
 msgid "Searching RSS feeds..."
 msgstr "Đang tìm kiếm nguồn cấp RSS..."
 
+msgid "Searching feeds"
+msgstr "Đang tìm kiếm nguồn cấp"
+
+msgid "Searching for"
+msgstr "Đang tìm"
+
 msgid "Searching saved stories..."
 msgstr "Đang tìm trong các bài đã lưu..."
 
+msgid "Searching the web"
+msgstr "Đang tìm kiếm trên web"
+
 msgid "Searching your archive..."
 msgstr "Đang tìm kiếm kho lưu trữ của bạn..."
+
+msgid "Searching…"
+msgstr "Đang tìm kiếm…"
 
 msgid "Seconds to skip backward"
 msgstr "Số giây tua lùi"
@@ -6186,6 +6309,9 @@ msgstr "Mạng xã hội"
 msgid "Social Connections"
 msgstr "Kết nối mạng xã hội"
 
+msgid "Something went wrong while searching."
+msgstr "Đã xảy ra lỗi khi tìm kiếm."
+
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
 msgstr "Rất tiếc, không tìm thấy ai khớp với \"%(value_1)s\"."
@@ -6324,6 +6450,12 @@ msgstr "Đang bắt đầu phân loại..."
 
 msgid "Starting trial..."
 msgstr "Đang bắt đầu dùng thử..."
+
+msgid "Starting your search…"
+msgstr "Đang bắt đầu tìm kiếm…"
+
+msgid "Starting…"
+msgstr "Đang bắt đầu…"
 
 msgid "Statistics"
 msgstr "Thống kê"
@@ -6740,6 +6872,12 @@ msgstr "Cảm ơn bạn! Bạn có %(bold_start)stài khoản Premium Archive%(b
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Cảm ơn bạn! Bạn có %(bold_start)stài khoản Premium Pro%(bold_end)s."
 
+msgid "That search could not be loaded."
+msgstr "Không thể tải tìm kiếm đó."
+
+msgid "That search is no longer in your history."
+msgstr "Tìm kiếm đó không còn trong lịch sử của bạn."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Dịch vụ AI phản hồi quá lâu. Vui lòng thử lại."
 
@@ -6817,6 +6955,9 @@ msgstr "Nhà xuất bản đã vô hiệu hóa trang gốc."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "HTML của trang được tải và phân tích để trích xuất cấu trúc nội dung."
+
+msgid "The search could not be started."
+msgstr "Không thể bắt đầu tìm kiếm."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
@@ -7200,6 +7341,9 @@ msgstr "Hãy thử cụm từ tìm kiếm khác hoặc dán URL trực tiếp."
 msgid "Try again"
 msgstr "Thử lại"
 
+msgid "Try describing something like"
+msgstr "Thử mô tả nội dung như"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "Hãy thử từ khóa khác hoặc xóa tìm kiếm để xem tất cả."
 
@@ -7291,6 +7435,9 @@ msgstr "Lỗi không xác định"
 
 msgid "Unknown question"
 msgstr "Câu hỏi không xác định"
+
+msgid "Unlimited searches"
+msgstr "Tìm kiếm không giới hạn"
 
 msgid "Unlock"
 msgstr "Mở khóa"
@@ -7549,6 +7696,9 @@ msgstr "Không thể ghi âm giọng nói. Vui lòng thử lại."
 
 msgid "Voice settings"
 msgstr "Cài đặt giọng đọc"
+
+msgid "Waiting for a verdict…"
+msgstr "Đang chờ kết quả…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Cảnh báo: Thao tác này thực sự không thể hoàn tác"
@@ -8000,6 +8150,9 @@ msgstr "Tài khoản Premium của bạn sẽ được hạ cấp vào:"
 
 msgid "Your profile"
 msgstr "Hồ sơ của bạn"
+
+msgid "Your searches"
+msgstr "Tìm kiếm của bạn"
 
 msgid "Your subscription is no longer active."
 msgstr "Gói đăng ký của bạn không còn hoạt động."

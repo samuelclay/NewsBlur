@@ -119,6 +119,16 @@ msgid_plural "%(count)s days"
 msgstr[0] "%(count)s 天"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s 小時"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s 分鐘"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s 個月"
@@ -1210,6 +1220,10 @@ msgstr "最便宜的付費方案"
 msgid "Check the FAQ"
 msgstr "查看常見問題"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "正在檢查 %(site)s 是否為訂閱來源"
+
 msgid "Chief Morale Officer"
 msgstr "首席士氣官"
 
@@ -1565,8 +1579,18 @@ msgstr "預設"
 msgid "Delete"
 msgstr "刪除"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "用幾個字描述你想看的內容。"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "依描述尋找訂閱來源是進階功能。升級即可依描述搜尋。"
+
 msgid "Description"
 msgstr "說明"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "描述最多可輸入 %(limit)d 個字元"
 
 msgid "Developer"
 msgstr "開發者"
@@ -2890,6 +2914,10 @@ msgid_plural ""
 msgstr[0] ""
 "距離你上次造訪 NewsBlur 已經過了 %(counter)s 個月。這段時間改變了許多。我們剛推出全面重新設計的版本，加入分享文章（Blurblog）功能，以及原生 iOS／Android "
 "App。如果你懷念舊版 Google Reader 的功能，一定會喜歡全新的 NewsBlur。"
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "正在根據你的描述評估 %(count)s 個訂閱來源"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4443,6 +4471,9 @@ msgstr "和朋友一起閱讀新聞更有趣。在你的公開 Blurblog 分享�
 msgid "Reading stories across folders with River of News"
 msgstr "使用新聞流瀏覽各資料夾中的文章"
 
+msgid "Reading your description"
+msgstr "正在讀取你的描述"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -4799,6 +4830,12 @@ msgstr "搜尋你的瀏覽閱讀封存"
 msgid "Search your entire archive with full-text search"
 msgstr "使用全文搜尋搜尋整個封存庫"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "正在搜尋 NewsBlur 的訂閱來源"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "正在網路上搜尋 NewsBlur 尚未看過的訂閱來源"
+
 msgid "Searching your sites and saved stories"
 msgstr "搜尋你的網站和已儲存的文章"
 
@@ -5059,6 +5096,9 @@ msgstr "已有其他人使用此電子郵件地址。"
 
 msgid "Someone is already using that username."
 msgstr "此使用者名稱已有人使用。"
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "搜尋時發生問題。請再試一次。"
 
 msgid "Something went wrong..."
 msgstr "發生錯誤……"
@@ -5382,6 +5422,12 @@ msgstr "該項目目前未播放"
 msgid "That part of the story doesn't exist."
 msgstr "文章的這個部分不存在。"
 
+msgid "That search is no longer in your history."
+msgstr "這筆搜尋已不在你的記錄中。"
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "該搜尋仍在執行中。請先等它完成。"
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "這篇文章已從訂閱來源中移除，無需標記為未讀。"
 
@@ -5505,6 +5551,9 @@ msgstr "遭截斷的 RSS 訂閱來源中的原始文章會無縫展開"
 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "與一般訂閱來源相同。Premium 和 Pro 使用者可享有更頻繁的更新。"
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "搜尋逾時了，以下是目前找到的結果。"
 
 msgid "The shared comment cannot be found."
 msgstr "找不到這則分享的留言。"
@@ -6471,6 +6520,11 @@ msgstr ""
 "你已追蹤 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>。"
 
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "你今天還能進行 %(count)s 次描述搜尋（於 %(time)s 重設）。"
+
 msgid "You have a follow request:"
 msgstr "你收到一個追蹤請求："
 
@@ -6710,6 +6764,10 @@ msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
 msgstr "你最近使用過 NewsBlur，所以你可能不是有意要轉回免費帳戶？也許你只需要續訂進階帳戶。我們來幫你處理。"
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "你今天已用完 %(limit)s 次描述搜尋額度。額度將於 %(time)s 重設。"
 
 msgid "YouTube search request failed."
 msgstr "YouTube 搜尋請求失敗。"

@@ -137,6 +137,20 @@ msgstr[1] "%(count)s dni"
 msgstr[2] "%(count)s dni"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s godzinę"
+msgstr[1] "%(count)s godziny"
+msgstr[2] "%(count)s godzin"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minutę"
+msgstr[1] "%(count)s minuty"
+msgstr[2] "%(count)s minut"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s miesiąc"
@@ -1367,6 +1381,10 @@ msgstr "Najtańszy płatny plan"
 msgid "Check the FAQ"
 msgstr "Sprawdź FAQ"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "Sprawdzanie, czy %(site)s ma kanał"
+
 msgid "Chief Morale Officer"
 msgstr "Dyrektor ds. dobrego nastroju"
 
@@ -1741,8 +1759,18 @@ msgstr "Domyślne"
 msgid "Delete"
 msgstr "Usuń"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "Opisz w kilku słowach, co chcesz czytać."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Opisywanie kanałów, których szukasz, to funkcja Premium. Przejdź na Premium, aby wyszukiwać według opisu."
+
 msgid "Description"
 msgstr "Opis"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "Opisy mogą mieć maksymalnie %(limit)d znaków"
 
 msgid "Developer"
 msgstr "Programista"
@@ -3217,6 +3245,10 @@ msgstr[2] ""
 "Właśnie uruchomiliśmy gruntownie przeprojektowaną wersję, z udostępnionymi artykułami (blurblogami) oraz "
 "natywnymi aplikacjami na iOS i Androida. Jeśli brakuje Ci dawnych funkcji Google Readera, pokochasz nowy "
 "NewsBlur."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "Porównywanie kanałów (%(count)s) z Twoim opisem"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4964,6 +4996,9 @@ msgstr "Czytanie wiadomości jest lepsze w gronie znajomych. Udostępniaj artyku
 msgid "Reading stories across folders with River of News"
 msgstr "Czytanie artykułów z różnych folderów w Strumieniu wiadomości"
 
+msgid "Reading your description"
+msgstr "Analizowanie Twojego opisu"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5345,6 +5380,12 @@ msgstr "Przeszukaj archiwum czytelnicze z przeglądanych stron"
 msgid "Search your entire archive with full-text search"
 msgstr "Przeszukuj całe archiwum za pomocą wyszukiwania pełnotekstowego"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "Przeszukiwanie kanałów NewsBlur"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "Przeszukiwanie internetu w poszukiwaniu kanałów, których nie widział(a) NewsBlur"
+
 msgid "Searching your sites and saved stories"
 msgstr "Wyszukiwanie w Twoich witrynach i zapisanych artykułach"
 
@@ -5624,6 +5665,9 @@ msgstr "Ktoś już używa tego adresu e-mail."
 
 msgid "Someone is already using that username."
 msgstr "Ktoś już używa tej nazwy użytkownika."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "Wyszukiwanie nie powiodło się. Spróbuj ponownie."
 
 msgid "Something went wrong..."
 msgstr "Coś poszło nie tak..."
@@ -5965,6 +6009,12 @@ msgstr "Ten element nie jest odtwarzany"
 msgid "That part of the story doesn't exist."
 msgstr "Ta część artykułu nie istnieje."
 
+msgid "That search is no longer in your history."
+msgstr "Tego wyszukiwania nie ma już w Twojej historii."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "To wyszukiwanie nadal trwa. Poczekaj, aż się zakończy."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Ten artykuł został usunięty z kanału, więc nie trzeba oznaczać go jako nieprzeczytanego."
 
@@ -6114,6 +6164,9 @@ msgstr "Oryginalny artykuł z obciętych kanałów RSS jest płynnie rozwijany"
 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Działa tak samo jak zwykłe kanały. Użytkownicy Premium i Pro otrzymują częstsze aktualizacje."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "Wyszukiwanie przekroczyło limit czasu. Oto dotychczasowe wyniki."
 
 msgid "The shared comment cannot be found."
 msgstr "Nie można znaleźć udostępnionego komentarza."
@@ -7211,6 +7264,13 @@ msgstr ""
 "Obserwujesz <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>."
 
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "Pozostało Ci dziś %(count)s wyszukiwanie opisowe (limit odnowi się za %(time)s)."
+msgstr[1] "Pozostały Ci dziś %(count)s wyszukiwania opisowe (limit odnowi się za %(time)s)."
+msgstr[2] "Pozostało Ci dziś %(count)s wyszukiwań opisowych (limit odnowi się za %(time)s)."
+
 msgid "You have a follow request:"
 msgstr "Masz prośbę o możliwość obserwowania:"
 
@@ -7495,6 +7555,10 @@ msgid ""
 msgstr ""
 "Ostatnio korzystasz z NewsBlur, więc może nie chodziło Ci o powrót do bezpłatnego konta? Być może wystarczy"
 " odnowić subskrypcję Premium. Pomożemy Ci to zrobić."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "Wykorzystano wszystkie %(limit)s wyszukiwania opisowe na dziś. Limit odnowi się za %(time)s."
 
 msgid "YouTube search request failed."
 msgstr "Nie udało się wykonać wyszukiwania w YouTube."

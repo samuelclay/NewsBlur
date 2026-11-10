@@ -221,6 +221,11 @@ msgid_plural "%(count)s feeds"
 msgstr[0] "피드 %(count)s개"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "현재까지 피드 %(count)s개"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "팔로워 %(count)s명"
@@ -518,6 +523,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "오늘 남은 검색 횟수: %(remaining)s/%(limit)s"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1204,6 +1217,9 @@ msgstr "허용된 도메인"
 
 msgid "Alphabetical"
 msgstr "가나다순"
+
+msgid "Already in NewsBlur’s feed index"
+msgstr "이미 NewsBlur의 피드 색인에 있습니다"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -2206,17 +2222,29 @@ msgstr "삭제 중..."
 msgid "Delivery"
 msgstr "전달 방식"
 
+msgid "Describe"
+msgstr "설명"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "찾고 있는 스토리를 설명해 주세요. 페이지를 다시 분석해 찾아보겠습니다."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "주제를 설명하면 AI가 각 스토리를 프롬프트와 비교해 점수를 매겨 일치하는 스토리를 강조하거나 숨깁니다."
 
+msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
+msgstr "찾는 피드를 설명해 주세요. 예: “스크린샷이 포함된 신규 iOS 앱 리뷰”"
+
 msgid "Describe what to focus or hide"
 msgstr "집중하거나 숨길 내용을 설명하세요"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "찾을 내용을 설명하면 AI가 프롬프트에 따라 각 스토리의 이미지를 분석합니다."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "읽고 싶은 내용을 설명하면 NewsBlur에서 일치하는 피드를 찾아드립니다"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "원하는 피드를 설명하는 기능은 프리미엄 기능입니다. 설명으로 검색하려면 업그레이드하세요."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2332,6 +2360,9 @@ msgstr "미리보기 없이 스토리 제목만 표시"
 
 msgid "Don't show a thumbnail"
 msgstr "미리보기 이미지를 표시하지 않음"
+
+msgid "Done"
+msgstr "완료"
 
 msgid "Done!"
 msgstr "완료!"
@@ -2661,6 +2692,9 @@ msgstr "얼굴"
 msgid "Fact check this story"
 msgstr "이 스토리 팩트체크하기"
 
+msgid "Failed"
+msgstr "실패"
+
 msgid "Failed to connect to server"
 msgstr "서버에 연결하지 못했습니다"
 
@@ -2886,6 +2920,16 @@ msgstr "%(value_1)s 친구 찾기"
 msgid "Find Friends"
 msgstr "친구 찾기"
 
+msgid "Find feeds"
+msgstr "피드 찾기"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "“%(term)s” 관련 피드 찾기"
+
+msgid "Find feeds by describing them"
+msgstr "설명으로 피드 찾기"
+
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "이메일 뉴스레터 대화상자에서 나만의 NewsBlur 이메일 주소를 확인하세요"
 
@@ -3033,12 +3077,23 @@ msgid "Forwarding email address"
 msgstr "전달 이메일 주소"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "설명과 일치하는 피드 %(count)s개를 찾았습니다"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "패턴 %(count)s개를 찾았습니다. 원하는 스토리와 가장 잘 맞는 패턴을 선택하세요."
 
 msgid "Found in the Account dialog"
 msgstr "계정 대화상자에 있습니다"
+
+msgid "Found on the web"
+msgstr "웹에서 찾음"
+
+msgid "Found on the web during this search"
+msgstr "이번 검색 중 웹에서 찾음"
 
 msgid "Free"
 msgstr "무료"
@@ -3424,6 +3479,9 @@ msgstr "감정 표현 정도"
 msgid "How often"
 msgstr "빈도"
 
+msgid "How well this feed matches your description"
+msgstr "이 피드가 설명과 얼마나 일치하는지"
+
 msgid "I'm Following"
 msgstr "팔로잉"
 
@@ -3534,6 +3592,9 @@ msgstr "검색을 위해 피드를 색인하는 중"
 msgid "Indexing..."
 msgstr "색인 중..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "인디 게임 개발자들이 개발 중인 게임에 관해 쓰는 글"
+
 msgid "Infrequent Site Stories"
 msgstr "업데이트가 드문 사이트의 스토리"
 
@@ -3590,6 +3651,12 @@ msgstr "1월"
 
 msgid "Japanese"
 msgstr "일본어"
+
+msgid "Judging"
+msgstr "판정 중"
+
+msgid "Judging…"
+msgstr "평가 중…"
 
 msgid "July"
 msgstr "7월"
@@ -3768,8 +3835,14 @@ msgstr "음성을 불러오는 중..."
 msgid "Loading your blocklist settings..."
 msgstr "차단 목록 설정을 불러오는 중..."
 
+msgid "Loading your search…"
+msgstr "검색을 불러오는 중…"
+
 msgid "Loading..."
 msgstr "불러오는 중..."
+
+msgid "Loading…"
+msgstr "불러오는 중…"
 
 msgid "Location"
 msgstr "위치"
@@ -3791,6 +3864,9 @@ msgstr "긴 글"
 
 msgid "Long Reads on NewsBlur"
 msgstr "NewsBlur의 긴 글"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "도시, 주거 및 대중교통에 관한 긴 에세이"
 
 msgid "Long reads for later"
 msgstr "나중에 읽을 긴 글"
@@ -3949,6 +4025,10 @@ msgstr "중복 제목으로 일치함"
 
 msgid "Matched via related topics"
 msgstr "관련 주제를 통해 일치"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "“%(query)s” 일치"
 
 msgid "Matches story titles containing all keywords"
 msgstr "모든 키워드가 포함된 스토리 제목과 일치"
@@ -4176,6 +4256,9 @@ msgstr "만료 안 함"
 msgid "Never gonna expire. Congrats!"
 msgstr "만료되지 않습니다. 축하합니다!"
 
+msgid "New"
+msgstr "새 항목"
+
 msgid "New Arrivals"
 msgstr "새로 도착한 항목"
 
@@ -4232,6 +4315,9 @@ msgstr "다른 서비스와 연동된 NewsBlur"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur에서 브라우저 언어를 %(language)s로 감지했습니다."
 
+msgid "NewsBlur index"
+msgstr "NewsBlur 색인"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur가 현재 다운되었습니다. <br>잠시 후 다시 시도하세요."
 
@@ -4243,6 +4329,11 @@ msgstr "NewsBlur가 페이지 변경 사항을 자동으로 확인합니다"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "모든 기능을 갖춘 iOS용 NewsBlur"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr "NewsBlur에서 설명을 읽고 피드 색인과 공개 웹을 검색한 다음, 각 결과를 평가합니다. 최대 1분 정도 걸릴 수 있습니다."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur가 이 사이트의 RSS 피드를 자동으로 찾습니다."
@@ -4318,6 +4409,9 @@ msgstr "피드를 찾을 수 없음"
 
 msgid "No feeds found in this category."
 msgstr "이 카테고리에서 피드를 찾을 수 없습니다."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "설명과 일치하는 피드가 없습니다. 다른 방식으로 설명해 보세요."
 
 msgid "No folders match"
 msgstr "일치하는 폴더가 없습니다"
@@ -5004,6 +5098,9 @@ msgstr[0] "프리미엄 체험판 (%(count)s일)"
 msgid "Premium details"
 msgstr "프리미엄 상세 정보"
 
+msgid "Premium feature"
+msgstr "프리미엄 기능"
+
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "프리미엄 글꼴을 사용하려면 %(link_start)s프리미엄 계정%(link_end)s이 필요합니다."
@@ -5362,6 +5459,9 @@ msgstr "삭제"
 msgid "Remove from Up Next"
 msgstr "다음 재생 목록에서 삭제"
 
+msgid "Remove from history"
+msgstr "기록에서 삭제"
+
 msgid "Remove this list"
 msgstr "이 목록 삭제"
 
@@ -5463,6 +5563,9 @@ msgstr "다시 시도"
 
 msgid "Retry fetching and parsing"
 msgstr "가져오기 및 파싱 다시 시도"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "스크린샷이 많은 새로운 iOS 앱 리뷰"
 
 msgid "Rewinding..."
 msgstr "되감는 중..."
@@ -5646,6 +5749,9 @@ msgstr "저장된 모든 스토리와 태그 검색"
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Elasticsearch 기반 전문 검색으로 모든 구독 피드를 검색하세요."
 
+msgid "Search again"
+msgstr "다시 검색"
+
 msgid "Search archives..."
 msgstr "보관된 항목 검색..."
 
@@ -5714,6 +5820,9 @@ msgstr "스토리 검색"
 msgid "Search: \"%(value_1)s\""
 msgstr "검색: \"%(value_1)s\""
 
+msgid "Searches you run will be kept here."
+msgstr "실행한 검색이 여기에 저장됩니다."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "\"<b>%(query)s</b>\"을(를) <b>%(feed_title)s</b>에서 검색 중"
@@ -5721,11 +5830,23 @@ msgstr "\"<b>%(query)s</b>\"을(를) <b>%(feed_title)s</b>에서 검색 중"
 msgid "Searching RSS feeds..."
 msgstr "RSS 피드 검색 중..."
 
+msgid "Searching feeds"
+msgstr "피드 검색 중"
+
+msgid "Searching for"
+msgstr "검색 중:"
+
 msgid "Searching saved stories..."
 msgstr "저장된 스토리를 검색하는 중..."
 
+msgid "Searching the web"
+msgstr "웹 검색 중"
+
 msgid "Searching your archive..."
 msgstr "보관함 검색 중..."
+
+msgid "Searching…"
+msgstr "검색 중…"
 
 msgid "Seconds to skip backward"
 msgstr "뒤로 건너뛸 초"
@@ -6103,6 +6224,9 @@ msgstr "소셜"
 msgid "Social Connections"
 msgstr "소셜 연결"
 
+msgid "Something went wrong while searching."
+msgstr "검색 중 문제가 발생했습니다."
+
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
 msgstr "죄송합니다. \"%(value_1)s\"에 해당하는 사용자가 없습니다."
@@ -6239,6 +6363,12 @@ msgstr "분류 시작 중..."
 
 msgid "Starting trial..."
 msgstr "체험판 시작 중..."
+
+msgid "Starting your search…"
+msgstr "검색을 시작하는 중…"
+
+msgid "Starting…"
+msgstr "시작 중…"
 
 msgid "Statistics"
 msgstr "통계"
@@ -6653,6 +6783,12 @@ msgstr "감사합니다! %(bold_start)s프리미엄 아카이브 계정%(bold_en
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "감사합니다! %(bold_start)s프리미엄 프로 계정%(bold_end)s을 이용 중입니다."
 
+msgid "That search could not be loaded."
+msgstr "해당 검색을 불러올 수 없습니다."
+
+msgid "That search is no longer in your history."
+msgstr "해당 검색어는 더 이상 검색 기록에 없습니다."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 서비스 응답이 너무 오래 걸립니다. 다시 시도해 주세요."
 
@@ -6722,6 +6858,9 @@ msgstr "게시자가 원문 페이지를 비활성화했습니다."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "페이지 HTML을 가져와 콘텐츠 구조를 추출합니다."
+
+msgid "The search could not be started."
+msgstr "검색을 시작할 수 없습니다."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "선택한 보기는 사이트별로 기억되므로 요약만 제공하는 피드는 기본적으로 텍스트 보기로 설정할 수 있습니다."
@@ -7087,6 +7226,9 @@ msgstr "다른 검색어를 입력하거나 URL을 직접 붙여넣으세요."
 msgid "Try again"
 msgstr "다시 시도"
 
+msgid "Try describing something like"
+msgstr "다음과 같이 설명해 보세요"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "다른 키워드를 입력하거나 검색어를 지워 전체 항목을 확인하세요."
 
@@ -7178,6 +7320,9 @@ msgstr "알 수 없는 오류"
 
 msgid "Unknown question"
 msgstr "알 수 없는 질문"
+
+msgid "Unlimited searches"
+msgstr "무제한 검색"
 
 msgid "Unlock"
 msgstr "잠금 해제"
@@ -7432,6 +7577,9 @@ msgstr "음성 녹음에 실패했습니다. 다시 시도해 주세요."
 
 msgid "Voice settings"
 msgstr "음성 설정"
+
+msgid "Waiting for a verdict…"
+msgstr "결과를 기다리는 중…"
 
 msgid "Warning: This is actually permanent"
 msgstr "경고: 이 작업은 실제로 영구적입니다"
@@ -7859,6 +8007,9 @@ msgstr "프리미엄 계정이 다음 날짜에 다운그레이드됩니다:"
 
 msgid "Your profile"
 msgstr "내 프로필"
+
+msgid "Your searches"
+msgstr "내 검색"
 
 msgid "Your subscription is no longer active."
 msgstr "구독이 더 이상 활성 상태가 아닙니다."
