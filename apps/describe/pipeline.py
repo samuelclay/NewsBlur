@@ -355,6 +355,9 @@ class DescribeFeedSearch:
             step="hunt",
             tools=[self.WEB_SEARCH_TOOL],
         )
+        if text is None:
+            # apps/describe/pipeline.py: call_model returns None only when the API call failed.
+            self.stats["hunt_failed"] = True
         sites = self.parse_sites(text)
         if not sites:
             return []
@@ -455,12 +458,15 @@ class DescribeFeedSearch:
         self.stats["duration_seconds"] = round(time.time() - self.started, 1)
         if note:
             self.stats["note"] = note
-        never_searched = self.stats["llm_calls"] == 0 or self.stats["embeddings"] == 0
-        if not self.results and self.stats["model_errors"] and never_searched:
-            # apps/describe/pipeline.py: nothing found, and either no model call or no embedding ever
-            # succeeded, so the index was never really searched. That is an outage, not an answer, and
-            # failing the search refunds it (mark_error). One failed call among working ones is not:
-            # a search that ran and matched nothing is still a real "no matches".
+        unanswered = (
+            self.stats["llm_calls"] == 0 or self.stats["embeddings"] == 0 or self.stats.get("hunt_failed")
+        )
+        if not self.results and self.stats["model_errors"] and unanswered:
+            # apps/describe/pipeline.py: nothing found, and the model or embedding service never
+            # answered, or the web hunt (the step left to find something) could not run. That is an
+            # outage, not an answer, and failing the search refunds it (mark_error). One failed call
+            # among working ones is not: a search that ran in full and matched nothing is a real
+            # "no matches".
             message = gettext("The search couldn't reach the services it relies on. Please try again.")
             self.search.stats = self.stats
             self.search.mark_error(message)

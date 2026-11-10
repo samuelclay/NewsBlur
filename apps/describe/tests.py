@@ -623,6 +623,33 @@ class Test_DescribeOutagesAndDeletion(Test_DescribePipeline):
         self.assertEqual(self.search.stats["model_errors"], 1)
         self.assertEqual(tracker.daily_count(), 1)
 
+    def test_nothing_in_the_index_and_a_failed_web_hunt_is_refunded(self):
+        tracker = DescribeUsageTracker(self.user)
+        self.search.charge(tracker.record_usage(search_id=self.search.id, request_id="request-0001"))
+
+        def embed(text):
+            self.pipeline.stats["embeddings"] += 1
+            return [0.1] * 4
+
+        def hunt_is_down(system, user_text, max_tokens, step, tools=None):
+            if step == "hunt":
+                self.pipeline.stats["model_errors"] += 1
+                return None
+            self.pipeline.stats["llm_calls"] += 1
+            if step == "expand":
+                return '{"sub_queries": []}'
+            ids = [int(found) for found in re.findall(r"feed_id=(-?\d+)", user_text)]
+            return json.encode([{"feed_id": feed_id, "score": 0, "reason": "no"} for feed_id in ids])
+
+        with patch.object(self.pipeline, "call_model", side_effect=hunt_is_down), patch.object(
+            self.pipeline, "embed", side_effect=embed
+        ), patch("apps.describe.pipeline.SearchFeed.vector_query", return_value=[es_hit(self.feeds[0], 0.8)]):
+            self.pipeline.run()
+
+        self.search.reload()
+        self.assertEqual(self.search.status, STATUS_ERROR)
+        self.assertEqual(tracker.daily_count(), 0)
+
     def test_an_old_refund_does_not_forget_the_rerun_that_replaced_it(self):
         tracker = DescribeUsageTracker(self.user)
         self.search.charge(tracker.record_usage(search_id=self.search.id, request_id="request-0001"))
