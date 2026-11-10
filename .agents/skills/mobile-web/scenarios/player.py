@@ -1,6 +1,6 @@
 """
 player.py: the Listen and podcast player (views/media_player_view.js) on a phone. It floats as a
-one-row bar above each screen's bottom toolbar, opens as a bottom sheet when tapped, and closes
+one-row bar at each screen's bottom, opens as a bottom sheet when tapped, and closes
 from the shade.
 
 It uses whatever the account's player already holds (playback state restores on load), since
@@ -23,11 +23,14 @@ def run(ctx):
         print("SKIP player: nothing is loaded in this account's player")
         return
     ctx.check("the player moves out of the feed list onto every screen", player["in_body"], player)
-    taskbar_top = ctx.evaluate(
-        "Math.round(document.querySelector('.left-south .NB-taskbar-container').getBoundingClientRect().top)"
+    taskbar_bottom = ctx.evaluate(
+        "Math.round(document.querySelector('.left-south .NB-taskbar-container').getBoundingClientRect().bottom)"
     )
+    floor = ctx.evaluate("window.innerHeight")
     ctx.check(
-        "on the feed list it floats above the taskbar", player["bottom"] <= taskbar_top, (player, taskbar_top)
+        "on the feed list it floats at the bottom, clear of the taskbar under the header",
+        player["top"] >= taskbar_bottom and floor - 24 <= player["bottom"] <= floor,
+        (player, taskbar_bottom, floor),
     )
     ctx.check("collapsed, it is a single row", player["height"] <= 72, player)
     ctx.shot("01-feeds")
@@ -36,13 +39,13 @@ def run(ctx):
     ctx.set_layout("grid")
     ctx.tap_story(1)
     player = ctx.evaluate(PLAYER)
-    toolbar_top = ctx.evaluate(
-        "Math.round(document.querySelector('.NB-mobile-story-toolbar').getBoundingClientRect().top)"
+    toolbar_bottom = ctx.evaluate(
+        "Math.round(document.querySelector('.NB-mobile-story-toolbar').getBoundingClientRect().bottom)"
     )
     ctx.check(
-        "on the story screen it floats above the toolbar",
-        player["bottom"] <= toolbar_top,
-        (player, toolbar_top),
+        "on the story screen it floats at the bottom, clear of the toolbar under the nav bar",
+        player["top"] >= toolbar_bottom and floor - 24 <= player["bottom"] <= floor,
+        (player, toolbar_bottom, floor),
     )
     ctx.shot("02-story")
 

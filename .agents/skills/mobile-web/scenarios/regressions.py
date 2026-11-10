@@ -371,18 +371,20 @@ PILL_BAR = """(() => {
   var player_box = player && player.offsetWidth && getComputedStyle(player).display !== 'none' ? player.getBoundingClientRect() : null;
   return {
     pane: {left: pane.left, right: pane.right, bottom: pane.bottom},
+    nav_bottom: Math.round(document.querySelector('.NB-mobile-titles-bar').getBoundingClientRect().bottom),
     pills: pills,
     options_fits: natural <= room + 1,
     options_mode: row.classList.contains('NB-mobile-options-icon') ? 'icon' :
       row.classList.contains('NB-mobile-options-compact') ? 'compact' : 'full',
-    player_bottom: player_box && Math.round(player_box.bottom)
+    player_top: player_box && Math.round(player_box.top)
   };
 })()"""
 
 
 def check_story_list_pills(ctx):
     """The story list's controls were a single scrolling row under the nav bar that hid mark read
-    off screen. They now float at the bottom as the iOS app's pills. Expects the story list."""
+    off screen, then floated over the bottom of the list, covering story titles. They are now a
+    second bar under the nav bar that stays in view. Expects the story list."""
     page = ctx.page
     for width in (393, 360, 320):
         page.set_viewport_size({"width": width, "height": 760})
@@ -392,34 +394,38 @@ def check_story_list_pills(ctx):
         ordered = all(a["right"] <= b["left"] for a, b in zip(pills, pills[1:]))
         one_row = len({pill["top"] for pill in pills}) == 1
         inside = pills[0]["left"] >= pane["left"] and pills[-1]["right"] <= pane["right"]
-        at_bottom = pane["bottom"] - pills[0]["bottom"] <= 12
+        at_top = 0 <= pills[0]["top"] - bar["nav_bottom"] <= 12
         ctx.check(
-            f"the story list's pills sit in one row along the bottom at {width}px",
-            ordered and one_row and inside and at_bottom and pills[-1]["name"] == "NB-taskbar-nav",
+            f"the story list's pills sit in one row under the nav bar at {width}px",
+            ordered and one_row and inside and at_top and pills[-1]["name"] == "NB-taskbar-nav",
             bar,
         )
         ctx.check(f"the story options pill never clips its label at {width}px", bar["options_fits"], bar)
-        if bar["player_bottom"]:
+        if bar["player_top"]:
             ctx.check(
-                f"the Listen player sits above the pills at {width}px",
-                bar["player_bottom"] <= pills[0]["top"],
+                f"the Listen player stays clear of the pills at {width}px",
+                bar["player_top"] >= pills[0]["bottom"],
                 bar,
             )
     page.set_viewport_size({"width": ctx.viewport["width"], "height": ctx.viewport["height"]})
     ctx.wait(500)
 
+    # mobile.css: the pills are a bar of their own, so no story title is ever beneath them.
     clearance = ctx.evaluate(
-        "(() => { var list = document.querySelector('#story_titles'); list.scrollTop = list.scrollHeight; "
-        "var rows = list.querySelectorAll('.NB-story-title'); var last = rows[rows.length - 1].getBoundingClientRect(); "
-        "var bar = document.querySelector('.right-pane .NB-search-container').getBoundingClientRect(); "
-        "return {last_bottom: Math.round(last.bottom), bar_top: Math.round(bar.top)}; })()"
+        "(() => { var list = document.querySelector('#story_titles'); "
+        "var bar = Math.round(document.querySelector('.right-pane > .content-north').getBoundingClientRect().bottom); "
+        "var first = list.querySelector('.NB-story-title').getBoundingClientRect(); "
+        "var hit = document.elementFromPoint(first.left + first.width / 2, first.top + 4); "
+        "return {first_top: Math.round(first.top), bar_bottom: bar, list_top: Math.round(list.getBoundingClientRect().top), "
+        "first_uncovered: !!hit && !!hit.closest('#story_titles')}; })()"
     )
     ctx.check(
-        "the last story scrolls clear of the pills",
-        clearance["last_bottom"] <= clearance["bar_top"],
+        "the story list starts below the pills, which cover no story",
+        clearance["list_top"] >= clearance["bar_bottom"]
+        and clearance["first_top"] >= clearance["bar_bottom"]
+        and clearance["first_uncovered"],
         clearance,
     )
-    ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
 
     page.locator(".right-pane .NB-search-container").tap()
     ctx.wait(500)
@@ -427,12 +433,14 @@ def check_story_list_pills(ctx):
         "(() => { var input = document.querySelector('.right-pane .NB-story-title-search-input'); "
         "var r = input.getBoundingClientRect(); var bar = document.querySelector('.right-pane .NB-search-container').getBoundingClientRect(); "
         "var hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); "
-        "return {focused: document.activeElement === input, width: Math.round(r.width), above: r.bottom <= bar.top, "
-        "uncovered: hit === input, pane: document.querySelector('.right-pane').clientWidth}; })()"
+        "var list = document.querySelector('#story_titles').getBoundingClientRect(); "
+        "return {focused: document.activeElement === input, width: Math.round(r.width), below: r.top >= bar.bottom, "
+        "off_list: r.bottom <= list.top, uncovered: hit === input, pane: document.querySelector('.right-pane').clientWidth}; })()"
     )
     ctx.check(
-        "tapping search opens an uncovered field across the bar above the pills",
-        field["focused"] and field["above"] and field["uncovered"] and field["width"] >= field["pane"] - 40,
+        "tapping search opens an uncovered field across the bar below the pills, above the list",
+        field["focused"] and field["below"] and field["off_list"] and field["uncovered"]
+        and field["width"] >= field["pane"] - 40,
         field,
     )
     ctx.evaluate("(() => { document.activeElement.blur(); })()")
@@ -504,7 +512,7 @@ def check_folder_pills(ctx):
     pills = bar["pills"]
     ordered = all(a["right"] <= b["left"] for a, b in zip(pills, pills[1:]))
     ctx.check(
-        "a folder's pills sit in one row along the bottom",
+        "a folder's pills sit in one row under the nav bar",
         len(pills) >= 3 and ordered and len({pill["top"] for pill in pills}) == 1,
         bar,
     )
