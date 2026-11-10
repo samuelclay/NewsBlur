@@ -229,6 +229,11 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - **Tests**:
   - Classes prefixed with `Test_`
   - Methods prefixed with `test_`
+  - Before writing a test, name the rule it protects and a realistic change that would break it. If the only way to break it is to edit the literal the test repeats, don't write it.
+  - For new code, list the ways it can fail before writing it, then test that list. Don't write tests afterwards by reading the finished code.
+  - Test at the highest level that can see the behavior: extend an existing view or task test before adding a test of a private helper.
+  - Don't write constant or prompt mirrors, tests that assert a mock received what the test handed it, tests of one-line wrappers, or presentation checks.
+  - Don't turn a red test green by deleting, skipping, or weakening it. To delete tests that fail these rules, use the `deslopify-tests` skill, which proves each deletion by breaking the code.
 
 - **Icons**: When you need new SVG icons, check `media/img/icons/phosphor-fill/` and `media/img/icons/remix-fill/` for existing icons before sourcing externally. Copy to `media/img/icons/nouns/` with `fill="#95968e"` to match the UI icon color.
 
