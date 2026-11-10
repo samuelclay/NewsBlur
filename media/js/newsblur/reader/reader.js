@@ -406,8 +406,11 @@
                 .removeClass('NB-story-pane-north')
                 .removeClass('NB-story-pane-south')
                 .removeClass('NB-story-pane-hidden')
+                // reader.js: Full uses the same titles pane as Split. It is normally hidden there, but the Try
+                // view opens it to hold the Subscribe bar, and without this class its rows take the padding
+                // meant for a full-width list and the titles wrap in half the pane.
                 .toggleClass('NB-story-pane-' + story_anchor,
-                    NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'split');
+                    _.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')));
             if (!options.right_side) {
                 var outerLayoutOptions = {
                     zIndex: 2,
