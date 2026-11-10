@@ -5613,6 +5613,9 @@ msgstr "これはすでにRSSフィードです。直接購読します。"
 msgid "This payment has been refunded."
 msgstr "このお支払いは返金されました。"
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "検索は完了前に停止しました。再試行するには、もう一度検索してください。"
+
 msgid "This story has no text to read aloud."
 msgstr "この記事には読み上げるテキストがありません。"
 
@@ -6364,6 +6367,9 @@ msgstr "昨日、%(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "昨日、%(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "検索はすでに実行中です。完了するまでお待ちください。"
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

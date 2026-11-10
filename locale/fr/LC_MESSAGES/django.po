@@ -6317,6 +6317,9 @@ msgstr "Il s'agit déjà d'un flux RSS. Abonnement direct en cours."
 msgid "This payment has been refunded."
 msgstr "Ce paiement a été remboursé."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Cette recherche s’est arrêtée avant d’être terminée. Relancez-la pour réessayer."
+
 msgid "This story has no text to read aloud."
 msgstr "Cet article ne contient aucun texte à lire à voix haute."
 
@@ -7177,6 +7180,9 @@ msgstr "Hier, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "Hier, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Une recherche est déjà en cours. Attendez qu’elle se termine."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

@@ -5783,6 +5783,9 @@ msgstr "이미 RSS 피드입니다. 바로 구독합니다."
 msgid "This payment has been refunded."
 msgstr "결제가 환불되었습니다."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "검색이 완료되기 전에 중단되었습니다. 다시 검색하여 재시도하세요."
+
 msgid "This story has no text to read aloud."
 msgstr "이 스토리에는 소리 내어 읽을 텍스트가 없습니다."
 
@@ -6546,6 +6549,9 @@ msgstr "어제, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "어제, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "이미 검색이 진행 중입니다. 완료될 때까지 기다려 주세요."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

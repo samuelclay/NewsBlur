@@ -6163,6 +6163,9 @@ msgstr "Bu zaten bir RSS akışı. Doğrudan abone olunuyor."
 msgid "This payment has been refunded."
 msgstr "Bu ödeme iade edildi."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Bu arama tamamlanmadan durdu. Yeniden denemek için tekrar arayın."
+
 msgid "This story has no text to read aloud."
 msgstr "Bu haberde sesli okunacak metin yok."
 
@@ -7009,6 +7012,9 @@ msgstr "Dün, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "Dün, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Zaten devam eden bir aramanız var. Önce tamamlanmasını bekleyin."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

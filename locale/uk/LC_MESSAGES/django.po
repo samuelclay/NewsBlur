@@ -6261,6 +6261,9 @@ msgstr "Це вже RSS-стрічка. Підписуємося безпосе�
 msgid "This payment has been refunded."
 msgstr "Кошти за цей платіж повернуто."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Пошук зупинився, не завершившись. Повторіть пошук."
+
 msgid "This story has no text to read aloud."
 msgstr "У цій статті немає тексту для озвучення."
 
@@ -7101,6 +7104,9 @@ msgstr "Учора, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "Учора, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Пошук уже виконується. Спершу дочекайтеся його завершення."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

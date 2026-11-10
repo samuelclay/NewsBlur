@@ -6200,6 +6200,9 @@ msgstr "Dit is al een RSS-feed. Er wordt rechtstreeks op geabonneerd."
 msgid "This payment has been refunded."
 msgstr "Deze betaling is terugbetaald."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Deze zoekopdracht is gestopt voordat deze klaar was. Zoek opnieuw om het opnieuw te proberen."
+
 msgid "This story has no text to read aloud."
 msgstr "Dit artikel bevat geen tekst om voor te lezen."
 
@@ -7029,6 +7032,9 @@ msgstr "Gisteren, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "Gisteren, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Je hebt al een zoekopdracht lopen. Wacht eerst tot deze klaar is."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

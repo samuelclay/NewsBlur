@@ -6224,6 +6224,9 @@ msgstr "هذه خلاصة RSS بالفعل. جارٍ الاشتراك مباشر
 msgid "This payment has been refunded."
 msgstr "تم رد قيمة هذه الدفعة."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "توقف هذا البحث قبل اكتماله. أعد البحث للمحاولة مرة أخرى."
+
 msgid "This story has no text to read aloud."
 msgstr "لا تحتوي هذه القصة على نص لقراءته بصوت عالٍ."
 
@@ -7034,6 +7037,9 @@ msgstr "أمس، %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "أمس، %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "لديك بحث جارٍ بالفعل. انتظر حتى يكتمل أولاً."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

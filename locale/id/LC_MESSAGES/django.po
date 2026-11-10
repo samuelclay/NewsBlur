@@ -6203,6 +6203,9 @@ msgstr "Ini sudah merupakan feed RSS. Berlangganan langsung."
 msgid "This payment has been refunded."
 msgstr "Pembayaran ini telah dikembalikan."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Pencarian ini berhenti sebelum selesai. Cari lagi untuk mencoba ulang."
+
 msgid "This story has no text to read aloud."
 msgstr "Artikel ini tidak memiliki teks untuk dibacakan."
 
@@ -7037,6 +7040,9 @@ msgstr "Kemarin, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "Kemarin, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Anda sudah menjalankan pencarian. Tunggu hingga selesai terlebih dahulu."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

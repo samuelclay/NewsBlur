@@ -6043,6 +6043,9 @@ msgstr "นี่เป็นฟีด RSS อยู่แล้ว กำลั
 msgid "This payment has been refunded."
 msgstr "คืนเงินสำหรับการชำระเงินนี้แล้ว"
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "การค้นหานี้หยุดก่อนเสร็จสิ้น ค้นหาอีกครั้งเพื่อลองใหม่"
+
 msgid "This story has no text to read aloud."
 msgstr "บทความนี้ไม่มีข้อความให้อ่านออกเสียง"
 
@@ -6860,6 +6863,9 @@ msgstr "เมื่อวาน %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "เมื่อวานนี้ %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "มีการค้นหาที่กำลังทำงานอยู่แล้ว โปรดรอให้เสร็จก่อน"
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

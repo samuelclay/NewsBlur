@@ -5658,6 +5658,9 @@ msgstr "這已是 RSS 訂閱來源，正在直接訂閱。"
 msgid "This payment has been refunded."
 msgstr "此筆付款已退款。"
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "這次搜尋尚未完成就已停止。請重新搜尋以重試。"
+
 msgid "This story has no text to read aloud."
 msgstr "這篇文章沒有可朗讀的文字。"
 
@@ -6410,6 +6413,9 @@ msgstr "昨天，%(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "昨天，%(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "你已有搜尋正在執行。請先等它完成。"
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

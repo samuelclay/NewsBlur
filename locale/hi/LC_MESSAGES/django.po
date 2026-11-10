@@ -6164,6 +6164,9 @@ msgstr "यह पहले से ही RSS फ़ीड है। सीध�
 msgid "This payment has been refunded."
 msgstr "यह भुगतान वापस कर दिया गया है।"
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "यह खोज पूरी होने से पहले रुक गई। फिर से कोशिश करने के लिए दोबारा खोजें।"
+
 msgid "This story has no text to read aloud."
 msgstr "इस लेख में ज़ोर से पढ़ने के लिए कोई पाठ नहीं है।"
 
@@ -6990,6 +6993,9 @@ msgstr "कल, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "कल, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "आपकी एक खोज पहले से चल रही है। पहले उसके पूरा होने की प्रतीक्षा करें।"
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

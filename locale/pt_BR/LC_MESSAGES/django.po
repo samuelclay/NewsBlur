@@ -6208,6 +6208,9 @@ msgstr "Este já é um feed RSS. Assinando diretamente."
 msgid "This payment has been refunded."
 msgstr "Este pagamento foi reembolsado."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Esta busca foi interrompida antes de terminar. Pesquise novamente para tentar de novo."
+
 msgid "This story has no text to read aloud."
 msgstr "Este artigo não tem texto para ser lido em voz alta."
 
@@ -7041,6 +7044,9 @@ msgstr "Ontem, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "Ontem, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Você já tem uma busca em andamento. Aguarde até ela terminar."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

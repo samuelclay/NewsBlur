@@ -6290,6 +6290,9 @@ msgstr "To już jest kanał RSS. Subskrybowanie bezpośrednio."
 msgid "This payment has been refunded."
 msgstr "Ta płatność została zwrócona."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "To wyszukiwanie zostało przerwane przed zakończeniem. Wyszukaj ponownie, aby spróbować jeszcze raz."
+
 msgid "This story has no text to read aloud."
 msgstr "Tego artykułu nie da się przeczytać na głos, ponieważ nie zawiera tekstu."
 
@@ -7134,6 +7137,9 @@ msgstr "Wczoraj, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "Wczoraj, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Wyszukiwanie jest już w toku. Poczekaj, aż się zakończy."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"

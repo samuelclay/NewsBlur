@@ -5999,6 +5999,9 @@ msgstr "זה כבר פיד RSS. מתבצעת הרשמה ישירה."
 msgid "This payment has been refunded."
 msgstr "התשלום הזה הוחזר."
 
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "החיפוש הזה נעצר לפני שהסתיים. חפשו שוב כדי לנסות מחדש."
+
 msgid "This story has no text to read aloud."
 msgstr "אין בכתבה הזו טקסט להקראה."
 
@@ -6796,6 +6799,9 @@ msgstr "אתמול, %(date)s %(time)s"
 #, python-format
 msgid "Yesterday, %(time)s"
 msgstr "אתמול, %(time)s"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "כבר מתבצע חיפוש. המתינו לסיומו תחילה."
 
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
