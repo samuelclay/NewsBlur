@@ -6311,9 +6311,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             for (NSString *folderName in appDelegate.dictFoldersArray) {
                 for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
                     BOOL isString = [feedId isKindOfClass:[NSString class]];
-                    // FeedDetailObjCViewController.m keeps blurblogs out of the Infrequent request: they are not in
-                    // that river, and the server's infrequent filter only accepts numeric feed IDs.
-                    if (isString && infrequent && [feedId startsWith:@"social:"]) continue;
+                    // FeedDetailObjCViewController.m sends only subscribed feeds for the Infrequent river. Blurblogs
+                    // and saved searches are not in it, and the server's infrequent filter only accepts numeric IDs.
+                    NSCharacterSet *nonDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+                    if (isString && infrequent && (![feedId length] || [feedId rangeOfCharacterFromSet:nonDigits].location != NSNotFound)) continue;
                     if (!isString || ![feedId startsWith:@"saved:"]) {
                         [feedIds addObject:feedId];
                     }

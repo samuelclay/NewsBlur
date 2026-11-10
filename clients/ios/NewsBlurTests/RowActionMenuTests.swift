@@ -448,11 +448,11 @@ import UIKit
         app.dictUnreadCounts = ["42": ["ps": 0, "nt": 69, "ng": 0], "43": ["ps": 0, "nt": 5, "ng": 0]]
         app.storiesCollection.appDelegate = app
         app.storiesCollection.activeFeed = app.dictFeeds["42"] as? [AnyHashable: Any]
-        // RowActionMenuTests.swift follows a blurblog in the global rivers; its ID is not a numeric feed ID.
+        // RowActionMenuTests.swift gives the global rivers a blurblog and a saved search; neither ID is a numeric feed ID.
         let global = infrequent || everything
         app.storiesCollection.activeFolder = infrequent ? "infrequent" : everything ? "everything" : "Tech"
-        app.dictFoldersArray = global ? ["Tech", "river_blurblogs"] : ["Tech"]
-        if global { app.dictFolders = ["Tech": [42, 43], "river_blurblogs": ["social:7"]] }
+        app.dictFoldersArray = global ? ["Tech", "river_blurblogs", "saved_searches"] : ["Tech"]
+        if global { app.dictFolders = ["Tech": [42, 43], "river_blurblogs": ["social:7"], "saved_searches": ["42?bulk"]] }
         app.storiesCollection.isRiverView = days != nil
         let newestTimestamp = days == nil ? 1_800_000_000 : Int(Date().timeIntervalSince1970)
         let stories: [[String: Any]] = (0..<70).map { index in
@@ -510,7 +510,7 @@ import UIKit
             } else {
                 if infrequent {
                     let requested = (app.lastParameters?["feed_id"] as? [Any] ?? []).map { String(describing: $0) }
-                    XCTAssertEqual(requested, ["42", "43"], "Followed blurblogs are outside the Infrequent river and must stay unread")
+                    XCTAssertEqual(requested, ["42", "43"], "Blurblogs and saved searches are outside the Infrequent river")
                 }
                 XCTAssertEqual(app.lastURL?.hasSuffix("/reader/mark_feed_as_read"), true)
                 let cutoff = try XCTUnwrap(app.lastParameters?["cutoff_timestamp"] as? NSNumber).intValue
