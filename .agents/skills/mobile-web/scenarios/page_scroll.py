@@ -81,6 +81,24 @@ def run(ctx):
     ctx.check("scrolling the page loads the next page of stories", state["stories"] > loaded, (loaded, state))
     ctx.shot("02-titles-scrolled")
 
+    # Safari's toolbar shrinking makes the window taller mid-scroll. The reader re-laid out every
+    # pane for it, which stuttered the scroll.
+    ctx.evaluate(
+        "(() => { window.__nb_resizes = 0; var resize = NEWSBLUR.reader.resize_window; "
+        "NEWSBLUR.reader.resize_window = function () { window.__nb_resizes += 1; return resize.apply(this, arguments); }; })()"
+    )
+    page.set_viewport_size({"width": width, "height": ctx.viewport["height"] + 80})
+    ctx.wait(900)
+    taller = ctx.evaluate("window.__nb_resizes")
+    page.set_viewport_size({"width": width, "height": ctx.viewport["height"]})
+    ctx.wait(900)
+    state = ctx.evaluate(STATE)
+    ctx.check(
+        "a window that only gets taller or shorter, as when the toolbar shrinks, re-lays out nothing",
+        taller == 0 and ctx.evaluate("window.__nb_resizes") == 0 and abs(state["page_y"] - titles_top) <= 2,
+        (taller, state),
+    )
+
     page.locator(".NB-mobile-titles-bar .NB-mobile-mark-read").tap()
     ctx.wait(700)
     state = ctx.evaluate(STATE)

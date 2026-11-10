@@ -215,6 +215,12 @@ body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-cen
     overflow: visible !important;
 }
 
+/* reader.js rebuilds the layout inside .content-pane whenever a list opens, and jquery.layout
+   puts up an alert for a container with no height, which this is until its stories arrive. */
+body.NB-mobile.NB-mobile-page-scroll .right-pane.NB-mobile-pos-center > .content-pane {
+    min-height: 50vh;
+}
+
 body.NB-mobile.NB-mobile-page-scroll .right-pane.NB-mobile-pos-center > .content-pane > #story_titles,
 body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-center > .left-center-content {
     position: relative !important;
