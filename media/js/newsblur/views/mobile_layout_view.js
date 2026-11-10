@@ -974,10 +974,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         return Math.max(0, window.innerHeight - bars_height);
     },
 
-    // The list's own scroll listeners hear the page's scroll.
+    // The list's own scroll listeners, jQuery's and native ones alike, hear the page's scroll.
     handle_page_scroll: function () {
         if (!this.page_scroll_screen || this.page_scroll_handoff) return;
-        $(this.page_scroller(this.page_scroll_screen)).triggerHandler('scroll');
+        this.page_scroller(this.page_scroll_screen).dispatchEvent(new Event('scroll'));
     },
 
     is_browser_edge_touch: function (x) {
