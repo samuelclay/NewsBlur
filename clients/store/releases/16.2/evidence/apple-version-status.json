@@ -1,0 +1,155 @@
+{
+  "app_id": "463981119",
+  "versions": [
+    {
+      "id": "0cefd4a7-60e4-4a7a-829a-f56ef2f0281f",
+      "platform": "MAC_OS",
+      "appStoreState": "WAITING_FOR_REVIEW",
+      "appVersionState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "build": {
+        "id": "81a7b17e-3dc0-4498-9cdd-d6e36a3bbd34",
+        "version": "356",
+        "processingState": "VALID"
+      },
+      "whats_new": {
+        "tr": "Bir haberle eşleşen yapay zekâ içerik ve görsel filtrelerini görün, filtrelerinizi Eğitmen’de yönetin. Gizle artık yapay zekâ filtre eşleşmelerini geçersiz kılıyor.\n\nPodcast’leri NewsBlur’ın Dinle oynatıcısında atlama kontrolleri, AirPlay ve podcast’lerle sesli okunan haberleri bir araya getiren bir sırayla çalın. Kaldığınız yerden farklı cihazlarda devam edin.",
+        "th": "ดูตัวกรองเนื้อหาและรูปภาพด้วย AI ที่ตรงกับบทความ และจัดการตัวกรองได้ในเครื่องมือฝึกระบบอัจฉริยะ ตอนนี้ «ซ่อน» มีผลเหนือการจับคู่ของตัวกรอง AI\n\nเล่นพอดแคสต์ในเครื่องเล่น Listen ของ NewsBlur พร้อมปุ่มข้าม AirPlay และคิวที่เล่นพอดแคสต์สลับกับบทความที่อ่านออกเสียง เล่นต่อจากจุดที่ค้างไว้ได้ทุกอุปกรณ์",
+        "fr-FR": "Découvrez quels filtres d’IA pour le contenu et les images correspondent à un article, et gérez vos filtres dans l’entraîneur. Masquer l’emporte désormais sur les correspondances des filtres d’IA.\n\nÉcoutez des podcasts dans le lecteur Listen de NewsBlur, avec des commandes de saut, AirPlay et une file d’attente mêlant podcasts et articles lus à voix haute. Reprenez la lecture où vous l’avez laissée, sur tous vos appareils.",
+        "ko": "스토리에 어떤 AI 콘텐츠 및 이미지 필터가 일치했는지 확인하고, 트레이너에서 필터를 관리하세요. 이제 숨기기가 AI 필터 일치보다 우선합니다.\n\nNewsBlur의 Listen 플레이어에서 건너뛰기 컨트롤과 AirPlay를 사용하고, 팟캐스트와 소리 내어 읽는 스토리를 함께 담은 대기열로 팟캐스트를 재생하세요. 기기 간에 마지막으로 들은 위치부터 이어서 재생할 수 있습니다.",
+        "he": "אפשר לראות אילו מסנני תוכן ותמונות של AI התאימו לכתבה ולנהל את המסננים במאמן הבינה. הסתרה גוברת כעת על התאמות של מסנני AI.\n\nאפשר להאזין לפודקאסטים בנגן ההאזנה של NewsBlur, עם בקרי דילוג, AirPlay ותור שמשלב פודקאסטים וכתבות שמוקראות בקול. אפשר להמשיך מהמקום שבו הפסקת בכל אחד מהמכשירים שלך.",
+        "vi": "Xem bộ lọc nội dung và hình ảnh AI nào khớp với bài viết, rồi quản lý bộ lọc trong trình huấn luyện. Ẩn hiện được ưu tiên hơn các kết quả khớp của bộ lọc AI.\n\nPhát podcast trong trình phát Nghe của NewsBlur với các nút tua, AirPlay và hàng đợi kết hợp podcast với bài viết được đọc thành tiếng. Tiếp tục nghe từ vị trí bạn đã dừng trên các thiết bị.",
+        "zh-Hant": "查看哪些 AI 內容和圖片篩選器符合文章，並在訓練器中管理篩選器。現在，「隱藏」會優先於 AI 篩選器比對結果。\n\n在 NewsBlur 的 Listen 播放器中播放 Podcast，使用跳轉控制、AirPlay，以及可混合 Podcast 與朗讀文章的播放佇列。可在不同裝置間接續上次的播放進度。",
+        "ru": "Посмотрите, какие фильтры ИИ для текста и изображений совпали со статьёй, и управляйте фильтрами в тренере. «Скрыть» теперь имеет приоритет над совпадениями с фильтрами ИИ.\n\nСлушайте подкасты в плеере Listen от NewsBlur с кнопками перемотки, AirPlay и очередью, где подкасты чередуются со статьями, прочитанными вслух. Продолжайте прослушивание с того места, где остановились, на любом устройстве.",
+        "es-ES": "Consulta qué filtros de contenido e imágenes con IA coinciden con un artículo y gestiona tus filtros en el entrenador. «Ocultar» prevalece ahora sobre las coincidencias de los filtros de IA.\n\nReproduce podcasts en el reproductor Escuchar de NewsBlur, con controles para saltar, AirPlay y una cola que combina podcasts con artículos leídos en voz alta. Retoma la reproducción donde la dejaste en cualquiera de tus dispositivos.",
+        "zh-Hans": "查看与文章匹配的 AI 内容和图片筛选条件，并在训练器中管理筛选条件。现在，“隐藏”会覆盖 AI 筛选条件的匹配结果。\n\n在 NewsBlur 的 Listen 播放器中收听播客，使用跳过控制、AirPlay，以及混合播客和朗读文章的队列。你可以在不同设备间从上次停止处继续收听。",
+        "hi": "देखें कि कौन-से AI सामग्री और इमेज फ़िल्टर किसी लेख से मेल खाते हैं, और ट्रेनर में अपने फ़िल्टर प्रबंधित करें। छिपाएँ अब AI फ़िल्टर से मेल खाने पर भी लागू होता है।\n\nNewsBlur के Listen प्लेयर में पॉडकास्ट चलाएँ। स्किप कंट्रोल, AirPlay और ऐसी कतार का इस्तेमाल करें जिसमें पॉडकास्ट और ज़ोर से पढ़े गए लेख साथ हों। दूसरे डिवाइस पर वहीं से सुनना जारी रखें जहाँ आपने छोड़ा था।",
+        "uk": "Переглядайте, які фільтри ШІ для тексту й зображень спрацювали для статті, та керуйте фільтрами в тренері. «Приховати» має перевагу над збігами з фільтрами ШІ.\n\nВідтворюйте подкасти в програвачі Listen від NewsBlur за допомогою кнопок перемотування, AirPlay та черги, у якій поєднано подкасти й статті, озвучені вголос. Продовжуйте прослуховування з того місця, де зупинилися, на будь-якому пристрої.",
+        "ar-SA": "اطّلع على فلاتر المحتوى والصور بالذكاء الاصطناعي التي انطبقت على القصة، وأدِر فلاترك في مدرّب الذكاء. يتجاوز «إخفاء» الآن نتائج فلاتر الذكاء الاصطناعي.\n\nشغّل البودكاست في مشغّل الاستماع لدى NewsBlur، مع عناصر تخطٍ وAirPlay وقائمة تشغيل تمزج البودكاست بالقصص المقروءة بصوت مسموع. استأنف من حيث توقفت على أجهزتك.",
+        "it": "Scopri quali filtri AI per contenuti e immagini corrispondono a un articolo e gestisci i filtri nell'addestramento. Nascondi ha ora la precedenza sulle corrispondenze dei filtri AI.\n\nRiproduci i podcast nel player Listen di NewsBlur, con controlli per saltare, AirPlay e una coda che alterna podcast e articoli letti ad alta voce. Riprendi da dove avevi interrotto su tutti i dispositivi.",
+        "de-DE": "Sieh, welche KI-Inhalts- und Bildfilter auf einen Artikel zutreffen, und verwalte deine Filter im Trainer. „Ausblenden“ hat jetzt Vorrang vor KI-Filtertreffern.\n\nSpiele Podcasts im Listen-Player von NewsBlur mit Überspringen-Steuerung, AirPlay und einer Warteschlange ab, die Podcasts mit vorgelesenen Artikeln mischt. Setze die Wiedergabe geräteübergreifend dort fort, wo du aufgehört hast.",
+        "pl": "Sprawdź, które filtry AI dotyczące treści i obrazów pasują do artykułu, i zarządzaj filtrami w trenerze. Ukryj ma teraz pierwszeństwo przed filtrami AI.\n\nOdtwarzaj podcasty w odtwarzaczu Listen aplikacji NewsBlur za pomocą przycisków pomijania, AirPlay i kolejki łączącej podcasty z artykułami czytanymi na głos. Wznawiaj odtwarzanie na różnych urządzeniach w miejscu, w którym zostało przerwane.",
+        "pt-BR": "Veja quais filtros de conteúdo e imagem com IA corresponderam a um artigo e gerencie seus filtros no treinador. Ocultar agora se sobrepõe às correspondências dos filtros de IA.\n\nOuça podcasts no player Listen de NewsBlur, com controles para avançar e retroceder, AirPlay e uma fila que combina podcasts com artigos lidos em voz alta. Retome de onde parou em todos os dispositivos.",
+        "id": "Lihat filter konten AI dan gambar yang cocok dengan artikel, lalu kelola filter Anda di Pelatih. Sembunyikan kini mengesampingkan kecocokan filter AI.\n\nPutar podcast di pemutar Listen milik NewsBlur dengan kontrol lewati, AirPlay, dan antrean yang menggabungkan podcast dengan artikel yang dibacakan. Lanjutkan dari posisi terakhir di berbagai perangkat.",
+        "ja": "記事に一致したAIコンテンツフィルターと画像フィルターを確認し、インテリジェンストレーナーでフィルターを管理できます。「非表示」はAIフィルターの一致より優先されます。\n\nNewsBlurのListenプレーヤーで、スキップ操作やAirPlayを使ってポッドキャストを再生できます。ポッドキャストと読み上げ記事を混ぜたキューを利用でき、デバイスをまたいで前回の続きから再生できます。",
+        "nl-NL": "Bekijk welke AI-inhouds- en afbeeldingsfilters overeenkomen met een artikel en beheer je filters in de trainer. Verbergen gaat nu vóór AI-filtermatches.\n\nSpeel podcasts af in de Luister-speler van NewsBlur, met bediening om over te slaan, AirPlay en een wachtrij met podcasts en voorgelezen artikelen. Ga op al je apparaten verder waar je was gebleven.",
+        "en-US": "See which AI content and image filters matched a story, and manage your filters in the trainer. Hide now overrides AI filter matches.\n\nPlay podcasts in NewsBlur's Listen player with skip controls, AirPlay, and a queue that mixes podcasts with stories read aloud. Resume where you left off across devices."
+      },
+      "localization_ids": {
+        "tr": "1b1b6cb0-b923-4342-9d0b-71e335ceae3d",
+        "th": "4f14de10-331f-48b0-aa74-80d8fb4a7c0e",
+        "fr-FR": "4cfaf642-0b3e-4c8f-8f96-6ca9488c72c5",
+        "ko": "e90ba625-68f2-4d63-9bcd-17ecc5806d63",
+        "he": "968a7f22-d38b-4501-90c1-7defc28868c4",
+        "vi": "377d1098-dd13-48a6-8cd2-9cb51067705a",
+        "zh-Hant": "9df101a9-b0d5-41fc-8fd6-f76ef73db54e",
+        "ru": "555f3446-0ba0-469f-9f28-04d2a7e94bdf",
+        "es-ES": "5ea4877e-b95c-4388-b6dc-0fe6105a6502",
+        "zh-Hans": "ba71e128-0db6-4e5d-a28c-40ced21874b5",
+        "hi": "6f865651-441f-4dad-b018-64ff29293c94",
+        "uk": "a086618d-3efd-42cb-a011-ecb6c36ec14d",
+        "ar-SA": "439951d1-fb4b-4124-a9db-34cfa8e45065",
+        "it": "f6636a44-3280-4334-b816-dd18b3ee2ea1",
+        "de-DE": "f12ffc79-a432-465a-8868-b529a66a9577",
+        "pl": "e3bf7e1b-3449-4f82-bfd8-56697fdc6fb7",
+        "pt-BR": "d7945e04-6c68-4a62-bd6a-d2b71a9d8f6d",
+        "id": "a215a84c-9534-41c4-8874-051f06f3dfba",
+        "ja": "9ffeaf4e-ab70-4989-afe6-97bf5d02acae",
+        "nl-NL": "aef8ada8-dec0-4c19-a58d-c5f3a110f1aa",
+        "en-US": "33a0f4fb-a07a-4242-80db-e69d44ff87ba"
+      }
+    },
+    {
+      "id": "bacde2cf-e989-45e8-bdd4-77703d2b1231",
+      "platform": "IOS",
+      "appStoreState": "WAITING_FOR_REVIEW",
+      "appVersionState": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "build": {
+        "id": "e4ca4c9d-485c-410a-a47c-f2a013de7e4d",
+        "version": "356",
+        "processingState": "VALID"
+      },
+      "whats_new": {
+        "hi": "देखें कि कौन-से AI सामग्री और इमेज फ़िल्टर किसी लेख से मेल खाते हैं, और ट्रेनर में अपने फ़िल्टर प्रबंधित करें। छिपाएँ अब AI फ़िल्टर से मेल खाने पर भी लागू होता है।\n\nNewsBlur के Listen प्लेयर में पॉडकास्ट चलाएँ। स्किप कंट्रोल, AirPlay और ऐसी कतार का इस्तेमाल करें जिसमें पॉडकास्ट और ज़ोर से पढ़े गए लेख साथ हों। दूसरे डिवाइस पर वहीं से सुनना जारी रखें जहाँ आपने छोड़ा था।\n\nअब Listen दूसरे ऐप्स के संगीत के ऊपर भी पढ़ सकता है। Now Playing में Play over other audio चालू करें, चुनें कि आवाज़ बोलते समय संगीत की आवाज़ कम करनी है या नहीं, और Music / Voice का संतुलन समायोजित करें।",
+        "en-US": "See which AI content and image filters matched a story, and manage your filters in the trainer. Hide now overrides AI filter matches.\n\nPlay podcasts in NewsBlur's Listen player with skip controls, AirPlay, and a queue that mixes podcasts with stories read aloud. Resume where you left off across devices.\n\nListen can now read over music from other apps. Turn on Play over other audio in Now Playing, choose whether to lower the music while the voice speaks, and adjust the Music / Voice balance.",
+        "uk": "Переглядайте, які фільтри ШІ для тексту й зображень спрацювали для статті, та керуйте фільтрами в тренері. «Приховати» має перевагу над збігами з фільтрами ШІ.\n\nВідтворюйте подкасти в програвачі Listen від NewsBlur за допомогою кнопок перемотування, AirPlay та черги, у якій поєднано подкасти й статті, озвучені вголос. Продовжуйте прослуховування з того місця, де зупинилися, на будь-якому пристрої.\n\nТепер Listen може відтворювати голос поверх музики з інших програм. Увімкніть «Відтворювати поверх іншого аудіо» в розділі «Зараз відтворюється», виберіть, чи потрібно приглушувати музику, коли звучить голос, і налаштуйте баланс «Музика / голос».",
+        "ko": "스토리에 어떤 AI 콘텐츠 및 이미지 필터가 일치했는지 확인하고, 트레이너에서 필터를 관리하세요. 이제 숨기기가 AI 필터 일치보다 우선합니다.\n\nNewsBlur의 Listen 플레이어에서 건너뛰기 컨트롤과 AirPlay를 사용하고, 팟캐스트와 소리 내어 읽는 스토리를 함께 담은 대기열로 팟캐스트를 재생하세요. 기기 간에 마지막으로 들은 위치부터 이어서 재생할 수 있습니다.\n\n이제 Listen이 다른 앱의 음악 위로 콘텐츠를 읽어 줄 수 있습니다. 지금 재생 중에서 다른 오디오 위에 재생을 켜고, 음성이 나올 때 음악 음량을 낮출지 선택한 다음 음악 / 음성 밸런스를 조절하세요.",
+        "pt-BR": "Veja quais filtros de conteúdo e imagem com IA corresponderam a um artigo e gerencie seus filtros no treinador. Ocultar agora se sobrepõe às correspondências dos filtros de IA.\n\nOuça podcasts no player Listen de NewsBlur, com controles para avançar e retroceder, AirPlay e uma fila que combina podcasts com artigos lidos em voz alta. Retome de onde parou em todos os dispositivos.\n\nAgora o Listen pode ler sobre a música de outros apps. Ative Reproduzir sobre outro áudio em Reproduzindo, escolha se quer diminuir o volume da música enquanto a voz fala e ajuste o equilíbrio entre Música e Voz.",
+        "zh-Hant": "查看哪些 AI 內容和圖片篩選器符合文章，並在訓練器中管理篩選器。現在，「隱藏」會優先於 AI 篩選器比對結果。\n\n在 NewsBlur 的 Listen 播放器中播放 Podcast，使用跳轉控制、AirPlay，以及可混合 Podcast 與朗讀文章的播放佇列。可在不同裝置間接續上次的播放進度。\n\nListen 現在可在其他 App 播放音樂時朗讀文章。在「正在播放」中開啟「播放其他音訊之上」，選擇語音播放時是否降低音樂音量，並調整音樂／語音平衡。",
+        "ru": "Посмотрите, какие фильтры ИИ для текста и изображений совпали со статьёй, и управляйте фильтрами в тренере. «Скрыть» теперь имеет приоритет над совпадениями с фильтрами ИИ.\n\nСлушайте подкасты в плеере Listen от NewsBlur с кнопками перемотки, AirPlay и очередью, где подкасты чередуются со статьями, прочитанными вслух. Продолжайте прослушивание с того места, где остановились, на любом устройстве.\n\nТеперь Listen может читать текст поверх музыки из других приложений. Включите «Воспроизведение поверх других аудио» в разделе «Сейчас играет», выберите, нужно ли приглушать музыку, пока звучит голос, и настройте баланс «Музыка / Голос».",
+        "it": "Scopri quali filtri AI per contenuti e immagini corrispondono a un articolo e gestisci i filtri nell'addestramento. Nascondi ha ora la precedenza sulle corrispondenze dei filtri AI.\n\nRiproduci i podcast nel player Listen di NewsBlur, con controlli per saltare, AirPlay e una coda che alterna podcast e articoli letti ad alta voce. Riprendi da dove avevi interrotto su tutti i dispositivi.\n\nOra Listen può leggere sopra la musica di altre app. Attiva Riproduci sopra altri audio in In riproduzione, scegli se abbassare la musica mentre la voce parla e regola il bilanciamento Musica/Voce.",
+        "he": "אפשר לראות אילו מסנני תוכן ותמונות של AI התאימו לכתבה ולנהל את המסננים במאמן הבינה. הסתרה גוברת כעת על התאמות של מסנני AI.\n\nאפשר להאזין לפודקאסטים בנגן ההאזנה של NewsBlur, עם בקרי דילוג, AirPlay ותור שמשלב פודקאסטים וכתבות שמוקראות בקול. אפשר להמשיך מהמקום שבו הפסקת בכל אחד מהמכשירים שלך.\n\nההאזנה יכולה כעת לקרוא מעל מוזיקה מאפליקציות אחרות. יש להפעיל את האפשרות ״השמעה מעל שמע אחר״ במסך ״מתנגן כעת״, לבחור אם להנמיך את המוזיקה בזמן ההקראה, ולכוונן את האיזון בין מוזיקה לקול.",
+        "tr": "Bir haberle eşleşen yapay zekâ içerik ve görsel filtrelerini görün, filtrelerinizi Eğitmen’de yönetin. Gizle artık yapay zekâ filtre eşleşmelerini geçersiz kılıyor.\n\nPodcast’leri NewsBlur’ın Dinle oynatıcısında atlama kontrolleri, AirPlay ve podcast’lerle sesli okunan haberleri bir araya getiren bir sırayla çalın. Kaldığınız yerden farklı cihazlarda devam edin.\n\nDinle artık diğer uygulamalardan gelen müziğin üzerine sesli okuma yapabiliyor. Şimdi Çalınıyor’da Diğer seslerin üzerine çal’ı açın, ses konuşurken müziğin kısılıp kısılmayacağını seçin ve Müzik / Ses dengesini ayarlayın.",
+        "zh-Hans": "查看与文章匹配的 AI 内容和图片筛选条件，并在训练器中管理筛选条件。现在，“隐藏”会覆盖 AI 筛选条件的匹配结果。\n\n在 NewsBlur 的 Listen 播放器中收听播客，使用跳过控制、AirPlay，以及混合播客和朗读文章的队列。你可以在不同设备间从上次停止处继续收听。\n\n现在，Listen 可以在其他应用播放音乐时朗读。你可以在“正在播放”中开启“在其他音频上播放”，选择语音播放时是否降低音乐音量，并调节音乐与语音的音量平衡。",
+        "ar-SA": "اطّلع على فلاتر المحتوى والصور بالذكاء الاصطناعي التي انطبقت على القصة، وأدِر فلاترك في مدرّب الذكاء. يتجاوز «إخفاء» الآن نتائج فلاتر الذكاء الاصطناعي.\n\nشغّل البودكاست في مشغّل الاستماع لدى NewsBlur، مع عناصر تخطٍ وAirPlay وقائمة تشغيل تمزج البودكاست بالقصص المقروءة بصوت مسموع. استأنف من حيث توقفت على أجهزتك.\n\nيمكن للاستماع الآن تشغيل القراءة فوق الموسيقى من التطبيقات الأخرى. فعّل «التشغيل فوق الصوت الآخر» في «قيد التشغيل الآن»، واختر ما إذا كنت تريد خفض الموسيقى أثناء تحدث الصوت، واضبط توازن الموسيقى والصوت.",
+        "pl": "Sprawdź, które filtry AI dotyczące treści i obrazów pasują do artykułu, i zarządzaj filtrami w trenerze. Ukryj ma teraz pierwszeństwo przed filtrami AI.\n\nOdtwarzaj podcasty w odtwarzaczu Listen aplikacji NewsBlur za pomocą przycisków pomijania, AirPlay i kolejki łączącej podcasty z artykułami czytanymi na głos. Wznawiaj odtwarzanie na różnych urządzeniach w miejscu, w którym zostało przerwane.\n\nListen może teraz odtwarzać głos na tle muzyki z innych aplikacji. Włącz opcję Odtwarzaj na tle innych dźwięków w sekcji Teraz odtwarzane, wybierz, czy muzyka ma być ściszana podczas mówienia, i dostosuj balans Muzyka / Głos.",
+        "fr-FR": "Découvrez quels filtres d’IA pour le contenu et les images correspondent à un article, et gérez vos filtres dans l’entraîneur. Masquer l’emporte désormais sur les correspondances des filtres d’IA.\n\nÉcoutez des podcasts dans le lecteur Listen de NewsBlur, avec des commandes de saut, AirPlay et une file d’attente mêlant podcasts et articles lus à voix haute. Reprenez la lecture où vous l’avez laissée, sur tous vos appareils.\n\nListen peut désormais lire par-dessus la musique d’autres apps. Activez Lire par-dessus les autres contenus audio dans À l’écoute, choisissez si le volume de la musique doit baisser pendant la lecture de la voix et réglez l’équilibre Musique / Voix.",
+        "de-DE": "Sieh, welche KI-Inhalts- und Bildfilter auf einen Artikel zutreffen, und verwalte deine Filter im Trainer. „Ausblenden“ hat jetzt Vorrang vor KI-Filtertreffern.\n\nSpiele Podcasts im Listen-Player von NewsBlur mit Überspringen-Steuerung, AirPlay und einer Warteschlange ab, die Podcasts mit vorgelesenen Artikeln mischt. Setze die Wiedergabe geräteübergreifend dort fort, wo du aufgehört hast.\n\nListen kann jetzt über der Musik anderer Apps vorlesen. Aktiviere unter „Aktuelle Wiedergabe“ die Option „Über andere Audioinhalte abspielen“, wähle aus, ob die Musik beim Sprechen leiser werden soll, und passe die Balance zwischen Musik und Stimme an.",
+        "vi": "Xem bộ lọc nội dung và hình ảnh AI nào khớp với bài viết, rồi quản lý bộ lọc trong trình huấn luyện. Ẩn hiện được ưu tiên hơn các kết quả khớp của bộ lọc AI.\n\nPhát podcast trong trình phát Nghe của NewsBlur với các nút tua, AirPlay và hàng đợi kết hợp podcast với bài viết được đọc thành tiếng. Tiếp tục nghe từ vị trí bạn đã dừng trên các thiết bị.\n\nGiờ đây, Nghe có thể đọc đè lên nhạc từ ứng dụng khác. Bật Phát đè lên âm thanh khác trong Đang phát, chọn có giảm âm lượng nhạc khi giọng đọc cất lên hay không, rồi điều chỉnh cân bằng Nhạc / Giọng đọc.",
+        "ja": "記事に一致したAIコンテンツフィルターと画像フィルターを確認し、インテリジェンストレーナーでフィルターを管理できます。「非表示」はAIフィルターの一致より優先されます。\n\nNewsBlurのListenプレーヤーで、スキップ操作やAirPlayを使ってポッドキャストを再生できます。ポッドキャストと読み上げ記事を混ぜたキューを利用でき、デバイスをまたいで前回の続きから再生できます。\n\nListenで、ほかのアプリの音楽に重ねて読み上げられるようになりました。「再生中」で「ほかのオーディオの上に重ねて再生」をオンにし、読み上げ中に音楽の音量を下げるかどうかを選択して、音楽と音声のバランスを調整できます。",
+        "th": "ดูตัวกรองเนื้อหาและรูปภาพด้วย AI ที่ตรงกับบทความ และจัดการตัวกรองได้ในเครื่องมือฝึกระบบอัจฉริยะ ตอนนี้ «ซ่อน» มีผลเหนือการจับคู่ของตัวกรอง AI\n\nเล่นพอดแคสต์ในเครื่องเล่น Listen ของ NewsBlur พร้อมปุ่มข้าม AirPlay และคิวที่เล่นพอดแคสต์สลับกับบทความที่อ่านออกเสียง เล่นต่อจากจุดที่ค้างไว้ได้ทุกอุปกรณ์\n\nตอนนี้ Listen อ่านออกเสียงทับเพลงจากแอปอื่นได้ เปิด «เล่นทับเสียงอื่น» ในหน้ากำลังเล่น เลือกว่าจะลดเสียงเพลงขณะอ่านออกเสียงหรือไม่ และปรับสมดุลเพลง / เสียงพูดได้",
+        "es-ES": "Consulta qué filtros de contenido e imágenes con IA coinciden con un artículo y gestiona tus filtros en el entrenador. «Ocultar» prevalece ahora sobre las coincidencias de los filtros de IA.\n\nReproduce podcasts en el reproductor Escuchar de NewsBlur, con controles para saltar, AirPlay y una cola que combina podcasts con artículos leídos en voz alta. Retoma la reproducción donde la dejaste en cualquiera de tus dispositivos.\n\nEscuchar ahora puede reproducir la voz por encima de la música de otras apps. Activa Reproducir sobre otro audio en Ahora suena, elige si quieres bajar la música mientras habla la voz y ajusta el equilibrio entre Música y Voz.",
+        "nl-NL": "Bekijk welke AI-inhouds- en afbeeldingsfilters overeenkomen met een artikel en beheer je filters in de trainer. Verbergen gaat nu vóór AI-filtermatches.\n\nSpeel podcasts af in de Luister-speler van NewsBlur, met bediening om over te slaan, AirPlay en een wachtrij met podcasts en voorgelezen artikelen. Ga op al je apparaten verder waar je was gebleven.\n\nLuisteren kan nu muziek uit andere apps overstemmen. Schakel ‘Afspelen over andere audio’ in bij ‘Wordt nu afgespeeld’, kies of de muziek zachter moet wanneer de stem spreekt en pas de balans tussen muziek en stem aan.",
+        "id": "Lihat filter konten AI dan gambar yang cocok dengan artikel, lalu kelola filter Anda di Pelatih. Sembunyikan kini mengesampingkan kecocokan filter AI.\n\nPutar podcast di pemutar Listen milik NewsBlur dengan kontrol lewati, AirPlay, dan antrean yang menggabungkan podcast dengan artikel yang dibacakan. Lanjutkan dari posisi terakhir di berbagai perangkat.\n\nListen kini dapat membacakan artikel di atas musik dari aplikasi lain. Aktifkan Putar di atas audio lain di Sedang Diputar, pilih apakah musik akan dikecilkan saat suara berbicara, lalu sesuaikan keseimbangan Musik / Suara."
+      },
+      "localization_ids": {
+        "hi": "ad6deaf3-a77e-4f21-8fd2-e730a6cfa026",
+        "en-US": "e69a566b-da98-4a9b-a91e-c7d13ba4f1a2",
+        "uk": "12732f6d-214f-4183-a77f-312e1b823cef",
+        "ko": "28cd374c-14d6-4a36-8654-afc5870ed1cd",
+        "pt-BR": "7fd44c5b-af9a-4678-8351-238142a46f50",
+        "zh-Hant": "75dc8faa-ccce-4bd8-9b94-f82453b94515",
+        "ru": "15cb8a85-bfcd-4ed3-b267-3e75fdf942ea",
+        "it": "9ac39241-3787-4337-854a-71ac20a725b2",
+        "he": "6a214c90-98d3-4ed7-88c2-012593fed31d",
+        "tr": "b1dcb864-110d-4b00-9b87-1affa9b5c7cf",
+        "zh-Hans": "4a2d56c7-1729-442f-9dde-5c3ff37f9574",
+        "ar-SA": "404bbb32-013c-4c61-85aa-20f2d2b07a3c",
+        "pl": "0c5fd4cd-8a95-42e9-9a56-fd546da140d2",
+        "fr-FR": "af8b75b2-0c18-4665-90e6-b4bb5fbe53ab",
+        "de-DE": "7a1df014-9b43-4cb7-b222-8c1383ecea08",
+        "vi": "e1eb70da-07cb-46b7-9ee8-17e151a4c491",
+        "ja": "71858466-5c07-4a91-b6ba-a134128837ba",
+        "th": "5707acad-2e76-4887-adf9-be046b18617e",
+        "es-ES": "d0433d64-ac71-4bd0-b8f4-a0e4aa631799",
+        "nl-NL": "ccbb9536-98db-4ce6-b85b-e5aad2375c5a",
+        "id": "c6a1ec86-af08-4a8b-9464-987cf738acb6"
+      }
+    }
+  ],
+  "builds": [
+    {
+      "id": "81a7b17e-3dc0-4498-9cdd-d6e36a3bbd34",
+      "version": "356",
+      "processingState": "VALID",
+      "uploadedDate": "2026-11-08T20:45:44-08:00",
+      "expired": false,
+      "platform": "MAC_OS"
+    },
+    {
+      "id": "e4ca4c9d-485c-410a-a47c-f2a013de7e4d",
+      "version": "356",
+      "processingState": "VALID",
+      "uploadedDate": "2026-11-08T20:45:09-08:00",
+      "expired": false,
+      "platform": "IOS"
+    },
+    {
+      "id": "8c8439b1-4c1c-41fe-8144-b390f561ff56",
+      "version": "355",
+      "processingState": "VALID",
+      "uploadedDate": "2026-11-07T09:22:30-08:00",
+      "expired": false,
+      "platform": "MAC_OS"
+    },
+    {
+      "id": "c921a085-c54f-4aa9-9763-3f9f290dff8d",
+      "version": "355",
+      "processingState": "VALID",
+      "uploadedDate": "2026-11-07T09:22:11-08:00",
+      "expired": false,
+      "platform": "IOS"
+    }
+  ]
+}

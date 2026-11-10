@@ -8,7 +8,7 @@
     "artifact": "NewsBlur.ipa",
     "sha256": "dc59fb28802d856f744849a2a2e5370e4b673fd79184418d5bae0568c1b12d73",
     "delivery_uuid": "e4ca4c9d-485c-410a-a47c-f2a013de7e4d",
-    "processing_state": "UPLOADED, not yet listed by the API at validation time"
+    "processing_state": "VALID"
   },
   "macos": {
     "build": "356",
@@ -20,7 +20,7 @@
     "artifact": "NewsBlur.pkg",
     "sha256": "b9c96de27b121be6726451095d1c0e99ec35801d4cdfbae301264944a30a2005",
     "delivery_uuid": "81a7b17e-3dc0-4498-9cdd-d6e36a3bbd34",
-    "processing_state": "UPLOADED, not yet listed by the API at validation time"
+    "processing_state": "VALID"
   },
   "android": {
     "version_code": 302,
@@ -68,5 +68,6 @@
       "sha256": "5fc4956a973946bd4d6d526e9bb71fd65200606c910219b63ebb8b9fd159755d"
     },
     "note": "Uploaded 2026-11-07 and never submitted for review; replaced by the AI filter scoring change in f5005e58ff."
-  }
+  },
+  "store_processing_verified_at": "2026-11-10T01:03:22.900Z"
 }
