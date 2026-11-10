@@ -327,6 +327,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         [weakSelf markReadShowMenu:MarkReadShowMenuBasedOnPref sender:weakSelf.storyTitlesHeaderBar.markReadContainer];
     };
     self.storyTitlesHeaderBar.markReadHandler = ^(NSInteger days) {
+        if (days > 0) {
+            // FeedDetailObjCViewController.m applies age cutoffs to cached stories and refreshes the list after success.
+            NSInteger cutoffTimestamp = (NSInteger)[[NSDate date] timeIntervalSince1970] - days * 24 * 60 * 60;
+            [weakSelf markFeedsReadFromTimestamp:cutoffTimestamp andOlder:YES footerDays:days];
+            return;
+        }
         NSArray *feedIds = weakSelf.storiesCollection.isRiverView ?
             [weakSelf.appDelegate feedIdsForFolderTitle:weakSelf.storiesCollection.activeFolder] :
             @[weakSelf.storiesCollection.activeFeed[@"id"]];
@@ -6279,57 +6285,100 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
+    [self markFeedsReadFromTimestamp:cutoffTimestamp andOlder:older footerDays:0];
+}
+
+// FeedDetailObjCViewController.m: footerDays is the age chosen in the phone footer's mark read menu, or 0 for the story row menu.
+- (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older footerDays:(NSInteger)footerDays {
+    BOOL queueOffline = footerDays > 0;
     NSString *account = [appDelegate.activeUsername copy] ?: @"";
     NSString *host = [appDelegate.url copy] ?: @"";
     NSUInteger generation = self.fetchRequestId;
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_feed_as_read",
-                           self.appDelegate.url];
+    BOOL infrequent = [storiesCollection.activeFolder isEqualToString:@"infrequent"];
+    BOOL everything = storiesCollection.isRiverView &&
+        ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || infrequent);
+    // FeedDetailObjCViewController.m sends the footer's age for All Site Stories and Dashboard as days to
+    // mark_all_as_read, which marks every subscription and blurblog in one pass. The Infrequent river lists its
+    // feeds for mark_feed_as_read instead, because mark_all_as_read would also mark every blurblog read.
+    BOOL markAll = everything && !infrequent && footerDays > 0;
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/%@",
+                           self.appDelegate.url, markAll ? @"mark_all_as_read" : @"mark_feed_as_read"];
     NSMutableArray *feedIds = [NSMutableArray array];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     if (storiesCollection.isRiverView) {
-        if ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
+        if (everything) {
             for (NSString *folderName in appDelegate.dictFoldersArray) {
                 for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
-                    if (![feedId isKindOfClass:[NSString class]] || ![feedId startsWith:@"saved:"]) {
+                    BOOL isString = [feedId isKindOfClass:[NSString class]];
+                    // FeedDetailObjCViewController.m sends only subscribed feeds for the Infrequent river. Blurblogs
+                    // and saved searches are not in it, and the server's infrequent filter only accepts numeric IDs.
+                    NSCharacterSet *nonDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+                    if (isString && infrequent && (![feedId length] || [feedId rangeOfCharacterFromSet:nonDigits].location != NSNotFound)) continue;
+                    if (!isString || ![feedId startsWith:@"saved:"]) {
                         [feedIds addObject:feedId];
                     }
                 }
             }
         } else {
-            for (id feedId in [appDelegate.dictFolders objectForKey:storiesCollection.activeFolder]) {
-                [feedIds addObject:feedId];
-            }
+            [feedIds addObjectsFromArray:[appDelegate feedIdsForFolderTitle:storiesCollection.activeFolder] ?: @[]];
         }
     } else {
-        [feedIds addObject:[storiesCollection.activeFeed objectForKey:@"id"]];
+        id feedId = [storiesCollection.activeFeed objectForKey:@"id"];
+        if (feedId) [feedIds addObject:feedId];
+    }
+    if (!feedIds.count) return;
+    
+    if (markAll) {
+        [params setObject:@(footerDays) forKey:@"days"];
+    } else {
+        [params setObject:feedIds forKey:@"feed_id"];
+        [params setObject:@(cutoffTimestamp) forKey:@"cutoff_timestamp"];
+        NSString *direction = older ? @"older" : @"newest";
+        [params setObject:direction forKey:@"direction"];
     }
     
-    [params setObject:feedIds forKey:@"feed_id"];
-    [params setObject:@(cutoffTimestamp) forKey:@"cutoff_timestamp"];
-    NSString *direction = older ? @"older" : @"newest";
-    [params setObject:direction forKey:@"direction"];
-    
-    if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+    if (infrequent) {
         NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
         NSString *infrequent = [NSString stringWithFormat:@"%ld", (long)[prefs integerForKey:@"infrequent_stories_per_month"]];
         [params setObject:infrequent forKey:@"infrequent"];
     }
     
+    // FeedDetailObjCViewController.m owns one progress view per request, including replies after navigation or account changes.
+    MBProgressHUD *progressHUD = self.viewIfLoaded ? [MBProgressHUD showHUDAddedTo:self.viewIfLoaded animated:YES] : nil;
+    progressHUD.removeFromSuperViewOnHide = YES;
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionTask *task, id responseObject) {
+        [progressHUD hide:NO];
         [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:account host:host];
         if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
             ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
-        [self.appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
+        // FeedDetailObjCViewController.m leaves infrequent-feed filtering to the server; the reply does not identify the filtered feeds.
+        if (!infrequent) [self.appDelegate markFeedReadInCache:feedIds cutoffTimestamp:cutoffTimestamp older:older];
+        if (queueOffline) {
+            self.appDelegate.feedsViewController.isOffline = NO;
+            [self.appDelegate.storyPagesViewController reloadWidget];
+        }
         [self.appDelegate.feedsViewController reloadFeedTitlesTable];
         [self.appDelegate.feedsViewController refreshHeaderCounts];
         // FeedDetailObjCViewController.m reconciles badges with the server because offline stories may cover only part of a feed.
         [self.appDelegate.feedsViewController refreshFeedList:feedIds.count == 1 ? feedIds.firstObject : nil];
         if (self.fetchRequestId == generation) [self reloadStories];
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        [progressHUD hide:NO];
         if (![(self.appDelegate.activeUsername ?: @"") isEqualToString:account] ||
             ![(self.appDelegate.url ?: @"") isEqualToString:host]) return;
-        [self requestFailed:error];
+        if (queueOffline && !infrequent) {
+            [self.appDelegate markStoriesRead:nil inFeeds:feedIds cutoffTimestamp:cutoffTimestamp];
+            self.appDelegate.feedsViewController.isOffline = YES;
+            [self.appDelegate.feedsViewController showOfflineNotifier];
+            [self.appDelegate.feedsViewController reloadFeedTitlesTable];
+            [self.appDelegate.feedsViewController refreshHeaderCounts];
+            if (self.fetchRequestId == generation) [self reloadStories];
+        } else {
+            // FeedDetailObjCViewController.m reports the failure from the story row menu and from the footer in the
+            // Infrequent river, where only the server knows which feeds are in scope, so nothing can be queued for replay.
+            [self requestFailed:error];
+        }
     }];
 }
 
