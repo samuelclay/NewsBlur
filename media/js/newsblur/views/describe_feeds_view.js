@@ -82,7 +82,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
                         $.make('textarea', {
                             className: 'NB-describe-input',
                             rows: 1,
-                            placeholder: gettext('Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”')
+                            placeholder: gettext('Describe the feeds you’re looking for')
                         }),
                         $.make('div', { className: 'NB-describe-submit NB-modal-submit-button NB-modal-submit-green', role: 'button' }, gettext('Find feeds'))
                     ]),

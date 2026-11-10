@@ -2669,8 +2669,8 @@ msgstr "صِف القصة التي تبحث عنها، وسنعيد تحليل �
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "صف موضوعًا، وسيقيّم الذكاء الاصطناعي كل قصة وفقًا لوصفك لتمييز القصص المطابقة أو إخفائها."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "صِف الخلاصات التي تبحث عنها، مثل «مراجعات لتطبيقات iOS جديدة مع لقطات شاشة»"
+msgid "Describe the feeds you’re looking for"
+msgstr "صِف الخلاصات التي تبحث عنها"
 
 msgid "Describe what to focus or hide"
 msgstr "صف ما تريد التركيز عليه أو إخفاءه"

@@ -2227,8 +2227,8 @@ msgstr "探している記事の内容を説明してください。ページを
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "トピックを説明すると、AIが各記事をプロンプトに照らして評価し、一致する記事を優先表示または非表示にします。"
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "探しているフィードについて説明してください。例：「スクリーンショット付きの新しい iOS アプリのレビュー」"
+msgid "Describe the feeds you’re looking for"
+msgstr "探しているフィードを説明してください"
 
 msgid "Describe what to focus or hide"
 msgstr "注目する内容、または非表示にする内容を説明してください"

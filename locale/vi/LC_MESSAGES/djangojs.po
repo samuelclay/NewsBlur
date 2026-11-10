@@ -2256,8 +2256,8 @@ msgstr ""
 "Mô tả một chủ đề để AI chấm điểm từng bài viết dựa trên lời nhắc của bạn, giúp tập trung vào hoặc ẩn các "
 "bài khớp."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Mô tả các nguồn cấp bạn đang tìm, chẳng hạn “đánh giá ứng dụng iOS mới kèm ảnh chụp màn hình”"
+msgid "Describe the feeds you’re looking for"
+msgstr "Mô tả nguồn cấp bạn đang tìm"
 
 msgid "Describe what to focus or hide"
 msgstr "Mô tả nội dung cần tập trung hoặc ẩn"

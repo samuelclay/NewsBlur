@@ -2352,10 +2352,8 @@ msgstr ""
 "Décrivez un sujet et l’IA évaluera chaque article selon votre consigne pour mettre en avant ou masquer les "
 "correspondances."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr ""
-"Décrivez les flux que vous recherchez, par exemple « des critiques de nouvelles apps iOS avec des captures "
-"d’écran »"
+msgid "Describe the feeds you’re looking for"
+msgstr "Décrivez les flux que vous recherchez"
 
 msgid "Describe what to focus or hide"
 msgstr "Décrivez ce qu’il faut mettre en avant ou masquer"

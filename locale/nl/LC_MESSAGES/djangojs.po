@@ -2341,8 +2341,8 @@ msgstr ""
 "Beschrijf een onderwerp en AI beoordeelt elk artikel aan de hand van je prompt, zodat je overeenkomsten "
 "kunt uitlichten of verbergen."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Beschrijf de feeds die je zoekt, bijvoorbeeld ‘recensies van nieuwe iOS-apps met schermafbeeldingen’"
+msgid "Describe the feeds you’re looking for"
+msgstr "Beschrijf de feeds die je zoekt"
 
 msgid "Describe what to focus or hide"
 msgstr "Beschrijf wat je wilt uitlichten of verbergen"

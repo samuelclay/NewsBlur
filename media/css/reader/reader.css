@@ -44845,8 +44845,13 @@ span.NB-briefing-inline-favicon {
     overflow-y: auto;
 }
 
+/* reader.css: a placeholder never grows the textarea (it is not part of scrollHeight), so it stays on
+   one line and ends in an ellipsis instead of wrapping into a clipped second line. */
 .NB-describe-input::placeholder {
     color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .NB-describe-composer-box .NB-describe-submit {

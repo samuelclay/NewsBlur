@@ -2231,8 +2231,8 @@ msgstr "찾고 있는 스토리를 설명해 주세요. 페이지를 다시 분�
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "주제를 설명하면 AI가 각 스토리를 프롬프트와 비교해 점수를 매겨 일치하는 스토리를 강조하거나 숨깁니다."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "찾는 피드를 설명해 주세요. 예: “스크린샷이 포함된 신규 iOS 앱 리뷰”"
+msgid "Describe the feeds you’re looking for"
+msgstr "찾으시는 피드를 설명해 주세요"
 
 msgid "Describe what to focus or hide"
 msgstr "집중하거나 숨길 내용을 설명하세요"

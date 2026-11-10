@@ -2227,8 +2227,8 @@ msgstr "描述一下你要找的文章，我们会重新分析页面并帮你找
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "描述一个主题，AI 会根据你的提示为每篇文章评分，帮你聚焦或隐藏匹配内容。"
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "描述你要找的订阅源，例如“带截图的新 iOS 应用评测”"
+msgid "Describe the feeds you’re looking for"
+msgstr "描述你要查找的订阅源"
 
 msgid "Describe what to focus or hide"
 msgstr "描述要聚焦或隐藏的内容"

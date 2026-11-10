@@ -2336,8 +2336,8 @@ msgstr ""
 "किसी विषय का वर्णन करें और AI आपके निर्देश के आधार पर हर लेख को स्कोर करेगा, ताकि मेल खाने वाले लेखों को "
 "प्राथमिकता दी जा सके या छिपाया जा सके।"
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "जिन फ़ीड की आप तलाश कर रहे हैं, उनका वर्णन करें, जैसे “स्क्रीनशॉट सहित नए iOS ऐप की समीक्षाएँ”"
+msgid "Describe the feeds you’re looking for"
+msgstr "जिन फ़ीड को आप ढूँढ़ रहे हैं, उनका वर्णन करें"
 
 msgid "Describe what to focus or hide"
 msgstr "बताएँ कि किस पर ध्यान देना है या क्या छिपाना है"

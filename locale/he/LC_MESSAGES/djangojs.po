@@ -2330,8 +2330,8 @@ msgstr "תארו את הכתבה שאתם מחפשים, וננתח מחדש את
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "תארו נושא, והבינה המלאכותית תדרג כל כתבה לפי ההנחיה שלכם כדי למקד את התוצאות או להסתיר התאמות."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "תארו את הפידים שאתם מחפשים, למשל ״ביקורות על אפליקציות iOS חדשות עם צילומי מסך״"
+msgid "Describe the feeds you’re looking for"
+msgstr "תארו את הפידים שאתם מחפשים"
 
 msgid "Describe what to focus or hide"
 msgstr "תארו במה להתמקד או מה להסתיר"

@@ -2435,8 +2435,8 @@ msgstr "Опишите нужную вам статью, и мы повторн�
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "Опишите тему, и ИИ будет оценивать каждую статью по вашему запросу, чтобы выделять или скрывать подходящие."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Опишите, какие ленты вы ищете, например: «обзоры новых приложений для iOS со скриншотами»"
+msgid "Describe the feeds you’re looking for"
+msgstr "Опишите, какие ленты вы ищете"
 
 msgid "Describe what to focus or hide"
 msgstr "Опишите, что выделять, а что скрывать"

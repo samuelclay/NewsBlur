@@ -2259,8 +2259,8 @@ msgstr "Aradığınız haberi açıklayın; bulmak için sayfayı yeniden analiz
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "Bir konu açıklayın; yapay zekâ, odaklanmanız veya gizlemeniz için her haberi isteminize göre puanlasın."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Aradığınız akışları, örneğin “ekran görüntülü yeni iOS uygulama incelemeleri” gibi açıklayın"
+msgid "Describe the feeds you’re looking for"
+msgstr "Aradığınız akışları açıklayın"
 
 msgid "Describe what to focus or hide"
 msgstr "Neye odaklanılacağını veya neyin gizleneceğini açıklayın"

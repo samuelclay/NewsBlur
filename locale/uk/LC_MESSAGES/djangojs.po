@@ -2429,8 +2429,8 @@ msgstr ""
 "Опишіть тему, і ШІ оцінюватиме кожну статтю за вашим запитом, щоб зосередити увагу на відповідних або "
 "приховати їх."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Опишіть стрічки, які шукаєте, наприклад: «огляди нових програм для iOS зі знімками екрана»"
+msgid "Describe the feeds you’re looking for"
+msgstr "Опишіть, які стрічки ви шукаєте"
 
 msgid "Describe what to focus or hide"
 msgstr "Опишіть, на чому зосередитися або що приховати"

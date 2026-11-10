@@ -2428,8 +2428,8 @@ msgstr ""
 "Opisz temat, a AI oceni każdy artykuł na podstawie Twojego polecenia, aby wyróżniać lub ukrywać pasujące "
 "wyniki."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Opisz, jakich kanałów szukasz, na przykład: „recenzje nowych aplikacji na iOS ze zrzutami ekranu”"
+msgid "Describe the feeds you’re looking for"
+msgstr "Opisz kanały, których szukasz"
 
 msgid "Describe what to focus or hide"
 msgstr "Opisz, co wyróżniać, a co ukrywać"

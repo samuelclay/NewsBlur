@@ -2355,8 +2355,8 @@ msgstr ""
 "Beschreibe ein Thema. Die KI bewertet jeden Artikel anhand deiner Vorgabe, damit passende Inhalte "
 "hervorgehoben oder ausgeblendet werden."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Beschreibe die Feeds, nach denen du suchst, zum Beispiel „Rezensionen zu neuen iOS-Apps mit Screenshots“"
+msgid "Describe the feeds you’re looking for"
+msgstr "Beschreibe die Feeds, nach denen du suchst"
 
 msgid "Describe what to focus or hide"
 msgstr "Beschreibe, worauf du dich konzentrieren oder was du ausblenden möchtest"

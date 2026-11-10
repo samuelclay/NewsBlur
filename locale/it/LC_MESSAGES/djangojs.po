@@ -2345,8 +2345,8 @@ msgstr ""
 "Descrivi un argomento e l’IA valuterà ogni articolo in base alla tua richiesta, per mettere in evidenza o "
 "nascondere le corrispondenze."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Descrivi i feed che cerchi, ad esempio “recensioni di nuove app iOS con screenshot”"
+msgid "Describe the feeds you’re looking for"
+msgstr "Descrivi i feed che stai cercando"
 
 msgid "Describe what to focus or hide"
 msgstr "Descrivi cosa mettere in evidenza o nascondere"

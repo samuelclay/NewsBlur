@@ -2247,8 +2247,8 @@ msgstr "อธิบายบทความที่คุณกำลังห
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "อธิบายหัวข้อ แล้ว AI จะให้คะแนนแต่ละเรื่องตามคำสั่งของคุณ เพื่อเน้นหรือซ่อนเรื่องที่ตรงกัน"
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "อธิบายฟีดที่กำลังมองหา เช่น “รีวิวแอป iOS ใหม่พร้อมภาพหน้าจอ”"
+msgid "Describe the feeds you’re looking for"
+msgstr "อธิบายฟีดที่คุณกำลังค้นหา"
 
 msgid "Describe what to focus or hide"
 msgstr "อธิบายสิ่งที่ต้องการเน้นหรือซ่อน"

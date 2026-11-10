@@ -2341,8 +2341,8 @@ msgstr ""
 "Descreva um tópico e a IA avaliará cada artigo com base no seu comando para colocar em foco ou ocultar os "
 "correspondentes."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Descreva os feeds que você está procurando, como “avaliações de novos apps para iOS com capturas de tela”"
+msgid "Describe the feeds you’re looking for"
+msgstr "Descreva os feeds que você está procurando"
 
 msgid "Describe what to focus or hide"
 msgstr "Descreva no que focar ou o que ocultar"

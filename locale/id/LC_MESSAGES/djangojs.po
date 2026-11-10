@@ -2341,8 +2341,8 @@ msgstr ""
 "Jelaskan sebuah topik dan AI akan menilai setiap artikel berdasarkan perintah Anda untuk menyorot atau "
 "menyembunyikan artikel yang cocok."
 
-msgid "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”"
-msgstr "Deskripsikan feed yang Anda cari, seperti “ulasan aplikasi iOS baru dengan tangkapan layar”"
+msgid "Describe the feeds you’re looking for"
+msgstr "Jelaskan feed yang Anda cari"
 
 msgid "Describe what to focus or hide"
 msgstr "Jelaskan hal yang ingin difokuskan atau disembunyikan"
