@@ -4,6 +4,7 @@ screens and history, list and grid, the story screen's swipes and toolbar, edge-
 long-press menus, bottom sheets, pull to refresh, search, modals, then regressions.py.
 """
 
+import harness
 from regressions import check_regressions
 
 
@@ -101,7 +102,7 @@ def run(ctx):
     )
     ctx.check("the list stays on screen", ctx.state()["screen"] == "titles")
 
-    titles = page.locator("#story_titles .NB-story-title")
+    titles = page.locator(harness.STORY_ROWS)
     ctx.long_press(titles.nth(min(4, titles.count() - 1)))
     ctx.wait(500)
     ctx.check(

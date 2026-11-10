@@ -142,6 +142,7 @@ body.NB-mobile.NB-mobile-under-chrome .NB-mobile-screen {
    The sheets themselves stay above it. */
 body.NB-mobile.NB-mobile-under-chrome #simplemodal-container,
 body.NB-mobile.NB-mobile-under-chrome.NB-mobile-sheet-open .NB-mobile-sheet-shade,
+body.NB-mobile.NB-mobile-under-chrome.NB-mobile-sideoption-open .NB-mobile-sheet-shade,
 body.NB-mobile.NB-mobile-under-chrome.NB-mobile-player-open .NB-mobile-player-shade {
     position: absolute !important;
     top: 0 !important;
@@ -254,6 +255,14 @@ body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-cente
 body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-center .NB-mobile-story-track {
     position: relative;
     height: auto;
+}
+
+/* The neighbors keep the height they have in the fixed layout, the window under the bars, and
+   not the open story's, which would change how far each can stay scrolled while it waits. */
+body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-center .NB-mobile-story-page-previous,
+body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-center .NB-mobile-story-page-next {
+    height: calc(100vh - var(--nb-mobile-page-bars-height, 96px));
+    height: calc(100dvh - var(--nb-mobile-page-bars-height, 96px));
 }
 
 /* The story runs to the bottom of the screen under the browser's toolbar, with room beneath
@@ -2376,11 +2385,104 @@ body.NB-mobile .NB-menu-ask-ai-container {
     animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
+/* mobile.css: a story's Share form, its Save tags and notes, and its Related stories slide up
+   the same way (mobile_layout_view.js Sideoption sheets), each panel moved out of the story
+   into this sheet while it is open. */
+body.NB-mobile .NB-mobile-sideoption-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 85vh;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    padding: 0 16px calc(16px + var(--nb-mobile-safe-bottom));
+    border-radius: 16px 16px 0 0;
+    background: var(--nb-mobile-sheet-bg);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
+    color: var(--nb-mobile-bar-text);
+    z-index: 2001;
+    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+    transition: transform 240ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .NB-mobile-sideoption-sheet.NB-mobile-sideoption-sheet-closing {
+    transform: translate3d(0, 100%, 0);
+}
+
+body.NB-mobile .NB-mobile-sideoption-sheet.NB-mobile-sheet-dragging {
+    transition: none;
+    animation: none;
+}
+
+body.NB-mobile .NB-mobile-sideoption-sheet-handle {
+    width: 36px;
+    height: 5px;
+    margin: 8px auto 12px;
+    border-radius: 3px;
+    background: var(--nb-mobile-sheet-handle);
+}
+
+/* The panels keep the height their desktop animation gives them out of the way, and stay out
+   of the story on a phone: a saved story's tags and notes show in their sheet only. */
+body.NB-mobile .NB-feed-story-sideoptions-container .NB-sideoption-share-wrapper,
+body.NB-mobile .NB-feed-story-sideoptions-container .NB-sideoption-save-wrapper,
+body.NB-mobile .NB-feed-story-sideoptions-container .NB-story-content-discover-wrapper,
+body.NB-mobile .NB-story-content-container .NB-story-content-discover-wrapper {
+    display: none !important;
+}
+
+body.NB-mobile .NB-mobile-sideoption-sheet > .NB-sideoption-share-wrapper,
+body.NB-mobile .NB-mobile-sideoption-sheet > .NB-sideoption-save-wrapper,
+body.NB-mobile .NB-mobile-sideoption-sheet > .NB-story-content-discover-wrapper {
+    display: block !important;
+    float: none;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+}
+
+body.NB-mobile .NB-mobile-sideoption-sheet .NB-sideoption-share,
+body.NB-mobile .NB-mobile-sideoption-sheet .NB-sideoption-save,
+body.NB-mobile .NB-mobile-sideoption-sheet .NB-sideoption-discover {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
+/* The related stories' five sources fit on one line each. */
+body.NB-mobile .NB-mobile-sideoption-sheet .NB-sideoption-discover-control-item {
+    padding-inline: 6px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* iOS zooms the page in on a focused field whose text is smaller than 16px. */
+body.NB-mobile .NB-mobile-sideoption-sheet textarea,
+body.NB-mobile .NB-mobile-sideoption-sheet input[type="text"],
+body.NB-mobile .NB-mobile-sideoption-sheet .tagit input,
+body.NB-mobile .NB-menu-ask-ai-container textarea,
+body.NB-mobile .NB-menu-ask-ai-container input[type="text"] {
+    font-size: 16px !important;
+}
+
+body.NB-mobile .NB-mobile-sideoption-sheet .NB-sideoption-share-comments,
+body.NB-mobile .NB-mobile-sideoption-sheet .NB-sideoption-save-notes {
+    min-height: 88px;
+    padding: 8px 10px;
+    border-radius: 10px;
+}
+
 body.NB-mobile .NB-mobile-sheet-shade {
     display: none;
 }
 
-body.NB-mobile.NB-mobile-sheet-open .NB-mobile-sheet-shade {
+body.NB-mobile.NB-mobile-sheet-open .NB-mobile-sheet-shade,
+body.NB-mobile.NB-mobile-sideoption-open .NB-mobile-sheet-shade {
     display: block;
     position: fixed;
     top: 0;

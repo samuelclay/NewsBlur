@@ -34,6 +34,13 @@ PHONE = {
 }
 
 
+# The story list's own rows. Other sites' versions of a story are listed under it and inside it
+# once it is open, as rows that open those sites instead.
+STORY_ROWS = (
+    "#story_titles .NB-story-title:not(.NB-story-title-cluster):not(.NB-story-detail .NB-story-title)"
+)
+
+
 class Touch:
     """Real touch events over the DevTools protocol, so the browser also derives pointer events
     and touch-action applies exactly as on a phone."""
@@ -238,8 +245,7 @@ class Context:
         self.wait(1400)
 
     def tap_story(self, index):
-        # Rows of other sites' versions of a story, listed under it, open those sites instead.
-        titles = self.page.locator("#story_titles .NB-story-title:not(.NB-story-title-cluster)")
+        titles = self.page.locator(STORY_ROWS)
         index = min(index, titles.count() - 1)
         titles.nth(index).tap()
         self.wait(1300)

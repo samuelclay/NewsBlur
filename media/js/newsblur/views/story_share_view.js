@@ -174,6 +174,15 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $story_comments = this.$('.NB-feed-story-comments');
         var $sideoption = this.$('.NB-sideoption.NB-feed-story-share');
 
+        // story_share_view.js: on a phone the form slides up as a sheet instead of opening in
+        // the story (mobile_layout_view.js Sideoption sheets), so there is no height to animate.
+        if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.sideoption_sheet(this, $share_wrapper, {
+            close: options.close,
+            dismiss: _.bind(this.toggle_feed_story_share_dialog, this, { close: true })
+        })) {
+            options.immediate = true;
+        }
+
         var $share_clone = $share_wrapper.clone();
         $share_wrapper.after($share_clone.css({
             'height': options.close ? 0 : 'auto',

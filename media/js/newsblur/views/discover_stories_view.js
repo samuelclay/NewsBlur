@@ -363,6 +363,8 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     position_discover_view: function () {
         var $discover = this.$('.NB-story-content-discover-wrapper');
+        // A phone's sheet holds it while it is open (mobile_layout_view.js Sideoption sheets).
+        if ($discover.closest('.NB-mobile-sideoption-sheet').length) return;
         if (NEWSBLUR.reader.flags.narrow_content) {
             // Move to below the sideoptions
             this.$('.NB-feed-story-sideoptions-container').append($discover);
@@ -386,6 +388,15 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         var $story_comments = this.$('.NB-feed-story-comments');
         var $sideoption = this.$('.NB-feed-story-discover');
         var $tag_input = this.$('.NB-sideoption-discover-tag');
+
+        // discover_stories_view.js: on a phone the related stories slide up as a sheet instead
+        // of opening in the story (mobile_layout_view.js Sideoption sheets).
+        if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.sideoption_sheet(this, $discover_wrapper, {
+            close: options.close,
+            dismiss: _.bind(this.toggle_feed_story_discover_dialog, this, { close: true })
+        })) {
+            options.immediate = true;
+        }
 
         var new_sideoptions_height = $sideoption_container.height() - $discover_wrapper.height() + 200;
 
