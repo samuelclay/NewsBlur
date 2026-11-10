@@ -135,7 +135,7 @@ test('Next selects the next story immediately when the CSS transition cannot emi
     const f = fixture();
     const target = {};
     let selected;
-    const view = { $track: f.element(), neighbors: () => ({ next: target }), finish_page: (step, story) => { selected = story; } };
+    const view = { mobile: { sync_page_scroll: () => {} }, $track: f.element(), neighbors: () => ({ next: target }), finish_page: (step, story) => { selected = story; } };
     f.pager.page_to.call(view, 1);
     assert.equal(selected, target);
     assert.equal(f.timers.length, 0);
@@ -154,7 +154,7 @@ test('Next still waits for the animated page turn when motion is enabled', () =>
     const f = fixture(false);
     const target = {};
     let selected;
-    const view = { $track: f.element(), neighbors: () => ({ next: target }), finish_page: (step, story) => { selected = story; } };
+    const view = { mobile: { sync_page_scroll: () => {} }, $track: f.element(), neighbors: () => ({ next: target }), finish_page: (step, story) => { selected = story; } };
     f.pager.page_to.call(view, 1);
     assert.equal(selected, undefined);
     assert.ok(view.$track.classes.has('NB-mobile-animating'));

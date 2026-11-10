@@ -44,6 +44,8 @@ function pager_fixture(active_feed) {
     context.NEWSBLUR.reader.active_story_view = context.NEWSBLUR.Reader.active_story_view;
     const pager = Object.create(context.NEWSBLUR.Views.MobileStoryPager);
     pager.pages = { current: {} };
+    // mobile_story_view_preferences.test.js: the pager tells the layout when its page changes.
+    pager.mobile = { sync_page_scroll: function () {} };
     pager.render_page = function () { pager.rendered_mode = pager.story_view_mode(); };
     pager.update_chrome = function () {};
     function story(feed_id) {
