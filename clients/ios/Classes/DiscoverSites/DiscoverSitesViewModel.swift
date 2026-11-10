@@ -908,7 +908,8 @@ class DiscoverSitesViewModel: ObservableObject {
     func startDescribeSearch(prompt rawPrompt: String, searchID: String? = nil) {
         let prompt = rawPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !prompt.isEmpty, !describeState.isStarting else { return }
-        stopDescribePolling()
+        // DiscoverSitesViewModel.swift leaves the search on screen polling until the server accepts this one
+        // (beginDescribePolling then replaces the poll): a start it refuses, or that never arrives, changes nothing.
         let token = UUID()
         describeRequestToken = token
         describeState.prompt = prompt

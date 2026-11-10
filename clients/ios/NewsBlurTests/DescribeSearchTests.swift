@@ -438,6 +438,67 @@ final class Test_DescribeSearchPolling: XCTestCase {
         XCTAssertTrue(model.describeState.usage?.isLocked == true)
     }
 
+    // DescribeSearchTests.swift: the composer stays enabled while a search runs, and the server allows one search per
+    // user. A second start it turns down must leave the running search polling, or the tab shows it unfinished forever.
+    func test_rejectedStartKeepsPollingTheRunningSearch() async throws {
+        try await assertRunningSearchSurvivesSecondStart(failsInTransport: false)
+    }
+
+    func test_failedStartKeepsPollingTheRunningSearch() async throws {
+        try await assertRunningSearchSurvivesSecondStart(failsInTransport: true)
+    }
+
+    private func assertRunningSearchSurvivesSecondStart(failsInTransport: Bool) async throws {
+        let model = makeModel()
+        let rejection = "You already have a search running."
+        var startCalls = 0
+        var statusCalls = 0
+        var workerFinished = false
+        DescribeURLProtocol.handler = { [self] request in
+            switch request.url?.path {
+            case "/discover/describe/start":
+                startCalls += 1
+                if startCalls == 1 {
+                    let search = Test_DescribeSearchParsing.payload(results: [Test_DescribeSearchParsing.pendingRow(feedId: 42)])
+                    return try respond(request, ["code": 1, "search": search])
+                }
+                if failsInTransport { throw URLError(.notConnectedToInternet) }
+                return try respond(request, ["code": -1, "message": rejection])
+            case "/discover/describe/status":
+                statusCalls += 1
+                let search = workerFinished
+                    ? Test_DescribeSearchParsing.payload(status: "complete", phase: "complete",
+                                                         results: [Test_DescribeSearchParsing.judgedRow(feedId: 42)])
+                    : Test_DescribeSearchParsing.payload(results: [Test_DescribeSearchParsing.pendingRow(feedId: 42)])
+                return try respond(request, ["code": 1, "search": search])
+            default:
+                XCTFail("Unexpected request \(request.url?.absoluteString ?? "")")
+                return try respond(request, ["code": -1])
+            }
+        }
+
+        model.startDescribeSearch(prompt: "reviews of iOS App Store apps with lots of screenshots")
+        await waitUntil { statusCalls >= 1 }
+        XCTAssertEqual(model.describeState.search?.isRunning, true)
+
+        model.startDescribeSearch(prompt: "indie game developers")
+        await waitUntil { startCalls == 2 && !model.describeState.isStarting }
+        XCTAssertEqual(startCalls, 2)
+        if failsInTransport {
+            XCTAssertNotNil(model.describeState.errorMessage, "The failure is still reported")
+        } else {
+            XCTAssertEqual(model.describeState.errorMessage, rejection, "The server's refusal is still shown")
+        }
+        XCTAssertEqual(model.describeState.search?.id, "6720f0c1c3b2a4d5e6f70001", "The running search stays on screen")
+
+        workerFinished = true
+        await waitUntil { model.describeState.search?.isFinished == true }
+        XCTAssertEqual(model.describeState.search?.status, "complete", "The running search is still polled to completion")
+        XCTAssertEqual(model.describeState.search?.results.first?.score, 9)
+        XCTAssertEqual(model.describeState.history.first?.status, "complete")
+        model.stopDescribePolling()
+    }
+
     func test_historyLoadsReplaysAndDeletes() async throws {
         let model = makeModel()
         var history: [[String: Any]] = [
