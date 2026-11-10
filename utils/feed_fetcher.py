@@ -475,20 +475,23 @@ class FetchFeed:
                 )
             self.fpf = feedparser.parse(processed_facebook_feed)
         elif re.match(r"(https?://)?(\w+\.)?reddit\.com/", clean_address):
-            reddit_feed, reddit_rate_limited, reddit_http_error_status = self.fetch_reddit()
+            reddit_feed, reddit_rate_limited, reddit_http_error_status, reddit_error = self.fetch_reddit()
             if reddit_rate_limited:
-                # The shared 100 req/min Reddit budget is spent. Record the throttle so
-                # the feed backs off and the stall is visible in fetch history, instead
+                # The RedListen budget or per-minute limit is spent. Record the throttle
+                # so the feed backs off and the stall is visible in fetch history, instead
                 # of silently showing no new stories. See utils/reddit_fetcher.py.
-                logging.debug("   ***> [%-30s] ~FRReddit API rate limit reached" % (self.feed.log_title[:30]))
-                self.feed.save_feed_history(429, "Reddit API rate limit reached")
+                message = reddit_error or "Reddit API rate limit reached"
+                logging.debug("   ***> [%-30s] ~FR%s" % (self.feed.log_title[:30], message))
+                self.feed.save_feed_history(429, message)
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
             if not reddit_feed:
                 logging.debug(
                     "   ***> [%-30s] ~FRReddit fetch failed: %s" % (self.feed.log_title[:30], address)
                 )
-                self.feed.save_feed_history(reddit_http_error_status or 404, "Reddit fetch failed")
+                self.feed.save_feed_history(
+                    reddit_http_error_status or 404, reddit_error or "Reddit fetch failed"
+                )
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
             # Apply encoding preprocessing to special feed content
@@ -968,10 +971,15 @@ class FetchFeed:
         return facebook_fetcher.fetch()
 
     def fetch_reddit(self):
-        # Preserve HTTP errors and local throttling for fetch history. See utils/reddit_fetcher.py.
+        # Preserve HTTP errors, throttling and the reason for fetch history. See utils/reddit_fetcher.py.
         reddit_fetcher = RedditFetcher(self.feed, self.options)
         reddit_feed = reddit_fetcher.fetch()
-        return reddit_feed, reddit_fetcher.rate_limited, reddit_fetcher.http_error_status
+        return (
+            reddit_feed,
+            reddit_fetcher.rate_limited,
+            reddit_fetcher.http_error_status,
+            reddit_fetcher.error_message,
+        )
 
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
