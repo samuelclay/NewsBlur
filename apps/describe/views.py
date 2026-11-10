@@ -12,6 +12,7 @@ tab, the iOS app and the Android app all use these four endpoints:
 import re
 import uuid
 
+from django.core.cache import cache
 from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
 
@@ -24,6 +25,8 @@ from utils.user_functions import ajax_login_required
 
 MIN_PROMPT_LENGTH = 3
 MAX_PROMPT_LENGTH = 500
+# apps/describe/views.py: long enough to cover the handful of queries a start makes.
+START_LOCK_SECONDS = 15
 REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9_\-]{8,64}$")
 
 
@@ -61,11 +64,25 @@ def start_search(request):
 
     # apps/describe/views.py: one search at a time per person. Each holds a work_queue worker for a
     # minute or more, and a stuck one is expired by running_for_user so it never blocks for long.
+    # The check, the quota and the new search are claimed together: cache.add is atomic, so two
+    # starts that arrive at once (a double tap, web and phone) cannot both pass the checks below.
+    already_running = {
+        "code": -1,
+        "message": gettext("You already have a search running. Wait for it to finish first."),
+    }
+    start_lock = f"describe:start:{request.user.pk}"
+    if not cache.add(start_lock, request_id, START_LOCK_SECONDS):
+        return already_running
+    try:
+        return start_search_locked(request, prompt, search_id, request_id, already_running)
+    finally:
+        cache.delete(start_lock)
+
+
+def start_search_locked(request, prompt, search_id, request_id, already_running):
+    """The part of start_search that runs while this user's start lock is held."""
     if MDescribeSearch.running_for_user(request.user.pk):
-        return {
-            "code": -1,
-            "message": gettext("You already have a search running. Wait for it to finish first."),
-        }
+        return already_running
 
     tracker = DescribeUsageTracker(request.user)
     can_use, limit_message = tracker.can_use()
@@ -79,7 +96,7 @@ def start_search(request):
         }
 
     search = MDescribeSearch.start(request.user.pk, prompt, request_id, search_id=search_id)
-    tracker.record_usage(search_id=search.id, request_id=request_id)
+    search.charge(tracker.record_usage(search_id=search.id, request_id=request_id))
     DescribeFeedsSearch.apply_async(
         kwargs={"user_id": request.user.pk, "search_id": str(search.id), "request_id": request_id},
         queue="work_queue",

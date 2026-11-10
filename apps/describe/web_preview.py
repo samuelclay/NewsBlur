@@ -10,9 +10,11 @@ later by /reader/add_url when someone subscribes, or by
 """
 
 import datetime
+import html
 
 import feedparser
 import requests
+from django.utils.html import strip_tags
 
 from apps.rss_feeds.models import DuplicateFeed, Feed
 from utils import feedfinder_forman, urlnorm
@@ -55,14 +57,11 @@ def preview_site(url):
     if feed:
         return {"feed": feed}
 
-    try:
-        response = safe_requests_get(address, timeout=10)
-    except (UnsafeUrlError, requests.RequestException):
-        return None
-    if response.status_code != 200:
+    body = fetch_feed_body(address)
+    if not body:
         return None
 
-    parsed = feedparser.parse(response.content[:MAX_FEED_BYTES])
+    parsed = feedparser.parse(body)
     entries = [entry for entry in parsed.entries if entry.get("title")]
     if not entries:
         return None
@@ -71,12 +70,12 @@ def preview_site(url):
     return {
         "feed": None,
         "feed_address": address,
-        "feed_title": (channel.get("title") or "").strip()[:255] or address,
+        "feed_title": clean_text(channel.get("title"), 255) or address,
         "feed_link": channel.get("link") or url,
-        "tagline": (channel.get("subtitle") or "").strip()[:200],
+        "tagline": clean_text(channel.get("subtitle"), 200),
         "stories": [
             {
-                "story_title": entry.get("title", "").strip()[:255],
+                "story_title": clean_text(entry.get("title"), 255),
                 "story_permalink": entry.get("link") or "",
                 "story_date": entry_date(entry),
                 "story_content": entry_content(entry),
@@ -85,6 +84,37 @@ def preview_site(url):
             for entry in entries[:PREVIEW_STORIES]
         ],
     }
+
+
+def fetch_feed_body(address):
+    """The first MAX_FEED_BYTES of a feed, or None when it cannot be fetched.
+
+    Streamed, so a huge or never-ending response is cut off at the limit
+    instead of being buffered whole into the worker's memory.
+    """
+    try:
+        response = safe_requests_get(address, timeout=10, stream=True)
+    except (UnsafeUrlError, requests.RequestException):
+        return None
+    try:
+        if response.status_code != 200:
+            return None
+        body = b""
+        for chunk in response.iter_content(chunk_size=64 * 1024):
+            body += chunk
+            if len(body) >= MAX_FEED_BYTES:
+                break
+        return body[:MAX_FEED_BYTES]
+    except requests.RequestException:
+        return None
+    finally:
+        response.close()
+
+
+def clean_text(value, limit):
+    """Plain text from a feed's own title or tagline. Tags are dropped: these strings reach
+    add_site_view.js, which inserts card text as HTML, and nothing has sanitized an unsaved feed."""
+    return " ".join(strip_tags(html.unescape(value or "")).split())[:limit]
 
 
 def existing_feed(address):

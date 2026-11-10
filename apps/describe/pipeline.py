@@ -133,9 +133,13 @@ class DescribeFeedSearch:
         self.search.mark_running()
         self.publish("start", {"prompt": self.search.prompt})
         sub_queries = self.expand_prompt()
+        if self.search.deleted:
+            return self.abandon()
         self.search_index(sub_queries)
         self.judge_unjudged()
         self.prune()
+        if self.search.deleted:
+            return self.abandon()
         try:
             self.hunt_web()
         except SoftTimeLimitExceeded:
@@ -146,6 +150,11 @@ class DescribeFeedSearch:
             self.stats["hunt_error"] = str(e)[:200]
             logging.user(self.user, f"~FBDescribe: ~FR~SBweb hunt failed~SN, keeping index results: {e}")
         self.finish()
+        return self.search
+
+    def abandon(self):
+        """Stop a search its owner deleted mid-run, so it stops spending calls and frees the worker."""
+        logging.user(self.user, f"~FBDescribe: search ~SB{self.search.id}~SN was deleted, stopping")
         return self.search
 
     def set_phase(self, phase, message):
@@ -355,6 +364,8 @@ class DescribeFeedSearch:
         known_addresses = {row.get("feed_address") for row in self.results}
         new_rows = []
         for site in sites[: self.WEB_SITE_LIMIT]:
+            if self.search.deleted:
+                break
             if time.time() - hunt_started > self.WEB_HUNT_BUDGET_SECONDS:
                 logging.user(self.user, "~FBDescribe: web hunt out of time, stopping")
                 break
@@ -444,6 +455,14 @@ class DescribeFeedSearch:
         self.stats["duration_seconds"] = round(time.time() - self.started, 1)
         if note:
             self.stats["note"] = note
+        if not self.results and self.stats["model_errors"]:
+            # apps/describe/pipeline.py: nothing found and the model or embedding API failed along the
+            # way, so this is an outage, not an answer. Failing the search refunds it (mark_error).
+            message = gettext("The search couldn't reach the services it relies on. Please try again.")
+            self.search.stats = self.stats
+            self.search.mark_error(message)
+            self.publish("error", {"error": message})
+            return
         self.search.mark_complete(stats=self.stats)
         self.publish(
             "complete",

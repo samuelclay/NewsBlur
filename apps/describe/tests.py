@@ -569,6 +569,95 @@ class Test_DescribeWebHunt(Test_DescribePipeline):
         self.assertEqual([row["feed_id"] for row in self.search.results], [self.feeds[0].pk])
 
 
+class Test_DescribeOutagesAndDeletion(Test_DescribePipeline):
+    def test_an_outage_fails_the_search_and_refunds_it(self):
+        tracker = DescribeUsageTracker(self.user)
+        self.search.charge(tracker.record_usage(search_id=self.search.id, request_id="request-0001"))
+
+        def failing_embed(text):
+            self.pipeline.stats["model_errors"] += 1
+            return None
+
+        with patch.object(self.pipeline, "call_model", return_value=None), patch.object(
+            self.pipeline, "embed", side_effect=failing_embed
+        ), patch("apps.describe.pipeline.preview_site"):
+            self.pipeline.run()
+
+        self.search.reload()
+        self.assertEqual(self.search.status, STATUS_ERROR)
+        self.assertTrue(self.search.error)
+        self.assertEqual(self.events_of("complete"), [])
+        self.assertEqual(len(self.events_of("error")), 1)
+        self.assertEqual(tracker.daily_count(), 0)
+
+    def test_a_search_deleted_mid_run_stops_before_the_web_hunt(self):
+        def delete_then_judge(system, user_text, max_tokens, step, tools=None):
+            if step == "judge":
+                MDescribeSearch.objects(id=self.search.id).delete()
+                return "[]"
+            return '{"sub_queries": []}'
+
+        with patch.object(self.pipeline, "call_model", side_effect=delete_then_judge), patch.object(
+            self.pipeline, "embed", return_value=[0.1] * 4
+        ), patch(
+            "apps.describe.pipeline.SearchFeed.vector_query", return_value=[es_hit(self.feeds[0], 0.8)]
+        ), patch.object(
+            self.pipeline, "hunt_web"
+        ) as hunt:
+            self.pipeline.run()
+
+        hunt.assert_not_called()
+        self.assertEqual(self.events_of("complete"), [])
+        self.assertEqual(MDescribeSearch.objects(id=self.search.id).count(), 0)
+
+    def test_hydrating_results_costs_the_same_queries_however_many_feeds(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        from apps.describe.models import make_result_row
+
+        def queries_for(feeds):
+            rows = [make_result_row(feed, SOURCE_INDEX) for feed in feeds]
+            with CaptureQueriesContext(connection) as captured:
+                hydrated = hydrate_results(rows)
+            self.assertEqual(len(hydrated), len(feeds))
+            # FeedData's AutoOneToOneField opens an empty savepoint on each access inside a test's
+            # transaction; those are not queries against the tables.
+            return len([query for query in captured.captured_queries if "SAVEPOINT" not in query["sql"]])
+
+        many = self.feeds + [make_feed(200 + index) for index in range(8)]
+        for feed in many:
+            # FeedData is created on first access; real feeds have it from their first fetch.
+            feed.data
+        self.assertEqual(queries_for(self.feeds[:2]), queries_for(many))
+
+    def test_the_task_speaks_the_accounts_language(self):
+        from apps.describe.tasks import DescribeFeedsSearch
+
+        profile = self.user.profile
+        profile.preferences = json.encode({"language": "es"})
+        profile.save()
+        seen = {}
+
+        class FakePipeline:
+            results = []
+            stats = {}
+
+            def __init__(self, search, user, publish):
+                pass
+
+            def run(self):
+                from django.utils.translation import get_language
+
+                seen["language"] = get_language()
+
+        with patch("apps.describe.tasks.DescribeFeedSearch", FakePipeline), patch(
+            "apps.describe.tasks.redis.Redis"
+        ):
+            DescribeFeedsSearch(self.user.pk, str(self.search.id), request_id="request-0001")
+        self.assertEqual(seen["language"], "es")
+
+
 class Test_DescribeWebPreview(TestCase):
     """apps/describe/web_preview.py reads a site once and writes nothing."""
 
@@ -584,7 +673,21 @@ class Test_DescribeWebPreview(TestCase):
     def preview(self, url, addresses, content=None, status_code=200):
         from apps.describe import web_preview
 
-        response = type("Response", (), {"status_code": status_code, "content": content or self.FEED_XML})()
+        body = content or self.FEED_XML
+
+        class Response:
+            closed = False
+
+            def iter_content(self, chunk_size):
+                for start in range(0, len(body), chunk_size):
+                    yield body[start : start + chunk_size]
+
+            def close(self):
+                self.closed = True
+
+        response = Response()
+        response.status_code = status_code
+        self.response = response
         with patch.object(web_preview, "validate_public_url"), patch.object(
             web_preview, "find_feed_addresses", return_value=addresses
         ), patch.object(web_preview, "safe_requests_get", return_value=response) as fetch:
@@ -614,6 +717,44 @@ class Test_DescribeWebPreview(TestCase):
         preview, fetch = self.preview("https://site50.example.com/", [feed.feed_address])
         self.assertEqual(preview, {"feed": feed})
         fetch.assert_not_called()
+
+    def test_a_huge_feed_is_cut_off_at_the_byte_limit(self):
+        from apps.describe import web_preview
+
+        chunks_read = []
+
+        class Endless:
+            status_code = 200
+            closed = False
+
+            def iter_content(self, chunk_size):
+                while True:
+                    chunks_read.append(chunk_size)
+                    yield b"x" * chunk_size
+
+            def close(self):
+                self.closed = True
+
+        response = Endless()
+        with patch.object(web_preview, "safe_requests_get", return_value=response) as fetch:
+            body = web_preview.fetch_feed_body("https://endless.example.com/feed.xml")
+        self.assertTrue(fetch.call_args.kwargs["stream"])
+        self.assertEqual(len(body), web_preview.MAX_FEED_BYTES)
+        self.assertLessEqual(sum(chunks_read), web_preview.MAX_FEED_BYTES + 64 * 1024)
+        self.assertTrue(response.closed)
+
+    def test_markup_in_a_feeds_own_titles_is_dropped(self):
+        hostile = self.FEED_XML.replace(
+            b"<title>Brand New Blog</title>", b"<title>Blog &lt;img src=x onerror=alert(1)&gt;</title>"
+        ).replace(
+            b"<title>Hello world</title>", b"<title>Hello &lt;script&gt;alert(1)&lt;/script&gt;</title>"
+        )
+        preview, fetch = self.preview(
+            "https://brandnew.example.com/", ["https://brandnew.example.com/feed.xml"], content=hostile
+        )
+        self.assertEqual(preview["feed_title"], "Blog")
+        self.assertNotIn("<", preview["stories"][0]["story_title"])
+        self.assertTrue(self.response.closed)
 
     def test_sites_without_a_readable_feed_are_skipped(self):
         self.assertIsNone(self.preview("https://nofeed.example.com/", [])[0])
@@ -692,9 +833,38 @@ class Test_DescribeStuckSearches(DescribeMongoTestCase):
     def test_a_search_that_errors_is_refunded(self):
         tracker = DescribeUsageTracker(self.user)
         search = MDescribeSearch.start(self.user.pk, "ios app reviews", "request-0001")
-        tracker.record_usage(search_id=search.id, request_id="request-0001")
+        search.charge(tracker.record_usage(search_id=search.id, request_id="request-0001"))
         search.mark_error("boom")
         self.assertEqual(tracker.daily_count(), 0)
+
+    def test_a_refund_never_touches_another_search_with_the_same_request_id(self):
+        tracker = DescribeUsageTracker(self.user)
+        finished = MDescribeSearch.start(self.user.pk, "ios app reviews", "request-0001")
+        finished.charge(tracker.record_usage(search_id=finished.id, request_id="request-0001"))
+        finished.mark_complete()
+        failed = MDescribeSearch.start(self.user.pk, "long essays about cities", "request-0001")
+        failed.charge(tracker.record_usage(search_id=failed.id, request_id="request-0001"))
+        failed.mark_error("boom")
+        self.assertEqual(tracker.daily_count(), 1)
+
+    @patch("apps.describe.views.DescribeFeedsSearch.apply_async")
+    def test_a_start_that_arrives_while_another_is_being_created_is_refused(self, apply_async):
+        from django.core.cache import cache
+
+        lock = f"describe:start:{self.user.pk}"
+        cache.add(lock, "other-request", 15)
+        try:
+            refused = self.start()
+        finally:
+            cache.delete(lock)
+        self.assertEqual(refused["code"], -1)
+        self.assertIn("already", refused["message"])
+        self.assertEqual(apply_async.call_count, 0)
+        self.assertEqual(MDescribeSearch.objects(user_id=self.user.pk).count(), 0)
+        self.assertEqual(DescribeUsageTracker(self.user).daily_count(), 0)
+
+        self.assertEqual(self.start()["code"], 1)
+        self.assertIsNone(cache.get(lock))
 
 
 class Test_DescribeTask(DescribeMongoTestCase):

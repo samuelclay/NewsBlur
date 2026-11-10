@@ -49,6 +49,9 @@ class MDescribeSearch(mongo.Document):
     user_id = mongo.IntField(required=True)
     prompt = mongo.StringField(required=True)
     request_id = mongo.StringField(max_length=64)
+    # apps/describe/models.py: the MDescribeUsage row this run was charged with, so a refund removes
+    # exactly that row. request_id comes from the client and may repeat.
+    usage_id = mongo.StringField()
     status = mongo.StringField(default=STATUS_QUEUED)
     phase = mongo.StringField(default=STATUS_QUEUED)
     phase_message = mongo.StringField()
@@ -59,6 +62,9 @@ class MDescribeSearch(mongo.Document):
     created_date = mongo.DateTimeField(default=datetime.datetime.now)
     updated_date = mongo.DateTimeField(default=datetime.datetime.now)
     completed_date = mongo.DateTimeField()
+
+    # apps/describe/models.py: set by touch() when the document no longer exists. Not a stored field.
+    deleted = False
 
     meta = {
         "collection": "describe_searches",
@@ -195,19 +201,26 @@ class MDescribeSearch(mongo.Document):
 
     def refund_usage(self):
         """A search that failed does not count against the daily quota in apps/describe/usage.py."""
-        if self.request_id:
-            MDescribeUsage.objects(
-                user_id=self.user_id, request_id=self.request_id, over_quota=False
-            ).delete()
+        if self.usage_id and ObjectId.is_valid(self.usage_id):
+            MDescribeUsage.objects(id=ObjectId(self.usage_id), user_id=self.user_id).delete()
+            self.__class__.objects(id=self.id).update_one(unset__usage_id=True)
+            self.usage_id = None
+
+    def charge(self, usage_entry):
+        """Remember which usage row paid for this run (apps/describe/views.py start_search)."""
+        self.usage_id = str(usage_entry.id)
+        self.__class__.objects(id=self.id).update_one(set__usage_id=self.usage_id)
 
     def touch(self):
         """Persist the mutable fields in place.
 
         An atomic update (not save()) so a search the user deleted while the
         pipeline was still running stays deleted instead of being re-inserted.
+        `deleted` records that the document is gone, which the pipeline checks
+        between phases so it stops working on a search nobody can see.
         """
         self.updated_date = datetime.datetime.now()
-        self.__class__.objects(id=self.id).update_one(
+        self.deleted = not self.__class__.objects(id=self.id).update_one(
             set__status=self.status,
             set__phase=self.phase,
             set__phase_message=self.phase_message or "",
@@ -372,14 +385,16 @@ def hydrate_results(results):
         return []
 
     feed_ids = [row["feed_id"] for row in results if not row.get("unsaved") and row.get("feed_id")]
-    feeds = {feed.pk: feed for feed in Feed.objects.filter(pk__in=feed_ids)}
+    feeds = {feed.pk: feed for feed in Feed.objects.filter(pk__in=feed_ids).select_related("data")}
 
     # apps/describe/models.py: an unsaved web find becomes a real feed once someone subscribes to
     # or previews it, so look for one at its address before falling back to the stored snapshot.
     unsaved_addresses = [row["feed_address"] for row in results if row.get("unsaved")]
     saved_since = {}
     if unsaved_addresses:
-        created = Feed.objects.filter(feed_address__in=unsaved_addresses, branch_from_feed=None)
+        created = Feed.objects.filter(
+            feed_address__in=unsaved_addresses, branch_from_feed=None
+        ).select_related("data")
         for feed in created.order_by("num_subscribers"):
             saved_since[feed.feed_address] = feed
 
@@ -405,7 +420,7 @@ def hydrate_results(results):
             feed = feeds.get(row.get("feed_id"))
         if not feed:
             continue
-        feed_dict = feed.canonical(full=True, include_favicon=False)
+        feed_dict = feed.canonical(full=True, include_favicon=False, include_similar=False)
         icon = icons.get(feed.pk)
         if icon and icon.data:
             feed_dict["favicon"] = icon.data
