@@ -164,9 +164,10 @@ class RedListenBudget:
         RedListen's account-wide counters plus the reservations still in flight, which
         those counters cannot include yet. Limits come from RedListen's headers once a
         response has carried them, so a plan change applies without a deploy."""
-        data = self.r.hgetall(self.usage_key(month)) or {}
-        observed = self.observed(month)
-        pending_requests, pending_results = self.pending(month)
+        snapshot = self.snapshot(month)
+        data = snapshot["counters"]
+        observed = snapshot["observed"]
+        pending_requests, pending_results = snapshot["pending"]
         return {
             "requests": max(int(data.get("requests") or 0), observed["requests"] + pending_requests),
             "results": max(int(data.get("results") or 0), observed["results"] + pending_results),
@@ -174,16 +175,32 @@ class RedListenBudget:
             "result_limit": int(data.get("result_limit") or settings.REDLISTEN_MONTHLY_RESULTS),
         }
 
+    def snapshot(self, month=None):
+        """Our counters, RedListen's observed counters and the pending reservations, read
+        in one MULTI/EXEC transaction. Read separately, a worker settling in between could
+        move a request from pending into the observed counters after the observed read and
+        before the pending read, and it would be missing from both."""
+        month = month or self.month()
+        since = time.time() - PENDING_SECONDS
+        pipe = self.r.pipeline(transaction=True)
+        pipe.hgetall(self.usage_key(month))
+        pipe.zscore(self.observed_key(month), "requests")
+        pipe.zscore(self.observed_key(month), "results")
+        pipe.zrangebyscore(self.pending_key(month), since, "+inf")
+        counters, observed_requests, observed_results, tokens = pipe.execute()
+        return {
+            "counters": counters or {},
+            "observed": {"requests": int(observed_requests or 0), "results": int(observed_results or 0)},
+            "pending": (len(tokens), sum(int(token.rsplit(":", 1)[1]) for token in tokens)),
+        }
+
     def observed(self, month=None):
         """RedListen's own counters, as the highest values its headers have reported."""
-        key = self.observed_key(month)
-        return {field: int(self.r.zscore(key, field) or 0) for field in ("requests", "results")}
+        return self.snapshot(month)["observed"]
 
     def pending(self, month=None):
         """(requests, results) reserved but not yet settled, ignoring abandoned ones."""
-        since = time.time() - PENDING_SECONDS
-        tokens = self.r.zrangebyscore(self.pending_key(month), since, "+inf")
-        return len(tokens), sum(int(token.rsplit(":", 1)[1]) for token in tokens)
+        return self.snapshot(month)["pending"]
 
     def caps(self, kind, usage=None):
         """(request cap, result cap) this kind of spending may reach this month."""

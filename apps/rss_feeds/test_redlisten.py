@@ -142,6 +142,26 @@ class Test_RedListenBudget(SimpleTestCase):
         self.assertEqual(self.budget.usage()["results"], 990)
         self.assertIsNone(self.budget.reserve(POLLER, 1))
 
+    def test_a_settle_racing_a_reservation_still_counts_once(self):
+        """Worker A settles after worker B has claimed its own slot but before B checks
+        usage. B's check reads in one transaction, so it sees A either still pending or
+        already in RedListen's counters, never in neither."""
+        self.r.zadd(self.budget.observed_key(), {"results": 985})
+        first = self.budget.reserve(POLLER, 5)
+        original_pipeline = self.r.pipeline
+        pipelines = []
+
+        def pipeline_settling_a_before_bs_check(*args, **kwargs):
+            pipelines.append(kwargs)
+            # B's reserve() writes its claim in its first pipeline and checks usage in its second.
+            if len(pipelines) == 2:
+                self.budget.settle(POLLER, first, 5, {"x-items-used": "985"})
+            return original_pipeline(*args, **kwargs)
+
+        with patch.object(self.r, "pipeline", side_effect=pipeline_settling_a_before_bs_check):
+            self.assertIsNone(self.budget.reserve(POLLER, 5))
+        self.assertEqual(pipelines[1], {"transaction": True})
+
     def test_an_abandoned_reservation_stops_counting(self):
         self.r.zadd(self.budget.observed_key(), {"results": 900})
         self.r.zadd(self.budget.pending_key(), {"dead-worker:80": time.time() - 10 * 60})

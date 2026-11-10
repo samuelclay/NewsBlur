@@ -98,12 +98,13 @@ class FakeRedis:
     def zscore(self, key, member):
         return (self.data.get(key) or {}).get(str(member))
 
-    def pipeline(self):
+    def pipeline(self, transaction=True):
         return FakePipeline(self)
 
 
 class FakePipeline:
-    """Queues commands and runs them in order on execute(), returning their results."""
+    """Queues commands and runs them in order on execute(), returning their results. Tests
+    run single-threaded, so execute() is as atomic as Redis's MULTI/EXEC."""
 
     def __init__(self, redis_):
         self.redis = redis_
