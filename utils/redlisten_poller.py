@@ -20,7 +20,9 @@ subreddits joined with + (/r/a+b+c/new.json), and one search covers dozens of au
   4. Packs targets into requests. Targets that get everything are drained: their batch
      pages back (after=) until it reaches the previous poll. Capped targets are grouped
      with others capped at a similar fraction and get one page sized to their combined
-     share, so the newest posts across the batch split roughly in proportion.
+     share, so the newest posts across the batch split roughly in proportion. Batches run
+     longest-waiting first, so a short hour rotates through targets instead of skipping
+     the same ones.
   5. Learns each target's posting rate from what came back. The newest N posts across a
      batch are every post its targets made since the oldest of them, so a page's counts
      over its time span are a fair rate sample even when the batch was capped. Samples
@@ -209,6 +211,19 @@ class PollBatch:
         self.chars += self.cost(target)
         self.readers += target.readers
 
+    def oldest_poll(self):
+        """When the least recently polled target in this batch was last polled, 0 if never."""
+        return min(target.last_polled for target in self.targets)
+
+    def priority(self):
+        """Sort key for the hour's batches: longest-waiting first, so when the budget runs
+        short the batches left over go first next hour and every target gets polled in turn.
+        The first prod poll ran 12 of 34 batches while busy targets of unknown rate spent the
+        budget, and ordering by readers alone would skip the same low-reader batches every
+        hour. Ties go to drained batches (quiet targets that get every post), then the
+        most-read."""
+        return (self.oldest_poll(), not self.drain, -self.readers)
+
     def first_limit(self):
         if self.drain:
             return max(5, min(PAGE_SIZE, math.ceil(self.expected * 1.3) + 5))
@@ -342,9 +357,7 @@ class RedListenPoller:
         for is_user in (False, True):
             group = [t for t in polled if t.is_user == is_user]
             batches.extend(build_batches(group, demands, shares, is_user))
-        # Drained batches first: they are the quiet targets that get every post. Then the
-        # capped batches, most-read first, so a short budget shortchanges the fewest readers.
-        batches.sort(key=lambda batch: (not batch.drain, -batch.readers))
+        batches.sort(key=PollBatch.priority)
 
         polled_batches = 0
         for batch in batches:

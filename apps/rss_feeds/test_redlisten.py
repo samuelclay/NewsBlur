@@ -435,6 +435,34 @@ class Test_RedListenPoller(SimpleTestCase):
         self.assertEqual(json.loads(self.r.get(LAST_POLL_KEY))["polled_batches"], 1)
         self.assertIsNone(self.r.get("redlisten:poll_lock"))
 
+    def test_a_short_hour_polls_the_longest_waiting_batch_first(self, _sleep):
+        """With room for one request, the batch whose targets have waited longest goes first,
+        even with fewer readers, so a short budget rotates instead of starving the tail."""
+        busy = {"posts": 1000, "window": 86400}
+        recently_polled = target("r:popular", readers=10, feed_ids=[1], last_polled=NOW_TS - 3600, **busy)
+        never_polled = target("u:starved", readers=1, feed_ids=[2], last_polled=0, **busy)
+        targets = {t.key: t for t in (recently_polled, never_polled)}
+        poller, client = self.poller([listing([post("s1", author="starved")])])
+        # About 1.5 requests and 5 results for this hour.
+        with self.settings(REDLISTEN_MONTHLY_REQUESTS=750, REDLISTEN_MONTHLY_RESULTS=2500), patch.object(
+            RedListenPoller, "load_targets", return_value=targets
+        ):
+            summary = poller.poll()
+
+        self.assertEqual(summary["capped_targets"], 2)
+        self.assertEqual((summary["batches"], summary["polled_batches"]), (2, 1))
+        self.assertEqual([call[0] for call in client.calls], ["/search.json"])
+        self.assertEqual(never_polled.last_polled, NOW_TS)
+
+    def test_ties_keep_drained_then_most_read_first(self, _sleep):
+        quiet = PollBatch(drain=True, is_user=False)
+        quiet.add(target("r:quiet", readers=1, last_polled=NOW_TS - 3600), 1, 1)
+        popular = PollBatch(drain=False, is_user=False)
+        popular.add(target("r:popular", readers=50, last_polled=NOW_TS - 3600), 50, 5)
+        niche = PollBatch(drain=False, is_user=False)
+        niche.add(target("r:niche", readers=2, last_polled=NOW_TS - 3600), 50, 1)
+        self.assertEqual(sorted([niche, popular, quiet], key=PollBatch.priority), [quiet, popular, niche])
+
     def test_a_poll_that_outlived_its_lock_leaves_the_next_polls_lock(self, _sleep):
         poller, _ = self.poller([])
 
