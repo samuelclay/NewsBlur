@@ -616,7 +616,14 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         var feed = row.feed || {};
         var $card = this.add_site_view.render_feed_card(feed, row.stories || []);
         $card.addClass('NB-describe-card' + (row.judged ? ' NB-describe-card-judged' : ''));
-        $card.attr('data-feed-id', row.feed_id);
+        // describe_feeds_view.js: row.feed_id is the row's key in this search. For a site found on the web that
+        // NewsBlur has not saved it is a negative number, not a feed id, so it never goes in data-feed-id.
+        // Such a card carries the feed's address instead, which Try and Stats use to create the feed on demand
+        // (add_site_view.js link_popular_feed) and Add uses to subscribe.
+        $card.attr('data-describe-row', row.feed_id);
+        if (!feed.id) {
+            $card.attr('data-feed-url', feed.feed_address || row.feed_address);
+        }
         $card.find('.NB-add-site-card-header').after([this.make_card_tags(row), this.make_reason(row)]);
         this.cards[row.feed_id] = $card;
         return $card;
