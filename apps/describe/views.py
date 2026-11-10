@@ -59,6 +59,14 @@ def start_search(request):
                 "message": gettext("That search is still running. Wait for it to finish first."),
             }
 
+    # apps/describe/views.py: one search at a time per person. Each holds a work_queue worker for a
+    # minute or more, and a stuck one is expired by running_for_user so it never blocks for long.
+    if MDescribeSearch.running_for_user(request.user.pk):
+        return {
+            "code": -1,
+            "message": gettext("You already have a search running. Wait for it to finish first."),
+        }
+
     tracker = DescribeUsageTracker(request.user)
     can_use, limit_message = tracker.can_use()
     if not can_use:

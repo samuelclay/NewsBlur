@@ -11,7 +11,8 @@ status, sees the same state:
 3. judge   - Haiku scores every candidate against the description in batches,
              streaming a 0 to 10 score and a one-line reason per feed.
 4. hunt    - Haiku searches the open web for publications NewsBlur hasn't
-             indexed; each site is resolved to a feed, fetched, then judged.
+             indexed; each site's feed is read in memory and judged. Nothing is
+             saved until someone subscribes (apps/describe/web_preview.py).
 5. finish  - weak matches are pruned, the list is capped at MAX_RESULTS.
 """
 
@@ -21,7 +22,7 @@ import time
 from urllib.parse import urlparse
 
 import anthropic
-import requests
+from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
 from django.utils.translation import gettext
 from openai import OpenAI, OpenAIError
@@ -32,6 +33,7 @@ from apps.describe.models import (
     SOURCE_WEB,
     hydrate_results,
     make_result_row,
+    make_unsaved_row,
     sort_results,
 )
 from apps.describe.prompts import (
@@ -42,12 +44,12 @@ from apps.describe.prompts import (
     hunt_user_prompt,
     judge_user_prompt,
 )
+from apps.describe.web_preview import preview_site
 from apps.rss_feeds.models import Feed
 from apps.search.models import SearchFeed
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
 from utils.llm_models import ANTHROPIC_MODEL
-from utils.url_safety import UnsafeUrlError
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 FEATURE = "describe_feeds"
@@ -112,6 +114,7 @@ class DescribeFeedSearch:
         self.rows_by_feed_id = {}
         self.headlines = {}
         self.taglines = {}
+        self.unsaved_count = 0
         self.started = time.time()
         self.stats = {
             "llm_calls": 0,
@@ -119,6 +122,7 @@ class DescribeFeedSearch:
             "web_searches": 0,
             "web_sites_tried": 0,
             "web_feeds_added": 0,
+            "web_errors": 0,
             "candidates_considered": 0,
             "model_errors": 0,
         }
@@ -132,7 +136,15 @@ class DescribeFeedSearch:
         self.search_index(sub_queries)
         self.judge_unjudged()
         self.prune()
-        self.hunt_web()
+        try:
+            self.hunt_web()
+        except SoftTimeLimitExceeded:
+            raise
+        except Exception as e:
+            # apps/describe/pipeline.py: the hunt is a bonus on top of the index results, which are
+            # already judged and stored. Whatever goes wrong out on the web, those still get delivered.
+            self.stats["hunt_error"] = str(e)[:200]
+            logging.user(self.user, f"~FBDescribe: ~FR~SBweb hunt failed~SN, keeping index results: {e}")
         self.finish()
         return self.search
 
@@ -340,6 +352,7 @@ class DescribeFeedSearch:
 
         hunt_started = time.time()
         known_hosts = set(excluded_hosts)
+        known_addresses = {row.get("feed_address") for row in self.results}
         new_rows = []
         for site in sites[: self.WEB_SITE_LIMIT]:
             if time.time() - hunt_started > self.WEB_HUNT_BUDGET_SECONDS:
@@ -350,11 +363,20 @@ class DescribeFeedSearch:
                 continue
             self.stats["web_sites_tried"] += 1
             self.set_phase("hunting", gettext("Checking %(site)s for a feed") % {"site": host})
-            feed = self.resolve_site(site["url"])
-            if not feed or feed.pk in self.rows_by_feed_id:
+            preview = self.resolve_site(site["url"])
+            if not preview:
+                continue
+            feed = preview.get("feed")
+            if feed and feed.pk in self.rows_by_feed_id:
+                continue
+            if not feed and preview["feed_address"] in known_addresses:
                 continue
             known_hosts.add(host)
-            row = self.add_candidate(feed, SOURCE_WEB, matched_query=site.get("why", ""), similarity=None)
+            if feed:
+                row = self.add_candidate(feed, SOURCE_WEB, matched_query=site.get("why", ""), similarity=None)
+            else:
+                row = self.add_unsaved_candidate(preview, matched_query=site.get("why", ""))
+            known_addresses.add(row["feed_address"])
             self.stats["web_feeds_added"] += 1
             new_rows.append(row)
             self.persist_results()
@@ -386,20 +408,33 @@ class DescribeFeedSearch:
         return sites
 
     def resolve_site(self, url):
-        """Turn a site URL from the web hunt into a fetched Feed, or None.
+        """Preview a site from the web hunt (apps/describe/web_preview.py), or None.
 
-        Feed.get_feed_from_url does the feed discovery, SSRF checks and the
-        first fetch. It is called without a user so the paid ScrapingBee
-        fallback (reserved for a person adding a blocked site by hand) never
-        runs for a hunted site. A site that fails to resolve is logged and
-        skipped so one bad link never ends the search.
+        Nothing is saved: the preview is either a Feed NewsBlur already has or
+        a snapshot read from the site. These are arbitrary sites picked by a
+        model, parsed by feed discovery and feedparser, so any failure at all
+        is logged and the site skipped. One bad link never ends the search.
         """
         try:
-            return Feed.get_feed_from_url(url, create=True, aggressive=False, fetch=True)
-        except (UnsafeUrlError, requests.RequestException, TimeoutError, ValueError) as e:
-            self.stats["web_errors"] = self.stats.get("web_errors", 0) + 1
-            logging.user(self.user, f"~FBDescribe: ~FRcould not resolve ~SB{url}~SN: {e}")
+            return preview_site(url)
+        except SoftTimeLimitExceeded:
+            raise
+        except Exception as e:
+            self.stats["web_errors"] += 1
+            logging.user(self.user, f"~FBDescribe: ~FRcould not preview ~SB{url}~SN: {e}")
             return None
+
+    def add_unsaved_candidate(self, preview, matched_query):
+        """Add a web find NewsBlur has no Feed for, keyed by a negative row number."""
+        self.unsaved_count += 1
+        row = make_unsaved_row(-self.unsaved_count, preview, matched_query=matched_query)
+        self.headlines[row["feed_id"]] = [
+            story["story_title"] for story in preview.get("stories") or [] if story.get("story_title")
+        ][:5]
+        self.taglines[row["feed_id"]] = row["tagline"]
+        self.results.append(row)
+        self.rows_by_feed_id[row["feed_id"]] = row
+        return row
 
     # Phase 5: finish ----------------------------------------------------------
 

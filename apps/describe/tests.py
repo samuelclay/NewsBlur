@@ -1,6 +1,7 @@
 """apps/describe/tests.py: Describe feed search with the LLM, embeddings, ES and web hunt mocked."""
 
 import datetime
+import re
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
@@ -11,9 +12,12 @@ from apps.describe.models import (
     MAX_RESULTS,
     SOURCE_INDEX,
     SOURCE_WEB,
+    STALE_AFTER_SECONDS,
     STATUS_COMPLETE,
+    STATUS_ERROR,
     MDescribeSearch,
     MDescribeUsage,
+    hydrate_results,
     sort_results,
 )
 from apps.describe.pipeline import DescribeFeedSearch, parse_json, site_host
@@ -92,9 +96,17 @@ class Test_DescribeUsageTracker(DescribeMongoTestCase):
         self.assertEqual(archive.daily_limit, 30)
         pro = DescribeUsageTracker(make_user("pro_user", pro=True))
         self.assertEqual(pro.plan_tier, TIER_PRO)
-        self.assertIsNone(pro.daily_limit)
+        self.assertEqual(pro.daily_limit, 100)
         self.assertTrue(pro.can_use()[0])
-        self.assertIsNone(pro.snapshot()["remaining"])
+        self.assertEqual(pro.snapshot()["remaining"], 100)
+
+    def test_pro_users_stop_at_the_sanity_limit(self):
+        tracker = DescribeUsageTracker(make_user("pro_heavy", pro=True))
+        for index in range(100):
+            tracker.record_usage(search_id=str(index), request_id=f"req-{index}")
+        allowed, message = tracker.can_use()
+        self.assertFalse(allowed)
+        self.assertIn("100", message)
 
     def test_usage_message_only_when_running_low(self):
         tracker = DescribeUsageTracker(make_user("premium_low", premium=True))
@@ -323,6 +335,9 @@ class Test_DescribePipeline(DescribeMongoTestCase):
             )
         self.fail(f"unexpected step {step}")
 
+    def fake_preview_site(self, url):
+        return {"feed": self.web_feed}
+
     def run_pipeline(self):
         hits_by_query = {
             "reviews of ios apps with screenshots": [es_hit(self.feeds[0], 0.8), es_hit(self.feeds[1], 0.7)],
@@ -341,7 +356,7 @@ class Test_DescribePipeline(DescribeMongoTestCase):
         with patch.object(self.pipeline, "call_model", side_effect=self.fake_call_model), patch.object(
             self.pipeline, "embed", side_effect=fake_embed
         ), patch("apps.describe.pipeline.SearchFeed.vector_query", side_effect=fake_vector_query), patch(
-            "apps.describe.pipeline.Feed.get_feed_from_url", return_value=self.web_feed
+            "apps.describe.pipeline.preview_site", side_effect=self.fake_preview_site
         ) as resolve:
             self.pipeline.run()
         return embedded, resolve
@@ -408,7 +423,7 @@ class Test_DescribePipeline(DescribeMongoTestCase):
         ), patch(
             "apps.describe.pipeline.SearchFeed.vector_query", return_value=[es_hit(self.feeds[0], 0.8)]
         ), patch(
-            "apps.describe.pipeline.Feed.get_feed_from_url"
+            "apps.describe.pipeline.preview_site"
         ) as resolve:
             self.pipeline.run()
 
@@ -446,6 +461,231 @@ class Test_DescribePipeline(DescribeMongoTestCase):
         self.assertEqual(len(self.search.results), MAX_RESULTS)
         removed = [feed_id for extra in self.events_of("remove") for feed_id in extra["feed_ids"]]
         self.assertEqual(len(removed), 6)
+
+
+class Test_DescribeWebHunt(Test_DescribePipeline):
+    """The web hunt must never create feeds, and one bad site must never end a search."""
+
+    UNSAVED = {
+        "feed": None,
+        "feed_address": "https://brandnew.example.com/feed.xml",
+        "feed_title": "Brand New Blog",
+        "feed_link": "https://brandnew.example.com/",
+        "tagline": "Fresh writing",
+        "stories": [
+            {
+                "story_title": "Hello world",
+                "story_permalink": "https://brandnew.example.com/hello",
+                "story_date": datetime.datetime(2026, 11, 2, 8, 0),
+            }
+        ],
+    }
+
+    def hunt_call_model(self, sites):
+        def call_model(system, user_text, max_tokens, step, tools=None):
+            if step == "expand":
+                return '{"sub_queries": []}'
+            if step == "judge":
+                ids = [int(found) for found in re.findall(r"feed_id=(-?\d+)", user_text)]
+                return json.encode([{"feed_id": feed_id, "score": 8, "reason": "fits"} for feed_id in ids])
+            return json.encode([{"url": url, "title": url, "why": "found"} for url in sites])
+
+        return call_model
+
+    def run_hunt(self, sites, preview):
+        with patch.object(self.pipeline, "call_model", side_effect=self.hunt_call_model(sites)), patch.object(
+            self.pipeline, "embed", return_value=[0.1] * 4
+        ), patch(
+            "apps.describe.pipeline.SearchFeed.vector_query", return_value=[es_hit(self.feeds[0], 0.8)]
+        ), patch(
+            "apps.describe.pipeline.preview_site", side_effect=preview
+        ):
+            self.pipeline.run()
+        self.search.reload()
+
+    def test_a_site_newsblur_has_never_seen_is_shown_without_creating_a_feed(self):
+        feeds_before = Feed.objects.count()
+        self.run_hunt(["https://brandnew.example.com/"], lambda url: dict(self.UNSAVED))
+
+        self.assertEqual(Feed.objects.count(), feeds_before)
+        self.assertEqual(self.search.status, STATUS_COMPLETE)
+        web_rows = [row for row in self.search.results if row["source"] == SOURCE_WEB]
+        self.assertEqual(len(web_rows), 1)
+        row = web_rows[0]
+        self.assertLess(row["feed_id"], 0)
+        self.assertTrue(row["judged"])
+        self.assertEqual(row["score"], 8)
+        self.assertEqual(row["feed_address"], "https://brandnew.example.com/feed.xml")
+        self.assertEqual(row["stories"][0]["story_title"], "Hello world")
+
+        hydrated = [
+            item for item in hydrate_results(self.search.results) if item["feed_id"] == row["feed_id"]
+        ][0]
+        self.assertEqual(hydrated["feed"]["feed_title"], "Brand New Blog")
+        self.assertEqual(hydrated["feed"]["feed_address"], "https://brandnew.example.com/feed.xml")
+        self.assertNotIn("id", hydrated["feed"])
+
+    def test_an_unsaved_find_picks_up_the_real_feed_once_someone_subscribes(self):
+        self.run_hunt(["https://brandnew.example.com/"], lambda url: dict(self.UNSAVED))
+        created = Feed.objects.create(
+            feed_address="https://brandnew.example.com/feed.xml",
+            feed_link="https://brandnew.example.com/",
+            feed_title="Brand New Blog",
+        )
+        row = [item for item in hydrate_results(self.search.results) if item["source"] == SOURCE_WEB][0]
+        self.assertLess(row["feed_id"], 0)
+        self.assertEqual(row["feed"]["id"], created.pk)
+
+    def test_a_site_that_blows_up_is_skipped_and_the_search_finishes(self):
+        def preview(url):
+            if "broken" in url:
+                raise RuntimeError("feedparser choked on this one")
+            return dict(self.UNSAVED)
+
+        self.run_hunt(["https://broken.example.com/", "https://brandnew.example.com/"], preview)
+
+        self.assertEqual(self.search.status, STATUS_COMPLETE)
+        self.assertEqual(self.search.stats["web_errors"], 1)
+        self.assertEqual(self.search.stats["web_feeds_added"], 1)
+        self.assertEqual(len(self.search.results), 2)
+
+    def test_a_failed_hunt_keeps_the_feeds_already_found(self):
+        with patch.object(self.pipeline, "call_model", side_effect=self.hunt_call_model([])), patch.object(
+            self.pipeline, "embed", return_value=[0.1] * 4
+        ), patch(
+            "apps.describe.pipeline.SearchFeed.vector_query", return_value=[es_hit(self.feeds[0], 0.8)]
+        ), patch.object(
+            self.pipeline, "hunt_web", side_effect=RuntimeError("hunt fell over")
+        ):
+            self.pipeline.run()
+        self.search.reload()
+        self.assertEqual(self.search.status, STATUS_COMPLETE)
+        self.assertEqual([row["feed_id"] for row in self.search.results], [self.feeds[0].pk])
+
+
+class Test_DescribeWebPreview(TestCase):
+    """apps/describe/web_preview.py reads a site once and writes nothing."""
+
+    FEED_XML = b"""<?xml version="1.0"?><rss version="2.0"><channel>
+        <title>Brand New Blog</title><link>https://brandnew.example.com/</link>
+        <description>Fresh writing</description>
+        <item><title>Hello world</title><link>https://brandnew.example.com/hello</link>
+        <pubDate>Mon, 02 Nov 2026 08:00:00 GMT</pubDate></item>
+        <item><title>Second post</title><link>https://brandnew.example.com/second</link></item>
+        </channel></rss>"""
+
+    def preview(self, url, addresses, content=None, status_code=200):
+        from apps.describe import web_preview
+
+        response = type("Response", (), {"status_code": status_code, "content": content or self.FEED_XML})()
+        with patch.object(web_preview, "validate_public_url"), patch.object(
+            web_preview, "find_feed_addresses", return_value=addresses
+        ), patch.object(web_preview, "safe_requests_get", return_value=response) as fetch:
+            return web_preview.preview_site(url), fetch
+
+    def test_an_unknown_site_is_read_without_creating_a_feed(self):
+        feeds_before = Feed.objects.count()
+        preview, fetch = self.preview(
+            "https://brandnew.example.com/", ["https://brandnew.example.com/feed.xml"]
+        )
+
+        self.assertEqual(Feed.objects.count(), feeds_before)
+        self.assertIsNone(preview["feed"])
+        self.assertEqual(preview["feed_address"], "https://brandnew.example.com/feed.xml")
+        self.assertEqual(preview["feed_title"], "Brand New Blog")
+        self.assertEqual(preview["tagline"], "Fresh writing")
+        self.assertEqual(
+            [story["story_title"] for story in preview["stories"]], ["Hello world", "Second post"]
+        )
+        self.assertEqual(preview["stories"][0]["story_date"], datetime.datetime(2026, 11, 2, 8, 0))
+        self.assertIsNone(preview["stories"][1]["story_date"])
+
+    def test_a_feed_newsblur_already_has_is_returned_without_fetching(self):
+        feed = make_feed(50)
+        preview, fetch = self.preview("https://site50.example.com/", [feed.feed_address])
+        self.assertEqual(preview, {"feed": feed})
+        fetch.assert_not_called()
+
+    def test_sites_without_a_readable_feed_are_skipped(self):
+        self.assertIsNone(self.preview("https://nofeed.example.com/", [])[0])
+        address = ["https://gone.example.com/feed.xml"]
+        self.assertIsNone(self.preview("https://gone.example.com/", address, status_code=404)[0])
+        self.assertIsNone(
+            self.preview("https://gone.example.com/", address, content=b"<html>not a feed</html>")[0]
+        )
+
+
+class Test_DescribeStuckSearches(DescribeMongoTestCase):
+    """A search whose task died must not stay running forever."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = make_user("stuck_user", premium=True)
+        self.client.login(username="stuck_user", password="pw")
+
+    def start(self, prompt="ios app reviews", **extra):
+        return json.decode(self.client.post("/discover/describe/start", dict(prompt=prompt, **extra)).content)
+
+    def age(self, search_id, seconds):
+        MDescribeSearch.objects(id=search_id).update_one(
+            set__updated_date=datetime.datetime.now() - datetime.timedelta(seconds=seconds)
+        )
+
+    @patch("apps.describe.views.DescribeFeedsSearch.apply_async")
+    def test_only_one_search_runs_at_a_time(self, apply_async):
+        first = self.start()
+        second = self.start(prompt="long essays about cities")
+        self.assertEqual(second["code"], -1)
+        self.assertIn("already", second["message"])
+        self.assertEqual(apply_async.call_count, 1)
+        self.assertEqual(DescribeUsageTracker(self.user).daily_count(), 1)
+
+        MDescribeSearch.for_user(self.user.pk, first["search"]["id"]).mark_complete()
+        self.assertEqual(self.start(prompt="long essays about cities")["code"], 1)
+
+    @patch("apps.describe.views.DescribeFeedsSearch.apply_async")
+    def test_a_search_that_went_quiet_is_marked_failed_and_refunded(self, apply_async):
+        search_id = self.start()["search"]["id"]
+        self.assertEqual(DescribeUsageTracker(self.user).daily_count(), 1)
+
+        self.age(search_id, STALE_AFTER_SECONDS - 30)
+        status = json.decode(self.client.get("/discover/describe/status", {"search_id": search_id}).content)
+        self.assertEqual(status["search"]["status"], "queued")
+
+        self.age(search_id, STALE_AFTER_SECONDS + 30)
+        status = json.decode(self.client.get("/discover/describe/status", {"search_id": search_id}).content)
+        self.assertEqual(status["search"]["status"], STATUS_ERROR)
+        self.assertTrue(status["search"]["error"])
+        history = json.decode(self.client.get("/discover/describe/history").content)
+        self.assertEqual(history["searches"][0]["status"], STATUS_ERROR)
+        self.assertEqual(DescribeUsageTracker(self.user).daily_count(), 0)
+
+        rerun = self.start(search_id=search_id)
+        self.assertEqual(rerun["code"], 1)
+        self.assertEqual(apply_async.call_count, 2)
+
+    @patch("apps.describe.views.DescribeFeedsSearch.apply_async")
+    def test_a_stuck_search_does_not_block_a_new_one(self, apply_async):
+        search_id = self.start()["search"]["id"]
+        self.age(search_id, STALE_AFTER_SECONDS + 30)
+        self.assertEqual(self.start(prompt="long essays about cities")["code"], 1)
+
+    @patch("apps.describe.tasks.DescribeFeedSearch")
+    def test_a_task_arriving_after_its_search_expired_does_not_run(self, pipeline_class):
+        from apps.describe.tasks import DescribeFeedsSearch
+
+        search = MDescribeSearch.start(self.user.pk, "ios app reviews", "request-0001")
+        self.age(search.id, STALE_AFTER_SECONDS + 30)
+        result = DescribeFeedsSearch(self.user.pk, str(search.id), request_id="request-0001")
+        self.assertEqual(result["code"], -1)
+        pipeline_class.assert_not_called()
+
+    def test_a_search_that_errors_is_refunded(self):
+        tracker = DescribeUsageTracker(self.user)
+        search = MDescribeSearch.start(self.user.pk, "ios app reviews", "request-0001")
+        tracker.record_usage(search_id=search.id, request_id="request-0001")
+        search.mark_error("boom")
+        self.assertEqual(tracker.daily_count(), 0)
 
 
 class Test_DescribeTask(DescribeMongoTestCase):

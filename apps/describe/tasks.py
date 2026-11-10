@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import gettext
 
-from apps.describe.models import MDescribeSearch
+from apps.describe.models import STATUS_QUEUED, MDescribeSearch
 from apps.describe.pipeline import DescribeFeedSearch
 from apps.describe.usage import DescribeUsageTracker
 from newsblur_web.celeryapp import app
@@ -34,6 +34,12 @@ def DescribeFeedsSearch(user_id, search_id, request_id=None):
             user, f"~FBDescribe: ~FRstale task~SN for search ~SB{search_id}~SN, a newer run replaced it"
         )
         return {"code": -1, "message": "Search was restarted"}
+
+    # apps/describe/tasks.py: only a queued search runs. One that was expired while it waited in the
+    # queue (MDescribeSearch.expire_if_stale), or a task delivered twice, stops here.
+    if search.status != STATUS_QUEUED:
+        logging.user(user, f"~FBDescribe: ~FRskipping~SN search ~SB{search_id}~SN, already {search.status}")
+        return {"code": -1, "message": "Search is not waiting to run"}
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     request_token = request_id or search.request_id

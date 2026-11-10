@@ -19,12 +19,13 @@ TIER_PRO = "pro"
 
 
 class DescribeUsageTracker:
-    # apps/describe/usage.py: searches per day by tier. None means unlimited.
+    # apps/describe/usage.py: searches per day by tier. None would mean unlimited; no tier is, since
+    # every search spends real API calls. Pro's limit is a ceiling against runaway use, not a plan feature.
     DAILY_LIMITS = {
         TIER_FREE: 0,
         TIER_PREMIUM: 10,
         TIER_ARCHIVE: 30,
-        TIER_PRO: None,
+        TIER_PRO: 100,
     }
 
     def __init__(self, user):

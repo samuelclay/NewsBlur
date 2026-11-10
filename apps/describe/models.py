@@ -10,11 +10,17 @@ import datetime
 
 import mongoengine as mongo
 from bson.objectid import ObjectId
+from django.utils.translation import gettext
 
 # apps/describe/models.py: only the most recent searches are kept per user.
 HISTORY_LIMIT = 20
 # apps/describe/models.py: a finished search never shows more feeds than this.
 MAX_RESULTS = 24
+
+# apps/describe/models.py: a search that has not written progress for this long has lost its task
+# (worker killed, task dropped, hard time limit). The task's hard limit is 420 seconds and the
+# longest single step is a 120 second model call with one retry, so ten quiet minutes means dead.
+STALE_AFTER_SECONDS = 600
 
 STATUS_QUEUED = "queued"
 STATUS_RUNNING = "running"
@@ -97,12 +103,23 @@ class MDescribeSearch(mongo.Document):
         """Return the user's search with this id, or None when it isn't theirs."""
         if not search_id or not ObjectId.is_valid(str(search_id)):
             return None
-        return cls.objects(id=ObjectId(str(search_id)), user_id=user_id).first()
+        search = cls.objects(id=ObjectId(str(search_id)), user_id=user_id).first()
+        if search:
+            search.expire_if_stale()
+        return search
+
+    @classmethod
+    def running_for_user(cls, user_id):
+        """The user's search that is still queued or running, if any. Stuck ones are expired first."""
+        for search in cls.objects(user_id=user_id, status__in=[STATUS_QUEUED, STATUS_RUNNING]):
+            if not search.expire_if_stale():
+                return search
+        return None
 
     @classmethod
     def trim_history(cls, user_id):
         """Delete every search past the user's HISTORY_LIMIT most recent ones."""
-        stale = cls.objects(user_id=user_id).order_by("-created_date").skip(HISTORY_LIMIT)
+        stale = cls.objects(user_id=user_id).order_by("-created_date", "-id").skip(HISTORY_LIMIT)
         stale_ids = [search.id for search in stale.only("id")]
         if stale_ids:
             cls.objects(id__in=stale_ids).delete()
@@ -110,7 +127,9 @@ class MDescribeSearch(mongo.Document):
 
     @classmethod
     def history_for_user(cls, user_id):
-        searches = cls.objects(user_id=user_id).order_by("-created_date")[:HISTORY_LIMIT]
+        searches = list(cls.objects(user_id=user_id).order_by("-created_date", "-id")[:HISTORY_LIMIT])
+        for search in searches:
+            search.expire_if_stale()
         return [search.summary() for search in searches]
 
     def mark_running(self):
@@ -137,6 +156,42 @@ class MDescribeSearch(mongo.Document):
         self.error = error
         self.completed_date = datetime.datetime.now()
         self.touch()
+        self.refund_usage()
+
+    def expire_if_stale(self):
+        """Fail a search whose task went quiet, so it never blocks its owner. Returns True when expired.
+
+        The update is conditional on the search still being unfinished and still
+        quiet, so a task that writes progress at the same moment wins.
+        """
+        if not self.is_running:
+            return False
+        now = datetime.datetime.now()
+        cutoff = now - datetime.timedelta(seconds=STALE_AFTER_SECONDS)
+        if self.updated_date and self.updated_date > cutoff:
+            return False
+        message = gettext("This search stopped before it finished. Search again to retry.")
+        expired = self.__class__.objects(
+            id=self.id, status__in=[STATUS_QUEUED, STATUS_RUNNING], updated_date__lte=cutoff
+        ).update_one(
+            set__status=STATUS_ERROR,
+            set__phase=STATUS_ERROR,
+            set__error=message,
+            set__completed_date=now,
+            set__updated_date=now,
+        )
+        self.reload()
+        if not expired:
+            return False
+        self.refund_usage()
+        return True
+
+    def refund_usage(self):
+        """A search that failed does not count against the daily quota in apps/describe/usage.py."""
+        if self.request_id:
+            MDescribeUsage.objects(
+                user_id=self.user_id, request_id=self.request_id, over_quota=False
+            ).delete()
 
     def touch(self):
         """Persist the mutable fields in place.
@@ -247,6 +302,40 @@ def make_result_row(feed, source, matched_query="", similarity=None, stories=Non
     }
 
 
+def make_unsaved_row(row_key, preview, matched_query=""):
+    """Build the stored row for a site the web hunt found that NewsBlur has no Feed for.
+
+    `row_key` is a negative number that identifies the row within its search,
+    since there is no feed id yet. See apps/describe/web_preview.py: the Feed is
+    only created when someone subscribes to or previews the site.
+    """
+    row = {
+        "feed_id": row_key,
+        "feed_title": preview["feed_title"],
+        "feed_address": preview["feed_address"],
+        "feed_link": preview["feed_link"],
+        "tagline": preview.get("tagline") or "",
+        "unsaved": True,
+        "source": SOURCE_WEB,
+        "matched_query": matched_query,
+        "similarity": None,
+        "score": None,
+        "reason": None,
+        "judged": False,
+        "stories": [
+            {
+                "story_title": story.get("story_title") or "",
+                "story_permalink": story.get("story_permalink") or "",
+                "story_date": story["story_date"].isoformat()
+                if isinstance(story.get("story_date"), datetime.datetime)
+                else (story.get("story_date") or None),
+            }
+            for story in (preview.get("stories") or [])[:3]
+        ],
+    }
+    return row
+
+
 def sort_results(results):
     """Judged feeds first by score, then similarity; unjudged candidates after, by similarity."""
 
@@ -266,13 +355,38 @@ def hydrate_results(results):
     if not results:
         return []
 
-    feed_ids = [row["feed_id"] for row in results if row.get("feed_id")]
+    feed_ids = [row["feed_id"] for row in results if not row.get("unsaved") and row.get("feed_id")]
     feeds = {feed.pk: feed for feed in Feed.objects.filter(pk__in=feed_ids)}
-    icons = {icon.feed_id: icon for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids)}
+
+    # apps/describe/models.py: an unsaved web find becomes a real feed once someone subscribes to
+    # or previews it, so look for one at its address before falling back to the stored snapshot.
+    unsaved_addresses = [row["feed_address"] for row in results if row.get("unsaved")]
+    saved_since = {}
+    if unsaved_addresses:
+        created = Feed.objects.filter(feed_address__in=unsaved_addresses, branch_from_feed=None)
+        for feed in created.order_by("num_subscribers"):
+            saved_since[feed.feed_address] = feed
+
+    icon_feed_ids = feed_ids + [feed.pk for feed in saved_since.values()]
+    icons = {icon.feed_id: icon for icon in MFeedIcon.objects.filter(feed_id__in=icon_feed_ids)}
 
     hydrated = []
     for row in results:
-        feed = feeds.get(row.get("feed_id"))
+        if row.get("unsaved"):
+            feed = saved_since.get(row["feed_address"])
+            if not feed:
+                hydrated_row = dict(row)
+                hydrated_row["feed"] = {
+                    "feed_title": row["feed_title"],
+                    "feed_address": row["feed_address"],
+                    "feed_link": row["feed_link"],
+                    "tagline": row.get("tagline") or "",
+                    "num_subscribers": 0,
+                }
+                hydrated.append(hydrated_row)
+                continue
+        else:
+            feed = feeds.get(row.get("feed_id"))
         if not feed:
             continue
         feed_dict = feed.canonical(full=True, include_favicon=False)

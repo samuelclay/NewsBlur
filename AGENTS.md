@@ -253,7 +253,9 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - Describe (search for feeds by written description) lives in `apps/describe/`: `pipeline.py` runs the expand → vector search → judge → web hunt phases, `tasks.py` streams them over Redis pubsub (`describe:` prefix, relayed by `node/describe.coffee`), and `views.py` serves `/discover/describe/{start,status,history,delete}` for the web tab (`media/js/newsblur/views/describe_feeds_view.js`), iOS and Android.
 - **Restart Celery after changes** to anything under `apps/describe/`: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>`).
 - A real search costs about five cents (Claude Haiku calls plus up to four Anthropic web searches) and takes 60 to 90 seconds; `apps/describe/tests.py` mocks every external call.
-- Quotas live in `apps/describe/usage.py` (free 0, premium 10, archive 30, pro unlimited per day); history is capped at 20 searches per user in `apps/describe/models.py`.
+- Quotas live in `apps/describe/usage.py` (free 0, premium 10, archive 30, pro 100 per day as a ceiling against runaway use); a search that fails is refunded. History is capped at 20 searches per user in `apps/describe/models.py`.
+- One search runs per user at a time. A search that writes no progress for `STALE_AFTER_SECONDS` (ten minutes) is marked failed the next time it is read, so a lost task never leaves it running.
+- The web hunt never creates feeds. `apps/describe/web_preview.py` reads a found site's feed in memory; its result row has a negative `feed_id` (a row key, not a feed id) and a `feed` dict without `id`. The Feed is created by `/reader/add_url` on subscribe or `/discover/link_popular_feed` on Try.
 
 ## Sentry
 - **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
