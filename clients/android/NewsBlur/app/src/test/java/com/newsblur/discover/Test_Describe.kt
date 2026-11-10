@@ -3,7 +3,9 @@ package com.newsblur.discover
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonParser
 import com.newsblur.MainDispatcherRule
+import com.newsblur.domain.Feed
 import com.newsblur.network.FeedApi
+import com.newsblur.network.domain.AddFeedResponse
 import com.newsblur.preference.DiscoveryPreferencesFixture
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -100,6 +102,91 @@ class Test_Describe {
         assertNull(pending.similarity)
         assertEquals("", pending.reason)
         assertNull(DescribeResult.parse(json("""{"feed_id":0,"feed_address":"https://example.com/rss"}""")))
+    }
+
+    // Test_Describe.kt: apps/describe/views.py gives a web find that is not saved yet a negative row key and a feed with no id.
+    private val unsavedRow =
+        """{"feed_id":-1,"feed_title":"Unsaved Find","feed_address":"https://unsaved.example/feed","feed_link":"https://unsaved.example",
+            "source":"web","matched_query":"","similarity":null,"score":7,"reason":"Fresh essays.","judged":true,"stories":[],
+            "feed":{"feed_title":"Unsaved Find","feed_address":"https://unsaved.example/feed","feed_link":"https://unsaved.example",
+                "num_subscribers":0,"tagline":"Essays from the open web"}}"""
+
+    // Test_Describe.kt: once the feed exists server-side the row keeps its negative key and feed.id carries the real id.
+    private val linkedRow =
+        """{"feed_id":-2,"feed_title":"Linked Find","feed_address":"https://linked.example/feed","feed_link":"https://linked.example",
+            "source":"web","matched_query":"","similarity":null,"score":null,"reason":null,"judged":false,"stories":[],
+            "feed":{"id":9001,"feed_title":"Linked Find","feed_address":"https://linked.example/feed","feed_link":"https://linked.example",
+                "num_subscribers":0,"tagline":""}}"""
+
+    @Test fun test_unsaved_web_find_parses_with_negative_row_key_and_blank_feed_id() {
+        val feed =
+            DiscoveryFeed.parse(
+                json(
+                    """{"feed_title":"Unsaved Find","feed_address":"https://unsaved.example/feed","feed_link":"https://unsaved.example",
+                        "num_subscribers":0,"tagline":"Essays from the open web"}""",
+                ),
+            )
+        assertEquals("https://unsaved.example/feed", feed?.url)
+        assertEquals("", feed?.id)
+
+        val search = search("running", "hunting", "[$judgedRow,$unsavedRow,$linkedRow]")
+        assertEquals(listOf("42", "-1", "-2"), search.results.map { it.feedId })
+        assertEquals(3, search.summary.resultCount)
+
+        val unsaved = search.results[1]
+        assertTrue(unsaved.fromWeb)
+        assertEquals(7, unsaved.score)
+        assertEquals("", unsaved.feed.id)
+        assertEquals("Unsaved Find", unsaved.feed.title)
+        assertEquals("https://unsaved.example/feed", unsaved.feed.url)
+        assertEquals("https://unsaved.example", unsaved.feed.link)
+        assertEquals(0, unsaved.feed.subscribers)
+    }
+
+    @Test fun test_negative_row_key_keeps_the_real_feed_id_once_the_feed_is_saved() {
+        val linked = DescribeResult.parse(json(linkedRow))!!
+        assertEquals("-2", linked.feedId)
+        assertEquals("9001", linked.feed.id)
+        assertEquals("https://linked.example/feed", linked.feed.url)
+    }
+
+    @Test fun test_zero_or_missing_row_key_is_rejected() {
+        val feed = """"feed":{"feed_title":"No Key","feed_address":"https://nokey.example/feed","feed_link":"https://nokey.example"}"""
+        assertNull(DescribeResult.parse(json("""{"feed_id":0,"feed_address":"https://nokey.example/feed",$feed}""")))
+        assertNull(DescribeResult.parse(json("""{"feed_id":null,"feed_address":"https://nokey.example/feed",$feed}""")))
+        assertNull(DescribeResult.parse(json("""{"feed_address":"https://nokey.example/feed",$feed}""")))
+    }
+
+    @Test fun test_unsaved_web_find_previews_and_subscribes_by_address_never_by_row_key() = runTest {
+        coEvery { describe.history() } returns DescribeHistory(emptyList(), null)
+        coEvery { describe.status("abc123") } returns search("complete", "complete", "[$unsavedRow]")
+        coEvery { feeds.addFeed("https://unsaved.example/feed", any()) } returns
+            AddFeedResponse().apply {
+                code = 1
+                feed = Feed().apply { feedId = "9100" }
+            }
+        coEvery { api.request("/discover/link_popular_feed", mapOf("feed_url" to "https://unsaved.example/feed"), false) } returns
+            json("""{"code":1,"feed_id":9100}""")
+        val model = model()
+        model.selectTab(DiscoveryTab.DESCRIBE)
+        model.describeOpen("abc123")
+        runCurrent()
+        val result = model.state.value.describe.search!!.results.single()
+        assertEquals("-1", result.feedId)
+
+        // Test_Describe.kt: DiscoveryViewModel.kt links a feed with a blank id by its address before opening the preview.
+        model.preview(result.feed)
+        runCurrent()
+        assertEquals("9100", model.state.value.preview?.feedId)
+        assertEquals("https://unsaved.example/feed", model.state.value.preview?.address)
+        coVerify(exactly = 1) { api.request("/discover/link_popular_feed", mapOf("feed_url" to "https://unsaved.example/feed"), false) }
+
+        // Test_Describe.kt: subscribing posts the feed address through FeedApi.addFeed (/reader/add_url).
+        model.previewOpened()
+        model.add(result.feed)
+        advanceUntilIdle()
+        coVerify(exactly = 1) { feeds.addFeed("https://unsaved.example/feed", any()) }
+        assertTrue("https://unsaved.example/feed" in model.state.value.added)
     }
 
     @Test fun test_start_reply_distinguishes_started_from_upgrade_denial() {

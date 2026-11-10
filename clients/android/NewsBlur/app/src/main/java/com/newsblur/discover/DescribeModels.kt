@@ -59,6 +59,7 @@ data class DescribeSummary(
 }
 
 data class DescribeResult(
+    // DescribeModels.kt: the row key DescribeTab.kt uses for list keys. Use `feed.id` wherever a NewsBlur feed id is needed.
     val feedId: String,
     val feed: DiscoveryFeed,
     val source: String,
@@ -72,20 +73,23 @@ data class DescribeResult(
 
     companion object {
         // DescribeModels.kt: a row is `make_result_row` plus the hydrated `feed` from `hydrate_results`.
+        // A web find that is not saved yet has a negative `feed_id`: a row key for this search only, never a NewsBlur
+        // feed id. Its `feed` has no `id` until the feed exists server-side, so DiscoveryViewModel.kt previews it through
+        // /discover/link_popular_feed and subscribes by its address.
         fun parse(json: JsonObject): DescribeResult? {
-            val feedId =
+            val rowKey =
                 json
                     .string("feed_id")
                     .toDoubleOrNull()
-                    ?.takeIf { it > 0 }
                     ?.toLong()
-                    ?.toString() ?: return null
+                    ?.takeIf { it != 0L } ?: return null
+            val feedId = rowKey.toString()
             val feed = DiscoveryFeed.parse(json) ?: return null
             // DescribeModels.kt: Feed.canonical() gives a site-relative favicon_url (/rss_feeds/icon/<id>), so make it absolute.
             val image = if (feed.image.startsWith("/")) APIConstants.buildUrl(feed.image) else feed.image
             return DescribeResult(
                 feedId = feedId,
-                feed = feed.copy(id = feed.id.ifBlank { feedId }, image = image),
+                feed = feed.copy(id = feed.id.ifBlank { if (rowKey > 0) feedId else "" }, image = image),
                 source = json.string("source").ifBlank { "index" },
                 matchedQuery = json.string("matched_query"),
                 similarity = json.string("similarity").toDoubleOrNull(),
