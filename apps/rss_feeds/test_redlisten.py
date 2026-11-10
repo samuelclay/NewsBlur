@@ -190,6 +190,22 @@ class Test_RedListenBudget(SimpleTestCase):
         november = self.budget.usage("202611")
         self.assertEqual((november["requests"], november["results"]), (49001, 989003))
 
+    def test_projected_month_runs_every_kind_at_its_last_day_pace(self):
+        self.r.hset(self.budget.usage_key(), mapping={"requests": 10, "results": 100})
+        self.r.hset(
+            self.budget.spend_key(),
+            mapping={
+                "poller_requests": 3,
+                "poller_results": 30,
+                "scheduled_requests": 1,
+                "one_off_results": 2,
+            },
+        )
+        days_left = (datetime.datetime(2026, 12, 1) - NOW).total_seconds() / 86400
+        requests, results = self.budget.projected_month()
+        self.assertAlmostEqual(requests, 10 + 4 * days_left)
+        self.assertAlmostEqual(results, 100 + 32 * days_left)
+
     def test_exhausted_quota_stops_everyone(self):
         self.budget.mark_exhausted("items_quota_exceeded")
         self.assertFalse(self.budget.reserve(POLLER, 1))
@@ -202,6 +218,13 @@ class Test_RedListenBudget(SimpleTestCase):
             self.assertTrue(self.budget.reserve(ONE_OFF, 1))
         with self.settings(DEBUG=True, REDLISTEN_BACKGROUND_IN_DEBUG=True):
             self.assertTrue(self.budget.reserve(POLLER, 1))
+
+    def test_a_profiled_production_task_still_spends_in_the_background(self):
+        # DBProfilerMiddleware.process_celery saves the real DEBUG and turns DEBUG on.
+        with self.settings(DEBUG=True, ORIGINAL_DEBUG=False):
+            self.assertTrue(self.budget.reserve(SCHEDULED, 1))
+        with self.settings(DEBUG=True, ORIGINAL_DEBUG=True):
+            self.assertFalse(self.budget.reserve(SCHEDULED, 1))
 
     def test_minute_window(self):
         with self.settings(REDLISTEN_REQUESTS_PER_MINUTE=2):
@@ -403,6 +426,19 @@ class Test_RedListenPoller(SimpleTestCase):
         # Three posts span the 300 seconds back to the oldest of them.
         self.assertEqual((busy.posts, busy.window), (3, 300))
 
+    def test_a_first_poll_schedules_feeds_even_without_new_posts(self, _sleep):
+        """A feed still backed off from Reddit's 401s rereads the cache and clears its error
+        once its subreddit is first polled, even if nothing new was posted."""
+        quiet = target("r:quiet", feed_ids=[41])
+        batch = PollBatch(drain=True, is_user=False)
+        batch.add(quiet, 1, 1)
+        poller, _ = self.poller([listing([])])
+
+        poller.poll_batch(batch)
+
+        self.assertEqual(poller.feeds_to_schedule, {41})
+        self.assertEqual(quiet.last_polled, NOW_TS)
+
     def test_posts_already_cached_do_not_reschedule_feeds(self, _sleep):
         quiet = target("r:quiet", feed_ids=[31], last_polled=NOW_TS - 3600)
         RedditPostCache(r=self.r).add("r:quiet", [post("q1", subreddit="quiet")])
@@ -481,7 +517,7 @@ class Test_RedListenPoller(SimpleTestCase):
         self.assertIsNone(poller.poll())
         self.assertEqual(client.calls, [])
 
-    def test_cycle_budget_spreads_the_month_and_leaves_room_for_scheduled_feeds(self, _sleep):
+    def test_cycle_budget_spreads_the_month_and_sets_aside_feeds_and_one_offs(self, _sleep):
         self.r.hset(self.budget.usage_key(), mapping={"requests": 9, "results": 270})
         poller, _ = self.poller([])
         hours_left = (datetime.datetime(2026, 12, 1) - NOW).total_seconds() / 3600
@@ -489,6 +525,20 @@ class Test_RedListenPoller(SimpleTestCase):
         self.assertAlmostEqual(results, (990 - 270) / hours_left)
         self.assertAlmostEqual(requests, (99 - 9) / hours_left)
 
-        self.r.hset(self.budget.spend_key(), mapping={"scheduled_requests": 1, "scheduled_results": 10})
-        results, _ = poller.cycle_budget()
-        self.assertAlmostEqual(results, (990 - 270 - 10 * hours_left / 24) / hours_left)
+        # Comment/search feeds and readers' one-offs both get their 24-hour pace set aside
+        # through month end, for requests as well as results.
+        self.r.hset(
+            self.budget.spend_key(),
+            mapping={
+                "scheduled_requests": 1,
+                "scheduled_results": 10,
+                "one_off_requests": 1,
+                "one_off_results": 5,
+            },
+        )
+        days_left = hours_left / 24
+        results, requests = poller.cycle_budget()
+        self.assertAlmostEqual(results, (990 - 270 - 15 * days_left) / hours_left)
+        self.assertAlmostEqual(requests, (99 - 9 - 2 * days_left) / hours_left)
+        self.assertAlmostEqual(poller.set_aside[0], 2 * days_left)
+        self.assertAlmostEqual(poller.set_aside[1], 15 * days_left)

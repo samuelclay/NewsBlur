@@ -511,12 +511,25 @@ class TestCommentThreadFeeds(FetcherTestCase):
         self.fetcher(self.address).fetch()
         state = json.loads(self.redis.get(SINGLE_FEED_STATE_KEY % 7))
         # One new comment: ceil(1.5) + 3 = 5.
-        self.assertEqual(state, {"limit": 5, "newest": 1700000100})
+        self.assertEqual(state, {"limit": 5, "newest": 1700000100, "quiet": 0})
 
         # Nothing newer on the next fetch keeps it at the floor.
         self.redlisten(self.thread("c1"))
         self.fetcher(self.address).fetch()
         self.assertEqual(json.loads(self.redis.get(SINGLE_FEED_STATE_KEY % 7))["limit"], 5)
+
+    def test_quiet_threads_back_off_and_new_comments_bring_them_back(self):
+        floors = []
+        for _ in range(6):
+            self.redlisten(self.thread("c1"))
+            self.fetcher(self.address).fetch()
+            floors.append(reddit_fetch_floor_minutes(self.address, 7))
+        # The first fetch found the comment; each fetch after it found nothing new.
+        self.assertEqual(floors, [720, 1440, 2880, 5760, 10080, 10080])
+
+        self.redlisten(self.thread("c1", "c2", created=1700000200))
+        self.fetcher(self.address).fetch()
+        self.assertEqual(reddit_fetch_floor_minutes(self.address, 7), 720)
 
     def test_busy_threads_take_a_full_page_next_time(self):
         self.redis.set(SINGLE_FEED_STATE_KEY % 7, json.dumps({"limit": 5, "newest": 1}))

@@ -4026,13 +4026,27 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (feedIds.count) {
         [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:self.activeUsername host:self.url];
     }
+    // NewsBlurAppDelegate.m includes the selected story, matching reader/models.py's cutoff adjustment.
+    NSString *direction = older ? @"<=" : @">=";
+    // NewsBlurAppDelegate.m finds the feeds with a cached unread story in range in one query, so marking a river of
+    // hundreds of feeds only reads and writes the few that have something to change.
+    NSMutableSet *feedIdsInRange = [NSMutableSet set];
+    [self.database inDatabase:^(FMDatabase *db) {
+        NSString *sql = [NSString stringWithFormat:@"SELECT DISTINCT story_feed_id FROM unread_hashes "
+                         "WHERE story_timestamp %@ ?", direction];
+        FMResultSet *cursor = [db executeQuery:sql, @(cutoff)];
+        while ([cursor next]) {
+            NSString *feedIdInRange = [cursor stringForColumnIndex:0];
+            if (feedIdInRange) [feedIdsInRange addObject:feedIdInRange];
+        }
+        [cursor close];
+    }];
     for (NSString *feedId in feedIds) {
         NSString *feedIdString = [NSString stringWithFormat:@"%@", feedId];
+        if (![feedIdsInRange containsObject:feedIdString]) continue;
         NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdString];
         NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy] ?: [@{@"ps": @0, @"nt": @0, @"ng": @0} mutableCopy];
         NSMutableArray *stories = [NSMutableArray array];
-        // NewsBlurAppDelegate.m includes the selected story, matching reader/models.py's cutoff adjustment.
-        NSString *direction = older ? @"<=" : @">=";
         
         [self.database inDatabase:^(FMDatabase *db) {
             NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s "

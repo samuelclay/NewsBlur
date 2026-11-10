@@ -49,6 +49,7 @@ from utils import log as logging
 from utils.reddit_fetcher import REDDIT_ADDRESS_PATTERN, RedditFetcher
 from utils.reddit_post_cache import RedditPostCache, subreddit_target, user_target
 from utils.redlisten import (
+    ONE_OFF,
     POLLER,
     SCHEDULED,
     RedListenBudget,
@@ -280,6 +281,8 @@ class RedListenPoller:
         self.lock_token = uuid.uuid4().hex
         self.spent_requests = 0
         self.spent_results = 0
+        # (requests, results) cycle_budget sets aside for other spending through month end.
+        self.set_aside = (0.0, 0.0)
         self.feeds_to_schedule = set()
 
     def load_targets(self):
@@ -311,16 +314,23 @@ class RedListenPoller:
 
     def cycle_budget(self):
         """(results, requests) this hour's poll may spend: the month's remaining
-        background share, less what scheduled per-feed fetches are on pace to spend,
-        spread evenly over the hours left in the month."""
+        background share, less what comment-thread and search feeds and readers' one-off
+        fetches are on pace to spend by month end at their last 24 hours' rate, spread
+        evenly over the hours left in the month. What is set aside is kept on
+        self.set_aside for the poll summary."""
         usage = self.budget.usage()
         request_cap, result_cap = self.budget.caps(POLLER, usage)
         seconds_left = max(CYCLE_SECONDS, (month_end(self.now) - self.now).total_seconds())
         cycles_left = seconds_left / CYCLE_SECONDS
         days_left = seconds_left / 86400
-        scheduled_requests, scheduled_results = self.budget.last_day_spend(SCHEDULED)
-        results_left = result_cap - usage["results"] - scheduled_results * days_left
-        requests_left = request_cap - usage["requests"] - scheduled_requests * days_left
+        set_aside_requests = set_aside_results = 0.0
+        for kind in (SCHEDULED, ONE_OFF):
+            requests_per_day, results_per_day = self.budget.last_day_spend(kind)
+            set_aside_requests += requests_per_day * days_left
+            set_aside_results += results_per_day * days_left
+        self.set_aside = (set_aside_requests, set_aside_results)
+        results_left = result_cap - usage["results"] - set_aside_results
+        requests_left = request_cap - usage["requests"] - set_aside_requests
         return max(0.0, results_left / cycles_left), max(0.0, requests_left / cycles_left)
 
     def poll(self):
@@ -384,6 +394,8 @@ class RedListenPoller:
             "polled_batches": polled_batches,
             "result_budget": round(result_budget),
             "request_budget": round(request_budget, 1),
+            "set_aside_requests": round(self.set_aside[0]),
+            "set_aside_results": round(self.set_aside[1]),
             "expected_results": round(sum(demands.values())),
             "spent_results": self.spent_results,
             "spent_requests": self.spent_requests,
@@ -461,9 +473,15 @@ class RedListenPoller:
             target_posts = by_target.get(target.key, [])
             seen = sum(1 for post in target_posts if (post.get("created_utc") or 0) >= window_start)
             target.observe(seen, self.now_ts - window_start, self.now_ts)
+            # A target's first complete poll schedules its feeds even with no new posts, so
+            # a feed still backed off from an old error (Reddit's 401s before RedListen) or
+            # one that is new rereads the cache and clears it instead of waiting out its
+            # backoff, up to a week, for the next post.
+            first_poll = complete and not target.last_polled
             if complete:
                 target.last_polled = self.now_ts
-            if target_posts and self.cache.add(target.key, target_posts):
+            added = self.cache.add(target.key, target_posts) if target_posts else 0
+            if added or first_poll:
                 self.feeds_to_schedule.update(target.feed_ids)
         return True
 

@@ -45,6 +45,10 @@ When I report a bug, don't start by trying to fix it. Instead, start by writing 
 - Present reply drafts as plain text, never block quotes, so they are easy to copy and paste. Do not post them to the forum unless I explicitly ask.
 - Follow the Writing Forum Replies guidelines in AGENTS.md, and describe deployment status accurately.
 
+## Skills
+- This repo's own skills live in `.agents/skills/` and are linked into `.claude/skills/`. Use `commit-pr` for commits and pull requests and `deslopify-tests` to review or prune tests.
+- Never use a skill whose name starts with `_skillshare__` in this repo. Those are another organization's shared skills, installed machine-wide by the skillshare CLI, and their conventions (conventional commit titles, Linear tickets, their PR templates) are wrong here. `.claude/hooks/ignore-skillshare-skills.py` turns them off for Claude Code on every session start; Codex still lists them, so skip them.
+
 ## Git Branching
 - **Do not automatically create branches**: Work on the current branch unless I explicitly ask you to create or switch to a branch. If you think a branch would help, ask first.
 
@@ -225,6 +229,11 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - **Tests**:
   - Classes prefixed with `Test_`
   - Methods prefixed with `test_`
+  - Before writing a test, name the rule it protects and a realistic change that would break it. If the only way to break it is to edit the literal the test repeats, don't write it.
+  - For new code, list the ways it can fail before writing it, then test that list. Don't write tests afterwards by reading the finished code.
+  - Test at the highest level that can see the behavior: extend an existing view or task test before adding a test of a private helper.
+  - Don't write constant or prompt mirrors, tests that assert a mock received what the test handed it, tests of one-line wrappers, or presentation checks.
+  - Don't turn a red test green by deleting, skipping, or weakening it. To delete tests that fail these rules, use the `deslopify-tests` skill, which proves each deletion by breaking the code.
 
 - **Icons**: When you need new SVG icons, check `media/img/icons/phosphor-fill/` and `media/img/icons/remix-fill/` for existing icons before sourcing externally. Copy to `media/img/icons/nouns/` with `fill="#95968e"` to match the UI icon color.
 
