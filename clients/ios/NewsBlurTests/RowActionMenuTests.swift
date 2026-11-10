@@ -503,11 +503,15 @@ import UIKit
             let before = Int(Date().timeIntervalSince1970)
             handler(days)
             let after = Int(Date().timeIntervalSince1970)
-            if global {
-                XCTAssertEqual(app.lastURL?.hasSuffix("/reader/mark_all_as_read"), true, "Global rivers mark every subscription in one server pass")
+            if everything {
+                XCTAssertEqual(app.lastURL?.hasSuffix("/reader/mark_all_as_read"), true, "All Site Stories marks every subscription in one server pass")
                 XCTAssertEqual(app.lastParameters?["days"] as? Int, days)
-                XCTAssertNil(app.lastParameters?["feed_id"], "The server resolves the feeds, so blurblog IDs never reach its numeric feed filter")
+                XCTAssertNil(app.lastParameters?["feed_id"])
             } else {
+                if infrequent {
+                    let requested = (app.lastParameters?["feed_id"] as? [Any] ?? []).map { String(describing: $0) }
+                    XCTAssertEqual(requested, ["42", "43"], "Followed blurblogs are outside the Infrequent river and must stay unread")
+                }
                 XCTAssertEqual(app.lastURL?.hasSuffix("/reader/mark_feed_as_read"), true)
                 let cutoff = try XCTUnwrap(app.lastParameters?["cutoff_timestamp"] as? NSNumber).intValue
                 XCTAssertGreaterThanOrEqual(cutoff, before - days * 86_400)

@@ -6297,9 +6297,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     BOOL infrequent = [storiesCollection.activeFolder isEqualToString:@"infrequent"];
     BOOL everything = storiesCollection.isRiverView &&
         ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || infrequent);
-    // FeedDetailObjCViewController.m sends the footer's age for a global river as days to mark_all_as_read, which
-    // marks every subscription and blurblog in one pass; mark_feed_as_read would look up each listed feed in turn.
-    BOOL markAll = everything && footerDays > 0;
+    // FeedDetailObjCViewController.m sends the footer's age for All Site Stories and Dashboard as days to
+    // mark_all_as_read, which marks every subscription and blurblog in one pass. The Infrequent river lists its
+    // feeds for mark_feed_as_read instead, because mark_all_as_read would also mark every blurblog read.
+    BOOL markAll = everything && !infrequent && footerDays > 0;
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/%@",
                            self.appDelegate.url, markAll ? @"mark_all_as_read" : @"mark_feed_as_read"];
     NSMutableArray *feedIds = [NSMutableArray array];
@@ -6309,7 +6310,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         if (everything) {
             for (NSString *folderName in appDelegate.dictFoldersArray) {
                 for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
-                    if (![feedId isKindOfClass:[NSString class]] || ![feedId startsWith:@"saved:"]) {
+                    BOOL isString = [feedId isKindOfClass:[NSString class]];
+                    // FeedDetailObjCViewController.m keeps blurblogs out of the Infrequent request: they are not in
+                    // that river, and the server's infrequent filter only accepts numeric feed IDs.
+                    if (isString && infrequent && [feedId startsWith:@"social:"]) continue;
+                    if (!isString || ![feedId startsWith:@"saved:"]) {
                         [feedIds addObject:feedId];
                     }
                 }
