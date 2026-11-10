@@ -390,8 +390,16 @@ import UIKit
         try verifyBulkRead(older: true, days: 3, infrequent: true)
     }
 
-    func test_offlineInfrequentAgeMarkReadDoesNotQueueUnknownFeedScope() throws {
+    func test_offlineInfrequentAgeMarkReadReportsFailureWithoutQueuingUnknownFeedScope() throws {
         try verifyBulkRead(older: true, succeeds: false, days: 3, infrequent: true)
+    }
+
+    func test_allSiteStoriesAgeMarkReadPostsDaysOnceAndUpdatesCachedStories() throws {
+        try verifyBulkRead(older: true, days: 3, everything: true)
+    }
+
+    func test_offlineAllSiteStoriesAgeMarkReadQueuesOnlyMatchingStories() throws {
+        try verifyBulkRead(older: true, succeeds: false, days: 3, everything: true)
     }
 
     func test_bulkReadFixtureWorksWithColdLoggedOutApplicationState() throws {
@@ -429,7 +437,7 @@ import UIKit
         try verifyBulkRead(older: true, replaceAccount: true)
     }
 
-    private func verifyBulkRead(older: Bool, cachedCount: Int = 70, succeeds: Bool = true, replaceAccount: Bool = false, days: Int? = nil, replaceGeneration: Bool = false, infrequent: Bool = false) throws {
+    private func verifyBulkRead(older: Bool, cachedCount: Int = 70, succeeds: Bool = true, replaceAccount: Bool = false, days: Int? = nil, replaceGeneration: Bool = false, infrequent: Bool = false, everything: Bool = false) throws {
         let (app, _) = feedFixture()
         // RowActionMenuTests.swift records offline queue payloads without dispatching work after the fixture database closes.
         app.didQueueReadStories = {}
@@ -440,8 +448,11 @@ import UIKit
         app.dictUnreadCounts = ["42": ["ps": 0, "nt": 69, "ng": 0], "43": ["ps": 0, "nt": 5, "ng": 0]]
         app.storiesCollection.appDelegate = app
         app.storiesCollection.activeFeed = app.dictFeeds["42"] as? [AnyHashable: Any]
-        app.storiesCollection.activeFolder = infrequent ? "infrequent" : "Tech"
-        app.dictFoldersArray = ["Tech"]
+        // RowActionMenuTests.swift follows a blurblog in the global rivers; its ID is not a numeric feed ID.
+        let global = infrequent || everything
+        app.storiesCollection.activeFolder = infrequent ? "infrequent" : everything ? "everything" : "Tech"
+        app.dictFoldersArray = global ? ["Tech", "river_blurblogs"] : ["Tech"]
+        if global { app.dictFolders = ["Tech": [42, 43], "river_blurblogs": ["social:7"]] }
         app.storiesCollection.isRiverView = days != nil
         let newestTimestamp = days == nil ? 1_800_000_000 : Int(Date().timeIntervalSince1970)
         let stories: [[String: Any]] = (0..<70).map { index in
@@ -492,9 +503,16 @@ import UIKit
             let before = Int(Date().timeIntervalSince1970)
             handler(days)
             let after = Int(Date().timeIntervalSince1970)
-            let cutoff = try XCTUnwrap(app.lastParameters?["cutoff_timestamp"] as? NSNumber).intValue
-            XCTAssertGreaterThanOrEqual(cutoff, before - days * 86_400)
-            XCTAssertLessThanOrEqual(cutoff, after - days * 86_400)
+            if global {
+                XCTAssertEqual(app.lastURL?.hasSuffix("/reader/mark_all_as_read"), true, "Global rivers mark every subscription in one server pass")
+                XCTAssertEqual(app.lastParameters?["days"] as? Int, days)
+                XCTAssertNil(app.lastParameters?["feed_id"], "The server resolves the feeds, so blurblog IDs never reach its numeric feed filter")
+            } else {
+                XCTAssertEqual(app.lastURL?.hasSuffix("/reader/mark_feed_as_read"), true)
+                let cutoff = try XCTUnwrap(app.lastParameters?["cutoff_timestamp"] as? NSNumber).intValue
+                XCTAssertGreaterThanOrEqual(cutoff, before - days * 86_400)
+                XCTAssertLessThanOrEqual(cutoff, after - days * 86_400)
+            }
             progress = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? MBProgressHUD }.first)
             XCTAssertTrue(progress?.superview === controller.view, "The footer shows progress until the request completes")
             XCTAssertEqual(app.unreadCount(forFeed: "42"), 69, "Pending requests must not change cached read state")
@@ -513,7 +531,8 @@ import UIKit
             XCTAssertNil(progress.superview, "Success, failure and stale responses must dismiss their progress view")
         }
         // RowActionMenuTests.swift models opening story one, then marking story four and everything older read.
-        let completed = !replaceAccount && (succeeds || days != nil)
+        let reportsFailure = !succeeds && !replaceAccount && (days == nil || infrequent)
+        let completed = !replaceAccount && !reportsFailure
         let applied = completed && !infrequent
         let marked = applied ? (older ? cachedCount - 3 : 3) : 0
         XCTAssertEqual(app.unreadCount(forFeed: "42"), 69 - marked)
@@ -523,11 +542,11 @@ import UIKit
         XCTAssertEqual(feeds.headerRefreshes, completed ? 1 : 0)
         XCTAssertEqual(feeds.refreshedFeedIDs, succeeds && !replaceAccount ? [days == nil ? "42" : "all"] : [], "Server counts cover unread stories absent from the offline cache")
         XCTAssertEqual(controller.reloads, completed && !replaceGeneration ? 1 : 0)
-        XCTAssertEqual(controller.failures, !succeeds && !replaceAccount && days == nil ? 1 : 0)
+        XCTAssertEqual(controller.failures, reportsFailure ? 1 : 0, "A failure that queues nothing for replay must be shown")
         let queued = !succeeds && applied && days != nil
         let queuedHashes = app.queuedReadStories?.values.flatMap { $0 as? [String] ?? [] } ?? []
         XCTAssertEqual(Set(queuedHashes), queued ? Set((3..<cachedCount).map { "42:bulk-\($0)" }) : [])
-        XCTAssertEqual(feeds.offlineNotices, !succeeds && !replaceAccount && days != nil ? 1 : 0)
+        XCTAssertEqual(feeds.offlineNotices, !succeeds && !replaceAccount && !reportsFailure ? 1 : 0)
         database.inDatabase { db in
             guard let remaining = db?.executeQuery("SELECT story_hash FROM unread_hashes ORDER BY story_timestamp DESC", withArgumentsIn: []) else { XCTFail("Missing fixture unread rows"); return }
             var hashes: [String] = []
