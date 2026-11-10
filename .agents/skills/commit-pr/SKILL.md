@@ -56,6 +56,8 @@ Cache these for the run. If the branch is `main`, stop: propose a branch name an
 
 **Visual evidence for UI changes.** If the change is visible on screen, capture before/after screenshots and attach them with `gh pr create --attach 'path.png#Alt text'` (or `gh pr edit --attach` on an existing PR; gh 2.99+ uploads and rewrites the body). For a web change the headless helper `.agents/skills/investigate-forum/screenshot.py` captures a logged-in worktree stack without a browser; the claude-in-chrome tools work too when Sam has asked for browser use. Backend-only PRs show the failing-then-passing test output instead.
 
+Open every screenshot with the Read tool before attaching it and confirm it shows what its alt text claims: the right screen, the right theme, the fix actually visible. After the PR is created or edited, read the body back (`gh pr view --json body -q .body`) and confirm every image is an uploaded URL, not a local path. If a screenshot could not be captured, say so in the body; never describe evidence that is not there.
+
 ### 1. Pre-flight: run what CI runs
 
 Django Tests runs `python manage.py test apps` (see `tests.yml`); locally run the modules the diff touches, from the worktree's own web container:
@@ -66,6 +68,10 @@ docker exec -t newsblur_web_<worktree> sh -c "black --check --line-length 110 <c
 ```
 
 If the worktree stack is stopped, `make worktree` from the worktree brings it back. iOS and Android changes follow the build commands in CLAUDE.md and `clients/ios/CLAUDE.md`; at minimum the compile-only check must pass. Fix failures before committing.
+
+**Lean-diff pass.** Read [references/engineering-principles.md](references/engineering-principles.md), then read the whole diff once and take out what does not need to ship: scratch scripts, unused settings, narration comments, redundant test setup. Stay inside the scope Sam asked for.
+
+**New or changed tests.** When the diff adds or changes a test case, run the `deslopify-tests` skill in review mode before committing and apply its verdicts. The test written first to reproduce a reported bug (CLAUDE.md, Bug Fixing Workflow) already has its proof, since it failed before the fix; it still goes through review so a second test that only restates the fix is caught.
 
 ### 2. Stage and commit
 
@@ -99,7 +105,15 @@ Draft keeps early CI churn out of the review queue; section 5.5 promotes it in t
 
 **PR exists:** the push already updated it. Edit the body only if the scope changed (`gh pr edit <n> --body ...`).
 
-Write the body for a reviewer walking in cold: what changed and why, what to check, exact test commands with before and after output, deploy notes (`make deploy`, `make celery`, or both; migrations; Celery restart). Cut author process notes.
+Write the body for a reviewer walking in cold: what changed and why, what to check, exact test commands with before and after output, deploy notes (`make deploy`, `make celery`, or both; migrations; Celery restart).
+
+Read `git log --no-merges origin/main..HEAD` first: when a later commit reversed an earlier one, the body describes the final state. Then sort every fact into one of three piles before writing:
+
+1. **Before facts** could have been written before anyone knew the fix: the forum report, the broken behavior, who it affected, the constraint. They go in Context.
+2. **Approach facts** say why this change fits the code that is already there: the helper it reuses, the path it stays on, the convention it follows. They go in Summary, after what changed.
+3. **Cut facts** are about how the patch was reached: rejected options, the order things were tried, speculative future benefits. They stay out.
+
+Show test evidence as `Before: <command> -> <failure>` and `After: <same command> -> <result>`. Never invent a baseline; when only the after exists, say what was run and what passed.
 
 ### 5. Watch CI
 
@@ -148,18 +162,19 @@ After **every** push that changes the head SHA, inspect the checks on that head:
 gh pr checks --json name,workflow,bucket,state,link
 ```
 
-`Claude PR Review` and `Codex PR Review` are the automated review tasks. While either has `bucket: pending`, wait for it the way section 5 waits (their recent durations come from `gh run list --workflow=claude-pr-review.yml` and `codex-pr-review.yml`; Codex normally takes 3 to 9 minutes). When neither is pending for the current head, the review wait is over: query the threads once more and handle what they posted.
+`Claude PR Review` and `Codex PR Review` are the automated review tasks; identify them by workflow, not by a name that happens to contain "review". While either has `bucket: pending`, wait for it the way section 5 waits (their recent durations come from `gh run list --workflow=claude-pr-review.yml` and `codex-pr-review.yml`; Codex normally takes 3 to 9 minutes). When neither is pending for the current head, the review wait is over: query the threads once more and handle what they posted.
 
-Review threads, not flat PR comments, are the source of truth. New threads are appended, so query the tail (`last: 100`); with `first: 100` a PR that reaches its hundred-and-first thread hides every new one, which happened on #2133 at exactly 100.
+Review threads, not flat PR comments, are the source of truth. Read every page: a single `first: 100` query hides each thread past the hundredth, which happened on #2133 at exactly 100, and a single `last: 100` hides old unresolved ones. `--paginate` follows `endCursor` and prints one JSON document per page.
 
 ```bash
 PR=$(gh pr view --json number -q .number)
-gh api graphql -F owner=samuelclay -F repo=NewsBlur -F number="$PR" -f query='
-query($owner: String!, $repo: String!, $number: Int!) {
+gh api graphql --paginate -F owner=samuelclay -F repo=NewsBlur -F number="$PR" -f query='
+query($owner: String!, $repo: String!, $number: Int!, $endCursor: String) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $number) {
-      reviewThreads(last: 100) {
+      reviewThreads(first: 100, after: $endCursor) {
         totalCount
+        pageInfo { hasNextPage endCursor }
         nodes {
           id
           isResolved
