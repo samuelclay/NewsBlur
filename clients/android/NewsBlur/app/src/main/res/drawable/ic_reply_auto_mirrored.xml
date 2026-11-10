@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ic_reply_auto_mirrored.xml flips the reply arrow in right-to-left languages, since ic_reply_gray55.png is a bitmap. -->
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:autoMirrored="true"
+    android:src="@drawable/ic_reply_gray55" />

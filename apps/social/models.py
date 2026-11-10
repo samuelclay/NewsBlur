@@ -31,6 +31,7 @@ from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import smart_bytes, smart_str
+from django.utils.translation import gettext
 from mongoengine.queryset import Q
 
 from apps.analyzer.models import (
@@ -53,11 +54,13 @@ from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStory, renew_merge_feeds_locks
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.text_importer import TextImporter
+from apps.social.discovery import discovery_excluded_pairs
 from utils import json_functions as json
 from utils import log as logging
 from utils import s3_utils
 from utils.feed_functions import chunks, relative_timesince
 from utils.image_functions import ImageOps
+from utils.languages import account_translation
 from utils.scrubber import SelectiveScriptScrubber
 from utils.story_functions import (
     linkify,
@@ -724,9 +727,12 @@ class MSocialProfile(mongo.Document):
             "common_followings": common_followings,
         }
 
-        text = render_to_string("mail/email_new_follower.txt", data)
-        html = render_to_string("mail/email_new_follower.xhtml", data)
-        subject = "%s is now following your Blurblog on NewsBlur!" % follower_profile.user.username
+        with account_translation(user.profile):
+            text = render_to_string("mail/email_new_follower.txt", data)
+            html = render_to_string("mail/email_new_follower.xhtml", data)
+            subject = gettext("%(username)s is now following your Blurblog on NewsBlur!") % {
+                "username": follower_profile.user.username
+            }
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -783,9 +789,12 @@ class MSocialProfile(mongo.Document):
             "common_followings": common_followings,
         }
 
-        text = render_to_string("mail/email_follow_request.txt", data)
-        html = render_to_string("mail/email_follow_request.xhtml", data)
-        subject = "%s has requested to follow your Blurblog on NewsBlur" % follower_profile.user.username
+        with account_translation(user.profile):
+            text = render_to_string("mail/email_follow_request.txt", data)
+            html = render_to_string("mail/email_follow_request.xhtml", data)
+            subject = gettext("%(username)s has requested to follow your Blurblog on NewsBlur") % {
+                "username": follower_profile.user.username
+            }
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -2108,19 +2117,27 @@ class MSharedStory(mongo.DynamicDocument):
             shared_feed_ids = []
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
-        today = datetime.datetime.now() - datetime.timedelta(days=days)
+        now = datetime.datetime.now()
+        today = now - datetime.timedelta(days=days)
 
         excluded_feed_ids = [int(fid) for fid in shared_feed_ids if fid.isdigit()]
+        eligible_shares = {"shared_date": {"$gte": today}}
+        excluded_pairs = discovery_excluded_pairs(now=now)
+        if excluded_pairs:
+            eligible_shares["$nor"] = [
+                {"user_id": user_id, "story_feed_id": feed_id} for user_id, feed_id in sorted(excluded_pairs)
+            ]
         pipeline = [
-            {"$match": {"shared_date": {"$gte": today}}},
+            {"$match": eligible_shares},
             {
                 "$group": {
                     "_id": "$story_hash",
                     "feed_id": {"$first": "$story_feed_id"},
                     "title": {"$first": "$story_title"},
-                    "count": {"$sum": 1},
+                    "users": {"$addToSet": "$user_id"},
                 }
             },
+            {"$addFields": {"count": {"$size": "$users"}}},
             {"$match": {"count": {"$gte": cutoff}}},
         ]
         if excluded_feed_ids:
@@ -2590,7 +2607,6 @@ class MSharedStory(mongo.DynamicDocument):
             profile_user_ids.add(self.source_user_id)
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.canonical(compact=True) for profile in profiles]
-        comment = MSharedStory.attach_users_to_comment(comment, profiles)
 
         for user_id in notify_user_ids:
             user = User.objects.get(pk=user_id)
@@ -2612,18 +2628,25 @@ class MSharedStory(mongo.DynamicDocument):
                     },
                 ),
             )
-            data = {
-                "reply_user_profile": reply_user_profile,
-                "comment": comment,
-                "shared_story": self,
-                "story_feed": story_feed,
-                "mute_url": mute_url,
-            }
             story_title = self.decoded_story_title.replace("\n", " ")
 
-            text = render_to_string("mail/email_reply.txt", data)
-            html = pynliner.fromString(render_to_string("mail/email_reply.xhtml", data))
-            subject = '%s replied to you on "%s" on NewsBlur' % (reply_user.username, story_title)
+            # social/models.py writes each recipient's email, including the comment's relative dates,
+            # in their own language.
+            with account_translation(user.profile):
+                comment = MSharedStory.attach_users_to_comment(self.comments_with_author(), profiles)
+                data = {
+                    "reply_user_profile": reply_user_profile,
+                    "comment": comment,
+                    "shared_story": self,
+                    "story_feed": story_feed,
+                    "mute_url": mute_url,
+                }
+                text = render_to_string("mail/email_reply.txt", data)
+                html = pynliner.fromString(render_to_string("mail/email_reply.xhtml", data))
+                subject = gettext('%(username)s replied to you on "%(story_title)s" on NewsBlur') % {
+                    "username": reply_user.username,
+                    "story_title": story_title,
+                }
             msg = EmailMultiAlternatives(
                 subject,
                 text,
@@ -2677,7 +2700,6 @@ class MSharedStory(mongo.DynamicDocument):
             profile_user_ids.add(self.source_user_id)
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.canonical(compact=True) for profile in profiles]
-        comment = MSharedStory.attach_users_to_comment(comment, profiles)
 
         mute_url = "http://%s%s" % (
             Site.objects.get_current().domain,
@@ -2689,19 +2711,24 @@ class MSharedStory(mongo.DynamicDocument):
                 },
             ),
         )
-        data = {
-            "comment": comment,
-            "shared_story": self,
-            "reshare_user_profile": reshare_user_profile,
-            "original_shared_story": original_shared_story,
-            "story_feed": story_feed,
-            "mute_url": mute_url,
-        }
         story_title = self.decoded_story_title.replace("\n", " ")
 
-        text = render_to_string("mail/email_reshare.txt", data)
-        html = pynliner.fromString(render_to_string("mail/email_reshare.xhtml", data))
-        subject = '%s re-shared "%s" from you on NewsBlur' % (reshare_user.username, story_title)
+        with account_translation(original_user.profile):
+            comment = MSharedStory.attach_users_to_comment(self.comments_with_author(), profiles)
+            data = {
+                "comment": comment,
+                "shared_story": self,
+                "reshare_user_profile": reshare_user_profile,
+                "original_shared_story": original_shared_story,
+                "story_feed": story_feed,
+                "mute_url": mute_url,
+            }
+            text = render_to_string("mail/email_reshare.txt", data)
+            html = pynliner.fromString(render_to_string("mail/email_reshare.xhtml", data))
+            subject = gettext('%(username)s re-shared "%(story_title)s" from you on NewsBlur') % {
+                "username": reshare_user.username,
+                "story_title": story_title,
+            }
         msg = EmailMultiAlternatives(
             subject,
             text,

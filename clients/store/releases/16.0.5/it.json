@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Risolve arresti anomali sui tablet Samsung meno recenti e su altri dispositivi all’apertura di NewsBlur o tornando ai feed. Risolve anche arresti anomali con articoli di grandi dimensioni, anteprime dei feed, cartelle con un solo feed, widget e conteggi dei commenti tradotti. Riduce i blocchi durante l’avvio, la sincronizzazione e la verifica degli abbonamenti."
+  }
+}

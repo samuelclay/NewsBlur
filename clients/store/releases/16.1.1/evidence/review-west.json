@@ -1,0 +1,32 @@
+{
+  "version": "16.1.1",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "reviewer": "translate_east",
+  "independent_of_translator": true,
+  "status": "passed",
+  "scope": [
+    "All iOS, macOS and Android listing fields",
+    "All subscription and subscription-group fields",
+    "All 16.1.1 release notes"
+  ],
+  "checks": [
+    "Compared all fields with canonical English for claims, omissions, natural wording, language and punctuation",
+    "Weekly allowance numbers and Sunday reset agree across listing, products and release notes",
+    "Saved and Read Stories preserve chosen ordering and oldest-first behavior",
+    "Duplicate headline and mini-player Next changes described accurately",
+    "Reading toolbar appears only in mobile release notes and iOS promotional text",
+    "Brand, immutable product IDs and terms/privacy URLs preserved",
+    "Existing subscription terms and 30-second previews retained",
+    "Canonical validator passed for all 21 locales on each platform"
+  ],
+  "findings": [],
+  "corrections": []
+}

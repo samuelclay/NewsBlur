@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <application
+    <application android:networkSecurityConfig="@xml/alpha_network_security"
         android:icon="@mipmap/app_icon_alpha"
         tools:replace="android:icon">
         <activity-alias

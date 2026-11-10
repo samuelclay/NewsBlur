@@ -1,0 +1,10 @@
+{
+  "udid": "011EB534-697E-4855-BACA-4D4C6E4E92EF",
+  "bundle_id": "com.newsblur.NewsBlur",
+  "pid": "43717",
+  "started_at": 1792195759.281399,
+  "cold_launch": false,
+  "launch_requested_at": 1792195755.0320919,
+  "cpu_sampling": false,
+  "ended_at": 1792195805.532634
+}

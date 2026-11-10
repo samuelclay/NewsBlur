@@ -27,7 +27,7 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
     // =================
 
     show_stories_progress_bar: function (feeds_loading, message) {
-        message = message || "Fetching stories";
+        message = message || gettext("Fetching stories");
         var $progress = $.make('div', { className: 'NB-river-progress' }, [
             $.make('div', { className: 'NB-river-progress-text' }),
             $.make('div', { className: 'NB-river-progress-bar' })
@@ -66,17 +66,17 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         NEWSBLUR.app.original_tab_view.iframe_not_busting();
 
         if (!message || message == 'error') {
-            message = "Oh no! <br> There was an error!";
+            message = gettext("Oh no! <br> There was an error!");
         }
 
         if (data && data.status) {
             if (data.status == 502) {
-                message = "NewsBlur is down right now. <br> Try again soon.";
+                message = gettext("NewsBlur is down right now. <br> Try again soon.");
             } else if (data.status == 503) {
-                message = "NewsBlur is in maintenance mode. <br> Try again soon.";
+                message = gettext("NewsBlur is in maintenance mode. <br> Try again soon.");
                 this.show_maintenance_page();
             } else if (data.status == 429) {
-                message = "You're being rate limited.<br> Try again soon, but not too soon.";
+                message = gettext("You're being rate limited.<br> Try again soon, but not too soon.");
             }
             NEWSBLUR.assets.stories.no_more_stories = true;
             NEWSBLUR.app.story_titles.end_loading();

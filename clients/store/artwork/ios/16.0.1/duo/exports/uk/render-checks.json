@@ -1,0 +1,130 @@
+[
+  {
+    "capture": "captures/uk/duo-stories.png",
+    "capture_bounds": {
+      "height": 1175.5549903006788,
+      "width": 1671.0804122211443,
+      "x": 1054.5722938894278,
+      "y": 415.7225048496605
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 5,
+    "headline_size": 142.65,
+    "language": "uk",
+    "output": "exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-01.png",
+    "panel": 1,
+    "size": "2853x2007",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText Duo Sage",
+    "capture_sha256": "730df788d2c4c76ca193c108221806cc25f1a29e1f3d25facb27bea58f36e30a",
+    "source_sha256": {
+      "native-render.swift": "64bc46d8ce23184c13ae886ead0e56c9f7d95dba4fc079b35c1c5f768db342cf",
+      "export-native.rb": "de1c23b84e5768ae491a8b30f0f5020d8f6f262a95b8ae7f2f557c87dc129db7",
+      "../../16.0/screenshots/copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "../../16.0/screenshots/verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+      "../../16.0/selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "assets/iphone-duo-inner-landscape.png": "bd684d4cd2b68756ca008c158b9c0cbfeeb134bf3b5e481b3d0dd02d783211f1",
+      "captures/uk/duo-stories.png": "730df788d2c4c76ca193c108221806cc25f1a29e1f3d25facb27bea58f36e30a",
+      "captures/uk/duo-feeds.png": "debc77f90c761ad0e5ed40f86c30c61e24f7ff4f3e9be84f691feb0a0287ef7d",
+      "captures/uk/duo-reader.png": "b03b66ebca0e9a8cc7b7b7b20a8055dd0b860559d75853ec84d6f6837152d849",
+      "captures/uk/duo-saved.png": "07ccbab901d3e66edeafc95cf683ceafa4ee80b10b5dad53c4466c186d8f120c"
+    },
+    "output_sha256": "ae70769704ec42f6665c89d8c5cfad6ce0f0b8b039627878093a70e855383ec7"
+  },
+  {
+    "capture": "captures/uk/duo-feeds.png",
+    "capture_bounds": {
+      "height": 1175.5549903006788,
+      "width": 1671.0804122211443,
+      "x": 1054.5722938894278,
+      "y": 415.7225048496605
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 4,
+    "headline_size": 142.65,
+    "language": "uk",
+    "output": "exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-02.png",
+    "panel": 2,
+    "size": "2853x2007",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText Duo Sage",
+    "capture_sha256": "debc77f90c761ad0e5ed40f86c30c61e24f7ff4f3e9be84f691feb0a0287ef7d",
+    "source_sha256": {
+      "native-render.swift": "64bc46d8ce23184c13ae886ead0e56c9f7d95dba4fc079b35c1c5f768db342cf",
+      "export-native.rb": "de1c23b84e5768ae491a8b30f0f5020d8f6f262a95b8ae7f2f557c87dc129db7",
+      "../../16.0/screenshots/copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "../../16.0/screenshots/verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+      "../../16.0/selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "assets/iphone-duo-inner-landscape.png": "bd684d4cd2b68756ca008c158b9c0cbfeeb134bf3b5e481b3d0dd02d783211f1",
+      "captures/uk/duo-stories.png": "730df788d2c4c76ca193c108221806cc25f1a29e1f3d25facb27bea58f36e30a",
+      "captures/uk/duo-feeds.png": "debc77f90c761ad0e5ed40f86c30c61e24f7ff4f3e9be84f691feb0a0287ef7d",
+      "captures/uk/duo-reader.png": "b03b66ebca0e9a8cc7b7b7b20a8055dd0b860559d75853ec84d6f6837152d849",
+      "captures/uk/duo-saved.png": "07ccbab901d3e66edeafc95cf683ceafa4ee80b10b5dad53c4466c186d8f120c"
+    },
+    "output_sha256": "4ea79f5836bad819d8de2c7a74fdfca6b411156cb4803bd00445660135a608d1"
+  },
+  {
+    "capture": "captures/uk/duo-reader.png",
+    "capture_bounds": {
+      "height": 1175.5549903006788,
+      "width": 1671.0804122211443,
+      "x": 1054.5722938894278,
+      "y": 415.7225048496605
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 3,
+    "headline_size": 121.65,
+    "language": "uk",
+    "output": "exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-03.png",
+    "panel": 3,
+    "size": "2853x2007",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText Duo Sage",
+    "capture_sha256": "b03b66ebca0e9a8cc7b7b7b20a8055dd0b860559d75853ec84d6f6837152d849",
+    "source_sha256": {
+      "native-render.swift": "64bc46d8ce23184c13ae886ead0e56c9f7d95dba4fc079b35c1c5f768db342cf",
+      "export-native.rb": "de1c23b84e5768ae491a8b30f0f5020d8f6f262a95b8ae7f2f557c87dc129db7",
+      "../../16.0/screenshots/copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "../../16.0/screenshots/verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+      "../../16.0/selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "assets/iphone-duo-inner-landscape.png": "bd684d4cd2b68756ca008c158b9c0cbfeeb134bf3b5e481b3d0dd02d783211f1",
+      "captures/uk/duo-stories.png": "730df788d2c4c76ca193c108221806cc25f1a29e1f3d25facb27bea58f36e30a",
+      "captures/uk/duo-feeds.png": "debc77f90c761ad0e5ed40f86c30c61e24f7ff4f3e9be84f691feb0a0287ef7d",
+      "captures/uk/duo-reader.png": "b03b66ebca0e9a8cc7b7b7b20a8055dd0b860559d75853ec84d6f6837152d849",
+      "captures/uk/duo-saved.png": "07ccbab901d3e66edeafc95cf683ceafa4ee80b10b5dad53c4466c186d8f120c"
+    },
+    "output_sha256": "dc405238b4da4fb733d451b9b9a8e19cd1ec971ac7dd7c716eb6e05c622ff684"
+  },
+  {
+    "capture": "captures/uk/duo-saved.png",
+    "capture_bounds": {
+      "height": 1175.5549903006788,
+      "width": 1671.0804122211443,
+      "x": 1054.5722938894278,
+      "y": 415.7225048496605
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 4,
+    "headline_size": 142.65,
+    "language": "uk",
+    "output": "exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-04.png",
+    "panel": 4,
+    "size": "2853x2007",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText Duo Sage",
+    "capture_sha256": "07ccbab901d3e66edeafc95cf683ceafa4ee80b10b5dad53c4466c186d8f120c",
+    "source_sha256": {
+      "native-render.swift": "64bc46d8ce23184c13ae886ead0e56c9f7d95dba4fc079b35c1c5f768db342cf",
+      "export-native.rb": "de1c23b84e5768ae491a8b30f0f5020d8f6f262a95b8ae7f2f557c87dc129db7",
+      "../../16.0/screenshots/copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "../../16.0/screenshots/verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+      "../../16.0/selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "assets/iphone-duo-inner-landscape.png": "bd684d4cd2b68756ca008c158b9c0cbfeeb134bf3b5e481b3d0dd02d783211f1",
+      "captures/uk/duo-stories.png": "730df788d2c4c76ca193c108221806cc25f1a29e1f3d25facb27bea58f36e30a",
+      "captures/uk/duo-feeds.png": "debc77f90c761ad0e5ed40f86c30c61e24f7ff4f3e9be84f691feb0a0287ef7d",
+      "captures/uk/duo-reader.png": "b03b66ebca0e9a8cc7b7b7b20a8055dd0b860559d75853ec84d6f6837152d849",
+      "captures/uk/duo-saved.png": "07ccbab901d3e66edeafc95cf683ceafa4ee80b10b5dad53c4466c186d8f120c"
+    },
+    "output_sha256": "74d5a8a5b629b1197aab848aacbf6909c247a82e57d33d69be2379727b1106a3"
+  }
+]

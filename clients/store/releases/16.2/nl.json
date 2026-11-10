@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Bekijk welke AI-inhouds- en afbeeldingsfilters overeenkomen met een artikel en beheer je filters in de trainer. Verbergen gaat nu vóór AI-filtermatches.\n\nSpeel podcasts af in de Luister-speler van NewsBlur, met bediening om over te slaan, AirPlay en een wachtrij met podcasts en voorgelezen artikelen. Ga op al je apparaten verder waar je was gebleven.\n\nLuisteren kan nu muziek uit andere apps overstemmen. Schakel ‘Afspelen over andere audio’ in bij ‘Wordt nu afgespeeld’, kies of de muziek zachter moet wanneer de stem spreekt en pas de balans tussen muziek en stem aan."
+  },
+  "android": {
+    "release_notes": "Bekijk welke AI-filters overeenkomen met artikelen en beheer ze in de vernieuwde trainer. Verbergen gaat vóór AI-filtermatches. Speel podcasts af via Luisteren, met bediening om over te slaan, een gemengde wachtrij met podcasts en artikelen en gesynchroniseerde afspeelpositie op al je apparaten. Luisteren kan muziek uit andere apps overstemmen, met de optie om de muziek zachter te zetten en de balans tussen muziek en stem aan te passen."
+  },
+  "macos": {
+    "whats_new": "Bekijk welke AI-inhouds- en afbeeldingsfilters overeenkomen met een artikel en beheer je filters in de trainer. Verbergen gaat nu vóór AI-filtermatches.\n\nSpeel podcasts af in de Luister-speler van NewsBlur, met bediening om over te slaan, AirPlay en een wachtrij met podcasts en voorgelezen artikelen. Ga op al je apparaten verder waar je was gebleven."
+  }
+}

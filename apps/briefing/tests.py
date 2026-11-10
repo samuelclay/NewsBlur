@@ -488,7 +488,7 @@ class Test_Summary(TestCase):
         model_name, model_config = get_briefing_model_config(None)
         self.assertEqual(DEFAULT_BRIEFING_MODEL, "openai")
         self.assertEqual(model_name, "openai")
-        self.assertEqual(model_config["model_id"], "gpt-5.6-luna")
+        self.assertEqual(model_config["model_id"], "gpt-6-luna")
         self.assertEqual(model_config["thinking_config"], {"reasoning_effort": "medium"})
 
     @patch("apps.briefing.summary.LLMCostTracker")
@@ -500,7 +500,7 @@ class Test_Summary(TestCase):
         mock_provider.is_configured.return_value = True
         mock_provider.generate.return_value = '<div class="NB-briefing-summary"><h3 data-section="top_stories">Trending</h3><p>Content</p></div>'
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://summary-test.com/rss",
@@ -524,7 +524,7 @@ class Test_Summary(TestCase):
             )
             mock_cost.record_usage.assert_called_once()
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "openai")
-            self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-5.6-luna")
+            self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-6-luna")
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "daily_briefing")
         finally:
             MStory.objects(story_hash=story.story_hash).delete()
@@ -541,7 +541,7 @@ class Test_Summary(TestCase):
             '```html\n<div class="NB-briefing-summary"><p>Content</p></div>\n```'
         )
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://fence-test.com/rss",
@@ -604,6 +604,98 @@ class Test_Summary(TestCase):
             MStory.objects(story_hash=story.story_hash).delete()
             feed.delete()
 
+    def _xai_error(self, error_class, status_code):
+        import httpx
+
+        request = httpx.Request("POST", "https://api.x.ai/v1/chat/completions")
+        return error_class(
+            "Error code: %s" % status_code,
+            response=httpx.Response(status_code, request=request),
+            body={"code": "permission-denied", "error": "Your team has used all available credits"},
+        )
+
+    @patch("apps.briefing.summary.LLMCostTracker")
+    @patch("apps.ask_ai.providers.get_briefing_provider")
+    @patch(
+        "apps.ask_ai.providers.BRIEFING_MODELS",
+        {"xai": {"vendor": "xai"}, "haiku": {"vendor": "anthropic"}},
+    )
+    @patch("apps.ask_ai.providers.DEFAULT_BRIEFING_MODEL", "haiku")
+    def test_summary_falls_back_to_the_default_model_when_xai_refuses(self, mock_get_provider, mock_cost):
+        """xAI answers 403 once its account runs out of credits or hits its spending limit.
+        Users who picked Grok got no briefing at all (users 701600, 757195, and 761308 on
+        2026-10-11); they get one from the default model instead."""
+        import openai
+
+        from apps.briefing.summary import generate_briefing_summary
+
+        xai = MagicMock()
+        xai.is_configured.return_value = True
+        xai.generate.side_effect = self._xai_error(openai.PermissionDeniedError, 403)
+        default = MagicMock()
+        default.is_configured.return_value = True
+        default.generate.return_value = "<div>From the default model</div>"
+        default.get_last_usage.return_value = (10, 5)
+        mock_get_provider.side_effect = [(xai, "grok-4.1"), (default, "haiku-id")]
+
+        feed = Feed.objects.create(
+            feed_address="http://xai-refused.com/rss",
+            feed_link="http://xai-refused.com",
+            feed_title="xAI Refused Feed",
+        )
+        story = self._make_summary_story(feed, "Refused Story", "Content", "xai-refused-guid")
+        scored = [self._scored_from_story(story)]
+
+        try:
+            html, metadata = generate_briefing_summary(
+                self.id(), scored, datetime.datetime.utcnow(), model="xai"
+            )
+            self.assertEqual(html, "<div>From the default model</div>")
+            self.assertEqual(metadata["model_name"], "haiku")
+            # A refusal isn't retried against xAI; it goes straight to the default model.
+            self.assertEqual(xai.generate.call_count, 1)
+        finally:
+            MStory.objects(story_hash=story.story_hash).delete()
+            feed.delete()
+
+    @patch("apps.briefing.summary.LLMCostTracker")
+    @patch("apps.ask_ai.providers.get_briefing_provider")
+    @patch(
+        "apps.ask_ai.providers.BRIEFING_MODELS",
+        {"xai": {"vendor": "xai"}, "haiku": {"vendor": "anthropic"}},
+    )
+    @patch("apps.ask_ai.providers.DEFAULT_BRIEFING_MODEL", "haiku")
+    def test_summary_does_not_fall_back_when_xai_rejects_the_request(self, mock_get_provider, mock_cost):
+        """A bad request is a bug in the request, not xAI refusing the account, so it fails
+        as before rather than hiding behind another model."""
+        import openai
+
+        from apps.briefing.summary import generate_briefing_summary
+
+        xai = MagicMock()
+        xai.is_configured.return_value = True
+        xai.generate.side_effect = self._xai_error(openai.BadRequestError, 400)
+        mock_get_provider.side_effect = [(xai, "grok-4.1")]
+
+        feed = Feed.objects.create(
+            feed_address="http://xai-badrequest.com/rss",
+            feed_link="http://xai-badrequest.com",
+            feed_title="xAI Bad Request Feed",
+        )
+        story = self._make_summary_story(feed, "Bad Request Story", "Content", "xai-badrequest-guid")
+        scored = [self._scored_from_story(story)]
+
+        try:
+            html, metadata = generate_briefing_summary(
+                self.id(), scored, datetime.datetime.utcnow(), model="xai"
+            )
+            self.assertIsNone(html)
+            self.assertIsNone(metadata)
+            self.assertEqual(mock_get_provider.call_count, 1)
+        finally:
+            MStory.objects(story_hash=story.story_hash).delete()
+            feed.delete()
+
     @patch("apps.ask_ai.providers.get_briefing_provider")
     def test_summary_all_unconfigured_returns_none(self, mock_get_provider):
         from apps.briefing.summary import generate_briefing_summary
@@ -637,7 +729,7 @@ class Test_Summary(TestCase):
         mock_provider = MagicMock()
         mock_provider.is_configured.return_value = True
         mock_provider.generate.side_effect = anthropic.APIConnectionError(request=MagicMock())
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://err-test.com/rss",
@@ -666,7 +758,7 @@ class Test_Summary(TestCase):
         mock_provider.is_configured.return_value = True
         mock_provider.generate.return_value = "<div>Result</div>"
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://remap-test.com/rss",
@@ -793,6 +885,126 @@ class Test_BriefingIcons(BriefingTestCase):
         self.assertIn('href="%s"' % story.story_permalink, result)
         self.assertIn('class="NB-briefing-direct-link"', result)
         self.assertIn("NB-briefing-direct-link-icon", result)
+
+    def _set_story_image(self, story, image_url="https://example.com/photo.jpg"):
+        story.image_urls = [image_url]
+        story.save()
+        return image_url
+
+    def test_embed_briefing_icons_adds_thumbnail_for_story_with_image(self):
+        from django.conf import settings
+
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[0]
+        self._set_story_image(story)
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="top_stories">Top stories</h3>'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a> matters today.</p>'
+            "</div>"
+        ) % (story.story_hash, story.story_title)
+
+        result = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+
+        # tests.py: Thumbnail links back to the story and floats right of the summary text
+        self.assertIn('class="NB-briefing-story-thumbnail"', result)
+        self.assertIn('data-thumbnail-story-hash="%s"' % story.story_hash, result)
+        self.assertIn('href="%s/briefing?story=%s"' % (settings.NEWSBLUR_URL, story.story_hash), result)
+        self.assertIn('align="right"', result)
+        self.assertIn("float:right", result)
+        self.assertIn("width:80px;height:80px", result)
+        self.assertIn("border-radius:", result)
+        # tests.py: Image is served as a 2x square crop through the imageproxy
+        self.assertIn("/160,sc,", result)
+        self.assertIn("https://example.com/photo.jpg", result)
+        # tests.py: Thumbnail sits inside the text cell so the table contains the float
+        text_cell = result.split("NB-briefing-inline-favicon", 1)[1]
+        self.assertIn("NB-briefing-story-thumbnail-image", text_cell)
+
+    def test_embed_briefing_icons_skips_thumbnail_without_image(self):
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[1]
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="top_stories">Top stories</h3>'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a> matters today.</p>'
+            "</div>"
+        ) % (story.story_hash, story.story_title)
+
+        result = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+
+        self.assertNotIn("NB-briefing-story-thumbnail", result)
+
+    def test_embed_briefing_icons_skips_non_http_images(self):
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[1]
+        self._set_story_image(story, "data:image/png;base64,AAAA")
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+            "</div>"
+        ) % (story.story_hash, story.story_title)
+
+        result = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+
+        self.assertNotIn("NB-briefing-story-thumbnail", result)
+
+    def test_widely_covered_topic_gets_thumbnail_but_sources_do_not(self):
+        from apps.briefing.summary import (
+            embed_briefing_icons,
+            inject_widely_covered_clusters,
+        )
+
+        lead, source_a, source_b = self.stories[0], self.stories[3], self.stories[4]
+        for story in (lead, source_a, source_b):
+            self._set_story_image(story, "https://example.com/%s.jpg" % story.story_hash.replace(":", "-"))
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="widely_covered">Widely covered</h3>'
+            '<p>Everyone is writing about <a class="NB-briefing-story-link" data-story-hash="%s">%s</a>.</p>'
+            "</div>"
+        ) % (lead.story_hash, lead.story_title)
+        scored = [{"story_hash": lead.story_hash, "category": "widely_covered"}]
+
+        with patch("apps.clustering.models.get_cluster_for_story", return_value="cluster-1"), patch(
+            "apps.clustering.models.get_cluster_members",
+            return_value=[lead.story_hash, source_a.story_hash, source_b.story_hash],
+        ):
+            injected, extras = inject_widely_covered_clusters(summary_html, scored, self.user.pk)
+        result = embed_briefing_icons(injected, scored + extras)
+
+        # tests.py: Topic paragraph shows the lead story's image
+        self.assertEqual(result.count('class="NB-briefing-story-thumbnail"'), 1)
+        self.assertIn('data-thumbnail-story-hash="%s"' % lead.story_hash, result)
+        self.assertNotIn('data-thumbnail-story-hash="%s"' % source_a.story_hash, result)
+        self.assertNotIn('data-thumbnail-story-hash="%s"' % source_b.story_hash, result)
+        # tests.py: Source lines keep their favicons and links
+        self.assertIn('data-story-hash="%s"' % source_a.story_hash, result)
+        self.assertIn('data-story-hash="%s"' % source_b.story_hash, result)
+
+    def test_exclusive_sections_strips_thumbnail_with_duplicate_link(self):
+        from apps.briefing.summary import embed_briefing_icons
+
+        story = self.stories[0]
+        self._set_story_image(story)
+        summary_html = (
+            '<div class="NB-briefing-summary">'
+            '<h3 data-section="top_stories">Top stories</h3>'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+            '<h3 data-section="long_read">Long reads</h3>'
+            '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+            "</div>"
+        ) % (story.story_hash, story.story_title, story.story_hash, story.story_title)
+
+        embedded = embed_briefing_icons(summary_html, [{"story_hash": story.story_hash}])
+        sections = enforce_exclusive_sections(extract_section_summaries(embedded))
+
+        self.assertIn("NB-briefing-story-thumbnail", sections["top_stories"])
+        self.assertNotIn("NB-briefing-story-thumbnail", sections["long_read"])
+        self.assertIn(story.story_title, sections["long_read"])
 
 
 # ---------------------------------------------------------------------------

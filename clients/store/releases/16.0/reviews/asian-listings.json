@@ -1,0 +1,31 @@
+{
+  "reviewer": "independent store_locales agent (did not author these six translations)",
+  "languages": [
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "fields_reviewed": 60,
+  "status": "passed_after_corrections",
+  "corrections": {
+    "vi": {
+      "Tiếp theo đổi thành Xong": "Tiếp đổi thành Xong"
+    },
+    "zh-Hans": {
+      "“下一篇”变为“完成”": "“下一步”变为“完成”",
+      "继续。 在": "继续。在"
+    },
+    "zh-Hant": {
+      "「下一篇」變成「完成」": "「下一步」變成「完成」",
+      "繼續。 在": "繼續。在"
+    },
+    "ja": {
+      "再開できます。 タブレット": "再開できます。タブレット"
+    }
+  },
+  "semantic_review": "Read each full listing against English/glossaries. All required account/paid-plan/AI limits and Apple subscription terms preserved. Interface languages distinguished from unchanged story contents. No unsupported feature claims or missing platform-specific facts identified. Both Chinese scripts correct; registers consistent. Actual Android navigation labels verified.",
+  "source_issue": "Resolved: Android descriptions and release notes now say choose the language in the app, matching revised English, rather than naming an ambiguous menu."
+}

@@ -1,0 +1,19 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1200
+PlayResY: 1600
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Apple SD Gothic Neo,43,&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,12,0,2,72,72,248,1
+Style: Disclosure,Apple SD Gothic Neo,33,&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,9,0,2,72,72,120,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:04.00,Title,,0,0,0,,즐겨 찾는 정보 출처를 위한 공간.
+Dialogue: 0,0:00:04.00,0:00:09.00,Title,,0,0,0,,매일 읽는 콘텐츠를 한곳에.
+Dialogue: 0,0:00:09.00,0:00:16.00,Title,,0,0,0,,좋은 글을 여유롭게 읽으세요.
+Dialogue: 0,0:00:16.00,0:00:20.00,Title,,0,0,0,,좋은 글은 저장해 두고 나중에 읽으세요.
+Dialogue: 1,0:00:16.00,0:00:20.00,Disclosure,,0,0,0,,NewsBlur 계정이 필요합니다. 일부 기능은 유료 구독이 필요합니다.

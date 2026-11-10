@@ -30,7 +30,9 @@ function NB_story_image_rect(token, generation) {
         viewportWidth: document.documentElement.clientWidth};
 }
 
-function NB_open_story_image(image) {
+// A long-press (show_actions) opens the same viewer with the image's title text and its Copy,
+// Save, and Share actions showing, like the iOS app; a linked photo also offers its link.
+function NB_open_story_image(image, show_actions) {
     var load = document.querySelector('meta[name="newsblur-image-generation"]');
     if (!window.NewsBlurImages || !load || !image || image.tagName !== 'IMG' ||
         !image.closest('.NB-story') || hasProtectedImageClass(image) ||
@@ -38,13 +40,19 @@ function NB_open_story_image(image) {
         !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
     var src = image.currentSrc || image.src;
     if (!/^(https?:|data:image\/)/i.test(src)) return false;
+    var browser_src = /^https:\/\/appassets\.androidplatform\.net\/images\//i.test(src) ?
+        image.getAttribute('data-nb-original-src') : src;
     var token = image.getAttribute('data-nb-viewer-token');
     if (!token) {
         token = String(++NB_story_image_sequence);
         image.setAttribute('data-nb-viewer-token', token);
     }
+    var link = image.closest('a[href]');
     window.NewsBlurImages.postMessage(JSON.stringify({
         generation: load.content, token: token, src: src, title: image.alt || image.title || 'Story image',
+        browserSrc: browser_src,
+        hoverText: image.title || '', showActions: show_actions === true,
+        link: show_actions === true && link && /^https?:/i.test(link.href) ? link.href : null,
         naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
         rect: NB_story_image_rect(token, load.content)
     }));
@@ -52,7 +60,16 @@ function NB_open_story_image(image) {
 }
 
 document.addEventListener('click', function(event) {
-    if (NB_open_story_image(event.target)) {
+    if (NB_open_story_image(event.target, false)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    }
+}, true);
+
+// Android WebView turns a long-press into a contextmenu event. Taking it here keeps the native
+// long-press menu (ReadingItemFragment.onCreateContextMenu) for everything that isn't a story photo.
+document.addEventListener('contextmenu', function(event) {
+    if (NB_open_story_image(event.target, true)) {
         event.preventDefault();
         event.stopImmediatePropagation();
     }
@@ -92,8 +109,11 @@ function setImage(img, inline_contexts) {
         img.naturalHeight >= 50 && !NB_is_deliberately_small_image(img) &&
         NB_is_standalone_image(img, inline_contexts || new WeakMap())) {
         setImageClass(img, 'NB-large-image');
-        // storyDetailView.js measures the image's actual inset, including nested wrapper padding.
-        img.style.setProperty('--NB-image-offset', -img.getBoundingClientRect().left + 'px');
+        // storyDetailView.js measures the image's actual inset, including nested wrapper padding, from
+        // the story's start edge, which is the right edge when the story reads right to left.
+        var rect = img.getBoundingClientRect();
+        var inset = window.getComputedStyle(img).direction === 'rtl' ? pane_width - rect.right : rect.left;
+        img.style.setProperty('--NB-image-offset', -inset + 'px');
     } else {
         setImageClass(img, 'NB-small-image');
     }

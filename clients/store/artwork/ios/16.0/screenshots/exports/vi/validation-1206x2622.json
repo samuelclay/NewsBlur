@@ -1,0 +1,84 @@
+{
+  "language": "vi",
+  "checked_at": "2026-10-17T02:09:20Z",
+  "capture_format": "CoreGraphics/CoreText opaque PNG",
+  "note": "Technical validation does not establish visual approval or store persistence.",
+  "files": [
+    {
+      "path": "exports/vi/1206x2622/panel-1.png",
+      "panel": 1,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 1051780,
+      "sha256": "c6c7fcc5106a203ed8f89752ce516c62be362b5bf19b4ad2e8ddd9a7cf8dd944",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.4089,
+        "largest_tile_error": 0.8529,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:09:41Z"
+    },
+    {
+      "path": "exports/vi/1206x2622/panel-2.png",
+      "panel": 2,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 495152,
+      "sha256": "45ce748829fdcc0f17c2679a8bdc59aa483f01498e2009ca6b91980c7d9d7066",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.1417,
+        "largest_tile_error": 0.8151,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:09:41Z"
+    },
+    {
+      "path": "exports/vi/1206x2622/panel-3.png",
+      "panel": 3,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 1962308,
+      "sha256": "cfea7748f874716595ea4e45042b0590a64cd960335e6a020ccb6041f2d99e97",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.6901,
+        "largest_tile_error": 1.8984,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:09:41Z"
+    },
+    {
+      "path": "exports/vi/1206x2622/panel-4.png",
+      "panel": 4,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 878009,
+      "sha256": "06e613618142a7772e71ed4aad8fc38aab598db4774c98da183b125c0a847ae1",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.2826,
+        "largest_tile_error": 0.6237,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:09:41Z"
+    }
+  ]
+}

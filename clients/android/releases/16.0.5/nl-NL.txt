@@ -1,0 +1,1 @@
+Verhelpt crashes op oudere Samsung-tablets en andere apparaten bij het openen van NewsBlur of terugkeren naar feeds. Verhelpt ook crashes met grote artikelen, voorvertoningen van feeds, mappen met één feed, widgets en vertaalde reactieaantallen. Vermindert vastlopers bij opstarten, synchroniseren en abonnementscontroles.

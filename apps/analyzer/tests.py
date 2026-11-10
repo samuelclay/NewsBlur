@@ -23,8 +23,10 @@ from apps.analyzer.models import (
     apply_classifier_titles,
     apply_classifier_url_regex,
     apply_classifier_urls,
+    classifier_matches_story_feed,
     compute_story_score,
     get_classifiers_for_user,
+    load_folder_feed_ids,
 )
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed
@@ -1335,6 +1337,186 @@ class Test_Classifiers(TransactionTestCase):
         global_tags = list(MClassifierTag.objects(user_id=self.user.pk, scope="global"))
         self.assertEqual(len(global_tags), 0)
 
+    def test_typed_scoped_classifiers_save_without_a_story_or_feed(self):
+        """
+        The Manage Training add row (reader_classifier.js, forum #13907) posts a
+        typed classifier with feed_id=0 because no story or site is involved. Global
+        and nested folder scopes must both land in scoped_classifiers.
+        """
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+        UserSubscriptionFolders.objects.create(
+            user=self.user,
+            folders='[{"Tech": [{"Apple": [%s]}]}]' % self.feed.pk,
+        )
+        self.client.login(username="testuser", password="testpass")
+
+        global_response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "global", "folder_name": "", "like_title": "vision pro"},
+        )
+        folder_response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "folder", "folder_name": "Tech - Apple", "dislike_tag": "sponsored"},
+        )
+        self.assertEqual(json.decode(global_response.content)["code"], 0)
+        self.assertEqual(json.decode(folder_response.content)["code"], 0)
+
+        scoped = json.decode(self.client.get("/reader/all_classifiers").content)["scoped_classifiers"]
+        self.assertEqual(
+            [(c["title"], c["score"], c["scope"], c["folder_name"]) for c in scoped["titles"]],
+            [("vision pro", 1, "global", "")],
+        )
+        self.assertEqual(
+            [(c["tag"], c["score"], c["scope"], c["folder_name"]) for c in scoped["tags"]],
+            [("sponsored", -1, "folder", "Tech - Apple")],
+        )
+        self.assertTrue(UserSubscription.objects.get(user=self.user, feed=self.feed).needs_unread_recalc)
+
+    def test_folder_classifier_does_not_overwrite_global_classifier_with_same_phrase(self):
+        """
+        A folder dislike for a phrase that is already a global like is a second classifier.
+        The legacy fallback in save_classifier used to drop scope and folder_name, find the
+        global one, and flip it to a dislike instead (forum #13907 add row review).
+        """
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+        self.client.login(username="testuser", password="testpass")
+
+        self.client.post(
+            "/classifier/save/", {"feed_id": 0, "scope": "global", "folder_name": "", "like_title": "apple"}
+        )
+        self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "folder", "folder_name": "Tech", "dislike_title": "apple"},
+        )
+        self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "folder", "folder_name": "Sports", "like_title": "apple"},
+        )
+
+        titles = sorted(
+            (c.scope, c.folder_name, c.score)
+            for c in MClassifierTitle.objects(user_id=self.user.pk, title="apple")
+        )
+        self.assertEqual(titles, [("folder", "Sports", 1), ("folder", "Tech", -1), ("global", "", 1)])
+
+    def test_tag_in_a_second_scope_is_refused_without_touching_the_first(self):
+        """
+        Tag and author unique indexes ignore scope, so a tag trained globally can't also be
+        trained for a folder. The save says so instead of reporting success.
+        """
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+        self.client.login(username="testuser", password="testpass")
+
+        self.client.post(
+            "/classifier/save/", {"feed_id": 0, "scope": "global", "folder_name": "", "like_tag": "apple"}
+        )
+        response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "folder", "folder_name": "Tech", "dislike_tag": "apple"},
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+        self.assertIn('"apple" is already trained', content["message"])
+        tags = [
+            (c.scope, c.folder_name, c.score)
+            for c in MClassifierTag.objects(user_id=self.user.pk, tag="apple")
+        ]
+        self.assertEqual(tags, [("global", "", 1)])
+
+    def test_plain_title_does_not_overwrite_regex_title_with_same_text(self):
+        self.client.login(username="testuser", password="testpass")
+        MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="iphone",
+            is_regex=True,
+            score=-1,
+            creation_date=datetime.datetime.now(),
+        )
+
+        self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "like_title": "iphone"})
+
+        titles = sorted(
+            (c.is_regex, c.score) for c in MClassifierTitle.objects(user_id=self.user.pk, title="iphone")
+        )
+        self.assertEqual(titles, [(False, 1), (True, -1)])
+
+    def test_removing_legacy_classifier_without_scope_fields_still_works(self):
+        """Classifiers saved before scope, folder_name and is_regex existed lack those fields."""
+        MClassifierTitle._get_collection().insert_one(
+            {
+                "user_id": self.user.pk,
+                "feed_id": self.feed.pk,
+                "social_user_id": 0,
+                "title": "old phrase",
+                "score": 1,
+                "creation_date": datetime.datetime.now(),
+            }
+        )
+        self.client.login(username="testuser", password="testpass")
+
+        self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "remove_like_title": "old phrase"})
+
+        self.assertEqual(MClassifierTitle.objects(user_id=self.user.pk, title="old phrase").count(), 0)
+
+    def test_bulk_save_applies_and_removes_super_dislikes(self):
+        """
+        Manage Training saves site-level pill edits through /classifier/save_all, which
+        used to ignore super_dislike_ names, so a super-dislike showed "Saved" and was lost.
+        """
+        self.client.login(username="testuser", password="testpass")
+        MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="iphone \\d+",
+            is_regex=True,
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+
+        response = self.client.post(
+            "/classifier/save_all",
+            json.encode(
+                {
+                    "classifiers": {
+                        str(self.feed.pk): {
+                            "super_dislike_title_regex": ["iphone \\d+"],
+                            "super_dislike_tag": ["sponsored"],
+                        }
+                    }
+                }
+            ),
+            content_type="application/json",
+        )
+        self.assertEqual(json.decode(response.content)["code"], 0)
+        title = MClassifierTitle.objects.get(user_id=self.user.pk, title="iphone \\d+")
+        self.assertEqual((title.is_regex, title.score), (True, -2))
+        self.assertEqual(MClassifierTag.objects.get(user_id=self.user.pk, tag="sponsored").score, -2)
+
+        self.client.post(
+            "/classifier/save_all",
+            json.encode({"classifiers": {str(self.feed.pk): {"remove_super_dislike_tag": ["sponsored"]}}}),
+            content_type="application/json",
+        )
+        self.assertEqual(MClassifierTag.objects(user_id=self.user.pk, tag="sponsored").count(), 0)
+
+    def test_typed_global_classifier_requires_archive(self):
+        self.client.login(username="testuser", password="testpass")
+
+        response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "global", "folder_name": "", "like_title": "vision pro"},
+        )
+
+        self.assertEqual(json.decode(response.content)["code"], -1)
+        self.assertEqual(MClassifierTitle.objects(user_id=self.user.pk).count(), 0)
+
     def test_all_classifiers_separates_scoped_from_feed(self):
         """
         The /reader/all_classifiers endpoint should put global classifiers in
@@ -1680,6 +1862,133 @@ class Test_SuperDownvote(TransactionTestCase):
             user_id=self.user.pk, feed_id=self.feed.pk, title="Breaking"
         )
         self.assertEqual(classifier.score, -2)
+
+
+class Test_AIPromptScorePriority(TransactionTestCase):
+    """An AI prompt match scores like any other classifier: a focus match is a +1
+    like, a hidden match is a -1 dislike, and a prompt that didn't match changes
+    nothing. So a like beats it or wins with it, and only a manual Hide (-2)
+    beats a like. Mirrors the Daring Fireball sponsor post: the publisher is
+    liked, the sponsor author is disliked, and a "Non-apple related news" focus
+    prompt matched, so the story was green."""
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="aipriority", password="testpass", email="ai@test.com")
+        self.feed = Feed.objects.get(pk=1)
+        self.story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "[Sponsor] WorkOS: Let Agents Sign Up for Your App",
+            "story_authors": "Daring Fireball Department of Commerce",
+            "story_tags": [],
+            "story_content": "Publish an auth.md file and agents register themselves.",
+            "story_permalink": "https://example.com/workos",
+        }
+
+    def tearDown(self):
+        MClassifierTitle.objects(user_id=self.user.pk).delete()
+        MClassifierAuthor.objects(user_id=self.user.pk).delete()
+        MClassifierFeed.objects(user_id=self.user.pk).delete()
+
+    def make_author_classifier(self, score):
+        return MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author="Daring Fireball Department of Commerce",
+            score=score,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def make_feed_classifier(self, score):
+        return MClassifierFeed.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            score=score,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def score(self, prompt_score, titles=None, authors=None, feeds=None):
+        return compute_story_score(
+            self.story,
+            classifier_titles=titles or [],
+            classifier_authors=authors or [],
+            classifier_tags=[],
+            classifier_feeds=feeds or [],
+            prompt_score=prompt_score,
+        )
+
+    def test_ai_focus_beats_plain_author_dislike(self):
+        """The sponsor post stays green: an AI focus match outranks a -1 author."""
+        score = self.score(
+            1,
+            authors=[self.make_author_classifier(-1)],
+            feeds=[self.make_feed_classifier(1)],
+        )
+        self.assertEqual(score, 1)
+
+    def test_super_dislike_author_beats_ai_focus(self):
+        """Turning the author into a super dislike makes the sponsor post red."""
+        score = self.score(
+            1,
+            authors=[self.make_author_classifier(-2)],
+            feeds=[self.make_feed_classifier(1)],
+        )
+        self.assertEqual(score, -2)
+
+    def test_super_dislike_keeps_its_strength_against_ai_hidden(self):
+        """A -2 author and a hidden AI match stay a super dislike, not a -1."""
+        score = self.score(-1, authors=[self.make_author_classifier(-2)])
+        self.assertEqual(score, -2)
+
+    def make_title_classifier(self, score):
+        return MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="WorkOS",
+            score=score,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def test_manual_like_beats_ai_hidden(self):
+        """An AI hidden match is a dislike like any other, so a liked title wins."""
+        self.assertEqual(self.score(-1, titles=[self.make_title_classifier(1)]), 1)
+
+    def test_ai_hidden_alone_hides(self):
+        """With nothing else trained, an AI hidden match is the story's dislike."""
+        self.assertEqual(self.score(-1), -1)
+
+    def test_ai_hidden_and_manual_dislike_stay_a_dislike(self):
+        self.assertEqual(self.score(-1, authors=[self.make_author_classifier(-1)]), -1)
+
+    def test_unmatched_ai_prompt_changes_nothing(self):
+        """A prompt that didn't match (0) or never ran (None) leaves the manual score alone."""
+        self.assertEqual(self.score(0, authors=[self.make_author_classifier(-1)]), -1)
+        self.assertEqual(self.score(None, titles=[self.make_title_classifier(1)]), 1)
+        self.assertEqual(self.score(0, feeds=[self.make_feed_classifier(1)]), 1)
+
+    def test_score_story_super_dislike_beats_ai_focus(self):
+        """UserSubscription.score_story() builds the API score field with the same rule."""
+        scores = {"author": -2, "tags": 0, "title": 0, "feed": 1, "prompt": 1}
+        self.assertEqual(UserSubscription.score_story(scores), -2)
+
+    def test_score_story_ai_focus_beats_plain_dislike(self):
+        scores = {"author": -1, "tags": 0, "title": 0, "feed": 1, "prompt": 1}
+        self.assertEqual(UserSubscription.score_story(scores), 1)
+
+    def test_score_story_manual_like_beats_ai_hidden(self):
+        scores = {"author": 0, "tags": 0, "title": 1, "feed": 0, "prompt": -1}
+        self.assertEqual(UserSubscription.score_story(scores), 1)
+
+    def test_score_story_ai_hidden_alone_hides(self):
+        scores = {"author": 0, "tags": 0, "title": 0, "feed": 1, "prompt": -1}
+        self.assertEqual(UserSubscription.score_story(scores), -1)
 
 
 class Test_ScopedClassifiersParity(TransactionTestCase):
@@ -2064,7 +2373,7 @@ class Test_AIPromptClassifierCoverage(TransactionTestCase):
             username="coverageuser", password="testpass", email="coverage@test.com"
         )
         self.feed = Feed.objects.get(pk=1)
-        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=True)
+        UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=True, active=True)
         self.prompt = MClassifierPrompt.objects.create(
             user_id=self.user.pk,
             feed_id=self.feed.pk,
@@ -2164,3 +2473,349 @@ class Test_AIPromptClassifierCoverage(TransactionTestCase):
             ["1:newc"],
             "The story that actually arrived must be classified, not the newest by date",
         )
+
+
+class Test_AIPromptClassifierSubscribers(TransactionTestCase):
+    """AI prompts only run and bill on feeds the user actively subscribes to.
+
+    apps/analyzer/tests.py: MClassifierPrompt.feed_has_prompt_subscribers returned every
+    user with a feed_id=0 (global or folder) prompt for every feed, so each fetch anywhere
+    on NewsBlur ran and billed their prompts against feeds they don't subscribe to.
+    """
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="promptsubscriber", password="testpass", email="promptsubscriber@test.com"
+        )
+        self.user.profile.is_usage_billing = True
+        self.user.profile.save()
+        self.subscribed_feed = Feed.objects.get(pk=1)
+        self.unsubscribed_feed = Feed.objects.get(pk=4)
+        self.muted_feed = Feed.objects.get(pk=5)
+        UserSubscription.objects.create(user=self.user, feed=self.subscribed_feed, active=True)
+        UserSubscription.objects.create(user=self.user, feed=self.muted_feed, active=False)
+        self.global_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=0, folder_id="", prompt="any new language", classifier_type="focus"
+        )
+
+    def tearDown(self):
+        MClassifierPrompt.invalidate_cache(
+            self.user.pk,
+            str(self.global_prompt.id),
+            feed_ids=[self.subscribed_feed.pk, self.unsubscribed_feed.pk, self.muted_feed.pk],
+        )
+        MClassifierPrompt.objects(user_id=self.user.pk).delete()
+
+    def fetch(self, feed):
+        """Classify one new story through classify_stories_for_subscribers in
+        utils/feed_fetcher.py. Returns (LLM calls, billing records)."""
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        worker = FeedFetcherWorker.__new__(FeedFetcherWorker)
+        worker.options = {"verbose": 0}
+        story = {
+            "story_hash": "%s:promptsubscriber" % feed.pk,
+            "story_feed_id": feed.pk,
+            "story_title": "Rust 2.0 ships a new borrow checker",
+            "story_content": "A story about a programming language.",
+            "image_urls": [],
+        }
+        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
+            "utils.ai_functions.anthropic.Anthropic"
+        ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
+            block = MagicMock()
+            block.type = "tool_use"
+            block.name = "classify_stories"
+            block.input = {"classifications": [{"id": story["story_hash"], "classification": 1}]}
+            MockAnthropic.return_value.messages.create.return_value.content = [block]
+            worker.classify_stories_for_subscribers(
+                feed, [story], new_story_count=1, new_story_hashes=[story["story_hash"]]
+            )
+            return MockAnthropic.return_value.messages.create.call_count, record_usage.call_count
+
+    def test_global_prompt_runs_and_bills_on_a_subscribed_feed(self):
+        self.assertEqual(self.fetch(self.subscribed_feed), (1, 1))
+
+    def test_global_prompt_neither_runs_nor_bills_on_an_unsubscribed_feed(self):
+        self.assertEqual(self.fetch(self.unsubscribed_feed), (0, 0))
+
+    def test_global_prompt_neither_runs_nor_bills_on_a_muted_feed(self):
+        self.assertEqual(self.fetch(self.muted_feed), (0, 0))
+
+
+class Test_AIPromptClassifierFolderScope(TransactionTestCase):
+    """Folder-scoped AI prompts only run, bill and score on the sites in their folder.
+
+    apps/analyzer/tests.py: Android and iOS save a folder prompt with feed_id=0 and the
+    folder's path in folder_id. MClassifierPrompt.get_prompts_for_user lumped every
+    feed_id=0 prompt in with the global ones, and the feed fetcher passed no folder
+    membership, so a prompt scoped to one folder was classified and billed against every
+    feed the user reads, and its verdicts colored stories outside the folder.
+    """
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="folderprompt", password="testpass", email="folderprompt@test.com"
+        )
+        self.user.profile.is_usage_billing = True
+        self.user.profile.save()
+        self.tech_feed = Feed.objects.get(pk=1)
+        self.swift_feed = Feed.objects.get(pk=2)
+        self.other_feed = Feed.objects.get(pk=3)
+        self.feeds = [self.tech_feed, self.swift_feed, self.other_feed]
+        for feed in self.feeds:
+            UserSubscription.objects.create(user=self.user, feed=feed, is_trained=True, active=True)
+        # Tech holds tech_feed directly and swift_feed in its Swift subfolder.
+        # other_feed sits at the top level, outside every folder.
+        UserSubscriptionFolders.objects.create(
+            user=self.user,
+            folders=json.encode(
+                [{"Tech": [self.tech_feed.pk, {"Swift": [self.swift_feed.pk]}]}, self.other_feed.pk]
+            ),
+        )
+        self.folder_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk,
+            feed_id=0,
+            folder_id="Tech",
+            prompt="programming languages",
+            classifier_type="focus",
+        )
+
+    def tearDown(self):
+        feed_ids = [feed.pk for feed in self.feeds]
+        for prompt in MClassifierPrompt.objects(user_id=self.user.pk):
+            MClassifierPrompt.invalidate_cache(self.user.pk, str(prompt.id), feed_ids=feed_ids)
+        MClassifierPrompt.objects(user_id=self.user.pk).delete()
+
+    def story(self, feed):
+        return {
+            "story_hash": "%s:folderprompt" % feed.pk,
+            "story_feed_id": feed.pk,
+            "story_title": "Rust 2.0 ships a new borrow checker",
+            "story_content": "A story about a programming language.",
+            "image_urls": [],
+        }
+
+    def classify(self, stories, feed_ids=None):
+        """Run classify_stories against a mocked Anthropic client that matches every story.
+
+        Returns (classifications, prompts the LLM was asked about, billing records).
+        """
+        block = MagicMock()
+        block.type = "tool_use"
+        block.name = "classify_stories"
+        block.input = {"classifications": [{"id": s["story_hash"], "classification": 1} for s in stories]}
+        response = MagicMock()
+        response.content = [block]
+        response.usage.input_tokens = 120
+        response.usage.output_tokens = 30
+
+        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
+            "utils.ai_functions.anthropic.Anthropic"
+        ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
+            create = MockAnthropic.return_value.messages.create
+            create.return_value = response
+            result = MClassifierPrompt.classify_stories(self.user.pk, stories, feed_ids=feed_ids)
+            asked = [call.kwargs["system"] for call in create.call_args_list]
+            billed = [call.kwargs for call in record_usage.call_args_list]
+        return result, asked, billed
+
+    def cached_score(self, prompt, feed):
+        story_hash = self.story(feed)["story_hash"]
+        return MClassifierPrompt.get_cached_scores(self.user.pk, str(prompt.id), feed.pk, [story_hash]).get(
+            story_hash
+        )
+
+    def test_folder_prompt_runs_and_bills_for_a_feed_in_its_folder(self):
+        story = self.story(self.tech_feed)
+
+        result, asked, billed = self.classify([story], feed_ids=[self.tech_feed.pk])
+
+        self.assertEqual(result, {story["story_hash"]: 1})
+        self.assertEqual(len(asked), 1)
+        self.assertIn("programming languages", asked[0])
+        self.assertEqual(len(billed), 1)
+        self.assertEqual(billed[0]["user_id"], self.user.pk)
+        self.assertEqual(self.cached_score(self.folder_prompt, self.tech_feed), 1)
+
+    def test_folder_prompt_neither_runs_nor_bills_for_a_feed_outside_its_folder(self):
+        story = self.story(self.other_feed)
+
+        result, asked, billed = self.classify([story], feed_ids=[self.other_feed.pk])
+
+        self.assertEqual(result, {story["story_hash"]: 0})
+        self.assertEqual(asked, [], "A Tech prompt must not be sent to the LLM for a site outside Tech")
+        self.assertEqual(billed, [], "A Tech prompt must not bill for a site outside Tech")
+        self.assertIsNone(self.cached_score(self.folder_prompt, self.other_feed))
+
+    def fetch(self, feed):
+        """Classify one new story through the fetch-time path, classify_stories_for_subscribers
+        in utils/feed_fetcher.py. Returns (LLM calls, billing records)."""
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        worker = FeedFetcherWorker.__new__(FeedFetcherWorker)
+        worker.options = {"verbose": 0}
+        story = self.story(feed)
+        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
+            "utils.ai_functions.anthropic.Anthropic"
+        ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
+            block = MagicMock()
+            block.type = "tool_use"
+            block.name = "classify_stories"
+            block.input = {"classifications": [{"id": story["story_hash"], "classification": 1}]}
+            MockAnthropic.return_value.messages.create.return_value.content = [block]
+            worker.classify_stories_for_subscribers(
+                feed, [story], new_story_count=1, new_story_hashes=[story["story_hash"]]
+            )
+            return MockAnthropic.return_value.messages.create.call_count, record_usage.call_count
+
+    def test_feed_fetcher_skips_a_folder_prompt_for_a_feed_outside_its_folder(self):
+        self.assertEqual(self.fetch(self.other_feed), (0, 0))
+        self.assertEqual(self.fetch(self.tech_feed), (1, 1))
+
+    def test_folder_prompt_covers_the_same_sites_as_a_folder_title_classifier(self):
+        """A folder covers only the sites filed directly in it, exactly like the folder-scoped
+        title/author/tag/text/url classifiers (classifier_matches_story_feed)."""
+        swift_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk,
+            feed_id=0,
+            folder_id="Tech - Swift",
+            prompt="swift concurrency",
+            classifier_type="focus",
+        )
+        folder_feed_ids = load_folder_feed_ids(self.user.pk)
+        for prompt in (self.folder_prompt, swift_prompt):
+            title_classifier = MClassifierTitle(
+                user_id=self.user.pk, feed_id=0, scope="folder", folder_name=prompt.folder_id, title="x"
+            )
+            for feed in self.feeds:
+                self.assertEqual(
+                    prompt.applies_to_feed(feed.pk, folder_feed_ids),
+                    classifier_matches_story_feed(title_classifier, feed.pk, folder_feed_ids),
+                    "%s on feed %s" % (prompt.folder_id, feed.pk),
+                )
+
+        result, asked, _billed = self.classify([self.story(self.swift_feed)], feed_ids=[self.swift_feed.pk])
+        self.assertEqual(len(asked), 1)
+        self.assertIn("swift concurrency", asked[0])
+
+    def test_global_prompt_still_runs_on_every_feed(self):
+        self.folder_prompt.delete()
+        MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=0, folder_id="", prompt="any new language", classifier_type="focus"
+        )
+
+        for feed in self.feeds:
+            story = self.story(feed)
+            result, asked, billed = self.classify([story], feed_ids=[feed.pk])
+            self.assertEqual(result, {story["story_hash"]: 1}, "feed %s" % feed.pk)
+            self.assertEqual((len(asked), len(billed)), (1, 1), "feed %s" % feed.pk)
+
+    def test_feed_prompt_only_runs_on_its_own_feed(self):
+        self.folder_prompt.delete()
+        MClassifierPrompt.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.other_feed.pk,
+            prompt="release notes",
+            classifier_type="focus",
+        )
+
+        _result, asked, billed = self.classify([self.story(self.other_feed)], feed_ids=[self.other_feed.pk])
+        self.assertEqual((len(asked), len(billed)), (1, 1))
+
+        _result, asked, billed = self.classify([self.story(self.tech_feed)], feed_ids=[self.tech_feed.pk])
+        self.assertEqual((asked, billed), ([], []))
+
+    def test_folders_load_once_and_only_for_users_with_folder_prompts(self):
+        """The fetcher classifies for every prompt subscriber of a feed, so the folder lookup
+        must be one UserSubscriptionFolders read per user per fetch, and none for users whose
+        prompts are all global or feed-scoped."""
+        stories = [self.story(feed) for feed in self.feeds]
+        feed_ids = [feed.pk for feed in self.feeds]
+
+        with patch("apps.analyzer.models.load_folder_feed_ids", wraps=load_folder_feed_ids) as load_folders:
+            self.classify(stories, feed_ids=feed_ids)
+        self.assertEqual(load_folders.call_count, 1)
+
+        self.folder_prompt.delete()
+        MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=0, folder_id="", prompt="any new language", classifier_type="focus"
+        )
+        MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=self.tech_feed.pk, prompt="release notes", classifier_type="focus"
+        )
+        with patch("apps.analyzer.models.load_folder_feed_ids", wraps=load_folder_feed_ids) as load_folders:
+            self.classify(stories, feed_ids=feed_ids)
+        self.assertEqual(load_folders.call_count, 0)
+
+    def test_cached_folder_prompt_score_is_not_read_for_a_feed_outside_its_folder(self):
+        """apps/reader/views.py get_prompt_scores_or_queue must apply the same folder rule
+        when it reads cached verdicts for the story views."""
+        from apps.reader.views import get_prompt_scores_or_queue
+
+        global_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=0, folder_id="", prompt="any new language", classifier_type="focus"
+        )
+        # Simulate stale verdicts written for every feed (what the old fetcher produced).
+        stories = [self.story(feed) for feed in self.feeds]
+        for prompt in (self.folder_prompt, global_prompt):
+            for story in stories:
+                MClassifierPrompt.set_cached_scores(
+                    self.user.pk, str(prompt.id), story["story_feed_id"], {story["story_hash"]: 1}
+                )
+
+        for folder_feed_ids in (None, load_folder_feed_ids(self.user.pk)):
+            data = get_prompt_scores_or_queue(
+                self.user, stories, [feed.pk for feed in self.feeds], folder_feed_ids=folder_feed_ids
+            )
+            prompts_by_hash = {
+                story_hash: sorted(detail["prompt"] for detail in details)
+                for story_hash, details in data["details"].items()
+            }
+            self.assertEqual(
+                prompts_by_hash,
+                {
+                    self.story(self.tech_feed)["story_hash"]: ["any new language", "programming languages"],
+                    self.story(self.swift_feed)["story_hash"]: ["any new language"],
+                    self.story(self.other_feed)["story_hash"]: ["any new language"],
+                },
+            )
+            self.assertEqual(set(data["scores"].values()), {1})
+
+    def test_focus_match_beats_hidden_match_from_another_prompt(self):
+        """apps/reader/views.py get_prompt_scores_or_queue folds every matching prompt into
+        one score per story the way likes and dislikes combine: a focus match wins."""
+        from apps.reader.views import get_prompt_scores_or_queue
+
+        hidden_prompt = MClassifierPrompt.objects.create(
+            user_id=self.user.pk, feed_id=0, folder_id="", prompt="anything at all", classifier_type="hidden"
+        )
+        tech_story = self.story(self.tech_feed)
+        swift_story = self.story(self.swift_feed)
+        for story in (tech_story, swift_story):
+            MClassifierPrompt.set_cached_scores(
+                self.user.pk, str(hidden_prompt.id), story["story_feed_id"], {story["story_hash"]: -1}
+            )
+        # Only the Tech folder's focus prompt matched the tech story.
+        MClassifierPrompt.set_cached_scores(
+            self.user.pk, str(self.folder_prompt.id), self.tech_feed.pk, {tech_story["story_hash"]: 1}
+        )
+
+        data = get_prompt_scores_or_queue(
+            self.user,
+            [tech_story, swift_story],
+            [self.tech_feed.pk, self.swift_feed.pk],
+            folder_feed_ids=load_folder_feed_ids(self.user.pk),
+        )
+        self.assertEqual(data["scores"][tech_story["story_hash"]], 1)
+        self.assertEqual(data["scores"][swift_story["story_hash"]], -1)

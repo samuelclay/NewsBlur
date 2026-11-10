@@ -50,35 +50,35 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout - Split'),
+                $.make('div', { className: 'NB-popover-section-title' }, gettext('Story Layout - Split')),
                 $.make('ul', { className: 'segmented-control NB-options-story-titles-pane' }, [
                     $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-west', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Left'
+                        gettext('Left')
                     ]),
                     $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-north', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Top'
+                        gettext('Top')
                     ]),
                     $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-south NB-active', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Bottom'
+                        gettext('Bottom')
                     ])
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-single-story' }, [
                     $.make('li', { className: 'NB-single-story-option NB-options-single-story-off NB-active', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'All Stories'
+                        gettext('All Stories')
                     ]),
                     $.make('li', { className: 'NB-single-story-option NB-options-single-story-on', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Single Story'
+                        gettext('Single Story')
                     ])
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-story-position' }, [
                     $.make('li', { className: 'NB-story-position-option NB-options-story-position-stretch', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Full width'
+                        gettext('Full width')
                     ]),
                     $.make('li', { className: 'NB-story-position-option NB-options-story-position-left', role: "button" }, [
                         $.make('div', { className: 'NB-icon' })
@@ -92,11 +92,11 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ])
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout - Grid Columns'),
+                $.make('div', { className: 'NB-popover-section-title' }, gettext('Story Layout - Grid Columns')),
                 $.make('ul', { className: 'segmented-control NB-options-grid-columns' }, [
                     $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-0', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Auto'
+                        gettext('Auto')
                     ]),
                     $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-1', role: "button" }, [
                         '1'
@@ -116,13 +116,13 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         'XS'
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-s', role: "button" }, [
-                        'Short'
+                        pgettext('card height', 'Short')
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-m', role: "button" }, [
-                        'Medium'
+                        pgettext('card height', 'Medium')
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-l', role: "button" }, [
-                        'Tall'
+                        pgettext('card height', 'Tall')
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xl', role: "button" }, [
                         'XL'
@@ -130,7 +130,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ])
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Story Typography'),
+                $.make('div', { className: 'NB-popover-section-title' }, gettext('Story Typography')),
                 $.make('ul', { className: 'segmented-control NB-options-story-font-size' }, [
                     $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-xs', role: "button" }, 'XS'),
                     $.make('li', { className: 'NB-story-font-size-option NB-options-font-size-s', role: "button" }, 'S'),
@@ -149,26 +149,26 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-font-family-option NB-options-font-family-sans-serif NB-active', role: "button" }, 'Helvetica'),
                     $.make('li', { className: 'NB-font-family-option NB-options-font-family-serif', role: "button" }, 'Palatino / Georgia'),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-gotham', role: "button" }, [
-                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
+                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, gettext('Premium'))),
                         'Gotham Narrow'
                     ]),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-sentinel', role: "button" }, [
-                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
+                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, gettext('Premium'))),
                         'Sentinel'
                     ]),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-whitney', role: "button" }, [
-                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
+                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, gettext('Premium'))),
                         'Whitney'
                     ]),
                     $.make('li', { className: 'NB-font-family-option NB-premium-only NB-options-font-family-chronicle', role: "button" }, [
-                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, 'Premium')),
+                        (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-tag' }, gettext('Premium'))),
                         'Chronicle'
                     ])
                 ]),
-                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-explainer' }, [
-                    'Premium fonts require a ',
-                    $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium account')
-                ]))
+                // story_options_popover.js: One translated sentence; the markers wrap the upgrade link.
+                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-explainer' }).html(interpolate(
+                    _.escape(gettext('Premium fonts require a %(link_start)spremium account%(link_end)s')),
+                    { link_start: '<span class="NB-splash-link NB-premium-link">', link_end: '</span>' }, true)))
             ])
         ]));
 

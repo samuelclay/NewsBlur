@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  FriendsListViewController.m
 //  NewsBlur
@@ -59,6 +60,52 @@
     
     [self updateTheme];
     [self.friendSearchBar becomeFirstResponder];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+
+    // FriendsListViewController.m follows the system search height instead of the XIB's original 44-point bar.
+    CGRect bounds = self.view.bounds;
+    CGSize searchSize = [self.friendSearchBar sizeThatFits:CGSizeMake(CGRectGetWidth(bounds), CGFLOAT_MAX)];
+    CGFloat searchHeight = MAX(44, searchSize.height);
+    CGRect searchFrame = CGRectMake(0, 0, CGRectGetWidth(bounds), searchHeight);
+    if (!CGRectEqualToRect(self.friendSearchBar.frame, searchFrame)) {
+        self.friendSearchBar.frame = searchFrame;
+    }
+    CGRect tableFrame = CGRectMake(0, CGRectGetMaxY(searchFrame), CGRectGetWidth(bounds),
+                                  MAX(0, CGRectGetHeight(bounds) - CGRectGetMaxY(searchFrame)));
+    if (!CGRectEqualToRect(self.friendsTable.frame, tableFrame)) {
+        self.friendsTable.frame = tableFrame;
+    }
+    [self.friendsTable layoutIfNeeded];
+    for (UITableViewCell *cell in self.friendsTable.visibleCells) {
+        [self layoutProfileContentInCell:cell];
+    }
+}
+
+- (void)layoutProfileContentInCell:(UITableViewCell *)cell {
+    [cell layoutIfNeeded];
+    for (UIView *content in cell.contentView.subviews) {
+        if ([content isKindOfClass:[ProfileBadge class]]) {
+            ProfileBadge *badge = (ProfileBadge *)content;
+            // FriendsListViewController.m sizes the badge inside the area reserved by the outer cell for content.
+            badge.frame = CGRectInset(cell.contentView.bounds, 5, 5);
+            [badge setNeedsLayout];
+            [badge layoutIfNeeded];
+            CGFloat width = CGRectGetWidth(badge.contentView.bounds);
+            UILabel *labels[] = {badge.username, badge.userDescription, badge.userLocation};
+            for (NSUInteger index = 0; index < sizeof(labels) / sizeof(labels[0]); index++) {
+                UILabel *label = labels[index];
+                if (!label) continue;
+                CGRect frame = label.frame;
+                frame.size.width = MAX(0, width - CGRectGetMinX(frame) - 10);
+                label.frame = frame;
+            }
+        } else if ([content isKindOfClass:[UILabel class]]) {
+            content.frame = cell.contentView.bounds;
+        }
+    }
 }
 
 - (void)updateTheme {
@@ -225,7 +272,7 @@ viewForHeaderInSection:(NSInteger)section {
     headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-    headerLabel.text = @"RECOMMENDED PEOPLE TO FOLLOW";
+    headerLabel.text = [NBLocalization text:@"RECOMMENDED PEOPLE TO FOLLOW"];
     
     customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
                                   colorWithAlphaComponent:0.8];
@@ -239,6 +286,12 @@ viewForHeaderInSection:(NSInteger)section {
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
     folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];    
+    // FriendsListViewController.m lays the header out from the left edge and mirrors it for Arabic and Hebrew.
+    if (NBLocalization.isRightToLeft) {
+        headerLabel.frame = [NBLocalization directionalRect:headerLabel.frame within:customView.bounds rightToLeft:YES];
+        headerLabel.textAlignment = NSTextAlignmentRight;
+        folderImageView.frame = [NBLocalization directionalRect:folderImageView.frame within:customView.bounds rightToLeft:YES];
+    }
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
 }
@@ -256,16 +309,8 @@ viewForHeaderInSection:(NSInteger)section {
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
-    if (self.inSearch_){
-        NSInteger userCount = [self.userProfiles count];
-        return userCount;
-    } else {
-        NSInteger userCount = [self.suggestedUserProfiles count];
-        if (!userCount) {
-            return 3;
-        }
-        return userCount;
-    }
+    NSArray *profiles = self.inSearch_ ? self.userProfiles : self.suggestedUserProfiles;
+    return MAX(1, profiles.count);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -278,53 +323,39 @@ viewForHeaderInSection:(NSInteger)section {
     if (cell == nil) {
         cell = [[UITableViewCell alloc] 
                 initWithStyle:UITableViewCellStyleDefault 
-                reuseIdentifier:nil];
+                reuseIdentifier:CellIdentifier];
     } else {
         [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
     
-    ProfileBadge *badge = [[ProfileBadge alloc] init];
-    badge.frame = CGRectMake(5, 5, vb.size.width - 35, self.view.frame.size.height);
-    
-    
-    if (self.inSearch_){
-        NSInteger userProfileCount = [self.userProfiles count];
-        
-        if (userProfileCount) {
-            if (userProfileCount > indexPath.row) {
-                [badge refreshWithProfile:[self.userProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
-                [cell.contentView addSubview:badge];
-                cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-            }
-        } else {
-            
-            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
-            int row = 0;
-            if (!self.isPhone) {
-                row = 1;
-            }
-            
-            if (indexPath.row == row) {
-                UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
-                [cell.contentView addSubview:msg];
-                msg.text = @"No results.";
-                msg.textColor = UIColorFromRGB(0x7a7a7a);
-                if (vb.size.width > 320) {
-                    msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 21.0];
-                } else {
-                    msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 15.0];
-                }
-                msg.textAlignment = NSTextAlignmentCenter;
-            }
-
-        }
-        
-    } 
+    // FriendsListViewController.m uses the same source for recommended profiles, search results, and profile navigation.
+    NSArray *profiles = self.inSearch_ ? self.userProfiles : self.suggestedUserProfiles;
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    if (indexPath.row < profiles.count) {
+        ProfileBadge *badge = [[ProfileBadge alloc] init];
+        CGFloat badgeWidth = MAX(0, CGRectGetWidth(cell.contentView.bounds) - 10);
+        badge.frame = CGRectMake(5, 5, badgeWidth, 130);
+        [badge refreshWithProfile:profiles[indexPath.row] showStats:NO withWidth:badgeWidth];
+        [cell.contentView addSubview:badge];
+        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+    } else {
+        UILabel *message = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
+        message.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        message.text = self.inSearch_ ? [NBLocalization text:@"No results."] : [NBLocalization text:@"No friends to suggest."];
+        message.textColor = UIColorFromRGB(0x7a7a7a);
+        message.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:vb.size.width > 320 ? 21.0 : 15.0];
+        message.textAlignment = NSTextAlignmentCenter;
+        [cell.contentView addSubview:message];
+    }
     
     cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self layoutProfileContentInCell:cell];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -336,15 +367,16 @@ viewForHeaderInSection:(NSInteger)section {
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-    NSInteger currentRow = indexPath.row;
-    NSInteger row = currentRow;
-    appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
-    appDelegate.activeUserProfileName = [[self.userProfiles objectAtIndex:row] objectForKey:@"username"];
+    NSArray *profiles = self.inSearch_ ? self.userProfiles : self.suggestedUserProfiles;
+    if (indexPath.row >= profiles.count) return;
+    NSDictionary *profile = profiles[indexPath.row];
+    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", profile[@"user_id"]];
+    appDelegate.activeUserProfileName = profile[@"username"];
     [self.friendSearchBar resignFirstResponder];
     
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close" 
+                                   initWithTitle:[NBLocalization text:@"Close"]
                                    style:UIBarButtonItemStyleDone 
                                    target:self 
                                    action:@selector(hideUserProfileModal)];

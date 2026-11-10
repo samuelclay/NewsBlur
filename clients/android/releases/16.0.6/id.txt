@@ -1,0 +1,1 @@
+Memperbaiki masalah di tablet saat menandai feed sebagai sudah dibaca dapat membuat NewsBlur masuk ke latar belakang. Kini tombol bawah dan menu feed sama-sama menjaga aplikasi tetap terbuka agar Anda bisa melanjutkan membaca.

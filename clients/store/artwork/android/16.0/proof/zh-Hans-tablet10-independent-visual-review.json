@@ -1,0 +1,33 @@
+{
+  "reviewed_at": "2026-10-17T16:24:32Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/zh-Hans/tenInchScreenshots/panel-01.png",
+      "sha256": "3355f3297733bf785535ecee2879d063cb37b4154f7cf7bb2ce07593a374d69e",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hans/tenInchScreenshots/panel-02.png",
+      "sha256": "b8a36d6e1b399ffa5976aa9f83aca18e6dcb544929cd5d1058ee988dc63d1916",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hans/tenInchScreenshots/panel-03.png",
+      "sha256": "26e4804cf144bb33155992d3fa924b05b1bd40319367c360443c56796a5edf2d",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hans/tenInchScreenshots/panel-04.png",
+      "sha256": "2b57bb4618414c1aea761014db17cc868d28f460e02a2f9584da591891e36a6f",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Simplified Chinese native controls and dates are legible, without missing glyphs or layout clipping.",
+    "Four populated native scenes show the cooking feeds and articles; no notification banners.",
+    "English feed and story names are original content. Native fixed split, read-state dimming and drawer scrim are expected current-release behavior."
+  ],
+  "scope": "Four ten-inch still exports only; video and store state are separate."
+}

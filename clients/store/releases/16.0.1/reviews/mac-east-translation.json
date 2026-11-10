@@ -1,0 +1,83 @@
+{
+  "version": "16.0.1",
+  "platform": "macos",
+  "agent": "mac_copy_east",
+  "source": "clients/store/metadata/en.json and clients/store/releases/16.0.1/en.json",
+  "languages": [
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "reviewed_fields": [
+    "name",
+    "subtitle",
+    "description",
+    "keywords",
+    "promotional_text",
+    "whats_new",
+    "ios.subscriptions",
+    "ios.subscription_groups"
+  ],
+  "findings": [],
+  "notes": [
+    "Existing Mac listing and shared Apple product copy reviewed against English; no product changes needed.",
+    "Preserved all non-macos keys, shared name/subtitle, product IDs, URLs, feature limits and subscription disclosures.",
+    "Applied glossary register, article/unread/preferences/keyboard/Ask AI terminology, and distinct simplified/traditional Chinese vocabulary.",
+    "This is translator self-review. Independent review pending."
+  ],
+  "limits": [
+    {
+      "language": "id",
+      "description_characters": 2521,
+      "promotional_text_characters": 119,
+      "keywords_bytes": 86,
+      "whats_new_characters": 533
+    },
+    {
+      "language": "vi",
+      "description_characters": 2525,
+      "promotional_text_characters": 119,
+      "keywords_bytes": 82,
+      "whats_new_characters": 473
+    },
+    {
+      "language": "th",
+      "description_characters": 2129,
+      "promotional_text_characters": 91,
+      "keywords_bytes": 95,
+      "whats_new_characters": 429
+    },
+    {
+      "language": "ja",
+      "description_characters": 1260,
+      "promotional_text_characters": 66,
+      "keywords_bytes": 95,
+      "whats_new_characters": 249
+    },
+    {
+      "language": "ko",
+      "description_characters": 1379,
+      "promotional_text_characters": 63,
+      "keywords_bytes": 84,
+      "whats_new_characters": 289
+    },
+    {
+      "language": "zh-Hans",
+      "description_characters": 931,
+      "promotional_text_characters": 47,
+      "keywords_bytes": 91,
+      "whats_new_characters": 193
+    },
+    {
+      "language": "zh-Hant",
+      "description_characters": 942,
+      "promotional_text_characters": 47,
+      "keywords_bytes": 87,
+      "whats_new_characters": 192
+    }
+  ]
+}

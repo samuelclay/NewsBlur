@@ -1,0 +1,1101 @@
+{
+  "checked_at": "2026-10-17T16:08:06Z",
+  "status": "passed",
+  "clip_count": 84,
+  "scope": "Hash, decode/probe, source still and hierarchy provenance only; visual notification review is recorded separately.",
+  "clips": [
+    {
+      "path": "captures/footage/ar/phone-feeds.mp4",
+      "sha256": "75ce0902f9746e3211f7ee7648ed64e151a481ff0de28c8c0f89008292da75b8",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1108125/30181",
+        "frame_count": 197,
+        "duration": 5.365511
+      },
+      "sidecar": "live_capture"
+    },
+    {
+      "path": "captures/footage/ar/phone-reader.mp4",
+      "sha256": "f89424f56ae01652343408a9c48548b0063b8cb29d587875417262b22356075e",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "6052500/136609",
+        "frame_count": 269,
+        "duration": 6.0715
+      },
+      "sidecar": "live_capture"
+    },
+    {
+      "path": "captures/footage/ar/phone-saved.mp4",
+      "sha256": "91f33bfcdb45545f2a301d91d4599270f8616f619cf308036a2784a28ee9ca65",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22410000/547627",
+        "frame_count": 249,
+        "duration": 6.084744
+      },
+      "sidecar": "live_capture"
+    },
+    {
+      "path": "captures/footage/ar/phone-stories.mp4",
+      "sha256": "c64bd4f1566db9b2ff7a8eb2a51b38b91b1fdf9c02dd72b0f798d3e2f64adcba",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "11430000/274259",
+        "frame_count": 254,
+        "duration": 6.094644
+      },
+      "sidecar": "live_capture"
+    },
+    {
+      "path": "captures/footage/de/phone-feeds.mp4",
+      "sha256": "505515e357bcedb027ffe8858083d11d16683376c36b1115df9a972cadb4a24e",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2261250/59267",
+        "frame_count": 201,
+        "duration": 5.268178
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/de/phone-reader.mp4",
+      "sha256": "d013be1013931df24b6c7bcbdcde41d9c858ee0b27bb4b4ecd39e8f9345715e7",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "3015000/68359",
+        "frame_count": 268,
+        "duration": 6.076356
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/de/phone-saved.mp4",
+      "sha256": "c71513bbdc6977661e9de979f7086f78574d0e166a2a184ff256ae4ab5a80a9e",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2286000/54593",
+        "frame_count": 254,
+        "duration": 6.065889
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/de/phone-stories.mp4",
+      "sha256": "ae3863faa4a5fb4b6b54f2dfe2f41c16226f4c5acd265346a3f41154124497db",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22770000/554603",
+        "frame_count": 253,
+        "duration": 6.162256
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/en/phone-feeds.mp4",
+      "sha256": "851d28926777e888ff8c8052d9fc8d68a78cc3a79629f5d5979ca1f2c8334d2a",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "17280000/212687",
+        "frame_count": 192,
+        "duration": 2.363189
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/en/phone-reader.mp4",
+      "sha256": "c669e3b7ab840d88b7789471cd1198f17ff1fc4343483986f12c4f7b330c0ebb",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1513125/34397",
+        "frame_count": 269,
+        "duration": 6.115022
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/en/phone-saved.mp4",
+      "sha256": "89ea559f9070154c1b4e97e2fcd4859a4eb0a0e1282dc2cddee7db9ccdb056b8",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22140000/544369",
+        "frame_count": 246,
+        "duration": 6.048544
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/en/phone-stories.mp4",
+      "sha256": "ec08f76b185507d43cf67ab9f6f18fb3e5ca1bbc172526d6b3b6eab0a824b623",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "3825000/91469",
+        "frame_count": 255,
+        "duration": 6.097933
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/es/phone-feeds.mp4",
+      "sha256": "c05e6d0a445feb618fb7dd70d0dad61e342086cdb3b138520f35bbb40290cd2c",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "17640000/241117",
+        "frame_count": 196,
+        "duration": 2.679078
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/es/phone-reader.mp4",
+      "sha256": "572104ccc9b5468f7069f45370519a1206d4380a932c200261eb2d64061b371a",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "8100000/183971",
+        "frame_count": 270,
+        "duration": 6.132367
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/es/phone-saved.mp4",
+      "sha256": "92ae5137979dc953466e9fd5420bb78dd0b7c2673786a4070a217efba12a6b3a",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "400000/10257",
+        "frame_count": 240,
+        "duration": 6.1542
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/es/phone-stories.mp4",
+      "sha256": "63ba9815da609fe302deca51af4037a122b1ac4754ef2c612fe1ccd2d963054e",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "3855000/91439",
+        "frame_count": 257,
+        "duration": 6.095933
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/fr/phone-feeds.mp4",
+      "sha256": "1c7fb0afe28e53c3b0702af11dd8ca57bcac0e76898d57fcb3643e1353e0bc06",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "5850000/77221",
+        "frame_count": 195,
+        "duration": 2.574033
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/fr/phone-reader.mp4",
+      "sha256": "ff6e995e1cf31b3c8e2a03c7361a3a34ccbf87b6949eb664dc0237d690dae7cc",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "12150000/277343",
+        "frame_count": 270,
+        "duration": 6.163178
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/fr/phone-saved.mp4",
+      "sha256": "26cbf3fdff64885460f05d6365ea0fa5e7a0cd233f02802455185f2a7ee086a4",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22680000/547819",
+        "frame_count": 252,
+        "duration": 6.086867
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/fr/phone-stories.mp4",
+      "sha256": "be1a12ccbb66a6de58e652b42f969eed893701941bb9add5b9db18ada6519053",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22860000/548743",
+        "frame_count": 254,
+        "duration": 6.097133
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/he/phone-feeds.mp4",
+      "sha256": "3d3b17359929d0ba635a1567536b8ba7ffbbfc34dbabddaa2dcdd958e2a2ba6d",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1350000/17797",
+        "frame_count": 195,
+        "duration": 2.570678
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/he/phone-reader.mp4",
+      "sha256": "897d48c4b97ef1e80d9acb9c9dcf160dc01bfa5a23a021bcbb96038de88056ae",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "4035000/91811",
+        "frame_count": 269,
+        "duration": 6.120733
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/he/phone-saved.mp4",
+      "sha256": "cd10e8cfc838f4ac300c35aaa11509135e88f7298c278b733f669c95dd378d68",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "926250/22883",
+        "frame_count": 247,
+        "duration": 6.102133
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/he/phone-stories.mp4",
+      "sha256": "a989ecc704626db42caf89d56ddc851f8fbb9911e68b26eaeb254c8065f26039",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22950000/550327",
+        "frame_count": 255,
+        "duration": 6.114744
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/hi/phone-feeds.mp4",
+      "sha256": "31724f7316a7c9c9a09d047f53a181a15864115e4e0458d605a71034b4382590",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "17280000/255947",
+        "frame_count": 192,
+        "duration": 2.843856
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/hi/phone-reader.mp4",
+      "sha256": "df8741ab6150ba8500b99d381e9457dab71934b452177ad814d195c57e6b81c8",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "24210000/549179",
+        "frame_count": 269,
+        "duration": 6.101989
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/hi/phone-saved.mp4",
+      "sha256": "b3e2c6b5f3c9faaf0bef7e5980304a7cf386910eea9166d4d6fb94b71c5d9244",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1875000/45493",
+        "frame_count": 250,
+        "duration": 6.065733
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/hi/phone-stories.mp4",
+      "sha256": "3c3fbfbcea0dff972bb5e52c72ef9c7e13078593cd11efec91e0e567f6d68522",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "304800/7333",
+        "frame_count": 254,
+        "duration": 6.110833
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/id/phone-feeds.mp4",
+      "sha256": "d62b779742d6129fa74919e1b84596533b4956309673501b1b014ca0ed1ecafe",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2205000/28541",
+        "frame_count": 196,
+        "duration": 2.536978
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/id/phone-reader.mp4",
+      "sha256": "98a82865cfcd5dacd75d6bd0ff68620c757988c6f647ff0555fd3019ade05cb5",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "12105000/275129",
+        "frame_count": 269,
+        "duration": 6.113978
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/id/phone-saved.mp4",
+      "sha256": "c5d7fdb1353e7c2a3e785d5b455936d992d550a6000e1413f14ed5ddd91019c7",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1170000/28981",
+        "frame_count": 247,
+        "duration": 6.118211
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/id/phone-stories.mp4",
+      "sha256": "d90d631f8a26a41dd47936c850c46780ed7edd7ec10cee26c48cf19b17a3da57",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "11430000/273079",
+        "frame_count": 254,
+        "duration": 6.068422
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/it/phone-feeds.mp4",
+      "sha256": "972d45c82f8ddd62d2fa82fc7db9853d7d46f7c11910c81d7159d2475b6f9d5e",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "8865000/113899",
+        "frame_count": 197,
+        "duration": 2.531089
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/it/phone-reader.mp4",
+      "sha256": "74d2f931b1c3279d26ae42a1a4afe5bc01cad08006a067b51b779401f090b61b",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "4050000/90913",
+        "frame_count": 270,
+        "duration": 6.060867
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/it/phone-saved.mp4",
+      "sha256": "4755fc06b797a8430b5574d963a8fa3ec69dce72fca4f04dd8e21bd29ce528c8",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1245000/30251",
+        "frame_count": 249,
+        "duration": 6.0502
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/it/phone-stories.mp4",
+      "sha256": "a65ee3b5817fc5fb570e332a0e5f4545bbe2a4c8c0632eaa15421a116efa4a03",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "11655000/273149",
+        "frame_count": 259,
+        "duration": 6.069978
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ja/phone-feeds.mp4",
+      "sha256": "e6d4b6c338b7a54506b42fd86323c93366d40998ce9e0c4255de46edeab9cb9e",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "955000/13183",
+        "frame_count": 191,
+        "duration": 2.6366
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ja/phone-reader.mp4",
+      "sha256": "f0daefc81f25478d32fc114f14d4033ac2dccf7f36cd37755acb3be751ae35b1",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "24120000/548279",
+        "frame_count": 268,
+        "duration": 6.091989
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ja/phone-saved.mp4",
+      "sha256": "7a49271d96fd149f7561ea3d7695f331e66586bf93b353a90fa13ce1e10dfec4",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "7410000/184151",
+        "frame_count": 247,
+        "duration": 6.138367
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ja/phone-stories.mp4",
+      "sha256": "6a89bab41200a1c8d6ec4ed1ca38de38d3791c69bc51b66bdca0d52346ae8c00",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "5760000/137827",
+        "frame_count": 256,
+        "duration": 6.125633
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ko/phone-feeds.mp4",
+      "sha256": "c51269a073ca955c384748b205f199723d42f9a69292754df7ecc8152e046919",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "8865000/115787",
+        "frame_count": 197,
+        "duration": 2.573033
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ko/phone-reader.mp4",
+      "sha256": "ccc939036c2532352e16314fd19742654e9dd391b457523c0cd79da6ffd4b9f6",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "24210000/549683",
+        "frame_count": 269,
+        "duration": 6.107589
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ko/phone-saved.mp4",
+      "sha256": "c21e9272b8bfb6986e5ba2af001621e1c51f56463bf5d7ad30c25ee46c12c576",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "830000/20613",
+        "frame_count": 249,
+        "duration": 6.1839
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ko/phone-stories.mp4",
+      "sha256": "8134338de514518b55337a2a127eacf2bd34e6b0f9f16bc676c3246dab59df78",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2540000/61589",
+        "frame_count": 254,
+        "duration": 6.158889
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/nl/phone-feeds.mp4",
+      "sha256": "40aa70dd550e21a3f13671b2e9d4295630f4e57cccbdc91bfcfbe110a7b6dcbd",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "17460000/237929",
+        "frame_count": 194,
+        "duration": 2.643656
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/nl/phone-reader.mp4",
+      "sha256": "073290b096b6e7768fb2d3b0b2e8e9e95e2dc5428e5a9436a214e5c6f0c8f052",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "11970000/273001",
+        "frame_count": 266,
+        "duration": 6.066678
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/nl/phone-saved.mp4",
+      "sha256": "624bfb5e7444be73b1f46fe8222442a2a37a4450c3fd420ba174986b4e645520",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "21960000/550933",
+        "frame_count": 244,
+        "duration": 6.121478
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/nl/phone-stories.mp4",
+      "sha256": "d481bc4abeadda0f869d13cd0fdab6444cf2164cff05a085b068ae76860c4974",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "5715000/136573",
+        "frame_count": 254,
+        "duration": 6.069911
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/pl/phone-feeds.mp4",
+      "sha256": "17bf51cff29027cdb73ceaacce67bc3ab91743cad5f03ae881975b8d7957bbc4",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1773000/23281",
+        "frame_count": 197,
+        "duration": 2.586767
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/pl/phone-reader.mp4",
+      "sha256": "46cff6b1c3bd23c7cb3fa082490b9076780e2c32af8a5ae46102a41cd0392e20",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "24390000/551651",
+        "frame_count": 271,
+        "duration": 6.129456
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/pl/phone-saved.mp4",
+      "sha256": "ef5a46a600fd8fe23dd1245440c5c4295b600b5ca0e0b2e5056aeb150780ec6b",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "3795000/92251",
+        "frame_count": 253,
+        "duration": 6.150056
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/pl/phone-stories.mp4",
+      "sha256": "ff6a06aaa77cbca8ac6dce47379c8dc9837980bf71fd7440e3526d2a445fcb70",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1161000/27607",
+        "frame_count": 258,
+        "duration": 6.134889
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/pt-BR/phone-feeds.mp4",
+      "sha256": "37504ab6e3a09a33ec5913cc3216f41817a526250ff92144c0c9849588bfbd88",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1764000/23263",
+        "frame_count": 196,
+        "duration": 2.584778
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/pt-BR/phone-reader.mp4",
+      "sha256": "fa7472c280b8fcd5f885d4e0c6986f7daeb5c62ecce9e67a7662ac4f35954487",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "299250/6823",
+        "frame_count": 266,
+        "duration": 6.064889
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/pt-BR/phone-saved.mp4",
+      "sha256": "bcf27271456aa25dd1255206bae5034da46e15185b7b139b987db1ce7cbd1406",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2778750/68327",
+        "frame_count": 247,
+        "duration": 6.073511
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/pt-BR/phone-stories.mp4",
+      "sha256": "ab93738d6543d61d9a3a21a7c61cb3afaee9e512eb5de0420c361550f96b2c45",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "61680/1469",
+        "frame_count": 257,
+        "duration": 6.120822
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ru/phone-feeds.mp4",
+      "sha256": "5b57bf33e343b4d6fd7f7d04fce4fe90df93c5840f0dc0c5cd5d401e26a5a595",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "731250/9623",
+        "frame_count": 195,
+        "duration": 2.566133
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ru/phone-reader.mp4",
+      "sha256": "a69aa71b78e12160d7150da1ecfb72cab704bd0000bb8eac29554f95da247975",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1201500/27331",
+        "frame_count": 267,
+        "duration": 6.073556
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ru/phone-saved.mp4",
+      "sha256": "38fe1300d8782770f2cf9fe1fef74c88c189a74e47718eb5cfcbfc9c7fc04942",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2756250/68687",
+        "frame_count": 245,
+        "duration": 6.105511
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/ru/phone-stories.mp4",
+      "sha256": "1f2cae50df69bf6bb5a9cdbc3bd9d764a0201505d8765005aff74630c82b4d78",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "23625/571",
+        "frame_count": 252,
+        "duration": 6.090656
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/th/phone-feeds.mp4",
+      "sha256": "fae53a9d155709b49ab0654d6e3841927c63316bf675cc6563beba4e6400ee18",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2182500/29473",
+        "frame_count": 194,
+        "duration": 2.619822
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/th/phone-reader.mp4",
+      "sha256": "6168bf3aec44f6e83758009dd25b1ea464cb663a260aac94bf9488f3f0965741",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "3037500/68617",
+        "frame_count": 270,
+        "duration": 6.099289
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/th/phone-saved.mp4",
+      "sha256": "59da202b56c0e7ffabbf884bf77fd791f807ffafcc7578d04b886778f2c40944",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "1512000/36739",
+        "frame_count": 252,
+        "duration": 6.123167
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/th/phone-stories.mp4",
+      "sha256": "5a177eaf5af98b55582f026c0a4f387efa5aa612eddbd167c1ef33732a959df4",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2268000/54703",
+        "frame_count": 252,
+        "duration": 6.0781
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/tr/phone-feeds.mp4",
+      "sha256": "63b0160dc936ccf6bf02d089fa1f5da7cebc616e1fc220684018566a80477b92",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "395000/4323",
+        "frame_count": 237,
+        "duration": 2.5938
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/tr/phone-reader.mp4",
+      "sha256": "ffb34b89a3305fb61074a2782e23bac4bbe0aef02f944d35a7a4d502ff4df301",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "8220000/179663",
+        "frame_count": 274,
+        "duration": 5.988767
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/tr/phone-saved.mp4",
+      "sha256": "dad89d45fe8ba062a2ec0b5c400846b101ac6f01cbd2d6415a1b482dbd4a1303",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22770000/549533",
+        "frame_count": 253,
+        "duration": 6.105922
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/tr/phone-stories.mp4",
+      "sha256": "ea886a3e26ba3d8815b204fe15982b30d91f9c83de5b4fcfa392f0ec720ba495",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "25110000/554699",
+        "frame_count": 279,
+        "duration": 6.163322
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/uk/phone-feeds.mp4",
+      "sha256": "af8c8fbc532eeb611488f49b80f4ca89f9877f8c08a44d9f2504b41bf61bc05d",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "17640000/230507",
+        "frame_count": 196,
+        "duration": 2.561189
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/uk/phone-reader.mp4",
+      "sha256": "8a63315021c1c9d2a22dd7b7d74f98d016e600fe384072b2446ff6caed39a0db",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "12150000/277261",
+        "frame_count": 270,
+        "duration": 6.161356
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/uk/phone-saved.mp4",
+      "sha256": "df93fbb9944914c66a3a91521d9df99aaa4a8646683eb31b7f4e3e6f3d581402",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22230000/550907",
+        "frame_count": 247,
+        "duration": 6.121189
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/uk/phone-stories.mp4",
+      "sha256": "8c91b24e1077be0eaac963f529eb6de8a353ee98b4a25f67e211f03602cdef65",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2295000/54821",
+        "frame_count": 255,
+        "duration": 6.091222
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/vi/phone-feeds.mp4",
+      "sha256": "4ece0f0304a0e48a723b5f4c474ff0416f3f5ddb8edc15caa36fc88468d8c77f",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "17730000/229129",
+        "frame_count": 197,
+        "duration": 2.545878
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/vi/phone-reader.mp4",
+      "sha256": "2f5ba0bcdbea4d439abba68bf00ee52ca8f9ee3378ab450d3c43b0a49a44bbcb",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "2680000/60869",
+        "frame_count": 268,
+        "duration": 6.0869
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/vi/phone-saved.mp4",
+      "sha256": "812edd4cbabd87b429f91647aaa04aea49411165125508995f7dbd0b7c69bc70",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22950000/552889",
+        "frame_count": 255,
+        "duration": 6.143211
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/vi/phone-stories.mp4",
+      "sha256": "87dbcc57bcdccef4113834c3b1d413ca68d06e7fba4fc25c3765f6212c43a73b",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "7650000/182731",
+        "frame_count": 255,
+        "duration": 6.091033
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/zh-Hans/phone-feeds.mp4",
+      "sha256": "97d06a706181db7e22bb2b35a1a580c60bfa98df42681b4e59d49563fb02e5a7",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "17370000/674513",
+        "frame_count": 193,
+        "duration": 7.494589
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/zh-Hans/phone-reader.mp4",
+      "sha256": "b433bba80ee2be494144bd1651d2fbb30f03ccfab765155e30e0fffe672fcd2d",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "3080000/61041",
+        "frame_count": 308,
+        "duration": 6.1041
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/zh-Hans/phone-saved.mp4",
+      "sha256": "8686ed9ccc498b677c5a1d53649adfe4941d6dae16f654ff04cc8d75a2d0dd9c",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "11205000/276479",
+        "frame_count": 249,
+        "duration": 6.143978
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/zh-Hans/phone-stories.mp4",
+      "sha256": "f1febe890d80145cdc71acccab08b35708f288251311c0245d7b0d5d1783c15b",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "23040000/548201",
+        "frame_count": 256,
+        "duration": 6.091122
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/zh-Hant/phone-feeds.mp4",
+      "sha256": "b3229ad0be7900db7287664906c7c260e5db5e834b546e8e6db8a83e28eddb83",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "434250/5963",
+        "frame_count": 193,
+        "duration": 2.650222
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/zh-Hant/phone-reader.mp4",
+      "sha256": "94147c13e38d94a9f7711ae0cf706712464d73f2508f7df75c9c457ae51cfcdc",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "21600000/545357",
+        "frame_count": 240,
+        "duration": 6.059522
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/zh-Hant/phone-saved.mp4",
+      "sha256": "e2f3ac7cbc757e6eeb631c49fd45d40e422a8d63880ac72bfdb6a46583e88438",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "7590000/184157",
+        "frame_count": 253,
+        "duration": 6.138556
+      },
+      "sidecar": "retrospective"
+    },
+    {
+      "path": "captures/footage/zh-Hant/phone-stories.mp4",
+      "sha256": "f3e41b5e362af0dee11de28f0298e529e639a5b6b79c541aa14a631c7edf919c",
+      "probe": {
+        "width": 1080,
+        "height": 2340,
+        "codec": "h264",
+        "frame_rate": "22950000/548707",
+        "frame_count": 255,
+        "duration": 6.096744
+      },
+      "sidecar": "retrospective"
+    }
+  ],
+  "identity_check": "All 21 canonical languages x 4 scenes, Samsung S22 R5CT601C8DA, phone, com.newsblur.storecapture"
+}

@@ -3,6 +3,7 @@ package com.newsblur.util
 import android.content.res.Configuration
 import android.text.TextUtils
 import com.google.gson.Gson
+import com.newsblur.design.ListenPalette
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import kotlinx.coroutines.Dispatchers
@@ -48,10 +49,14 @@ object StoryUtil {
         nightMask: Int,
         enableHighlights: Boolean,
         classifier: Classifier? = null,
+        interfaceRtl: Boolean = false,
+        mediaLabels: Map<String, String> = emptyMap(),
     ): String =
         withContext(Dispatchers.Default) {
             val sb = StringBuilder(8 * 1024)
-            sb.append("<html><head>")
+            // StoryUtil.kt gives the page the interface direction (Arabic, Hebrew) and lets the story
+            // itself take the direction of its own text, so an English story still reads left to right.
+            sb.append(if (interfaceRtl) "<html dir=\"rtl\"><head>" else "<html><head>")
             sb.append(
                 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\"/>",
             )
@@ -73,7 +78,17 @@ object StoryUtil {
                     }
             }
 
-            sb.append("</head><body><div class=\"NB-story\">")
+            // StoryUtil.kt styles Listen's follow-along highlight from ListenPalette.kt's theme colors.
+            val highlightTheme =
+                when {
+                    themeValue != PrefConstants.ThemeValue.AUTO -> themeValue
+                    nightMask == Configuration.UI_MODE_NIGHT_YES -> PrefConstants.ThemeValue.DARK
+                    else -> PrefConstants.ThemeValue.LIGHT
+                }
+            sb.append("<style>").append(ListenPalette.highlightCss(highlightTheme)).append("</style>")
+            // StoryUtil.kt styles storyMedia.js's audio card the same way.
+            sb.append("<style>").append(ListenPalette.mediaCardCss(highlightTheme)).append("</style>")
+            sb.append("</head><body><div class=\"NB-story\" dir=\"auto\">")
             sb.append(storyHtml)
             sb.append("<script src=\"mark.min.js\"></script>")
             if (enableHighlights) {
@@ -86,6 +101,11 @@ object StoryUtil {
                 sb.append(");});</script>")
             }
             sb.append("<script type=\"text/javascript\" src=\"storyDetailView.js\"></script>")
+            sb.append("<script type=\"text/javascript\" src=\"listenFollowAlong.js\"></script>")
+            // storyMedia.js labels its audio cards in the interface language, from strings.xml. Gson escapes < and >,
+            // so a label can't close the script.
+            sb.append("<script>window.NB_media_labels=").append(Gson().toJson(mediaLabels)).append(";</script>")
+            sb.append("<script type=\"text/javascript\" src=\"storyMedia.js\"></script>")
             sb.append("</div></body></html>")
             sb.toString()
         }

@@ -14,23 +14,23 @@ When adding a new model here, also add its pricing to utils/llm_costs.py.
 
 # Cheap tier: used by story classification, discover, curation, and web feed
 # analysis. Always the vendor's cheapest current model.
-ANTHROPIC_MODEL = "claude-haiku-4-5"
-ANTHROPIC_MODEL_DISPLAY = "Claude Haiku 4.5"
+ANTHROPIC_MODEL = "claude-haiku-5-5"
+ANTHROPIC_MODEL_DISPLAY = "Claude Haiku 5.5"
 
 # Chat tier: user-facing conversations — Ask AI and the Daily Briefing — get a
 # Sonnet-class model instead of the cheap tier so answers are worth reading.
-ANTHROPIC_CHAT_MODEL = "claude-sonnet-5"
-ANTHROPIC_CHAT_MODEL_DISPLAY = "Claude Sonnet 5"
+ANTHROPIC_CHAT_MODEL = "claude-sonnet-5-5"
+ANTHROPIC_CHAT_MODEL_DISPLAY = "Claude Sonnet 5.5"
 
-OPENAI_MODEL = "gpt-5.6-luna"
-OPENAI_MODEL_DISPLAY = "GPT-5.6 Luna"
+OPENAI_MODEL = "gpt-6-luna"
+OPENAI_MODEL_DISPLAY = "GPT-6 Luna"
 
-GOOGLE_MODEL = "gemini-3.6-flash"
-GOOGLE_MODEL_DISPLAY = "Gemini 3.6 Flash"
+GOOGLE_MODEL = "gemini-3.8-flash"
+GOOGLE_MODEL_DISPLAY = "Gemini 3.8 Flash"
 
-XAI_MODEL = "grok-4.6"
-XAI_MODEL_DISPLAY = "Grok 4.6"
+XAI_MODEL = "grok-4.7"
+XAI_MODEL_DISPLAY = "Grok 4.7"
 
 # Heavier tier: Archive Assistant runs long multi-tool searches over years of
 # stories, so it keeps a Sonnet-class model instead of the cheap tier.
-ANTHROPIC_ARCHIVE_MODEL = "claude-sonnet-5"
+ANTHROPIC_ARCHIVE_MODEL = "claude-sonnet-5-5"

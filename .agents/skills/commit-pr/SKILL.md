@@ -32,8 +32,8 @@ If genuinely blocked (a review check is stuck, CI is broken by something outside
 |---|---|
 | Repo | `samuelclay/NewsBlur`, default branch `main` |
 | PR template | none; use the body the caller supplies, else the generic default at the bottom |
-| CI on pull requests | `tests.yml` (Django Tests, job `test`), `ios-actions.yml` (iOS Tests), `android-actions.yml` (Android Tests) |
-| Review bots on pull requests | `claude-pr-review.yml` (Claude PR Review) and `codex-pr-review.yml` (Codex PR Review); both run on open, reopen, ready_for_review, and every synchronize |
+| CI on pull requests | `tests.yml` (Django Tests, job `test`), `ios-actions.yml` (iOS Tests, only when the PR touches `clients/ios/` or that workflow), `android-actions.yml` (Android Tests) |
+| Review bots on pull requests | `claude-pr-review.yml` (Claude PR Review) and `codex-pr-review.yml` (Codex PR Review); both run on open, reopen, ready_for_review, and every synchronize. Each posts its top-level summary once, on the PR's first review; later pushes add inline threads only, or nothing when clean |
 | Commit subjects | Plain imperative sentence, no conventional prefix (`Fix`, `Add`, `Never ration ...`). Match `git log --oneline -10`. |
 | Commit trailers | The attribution lines from the current session's system reminder (`Co-Authored-By`, `Claude-Session`) |
 | PR footer | `🤖 Generated with [Claude Code](https://claude.com/claude-code)` then the session URL, per the session reminder |
@@ -191,7 +191,7 @@ Resolve without a code change only when the comment is wrong, stale, or already 
 
 After any follow-up push, repeat the review-task check for the new head, wait only while a review task is pending, then `gh pr checks --watch` again.
 
-**Round cap.** Three review rounds per PR. If the fourth round opens new threads, stop and ask Sam with AskUserQuestion, with the size of the PR next to the size of its first commit, whether to continue, split the PR, or merge with the new findings as follow-up issues. Ask sooner when a round's findings are all second-order races in code this PR itself introduced (a bug fix that has grown locks, leases, queues, or a new store is a subsystem, which is a product decision, not a review thread). Codex at medium thinking (its setting since #2136) keeps finding a real but ever finer edge on a growing surface; #2133 ran seventeen rounds and 102 threads before Sam called it, and the loop was not converging. When Sam closes the loop, say so in the PR body's review section so the next reader knows further findings are follow-ups.
+**Round cap.** Up to ten review rounds per PR. Fix, push and go again through all ten without asking: the review bots run on a less expensive model now, and later rounds still find real things (#2146 found a secret token in a log line at round 7). If the eleventh round opens new threads, stop and ask Sam with AskUserQuestion, with the size of the PR next to the size of its first commit, whether to continue, split the PR, or merge with the new findings as follow-up issues. Ask before ten only when a round's findings need a product decision, such as all second-order races in code this PR itself introduced (a bug fix that has grown locks, leases, queues, or a new store is a subsystem, which is a product decision, not a review thread). Codex at medium thinking (its setting since #2136) keeps finding a real but ever finer edge on a growing surface; #2133 ran seventeen rounds and 102 threads before Sam called it, and the loop was not converging. When Sam closes the loop, say so in the PR body's review section so the next reader knows further findings are follow-ups.
 
 **Final verification, mandatory, immediately before ending the turn:** re-run the thread query and `gh pr checks` against the current head and confirm the Goal holds. If not, keep working or report the blocker explicitly.
 

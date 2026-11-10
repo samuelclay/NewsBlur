@@ -7,6 +7,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
+import android.database.sqlite.SQLiteStatement;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
@@ -223,6 +225,7 @@ public class BlurDatabaseHelper {
             resetCustomIcons();
             dbWrapper.dropAndRecreateTables();
         }
+        com.newsblur.viewModel.AllFoldersViewModel.forgetLastPublished();
         com.newsblur.util.Log.i(this.getClass().getName(), ". . . tables recreated.");
     }
 
@@ -356,6 +359,7 @@ public class BlurDatabaseHelper {
 
     @Nullable
     public Feed getFeed(@Nullable String feedId) {
+        if (feedId == null) return null;
         Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId}, null, null, null, "1");
         Feed result = null;
         while (c.moveToNext()) {
@@ -458,6 +462,35 @@ public class BlurDatabaseHelper {
         }
         c.close();
         return urls;
+    }
+
+    /** One story's image URLs in API order, which apps/analyzer/views.py test_prompt_classifier answers in. */
+    @NonNull
+    public List<String> getStoryImageUrls(@Nullable String storyHash) {
+        List<String> urls = new ArrayList<>();
+        if (storyHash == null) return urls;
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_IMAGE_URLS},
+                DatabaseConstants.STORY_HASH + " = ?", new String[]{storyHash}, null, null, null, "1");
+        if (c.moveToFirst()) {
+            for (String url : TextUtils.split(c.getString(0) == null ? "" : c.getString(0), ",")) {
+                if (!TextUtils.isEmpty(url)) urls.add(url);
+            }
+        }
+        c.close();
+        return urls;
+    }
+
+    /** Each feed's stories_last_month, for the trainer's AI cost estimates in AiClassifierSections.kt. */
+    @NonNull
+    public Map<String, Integer> getStoriesLastMonthByFeed() {
+        Map<String, Integer> stories = new HashMap<>();
+        Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE,
+                new String[]{DatabaseConstants.FEED_ID, DatabaseConstants.FEED_STORIES_LAST_MONTH}, null, null, null, null, null);
+        while (c.moveToNext()) {
+            stories.put(c.getString(0), c.getInt(1));
+        }
+        c.close();
+        return stories;
     }
 
     @NonNull
@@ -1208,29 +1241,25 @@ public class BlurDatabaseHelper {
                 " FROM " + DatabaseConstants.STORY_TEXT_TABLE +
                 " WHERE " + DatabaseConstants.STORY_TEXT_STORY_HASH + " = ?" +
                 " LIMIT 1";
-        Cursor c = dbRO.rawQuery(q, new String[]{hash});
-        if (c.moveToFirst()) {
-            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_TEXT_STORY_TEXT));
-            c.close();
-            return result;
-        } else {
-            c.close();
-            return null;
-        }
+        return readStoryString(q, hash);
     }
 
     @Nullable
     public String getStoryContent(@Nullable String hash) {
         String q = "SELECT " + DatabaseConstants.STORY_CONTENT +
                 " FROM " + DatabaseConstants.STORY_TABLE +
-                " WHERE " + DatabaseConstants.STORY_HASH + " = ?";
-        Cursor c = dbRO.rawQuery(q, new String[]{hash});
-        if (c.moveToFirst()) {
-            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_CONTENT));
-            c.close();
-            return result;
-        } else {
-            c.close();
+                " WHERE " + DatabaseConstants.STORY_HASH + " = ? LIMIT 1";
+        return readStoryString(q, hash);
+    }
+
+    @Nullable
+    private String readStoryString(String query, @Nullable String hash) {
+        if (hash == null) return null;
+        // BlurDatabaseHelper.java reads full articles without the per-row CursorWindow size limit.
+        try (SQLiteStatement statement = dbRO.compileStatement(query)) {
+            statement.bindString(1, hash);
+            return statement.simpleQueryForString();
+        } catch (SQLiteDoneException missingStory) {
             return null;
         }
     }
@@ -1757,6 +1786,41 @@ public class BlurDatabaseHelper {
         boolean result = c.moveToFirst();
         closeQuietly(c);
         return result;
+    }
+
+    /** BlurDatabaseHelper.java finds a story Listen's Up Next queued, if this device has it, so it can be marked read. */
+    @Nullable
+    public Story getStoryByHash(@NonNull String storyHash) {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE,
+                null,
+                DatabaseConstants.STORY_HASH + " = ?",
+                new String[]{storyHash},
+                null, null, null, "1");
+        try {
+            if (!c.moveToFirst()) return null;
+            return Story.fromCursor(c);
+        } finally {
+            closeQuietly(c);
+        }
+    }
+
+    /**
+     * BlurDatabaseHelper.java reports whether a story is read right now, or null when it isn't stored.
+     * ListenManager.kt checks this so auto-continue skips stories read since the queue was captured.
+     */
+    @Nullable
+    public Boolean isStoryRead(@NonNull String storyHash) {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE,
+                new String[]{DatabaseConstants.STORY_READ},
+                DatabaseConstants.STORY_HASH + " = ?",
+                new String[]{storyHash},
+                null, null, null, "1");
+        try {
+            if (!c.moveToFirst()) return null;
+            return c.getInt(0) != 0;
+        } finally {
+            closeQuietly(c);
+        }
     }
 
     public void cleanupDismissals() {

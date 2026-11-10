@@ -1,0 +1,41 @@
+{
+  "archive": "/Users/sclay/Library/Mobile Documents/com~apple~CloudDocs/NewsBlur/Android/Builds/16.0.6/evidence",
+  "files": [
+    {
+      "file": "newsblur-before-mark.png",
+      "sha256": "5e5ff55548df8e165c909ca441de3970fe38346ad3d5ba84ffb72c8dacaf8b59"
+    },
+    {
+      "file": "newsblur-after-mark-before-fix.png",
+      "sha256": "02c9d3809143d166547ec9aab91947dbade66dc4765e98e2d5d28331df9d7885"
+    },
+    {
+      "file": "newsblur-menu-after-before-fix.png",
+      "sha256": "e4a5cf5373a86ee49ff47b0231c91a9e73804603de4012366a47d67dad36321a"
+    },
+    {
+      "file": "newsblur-fixed-light-bottom.png",
+      "sha256": "e3f34ecc154e6aa6242d14c07cd230964a2be04c12ce85b0a78c9673b0999c6f"
+    },
+    {
+      "file": "newsblur-fixed-light-menu.png",
+      "sha256": "f067487a223e6ccc2d39df9db74982ffadaad1fbe6c76aa19288684d3cb4bb3f"
+    },
+    {
+      "file": "newsblur-fixed-dark.png",
+      "sha256": "6977a41f3dfc56cd40caff919e3c39349e91d580122630f175494588f305e9ba"
+    },
+    {
+      "file": "newsblur-fixed-black.png",
+      "sha256": "50ff961064447e1f5863b646568eccf62705091a8269ea708d23731f0d8c3935"
+    },
+    {
+      "file": "newsblur-fixed-sepia.png",
+      "sha256": "0416df3fa81ae7234fa30121c169772a2f42b142409a0c9678198827b145961f"
+    },
+    {
+      "file": "newsblur-16.0.6-play-submitted.png",
+      "sha256": "e080ad9fc1dbb1ef4ea172002699d52be57afaf39538e38f3153bbf48465bc37"
+    }
+  ]
+}

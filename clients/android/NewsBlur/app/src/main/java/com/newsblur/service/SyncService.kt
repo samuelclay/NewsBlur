@@ -19,8 +19,10 @@ import com.newsblur.network.APIConstants
 import com.newsblur.network.FeedApi
 import com.newsblur.network.NetworkClient
 import com.newsblur.network.StoryApi
+import com.newsblur.network.UserApi
 import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.StoriesResponse
+import com.newsblur.preference.ListenPreferences
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager.UPDATE_DB_READY
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
@@ -34,6 +36,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.CursorFilters
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FileCache
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.NotificationUtils
@@ -67,6 +70,9 @@ open class SyncService :
     JobService(),
     CoroutineScope {
     @Inject
+    lateinit var userApi: UserApi
+
+    @Inject
     lateinit var storyApi: StoryApi
 
     @Inject
@@ -79,7 +85,11 @@ open class SyncService :
     lateinit var networkClient: NetworkClient
 
     @Inject
-    lateinit var dbHelper: BlurDatabaseHelper
+    lateinit var dbHelperLazy: dagger.Lazy<BlurDatabaseHelper>
+
+    // NbApplication.kt warms this singleton on IO; eager injection would block service startup
+    // on that same database lock. SyncService.kt first accesses it from its IO coroutine work.
+    val dbHelper: BlurDatabaseHelper get() = dbHelperLazy.get()
 
     @IconFileCache
     @Inject
@@ -95,6 +105,9 @@ open class SyncService :
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var listenPreferences: ListenPreferences
 
     @Inject
     lateinit var syncServiceState: SyncServiceState
@@ -183,6 +196,7 @@ open class SyncService :
 
     override fun onStopJob(params: JobParameters?): Boolean {
         Log.d(this, "onStopJob")
+        if (!hiltInjected) return false
         val stoppedJob = scheduledJob
         scheduledJob = null
         // SyncService.kt coalesces scheduled and foreground wakeups onto the same worker.
@@ -284,7 +298,10 @@ open class SyncService :
 
     override fun onDestroy() {
         Log.d(this, "onDestroy")
-        syncServiceState.setServiceState(ServiceState.Idle)
+        // SyncService.kt also receives teardown after onCreate stops a failed Hilt injection.
+        if (::syncServiceState.isInitialized) {
+            syncServiceState.setServiceState(ServiceState.Idle)
+        }
         coroutineContext.cancel()
         super.onDestroy()
     }
@@ -472,6 +489,7 @@ open class SyncService :
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
             prefsRepo.setArchive(feedResponse.isArchive, feedResponse.premiumExpire)
             prefsRepo.setPro(feedResponse.isPro, feedResponse.premiumExpire)
+            feedResponse.usageBillingState?.let(prefsRepo::setUsageBillingState)
             prefsRepo.setIsStaff(feedResponse.isStaff)
             prefsRepo.setExtToken(feedResponse.shareExtToken)
             feedResponse.storyClustering?.let {
@@ -481,6 +499,17 @@ open class SyncService :
                 prefsRepo.putString(PrefConstants.CLUSTER_MODE, it)
             }
             prefsRepo.putBoolean(PrefConstants.CLUSTER_MARK_READ, feedResponse.clusterMarkRead)
+            // SyncService.kt brings in the Listen settings and story button toggles saved on other devices.
+            listenPreferences.applyServerPreferences(feedResponse.preferences)
+            // SyncService.kt saves a language chosen on this device first; otherwise the account's language wins.
+            val localLanguage = LanguageSettings.selected(this)
+            if (LanguageSettings.pending(this)) {
+                if (userApi.setPreference("language", localLanguage)) {
+                    LanguageSettings.select(this, localLanguage)
+                }
+            } else if (localLanguage != feedResponse.language) {
+                LanguageSettings.select(this, feedResponse.language)
+            }
 
             // note all feeds that belong to some folder so we can find orphans
             for (folder in feedResponse.folders) {

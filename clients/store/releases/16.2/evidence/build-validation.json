@@ -1,0 +1,73 @@
+{
+  "version": "16.2",
+  "validated_at": "2026-11-09T04:46:28.000Z",
+  "toolchain": "Xcode 27.2\nBuild version 27B52",
+  "ios": {
+    "build": "356",
+    "tag": "iOS_16.2_356",
+    "artifact": "NewsBlur.ipa",
+    "sha256": "dc59fb28802d856f744849a2a2e5370e4b673fd79184418d5bae0568c1b12d73",
+    "delivery_uuid": "e4ca4c9d-485c-410a-a47c-f2a013de7e4d",
+    "processing_state": "VALID"
+  },
+  "macos": {
+    "build": "356",
+    "tag": "macOS_16.2_356",
+    "architectures": [
+      "arm64",
+      "x86_64"
+    ],
+    "artifact": "NewsBlur.pkg",
+    "sha256": "b9c96de27b121be6726451095d1c0e99ec35801d4cdfbae301264944a30a2005",
+    "delivery_uuid": "81a7b17e-3dc0-4498-9cdd-d6e36a3bbd34",
+    "processing_state": "VALID"
+  },
+  "android": {
+    "version_code": 302,
+    "tag": "Android_16.2_302",
+    "artifact": "app-release.aab",
+    "sha256": "59fd7748a00bc4cfed04993c2b533d4c16a521877ce61fbae636fd694a37acab"
+  },
+  "validation": {
+    "django_tests": "Test_AIPromptScorePriority, Test_AIPromptClassifierFolderScope and Test_SuperDownvote: 29 passed",
+    "node_tests": "node/tests/story_score_ai_priority.test.js: 6 passed",
+    "focused_ios_tests": "Test_StoryScoreAIPriority: 6 passed on the iPhone 17 Pro simulator (Xcode 27.2)",
+    "android_unit_tests": "1198 passed, 0 failures, 0 errors, 0 skipped",
+    "localization": "localization/manage.py check: 0 untranslated in 20 languages; catalogs recompiled",
+    "export_signing": "xcodebuild -exportArchive with the App Store Connect API key was refused (no access to cloud-managed distribution certificates); both exports succeeded with the same export options through Xcode's signed-in account",
+    "store_notes": "21 languages validated and exported for iOS, Android, and macOS (unchanged copy)"
+  },
+  "release_commit": "40b791e012",
+  "superseded_builds": {
+    "ios": {
+      "build": "355",
+      "tag": "iOS_16.2",
+      "artifact": "NewsBlur.ipa",
+      "sha256": "fc2909007627de5fd897e322ea659967b2f2be01f0adfbbc4d8c79f494ec1f31",
+      "delivery_uuid": "c921a085-c54f-4aa9-9763-3f9f290dff8d",
+      "processing_state": "VALID",
+      "build_audience_type": "APP_STORE_ELIGIBLE"
+    },
+    "macos": {
+      "build": "355",
+      "tag": "macOS_16.2",
+      "architectures": [
+        "arm64",
+        "x86_64"
+      ],
+      "artifact": "NewsBlur.pkg",
+      "sha256": "6ddf424a13283e15cc178ebd5be94eb300252afcdccb9957b2e9745dd52ada71",
+      "delivery_uuid": "8c8439b1-4c1c-41fe-8144-b390f561ff56",
+      "processing_state": "VALID",
+      "build_audience_type": "APP_STORE_ELIGIBLE"
+    },
+    "android": {
+      "version_code": 301,
+      "tag": "Android_16.2",
+      "artifact": "app-release.aab",
+      "sha256": "5fc4956a973946bd4d6d526e9bb71fd65200606c910219b63ebb8b9fd159755d"
+    },
+    "note": "Uploaded 2026-11-07 and never submitted for review; replaced by the AI filter scoring change in f5005e58ff."
+  },
+  "store_processing_verified_at": "2026-11-10T01:03:22.900Z"
+}

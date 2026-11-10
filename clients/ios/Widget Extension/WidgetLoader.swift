@@ -16,7 +16,7 @@ class Loader: NSObject, URLSessionDataDelegate {
     
     private var receivedData = Data()
     
-    init(url: URL, completion: @escaping Completion) {
+    init(url: URL, timeout: TimeInterval = 20, completion: @escaping Completion) {
         self.completion = completion
         
         super.init()
@@ -26,8 +26,11 @@ class Loader: NSObject, URLSessionDataDelegate {
         request.httpMethod = "GET"
 //        request.addValue(accept, forHTTPHeaderField: "Accept")
         
-        let config = URLSessionConfiguration.background(withIdentifier: UUID().uuidString)
-        config.sharedContainerIdentifier = "group.com.newsblur.NewsBlur-Group"
+        let config = URLSessionConfiguration.ephemeral
+        config.timeoutIntervalForRequest = min(15, timeout)
+        config.timeoutIntervalForResource = min(20, timeout)
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        config.httpShouldSetCookies = false
         
         let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         let task = session.dataTask(with: request)
@@ -58,6 +61,7 @@ class Loader: NSObject, URLSessionDataDelegate {
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        defer { session.finishTasksAndInvalidate() }
         if let error {
             completion(.failure(error))
         } else {

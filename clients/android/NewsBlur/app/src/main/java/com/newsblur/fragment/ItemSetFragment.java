@@ -143,9 +143,24 @@ public class ItemSetFragment extends NbFragment {
     private int bottomNextFeedBaseBottomMarginPx;
     @Nullable
     private View floatingStoryHeader;
+    // ItemSetFragment.java keeps the last stories scrollable above Listen's mini player (ListenMiniPlayerHost.kt).
+    private int listenMiniPlayerInsetPx = 0;
+    private int gridBaseBottomPaddingPx = -1;
     private final View.OnLayoutChangeListener floatingStoryHeaderLayoutListener =
             (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> updateBottomNextFeedBottomInset();
     private int storyListScrollState = RecyclerView.SCROLL_STATE_IDLE;
+    private final RecyclerView.OnScrollListener storyScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            ItemSetFragment.this.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            ItemSetFragment.this.onScrolled(dy);
+            updateBottomNextFeedControl();
+        }
+    };
     private int bottomNextFeedActiveDragStartOffsetY;
     private int bottomNextFeedActivationAnchorOffsetY;
     private boolean hasBottomNextFeedActiveDragStartOffset;
@@ -268,18 +283,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        binding.itemgridfragmentGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                ItemSetFragment.this.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                ItemSetFragment.this.onScrolled(dy);
-                updateBottomNextFeedControl();
-            }
-        });
+        binding.itemgridfragmentGrid.addOnScrollListener(storyScrollListener);
         binding.itemgridfragmentGrid.addOnItemTouchListener(new StoryListBackTouchListener());
 
         return v;
@@ -424,6 +428,11 @@ public class ItemSetFragment extends NbFragment {
         requestStoryReturn(storyHash, false);
     }
 
+    public void followReadingStory(@Nullable String storyHash) {
+        if (binding == null || adapter == null) return;
+        adapter.followReadingStory(storyHash, binding.itemgridfragmentGrid);
+    }
+
     private void requestStoryReturn(@Nullable String storyHash, boolean presentationReady) {
         if (binding == null || adapter == null) return;
         // ItemSetFragment.java handles an already committed list as well as later database batches.
@@ -435,6 +444,8 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void hasUpdated() {
+        // A tablet's launch story list loads nothing until a feed is picked (ItemsList.EXTRA_DEFER_STORIES).
+        if (isAdded() && ((ItemsList) requireActivity()).areStoriesDeferred()) return;
         FeedSet fs = getFeedSet();
         if (isAdded() && fs != null) {
             storiesViewModel.loadActiveStories(fs, new CursorFilters(prefsRepo, fs));
@@ -566,28 +577,44 @@ public class ItemSetFragment extends NbFragment {
         ViewGroup.LayoutParams params = binding.bottomNextFeedControl.getLayoutParams();
         if (!(params instanceof ViewGroup.MarginLayoutParams)) return;
         ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-        int targetBottomMargin = bottomNextFeedBaseBottomMarginPx + navBarInsets.bottom;
+        int targetBottomMargin = bottomNextFeedBaseBottomMarginPx + navBarInsets.bottom + listenMiniPlayerInsetPx;
+        RecyclerView grid = binding.itemgridfragmentGrid;
+        if (gridBaseBottomPaddingPx < 0) gridBaseBottomPaddingPx = grid.getPaddingBottom();
         if (floatingStoryHeader != null && floatingStoryHeader.isLaidOut()) {
             // ItemSetFragment.java draws stories beneath the footer while allowing the final row to scroll above it.
             int[] listLocation = new int[2];
             int[] headerLocation = new int[2];
-            RecyclerView grid = binding.itemgridfragmentGrid;
             grid.getLocationOnScreen(listLocation);
             floatingStoryHeader.getLocationOnScreen(headerLocation);
             int overlap = Math.max(0, listLocation[1] + grid.getHeight() - headerLocation[1]);
-            int bottomPadding = overlap + UIUtils.dp2px(requireContext(), 8);
+            int bottomPadding = overlap + UIUtils.dp2px(requireContext(), 8) + listenMiniPlayerInsetPx;
             if (grid.getPaddingBottom() != bottomPadding) {
-                grid.setPadding(grid.getPaddingLeft(), grid.getPaddingTop(), grid.getPaddingRight(), bottomPadding);
+                grid.setPaddingRelative(grid.getPaddingStart(), grid.getPaddingTop(), grid.getPaddingEnd(), bottomPadding);
             }
             // ItemSetFragment.java keeps the next-feed control above both search and the floating action capsules.
-            targetBottomMargin = bottomNextFeedBaseBottomMarginPx + overlap;
+            targetBottomMargin = bottomNextFeedBaseBottomMarginPx + overlap + listenMiniPlayerInsetPx;
+        } else {
+            // With the story toolbar at the top, only the mini player covers the list's last rows.
+            int bottomPadding = gridBaseBottomPaddingPx + listenMiniPlayerInsetPx;
+            if (grid.getPaddingBottom() != bottomPadding) {
+                grid.setClipToPadding(false);
+                grid.setPaddingRelative(grid.getPaddingStart(), grid.getPaddingTop(), grid.getPaddingEnd(), bottomPadding);
+            }
         }
         if (marginParams.bottomMargin == targetBottomMargin) return;
         marginParams.bottomMargin = targetBottomMargin;
         binding.bottomNextFeedControl.setLayoutParams(marginParams);
     }
 
+    /** ItemsList.java reports how much of the list Listen's mini player covers, or 0 while it is hidden. */
+    public void setListenMiniPlayerInset(int insetPx) {
+        if (listenMiniPlayerInsetPx == insetPx) return;
+        listenMiniPlayerInsetPx = insetPx;
+        updateBottomNextFeedBottomInset();
+    }
+
     private void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+        if (adapter != null) adapter.onStoryListScrollStateChanged(newState);
         int oldState = storyListScrollState;
         storyListScrollState = newState;
 
@@ -965,7 +992,7 @@ public class ItemSetFragment extends NbFragment {
 
         // the list can be scrolled past the last item thanks to the offset footer, but don't fling
         // past the last item, which can be confusing to users who don't know about or need the offset
-        if ((!fullFlingComplete) &&
+        if (!adapter.isFollowingReadingStory() && (!fullFlingComplete) &&
                 (layoutManager.findLastCompletelyVisibleItemPosition() >= adapter.getStoryCount())) {
             binding.itemgridfragmentGrid.stopScroll();
             // but after halting at the end once, do allow scrolling past the bottom
@@ -973,7 +1000,7 @@ public class ItemSetFragment extends NbFragment {
         }
 
         // if flinging downwards, pause at the last unread as a convenience
-        if ((indexOfLastUnread >= 0) &&
+        if (!adapter.isFollowingReadingStory() && (indexOfLastUnread >= 0) &&
                 (layoutManager.findLastCompletelyVisibleItemPosition() >= indexOfLastUnread)) {
             // but don't interrupt if already past the last unread
             if (indexOfLastUnread >= layoutManager.findFirstCompletelyVisibleItemPosition()) {
@@ -1072,8 +1099,9 @@ public class ItemSetFragment extends NbFragment {
 
     private boolean isInteractiveStoryListSwipeEnabled() {
         ItemsList activity = (ItemsList) getActivity();
+        // A tablet's root story list swipes the feed list over it instead (FeedListDrawer.kt).
         return activity != null &&
-                !activity.isTaskRoot() &&
+                (!activity.isTaskRoot() || activity.slidesOverFeedDrawer()) &&
                 prefsRepo.getLeftToRightGestureAction() == GestureAction.GEST_ACTION_BACK;
     }
 
@@ -1128,8 +1156,9 @@ public class ItemSetFragment extends NbFragment {
         public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    gestureEligible = (getActivity() != null && !getActivity().isTaskRoot()) &&
-                            (event.getX() < UIUtils.dp2px(requireContext(), 24) ||
+                    ItemsList storyList = (ItemsList) getActivity();
+                    gestureEligible = (storyList != null && (!storyList.isTaskRoot() || storyList.slidesOverFeedDrawer())) &&
+                            (isNearStartEdge(recyclerView, event) ||
                              (prefsRepo.isStorySwipesEnabled() && isInteractiveStoryListSwipeEnabled()));
 
                     isDragging = false;
@@ -1142,7 +1171,8 @@ public class ItemSetFragment extends NbFragment {
                 case MotionEvent.ACTION_MOVE:
                     if (!gestureEligible) return false;
                     trackMovement(event);
-                    float deltaX = event.getRawX() - downRawX;
+                    // deltaX counts toward the end edge, so the swipe mirrors in right-to-left layouts.
+                    float deltaX = towardEnd(event.getRawX() - downRawX);
                     float deltaY = event.getRawY() - downRawY;
                     if (!isDragging && Math.abs(deltaY) > touchSlopPx && Math.abs(deltaY) >= Math.abs(deltaX)) {
                         gestureEligible = false;
@@ -1185,10 +1215,10 @@ public class ItemSetFragment extends NbFragment {
 
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_MOVE:
-                    activity.updateInteractiveStoryListSwipe(event.getRawX() - downRawX);
+                    activity.updateInteractiveStoryListSwipe(towardEnd(event.getRawX() - downRawX));
                     break;
                 case MotionEvent.ACTION_UP:
-                    float totalDeltaX = Math.max(0f, event.getRawX() - downRawX);
+                    float totalDeltaX = Math.max(0f, towardEnd(event.getRawX() - downRawX));
                     float xVelocity = getXVelocity();
                     boolean shouldComplete = totalDeltaX >= recyclerView.getWidth() * STORY_LIST_BACK_GESTURE_TRIGGER_RATIO;
                     if (!shouldComplete && xVelocity > minimumFlingVelocityPx * 4f) {
@@ -1214,10 +1244,20 @@ public class ItemSetFragment extends NbFragment {
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         }
 
+        private float towardEnd(float physicalDeltaX) {
+            return physicalDeltaX * UIUtils.towardEndSign(requireContext());
+        }
+
+        // ItemSetFragment.java starts the back swipe from the start edge, the right edge in Arabic and Hebrew.
+        private boolean isNearStartEdge(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
+            int edge = UIUtils.dp2px(requireContext(), 24);
+            return UIUtils.towardEndSign(requireContext()) < 0f ? event.getX() > recyclerView.getWidth() - edge : event.getX() < edge;
+        }
+
         private float getXVelocity() {
             if (velocityTracker == null) return 0f;
             velocityTracker.computeCurrentVelocity(1000);
-            return velocityTracker.getXVelocity();
+            return towardEnd(velocityTracker.getXVelocity());
         }
 
         private void trackMovement(@NonNull MotionEvent event) {

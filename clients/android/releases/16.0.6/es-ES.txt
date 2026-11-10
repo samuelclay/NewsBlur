@@ -1,0 +1,1 @@
+Corrige un problema en tabletas por el que marcar un feed como leído podía enviar NewsBlur a segundo plano. Tanto el botón inferior como el menú del feed mantienen ahora la app abierta para que puedas seguir leyendo.

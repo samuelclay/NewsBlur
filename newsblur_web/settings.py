@@ -59,6 +59,26 @@ NEWSBLUR_URL = "https://www.newsblur.com"
 IMAGES_URL = "https://imageproxy.newsblur.com"
 PUSH_DOMAIN = "push.newsblur.com"
 SECRET_KEY = "YOUR_SECRET_KEY"
+# apps/api/social_auth.py uses a native Apple ID and a Google web OAuth client.
+SOCIAL_APPLE_CLIENT_IDS = ["com.newsblur.NewsBlur", "com.newsblur.NB-Alpha"]
+# apps/api/social_auth.py uses a Sign in with Apple key mounted outside the repository for token revocation.
+SOCIAL_APPLE_TEAM_ID = os.environ.get("SOCIAL_APPLE_TEAM_ID", "")
+SOCIAL_APPLE_KEY_ID = os.environ.get("SOCIAL_APPLE_KEY_ID", "")
+SOCIAL_APPLE_PRIVATE_KEY_PATH = os.environ.get("SOCIAL_APPLE_PRIVATE_KEY_PATH", "")
+# apps/api/social_auth.py keeps the Apple Services ID audience separate from native iOS audiences.
+SOCIAL_APPLE_WEB_CLIENT_ID = os.environ.get("SOCIAL_APPLE_WEB_CLIENT_ID", "")
+SOCIAL_APPLE_REDIRECT_URI = "https://www.newsblur.com/api/social/apple/callback"
+SOCIAL_GOOGLE_CLIENT_ID = os.environ.get("SOCIAL_GOOGLE_CLIENT_ID", "")
+SOCIAL_GOOGLE_CLIENT_SECRET = os.environ.get("SOCIAL_GOOGLE_CLIENT_SECRET", "")
+SOCIAL_GOOGLE_REDIRECT_URI = "https://www.newsblur.com/api/social/google/callback"
+# web_social_auth.py uses browser callbacks separate from the mobile app callbacks.
+SOCIAL_WEB_ENABLED = True
+SOCIAL_APPLE_WEB_REDIRECT_URI = os.environ.get(
+    "SOCIAL_APPLE_WEB_REDIRECT_URI", "https://www.newsblur.com/account/social/apple/callback"
+)
+SOCIAL_GOOGLE_WEB_REDIRECT_URI = os.environ.get(
+    "SOCIAL_GOOGLE_WEB_REDIRECT_URI", "https://www.newsblur.com/account/social/google/callback"
+)
 IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 DNSIMPLE_TOKEN = "YOUR_DNSIMPLE_TOKEN"
 RECAPTCHA_SECRET_KEY = "YOUR_RECAPTCHA_KEY"
@@ -85,8 +105,14 @@ MANAGERS = ADMINS
 PAYPAL_RECEIVER_EMAIL = "samuel@ofbrooklyn.com"
 TIME_ZONE = "GMT"
 LANGUAGE_CODE = "en-us"
+# settings.py: new-signup language revenue starts at the requested October 16, 2026 cutoff (UTC).
+LANGUAGE_ANALYTICS_COHORT_START = "2026-10-16T23:25:40"
 SITE_ID = 1
-USE_I18N = False
+USE_I18N = True
+from utils.languages import LANGUAGES as UI_LANGUAGES
+
+LANGUAGES = [(code.lower(), name) for code, name in UI_LANGUAGES.items()]
+LOCALE_PATHS = (os.path.join(NEWSBLUR_DIR, "locale"),)
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/account/login"
 MEDIA_URL = "/media/"
@@ -133,6 +159,7 @@ MIDDLEWARE = (
     "utils.prometheus_middleware.PrometheusBeforeMiddlewareWrapper",
     "apps.profile.middleware.UserAgentBanMiddleware",
     "django.middleware.gzip.GZipMiddleware",
+    "apps.profile.language.LanguageCatalogMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "subdomains.middleware.SubdomainMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -147,6 +174,7 @@ MIDDLEWARE = (
     "apps.profile.middleware.SimpsonsMiddleware",
     "apps.profile.middleware.ServerHostnameMiddleware",
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
+    "apps.profile.language.NewsBlurLocaleMiddleware",
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     "utils.request_introspection_middleware.DumpRequestMiddleware",
     "apps.profile.middleware.DBProfilerMiddleware",
@@ -362,12 +390,23 @@ DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
     # ScrapingBee at a credit apiece. 60/min still cycles their feeds every ~15
     # minutes (the limiter's deferral cap is an hour) while halving the hammering.
     "abebooks.com": 60,
-    # Matches REDDIT_API_REQUESTS_PER_MINUTE in utils/reddit_fetcher.py. The OAuth
-    # budget there remains the true gate on API calls; this just converts overflow
-    # into silent deferral instead of 429s in fetch history.
-    "reddit.com": 95,
-    "old.reddit.com": 95,
 }
+
+# Reddit feeds come from RedListen (utils/redlisten.py), not reddit.com, so reddit hosts
+# skip the per-domain budget above (utils/domain_fetch_limiter.py). These are the Pro
+# plan's monthly quotas; RedListen's own x-quota-limit and x-items-limit headers take
+# over once a response carries them. Automatic fetching (the hourly poller in
+# utils/redlisten_poller.py and the comment-thread and search feeds) stops at
+# REDLISTEN_BACKGROUND_SHARE of each quota, leaving the rest for fetches a reader asks
+# for (insta-fetch, refresh, retry). Pro allows 120 requests a minute per key.
+REDLISTEN_API_KEY = None
+REDLISTEN_MONTHLY_REQUESTS = 50000
+REDLISTEN_MONTHLY_RESULTS = 1000000
+REDLISTEN_BACKGROUND_SHARE = 0.99
+REDLISTEN_REQUESTS_PER_MINUTE = 100
+# Every key on the account draws on the production quota, so development servers only
+# make one-off fetches unless this is turned on.
+REDLISTEN_BACKGROUND_IN_DEBUG = False
 
 ROOT_URLCONF = "newsblur_web.urls"
 INTERNAL_IPS = ("127.0.0.1",)
@@ -438,6 +477,7 @@ INSTALLED_APPS = (
     "apps.categories",
     "apps.discover",
     "apps.ask_ai",
+    "apps.listen",
     "apps.webfeed",
     "apps.archive_extension",
     "apps.mcp",
@@ -477,6 +517,8 @@ GOOGLE_PLAY_SERVICE_ACCOUNT_INFO = None
 
 CELERY_TASK_ROUTES = {
     "work-queue": {"queue": "work_queue", "binding_key": "work_queue"},
+    # Long merges run on the work servers, off the fetch queues (apps/rss_feeds/tasks.py MergeFeeds).
+    "merge-feeds": {"queue": "work_queue", "binding_key": "work_queue"},
     "new-feeds": {"queue": "new_feeds", "binding_key": "new_feeds"},
     "push-feeds": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "update-feeds": {"queue": "update_feeds", "binding_key": "update_feeds"},
@@ -580,8 +622,16 @@ CELERY_IMPORTS = (
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
+# newsblur_web/settings.py: Each pool process is replaced after this many tasks. At 10, a busy fetch
+# server forked a new process every couple of seconds, and on the 4 CPU servers some of those new
+# processes couldn't get the CPU to report in before CELERY_WORKER_PROC_ALIVE_TIMEOUT and were
+# SIGKILLed (most of the worker SIGKILLs in Sentry). CELERY_WORKER_MAX_MEMORY_PER_CHILD still
+# recycles any process that grows too large.
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 50
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 750 * 1024
+# newsblur_web/settings.py: How long a freshly forked pool process has to report it's ready before
+# celery kills it. The 4 second default is too short on a CPU-saturated server.
+CELERY_WORKER_PROC_ALIVE_TIMEOUT = 30
 CELERY_TASK_TIME_LIMIT = 12 * 30
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
@@ -609,6 +659,13 @@ CELERY_BEAT_SCHEDULE = {
         "task": "task-broken-feeds",
         "schedule": datetime.timedelta(hours=6),
         "options": {"queue": "beat_feeds_task"},
+    },
+    # Fetches every subreddit and Reddit user that active feeds read, in batches,
+    # on the RedListen budget (utils/redlisten_poller.py).
+    "poll-redlisten": {
+        "task": "poll-redlisten",
+        "schedule": datetime.timedelta(hours=1),
+        "options": {"queue": "cron_queue"},
     },
     "freshen-homepage": {
         "task": "freshen-homepage",
@@ -662,6 +719,12 @@ CELERY_BEAT_SCHEDULE = {
     },
     "premium-expire": {
         "task": "premium-expire",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    # Feeds nobody fetches are never trimmed by a fetch (apps/rss_feeds/tasks.py TrimAbandonedFeeds).
+    "trim-abandoned-feeds": {
+        "task": "trim-abandoned-feeds",
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
@@ -782,6 +845,11 @@ YOUTUBE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPENINJA_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPINGBEE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
+# Listen (apps/listen) reads stories aloud with ElevenLabs. Without a real key the feature reports itself
+# unavailable. The node stream server (node/listen.coffee) reads the same key from node/.env.
+ELEVENLABS_API_KEY = "sk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+LISTEN_MODEL = "eleven_v4_turbo"
+
 # ===============
 # = AWS Backing =
 # ===============
@@ -797,6 +865,7 @@ S3_BACKUP_BUCKET = "newsblur-backups"
 S3_PAGES_BUCKET_NAME = "pages.newsblur.com"
 S3_ICONS_BUCKET_NAME = "icons.newsblur.com"
 S3_AVATARS_BUCKET_NAME = "avatars.newsblur.com"
+S3_LISTEN_BUCKET_NAME = "listen.newsblur.com"
 
 # ==================
 # = Configurations =
@@ -832,6 +901,16 @@ if DOCKERBUILD:
     CELERY_WORKER_CONCURRENCY = 2
 elif "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
     CELERY_WORKER_CONCURRENCY = 4
+elif (os.cpu_count() or 0) <= 4:
+    # newsblur_web/settings.py: The 4 CPU, 7 GB fetch servers (htask-celery-01 through 10) ran CPU
+    # saturated at 24 processes and are the only ones the kernel OOM killer and the slow-start
+    # SIGKILLs hit. The memory cap is measured on RSS, which counts the ~190 MB a pool process
+    # shares with its parent: processes measured ~355 MB RSS, ~160 MB of it their own. 16 at the
+    # usual size use ~3 GB; 16 all at the 600 MB cap would use ~7 GB of the 7.7 GB, which is why
+    # the cap is lower here than on the 15 GB servers. Chosen by the CPU count the worker sees, so
+    # a server that's resized picks up the right setting.
+    CELERY_WORKER_CONCURRENCY = 16
+    CELERY_WORKER_MAX_MEMORY_PER_CHILD = 600 * 1024
 else:
     CELERY_WORKER_CONCURRENCY = 24
 
@@ -911,6 +990,7 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.media",
                 "django.template.context_processors.request",
+                "apps.profile.language.language_context",
                 "django.contrib.messages.context_processors.messages",
             ],
             "loaders": template_loaders,
@@ -1023,7 +1103,18 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_BEAT_SCHEDULER = "newsblur_web.celery_beat:DedupPersistentScheduler"
 CELERY_WORKER_LOG_FORMAT = "%(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
-BROKER_TRANSPORT_OPTIONS = {
+# newsblur_web/settings.py: The celery app reads settings with the CELERY_ prefix
+# (newsblur_web/celeryapp.py), so these were ignored while they were named BROKER_TRANSPORT_OPTIONS.
+# max_retries and interval_* apply for the first time, on purpose: publishing a task gives up after
+# about a second of broker connection errors instead of retrying forever, so a request fails rather
+# than hangs (payment providers retry a webhook that fails).
+# visibility_timeout stays at kombu's 1 hour default. A task waits unacknowledged in a worker until
+# it finishes, countdown tasks included, and the broker hands it to another worker once that passes.
+# A worker that is killed instead of restarted (a forced container stop, autoheal, an OOM kill)
+# hands nothing back, so its tasks come back only after the timeout; raising it would hold every
+# queue's tasks that long. Keep countdowns well under an hour instead: the archive backfill queues
+# one batch of walks at a time for that reason (apps/reader/models.py dispatch_archive_backfill).
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
     "interval_step": 0.2,
@@ -1165,6 +1256,10 @@ PIPELINE = {
         "common": {
             "source_filenames": assets["stylesheets"]["common"],
             "output_filename": "css/common.css",
+        },
+        "rtl": {
+            "source_filenames": assets["stylesheets"]["rtl"],
+            "output_filename": "css/rtl.css",
         },
         "bookmarklet": {
             "source_filenames": assets["stylesheets"]["bookmarklet"],

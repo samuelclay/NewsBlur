@@ -1,0 +1,30 @@
+{
+  "language": "fr",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:04:19Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Corrected quotidiennes and Installez-vous remain whole words; four captions fit.",
+    "French navigation/search/date controls and loaded photos visible."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-fr-duo-inner-2853x2007-01.png",
+      "sha256": "a80736db40af6b7b910b4ebfdb996fb72a9d43ade573c860b525c48dd382335a"
+    },
+    {
+      "filename": "newsblur-16.0.1-fr-duo-inner-2853x2007-02.png",
+      "sha256": "16e6957bf245f67b8bb5d659c51b77e9e6355bb8dd67a2b486c2052bd5128142"
+    },
+    {
+      "filename": "newsblur-16.0.1-fr-duo-inner-2853x2007-03.png",
+      "sha256": "2d5ce45b99f6a5cc64031aed6655ecfacedb08459d7d7a8f94fef62c2261b326"
+    },
+    {
+      "filename": "newsblur-16.0.1-fr-duo-inner-2853x2007-04.png",
+      "sha256": "0a7441833d27d16dfc25f11eb44f3ea1b3417b7f6a6041964a7a6d9a070c2bd0"
+    }
+  ],
+  "contact_sha256": "359a12e10a96c9a2ab0dffa72bec44524771ec332699dfaa6adfdab968c3116e"
+}

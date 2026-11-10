@@ -1,0 +1,30 @@
+{
+  "language": "pt-BR",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:04:46Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Portuguese captions fit with intact words including Acomode-se.",
+    "Portuguese search/source/filter/date controls and loaded food photos visible."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-pt-BR-duo-inner-2853x2007-01.png",
+      "sha256": "a3bc610cd1ec83e196cb14749c4a3da111d82202b3d9d38a05f3f4e6c298ccf7"
+    },
+    {
+      "filename": "newsblur-16.0.1-pt-BR-duo-inner-2853x2007-02.png",
+      "sha256": "d37748565d8dd186ebe3c15e2bc5597eb1920b7bc35e30d31266b527a01d01aa"
+    },
+    {
+      "filename": "newsblur-16.0.1-pt-BR-duo-inner-2853x2007-03.png",
+      "sha256": "a888ee162402a4849209788ca456bec7dd63f266b2c531a51c3a4ec2f963e9cc"
+    },
+    {
+      "filename": "newsblur-16.0.1-pt-BR-duo-inner-2853x2007-04.png",
+      "sha256": "5fc55d6e77b100ebf447733908fb46b3af514d3c0c380637c550a748de4b8b45"
+    }
+  ],
+  "contact_sha256": "ef313f2c60c42f772c966a0a6aa96aece0c40b2b8ffc3695879e0c58b702d617"
+}

@@ -83,6 +83,23 @@ public class NewsblurWebview extends WebView {
                             fragment.openStoryImage(this, message.getData());
                         }
                     });
+            // NewsblurWebview.java passes listenFollowAlong.js paragraph taps to ListenStoryFollower.kt.
+            WebViewCompat.addWebMessageListener(this, "NewsBlurListen",
+                    java.util.Collections.singleton("https://appassets.androidplatform.net"),
+                    (view, message, origin, mainFrame, reply) -> {
+                        if (mainFrame && fragment != null && message.getData() != null) {
+                            fragment.onListenMessage(this, message.getData());
+                        }
+                    });
+            // NewsblurWebview.java passes storyMedia.js's audio card taps to ReadingItemFragment.kt, which plays the
+            // file in Listen's player.
+            WebViewCompat.addWebMessageListener(this, "NewsBlurMedia",
+                    java.util.Collections.singleton("https://appassets.androidplatform.net"),
+                    (view, message, origin, mainFrame, reply) -> {
+                        if (mainFrame && fragment != null && message.getData() != null) {
+                            fragment.onMediaMessage(this, message.getData());
+                        }
+                    });
         }
     }
 

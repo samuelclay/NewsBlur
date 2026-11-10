@@ -1,0 +1,36 @@
+{
+  "checked_on": "2026-10-17",
+  "question": "Locate previously developed Android feed-list and story-list resize handles before final store capture submission.",
+  "result": "No Android resize-handle implementation was located. The matching implemented feature is in the iOS iphone-duo branch. The later Android port explicitly excludes a draggable divider.",
+  "matched_implementation": {
+    "platform": "iOS",
+    "branch": "iphone-duo",
+    "implementation_commit": "4a35b302c9419ebde947425c3641b8092b3e75fa",
+    "runtime_test_commit": "f70e8efb2",
+    "pull_request": "https://github.com/samuelclay/NewsBlur/pull/2141",
+    "implemented": "2026-09-19",
+    "merged": "2026-09-30",
+    "behavior": "Resizable native feed and story-title overlays with a shared saved width."
+  },
+  "android_followup": {
+    "commit": "cc39d35dfc21c1d18b70e11462a9563470e9265b",
+    "pull_request": "https://github.com/samuelclay/NewsBlur/pull/2163",
+    "implemented": "2026-10-05",
+    "behavior": "Persistent fullscreen article toggle, retaining the fixed story-list split ratio.",
+    "published_pr_description": "The existing fullscreen toggle covers the requested quick layout change; this PR does not add a draggable divider."
+  },
+  "search_coverage": {
+    "branch_refs": 114,
+    "worktrees": 18,
+    "unreachable_commits": 462,
+    "other_sources": [
+      "Git reflogs and Android patch history",
+      "GitHub PR titles, descriptions and branch metadata",
+      "Other filesystem NewsBlur checkouts and source copies",
+      "Relevant local development conversation records"
+    ],
+    "unreachable_android_prototype": "e76db5e99 also uses a fixed 0.4 split ratio."
+  },
+  "submission_status": "No Play image mutations or submissions. Awaiting the user's choice between implementing Android resize handles and continuing the current 16.0 artwork.",
+  "device_status": "Capture automation stopped. Tablet settings restored; Alpha remains open for inspection."
+}

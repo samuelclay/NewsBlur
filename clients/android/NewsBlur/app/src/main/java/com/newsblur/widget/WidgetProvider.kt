@@ -15,6 +15,7 @@ import com.newsblur.activity.ItemsList
 import com.newsblur.activity.WidgetConfig
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.PendingIntentUtils.getImmutableBroadcast
 import com.newsblur.util.PendingIntentUtils.getMutableBroadcast
 import com.newsblur.util.WidgetBackground
@@ -70,6 +71,8 @@ class WidgetProvider : AppWidgetProvider() {
         checkWidgetUpdateAlarm(context)
         val widgetBackground = prefsRepo.getWidgetBackground()
         val feedIds = prefsRepo.getWidgetFeedIds()
+        // WidgetProvider.kt runs outside any activity, so it resolves the empty view text in the app language.
+        val strings = LanguageSettings.localizedContext(context)
         for (appWidgetId in appWidgetIds) {
             // Set up the intent that starts the WidgetRemoteViewService, which will
             // provide the views for this collection.
@@ -97,9 +100,8 @@ class WidgetProvider : AppWidgetProvider() {
             // It should be in the same layout used to instantiate the RemoteViews
             // object above.
             rv.setEmptyView(R.id.widget_list, R.id.widget_empty_view)
-            if (feedIds != null && feedIds.isEmpty()) {
-                rv.setTextViewText(R.id.widget_empty_view, context.getString(R.string.title_widget_setup))
-            }
+            val emptyText = if (feedIds != null && feedIds.isEmpty()) R.string.title_widget_setup else R.string.title_widget_loading
+            rv.setTextViewText(R.id.widget_empty_view, strings.getString(emptyText))
 
             val configIntent = Intent(context, WidgetProvider::class.java)
             configIntent.action = WidgetUtils.ACTION_OPEN_CONFIG

@@ -1,0 +1,89 @@
+{
+  "reviewed_at": "2026-10-17T15:55:33Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/ja/featureGraphic/panel-01.png",
+      "sha256": "c641cbc3afb2f99cb286af65f8ba194db6abbf4e6c608a984c288d7b464ced3a",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ja/phoneScreenshots/panel-01.png",
+      "sha256": "dff3be11feadf319b3e2e1bf4ac70221fe4cc2d1ccc6d048b72314a0179aff2d",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ja/phoneScreenshots/panel-02.png",
+      "sha256": "38259f050d12b0ef01850c5db36963885bb32204b0ed239d2e96ca07b033e388",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ja/phoneScreenshots/panel-03.png",
+      "sha256": "c885cb1fc661f52fc7e11b0b96bdd83b02cf4536ed48518dfa38551ff29997da",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ja/phoneScreenshots/panel-04.png",
+      "sha256": "afdf1b1776cca0468c8cb4019bc5359bc3a3f1d0cc91e0c5540969e757bc2779",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/featureGraphic/panel-01.png",
+      "sha256": "15195b94bbe0da883397935e9657646901b645874aa27dc5a77925fb6081b957",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/phoneScreenshots/panel-01.png",
+      "sha256": "10df83b3cdfc648df049b6c07e473dd07b2d4c70ee9e29048c3ce33a627a8e65",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/phoneScreenshots/panel-02.png",
+      "sha256": "dfa8872a3683e1faa677c843768d9fd166dd83d547abbefc9397dc3ac272ddd3",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/phoneScreenshots/panel-03.png",
+      "sha256": "05175b090e2a4f6f65ac23507d11f1db2e83c2d4f10be057a89e7eeded59c29a",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/phoneScreenshots/panel-04.png",
+      "sha256": "df625a7695ba79b4daf24397e72d0c5bcd05b7cfc6a91a63c9021c5b42679ab5",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/th/featureGraphic/panel-01.png",
+      "sha256": "66812309f2f14cb6442d74f86f3d9a39afc3bba777bfba79b64c60555b3e8229",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/th/phoneScreenshots/panel-01.png",
+      "sha256": "b512c92708785e6cdff190809c740eae40e8c314c474e6a0b1a756bb4c4a399e",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/th/phoneScreenshots/panel-02.png",
+      "sha256": "ab437df18127ff51f561f3481c1c208e97b4d768dc2ec746fb2a1583b44c79b8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/th/phoneScreenshots/panel-03.png",
+      "sha256": "d19f655509b240d99e1270ca9d3fe30c45dd7e9e2862cf7657da9551a9c209b8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/th/phoneScreenshots/panel-04.png",
+      "sha256": "ddcd3180d5a451e1ab647fe4686ba096c5bd1db92242968c14880b4e448a5092",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Japanese, Korean and Thai captions preserve the intended meaning and fit their allocated space.",
+    "Native search, title, saved state, dates and Next controls are localized; scripts and combining marks show no missing glyphs.",
+    "No notification banners, loaders, errors or private data are visible in these still exports.",
+    "Original fictional feed names and article content intentionally remain English."
+  ],
+  "scope": "Fifteen phone and feature stills only; tablet images and videos are separate checks."
+}

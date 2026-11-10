@@ -1,4 +1,6 @@
 ---
+# deploy.yml migrates first, from the new code, so no server restarts onto models its database lacks.
+- import_playbook: playbooks/deploy_migrate.yml
 - import_playbook: playbooks/deploy_app.yml
   when: "'app' in group_names or 'staging' in group_names"
 - import_playbook: playbooks/deploy_www.yml

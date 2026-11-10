@@ -1,6 +1,122 @@
 import XCTest
 import UIKit
 
+final class Test_SafariFeedSubscription: XCTestCase {
+    // AddSiteUITests.swift defaults to the reported Safari flow; live fixtures can be overridden without code changes.
+    private var liveFeedURL: String {
+        ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_URL"] ?? "https://ngrislain.github.io/feed.xml"
+    }
+    private var liveArticleURL: String {
+        ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_ARTICLE_URL"] ?? "https://ngrislain.github.io/projects/2026-3-12-dont-vibe--prove/"
+    }
+    private var liveLinkLabel: String {
+        ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_LINK_LABEL"] ?? "RSS Feed"
+    }
+    private var liveStoryIdentifierPrefix: String {
+        let feedID = ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_FEED_ID"] ?? "10317479"
+        return "story-row-\(feedID):"
+    }
+
+    func test_liveFeedSchemeOpensSubscribedFeed() throws {
+        guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_SUBSCRIBE"] == "1" else {
+            throw XCTSkip("Explicit subscription check: TEST_RUNNER_NEWSBLUR_LIVE_RSS_SUBSCRIBE=1")
+        }
+        continueAfterFailure = false
+        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        safari.terminate()
+        safari.open(try XCTUnwrap(URL(string: "feed:\(liveFeedURL)")))
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let open = springboard.alerts.buttons["Open"]
+        if open.waitForExistence(timeout: 5) {
+            open.tap()
+        } else if safari.buttons["Open"].waitForExistence(timeout: 5) {
+            safari.buttons["Open"].tap()
+        }
+        let newsblur = XCUIApplication()
+        XCTAssertTrue(newsblur.wait(for: .runningForeground, timeout: 20))
+        let subscribedStory = newsblur.cells.matching(
+            NSPredicate(format: "identifier BEGINSWITH %@", liveStoryIdentifierPrefix)
+        ).firstMatch
+        XCTAssertTrue(subscribedStory.waitForExistence(timeout: 60))
+    }
+
+    func test_liveSafariOffersSubscribeForRSSURL() throws {
+        guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_TESTS"] == "1" else {
+            throw XCTSkip("Explicit Safari integration check: TEST_RUNNER_NEWSBLUR_LIVE_RSS_TESTS=1")
+        }
+        continueAfterFailure = false
+        let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        safari.terminate()
+        safari.open(try XCTUnwrap(URL(string: liveArticleURL)))
+        let rss = safari.links[liveLinkLabel]
+        XCTAssertTrue(rss.waitForExistence(timeout: 30))
+        rss.tap()
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "Safari-RSS-link"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        let pageMenu = safari.buttons["Page Menu"]
+        XCTAssertTrue(pageMenu.waitForExistence(timeout: 10))
+        pageMenu.tap()
+        let share = safari.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'Share'")).firstMatch
+        XCTAssertTrue(share.waitForExistence(timeout: 10))
+        share.tap()
+        let shareService = XCUIApplication(bundleIdentifier: "com.apple.SharingUIService")
+        let subscribe = shareService.cells["Subscribe in NewsBlur"]
+        XCTAssertTrue(subscribe.waitForExistence(timeout: 10))
+        for _ in 0..<4 where !subscribe.isHittable {
+            shareService.collectionViews["activityCollectionView"].swipeUp()
+        }
+        XCTAssertTrue(subscribe.isHittable)
+        let actionScreenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        actionScreenshot.name = "Safari-Subscribe-in-NewsBlur-action"
+        actionScreenshot.lifetime = .keepAlways
+        add(actionScreenshot)
+        let subscription = XCUIApplication(bundleIdentifier: "com.newsblur.NewsBlur.Subscribe-Extension")
+        subscribe.tap()
+        XCTAssertTrue(subscription.segmentedControls.buttons["Save This Story"].waitForExistence(timeout: 15))
+        XCTAssertTrue(subscription.segmentedControls.buttons["Share This Story"].exists)
+        XCTAssertTrue(subscription.segmentedControls.buttons["Subscribe"].isSelected)
+        XCTAssertTrue(subscription.staticTexts["Top Level"].exists)
+        XCTAssertTrue(subscription.tables.cells.element(boundBy: 0).staticTexts["Top Level"].exists)
+        XCTAssertFalse(subscription.staticTexts["discover_sites"].exists)
+        XCTAssertFalse(subscription.staticTexts["daily_briefing"].exists)
+        let dialog = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        dialog.name = "Safari-subscribe-folder-picker"
+        dialog.lifetime = .keepAlways
+        add(dialog)
+        if ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_SIGNED_OUT"] == "1" {
+            subscription.navigationBars.buttons["Subscribe"].tap()
+            XCTAssertTrue(subscription.staticTexts["Open NewsBlur and sign in, then share this link again."].waitForExistence(timeout: 15))
+            let signIn = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            signIn.name = "Safari-subscribe-sign-in-required"
+            signIn.lifetime = .keepAlways
+            add(signIn)
+            safari.alerts["Could Not Subscribe"].buttons["Cancel"].tap()
+        }
+        if ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_RSS_SUBSCRIBE"] == "1" {
+            subscription.navigationBars.buttons["Subscribe"].tap()
+            let success = subscription.alerts["Subscribed"]
+            XCTAssertTrue(success.waitForExistence(timeout: 65))
+            let confirmation = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            confirmation.name = "Safari-subscription-confirmed"
+            confirmation.lifetime = .keepAlways
+            add(confirmation)
+            safari.alerts["Subscribed"].buttons["Done"].tap()
+            let newsblur = XCUIApplication()
+            newsblur.activate()
+            let subscribedStory = newsblur.cells.matching(
+                NSPredicate(format: "identifier BEGINSWITH %@", liveStoryIdentifierPrefix)
+            ).firstMatch
+            XCTAssertTrue(subscribedStory.waitForExistence(timeout: 60))
+            let openedFeed = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            openedFeed.name = "Subscribed-feed-opened-in-NewsBlur"
+            openedFeed.lifetime = .keepAlways
+            add(openedFeed)
+        }
+    }
+}
+
 final class AddSiteUITests: XCTestCase {
     private var app: XCUIApplication!
 

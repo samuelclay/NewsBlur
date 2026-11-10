@@ -1,0 +1,1 @@
+Tabletlerde bir akışı okundu olarak işaretlemenin NewsBlur’u arka plana gönderebildiği sorun düzeltildi. Hem alttaki düğme hem de akış menüsü artık uygulamayı açık tutuyor, böylece okumaya devam edebilirsiniz.

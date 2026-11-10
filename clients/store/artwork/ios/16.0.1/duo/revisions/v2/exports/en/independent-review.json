@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "reviewer": "duo_visual_review",
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-en-duo-closed-2853x2007-01-v2.png",
+      "sha256": "53e475005c059c8e50c1c086cebb9002f5e5bc237258d372431f0e3ca01ad4b0",
+      "path": "revisions/v2/exports/en/newsblur-16.0.1-en-duo-closed-2853x2007-01-v2.png"
+    },
+    {
+      "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-02.png",
+      "sha256": "5e028e44f6671177442b50e8f364d00e153694d005e5c3e5f6938860412f3682",
+      "path": "exports/en/newsblur-16.0.1-en-duo-inner-2853x2007-02.png"
+    },
+    {
+      "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-03.png",
+      "sha256": "a94aad3e3f1149a0973ce8a123df67ac2a36bd67fd0bcff0625046868f83d56e",
+      "path": "exports/en/newsblur-16.0.1-en-duo-inner-2853x2007-03.png"
+    },
+    {
+      "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-04-v2.png",
+      "sha256": "677427a3c805d873eaef7f5d99857c1f12ec22827dc7da810e71fa142a5183b3",
+      "path": "revisions/v2/exports/en/newsblur-16.0.1-en-duo-inner-2853x2007-04-v2.png"
+    }
+  ],
+  "notes": [
+    "Viewed final four-panel contact sheet and inspected new panels 1 and 4 at larger scale.",
+    "Panel 1 shows closed portrait Duo with story list only. Panels 2 and 3 show the preserved feed/story and title/article split layouts. Panel 4 shows open landscape article without sidebar overlay.",
+    "Typography, device masking, spacing, image content and panel numbering are clean. All four file hashes verified against validation.json."
+  ]
+}

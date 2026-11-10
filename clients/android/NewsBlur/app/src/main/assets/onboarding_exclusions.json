@@ -1,0 +1,108 @@
+{
+  "food & cooking": [
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCR4s1DE9J4DHzZYXMltSMAg",
+    "http://thebakingbird.com/feed/",
+    "http://thebakingdba.blogspot.com/feeds/posts/default",
+    "https://bakingclouds.com/feed/"
+  ],
+  "agriculture": [
+    "https://feeds.megaphone.fm/accelerateyourbusinessgrowth"
+  ],
+  "anime & manga": [
+    "https://tumblr.forgifs.com/rss",
+    "https://feeds.feedburner.com/crunchyroll/rss/anime"
+  ],
+  "books & reading": [
+    "https://devblogs.microsoft.com/oldnewthing/author/oldnewthing/feed",
+    "https://techcrunch.com/author/zack-whittaker/feed/",
+    "https://reason.com/people/jim-epstein/feed/atom/"
+  ],
+  "education": [
+    "https://www.thehindu.com/?service=rss",
+    "https://aella.substack.com/feed",
+    "https://ryanmcbeth.substack.com/feed"
+  ],
+  "film & television": [
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC_x5XG1OV2P6uZZ5FSM9Ttw"
+  ],
+  "gaming": [
+    "https://techcrunch.com/feed/"
+  ],
+  "economics": [
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCr3cBLTYmIK9kY0F_OdFWFQ"
+  ],
+  "automotive": [
+    "https://www.sciencedaily.com/rss/matter_energy/automotive_and_transportation.xml"
+  ],
+  "business": [
+    "https://feeds.feedburner.com/time/business",
+    "http://www.bbc.co.uk/programmes/p002vsxs/episodes/downloads.rss"
+  ],
+  "comedy & humor": [
+    "https://feeds.megaphone.fm/jokermenpod"
+  ],
+  "fashion & beauty": [
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCFWK-5uho_CvKKdwcuHNo1g",
+    "https://www.reddit.com/r/amIuglyBrutallyHonest/.rss"
+  ],
+  "health & fitness": [
+    "https://www.precisionnutrition.com/blog/feed"
+  ],
+  "internet culture & social media": [
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC3NaOy_DAFPLMzNhXQ3PWZA",
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCzdnmHHR7fNHtoVLolDg6_g",
+    "https://www.microsoft.com/en-us/power-platform/blog/product/power-apps/feed/",
+    "https://platformengineering.org/blog/rss.xml",
+    "https://pnp.github.io/blog/index.xml"
+  ],
+  "lifestyle": [
+    "http://feeds2.feedburner.com/LifestylesUnlimited"
+  ],
+  "military & defense": [
+    "https://www.reddit.com/r/netsec/.rss"
+  ],
+  "parenting": [
+    "https://feeds.feedburner.com/TheArtfulParent"
+  ],
+  "pets & animals": [
+    "https://arsenalyouth.wordpress.com/feed/",
+    "https://eatlittlebird.com/feed/",
+    "http://feeds.feedburner.com/BirdsOnTheBlog",
+    "http://birdsoftheair.blogspot.com/feeds/posts/default"
+  ],
+  "religion & spirituality": [
+    "https://christianselig.com/index.xml",
+    "https://rss.csmonitor.com/feeds/science",
+    "https://rss.csmonitor.com/feeds/environment",
+    "https://rss.csmonitor.com/feeds/arts"
+  ],
+  "photography": [
+    "https://feeds.simplecast.com/tIivNLb5",
+    "https://medium.com/feed/adventures-in-consumer-technology"
+  ],
+  "science": [
+    "https://reactormag.com/feed/",
+    "https://www.spreaker.com/show/6180443/episodes/feed"
+  ],
+  "productivity & organization": [
+    "https://aws.amazon.com/blogs/infrastructure-and-automation/feed/",
+    "https://automationpanda.com/feed/",
+    "https://www.ontestautomation.com/feed.xml",
+    "https://responsibleautomation.wordpress.com/feed/",
+    "https://automationchampion.com/feed/",
+    "http://roboticsandautomationnews.com/feed/",
+    "https://www.automationworld.com/__rss/website-scheduled-content.xml?input=%7B%22sectionAlias%22:%22home%22%7D"
+  ],
+  "psychology & mental health": [
+    "https://www.reddit.com/r/ThinkingProcess/.rss"
+  ],
+  "relationships & dating": [
+    "http://thevisualcommunicationguy.com/feed/",
+    "http://www.timetoshinepodcast.com/feed/podcast/",
+    "https://www.reddit.com/r/PublicSpeaking/.rss",
+    "https://www.reddit.com/r/Toastmasters/.rss"
+  ],
+  "wellness & self-care": [
+    "https://meditations-in-an-emergency.ghost.io/rss/"
+  ]
+}

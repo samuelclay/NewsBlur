@@ -1,0 +1,378 @@
+- generic: Channel content
+- banner:
+  - button "Collapse menu":
+  - link "YouTube Studio dashboard":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g
+    - img "YouTube Studio dashboard"
+  - button "Skip navigation":
+    - generic: Skip navigation
+  - button "Search":
+  - button "Help":
+  - button "Notifications":
+  - button "Ask Studio":
+    - generic: Ask Studio
+  - button "Create":
+    - generic: Create
+  - generic "Account":
+    - button "Account"
+- navigation:
+  - img "Samuel Clay"
+  - generic: Your channel
+  - generic: Samuel Clay
+  - menu:
+    - menuitem "Dashboard":
+      - generic: Dashboard
+    - menuitem "Content":
+      - generic: Content
+    - menuitem "Analytics":
+      - generic: Analytics
+    - menuitem "Community":
+      - generic: Community
+    - menuitem "Subtitles":
+      - generic: Subtitles
+    - menuitem "Content detection":
+      - generic: Content detection
+    - menuitem "Earn":
+      - generic: Earn
+    - menuitem "Customization":
+      - generic: Customization
+    - menuitem "Audio library":
+      - generic: Audio library
+  - list:
+    - button "Settings":
+      - generic: Settings
+    - button "Send feedback":
+      - generic: Send feedback
+- main:
+  - heading "Channel content" [level=1]
+  - tablist:
+    - tab "Videos" [selected]:
+      - generic: Videos
+    - tab "Shorts":
+      - generic: Shorts
+    - tab "Live":
+      - generic: Live
+    - tab "Posts":
+      - generic: Posts
+    - tab "Playlists":
+      - generic: Playlists
+    - tab "Podcasts":
+      - generic: Podcasts
+    - tab "Promotions":
+      - generic: Promotions
+    - tab "Collaborations":
+      - generic: Collaborations
+    - tab "Ideas":
+      - generic: Ideas
+  - table "Video list":
+    - rowgroup:
+      - textbox "Filter"
+      - row "Select all Video Notices Visibility Sort by Date Sort by Views Comments":
+        - columnheader "Select all":
+          - generic "Select all":
+            - checkbox "Select all"
+        - columnheader "Video":
+          - heading "Video" [level=3]:
+            - generic: Video
+        - columnheader "Notices":
+          - heading "Notices" [level=3]:
+            - generic: Notices
+        - columnheader "Visibility":
+          - heading "Visibility" [level=3]:
+            - generic: Visibility
+        - columnheader "Sort by Date":
+          - heading "Sort by Date" [level=3]:
+            - button "Sort by Date":
+              - generic: Date
+        - columnheader "Sort by Views":
+          - heading "Sort by Views" [level=3]:
+            - button "Sort by Views":
+              - generic: Views
+        - columnheader "Comments":
+          - heading "Comments" [level=3]:
+            - generic: Comments
+    - 'row "Select NewsBlur: czytnik RSS · Polski Video thumbnail: NewsBlur: czytnik RSS · Polski 0:28 NewsBlur: czytnik RSS · Polski Ulubione witryny razem. Czytaj, zapisuj i udostępniaj artykuły. Wymagane jest konto NewsBlur. Niektóre funkcje wymagają płatnej subskrypcji. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: czytnik RSS · Polski"':
+        - 'generic "Select NewsBlur: czytnik RSS · Polski"':
+          - 'checkbox "Select NewsBlur: czytnik RSS · Polski"'
+      - 'cell "Video thumbnail: NewsBlur: czytnik RSS · Polski 0:28 NewsBlur: czytnik RSS · Polski Ulubione witryny razem. Czytaj, zapisuj i udostępniaj artykuły. Wymagane jest konto NewsBlur. Niektóre funkcje wymagają płatnej subskrypcji. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: czytnik RSS · Polski 0:28"':
+          - /url: /video/99s8PpYy_dY/edit
+          - 'img "Video thumbnail: NewsBlur: czytnik RSS · Polski"'
+          - generic: 0:28
+        - 'link "NewsBlur: czytnik RSS · Polski"':
+          - /url: /video/99s8PpYy_dY/edit
+          - generic: "NewsBlur: czytnik RSS · Polski"
+        - generic: Ulubione witryny razem. Czytaj, zapisuj i udostępniaj artykuły. Wymagane jest konto NewsBlur. Niektóre funkcje wymagają płatnej subskrypcji. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/99s8PpYy_dY/comments
+          - text: "0"
+    - 'row "Select NewsBlur: RSS-lezer · Nederlands Video thumbnail: NewsBlur: RSS-lezer · Nederlands 0:28 NewsBlur: RSS-lezer · Nederlands Je favoriete sites op één plek. Lees artikelen, sla ze op en deel ze. Een NewsBlur-account is vereist. Voor sommige functies is een betaald abonnement nodig. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: RSS-lezer · Nederlands"':
+        - 'generic "Select NewsBlur: RSS-lezer · Nederlands"':
+          - 'checkbox "Select NewsBlur: RSS-lezer · Nederlands"'
+      - 'cell "Video thumbnail: NewsBlur: RSS-lezer · Nederlands 0:28 NewsBlur: RSS-lezer · Nederlands Je favoriete sites op één plek. Lees artikelen, sla ze op en deel ze. Een NewsBlur-account is vereist. Voor sommige functies is een betaald abonnement nodig. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: RSS-lezer · Nederlands 0:28"':
+          - /url: /video/YgoxH2alBWc/edit
+          - 'img "Video thumbnail: NewsBlur: RSS-lezer · Nederlands"'
+          - generic: 0:28
+        - 'link "NewsBlur: RSS-lezer · Nederlands"':
+          - /url: /video/YgoxH2alBWc/edit
+          - generic: "NewsBlur: RSS-lezer · Nederlands"
+        - generic: Je favoriete sites op één plek. Lees artikelen, sla ze op en deel ze. Een NewsBlur-account is vereist. Voor sommige functies is een betaald abonnement nodig. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/YgoxH2alBWc/comments
+          - text: "0"
+    - 'row "Select NewsBlur: lettore RSS · Italiano Video thumbnail: NewsBlur: lettore RSS · Italiano 0:28 NewsBlur: lettore RSS · Italiano I tuoi siti preferiti insieme. Leggi, salva e condividi articoli. È necessario un account NewsBlur. Alcune funzioni richiedono un abbonamento a pagamento. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: lettore RSS · Italiano"':
+        - 'generic "Select NewsBlur: lettore RSS · Italiano"':
+          - 'checkbox "Select NewsBlur: lettore RSS · Italiano"'
+      - 'cell "Video thumbnail: NewsBlur: lettore RSS · Italiano 0:28 NewsBlur: lettore RSS · Italiano I tuoi siti preferiti insieme. Leggi, salva e condividi articoli. È necessario un account NewsBlur. Alcune funzioni richiedono un abbonamento a pagamento. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: lettore RSS · Italiano 0:28"':
+          - /url: /video/-FaJicL236E/edit
+          - 'img "Video thumbnail: NewsBlur: lettore RSS · Italiano"'
+          - generic: 0:28
+        - 'link "NewsBlur: lettore RSS · Italiano"':
+          - /url: /video/-FaJicL236E/edit
+          - generic: "NewsBlur: lettore RSS · Italiano"
+        - generic: I tuoi siti preferiti insieme. Leggi, salva e condividi articoli. È necessario un account NewsBlur. Alcune funzioni richiedono un abbonamento a pagamento. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/-FaJicL236E/comments
+          - text: "0"
+    - 'row "Select NewsBlur: قارئ أخبار RSS · العربية Video thumbnail: NewsBlur: قارئ أخبار RSS · العربية 0:28 NewsBlur: قارئ أخبار RSS · العربية مواقعك المفضلة في مكان واحد. اقرأ القصص واحفظها وشاركها. يلزم وجود حساب NewsBlur. تتطلب بعض الميزات اشتراكًا مدفوعًا. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: قارئ أخبار RSS · العربية"':
+        - 'generic "Select NewsBlur: قارئ أخبار RSS · العربية"':
+          - 'checkbox "Select NewsBlur: قارئ أخبار RSS · العربية"'
+      - 'cell "Video thumbnail: NewsBlur: قارئ أخبار RSS · العربية 0:28 NewsBlur: قارئ أخبار RSS · العربية مواقعك المفضلة في مكان واحد. اقرأ القصص واحفظها وشاركها. يلزم وجود حساب NewsBlur. تتطلب بعض الميزات اشتراكًا مدفوعًا. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: قارئ أخبار RSS · العربية 0:28"':
+          - /url: /video/-nSi5n5XJ4E/edit
+          - 'img "Video thumbnail: NewsBlur: قارئ أخبار RSS · العربية"'
+          - generic: 0:28
+        - 'link "NewsBlur: قارئ أخبار RSS · العربية"':
+          - /url: /video/-nSi5n5XJ4E/edit
+          - generic: "NewsBlur: قارئ أخبار RSS · العربية"
+        - generic: مواقعك المفضلة في مكان واحد. اقرأ القصص واحفظها وشاركها. يلزم وجود حساب NewsBlur. تتطلب بعض الميزات اشتراكًا مدفوعًا. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/-nSi5n5XJ4E/comments
+          - text: "0"
+    - 'row "Select NewsBlur: leitor RSS · Português (Brasil) Video thumbnail: NewsBlur: leitor RSS · Português (Brasil) 0:28 NewsBlur: leitor RSS · Português (Brasil) Seus sites favoritos juntos. Leia, salve e compartilhe artigos. É necessário ter uma conta do NewsBlur. Alguns recursos exigem uma assinatura paga. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: leitor RSS · Português (Brasil)"':
+        - 'generic "Select NewsBlur: leitor RSS · Português (Brasil)"':
+          - 'checkbox "Select NewsBlur: leitor RSS · Português (Brasil)"'
+      - 'cell "Video thumbnail: NewsBlur: leitor RSS · Português (Brasil) 0:28 NewsBlur: leitor RSS · Português (Brasil) Seus sites favoritos juntos. Leia, salve e compartilhe artigos. É necessário ter uma conta do NewsBlur. Alguns recursos exigem uma assinatura paga. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: leitor RSS · Português (Brasil) 0:28"':
+          - /url: /video/RtomW35_WGI/edit
+          - 'img "Video thumbnail: NewsBlur: leitor RSS · Português (Brasil)"'
+          - generic: 0:28
+        - 'link "NewsBlur: leitor RSS · Português (Brasil)"':
+          - /url: /video/RtomW35_WGI/edit
+          - generic: "NewsBlur: leitor RSS · Português (Brasil)"
+        - generic: Seus sites favoritos juntos. Leia, salve e compartilhe artigos. É necessário ter uma conta do NewsBlur. Alguns recursos exigem uma assinatura paga. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/RtomW35_WGI/comments
+          - text: "0"
+    - 'row "Select NewsBlur: RSS-Reader · Deutsch Video thumbnail: NewsBlur: RSS-Reader · Deutsch 0:28 NewsBlur: RSS-Reader · Deutsch Deine Lieblingswebsites an einem Ort. Artikel lesen, speichern und teilen. Ein NewsBlur-Konto ist erforderlich. Einige Funktionen erfordern ein kostenpflichtiges Abonnement. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: RSS-Reader · Deutsch"':
+        - 'generic "Select NewsBlur: RSS-Reader · Deutsch"':
+          - 'checkbox "Select NewsBlur: RSS-Reader · Deutsch"'
+      - 'cell "Video thumbnail: NewsBlur: RSS-Reader · Deutsch 0:28 NewsBlur: RSS-Reader · Deutsch Deine Lieblingswebsites an einem Ort. Artikel lesen, speichern und teilen. Ein NewsBlur-Konto ist erforderlich. Einige Funktionen erfordern ein kostenpflichtiges Abonnement. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: RSS-Reader · Deutsch 0:28"':
+          - /url: /video/IH4B82sJ7xo/edit
+          - 'img "Video thumbnail: NewsBlur: RSS-Reader · Deutsch"'
+          - generic: 0:28
+        - 'link "NewsBlur: RSS-Reader · Deutsch"':
+          - /url: /video/IH4B82sJ7xo/edit
+          - generic: "NewsBlur: RSS-Reader · Deutsch"
+        - generic: Deine Lieblingswebsites an einem Ort. Artikel lesen, speichern und teilen. Ein NewsBlur-Konto ist erforderlich. Einige Funktionen erfordern ein kostenpflichtiges Abonnement. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/IH4B82sJ7xo/comments
+          - text: "0"
+    - 'row "Select NewsBlur: lector RSS · Español Video thumbnail: NewsBlur: lector RSS · Español 0:28 NewsBlur: lector RSS · Español Tus sitios favoritos juntos. Lee, guarda y comparte artículos. Se necesita una cuenta de NewsBlur. Algunas funciones requieren una suscripción de pago. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: lector RSS · Español"':
+        - 'generic "Select NewsBlur: lector RSS · Español"':
+          - 'checkbox "Select NewsBlur: lector RSS · Español"'
+      - 'cell "Video thumbnail: NewsBlur: lector RSS · Español 0:28 NewsBlur: lector RSS · Español Tus sitios favoritos juntos. Lee, guarda y comparte artículos. Se necesita una cuenta de NewsBlur. Algunas funciones requieren una suscripción de pago. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: lector RSS · Español 0:28"':
+          - /url: /video/zWjgI-GSJvU/edit
+          - 'img "Video thumbnail: NewsBlur: lector RSS · Español"'
+          - generic: 0:28
+        - 'link "NewsBlur: lector RSS · Español"':
+          - /url: /video/zWjgI-GSJvU/edit
+          - generic: "NewsBlur: lector RSS · Español"
+        - generic: Tus sitios favoritos juntos. Lee, guarda y comparte artículos. Se necesita una cuenta de NewsBlur. Algunas funciones requieren una suscripción de pago. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/zWjgI-GSJvU/comments
+          - text: "0"
+    - 'row "Select NewsBlur: קורא חדשות RSS · עברית Video thumbnail: NewsBlur: קורא חדשות RSS · עברית 0:28 NewsBlur: קורא חדשות RSS · עברית האתרים האהובים שלך במקום אחד. קוראים, שומרים ומשתפים כתבות. נדרש חשבון NewsBlur. חלק מהתכונות דורשות מינוי בתשלום. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: קורא חדשות RSS · עברית"':
+        - 'generic "Select NewsBlur: קורא חדשות RSS · עברית"':
+          - 'checkbox "Select NewsBlur: קורא חדשות RSS · עברית"'
+      - 'cell "Video thumbnail: NewsBlur: קורא חדשות RSS · עברית 0:28 NewsBlur: קורא חדשות RSS · עברית האתרים האהובים שלך במקום אחד. קוראים, שומרים ומשתפים כתבות. נדרש חשבון NewsBlur. חלק מהתכונות דורשות מינוי בתשלום. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: קורא חדשות RSS · עברית 0:28"':
+          - /url: /video/6I7E1GrRemA/edit
+          - 'img "Video thumbnail: NewsBlur: קורא חדשות RSS · עברית"'
+          - generic: 0:28
+        - 'link "NewsBlur: קורא חדשות RSS · עברית"':
+          - /url: /video/6I7E1GrRemA/edit
+          - generic: "NewsBlur: קורא חדשות RSS · עברית"
+        - generic: האתרים האהובים שלך במקום אחד. קוראים, שומרים ומשתפים כתבות. נדרש חשבון NewsBlur. חלק מהתכונות דורשות מינוי בתשלום. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/6I7E1GrRemA/comments
+          - text: "0"
+    - 'row "Select NewsBlur : lecteur RSS · Français Video thumbnail: NewsBlur : lecteur RSS · Français 0:28 NewsBlur : lecteur RSS · Français Vos sites favoris réunis. Lisez, enregistrez et partagez des articles. Un compte NewsBlur est nécessaire. Certaines fonctionnalités nécessitent un abonnement payant. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur : lecteur RSS · Français"':
+        - 'generic "Select NewsBlur : lecteur RSS · Français"':
+          - 'checkbox "Select NewsBlur : lecteur RSS · Français"'
+      - 'cell "Video thumbnail: NewsBlur : lecteur RSS · Français 0:28 NewsBlur : lecteur RSS · Français Vos sites favoris réunis. Lisez, enregistrez et partagez des articles. Un compte NewsBlur est nécessaire. Certaines fonctionnalités nécessitent un abonnement payant. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur : lecteur RSS · Français 0:28"':
+          - /url: /video/1ur-fYshgfo/edit
+          - 'img "Video thumbnail: NewsBlur : lecteur RSS · Français"'
+          - generic: 0:28
+        - 'link "NewsBlur : lecteur RSS · Français"':
+          - /url: /video/1ur-fYshgfo/edit
+          - generic: "NewsBlur : lecteur RSS · Français"
+        - generic: Vos sites favoris réunis. Lisez, enregistrez et partagez des articles. Un compte NewsBlur est nécessaire. Certaines fonctionnalités nécessitent un abonnement payant. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/1ur-fYshgfo/comments
+          - text: "0"
+    - 'row "Select NewsBlur: RSS News Reader · English Video thumbnail: NewsBlur: RSS News Reader · English 0:28 NewsBlur: RSS News Reader · English Your favorite sites in one place. Read, save, and share stories. A NewsBlur account is required. Some features require a paid subscription. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com — Unlisted Oct 17, 2026 Uploaded 0 Video has 0 comments. Video comments page"':
+      - 'cell "Select NewsBlur: RSS News Reader · English"':
+        - 'generic "Select NewsBlur: RSS News Reader · English"':
+          - 'checkbox "Select NewsBlur: RSS News Reader · English"'
+      - 'cell "Video thumbnail: NewsBlur: RSS News Reader · English 0:28 NewsBlur: RSS News Reader · English Your favorite sites in one place. Read, save, and share stories. A NewsBlur account is required. Some features require a paid subscription. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com"':
+        - 'link "Video thumbnail: NewsBlur: RSS News Reader · English 0:28"':
+          - /url: /video/iUO8KcJc9DQ/edit
+          - 'img "Video thumbnail: NewsBlur: RSS News Reader · English"'
+          - generic: 0:28
+        - 'link "NewsBlur: RSS News Reader · English"':
+          - /url: /video/iUO8KcJc9DQ/edit
+          - generic: "NewsBlur: RSS News Reader · English"
+        - generic: Your favorite sites in one place. Read, save, and share stories. A NewsBlur account is required. Some features require a paid subscription. https://play.google.com/store/apps/details?id=com.newsblur https://www.newsblur.com
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Oct 17, 2026 Uploaded":
+        - text: Oct 17, 2026
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/iUO8KcJc9DQ/comments
+          - text: "0"
+    - 'row "Select Screen Recording 2024 03 01 at 7 23 47 AM Video thumbnail: Screen Recording 2024 03 01 at 7 23 47 AM 0:17 Screen Recording 2024 03 01 at 7 23 47 AM Add description — Unlisted Mar 1, 2024 Uploaded 0 Video has 0 comments. Video comments page"':
+      - cell "Select Screen Recording 2024 03 01 at 7 23 47 AM":
+        - generic "Select Screen Recording 2024 03 01 at 7 23 47 AM":
+          - checkbox "Select Screen Recording 2024 03 01 at 7 23 47 AM"
+      - 'cell "Video thumbnail: Screen Recording 2024 03 01 at 7 23 47 AM 0:17 Screen Recording 2024 03 01 at 7 23 47 AM Add description"':
+        - 'link "Video thumbnail: Screen Recording 2024 03 01 at 7 23 47 AM 0:17"':
+          - /url: /video/2HKLia5WlQA/edit
+          - 'img "Video thumbnail: Screen Recording 2024 03 01 at 7 23 47 AM"'
+          - generic: 0:17
+        - link "Screen Recording 2024 03 01 at 7 23 47 AM":
+          - /url: /video/2HKLia5WlQA/edit
+          - generic: Screen Recording 2024 03 01 at 7 23 47 AM
+        - generic: Add description
+      - cell "—":
+        - generic: —
+      - cell "Unlisted":
+        - generic: Unlisted
+      - cell "Mar 1, 2024 Uploaded":
+        - text: Mar 1, 2024
+        - generic: Uploaded
+      - cell "0"
+      - cell "Video has 0 comments. Video comments page":
+        - link "Video has 0 comments. Video comments page":
+          - /url: /video/2HKLia5WlQA/comments
+          - text: "0"
+    - generic: "Rows per page:"
+    - generic "Menu for selecting the number of rows per page.":
+      - button "30":
+        - button "30":
+          - generic: "30"
+    - generic: 1–11 of 11
+    - button "Navigate to the first page" [disabled]:
+    - button "Navigate to the previous page" [disabled]:
+    - button "Navigate to the next page" [disabled]:
+    - button "Navigate to the last page" [disabled]:

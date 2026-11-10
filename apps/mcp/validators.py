@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 from oauth2_provider.models import get_grant_model
 from oauth2_provider.oauth2_validators import OAuth2Validator
+from oauth2_provider.settings import oauth2_settings
 
 LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "[::1]"}
 
@@ -54,3 +55,18 @@ class RFC8252OAuth2Validator(OAuth2Validator):
             super().invalidate_authorization_code(client_id, code, request, *args, **kwargs)
         except Grant.DoesNotExist:
             pass
+
+    def save_bearer_token(self, token, request, *args, **kwargs):
+        """Tell clients how long the refresh token lasts.
+
+        Our refresh tokens never expire (REFRESH_TOKEN_EXPIRE_SECONDS is unset), but
+        the token response never said so, and FastMCP's OAuth proxy in newsblur_mcp
+        treats a missing refresh_expires_in as 30 days. MCP clients then lost the
+        ability to refresh a month after connecting. oauthlib serializes this dict
+        after saving it, so the field lands in the token response.
+        """
+        super().save_bearer_token(token, request, *args, **kwargs)
+        if token.get("refresh_token"):
+            token["refresh_expires_in"] = (
+                oauth2_settings.REFRESH_TOKEN_EXPIRE_SECONDS or oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS
+            )

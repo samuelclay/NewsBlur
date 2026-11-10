@@ -84,6 +84,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         Backbone.View.prototype.remove.call(this);
     },
 
+    // feed_title_view.js: dir="auto" on .feed_title isolates the feed name, so a title in another
+    // script keeps its punctuation and truncates at its own end (see media/css/reader/reader_rtl.css).
     render: function () {
         var feed = this.model;
         var extra_classes = this.extra_classes();
@@ -108,21 +110,21 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                         var end_date = NEWSBLUR.reader.flags.date_filter_end;\
                         if (start_date && end_date) { %>\
                         <% if (start_date === end_date) { %>\
-                        Stories on <%= start_date %>\
+                        <%- interpolate(gettext("Stories on %(date)s"), {date: start_date}, true) %>\
                         <% } else { %>\
-                        Stories from <%= start_date %> to <%= end_date %>\
+                        <%- interpolate(gettext("Stories from %(start_date)s to %(end_date)s"), {start_date: start_date, end_date: end_date}, true) %>\
                         <% } %>\
                         &middot;\
                       <% } else if (start_date) { %>\
-                        Stories newer than <%= start_date %>\
+                        <%- interpolate(gettext("Stories newer than %(date)s"), {date: start_date}, true) %>\
                         &middot;\
                       <% } else if (end_date) { %>\
-                        Stories older than <%= end_date %>\
+                        <%- interpolate(gettext("Stories older than %(date)s"), {date: end_date}, true) %>\
                         &middot;\
                       <% } %>\
-                      <%= read_filter %>\
+                      <%- setting_label(read_filter) %>\
                       &middot;\
-                      <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
+                      <%- setting_label(NEWSBLUR.assets.view_setting(feed.id, "order")) %>\
                       <% if (has_notifications && has_notifications.length) { %>\
                           &middot;\
                           <div class="NB-feedbar-notifications-icon"></div>\
@@ -135,7 +137,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
               </div>\
               <div class="NB-story-title-indicator">\
                   <div class="NB-story-title-indicator-count"></div>\
-                  <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                  <span class="NB-story-title-indicator-text"><%- gettext("show hidden stories") %></span>\
               </div>\
               <% if (show_discover) { %>\
                 <div class="NB-feedbar-discover-container">\
@@ -145,14 +147,14 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                             <%= $.favicon_html(feed_id) %>\
                         <% }); %>\
                     <% } else { %>\
-                        <span class="NB-feedbar-discover-text">Related Sites</span>\
+                        <span class="NB-feedbar-discover-text"><%- gettext("Related Sites") %></span>\
                     <% } %>\
                     <div class="NB-icon"></div>\
                 </div>\
               <% } %>\
           <% } %>\
           <%= $.favicon_html(feed, { role: type == "story" ? "button" : null }) %>\
-          <span class="feed_title">\
+          <span class="feed_title" dir="auto">\
             <%= feed.get("feed_title") %>\
           </span>\
           <div class="NB-feed-exception-icon"></div>\
@@ -161,16 +163,16 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           <div class="NB-feed-highlight"></div>\
           <% if (organizer) { %>\
               <div class="NB-feed-organizer-sort NB-feed-organizer-subscribers">\
-                <%= pluralize("subscriber", feed.get("num_subscribers"), true) %>\
+                <%- interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", feed.get("num_subscribers")), {count: Inflector.commas(feed.get("num_subscribers"))}, true) %>\
               </div>\
               <div class="NB-feed-organizer-sort NB-feed-organizer-laststory">\
                 <%= feed.relative_last_story_date() %>\
               </div>\
               <div class="NB-feed-organizer-sort NB-feed-organizer-monthlycount">\
-                <%= pluralize("story", feed.get("average_stories_per_month"), true) %>/month\
+                <%- interpolate(ngettext("%(count)s story/month", "%(count)s stories/month", feed.get("average_stories_per_month")), {count: Inflector.commas(feed.get("average_stories_per_month"))}, true) %>\
               </div>\
               <div class="NB-feed-organizer-sort NB-feed-organizer-opens">\
-                <%= pluralize("open", feed.get("feed_opens"), true) %>\
+                <%- interpolate(ngettext("%(count)s open", "%(count)s opens", feed.get("feed_opens")), {count: Inflector.commas(feed.get("feed_opens"))}, true) %>\
               </div>\
           <% } %>\
         </<%= list_type %>>\
@@ -189,7 +191,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             highlighted: this.options.feed_chooser &&
                 this.model.highlighted_in_folder(this.options.folder_title),
             organizer: this.options.organizer,
-            pluralize: Inflector.pluralize,
+            setting_label: this.setting_label,
             show_discover: NEWSBLUR.assets.preference("show_discover"),
             has_notifications: this.model.get('notification_types') || [],
             has_auto_mark_read: (function () {
@@ -232,6 +234,18 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             .bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
 
         return this;
+    },
+
+    // feed_title_view.js: Display label for read_filter/order view setting identifiers,
+    // which stay untranslated because they are stored preferences and sent to the server.
+    setting_label: function (value) {
+        var labels = {
+            all: gettext("All"),
+            unread: gettext("Unread"),
+            newest: gettext("Newest"),
+            oldest: gettext("Oldest")
+        };
+        return labels[value] || value;
     },
 
     extra_classes: function () {
@@ -307,8 +321,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     render_updated_time: function () {
         if (this.options.type == 'story') {
             var updated_text = this.model.get('updated') ?
-                this.model.get('updated') + ' ago' :
-                'Loading...';
+                interpolate(gettext("%(time)s ago"), { time: this.model.get('updated') }, true) :
+                gettext('Loading...');
             this.$('.NB-feedbar-last-updated-date').text(updated_text);
         }
     },
@@ -498,23 +512,26 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         var $expand = this.$(".NB-feedbar-mark-feed-read-expand");
         var $times = this.$(".NB-feedbar-mark-feed-read-time");
         var times_count = $times.length;
+        // feed_title_view.js: the mirrored CSS (utils/rtl_css.py) pins these from the left in RTL,
+        // so the times fan out from that side and the container makes room on its right.
+        var is_rtl = NEWSBLUR.utils.is_rtl();
+        var edge = is_rtl ? 'left' : 'right';
+        var expand_to = { opacity: 0 };
+        expand_to[edge] = 0;
 
         $hidden.hide();
         $markread.css('z-index', times_count + 1);
-        $container.css('margin-left', $times.eq(0).outerWidth(true) * (times_count - 1) + 12);
-        $expand.animate({
-            right: 0,
-            opacity: 0
-        }, {
+        $container.css(is_rtl ? 'margin-right' : 'margin-left', $times.eq(0).outerWidth(true) * (times_count - 1) + 12);
+        $expand.animate(expand_to, {
             queue: false,
             easing: 'easeInQuint',
             duration: 180,
             complete: function () {
                 $times.each(function (i) {
+                    var fan_to = {};
+                    fan_to[edge] = (32 * (i + 1)) + 6;
                     $(this).css('z-index', times_count - i);
-                    $(this).animate({
-                        right: (32 * (i + 1)) + 6
-                    }, {
+                    $(this).animate(fan_to, {
                         queue: false,
                         easing: 'easeOutBack',
                         duration: 280 + 100 * (Math.pow(i, 0.5))

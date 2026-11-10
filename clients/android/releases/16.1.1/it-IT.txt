@@ -1,0 +1,1 @@
+Novità di Ascolta: avvia dalla barra di lettura e prosegui con Articolo successivo nel mini player. La riproduzione automatica segue l’ordine di Articoli salvati e Articoli letti, scorrendo l’elenco. I titoli ripetuti vengono letti una volta. Ascolto settimanale: 1 ora con Premium Archive, 10 con Premium Pro, rinnovate la domenica. Impostazioni mostra ore e minuti rimasti.

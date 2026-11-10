@@ -1,8 +1,10 @@
 import datetime
 from unittest.mock import MagicMock, call, patch
 
+import stripe
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
@@ -425,6 +427,58 @@ class Test_UpgradePaths(TestCase):
 
         self.assertEqual(m["email_premium"].call_count, 1, "new-premium email must send exactly once")
         m["email_staff"].assert_not_called()
+
+
+class Test_ConcurrentArchiveActivation(TestCase):
+    """Four PayPal webhooks for one archive upgrade each ran setup_premium_history and
+    activate_archive at once on 2026-10-10, and every one of them scheduled the archive
+    backfill for all 3,910 of the user's feeds. A handler still holding the profile it
+    loaded before the upgrade saved the whole row back, which turned is_archive off again
+    so the next handler's guard let it through (apps/profile/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="archiverace", password="password", email="archiverace@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.is_premium = True
+        self.profile.is_premium_trial = False
+        self.profile.is_archive = False
+        self.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(days=10)
+        self.profile.save()
+
+        patch("apps.profile.tasks.EmailStaffPremiumUpgrade.delay").start()
+        patch("apps.profile.models.SchedulePremiumSetup").start()
+        patch("apps.reader.models.UserSubscription.queue_new_feeds").start()
+        self.archive_fetch = patch(
+            "apps.reader.models.UserSubscription.schedule_fetch_archive_feeds_for_user"
+        ).start()
+        self.addCleanup(patch.stopall)
+
+    def test_a_stale_premium_history_save_does_not_reopen_the_archive_upgrade(self):
+        # A second webhook loaded the profile before the upgrade landed.
+        stale_profile = Profile.objects.get(pk=self.profile.pk)
+
+        self.profile.activate_archive()
+        self.assertTrue(Profile.objects.get(pk=self.profile.pk).is_archive)
+
+        # The upgrade payment moves premium_expire forward, so the stale handler's history
+        # sync has something to save.
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=99,
+            payment_provider="paypal",
+        )
+        stale_profile.setup_premium_history()
+
+        self.assertTrue(
+            Profile.objects.get(pk=self.profile.pk).is_archive,
+            "a history sync on a stale profile must not turn archive back off",
+        )
+
+        Profile.objects.get(pk=self.profile.pk).activate_archive()
+        self.assertEqual(self.archive_fetch.call_count, 1, "the archive backfill must be scheduled once")
 
 
 class Test_SetupPremiumHistoryStripe(TestCase):
@@ -1695,6 +1749,98 @@ class Test_RefundLatestStripePayment(TestCase):
         self.assertIsNot(original.refunded, True)
 
 
+class Test_PremiumExpireEmailsAfterPricingCancel(TestCase):
+    """The grace and expired emails must say why Premium is ending when the pricing migration
+    cancelled a grandfathered PayPal subscription. A 13 year subscriber who missed the one pricing
+    email only got the generic "maybe you didn't mean to transition back" copy, so the cancellation
+    looked like a billing bug (apps/profile/models.py)."""
+
+    EXPLANATION = "PayPal would not let NewsBlur move your older $24/year subscription to the new rate"
+
+    def setUp(self):
+        from django.core import mail
+
+        mail.outbox = []
+        self.user = User.objects.create_user(
+            username="pricingexpire", password="password", email="pricingexpire@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.is_premium = True
+        self.profile.is_premium_trial = False
+        self.profile.premium_renewal = False
+        self.profile.active_provider = "paypal"
+        self.profile.last_seen_on = datetime.datetime.now()
+        self.profile.premium_expire = datetime.datetime.now() - datetime.timedelta(days=3)
+        self.profile.save()
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=368),
+            payment_amount=24,
+            payment_provider="paypal",
+        )
+
+    def _migration_row(self, paypal_canceled_days_ago=5):
+        from apps.profile.models import PremiumPricingMigration
+
+        canceled_date = None
+        if paypal_canceled_days_ago is not None:
+            canceled_date = datetime.datetime.now() - datetime.timedelta(days=paypal_canceled_days_ago)
+        return PremiumPricingMigration.objects.create(
+            user=self.user,
+            provider="paypal",
+            old_amount=24,
+            email_sent_date=canceled_date,
+            paypal_canceled_date=canceled_date,
+            status="cancelled",
+        )
+
+    def _sent_bodies(self):
+        from django.core import mail
+
+        self.assertEqual(len(mail.outbox), 1)
+        html = mail.outbox[0].alternatives[0][0]
+        return mail.outbox[0].body, html
+
+    def test_grace_email_explains_pricing_cancellation(self):
+        self._migration_row()
+
+        self.profile.send_premium_expire_grace_period_email()
+
+        text, html = self._sent_bodies()
+        for body in (text, html):
+            self.assertIn(self.EXPLANATION, body)
+            self.assertNotIn("maybe you didn't mean to transition back", body)
+
+    def test_expired_email_explains_pricing_cancellation(self):
+        self._migration_row(paypal_canceled_days_ago=36)
+
+        self.profile.send_premium_expire_email()
+
+        text, html = self._sent_bodies()
+        for body in (text, html):
+            self.assertIn(self.EXPLANATION, body)
+
+    def test_subscriber_who_cancelled_paypal_themselves_gets_generic_copy(self):
+        """Reconcile marks a row cancelled without paypal_canceled_date when the subscriber ended
+        the PayPal subscription on their own, so NewsBlur must not claim it cancelled it."""
+        self._migration_row(paypal_canceled_days_ago=None)
+
+        self.profile.send_premium_expire_grace_period_email()
+
+        text, _ = self._sent_bodies()
+        self.assertNotIn(self.EXPLANATION, text)
+        self.assertIn("maybe you didn't mean to transition back", text)
+
+    def test_payment_after_cancellation_gets_generic_copy(self):
+        """A subscriber who paid again after the cancellation is expiring for some later reason."""
+        self._migration_row(paypal_canceled_days_ago=400)
+
+        self.profile.send_premium_expire_email()
+
+        text, _ = self._sent_bodies()
+        self.assertNotIn(self.EXPLANATION, text)
+
+
 class Test_PremiumExpireBillingPeriod(TestCase):
     """A payment buys one billing period, not a flat year. Granting 365 days per
     charge pushed monthly Premium Pro subscribers out to expirations in the 2030s
@@ -2066,3 +2212,542 @@ class Test_StripeWebhookOrdering(TestCase):
         stripe_subscription_updated(None, self._event(self._subscription_object()))
 
         self._assert_archive_active()
+
+
+@override_settings(
+    STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
+    STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
+)
+class Test_UsageBillingSubscriptionIsolation(TestCase):
+    """The AI classifier usage billing sub must not be mistaken for a tier sub (apps/profile/models.py).
+
+    inovatiq (Oct 2026) set up usage billing, then clicked Upgrade to Premium. The
+    switch found the usage billing sub first, since a two item sub has no top level
+    plan and the fallback grabbed its first metered price, and tried to swap that
+    monthly item to the yearly premium price. Stripe refuses mixed intervals, the
+    InvalidRequestError went uncaught, and the user saw the error page twenty times
+    before paying with PayPal. The PayPal activation then canceled every Stripe sub,
+    usage billing included. PROmentor (Oct 2026) hit the same 500 switching Archive
+    to Pro while paying for usage billing alongside it.
+    """
+
+    STRIPE_ID = "cus_usageisolation"
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="usageisolation", password="password", email="usageisolation@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.stripe_id = self.STRIPE_ID
+        self.profile.is_usage_billing = True
+        self.profile.save()
+        StripeIds.objects.create(user=self.user, stripe_id=self.STRIPE_ID)
+
+    def _subscription(self, sub_id, prices, interval):
+        """A Stripe subscription as the API returns it: no top level plan once it has two items."""
+        items = [
+            {
+                "id": "si_%s_%s" % (sub_id, index),
+                "object": "subscription_item",
+                "price": {"id": price, "object": "price", "recurring": {"interval": interval}},
+                "plan": {"id": price, "object": "plan", "active": True},
+            }
+            for index, price in enumerate(prices)
+        ]
+        plan = items[0]["plan"] if len(items) == 1 else None
+        return stripe.Subscription.construct_from(
+            {
+                "id": sub_id,
+                "object": "subscription",
+                "customer": self.STRIPE_ID,
+                "status": "active",
+                "plan": plan,
+                "items": {"object": "list", "data": items},
+            },
+            "sk_test",
+        )
+
+    def _usage_sub(self):
+        return self._subscription("sub_usage", ["price_text_classifier", "price_image_classifier"], "month")
+
+    def _tier_sub(self, plan):
+        return self._subscription("sub_%s" % plan, [Profile.plan_to_stripe_price(plan)], "year")
+
+    def _mixed_interval_error(self, *args, **kwargs):
+        raise stripe.error.InvalidRequestError(
+            "All prices on a subscription must have the same `recurring.interval` and "
+            "`recurring.interval_count` unless flexible billing mode is enabled.",
+            param=None,
+        )
+
+    # --- Upgrading with only a usage billing sub ----------------------------
+
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    @patch.object(Profile, "stripe_customer")
+    @patch.object(Profile, "setup_premium_history")
+    def test_switch_ignores_usage_billing_sub(self, mock_history, mock_customer, mock_list, mock_modify):
+        """With no tier sub to switch, the switch reports failure so the view falls back to checkout."""
+        mock_customer.return_value = MagicMock(id=self.STRIPE_ID)
+        mock_list.return_value = MagicMock(data=[self._usage_sub()])
+        mock_modify.side_effect = self._mixed_interval_error
+
+        result = self.profile.switch_stripe_subscription("premium")
+
+        self.assertFalse(result)
+        mock_modify.assert_not_called()
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_upgrade_view_sends_usage_billing_user_to_checkout(
+        self, mock_customer, mock_list, mock_modify, mock_session
+    ):
+        """The exact request inovatiq made: a premium checkout instead of the error page."""
+        mock_customer.return_value = MagicMock(id=self.STRIPE_ID)
+        mock_list.return_value = MagicMock(data=[self._usage_sub()])
+        mock_modify.side_effect = self._mixed_interval_error
+        mock_session.return_value = MagicMock(url="https://checkout.stripe.com/c/pay/cs_test")
+        client = Client()
+        client.login(username="usageisolation", password="password")
+
+        response = client.post(reverse("switch-stripe-subscription"), {"plan": "premium"})
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response["Location"], "https://checkout.stripe.com/c/pay/cs_test")
+        _, kwargs = mock_session.call_args
+        self.assertEqual(kwargs["line_items"][0]["price"], Profile.plan_to_stripe_price("premium"))
+        self.assertEqual(kwargs["customer"], self.STRIPE_ID)
+        mock_modify.assert_not_called()
+
+    # --- Switching tiers with usage billing alongside ------------------------
+
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    @patch.object(Profile, "stripe_customer")
+    @patch.object(Profile, "setup_premium_history")
+    def test_switch_changes_tier_sub_not_usage_billing_sub(
+        self, mock_history, mock_customer, mock_list, mock_modify
+    ):
+        """PROmentor's account: Stripe lists the newer usage billing sub ahead of the Archive sub."""
+        mock_customer.return_value = MagicMock(id=self.STRIPE_ID)
+        archive_sub = self._tier_sub("archive")
+        mock_list.return_value = MagicMock(data=[self._usage_sub(), archive_sub])
+
+        result = self.profile.switch_stripe_subscription("pro")
+
+        self.assertTrue(result)
+        mock_modify.assert_called_once()
+        args, kwargs = mock_modify.call_args
+        self.assertEqual(args[0], archive_sub.id)
+        self.assertEqual(kwargs["items"][0]["id"], archive_sub["items"].data[0].id)
+        self.assertEqual(kwargs["items"][0]["price"], Profile.plan_to_stripe_price("pro"))
+
+    # --- Canceling Stripe ----------------------------------------------------
+
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    @patch("stripe.Customer.retrieve")
+    def test_cancel_premium_stripe_keeps_usage_billing_sub(self, mock_retrieve, mock_list, mock_modify):
+        """Switching to PayPal, refunding, or canceling renewal only stops the tier sub."""
+        mock_retrieve.return_value = MagicMock(id=self.STRIPE_ID)
+        premium_sub = self._tier_sub("premium")
+        mock_list.return_value = MagicMock(data=[self._usage_sub(), premium_sub])
+
+        self.assertTrue(self.profile.cancel_premium_stripe())
+
+        mock_modify.assert_called_once_with(premium_sub.id, cancel_at_period_end=True)
+
+    @patch.object(Profile, "archive_deleted_user", return_value=None)
+    @patch.object(Profile, "cancel_premium_paypal")
+    @patch.object(Profile, "setup_premium_history")
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    @patch("stripe.Customer.retrieve")
+    def test_account_deletion_cancels_usage_billing_sub(
+        self, mock_retrieve, mock_list, mock_modify, mock_history, mock_paypal, mock_archive
+    ):
+        """A deleted account has nothing left to classify, so usage billing stops with everything else."""
+        mock_retrieve.return_value = MagicMock(id=self.STRIPE_ID)
+        usage_sub = self._usage_sub()
+        premium_sub = self._tier_sub("premium")
+        mock_list.return_value = MagicMock(data=[usage_sub, premium_sub])
+
+        self.profile.delete_user(confirm=True)
+
+        self.assertCountEqual(
+            mock_modify.call_args_list,
+            [
+                call(usage_sub.id, cancel_at_period_end=True),
+                call(premium_sub.id, cancel_at_period_end=True),
+            ],
+        )
+
+    # --- Reactivating --------------------------------------------------------
+
+    @patch("stripe.Subscription.create")
+    @patch("stripe.Customer.modify")
+    @patch("stripe.PaymentMethod.list")
+    @patch("stripe.Subscription.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_reactivate_ignores_usage_billing_sub(
+        self, mock_customer, mock_list, mock_payment_methods, mock_customer_modify, mock_create
+    ):
+        """An active usage billing sub is not an active Premium sub, so reactivation still creates one."""
+        mock_customer.return_value = MagicMock(id=self.STRIPE_ID)
+        mock_list.return_value = MagicMock(data=[self._usage_sub()])
+        mock_payment_methods.return_value = MagicMock(data=[MagicMock(id="pm_test")])
+        mock_create.return_value = MagicMock(id="sub_reactivated")
+
+        result = self.profile.reactivate_stripe_subscription("premium")
+
+        self.assertEqual(result, "sub_reactivated")
+        _, kwargs = mock_create.call_args
+        self.assertEqual(kwargs["items"], [{"price": Profile.plan_to_stripe_price("premium")}])
+
+
+@override_settings(
+    STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
+    STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
+)
+class Test_ProfileCanonicalUsageBilling(TestCase):
+    """Profile.canonical() is the user_profile the iOS and Android apps load from
+    /reader/feeds, so it carries the AI classifier billing state (apps/profile/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="canonicalbilling", password="password", email="canonicalbilling@test.com"
+        )
+        self.profile = self.user.profile
+
+    def test_billing_flags_default_off(self):
+        canonical = self.profile.canonical()
+
+        self.assertIs(canonical["is_usage_billing"], False)
+        self.assertIs(canonical["is_self_hosted_ai"], False)
+        self.assertIs(canonical["can_use_ai_classifiers"], False)
+        self.assertIsNone(canonical["usage_billing_limit"])
+
+    def test_billing_flags_with_usage_billing_and_limit(self):
+        self.profile.is_usage_billing = True
+        self.profile.usage_billing_limit = "25.50"
+        self.profile.save()
+        self.profile = Profile.objects.get(pk=self.profile.pk)
+
+        payload = json.decode(json.encode(self.profile))
+
+        self.assertIs(payload["is_usage_billing"], True)
+        self.assertIs(payload["is_self_hosted_ai"], False)
+        self.assertIs(payload["can_use_ai_classifiers"], True)
+        # A Decimal would encode as the string "25.50"; the apps need a number.
+        self.assertEqual(payload["usage_billing_limit"], 25.5)
+        self.assertIsInstance(payload["usage_billing_limit"], float)
+
+
+@override_settings(
+    STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
+    STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
+)
+class Test_UsageBillingAppMode(TestCase):
+    """The iOS and Android apps post a platform to setup_usage_billing and
+    manage_usage_billing and get the Stripe URL back as JSON, then open it in an
+    in-app browser. Stripe returns that browser to usage_billing_app_return, which
+    hands off to the app's fixed scheme (apps/profile/views.py)."""
+
+    STRIPE_ID = "cus_usageappmode"
+    CHECKOUT_URL = "https://checkout.stripe.com/c/pay/cs_test_app"
+    PORTAL_URL = "https://billing.stripe.com/p/session/test_app"
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="usageappmode", password="password", email="usageappmode@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.stripe_id = self.STRIPE_ID
+        self.profile.save()
+        self.client = Client()
+        self.client.login(username="usageappmode", password="password")
+        self.domain = Site.objects.get_current().domain
+
+    def _usage_sub(self):
+        return stripe.Subscription.construct_from(
+            {
+                "id": "sub_usage",
+                "object": "subscription",
+                "customer": self.STRIPE_ID,
+                "status": "active",
+                "items": {
+                    "object": "list",
+                    "data": [
+                        {
+                            "id": "si_text",
+                            "object": "subscription_item",
+                            "price": {"id": "price_text_classifier"},
+                        },
+                        {
+                            "id": "si_image",
+                            "object": "subscription_item",
+                            "price": {"id": "price_image_classifier"},
+                        },
+                    ],
+                },
+            },
+            "sk_test",
+        )
+
+    def _app_return_url(self, platform, status):
+        return "https://%s%s?platform=%s&status=%s" % (
+            self.domain,
+            reverse("usage-billing-app-return"),
+            platform,
+            status,
+        )
+
+    # --- Setting up usage billing --------------------------------------------
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_app_setup_returns_checkout_url(self, mock_list, mock_session):
+        mock_list.return_value = MagicMock(data=[])
+        mock_session.return_value = MagicMock(url=self.CHECKOUT_URL)
+
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.decode(response.content), {"code": 0, "url": self.CHECKOUT_URL})
+        _, kwargs = mock_session.call_args
+        self.assertEqual(kwargs["success_url"], self._app_return_url("ios", "setup_complete"))
+        self.assertEqual(kwargs["cancel_url"], self._app_return_url("ios", "cancelled"))
+        self.assertEqual(kwargs["metadata"], {"newsblur_user_id": self.user.pk, "purpose": "usage_billing"})
+        self.assertEqual(kwargs["customer"], self.STRIPE_ID)
+        self.assertEqual(
+            kwargs["line_items"], [{"price": "price_text_classifier"}, {"price": "price_image_classifier"}]
+        )
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_app_setup_already_active(self, mock_list, mock_session):
+        """The duplicate subscription guard still holds in app mode, so no second checkout opens."""
+        mock_list.return_value = MagicMock(data=[self._usage_sub()])
+
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "android"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.decode(response.content), {"code": 0, "already_active": True})
+        mock_session.assert_not_called()
+
+    @override_settings(STRIPE_PRICE_TEXT_CLASSIFICATION="", STRIPE_PRICE_IMAGE_CLASSIFICATION="")
+    @patch("stripe.checkout.Session.create")
+    def test_app_setup_without_prices_returns_error(self, mock_session):
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 200)
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+        self.assertTrue(content["message"])
+        self.assertNotIn("url", content)
+        mock_session.assert_not_called()
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_app_setup_stripe_failure_returns_error(self, mock_list, mock_session):
+        mock_list.return_value = MagicMock(data=[])
+        mock_session.side_effect = stripe.error.APIConnectionError("Stripe is down")
+
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 200)
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+        self.assertTrue(content["message"])
+
+    def test_app_setup_logged_out_returns_json_403(self):
+        """An expired app session gets JSON, not a redirect to the login page."""
+        response = Client().post(reverse("setup-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(json.decode(response.content)["code"], -1)
+
+    def test_web_setup_logged_out_still_redirects_to_login(self):
+        response = Client().post(reverse("setup-usage-billing"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(settings.LOGIN_URL, response["Location"])
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_web_setup_still_redirects_to_checkout(self, mock_list, mock_session):
+        mock_list.return_value = MagicMock(data=[])
+        mock_session.return_value = MagicMock(url=self.CHECKOUT_URL)
+
+        response = self.client.post(reverse("setup-usage-billing"))
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response["Location"], self.CHECKOUT_URL)
+        _, kwargs = mock_session.call_args
+        index_url = "https://%s%s" % (self.domain, reverse("index"))
+        self.assertEqual(kwargs["success_url"], index_url + "?next=payments&usage_billing=setup_complete")
+        self.assertEqual(kwargs["cancel_url"], index_url + "?next=payments")
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_unknown_platform_gets_the_web_redirect(self, mock_list, mock_session):
+        """Only the fixed app platforms switch to JSON; anything else is the web flow."""
+        mock_list.return_value = MagicMock(data=[])
+        mock_session.return_value = MagicMock(url=self.CHECKOUT_URL)
+
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "https://evil.example"})
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response["Location"], self.CHECKOUT_URL)
+        _, kwargs = mock_session.call_args
+        self.assertNotIn("evil", kwargs["success_url"])
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_web_setup_already_active_still_redirects(self, mock_list, mock_session):
+        mock_list.return_value = MagicMock(data=[self._usage_sub()])
+
+        response = self.client.post(reverse("setup-usage-billing"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response["Location"],
+            "https://%s%s?next=payments&usage_billing=already_active" % (self.domain, reverse("index")),
+        )
+        mock_session.assert_not_called()
+
+    # --- Managing usage billing ----------------------------------------------
+
+    @patch("stripe.billing_portal.Session.create")
+    def test_app_manage_returns_portal_url(self, mock_portal):
+        mock_portal.return_value = MagicMock(url=self.PORTAL_URL)
+
+        response = self.client.post(reverse("manage-usage-billing"), {"platform": "android-alpha"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.decode(response.content), {"code": 0, "url": self.PORTAL_URL})
+        mock_portal.assert_called_once_with(
+            customer=self.STRIPE_ID,
+            return_url=self._app_return_url("android-alpha", "portal_return"),
+        )
+
+    @patch("stripe.billing_portal.Session.create")
+    def test_app_manage_without_stripe_id_returns_error(self, mock_portal):
+        self.profile.stripe_id = None
+        self.profile.save()
+
+        response = self.client.post(reverse("manage-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 200)
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+        self.assertTrue(content["message"])
+        mock_portal.assert_not_called()
+
+    @patch("stripe.billing_portal.Session.create")
+    def test_web_manage_still_redirects_to_portal(self, mock_portal):
+        mock_portal.return_value = MagicMock(url=self.PORTAL_URL)
+
+        response = self.client.post(reverse("manage-usage-billing"))
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response["Location"], self.PORTAL_URL)
+        mock_portal.assert_called_once_with(
+            customer=self.STRIPE_ID,
+            return_url="https://%s%s?next=payments" % (self.domain, reverse("index")),
+        )
+
+    # --- Returning from Stripe to the app ------------------------------------
+
+    def test_app_return_redirects_to_each_platform_scheme(self):
+        """The in-app browser has no NewsBlur session, so this works logged out."""
+        schemes = {
+            "ios": "newsblur-auth",
+            "android": "newsblur-auth-android",
+            "android-alpha": "newsblur-auth-android-alpha",
+        }
+        for platform, scheme in schemes.items():
+            for status in ("setup_complete", "cancelled", "portal_return"):
+                with self.subTest(platform=platform, status=status):
+                    response = Client().get(
+                        reverse("usage-billing-app-return"), {"platform": platform, "status": status}
+                    )
+
+                    self.assertEqual(response.status_code, 302)
+                    self.assertEqual(response["Location"], "%s://usage-billing?status=%s" % (scheme, status))
+
+    def test_app_return_rejects_unknown_platform_or_status(self):
+        for params in (
+            {"platform": "evil", "status": "setup_complete"},
+            {"platform": "javascript", "status": "cancelled"},
+            {"platform": "ios", "status": "https://evil.example"},
+            {"platform": "ios"},
+            {"status": "setup_complete"},
+            {},
+        ):
+            with self.subTest(params=params):
+                response = Client().get(reverse("usage-billing-app-return"), params)
+
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response["Location"], reverse("index"))
+
+
+class Test_StaffPremiumUpgradeEmail(TestCase):
+    """The staff notification sent on every paid upgrade (send_staff_premium_upgrade_email, apps/profile/models.py)."""
+
+    def setUp(self):
+        from django.core import mail
+
+        from apps.listen.models import MListenDaily
+
+        mail.outbox = []
+        MListenDaily.drop_collection()
+        self.user = User.objects.create_user(
+            username="staffupgrade", password="password", email="staffupgrade@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.is_premium = True
+        self.profile.is_pro = True
+        self.profile.last_seen_on = datetime.datetime.now()
+        self.profile.save()
+
+    def _listened(self, days_ago, listen_seconds, story_hash):
+        from apps.listen.models import MListenDaily
+
+        day = datetime.datetime.utcnow() - datetime.timedelta(days=days_ago)
+        MListenDaily.objects.create(
+            user_id=self.user.pk,
+            date=day.strftime("%Y-%m-%d"),
+            story_hash=story_hash,
+            feed_id=1,
+            audio_seconds=listen_seconds,
+            listen_seconds=listen_seconds,
+        )
+
+    def test_minutes_listened_past_week_and_all_time(self):
+        from django.core import mail
+
+        # 10 minutes last month only counts toward all time; 5 minutes today counts toward both.
+        self._listened(days_ago=30, listen_seconds=600, story_hash="1:old")
+        self._listened(days_ago=0, listen_seconds=300, story_hash="1:new")
+
+        self.profile.send_staff_premium_upgrade_email(tier="pro", previous_tier="premium")
+
+        self.assertEqual(len(mail.outbox), 1)
+        msg = mail.outbox[0]
+        self.assertIn("Premium → Premium Pro", msg.subject)
+        self.assertIn("Listened:      5 min past week, 15 min all time", msg.body)
+        html = msg.alternatives[0][0]
+        self.assertIn("Minutes listened", html)
+        self.assertIn("<strong>5</strong> past week, 15 all time", html)
+
+    def test_minutes_listened_are_zero_for_a_user_who_never_listened(self):
+        from django.core import mail
+
+        self.profile.send_staff_premium_upgrade_email(tier="pro", previous_tier="premium")
+
+        msg = mail.outbox[0]
+        self.assertIn("Listened:      0 min past week, 0 min all time", msg.body)
+        self.assertIn("<strong>0</strong> past week, 0 all time", msg.alternatives[0][0])

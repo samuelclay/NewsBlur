@@ -1,0 +1,164 @@
+{
+  "platform": "macos",
+  "version": "16.0",
+  "app_id": "463981119",
+  "state": "PREPARE_FOR_SUBMISSION",
+  "fields": [
+    "promotionalText",
+    "description",
+    "whatsNew",
+    "keywords",
+    "supportUrl",
+    "marketingUrl"
+  ],
+  "verification": "Reloaded App Store Connect then selected each saved locale and compared live form values with canonical files.",
+  "locales": [
+    {
+      "language": "en",
+      "verified_at": "2026-10-17T23:30:41.142Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "4fc2861dc5157f0104950db827e8f529b0cd825419ac1089bc4cdf21b1b94426"
+    },
+    {
+      "language": "ar",
+      "verified_at": "2026-10-17T23:30:42.576Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "dc8347c915771d9218edadccf7cd51f0a06d041fc484f14e7cbb467ab4f2258d"
+    },
+    {
+      "language": "he",
+      "verified_at": "2026-10-17T23:30:46.919Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "24f5f1b29d54853933cecac3a3625662d98846f282df583cb76138aebf91f2cf"
+    },
+    {
+      "language": "hi",
+      "verified_at": "2026-10-17T23:30:47.728Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "5b3d1892d9ea03eb26c831bf7826798013c6339470f76c8782342fe9e0c4d2d2"
+    },
+    {
+      "language": "id",
+      "verified_at": "2026-10-17T23:30:48.836Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "d474a957f38d5a3172d5e64b3428c9f6c2695819cbade66630258ec8f18a375f"
+    },
+    {
+      "language": "vi",
+      "verified_at": "2026-10-17T23:30:49.982Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "4b90682479bdea68f98595c7b10c0dd9b060d56d7d2b66f921668e03a309f76f"
+    },
+    {
+      "language": "th",
+      "verified_at": "2026-10-17T23:30:55.163Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "8cc453590ee52510ebb5c0fc3b3662e3e0066075db8ee16f3389ed5dd30d5efe"
+    },
+    {
+      "language": "ja",
+      "verified_at": "2026-10-17T23:30:56.435Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "da85a45468d757f8760afab82a76cc2dbcb0228493878d35381cd66bcf4b2f7d"
+    },
+    {
+      "language": "ko",
+      "verified_at": "2026-10-17T23:30:57.165Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "b606843d42824dc297a10f0f0ff7aa08922956cb2c0d77539c65f8c57a6cdf19"
+    },
+    {
+      "language": "zh-Hans",
+      "verified_at": "2026-10-17T23:30:58.233Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "7dfbed76b6fec361f18cf58fc2e0046032c9eec2c5f218fea62d7eacb8563745"
+    },
+    {
+      "language": "zh-Hant",
+      "verified_at": "2026-10-17T23:30:59.231Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "8484847101f8d6a73c6d66b7f7326299fdb2d69566fd963dc584d7f493290752"
+    },
+    {
+      "language": "es",
+      "verified_at": "2026-10-17T23:31:00.078Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "a540c8ebc0717eac3c46cd7a08f816632d6a4d3d5760b10d2e5ace2198c7c978"
+    },
+    {
+      "language": "fr",
+      "verified_at": "2026-10-17T23:31:01.851Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "acfa4eabb5f9442e291283651aad876384726af814a756316d0b756526b39c90"
+    },
+    {
+      "language": "de",
+      "verified_at": "2026-10-17T23:31:07.842Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "f276d67f65c416b672de85315bce538ef21cdab2acdd769bf2556fa7779e8726"
+    },
+    {
+      "language": "pt-BR",
+      "verified_at": "2026-10-17T23:31:08.586Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "60b410bf731cc48a48b8c98f74a476e84439c57162491573fe1bb4590f7e2bc6"
+    },
+    {
+      "language": "it",
+      "verified_at": "2026-10-17T23:31:10.256Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "bda78db0976f7ccee489d70fdb003bb95f5a3a90375970dff79a4820f822b0dc"
+    },
+    {
+      "language": "nl",
+      "verified_at": "2026-10-17T23:31:11.872Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "06a3fbe0b0ae0f936c8f66e2d947f5ca4db950d67771adef141e75752ee154f9"
+    },
+    {
+      "language": "pl",
+      "verified_at": "2026-10-17T23:31:13.268Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "02db9258b009412ad031691f7d01821861236d09eeb9b2270b790eaa45ee54d4"
+    },
+    {
+      "language": "tr",
+      "verified_at": "2026-10-17T23:31:14.183Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "853926882cb1b8e18ff280b7ece01bc3f8b4b2308307d5e5df699c5fcd19494e"
+    },
+    {
+      "language": "ru",
+      "verified_at": "2026-10-17T23:31:16.739Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "661721e50da6b7534beee9cb4758d44a9e27f7d92e9a2dc6c9733c09a034c9bd"
+    },
+    {
+      "language": "uk",
+      "verified_at": "2026-10-17T23:31:17.484Z",
+      "matches": true,
+      "mismatched_fields": [],
+      "sha256": "bfd473b75367c5fca1b173c844dacfb71c95e544859db0449041cae10bf14424"
+    }
+  ]
+}

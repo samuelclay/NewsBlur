@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Corrige des plantages sur les anciennes tablettes Samsung et d’autres appareils à l’ouverture de NewsBlur ou au retour aux flux. Corrige aussi des plantages liés aux articles volumineux, aperçus de flux, dossiers à un seul flux, widgets et compteurs de commentaires traduits. Réduit les blocages au démarrage, lors de la synchronisation et de la vérification des abonnements."
+  }
+}

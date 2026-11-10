@@ -5,6 +5,78 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_NotificationNavigation: XCTestCase {
+#if targetEnvironment(macCatalyst)
+    func test_notificationAfterClosingMacWindowWaitsForReplacementReader() throws {
+        for action in [UNNotificationDefaultActionIdentifier, "VIEW_STORY_IDENTIFIER"] {
+            let app = makeApp(phone: false)
+            let oldReader = DetailViewController()
+            app.detailViewController = oldReader
+            // NotificationNavigationTests.swift reproduces Command-W retaining the reader after SceneDelegate releases its window.
+            app.window = nil
+            app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: action)
+
+            XCTAssertNil(app.openedFeed, "The notification must not start a fetch on the disconnected reader")
+            XCTAssertEqual(app.pendingNotificationStory?["storyHash"] as? String, "42:older-story")
+            XCTAssertEqual(app.completions, 1, "The OS completion must not wait for a window or network response")
+
+            // NotificationNavigationTests.swift delivers the delegate response before a new scene without a connection response.
+            _ = try connectColdScene(content: nil, action: action, app: app)
+            XCTAssertEqual(app.openedFeed, "42")
+            XCTAssertEqual(app.openedHash, "42:older-story")
+            XCTAssertEqual(app.navigationPreparationCounts, [1], "Navigation must run once, after replacement views are prepared")
+        }
+    }
+
+    func test_feedRefreshCannotDrainNotificationWhileMacWindowIsClosed() {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.setValue(["feedId": "42", "storyHash": "42:older-story"], forKey: "pendingNotificationStory")
+
+        app.backgroundLoadNotificationStory()
+
+        XCTAssertNil(app.openedFeed, "A late feed refresh must not route into the disconnected reader")
+        XCTAssertEqual(app.pendingNotificationStory?["storyHash"] as? String, "42:older-story")
+    }
+
+    func test_reconnectingNotificationResponseRoutesOnceAndReplacesTheQueuedDestination() throws {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: UNNotificationDefaultActionIdentifier)
+
+        _ = try connectColdScene(content: ["story_feed_id": 42, "story_hash": "42:newer-story"],
+                                 action: UNNotificationDefaultActionIdentifier, app: app)
+
+        XCTAssertEqual(app.openedHash, "42:newer-story")
+        XCTAssertEqual(app.navigationPreparationCounts, [1])
+    }
+
+    func test_closedMacWindowQueuesBriefingAndKeepsBackgroundActionsImmediate() throws {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: UNNotificationDefaultActionIdentifier)
+        app.receive(["story_hash": "briefing:today", "is_daily_briefing": true], action: UNNotificationDefaultActionIdentifier)
+        app.backgroundLoadNotificationStory()
+
+        XCTAssertNil(app.openedBriefing)
+        XCTAssertNil(app.pendingNotificationStory)
+        XCTAssertEqual(app.pendingDailyBriefingStoryHash, "briefing:today")
+        XCTAssertEqual(app.completions, 2)
+        for action in ["MARK_READ_IDENTIFIER", "STAR_IDENTIFIER", "DISMISS_IDENTIFIER"] {
+            app.receive(["story_feed_id": 42, "story_hash": "42:background-story"], action: action)
+        }
+        XCTAssertEqual(app.markedRead, "42:background-story")
+        XCTAssertEqual(app.savedHash, "42:background-story")
+        XCTAssertEqual(app.completions, 5)
+        XCTAssertNil(app.openedFeed)
+
+        _ = try connectColdScene(content: nil, action: UNNotificationDefaultActionIdentifier, app: app)
+
+        XCTAssertEqual(app.openedBriefing, "briefing:today")
+        XCTAssertNil(app.pendingDailyBriefingStoryHash)
+        XCTAssertNil(app.openedFeed)
+    }
+#endif
+
     func test_coldSceneConnectionRoutesTheNotificationAfterPreparingItsViews() throws {
         for action in [UNNotificationDefaultActionIdentifier, "VIEW_STORY_IDENTIFIER"] {
             let app = try connectColdScene(content: ["story_feed_id": 42, "story_hash": "42:older-story"], action: action)
@@ -230,8 +302,9 @@ import XCTest
         XCTAssertEqual(reader.reloadCount, 1)
     }
 
-    private func connectColdScene(content: [String: Any]?, action: String) throws -> NotificationNavigationApp {
-        let app = makeApp()
+    private func connectColdScene(content: [String: Any]?, action: String, app existingApp: NotificationNavigationApp? = nil) throws -> NotificationNavigationApp {
+        let app = existingApp ?? makeApp()
+        app.window = nil
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let delegate = SceneDelegate()
         delegate.appDelegate = app
@@ -305,7 +378,7 @@ import XCTest
             window.rootViewController = nil
             previousKeyWindow?.makeKey()
         }
-        await fulfillment(of: [initialAppearance], timeout: 5)
+        await fulfillment(of: [initialAppearance], timeout: SimulatorTestTiming.realWorkTimeout)
         initialDestination.appeared = nil
         feeds.repeatAnimationOnAppearance = repeatingAnimation
 
@@ -315,7 +388,9 @@ import XCTest
             routed.fulfill()
         }
         app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: UNNotificationDefaultActionIdentifier)
-        await fulfillment(of: [routed], timeout: 2)
+        // NotificationNavigationTests.swift waits for the real pop transition, which a stalled CI main thread can stretch
+        // past a few seconds; the repeating animation never finishes, so waiting on it would still miss any finite budget.
+        await fulfillment(of: [routed], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertTrue(navigation.topViewController === feeds)
         XCTAssertEqual(app.openedFeed, "42")
         XCTAssertEqual(app.openedHash, "42:older-story")
@@ -328,6 +403,7 @@ import XCTest
 
     private func makeApp(phone: Bool = true) -> NotificationNavigationApp {
         let app = NotificationNavigationApp()
+        app.window = UIWindow()
         app.phone = phone
         app.activeUsername = "notification-navigation-fixture"
         app.storiesCollection = StoriesCollection()
@@ -345,6 +421,8 @@ import XCTest
 
 @MainActor private final class NotificationSceneConnectionOptions: NSObject {
     @objc var notificationResponse: UNNotificationResponse?
+    // NotificationNavigationTests.swift mirrors UIKit's empty URL-context set for notification-only scene connections.
+    @objc(URLContexts) var urlContexts: Set<UIOpenURLContext> { [] }
 }
 
 @MainActor private final class NotificationNavigationScreen: UIViewController {
@@ -444,4 +522,366 @@ import XCTest
         let completion: @convention(block) () -> Void = { self.completions += 1 }
         implementation(self, selector, content as NSDictionary, action as NSString, completion as AnyObject)
     }
+}
+
+@MainActor final class Test_MacWindowMenu: XCTestCase {
+#if targetEnvironment(macCatalyst)
+    func test_closingMainWindowSavesSizeAndPositionBeforeReleasingIt() throws {
+        let defaults = UserDefaults.standard
+        let key = "mac_main_window_frame"
+        let previous = defaults.object(forKey: key)
+        defaults.removeObject(forKey: key)
+        defer { defaults.set(previous, forKey: key) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let frame = scene.effectiveGeometry.systemFrame
+        XCTAssertGreaterThan(frame.width, 0)
+        let delegate = SceneDelegate()
+        let app = NewsBlurAppDelegate()
+        let window = UIWindow(windowScene: scene)
+        delegate.appDelegate = app
+        delegate.window = window
+        app.window = window
+
+        // NotificationNavigationTests.swift exercises the actual close callback without closing the test host window.
+        delegate.sceneDidDisconnect(scene)
+
+        let saved = try XCTUnwrap(defaults.string(forKey: key), "Closing must persist the frame for the next scene and app launch")
+        XCTAssertEqual(NSCoder.cgRect(for: saved), frame)
+        XCTAssertNil(app.window)
+    }
+
+    func test_freshSceneRestoresSavedFrameBeforeStartupGeometryCanOverwriteIt() throws {
+        let saved = CGRect(x: -240, y: 90, width: 1180, height: 780)
+        try withSavedWindowFrame(NSCoder.string(for: saved)) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+
+            connectWindowScene(delegate, scene: scene)
+
+            XCTAssertEqual(delegate.requestedFrames, [saved])
+            XCTAssertEqual(app.preparationCount, 1)
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            delegate.sceneWillResignActive(scene)
+            XCTAssertEqual(savedWindowFrame(), saved, "The launch frame must not overwrite the pending restoration")
+
+            // NotificationNavigationTests.swift simulates the native geometry result, including display constraints.
+            let constrained = CGRect(x: 30, y: 90, width: 1180, height: 780)
+            delegate.currentFrame = constrained
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            XCTAssertEqual(savedWindowFrame(), constrained)
+            delegate.sceneDidDisconnect(scene)
+            XCTAssertNil(app.window)
+
+            // NotificationNavigationTests.swift also covers UIKit reconnecting the existing scene delegate.
+            delegate.currentFrame = CGRect(x: 0, y: 0, width: 800, height: 600)
+            connectWindowScene(delegate, scene: scene)
+            XCTAssertEqual(delegate.requestedFrames, [saved, constrained])
+            delegate.sceneDidDisconnect(scene)
+
+            // NotificationNavigationTests.swift creates a fresh delegate, as both Dock reopening and relaunch do.
+            let (reopened, _, reopenedApp) = try makeWindowSceneProbe()
+            reopenedApp.window = nil
+            connectWindowScene(reopened, scene: scene)
+            XCTAssertEqual(reopened.requestedFrames, [constrained])
+        }
+    }
+
+    func test_windowMovesAndResizesPersistWithoutClosing() throws {
+        try withSavedWindowFrame(nil) {
+            let (delegate, scene, _) = try makeWindowSceneProbe()
+            for frame in [CGRect(x: 75, y: 130, width: 900, height: 700),
+                          CGRect(x: 200, y: 50, width: 1350, height: 850)] {
+                delegate.currentFrame = frame
+                delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+                XCTAssertEqual(savedWindowFrame(), frame)
+            }
+            delegate.currentFrame = CGRect(x: 20, y: 40, width: 1000, height: 800)
+            delegate.sceneWillResignActive(scene)
+            XCTAssertEqual(savedWindowFrame(), delegate.currentFrame)
+            delegate.currentFrame = CGRect(x: 25, y: 45, width: 1100, height: 900)
+            delegate.sceneDidEnterBackground(scene)
+            XCTAssertEqual(savedWindowFrame(), delegate.currentFrame)
+        }
+    }
+
+    func test_disconnectAfterWindowDetachesStillAllowsDockReopening() throws {
+        let normal = CGRect(x: 100, y: 80, width: 1100, height: 750)
+        try withSavedWindowFrame(NSCoder.string(for: normal)) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+            connectWindowScene(delegate, scene: scene)
+            delegate.currentFrame = normal
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            delegate.window?.windowScene = nil
+            delegate.currentFrame = .zero
+
+            delegate.sceneDidDisconnect(scene)
+
+            XCTAssertNil(app.window)
+            XCTAssertEqual(savedWindowFrame(), normal)
+        }
+    }
+
+    func test_fullScreenAndInvalidGeometryPreserveNormalWindowFrame() throws {
+        let normal = CGRect(x: 100, y: 80, width: 1100, height: 750)
+        try withSavedWindowFrame(NSCoder.string(for: normal)) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            delegate.fullScreen = true
+            delegate.currentFrame = CGRect(x: 0, y: 0, width: 2560, height: 1440)
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            delegate.sceneWillResignActive(scene)
+            XCTAssertEqual(savedWindowFrame(), normal)
+            delegate.fullScreen = false
+            for invalid in [CGRect.zero, CGRect(x: 0, y: 0, width: -1, height: 600),
+                            CGRect(x: CGFloat.infinity, y: 0, width: 900, height: 600)] {
+                delegate.currentFrame = invalid
+                delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+                XCTAssertEqual(savedWindowFrame(), normal)
+            }
+            delegate.fullScreen = true
+            delegate.sceneDidDisconnect(scene)
+            XCTAssertEqual(savedWindowFrame(), normal)
+            XCTAssertNil(app.window)
+        }
+    }
+
+    func test_unownedSceneDoesNotOverwriteMainWindowFrameOrReleaseItsWindow() throws {
+        let normal = CGRect(x: 100, y: 80, width: 1100, height: 750)
+        try withSavedWindowFrame(NSCoder.string(for: normal)) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            let otherWindow = UIWindow(windowScene: scene)
+            app.window = otherWindow
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            delegate.sceneDidDisconnect(scene)
+            XCTAssertEqual(savedWindowFrame(), normal)
+            XCTAssertTrue(app.window === otherWindow)
+        }
+    }
+
+    func test_corruptSavedFrameDoesNotRequestInvalidGeometry() throws {
+        for saved in ["not a rectangle", NSCoder.string(for: CGRect.zero), "{{0, 0}, {nan, 800}}"] {
+            try withSavedWindowFrame(saved) {
+                let (delegate, scene, app) = try makeWindowSceneProbe()
+                app.window = nil
+                let oldToolbar = scene.titlebar?.toolbar
+                defer { scene.titlebar?.toolbar = oldToolbar }
+                connectWindowScene(delegate, scene: scene)
+                XCTAssertTrue(delegate.requestedFrames.isEmpty)
+            }
+        }
+    }
+
+    private func withSavedWindowFrame(_ value: String?, body: () throws -> Void) rethrows {
+        let defaults = UserDefaults.standard
+        let key = "mac_main_window_frame"
+        let previous = defaults.object(forKey: key)
+        defaults.set(value, forKey: key)
+        defer { defaults.set(previous, forKey: key) }
+        try body()
+    }
+
+    private func savedWindowFrame() -> CGRect? {
+        UserDefaults.standard.string(forKey: "mac_main_window_frame").map { NSCoder.cgRect(for: $0) }
+    }
+
+    private func makeWindowSceneProbe() throws -> (MacWindowSceneProbe, UIWindowScene, NotificationNavigationApp) {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let delegate = MacWindowSceneProbe()
+        let app = NotificationNavigationApp()
+        delegate.appDelegate = app
+        delegate.window = UIWindow(windowScene: scene)
+        app.window = delegate.window
+        return (delegate, scene, app)
+    }
+
+    private func connectWindowScene(_ delegate: SceneDelegate, scene: UIWindowScene) {
+        let selector = NSSelectorFromString("scene:willConnectToSession:options:")
+        typealias Connect = @convention(c) (AnyObject, Selector, UIScene, UISceneSession, AnyObject) -> Void
+        let connect = unsafeBitCast(delegate.method(for: selector), to: Connect.self)
+        connect(delegate, selector, scene, scene.session, NotificationSceneConnectionOptions())
+    }
+#endif
+    func test_fileMenuKeepsSystemCloseCommandsThroughRebuilds() throws {
+        // NotificationNavigationTests.swift checks the real menu transformation preserves native responder routing.
+        let closeCommand = UIKeyCommand(title: "Close Window", action: NSSelectorFromString("performClose:"),
+                                        input: "w", modifierFlags: .command)
+        let closeMenu = UIMenu(title: "", identifier: .close, options: .displayInline, children: [closeCommand])
+        let oldAppMenu = UIMenu(title: "Old App Commands", children: [])
+        var children: [UIMenuElement] = [oldAppMenu, closeMenu]
+        for _ in 0..<2 {
+            children = AppMenuHelper.fileMenuChildren(children)
+            let retainedClose = try XCTUnwrap(children.compactMap { $0 as? UIMenu }.first { $0.identifier == .close })
+            XCTAssertTrue(retainedClose === closeMenu)
+            XCTAssertTrue(retainedClose.children.first === closeCommand)
+            XCTAssertEqual(children.compactMap { $0 as? UIMenu }.filter { $0.identifier == .close }.count, 1)
+            XCTAssertFalse(children.contains { $0 === oldAppMenu })
+        }
+    }
+}
+
+#if targetEnvironment(macCatalyst)
+@MainActor private final class MacWindowSceneProbe: SceneDelegate {
+    var currentFrame = CGRect(x: 0, y: 0, width: 800, height: 600)
+    var fullScreen = false
+    var requestedFrames: [CGRect] = []
+
+    override func macWindowFrame(in scene: UIWindowScene) -> CGRect { currentFrame }
+    override func macWindowIsFullScreen(in scene: UIWindowScene) -> Bool { fullScreen }
+    override func requestMacWindowFrame(_ frame: CGRect, in scene: UIWindowScene, errorHandler: @escaping (Error) -> Void) {
+        requestedFrames.append(frame)
+    }
+}
+#endif
+
+@MainActor final class Test_StoryTraversalCompletion: XCTestCase {
+    func test_doneTapDoesNotStartPagingWhenUnreadCountChangesBeforeChromeRefreshes() {
+        let (app, pages, bar, feed) = makeTraversal(unreadCount: 0, filter: "all", loadedUnread: false)
+        pages.setNextPreviousButtons()
+        XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Done with stories"))
+        app.dictUnreadCounts = ["42": ["nt": 0, "ps": 1, "ng": 0]]
+
+        pages.doNextUnreadStory(bar.nextButton)
+
+        XCTAssertEqual(app.finishedReading, 1)
+        XCTAssertEqual(feed.requestedPages, 0)
+        XCTAssertFalse(pages.waitingForNextUnreadFromServer)
+        XCTAssertFalse(bar.loadingIndicator.isAnimating)
+    }
+
+    func test_reachingDoneStopsPendingUnreadTraversal() {
+        let (_, pages, bar, feed) = makeTraversal(unreadCount: 1, filter: "all", loadedUnread: false)
+        pages.setNextPreviousButtons()
+        pages.doNextUnreadStory(nil)
+        XCTAssertTrue(pages.waitingForNextUnreadFromServer)
+        XCTAssertTrue(bar.loadingIndicator.isAnimating)
+
+        feed.pageFinished = true
+        pages.setNextPreviousButtons()
+
+        XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Done with stories"))
+        XCTAssertFalse(pages.waitingForNextUnreadFromServer)
+        XCTAssertFalse(bar.loadingIndicator.isAnimating)
+        XCTAssertFalse(bar.circularProgressView.isHidden)
+        XCTAssertTrue(bar.nextButton.isEnabled)
+    }
+
+    #if targetEnvironment(macCatalyst)
+    func test_macDoneButtonHasNoNativeTitleToReappearWhenDisabled() {
+        let (_, pages, bar, _) = makeTraversal(unreadCount: 0, filter: "all")
+        pages.setNextPreviousButtons()
+        bar.nextButton.isEnabled = false
+        bar.nextButton.updateConfiguration()
+        XCTAssertNil(bar.nextButton.configuration?.title)
+        XCTAssertNil(bar.nextButton.title(for: .disabled))
+        XCTAssertEqual(bar.rightGroupView.subviews.compactMap { ($0 as? UILabel)?.text }, [NBLocalization.text("Done")])
+    }
+    #endif
+
+    func test_markingLastUnreadStoryReadImmediatelyUpdatesDoneButton() {
+        let (app, pages, bar, _) = makeTraversal(unreadCount: 1, filter: "all")
+        let stories = app.storiesCollection!
+        app.activeStory = stories.activeFeedStories.last as? [AnyHashable: Any]
+        pages.setNextPreviousButtons()
+        XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Next story"))
+
+        stories.markStoryRead(app.activeStory, feed: stories.activeFeed)
+
+        XCTAssertEqual(app.unreadCount(), 0)
+        XCTAssertEqual(stories.locationOfNextUnreadStory(), -1)
+        XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Done with stories"))
+        pages.doNextUnreadStory(nil)
+        XCTAssertEqual(app.finishedReading, 1)
+    }
+
+    func test_zeroUnreadCountFinishesAllStoriesEvenWhenALoadedStoryHasStaleUnreadState() {
+        for filter in ["all", "unread"] {
+            let (app, pages, bar, feed) = makeTraversal(unreadCount: 0, filter: filter)
+            XCTAssertEqual(app.storiesCollection.locationOfNextUnreadStory(), 1,
+                           "NotificationNavigationTests.swift reproduces a loaded unread flag that outlives the feed count.")
+            pages.setNextPreviousButtons()
+            XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Done with stories"))
+            pages.doNextUnreadStory(nil)
+            XCTAssertEqual(app.finishedReading, 1)
+            XCTAssertTrue(pages.changedPages.isEmpty)
+            XCTAssertEqual(feed.requestedPages, 0)
+        }
+    }
+
+    func test_remainingUnreadStillAdvancesToLoadedStoryOrFetchesItsPage() {
+        for loadedUnread in [true, false] {
+            let (app, pages, bar, feed) = makeTraversal(unreadCount: 1, filter: "all", loadedUnread: loadedUnread)
+            pages.setNextPreviousButtons()
+            XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Next story"))
+            pages.doNextUnreadStory(nil)
+            XCTAssertEqual(app.finishedReading, 0)
+            XCTAssertEqual(pages.changedPages, loadedUnread ? [1] : [])
+            XCTAssertEqual(feed.requestedPages, loadedUnread ? 0 : 1)
+        }
+    }
+
+    private func makeTraversal(unreadCount: Int, filter: String, loadedUnread: Bool = true)
+        -> (TraversalCompletionApp, TraversalCompletionPages, StoryTraverseBar, TraversalCompletionFeed) {
+        let app = TraversalCompletionApp()
+        app.selectedIntelligence = 0
+        app.dictUnreadCounts = ["42": ["nt": unreadCount, "ps": 0, "ng": 0]]
+        app.originalStoryCount = 1
+        app.readStories = NSMutableArray(array: ["42:selected"])
+        app.recentlyReadStories = NSMutableDictionary()
+        app.unreadStoryHashes = NSMutableDictionary()
+        let stories = StoriesCollection()
+        stories.appDelegate = app
+        stories.activeFeed = ["id": 42]
+        stories.readFilterOverride = filter
+        stories.feedPage = 1
+        stories.setStories([
+            ["story_hash": "42:selected", "story_feed_id": 42, "read_status": 1],
+            ["story_hash": "42:older", "story_feed_id": 42, "read_status": loadedUnread ? 0 : 1]
+        ])
+        stories.activeFeedStoryLocations = [0, 1]
+        stories.activeFeedStoryLocationIds = ["42:selected", "42:older"]
+        stories.storyLocationsCount = 2
+        app.storiesCollection = stories
+        app.activeStory = stories.activeFeedStories.first as? [AnyHashable: Any]
+        let feed = TraversalCompletionFeed()
+        feed.appDelegate = app
+        feed.pageFinished = false
+        app.testFeed = feed
+        let pages = TraversalCompletionPages()
+        pages.appDelegate = app
+        app.testPages = pages
+        let bar = StoryTraverseBar()
+        bar.setup(in: pages.view)
+        pages.setValue(bar, forKey: "traverseBar")
+        pages.buttonNext = bar.nextButton
+        pages.loadingIndicator = bar.loadingIndicator
+        pages.circularProgressView = bar.circularProgressView
+        return (app, pages, bar, feed)
+    }
+}
+
+@MainActor private final class TraversalCompletionApp: NewsBlurAppDelegate {
+    var finishedReading = 0
+    var testFeed: FeedDetailViewController!
+    var testPages: StoryPagesViewController!
+    override var feedDetailViewController: FeedDetailViewController! { testFeed }
+    override var storyPagesViewController: StoryPagesViewController! { testPages }
+    override func hideStoryDetailView() { finishedReading += 1 }
+}
+
+@MainActor private final class TraversalCompletionPages: StoryPagesViewController {
+    var changedPages: [Int] = []
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
+    override func viewDidLoad() {}
+    override func changePage(_ pageIndex: Int, animated: Bool) { changedPages.append(pageIndex) }
+    override func reloadWidget() {}
+}
+
+@MainActor private final class TraversalCompletionFeed: FeedDetailViewController {
+    var requestedPages = 0
+    override func hasRetainedFirstPageStory() -> Bool { false }
+    override func fetchNextPage(_ callback: (() -> Void)!) { requestedPages += 1 }
 }

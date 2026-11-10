@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Corrige un problème sur les tablettes où marquer un flux comme lu pouvait faire passer NewsBlur en arrière-plan. Le bouton du bas et le menu du flux gardent désormais l’application ouverte pour que vous puissiez continuer à lire."
+  }
+}

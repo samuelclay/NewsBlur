@@ -1,0 +1,13 @@
+{
+  "base_commit": "9dcf4b5cfd",
+  "app_version": "16.0.1",
+  "app_build": "350",
+  "xcode": "27.1 (27A9269)",
+  "configuration": "Debug with explicit SWIFT_ACTIVE_COMPILATION_CONDITIONS=DEBUG",
+  "capture_only_patch": "capture-harness.patch",
+  "harness_sha256": "aab2d3fb90a3530aadc5afe55aafc3046de2c30b10816687ac4edf5c7dea7692",
+  "executable_sha256": "7e2ac3e24a105f25a4c883c8b5bc2e7f26c819cca287c070a05e28f6389fc950",
+  "closed_capture_source": "Original bf81b82315 capture binary",
+  "fullscreen_capture_source": "Rebuilt capture binary with guarded marketing-fullscreen setup",
+  "built_at": "2026-10-26T15:29:27Z"
+}

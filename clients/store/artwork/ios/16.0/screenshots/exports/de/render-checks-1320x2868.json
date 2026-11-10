@@ -1,0 +1,162 @@
+[
+  {
+    "language": "de",
+    "size": "1320x2868",
+    "panel": 1,
+    "captured_at": "2026-10-16T22:53:57.840Z",
+    "capture": "captures/localized/de/iphone-stories.png",
+    "capture_sha256": "66bbbdfe671e10b7ab1f6b181b4c9ddacc514d24d240007447c1b7ad8504b059",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "0278abd360ee7bb5eab43524c346ee4aff3a871660459aa072614d41d2653e1c",
+    "screenshot_sha256": "8cc0ae402324176d7123f2e74fe784c903554635e2d69f074826091dc53d34e3",
+    "capture_bounds": {
+      "height": 1957.2578125,
+      "width": 900.8359375,
+      "x": 209.578125,
+      "y": 687.890625
+    },
+    "headline": "Deine tägliche Lektüre an einem Ort.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/de/iphone-stories.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1320,
+      2868
+    ]
+  },
+  {
+    "language": "de",
+    "size": "1320x2868",
+    "panel": 2,
+    "captured_at": "2026-10-16T22:54:02.634Z",
+    "capture": "captures/localized/de/iphone-feeds.png",
+    "capture_sha256": "95ef2cc70911b165ce4f7fce4c35b6809205636e7fb64ff8687351688537dead",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "0278abd360ee7bb5eab43524c346ee4aff3a871660459aa072614d41d2653e1c",
+    "screenshot_sha256": "d34cdc3402affcdf0e6f43ae976da3ae23408be1c5f3b9f88e41db4cded68f2d",
+    "capture_bounds": {
+      "height": 1957.2578125,
+      "width": 900.8359375,
+      "x": 209.578125,
+      "y": 687.890625
+    },
+    "headline": "Ein Zuhause für deine Lieblingsquellen.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/de/iphone-feeds.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1320,
+      2868
+    ]
+  },
+  {
+    "language": "de",
+    "size": "1320x2868",
+    "panel": 3,
+    "captured_at": "2026-10-16T22:54:03.156Z",
+    "capture": "captures/localized/de/iphone-reader.png",
+    "capture_sha256": "784d199363fbdb4e08dc1c3eac45a2b968b51cc94b40b369fdf6f8f18265dc9c",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "0278abd360ee7bb5eab43524c346ee4aff3a871660459aa072614d41d2653e1c",
+    "screenshot_sha256": "acedbe2a223ba75471b1d6c0f6982311406faa23dba4a5673647f8f1808f0118",
+    "capture_bounds": {
+      "height": 1957.2578125,
+      "width": 900.8359375,
+      "x": 209.578125,
+      "y": 687.890625
+    },
+    "headline": "Mach es dir beim Lesen gemütlich.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/de/iphone-reader.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1320,
+      2868
+    ]
+  },
+  {
+    "language": "de",
+    "size": "1320x2868",
+    "panel": 4,
+    "captured_at": "2026-10-16T22:54:03.926Z",
+    "capture": "captures/localized/de/iphone-saved.png",
+    "capture_sha256": "787c79996005c7e0ea8ddaa983916641c6749c9b6c7cc2273294f8153ca9929e",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "0278abd360ee7bb5eab43524c346ee4aff3a871660459aa072614d41d2653e1c",
+    "screenshot_sha256": "addc3e11399b67918a15e93428d2fe736ff85673deecadcff9685813cefdbcb2",
+    "capture_bounds": {
+      "height": 1957.2578125,
+      "width": 900.8359375,
+      "x": 209.578125,
+      "y": 687.890625
+    },
+    "headline": "Speichere gute Artikel für später.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/de/iphone-saved.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1320,
+      2868
+    ]
+  }
+]

@@ -1,0 +1,1 @@
+Sửa lỗi trên máy tính bảng khiến NewsBlur có thể chuyển xuống nền khi đánh dấu một nguồn cấp là đã đọc. Giờ đây, cả nút ở dưới cùng và menu nguồn cấp đều giữ ứng dụng mở để bạn tiếp tục đọc.

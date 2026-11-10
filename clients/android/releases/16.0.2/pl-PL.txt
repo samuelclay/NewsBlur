@@ -1,0 +1,3 @@
+Wracają przyciski na tabletach: rozwiń listę kanałów, tytuły artykułów lub artykuł na pełny ekran, niezależnie od pozostałych paneli. Przeciągnij separatory, aby zmienić rozmiar paneli; NewsBlur zapamięta ich szerokość.
+
+Zawiera interfejs w 21 językach i przyciski następnego artykułu w stałym miejscu z wersji 16.0.

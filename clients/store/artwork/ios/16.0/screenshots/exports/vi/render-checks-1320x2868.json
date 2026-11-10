@@ -1,0 +1,126 @@
+[
+  {
+    "capture": "captures/localized/vi/iphone-stories.png",
+    "capture_bounds": {
+      "height": 1957.2636734693879,
+      "width": 900.8326530612245,
+      "x": 209.58367346938775,
+      "y": 687.8786938775506
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 2,
+    "headline_size": 116.16,
+    "language": "vi",
+    "output": "exports/vi/1320x2868/panel-1.png",
+    "panel": 1,
+    "size": "1320x2868",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText offline Sage01",
+    "capture_sha256": "2dd04323bc583bdf71a5c9813b27d4de783d95656c47f95154caf93e19a3ea5d",
+    "source_sha256": {
+      "native-render.swift": "546f418adb8035be3bfbef3f91c427cacc5bc72d3c89a7adf6f9f259279abce9",
+      "export-native.rb": "48c66d6c1598ac31bf6faeec3490d860e890fe6645bc678a5ecbda8ebfebbdf5",
+      "copy/vi.json": "d69a9c1fd5efded4229afb182eee4550dceee4c11aecc093515905b38804f699",
+      "../selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "../selected/assets/iphone-18-pro-max.png": "13fc8a8f0bc612f50c00d073b12aefa87bce1e4618fbdd3aa882438ae171e2be",
+      "captures/localized/vi/iphone-stories.png": "2dd04323bc583bdf71a5c9813b27d4de783d95656c47f95154caf93e19a3ea5d",
+      "captures/localized/vi/iphone-feeds.png": "6a71d838dd9b8e2c50f577728e2cf32e06b9a662ca5fb85b2149c9927badefeb",
+      "captures/localized/vi/iphone-reader.png": "353e46b0699f78b32306b41590739e4275f140f40026fcc716069cd498f65472",
+      "captures/localized/vi/iphone-saved.png": "a3c739ad8b8eb7eee274235ccc3d56c106e4150c4fe20a05ec1b0d4db83fa11d"
+    },
+    "output_sha256": "b8cd2a9191304b1046e2350560649ae4a66f8e12966ce8f37fe876cf3d67e96c"
+  },
+  {
+    "capture": "captures/localized/vi/iphone-feeds.png",
+    "capture_bounds": {
+      "height": 1957.2636734693879,
+      "width": 900.8326530612245,
+      "x": 209.58367346938775,
+      "y": 687.8786938775506
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 2,
+    "headline_size": 113.16,
+    "language": "vi",
+    "output": "exports/vi/1320x2868/panel-2.png",
+    "panel": 2,
+    "size": "1320x2868",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText offline Sage01",
+    "capture_sha256": "6a71d838dd9b8e2c50f577728e2cf32e06b9a662ca5fb85b2149c9927badefeb",
+    "source_sha256": {
+      "native-render.swift": "546f418adb8035be3bfbef3f91c427cacc5bc72d3c89a7adf6f9f259279abce9",
+      "export-native.rb": "48c66d6c1598ac31bf6faeec3490d860e890fe6645bc678a5ecbda8ebfebbdf5",
+      "copy/vi.json": "d69a9c1fd5efded4229afb182eee4550dceee4c11aecc093515905b38804f699",
+      "../selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "../selected/assets/iphone-18-pro-max.png": "13fc8a8f0bc612f50c00d073b12aefa87bce1e4618fbdd3aa882438ae171e2be",
+      "captures/localized/vi/iphone-stories.png": "2dd04323bc583bdf71a5c9813b27d4de783d95656c47f95154caf93e19a3ea5d",
+      "captures/localized/vi/iphone-feeds.png": "6a71d838dd9b8e2c50f577728e2cf32e06b9a662ca5fb85b2149c9927badefeb",
+      "captures/localized/vi/iphone-reader.png": "353e46b0699f78b32306b41590739e4275f140f40026fcc716069cd498f65472",
+      "captures/localized/vi/iphone-saved.png": "a3c739ad8b8eb7eee274235ccc3d56c106e4150c4fe20a05ec1b0d4db83fa11d"
+    },
+    "output_sha256": "54590f81c53fb2f4bf6267a756d8f7c7e6aa4725daf562c968ca7c19fa500b1d"
+  },
+  {
+    "capture": "captures/localized/vi/iphone-reader.png",
+    "capture_bounds": {
+      "height": 1957.2636734693879,
+      "width": 900.8326530612245,
+      "x": 209.58367346938775,
+      "y": 687.8786938775506
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 2,
+    "headline_size": 116.16,
+    "language": "vi",
+    "output": "exports/vi/1320x2868/panel-3.png",
+    "panel": 3,
+    "size": "1320x2868",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText offline Sage01",
+    "capture_sha256": "353e46b0699f78b32306b41590739e4275f140f40026fcc716069cd498f65472",
+    "source_sha256": {
+      "native-render.swift": "546f418adb8035be3bfbef3f91c427cacc5bc72d3c89a7adf6f9f259279abce9",
+      "export-native.rb": "48c66d6c1598ac31bf6faeec3490d860e890fe6645bc678a5ecbda8ebfebbdf5",
+      "copy/vi.json": "d69a9c1fd5efded4229afb182eee4550dceee4c11aecc093515905b38804f699",
+      "../selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "../selected/assets/iphone-18-pro-max.png": "13fc8a8f0bc612f50c00d073b12aefa87bce1e4618fbdd3aa882438ae171e2be",
+      "captures/localized/vi/iphone-stories.png": "2dd04323bc583bdf71a5c9813b27d4de783d95656c47f95154caf93e19a3ea5d",
+      "captures/localized/vi/iphone-feeds.png": "6a71d838dd9b8e2c50f577728e2cf32e06b9a662ca5fb85b2149c9927badefeb",
+      "captures/localized/vi/iphone-reader.png": "353e46b0699f78b32306b41590739e4275f140f40026fcc716069cd498f65472",
+      "captures/localized/vi/iphone-saved.png": "a3c739ad8b8eb7eee274235ccc3d56c106e4150c4fe20a05ec1b0d4db83fa11d"
+    },
+    "output_sha256": "87005abe009bcc386710bb6ebf32ba57afc12b35b0c931c4a354684aecd56528"
+  },
+  {
+    "capture": "captures/localized/vi/iphone-saved.png",
+    "capture_bounds": {
+      "height": 1957.2636734693879,
+      "width": 900.8326530612245,
+      "x": 209.58367346938775,
+      "y": 687.8786938775506
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 2,
+    "headline_size": 116.16,
+    "language": "vi",
+    "output": "exports/vi/1320x2868/panel-4.png",
+    "panel": 4,
+    "size": "1320x2868",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText offline Sage01",
+    "capture_sha256": "a3c739ad8b8eb7eee274235ccc3d56c106e4150c4fe20a05ec1b0d4db83fa11d",
+    "source_sha256": {
+      "native-render.swift": "546f418adb8035be3bfbef3f91c427cacc5bc72d3c89a7adf6f9f259279abce9",
+      "export-native.rb": "48c66d6c1598ac31bf6faeec3490d860e890fe6645bc678a5ecbda8ebfebbdf5",
+      "copy/vi.json": "d69a9c1fd5efded4229afb182eee4550dceee4c11aecc093515905b38804f699",
+      "../selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "../selected/assets/iphone-18-pro-max.png": "13fc8a8f0bc612f50c00d073b12aefa87bce1e4618fbdd3aa882438ae171e2be",
+      "captures/localized/vi/iphone-stories.png": "2dd04323bc583bdf71a5c9813b27d4de783d95656c47f95154caf93e19a3ea5d",
+      "captures/localized/vi/iphone-feeds.png": "6a71d838dd9b8e2c50f577728e2cf32e06b9a662ca5fb85b2149c9927badefeb",
+      "captures/localized/vi/iphone-reader.png": "353e46b0699f78b32306b41590739e4275f140f40026fcc716069cd498f65472",
+      "captures/localized/vi/iphone-saved.png": "a3c739ad8b8eb7eee274235ccc3d56c106e4150c4fe20a05ec1b0d4db83fa11d"
+    },
+    "output_sha256": "9d4bddce4e35832032ae386faca27e5a72f93f73ddc28343e80956673ab48d6b"
+  }
+]

@@ -8,6 +8,13 @@ from django.views.generic import RedirectView
 
 from apps.mcp import views as mcp_views
 from apps.profile import views as profile_views
+from apps.profile import web_social_auth
+from apps.profile.language import (
+    FLIPPED_STYLESHEET_PATTERN,
+    JAVASCRIPT_CATALOG_PATTERN,
+    flipped_stylesheet,
+    javascript_catalog,
+)
 from apps.reader import views as reader_views
 from apps.social import views as social_views
 from apps.static import views as static_views
@@ -16,9 +23,21 @@ from apps.static.sitemaps import StaticSitemap
 admin.autodiscover()
 
 urlpatterns = [
+    url(JAVASCRIPT_CATALOG_PATTERN, javascript_catalog, name="javascript-catalog"),
+    url(FLIPPED_STYLESHEET_PATTERN, flipped_stylesheet, name="flipped-stylesheet"),
+    url(r"^account/social/start/?$", web_social_auth.start, name="web-social-start"),
+    url(
+        r"^account/social/(?P<provider>apple|google)/callback/?$",
+        web_social_auth.callback,
+        name="web-social-callback",
+    ),
+    url(r"^account/social/finish/?$", web_social_auth.finish, name="web-social-finish"),
+    url(r"^account/social/continue/?$", web_social_auth.continue_signin, name="web-social-continue"),
+    url(r"^account/social/disconnect/?$", web_social_auth.disconnect, name="web-social-disconnect"),
     url(r"^$", reader_views.index, name="index"),
     url(r"^reader/", include("apps.reader.urls")),
     url(r"^ask-ai/", include("apps.ask_ai.urls")),
+    url(r"^listen/", include("apps.listen.urls")),
     url(r"^webfeed/", include("apps.webfeed.urls")),
     url(r"^welcome/?$", reader_views.welcome_req, name="welcome-page"),
     url(r"^add(?:/.*)?$", reader_views.index),
@@ -78,6 +97,7 @@ urlpatterns = [
         name="feature-intelligence-training",
     ),
     url(r"^features/ask-ai/?$", static_views.feature_ask_ai, name="feature-ask-ai"),
+    url(r"^features/listen/?$", static_views.feature_listen, name="feature-listen"),
     url(r"^features/web-feeds/?$", static_views.feature_web_feeds, name="feature-web-feeds"),
     url(r"^features/newsletters/?$", static_views.feature_newsletters, name="feature-newsletters"),
     url(r"^features/search/?$", static_views.feature_search, name="feature-search"),
@@ -118,14 +138,16 @@ urlpatterns = [
     url(r"^privacy/?", static_views.privacy, name="privacy"),
     url(r"^tos/?", static_views.tos, name="tos"),
     url(r"^manifest.webmanifest", static_views.webmanifest, name="webmanifest"),
-    # MCP OAuth discovery (RFC 8414 / RFC 9728)
+    # MCP OAuth discovery (RFC 8414 / RFC 9728). The /mcp-less root forms are
+    # for clients on the 2025-03-26 MCP auth spec, which strip the server path
+    # and only look at the origin root (forum #13806, apps/mcp/views.py).
     url(
-        r"^\.well-known/oauth-authorization-server/mcp/?$",
+        r"^\.well-known/oauth-authorization-server(?:/mcp)?/?$",
         mcp_views.oauth_authorization_server_metadata,
         name="mcp-oauth-metadata",
     ),
     url(
-        r"^\.well-known/oauth-protected-resource/mcp/?$",
+        r"^\.well-known/oauth-protected-resource(?:/mcp)?/?$",
         mcp_views.oauth_protected_resource_metadata,
         name="mcp-oauth-protected-resource",
     ),

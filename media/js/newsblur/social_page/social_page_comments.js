@@ -76,7 +76,7 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
             }, [
                 $.make('div', {
                     className: 'NB-story-comments-public-header'
-                }, Inflector.pluralize(' public comment', $('.NB-story-comment', $template).length, true))
+                }, interpolate(ngettext("%(count)s public comment", "%(count)s public comments", $('.NB-story-comment', $template).length), { count: Inflector.commas($('.NB-story-comment', $template).length) }, true))
             ]);
 
             this.$(".NB-story-comments-public-teaser-wrapper").replaceWith($template);

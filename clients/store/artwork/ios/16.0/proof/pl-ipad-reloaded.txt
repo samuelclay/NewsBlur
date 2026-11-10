@@ -1,0 +1,90 @@
+
+							49 HTML content App Store Connect, URL: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/ipad
+								50 container
+									51 container App Store Connect
+										52 container
+											53 heading App Store Connect, Value: 1
+												54 link App Store Connect, Value: appstoreconnect.apple.com/
+											55 container Global
+												56 content list
+													57 link Apps, Value: appstoreconnect.apple.com/apps
+													58 link Xcode Cloud, Value: appstoreconnect.apple.com/teams/69a6de74-9a8f-47e3-e053-5b8c7c11a4d1/xcode-cloud
+													59 link Trends, Value: appstoreconnect.apple.com/trends
+													60 link Reports, Value: appstoreconnect.apple.com/itc/payments_and_financial_reports
+													61 link Business, Value: appstoreconnect.apple.com/business
+											62 button Samuel Clay NewsBlur, Inc. Account name menu
+									63 container
+									64 container
+										65 pop up button Apps menu, NewsBlur: RSS News Reader, selected
+											66 container
+												67 image NewsBlur: RSS News Reader
+												68 text NewsBlur: RSS News Reader
+											69 image
+										70 container Apps
+											71 content list
+												72 link Distribution, Value: appstoreconnect.apple.com/apps/463981119/distribution
+												73 link Analytics, Value: appstoreconnect.apple.com/apps/463981119/analytics
+												74 link TestFlight, Value: appstoreconnect.apple.com/teams/69a6de74-9a8f-47e3-e053-5b8c7c11a4d1/apps/463981119/testflight
+									75 container
+										76 container
+											77 container
+												78 image
+												79 text iOS App 16.0
+											80 heading Media Manager, Value: 2
+												81 text Media Manager
+											82 link iPhone, Value: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/iphone
+											83 link iPad, Value: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/ipad
+											84 link Apple Watch, Value: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/apple-watch
+											85 link iMessage App, Value: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/imessage
+											86 container
+												87 pop up button Polish
+													88 text Polish
+													89 image
+												90 button ?
+											91 text Use app previews and screenshots to visually communicate your app's user experience. Screenshots will automatically scale down to smaller device sizes unless you add specific app previews and screenshots for other device sizes and localizations. Screenshots must show your app in use or primarily depict your app's user experience. 
+											92 link Learn more..., Value: developer.apple.com/app-store/asset-best-practices/#screenshots
+											93 heading Required, Value: 3
+												94 text Required
+											95 text App previews and screenshots are required to accurately represent your app on these devices.
+											96 button DropZone
+											97 text iPad
+											98 text 13" display
+											99 container
+												100 content list
+													101 button Screenshot newsblur-16.0-pl-2064x2752-01.png
+													102 button Screenshot newsblur-16.0-pl-2064x2752-02.png
+													103 button Screenshot newsblur-16.0-pl-2064x2752-03.png
+													104 button Screenshot newsblur-16.0-pl-2064x2752-04.png
+												105 text 0 of 3 App Previews
+												106 text 4 of 10 App Screenshots
+												107 pop up button Browse Assets
+												108 button Upload
+												109 pop up button Remove All
+												110 text Drag and drop to add assets or choose from your Asset Library for iPad 12.9" or 13" displays. Supported sizes for app previews include 1600 × 1200px and 1200 × 1600px. For app screenshots, supported sizes include 2732 × 2048px, 2048 × 2732px, 2752 × 2064px and 2064 × 2752px.
+											111 heading Optional, Value: 3
+												112 text Optional
+											113 text You can add app previews and screenshots to better represent your app on these devices.
+											114 button DropZone
+											115 button iPad Pro (2nd Gen) 12.9" display
+											116 container iPad Pro (2nd Gen) 12.9" display
+											117 button DropZone
+											118 button iPad 11" display
+											119 container iPad 11" display
+											120 button DropZone
+											121 button iPad 10.5" display
+											122 container iPad 10.5" display
+											123 button DropZone
+											124 button iPad 9.7" display
+											125 container iPad 9.7" display
+									126 content list
+										127 link App Store Connect, Value: appstoreconnect.apple.com/apps
+									128 content list
+										129 container
+											130 text Copyright © 2026 Apple Inc. All rights reserved. |
+										131 container
+											132 link Terms of Service, Value: appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/wa/termsOfService
+											133 text |
+										134 container
+											135 link Privacy Policy, Value: apple.com/legal/privacy
+											136 text |
+										137 link Contact Us, Value: appstoreconnect.apple.com/contact-us

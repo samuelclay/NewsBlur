@@ -83,7 +83,7 @@ struct DashListActionMenu: View {
             Button {
                 interaction.changeDashboard(dash: dash)
             } label: {
-                Text("Change Story List")
+                Text(NBLocalization.text("Change Story List"))
             }
             
             Divider()
@@ -91,13 +91,13 @@ struct DashListActionMenu: View {
             Button {
                 interaction.addDashboard(before: true, dash: dash)
             } label: {
-                Text("Add Story List Before")
+                Text(NBLocalization.text("Add Story List Before"))
             }
             
             Button {
                 interaction.addDashboard(before: false, dash: dash)
             } label: {
-                Text("Add Story List After")
+                Text(NBLocalization.text("Add Story List After"))
             }
             
             Divider()
@@ -137,33 +137,33 @@ struct DashListActionMenu: View {
             Button {
                 cache.remove(dash: dash)
             } label: {
-                Text("Remove This List")
+                Text(NBLocalization.text("Remove This List"))
             }
             .disabled(cache.dashboardLeft.count + cache.dashboardRight.count <= 1)
             
             Divider()
             
-            Picker("Show", selection: $dash.numberOfStories) {
-                Text("5 stories").tag(5)
-                Text("10 stories").tag(10)
-                Text("15 stories").tag(15)
-                Text("20 stories").tag(20)
+            Picker(NBLocalization.text("Show"), selection: $dash.numberOfStories) {
+                Text(NBLocalization.text("5 stories")).tag(5)
+                Text(NBLocalization.text("10 stories")).tag(10)
+                Text(NBLocalization.text("15 stories")).tag(15)
+                Text(NBLocalization.text("20 stories")).tag(20)
             }
             .onChange(of: dash.numberOfStories) { newValue in
                 interaction.reloadOneDash(with: dash)
             }
             
-            Picker("Ordered", selection: $dash.activeOrder) {
-                Text("Newest first").tag("newest")
-                Text("Oldest first").tag("oldest")
+            Picker(NBLocalization.text("Ordered"), selection: $dash.activeOrder) {
+                Text(NBLocalization.text("Newest first")).tag("newest")
+                Text(NBLocalization.text("Oldest first")).tag("oldest")
             }
             .onChange(of: dash.activeOrder) { newValue in
                 interaction.reloadOneDash(with: dash)
             }
             
-            Picker("Include", selection: $dash.activeReadFilter) {
-                Text("All stories").tag("all")
-                Text("Unread only").tag("unread")
+            Picker(NBLocalization.text("Include"), selection: $dash.activeReadFilter) {
+                Text(NBLocalization.text("All stories")).tag("all")
+                Text(NBLocalization.text("Unread only")).tag("unread")
             }
             .onChange(of: dash.activeReadFilter) { newValue in
                 interaction.reloadOneDash(with: dash)
@@ -205,25 +205,25 @@ struct DashListActionMenu: View {
     
     var moveEarlierTitle: String {
         if isHorizontal {
-            return "Move This List Left"
+            return NBLocalization.text("Move This List Left")
         } else {
-            return "Move This List Up"
+            return NBLocalization.text("Move This List Up")
         }
     }
     
     var moveLaterTitle: String {
         if isHorizontal {
-            return "Move This List Right"
+            return NBLocalization.text("Move This List Right")
         } else {
-            return "Move This List Down"
+            return NBLocalization.text("Move This List Down")
         }
     }
     
     var moveBetweenSidesTitle: String {
         if isHorizontal {
-            return "Move This List \(dash.side == .left ? "Down" : "Up")"
+            return dash.side == .left ? NBLocalization.text("Move This List Down") : NBLocalization.text("Move This List Up")
         } else {
-            return "Move This List \(dash.side == .left ? "Right" : "Left")"
+            return dash.side == .left ? NBLocalization.text("Move This List Right") : NBLocalization.text("Move This List Left")
         }
     }
 }
@@ -240,7 +240,7 @@ struct DashListStoriesView: View {
             if let stories = dash.stories {
                 if stories.isEmpty {
                     Spacer()
-                    Text("No Stories")
+                    Text(NBLocalization.text("No Stories"))
                         .foregroundColor(.secondary)
                         .font(.custom("WhitneySSm-Medium", size: 24, relativeTo: .body))
                         .frame(minHeight: 300)
@@ -254,7 +254,7 @@ struct DashListStoriesView: View {
                 }
             } else {
                 Spacer()
-                Text("Loading…")
+                Text(NBLocalization.text("Loading…"))
                     .foregroundColor(.secondary)
                     .font(.custom("WhitneySSm-Medium", size: 24, relativeTo: .body))
                     .frame(minHeight: 300)

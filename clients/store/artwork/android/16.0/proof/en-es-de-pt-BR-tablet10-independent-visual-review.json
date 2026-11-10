@@ -1,0 +1,94 @@
+{
+  "reviewed_at": "2026-10-17T16:01:39Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/en/tenInchScreenshots/panel-01.png",
+      "sha256": "ceb496d10c18a94187e17e6e691635963e72d1dbfc1cd37751af509926693b31",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/tenInchScreenshots/panel-02.png",
+      "sha256": "58dadf8c4d1133fe88be6ea73d06c53359641a213fc5499c7fb61be8c4bdf384",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/tenInchScreenshots/panel-03.png",
+      "sha256": "2cd6ead84a6bc443094bd65a09deb292d1ee0645a865bbb0e949b0da12ffa7fd",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/tenInchScreenshots/panel-04.png",
+      "sha256": "2b1b5395a522768c4529f726a701382b0946cdd6bca616d5761cb20df6867729",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/tenInchScreenshots/panel-01.png",
+      "sha256": "def309a20af4cc479f522d1e184884a063feb73f72db5353fc3aae62e5c90efe",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/tenInchScreenshots/panel-02.png",
+      "sha256": "7b79360556f84da26a07659338250a2b0606ceb319837a4ecaa936431e1994a9",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/tenInchScreenshots/panel-03.png",
+      "sha256": "a59f0384ce6b2857e32f03553780f1f9fc455e2d29b565b46abdca52a876a1ab",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/tenInchScreenshots/panel-04.png",
+      "sha256": "9e5681b98342b55f8f6320287bd17773472b5e13af202d780e10c3915d209e27",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/de/tenInchScreenshots/panel-01.png",
+      "sha256": "406325ddca5a6af18e54cbf6d034dfe61411eab9020fe81c49a389fe61fe5ef6",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/de/tenInchScreenshots/panel-02.png",
+      "sha256": "bebf9498111ee190293bd0ab081b07d5e5ce02ddd08d608de2408b52f3d35e96",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/de/tenInchScreenshots/panel-03.png",
+      "sha256": "359c721f948e0628dd4cc9901dfd03938ceb6bdde975ee21ea50e19bf5c40eb2",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/de/tenInchScreenshots/panel-04.png",
+      "sha256": "52a6173f23f13459b99e6533213e01ddb8be166218d348e2a51b093fb9c0df15",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/tenInchScreenshots/panel-01.png",
+      "sha256": "826b63410bff6e76d8a95353622fe463ed22333e14da194ff7df9e2ba6bb7d8b",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/tenInchScreenshots/panel-02.png",
+      "sha256": "69f85095da38eef6c28430645213810180b3f4feecf3e9e7b694a18e0986fbc3",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/tenInchScreenshots/panel-03.png",
+      "sha256": "268ad558ebfdcb75dbd2a2981241bbeaa1d18a325648059e0759b19c20046dfe",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/tenInchScreenshots/panel-04.png",
+      "sha256": "43bb1a2af5a5616c451fec8a7472c1a57d66eb3ff336ec672b2326260c06957d",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "English, Spanish, German and Brazilian Portuguese tablet titles, search, saved state, dates and navigation are localized and fit the native split view.",
+    "All four scenes show populated native tablet UI, with no added frame, outside text, notification banners or missing content.",
+    "The drawer scrim and dimmed read article reflect native application state; fictional feed names and article content intentionally remain English.",
+    "Stories and reader scenes share nearly the same split-view composition; this is a variety limitation, not a capture defect."
+  ],
+  "scope": "Sixteen ten-inch tablet still exports only; video playback and store readback are separate checks."
+}

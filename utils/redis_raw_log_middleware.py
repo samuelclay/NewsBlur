@@ -7,6 +7,8 @@ from django.db import connection
 from redis.client import Pipeline, Redis
 from redis.connection import Connection
 
+from utils.mongo_command_monitor import recording_queries
+
 
 class RedisDumpMiddleware(object):
     def __init__(self, get_response=None):
@@ -53,14 +55,16 @@ class RedisDumpMiddleware(object):
             result = original_method(*args, **kwargs)
             stop = time()
             duration = stop - start
-            if not getattr(connection, "queriesx", False):
-                connection.queriesx = []
-            connection.queriesx.append(
-                {
-                    message["redis_server_name"]: message,
-                    "time": "%.6f" % duration,
-                }
-            )
+            # Recorded only while a profiled request or task has turned recording on
+            # (utils/mongo_command_monitor.py recording_queries); this instrumentation stays installed
+            # for the life of the process once any profiled request has installed it.
+            if recording_queries():
+                connection.queriesx.append(
+                    {
+                        message["redis_server_name"]: message,
+                        "time": "%.6f" % duration,
+                    }
+                )
             return result
 
         return instrumented_method
@@ -74,14 +78,16 @@ class RedisDumpMiddleware(object):
             result = original_method(*args, **kwargs)
             stop = time()
             duration = stop - start
-            if not getattr(connection, "queriesx", False):
-                connection.queriesx = []
-            connection.queriesx.append(
-                {
-                    message["redis_server_name"]: message,
-                    "time": "%.6f" % duration,
-                }
-            )
+            # Recorded only while a profiled request or task has turned recording on
+            # (utils/mongo_command_monitor.py recording_queries); this instrumentation stays installed
+            # for the life of the process once any profiled request has installed it.
+            if recording_queries():
+                connection.queriesx.append(
+                    {
+                        message["redis_server_name"]: message,
+                        "time": "%.6f" % duration,
+                    }
+                )
             return result
 
         return instrumented_method

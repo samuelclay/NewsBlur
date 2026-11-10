@@ -11,6 +11,8 @@ struct StoryImageSource {
     let originalURL: URL?
     let link: URL?
     let title: String
+    let hoverText: String?
+    let showActions: Bool
     let naturalSize: CGSize
     let rect: CGRect
     let viewportWidth: CGFloat
@@ -27,7 +29,10 @@ struct StoryImageSource {
         self.url = url
         originalURL = Self.browserURL(body["originalURL"] as? String)
         link = Self.browserURL(body["link"] as? String)
-        title = (body["title"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? "Story image"
+        title = (body["title"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? NBLocalization.text("Story image")
+        hoverText = (body["hoverText"] as? String).map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .flatMap { $0.isEmpty ? nil : $0 }
+        showActions = body["showActions"] as? Bool == true
         naturalSize = dimensions
         rect = geometry.0
         viewportWidth = geometry.1
@@ -54,6 +59,13 @@ struct StoryImageSource {
         return (CGRect(x: x, y: y, width: width, height: height), CGFloat(viewport))
     }
 
+    @MainActor static func viewRect(_ rect: CGRect, viewportWidth: CGFloat, in webView: WKWebView) -> CGRect {
+        let scale = webView.bounds.width / viewportWidth
+        let offset = webView.scrollView.contentOffset
+        return rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+            .offsetBy(dx: -offset.x, dy: -offset.y)
+    }
+
     static func fittedSize(_ size: CGSize, in bounds: CGSize) -> CGSize {
         guard size.width > 0, size.height > 0 else { return .zero }
         let scale = min(1, bounds.width / size.width, bounds.height / size.height)
@@ -63,25 +75,86 @@ struct StoryImageSource {
 
 // StoryDetailObjCViewController.m calls this after substituting each offline image URL.
 @objc(StoryImageOfflineSource) final class StoryImageOfflineSource: NSObject {
+    private static let imageStarts = try? NSRegularExpression(pattern: #"<img\b"#, options: .caseInsensitive)
+
+    private static func isWhitespace(_ character: unichar) -> Bool {
+        character == 32 || character == 9 || character == 10 || character == 12 || character == 13
+    }
+
     @objc static func annotate(_ html: String, cachedURL: String, originalURL: String) -> String {
-        let pattern = "(<img\\b[^>]*?\\s)src\\s*=\\s*([\"'])" + NSRegularExpression.escapedPattern(for: cachedURL) + "\\2"
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { return html }
+        guard let imageStarts else { return html }
+        let document = html as NSString
+        var insertionLocations: [Int] = []
+        var previousTagEnd = 0
+        // StoryImageViewerController.swift scans attributes linearly; image bytes never enter a regex or a replacement template.
+        for image in imageStarts.matches(in: html, range: NSRange(location: 0, length: document.length)) {
+            if image.range.location < previousTagEnd { continue }
+            var cursor = NSMaxRange(image.range)
+            var sourceLocation: Int?
+            var alreadyAnnotated = false
+            while cursor < document.length {
+                let character = document.character(at: cursor)
+                if character == 62 {
+                    previousTagEnd = cursor + 1
+                    if !alreadyAnnotated, let sourceLocation { insertionLocations.append(sourceLocation) }
+                    break
+                }
+                if character == 60 { break }
+                if isWhitespace(character) || character == 47 { cursor += 1; continue }
+                let nameStart = cursor
+                while cursor < document.length {
+                    let character = document.character(at: cursor)
+                    if isWhitespace(character) || [61, 47, 62, 60, 34, 39].contains(character) { break }
+                    cursor += 1
+                }
+                if cursor == nameStart { break }
+                let name = document.substring(with: NSRange(location: nameStart, length: cursor - nameStart)).lowercased()
+                if name == "data-newsblur-original-src" { alreadyAnnotated = true }
+                while cursor < document.length && isWhitespace(document.character(at: cursor)) { cursor += 1 }
+                guard cursor < document.length, document.character(at: cursor) == 61 else { continue }
+                cursor += 1
+                while cursor < document.length && isWhitespace(document.character(at: cursor)) { cursor += 1 }
+                guard cursor < document.length else { break }
+                let quote = document.character(at: cursor)
+                if quote == 34 || quote == 39 {
+                    cursor += 1
+                    let end = document.range(of: quote == 34 ? "\"" : "'", options: .literal,
+                                             range: NSRange(location: cursor, length: document.length - cursor))
+                    guard end.location != NSNotFound else { break }
+                    let valueRange = NSRange(location: cursor, length: end.location - cursor)
+                    // StoryDetailObjCViewController.m supplies case-sensitive data URLs; keep original quoting and surrounding markup intact.
+                    if name == "src", sourceLocation == nil,
+                       document.compare(cachedURL, options: .literal, range: valueRange) == .orderedSame {
+                        sourceLocation = nameStart
+                    }
+                    cursor = NSMaxRange(end)
+                } else {
+                    while cursor < document.length && !isWhitespace(document.character(at: cursor)) &&
+                        document.character(at: cursor) != 62 && document.character(at: cursor) != 60 { cursor += 1 }
+                }
+            }
+        }
+        guard !insertionLocations.isEmpty else { return html }
         let escaped = originalURL.replacingOccurrences(of: "&", with: "&amp;").replacingOccurrences(of: "\"", with: "&quot;")
-        let replacement = "$1data-newsblur-original-src=\"" + NSRegularExpression.escapedTemplate(for: escaped) + "\" src=$2" + NSRegularExpression.escapedTemplate(for: cachedURL) + "$2"
-        return regex.stringByReplacingMatches(in: html, range: NSRange(html.startIndex..., in: html), withTemplate: replacement)
+        let annotation = "data-newsblur-original-src=\"\(escaped)\" "
+        let result = NSMutableString(string: html)
+        for location in insertionLocations.reversed() { result.insert(annotation, at: location) }
+        return result as String
     }
 }
 
 extension StoryDetailViewController {
     func receiveImageMessage(_ message: WKScriptMessage) {
+        let accessibility = (message.body as? [String: Any])?["accessibilityActivation"] as? Bool == true
         guard message.frameInfo.isMainFrame, message.webView === webView,
               let source = StoryImageSource(message.body), isCurrentStoryImageLoad(source.loadID),
+              canOpenStoryImage(accessibility: accessibility || source.showActions),
               appDelegate.storyPagesViewController.currentPage === self,
               let window = webView.window, let presenter = window.rootViewController,
               presenter.presentedViewController == nil, !openingImage else { return }
         openingImage = true
-        let scale = webView.bounds.width / source.viewportWidth
-        let localRect = source.rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+        let scrollOffset = webView.scrollView.contentOffset
+        let localRect = StoryImageSource.viewRect(source.rect, viewportWidth: source.viewportWidth, in: webView)
         let sourceRect = webView.convert(localRect, to: window)
         let configuration = WKSnapshotConfiguration()
         configuration.rect = localRect.intersection(webView.bounds)
@@ -90,6 +163,8 @@ extension StoryDetailViewController {
             guard let self else { return }
             self.openingImage = false
             guard let presenter, self.isCurrentStoryImageLoad(source.loadID),
+                  self.canOpenStoryImage(accessibility: accessibility || source.showActions),
+                  self.webView.scrollView.contentOffset == scrollOffset,
                   self.appDelegate.storyPagesViewController.currentPage === self,
                   self.webView.window === window, presenter.presentedViewController == nil else { return }
             let viewer = StoryImageViewerController(source: source, preview: snapshot, origin: sourceRect)
@@ -103,8 +178,7 @@ extension StoryDetailViewController {
                 self.webView.evaluateJavaScript("newsblurImageRect.apply(null, \(arguments))") { [weak self] result, _ in
                     guard let self, self.isCurrentStoryImageLoad(source.loadID),
                           let (rect, viewport) = StoryImageSource.geometry(result) else { completion(nil); return }
-                    let scale = self.webView.bounds.width / viewport
-                    let local = rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+                    let local = StoryImageSource.viewRect(rect, viewportWidth: viewport, in: self.webView)
                     completion(local.intersects(self.webView.bounds) ? self.webView.convert(local, to: window) : nil)
                 }
             }
@@ -122,6 +196,11 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
     private let imageView = UIImageView()
     private let controls = UIView()
     private let menuButton = UIButton(type: .system)
+    private let hoverDisclosure = UIScrollView()
+    private let hoverLabel = UILabel()
+    private let actionDisclosure = UIStackView()
+    private var actionButtons: [UIButton] = []
+    private var disclosuresVisible = false
     private let status = UILabel()
     private let spinner = UIActivityIndicatorView(style: .medium)
     private var imageData: Data?
@@ -139,6 +218,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
     init(source: StoryImageSource, preview: UIImage?, origin: CGRect) {
         self.source = source
         self.origin = origin
+        disclosuresVisible = source.showActions
         super.init(nibName: nil, bundle: nil)
         imageView.image = preview
         modalPresentationStyle = .overFullScreen
@@ -146,7 +226,15 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
     }
 
     required init?(coder: NSCoder) { fatalError("StoryImageViewerController.swift uses init(source:preview:origin:)") }
-    override var prefersStatusBarHidden: Bool { false }
+    private var usesEdgeToEdgePresentation: Bool {
+        // StoryImageViewerController.swift reads the presenting window before attachment so Duo's status rail is hidden from the first frame.
+        let traits = viewIfLoaded?.window?.traitCollection
+            ?? presentingViewController?.viewIfLoaded?.window?.traitCollection
+            ?? traitCollection
+        return Utilities.usesSystemVerticalBar(traits)
+    }
+
+    override var prefersStatusBarHidden: Bool { usesEdgeToEdgePresentation }
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .allButUpsideDown }
@@ -173,10 +261,10 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         imageView.accessibilityIdentifier = "fullscreen-story-image"
         scroll.addSubview(imageView)
         view.addSubview(controls)
-        let close = makeButton(symbol: "xmark", label: "Close image")
+        let close = makeButton(symbol: "xmark", label: NBLocalization.text("Close image"))
         close.addTarget(self, action: #selector(closeImage), for: .touchUpInside)
         controls.addSubview(close)
-        configureButton(menuButton, symbol: "ellipsis", label: "Image actions")
+        configureButton(menuButton, symbol: "ellipsis", label: NBLocalization.text("Image actions"))
         menuButton.showsMenuAsPrimaryAction = true
         controls.addSubview(menuButton)
         close.translatesAutoresizingMaskIntoConstraints = false
@@ -187,11 +275,60 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
             menuButton.trailingAnchor.constraint(equalTo: controls.trailingAnchor), menuButton.topAnchor.constraint(equalTo: controls.topAnchor),
             menuButton.widthAnchor.constraint(equalToConstant: 48), menuButton.heightAnchor.constraint(equalToConstant: 48)
         ])
+        hoverDisclosure.backgroundColor = UIColor(white: 0.14, alpha: 1)
+        hoverDisclosure.layer.cornerRadius = 16
+        hoverDisclosure.accessibilityIdentifier = "image-hover-disclosure"
+        hoverDisclosure.contentInsetAdjustmentBehavior = .never
+        hoverLabel.text = source.hoverText
+        hoverLabel.font = .preferredFont(forTextStyle: .body)
+        hoverLabel.adjustsFontForContentSizeCategory = true
+        hoverLabel.textColor = .white
+        hoverLabel.numberOfLines = 0
+        hoverDisclosure.addSubview(hoverLabel)
+        view.addSubview(hoverDisclosure)
+        actionDisclosure.axis = .vertical
+        actionDisclosure.distribution = .fillEqually
+        actionDisclosure.backgroundColor = UIColor(white: 0.14, alpha: 1)
+        actionDisclosure.layer.cornerRadius = 16
+        actionDisclosure.clipsToBounds = true
+        actionDisclosure.accessibilityIdentifier = "image-action-disclosure"
+        for (title, symbol, selector) in [
+            ("Copy Image", "doc.on.doc", #selector(copyImage)),
+            ("Save Image", "square.and.arrow.down", #selector(saveImage)),
+            ("Share Image…", "square.and.arrow.up", #selector(shareImage))
+        ] {
+            let button = UIButton(type: .system)
+            var configuration = UIButton.Configuration.plain()
+            configuration.title = title
+            configuration.image = UIImage(systemName: symbol)
+            configuration.imagePlacement = .trailing
+            configuration.imagePadding = 16
+            configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16)
+            configuration.baseForegroundColor = .white
+            button.configuration = configuration
+            button.contentHorizontalAlignment = .fill
+            button.addTarget(self, action: selector, for: .touchUpInside)
+            actionDisclosure.addArrangedSubview(button)
+            actionButtons.append(button)
+            if actionButtons.count < 3 {
+                let separator = UIView()
+                separator.backgroundColor = UIColor(white: 1, alpha: 0.12)
+                separator.translatesAutoresizingMaskIntoConstraints = false
+                button.addSubview(separator)
+                NSLayoutConstraint.activate([
+                    separator.leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: 16),
+                    separator.trailingAnchor.constraint(equalTo: button.trailingAnchor),
+                    separator.bottomAnchor.constraint(equalTo: button.bottomAnchor),
+                    separator.heightAnchor.constraint(equalToConstant: 0.5)
+                ])
+            }
+        }
+        view.addSubview(actionDisclosure)
         status.textColor = .white
         status.font = .preferredFont(forTextStyle: .footnote)
         status.textAlignment = .center
         status.numberOfLines = 0
-        status.text = "Loading image…"
+        status.text = NBLocalization.text("Loading image…")
         view.addSubview(status)
         spinner.color = .white
         view.addSubview(spinner)
@@ -202,13 +339,15 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(tapImage))
         // StoryImageViewerController.swift lets a double tap zoom without also dismissing the viewer.
         singleTap.require(toFail: doubleTap)
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(revealImageActions(_:)))
+        singleTap.require(toFail: longPress)
+        scroll.addGestureRecognizer(longPress)
         scroll.addGestureRecognizer(singleTap)
         let pan = UIPanGestureRecognizer(target: self, action: #selector(dragImage(_:)))
         pan.maximumNumberOfTouches = 1
         pan.delegate = self
         scroll.addGestureRecognizer(pan)
         scroll.panGestureRecognizer.require(toFail: pan)
-        imageView.addInteraction(UIContextMenuInteraction(delegate: self))
         imageView.isUserInteractionEnabled = true
         updateMenu()
         loadImage()
@@ -237,10 +376,42 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
                                 width: view.bounds.width - view.safeAreaInsets.left - view.safeAreaInsets.right - 32, height: 48)
         status.frame = CGRect(x: 30, y: view.bounds.height - view.safeAreaInsets.bottom - 72, width: view.bounds.width - 60, height: 44)
         spinner.center = CGPoint(x: view.bounds.midX, y: status.frame.minY - 16)
-        let viewport = view.bounds.inset(by: view.safeAreaInsets)
+        var viewport = usesEdgeToEdgePresentation ? view.bounds : view.bounds.inset(by: view.safeAreaInsets)
+        hoverDisclosure.isHidden = !disclosuresVisible || source.hoverText == nil
+        actionDisclosure.isHidden = !disclosuresVisible
+        if disclosuresVisible {
+            viewport = view.bounds.inset(by: view.safeAreaInsets).insetBy(dx: 16, dy: 0)
+            viewport.origin.y = controls.frame.maxY + 12
+            viewport.size.height = max(1, view.bounds.height - view.safeAreaInsets.bottom - viewport.minY - 44)
+            let rowHeight = max(44, UIFont.preferredFont(forTextStyle: .body).lineHeight + 22)
+            let menuHeight = rowHeight * 3
+            let menuWidth = min(260, viewport.width)
+            // StoryImageViewerController.swift keeps the image useful on short landscape screens by placing actions beside it.
+            if viewport.width > viewport.height * 1.6, viewport.width > 500 {
+                actionDisclosure.frame = CGRect(x: viewport.maxX - menuWidth, y: viewport.midY - menuHeight / 2,
+                                                width: menuWidth, height: menuHeight)
+                viewport.size.width -= menuWidth + 16
+            } else {
+                actionDisclosure.frame = CGRect(x: viewport.midX - menuWidth / 2, y: viewport.maxY - menuHeight,
+                                                width: menuWidth, height: menuHeight)
+                viewport.size.height = max(1, viewport.height - menuHeight - 16)
+            }
+            if !hoverDisclosure.isHidden {
+                let textSize = hoverLabel.sizeThatFits(CGSize(width: viewport.width - 32, height: .greatestFiniteMagnitude))
+                let height = min(textSize.height + 28, max(44, viewport.height * 0.35))
+                hoverDisclosure.frame = CGRect(x: viewport.minX, y: viewport.minY, width: viewport.width, height: height)
+                hoverLabel.frame = CGRect(x: 16, y: 14, width: viewport.width - 32, height: textSize.height)
+                hoverDisclosure.contentSize = CGSize(width: viewport.width, height: textSize.height + 28)
+                viewport.origin.y += height + 12
+                viewport.size.height = max(1, viewport.height - height - 12)
+            }
+            status.frame = CGRect(x: controls.frame.minX, y: view.bounds.height - view.safeAreaInsets.bottom - 40,
+                                  width: controls.frame.width, height: 36)
+            spinner.center = CGPoint(x: viewport.midX, y: viewport.midY)
+        }
         guard laidOutViewport != viewport, !closing else { return }
         laidOutViewport = viewport
-        // StoryImageViewerController.swift keeps zoomed content below the status bar and respects a live dismissal transform.
+        // StoryImageViewerController.swift fills Duo's display beneath its cutout while retaining ordinary status-bar protection and live dismissal transforms.
         scroll.bounds.size = viewport.size
         scroll.center = CGPoint(x: viewport.midX, y: viewport.midY)
         layoutImage()
@@ -316,6 +487,15 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         }
     }
 
+    @objc private func revealImageActions(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began, !closing, transitionImage == nil, !dragging,
+              presentedViewController == nil else { return }
+        disclosuresVisible = true
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+        UIAccessibility.post(notification: .layoutChanged, argument: source.hoverText == nil ? actionDisclosure : hoverLabel)
+    }
+
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         !closing && transitionImage == nil && scroll.zoomScale <= 1.01 && presentedViewController == nil
     }
@@ -330,6 +510,8 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
             scroll.transform = CGAffineTransform(translationX: translation.x, y: translation.y).scaledBy(x: scale, y: scale)
             backdrop.alpha = max(0.15, 1 - distance / 320)
             controls.alpha = max(0, 1 - distance / 100)
+            hoverDisclosure.alpha = controls.alpha
+            actionDisclosure.alpha = controls.alpha
             status.alpha = controls.alpha
         case .ended:
             dragging = false
@@ -348,6 +530,8 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
             self.scroll.transform = .identity
             self.backdrop.alpha = 1
             self.controls.alpha = 1
+            self.hoverDisclosure.alpha = 1
+            self.actionDisclosure.alpha = 1
             self.status.alpha = 1
         }
     }
@@ -374,6 +558,8 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         UIView.animate(withDuration: UIAccessibility.isReduceMotionEnabled ? 0.18 : 0.3, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState]) {
             self.backdrop.alpha = 0
             self.controls.alpha = 0
+            self.hoverDisclosure.alpha = 0
+            self.actionDisclosure.alpha = 0
             self.status.alpha = 0
             if let rect, !UIAccessibility.isReduceMotionEnabled { flying.frame = self.view.convert(rect, from: self.view.window) }
             else { flying.alpha = 0 }
@@ -402,7 +588,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
                     self.transitionImage?.image = image
                     self.status.text = nil
                 } else {
-                    self.status.text = "Couldn’t load the full image. You can try opening it in your browser."
+                    self.status.text = NBLocalization.text("Couldn’t load the full image. You can try opening it in your browser.")
                 }
                 self.updateMenu()
             }
@@ -426,6 +612,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
     }
 
     private func updateMenu() {
+        actionButtons.forEach { $0.isEnabled = imageData != nil }
         func action(_ title: String, _ symbol: String, enabled: Bool = true, _ body: @escaping () -> Void) -> UIAction {
             UIAction(title: title, image: UIImage(systemName: symbol), attributes: enabled ? [] : [.disabled]) { _ in body() }
         }
@@ -445,13 +632,13 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
                               (links.isEmpty ? [] : [UIMenu(options: .displayInline, children: links)]))
     }
 
-    private func copyImage() {
+    @objc private func copyImage() {
         guard let imageData else { return }
         UIPasteboard.general.setData(imageData, forPasteboardType: imageType ?? UTType.image.identifier)
         announce("Image copied")
     }
 
-    private func shareImage() {
+    @objc private func shareImage() {
         guard let imageData else { return }
         // StoryImageViewerController.swift shares the original file, preserving resolution and animated formats.
         let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -473,7 +660,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         closeViewer { UIApplication.shared.open(url) }
     }
 
-    private func saveImage() {
+    @objc private func saveImage() {
         guard let imageData else { return }
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] authorization in
             guard authorization == .authorized || authorization == .limited else {
@@ -497,19 +684,13 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
 
     private func showError(_ message: String) {
         guard !closing else { return }
-        let alert = UIAlertController(title: "Save Image", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+        let alert = UIAlertController(title: NBLocalization.text("Save Image"), message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NBLocalization.text("OK"), style: .cancel))
         present(alert, animated: true)
     }
 
     deinit {
         task?.cancel()
         if let sharedFile { try? FileManager.default.removeItem(at: sharedFile) }
-    }
-}
-
-extension StoryImageViewerController: UIContextMenuInteractionDelegate {
-    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in self?.menuButton.menu }
     }
 }

@@ -1,0 +1,53 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: transparent; }
+body { font-family: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 15%, rgba(255, 252, 240, 0.95), rgba(255, 252, 240, 0) 70%),
+    radial-gradient(ellipse 60% 70% at 85% 90%, rgba(196, 216, 182, 0.75), rgba(196, 216, 182, 0) 70%),
+    linear-gradient(160deg, #f5efe2 0%, #ebe9d9 45%, #dfe8d6 100%);
+}
+.stage.warm {
+  background:
+    radial-gradient(ellipse 70% 60% at 80% 10%, rgba(255, 246, 214, 0.95), rgba(255, 246, 214, 0) 70%),
+    radial-gradient(ellipse 60% 70% at 10% 95%, rgba(230, 214, 170, 0.55), rgba(230, 214, 170, 0) 70%),
+    linear-gradient(160deg, #f8f2e2 0%, #f3ead2 55%, #ece3c8 100%);
+}
+.stage.dusk {
+  background:
+    radial-gradient(ellipse 70% 60% at 25% 20%, rgba(120, 104, 150, 0.55), rgba(120, 104, 150, 0) 70%),
+    radial-gradient(ellipse 60% 70% at 85% 90%, rgba(80, 112, 92, 0.55), rgba(80, 112, 92, 0) 70%),
+    linear-gradient(160deg, #2a2b33 0%, #23262a 55%, #1d2422 100%);
+}
+
+/* Waveform drawn behind the devices (wave.js fills it with bars). */
+.wave { position: absolute; display: flex; align-items: center; gap: 0; }
+.wave span { display: block; border-radius: 99px; background: currentColor; }
+
+.device { position: absolute; }
+.device > .frame { position: relative; display: block; width: 100%; z-index: 2; pointer-events: none; }
+.device > .screen { position: absolute; z-index: 1; overflow: hidden; background: #000; }
+.device > .screen img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.device.shadow { filter: drop-shadow(0 30px 40px rgba(40, 46, 30, 0.22)) drop-shadow(0 6px 10px rgba(40, 46, 30, 0.12)); }
+
+.iphone > .screen { left: 4.124%; top: 1.625%; width: 91.753%; height: 96.75%; border-radius: 13% / 6%; }
+.galaxy > .screen { left: 3.866%; top: 1.875%; width: 91.495%; height: 96.125%; border-radius: 10% / 4.6%; }
+.ipad > .screen { left: 5.893%; top: 4.375%; width: 88.042%; height: 91.375%; border-radius: 3% / 2%; }
+.macbook > .screen { left: 11.125%; top: 5.652%; width: 77.625%; height: 84.565%; border-radius: 1.2% / 1.8%; }
+.macbook > .screen img { object-position: center center; }
+
+/* A crop of a screenshot shown as a floating card. */
+.card {
+  position: absolute; overflow: hidden; border-radius: 18px; background: #fff;
+  box-shadow: 0 30px 60px rgba(40, 46, 30, 0.22), 0 8px 16px rgba(40, 46, 30, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.card > img { position: absolute; display: block; max-width: none; }
+
+.label {
+  position: absolute; font-size: 21px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(54, 62, 44, 0.55); text-align: center;
+}
+.dusk .label { color: rgba(255, 255, 255, 0.5); }

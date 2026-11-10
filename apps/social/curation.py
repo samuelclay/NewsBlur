@@ -16,6 +16,7 @@ import zlib
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 
+from apps.social.discovery import discovery_excluded_pairs
 from apps.social.rglobal import RGlobalSharedStory
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
@@ -170,6 +171,7 @@ def collect_candidates(hours=CANDIDATE_HOURS, pool_size=CANDIDATE_POOL_SIZE, now
     if not shared_stories:
         return []
 
+    excluded_pairs = discovery_excluded_pairs(now=now)
     user_ids = list({story.user_id for story in shared_stories})
     profiles = MSocialProfile.objects(user_id__in=user_ids).only(
         "user_id", "username", "private", "follower_count"
@@ -199,6 +201,7 @@ def collect_candidates(hours=CANDIDATE_HOURS, pool_size=CANDIDATE_POOL_SIZE, now
             story.user_id in private_user_ids
             or story.user_id in popular_user_ids
             or story.user_id in muted_user_ids
+            or (story.user_id, story.story_feed_id) in excluded_pairs
         ):
             continue
         if story.story_feed_id not in allowed_feed_ids:

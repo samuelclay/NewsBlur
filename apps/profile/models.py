@@ -28,6 +28,7 @@ from django.db.models.signals import post_save
 from django.db.utils import DatabaseError
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.translation import gettext, ngettext
 from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import invalid_ipn_received, valid_ipn_received
 from zebra.signals import (
@@ -42,12 +43,14 @@ from zebra.signals import (
 
 from apps.ask_ai.usage import AskAIUsageTracker
 from apps.feed_import.models import OPMLExporter
+from apps.listen.models import MListenDaily
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import chunks
+from utils.languages import in_account_language, localized_number
 from utils.user_functions import generate_secret_token
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from vendor.paypalapi.interface import PayPalInterface
@@ -68,6 +71,9 @@ class Profile(models.Model):
     premium_expire = models.DateTimeField(blank=True, null=True)
     send_emails = models.BooleanField(default=True)
     preferences = models.TextField(default="{}")
+    # models.py keeps acquisition language immutable; current device language can change independently.
+    signup_language = models.CharField(max_length=16, null=True, blank=True)
+    last_read_language = models.CharField(max_length=16, null=True, blank=True)
     view_settings = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
     feed_pane_size = models.IntegerField(default=282)
@@ -80,6 +86,9 @@ class Profile(models.Model):
     has_trained_intelligence = models.BooleanField(default=False, null=True, blank=True)
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
+    # The language this account's devices last asked for, kept by apps/profile/language.py so emails reach
+    # Automatic users in it (utils/languages.py:account_language).
+    last_seen_language = models.CharField(max_length=16, blank=True, null=True)
     dashboard_date = models.DateTimeField(default=datetime.datetime.now)
     timezone = TimeZoneField(default="America/New_York")
     secret_token = models.CharField(max_length=12, blank=True, null=True)
@@ -223,6 +232,27 @@ class Profile(models.Model):
             if settings.DEBUG:
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
         return price
+
+    @staticmethod
+    def is_usage_billing_subscription(subscription):
+        """True for the AI classifier metered sub that setup_usage_billing creates (apps/profile/views.py).
+
+        It shares the Stripe customer with the yearly tier sub, so switching, canceling, and
+        reactivating the tier sub must all skip it (apps/profile/models.py).
+        """
+        usage_price_ids = set(
+            filter(
+                None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION]
+            )
+        )
+        if not usage_price_ids:
+            return False
+        items = subscription.get("items")
+        for item in items["data"] if items else []:
+            price = item.get("price")
+            if price and price.get("id") in usage_price_ids:
+                return True
+        return False
 
     @classmethod
     def plan_to_paypal_plan_id(cls, plan):
@@ -386,6 +416,13 @@ class Profile(models.Model):
             "has_found_friends": self.has_found_friends,
             "has_trained_intelligence": self.has_trained_intelligence,
             "dashboard_date": self.dashboard_date,
+            # models.py: AI classifier billing state for the iOS and Android apps, which read
+            # user_profile from /reader/feeds. The web gets the same values from
+            # templates/base.html NEWSBLUR.Globals.
+            "is_usage_billing": bool(self.is_usage_billing),
+            "is_self_hosted_ai": self.is_self_hosted_ai,
+            "can_use_ai_classifiers": self.can_use_ai_classifiers,
+            "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
         }
 
     def save(self, *args, **kwargs):
@@ -519,7 +556,8 @@ class Profile(models.Model):
         cancellation_succeeded = False
         try:
             if not fast:
-                self.cancel_premium(force=True)
+                # A deleted account has nothing left to classify, so usage billing stops too.
+                self.cancel_premium(force=True, include_usage_billing=True)
                 cancellation_succeeded = True
         except Exception as e:
             logging.user(
@@ -1108,6 +1146,11 @@ class Profile(models.Model):
         existing_subscription = None
         existing_plan = None
         for subscription in stripe_subscriptions:
+            # Skip the AI classifier usage billing sub. Its monthly metered items can't take a
+            # yearly tier price, and with no tier sub left the view falls back to a new checkout
+            # (apps/profile/views.py).
+            if Profile.is_usage_billing_subscription(subscription):
+                continue
             plan_obj = subscription.plan
             if not plan_obj:
                 # Newer subscriptions may not have a top-level plan; fall back to the
@@ -1365,6 +1408,16 @@ class Profile(models.Model):
         recent_payment_dates = []
         latest_annual_payment_date = None
         free_lifetime_premium = False
+        verified_apple_expiration = None
+        verified_apple_count = 0
+        payments = list(payments)
+        verified_apple_periods = {}
+        for payment in payments:
+            if payment.apple_original_transaction_id and payment.apple_expires_date and not payment.refunded:
+                key = (payment.payment_provider, payment.apple_original_transaction_id)
+                verified_apple_periods[key] = max(
+                    verified_apple_periods.get(key, payment.apple_expires_date), payment.apple_expires_date
+                )
 
         for payment in payments:
             # Don't use free gift premiums in calculation for expiration
@@ -1376,6 +1429,21 @@ class Profile(models.Model):
             # user's premium expiration.
             if payment.payment_amount < 0 or payment.refunded:
                 continue
+            # Signed Apple periods from apps/profile/apple_subscriptions.py are
+            # exact; do not turn monthly renewals into inferred extra days.
+            if payment.apple_expires_date:
+                if payment.apple_expires_date > datetime.datetime.now():
+                    verified_apple_expiration = max(
+                        verified_apple_expiration or payment.apple_expires_date,
+                        payment.apple_expires_date,
+                    )
+                    verified_apple_count += 1
+                continue
+            # Older original-ID receipts in apps/profile/models.py belong to the
+            # same signed subscription period, not another inferred entitlement.
+            covered_until = verified_apple_periods.get((payment.payment_provider, payment.payment_identifier))
+            if covered_until and payment.payment_date < covered_until:
+                continue
             # Only update expiration if payment in the last year
             if payment.payment_date > last_year:
                 recent_payment_dates.append(payment.payment_date)
@@ -1385,7 +1453,7 @@ class Profile(models.Model):
                     latest_annual_payment_date = payment.payment_date
 
         if not recent_payment_dates:
-            return None, free_lifetime_premium, 0
+            return verified_apple_expiration, free_lifetime_premium, verified_apple_count
 
         period_days = cls.billing_period_days(recent_payment_dates)
         expiration = min(recent_payment_dates) + datetime.timedelta(
@@ -1396,7 +1464,9 @@ class Profile(models.Model):
                 expiration,
                 latest_annual_payment_date + datetime.timedelta(days=cls.ANNUAL_PERIOD_DAYS),
             )
-        return expiration, free_lifetime_premium, len(recent_payment_dates)
+        if verified_apple_expiration:
+            expiration = max(expiration, verified_apple_expiration)
+        return expiration, free_lifetime_premium, len(recent_payment_dates) + verified_apple_count
 
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         # Deduplicate payments: keep only one per provider per identifier, then per day.
@@ -1423,7 +1493,7 @@ class Profile(models.Model):
                 renewal_window = datetime.timedelta(days=self.MONTHLY_RENEWAL_WINDOW_DAYS)
             else:
                 renewal_window = datetime.timedelta(days=self.ANNUAL_RENEWAL_WINDOW_DAYS)
-            last_kept_identifier_dates = {}
+            last_kept_identifier_payments = {}
             for payment in list(
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(payment_identifier__isnull=True)
@@ -1431,23 +1501,30 @@ class Profile(models.Model):
                 .exclude(refunded=True)
                 .order_by("payment_date")
             ):
-                last_kept_date = last_kept_identifier_dates.get(payment.payment_identifier)
-                if last_kept_date and (
-                    renewal_window is None or payment.payment_date - last_kept_date < renewal_window
+                last_kept = last_kept_identifier_payments.get(payment.payment_identifier)
+                if last_kept and (
+                    renewal_window is None or payment.payment_date - last_kept.payment_date < renewal_window
                 ):
-                    payment.delete()
+                    # Prefer signed dates from apps/profile/apple_subscriptions.py
+                    # over a legacy client receipt for the same transaction.
+                    if payment.apple_expires_date and not last_kept.apple_expires_date:
+                        last_kept.delete()
+                        last_kept_identifier_payments[payment.payment_identifier] = payment
+                    else:
+                        payment.delete()
                     deleted_count += 1
                 else:
-                    last_kept_identifier_dates[payment.payment_identifier] = payment.payment_date
+                    last_kept_identifier_payments[payment.payment_identifier] = payment
             # Second pass: dedup by date (race condition duplicates on same day)
             seen_dates = set()
-            for payment in list(
+            for payment in sorted(
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(refunded=True)
-                .order_by("payment_date")
+                .order_by("payment_date"),
+                key=lambda payment: (payment.apple_expires_date is None, payment.payment_date),
             ):
                 payment_day = payment.payment_date.date()
-                if payment_day in seen_dates:
+                if payment_day in seen_dates and not payment.apple_expires_date:
                     payment.delete()
                     deleted_count += 1
                 else:
@@ -1674,7 +1751,10 @@ class Profile(models.Model):
                 or (self.premium_expire and new_premium_expire > self.premium_expire)
             ):
                 self.premium_expire = new_premium_expire
-                self.save()
+                # Only the field that changed: payment webhooks run this concurrently, and a
+                # whole-row save from a profile loaded before another webhook's tier change
+                # writes the old tier back (apps/profile/models.py activate_archive).
+                self.save(update_fields=["premium_expire"])
 
         if self.premium_renewal != premium_renewal or self.active_provider != active_provider:
             active_sub_id = self.stripe_id
@@ -1687,7 +1767,7 @@ class Profile(models.Model):
             )
             self.premium_renewal = premium_renewal
             self.active_provider = active_provider
-            self.save()
+            self.save(update_fields=["premium_renewal", "active_provider"])
 
         logging.user(
             self.user,
@@ -2336,9 +2416,9 @@ class Profile(models.Model):
         )
         return refund_dollars
 
-    def cancel_premium(self, force=False):
+    def cancel_premium(self, force=False, include_usage_billing=False):
         paypal_cancel = self.cancel_premium_paypal(force=force)
-        stripe_cancel = self.cancel_premium_stripe(force=force)
+        stripe_cancel = self.cancel_premium_stripe(force=force, include_usage_billing=include_usage_billing)
         self.setup_premium_history()  # Sure, webhooks will force new history, but they take forever
         return stripe_cancel or paypal_cancel
 
@@ -2426,7 +2506,7 @@ class Profile(models.Model):
         logging.user(self.user, "~FRCanceling classic Paypal subscription: %s" % paypal_id)
         return True
 
-    def cancel_premium_stripe(self, force=False):
+    def cancel_premium_stripe(self, force=False, include_usage_billing=False):
         if not self.stripe_id:
             if force:
                 self.retrieve_stripe_ids()
@@ -2440,6 +2520,15 @@ class Profile(models.Model):
             try:
                 subscriptions = stripe.Subscription.list(customer=stripe_customer)
                 for subscription in subscriptions.data:
+                    # Switching to PayPal, refunding, or canceling renewal only stops the tier sub.
+                    # The AI classifier usage billing sub keeps running unless the account is
+                    # being deleted (apps/profile/models.py delete_user).
+                    if not include_usage_billing and Profile.is_usage_billing_subscription(subscription):
+                        logging.user(
+                            self.user,
+                            "~FBNot canceling Stripe usage billing subscription: %s" % subscription["id"],
+                        )
+                        continue
                     stripe.Subscription.modify(subscription["id"], cancel_at_period_end=True)
                     logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription["id"])
             except stripe.error.InvalidRequestError:
@@ -2502,14 +2591,16 @@ class Profile(models.Model):
         if not stripe_customer:
             return None
 
-        # Check if there's already an active subscription
+        # Check if there's already an active subscription. The AI classifier usage billing sub
+        # can be active alongside it but isn't a tier sub, so it doesn't count (apps/profile/models.py).
         existing_subs = stripe.Subscription.list(customer=stripe_customer.id, status="active")
-        if existing_subs.data:
+        tier_subs = [sub for sub in existing_subs.data if not Profile.is_usage_billing_subscription(sub)]
+        if tier_subs:
             logging.user(
                 self.user,
-                "~FBStripe subscription already active: ~SB%s" % existing_subs.data[0].id,
+                "~FBStripe subscription already active: ~SB%s" % tier_subs[0].id,
             )
-            return existing_subs.data[0].id
+            return tier_subs[0].id
 
         # Ensure default payment method is set
         payment_methods = stripe.PaymentMethod.list(customer=stripe_customer.id, type="card")
@@ -2595,7 +2686,9 @@ class Profile(models.Model):
 
         if not self.paypal_sub_id:
             self.paypal_sub_id = ipns[0].subscr_id
-            self.save()
+            # Only the field that changed, for the same concurrent webhook reason as
+            # setup_premium_history (apps/profile/models.py).
+            self.save(update_fields=["paypal_sub_id"])
 
         paypal_ids = set()
         for ipn in ipns:
@@ -2667,9 +2760,21 @@ class Profile(models.Model):
         now = datetime.datetime.now()
         real_identifier = payment_identifier and payment_identifier not in self.STORE_PLACEHOLDER_IDENTIFIERS
         if real_identifier:
-            same_txn = PaymentHistory.objects.filter(
+            # A signed actual transaction is unique forever; an original ID is
+            # already covered while its verified period is still active.
+            verified_txn = PaymentHistory.objects.filter(
+                Q(payment_identifier=payment_identifier)
+                | Q(apple_original_transaction_id=payment_identifier, apple_expires_date__gt=now),
                 user=self.user,
-                payment_identifier=payment_identifier,
+                payment_provider=payment_provider,
+                apple_expires_date__isnull=False,
+            ).exists()
+            if verified_txn:
+                return "verified txn"
+            same_txn = PaymentHistory.objects.filter(
+                Q(payment_identifier=payment_identifier)
+                | Q(apple_original_transaction_id=payment_identifier),
+                user=self.user,
                 payment_provider=payment_provider,
                 payment_date__gte=now - datetime.timedelta(days=renewal_window_days),
             ).exists()
@@ -3019,6 +3124,7 @@ class Profile(models.Model):
                         pipeline.zrem(pro_key, user.pk)
                 pipeline.execute()
 
+    @in_account_language
     def send_new_user_email(self):
         if not self.user.email or not self.send_emails:
             return
@@ -3026,7 +3132,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_account.txt", locals())
         html = render_to_string("mail/email_new_account.xhtml", locals())
-        subject = "Welcome to NewsBlur, %s" % (self.user.username)
+        subject = gettext("Welcome to NewsBlur, %(username)s") % {"username": self.user.username}
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3039,6 +3145,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
 
+    @in_account_language
     def send_opml_export_email(self, reason=None, force=False):
         if not self.user.email:
             return
@@ -3062,7 +3169,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_opml_export.txt", params)
         html = render_to_string("mail/email_opml_export.xhtml", params)
-        subject = "Backup OPML file of your NewsBlur sites"
+        subject = gettext("Backup OPML file of your NewsBlur sites")
         filename = "NewsBlur Subscriptions - %s.xml" % datetime.datetime.now().strftime("%Y-%m-%d")
         msg = EmailMultiAlternatives(
             subject,
@@ -3081,6 +3188,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending OPML backup email to: %s" % self.user.email)
 
+    @in_account_language
     def send_first_share_to_blurblog_email(self, force=False):
         from apps.social.models import MSharedStory, MSocialProfile
 
@@ -3105,7 +3213,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_first_share_to_blurblog.txt", params)
         html = render_to_string("mail/email_first_share_to_blurblog.xhtml", params)
-        subject = "Your shared stories on NewsBlur are available on your Blurblog"
+        subject = gettext("Your shared stories on NewsBlur are available on your Blurblog")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3118,6 +3226,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending first share to blurblog email to: %s" % self.user.email)
 
+    @in_account_language
     def send_new_premium_email(self, force=False):
         if not self.user.email or not self.send_emails:
             return
@@ -3134,7 +3243,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_premium.txt", locals())
         html = render_to_string("mail/email_new_premium.xhtml", locals())
-        subject = "Thank you for subscribing to NewsBlur Premium!"
+        subject = gettext("Thank you for subscribing to NewsBlur Premium!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3147,6 +3256,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
 
+    @in_account_language
     def send_new_premium_archive_email(self, total_story_count, pre_archive_count, force=False):
         if not self.user.email:
             return
@@ -3169,9 +3279,17 @@ class Profile(models.Model):
         text = render_to_string("mail/email_new_premium_archive.txt", locals())
         html = render_to_string("mail/email_new_premium_archive.xhtml", locals())
         if total_story_count > pre_archive_count:
-            subject = f"NewsBlur archive backfill is complete: from {pre_archive_count:,} to {total_story_count:,} stories"
+            subject = ngettext(
+                "NewsBlur archive backfill is complete: from %(before)s to %(after)s story",
+                "NewsBlur archive backfill is complete: from %(before)s to %(after)s stories",
+                total_story_count,
+            ) % {"before": localized_number(pre_archive_count), "after": localized_number(total_story_count)}
         else:
-            subject = f"NewsBlur archive backfill is complete: {total_story_count:,} stories"
+            subject = ngettext(
+                "NewsBlur archive backfill is complete: %(count)s story",
+                "NewsBlur archive backfill is complete: %(count)s stories",
+                total_story_count,
+            ) % {"count": localized_number(total_story_count)}
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3188,6 +3306,7 @@ class Profile(models.Model):
             % (self.user.email, pre_archive_count, total_story_count),
         )
 
+    @in_account_language
     def send_new_premium_pro_email(self, force=False):
         if not self.user.email or not self.send_emails:
             return
@@ -3204,7 +3323,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_premium_pro.txt", locals())
         html = render_to_string("mail/email_new_premium_pro.xhtml", locals())
-        subject = "Thanks for subscribing to NewsBlur Premium Pro!"
+        subject = gettext("Thanks for subscribing to NewsBlur Premium Pro!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3249,6 +3368,10 @@ class Profile(models.Model):
         stories_read = RUserStory.read_story_count(user.pk)
         starred_count = MStarredStory.objects.filter(user_id=user.pk).count()
         shared_count = MSharedStory.objects.filter(user_id=user.pk).count()
+
+        # Listen stats (apps/listen/models.py): wall-clock minutes spent hearing stories read aloud
+        listen_minutes_week = MListenDaily.minutes_listened(user.pk, days=7)
+        listen_minutes_total = MListenDaily.minutes_listened(user.pk)
 
         # Social stats
         following_count = 0
@@ -3315,6 +3438,8 @@ class Profile(models.Model):
             "active_feed_count": active_feed_count,
             "feed_opens": feed_opens,
             "stories_read": stories_read,
+            "listen_minutes_week": listen_minutes_week,
+            "listen_minutes_total": listen_minutes_total,
             "starred_count": starred_count,
             "shared_count": shared_count,
             "following_count": following_count,
@@ -3408,6 +3533,7 @@ class Profile(models.Model):
             "~BB~FM~SBSending staff WOULD-CANCEL email: %s ($%s/yr)" % (user.username, old_amount),
         )
 
+    @in_account_language
     def send_forgot_password_email(self, email=None):
         if not self.user.email and not email:
             print("Please provide an email address.")
@@ -3420,7 +3546,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_forgot_password.txt", locals())
         html = render_to_string("mail/email_forgot_password.xhtml", locals())
-        subject = "Forgot your password on NewsBlur?"
+        subject = gettext("Forgot your password on NewsBlur?")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3433,6 +3559,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
 
+    @in_account_language
     def send_new_user_queue_email(self, force=False):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3450,7 +3577,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_user_queue.txt", locals())
         html = render_to_string("mail/email_new_user_queue.xhtml", locals())
-        subject = "Your free account is now ready to go on NewsBlur"
+        subject = gettext("Your free account is now ready to go on NewsBlur")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3463,6 +3590,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for new user queue: %s" % self.user.email)
 
+    @in_account_language
     def send_upload_opml_finished_email(self, feed_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3471,7 +3599,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_upload_opml_finished.txt", locals())
         html = render_to_string("mail/email_upload_opml_finished.xhtml", locals())
-        subject = "Your OPML upload is complete. Get going with NewsBlur!"
+        subject = gettext("Your OPML upload is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3484,6 +3612,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
 
+    @in_account_language
     def send_import_reader_finished_email(self, feed_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3492,7 +3621,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_import_reader_finished.txt", locals())
         html = render_to_string("mail/email_import_reader_finished.xhtml", locals())
-        subject = "Your Google Reader import is complete. Get going with NewsBlur!"
+        subject = gettext("Your Google Reader import is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3505,6 +3634,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for Google Reader import: %s" % self.user.email)
 
+    @in_account_language
     def send_import_reader_starred_finished_email(self, feed_count, starred_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3513,7 +3643,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_import_reader_starred_finished.txt", locals())
         html = render_to_string("mail/email_import_reader_starred_finished.xhtml", locals())
-        subject = "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+        subject = gettext("Your Google Reader starred stories import is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3679,6 +3809,7 @@ class Profile(models.Model):
                 logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
                 return True
 
+    @in_account_language
     def send_premium_expire_grace_period_email(self, force=False):
         if not self.user.email:
             logging.user(
@@ -3696,10 +3827,14 @@ class Profile(models.Model):
         delta = datetime.datetime.now() - self.last_seen_on
         months_ago = round(delta.days / 30)
         user = self.user
-        data = dict(user=user, months_ago=months_ago)
+        data = dict(
+            user=user,
+            months_ago=months_ago,
+            pricing_cancellation=self.pricing_migration_paypal_cancellation(),
+        )
         text = render_to_string("mail/email_premium_expire_grace.txt", data)
         html = render_to_string("mail/email_premium_expire_grace.xhtml", data)
-        subject = "Your premium account on NewsBlur has one more month!"
+        subject = gettext("Your premium account on NewsBlur has one more month!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3717,6 +3852,7 @@ class Profile(models.Model):
             % (months_ago, self.user.email),
         )
 
+    @in_account_language
     def send_premium_expire_email(self, force=False):
         if not self.user.email:
             logging.user(self.user, "~FM~SB~FRNot~FM sending premium expire for user: %s" % (self.user))
@@ -3732,10 +3868,14 @@ class Profile(models.Model):
         delta = datetime.datetime.now() - self.last_seen_on
         months_ago = round(delta.days / 30)
         user = self.user
-        data = dict(user=user, months_ago=months_ago)
+        data = dict(
+            user=user,
+            months_ago=months_ago,
+            pricing_cancellation=self.pricing_migration_paypal_cancellation(),
+        )
         text = render_to_string("mail/email_premium_expire.txt", data)
         html = render_to_string("mail/email_premium_expire.xhtml", data)
-        subject = "Your premium account on NewsBlur has expired"
+        subject = gettext("Your premium account on NewsBlur has expired")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3752,6 +3892,7 @@ class Profile(models.Model):
             "~BB~FM~SBSending premium expire email for user: %s months, %s" % (months_ago, self.user.email),
         )
 
+    @in_account_language
     def send_premium_trial_welcome_email(self, force=False):
         """Send welcome email for new premium trial users."""
         if not self.user.email or not self.send_emails:
@@ -3771,7 +3912,7 @@ class Profile(models.Model):
         data = dict(user=user, days_remaining=days_remaining)
         text = render_to_string("mail/email_premium_trial_welcome.txt", data)
         html = render_to_string("mail/email_premium_trial_welcome.xhtml", data)
-        subject = "Welcome to NewsBlur! Your 30-day premium trial has started"
+        subject = gettext("Welcome to NewsBlur! Your 30-day premium trial has started")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3784,6 +3925,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending trial welcome email: %s" % self.user.email)
 
+    @in_account_language
     def send_premium_trial_expire_email(self, force=False):
         """Send email when premium trial expires."""
         if not self.user.email:
@@ -3803,7 +3945,7 @@ class Profile(models.Model):
         data = dict(user=user)
         text = render_to_string("mail/email_premium_trial_expire.txt", data)
         html = render_to_string("mail/email_premium_trial_expire.xhtml", data)
-        subject = "Your 30-day NewsBlur premium trial has ended"
+        subject = gettext("Your 30-day NewsBlur premium trial has ended")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3817,6 +3959,7 @@ class Profile(models.Model):
         MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
         logging.user(self.user, "~BB~FM~SBSending trial expire email for: %s" % self.user.email)
 
+    @in_account_language
     def send_premium_renewal_notice_email(self, force=False):
         if not self.user.email:
             logging.user(
@@ -3837,15 +3980,16 @@ class Profile(models.Model):
                 )
                 return
 
+        # Plan names reuse the pricing pages' translations (templates/static/pricing_*.xhtml).
         if self.is_pro:
-            tier_name = "Premium Pro"
-            amount = "$29/month"
+            tier_name = gettext("Premium Pro")
+            amount = gettext("$29/month")
         elif self.is_archive:
-            tier_name = "Premium Archive"
-            amount = "$99/year"
+            tier_name = gettext("Premium Archive")
+            amount = gettext("$99/year")
         else:
-            tier_name = "Premium"
-            amount = "$36/year"
+            tier_name = gettext("Premium")
+            amount = gettext("$36/year")
 
         user = self.user
         renewal_date = self.premium_expire
@@ -3859,7 +4003,7 @@ class Profile(models.Model):
         )
         text = render_to_string("mail/email_premium_renewal_notice.txt", data)
         html = render_to_string("mail/email_premium_renewal_notice.xhtml", data)
-        subject = "Your %s subscription renews soon" % tier_name
+        subject = gettext("Your %(tier_name)s subscription renews soon") % {"tier_name": tier_name}
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3887,6 +4031,7 @@ class Profile(models.Model):
         )
         return payment.payment_amount if payment else None
 
+    @in_account_language
     def send_premium_pricing_upgrade_email(
         self,
         old_amount=None,
@@ -3950,7 +4095,7 @@ class Profile(models.Model):
             )
             text = render_to_string("mail/email_premium_pricing_upgrade_%s.txt" % v, data)
             html = render_to_string("mail/email_premium_pricing_upgrade_%s.xhtml" % v, data)
-            subject = "After years at the old price, NewsBlur Premium is moving to $36/year"
+            subject = gettext("After years at the old price, NewsBlur Premium is moving to $36/year")
             if preview:
                 subject = "[%s preview] %s" % (v, subject)
             msg = EmailMultiAlternatives(
@@ -3968,6 +4113,21 @@ class Profile(models.Model):
 
         if not preview:
             MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_pricing_upgrade")
+
+    def pricing_migration_paypal_cancellation(self):
+        """The PremiumPricingMigration row when the pricing migration cancelled this subscriber's
+        grandfathered PayPal subscription and nothing has been paid since, so the grace and expired
+        emails can say why Premium is ending. A subscriber who misses the one pricing email
+        otherwise sees a 13 year subscription lapse with no explanation. Rows the subscriber
+        cancelled themselves have no paypal_canceled_date (apps/profile/models.py)."""
+        row = PremiumPricingMigration.objects.filter(
+            user=self.user, status="cancelled", paypal_canceled_date__isnull=False
+        ).first()
+        if not row:
+            return None
+        if PaymentHistory.objects.filter(user=self.user, payment_date__gt=row.paypal_canceled_date).exists():
+            return None
+        return row
 
     def is_dormant_for_paypal_cancel(self, now=None):
         """True when this subscriber has been inactive long enough that force-cancelling their
@@ -4389,7 +4549,8 @@ def create_profile(sender, instance, created, **kwargs):
             is_premium_trial=True,
             premium_expire=now + datetime.timedelta(days=30),
         )
-        EmailNewPremiumTrial.delay(user_id=instance.pk)
+        # models.py also creates profiles inside apps/api/social_auth.py's signup transaction.
+        transaction.on_commit(lambda: EmailNewPremiumTrial.delay(user_id=instance.pk))
         logging.user(
             instance,
             "~BY~SK~FW~SBNEW USER WITH PREMIUM TRIAL! Expires %s~SN" % profile.premium_expire,
@@ -4905,6 +5066,16 @@ def change_password(user, old_password, new_password, only_check=False):
         return 1
 
 
+class SocialIdentity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="social_identities")
+    provider = models.CharField(max_length=16)
+    subject = models.CharField(max_length=255)
+    email = models.EmailField()
+
+    class Meta:
+        unique_together = (("provider", "subject"),)
+
+
 def blank_authenticate(username, password=""):
     try:
         user = User.objects.get(username__iexact=username)
@@ -4913,6 +5084,10 @@ def blank_authenticate(username, password=""):
 
     if user.password == "!":
         return user
+
+    # apps/api/social_auth.py creates provider-only accounts with unusable passwords.
+    if not user.has_usable_password():
+        return None
 
     algorithm, salt, hash = user.password.split("$", 2)
     encoded_blank = hashlib.sha1((salt + password).encode(encoding="utf-8")).hexdigest()
@@ -5205,6 +5380,8 @@ class PaymentHistory(models.Model):
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=32)
     payment_identifier = models.CharField(max_length=100, null=True)
+    apple_original_transaction_id = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    apple_expires_date = models.DateTimeField(blank=True, null=True)
     refunded = models.BooleanField(blank=True, null=True)
 
     def __str__(self):

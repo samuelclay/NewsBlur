@@ -1,0 +1,162 @@
+[
+  {
+    "language": "ar",
+    "size": "1320x2868",
+    "panel": 1,
+    "captured_at": "2026-10-16T22:49:58.516Z",
+    "capture": "captures/localized/ar/iphone-stories.png",
+    "capture_sha256": "b3086c273e7ba8b941d1a92a4b98fd785b24aef5f503b31b544d17d086945bd2",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "1cb959158b9f42a593a76ae9e8512c0ee1a9ec127339980ba5cdd679027c9262",
+    "screenshot_sha256": "46a4277d811ff740ac78bfb24a56fffc56590e2b07a2be80eba81586c830e4d4",
+    "capture_bounds": {
+      "height": 1957.2578125,
+      "width": 900.8359375,
+      "x": 209.578125,
+      "y": 687.890625
+    },
+    "headline": "قراءاتك اليومية، في مكان واحد.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/ar/iphone-stories.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1320,
+      2868
+    ]
+  },
+  {
+    "language": "ar",
+    "size": "1320x2868",
+    "panel": 2,
+    "captured_at": "2026-10-16T22:50:04.838Z",
+    "capture": "captures/localized/ar/iphone-feeds.png",
+    "capture_sha256": "1bb6f6635435ab178b0be2d4a4915a8486a689666646ee3d615b4b9d55b220f8",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "1cb959158b9f42a593a76ae9e8512c0ee1a9ec127339980ba5cdd679027c9262",
+    "screenshot_sha256": "cf92766679d3853bb63ddbd75ebae802517931e7b6c1fd2d372bcd1d270590a3",
+    "capture_bounds": {
+      "height": 1957.2578125,
+      "width": 900.8359375,
+      "x": 209.578125,
+      "y": 687.890625
+    },
+    "headline": "مساحة تجمع مصادرك المفضلة.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/ar/iphone-feeds.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1320,
+      2868
+    ]
+  },
+  {
+    "language": "ar",
+    "size": "1320x2868",
+    "panel": 3,
+    "captured_at": "2026-10-16T22:50:06.662Z",
+    "capture": "captures/localized/ar/iphone-reader.png",
+    "capture_sha256": "a81540daba39c0d467612d72d427f0f5beeb9f6f2de1eeb5953e6ca12689f64e",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "1cb959158b9f42a593a76ae9e8512c0ee1a9ec127339980ba5cdd679027c9262",
+    "screenshot_sha256": "f09d4f659cc8faf7d686d5a26e77f31e7d89017c3da1b97aaed277c55c44449f",
+    "capture_bounds": {
+      "height": 1957.2578125,
+      "width": 900.8359375,
+      "x": 209.578125,
+      "y": 687.890625
+    },
+    "headline": "استمتع بقراءة ممتعة.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/ar/iphone-reader.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1320,
+      2868
+    ]
+  },
+  {
+    "language": "ar",
+    "size": "1320x2868",
+    "panel": 4,
+    "captured_at": "2026-10-16T22:50:08.095Z",
+    "capture": "captures/localized/ar/iphone-saved.png",
+    "capture_sha256": "22502c4c9c558e3d9f75bb5313e92c373e22e2362e8bd5d07708d0c11fdd2fe9",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "1cb959158b9f42a593a76ae9e8512c0ee1a9ec127339980ba5cdd679027c9262",
+    "screenshot_sha256": "24ce4be5cc99601d57914b9e84fee28d49df25d780c3dd132314652577562ac2",
+    "capture_bounds": {
+      "height": 1957.2578125,
+      "width": 900.8359375,
+      "x": 209.578125,
+      "y": 687.890625
+    },
+    "headline": "احفظ مقالًا جيدًا لقراءته لاحقًا.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/ar/iphone-saved.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1320,
+      2868
+    ]
+  }
+]

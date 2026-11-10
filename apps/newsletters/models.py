@@ -15,6 +15,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.html import linebreaks, strip_tags
+from django.utils.translation import gettext
 from mongoengine.queryset import NotUniqueError
 
 from apps.notifications.models import MUserFeedNotification
@@ -30,6 +31,7 @@ from apps.rss_feeds.models import (
     feed_write_lock,
 )
 from utils import log as logging
+from utils.languages import account_translation
 from utils.scrubber import Scrubber
 from utils.story_functions import linkify
 
@@ -253,9 +255,10 @@ class EmailNewsletter:
         except MSentEmail.DoesNotExist:
             MSentEmail.objects.create(**params)
 
-        text = render_to_string("mail/email_first_newsletter.txt", {"user": user})
-        html = render_to_string("mail/email_first_newsletter.xhtml", {"user": user})
-        subject = "Your email newsletters are now being sent to NewsBlur"
+        with account_translation(user.profile):
+            text = render_to_string("mail/email_first_newsletter.txt", {"user": user})
+            html = render_to_string("mail/email_first_newsletter.xhtml", {"user": user})
+            subject = gettext("Your email newsletters are now being sent to NewsBlur")
         msg = EmailMultiAlternatives(
             subject,
             text,

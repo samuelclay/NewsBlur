@@ -1,15 +1,19 @@
 {% extends "mail/email_base.xhtml" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
 {% block body %}
-    
+    {% current_domain as domain %}
     <p style="margin-top: 12px;">
-        Good news! NewsBlur has finished importing your sites from Google Reader. 
-        You are now subscribed to <b>{{ feed_count }}</b> site{{ feed_count|pluralize }}.
+        {% trans "Good news! NewsBlur has finished importing your sites from Google Reader." %}
+        {% blocktrans trimmed count counter=feed_count %}
+            You are now subscribed to <b>{{ counter }}</b> site.
+        {% plural %}
+            You are now subscribed to <b>{{ counter }}</b> sites.
+        {% endblocktrans %}
     </p>
         
     <p>
-        Head over to <a href="https://{% current_domain %}">NewsBlur</a> and get reading.
+        {% blocktrans trimmed %}Head over to <a href="https://{{ domain }}">NewsBlur</a> and get reading.{% endblocktrans %}
     </p>
 {% endblock %}

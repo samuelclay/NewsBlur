@@ -1,0 +1,3 @@
+Naprawia awarie przy otwieraniu NewsBlur, sprawdzaniu liczby nieprzeczytanych artykułów, potwierdzaniu czynności związanych z czytaniem i przywracaniu czytnika. Aktualizacje bazy zachowują artykuły w pamięci podręcznej i oczekujące działania offline.
+
+Obejmuje pełny ekran na tabletach, zapamiętywanie szerokości paneli, 21 języków interfejsu i elementy sterowania następnym artykułem w stałym miejscu.

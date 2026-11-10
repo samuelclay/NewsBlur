@@ -18,6 +18,69 @@ class Test_StoryImageSource {
         assertEquals("An image", image.title)
     }
 
+    @Test fun test_a_tap_opens_without_actions_or_hover_text() {
+        val image = StoryImageSource.parse(json)!!
+        assertFalse(image.showActions)
+        assertNull(image.hoverText)
+        assertNull(image.linkUrl)
+    }
+
+    @Test fun test_browser_uses_the_displayed_image_instead_of_its_link_or_an_unused_original() {
+        val image = StoryImageSource.parse(json)!!.copy(
+            linkUrl = "https://example.com/article",
+            originalUrl = "https://example.com/unused-small.jpg",
+        )
+        assertEquals("https://example.com/image.jpg", image.browserUrl)
+    }
+
+    @Test fun test_cached_image_opens_original_public_url_without_changing_the_viewer_source() {
+        val local = "${StoryImageSource.READER_ORIGIN}/images/123.jpg"
+        val cachedJson = json.replace("https://example.com/image.jpg", local)
+            .replace("\"title\":", "\"browserSrc\":\"https://example.com/original.jpg\",\"title\":")
+        val image = StoryImageSource.parse(cachedJson)!!
+        assertEquals(local, image.url)
+        assertEquals("https://example.com/original.jpg", image.browserUrl)
+        assertNull(image.copy(originalUrl = null).browserUrl)
+    }
+
+    @Test fun test_browser_does_not_offer_internal_data_or_non_web_urls() {
+        val image = StoryImageSource.parse(json)!!
+        listOf(
+            "data:image/png;base64,AAAA", "content://private/image", "file:///private.jpg",
+            "javascript:alert(1)", "https://APPASSETS.androidplatform.net/images/a.jpg",
+            "https://appassets.androidplatform.net/assets/a.html", "https:///missing-host",
+        ).forEach { url ->
+            assertNull(image.copy(url = url).browserUrl)
+            assertNull(image.copy(url = "${StoryImageSource.READER_ORIGIN}/images/123.jpg", originalUrl = url).browserUrl)
+        }
+    }
+
+    @Test fun test_a_long_press_carries_hover_text_actions_and_its_link() {
+        val longPress =
+            json.replace(
+                "\"title\":\"An image\"",
+                "\"title\":\"An image\",\"hoverText\":\"  The comic's punchline  \",\"showActions\":true," +
+                    "\"link\":\"https://example.com/story\"",
+            )
+        val image = StoryImageSource.parse(longPress)!!
+        assertTrue(image.showActions)
+        assertEquals("The comic's punchline", image.hoverText)
+        assertEquals("https://example.com/story", image.linkUrl)
+        // The accessibility description stays the alt text, separate from the hover text.
+        assertEquals("An image", image.title)
+    }
+
+    @Test fun test_blank_hover_text_and_non_web_links_are_dropped() {
+        val longPress =
+            json.replace(
+                "\"title\":\"An image\"",
+                "\"title\":\"An image\",\"hoverText\":\"   \",\"showActions\":true,\"link\":\"javascript:alert(1)\"",
+            )
+        val image = StoryImageSource.parse(longPress)!!
+        assertNull(image.hoverText)
+        assertNull(image.linkUrl)
+    }
+
     @Test fun test_rejects_missing_fields_invalid_json_tracking_pixels_and_bad_geometry() {
         assertNull(StoryImageSource.parse("{}"))
         assertNull(StoryImageSource.parse("invalid"))

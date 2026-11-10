@@ -1,0 +1,75 @@
+{
+  "reviewed_at": "2026-10-17T15:40:07Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/en/featureGraphic/panel-01.png",
+      "sha256": "ae4d32ad395fdc9435db0d3cc9e9903910cf1b8041072982a20295bbaa76b89d",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/phoneScreenshots/panel-01.png",
+      "sha256": "2b69f0f098c4e33cec94d709f40c499c798062e9d0f4a883e5cbf3639c165437",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/phoneScreenshots/panel-02.png",
+      "sha256": "8446f702b213ce39998dc67a2323965a5db24a7ea1754dadfaefa3e2c275c8a4",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/phoneScreenshots/panel-03.png",
+      "sha256": "756c533fbcca41ba7be1184d832bde128cfebaf9524c492037118fd002874c4b",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/phoneScreenshots/panel-04.png",
+      "sha256": "2b65475c96c1e0b8fd5f3db235f2a82fdd8f1b3a0fac5e7356632d962800c21a",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/featureGraphic/panel-01.png",
+      "sha256": "4f21a1f80554124cd4a81e06c11bf2d944d5b91947ed490f40c66f2960c4ee8f",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "review": "identical to inspected English icon"
+    },
+    {
+      "path": "exports/es/phoneScreenshots/panel-01.png",
+      "sha256": "bdafbdf62600f13e54929263d83458ab1ea62b490af7d0e52ff36aed8ba83018",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/phoneScreenshots/panel-02.png",
+      "sha256": "e9222d2662048af2ab48f70e2a198ef28f5b972db4fae77eec54aeaf09286343",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/phoneScreenshots/panel-03.png",
+      "sha256": "4b72dff1c50552d838b572de5d5b3a66913486c3f9e7036e01583260975c9294",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/es/phoneScreenshots/panel-04.png",
+      "sha256": "b5a42b8623d6f95d80825e15e4906e483ec7a02603ac3feeb4976ec93478853b",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "English and Spanish headlines are readable with no clipped marketing text or missing glyphs.",
+    "Spanish interface uses localized titles, date labels, feed search, saved label, tag action, text mode and Next control.",
+    "Original feed names, tags and story body remain intentionally English.",
+    "Native title ellipsis is app behavior; source pixels match exports.",
+    "Status bar retains actual time and battery; clean full battery presentation is a Google recommendation, not a publishing requirement."
+  ],
+  "scope": "21-language completion and store upload remain separate"
+}

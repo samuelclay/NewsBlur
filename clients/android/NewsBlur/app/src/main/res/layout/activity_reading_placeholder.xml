@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- activity_reading_placeholder.xml fills the empty reader pane of a tablet split view (ReadingPlaceholder.kt). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/reading_placeholder"
+    style="?readingBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/reading_placeholder_logo"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:alpha="0.18"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_logo_monochrome" />
+
+    <TextView
+        android:id="@+id/reading_placeholder_text"
+        style="?defaultText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:alpha="0.55"
+        android:gravity="center"
+        android:text="@string/reading_placeholder_select_story"
+        android:textSize="16sp" />
+
+</LinearLayout>

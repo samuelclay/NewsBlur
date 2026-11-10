@@ -84,7 +84,7 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.json_fetcher import JSONFetcher
-from utils.reddit_fetcher import RedditFetcher
+from utils.reddit_fetcher import RedditFetcher, reddit_max_entries
 from utils.story_functions import (
     extract_story_date,
     linkify,
@@ -92,7 +92,12 @@ from utils.story_functions import (
     strip_tags,
 )
 from utils.twitter_fetcher import TwitterFetcher
-from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
+from utils.url_safety import (
+    UnsafeUrlError,
+    safe_http2_get,
+    safe_requests_get,
+    validate_public_url,
+)
 from utils.youtube_fetcher import YoutubeFetcher, YoutubeQuotaError
 
 
@@ -178,6 +183,24 @@ FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 # far apart, before the archive walk stops at that page. utils/feed_fetcher.py
 ARCHIVE_PAGE_LOCK_ATTEMPTS = 3
 ARCHIVE_PAGE_LOCK_WAIT_SECONDS = 30
+# A walk stopped at a locked page is queued again at most this many times within the window,
+# so a feed whose lock stays taken can't keep queuing its own walk forever. utils/feed_fetcher.py
+ARCHIVE_WALK_MAX_REQUEUES = 3
+ARCHIVE_WALK_REQUEUE_WINDOW_SECONDS = 60 * 60 * 6
+# The walk that queues the retry keeps going through the other page styles and holds the feed's
+# walk lock until it finishes, at most the backfill task's time limit, which is also how long the
+# lock lasts (apps/rss_feeds/models.py fill_out_archive_stories). A retry that arrived sooner
+# would find the lock taken and exit without walking. utils/feed_fetcher.py
+ARCHIVE_WALK_REQUEUE_DELAY_SECONDS = settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED + 60
+# Counts a requeue and starts its window in one step, and gives a counter that somehow lost its
+# expiry one again, so a feed's requeues can never be stopped for good. utils/feed_fetcher.py
+ARCHIVE_WALK_REQUEUE_COUNT_SCRIPT = """
+local requeues = redis.call('INCR', KEYS[1])
+if redis.call('TTL', KEYS[1]) < 0 then
+    redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+return requeues
+"""
 
 # Statuses a site uses to refuse a request because of its User-Agent rather than because the
 # feed is gone: bugs.kde.org answers any UA carrying a desktop browser string with 403 (forum
@@ -452,20 +475,23 @@ class FetchFeed:
                 )
             self.fpf = feedparser.parse(processed_facebook_feed)
         elif re.match(r"(https?://)?(\w+\.)?reddit\.com/", clean_address):
-            reddit_feed, reddit_rate_limited = self.fetch_reddit()
+            reddit_feed, reddit_rate_limited, reddit_http_error_status, reddit_error = self.fetch_reddit()
             if reddit_rate_limited:
-                # The shared 100 req/min Reddit budget is spent. Record the throttle so
-                # the feed backs off and the stall is visible in fetch history, instead
+                # The RedListen budget or per-minute limit is spent. Record the throttle
+                # so the feed backs off and the stall is visible in fetch history, instead
                 # of silently showing no new stories. See utils/reddit_fetcher.py.
-                logging.debug("   ***> [%-30s] ~FRReddit API rate limit reached" % (self.feed.log_title[:30]))
-                self.feed.save_feed_history(429, "Reddit API rate limit reached")
+                message = reddit_error or "Reddit API rate limit reached"
+                logging.debug("   ***> [%-30s] ~FR%s" % (self.feed.log_title[:30], message))
+                self.feed.save_feed_history(429, message)
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
             if not reddit_feed:
                 logging.debug(
                     "   ***> [%-30s] ~FRReddit fetch failed: %s" % (self.feed.log_title[:30], address)
                 )
-                self.feed.save_feed_history(404, "Reddit fetch failed")
+                self.feed.save_feed_history(
+                    reddit_http_error_status or 404, reddit_error or "Reddit fetch failed"
+                )
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
             # Apply encoding preprocessing to special feed content
@@ -571,11 +597,41 @@ class FetchFeed:
                     raw_feed = safe_requests_get(address, headers=headers, timeout=15)
                 except (UnsafeUrlError, requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
-                if (
-                    raw_feed is None
-                    and address.startswith("http://")
-                    and not self.options.get("archive_page")
-                ):
+                refused_http1 = raw_feed is not None and raw_feed.status_code == 426
+                # A plain http feed address, the kind the https probe below can upgrade. Archive
+                # fetches are left out: their address is a history page, not the feed.
+                plain_http_address = address.startswith("http://") and not self.options.get("archive_page")
+                # The direct retries further down switch to HTTP/2 once the site has answered
+                # over it, or each of them would get the same 426 and hide the real status.
+                direct_get = safe_requests_get
+                retry_address = self.feed.feed_address
+                if refused_http1 and not plain_http_address and raw_feed.url.startswith("https://"):
+                    # Forum #13858: dumbingofage.com answers every HTTP/1.1 request with 426
+                    # Upgrade Required and serves the feed only over HTTP/2, which requests
+                    # can't speak. Retry the same request once over HTTP/2 with the same
+                    # headers, so a 304 or a 200 there is handled like any other fetch. If the
+                    # HTTP/2 retry fails too, the 426 stays and the usual retries run. httpx
+                    # speaks HTTP/2 only over TLS, so this needs the 426 to have come over
+                    # https; a plain http address goes to the https probe below instead,
+                    # since a 426 on plain http is the server asking for TLS.
+                    # utils/feed_fetcher.py
+                    try:
+                        raw_feed = safe_http2_get(address, headers=headers, timeout=15)
+                        direct_get = safe_http2_get
+                        logging.debug(
+                            "   ---> [%-30s] ~FBHTTP/1.1 refused with 426, retry over %s answered %s"
+                            % (
+                                self.feed.log_title[:30],
+                                getattr(raw_feed, "http_version", "HTTP/2"),
+                                raw_feed.status_code,
+                            )
+                        )
+                    except (UnsafeUrlError, requests.RequestException, TimeoutError) as e:
+                        logging.debug(
+                            "   ***> [%-30s] ~FRHTTP/1.1 refused with 426 and HTTP/2 failed: %s"
+                            % (self.feed.log_title[:30], e)
+                        )
+                if (raw_feed is None or refused_http1) and plain_http_address:
                     # Forum #13830: rss.cbc.ca dropped port 80 with no redirect, so every
                     # http:// subscription went quiet. When the http address won't connect at
                     # all, try the same path over https before the fake-header retry. A live
@@ -583,15 +639,18 @@ class FetchFeed:
                     # ProcessFeed.migrate_https_feed_address persists the https address.
                     # Archive fetches are skipped: their address is a history page, not the
                     # feed. The probe is unconditional so a healthy https copy can't answer
-                    # 304 and look dead. utils/feed_fetcher.py
+                    # 304 and look dead. An http address refused with 426 (forum #13858) gets
+                    # the same probe over HTTP/2, since the site already refused HTTP/1.1.
+                    # utils/feed_fetcher.py
                     https_address = "https://" + address[len("http://") :]
                     probe_headers = {
                         name: value
                         for name, value in headers.items()
                         if name not in ("If-None-Match", "If-Modified-Since", "A-IM")
                     }
+                    fetch_https = safe_http2_get if refused_http1 else safe_requests_get
                     try:
-                        https_feed = safe_requests_get(https_address, headers=probe_headers, timeout=15)
+                        https_feed = fetch_https(https_address, headers=probe_headers, timeout=15)
                     except (UnsafeUrlError, requests.RequestException, TimeoutError):
                         # Any failure of the optional probe (connection refused, read timeout,
                         # redirect loop) just means the usual http retries run as before.
@@ -609,6 +668,17 @@ class FetchFeed:
                             "   ---> [%-30s] ~FYhttps answered without a feed, keeping the usual retries: %s"
                             % (self.feed.log_title[:30], https_address)
                         )
+                        if refused_http1:
+                            # The http address refused HTTP/1.1 and the https copy answered over
+                            # HTTP/2, just not with a feed (a 403 for the browser UA, say). The
+                            # http address can only ever answer 426, so the UA retries go to the
+                            # https copy over HTTP/2. Its address is saved only when a retry
+                            # there parses to a feed with stories, see the upgraded_to_https
+                            # gate below.
+                            direct_get = safe_http2_get
+                            retry_address = https_address
+                            address = https_address
+                            upgraded_to_https = True
                 if raw_feed and raw_feed.status_code == 304:
                     logging.debug("   ---> [%-30s] ~FGFeed not modified (304)" % (self.feed.log_title[:30]))
                     self.feed = self.feed.save()
@@ -637,8 +707,8 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
                                 % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
                             )
-                            raw_feed = safe_requests_get(
-                                self.feed.feed_address,
+                            raw_feed = direct_get(
+                                retry_address,
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
                             )
@@ -653,8 +723,8 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRJson feed fetch timed out, trying fake headers: %s"
                                 % (self.feed.log_title[:30], address)
                             )
-                            raw_feed = safe_requests_get(
-                                self.feed.feed_address,
+                            raw_feed = direct_get(
+                                retry_address,
                                 headers=self.feed.fetch_headers(fake=True),
                                 timeout=15,
                             )
@@ -675,8 +745,8 @@ class FetchFeed:
                             "   ***> [%-30s] ~FRFeed fetch was %s with a browser UA too, trying the plain one"
                             % (self.feed.log_title[:30], raw_feed.status_code)
                         )
-                        raw_feed = safe_requests_get(
-                            self.feed.feed_address,
+                        raw_feed = direct_get(
+                            retry_address,
                             headers=self.feed.fetch_headers(plain=True),
                             timeout=15,
                         )
@@ -699,8 +769,8 @@ class FetchFeed:
                                 "   ***> [%-30s] ~FRBot challenge page detected, retrying without browser UA suffix"
                                 % (self.feed.log_title[:30])
                             )
-                            raw_feed = safe_requests_get(
-                                self.feed.feed_address,
+                            raw_feed = direct_get(
+                                retry_address,
                                 headers=self.feed.fetch_headers(plain=True),
                                 timeout=15,
                             )
@@ -901,11 +971,15 @@ class FetchFeed:
         return facebook_fetcher.fetch()
 
     def fetch_reddit(self):
-        # Returns (feed_xml, rate_limited). rate_limited is True when the shared Reddit
-        # budget is spent so the caller backs the feed off. See utils/reddit_fetcher.py.
+        # Preserve HTTP errors, throttling and the reason for fetch history. See utils/reddit_fetcher.py.
         reddit_fetcher = RedditFetcher(self.feed, self.options)
         reddit_feed = reddit_fetcher.fetch()
-        return reddit_feed, reddit_fetcher.rate_limited
+        return (
+            reddit_feed,
+            reddit_fetcher.rate_limited,
+            reddit_fetcher.http_error_status,
+            reddit_fetcher.error_message,
+        )
 
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
@@ -1281,6 +1355,8 @@ class ProcessFeed:
         self.raw_feed = raw_feed
         self.feed_entries = []
         self.archive_seen_story_hashes = set()
+        # The hashes of the stories in this response, which an unread feed's trim keeps (utils/feed_fetcher.py)
+        self.fetched_story_hashes = []
         self.cache_control_max_age = None
         # Set when the lease on the feed's merge lock ran out partway through the batch.
         self.lease_lost = False
@@ -1360,6 +1436,26 @@ class ProcessFeed:
         stories = MStory.objects(story_hash__in=story_hashes).order_by()
         return {story.story_hash: story for story in stories}
 
+    def entry_limit(self):
+        """How many of this fetch's entries to process, newest first."""
+        # A caller can ask for a specific limit (e.g. bootstrap_popular_feeds)
+        if self.options.get("max_stories"):
+            return self.options["max_stories"]
+        # Subreddit and user feeds carry every post RedListen was paid for since the last
+        # fetch, up to one poll's worth. See utils/reddit_fetcher.py.
+        reddit_limit = reddit_max_entries(self.feed.feed_address)
+        if reddit_limit:
+            return reddit_limit
+        # High-volume feeds can handle more stories
+        feed_address_lower = self.feed.feed_address.lower()
+        for high_volume_url in HIGH_VOLUME_FEED_URLS:
+            if high_volume_url in feed_address_lower:
+                logging.debug(
+                    f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {MAX_ENTRIES_HIGH_VOLUME} stories"
+                )
+                return MAX_ENTRIES_HIGH_VOLUME
+        return MAX_ENTRIES_TO_PROCESS
+
     def process(self):
         """Downloads and parses a feed."""
         start = time.time()
@@ -1413,20 +1509,7 @@ class ProcessFeed:
         if is_bluesky_feed(self.feed.feed_address):
             enrich_bluesky_entries(self.feed.feed_address, self.feed_entries)
 
-        # Check if caller requested a specific max_stories limit (e.g. bootstrap_popular_feeds)
-        max_entries = MAX_ENTRIES_TO_PROCESS
-        if self.options.get("max_stories"):
-            max_entries = self.options["max_stories"]
-        else:
-            # Check if this is a high-volume feed that can handle more stories
-            feed_address_lower = self.feed.feed_address.lower()
-            for high_volume_url in HIGH_VOLUME_FEED_URLS:
-                if high_volume_url in feed_address_lower:
-                    max_entries = MAX_ENTRIES_HIGH_VOLUME
-                    logging.debug(
-                        f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories"
-                    )
-                    break
+        max_entries = self.entry_limit()
 
         # If there are more than max_entries, we should sort the entries in date descending order and cut them off
         if len(self.feed_entries) > max_entries:
@@ -1496,7 +1579,7 @@ class ProcessFeed:
         fetch_date = datetime.datetime.now()
         if ret_values["new"]:
             if not getattr(settings, "TEST_DEBUG", False):
-                self.feed.trim_feed()
+                self.feed.trim_feed(fetched_story_hashes=self.fetched_story_hashes)
                 self.feed.expire_redis()
             if MStatistics.get("raw_feed", None) == self.feed.pk:
                 self.feed.save_raw_feed(self.raw_feed, fetch_date)
@@ -1630,6 +1713,7 @@ class ProcessFeed:
             story_hashes.append(story.get("story_hash"))
 
         original_story_hash_count = len(story_hashes)
+        self.fetched_story_hashes = list(story_hashes)
         story_hashes_in_unread_cutoff = self.feed.story_hashes_in_unread_cutoff[:original_story_hash_count]
         story_hashes.extend(story_hashes_in_unread_cutoff)
         story_hashes = list(set(story_hashes))
@@ -2287,18 +2371,38 @@ class FeedFetcherWorker:
         return False
 
     def reschedule_archive_walk(self, feed):
-        """Queue the archive import for this feed again, after the fetch deferral: the walk
-        stopped at a page the feed's lock kept it from storing, and no ordinary refresh ever
-        comes back for historical pages. The walk restarts from the first page; pages
-        already stored are matched as unchanged. utils/feed_fetcher.py"""
+        """Queue the archive import for this feed again, once the walk that stopped has let go
+        of the feed: the walk stopped at a page the feed's lock kept it from storing, and no
+        ordinary refresh ever comes back for historical pages. The walk restarts from the
+        first page; pages already stored are matched as unchanged. utils/feed_fetcher.py"""
         from apps.profile.tasks import FetchArchiveFeedsChunk
 
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        requeue_key = "archive_walk_requeues:%s" % feed.pk
+        requeues = r.eval(
+            ARCHIVE_WALK_REQUEUE_COUNT_SCRIPT, 1, requeue_key, ARCHIVE_WALK_REQUEUE_WINDOW_SECONDS
+        )
+        if requeues > ARCHIVE_WALK_MAX_REQUEUES:
+            logging.info(
+                "   ---> [%-30s] ~FRArchive import already queued again %s times, not queuing it again"
+                % (feed.log_title[:30], ARCHIVE_WALK_MAX_REQUEUES)
+            )
+            return
+
+        # Back on the archive queue with the archive time limits, the same as the backfill
+        # (apps/reader/models.py dispatch_archive_backfill). On the default queue it ran on
+        # the work servers under the 360 second global limit, which a long walk never finishes in.
         FetchArchiveFeedsChunk.apply_async(
-            args=[[feed.pk]], kwargs={"user_id": None}, countdown=FETCH_LOCK_DEFERRAL_SECONDS
+            args=[[feed.pk]],
+            kwargs={"user_id": None},
+            queue="search_indexer",
+            countdown=ARCHIVE_WALK_REQUEUE_DELAY_SECONDS,
+            time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
         )
         logging.info(
             "   ---> [%-30s] ~FYArchive import queued again in %s seconds"
-            % (feed.log_title[:30], FETCH_LOCK_DEFERRAL_SECONDS)
+            % (feed.log_title[:30], ARCHIVE_WALK_REQUEUE_DELAY_SECONDS)
         )
 
     def fetch_and_process_archive_pages(self, feed_id):

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Anhören lässt sich jetzt leichter steuern. Starte über die Leseleiste und springe mit Nächster Artikel im Miniplayer weiter.\n\nDie automatische Wiedergabe folgt jetzt deiner Sortierung in Gespeicherte Artikel und Gelesene Artikel, auch mit den ältesten zuerst. Sie läuft die Liste nach unten durch, ohne zu früheren Artikeln zurückzuspringen.\n\nAnhören liest eine Überschrift nur einmal vor, wenn sie am Anfang des Artikels wiederholt wird.\n\nDie Hörkontingente gelten jetzt pro Woche: 1 Stunde mit Premium Archive und 10 Stunden mit Premium Pro. Sie werden jeden Sonntag zurückgesetzt. Einstellungen und Wird gerade abgespielt zeigen die verbleibende Zeit in Stunden und Minuten."
+  },
+  "macos": {
+    "whats_new": "Anhören lässt sich jetzt leichter steuern. Springe mit Nächster Artikel im Miniplayer weiter.\n\nDie automatische Wiedergabe folgt jetzt deiner Sortierung in Gespeicherte Artikel und Gelesene Artikel, auch mit den ältesten zuerst. Sie läuft die Liste nach unten durch, ohne zu früheren Artikeln zurückzuspringen.\n\nAnhören liest eine Überschrift nur einmal vor, wenn sie am Anfang des Artikels wiederholt wird.\n\nDie Hörkontingente gelten jetzt pro Woche: 1 Stunde mit Premium Archive und 10 Stunden mit Premium Pro. Sie werden jeden Sonntag zurückgesetzt. Einstellungen und Wird gerade abgespielt zeigen die verbleibende Zeit in Stunden und Minuten."
+  },
+  "android": {
+    "release_notes": "Anhören: Starte über die Leseleiste und springe mit Nächster Artikel im Miniplayer weiter. Die automatische Wiedergabe folgt der Sortierung gespeicherter und gelesener Artikel nach unten durch die Liste. Doppelte Überschriften werden einmal gelesen. Hörzeit pro Woche: 1 Stunde mit Premium Archive, 10 mit Premium Pro, sonntags zurückgesetzt. Die Einstellungen zeigen verbleibende Stunden und Minuten."
+  }
+}

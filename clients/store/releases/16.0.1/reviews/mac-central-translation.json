@@ -1,0 +1,63 @@
+{
+  "review_type": "translation self-review; independent review pending",
+  "source": "clients/store/metadata/en.json macos; clients/store/releases/16.0.1/en.json macos",
+  "glossaries": "localization/glossaries/{tr,ru,uk,ar,he,hi}.json",
+  "scope": "Mac description, promotional text and release notes translated; all Mac listing and shared Apple product fields compared to English. Non-Mac keys, shared name/subtitle, product identifiers and product text preserved.",
+  "rtl": "Arabic and Hebrew use natural RTL text with unmodified Latin brand/key names and no inserted bidi control characters. Actual App Store rendering remains coordinator verification.",
+  "checks": [
+    {
+      "language": "tr",
+      "promotional_text_characters": 129,
+      "description_characters": 2602,
+      "whats_new_characters": 509,
+      "keywords_bytes": 78,
+      "listing_and_apple_products_reviewed": true,
+      "product_changes_needed": false
+    },
+    {
+      "language": "ru",
+      "promotional_text_characters": 117,
+      "description_characters": 2552,
+      "whats_new_characters": 523,
+      "keywords_bytes": 90,
+      "listing_and_apple_products_reviewed": true,
+      "product_changes_needed": false
+    },
+    {
+      "language": "uk",
+      "promotional_text_characters": 122,
+      "description_characters": 2582,
+      "whats_new_characters": 541,
+      "keywords_bytes": 94,
+      "listing_and_apple_products_reviewed": true,
+      "product_changes_needed": false
+    },
+    {
+      "language": "ar",
+      "promotional_text_characters": 99,
+      "description_characters": 2001,
+      "whats_new_characters": 511,
+      "keywords_bytes": 82,
+      "listing_and_apple_products_reviewed": true,
+      "product_changes_needed": false
+    },
+    {
+      "language": "he",
+      "promotional_text_characters": 110,
+      "description_characters": 1951,
+      "whats_new_characters": 411,
+      "keywords_bytes": 86,
+      "listing_and_apple_products_reviewed": true,
+      "product_changes_needed": false
+    },
+    {
+      "language": "hi",
+      "promotional_text_characters": 126,
+      "description_characters": 2466,
+      "whats_new_characters": 503,
+      "keywords_bytes": 87,
+      "listing_and_apple_products_reviewed": true,
+      "product_changes_needed": false
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "role": "independent_review",
+  "reviewer": "ios_western",
+  "translator": "ios_central",
+  "locales": [
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi"
+  ],
+  "status": "passed_with_correction",
+  "files": {
+    "clients/store/metadata/tr.json": "bd99398d75210bda8c804a1b5b62a0a581a06b4ee6bcf6fe84d26c42c8e9d55c",
+    "clients/store/releases/16.0/tr.json": "67d0fc21459426bc69f873897601c8ade45ddb2fece4e3349f3a9f3a3ce16710",
+    "clients/store/products/tr.json": "9f5351c0dd6a8e170c227090d979465a6a9dc203e3509212fb1bf8605484556b",
+    "clients/store/metadata/ru.json": "e747098df457c8cff90df6d8ef4b368ec31e61bda2ef5b63eef06a01bee7d60b",
+    "clients/store/releases/16.0/ru.json": "505437bc7d33978bc05e5d5e5c8c5d54d6342ece49d3e2526549777b378a291e",
+    "clients/store/products/ru.json": "b173f75739ba72ebf0b83ca95588cab882afef51b4e73bab2a990a5d7c61687a",
+    "clients/store/metadata/uk.json": "809ef8ab90f2ae27164529e1c01b824e109af8249ab966acdcd7703271f56857",
+    "clients/store/releases/16.0/uk.json": "48bdac69becdeaa158b1d81a107ae6d44fc5555938bea6375571350c9091eb1c",
+    "clients/store/products/uk.json": "ba1ed207e28c1af02eac185b5d6ea12c7d85435f25d77f56dd10cf9befecfb48",
+    "clients/store/metadata/ar.json": "9ebd101e8857ca90e5b529ac2449b72c99c4660646f67a2010127aad6444f305",
+    "clients/store/releases/16.0/ar.json": "633cb3ecd1441630c4d3d79a495d111c68e782fc05444d76bde7a9bb535e2279",
+    "clients/store/products/ar.json": "c11215baafc546665a5171791c07d163bda50f57f975b12bb1e90aa43ffb62c0",
+    "clients/store/metadata/he.json": "d81d5bb57aad01da04993ba0f127db9937172652f7edd25d1e775a56d5b4093d",
+    "clients/store/releases/16.0/he.json": "65313201a9b5b399a0617c940418a8ca7436b05734e83df8787b95ff3aa52cbe",
+    "clients/store/products/he.json": "70243c21fd5c79377bf1e756fbb28484f66237475e0e7a47c54abdc7152e92e7",
+    "clients/store/metadata/hi.json": "5440ca84dbfa9dc17b2f6222771681211ca5b35bcd102424f09b883e033ca5b8",
+    "clients/store/releases/16.0/hi.json": "f4477a889905bd7f50972715c78ad2cafaf2e039453d08b910296244a3fb089f",
+    "clients/store/products/hi.json": "ede6fb7df74884b665d1f607bc61e635ed9c30a338ee0de31f81aabe80f1cde4"
+  },
+  "source_files": {
+    "clients/store/metadata/en.json": "9edce2ada0cd57b0332fba4ad84fef3e81d0d57333e32a502c767afb4c7b7f65",
+    "clients/store/releases/16.0/en.json": "f74e76a18538dec3ae8cb2e3311b92395d32d4a5f5522c30e40139e84a3390d7",
+    "clients/store/products/en.json": "d77538c0737652f6a7411c057a6fbe5c499c0334cdc5d38aab0ea73af21267d3"
+  },
+  "checks": [
+    "Compared every iOS listing field and complete release notes against English and locale glossaries",
+    "Verified widget source choices, per-widget selection, signed-in account default, hidden-story refresh, remove/re-add migration and long-press Edit Widget instructions",
+    "Reviewed Arabic and Hebrew script, reading direction claims, mixed-script brand and keyboard references, and unchanged canonical URLs",
+    "Verified free account and optional paid plan statements, Apple Account charging, automatic renewal, both 24-hour terms, and cancellation settings",
+    "Reviewed all shared iOS subscription/group fields and immutable identifiers; retained plan names, permanent archive and 5-to-15 minute facts",
+    "Verified macOS and Android fields remain identical to HEAD",
+    "Reviewed finalized English: no correction needed"
+  ],
+  "findings": [
+    {
+      "locale": "he",
+      "field": "ios.whats_new",
+      "severity": "minor",
+      "issue": "Touch-and-hold sentence was awkward Hebrew",
+      "resolution": "Replaced literal touch-and-hold wording with natural long-press instruction"
+    }
+  ],
+  "limitations": [
+    "Text review only; no rendered App Store RTL verification",
+    "No native-speaker validation claimed",
+    "No live store upload/readback performed"
+  ]
+}

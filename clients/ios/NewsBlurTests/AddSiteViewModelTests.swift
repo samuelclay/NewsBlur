@@ -721,8 +721,10 @@ final class AddSiteViewModelTests: XCTestCase {
             }
     }
 
+    // AddSiteViewModelTests.swift waits on URLSession and main actor work it doesn't schedule itself,
+    // so the default budget is SimulatorTestTiming.realWorkTimeout: GitHub's runners stalled a 5 second wait.
     private func waitUntil(
-        timeout: TimeInterval = 5.0,
+        timeout: TimeInterval = SimulatorTestTiming.realWorkTimeout,
         condition: @escaping () -> Bool
     ) async {
         let deadline = Date().addingTimeInterval(timeout)
@@ -1406,6 +1408,23 @@ final class Test_DiscoverFeedFreshness: XCTestCase {
     private let now = ISO8601DateFormatter().date(from: "2026-09-19T12:00:00Z")!
     private let utc = TimeZone(secondsFromGMT: 0)!
     private let locale = Locale(identifier: "en_US")
+    private var previousLanguage: Any?
+
+    // AddSiteViewModelTests.swift compares the English labels, so the interface language is English here.
+    override func setUp() {
+        super.setUp()
+        previousLanguage = UserDefaults.standard.object(forKey: NBLocalization.preferenceKey)
+        UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
+    }
+
+    override func tearDown() {
+        if let previousLanguage {
+            UserDefaults.standard.set(previousLanguage, forKey: NBLocalization.preferenceKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: NBLocalization.preferenceKey)
+        }
+        super.tearDown()
+    }
 
     func test_activeLabelsMatchWebAtElapsedDayBoundaries() throws {
         let cases: [(Double, String)] = [

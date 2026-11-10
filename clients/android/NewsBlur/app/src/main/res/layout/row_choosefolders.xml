@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
+    <!-- row_choosefolders.xml only spaces the label from the checkbox glyph at the start; an explicit
+         end padding would replace the CheckBox style's own. -->
     <CheckBox
         android:id="@+id/choosefolders_foldername"
+        tools:ignore="RtlSymmetry"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
         android:paddingBottom="7dp"
     	android:paddingTop="7dp" 
-        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:textSize="16sp"
         android:textStyle="bold" 
         android:button="@null"
-        android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+        android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
         />
 
 </RelativeLayout>

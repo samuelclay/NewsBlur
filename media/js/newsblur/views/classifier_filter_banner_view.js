@@ -16,11 +16,11 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     },
 
     type_label_map: {
-        'tag': 'Tag',
-        'author': 'Author',
-        'title': 'Title',
+        'tag': gettext('Tag'),
+        'author': gettext('Author'),
+        'title': gettext('Title'),
         'url': 'URL',
-        'text': 'Text'
+        'text': gettext('Text')
     },
 
     type_icons: {
@@ -66,11 +66,11 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         ]);
         var $narrow_hint = $.make('div', {
             className: 'NB-classifier-filter-narrow-hint',
-            'aria-label': 'Widen the story titles pane to use filter controls'
+            'aria-label': gettext('Widen the story titles pane to use filter controls')
         }, [
             $.make('span', {
                 className: 'NB-classifier-filter-narrow-hint-label'
-            }, 'Widen pane for controls'),
+            }, gettext('Widen pane for controls')),
             $.make('span', {
                 className: 'NB-classifier-filter-narrow-hint-compact',
                 'aria-hidden': 'true'
@@ -78,7 +78,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         ]);
         var $view_section = $.make('section', {
             className: 'NB-classifier-filter-view-section',
-            'aria-label': 'Filter stories'
+            'aria-label': gettext('Filter stories')
         }, this._make_scope_controls());
         var $account_controls = $.make('div', {
             className: 'NB-classifier-filter-account-controls'
@@ -93,17 +93,18 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         ]);
         var $account_section = $.make('section', {
             className: 'NB-classifier-filter-account-section',
-            'aria-label': 'Train and notification settings'
+            'aria-label': gettext('Train and notification settings')
         }, $account_controls);
         var $tools = $.make('div', { className: 'NB-classifier-filter-banner-tools' }, [
             $view_section,
             $account_section
         ]);
 
+        // The tools sit outside the content column so they run the banner's
+        // full width under the actions, instead of beside "Back to trainer".
         var $content = $.make('div', { className: 'NB-classifier-filter-banner-content' }, [
             $heading,
-            $narrow_hint,
-            $tools
+            $narrow_hint
         ]);
 
         var $actions = $.make('div', { className: 'NB-classifier-filter-banner-actions' });
@@ -111,13 +112,13 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             $actions.append($.make('button', {
                 type: 'button',
                 className: 'NB-classifier-filter-banner-back-trainer',
-                'aria-label': 'Back to classifier trainer'
-            }, 'Back to trainer'));
+                'aria-label': gettext('Back to classifier trainer')
+            }, gettext('Back to trainer')));
         }
         $actions.append($.make('button', {
             type: 'button',
             className: 'NB-classifier-filter-banner-clear',
-            'aria-label': 'Clear classifier filter'
+            'aria-label': gettext('Clear classifier filter')
         }, $.make(
             'span',
             { className: 'NB-classifier-filter-banner-clear-icon', 'aria-hidden': 'true' },
@@ -132,6 +133,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         this.$el.append($icon);
         this.$el.append($content);
         this.$el.append($actions);
+        this.$el.append($tools);
 
         return this;
     },
@@ -139,14 +141,14 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     _make_scope_controls: function () {
         var scope = this.filter.scope || 'feed';
         var scope_labels = {
-            feed: 'Site',
-            folder: 'Folder',
-            global: 'All'
+            feed: gettext('Site'),
+            folder: gettext('Folder'),
+            global: gettext('All')
         };
         var $buttons = $.make('span', {
             className: 'NB-classifier-filter-segmented',
             role: 'group',
-            'aria-label': 'Classifier filter scope'
+            'aria-label': gettext('Classifier filter scope')
         });
 
         _.each(NEWSBLUR.ClassifierConstants.SCOPE_ICON_DATA, function (icon) {
@@ -169,7 +171,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         });
 
         return $.make('span', { className: 'NB-classifier-filter-tool-group' }, [
-            $.make('span', { className: 'NB-classifier-filter-tool-label' }, 'Filter stories'),
+            $.make('span', { className: 'NB-classifier-filter-tool-label' }, gettext('Filter stories')),
             $buttons
         ]);
     },
@@ -179,22 +181,22 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         var controls = [
             {
                 key: 'like',
-                label: 'Like matching stories',
-                short_label: 'Like',
+                label: gettext('Like matching stories'),
+                short_label: gettext('Like'),
                 active: score > 0,
                 icon: '<span class="NB-classifier-filter-training-icon NB-training-icon-like" aria-hidden="true"></span>'
             },
             {
                 key: 'dislike',
-                label: 'Dislike matching stories',
-                short_label: 'Dislike',
+                label: gettext('Dislike matching stories'),
+                short_label: gettext('Dislike'),
                 active: score < 0 && score > -2,
                 icon: '<span class="NB-classifier-filter-training-icon NB-training-icon-dislike" aria-hidden="true"></span>'
             },
             {
                 key: 'super_dislike',
-                label: 'Hide matching stories',
-                short_label: 'Hide',
+                label: gettext('Hide matching stories'),
+                short_label: gettext('Hide'),
                 active: score <= -2,
                 icon: '<span class="NB-classifier-filter-super-dislike-icon" aria-hidden="true">' +
                     '<span class="NB-classifier-filter-training-icon NB-training-icon-dislike NB-super-dislike-icon-back"></span>' +
@@ -206,7 +208,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         var $buttons = $.make('span', {
             className: 'NB-classifier-filter-segmented NB-classifier-filter-training-segmented',
             role: 'group',
-            'aria-label': 'Train this classifier'
+            'aria-label': gettext('Train this classifier')
         });
         _.each(controls, function (control) {
             var $button = $.make('button', {
@@ -228,7 +230,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         });
 
         return $.make('span', { className: 'NB-classifier-filter-tool-group' }, [
-            $.make('span', { className: 'NB-classifier-filter-tool-label' }, 'Train'),
+            $.make('span', { className: 'NB-classifier-filter-tool-label' }, gettext('Train')),
             $buttons
         ]);
     },
@@ -252,26 +254,46 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
         var channel_icons = NEWSBLUR.Views.ClassifierNotificationPopover &&
             NEWSBLUR.Views.ClassifierNotificationPopover.CHANNEL_ICONS || {};
         var channels = [
-            { key: 'email', short_label: 'Email' },
-            { key: 'web', short_label: 'Web' },
-            { key: 'ios', short_label: 'iOS' },
-            { key: 'android', short_label: 'Android' }
+            {
+                key: 'email',
+                short_label: gettext('Email'),
+                label: gettext('Email notifications'),
+                upgrade_label: gettext('Email notifications require Premium Archive')
+            },
+            {
+                key: 'web',
+                short_label: gettext('Web'),
+                label: gettext('Web notifications'),
+                upgrade_label: gettext('Web notifications require Premium Archive')
+            },
+            {
+                key: 'ios',
+                short_label: 'iOS',
+                label: gettext('iOS notifications'),
+                upgrade_label: gettext('iOS notifications require Premium Archive')
+            },
+            {
+                key: 'android',
+                short_label: 'Android',
+                label: gettext('Android notifications'),
+                upgrade_label: gettext('Android notifications require Premium Archive')
+            }
         ];
         var $buttons = $.make('span', {
             className: 'NB-classifier-filter-segmented NB-classifier-filter-notification-segmented' +
                 (!is_archive ? ' NB-disabled' : ''),
             role: 'group',
-            'aria-label': is_archive ? 'Notify on match' :
-                'Notify on match. Premium Archive required'
+            'aria-label': is_archive ? gettext('Notify on match') :
+                gettext('Notify on match. Premium Archive required')
         });
         _.each(channels, function (channel) {
             var is_active = _.contains(state.notification_types, channel.key);
-            var label = channel.short_label + ' notifications';
+            var label = channel.label;
             var $button = $.make('button', {
                 type: 'button',
                 className: 'NB-classifier-filter-notification-button NB-notification-' + channel.key +
                     (is_active ? ' NB-active' : ''),
-                title: is_archive ? label : label + ' require Premium Archive',
+                title: is_archive ? label : channel.upgrade_label,
                 'aria-label': label,
                 'aria-pressed': is_active ? 'true' : 'false',
                 'aria-disabled': !is_archive ? 'true' : 'false',
@@ -301,14 +323,14 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             $notification_content.append($.make('button', {
                 type: 'button',
                 className: 'NB-classifier-filter-notification-upgrade',
-                'aria-label': 'Upgrade to Premium Archive for classifier notifications'
-            }, 'Upgrade to Premium Archive'));
+                'aria-label': gettext('Upgrade to Premium Archive for classifier notifications')
+            }, gettext('Upgrade to Premium Archive')));
         }
 
         return $.make('span', {
             className: 'NB-classifier-filter-tool-group NB-classifier-filter-notification-group'
         }, [
-            $.make('span', { className: 'NB-classifier-filter-tool-label' }, 'Notify on'),
+            $.make('span', { className: 'NB-classifier-filter-tool-label' }, gettext('Notify on')),
             $notification_content
         ]);
     },
@@ -367,10 +389,17 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
     back_to_trainer: function (e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         // Close the banner first so the story list reflow happens before the
-        // trainer modal mounts. open_trainer_modal reads active_feed itself.
+        // trainer modal mounts. A filter opened from the trainer carries where
+        // the reader was in it; one restored from a URL has none, so it gets a
+        // fresh trainer.
+        var trainer_snapshot = this.filter && this.filter.trainer_snapshot;
         NEWSBLUR.reader.close_classifier_filter();
         _.defer(function () {
-            NEWSBLUR.reader.open_trainer_modal();
+            if (trainer_snapshot) {
+                NEWSBLUR.reader.reopen_trainer(trainer_snapshot);
+            } else {
+                NEWSBLUR.reader.open_trainer_modal();
+            }
         });
     },
 
@@ -453,6 +482,7 @@ NEWSBLUR.Views.ClassifierFilterBannerView = Backbone.View.extend({
             classifier_scope: this.filter.classifier_scope,
             classifier_folder_name: this.filter.classifier_folder_name,
             origin: this.filter.origin,
+            trainer_snapshot: this.filter.trainer_snapshot,
             navigate_to_scope: true
         });
     },

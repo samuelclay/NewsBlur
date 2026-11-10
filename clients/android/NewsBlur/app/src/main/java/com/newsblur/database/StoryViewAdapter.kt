@@ -27,7 +27,9 @@ import android.widget.TextView
 import androidx.core.view.doOnLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.BuildConfig
 import com.newsblur.R
@@ -39,6 +41,7 @@ import com.newsblur.delegate.StoryMenuPopover
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.util.AppConstants
+import com.newsblur.util.BidiText
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.ReturnedStoryScrollDecider
 import com.newsblur.fragment.StoryIntelTrainerFragment
@@ -76,7 +79,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.SupervisorJob
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -101,6 +103,9 @@ class StoryViewAdapter(
 
     private var oldScrollState: Parcelable? = null
     private var pendingScrollStoryHash: String? = null
+    private var smoothPendingStoryScroll = false
+    var isFollowingReadingStory = false
+        private set
     private var pendingHighlightStoryHash: String? = null
     private var returnPresentationReady = true
     private var returnHighlight: ReturnedStoryHighlight? = null
@@ -123,7 +128,7 @@ class StoryViewAdapter(
     private val storyBookTypeface by lazy { ResourcesCompat.getFont(context, R.font.whitney_ssm_book_bas) }
     private var thumbnailStyle: ThumbnailStyle
     private var spacingStyle: SpacingStyle
-    private val storyOrder: StoryOrder
+    private lateinit var storyOrder: StoryOrder
     private val prefsRepo: PrefsRepo
     private var activeFeedIds: Set<String>? = null
     private val clusterThumbnailUrls = mutableMapOf<String, String?>()
@@ -152,6 +157,22 @@ class StoryViewAdapter(
         this.prefsRepo = prefsRepo
         useHardwareRowLayers = !BuildConfig.DEBUG || prefsRepo.getBoolean("debug_story_row_hardware_layers", true)
 
+        applyFeedSetFlags(fs)
+
+        textSize = prefsRepo.getListTextSize()
+        userId = prefsRepo.getUserDetails().id
+        thumbnailStyle = prefsRepo.getThumbnailStyle()
+        spacingStyle = prefsRepo.getSpacingStyle()
+
+        setHasStableIds(true)
+    }
+
+    // StoryViewAdapter.kt: how rows show read state, intelligence and feed names depends on the
+    // feed set, so a list that switches feed sets in place (ItemsList.switchStoryList) redoes it.
+    private fun applyFeedSetFlags(fs: FeedSet) {
+        ignoreReadStatus = false
+        ignoreIntel = false
+        singleFeed = false
         if (fs.isGlobalShared) {
             ignoreReadStatus = false
             ignoreIntel = true
@@ -207,14 +228,7 @@ class StoryViewAdapter(
             ignoreIntel = true
             singleFeed = false
         }
-
-        textSize = prefsRepo.getListTextSize()
-        userId = prefsRepo.getUserDetails().id
-        thumbnailStyle = prefsRepo.getThumbnailStyle()
-        spacingStyle = prefsRepo.getSpacingStyle()
         storyOrder = prefsRepo.getStoryOrder(fs)
-
-        setHasStableIds(true)
     }
 
     fun updateFeedSet(fs: FeedSet?) {
@@ -222,10 +236,13 @@ class StoryViewAdapter(
             invalidateStoryDiffs()
             oldScrollState = null
             pendingScrollStoryHash = null
+            smoothPendingStoryScroll = false
+            isFollowingReadingStory = false
             pendingHighlightStoryHash = null
             returnHighlight?.cancel()
             returnHighlight = null
             diffFeedSet = fs?.let { FeedSet.fromCompactSerial(it.toCompactSerial()) }
+            fs?.let(::applyFeedSetFlags)
         }
         this.fs = fs
     }
@@ -243,6 +260,8 @@ class StoryViewAdapter(
         invalidateStoryDiffs()
         oldScrollState = null
         pendingScrollStoryHash = null
+        smoothPendingStoryScroll = false
+        isFollowingReadingStory = false
         pendingHighlightStoryHash = null
         returnHighlight?.cancel()
         returnHighlight = null
@@ -402,9 +421,13 @@ class StoryViewAdapter(
         val subscribedFeedIds = if (showClusterRows) subscribedFeedIds() else emptySet()
         val isArchiveUser = isArchiveUser()
         val clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo)
+        // StoryViewAdapter.kt must diff the same preview rows that RecyclerView can display.
+        // Capping only itemCount sends inserts for hidden stories and corrupts RecyclerView's positions.
+        val visibleStories =
+            if (fs?.let { UIUtils.needsSubscriptionAccess(it, prefsRepo) } == true) stories.take(3) else stories
 
         return buildList {
-            stories.forEachIndexed { storyIndex, story ->
+            visibleStories.forEachIndexed { storyIndex, story ->
                 add(DisplayItem.StoryRow(story, storyIndex))
 
                 if (!showClusterRows || story.isBriefingSummary) return@forEachIndexed
@@ -471,6 +494,10 @@ class StoryViewAdapter(
         }
     }
 
+    /** StoryViewAdapter.kt's stories in list order, for Listen's Up Next (ListenManager.kt). */
+    @Synchronized
+    fun storiesSnapshot(): List<Story> = stories.toList()
+
     @Synchronized
     fun getStory(position: Int): Story? =
         if (position >= storyCount || position < 0) {
@@ -501,6 +528,7 @@ class StoryViewAdapter(
 
     fun setPendingScrollStoryHash(storyHash: String?) {
         pendingScrollStoryHash = storyHash
+        smoothPendingStoryScroll = false
     }
 
     fun setPendingHighlightStoryHash(storyHash: String?) {
@@ -525,12 +553,29 @@ class StoryViewAdapter(
 
     @JvmOverloads
     fun requestStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean = true) {
+        queueStoryReturn(storyHash, rv, presentationReady, false)
+    }
+
+    fun followReadingStory(storyHash: String?, rv: RecyclerView) {
         if (storyHash.isNullOrBlank()) return
+        // StoryViewAdapter.kt cancels the previous swipe's target even when the new row is already visible.
+        rv.stopScroll()
+        queueStoryReturn(storyHash, rv, false, true)
+    }
+
+    fun onStoryListScrollStateChanged(newState: Int) {
+        if (newState != RecyclerView.SCROLL_STATE_SETTLING) isFollowingReadingStory = false
+    }
+
+    private fun queueStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean, smoothScroll: Boolean) {
+        if (storyHash.isNullOrBlank()) return
+        isFollowingReadingStory = false
         if (pendingHighlightStoryHash != storyHash && returnHighlight?.storyHash != storyHash) {
             returnHighlight?.cancel()
             returnHighlight = null
         }
         pendingScrollStoryHash = storyHash
+        smoothPendingStoryScroll = smoothScroll
         pendingHighlightStoryHash = storyHash
         returnPresentationReady = presentationReady
         applyPendingStoryReturn(rv)
@@ -547,12 +592,34 @@ class StoryViewAdapter(
                 val llm = lm as? LinearLayoutManager
                 val first = llm?.findFirstVisibleItemPosition() ?: -1
                 val last = llm?.findLastVisibleItemPosition() ?: -1
-                if (replacingEmptyList || ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)) {
-                    if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
+                val hasVisibleAnchor = first >= 0 && last >= first
+                val row = if (smoothPendingStoryScroll) lm.findViewByPosition(position) else null
+                val shouldScroll = if (smoothPendingStoryScroll && hasVisibleAnchor) {
+                    row == null || lm.getDecoratedTop(row) < rv.paddingTop ||
+                        lm.getDecoratedBottom(row) > rv.height - rv.paddingBottom
+                } else ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)
+                if (replacingEmptyList || shouldScroll) {
+                    // StoryViewAdapter.kt animates live reading only after a list has a visible anchor.
+                    if (smoothPendingStoryScroll && !replacingEmptyList && hasVisibleAnchor) {
+                        // StoryViewAdapter.kt keeps the fling-stop exemption until the animation ends, not just until it starts.
+                        isFollowingReadingStory = true
+                        // StoryViewAdapter.kt counts visual rows, including variable-span tiles, before keeping a preceding row.
+                        val grid = lm as? GridLayoutManager
+                        fun rowIndex(item: Int) = grid?.spanSizeLookup?.getSpanGroupIndex(item, grid.spanCount) ?: item
+                        var target = position
+                        if (rowIndex(last) - rowIndex(first) + 1 > 4) {
+                            val precedingRow = (rowIndex(position) - 1).coerceAtLeast(0)
+                            while (target > 0 && rowIndex(target - 1) >= precedingRow) target--
+                        }
+                        lm.startSmoothScroll(object : LinearSmoothScroller(rv.context) {
+                            override fun getVerticalSnapPreference() = SNAP_TO_START
+                        }.apply { targetPosition = target })
+                    } else if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
                     else lm.scrollToPosition(position)
                 }
                 // StoryViewAdapter.kt retains the identity until its page exists in a committed batch.
                 pendingScrollStoryHash = null
+                smoothPendingStoryScroll = false
             }
         }
         val hash = pendingHighlightStoryHash ?: return
@@ -590,6 +657,7 @@ class StoryViewAdapter(
         }
         // StoryViewAdapter.kt holds the tap through launch; only the existing reader-return path starts its fade.
         pendingScrollStoryHash = null
+        smoothPendingStoryScroll = false
         pendingHighlightStoryHash = null
         returnPresentationReady = false
         returnHighlight?.cancel()
@@ -655,6 +723,7 @@ class StoryViewAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
+        isFollowingReadingStory = false
         recyclerView.viewTreeObserver.takeIf { it.isAlive }?.let { observer ->
             returnPreDrawListener?.let(observer::removeOnPreDrawListener)
             returnFocusListener?.let(observer::removeOnWindowFocusChangeListener)
@@ -859,9 +928,17 @@ class StoryViewAdapter(
             if (event.actionMasked == MotionEvent.ACTION_DOWN) {
                 gestureDebounce = false
                 gestureStoryHash = story?.storyHash
+                val pane = itemView.parent as? View
                 val paneOrigin = IntArray(2)
-                (itemView.parent as? View)?.getLocationOnScreen(paneOrigin)
-                edgeGesture = context is ItemsList && event.rawX - paneOrigin[0] < UIUtils.dp2px(context, 24)
+                pane?.getLocationOnScreen(paneOrigin)
+                // The back swipe owns the start edge, which is the right edge in right-to-left layouts.
+                val fromStartEdge =
+                    if (UIUtils.towardEndSign(context) < 0f) {
+                        paneOrigin[0] + (pane?.width ?: 0) - event.rawX
+                    } else {
+                        event.rawX - paneOrigin[0]
+                    }
+                edgeGesture = context is ItemsList && fromStartEdge < UIUtils.dp2px(context, 24)
             }
             if (edgeGesture || gestureStoryHash != story?.storyHash) {
                 rowSwipe.cancel()
@@ -905,6 +982,11 @@ class StoryViewAdapter(
                                 fs,
                             ).show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
                     }
+                GestureAction.GEST_ACTION_LISTEN ->
+                    // StoryViewAdapter.kt queues the list as shown, so Listen continues with the next unread story.
+                    com.newsblur.listen.ListenManager
+                        .from(context)
+                        .listen(target, storiesSnapshot())
                 GestureAction.GEST_ACTION_ASK_AI -> {
                     val tag = com.newsblur.askai.AskAiBottomSheetFragment.TAG
                     if (context.supportFragmentManager.findFragmentByTag(tag) == null) {
@@ -1160,11 +1242,11 @@ class StoryViewAdapter(
 
         // dynamic spacing
         val verticalTitlePadding = spacingStyle.getStoryTitleVerticalPadding(context)
-        val rightTitlePadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
-        vh.storyTitleView.setPadding(
-            vh.storyTitleView.paddingLeft,
+        val endTitlePadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
+        vh.storyTitleView.setPaddingRelative(
+            vh.storyTitleView.paddingStart,
             verticalTitlePadding,
-            rightTitlePadding,
+            endTitlePadding,
             verticalTitlePadding,
         )
 
@@ -1248,7 +1330,8 @@ class StoryViewAdapter(
         if (TextUtils.isEmpty(story.authors)) {
             vh.storyAuthor.text = ""
         } else {
-            vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, story.authors)
+            // StoryViewAdapter.kt isolates the author so the bullet stays between the date and the author in either direction.
+            vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, BidiText.isolate(story.authors))
         }
 
         val typography = StoryRowTypography.forScale(textSize)
@@ -1257,34 +1340,34 @@ class StoryViewAdapter(
         vh.storyAuthor.typeface = storyMediumTypeface
         vh.storySnippet.typeface = storyBookTypeface
 
-        val contentRightPadding =
+        val contentEndPadding =
             spacingStyle.getStoryContentRightPadding(
                 context,
                 if (showRightThumbnail) thumbnailStyle else ThumbnailStyle.OFF,
             )
         val titleVerticalPadding = spacingStyle.getStoryTitleVerticalPadding(context)
-        vh.storyTitleView.setPadding(
-            vh.storyTitleView.paddingLeft,
+        vh.storyTitleView.setPaddingRelative(
+            vh.storyTitleView.paddingStart,
             titleVerticalPadding,
-            contentRightPadding,
+            contentEndPadding,
             titleVerticalPadding,
         )
         val contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context)
-        vh.storySnippet.setPadding(
-            vh.storySnippet.paddingLeft,
+        vh.storySnippet.setPaddingRelative(
+            vh.storySnippet.paddingStart,
             vh.storySnippet.paddingTop,
-            contentRightPadding,
+            contentEndPadding,
             contentVerticalPadding,
         )
-        vh.storyMetadata.setPadding(0, 0, contentRightPadding, 0)
+        vh.storyMetadata.setPaddingRelative(0, 0, contentEndPadding, 0)
 
         val verticalContainerMargin = spacingStyle.getStoryContainerMargin(context)
         val feedIconLp = vh.feedIconView.layoutParams as RelativeLayout.LayoutParams
-        feedIconLp.setMargins(feedIconLp.leftMargin, verticalContainerMargin, feedIconLp.rightMargin, feedIconLp.bottomMargin)
+        feedIconLp.topMargin = verticalContainerMargin
         val feedTitleLp = vh.feedTitleView.layoutParams as RelativeLayout.LayoutParams
-        feedTitleLp.setMargins(feedTitleLp.leftMargin, verticalContainerMargin, feedTitleLp.rightMargin, feedTitleLp.bottomMargin)
+        feedTitleLp.topMargin = verticalContainerMargin
         val metadataLp = vh.storyMetadata.layoutParams as RelativeLayout.LayoutParams
-        metadataLp.setMargins(metadataLp.leftMargin, metadataLp.topMargin, metadataLp.rightMargin, verticalContainerMargin)
+        metadataLp.bottomMargin = verticalContainerMargin
 
         if (!thumbnailStyle.isOff() && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
@@ -1367,9 +1450,9 @@ class StoryViewAdapter(
                         targetThumbView.setExpandedLayout(
                             layout.widthPx,
                             initialHeight,
-                            layout.leftMarginPx,
+                            layout.startMarginPx,
                             layout.topMarginPx,
-                            layout.rightMarginPx,
+                            layout.endMarginPx,
                             layout.bottomMarginPx,
                         )
                         vh.itemView.doOnLayout { itemView ->
@@ -1386,9 +1469,9 @@ class StoryViewAdapter(
                             targetThumbView.setExpandedLayout(
                                 layout.widthPx,
                                 targetHeight,
-                                layout.leftMarginPx,
+                                layout.startMarginPx,
                                 layout.topMarginPx,
-                                layout.rightMarginPx,
+                                layout.endMarginPx,
                                 layout.bottomMarginPx,
                             )
                             // RecyclerView suppresses requestLayout() during its layout pass,
@@ -1417,9 +1500,9 @@ class StoryViewAdapter(
                     thumbView?.setExpandedLayout(
                         layout.widthPx,
                         0,
-                        layout.leftMarginPx,
+                        layout.startMarginPx,
                         layout.topMarginPx,
-                        layout.rightMarginPx,
+                        layout.endMarginPx,
                         layout.bottomMarginPx,
                     )
                 }
@@ -1495,7 +1578,7 @@ class StoryViewAdapter(
             }
 
         vh.title.text = titleCache.get(clusterStory.title)
-        vh.date.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
+        vh.date.text = StoryUtils.formatRelativeShortDate(context, clusterStory.timestamp)
         vh.title.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
         vh.date.textSize = textSize * 10f
         StoryClusterBadgeViewBinder.bind(vh.badge, context, clusterStory.clusterTier, palette, false)
@@ -1619,32 +1702,7 @@ class StoryViewAdapter(
 
     private fun isArchiveUser(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
 
-    private fun visibleDisplayItemCount(): Int {
-        if (fs == null || !UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
-            return displayItems.size
-        }
-
-        val visibleStories = min(3.0, stories.size.toDouble()).toInt()
-        if (visibleStories <= 0) {
-            return 0
-        }
-
-        var seenStories = 0
-        displayItems.forEachIndexed { index, item ->
-            if (item is DisplayItem.StoryRow) {
-                seenStories++
-                if (seenStories == visibleStories) {
-                    var end = index + 1
-                    while (end < displayItems.size && displayItems[end] is DisplayItem.ClusterRow) {
-                        end++
-                    }
-                    return end
-                }
-            }
-        }
-
-        return displayItems.size
-    }
+    private fun visibleDisplayItemCount(): Int = displayItems.size
 
     private fun rebuildStoryDisplayPositions() {
         storyDisplayPositions.clear()

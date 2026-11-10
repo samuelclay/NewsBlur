@@ -1,0 +1,179 @@
+{
+  "version": "16.0.6",
+  "reviewer": "translate_west",
+  "independent": true,
+  "reviewed_at": "2026-10-27T15:24:50Z",
+  "languages": [
+    "ar",
+    "he",
+    "hi",
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "scope": "Complete Android listings, subscription titles/descriptions/benefits, and release notes compared with finalized English, including retained paragraphs and each language glossary.",
+  "status": "passed_after_correction",
+  "findings": [
+    {
+      "language": "hi",
+      "file": "clients/store/releases/16.0.6/hi.json",
+      "field": "android.release_notes",
+      "severity": "minor",
+      "issue": "Past habitual wording could imply every mark-read action backgrounds the app; English says could.",
+      "correction": "Changed चला जाता था to जा सकता था to retain conditional possibility.",
+      "resolved": true
+    }
+  ],
+  "language_review": {
+    "rtl": "Arabic and Hebrew text reviewed for coherent RTL prose, correct brand/URL Latin tokens, no injected bidi control characters. No UI rendering claim.",
+    "chinese": "Simplified and Traditional scripts and locale terms reviewed separately: 网站/網站, 文件夹/資料夾, 订阅源/訂閱來源, 保存/儲存, 后台/背景; no script mixing found.",
+    "claims": "No added crash, pricing, billing-period, privacy, or entitlement claims. Product names retained as inventoried brand names; URLs unchanged."
+  },
+  "english_sources": [
+    {
+      "path": "clients/store/metadata/en.json",
+      "sha256": "adc16c6884fda3005e486371e5182913e0921f604602692694723a6785d283f1"
+    },
+    {
+      "path": "clients/store/products/en.json",
+      "sha256": "c5eaa284ccd335c3e9e4b90310569b31436b994b2b33565bb70d535a9d4f8313"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/en.json",
+      "sha256": "f8a59f47662656c2186121b8b56b29bec52c7db085a5161c05c09d7833336394"
+    }
+  ],
+  "files": [
+    {
+      "path": "clients/store/metadata/ar.json",
+      "sha256": "1fd36bfa5da0f17b91b5032137cbad111cbffec7b9a8eed00b4ae22ddf0b3a5c"
+    },
+    {
+      "path": "clients/store/products/ar.json",
+      "sha256": "55c13d691b36064feacb434c533f0adbe30df6a8be426e2c21a6662a11a4b3ba"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/ar.json",
+      "sha256": "0f737fc785bf40c13a134e5459e2c702a19371e4f3d760ef7391e326a465c509"
+    },
+    {
+      "path": "clients/store/metadata/he.json",
+      "sha256": "1612ba1128c781ecf7bc21882cfa391098727197067b9e5d6a9dfbbef5f4a907"
+    },
+    {
+      "path": "clients/store/products/he.json",
+      "sha256": "38d3f3d5a6b5e53b985523461aaee749914d2f7c81fee8aef62999a32ed9f3f4"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/he.json",
+      "sha256": "3db5ba64c346b0f8c4ff9eaeabfc7b107a29d71ed1d291598d7895e12ac6bef6"
+    },
+    {
+      "path": "clients/store/metadata/hi.json",
+      "sha256": "9e7ede4b47918bfd20a031bda8790dd442241b8c6f572275461cc2a08a9ad1d7"
+    },
+    {
+      "path": "clients/store/products/hi.json",
+      "sha256": "233fc6a623e6c09a39c1217d9bda1a6a77c1306074605633955d4e658094ca69"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/hi.json",
+      "sha256": "d125ca0a81f56ed177f216135852c7710a918439799456c40d3921c6909774cf"
+    },
+    {
+      "path": "clients/store/metadata/id.json",
+      "sha256": "4b28bf26094ed0150b5dc349ce54d814aeeade5e0edfdd63dc83f918a5c08935"
+    },
+    {
+      "path": "clients/store/products/id.json",
+      "sha256": "fca59e73831a3dbbd464701396e7476e359f91d51017de1fb417d4b00684f76d"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/id.json",
+      "sha256": "35080ef61d8f31dfef57e0a84890ed100e24698662a3a01c544cf5deb42b007a"
+    },
+    {
+      "path": "clients/store/metadata/vi.json",
+      "sha256": "224bfe7d6588405dd41d34892842a5770574498fc9496124ace6afe739390220"
+    },
+    {
+      "path": "clients/store/products/vi.json",
+      "sha256": "61d67fb098c3c2e76724a8fd86bc81f62aed737b61a494457ce9b40cc3c7d532"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/vi.json",
+      "sha256": "25c297bfe5c001e0bedf77a0ee60994c93c2a4db9519668e313dc2ec4a39ad5f"
+    },
+    {
+      "path": "clients/store/metadata/th.json",
+      "sha256": "869dd6cf72e5925e0c62075768db5e2232ae01698c77debc33b22150ce4007ae"
+    },
+    {
+      "path": "clients/store/products/th.json",
+      "sha256": "073e5d4ff07543962213e52c4d807383b84088f3a5eb48bb48057ee284cf81de"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/th.json",
+      "sha256": "a4d068a87ff1ed2c4df2b8cbc28a1cba1fd97eaa92325458ca15df26a4ccdd5d"
+    },
+    {
+      "path": "clients/store/metadata/ja.json",
+      "sha256": "ceec6b6b2d7570f127eef69269c01a392549dc35f2e119e0ece179aaf576c006"
+    },
+    {
+      "path": "clients/store/products/ja.json",
+      "sha256": "fcac406d71d0b53a8ef88d5061ad651f9598043be4b3bf8acce2eaa100d1fbde"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/ja.json",
+      "sha256": "d33b4972e56d67d34e3efe14736c8e4b2abde5d7cef87390b2ac824807ef9c5a"
+    },
+    {
+      "path": "clients/store/metadata/ko.json",
+      "sha256": "64f9e259a7a2ac9099fad71acbab7f96f2a0434ddc572181a14974148255659b"
+    },
+    {
+      "path": "clients/store/products/ko.json",
+      "sha256": "c95979fad0aa4b8ade09f45b80372757677b956dee43e4ed7319ae946a25c83c"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/ko.json",
+      "sha256": "388d3c1ac3dcdaca27271bb64b1117ba6cf8ad452d7bc2526cad277f1c2b4e63"
+    },
+    {
+      "path": "clients/store/metadata/zh-Hans.json",
+      "sha256": "e4fc1e9a504a492b4cd86d65f47891b117d5d6eeaa725b657f55bfa565afeb30"
+    },
+    {
+      "path": "clients/store/products/zh-Hans.json",
+      "sha256": "09bdf97c14bfb296a39cf018cf85ec3c43f8117054dd3f6fb8f346bb970d2683"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/zh-Hans.json",
+      "sha256": "68193bceb4bbc828bf7c771955053960e01f1ec148988091dd5921f08ae4323f"
+    },
+    {
+      "path": "clients/store/metadata/zh-Hant.json",
+      "sha256": "72b32cd9ea5ddc8741ec733fe36a197c7698af26eeb5bd7efaa7fee8de75c2f4"
+    },
+    {
+      "path": "clients/store/products/zh-Hant.json",
+      "sha256": "cd51363dfc7f9a8f397b39cb420ff21d996f8a60d11cf66308f3fd7d691b1c16"
+    },
+    {
+      "path": "clients/store/releases/16.0.6/zh-Hant.json",
+      "sha256": "05c605f0a4bcff41e13f084abb6e24c22efd865d724bbdb9fe0b2973175af8ac"
+    }
+  ],
+  "automated_checks": [
+    "All required fields present and nonempty",
+    "All Google listing, notes, and subscription character limits",
+    "Exactly two inventoried product IDs and four benefits each",
+    "Terms/privacy URLs identical to English",
+    "No explicit bidi embedding or override control characters"
+  ]
+}

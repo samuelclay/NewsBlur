@@ -1,0 +1,54 @@
+{
+  "reviewed_at": "2026-10-17T16:03:53Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/pl/tenInchScreenshots/panel-01.png",
+      "sha256": "b2ab7e97d64bb4eda64b7f826293d9e94f40f81d741f6f16920aecaf6f2a4db7",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pl/tenInchScreenshots/panel-02.png",
+      "sha256": "7d5c7bfc3c4de9d2bd1a9e5e3739cad3e464790dbbb054e5acb8c4a70aeec462",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pl/tenInchScreenshots/panel-03.png",
+      "sha256": "91eac2004b693d49caa0f4135f8f7c2258be4f5b7cafdbcb03a23023f540cb67",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pl/tenInchScreenshots/panel-04.png",
+      "sha256": "597715c57a7fcce2c60c251538175a6e60a7748d7205fd975b469453197577e5",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/tenInchScreenshots/panel-01.png",
+      "sha256": "2400882e0b780966bc7801b9a15dac16177791ca4e6d7635a6cdc2a9461d37e0",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/tenInchScreenshots/panel-02.png",
+      "sha256": "6db28d85bcc09ee921e42a98b6a1e5e852d5a30c37791604cc3454af2fe43225",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/tenInchScreenshots/panel-03.png",
+      "sha256": "06b8781a5c862f992cb0f762f0a89bdd70bfc4d7835e1c38a00c07751d86dcfa",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/tenInchScreenshots/panel-04.png",
+      "sha256": "d87afbdec04184ee96de5e52a957e5761e153c8896e8287d95281b83a7e88657",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Polish and Turkish native titles, search, dates, saved state and navigation are localized and legible with correct accented letters.",
+    "Populated native tablet split views contain no notification banners, outside marketing text or missing content.",
+    "Polish drawer filters use the native compact icon presentation for unselected filters; selected All remains labeled.",
+    "The drawer scrim and dimmed read article reflect native state; original fictional article content intentionally remains English."
+  ],
+  "scope": "Eight ten-inch tablet still exports only; video playback and store readback are separate checks."
+}

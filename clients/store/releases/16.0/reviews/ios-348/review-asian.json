@@ -1,0 +1,182 @@
+{
+  "role": "independent_review",
+  "reviewer": "ios_central",
+  "translator": "ios_asian",
+  "platform": "ios",
+  "version": "16.0",
+  "build": "348",
+  "languages": [
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "status": "passed",
+  "findings": [],
+  "corrections": [],
+  "checks": [
+    "All listing fields and release notes compared to finalized English",
+    "All iOS subscription and group copy checked against immutable English IDs and facts",
+    "Home Screen placement, independent widget selection, signed-in account default, hidden-first refresh, removal/re-addition and long press editing retained",
+    "Chinese Simplified and Traditional scripts and terminology reviewed separately",
+    "Subscription payment timing, automatic renewal, 24-hour cancellation and renewal window, management and cancellation retained",
+    "Localized descriptions, promotional text, names, subtitles, UTF-8 keyword byte limits, notes and subscription/group limits pass",
+    "Terms and privacy URLs preserved",
+    "No files required correction; macOS and Android content untouched"
+  ],
+  "locale_checks": [
+    {
+      "language": "id",
+      "status": "passed",
+      "files": [
+        {
+          "path": "clients/store/metadata/id.json",
+          "sha256": "4097125c159f585516febc962cd2d61c65f6ea0fcb3b8ddf2478765a2b2a462f"
+        },
+        {
+          "path": "clients/store/releases/16.0/id.json",
+          "sha256": "f3506aefcba180d669fd277a32275fd28a3487f7bb0cbeee7705ea325a903c38"
+        },
+        {
+          "path": "clients/store/products/id.json",
+          "sha256": "43fe84b4f727360a53cf816778d9c38afa93041269f474f35b8755dda9bd4d6d"
+        }
+      ],
+      "description_characters": 2256,
+      "notes_characters": 956,
+      "keyword_utf8_bytes": 86
+    },
+    {
+      "language": "vi",
+      "status": "passed",
+      "files": [
+        {
+          "path": "clients/store/metadata/vi.json",
+          "sha256": "b9f2b166f7ce6fe5c3994afe7f223752a3f9cbd569ac31479add0bbfc43eca1a"
+        },
+        {
+          "path": "clients/store/releases/16.0/vi.json",
+          "sha256": "43fec59525412b54ecdcad3b801def23d2669d808e64fac2aa0bcc36cd65160f"
+        },
+        {
+          "path": "clients/store/products/vi.json",
+          "sha256": "0d2472645814c062c3cc39e3e0b739d030763c800197bed4fc7809818112ed17"
+        }
+      ],
+      "description_characters": 2256,
+      "notes_characters": 934,
+      "keyword_utf8_bytes": 82
+    },
+    {
+      "language": "th",
+      "status": "passed",
+      "files": [
+        {
+          "path": "clients/store/metadata/th.json",
+          "sha256": "a6a5f0797fe11ceeac1a7053d877d2c81743f76e8a051f27484c38be9f3d801e"
+        },
+        {
+          "path": "clients/store/releases/16.0/th.json",
+          "sha256": "47a2a6c3283a47e8f34397e63ebab702f7d1433e55f69dec42b9a6a2ca1fd6dc"
+        },
+        {
+          "path": "clients/store/products/th.json",
+          "sha256": "deef464bc5e88de7f324de1f76a4bbbe6a7fccfbc1a2bb90f18ed134fcf467b6"
+        }
+      ],
+      "description_characters": 1918,
+      "notes_characters": 759,
+      "keyword_utf8_bytes": 95
+    },
+    {
+      "language": "ja",
+      "status": "passed",
+      "files": [
+        {
+          "path": "clients/store/metadata/ja.json",
+          "sha256": "da36ccb733f81e7d6266e6e89efc045a24852f383250b14e9286cce9a910a5ae"
+        },
+        {
+          "path": "clients/store/releases/16.0/ja.json",
+          "sha256": "f592850289ded96389b0a6cc0349977536a7d296f9742dea020d3466e60859b0"
+        },
+        {
+          "path": "clients/store/products/ja.json",
+          "sha256": "9dc32eb345393cd28291eacc7e271a856d8633ed7ca3336fc0e6e1a64f57a0b7"
+        }
+      ],
+      "description_characters": 1126,
+      "notes_characters": 472,
+      "keyword_utf8_bytes": 95
+    },
+    {
+      "language": "ko",
+      "status": "passed",
+      "files": [
+        {
+          "path": "clients/store/metadata/ko.json",
+          "sha256": "841a4fc26558c9046300a58417860f85b5977a0a477999842e48326311ab92d0"
+        },
+        {
+          "path": "clients/store/releases/16.0/ko.json",
+          "sha256": "fabeb478d19aae25a8c8f444af1253fe95120c3f2cc6fc4b253451a91a0dbef1"
+        },
+        {
+          "path": "clients/store/products/ko.json",
+          "sha256": "f767e46f15f26e0eda1c38bd786d3a6b4af9045483da7271b7a9497da8bf5b00"
+        }
+      ],
+      "description_characters": 1233,
+      "notes_characters": 516,
+      "keyword_utf8_bytes": 84
+    },
+    {
+      "language": "zh-Hans",
+      "status": "passed",
+      "files": [
+        {
+          "path": "clients/store/metadata/zh-Hans.json",
+          "sha256": "6a1f941b9899668add26cc540f67a92d84e8ebb049e02eca84854247af180082"
+        },
+        {
+          "path": "clients/store/releases/16.0/zh-Hans.json",
+          "sha256": "7848a8b1f95fecbc1420728455f58b9d2ede6182bb46e87670cddeea717be2c5"
+        },
+        {
+          "path": "clients/store/products/zh-Hans.json",
+          "sha256": "3cc86edb1e85dd2a385305111a7e133fe6fa36122fdaa97467e7c64117e38fe8"
+        }
+      ],
+      "description_characters": 833,
+      "notes_characters": 342,
+      "keyword_utf8_bytes": 91
+    },
+    {
+      "language": "zh-Hant",
+      "status": "passed",
+      "files": [
+        {
+          "path": "clients/store/metadata/zh-Hant.json",
+          "sha256": "1447feb79e5dec05f087c5ea849f8e80f982e585bf8853968f64da5bf5c0421c"
+        },
+        {
+          "path": "clients/store/releases/16.0/zh-Hant.json",
+          "sha256": "9e80a6d1e723bf8125d12415dbecd79216b82e4be3896e6f8d44fa543265e141"
+        },
+        {
+          "path": "clients/store/products/zh-Hant.json",
+          "sha256": "ad0f0fbdd1e47cec318d65bbfbd40f9d54348f132c6fedaab48c558f9a551ca9"
+        }
+      ],
+      "description_characters": 842,
+      "notes_characters": 353,
+      "keyword_utf8_bytes": 87
+    }
+  ],
+  "limitations": [
+    "Text review only; no native-speaker or rendered App Store verification claimed"
+  ]
+}

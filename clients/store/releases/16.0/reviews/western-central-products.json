@@ -1,0 +1,32 @@
+{
+  "reviewer": "independent store_locales agent (did not author these product translations)",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id"
+  ],
+  "status": "passed_after_corrections",
+  "semantic_review": "Read every product description and benefit against English source. Apple 3 subscription IDs plus group, Google 2 subscription IDs remain exact. No products, benefits, prices, durations, entitlement configuration, or plan brand names added/changed. Premium tagging references saved stories, Archive retains Premium and permanent archival/search/unread retention, Pro interval remains 5–15 minutes.",
+  "corrections": {
+    "es": "Apple Premium short description now explicitly ties tags to saved items.",
+    "fr": "Apple Premium short description and Google tagging benefit now specify saved articles.",
+    "de": "Apple Premium short description now specifies saved articles.",
+    "pt-BR": "Apple Premium short description now specifies saved articles.",
+    "nl": "Apple Premium short description now specifies saved articles.",
+    "pl": "Apple Premium short description now specifies saved articles; naturalized Pro interval wording.",
+    "he": "Corrected Hebrew syntax for leaving stories unread.",
+    "id": "Changed ambiguous reading folders together wording to reading folder contents in one list."
+  },
+  "validation": "Ruby verified identical product/group IDs and schemas, immutable Apple brand names, Google plan brand inclusion, Apple name30/description45/group75/app30 and Google title55/description200/4 benefits each40. All passed."
+}

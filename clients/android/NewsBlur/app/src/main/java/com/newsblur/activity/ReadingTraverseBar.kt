@@ -206,6 +206,10 @@ class ReadingTraverseBar(
             minimumHeight = 0
             includeFontPadding = false
         }
+        binding.readingOverlayRight.layoutParams = binding.readingOverlayRight.layoutParams.apply {
+            // ReadingTraverseBar.kt preserves the tap target when Next becomes Done, including translated labels.
+            width = stableNextButtonWidth()
+        }
     }
 
     private fun configureImageButtons() {
@@ -273,6 +277,17 @@ class ReadingTraverseBar(
         val iconWidth = UIUtils.dp2px(context, iconSizeDp)
         val drawablePadding = binding.readingOverlayText.compoundDrawablePadding
         return labelWidth + horizontalPadding + iconWidth + drawablePadding
+    }
+
+    private fun stableNextButtonWidth(): Int {
+        val button = binding.readingOverlayRight
+        val nextLabelWidth = ceil(button.paint.measureText(context.getString(R.string.overlay_next)).toDouble()).toInt()
+        val doneLabelWidth = ceil(button.paint.measureText(context.getString(R.string.overlay_done)).toDouble()).toInt()
+        val contentWidth = maxOf(
+            nextLabelWidth + UIUtils.dp2px(context, nextChevronSizeDp),
+            doneLabelWidth + UIUtils.dp2px(context, previousChevronSizeDp),
+        )
+        return contentWidth + button.paddingStart + button.paddingEnd + button.compoundDrawablePadding
     }
 
     private fun reservedTextButtonLabel(label: String): CharSequence {

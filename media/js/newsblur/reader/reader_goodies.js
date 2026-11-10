@@ -28,16 +28,16 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
 
     this.$modal = $.make('div', { className: 'NB-modal-goodies NB-modal' }, [
       $.make('div', { className: 'NB-modal-tabs' }, [
-        $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-ios' }, 'iPhone &amp; iPad'),
+        $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-ios' }, gettext('iPhone &amp; iPad')),
         $.make('div', { className: 'NB-modal-tab NB-modal-tab-android' }, 'Android'),
         $.make('div', { className: 'NB-modal-tab NB-modal-tab-mac' }, 'Mac'),
-        $.make('div', { className: 'NB-modal-tab NB-modal-tab-windows' }, 'Windows &amp; Linux'),
-        $.make('div', { className: 'NB-modal-tab NB-modal-tab-browser' }, 'Browser'),
-        $.make('div', { className: 'NB-modal-tab NB-modal-tab-extras' }, 'Extras')
+        $.make('div', { className: 'NB-modal-tab NB-modal-tab-windows' }, gettext('Windows &amp; Linux')),
+        $.make('div', { className: 'NB-modal-tab NB-modal-tab-browser' }, gettext('Browser')),
+        $.make('div', { className: 'NB-modal-tab NB-modal-tab-extras' }, gettext('Extras'))
       ]),
       $.make('h2', { className: 'NB-modal-title' }, [
         $.make('div', { className: 'NB-icon' }),
-        'Goodies &amp; Extras',
+        gettext('Goodies &amp; Extras'),
         $.make('div', { className: 'NB-icon-dropdown' })
       ]),
       this.make_ios_tab(),
@@ -117,83 +117,83 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
     return $.make('div', { className: 'NB-tab NB-tab-ios NB-active' }, [
       this.make_hero({
         key: 'newsblur-ios',
-        name: 'Official NewsBlur iPhone/iPad App',
-        meta: 'Free · Made by NewsBlur',
+        name: gettext('Official NewsBlur iPhone/iPad App'),
+        meta: gettext('Free · Made by NewsBlur'),
         url: 'https://apps.apple.com/us/app/newsblur/id463981119',
         button: 'App Store',
         shots: ['newsblur-ios-1.jpg', 'newsblur-ios-2.jpg', 'newsblur-ios-3.jpg', 'newsblur-ios-4.jpg']
       }),
-      this.make_section_title('Third-party apps that sync with NewsBlur'),
+      this.make_section_title(gettext('Third-party apps that sync with NewsBlur')),
       this.make_app_grid([
         this.make_app_row({
           key: 'reeder-classic',
         name: 'Reeder Classic',
-        meta: '$4.99 · iPhone &amp; iPad',
+        meta: interpolate(gettext("%(price)s · iPhone &amp; iPad"), {price: '$4.99'}, true),
         url: 'https://apps.apple.com/us/app/reeder-classic/id1529445840',
         thumbs: ['reeder-classic-1.jpg', 'reeder-classic-2.jpg']
         }),
         this.make_app_row({
         key: 'unread',
         name: 'Unread',
-        meta: 'Free + subscription · iPhone, iPad &amp; Mac',
+        meta: gettext('Free + subscription · iPhone, iPad &amp; Mac'),
         url: 'https://www.goldenhillsoftware.com/unread/',
-        button: 'Download',
+        button: gettext('Download'),
         thumbs: ['unread-1.jpg', 'unread-2.jpg']
         }),
         this.make_app_row({
         key: 'netnewswire',
         name: 'NetNewsWire',
-        meta: 'Free, open source · iPhone, iPad &amp; Mac',
+        meta: gettext('Free, open source · iPhone, iPad &amp; Mac'),
         url: 'https://apps.apple.com/us/app/netnewswire-rss-reader/id1480640210',
         thumbs: ['netnewswire-2.jpg', 'netnewswire-3.jpg']
         }),
         this.make_app_row({
         key: 'readkit',
         name: 'ReadKit',
-        meta: 'Free + subscription · iPhone, iPad &amp; Mac',
+        meta: gettext('Free + subscription · iPhone, iPad &amp; Mac'),
         url: 'https://readkit.app/',
-        button: 'Download',
+        button: gettext('Download'),
         thumbs: ['readkit-1.jpg']
         }),
         this.make_app_row({
         key: 'lire',
         name: 'lire',
-        meta: '$9.99 · iPhone &amp; iPad',
+        meta: interpolate(gettext("%(price)s · iPhone &amp; iPad"), {price: '$9.99'}, true),
         url: 'https://apps.apple.com/us/app/lire-rss-reader/id1531976425',
         thumbs: ['lire-1.jpg', 'lire-2.jpg']
         }),
         this.make_app_row({
         key: 'fiery-feeds',
         name: 'Fiery Feeds',
-        meta: 'Free + subscription · iPhone, iPad &amp; Mac',
+        meta: gettext('Free + subscription · iPhone, iPad &amp; Mac'),
         url: 'https://apps.apple.com/us/app/fiery-feeds-news-reader/id1158763303',
         thumbs: ['fiery-feeds-1.jpg', 'fiery-feeds-2.jpg']
         }),
         this.make_app_row({
         key: 'slow-feeds',
         name: 'Slow Feeds',
-        meta: 'Free · iPhone, iPad &amp; Mac',
+        meta: gettext('Free · iPhone, iPad &amp; Mac'),
         url: 'https://apps.apple.com/us/app/slow-feeds/id1366946855',
         thumbs: ['slow-feeds-1.jpg', 'slow-feeds-2.jpg']
         }),
         this.make_app_row({
         key: 'powereader',
         name: 'PoweReader',
-        meta: 'Free · iPhone, iPad &amp; Mac',
+        meta: gettext('Free · iPhone, iPad &amp; Mac'),
         url: 'https://apps.apple.com/us/app/powereader-ai-rss-reader/id6479644903',
         thumbs: ['powereader-1.jpg', 'powereader-2.jpg']
         }),
         this.make_app_row({
         key: 'current',
         name: 'Current',
-        meta: '$9.99 · iPhone, iPad &amp; Mac',
+        meta: interpolate(gettext("%(price)s · iPhone, iPad &amp; Mac"), {price: '$9.99'}, true),
         url: 'https://apps.apple.com/us/app/current-rss-feed-reader/id6758530974',
         thumbs: ['current-1.jpg', 'current-2.jpg']
         }),
         this.make_app_row({
         key: 'feedler',
         name: 'Feedler',
-        meta: 'Free beta · iPhone, iPad &amp; Mac',
+        meta: gettext('Free beta · iPhone, iPad &amp; Mac'),
         url: 'https://feedlerapp.com/',
         button: 'TestFlight',
         thumbs: ['feedler-1.jpg', 'feedler-2.jpg']
@@ -201,28 +201,28 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
         key: 'feedit',
         name: 'Feedit',
-        meta: 'Free · iPhone &amp; iPad',
+        meta: gettext('Free · iPhone &amp; iPad'),
         url: 'https://apps.apple.com/us/app/feedit/id6444137580',
         thumbs: ['feedit-1.jpg', 'feedit-2.jpg']
         }),
         this.make_app_row({
         key: 'watch-feeds',
         name: 'Watch Feeds',
-        meta: 'Free · Apple Watch, iPhone &amp; iPad',
+        meta: gettext('Free · Apple Watch, iPhone &amp; iPad'),
         url: 'https://apps.apple.com/us/app/watch-feeds/id1480741074',
         thumbs: ['watch-feeds-1.jpg', 'watch-feeds-2.jpg']
         }),
         this.make_app_row({
         key: 'smartrss',
         name: 'SmartRSS',
-        meta: 'Free · iPhone, iPad, Mac &amp; Android',
+        meta: gettext('Free · iPhone, iPad, Mac &amp; Android'),
         url: 'https://apps.apple.com/us/app/smartrss-rss-reader-podcast/id6749771900',
         thumbs: ['smartrss-1.jpg', 'smartrss-2.jpg']
         }),
         this.make_app_row({
         key: 'web-subscriber',
         name: 'Web Subscriber',
-        meta: 'Free · iPhone &amp; iPad',
+        meta: gettext('Free · iPhone &amp; iPad'),
         url: 'https://apps.apple.com/us/app/web-subscriber/id511900080',
         thumbs: ['web-subscriber-1.jpg', 'web-subscriber-2.jpg']
         })
@@ -234,18 +234,18 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
     return $.make('div', { className: 'NB-tab NB-tab-android' }, [
       this.make_hero({
         key: 'newsblur-android',
-        name: 'Official NewsBlur Android App',
-        meta: 'Free · Made by NewsBlur',
+        name: gettext('Official NewsBlur Android App'),
+        meta: gettext('Free · Made by NewsBlur'),
         url: 'https://play.google.com/store/apps/details?id=com.newsblur',
         button: 'Google Play',
         shots: ['newsblur-android-1.jpg', 'newsblur-android-2.jpg', 'newsblur-android-3.jpg', 'newsblur-android-4.jpg']
       }),
-      this.make_section_title('Third-party apps that sync with NewsBlur'),
+      this.make_section_title(gettext('Third-party apps that sync with NewsBlur')),
       this.make_app_grid([
         this.make_app_row({
           key: 'smartrss',
           name: 'SmartRSS',
-          meta: 'Free · Android, iPhone, iPad &amp; Mac',
+          meta: gettext('Free · Android, iPhone, iPad &amp; Mac'),
           url: 'https://play.google.com/store/apps/details?id=com.vinsonguo.flutter_rss_reader',
           button: 'Google Play',
           thumbs: ['smartrss-1.jpg', 'smartrss-2.jpg']
@@ -258,28 +258,28 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
     return $.make('div', { className: 'NB-tab NB-tab-mac' }, [
       this.make_hero({
         key: 'newsblur-macos',
-        name: 'Official NewsBlur macOS App',
-        meta: 'Free · Made by NewsBlur',
+        name: gettext('Official NewsBlur macOS App'),
+        meta: gettext('Free · Made by NewsBlur'),
         url: 'https://apps.apple.com/us/app/newsblur/id463981119?platform=mac',
         button: 'Mac App Store',
         shots: ['newsblur-macos-1.jpg', 'newsblur-macos-2.jpg']
       }),
-      this.make_section_title('Third-party apps that sync with NewsBlur'),
+      this.make_section_title(gettext('Third-party apps that sync with NewsBlur')),
       this.make_app_grid([
         this.make_app_row({
           key: 'netnewswire',
           name: 'NetNewsWire',
-          meta: 'Free, open source · Mac, iPhone &amp; iPad',
+          meta: gettext('Free, open source · Mac, iPhone &amp; iPad'),
         url: 'https://netnewswire.com/',
-        button: 'Download',
+        button: gettext('Download'),
         thumbs: ['netnewswire-1.jpg']
         }),
         this.make_app_row({
         key: 'readkit',
         name: 'ReadKit',
-        meta: 'Free + subscription · Mac, iPhone &amp; iPad',
+        meta: gettext('Free + subscription · Mac, iPhone &amp; iPad'),
         url: 'https://readkit.app/',
-        button: 'Download',
+        button: gettext('Download'),
         thumbs: ['readkit-1.jpg']
         }),
         this.make_app_row({
@@ -293,9 +293,9 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
         key: 'unread',
         name: 'Unread',
-        meta: 'Free + subscription · Mac, iPhone &amp; iPad',
+        meta: gettext('Free + subscription · Mac, iPhone &amp; iPad'),
         url: 'https://www.goldenhillsoftware.com/unread/',
-        button: 'Download',
+        button: gettext('Download'),
         thumbs: ['unread-1.jpg', 'unread-2.jpg']
         }),
         this.make_app_row({
@@ -308,14 +308,14 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
         key: 'fiery-feeds',
         name: 'Fiery Feeds',
-        meta: 'Free + subscription · Mac, iPhone &amp; iPad',
+        meta: gettext('Free + subscription · Mac, iPhone &amp; iPad'),
         url: 'https://apps.apple.com/us/app/fiery-feeds-news-reader/id1158763303',
         thumbs: ['fiery-feeds-1.jpg', 'fiery-feeds-2.jpg']
         }),
         this.make_app_row({
         key: 'feedler',
         name: 'Feedler',
-        meta: 'Free beta · Mac, iPhone &amp; iPad',
+        meta: gettext('Free beta · Mac, iPhone &amp; iPad'),
         url: 'https://feedlerapp.com/',
         button: 'TestFlight',
         thumbs: ['feedler-1.jpg', 'feedler-2.jpg']
@@ -323,7 +323,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
         key: 'newsflow',
         name: 'Newsflow',
-        meta: '$4.99 · Menu bar news ticker for Mac',
+        meta: interpolate(gettext("%(price)s · Menu bar news ticker for Mac"), {price: '$4.99'}, true),
         url: 'https://apps.apple.com/us/app/newsflow-the-no-1-news-ticker/id890805912',
         thumbs: ['newsflow-1.jpg']
         }),
@@ -345,7 +345,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
           key: 'rsstracker',
           name: 'RSS Tracker',
-          meta: 'Free · Windows 10 &amp; 11',
+          meta: gettext('Free · Windows 10 &amp; 11'),
           url: 'https://apps.microsoft.com/detail/9n85pv1rjd6v',
           button: 'Microsoft Store',
           thumbs: ['rsstracker-1.jpg', 'rsstracker-3.jpg']
@@ -356,7 +356,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
           key: 'newsflash',
           name: 'Newsflash',
-          meta: 'Free, open source · GNOME/Flathub',
+          meta: gettext('Free, open source · GNOME/Flathub'),
           url: 'https://flathub.org/apps/io.gitlab.news_flash.NewsFlash',
           button: 'Flathub',
           thumbs: ['newsflash-1.jpg']
@@ -364,19 +364,19 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
           key: 'newsboat',
           name: 'Newsboat',
-          meta: 'Free, open source · Terminal (Linux, macOS, BSD)',
+          meta: gettext('Free, open source · Terminal (Linux, macOS, BSD)'),
           url: 'https://newsboat.org/',
-          button: 'Download',
+          button: gettext('Download'),
           thumbs: ['newsboat-1.jpg']
         })
       ]),
-      this.make_section_title('Even geekier'),
+      this.make_section_title(gettext('Even geekier')),
       this.make_app_grid([
         this.make_app_row({
           key: 'koreader',
           icon: false,
           name: 'KOReader RSS plugin',
-          meta: 'Free, open source · E-ink devices (Kobo, Kindle, PocketBook)',
+          meta: gettext('Free, open source · E-ink devices (Kobo, Kindle, PocketBook)'),
           url: 'https://github.com/omer-faruq/rssreader.koplugin',
           button: 'GitHub'
         }),
@@ -384,7 +384,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
           key: 'elfeed-protocol',
           icon: false,
           name: 'elfeed-protocol',
-          meta: 'Free, open source · Emacs',
+          meta: gettext('Free, open source · Emacs'),
           url: 'https://github.com/fasheng/elfeed-protocol',
           button: 'GitHub'
         })
@@ -399,21 +399,18 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
           key: 'firefox-notifier',
           name: 'NewsBlur Notifier',
-          meta: 'Shows a toolbar button with your unread count',
+          meta: gettext('Shows a toolbar button with your unread count'),
           url: 'https://addons.mozilla.org/en-US/firefox/addon/newsblurcom-notifier/',
-          button: 'Add to Firefox'
+          button: gettext('Add to Firefox')
         }),
         $.make('div', { className: 'NB-goodies-tip' }, [
-          $.make('div', { className: 'NB-goodies-app-name' }, 'Open links in a background tab'),
-          $.make('div', { className: 'NB-goodies-app-meta' }, [
-            'In a new tab, open ',
-            $.make('b', 'about:config'),
-            ', search for ',
-            $.make('b', 'browser.tabs.loadDivertedInBackground'),
-            ', and set it to ',
-            $.make('b', 'true'),
-            '. Stories opened with \'o\' will then load in the background.'
-          ])
+          $.make('div', { className: 'NB-goodies-app-name' }, gettext('Open links in a background tab')),
+          $.make('div', { className: 'NB-goodies-app-meta' }, interpolate(gettext("In a new tab, open <b>%(config_page)s</b>, search for <b>%(setting)s</b>, and set it to <b>%(value)s</b>. Stories opened with %(shortcut)s will then load in the background."), {
+            config_page: 'about:config',
+            setting: 'browser.tabs.loadDivertedInBackground',
+            value: 'true',
+            shortcut: "'o'"
+          }, true))
         ])
       ]),
       this.make_section_title('Chrome'),
@@ -421,16 +418,16 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
           key: 'chrome-rss-sub',
           name: 'RSS Subscription Extension',
-          meta: 'One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab.',
+          meta: gettext('One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab.'),
           url: 'https://chromewebstore.google.com/detail/rss-subscription-extensio/nlbjncdgjeocebhnmkbbbdekmmmcbfjd',
-          button: 'Add to Chrome'
+          button: gettext('Add to Chrome')
         }),
         this.make_app_row({
           key: 'chrome-bg-tab',
           name: 'Background Tab for NewsBlur',
-          meta: 'Opens stories in a background tab with a customizable hotkey',
+          meta: gettext('Opens stories in a background tab with a customizable hotkey'),
           url: 'https://chromewebstore.google.com/detail/background-tab-for-newsbl/ieeimmkgocgaaabphkgjdkophaejfnlk',
-          button: 'Add to Chrome'
+          button: gettext('Add to Chrome')
         })
       ]),
       this.make_section_title('Safari'),
@@ -439,7 +436,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
           key: 'safari-helper',
           icon: false,
           name: 'NewsBlur Helper',
-          meta: 'Safari App Extension that lets \'o\' open stories in a background tab. Download the app from the Releases appcast in the repo.',
+          meta: interpolate(gettext("Safari App Extension that lets %(shortcut)s open stories in a background tab. Download the app from the Releases appcast in the repo."), {shortcut: "'o'"}, true),
           url: 'https://github.com/nriley/NewsBlur-Helper',
           button: 'GitHub'
         })
@@ -449,25 +446,25 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
 
   make_extras_tab: function () {
     return $.make('div', { className: 'NB-tab NB-tab-extras' }, [
-      this.make_section_title('Bookmarklet'),
+      this.make_section_title(gettext('Bookmarklet')),
       this.make_app_grid([
         $.make('div', { className: 'NB-goodies-app' }, [
           $.make('div', { className: 'NB-goodies-app-header' }, [
             $.make('div', { className: 'NB-goodies-app-info' }, [
-              $.make('div', { className: 'NB-goodies-app-name' }, 'Add Site &amp; Share Story Bookmarklet'),
-              $.make('div', { className: 'NB-goodies-app-meta' }, 'Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you\'re reading.')
+              $.make('div', { className: 'NB-goodies-app-name' }, gettext('Add Site &amp; Share Story Bookmarklet')),
+              $.make('div', { className: 'NB-goodies-app-meta' }, gettext('Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you\'re reading.'))
             ]),
             NEWSBLUR.generate_bookmarklet()
           ])
         ])
       ], { full: true }),
-      this.make_section_title('Custom URLs'),
+      this.make_section_title(gettext('Custom URLs')),
       this.make_app_grid([
         $.make('div', { className: 'NB-goodies-app' }, [
           $.make('div', { className: 'NB-goodies-app-header' }, [
             $.make('div', { className: 'NB-goodies-app-info' }, [
-              $.make('div', { className: 'NB-goodies-app-name' }, 'Custom Add Site URL'),
-              $.make('div', { className: 'NB-goodies-app-meta' }, 'Use this URL template in browser extensions and feed readers to subscribe on NewsBlur.')
+              $.make('div', { className: 'NB-goodies-app-name' }, gettext('Custom Add Site URL')),
+              $.make('div', { className: 'NB-goodies-app-meta' }, gettext('Use this URL template in browser extensions and feed readers to subscribe on NewsBlur.'))
             ]),
             $.make('input', {
               className: 'NB-goodies-custom-input',
@@ -521,7 +518,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
     $.targetIs(e, { tagSelector: '.NB-goodies-bookmarklet-button' }, function ($t, $p) {
       e.preventDefault();
 
-      alert('Drag this button to your bookmark toolbar.');
+      alert(gettext('Drag this button to your bookmark toolbar.'));
     });
 
     $.targetIs(e, { tagSelector: '.NB-goodies-custom-input' }, function ($t, $p) {

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ReadingAction;
@@ -27,7 +28,7 @@ public class ReadingActionConfirmationFragment extends DialogFragment {
     private static final String DIALOG_TITLE = "dialog_title";
     private static final String DIALOG_MESSAGE = "dialog_message";
     private static final String DIALOG_CHOICES_RID = "dialog_choices_rid";
-    private static final String ACTION_CALLBACK = "action_callback";
+    private static final String NOTIFY_HOST = "notify_host";
 
     public static ReadingActionConfirmationFragment newInstance(ReadingAction ra, CharSequence title, CharSequence message, int choicesId, @Nullable ReadingActionListener callback) {
         ReadingActionConfirmationFragment fragment = new ReadingActionConfirmationFragment();
@@ -36,7 +37,7 @@ public class ReadingActionConfirmationFragment extends DialogFragment {
         args.putCharSequence(DIALOG_TITLE, title);
         args.putCharSequence(DIALOG_MESSAGE, message);
         args.putInt(DIALOG_CHOICES_RID, choicesId);
-        args.putSerializable(ACTION_CALLBACK, callback);
+        args.putBoolean(NOTIFY_HOST, callback != null);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,7 +51,6 @@ public class ReadingActionConfirmationFragment extends DialogFragment {
         CharSequence title = getArguments().getCharSequence(DIALOG_TITLE);
         CharSequence message = getArguments().getCharSequence(DIALOG_MESSAGE);
         int choicesId = getArguments().getInt(DIALOG_CHOICES_RID);
-        @Nullable ReadingActionListener callback = (ReadingActionListener) getArguments().getSerializable(ACTION_CALLBACK);
 
         builder.setTitle(title);
         // NB: setting a message will override the display of the buttons, making the dialogue a no-op
@@ -59,12 +59,17 @@ public class ReadingActionConfirmationFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
                     feedUtils.doAction(ra, requireContext());
-                    if (callback != null) {
-                        callback.onReadingActionCompleted();
-                    }
+                    notifyReadingActionCompleted(requireArguments(), getActivity());
                 }
             }
         });
         return builder.create();
+    }
+
+    static void notifyReadingActionCompleted(Bundle arguments, @Nullable FragmentActivity activity) {
+        // ReadingActionConfirmationFragment.java stores only the request, never the Activity callback.
+        if (arguments.getBoolean(NOTIFY_HOST) && activity instanceof ReadingActionListener) {
+            ((ReadingActionListener) activity).onReadingActionCompleted();
+        }
     }
 }

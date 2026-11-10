@@ -1,0 +1,19 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 886
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Helvetica Neue,34,&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,12,0,2,53,53,298,1
+Style: Disclosure,Helvetica Neue,26,&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,9,0,2,53,53,144,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:04.00,Title,,0,0,0,,A home for your favorite sources.
+Dialogue: 0,0:00:04.00,0:00:07.50,Title,,0,0,0,,Your daily reading, in one place.
+Dialogue: 0,0:00:07.50,0:00:14.50,Title,,0,0,0,,Settle into a good read.
+Dialogue: 0,0:00:14.50,0:00:19.50,Title,,0,0,0,,Save a good read for later.
+Dialogue: 1,0:00:14.50,0:00:19.50,Disclosure,,0,0,0,,A NewsBlur account is required. Some features require a paid subscription.

@@ -49,6 +49,14 @@ NEWSBLUR.Modal.prototype = {
             },
             'onClose': function (dialog, callback) {
                 self.flags.open = false;
+                // modal.js: Optional per-modal cleanup, such as the trainer's deferred
+                // feed refresh in reader_classifier.js.
+                if (self.handle_modal_closed) {
+                    self.handle_modal_closed();
+                }
+                // modal.js: Hover tooltips live on body (bind_tooltip in reader_classifier.js),
+                // so one over a control that closes the dialog would outlive it.
+                $('.NB-scope-tooltip').remove();
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function () {
@@ -108,7 +116,8 @@ NEWSBLUR.Modal.prototype = {
         if (this.feed.is_starred() || this.feed.is_social()) {
             $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).hide();
         } else {
-            $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true)).show();
+            var num_subscribers = this.feed.get('num_subscribers');
+            $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", num_subscribers), { count: Inflector.commas(num_subscribers) }, true)).show();
         }
     },
 

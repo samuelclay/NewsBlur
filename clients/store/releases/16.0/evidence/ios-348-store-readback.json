@@ -1,0 +1,159 @@
+{
+  "version": "16.0",
+  "build": "348",
+  "versionLocalizations": [
+    {
+      "language": "en",
+      "checkedAt": "2026-10-22T04:45:12.398Z",
+      "fields": 6
+    },
+    {
+      "language": "es",
+      "checkedAt": "2026-10-22T04:45:14.740Z",
+      "fields": 6
+    },
+    {
+      "language": "fr",
+      "checkedAt": "2026-10-22T04:45:17.181Z",
+      "fields": 6
+    },
+    {
+      "language": "de",
+      "checkedAt": "2026-10-22T04:45:21.699Z",
+      "fields": 6
+    },
+    {
+      "language": "pt-BR",
+      "checkedAt": "2026-10-22T04:45:24.423Z",
+      "fields": 6
+    },
+    {
+      "language": "it",
+      "checkedAt": "2026-10-22T04:45:26.692Z",
+      "fields": 6
+    },
+    {
+      "language": "nl",
+      "checkedAt": "2026-10-22T04:45:28.796Z",
+      "fields": 6
+    },
+    {
+      "language": "pl",
+      "checkedAt": "2026-10-22T04:45:30.817Z",
+      "fields": 6
+    },
+    {
+      "language": "tr",
+      "checkedAt": "2026-10-22T04:45:38.135Z",
+      "fields": 6
+    },
+    {
+      "language": "ru",
+      "checkedAt": "2026-10-22T04:45:40.324Z",
+      "fields": 6
+    },
+    {
+      "language": "uk",
+      "checkedAt": "2026-10-22T04:45:42.434Z",
+      "fields": 6
+    },
+    {
+      "language": "ar",
+      "checkedAt": "2026-10-22T04:45:44.489Z",
+      "fields": 6
+    },
+    {
+      "language": "he",
+      "checkedAt": "2026-10-22T04:45:46.597Z",
+      "fields": 6
+    },
+    {
+      "language": "hi",
+      "checkedAt": "2026-10-22T04:45:48.873Z",
+      "fields": 6
+    },
+    {
+      "language": "id",
+      "checkedAt": "2026-10-22T04:45:50.500Z",
+      "fields": 6
+    },
+    {
+      "language": "vi",
+      "checkedAt": "2026-10-22T04:45:56.994Z",
+      "fields": 6
+    },
+    {
+      "language": "th",
+      "checkedAt": "2026-10-22T04:45:59.477Z",
+      "fields": 6
+    },
+    {
+      "language": "ja",
+      "checkedAt": "2026-10-22T04:46:01.562Z",
+      "fields": 6
+    },
+    {
+      "language": "ko",
+      "checkedAt": "2026-10-22T04:46:04.330Z",
+      "fields": 6
+    },
+    {
+      "language": "zh-Hans",
+      "checkedAt": "2026-10-22T04:46:06.500Z",
+      "fields": 6
+    },
+    {
+      "language": "zh-Hant",
+      "checkedAt": "2026-10-22T04:46:08.067Z",
+      "fields": 6
+    }
+  ],
+  "appInfoLocales": [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "subscriptionAndGroupLocales": [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "productVerification": "All 21 locales matched canonical text for each of three subscriptions and the group. French Premium corrected and reloaded before reattaching.",
+  "verifiedAt": "2026-10-22T04:50:24.347Z"
+}

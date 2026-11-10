@@ -1,0 +1,45 @@
+{
+  "locale": "fr",
+  "udid": "D570C816-B762-48E2-AC94-C592153A896D",
+  "display": 3,
+  "source_commit": "bf81b82315d2d35384e79fcfebc0c0664104dc8d",
+  "files": [
+    {
+      "view": "stories",
+      "screen": "reader-folder-tech",
+      "style": "experimental",
+      "arguments": "-newsblur-ui-testing -newsblur-marketing-cooking -newsblur-marketing-assets /Users/sclay/projects/newsblur/clients/ios/MarketingCooking -newsblur-ui-test-screen reader-folder-tech -newsblur-ui-test-story-titles-style experimental -newsblur-ui-test-theme light -ApplePersistenceIgnoreState YES -newsblur_language fr -duo_fullscreen_reader.Alex NO",
+      "path": "duo-stories.png",
+      "sha256": "3482cee8a8692dd5e0249ecac5bf855c9e6ef5ea17d4ea72b7b63f37d3ef8197",
+      "captured_at": "2026-10-26T04:00:15Z"
+    },
+    {
+      "view": "feeds",
+      "screen": "reader-folder-tech",
+      "style": "standard",
+      "arguments": "-newsblur-ui-testing -newsblur-marketing-cooking -newsblur-marketing-assets /Users/sclay/projects/newsblur/clients/ios/MarketingCooking -newsblur-ui-test-screen reader-folder-tech -newsblur-ui-test-story-titles-style standard -newsblur-ui-test-theme light -ApplePersistenceIgnoreState YES -newsblur_language fr -duo_fullscreen_reader.Alex NO",
+      "path": "duo-feeds.png",
+      "sha256": "f9df481424756287a1d05681c2fdf745010cc63083b62f683c8a96d46d0db3ee",
+      "captured_at": "2026-10-26T04:00:32Z"
+    },
+    {
+      "view": "reader",
+      "screen": "reader-story-swift-1",
+      "style": "standard",
+      "arguments": "-newsblur-ui-testing -newsblur-marketing-cooking -newsblur-marketing-assets /Users/sclay/projects/newsblur/clients/ios/MarketingCooking -newsblur-ui-test-screen reader-story-swift-1 -newsblur-ui-test-story-titles-style standard -newsblur-ui-test-theme light -ApplePersistenceIgnoreState YES -newsblur_language fr -duo_fullscreen_reader.Alex NO",
+      "path": "duo-reader.png",
+      "sha256": "123623b461b06b3459739c0aae0dbaacf5c4fb8014525f091cdd51076984974d",
+      "captured_at": "2026-10-26T04:00:50Z"
+    },
+    {
+      "view": "saved",
+      "screen": "cooking-saved",
+      "style": "standard",
+      "arguments": "-newsblur-ui-testing -newsblur-marketing-cooking -newsblur-marketing-assets /Users/sclay/projects/newsblur/clients/ios/MarketingCooking -newsblur-ui-test-screen cooking-saved -newsblur-ui-test-story-titles-style standard -newsblur-ui-test-theme light -ApplePersistenceIgnoreState YES -newsblur_language fr -duo_fullscreen_reader.Alex NO",
+      "path": "duo-saved.png",
+      "sha256": "d308f678892752b95dcb7c40e6071b4b4b51e491bb8fe7921411c5d9f6c3db27",
+      "captured_at": "2026-10-26T04:01:07Z"
+    }
+  ],
+  "visual_review": "required"
+}

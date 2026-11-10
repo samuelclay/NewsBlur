@@ -43,11 +43,16 @@ public class FeedFolderResponse {
     public boolean isArchive;
     public boolean isPro;
     public long premiumExpire;
+    // Natural language classifier billing, null when the server doesn't send it yet.
+    public com.newsblur.util.UsageBillingState usageBillingState;
     public boolean isStaff;
 	public int starredCount;
     public Boolean storyClustering;
     public String clusterMode;
     public boolean clusterMarkRead;
+    public String language = "auto";
+    /** FeedFolderResponse.java keeps the raw preferences for ListenPreferences.kt's lenient parsing. */
+    public JsonObject preferences;
 
     public String shareExtToken;
 	
@@ -77,8 +82,21 @@ public class FeedFolderResponse {
             if (profile.has("is_pro")) {
                 this.isPro = profile.get("is_pro").getAsBoolean();
             }
+            if (profile.has("can_use_ai_classifiers")) {
+                this.usageBillingState = new com.newsblur.util.UsageBillingState(
+                        profileBoolean(profile, "is_usage_billing"),
+                        profileBoolean(profile, "is_self_hosted_ai"),
+                        profileBoolean(profile, "can_use_ai_classifiers"),
+                        profile.has("usage_billing_limit") && !profile.get("usage_billing_limit").isJsonNull()
+                                ? profile.get("usage_billing_limit").getAsDouble()
+                                : null);
+            }
             if (profile.has("preferences")) {
                 JsonObject preferences = parsePreferences(profile.get("preferences"));
+                this.preferences = preferences;
+                if (preferences != null && preferences.has("language") && !preferences.get("language").isJsonNull()) {
+                    this.language = preferences.get("language").getAsString();
+                }
                 if (preferences != null && preferences.has("story_clustering")) {
                     this.storyClustering = preferences.get("story_clustering").getAsBoolean();
                 }
@@ -187,6 +205,10 @@ public class FeedFolderResponse {
         parseTime = System.currentTimeMillis() - startTime;
         com.newsblur.network.FolderPath.setFolders(folders);
 	}
+
+    private static boolean profileBoolean(JsonObject profile, String key) {
+        return profile.has(key) && !profile.get(key).isJsonNull() && profile.get(key).getAsBoolean();
+    }
 
     private JsonObject parsePreferences(JsonElement preferencesElement) {
         if (preferencesElement == null || preferencesElement.isJsonNull()) {

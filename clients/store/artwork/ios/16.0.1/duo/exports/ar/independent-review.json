@@ -1,0 +1,30 @@
+{
+  "language": "ar",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:13:59Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Arabic captions are shaped and right-aligned, with correct punctuation placement and intact words.",
+    "Native Arabic controls and mirrored right-to-left source/story layout visible; photos and article loaded and no completion notice in final panels."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-ar-duo-inner-2853x2007-01.png",
+      "sha256": "310bc405be3bb59718592c8005bf5e97acb112e622a1d0da0dc082bb5221bc3f"
+    },
+    {
+      "filename": "newsblur-16.0.1-ar-duo-inner-2853x2007-02.png",
+      "sha256": "569403818ef930e09cabaab2fd04eb26ae89257a14d03ae9b2b15bc7327a7fe3"
+    },
+    {
+      "filename": "newsblur-16.0.1-ar-duo-inner-2853x2007-03.png",
+      "sha256": "dde072d6807dd6c8c91ba2aa9eb72872b5440cc653cf7a17d26098c15d75298d"
+    },
+    {
+      "filename": "newsblur-16.0.1-ar-duo-inner-2853x2007-04.png",
+      "sha256": "51d9c6fb59a22870ba16fa1598a0aeb18e33839286316c5c17bb4bffb473fb9a"
+    }
+  ],
+  "contact_sha256": "bb683c02b45a942b445b38148b9ae2763b2e2eb73d6ff87ee98f3d78b048662c"
+}

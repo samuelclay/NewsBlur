@@ -93,6 +93,9 @@
 @property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic, readonly) BOOL useCustomToolbar;
+@property (nonatomic, readonly) BOOL usesVerticalReaderToolbar;
+@property (nonatomic, readonly) UIBarButtonItem *settingsPresentationBarButton;
+@property (nonatomic, readonly) BOOL retainsDuoSourceArticle;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
@@ -104,7 +107,9 @@
 @property (nonatomic, strong) StoryToolbarScrollHandler *toolbarScrollHandler;
 
 - (void)resizeScrollView;
+- (BOOL)hasHiddenReaderAncestor;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
+- (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController supressRedraw:(BOOL)suppressRedraw;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
@@ -121,6 +126,7 @@
 - (void)refreshPages;
 - (void)reorientPages;
 - (void)preserveCurrentPageAtLocation:(NSInteger)location;
+- (void)relayoutPagesKeepingCurrentPageAtLocation:(NSInteger)location;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;
@@ -152,6 +158,8 @@
 - (void)changedAutoscroll;
 - (void)changedScrollOrientation;
 - (void)updateStoriesTheme;
+- (void)updateStoriesDirection;
+- (void)updateReaderDirection;
 - (void)showShareHUD:(NSString *)msg;
 - (void)showFetchingTextNotifier;
 - (void)hideNotifier;
@@ -171,6 +179,7 @@
 - (IBAction)autoscrollFaster:(UIButton *)sender;
 
 - (IBAction)openSendToDialog:(id)sender;
+- (void)openStoryTrainerFromKeyboard:(id)sender;
 - (IBAction)doNextUnreadStory:(id)sender;
 - (IBAction)doPreviousStory:(id)sender;
 - (void)changeToNextPage:(id)sender;

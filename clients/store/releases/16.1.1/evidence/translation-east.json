@@ -1,0 +1,29 @@
+{
+  "version": "16.1.1",
+  "languages": [
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "status": "translated and translator reviewed; independent review pending",
+  "source": "Canonical English metadata, products and 16.1.1 notes",
+  "fields": "All platform listing and product fields reviewed; changed Listen descriptions, promotional copy, Archive/Pro product descriptions, Archive benefits and full release notes translated",
+  "validation": {
+    "ios": 98,
+    "macos": 98,
+    "android": 112
+  },
+  "checks": [
+    "JSON/schema and all field limits passed for iOS, macOS and Android",
+    "Preserved product identifiers, brand names and terms/privacy URLs",
+    "Matched locale glossaries and shipped control labels",
+    "Preserved 30-second previews and account/billing disclosures",
+    "Weekly allowances remain 1 hour Archive and 10 hours Pro, resetting Sunday",
+    "macOS release notes omit the mobile reading-toolbar claim",
+    "Simplified and Traditional Chinese scripts and punctuation reviewed"
+  ],
+  "independent_review": false
+}

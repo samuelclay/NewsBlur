@@ -1,0 +1,313 @@
+- generic: All changes saved.
+- banner:
+  - button "Collapse menu":
+  - link "YouTube Studio dashboard":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g
+    - img "YouTube Studio dashboard"
+  - button "Skip navigation":
+    - generic: Skip navigation
+  - button "Search":
+  - button "Help":
+  - button "Notifications":
+  - button "Ask Studio":
+    - generic: Ask Studio
+  - button "Create":
+    - generic: Create
+  - generic "Account":
+    - button "Account"
+- navigation:
+  - img "Samuel Clay"
+  - generic: Your channel
+  - generic: Samuel Clay
+  - menu:
+    - menuitem "Dashboard":
+      - generic: Dashboard
+    - menuitem "Content":
+      - generic: Content
+    - menuitem "Analytics":
+      - generic: Analytics
+    - menuitem "Community":
+      - generic: Community
+    - menuitem "Subtitles":
+      - generic: Subtitles
+    - menuitem "Content detection":
+      - generic: Content detection
+    - menuitem "Earn":
+      - generic: Earn
+    - menuitem "Customization":
+      - generic: Customization
+    - menuitem "Audio library":
+      - generic: Audio library
+  - list:
+    - button "Settings":
+      - generic: Settings
+    - button "Send feedback":
+      - generic: Send feedback
+- main:
+  - heading "Channel dashboard" [level=1]
+  - button "Upload videos":
+  - link "Go live":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g/livestreaming
+    - button "Go live":
+  - link "Create post":
+    - /url: https://www.youtube.com/channel/UCm5FhdXNAqQTpAxpWs5mF6g/posts?show_create_dialog=1
+    - button "Create post":
+  - paragraph:
+    - text: Want to see metrics on your recent video?
+    - text: Upload and publish a video to get started.
+  - button "Upload videos":
+    - generic: Upload videos
+  - heading "Channel analytics" [level=2]
+  - generic: Current subscribers
+  - generic: "0"
+  - link "View live count":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g/explore?entity_type=CHANNEL&entity_id=UCm5FhdXNAqQTpAxpWs5mF6g&time_period=4_weeks&explore_type=SUBSCRIBERS
+    - button "View live count":
+      - generic: View live count
+  - separator
+  - generic: Summary
+  - generic: Last 28 days
+  - generic: Views
+  - generic: "0"
+  - generic: —
+  - generic: Watch time (hours)
+  - generic: "0.0"
+  - generic: —
+  - link "Go to channel analytics":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g/analytics/tab-overview/period-default
+    - button "Go to channel analytics":
+      - generic: Go to channel analytics
+  - separator
+  - text: Top content
+  - generic: Last 48 hours · Views
+  - table:
+    - rowgroup
+  - link "View realtime data":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g/explore?entity_type=CHANNEL&entity_id=UCm5FhdXNAqQTpAxpWs5mF6g&time_period=4_weeks&explore_type=LATEST_ACTIVITY
+    - button "View realtime data":
+      - generic: View realtime data
+  - button "Previous Item" [disabled]:
+  - status "Card 1 of 5": 1 / 5
+  - button "Next Item":
+  - heading "Creator Insider" [level=2]
+  - link "New 30+ YouTube updates":
+    - /url: https://www.youtube.com/watch?v=pbUkedxJPCE
+  - heading "New 30+ YouTube updates" [level=2]
+  - generic: "@ColinandSamir recap #MadeOnYouTube with CEO @nealmohan, @mkbhd, @troyesivan, @CelebritySubstitute, Chucky, @paddygalloway8780, @JennyHoyos"
+  - button "Watch on YouTube":
+    - generic: Watch on YouTube
+  - heading "What's new in Studio" [level=2]
+  - list:
+    - link "Increasing Shorts length":
+      - /url: https://support.google.com/youtube/answer/11286863?hl=en
+      - heading "Increasing Shorts length" [level=3]
+    - separator
+    - link "Expansion of channel permissions":
+      - /url: https://support.google.com/youtube/answer/11286864?hl=en
+      - heading "Expansion of channel permissions" [level=3]
+    - separator
+    - link "Upcoming changes to Community Guidelines warnings":
+      - /url: https://support.google.com/youtube/answer/11287076?hl=en
+      - heading "Upcoming changes to Community Guidelines warnings" [level=3]
+  - link "Terms of use":
+    - /url: https://www.youtube.com/t/terms
+  - link "Privacy policy":
+    - /url: https://policies.google.com/privacy?hl=en
+  - link "Policies & Safety":
+    - /url: https://www.youtube.com/yt/policyandsafety/
+- dialog:
+  - button "Uploads complete" [expanded]:
+    - generic: Uploads complete
+    - button:
+  - button "Close":
+  - list:
+    - button "Edit video newsblur-android-16.0-de.mp4":
+      - button:
+      - generic: newsblur-android-16.0-de.mp4
+      - generic: 100% uploaded
+    - button "Edit video newsblur-android-16.0-pt-BR.mp4":
+      - button:
+      - generic: newsblur-android-16.0-pt-BR.mp4
+      - generic: 100% uploaded
+- dialog:
+  - generic: "NewsBlur: RSS-Reader · Deutsch"
+  - generic: Saved as private
+  - button "Send Feedback":
+  - button "Close":
+  - tablist:
+    - tab "Details":
+      - generic: Details
+    - tab "Video elements" [selected]:
+      - generic: Video elements
+    - tab "Checks":
+      - generic: Checks
+    - tab "Visibility":
+      - generic: Visibility
+  - heading "Video elements" [level=1]
+  - text: Use cards and an end screen to show viewers related videos, websites, and calls to action.
+  - link "Learn more":
+    - /url: https://support.google.com/youtube/answer/57407?hl=en#video-elements
+  - heading "Subtitles" [level=3]
+  - generic: Reach a broader audience by adding subtitles to your video
+  - button "Add":
+    - generic: Add
+  - heading "End screen" [level=3]
+  - generic: Promote related content at the end of your video
+  - button "Import from video":
+    - generic: Import from video
+  - button "Add":
+    - generic: Add
+  - heading "Cards" [level=3]
+  - generic: Promote related content during your video
+  - button "Add":
+    - generic: Add
+  - generic "Video upload complete":
+  - generic "Video processing Processing complete":
+  - generic "Copyright check complete No issues found":
+  - generic: Checks complete. No issues found.
+  - button "Back":
+    - generic: Back
+  - button "Next":
+    - generic: Next
+- generic "German subtitles":
+  - dialog "German subtitles":
+    - generic: German
+    - region "Dialog controls":
+      - heading "Dialog controls" [level=2]
+      - button "Send Feedback":
+      - button "Save draft":
+        - generic: Save draft
+      - status: Save draft button enabled
+      - button "Done":
+        - generic: Done
+      - status: Done button enabled
+      - button "Close":
+    - region "Edit timings":
+      - heading "Edit timings" [level=2]
+      - button "Subtitle":
+        - generic: Subtitle
+      - button "Edit as text" [disabled]:
+        - generic: Edit as text
+      - button "Options":
+      - list "Timings":
+        - listitem "Text with timing":
+          - textbox "Subtitle": Ein Zuhause für deine Lieblingsquellen.
+          - generic: Press Enter to split or add a subtitle line. Press Shift+Enter for a new line.
+          - button "Remove caption line":
+          - generic "0 seconds 0 frames":
+            - generic: 00:00
+            - textbox "0 seconds 0 frames"
+          - generic "3 seconds 14 frames":
+            - generic: 03:14
+            - textbox "3 seconds 14 frames"
+          - button "Add caption line" [disabled]:
+        - listitem "Text with timing":
+          - textbox "Subtitle": Deine tägliche Lektüre an einem Ort.
+          - generic: Press Enter to split or add a subtitle line. Press Shift+Enter for a new line.
+          - generic "3 seconds 14 frames":
+            - generic: 03:14
+            - textbox "3 seconds 14 frames"
+          - generic "6 seconds 29 frames":
+            - generic: 06:29
+            - textbox "6 seconds 29 frames"
+        - listitem "Text with timing":
+          - textbox "Subtitle": Mach es dir beim Lesen gemütlich.
+          - generic: Press Enter to split or add a subtitle line. Press Shift+Enter for a new line.
+          - generic "6 seconds 29 frames":
+            - generic: 06:29
+            - textbox "6 seconds 29 frames"
+          - generic "10 seconds 14 frames":
+            - generic: 10:14
+            - textbox "10 seconds 14 frames"
+        - listitem "Text with timing":
+          - textbox "Subtitle": Speichere gute Artikel für später.
+          - generic: Press Enter to split or add a subtitle line. Press Shift+Enter for a new line.
+          - generic "10 seconds 14 frames":
+            - generic: 10:14
+            - textbox "10 seconds 14 frames"
+          - generic "13 seconds 29 frames":
+            - generic: 13:29
+            - textbox "13 seconds 29 frames"
+        - listitem "Text with timing":
+          - textbox "Subtitle": Ein Zuhause für deine Lieblingsquellen.
+          - generic: Press Enter to split or add a subtitle line. Press Shift+Enter for a new line.
+          - generic "13 seconds 29 frames":
+            - generic: 13:29
+            - textbox "13 seconds 29 frames"
+          - generic "17 seconds 14 frames":
+            - generic: 17:14
+            - textbox "17 seconds 14 frames"
+        - listitem "Text with timing":
+          - textbox "Subtitle": Deine tägliche Lektüre an einem Ort.
+          - generic: Press Enter to split or add a subtitle line. Press Shift+Enter for a new line.
+          - generic "17 seconds 14 frames":
+            - generic: 17:14
+            - textbox "17 seconds 14 frames"
+          - generic "20 seconds 29 frames":
+            - generic: 20:29
+            - textbox "20 seconds 29 frames"
+        - listitem "Text with timing":
+          - textbox "Subtitle": Mach es dir beim Lesen gemütlich. Ein NewsBlur-Konto ist erforderlich. Einige Funktionen erfordern ein kostenpflichtiges Abonnement.
+          - generic: Press Enter to split or add a subtitle line. Press Shift+Enter for a new line.
+          - generic "20 seconds 29 frames":
+            - generic: 20:29
+            - textbox "20 seconds 29 frames"
+          - generic "24 seconds 14 frames":
+            - generic: 24:14
+            - textbox "24 seconds 14 frames"
+        - listitem "Text with timing":
+          - textbox "Subtitle": Speichere gute Artikel für später. Ein NewsBlur-Konto ist erforderlich. Einige Funktionen erfordern ein kostenpflichtiges Abonnement.
+          - generic: Press Enter to split or add a subtitle line. Press Shift+Enter for a new line.
+          - generic "24 seconds 14 frames":
+            - generic: 24:14
+            - textbox "24 seconds 14 frames"
+          - generic "27 seconds 29 frames":
+            - generic: 27:29
+            - textbox "27 seconds 29 frames"
+    - heading "Subtitles preview" [level=2]
+    - region "Subtitles preview":
+      - region "Video player":
+        - generic: Ein Zuhause für deine Lieblingsquellen.
+        - button "Play":
+        - button "Skip back 10 seconds":
+        - button "Skip forward 10 seconds":
+        - button "Mute":
+        - slider "volume"
+        - generic: 0:00 / 0:29
+        - button "Settings":
+      - checkbox "Pause while typing"
+      - generic: Pause while typing
+      - button "View keyboard shortcuts":
+        - generic: View keyboard shortcuts
+    - heading "Subtitles timeline" [level=2]
+    - region "Subtitles timeline":
+      - generic "0 seconds 0 frames":
+        - generic: 00:00
+        - textbox "0 seconds 0 frames"
+      - button "Undo":
+        - generic: Undo
+      - button "Redo" [disabled]:
+        - generic: Redo
+      - button "Zoom out":
+      - slider "Zoom slider":
+        - progressbar
+      - button "Zoom in":
+      - generic "Timeline header"
+      - button "Find playhead":
+      - button "Find playhead":
+      - generic "Ein Zuhause für deine Lieblingsquellen."
+      - generic: Ein Zuhause für deine Lieblingsquellen.
+      - generic "Deine tägliche Lektüre an einem Ort."
+      - generic: Deine tägliche Lektüre an einem Ort.
+      - generic: Mach es dir beim Lesen gemütlich.
+      - generic: Speichere gute Artikel für später.
+      - generic: Ein Zuhause für deine Lieblingsquellen.
+      - generic: Deine tägliche Lektüre an einem Ort.
+      - generic: Mach es dir beim Lesen gemütlich. Ein NewsBlur-Konto ist erforderlich. Einige Funktionen erfordern ein kostenpflichtiges Abonnement.
+      - generic: Speichere gute Artikel für später. Ein NewsBlur-Konto ist erforderlich. Einige Funktionen erfordern ein kostenpflichtiges Abonnement.
+      - generic "Audio waveform"
+      - generic "Start of timeline"
+      - generic "End of timeline"
+      - slider "Playhead"
+      - generic: 00:00
+- generic "Select subtitles file type to upload"

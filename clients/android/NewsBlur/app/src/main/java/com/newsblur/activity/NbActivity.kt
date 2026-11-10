@@ -1,13 +1,17 @@
 package com.newsblur.activity
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.listen.ListenManager
+import com.newsblur.listen.ListenMiniPlayerHost
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSync
 import com.newsblur.service.NbSyncManager
@@ -17,6 +21,7 @@ import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,7 +32,7 @@ import javax.inject.Inject
  * login state and tracking of sync/update broadcasts.
  */
 @AndroidEntryPoint
-open class NbActivity : AppCompatActivity() {
+open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
@@ -37,10 +42,18 @@ open class NbActivity : AppCompatActivity() {
     @Inject
     lateinit var syncServiceState: SyncServiceState
 
+    @Inject
+    lateinit var listenManager: ListenManager
+
+    private var listenMiniPlayerHost: ListenMiniPlayerHost? = null
+
     private var uniqueLoginKey: String? = null
     private var lastTheme: ThemeValue? = null
+    private var themePreferences: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // A foldable that started folded gets its split rules once any window opens up wide.
+        StorySplitView.installIfWideEnough(this)
         applyTheme(readStartupTheme(), shouldUseTranslucentTheme())
         super.onCreate(savedInstanceState)
         Log.d(this, "onCreate")
@@ -75,12 +88,51 @@ open class NbActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        if (showsListenMiniPlayer() && !isFinishing) {
+            listenMiniPlayerHost =
+                ListenMiniPlayerHost(
+                    activity = this,
+                    listenManager = listenManager,
+                    prefsRepo = prefsRepo,
+                    anchor = ::listenMiniPlayerAnchor,
+                    onInsetChanged = ::onListenMiniPlayerInsetChanged,
+                ).also { it.attach() }
+        }
+    }
+
     override fun onResume() {
         Log.d(this, "onResume" + UIUtils.getMemoryUsageDebug(this))
         super.onResume()
         finishIfNotLoggedIn()
+        listenMiniPlayerHost?.setShownInThisPane(showsListenMiniPlayerInThisPane())
 
-        // is is possible that another activity changed the theme while we were on the backstack
+        startObservingThemeChanges()
+    }
+
+    private fun startObservingThemeChanges() {
+        if (themePreferences == null) {
+            themePreferences = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE).also {
+                it.registerOnSharedPreferenceChangeListener(this)
+            }
+        }
+        refreshThemeIfChanged()
+    }
+
+    private fun stopObservingThemeChanges() {
+        val preferences = themePreferences
+        themePreferences = null
+        preferences?.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        // NbActivity.kt observes each resumed pane, including peers that never leave the foreground.
+        if (themePreferences != null && key == PrefConstants.THEME) refreshThemeIfChanged()
+    }
+
+    private fun refreshThemeIfChanged() {
+        if (isFinishing || isDestroyed) return
         val currentSelectedTheme = prefsRepo.getSelectedTheme()
         if (lastTheme != currentSelectedTheme) {
             lastTheme = currentSelectedTheme
@@ -90,10 +142,23 @@ open class NbActivity : AppCompatActivity() {
 
     override fun onPause() {
         Log.d(this.javaClass.name, "onPause")
+        stopObservingThemeChanges()
         super.onPause()
     }
 
     protected open fun shouldUseTranslucentTheme(): Boolean = false
+
+    /** NbActivity.kt floats Listen's mini player (ListenMiniPlayerHost.kt) on the main screens that opt in. */
+    protected open fun showsListenMiniPlayer(): Boolean = false
+
+    /** The bottom toolbar the mini player sits above, or null to sit above the navigation bar. */
+    protected open fun listenMiniPlayerAnchor(): View? = null
+
+    /** In a tablet split only one pane shows the mini player, so neighbors can decline it here. */
+    protected open fun showsListenMiniPlayerInThisPane(): Boolean = true
+
+    /** How much of the screen bottom the mini player covers, for screens that pad their lists to match. */
+    protected open fun onListenMiniPlayerInsetChanged(insetPx: Int) = Unit
 
     private fun readStartupTheme(): ThemeValue {
         val prefs = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)

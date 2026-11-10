@@ -1,0 +1,3 @@
+NewsBlur's interface now supports 21 languages. Choose yours in the app, with a preview in your language and English. Arabic and Hebrew read right to left. Stories stay exactly as published.
+
+Next story controls stay in a fixed position, including when Next becomes Done. Sign-in buttons are easier to read in dark themes.

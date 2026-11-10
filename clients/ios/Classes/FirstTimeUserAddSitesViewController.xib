@@ -25,6 +25,9 @@
                     <nil key="highlightedColor"/>
                     <color key="shadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <size key="shadowOffset" width="0.0" height="1"/>
+                <userDefinedRuntimeAttributes>
+                    <userDefinedRuntimeAttribute keyPath='nbLocalizedText' type='string' value='Subscribe to recommended sites:'/>
+                </userDefinedRuntimeAttributes>
                 </label>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="160">
                     <rect key="frame" x="30" y="40" width="480" height="475"/>

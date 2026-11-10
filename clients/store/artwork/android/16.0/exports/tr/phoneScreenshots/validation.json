@@ -1,0 +1,281 @@
+{
+  "checked_at": "2026-10-17T15:45:28Z",
+  "assets": [
+    {
+      "language": "tr",
+      "locale": "tr-TR",
+      "imageType": "phoneScreenshots",
+      "position": 1,
+      "path": "tr/phoneScreenshots/panel-01.png",
+      "sha256": "48c8bd5cde451474e7eadbcecdbb5d6a625157a794fa6d68e74a657feb77e5da",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1064321,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/tr.json": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/tr/phone-stories.png": "a1b8e79c8fcff9302371bf9436a92f7305c18e25a2e6392f4aafe567b6b1299b",
+        "captures/tr/phone-feeds.png": "8ad7e4acc4615a8aba7ccebe549a12adf24b49dd6249ba3cd405b56664c1f99d",
+        "captures/tr/phone-reader.png": "3f39af1ebe80782b6f7c290ecff1cd17e42557be92d1b4ed04656a0dedc9e3ea",
+        "captures/tr/phone-saved.png": "02b7962fac486382e0500591fc2667e27871ea6fde7c95d665762d960a46ad8d"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.5646,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/tr/phone-stories.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/tr/phone-stories.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "tr",
+        "panel": 1,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Günlük okumalarınız tek bir yerde."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:46:32Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "tr",
+      "locale": "tr-TR",
+      "imageType": "phoneScreenshots",
+      "position": 2,
+      "path": "tr/phoneScreenshots/panel-02.png",
+      "sha256": "d2aca130529b59a6f1a21f5c697d7a663b0fad641aacd9eabdcb0117dc196cac",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 308836,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/tr.json": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/tr/phone-stories.png": "a1b8e79c8fcff9302371bf9436a92f7305c18e25a2e6392f4aafe567b6b1299b",
+        "captures/tr/phone-feeds.png": "8ad7e4acc4615a8aba7ccebe549a12adf24b49dd6249ba3cd405b56664c1f99d",
+        "captures/tr/phone-reader.png": "3f39af1ebe80782b6f7c290ecff1cd17e42557be92d1b4ed04656a0dedc9e3ea",
+        "captures/tr/phone-saved.png": "02b7962fac486382e0500591fc2667e27871ea6fde7c95d665762d960a46ad8d"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.2574,
+          "largest_tile_error": 0.6862,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/tr/phone-feeds.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/tr/phone-feeds.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "tr",
+        "panel": 2,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Sevdiğiniz kaynaklar için bir yuva."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:46:32Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "tr",
+      "locale": "tr-TR",
+      "imageType": "phoneScreenshots",
+      "position": 3,
+      "path": "tr/phoneScreenshots/panel-03.png",
+      "sha256": "fcc1e7e803adc8aaa5bf35a2e2c4c274a3c02766eec766e1e3da1885ca6fdab8",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1098786,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/tr.json": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/tr/phone-stories.png": "a1b8e79c8fcff9302371bf9436a92f7305c18e25a2e6392f4aafe567b6b1299b",
+        "captures/tr/phone-feeds.png": "8ad7e4acc4615a8aba7ccebe549a12adf24b49dd6249ba3cd405b56664c1f99d",
+        "captures/tr/phone-reader.png": "3f39af1ebe80782b6f7c290ecff1cd17e42557be92d1b4ed04656a0dedc9e3ea",
+        "captures/tr/phone-saved.png": "02b7962fac486382e0500591fc2667e27871ea6fde7c95d665762d960a46ad8d"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.4041,
+          "largest_tile_error": 0.8568,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/tr/phone-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/tr/phone-reader.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "tr",
+        "panel": 3,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Rahatınıza bakın, keyifle okuyun."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:46:32Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "tr",
+      "locale": "tr-TR",
+      "imageType": "phoneScreenshots",
+      "position": 4,
+      "path": "tr/phoneScreenshots/panel-04.png",
+      "sha256": "1244453169c95e6eda1bb61b1409ec9e294b55a08bd452b29675bed4920a2c85",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1080442,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/tr.json": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/tr/phone-stories.png": "a1b8e79c8fcff9302371bf9436a92f7305c18e25a2e6392f4aafe567b6b1299b",
+        "captures/tr/phone-feeds.png": "8ad7e4acc4615a8aba7ccebe549a12adf24b49dd6249ba3cd405b56664c1f99d",
+        "captures/tr/phone-reader.png": "3f39af1ebe80782b6f7c290ecff1cd17e42557be92d1b4ed04656a0dedc9e3ea",
+        "captures/tr/phone-saved.png": "02b7962fac486382e0500591fc2667e27871ea6fde7c95d665762d960a46ad8d"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.5618,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/tr/phone-saved.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/tr/phone-saved.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "tr",
+        "panel": 4,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 53.5,
+            "line_count": 2,
+            "text": "Güzel bir yazıyı daha sonra okumak için kaydedin."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:46:32Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    }
+  ]
+}

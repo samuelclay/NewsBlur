@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Ordner, Suche, Tags für gespeicherte Artikel"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Dauerhaftes Archiv und 1 Stunde Hörzeit pro Woche"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Häufige Feedupdates und 10 Stunden Hörzeit pro Woche"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlur-Abonnements",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premium-Abonnement",
+        "description": "Lies Ordner in einer Liste, durchsuche deine Feeds, ordne gespeicherte Artikel mit Tags und profitiere von schnelleren Feed-Aktualisierungen.",
+        "benefits": [
+          "Ordner in einer Artikelliste lesen",
+          "Feeds übergreifend durchsuchen",
+          "Gespeicherte Artikel mit Tags ordnen",
+          "Häufigere Feed-Aktualisierungen"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archive-Abonnement",
+        "description": "Alle Premium-Funktionen, ein dauerhaftes durchsuchbares Archiv und 1 Stunde Hörzeit pro Woche. Lass Artikel beliebig lange ungelesen. Das Hörkontingent wird sonntags zurückgesetzt.",
+        "benefits": [
+          "Alles aus Premium",
+          "Artikel für immer ungelesen lassen",
+          "Dauerhaftes durchsuchbares Archiv",
+          "1 Stunde Hörzeit pro Woche"
+        ]
+      }
+    }
+  }
+}

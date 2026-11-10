@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- AndroidManifest.xml: ListenPlaybackService.kt keeps Listen audio playing in the background. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -20,11 +23,22 @@
         android:fullBackupContent="@xml/backupscheme"
         android:icon="@mipmap/app_icon_sunrise_gold"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
+        android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        <service android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false" android:exported="false">
+            <meta-data android:name="autoStoreLocales" android:value="true" />
+        </service>
 
         <profileable
             android:shell="true"
             tools:targetApi="29" />
+
+        <!-- StorySplitView.kt shows story lists and readers side by side on tablets and foldables. -->
+        <property
+            android:name="android.window.PROPERTY_ACTIVITY_EMBEDDING_SPLITS_ENABLED"
+            android:value="true" />
 
         <activity
             android:name=".activity.InitActivity"
@@ -671,7 +685,16 @@
 
         <activity
             android:name=".activity.LoginActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="${socialCallbackScheme}" android:host="complete" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".activity.Main"
@@ -698,51 +721,63 @@
 
         <activity
             android:name=".activity.FeedItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.AllStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:launchMode="singleTask"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.InfrequentItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.WidelyReadStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.LongReadsItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.GoodReadsItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.ReadStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.SavedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.AllSharedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.GlobalSharedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.FolderItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.SocialFeedItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
@@ -807,6 +842,23 @@
 
         <activity android:name=".activity.SubscriptionActivity" />
 
+        <!-- UsageBillingActivity.kt: Stripe returns the Custom Tab to <socialCallbackScheme>://usage-billing,
+             and singleTask closes the tab and hands the result to the open billing screen. While
+             util/UsageBillingFeature.kt holds billing, the activity stays registered but closes at once. -->
+        <activity
+            android:name=".activity.UsageBillingActivity"
+            android:exported="true"
+            android:label="@string/usage_billing_title"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="${socialCallbackScheme}" android:host="usage-billing" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".activity.MuteConfig"
             android:label="@string/mute_sites"
@@ -820,9 +872,24 @@
             android:name=".activity.DiscoverFeedsActivity"
             android:launchMode="singleTop" />
 
+        <activity android:name=".activity.OnboardingActivity" android:exported="false" />
         <activity
             android:name=".activity.DiscoverSitesActivity"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity android:name=".activity.ReadingPlaceholder" />
+
+        <!-- FeedListDrawer.kt sits beside story titles in the tablet browsing layout. -->
+        <activity
+            android:name=".activity.FeedListDrawer"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Translucent" />
+
+        <activity
+            android:name=".image.StoryImageViewerHost"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
+            android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.SocialFeedReading"
@@ -833,10 +900,19 @@
             android:name=".service.SyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
+            android:name=".listen.ListenPlaybackService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
+        <service
             android:name=".widget.WidgetRemoteViewsService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
             android:name=".service.SubscriptionSyncService"
+            android:enabled="${playBillingEnabled}"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 

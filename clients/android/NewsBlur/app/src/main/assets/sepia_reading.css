@@ -20,7 +20,7 @@ blockquote {
 
 pre,
 blockquote {
-    border-left-color: #D4C8B8;
+    border-inline-start-color: #D4C8B8;
 }
 
 blockquote *,

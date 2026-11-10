@@ -2,6 +2,23 @@
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlur-Swift.h"
 
+static BOOL NBHasKeyboardTextInput(UIView *view) {
+    if (view.isFirstResponder &&
+        ([view isKindOfClass:UITextField.class] || [view isKindOfClass:UITextView.class])) return YES;
+    for (UIView *child in view.subviews) {
+        if (NBHasKeyboardTextInput(child)) return YES;
+    }
+    return NO;
+}
+
+static BOOL NBReaderViewIsVisible(UIView *view, UIWindow *window) {
+    if (!window || view.window != window) return NO;
+    for (UIView *ancestor = view; ancestor; ancestor = ancestor.superview) {
+        if (ancestor.hidden || ancestor.alpha == 0) return NO;
+    }
+    return YES;
+}
+
 static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplitPreferredBehavior behavior) {
     switch (behavior) {
         case StorySplitPreferredBehaviorTile:
@@ -10,40 +27,6 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
             return UISplitViewControllerSplitBehaviorOverlay;
         default:
             return UISplitViewControllerSplitBehaviorDisplace;
-    }
-}
-
-static StorySplitPreferredDisplayMode NBDecisionDisplayModeFromSplitDisplayMode(UISplitViewControllerDisplayMode displayMode) {
-    switch (displayMode) {
-        case UISplitViewControllerDisplayModeOneBesideSecondary:
-            return StorySplitPreferredDisplayModeOneBesideSecondary;
-        case UISplitViewControllerDisplayModeOneOverSecondary:
-            return StorySplitPreferredDisplayModeOneOverSecondary;
-        case UISplitViewControllerDisplayModeTwoBesideSecondary:
-            return StorySplitPreferredDisplayModeTwoBesideSecondary;
-        case UISplitViewControllerDisplayModeTwoOverSecondary:
-            return StorySplitPreferredDisplayModeTwoOverSecondary;
-        case UISplitViewControllerDisplayModeTwoDisplaceSecondary:
-            return StorySplitPreferredDisplayModeTwoDisplaceSecondary;
-        default:
-            return StorySplitPreferredDisplayModeSecondaryOnly;
-    }
-}
-
-static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySplitPreferredDisplayMode displayMode) {
-    switch (displayMode) {
-        case StorySplitPreferredDisplayModeOneBesideSecondary:
-            return UISplitViewControllerDisplayModeOneBesideSecondary;
-        case StorySplitPreferredDisplayModeOneOverSecondary:
-            return UISplitViewControllerDisplayModeOneOverSecondary;
-        case StorySplitPreferredDisplayModeTwoBesideSecondary:
-            return UISplitViewControllerDisplayModeTwoBesideSecondary;
-        case StorySplitPreferredDisplayModeTwoOverSecondary:
-            return UISplitViewControllerDisplayModeTwoOverSecondary;
-        case StorySplitPreferredDisplayModeTwoDisplaceSecondary:
-            return UISplitViewControllerDisplayModeTwoDisplaceSecondary;
-        default:
-            return UISplitViewControllerDisplayModeSecondaryOnly;
     }
 }
 
@@ -94,7 +77,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         return [self informError:@"The server barfed!"];
     } else {
         errorMessage = [error localizedDescription];
-        if ([error code] == 4 &&
+        if ([(NSError *)error code] == 4 &&
             [errorMessage rangeOfString:@"cancelled"].location != NSNotFound) {
             return;
         }
@@ -190,7 +173,9 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 - (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle wantPriority:(BOOL)wantPriority {
     UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
     if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)] && [self respondsToSelector:@selector(addKeyCommand:)]) {
-        keyCommand.discoverabilityTitle = discoverabilityTitle;
+        // BaseViewController.m translates every shortcut title here; localization/manage.py extracts the
+        // discoverabilityTitle:@"..." literals passed by callers.
+        keyCommand.discoverabilityTitle = [NBLocalization text:discoverabilityTitle];
         if (@available(iOS 15.0, *)) {
             keyCommand.wantsPriorityOverSystemBehavior = wantPriority;
         }
@@ -215,6 +200,52 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
 
     [self addKeyCommandWithInput:@"/" modifierFlags:UIKeyModifierShift action:@selector(showKeyboardShortcuts:) discoverabilityTitle:@"Keyboard Shortcuts"];
+
+    // BaseViewController.m keeps reader shortcuts available when UIKit focuses another split-view pane.
+    if ([self isKindOfClass:FeedsObjCViewController.class] ||
+        [self isKindOfClass:FeedDetailObjCViewController.class] ||
+        [self isKindOfClass:DetailViewController.class]) {
+        if (![self isKindOfClass:FeedDetailObjCViewController.class]) {
+            [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(nextStory:) discoverabilityTitle:@"Next Story" wantPriority:YES];
+            [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
+        }
+        [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(saveStoryFromKeyboard:) discoverabilityTitle:@"Save/Unsave Story" wantPriority:YES];
+
+        // BaseViewController.m mirrors the reader's story shortcuts so the Mac story list doesn't beep at J or V (forum #13881).
+        [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(nextStory:) discoverabilityTitle:@"Next Story" wantPriority:YES];
+        [self addKeyCommandWithInput:@"k" modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
+        [self addReaderShortcutWithInput:@"n" modifierFlags:0 readerAction:@selector(doNextUnreadStory:) discoverabilityTitle:@"Next Unread Story"];
+        [self addReaderShortcutWithInput:@"u" modifierFlags:0 readerAction:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+        [self addReaderShortcutWithInput:@"m" modifierFlags:0 readerAction:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+        [self addReaderShortcutWithInput:@"o" modifierFlags:0 readerAction:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+        [self addReaderShortcutWithInput:@"v" modifierFlags:0 readerAction:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+        [self addReaderShortcutWithInput:@"t" modifierFlags:0 readerAction:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
+        [self addReaderShortcutWithInput:@"\r" modifierFlags:UIKeyModifierShift readerAction:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
+        [self addReaderShortcutWithInput:@" " modifierFlags:0 readerAction:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
+        [self addReaderShortcutWithInput:@" " modifierFlags:UIKeyModifierShift readerAction:@selector(scrollPageUp:) discoverabilityTitle:@"Page Up"];
+        [self addReaderShortcutWithInput:@"c" modifierFlags:0 readerAction:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
+        [self addReaderShortcutWithInput:@"s" modifierFlags:UIKeyModifierShift readerAction:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
+    }
+}
+
+- (void)addReaderShortcutWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags readerAction:(SEL)readerAction discoverabilityTitle:(NSString *)discoverabilityTitle {
+    // BaseViewController.m carries the reader's selector in the command so performReaderShortcut: can forward it to the story pane.
+    UIKeyCommand *keyCommand = [UIKeyCommand commandWithTitle:@""
+                                                        image:nil
+                                                       action:@selector(performReaderShortcut:)
+                                                        input:input
+                                                modifierFlags:modifierFlags
+                                                 propertyList:NSStringFromSelector(readerAction)];
+    keyCommand.discoverabilityTitle = [NBLocalization text:discoverabilityTitle];
+    keyCommand.wantsPriorityOverSystemBehavior = YES;
+    [self addKeyCommand:keyCommand];
+}
+
+- (SEL)readerActionForShortcut:(id)sender {
+    if (![sender isKindOfClass:UIKeyCommand.class]) return NULL;
+    id propertyList = [(UIKeyCommand *)sender propertyList];
+    if (![propertyList isKindOfClass:NSString.class]) return NULL;
+    return NSSelectorFromString(propertyList);
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -318,9 +349,42 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     [super buildMenuWithBuilder:builder];
 }
 
+- (BOOL)readerKeyboardContextAvailable {
+    // BaseViewController.m ignores cached readers after Back and leaves search fields and dialogs in charge of input.
+    UIWindow *window = self.viewIfLoaded.window;
+    if (self.presentingViewController || self.presentedViewController ||
+        self.navigationController.presentedViewController ||
+        appDelegate.splitViewController.presentedViewController ||
+        appDelegate.feedsNavigationController.presentedViewController || NBHasKeyboardTextInput(window)) return NO;
+    return NBReaderViewIsVisible(appDelegate.storyPagesViewController.viewIfLoaded, window) ||
+        NBReaderViewIsVisible(appDelegate.feedDetailViewController.viewIfLoaded, window);
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
     [AppMenuHelper.shared prepareIfNeeded];
+
+    if (action == @selector(nextStory:) || action == @selector(previousStory:) ||
+        action == @selector(saveStoryFromKeyboard:)) {
+        if (![self readerKeyboardContextAvailable]) return NO;
+        if (action == @selector(saveStoryFromKeyboard:)) {
+            return self.isStoryShown && NBReaderViewIsVisible(appDelegate.storyPagesViewController.viewIfLoaded, self.viewIfLoaded.window);
+        }
+        return self.isStoryShown || (self.isFeedShown && appDelegate.storiesCollection.storyLocationsCount > 0);
+    }
     
+    if (action == @selector(performReaderShortcut:)) {
+        // BaseViewController.m enables a mirrored shortcut only when the open reader would accept it from its own pane.
+        StoryPagesViewController *reader = appDelegate.storyPagesViewController;
+        SEL readerAction = [self readerActionForShortcut:sender];
+        if (!readerAction || ![self readerKeyboardContextAvailable]) return NO;
+        BOOL storyOpen = self.isStoryShown && NBReaderViewIsVisible(reader.viewIfLoaded, self.viewIfLoaded.window);
+        // BaseViewController.m lets N open the first unread story from the list, the way J and the arrows open the first story.
+        BOOL opensFirstUnread = readerAction == @selector(doNextUnreadStory:) &&
+            self.isFeedShown && appDelegate.storiesCollection.storyLocationsCount > 0;
+        if (!storyOpen && !opensFirstUnread) return NO;
+        return [reader respondsToSelector:readerAction] && [reader canPerformAction:readerAction withSender:sender];
+    }
+
     if (action == @selector(chooseLayout:) || action == @selector(findInFeedDetail:)) {
         return self.isFeedShown;
     } else if (action == @selector(chooseTitle:) || action == @selector(choosePreview:)) {
@@ -341,6 +405,13 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     } else if (action == @selector(instaFetchFeed:) ||
                action == @selector(doMarkAllRead:)) {
         return self.isFeedShown && !self.isDashboard;
+    } else if (action == @selector(toggleListen:)) {
+        // BaseViewController.m offers Listen (Y) for the story on screen, but not while typing or in a dialog.
+        return self.isStoryShown && [self readerKeyboardContextAvailable];
+    } else if (action == @selector(toggleListenPlayback:)) {
+        return ListenStoryBridge.isPlayerActive || self.isStoryShown;
+    } else if (action == @selector(toggleListenQueue:)) {
+        return self.isStoryShown && [ListenStoryBridge offersQueueForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
     } else if (action == @selector(showSendTo:) ||
                action == @selector(showTrain:) ||
                action == @selector(showShare:) ||
@@ -374,14 +445,8 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         }
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
-        UISplitViewController *splitViewController = self.appDelegate.splitViewController;
-        UISplitViewControllerDisplayMode preferredDisplayMode = splitViewController.preferredDisplayMode;
-        BOOL isSidebarVisible = preferredDisplayMode == UISplitViewControllerDisplayModeOneBesideSecondary ||
-                               preferredDisplayMode == UISplitViewControllerDisplayModeOneOverSecondary ||
-                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoBesideSecondary ||
-                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoOverSecondary ||
-                               preferredDisplayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary;
-        command.title = isSidebarVisible ? @"Hide Sidebar" : @"Show Sidebar";
+        BOOL isSidebarVisible = !self.appDelegate.splitViewController.isFeedsListHidden;
+        command.title = isSidebarVisible ? [NBLocalization text:@"Hide Sidebar"] : [NBLocalization text:@"Show Sidebar"];
     } else if (command.action == @selector(chooseTitle:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
         command.state = [command.propertyList isEqualToString:value];
@@ -417,29 +482,35 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
         }
     } else if (command.action == @selector(openRenameSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
-            command.title = @"Rename Folder…";
+            command.title = [NBLocalization text:@"Rename Folder…"];
         } else {
-            command.title = @"Rename Site…";
+            command.title = [NBLocalization text:@"Rename Site…"];
         }
     } else if (command.action == @selector(deleteSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
-            command.title = @"Delete Folder…";
+            command.title = [NBLocalization text:@"Delete Folder…"];
         } else {
-            command.title = @"Delete Site…";
+            command.title = [NBLocalization text:@"Delete Site…"];
         }
+    } else if (command.action == @selector(toggleListen:)) {
+        command.title = [ListenStoryBridge menuTitleForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
+    } else if (command.action == @selector(toggleListenQueue:)) {
+        NSDictionary *story = self.appDelegate.storyPagesViewController.currentPage.activeStory;
+        command.title = [ListenStoryBridge queueMenuTitleForStory:story];
+        command.image = [UIImage systemImageNamed:[ListenStoryBridge isQueued:story] ? @"text.badge.minus" : @"text.badge.plus"];
     } else if (command.action == @selector(toggleStorySaved:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isRead) {
-            command.title = @"Unsave This Story";
+            command.title = [NBLocalization text:@"Unsave This Story"];
         } else {
-            command.title = @"Save This Story";
+            command.title = [NBLocalization text:@"Save This Story"];
         }
     } else if (command.action == @selector(toggleStoryUnread:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            command.title = @"Mark as Unread";
+            command.title = [NBLocalization text:@"Mark as Unread"];
         } else {
-            command.title = @"Mark as Read";
+            command.title = [NBLocalization text:@"Mark as Read"];
         }
     } else if (command.action == @selector(chooseMarkRead:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_mark_read_filter"];
@@ -629,6 +700,10 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (IBAction)toggleFeeds:(id)sender {
+    if (self.appDelegate.detailViewController.isDuoFullscreenReader) {
+        [self.appDelegate.detailViewController showDuoFullscreenFeeds:sender];
+        return;
+    }
     // If in temporary full-screen, exit it instead of normal sidebar toggle.
     if (self.appDelegate.detailViewController.isTemporaryFullScreen) {
         [self.appDelegate.detailViewController resetTemporaryFullScreenIfNeeded];
@@ -647,7 +722,7 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
     
     NSLog(@"toggleSidebar: displayMode: %@; preferredDisplayMode: %@; splitBehavior: %@", @(splitViewController.displayMode), @(splitViewController.preferredDisplayMode), @(splitViewController.splitBehavior));  // log
 
-    NSString *behavior = [[NSUserDefaults standardUserDefaults] stringForKey:@"split_behavior"] ?: @"auto";
+    NSString *behavior = self.appDelegate.detailViewController.behaviorString;
     CGSize size = splitViewController.view.bounds.size;
     if (size.width <= 0) {
         size = UIScreen.mainScreen.bounds.size;
@@ -657,18 +732,21 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
                                                                                                width:size.width
                                                                                               height:size.height
                                                                                                isMac:self.isMac];
-    BOOL usesTiledSidebarLayout = [StorySplitBehaviorDecision usesTiledSidebarLayoutFor:behavior
-                                                                                  width:size.width
-                                                                                 height:size.height
-                                                                                  isMac:self.isMac];
-    StorySplitPreferredDisplayMode currentDisplayMode = NBDecisionDisplayModeFromSplitDisplayMode(splitViewController.displayMode);
-    StorySplitPreferredDisplayMode nextDisplayMode = [StorySplitBehaviorDecision sidebarDisplayModeForTiledLayout:usesTiledSidebarLayout
-                                                                                              currentDisplayMode:currentDisplayMode];
-
-    [UIView animateWithDuration:0.2 animations:^{
-        splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
-        splitViewController.preferredDisplayMode = NBSplitDisplayModeFromDecision(nextDisplayMode);
-    }];
+    BOOL shouldShowFeeds = self.appDelegate.splitViewController.isFeedsListHidden;
+    if (shouldShowFeeds && self.appDelegate.detailViewController.isPhone &&
+        !self.appDelegate.detailViewController.isPhoneOrCompact &&
+        splitViewController.style == UISplitViewControllerStyleDoubleColumn) {
+        // BaseViewController.m shares DetailViewController.swift's supported native reveal with the Feeds title action.
+        [self.appDelegate.detailViewController showColumn:UISplitViewControllerColumnPrimary animated:YES];
+        return;
+    }
+    splitViewController.preferredSplitBehavior = NBSplitBehaviorFromDecision(preferredBehavior);
+    // BaseViewController.m lets UIKit choose a valid display mode for the actual split style and behavior.
+    if (shouldShowFeeds) {
+        [splitViewController showColumn:UISplitViewControllerColumnPrimary];
+    } else {
+        [splitViewController hideColumn:UISplitViewControllerColumnPrimary];
+    }
 }
 
 - (IBAction)hideStoryTitlesSidebar:(id)sender {
@@ -691,23 +769,23 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (IBAction)muteSite:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to mute %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Mute Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to mute %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Mute Site"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController muteSite];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (IBAction)deleteSite:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to delete %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to delete %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Delete Site"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController deleteSite];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -780,11 +858,30 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 }
 
 - (IBAction)showTrain:(id)sender {
-    [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
+    [self.appDelegate.storyPagesViewController openStoryTrainerFromKeyboard:sender];
 }
 
 - (IBAction)showShare:(id)sender {
     [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
+}
+
+- (IBAction)toggleListen:(id)sender {
+    // BaseViewController.m starts or pauses reading the story on screen aloud (Listen/ListenPlayer.swift).
+    [ListenStoryBridge toggleListenForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
+}
+
+- (IBAction)toggleListenQueue:(id)sender {
+    // BaseViewController.m: the Story menu's Add to Up Next for the story on screen (Listen/ListenQueue.swift).
+    [ListenStoryBridge toggleQueueForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
+}
+
+- (IBAction)toggleListenPlayback:(id)sender {
+    // BaseViewController.m: the Mac toolbar's play/pause controls whatever is playing, else starts the story on screen.
+    if (ListenStoryBridge.isPlayerActive) {
+        [ListenStoryBridge togglePlayback];
+    } else {
+        [self toggleListen:sender];
+    }
 }
 
 - (IBAction)nextUnreadStory:(id)sender {
@@ -793,6 +890,16 @@ static UISplitViewControllerDisplayMode NBSplitDisplayModeFromDecision(StorySpli
 
 - (IBAction)nextStory:(id)sender {
     [self.appDelegate.storyPagesViewController changeToNextPage:sender];
+}
+
+- (IBAction)saveStoryFromKeyboard:(id)sender {
+    [self.appDelegate.storyPagesViewController toggleStorySaved:sender];
+}
+
+- (IBAction)performReaderShortcut:(id)sender {
+    SEL readerAction = [self readerActionForShortcut:sender];
+    if (!readerAction) return;
+    [UIApplication.sharedApplication sendAction:readerAction to:self.appDelegate.storyPagesViewController from:sender forEvent:nil];
 }
 
 - (IBAction)previousStory:(id)sender {

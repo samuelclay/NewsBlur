@@ -1,0 +1,89 @@
+{
+  "closed_frame_spec": "../../assets/iphone-duo-outer-closed-portrait.json",
+  "languages": {
+    "en": {
+      "closed_capture": "captures/en/duo-closed.png",
+      "fullscreen_capture": "captures/en/duo-fullscreen.png"
+    },
+    "es": {
+      "closed_capture": "captures/es/duo-closed.png",
+      "fullscreen_capture": "captures/es/duo-fullscreen.png"
+    },
+    "fr": {
+      "closed_capture": "captures/fr/duo-closed.png",
+      "fullscreen_capture": "captures/fr/duo-fullscreen.png"
+    },
+    "de": {
+      "closed_capture": "captures/de/duo-closed.png",
+      "fullscreen_capture": "captures/de/duo-fullscreen.png"
+    },
+    "pt-BR": {
+      "closed_capture": "captures/pt-BR/duo-closed.png",
+      "fullscreen_capture": "captures/pt-BR/duo-fullscreen.png"
+    },
+    "it": {
+      "closed_capture": "captures/it/duo-closed.png",
+      "fullscreen_capture": "captures/it/duo-fullscreen.png"
+    },
+    "nl": {
+      "closed_capture": "captures/nl/duo-closed.png",
+      "fullscreen_capture": "captures/nl/duo-fullscreen.png"
+    },
+    "pl": {
+      "closed_capture": "captures/pl/duo-closed.png",
+      "fullscreen_capture": "captures/pl/duo-fullscreen.png"
+    },
+    "tr": {
+      "closed_capture": "captures/tr/duo-closed.png",
+      "fullscreen_capture": "captures/tr/duo-fullscreen.png"
+    },
+    "ru": {
+      "closed_capture": "captures/ru/duo-closed.png",
+      "fullscreen_capture": "captures/ru/duo-fullscreen.png"
+    },
+    "uk": {
+      "closed_capture": "captures/uk/duo-closed.png",
+      "fullscreen_capture": "captures/uk/duo-fullscreen.png"
+    },
+    "ar": {
+      "closed_capture": "captures/ar/duo-closed.png",
+      "fullscreen_capture": "captures/ar/duo-fullscreen.png"
+    },
+    "he": {
+      "closed_capture": "captures/he/duo-closed.png",
+      "fullscreen_capture": "captures/he/duo-fullscreen.png"
+    },
+    "hi": {
+      "closed_capture": "captures/hi/duo-closed.png",
+      "fullscreen_capture": "captures/hi/duo-fullscreen.png"
+    },
+    "id": {
+      "closed_capture": "captures/id/duo-closed.png",
+      "fullscreen_capture": "captures/id/duo-fullscreen.png"
+    },
+    "vi": {
+      "closed_capture": "captures/vi/duo-closed.png",
+      "fullscreen_capture": "captures/vi/duo-fullscreen.png"
+    },
+    "th": {
+      "closed_capture": "captures/th/duo-closed.png",
+      "fullscreen_capture": "captures/th/duo-fullscreen.png"
+    },
+    "ja": {
+      "closed_capture": "captures/ja/duo-closed.png",
+      "fullscreen_capture": "captures/ja/duo-fullscreen.png"
+    },
+    "ko": {
+      "closed_capture": "captures/ko/duo-closed.png",
+      "fullscreen_capture": "captures/ko/duo-fullscreen.png"
+    },
+    "zh-Hans": {
+      "closed_capture": "captures/zh-Hans/duo-closed.png",
+      "fullscreen_capture": "captures/zh-Hans/duo-fullscreen.png"
+    },
+    "zh-Hant": {
+      "closed_capture": "captures/zh-Hant/duo-closed.png",
+      "fullscreen_capture": "captures/zh-Hant/duo-fullscreen.png"
+    }
+  }
+}

@@ -1,0 +1,415 @@
+{
+  "description": "Original editorial demo content for NewsBlur marketing screenshots. Names are fictional; photography credits are in photo-sources.json.",
+  "feeds": [
+    {
+      "id": "910001",
+      "title": "The Seasonal Table",
+      "color": "AB653E"
+    },
+    {
+      "id": "910002",
+      "title": "Weeknight Kitchen",
+      "color": "55785B"
+    },
+    {
+      "id": "910003",
+      "title": "Bread & Butter",
+      "color": "C28A3D"
+    },
+    {
+      "id": "910004",
+      "title": "Slow Mornings",
+      "color": "799091"
+    },
+    {
+      "id": "910005",
+      "title": "Garden to Bowl",
+      "color": "738449"
+    },
+    {
+      "id": "910006",
+      "title": "Everyday Pasta",
+      "color": "B36648"
+    },
+    {
+      "id": "910007",
+      "title": "The Bread Journal",
+      "color": "AA7A46"
+    },
+    {
+      "id": "910008",
+      "title": "A Bowl of Greens",
+      "color": "4B795F"
+    },
+    {
+      "id": "910009",
+      "title": "The Soup Pot",
+      "color": "B58439"
+    },
+    {
+      "id": "910010",
+      "title": "Breakfast Notebook",
+      "color": "698B96"
+    }
+  ],
+  "stories": [
+    {
+      "id": "cooking-pasta-1",
+      "feed_id": "910002",
+      "title": "Pesto pasta with blistered tomatoes",
+      "author": "Maya Chen",
+      "photo": "pasta",
+      "tags": [
+        "Weeknight",
+        "Pasta",
+        "Seasonal"
+      ],
+      "saved": true,
+      "paragraphs": [
+        "A bright, generous bowl of pasta for the evenings when dinner needs to be simple. Sweet tomatoes, fresh pesto and a handful of Parmesan do all the work.",
+        "Bring a large pot of salted water to a boil. Cook spaghetti until just tender, saving a mug of the starchy water before draining.",
+        "Warm olive oil in a wide pan. Add cherry tomatoes and let them blister, turning occasionally, until their skins split and the juices begin to collect.",
+        "Toss the pasta with the tomatoes, a few spoonfuls of pesto and a splash of cooking water. Keep tossing until the sauce lightly coats every strand.",
+        "Finish with grated Parmesan, black pepper and fresh herbs. Put the pan in the middle of the table with crusty bread on the side.",
+        "The little habit that makes this dinner easier: keep a jar of pesto in the fridge and good pasta in the cupboard. The rest can follow the season."
+      ]
+    },
+    {
+      "id": "cooking-salad-1",
+      "feed_id": "910005",
+      "title": "A generous salad for a sunny afternoon",
+      "author": "Elena Rivera",
+      "photo": "salad",
+      "tags": [
+        "Salads",
+        "Lunch",
+        "Seasonal"
+      ],
+      "saved": true,
+      "paragraphs": [
+        "Crunchy leaves, sweet tomatoes and shavings of Parmesan make this a salad worth sitting down for. Add cooked chicken and eggs to turn it into lunch.",
+        "Wash and dry a mix of tender greens. Halve cherry tomatoes and shave a little Parmesan with a vegetable peeler.",
+        "Whisk olive oil with lemon juice, a small spoonful of Dijon mustard and a pinch of salt. Taste before dressing the leaves.",
+        "Arrange everything in a wide bowl. Dress just before serving so the greens stay lively, then finish with black pepper."
+      ]
+    },
+    {
+      "id": "cooking-bread-1",
+      "feed_id": "910003",
+      "title": "The quiet pleasure of a homemade loaf",
+      "author": "Oliver Reed",
+      "photo": "bread",
+      "tags": [
+        "Baking",
+        "Sourdough",
+        "Weekend"
+      ],
+      "saved": true,
+      "paragraphs": [
+        "A crisp crust, a soft middle and enough bread for tomorrow’s toast. Making a loaf is as much about patience as it is about ingredients.",
+        "Let the dough tell you when it is ready. A warm kitchen moves things along, while a cool one asks for a little more time.",
+        "Give the shaped loaf room to rise, then score the surface just before it goes into a thoroughly heated oven.",
+        "Wait for the loaf to cool before slicing. The aroma is tempting, but that final rest is part of the bake.",
+        "Keep the first meal simple: good butter, a bowl of soup and a thick slice with a wonderfully crisp edge."
+      ]
+    },
+    {
+      "id": "cooking-soup-1",
+      "feed_id": "910001",
+      "title": "Roasted pumpkin soup for cooler evenings",
+      "author": "Nora Ellis",
+      "photo": "soup",
+      "tags": [
+        "Seasonal",
+        "Soups",
+        "Vegetarian"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "Roasting brings out the sweetness in pumpkin and gives this smooth autumn soup a deeper flavor. It is the kind of supper that makes the kitchen feel warm.",
+        "Cut the pumpkin into wedges, remove the seeds and roast with olive oil until the flesh is tender and the edges are golden.",
+        "Soften an onion in a large pan. Add the roasted pumpkin, vegetable stock and a pinch of smoked paprika, then simmer gently.",
+        "Blend until smooth, adding more stock if needed. Taste, season and serve in warmed bowls with herbs and crusty bread."
+      ]
+    },
+    {
+      "id": "cooking-breakfast-1",
+      "feed_id": "910004",
+      "title": "A slower start with fruit and granola",
+      "author": "Sofia Bennett",
+      "photo": "breakfast",
+      "tags": [
+        "Breakfast",
+        "Weekend",
+        "Fruit"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "A few minutes at the breakfast table can change the pace of a morning. Start with crisp granola, colorful fruit and a small jug of cold milk.",
+        "Choose fruit that is ripe and ready: berries, slices of kiwi and a little citrus work beautifully together.",
+        "Keep the granola separate until you are ready to eat. Spoon it into a bowl, pile the fruit on top and pour the milk at the table.",
+        "Open the window, make your coffee and leave a little room in the morning for something you enjoy reading."
+      ]
+    },
+    {
+      "id": "cooking-pasta-2",
+      "feed_id": "910002",
+      "title": "The pantry staples that make dinner easier",
+      "author": "Maya Chen",
+      "photo": "pasta",
+      "tags": [
+        "Weeknight",
+        "Pantry",
+        "Pasta"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "A useful pantry is a small collection of ingredients you love cooking with. Start with pasta, good olive oil, canned tomatoes and a jar of pesto.",
+        "Choose a few reliable combinations instead of filling every shelf. Pasta and tomatoes, beans and greens, or eggs and bread can carry a busy week.",
+        "Keep fresh herbs where you can see them. A handful added at the end makes a familiar dinner feel new."
+      ]
+    },
+    {
+      "id": "cooking-salad-2",
+      "feed_id": "910005",
+      "title": "A lemon dressing to keep in the fridge",
+      "author": "Elena Rivera",
+      "photo": "salad",
+      "tags": [
+        "Salads",
+        "Basics",
+        "Lunch"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "One bright dressing can bring a week of lunches together. Lemon, olive oil and a spoonful of mustard are a good place to begin.",
+        "Shake the ingredients in a clean jar until smooth, then taste with a leaf of lettuce. Adjust the lemon or oil until it tastes balanced.",
+        "Refrigerate, shake again before using and dress greens just before you eat."
+      ]
+    },
+    {
+      "id": "cooking-bread-2",
+      "feed_id": "910003",
+      "title": "Good bread deserves good butter",
+      "author": "Oliver Reed",
+      "photo": "bread",
+      "tags": [
+        "Baking",
+        "Weekend",
+        "Basics"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "The simplest kitchen pleasures rarely need a recipe. A warm slice, a little salted butter and a quiet moment are enough.",
+        "Toast yesterday’s bread until the edges are crisp. Let the butter soften while the kettle boils.",
+        "For a savory variation, rub the toast lightly with a cut clove of garlic and add a few slices of ripe tomato."
+      ]
+    },
+    {
+      "id": "cooking-soup-2",
+      "feed_id": "910001",
+      "title": "What to cook when autumn arrives",
+      "author": "Nora Ellis",
+      "photo": "soup",
+      "tags": [
+        "Seasonal",
+        "Soups",
+        "Weekend"
+      ],
+      "saved": true,
+      "paragraphs": [
+        "The first cool evenings are an invitation to turn on the oven. Look for pumpkins, sturdy greens and the last of the season’s tomatoes.",
+        "Roast a tray of vegetables while a pot of soup simmers. The leftovers will make tomorrow’s lunch almost effortless.",
+        "Plan around what looks good at the market, then keep the cooking simple enough to enjoy the evening."
+      ]
+    },
+    {
+      "id": "cooking-breakfast-2",
+      "feed_id": "910004",
+      "title": "Small rituals for a better morning",
+      "author": "Sofia Bennett",
+      "photo": "breakfast",
+      "tags": [
+        "Breakfast",
+        "Weekend",
+        "Fruit"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "You do not need an elaborate breakfast to make the morning feel special. A good bowl, fresh fruit and a little time can be plenty.",
+        "Set out what you need the night before. In the morning, wash the fruit, make something warm to drink and take a seat.",
+        "Leave the washing-up for a few minutes. This is your time to settle into the day."
+      ]
+    },
+    {
+      "id": "cooking-pasta-3",
+      "feed_id": "910006",
+      "title": "How to finish pasta in the pan",
+      "author": "Luca Marin",
+      "photo": "pasta",
+      "tags": [
+        "Pasta",
+        "Basics"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "The last minute of cooking is where pasta and sauce become dinner. A wide pan and a little starchy water make the difference.",
+        "Lift the pasta from its cooking water while it still has a little bite. Add it to the warm sauce and toss gently over low heat.",
+        "Add a splash of the reserved water at a time until the sauce turns glossy. Finish with herbs and cheese, then serve straight away."
+      ]
+    },
+    {
+      "id": "cooking-bread-3",
+      "feed_id": "910007",
+      "title": "A small guide to a crisp, golden crust",
+      "author": "Amelia Brooks",
+      "photo": "bread",
+      "tags": [
+        "Baking",
+        "Sourdough"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "A well-baked crust brings texture and flavor to a loaf. Give the oven time to heat fully before the bread goes in.",
+        "A covered baking pot holds steam around the dough during the early part of the bake. Removing the lid later lets the surface deepen in color.",
+        "Cool the finished loaf on a rack. A little patience keeps the crust crisp and gives the middle time to settle."
+      ]
+    },
+    {
+      "id": "cooking-salad-3",
+      "feed_id": "910008",
+      "title": "Building a salad with more texture",
+      "author": "Isabel Moore",
+      "photo": "salad",
+      "tags": [
+        "Salads",
+        "Lunch"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "A satisfying salad has a little contrast in every bite: something crisp, something tender and something with a rich, savory edge.",
+        "Begin with fresh leaves, then add juicy tomatoes, shaved cheese and a simple dressing. Cooked chicken or eggs can make it a complete lunch.",
+        "Toss gently in a roomy bowl and taste a leaf before serving. A final squeeze of lemon can bring everything together."
+      ]
+    },
+    {
+      "id": "cooking-soup-3",
+      "feed_id": "910009",
+      "title": "Soup season begins with roasted vegetables",
+      "author": "Theo Park",
+      "photo": "soup",
+      "tags": [
+        "Soups",
+        "Seasonal"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "A tray of roasted vegetables is a useful beginning for a comforting pot of soup. Pumpkin is especially good when the evenings turn cool.",
+        "Roast until the edges are golden, then simmer with softened onion and vegetable stock. Blend until smooth and adjust the seasoning.",
+        "Serve with fresh herbs, a spoonful of cream if you like, and good bread for the last few spoonfuls."
+      ]
+    },
+    {
+      "id": "cooking-breakfast-3",
+      "feed_id": "910010",
+      "title": "The breakfast bowl you can make your own",
+      "author": "Grace Lin",
+      "photo": "breakfast",
+      "tags": [
+        "Breakfast",
+        "Fruit"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "A bowl of granola and fruit is a starting point, not a rule. Choose the fruit you like and give yourself a few minutes to enjoy it.",
+        "Add berries for brightness, slices of kiwi for a little tang and a splash of milk just before eating.",
+        "Keep the bowl simple enough for a weekday, then take a little more time with it on the weekend."
+      ]
+    },
+    {
+      "id": "cooking-pasta-4",
+      "feed_id": "910006",
+      "title": "Fresh herbs are the finishing touch",
+      "author": "Luca Marin",
+      "photo": "pasta",
+      "tags": [
+        "Pasta",
+        "Herbs"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "A handful of herbs can change the whole feeling of a familiar dinner. Keep them fresh and add them toward the end of cooking.",
+        "With pesto pasta, a few tender leaves bring a welcome brightness alongside sweet tomatoes and Parmesan.",
+        "Tear larger leaves just before serving and scatter them over the warm pasta. Small stems can bring flavor too."
+      ]
+    },
+    {
+      "id": "cooking-bread-4",
+      "feed_id": "910007",
+      "title": "Tomorrow’s toast starts with today’s loaf",
+      "author": "Amelia Brooks",
+      "photo": "bread",
+      "tags": [
+        "Baking",
+        "Breakfast"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "Good bread makes tomorrow morning easier. Save a few slices for toast and put the rest away once the loaf has cooled.",
+        "Slice only what you need for the next day. Freeze additional slices in a sealed bag so they are ready whenever breakfast calls.",
+        "Toast until golden, add butter and let a simple breakfast be enough."
+      ]
+    },
+    {
+      "id": "cooking-salad-4",
+      "feed_id": "910008",
+      "title": "A few good things from the garden",
+      "author": "Isabel Moore",
+      "photo": "salad",
+      "tags": [
+        "Salads",
+        "Seasonal"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "Tender leaves and ripe tomatoes need very little help. Choose a few fresh ingredients and let their flavors lead.",
+        "Wash the greens, dry them carefully and slice the tomatoes just before assembling the salad.",
+        "Finish with a light dressing, a few shavings of cheese and a generous pinch of black pepper."
+      ]
+    },
+    {
+      "id": "cooking-soup-4",
+      "feed_id": "910009",
+      "title": "Make room for a comforting bowl",
+      "author": "Theo Park",
+      "photo": "soup",
+      "tags": [
+        "Soups",
+        "Weekend"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "Soup is a gentle way to end a busy day. Put a pot on the stove, warm a few bowls and set out some bread.",
+        "A smooth pumpkin soup takes well to small variations: fresh herbs, a spoonful of yogurt or a little smoked paprika.",
+        "Keep the toppings simple so the roasted vegetables remain the heart of the meal."
+      ]
+    },
+    {
+      "id": "cooking-breakfast-4",
+      "feed_id": "910010",
+      "title": "A colorful start to the weekend",
+      "author": "Grace Lin",
+      "photo": "breakfast",
+      "tags": [
+        "Breakfast",
+        "Weekend"
+      ],
+      "saved": false,
+      "paragraphs": [
+        "Weekend breakfast can be slow without being complicated. Fruit, granola and a jug of milk make a cheerful beginning.",
+        "Wash the fruit while the coffee brews. Put everything on the table so everyone can build a bowl of their own.",
+        "Leave a little time to read, talk or simply watch the morning arrive."
+      ]
+    }
+  ]
+}

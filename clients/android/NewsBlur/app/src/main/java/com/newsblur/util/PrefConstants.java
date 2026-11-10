@@ -30,6 +30,11 @@ public class PrefConstants {
 	public static final String IS_ARCHIVE = "is_archive";
     public static final String IS_PRO = "is_pro";
     public static final String IS_STAFF = "is_staff";
+    // Natural language classifier billing from /reader/feeds user_profile, see UsageBilling.kt.
+    public static final String IS_USAGE_BILLING = "is_usage_billing";
+    public static final String IS_SELF_HOSTED_AI = "is_self_hosted_ai";
+    public static final String CAN_USE_AI_CLASSIFIERS = "can_use_ai_classifiers";
+    public static final String USAGE_BILLING_LIMIT = "usage_billing_limit";
     // don't update key value for backward compat
 	public static final String SUBSCRIPTION_EXPIRE = "premium_expire";
 
@@ -73,6 +78,11 @@ public class PrefConstants {
     public static final String STORIES_SHOW_PREVIEWS_STYLE = "pref_show_content_preview_style";
     public static final String STORIES_THUMBNAIL_STYLE = "pref_thumbnail_style";
     public static final String STORY_TOOLBAR_POSITION = "story_toolbar_position";
+    public static final String READER_FULLSCREEN = "reader_fullscreen";
+    public static final String STORY_LIST_FULLSCREEN = "story_list_fullscreen";
+    public static final String FEED_LIST_FULLSCREEN = "feed_list_fullscreen";
+    public static final String STORY_LIST_SPLIT_RATIO = "story_list_split_ratio";
+    public static final String FEED_LIST_WIDTH_RATIO = "feed_list_width_ratio";
     public static final String STORY_MARK_READ_BEHAVIOR = "pref_story_mark_read_behavior";
     public static final String STORY_CLUSTERING = "story_clustering";
     public static final String CLUSTER_MODE = "cluster_mode";
@@ -109,6 +119,11 @@ public class PrefConstants {
     public static final String FEED_LIST_ORDER_ALPHABETICAL = "feed_list_order_alphabetical";
     public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";
 
+    // LanguageChooserDialog.kt shows the language dialog once per device. Debug builds also read a language code
+    // that forces it, with that language as the detected one, for screenshots.
+    public static final String LANGUAGE_DIALOG_SEEN = "language_dialog_seen";
+    public static final String LANGUAGE_DIALOG_DEBUG = "language_dialog_debug";
+
     public static final String THEME = "theme";
     public static final String THEME_LIGHT_VARIANT = "theme_light_variant";
     public static final String THEME_DARK_VARIANT = "theme_dark_variant";
@@ -138,6 +153,7 @@ public class PrefConstants {
     public static final String ASK_AI_MODEL = "ask_ai_model";
 
     public static final String READING_FONT = "reading_font";
+    public static final String READER_CONTROLS_ALWAYS_VISIBLE = "reader_controls_always_visible";
     public static final String WIDGET_FEED_SET = "widget_feed_set";
     public static final String FEED_CHOOSER_LIST_ORDER = "feed_chooser_list_order";
     public static final String FEED_CHOOSER_FEED_ORDER = "feed_chooser_feed_order";

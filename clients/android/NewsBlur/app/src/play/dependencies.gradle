@@ -1,0 +1,6 @@
+// app/build.gradle.kts applies these SDKs only to the Play distribution.
+dependencies {
+    add("implementation", "com.google.mlkit:language-id:17.0.6")
+    add("implementation", "com.android.billingclient:billing:8.0.0")
+    add("implementation", "com.google.android.play:review:2.0.2")
+}

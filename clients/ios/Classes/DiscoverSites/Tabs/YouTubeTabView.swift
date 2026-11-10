@@ -19,7 +19,7 @@ struct YouTubeTabView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 DiscoverSearchBarView(
-                    placeholder: "Search YouTube channels...",
+                    placeholder: NBLocalization.text("Search YouTube channels..."),
                     text: $viewModel.youtubeState.searchQuery,
                     isLoading: viewModel.youtubeState.isSearching,
                     onSubmit: {

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Funkcją Słuchaj łatwiej teraz sterować. Rozpocznij słuchanie z paska czytania i przejdź dalej przyciskiem Następny artykuł w miniodtwarzaczu.\n\nAutomatyczne odtwarzanie kolejnych artykułów zachowuje teraz wybrane sortowanie w Zapisanych artykułach i Przeczytanych artykułach, także od najstarszych. Odtwarzanie postępuje w dół listy, bez powrotu do wcześniejszych artykułów.\n\nSłuchaj czyta nagłówek tylko raz, gdy powtarza się on na początku artykułu.\n\nLimity słuchania są teraz tygodniowe: 1 godzina z Premium Archive i 10 godzin z Premium Pro. Odnawiają się w każdą niedzielę. Ustawienia i Teraz odtwarzane pokazują pozostały czas w godzinach i minutach."
+  },
+  "macos": {
+    "whats_new": "Funkcją Słuchaj łatwiej teraz sterować. Przejdź dalej przyciskiem Następny artykuł w miniodtwarzaczu.\n\nAutomatyczne odtwarzanie kolejnych artykułów zachowuje teraz wybrane sortowanie w Zapisanych artykułach i Przeczytanych artykułach, także od najstarszych. Odtwarzanie postępuje w dół listy, bez powrotu do wcześniejszych artykułów.\n\nSłuchaj czyta nagłówek tylko raz, gdy powtarza się on na początku artykułu.\n\nLimity słuchania są teraz tygodniowe: 1 godzina z Premium Archive i 10 godzin z Premium Pro. Odnawiają się w każdą niedzielę. Ustawienia i Teraz odtwarzane pokazują pozostały czas w godzinach i minutach."
+  },
+  "android": {
+    "release_notes": "Słuchaj: rozpocznij z paska czytania i przejdź dalej przyciskiem Następny artykuł w miniodtwarzaczu. Automatyczne odtwarzanie zachowuje sortowanie Zapisanych artykułów i Przeczytanych artykułów, idąc w dół listy. Powtórzone nagłówki są czytane raz. Tygodniowo: 1 godzina z Premium Archive, 10 z Premium Pro, odnawiane w niedzielę. Ustawienia pokazują pozostałe godziny i minuty."
+  }
+}

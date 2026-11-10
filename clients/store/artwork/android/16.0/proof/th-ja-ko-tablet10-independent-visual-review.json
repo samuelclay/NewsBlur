@@ -1,0 +1,74 @@
+{
+  "reviewed_at": "2026-10-17T16:23:33Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/th/tenInchScreenshots/panel-01.png",
+      "sha256": "cf8342761c6c82b63989687ce4d222ac980b0eeb9c166f2e6020102c3c68ffe0",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/th/tenInchScreenshots/panel-02.png",
+      "sha256": "5aa0dc7828f806c9c2d8eab00cfdd0d981226e0e1048a46a33295bb0305e6ceb",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/th/tenInchScreenshots/panel-03.png",
+      "sha256": "e15e7761ba25a1f4ad3195ae5d8d648252f602321d2f96b1e4c5592f98bc5bfe",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/th/tenInchScreenshots/panel-04.png",
+      "sha256": "5a06a5afb86ac244f85a2c7776576477e3f9027d9e0e78c05d2c676825344b51",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ja/tenInchScreenshots/panel-01.png",
+      "sha256": "f9a6f18de837aa64cd56435ef05ed8bd60384faaf17767adf0b4c73fcb850b46",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ja/tenInchScreenshots/panel-02.png",
+      "sha256": "0230a7b2ffb0fa196979b5a85b404662afba265f86872eee8fbdea17813f957c",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ja/tenInchScreenshots/panel-03.png",
+      "sha256": "7ce2af750444cfa633a4701dfa85bfb59a435408ff108f457856f1ddc076d4ab",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ja/tenInchScreenshots/panel-04.png",
+      "sha256": "b9460c334b578ba8273341591cad80a1959ef5b194893f35265e338aa12f63ae",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/tenInchScreenshots/panel-01.png",
+      "sha256": "552f47b7a175aebdefb2a6abdcc0a8f6773a2cda46f799704fd5619e41fb5974",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/tenInchScreenshots/panel-02.png",
+      "sha256": "2b38dd8434630089f36042b4ba8c910b7518590c72999f9842dc5401a2012df9",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/tenInchScreenshots/panel-03.png",
+      "sha256": "94117a3bcaea88f629da8d4011ef38dee7e9f4b6c7d6211101e288d8ff092962",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ko/tenInchScreenshots/panel-04.png",
+      "sha256": "888796fa689daabd700b50f5e57d17fe69adfb2e7dd327e714818e8d8fec92f5",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Thai, Japanese and Korean native controls and dates render without missing glyphs or clipping.",
+    "All four scenes contain populated native UI and cooking demo content, with no notification banners.",
+    "Drawer dimming and read-story dimming match native Android behavior; fixed split verified separately against current source and installed Alpha.",
+    "English feed names and story content are intentional original content."
+  ],
+  "scope": "12 ten-inch still exports only; footage, store uploads and publication are separate."
+}

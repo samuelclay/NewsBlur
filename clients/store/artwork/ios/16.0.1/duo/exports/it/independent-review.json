@@ -1,0 +1,30 @@
+{
+  "language": "it",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:05:35Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "All Italian captions fit without splitting words; long quotidiane remains intact.",
+    "Italian search/source/filter/date controls visible; food photography and article content loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-it-duo-inner-2853x2007-01.png",
+      "sha256": "179531a2dc40c59a11e2ecd86c1f4f80e9f5b07aa72a32d33c3a53c5c2e0c040"
+    },
+    {
+      "filename": "newsblur-16.0.1-it-duo-inner-2853x2007-02.png",
+      "sha256": "4fe3b4ad707df102ec23fbb59d3337f4d99379ef0c3a2b0246dbc6b20318a829"
+    },
+    {
+      "filename": "newsblur-16.0.1-it-duo-inner-2853x2007-03.png",
+      "sha256": "3a1b37b4e79c49e8b74bd7cdce4e4cddcdacb1099c59eb869feebf9d06d53b57"
+    },
+    {
+      "filename": "newsblur-16.0.1-it-duo-inner-2853x2007-04.png",
+      "sha256": "d1b1c85d363012fe13521b96de6c0911e3919ac4694264b3499f3075691afa71"
+    }
+  ],
+  "contact_sha256": "bdb863db4e52e0d01f34b7ea5cc1c70d0384be9e1c8552d73774b59ddd78b92f"
+}

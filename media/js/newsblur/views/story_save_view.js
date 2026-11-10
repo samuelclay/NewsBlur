@@ -30,20 +30,20 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         <div class="NB-sideoption-save">\
             <% if (story_tags.length) { %>\
                 <div class="NB-sideoption-save-populate">\
-                    Add <%= Inflector.pluralize("story tag", story_tags.length, true) %>\
+                    <%- interpolate(ngettext("Add %(count)s story tag", "Add %(count)s story tags", story_tags.length), {count: Inflector.commas(story_tags.length)}, true) %>\
                 </div>\
             <% } %>\
             <div class="NB-sideoption-save-icon"></div>\
             <div class="NB-sideoption-save-title">\
-                Tags:\
+                <%- gettext("Tags:") %>\
             </div>\
             <ul class="NB-sideoption-save-tag">\
                 <% _.each(tags, function(tag) { %>\
                     <li><%= tag %></li>\
                 <% }) %>\
             </ul>\
-            <div class="NB-sideoption-save-message">Saved</div>\
-            <div class="NB-sideoption-save-title">Private notes:</div>\
+            <div class="NB-sideoption-save-message"><%- gettext("Saved") %></div>\
+            <div class="NB-sideoption-save-title"><%- gettext("Private notes:") %></div>\
             <textarea class="NB-sideoption-save-notes"><%= story.get("user_notes") %></textarea>\
         </div>\
     </div>\

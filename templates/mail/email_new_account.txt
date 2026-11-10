@@ -1,17 +1,17 @@
 {% extends "mail/email_base.txt" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
-{% block body %}Welcome to NewsBlur, {{ user.username }}.
+{% block body %}{% current_domain as domain %}{% blocktrans with username=user.username %}Welcome to NewsBlur, {{ username }}.{% endblocktrans %}
 
-OK, firstly, thank you for trying out NewsBlur. I hope NewsBlur can make your daily reading more personal and intelligent.
+{% trans "OK, firstly, thank you for trying out NewsBlur. I hope NewsBlur can make your daily reading more personal and intelligent." %}
 
-Here are some easy ways to have a great time on NewsBlur:
+{% trans "Here are some easy ways to have a great time on NewsBlur:" %}
 
-    * Follow friends from Twitter, Facebook, and NewsBlur: https://{% current_domain %}{{ user.profile.autologin_url }}?next=friends
-    * Visit the popular blurblog, The People Have Spoken: https://popular.newsblur.com
-    * Upgrade to a premium account for only $36/year: https://{% current_domain %}{{ user.profile.autologin_url }}?next=premium
+    * {% trans "Follow friends from X, Facebook, and NewsBlur" %}: https://{{ domain }}{{ user.profile.autologin_url }}?next=friends
+    * {% trans "Visit the popular blurblog, The People Have Spoken" %}: https://popular.newsblur.com
+    * {% trans "Upgrade to a premium account for only $36/year" %}: https://{{ domain }}{{ user.profile.autologin_url }}?next=premium
 
-I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.
+{% trans "I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too." %}
 
 - Sam Clay{% endblock body %}

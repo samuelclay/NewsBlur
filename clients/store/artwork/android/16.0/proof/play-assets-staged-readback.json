@@ -1,0 +1,2623 @@
+{
+  "packageName": "com.newsblur",
+  "capturedAt": "2026-10-17T18:15:18.229836+00:00",
+  "edit": {
+    "id": "03809724643036911628",
+    "expiryTimeSeconds": "1792264603"
+  },
+  "listings": [
+    {
+      "language": "en-US",
+      "title": "NewsBlur: RSS News Reader",
+      "fullDescription": "Follow the sites you care about with NewsBlur, a personal RSS news reader that brings your reading together. Keep up with news, blogs, newsletters, and more, with your subscriptions and reading progress synced across your phone, tablet, and the web.\n\nREAD YOUR WAY\nBrowse stories from individual sites or bring a folder together in one reading list. Choose a comfortable theme, adjust the text, and use gestures to move through your stories. Download stories for offline reading and pick up where you left off. On tablets and foldables, read with your story list and article side by side.\n\nFIND YOUR FOCUS\nTrain NewsBlur on authors, tags, and words in headlines to highlight stories you want and hide ones you don't. You decide what matters.\n\nDISCOVER AND KEEP\nFind new sites, preview their latest stories, and try reading before subscribing. Save stories for later, organize them with tags, and search your reading. Share stories with comments on your NewsBlur blurblog and follow what friends are reading.\n\nGO DEEPER\nUse Text view to read an extracted article. Ask AI for a summary, background, or answers to questions about a story. Availability and usage limits depend on your account plan.\n\nIN YOUR LANGUAGE\nUse NewsBlur's interface in 21 languages, including right-to-left layouts for Arabic and Hebrew. Choose your language in the app or follow your device settings. Stories stay in the language they were published in.\n\nA NewsBlur account is required. Free accounts and optional paid subscriptions are available. Some features require a paid plan.\n\nTerms of use: https://www.newsblur.com/tos\nPrivacy policy: https://www.newsblur.com/privacy",
+      "shortDescription": "Your favorite sites in one place. Read, save, and share stories.",
+      "video": "https://www.youtube.com/watch?v=iUO8KcJc9DQ"
+    },
+    {
+      "language": "ar",
+      "title": "NewsBlur: قارئ أخبار RSS",
+      "fullDescription": "تابع المواقع التي تهمك مع NewsBlur، قارئ أخبار RSS الشخصي الذي يجمع قراءاتك في مكان واحد. واكب الأخبار والمدونات والنشرات البريدية وغيرها، مع مزامنة اشتراكاتك وتقدم القراءة بين هاتفك وجهازك اللوحي والويب.\n\nاقرأ بطريقتك\nتصفح قصص كل موقع على حدة أو اجمع محتويات مجلد في قائمة قراءة واحدة. اختر مظهرًا مريحًا، واضبط النص، واستخدم الإيماءات للتنقل بين القصص. نزّل القصص لقراءتها دون اتصال، وأكمل من حيث توقفت. على الأجهزة اللوحية والقابلة للطي، اقرأ مع عرض قائمة القصص والمقال جنبًا إلى جنب.\n\nركّز على ما يهمك\nدرّب NewsBlur على الكتّاب والوسوم والكلمات في العناوين لإبراز القصص التي تريدها وإخفاء ما لا تريده. أنت من يقرر ما يستحق الاهتمام.\n\nاكتشف واحتفظ\nاعثر على مواقع جديدة، وعاين أحدث قصصها، وجرّب القراءة قبل الاشتراك. احفظ القصص لوقت لاحق، ونظّمها بالوسوم، وابحث في قراءاتك. شارك القصص مع تعليقاتك في مدونتك على Blurblog في NewsBlur، وتابع ما يقرؤه أصدقاؤك.\n\nتعمّق أكثر\nاستخدم عرض النص لقراءة النص المستخرج من المقال. اطلب ملخصًا أو معلومات عن السياق أو إجابات عن أسئلتك حول القصة من خلال «اسأل الذكاء الاصطناعي». يعتمد توفر الميزة وحدود استخدامها على خطة حسابك.\n\nبلغتك\nاستخدم واجهة NewsBlur بإحدى اللغات الـ21، مع تخطيط من اليمين إلى اليسار للعربية والعبرية. اختر لغتك داخل التطبيق أو اتبع إعدادات جهازك. تبقى القصص باللغة التي نُشرت بها.\n\nيلزم حساب NewsBlur. تتوفر حسابات مجانية واشتراكات مدفوعة اختيارية. تتطلب بعض الميزات خطة مدفوعة.\n\nشروط الاستخدام: https://www.newsblur.com/tos\nسياسة الخصوصية: https://www.newsblur.com/privacy",
+      "shortDescription": "مواقعك المفضلة في مكان واحد. اقرأ القصص واحفظها وشاركها.",
+      "video": "https://www.youtube.com/watch?v=-nSi5n5XJ4E"
+    },
+    {
+      "language": "zh-CN",
+      "title": "NewsBlur：RSS 新闻阅读器",
+      "fullDescription": "用 NewsBlur 关注你在意的网站。这款个人 RSS 新闻阅读器将你想读的内容汇集在一起。随时阅读新闻、博客、邮件简报等内容，订阅列表和阅读进度会在手机、平板电脑和网页端之间同步。\n\n按你的方式阅读\n逐个网站浏览文章，或将文件夹内的文章汇集到一个阅读列表中。选择舒适的主题、调整文字，并用手势切换文章。下载文章以供离线阅读，随时从上次停下的地方继续。在平板电脑和折叠屏设备上，还可以并排查看文章列表和正文。\n\n聚焦你在意的内容\n根据作者、标签和标题中的词语训练 NewsBlur，突出你想读的文章，隐藏你不感兴趣的文章。什么重要，由你决定。\n\n发现并保存\n寻找新网站，预览最新文章，订阅前先试读。保存文章以便稍后阅读，用标签整理，并搜索阅读内容。在你的 NewsBlur Blurblog 上分享文章和评论，也可以关注好友正在读什么。\n\n了解更多\n使用文本视图阅读提取出的文章正文。通过“询问 AI”获取摘要、背景信息，或询问有关文章的问题。功能是否可用以及使用限额取决于你的账户套餐。\n\n使用你的语言\nNewsBlur 界面支持 21 种语言，阿拉伯语和希伯来语还提供从右到左的布局。你可以在应用中选择语言，也可以跟随设备设置。文章仍保留发布时的语言。\n\n需要 NewsBlur 账户。提供免费账户和可选的付费订阅，部分功能需要付费套餐。\n\n使用条款：https://www.newsblur.com/tos\n\n隐私政策：https://www.newsblur.com/privacy",
+      "shortDescription": "将喜欢的网站汇集一处，阅读、保存和分享文章。"
+    },
+    {
+      "language": "zh-TW",
+      "title": "NewsBlur：RSS 新聞閱讀器",
+      "fullDescription": "用 NewsBlur 追蹤你在意的網站。這款個人 RSS 新聞閱讀器將你想讀的內容集中在一起。隨時閱讀新聞、部落格、電子報等內容，訂閱清單和閱讀進度會在手機、平板電腦和網頁版之間同步。\n\n照你的方式閱讀\n逐一瀏覽各網站的文章，或將資料夾內的文章整合成一份閱讀清單。選擇舒適的佈景主題、調整文字，並用手勢切換文章。下載文章以供離線閱讀，隨時從上次停下的地方繼續。在平板電腦和摺疊裝置上，還可以並排查看文章清單和內文。\n\n把焦點放在你在意的內容\n根據作者、標籤和標題中的字詞訓練 NewsBlur，凸顯你想讀的文章，隱藏你不感興趣的文章。什麼重要，由你決定。\n\n探索並儲存\n尋找新網站，預覽最新文章，訂閱前先試讀。儲存文章以便稍後閱讀，用標籤整理，並搜尋閱讀內容。在你的 NewsBlur Blurblog 上分享文章並附上留言，也可以追蹤朋友正在讀什麼。\n\n深入了解\n使用文字檢視閱讀擷取出的文章內文。透過「詢問 AI」取得摘要、背景資訊，或詢問與文章有關的問題。功能是否可用及使用限制取決於你的帳戶方案。\n\n使用你的語言\nNewsBlur 介面支援 21 種語言，阿拉伯文和希伯來文也提供從右至左的版面配置。你可以在應用程式中選擇語言，或依照裝置設定。文章仍保留發佈時的語言。\n\n需要 NewsBlur 帳戶。提供免費帳戶和可自行選用的付費訂閱，部分功能需要付費方案。\n\n使用條款：https://www.newsblur.com/tos\n\n隱私權政策：https://www.newsblur.com/privacy",
+      "shortDescription": "將喜愛的網站集中一處，閱讀、儲存和分享文章。"
+    },
+    {
+      "language": "nl-NL",
+      "title": "NewsBlur: RSS-lezer",
+      "fullDescription": "Volg de sites die je belangrijk vindt met NewsBlur, een persoonlijke RSS-nieuwslezer die je leesvoer samenbrengt. Blijf bij met nieuws, blogs, nieuwsbrieven en meer. Je abonnementen en leesvoortgang worden gesynchroniseerd tussen je telefoon, tablet en het web.\n\nLEES OP JOUW MANIER\nBlader door artikelen van afzonderlijke sites of voeg een map samen tot één leeslijst. Kies een prettig thema, pas de tekst aan en gebruik gebaren om door je artikelen te gaan. Download artikelen om offline te lezen en ga verder waar je was gebleven. Op tablets en vouwbare apparaten lees je met de artikellijst en het artikel naast elkaar.\n\nVIND JE FOCUS\nTrain NewsBlur op auteurs, tags en woorden in koppen om interessante artikelen uit te lichten en andere te verbergen. Jij bepaalt wat telt.\n\nONTDEK EN SLA OP\nVind nieuwe sites, bekijk hun nieuwste artikelen en probeer ze uit voordat je je abonneert. Sla artikelen op voor later, orden ze met tags en doorzoek je leesvoer. Deel artikelen met opmerkingen op je NewsBlur-blurblog en volg wat je vrienden lezen.\n\nGA DIEPER\nGebruik de Tekstweergave om de tekst die uit een artikel is gehaald te lezen. Met Vraag AI krijg je een samenvatting, achtergrondinformatie of antwoorden op vragen over een artikel. De beschikbaarheid en gebruikslimieten hangen af van je accountabonnement.\n\nIN JOUW TAAL\nGebruik de interface van NewsBlur in 21 talen, met een indeling van rechts naar links voor Arabisch en Hebreeuws. Kies je taal in de app of volg de instellingen van je apparaat. Artikelen blijven in de taal waarin ze zijn gepubliceerd.\n\nEen NewsBlur-account is vereist. Er zijn gratis accounts en optionele betaalde abonnementen. Voor sommige functies is een betaald abonnement nodig.\n\nGebruiksvoorwaarden: https://www.newsblur.com/tos\nPrivacybeleid: https://www.newsblur.com/privacy",
+      "shortDescription": "Je favoriete sites op één plek. Lees artikelen, sla ze op en deel ze.",
+      "video": "https://www.youtube.com/watch?v=YgoxH2alBWc"
+    },
+    {
+      "language": "fr-FR",
+      "title": "NewsBlur : lecteur RSS",
+      "fullDescription": "Suivez les sites qui vous intéressent avec NewsBlur, un lecteur RSS personnel qui rassemble vos lectures. Retrouvez actualités, blogs, newsletters et bien plus, avec vos abonnements et votre progression de lecture synchronisés sur votre téléphone, votre tablette et le web.\n\nLISEZ À VOTRE FAÇON\nParcourez les articles de chaque site ou regroupez ceux d’un dossier dans une seule liste de lecture. Choisissez un thème agréable, ajustez le texte et utilisez les gestes pour passer d’un article à l’autre. Téléchargez des articles pour les lire hors ligne et reprenez là où vous en étiez. Sur les tablettes et les appareils pliables, affichez la liste des articles et l’article côte à côte.\n\nCONCENTREZ-VOUS SUR L’ESSENTIEL\nEntraînez NewsBlur à partir des auteurs, des tags et des mots des titres pour mettre en avant les articles qui vous intéressent et masquer les autres. C’est vous qui décidez de ce qui compte.\n\nDÉCOUVREZ ET CONSERVEZ\nTrouvez de nouveaux sites, consultez leurs derniers articles et découvrez-les avant de vous abonner. Enregistrez des articles pour plus tard, organisez-les avec des tags et effectuez des recherches dans vos lectures. Partagez des articles avec vos commentaires sur votre blurblog NewsBlur et suivez les lectures de vos amis.\n\nALLEZ PLUS LOIN\nUtilisez la vue Texte pour lire le contenu extrait d’un article. Avec Demander à l’IA, obtenez un résumé, du contexte ou des réponses à vos questions sur un article. La disponibilité et les limites d’utilisation dépendent de l’offre associée à votre compte.\n\nDANS VOTRE LANGUE\nUtilisez l’interface de NewsBlur dans 21 langues, avec une disposition de droite à gauche pour l’arabe et l’hébreu. Choisissez votre langue dans l’application ou suivez les réglages de votre appareil. Les articles restent dans leur langue de publication.\n\nUn compte NewsBlur est nécessaire. Des comptes gratuits et des abonnements payants facultatifs sont disponibles. Certaines fonctionnalités nécessitent une offre payante.\n\nConditions d’utilisation : https://www.newsblur.com/tos\nPolitique de confidentialité : https://www.newsblur.com/privacy",
+      "shortDescription": "Vos sites favoris réunis. Lisez, enregistrez et partagez des articles.",
+      "video": "https://www.youtube.com/watch?v=1ur-fYshgfo"
+    },
+    {
+      "language": "de-DE",
+      "title": "NewsBlur: RSS-Reader",
+      "fullDescription": "Folge den Websites, die dir wichtig sind, mit NewsBlur, deinem persönlichen RSS-Reader, der deine Lektüre zusammenbringt. Bleib bei Nachrichten, Blogs, Newslettern und mehr auf dem Laufenden. Deine Abonnements und dein Lesefortschritt werden zwischen Smartphone, Tablet und dem Web synchronisiert.\n\nLIES AUF DEINE ART\nLies Artikel einzelner Websites oder fasse einen Ordner in einer Leseliste zusammen. Wähle ein angenehmes Design, passe den Text an und navigiere mit Gesten durch deine Artikel. Lade Artikel zum Offline-Lesen herunter und lies dort weiter, wo du aufgehört hast. Auf Tablets und faltbaren Geräten kannst du Artikelliste und Artikel nebeneinander lesen.\n\nFINDE DEINEN FOKUS\nTrainiere NewsBlur mit Autoren, Tags und Wörtern in Überschriften, um interessante Artikel hervorzuheben und andere auszublenden. Du entscheidest, was zählt.\n\nENTDECKEN UND AUFBEWAHREN\nFinde neue Websites, sieh dir ihre neuesten Artikel an und lies sie zur Probe, bevor du sie abonnierst. Speichere Artikel für später, ordne sie mit Tags und durchsuche deine Lektüre. Teile Artikel mit Kommentaren auf deinem NewsBlur-Blurblog und verfolge, was deine Freunde lesen.\n\nMEHR ERFAHREN\nLies den extrahierten Artikel in der Textansicht. Mit KI fragen erhältst du eine Zusammenfassung, Hintergrundinformationen oder Antworten auf Fragen zu einem Artikel. Verfügbarkeit und Nutzungslimits hängen von deinem Kontotarif ab.\n\nIN DEINER SPRACHE\nNutze die NewsBlur-Oberfläche in 21 Sprachen, mit rechts-nach-links angeordneten Ansichten für Arabisch und Hebräisch. Wähle deine Sprache in der App oder folge der Sprache deines Geräts. Artikel bleiben in ihrer ursprünglichen Veröffentlichungssprache.\n\nEin NewsBlur-Konto ist erforderlich. Kostenlose Konten und optionale kostenpflichtige Abonnements sind verfügbar. Einige Funktionen erfordern einen kostenpflichtigen Tarif.\n\nNutzungsbedingungen: https://www.newsblur.com/tos\nDatenschutzrichtlinie: https://www.newsblur.com/privacy",
+      "shortDescription": "Deine Lieblingswebsites an einem Ort. Artikel lesen, speichern und teilen.",
+      "video": "https://www.youtube.com/watch?v=IH4B82sJ7xo"
+    },
+    {
+      "language": "iw-IL",
+      "title": "NewsBlur: קורא חדשות RSS",
+      "fullDescription": "עקבו אחר האתרים שמעניינים אתכם עם NewsBlur, קורא חדשות RSS אישי שמרכז את כל הקריאה במקום אחד. התעדכנו בחדשות, בבלוגים, בניוזלטרים ועוד, עם סנכרון המינויים וההתקדמות בקריאה בין הטלפון, הטאבלט והאינטרנט.\n\nקוראים בדרך שלך\nעיינו בכתבות מאתרים בודדים או רכזו את תוכן התיקייה ברשימת קריאה אחת. בחרו ערכת נושא נוחה, התאימו את הטקסט והשתמשו במחוות למעבר בין כתבות. הורידו כתבות לקריאה ללא חיבור והמשיכו מהמקום שבו עצרתם. בטאבלטים ובמכשירים מתקפלים אפשר לקרוא כשרשימת הכתבות והכתבה מוצגות זו לצד זו.\n\nמתמקדים במה שחשוב\nאמנו את NewsBlur לפי כותבים, תגיות ומילים בכותרות כדי להבליט כתבות רצויות ולהסתיר כתבות שאינן רצויות. הבחירה במה שחשוב נשארת שלך.\n\nמגלים ושומרים\nגלו אתרים חדשים, צפו בתצוגה מקדימה של הכתבות האחרונות ונסו לקרוא לפני ההרשמה. שמרו כתבות להמשך, ארגנו אותן בעזרת תגיות וחפשו בחומרי הקריאה שלכם. שתפו כתבות עם תגובות ב־Blurblog שלכם ב־NewsBlur ועקבו אחר מה שחברים קוראים.\n\nמעמיקים בקריאה\nהשתמשו בתצוגת טקסט לקריאת הטקסט שחולץ מהכתבה. עם ״שאלו את ה-AI״ אפשר לקבל סיכום, רקע או תשובות לשאלות על כתבה. הזמינות ומגבלות השימוש תלויות במסלול החשבון שלכם.\n\nבשפה שלך\nממשק NewsBlur זמין ב־21 שפות, כולל פריסה מימין לשמאל לערבית ולעברית. בחרו שפה באפליקציה או השתמשו בשפת המכשיר. הכתבות נשארות בשפה שבה פורסמו.\n\nנדרש חשבון NewsBlur. יש חשבונות בחינם ומינויים בתשלום לבחירתך. חלק מהתכונות דורשות מסלול בתשלום.\n\nתנאי שימוש: https://www.newsblur.com/tos\nמדיניות פרטיות: https://www.newsblur.com/privacy",
+      "shortDescription": "האתרים האהובים שלך במקום אחד. קוראים, שומרים ומשתפים כתבות.",
+      "video": "https://www.youtube.com/watch?v=6I7E1GrRemA"
+    },
+    {
+      "language": "hi-IN",
+      "title": "NewsBlur: RSS समाचार रीडर",
+      "fullDescription": "NewsBlur के साथ अपनी पसंद की साइटों से जुड़े रहें। यह निजी RSS समाचार रीडर आपकी सारी पढ़ने की सामग्री एक जगह लाता है। समाचार, ब्लॉग, न्यूज़लेटर और बहुत कुछ पढ़ें। आपकी सदस्यताएँ और पढ़ने की प्रगति फ़ोन, टैबलेट और वेब के बीच सिंक रहती हैं।\n\nअपने तरीके से पढ़ें\nअलग-अलग साइटों के लेख देखें या किसी फ़ोल्डर के लेखों को एक ही पठन सूची में लाएँ। आरामदायक थीम चुनें, टेक्स्ट को अपने अनुसार ढालें और जेस्चर से लेखों के बीच जाएँ। ऑफ़लाइन पढ़ने के लिए लेख डाउनलोड करें और जहाँ छोड़ा था, वहीं से आगे पढ़ें। टैबलेट और फ़ोल्ड होने वाले डिवाइस पर लेख सूची और लेख को साथ-साथ देखकर पढ़ें।\n\nज़रूरी चीज़ों पर ध्यान दें\nलेखकों, टैग और शीर्षकों के शब्दों के आधार पर NewsBlur को प्रशिक्षित करें, ताकि आपकी पसंद के लेख उभरकर दिखें और अनचाहे लेख छिप जाएँ। क्या ज़रूरी है, यह आप तय करते हैं।\n\nखोजें और सहेजें\nनई साइटें खोजें, उनके ताज़ा लेखों की झलक देखें और सदस्यता लेने से पहले पढ़कर आज़माएँ। लेख बाद में पढ़ने के लिए सहेजें, टैग से व्यवस्थित करें और अपनी पढ़ने की सामग्री में खोजें। अपने NewsBlur के Blurblog पर टिप्पणियों के साथ लेख साझा करें और देखें कि आपके मित्र क्या पढ़ रहे हैं।\n\nऔर गहराई से जानें\nलेख से निकाला गया टेक्स्ट पढ़ने के लिए टेक्स्ट दृश्य इस्तेमाल करें। ‘AI से पूछें’ सुविधा से लेख का सारांश, पृष्ठभूमि या उसके बारे में अपने सवालों के जवाब पाएँ। उपलब्धता और उपयोग की सीमाएँ आपके खाते की योजना पर निर्भर करती हैं।\n\nआपकी भाषा में\nNewsBlur का इंटरफ़ेस 21 भाषाओं में इस्तेमाल करें। अरबी और हिब्रू के लिए दाएँ से बाएँ लेआउट भी उपलब्ध है। ऐप में अपनी भाषा चुनें या डिवाइस की भाषा अपनाएँ। लेख उसी भाषा में रहते हैं जिसमें वे प्रकाशित हुए थे।\n\nNewsBlur खाता ज़रूरी है। मुफ़्त खाते और वैकल्पिक सशुल्क सदस्यताएँ उपलब्ध हैं। कुछ सुविधाओं के लिए सशुल्क योजना चाहिए।\n\nउपयोग की शर्तें: https://www.newsblur.com/tos\nगोपनीयता नीति: https://www.newsblur.com/privacy",
+      "shortDescription": "पसंदीदा साइटें एक जगह। लेख पढ़ें, सहेजें और साझा करें।"
+    },
+    {
+      "language": "id",
+      "title": "NewsBlur: Pembaca Berita RSS",
+      "fullDescription": "Ikuti situs yang Anda sukai dengan NewsBlur, pembaca berita RSS pribadi yang menyatukan bacaan Anda. Ikuti berita, blog, buletin email, dan lainnya, dengan langganan serta progres membaca yang tersinkron di ponsel, tablet, dan web.\n\nBACA SESUAI SELERA\nJelajahi artikel dari setiap situs atau satukan isi folder dalam satu daftar bacaan. Pilih tema yang nyaman, sesuaikan teks, dan gunakan gestur untuk berpindah antarartikel. Unduh artikel untuk dibaca tanpa internet dan lanjutkan dari tempat terakhir Anda membaca. Di tablet dan perangkat lipat, baca dengan daftar artikel dan isi artikel yang tampil berdampingan.\n\nTEMUKAN FOKUS ANDA\nLatih NewsBlur berdasarkan penulis, tag, dan kata dalam judul untuk menyorot artikel yang Anda inginkan dan menyembunyikan yang tidak Anda inginkan. Anda yang menentukan apa yang penting.\n\nTEMUKAN DAN SIMPAN\nTemukan situs baru, lihat pratinjau artikel terbarunya, dan coba baca sebelum berlangganan. Simpan artikel untuk nanti, atur dengan tag, dan cari di bacaan Anda. Bagikan artikel beserta komentar di Blurblog Anda di NewsBlur dan ikuti apa yang dibaca teman.\n\nGALI LEBIH DALAM\nGunakan Tampilan Teks untuk membaca teks artikel yang diekstrak. Dengan Tanya AI, dapatkan ringkasan, latar belakang, atau jawaban atas pertanyaan tentang artikel. Ketersediaan dan batas penggunaan bergantung pada paket akun Anda.\n\nDALAM BAHASA ANDA\nGunakan antarmuka NewsBlur dalam 21 bahasa, termasuk tata letak kanan ke kiri untuk bahasa Arab dan Ibrani. Pilih bahasa di aplikasi atau ikuti pengaturan perangkat Anda. Artikel tetap dalam bahasa aslinya saat diterbitkan.\n\nDiperlukan akun NewsBlur. Tersedia akun gratis dan langganan berbayar opsional. Beberapa fitur memerlukan paket berbayar.\n\nKetentuan penggunaan: https://www.newsblur.com/tos\nKebijakan privasi: https://www.newsblur.com/privacy",
+      "shortDescription": "Situs favorit di satu tempat. Baca, simpan, dan bagikan artikel."
+    },
+    {
+      "language": "it-IT",
+      "title": "NewsBlur: lettore RSS",
+      "fullDescription": "Segui i siti che ti interessano con NewsBlur, un lettore personale di notizie RSS che riunisce le tue letture. Tieniti al passo con notizie, blog, newsletter e molto altro, con iscrizioni e progressi di lettura sincronizzati tra telefono, tablet e il web.\n\nLEGGI A MODO TUO\nSfoglia gli articoli dei singoli siti o riunisci quelli di una cartella in un unico elenco di lettura. Scegli un tema confortevole, regola il testo e usa i gesti per passare da un articolo all’altro. Scarica gli articoli per leggerli offline e riprendi dal punto in cui avevi interrotto. Su tablet e dispositivi pieghevoli puoi leggere con l’elenco degli articoli e l’articolo affiancati.\n\nCONCENTRATI SU CIÒ CHE CONTA\nAddestra NewsBlur in base ad autori, tag e parole nei titoli per mettere in evidenza gli articoli che ti interessano e nascondere gli altri. Decidi tu cosa conta.\n\nSCOPRI E CONSERVA\nTrova nuovi siti, guarda i loro ultimi articoli e prova a leggerli prima di iscriverti. Salva gli articoli per dopo, organizzali con i tag e cerca tra le tue letture. Condividi articoli con commenti sul tuo blurblog di NewsBlur e segui ciò che leggono i tuoi amici.\n\nAPPROFONDISCI\nUsa la Vista testo per leggere il contenuto estratto di un articolo. Con Chiedi all’IA puoi ottenere un riepilogo, informazioni di contesto o risposte alle tue domande su un articolo. La disponibilità e i limiti di utilizzo dipendono dal piano del tuo account.\n\nNELLA TUA LINGUA\nUsa l’interfaccia di NewsBlur in 21 lingue, con layout da destra a sinistra per arabo ed ebraico. Scegli la lingua nell’app o segui le impostazioni del dispositivo. Gli articoli restano nella lingua in cui sono stati pubblicati.\n\nÈ necessario un account NewsBlur. Sono disponibili account gratuiti e abbonamenti a pagamento facoltativi. Alcune funzioni richiedono un piano a pagamento.\n\nTermini di utilizzo: https://www.newsblur.com/tos\nInformativa sulla privacy: https://www.newsblur.com/privacy",
+      "shortDescription": "I tuoi siti preferiti insieme. Leggi, salva e condividi articoli.",
+      "video": "https://www.youtube.com/watch?v=-FaJicL236E"
+    },
+    {
+      "language": "ja-JP",
+      "title": "NewsBlur：RSSニュースリーダー",
+      "fullDescription": "NewsBlurは、気になるサイトをまとめて読めるパーソナルRSSニュースリーダーです。ニュース、ブログ、ニュースレターなどをチェックでき、購読リストや読書の進み具合はスマートフォン、タブレット、ウェブ間で同期されます。\n\n自分に合った読み方で\nサイトごとに記事を読むことも、フォルダー内の記事を1つの一覧にまとめることもできます。見やすいテーマを選び、文字を調整して、ジェスチャーで記事を切り替えられます。記事をダウンロードしてオフラインで読み、中断したところから再開できます。タブレットや折りたたみスマートフォンでは、記事一覧と本文を並べて表示できます。\n\n読みたい記事にフォーカス\n著者、タグ、見出しの単語をもとにNewsBlurをトレーニングすると、読みたい記事を目立たせ、不要な記事を非表示にできます。何が大切かを決めるのは、あなたです。\n\n見つけて、残す\n新しいサイトを探し、最新記事をプレビューして、購読する前に試し読みできます。記事を後で読むために保存し、タグで整理したり、読みたい内容を検索したりできます。NewsBlurの自分のBlurblogにコメント付きで記事を共有し、友達が読んでいる記事もチェックできます。\n\nもっと深く知る\nテキスト表示では、抽出した記事本文を読めます。「AIに質問」で記事の要約や背景情報を求めたり、記事について質問したりできます。利用できる機能や利用上限は、アカウントのプランによって異なります。\n\nあなたの言語で\nNewsBlurのインターフェースは21言語に対応し、アラビア語とヘブライ語では右から左へのレイアウトを使えます。アプリ内で言語を選ぶか、デバイスの設定に合わせられます。記事は公開時の言語のまま表示されます。\n\nNewsBlurアカウントが必要です。無料アカウントと、任意で利用できる有料サブスクリプションがあります。一部の機能には有料プランが必要です。\n\n利用規約：https://www.newsblur.com/tos\n\nプライバシーポリシー：https://www.newsblur.com/privacy",
+      "shortDescription": "お気に入りのサイトを1か所に。記事を読んで、保存して、共有できます。"
+    },
+    {
+      "language": "ko-KR",
+      "title": "NewsBlur: RSS 뉴스 리더",
+      "fullDescription": "NewsBlur는 관심 있는 사이트를 모아 읽을 수 있는 개인용 RSS 뉴스 리더입니다. 뉴스, 블로그, 뉴스레터 등을 확인하고, 구독 목록과 읽기 진행 상황을 휴대폰, 태블릿, 웹에서 동기화할 수 있습니다.\n\n나에게 맞는 방식으로 읽기\n사이트별로 스토리를 읽거나 폴더에 담긴 스토리를 하나의 목록으로 모아 보세요. 편안한 테마를 선택하고 글자를 조절하며 제스처로 스토리를 넘길 수 있습니다. 스토리를 다운로드해 오프라인으로 읽고, 멈췄던 곳에서 이어 읽으세요. 태블릿과 폴더블 기기에서는 스토리 목록과 본문을 나란히 놓고 읽을 수 있습니다.\n\n관심 있는 스토리에 집중하기\n작성자, 태그, 제목의 단어를 기준으로 NewsBlur를 학습시키면 원하는 스토리를 강조하고 원하지 않는 스토리를 숨길 수 있습니다. 무엇이 중요한지는 직접 결정하세요.\n\n발견하고 보관하기\n새로운 사이트를 찾고 최신 스토리를 미리 본 다음, 구독하기 전에 읽어 보세요. 스토리를 나중에 읽도록 저장하고 태그로 정리하며 읽을 내용을 검색할 수 있습니다. NewsBlur의 내 Blurblog에 댓글과 함께 스토리를 공유하고 친구들이 무엇을 읽는지도 살펴보세요.\n\n더 깊이 알아보기\n텍스트 보기에서 추출된 본문을 읽으세요. ‘AI에게 질문’으로 스토리 요약이나 배경 정보를 요청하고 스토리에 관해 질문할 수 있습니다. 기능 이용 가능 여부와 사용 한도는 계정 요금제에 따라 다릅니다.\n\n내 언어로 사용하기\nNewsBlur 인터페이스는 21개 언어를 지원하며, 아랍어와 히브리어에서는 오른쪽에서 왼쪽으로 표시되는 레이아웃을 사용할 수 있습니다. 앱에서 언어를 선택하거나 기기 설정을 따르세요. 스토리는 발행된 원래 언어로 유지됩니다.\n\nNewsBlur 계정이 필요합니다. 무료 계정과 선택 가능한 유료 구독이 제공됩니다. 일부 기능에는 유료 요금제가 필요합니다.\n\n이용 약관: https://www.newsblur.com/tos\n\n개인정보 처리방침: https://www.newsblur.com/privacy",
+      "shortDescription": "좋아하는 사이트를 한곳에 모아 스토리를 읽고 저장하고 공유하세요."
+    },
+    {
+      "language": "pl-PL",
+      "title": "NewsBlur: czytnik RSS",
+      "fullDescription": "Obserwuj ważne dla Ciebie witryny w NewsBlur, osobistym czytniku wiadomości RSS, który zbiera Twoje lektury. Bądź na bieżąco z wiadomościami, blogami, newsletterami i nie tylko. Twoje subskrypcje i postęp czytania synchronizują się między telefonem, tabletem i przeglądarką.\n\nCZYTAJ PO SWOJEMU\nPrzeglądaj artykuły z poszczególnych witryn lub zbierz zawartość folderu na jednej liście do czytania. Wybierz wygodny motyw, dostosuj tekst i poruszaj się po artykułach za pomocą gestów. Pobierz artykuły do czytania offline i wróć do miejsca, w którym skończyło się czytanie. Na tabletach i urządzeniach składanych możesz czytać z listą artykułów i artykułem obok siebie.\n\nWYBIERZ TO, CO WAŻNE\nTrenuj NewsBlur na podstawie autorów, tagów i słów w tytułach, aby wyróżniać interesujące Cię artykuły i ukrywać pozostałe. Ty decydujesz, co się liczy.\n\nODKRYWAJ I ZAPISUJ\nZnajduj nowe witryny, przeglądaj ich najnowsze artykuły i wypróbuj czytanie przed subskrypcją. Zapisuj artykuły na później, porządkuj je za pomocą tagów i przeszukuj swoje lektury. Udostępniaj artykuły z komentarzami na swoim blurblogu NewsBlur i obserwuj, co czytają znajomi.\n\nDOWIEDZ SIĘ WIĘCEJ\nUżyj Widoku tekstowego, aby przeczytać wyodrębnioną treść artykułu. Funkcja Zapytaj AI pozwala uzyskać podsumowanie, kontekst lub odpowiedzi na pytania o artykuł. Dostępność i limity użycia zależą od planu Twojego konta.\n\nW TWOIM JĘZYKU\nKorzystaj z interfejsu NewsBlur w 21 językach, z układem od prawej do lewej dla arabskiego i hebrajskiego. Wybierz język w aplikacji lub użyj ustawień urządzenia. Artykuły pozostają w języku, w którym je opublikowano.\n\nWymagane jest konto NewsBlur. Dostępne są konta bezpłatne i opcjonalne płatne subskrypcje. Niektóre funkcje wymagają płatnego planu.\n\nWarunki korzystania: https://www.newsblur.com/tos\nPolityka prywatności: https://www.newsblur.com/privacy",
+      "shortDescription": "Ulubione witryny razem. Czytaj, zapisuj i udostępniaj artykuły.",
+      "video": "https://www.youtube.com/watch?v=99s8PpYy_dY"
+    },
+    {
+      "language": "pt-BR",
+      "title": "NewsBlur: leitor RSS",
+      "fullDescription": "Acompanhe os sites que importam para você com o NewsBlur, um leitor pessoal de notícias RSS que reúne suas leituras. Fique por dentro de notícias, blogs, newsletters e muito mais, com suas assinaturas e seu progresso de leitura sincronizados entre seu celular, tablet e a web.\n\nLEIA DO SEU JEITO\nLeia artigos de sites individuais ou reúna os de uma pasta em uma única lista de leitura. Escolha um tema confortável, ajuste o texto e use gestos para navegar pelos artigos. Baixe artigos para ler offline e continue de onde parou. Em tablets e dispositivos dobráveis, leia com a lista de artigos e o artigo lado a lado.\n\nENCONTRE SEU FOCO\nTreine o NewsBlur com autores, tags e palavras dos títulos para destacar os artigos que você quer e ocultar os demais. Você decide o que importa.\n\nDESCUBRA E SALVE\nEncontre novos sites, veja seus artigos mais recentes e experimente ler antes de assinar. Salve artigos para depois, organize-os com tags e pesquise nas suas leituras. Compartilhe artigos com comentários no seu blurblog do NewsBlur e acompanhe o que seus amigos estão lendo.\n\nVÁ ALÉM\nUse a Visualização de texto para ler o conteúdo extraído de um artigo. Com Perguntar à IA, obtenha um resumo, contexto ou respostas a perguntas sobre um artigo. A disponibilidade e os limites de uso dependem do plano da sua conta.\n\nNO SEU IDIOMA\nUse a interface do NewsBlur em 21 idiomas, com layouts da direita para a esquerda em árabe e hebraico. Escolha seu idioma no app ou siga as configurações do dispositivo. Os artigos permanecem no idioma em que foram publicados.\n\nÉ necessário ter uma conta do NewsBlur. Há contas gratuitas e assinaturas pagas opcionais. Alguns recursos exigem um plano pago.\n\nTermos de uso: https://www.newsblur.com/tos\nPolítica de privacidade: https://www.newsblur.com/privacy",
+      "shortDescription": "Seus sites favoritos juntos. Leia, salve e compartilhe artigos.",
+      "video": "https://www.youtube.com/watch?v=RtomW35_WGI"
+    },
+    {
+      "language": "ru-RU",
+      "title": "NewsBlur: RSS и новости",
+      "fullDescription": "Следите за интересными вам сайтами с NewsBlur — персональным RSS-ридером, который собирает всё для чтения в одном месте. Читайте новости, блоги, рассылки и многое другое. Подписки и прогресс чтения синхронизируются между телефоном, планшетом и веб-версией.\n\nЧИТАЙТЕ ПО-СВОЕМУ\nПросматривайте статьи отдельных сайтов или объединяйте содержимое папки в один список для чтения. Выберите удобную тему, настройте текст и переходите между статьями с помощью жестов. Загружайте статьи для чтения без интернета и продолжайте с того места, где остановились. На планшетах и складных устройствах список статей и открытая статья могут отображаться рядом.\n\nСОСРЕДОТОЧЬТЕСЬ НА ВАЖНОМ\nОбучайте NewsBlur по авторам, тегам и словам в заголовках, чтобы выделять интересные статьи и скрывать ненужные. Вы сами решаете, что важно.\n\nНАХОДИТЕ И СОХРАНЯЙТЕ\nОткрывайте новые сайты, просматривайте их свежие статьи и пробуйте читать до подписки. Сохраняйте статьи на потом, упорядочивайте их с помощью тегов и находите нужное поиском. Делитесь статьями с комментариями в своём Blurblog на NewsBlur и следите за тем, что читают друзья.\n\nУЗНАВАЙТЕ БОЛЬШЕ\nЧитайте извлечённый текст статьи в текстовом режиме. Функция «Спросить ИИ» поможет получить краткое содержание, контекст или ответы на вопросы о статье. Доступность и ограничения использования зависят от тарифа вашего аккаунта.\n\nНА ВАШЕМ ЯЗЫКЕ\nИнтерфейс NewsBlur доступен на 21 языке, включая отображение справа налево для арабского и иврита. Выберите язык в приложении или используйте язык устройства. Статьи остаются на языке публикации.\n\nТребуется аккаунт NewsBlur. Доступны бесплатные аккаунты и необязательные платные подписки. Для некоторых функций нужен платный тариф.\n\nУсловия использования: https://www.newsblur.com/tos\nПолитика конфиденциальности: https://www.newsblur.com/privacy",
+      "shortDescription": "Любимые сайты в одном месте. Читайте, сохраняйте статьи и делитесь ими."
+    },
+    {
+      "language": "es-ES",
+      "title": "NewsBlur: lector RSS",
+      "fullDescription": "Sigue los sitios que te interesan con NewsBlur, un lector personal de noticias RSS que reúne tus lecturas. Mantente al día con noticias, blogs, boletines y más, con tus suscripciones y tu progreso de lectura sincronizados entre tu teléfono, tu tableta y la web.\n\nLEE A TU MANERA\nExplora artículos de sitios individuales o reúne los de una carpeta en una sola lista de lectura. Elige un tema cómodo, ajusta el texto y usa gestos para moverte por los artículos. Descarga artículos para leer sin conexión y continúa donde lo dejaste. En tabletas y dispositivos plegables, lee con la lista de artículos y el artículo uno al lado del otro.\n\nCÉNTRATE EN LO QUE TE IMPORTA\nEntrena NewsBlur con autores, etiquetas y palabras de los títulos para destacar los artículos que te interesan y ocultar los demás. Tú decides qué importa.\n\nDESCUBRE Y GUARDA\nEncuentra nuevos sitios, consulta sus últimos artículos y prueba a leerlos antes de suscribirte. Guarda artículos para más tarde, organízalos con etiquetas y busca entre tus lecturas. Comparte artículos con comentarios en tu blurblog de NewsBlur y sigue lo que leen tus amigos.\n\nPROFUNDIZA\nUsa la Vista de texto para leer el contenido extraído de un artículo. Con Preguntar a la IA, obtén un resumen, contexto o respuestas a tus preguntas sobre un artículo. La disponibilidad y los límites de uso dependen del plan de tu cuenta.\n\nEN TU IDIOMA\nUsa la interfaz de NewsBlur en 21 idiomas, con diseños de derecha a izquierda para árabe y hebreo. Elige tu idioma en la app o usa el del dispositivo. Los artículos permanecen en el idioma en el que se publicaron.\n\nSe necesita una cuenta de NewsBlur. Hay cuentas gratuitas y suscripciones de pago opcionales. Algunas funciones requieren un plan de pago.\n\nCondiciones de uso: https://www.newsblur.com/tos\nPolítica de privacidad: https://www.newsblur.com/privacy",
+      "shortDescription": "Tus sitios favoritos juntos. Lee, guarda y comparte artículos.",
+      "video": "https://www.youtube.com/watch?v=zWjgI-GSJvU"
+    },
+    {
+      "language": "th",
+      "title": "NewsBlur: อ่านข่าว RSS",
+      "fullDescription": "ติดตามเว็บไซต์ที่คุณสนใจด้วย NewsBlur แอปอ่านข่าว RSS ส่วนตัวที่รวมสิ่งที่คุณอ่านไว้ในที่เดียว ไม่พลาดข่าว บล็อก จดหมายข่าว และอีกมากมาย พร้อมซิงค์รายการที่สมัครรับและความคืบหน้าในการอ่านระหว่างโทรศัพท์ แท็บเล็ต และเว็บ\n\nอ่านในแบบของคุณ\nเลือกอ่านบทความจากแต่ละเว็บไซต์ หรือรวมทั้งโฟลเดอร์ไว้ในรายการอ่านเดียว เลือกธีมที่สบายตา ปรับข้อความ และใช้ท่าทางเพื่อเลื่อนดูบทความ ดาวน์โหลดบทความไว้อ่านออฟไลน์ แล้วกลับมาอ่านต่อจากจุดเดิมได้ บนแท็บเล็ตและโทรศัพท์จอพับ คุณสามารถดูรายการบทความและเนื้อหาบทความเคียงข้างกันได้\n\nโฟกัสสิ่งที่สนใจ\nฝึก NewsBlur ตามผู้เขียน แท็ก และคำในพาดหัว เพื่อเน้นบทความที่คุณต้องการและซ่อนบทความที่ไม่ต้องการ คุณเป็นคนตัดสินว่าอะไรสำคัญ\n\nค้นพบและเก็บไว้อ่าน\nค้นหาเว็บไซต์ใหม่ ดูตัวอย่างบทความล่าสุด และลองอ่านก่อนสมัครรับ บันทึกบทความไว้อ่านทีหลัง จัดระเบียบด้วยแท็ก และค้นหาเนื้อหาที่อ่าน แชร์บทความพร้อมความคิดเห็นบน Blurblog ของคุณใน NewsBlur และติดตามว่าเพื่อนกำลังอ่านอะไร\n\nทำความเข้าใจให้มากขึ้น\nใช้มุมมองข้อความเพื่ออ่านเนื้อหาบทความที่ดึงออกมา ใช้ ถาม AI เพื่อขอสรุป ข้อมูลเบื้องหลัง หรือคำตอบเกี่ยวกับบทความ ความพร้อมใช้งานและขีดจำกัดการใช้ขึ้นอยู่กับแพ็กเกจบัญชีของคุณ\n\nในภาษาของคุณ\nใช้อินเทอร์เฟซ NewsBlur ได้ใน 21 ภาษา รวมถึงการจัดวางจากขวาไปซ้ายสำหรับภาษาอาหรับและฮีบรู เลือกภาษาในแอป หรือใช้ตามการตั้งค่าภาษาของอุปกรณ์ บทความยังคงเป็นภาษาที่เผยแพร่\n\nต้องมีบัญชี NewsBlur มีทั้งบัญชีฟรีและแพ็กเกจแบบชำระเงินให้เลือก ฟีเจอร์บางอย่างต้องใช้แพ็กเกจแบบชำระเงิน\n\nข้อกำหนดการใช้งาน: https://www.newsblur.com/tos\n\nนโยบายความเป็นส่วนตัว: https://www.newsblur.com/privacy",
+      "shortDescription": "รวมเว็บไซต์โปรดไว้ในที่เดียว อ่าน บันทึก และแชร์บทความ"
+    },
+    {
+      "language": "tr-TR",
+      "title": "NewsBlur: RSS Haber Okuyucu",
+      "fullDescription": "İlginizi çeken siteleri, okumak istediklerinizi bir araya getiren kişisel RSS haber okuyucusu NewsBlur ile takip edin. Haberleri, blogları, e-posta bültenlerini ve daha fazlasını okuyun. Abonelikleriniz ve okuma ilerlemeniz telefonunuz, tabletiniz ve web arasında eşitlenir.\n\nKENDİ TARZINIZDA OKUYUN\nTek tek sitelerin haberlerine göz atın veya bir klasördeki haberleri tek okuma listesinde birleştirin. Rahat bir tema seçin, metni ayarlayın ve hareketlerle haberler arasında gezinin. Çevrimdışı okumak için haberleri indirin ve kaldığınız yerden devam edin. Tabletlerde ve katlanabilir cihazlarda haber listesini ve makaleyi yan yana görüntüleyin.\n\nODAĞINIZI BULUN\nİstediğiniz haberleri öne çıkarmak, istemediklerinizi gizlemek için NewsBlur’u yazarlara, etiketlere ve başlıklardaki kelimelere göre eğitin. Nelerin önemli olduğuna siz karar verin.\n\nKEŞFEDİN VE SAKLAYIN\nYeni siteler bulun, son haberlerini önizleyin ve abone olmadan önce okumayı deneyin. Haberleri daha sonra okumak için kaydedin, etiketlerle düzenleyin ve okuduklarınız arasında arama yapın. Haberleri yorumlarınızla NewsBlur’daki Blurblog’unuzda paylaşın ve arkadaşlarınızın neler okuduğunu takip edin.\n\nDAHA FAZLASINI ÖĞRENİN\nBir makalenin çıkarılmış metnini Metin görünümünde okuyun. Yapay Zekâya Sor ile bir haberin özetini, arka planını veya haberle ilgili sorularınızın yanıtlarını alın. Kullanılabilirlik ve kullanım sınırları hesap planınıza bağlıdır.\n\nKENDİ DİLİNİZDE\nNewsBlur arayüzünü, Arapça ve İbranice için sağdan sola düzenler dahil 21 dilde kullanın. Dilinizi uygulama içinden seçin veya cihazınızın ayarlarını izleyin. Haberler yayımlandıkları dilde kalır.\n\nNewsBlur hesabı gereklidir. Ücretsiz hesaplar ve isteğe bağlı ücretli abonelikler sunulur. Bazı özellikler ücretli plan gerektirir.\n\nKullanım koşulları: https://www.newsblur.com/tos\nGizlilik politikası: https://www.newsblur.com/privacy",
+      "shortDescription": "Sevdiğiniz siteler tek yerde. Haberleri okuyun, kaydedin ve paylaşın."
+    },
+    {
+      "language": "uk",
+      "title": "NewsBlur: RSS і новини",
+      "fullDescription": "Стежте за цікавими вам сайтами з NewsBlur — персональним RSS-читачем, який збирає все для читання в одному місці. Читайте новини, блоги, розсилки та багато іншого. Підписки й поступ читання синхронізуються між телефоном, планшетом і вебверсією.\n\nЧИТАЙТЕ ПО-СВОЄМУ\nПереглядайте статті окремих сайтів або об’єднуйте вміст папки в один список для читання. Виберіть зручну тему, налаштуйте текст і переходьте між статтями жестами. Завантажуйте статті для читання без інтернету й продовжуйте з того місця, де зупинилися. На планшетах і складаних пристроях список статей і відкриту статтю можна переглядати поруч.\n\nЗОСЕРЕДЬТЕСЯ НА ВАЖЛИВОМУ\nНавчайте NewsBlur за авторами, тегами й словами в заголовках, щоб виділяти цікаві статті та приховувати непотрібні. Ви самі вирішуєте, що важливо.\n\nЗНАХОДЬТЕ Й ЗБЕРІГАЙТЕ\nВідкривайте нові сайти, переглядайте їхні свіжі статті й спробуйте читати перед підпискою. Зберігайте статті на потім, упорядковуйте їх за тегами й знаходьте потрібне пошуком. Діліться статтями з коментарями у своєму Blurblog на NewsBlur і стежте за тим, що читають друзі.\n\nДІЗНАВАЙТЕСЯ БІЛЬШЕ\nЧитайте видобутий текст статті в текстовому режимі. Функція «Запитати ШІ» допоможе отримати стислий виклад, контекст або відповіді на запитання про статтю. Доступність і обмеження використання залежать від тарифу вашого облікового запису.\n\nВАШОЮ МОВОЮ\nІнтерфейс NewsBlur доступний 21 мовою, зокрема з відображенням справа наліво для арабської та івриту. Виберіть мову в застосунку або використовуйте мову пристрою. Статті залишаються мовою публікації.\n\nПотрібен обліковий запис NewsBlur. Доступні безплатні облікові записи й необов’язкові платні підписки. Для деяких функцій потрібен платний тариф.\n\nУмови використання: https://www.newsblur.com/tos\nПолітика конфіденційності: https://www.newsblur.com/privacy",
+      "shortDescription": "Улюблені сайти в одному місці. Читайте, зберігайте статті й діліться ними."
+    },
+    {
+      "language": "vi",
+      "title": "NewsBlur: Trình đọc tin RSS",
+      "fullDescription": "Theo dõi các trang web bạn quan tâm với NewsBlur, trình đọc tin RSS cá nhân giúp tập hợp nội dung đọc vào một nơi. Cập nhật tin tức, blog, bản tin email và nhiều nội dung khác, với danh sách đăng ký và tiến độ đọc được đồng bộ trên điện thoại, máy tính bảng và web.\n\nĐọc theo cách của bạn\nDuyệt bài viết từ từng trang web hoặc gom các trang trong một thư mục thành một danh sách đọc. Chọn giao diện dễ nhìn, điều chỉnh văn bản và dùng cử chỉ để chuyển qua các bài viết. Tải bài viết để đọc ngoại tuyến và đọc tiếp từ chỗ bạn đã dừng. Trên máy tính bảng và điện thoại gập, xem danh sách bài viết và nội dung bài viết cạnh nhau.\n\nTập trung vào điều bạn cần\nHuấn luyện NewsBlur theo tác giả, thẻ và từ trong tiêu đề để làm nổi bật những bài viết bạn muốn đọc và ẩn những bài bạn không muốn. Bạn quyết định điều gì quan trọng.\n\nKhám phá và lưu giữ\nTìm trang web mới, xem trước các bài viết gần đây và đọc thử trước khi đăng ký theo dõi. Lưu bài viết để đọc sau, sắp xếp bằng thẻ và tìm kiếm nội dung đọc. Chia sẻ bài viết kèm bình luận trên Blurblog của bạn ở NewsBlur và theo dõi những gì bạn bè đang đọc.\n\nTìm hiểu sâu hơn\nDùng chế độ xem văn bản để đọc nội dung bài viết được trích xuất. Dùng Hỏi AI để nhận bản tóm tắt, thông tin nền hoặc câu trả lời cho các câu hỏi về bài viết. Tính khả dụng và giới hạn sử dụng tùy thuộc vào gói tài khoản của bạn.\n\nBằng ngôn ngữ của bạn\nSử dụng giao diện NewsBlur bằng 21 ngôn ngữ, bao gồm bố cục từ phải sang trái cho tiếng Ả Rập và tiếng Do Thái. Chọn ngôn ngữ trong ứng dụng hoặc dùng theo cài đặt thiết bị. Bài viết giữ nguyên ngôn ngữ khi xuất bản.\n\nBạn cần có tài khoản NewsBlur. Có tài khoản miễn phí và các gói đăng ký trả phí tùy chọn. Một số tính năng yêu cầu gói trả phí.\n\nĐiều khoản sử dụng: https://www.newsblur.com/tos\n\nChính sách quyền riêng tư: https://www.newsblur.com/privacy",
+      "shortDescription": "Các trang web yêu thích, cùng một nơi. Đọc, lưu và chia sẻ bài viết."
+    }
+  ],
+  "images": {
+    "en-US/phoneScreenshots": [
+      {
+        "id": "9454441360748210654",
+        "url": "https://lh3.googleusercontent.com/UMT81U8NEr_89zE6ljjzDF1YZpSmSD9qeEHo-xGP1t_hYFnJAiOUCHd6YOwDjF1kFw",
+        "sha1": "18c1cbd56f73abd3a7aa66bc1b850aec6570ac32",
+        "sha256": "2b69f0f098c4e33cec94d709f40c499c798062e9d0f4a883e5cbf3639c165437",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2328555189919033654",
+        "url": "https://lh3.googleusercontent.com/Lb84WcyQap-XQyTwuoZtTkzgGBJRBU2AhZxaVa_a5lh8ZlRQZifiJ3PDQx6X7vJBX5Rl",
+        "sha1": "38f7b9fcdaa31aaf72058f4bb74c0d6988ef8d32",
+        "sha256": "8446f702b213ce39998dc67a2323965a5db24a7ea1754dadfaefa3e2c275c8a4",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16197130105071677057",
+        "url": "https://lh3.googleusercontent.com/r8xXKs9w718FXmjOkgyNszKTBoeArcJTIOU9RGS1Rq5aGknP-AfqdR0Qs-eKVfAu1g",
+        "sha1": "6c15d6cf37b1a36481d17d9283c759b8c01233dc",
+        "sha256": "756c533fbcca41ba7be1184d832bde128cfebaf9524c492037118fd002874c4b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2339318738343837590",
+        "url": "https://lh3.googleusercontent.com/seIXqWhgmbxd-d_8GNdIYOny47AeUUbjZ2oXuSUE2OY_hxJxp_4UjC79S30EJ0P_v2s",
+        "sha1": "c525b56a0f424ae0b2538ac1f3fcea461be14ce1",
+        "sha256": "2b65475c96c1e0b8fd5f3db235f2a82fdd8f1b3a0fac5e7356632d962800c21a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "en-US/sevenInchScreenshots": [
+      {
+        "id": "18387685574315271785",
+        "url": "https://lh3.googleusercontent.com/t3rCAROl5wB2QWC4jNjp8w8Og99tunuyVNwG29JzS5o3F3lugGKjFOjvlEpmTjN2loo",
+        "sha1": "a26c8940ba0adbf030a817aa53ca7430d9a1ae46",
+        "sha256": "db259bacb6bdb50e0904eb8ba0a70f6df0d4fcfed36743a00e4d2367fe253fb3",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5270576372189978582",
+        "url": "https://lh3.googleusercontent.com/mqppRsbhEocj_PoTmfgn1i-Ja7bB7pWEQJtwtEFQwicKcOXd_e7MR6mAbC2M-3ubhiw",
+        "sha1": "2583ee5141017cdc867c2f87265111edd6fadab0",
+        "sha256": "a8d2f058c0a7b6f14873ca7c8cb7c27cedf867b8794207a02bc6d12d6cb5d699",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7105834167418779157",
+        "url": "https://lh3.googleusercontent.com/psOdQnysRX2CVx0NT2uG-_xE_xvqydSQ7BVT5Ce5Fh8BbKaGjZvLJOINZLwj-850zQ",
+        "sha1": "fddd357cb709dd2cc6dacd44608844f2d2f4bf81",
+        "sha256": "c869bbe336364c258fdb05e7984bbea6a890cba38884dac4119fdf543b6f2718",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6470122880801300057",
+        "url": "https://lh3.googleusercontent.com/ZH5zBuFlKl1B5mWtEXLEsgakuLlmkfU6Kt8ybKpS2pMwhz_7Ca2GGS8QfwSd1BVAxw",
+        "sha1": "6b64821378430170fc7c6a04f968c4bfe90e1e25",
+        "sha256": "d7fefbc3a00b7cdf5cd1405e879715b3724b97a0e1fb1be69f54b27ff8940958",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "en-US/tenInchScreenshots": [
+      {
+        "id": "11893009935577046672",
+        "url": "https://lh3.googleusercontent.com/Unq6FvuH3hxZC3O20VcDTK79Vm0ph89ofpvTHiUTuKnFO3k_AOPlFoENmem6Wh9ZNQ",
+        "sha1": "e8ddff856b6ccaf2a751a4050ed81d203d3fdc5e",
+        "sha256": "ceb496d10c18a94187e17e6e691635963e72d1dbfc1cd37751af509926693b31",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "15234786160772372023",
+        "url": "https://lh3.googleusercontent.com/0anaKPfmmaZZl3sh1ASDdm75j4fdUyQtd5DUgL2CDAjefSiHdkbQlpT3PgOLpf9bmoHh",
+        "sha1": "8b3c1e2281b00090937f52a95b7c0640ddbfe189",
+        "sha256": "58dadf8c4d1133fe88be6ea73d06c53359641a213fc5499c7fb61be8c4bdf384",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3249262592733309214",
+        "url": "https://lh3.googleusercontent.com/8baRAGsE-XqH8iZZy3dJm3PNkdgyvPYaFnYsO2wsxmCCEqbBIrAmFW95bNlGdHYxZ_g",
+        "sha1": "60f35db22bf480c33b6c80aa21b883e848eba23a",
+        "sha256": "2cd6ead84a6bc443094bd65a09deb292d1ee0645a865bbb0e949b0da12ffa7fd",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "18210917381893145237",
+        "url": "https://lh3.googleusercontent.com/4bx5nXvpPA3WJP0o7QaK3cn3VnRPUKrf0fSIpcTq_-efU8L-zGRoo29L97hArBfylt8",
+        "sha1": "59807199d75f6bc43ce46aecd6a61865083ef331",
+        "sha256": "2b1b5395a522768c4529f726a701382b0946cdd6bca616d5761cb20df6867729",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "en-US/tvScreenshots": [],
+    "en-US/wearScreenshots": [],
+    "en-US/icon": [
+      {
+        "id": "17957538514288531022",
+        "url": "https://lh3.googleusercontent.com/e3ki1WnWi8H_pm2WyS0gxRyAInXIhGu-lXNLyXeIlXCqKQuspDc1huOh95qIXO8UHTmz",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "en-US/featureGraphic": [
+      {
+        "id": "11621345268528570007",
+        "url": "https://lh3.googleusercontent.com/NtEDzmdkirx9cPURmIbtO6y90FyUF2QcOk6NfDXmCgwDJUA10R_Hc_d1Swj_s9IH_Q",
+        "sha1": "cfe15808eeac0e49565ba114997ee9e6407db5d0",
+        "sha256": "ae4d32ad395fdc9435db0d3cc9e9903910cf1b8041072982a20295bbaa76b89d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "en-US/tvBanner": [],
+    "ar/phoneScreenshots": [
+      {
+        "id": "106444652991922114",
+        "url": "https://lh3.googleusercontent.com/cWKF_-5XxdLOp8GWOI-d2QXKBaNy7axFLRJ_1AM5pYDo6wBb4DPko4rybP2TxS0gew",
+        "sha1": "e1e2784805da61fb70e360aee3b5d9234367f1b2",
+        "sha256": "7a4d2918c889c3ef4b1cb9e5ff4cfd03105a2c6aaec21158692a81cc9838c5b8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4467068990440177825",
+        "url": "https://lh3.googleusercontent.com/7Kef6m1miflJGxdj0ZlM8XG7UTBbDgYw6z04awFgrHuV8Y6C-yYYWXBE_Va-kVpCTuM",
+        "sha1": "a412b1275ce1345a987c347e313e153ee145c2ed",
+        "sha256": "824778e1557d334f7d3784f94eb08343ee94c7b43126f4ca666bbb5f5c127101",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5512586359759514932",
+        "url": "https://lh3.googleusercontent.com/q2FdlrqImkfuMbihyGp1KP21Ij7cbKSCUX9xy8RaM_oVckUE3zB5reSjKvC-zP4LyQ",
+        "sha1": "6ae4e82f797a1a0940928f2baf25de033f9262cf",
+        "sha256": "45320321b1135944710610f13d01a9227991e1bc4324c489ca15735a17b7a45c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "15428577970035644786",
+        "url": "https://lh3.googleusercontent.com/73Ac8RN-flXYQEMu1_TCTlUtgVqQoBDwZDorqig3hoJrHtyRQi8ni0bn1vu09nTXbA",
+        "sha1": "9271466fe7b805643688d2701e70cfa3e7707e20",
+        "sha256": "ae28e39e3b479b56784a24a1d12e04284a4f0ce746484799346c397c4abbf49a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ar/sevenInchScreenshots": [
+      {
+        "id": "3501993750477575849",
+        "url": "https://lh3.googleusercontent.com/-9PVj_Yjf3YwMvWVqHe2c5mGf5P8Y3z3itoesjobIomibI80o3C8U5hErUcHRaLlqno",
+        "sha1": "26b276dd480ee3e6fd0082818e2b61ca97a59758",
+        "sha256": "669c17bc7f04800ae7d474394117a84f82670ff491a77bee181cea4bc36b3904",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2054475552470336388",
+        "url": "https://lh3.googleusercontent.com/AvAziOEckMvnmdZhFG6WiWgDQHCAAeCn8OrEwjHB119yY8ey5IHi4joL7MFLgoPN3Dw",
+        "sha1": "b7b0416db2af522ed15bb00ab882a7bab050fae9",
+        "sha256": "4f3ed242236bd83201287f3c2d303284180facfe96e236b4100ba1f5f1723982",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "10314382062934120892",
+        "url": "https://lh3.googleusercontent.com/Gz3GElk7pIslS5h4S5KmN5JzsXkHg1exWMdchgZ6-96fN740EcWgQVlQUMasUSm7pg",
+        "sha1": "26b276dd480ee3e6fd0082818e2b61ca97a59758",
+        "sha256": "669c17bc7f04800ae7d474394117a84f82670ff491a77bee181cea4bc36b3904",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2905830782256695903",
+        "url": "https://lh3.googleusercontent.com/fvCn2BKWRLEckomuGGuVTFVtcAWg-skqg2dJ_Z-CD8e1z4-Mf_wwe7W1C73EiGucCqnI",
+        "sha1": "f31d147ad64ebe68b4dbe7c583ad40ad74ae2ef7",
+        "sha256": "30fa5f98353c04fd8d5a2c893f238bc3e37f1864b08b99fc6dc8494f6a88be1d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ar/tenInchScreenshots": [
+      {
+        "id": "13270339207549493453",
+        "url": "https://lh3.googleusercontent.com/-vuLMTbCM5z4pYv1jq8yldp4GISFAkEuLdzyfCgTZPogZ9T78q8KGKQJsPhHvPtCn1I",
+        "sha1": "19cc254c177eb29f0531efec3d0f0f0aa698542b",
+        "sha256": "f082360208df41f0553c1dc4fc28d337b94a92ca32aeeccddab39f1f7d87f2bb",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8784084296663467217",
+        "url": "https://lh3.googleusercontent.com/Qs92i6Vm_pk3NdYyKgbK1sftxb2eMk2Zg6e-WztHzNFPcrV5BZmaJgz6kQWy4zrB_BE",
+        "sha1": "b4275c05bd39c44cab122c962d001741e1f36385",
+        "sha256": "a8e08cb41ccac8f82c40f31fc5718609cb08df3c6fa1a71844f6759909b2df62",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "11978360085884086475",
+        "url": "https://lh3.googleusercontent.com/zXtJQSCDxkeVAU9lkpf_SgzMn3ItM4JxiwA4RGjN3CpJx8zh_ak4AhtBF-jTlLRVsCg",
+        "sha1": "9ba7db0ee5059046f381935b92f7d535cab4abf5",
+        "sha256": "19c906deb47c00c3f1797b4c0b1bc799597f5675d6a0551e3bdfc295cd785cef",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14527229577042577986",
+        "url": "https://lh3.googleusercontent.com/7EuUGesiAncY2CX4jCLEXW8QalRqMwpAxo8-5zfE6laEdGNiLDTQ_Q9mYcgFzmMLkA",
+        "sha1": "ff09ae9609efc643408ca9b91516638e8f93c544",
+        "sha256": "3a955c89da226c42d8d21f12771facf5df7fbddb6b1093e8368828a4b56806fe",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ar/tvScreenshots": [],
+    "ar/wearScreenshots": [],
+    "ar/icon": [
+      {
+        "id": "12877775532418340825",
+        "url": "https://lh3.googleusercontent.com/nLBtqpIEqVLlSI4EJIzUqkzfeb68PlU_PIjnxKlpMTF51YT2WG2X7pCeLYPDkSJ_VfM",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ar/featureGraphic": [
+      {
+        "id": "3034641023271606807",
+        "url": "https://lh3.googleusercontent.com/yDuv3RW3QCF-YIstBK4gcq8w4p531efYe7IyoekfICE9XHWm_VgoZnVP3_SJa_ACs_8F",
+        "sha1": "c46f3667bafcc356eef47f914536573977bdc83c",
+        "sha256": "d710126a36fd9e7d126415952eb6c7381ff8be9a188150ecc557b4d3be7b590c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ar/tvBanner": [],
+    "zh-CN/phoneScreenshots": [
+      {
+        "id": "3930467826633762376",
+        "url": "https://lh3.googleusercontent.com/ds8oE_pI7FIIr4YS4q0t8NbN-ZNqIh0mzDnn_ej1r4FcQPBuzF3nppXz-26dyJ8ORg",
+        "sha1": "5a67ed853e3be12d86d0ca31b2db27aba62442a0",
+        "sha256": "246c3bd99f752ecb3aaaad3cfb393163f3287585d112387df7f87cbe41c3b106",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16537468339123838580",
+        "url": "https://lh3.googleusercontent.com/naYopIY6DX94odxXReADZ7vIpQQzbbna-e0sWyQKqh9TtuHWtZB3weMkYcucIpaDb70",
+        "sha1": "1f542407928d60b193559068ea36cd5e17ecdb0a",
+        "sha256": "5e580e48caaba8204e1fe235815a93846e36d6972161fc274f031293d96bdab7",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12585285899825231018",
+        "url": "https://lh3.googleusercontent.com/yu-ryoGTgBRrf-MlzLHwPHJy5OHZFbo5jD6MM1i4PROS3FIXDGhwozQp7Wrn4NjiLxM",
+        "sha1": "678db36c20de2549174ee17729eed965fbcc9b8e",
+        "sha256": "3624d5a94713881c34c90b82621ecc130e28e1fc85c2866fdfce29549de5f01a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "992038055823136759",
+        "url": "https://lh3.googleusercontent.com/aT5bVhE2evVedutNhVtXRI3UQ0xaf8PMeHCQkegWsIm4Ny6cXOat44uUpiP2RzS8CsOB",
+        "sha1": "2489cb20ba20d688b67b5833a27e5c9bf0cdf634",
+        "sha256": "7701069ffa8d103d81be541530abacbc4c000c8115acb7574c77a44f23816753",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-CN/sevenInchScreenshots": [
+      {
+        "id": "17121444969718928737",
+        "url": "https://lh3.googleusercontent.com/7ypyNC3FpI3Ssa_S4kiRwtjS3vfk7KqseDoE5rGdGX1DKP3vV2cPsWpjWMmCxI90YFE",
+        "sha1": "8d1398f06a303d18413a40296e5253111ad05064",
+        "sha256": "962e47379b73ae647b0c6afa61dc0ea1bf93fb4c98b36434072d6d9481063b96",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "17289367266471665633",
+        "url": "https://lh3.googleusercontent.com/YEGrM2bLdMekXR5LaUMIm2SA1DgNSJ2KdFmQ0LXdbiOUdOlvkMUhcya8V6ld34sI3Q",
+        "sha1": "90f59884f30239e51e2fe3d6978056fe607b881f",
+        "sha256": "b17c146ea826d5f63921f708b5422c3f6ffa7fc5ccf632ecda5572c032cdc0de",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9429639124252569162",
+        "url": "https://lh3.googleusercontent.com/2m7yuSV6TWp6aT_rhFyu26Yb87iMlI0yCSY7FZOlDnom_-GQjVTABQ2uCuW-PC9uYeQ",
+        "sha1": "6a7176b68e05ba3c325e3967d7d90bf56e5d6c31",
+        "sha256": "9ae1b17be88aa6e018ad28f47338471055069b3c007d36ce5b9b3c70da57c66c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "17718499248910545080",
+        "url": "https://lh3.googleusercontent.com/eQ0JKf1r4mEBSVFAqxpA53I-bFfc2ZmzEsubGbeeNoirblkUantLwCFoQyh6udINZQ",
+        "sha1": "07344ac3adfa30d2266df884e252857b64f5954a",
+        "sha256": "f12aa621f66ba67954345d4fdf7d794e7a87a17a53ceceb42cb7ca5e55b66219",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-CN/tenInchScreenshots": [
+      {
+        "id": "10540872430318662308",
+        "url": "https://lh3.googleusercontent.com/WQdbCMe3MXLCIxiXt47H_TgblATb7eKaBTl5t0TSWb7LPGskEHwSBOCI2NK8O9nNvVA",
+        "sha1": "0216df2e8f4844a68f867efe3f44753777c33007",
+        "sha256": "3355f3297733bf785535ecee2879d063cb37b4154f7cf7bb2ce07593a374d69e",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12538439522291867714",
+        "url": "https://lh3.googleusercontent.com/MX6Jvn9hZIWTE4wgyPmJnp0vlkXPULLg7uuK_TrWCajfwMq2oF2wqEcW_94TZTU5Hyc",
+        "sha1": "82dbd4a0fa7bf23ffaa5b40ada400ddaed70c0ba",
+        "sha256": "b8a36d6e1b399ffa5976aa9f83aca18e6dcb544929cd5d1058ee988dc63d1916",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16959657107591189034",
+        "url": "https://lh3.googleusercontent.com/T4Ji0FtwkvTWSEE-aasE0wvswSBTJAOlEgFKBXNw6E7fu8PU3Xt_0w0MvOOOv5WCWQ",
+        "sha1": "749a8f402cee62a0708f6edb1ff3d73812470144",
+        "sha256": "26e4804cf144bb33155992d3fa924b05b1bd40319367c360443c56796a5edf2d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8903764264911347633",
+        "url": "https://lh3.googleusercontent.com/OTgqSZ_uNYJDDST0lqtgAZ6yHUOlGMrNoZr221rSimlbfHuPkUBV8Y3ilFlVbB-zTfBh",
+        "sha1": "b891bacd9c859a664331500d7e758b5325cf4a3d",
+        "sha256": "2b57bb4618414c1aea761014db17cc868d28f460e02a2f9584da591891e36a6f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-CN/tvScreenshots": [],
+    "zh-CN/wearScreenshots": [],
+    "zh-CN/icon": [
+      {
+        "id": "13698006169896383254",
+        "url": "https://lh3.googleusercontent.com/3evjmbIO2Q5HBAL0Y5bGKf9hnepGrcHHX8uGozfxBNZfVzBmR-UoD3UDFFQNWw5vnUw",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-CN/featureGraphic": [
+      {
+        "id": "5004086686617932422",
+        "url": "https://lh3.googleusercontent.com/Y7zMKTEEpO0uj8derYp5mRZq-dKR5W4apLSmbilel_OB3h6J-BFRUv_ofZebNuOmzw",
+        "sha1": "a70b66ea0ba9a8f85b4f78f447f6e8dbdde39252",
+        "sha256": "9632e0537d4ace1983884f1a0a009bc2ae2f2689882fc0a0fd98849579726a4c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-CN/tvBanner": [],
+    "zh-TW/phoneScreenshots": [
+      {
+        "id": "10881938317805251976",
+        "url": "https://lh3.googleusercontent.com/r8ad45RNb9Dfphmu-wCZqr93EL4U2XNpeMeSqfpij3JHXyzPK3FOW2f9yTPiQv2lRC8",
+        "sha1": "f164873206dd5baa3a7fc99515f2d389cfa9f99c",
+        "sha256": "e54d60ef0d1442c142a76aa30286c28b05b259426ccf93bb14d4e57d369b9f8b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4207458789940078661",
+        "url": "https://lh3.googleusercontent.com/PLGmG1tZzeemwjLItyw15nX7-tPeKOei4v5e_pf1OHsuSPn1MRIaXqU5PyZAPFASJg",
+        "sha1": "534c5723e08258d88cb2aad6af652f30b283992a",
+        "sha256": "4c6a8cd3c19bac6d377a92416804fd6be796beb8611761471bb81b37ec243033",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5623754835993847663",
+        "url": "https://lh3.googleusercontent.com/Y5qUkVgCvT9nf1KZ9fto2zmCMVy3U7g67iYgrDYia3IxzutmzPflI-atgBpV14GWCA",
+        "sha1": "7b33309d0807c18faa6ca4b5678183b770d0aee1",
+        "sha256": "bbd49e6fc7e99a68c4c7fec02bd3f1dd96a1851f5f24099f3ef40c6d76cf43ea",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "10379144553796090194",
+        "url": "https://lh3.googleusercontent.com/_uJ5vX9K-iyH6iqsBgMWj06_6W_ApJqQ2PolRYtt4cZ7Asxj_p-CJ8TJFUEZMto3nCoP",
+        "sha1": "10700de097320f0c7d2c8ab145855307ed90f362",
+        "sha256": "cfbafa0056ccf9ae9257e43bec972b29a0c1dcf752411ba716a4dedd88ec8f72",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-TW/sevenInchScreenshots": [
+      {
+        "id": "9752422761062803738",
+        "url": "https://lh3.googleusercontent.com/ebiSpbDtKPvMYhrylsWqSQsapgxewF5aqmBC8YqcbhB7LmM0UhgqI4LoSY6mjPwurio",
+        "sha1": "b7ae4bd6de3e83f82bebce3e07bdff0dd63b24e2",
+        "sha256": "a3ba4c8952339db820ea6e4a466e5f6deac0914db0ac0d279d3848502d0ea27e",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6056045254354125137",
+        "url": "https://lh3.googleusercontent.com/K1Kjiz5kr-zTnrJQV6qa_bTekTOnZtuMNB1kJF9k9JKFyK2ujG5_OwvjwkkswRU_iw",
+        "sha1": "8cfd291c52e9887bf16a138dcd1d31a65bc8fd3b",
+        "sha256": "d24b2d7daca18ef605e5086a14e3f128dc0e6265050d880f425e687b2a8d7794",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14116989887283734147",
+        "url": "https://lh3.googleusercontent.com/vmUVqcYTlKhr_SrcWEmIEm8mNTxogFC4K7moFH8aanJ-hco3XLh4N3WN3bDY9f0W4vcj",
+        "sha1": "c03a1c93cf0856f9c6e41d5f539e33652b582ba2",
+        "sha256": "e322d0f35b10cade310809fa5cd023ad6a714ead6a1365767caccf16b379d4ef",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "17831450156010659827",
+        "url": "https://lh3.googleusercontent.com/G5_fit_0bszACP65g0l23krKynvIZCHHiMnlsyjt4NnEsJmLAlO04rNULmONOtRRyDh8",
+        "sha1": "e35a25557b023d9c12aabbb9b38d31f21fb6b60a",
+        "sha256": "c7197431525f3ed0c2bab5e0205906d41d35e367ce49c1592d6d55ed1390182f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-TW/tenInchScreenshots": [
+      {
+        "id": "2653421596638628441",
+        "url": "https://lh3.googleusercontent.com/Ff5aUmGSdIEEN1Wm4p8Aef3sEQWAApI9hbdR-JWgSvyga9Pm6u9BeqsGbaamRlm6rg",
+        "sha1": "8333889efa33ba3e7282fecc79aa3fd2959ef996",
+        "sha256": "b637182055eccdd63bfe2194e9c3e3e74581f71b47a1b88b13e1ac3fff7d3e14",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7920782074048965049",
+        "url": "https://lh3.googleusercontent.com/VThvOOHMje_kDiKuHWtAqXx5pxKuQ_Z53V63u3sinUvEFJ_ytibDHa9dfRiXF_W3miI4",
+        "sha1": "edd35ca5a53bc552f5353657d0c916cfbf198581",
+        "sha256": "179635fe8ef039f95eb7e31a9944b9de9dcbe5be8ba6f95b2cf859ade7cae87f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8428094051090982437",
+        "url": "https://lh3.googleusercontent.com/S7XeLo_3ItMS1csEA6PACO-L3BRvpFyCzYkgmPSqpzDgMy8IJC8UFae9wShsnmdKcKs",
+        "sha1": "50df0fdefecec4f5bc7187fff0a9036ada4e136e",
+        "sha256": "2e10d9fa32f63746d59f48069d62f37e1f2f0f2fd991b72036a33abdb63a55c0",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5270235144838016041",
+        "url": "https://lh3.googleusercontent.com/CZV9Lx7SBktkojsMLlHGekn1rmdieKb9UNdxfNd_pJwlpjjAUJRQ53RNZREkYUCuJTU",
+        "sha1": "ed7377106569d3eaffd3a27849d847cdac9b122e",
+        "sha256": "da8388716c47707ddf3fb4f964daf8534c65612aaafb07bd80740a881cc84224",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-TW/tvScreenshots": [],
+    "zh-TW/wearScreenshots": [],
+    "zh-TW/icon": [
+      {
+        "id": "16180144791138714715",
+        "url": "https://lh3.googleusercontent.com/pasvw0011lsBOuvywPAWTwv1SAD_XeTn4vAvhP_TSh9xswdqao4HP2o1Ev_Fnl_6gw",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-TW/featureGraphic": [
+      {
+        "id": "5717163846344236073",
+        "url": "https://lh3.googleusercontent.com/nGdUwc9T2_vWWximmqhCBp2KxGrt06Dwa0NySCpa58se71-rqzSmcCLsJmXtHBjtOfQ",
+        "sha1": "4e0763599095e4cd2910d9e015c5e37e2293dd50",
+        "sha256": "4d0367d506ed7b2611c53b1c457f253863c55880256d50f54e7fa70f181a0ff8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "zh-TW/tvBanner": [],
+    "nl-NL/phoneScreenshots": [
+      {
+        "id": "10541048016670433411",
+        "url": "https://lh3.googleusercontent.com/6ok46qH6hCrsdAuzNc-tyWBvKsM6QumP9SkTulGNAkJIW3EFiEDXu-0UfBp7oN4w0_Y",
+        "sha1": "811f183dccad1e7f50f20e78d1038cd1896604a9",
+        "sha256": "0df8c53e6e0bd5fe748d20f98f7f2a52a57b1abaf3c0ae130561cd08566bb591",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6691409118518870461",
+        "url": "https://lh3.googleusercontent.com/0U-lsz8L1Wy0HDX8DLznyqwSzNtk16wCS4CDvSJJrGFSc85sA9raU3HJkwaYPt1zzA",
+        "sha1": "51e8fd222b2c2c4926930acfe49c97b651250c72",
+        "sha256": "97354148fffb88f0809a03760d82fdfd7131b9bbe5cf89a9b24b4c907977db3b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7945932861476647962",
+        "url": "https://lh3.googleusercontent.com/lMLxtcL4M9mxhM0OdeiGZ9LFhehLK5g9kvZ4vOIFIFVmPk8gZRy7ky6T_0a70JyInA",
+        "sha1": "2b95bbde43c9270058476eb035a1f7d206253bde",
+        "sha256": "15d010fc3bbd0b82e1d08f4d2e6f6ea4fb3896c40adf0f1d66b854cdd8db500a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "10281260728982976048",
+        "url": "https://lh3.googleusercontent.com/aVVfyYMOd-d4qyluGDPNtE_dikJn6H3rrd_05lVssSXZFTc1zY8ew4MKkTeOnIMmjtU",
+        "sha1": "6f19e05ff36512e8c21e9a6d39871db712012dc8",
+        "sha256": "bdbf79b202fb12018af9a282b90024bdcd59f10b58f9da20490188d604937c6d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "nl-NL/sevenInchScreenshots": [
+      {
+        "id": "903231237524616483",
+        "url": "https://lh3.googleusercontent.com/QfyhpgAb9mya739WHQRDxCTamsK9kDaYuVHrN35fktKbDjZec9A-dZ1LAgQEOG938Co",
+        "sha1": "78cfb96301886cd5840abbad753c032b1731e7ae",
+        "sha256": "6f2bd5c66fb57a0c8eb158dfe1856d9853c0ee463102ef6ea5773ed5928d9253",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12329698628167004334",
+        "url": "https://lh3.googleusercontent.com/EgFO8tFtcVaFv-43Kpad2e1SBdnDXTFLvu105BYnENp1HnYo-r_mP1KfeoeGvwuyeA4",
+        "sha1": "ea9f5a12c53b48229a78842dc438ee1533270487",
+        "sha256": "4711a5e10f03522aec8b84a2f84bfb2b929c3b4d615022724eae088afea09d29",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "17566463454097198437",
+        "url": "https://lh3.googleusercontent.com/EuiAMToCtz16s5PYtT7Ron_j-Tpj7q-fIgE3YCfvZVuybXyPJz8zVqVW799_jBeRLrI",
+        "sha1": "617f53ecffeaa98887034ec7c406ce91a8fbdcf3",
+        "sha256": "5207083018afc7f1053b893218106062f59ba58bdd1ee3adef1e5c4488929e96",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9156314812415509936",
+        "url": "https://lh3.googleusercontent.com/IZ1hQVwpW45pES8cWmtULs4RVjrUijVc6EMO78PQR1GANYBteOalJafxdkQVrAWHN-I",
+        "sha1": "24b2e4890f124059ecbd3027351d0135c517d33f",
+        "sha256": "69f1808a967845899e6db0895493908e55bbff14a7359b0a5e232d81548e86bd",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "nl-NL/tenInchScreenshots": [
+      {
+        "id": "12753275672728858407",
+        "url": "https://lh3.googleusercontent.com/WCyJ5v35mvSwmrollCZQp8J59I0odhD0G0lLwwG1SGUytHh-5B-7JazO4vYxkGIufyY",
+        "sha1": "67aa5ed27153a2921c753bb1231e30f5aec737c2",
+        "sha256": "a8017cbef9b88dffcd1cf5374ab3e5c9b0aec626f9483b4caccb6a5a1e340cc2",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "18200094588175046893",
+        "url": "https://lh3.googleusercontent.com/VoNAZ0UcQVSplrV3K2iM-m4_IGZZalSp15yGKZo4umwRoUbVfHzhS9an-pEz5GAjInE",
+        "sha1": "634705e40a0c30e03114222f572606607cd76bbe",
+        "sha256": "e9318c13c56b6e1abcbb1be0e533dd1df9e587781e9e9d1fcc0ecfa960e16776",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16505538180619145112",
+        "url": "https://lh3.googleusercontent.com/fTqjYlxfatSChGkuwhTaBhAebXVTRO4w_sVFxmXNgmVLvJAW7RH6cTkON9ByaOTH5t0",
+        "sha1": "a7aad239566161ae747fee8a343f28841b36b010",
+        "sha256": "ac08eb7e27e480a8423f491ce22f1ae54549378b55ca9ee804c0f86514aa0b2c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4189668361290117589",
+        "url": "https://lh3.googleusercontent.com/RkPMDGTulZhU15LN9Zgg2uQwn6vVQep7936bntevKSk9apSYg4yROjb4_HxLf9OzUIY",
+        "sha1": "7cb7a6e18a73e6512ec6ee7966ce8a17d59b8bb6",
+        "sha256": "9bb704916341989cb0eb7664b0fa546925879d876d14e559d6aa2068ed4ab74a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "nl-NL/tvScreenshots": [],
+    "nl-NL/wearScreenshots": [],
+    "nl-NL/icon": [
+      {
+        "id": "3768554925775063460",
+        "url": "https://lh3.googleusercontent.com/arYUYP_stEwNLSIw3zSVF_IW_PyZUgPpkN0mh-CmhVNA5TDFl35Mbaph9q9w6eMBpA",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "nl-NL/featureGraphic": [
+      {
+        "id": "11420853292234429577",
+        "url": "https://lh3.googleusercontent.com/9ta5nUh8Mu5vPPl5zhLLkvPEX1xXLTjxxF31fYD-IthHtzDaGCrlrpsWWTX73fLCDpHe",
+        "sha1": "2ad36f2c8f57eb7c04d7811cf3da78d782af94a6",
+        "sha256": "154ee922833cd8c562463e4ba85b4a609ca6b951e0a25cd2996bb96a8b9f07e4",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "nl-NL/tvBanner": [],
+    "fr-FR/phoneScreenshots": [
+      {
+        "id": "13561672019761843139",
+        "url": "https://lh3.googleusercontent.com/4g0p_PdMOg0aVuMF8nmtcjF5CQpot9aDcqbtf7yf44mA_VjT1gFCwH0HmPn78TxTvNAi",
+        "sha1": "3fc99c7136597890a9cd63490946386a3f764039",
+        "sha256": "66a174ba6c9e6d69f324cc43b673b0432de2c710afff91638c97b0cb754d3c17",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16053265749312880243",
+        "url": "https://lh3.googleusercontent.com/gXhfiGu40ZqULM5led6Xw65ZmRLTe0N6rVC5BQeVvshTKzMKrtKH9QFEdBBIJrvycQ",
+        "sha1": "8dab2de0609fb8c71ffbaf166d8d1afe958044eb",
+        "sha256": "537a1c7b8f248dd05bee253a035014d51a67f7e04958ba74aedcbb1349ec6451",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3091485572842454036",
+        "url": "https://lh3.googleusercontent.com/h10XZVAgaEgKcEghv-Oe6_JxfKNs1iPatO_AsagexqRv_QWZILWQhFZsII5W1OcAN3U",
+        "sha1": "f644fe9456707dc9af08a0780e89b6ce9cea86c8",
+        "sha256": "223459d588e6f4ca6d540cdb38b66a418da2919707af562999ebb04a34465e77",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "15026297942998108682",
+        "url": "https://lh3.googleusercontent.com/MhiakpyyXMjOEkZQRM_Oq94aQhRGXsLLAvt-CYKlVadQTTi6ckrXd9eeJ_nrofJYiUUm",
+        "sha1": "f4e7d7a580d3cc2eb7c9eeca76edf488de65bc28",
+        "sha256": "1218c877ecd3c4b2d7acad8e8ce644105b21de42082eeefedbca261660e6578f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "fr-FR/sevenInchScreenshots": [
+      {
+        "id": "12100565793441286171",
+        "url": "https://lh3.googleusercontent.com/_tw2u45HKK3QhusgQ0-4LlH_IQn4XJ-SLA0Lpk7WPkq4QAnJmTavw6YV8YxaOsnRZw",
+        "sha1": "1e89875084c6965a64648fab35822946f6f20fa3",
+        "sha256": "e7f48107b953a1493caa6a67532a28290ccc154d3fe1e634e262f0b9bef56ea9",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8873180035154891362",
+        "url": "https://lh3.googleusercontent.com/QmdslSc7M5yI8ZZ2WeO4ThVgdzYvU85-LeuD57l1ibE6lKiHjXfPt-TJJKAS_1VDVV0",
+        "sha1": "0bd3c7d1cb8cfc65d6237ec2b0e5a6d85456e7f5",
+        "sha256": "6a2387f4d89e750b84f088378d0a327a1ae6be15ac19bca745ec92072ca475fb",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12823175756038851681",
+        "url": "https://lh3.googleusercontent.com/lncj1XOxZ4RmFtnJ5MxCuH7mDWVyHwAFD5lheB6fmLuffNFSjyi_C2MDOJ-yMIGVVu4",
+        "sha1": "1e89875084c6965a64648fab35822946f6f20fa3",
+        "sha256": "e7f48107b953a1493caa6a67532a28290ccc154d3fe1e634e262f0b9bef56ea9",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4351586740743389546",
+        "url": "https://lh3.googleusercontent.com/irbc3a2A90n5SpIK6lzl8imQ3QVMhsXGvUrM-5y__-n9iHf-RwuAMN5tcwy3MSBmgG8",
+        "sha1": "c2d59611588ba20dd6e505a7e79c5720839a44d6",
+        "sha256": "e20af52bcbf881f1b4d321c81de25d27acca18498a1c56de40b0f6cf208b2171",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "fr-FR/tenInchScreenshots": [
+      {
+        "id": "17479233093760372550",
+        "url": "https://lh3.googleusercontent.com/Bsq9-yELjq0VLk7jm4UR6O1mT1g3SOVy9Wn_UkS0UnxMLXrtz2X1iNkrQC7e4TREYVnN",
+        "sha1": "c92b757283a9a52e3ba09dc166cfca16f28f2535",
+        "sha256": "6054d261f7936d690afb57986ac10983b925e380fa15d9b2d28a3439cccf6fa5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14229921040298305813",
+        "url": "https://lh3.googleusercontent.com/8x2bTgc-8J35Z6JjZOtnNxLkFpqymtUDLIDhcrrPnaKMZShS81JCITNpj_-fxyasmQ",
+        "sha1": "2828f5ff12efcdc850fdf450edc5a87568d7bcd1",
+        "sha256": "6fef2fbfa9ff6ea3d33d1777183dd5bab95576d01af470261d2872550a7a6ea3",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12303033069640153620",
+        "url": "https://lh3.googleusercontent.com/sW9yIlOTWupoJBy2pQkmWQ5oZ6y1N5cMdblolEDCeJqPZ3VcdGpSTnkTkZMRlZZXBTE",
+        "sha1": "735eecff62336a0e58e3c66b3c7538d52db312ff",
+        "sha256": "5e4256a7cfed8c7b0c66d21f7d3021bb450f19eccf5deb709b667a45f0527714",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "10340898213252716870",
+        "url": "https://lh3.googleusercontent.com/Kvx3DyfseE61ii91Obe58fVxnYZZQVadEq9-GNORwA3yWC20k80-tNcypeuQWCtFgt4-",
+        "sha1": "2e3350eeec8fee1cd424b3d5937ec886d03c42fd",
+        "sha256": "738bb3065f36cac171348a2167b1c9a7673568f8bf34bac11e72ab4e137869b8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "fr-FR/tvScreenshots": [],
+    "fr-FR/wearScreenshots": [],
+    "fr-FR/icon": [
+      {
+        "id": "9163760723430016263",
+        "url": "https://lh3.googleusercontent.com/Xh8JjQrpEJS27oAqgImqYvVQtczmSyAuJM2JYvM_P866tVZ0jvzt-JTrzYXDnLenfeM",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "fr-FR/featureGraphic": [
+      {
+        "id": "14755929143003010768",
+        "url": "https://lh3.googleusercontent.com/SjIK_krO3CkvO7DKYTJlhaIlY8DHLMU3g_Rkg3_xDkd7nAn5fkbOw1fnmCD_XYHebYU",
+        "sha1": "b1d19c8c8717361a5aa533ee11fce1866633e568",
+        "sha256": "a40da09b1eefd8326506b743600a2b8d4963bb9a9d9e51606a87fd1a563e0a3b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "fr-FR/tvBanner": [],
+    "de-DE/phoneScreenshots": [
+      {
+        "id": "939423194031295204",
+        "url": "https://lh3.googleusercontent.com/qIi9ukFYcrP4PEv2jdl9Wva6Ev9PxobLfSvay0pzZw7qG1WL4eOE6ck9gPGOeA6CsoIQ",
+        "sha1": "f420bbc305fd5f37aed65a859c9feb1ab5e7e13e",
+        "sha256": "1cc2ccf3c7a3362d7b44a93f95bcd5837dde4b1dc4d47e6cd342eed23bfc8b46",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "11636002203303220382",
+        "url": "https://lh3.googleusercontent.com/Kus7ovTx3TCbpuAtn2wfEJ0zfoHsBUxp8zWRnubOrR5SQHSGh27gmb1UPsyDqk_8rQ",
+        "sha1": "4a964b8e5cc7882926b2399242733729bcb2f5b3",
+        "sha256": "0c65c88ecd3e529bd2678628d7b66479828c61eacd0b4e112dcfca14ff8f385a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8503724696318308569",
+        "url": "https://lh3.googleusercontent.com/OD7GfGOuvubeAj2yXq7ZQ8WvOsP_EojrzN6VbfVTWie1BN3NVDrUHvKLZIqx8Nyi084",
+        "sha1": "f334bebb70bbe3cf0f36f6275148d00c4c2f68ca",
+        "sha256": "c4292008d8d62ef45760e94abd2d27a868e3207d5e16773e3b05a60b7807b9f6",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "10439362661081345355",
+        "url": "https://lh3.googleusercontent.com/t3emrIDd02dWKvGcvabPVyLGkm7XiIXLiC-5Qtt3UOUD8IcJYXTbqtblCqtX_UUQjHM",
+        "sha1": "ba8e4204926889e0b3c440211b88742954fee5b6",
+        "sha256": "3b99d889cac13b66acd43c95dd5ed9e62289b0eba09ab5a6b2e8985431024f8e",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "de-DE/sevenInchScreenshots": [
+      {
+        "id": "10405547095478950799",
+        "url": "https://lh3.googleusercontent.com/L5OopW8qRmekjs8BEUMy4h2oRDUWx3AP3iUnMdDMpTtpyLGbTDlApc4TYBoZNF95",
+        "sha1": "d10560def2dce68c75fc7ac3594dc809aecbc552",
+        "sha256": "ce7f762dc6be0d46f80cdcdcddb9c20f980da0160274c068b3c1389a4d8402df",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5251336181997629756",
+        "url": "https://lh3.googleusercontent.com/wImj8lRPvTNk4m-wLXuOW1ZjYKEQOcnEipbaf5O-7NwhMN-28iC_Vr2Y2DUwCCRe-s91",
+        "sha1": "57781174bcdf50014cc0b028b589502d5f98aa63",
+        "sha256": "dc63de3a6f7a4ede36b85cf8c9da69a906a97e1b357a937d9c093967810d0fba",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12413597129258011981",
+        "url": "https://lh3.googleusercontent.com/7iAOSfZ1dY58N42EmsfyMstPCFPQDGwaKyloPGAi5u12kCB3wAViBNO46c6Lf5i77fU",
+        "sha1": "a1cb5e093dea5a517219f41416af155aedd289c4",
+        "sha256": "737481850f3a0c4b55d2d6691f69dec8c218b61742274c8c6cf0b26f1fc2c50f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9301297870211538931",
+        "url": "https://lh3.googleusercontent.com/eFOsgpEhEUf_vwbqjAjv4u6rd57xmGx4IiO4w0_7hOz80E0XHeeGNBoJmW685OnT6Hs",
+        "sha1": "5a3fc60f02414b18d22da9dc0c9714ee69f1994f",
+        "sha256": "7f43414e90b6b66b3f07c28739666da63bad4b830d5ceff40dcb0fde606fa302",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "de-DE/tenInchScreenshots": [
+      {
+        "id": "4735254759959060378",
+        "url": "https://lh3.googleusercontent.com/xqg2yZxOLh9h4JsEBDAuVQ3IeOIxulpgdWi9WB8h9rLm8UUEUbwB_aiEtE8V1wEdx2vy",
+        "sha1": "0c8729206b104c2f152dd3401867c9774befb3c8",
+        "sha256": "406325ddca5a6af18e54cbf6d034dfe61411eab9020fe81c49a389fe61fe5ef6",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "18195254214174971269",
+        "url": "https://lh3.googleusercontent.com/b-B6Tl-ZOqkFjV1UC1suP5hGNnM2aA3E33IP3OOSM_nM5IvxDd-49n0VTtmOoSkouvw",
+        "sha1": "39854d950294e90836e251c8a0f85cd3b419b195",
+        "sha256": "bebf9498111ee190293bd0ab081b07d5e5ce02ddd08d608de2408b52f3d35e96",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5949619460475304237",
+        "url": "https://lh3.googleusercontent.com/KXTEPlAwTOtWRUJVMBpIx6AzKyGazePMyZOLbpShUg4LetgqNw5FaUQBwcWuH7oztuA",
+        "sha1": "540f6c8da090d38a11df6e1bac5524e81f4e601d",
+        "sha256": "359c721f948e0628dd4cc9901dfd03938ceb6bdde975ee21ea50e19bf5c40eb2",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5656889763957985288",
+        "url": "https://lh3.googleusercontent.com/w9t4o-PmFW8Sl-ASzOKbkUNmQem957FdPgx6fFSnerQyIWGIuS3NfL_ra7Ll29DTf-M",
+        "sha1": "51b7f26b685e3af9a608b81174811c5592df743a",
+        "sha256": "52a6173f23f13459b99e6533213e01ddb8be166218d348e2a51b093fb9c0df15",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "de-DE/tvScreenshots": [],
+    "de-DE/wearScreenshots": [],
+    "de-DE/icon": [
+      {
+        "id": "13034828319199356285",
+        "url": "https://lh3.googleusercontent.com/W1O4yraRfiB4Z4Hk4ioycuCrepLmyeJGlx9HHv0PmoFCoQEF7dHR_gvaW6IFbl-r2lI",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "de-DE/featureGraphic": [
+      {
+        "id": "463527322342761903",
+        "url": "https://lh3.googleusercontent.com/1b4sFJSqih1zcLCoWbpdqMTlNPqQjKLqdxMlblcL3P9p9r0FppXFs2HF9Lrr7EnQ8g",
+        "sha1": "d33c4b628f3936e76c31537e0e8253f927bd1a80",
+        "sha256": "b3758ae875645367cf33d65997b15470fece4e39568f7b59ab84ec3b583e8569",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "de-DE/tvBanner": [],
+    "iw-IL/phoneScreenshots": [
+      {
+        "id": "18295865922593983892",
+        "url": "https://lh3.googleusercontent.com/80D-Lp4D8gR97sTZtR-X2ugEIQUkFdKYrfyFYCgc4CNLgiAVSYY81UQCY4ActjoNDx4",
+        "sha1": "f72129acaf145887db349f7c7d7432ebea63bb7c",
+        "sha256": "4c967683122ebef199b4f967068cb86051a377e13127d7a32fec19bcca2eabd6",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1510404985288182552",
+        "url": "https://lh3.googleusercontent.com/V17im1BQh19_M-D2ecoS52knzXzCfOm714WYxGaUokhgpCC6F8mfuik8f0WyA6lDY64",
+        "sha1": "746a17385ccc5bd2100e6675606170b396188ff1",
+        "sha256": "b2f0290c3145f4f4c5f3362401dd630ecd62d3b12ea1138d4ae1a150aa4500e8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4188874038892401849",
+        "url": "https://lh3.googleusercontent.com/29P-AY0hXxC9sqeIn_XOGBPygFlxhUwhbWZ-TMCvHuenOrWwWcYZ15S8fpS9ygqR8g",
+        "sha1": "a3a5d35da97354fa035eaeeedd374d3627807571",
+        "sha256": "09fedb23caf6a8ce1aef253d300ddc4684a9dbd1f2e7d7e272a08d31eb965759",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12308456815965328836",
+        "url": "https://lh3.googleusercontent.com/jgY7phrASzW4zPwqcfeCoONPnMPIW9R-f7525kzOyMlluOOZsc06nx7V0bhFBBlww2I",
+        "sha1": "d9e390cbea268743577752e08aa25af9d59c880d",
+        "sha256": "08ad6331a4d9e7bb3512fd1e153f039b0e4dbcfedab6714e5cec9151bc26deee",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "iw-IL/sevenInchScreenshots": [
+      {
+        "id": "18143359298930517070",
+        "url": "https://lh3.googleusercontent.com/AMtN4CxGnsJ_zC9tBMlJVoSNMe6syyWdkxicYa_wfl_yY9z5ry7S-3fNcRy1IMTaZhM",
+        "sha1": "0d84a8356f8751fcb3aaf2ddc174c3dd94d379d6",
+        "sha256": "395b0f36270763e9f7ccc46a092013c8609b3e3eaa89d9ba9f1e5022f9f9a0ab",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14841735048401032229",
+        "url": "https://lh3.googleusercontent.com/nr17UVodwju5UMfDbp0WoDfbCM2Op4u4c2IY-H9w9wGcpZjhxedkGF1vInb7YfMzLq1r",
+        "sha1": "09db94eda0075f30c71692221aa223cb040eb52c",
+        "sha256": "be01ad32a035e08be4781c0538709407f2ab694ad2c8b8151b7df41657c5e7e3",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "951784803592492650",
+        "url": "https://lh3.googleusercontent.com/6_STdG1wsNfLi8GKTiWVLHi01nJDKcw7UNLVNJWYZA0PwTJTsQx7Xah9uwix19bJmw",
+        "sha1": "4182d2d0005d77014a1b9073e2938be1a5fa660b",
+        "sha256": "660eda9635cb830c2daa65df2fd618b3f543f98dfeef46c6cb826ae3d366daff",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4083939141111357328",
+        "url": "https://lh3.googleusercontent.com/YUw0dW3dB0ujcDhkIE_qdtsDZJ9MO4X_cb6IHSAynsrkLCZn5UXKy6PKV9Lgav2PUw",
+        "sha1": "c162b766a993245d508b553ac7c761ec9d047470",
+        "sha256": "cfcdfa2c004e0d97de855c824bec8776067b254f6e97dd4573bb748d0e4052b2",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "iw-IL/tenInchScreenshots": [
+      {
+        "id": "5910506966412896208",
+        "url": "https://lh3.googleusercontent.com/2s-153_lgQ1sQCPGeI0GpBu0W_F71vaia9zhcWdtM6IcoXZeGjEQzYSDMqancAeE_Z9W",
+        "sha1": "7254611e40e28c97708a59bde403032917537e05",
+        "sha256": "8cd01af6fdad1ec8cd00b46fad985e17b3d991d736aa826d2452044a591d4790",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4407889679217948669",
+        "url": "https://lh3.googleusercontent.com/9iuORrHMOlLfA0qfmlQQKSvWr7G5vYl_oC4Q9_YRUJlKQg_Rzph_8vXt-XPSNLjFTMo",
+        "sha1": "ab832911a9740d3f04efaf1fb984585d348d38c0",
+        "sha256": "1a2ad8550025dc1b78300e5d74a7073d8e6128d43f9c2ad1c891d24298cde494",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "366470805558186532",
+        "url": "https://lh3.googleusercontent.com/1NtrrKuvd4F1DMEu22Y5vrNu9Du_Bf2lvefwbyiJ9_XLYSZ4rLkpeTSqy2mrT6WXl2s",
+        "sha1": "7254611e40e28c97708a59bde403032917537e05",
+        "sha256": "8cd01af6fdad1ec8cd00b46fad985e17b3d991d736aa826d2452044a591d4790",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12817914455721608108",
+        "url": "https://lh3.googleusercontent.com/HvyAtfPo2P4lBokUmign6_NY_qizGWQPmKNe_zgZf_caxTmIZWMUozk5X7PFV-FccA",
+        "sha1": "ec5d11ca899e1f26319df625d65899368e835698",
+        "sha256": "e9f0358a2f8367499bd34f75ab360e3e087177ac96a6640ea458ada78e84e885",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "iw-IL/tvScreenshots": [],
+    "iw-IL/wearScreenshots": [],
+    "iw-IL/icon": [
+      {
+        "id": "2422401760070717083",
+        "url": "https://lh3.googleusercontent.com/ZN3DtMJOCeG3iDZF3z5rrzKDYa1aVz1S_D-p7jazE9WNYxdG0MVZzhAO0PNIzybqzoE",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "iw-IL/featureGraphic": [
+      {
+        "id": "567659486776286797",
+        "url": "https://lh3.googleusercontent.com/kFhl4gsOjKtUi9Wmqp9WqplHHCyK0SZdlJQF_dM-sU3znx3vIAsTxFtiWHxvoDJAge8",
+        "sha1": "88e84c546151b968a391bc9b056efd37bdb8a9f5",
+        "sha256": "6ad82868f01252c65bcdeb81e61b6f36319f03e7e6e6b1a7d9705ebc7d83818c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "iw-IL/tvBanner": [],
+    "hi-IN/phoneScreenshots": [
+      {
+        "id": "8080538492167481426",
+        "url": "https://lh3.googleusercontent.com/EQSFAn_C0J7_UrEN0hNSPVYFNtUoEsxQVVgkC71Ocnv57Aj0sYiLJjGN9GVz-bFvA2o",
+        "sha1": "492df510d0a645274b06e24e547bfa9d92e1493c",
+        "sha256": "d6b6a44816214ba31e658a88fb16befebc57e287ea3fb5d99fb953d85c1bccde",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1320820042756284784",
+        "url": "https://lh3.googleusercontent.com/dW34WslXLYie1xWSufru3qF-bEEormfW2LTDoPPAuaYXqKfekuyrrK-bRkbjdDyobzY",
+        "sha1": "64c22a23f058ad533b27b944b9f121ff22691c86",
+        "sha256": "9d98dfa72aa1874b6f1e6baa1a31ea58b528dc51348a3cb0366ef18832d1f0a4",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "18159307142694616246",
+        "url": "https://lh3.googleusercontent.com/a1bc9rgnD6FIm-wPy1Rx78A3ROXJ2-XzQqO1X9YX8EupsFh3UYMipHwbMXMRPMsMRx8",
+        "sha1": "639b13a285400264eba4ce54087fb4b4a9fa4bd8",
+        "sha256": "7aea30f50610222dbe6d4ed3f6a65a95e28fee88a4c5792be53e599f1d1b2812",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5162769203523036843",
+        "url": "https://lh3.googleusercontent.com/-qoGc-Ud08lxR3nEEFyA71qe-1tcHIQwuFaEpDQSb6SpTydudATE3djCAONADExepe0",
+        "sha1": "0e75b8e01bd92e9352e6dbb11ef900aa27faf832",
+        "sha256": "40e74a339ba7e3a7c8ad9de168a95a120e6b0ba46d5a76422dee769e1b26a275",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "hi-IN/sevenInchScreenshots": [
+      {
+        "id": "2314064819356722315",
+        "url": "https://lh3.googleusercontent.com/69bNZ5_uWYgBinwAPle2Au-OT2cr87xh-qLgwkOr4tQotrZST-_IBtnebqcuTmZWrdBI",
+        "sha1": "a3f7dfa0759d6ffbfec6f01b7ed2c7fff7749c14",
+        "sha256": "9583e28c55e98dc771aa2ba3b658ad9f8f01b15f4e82dbba4560c44c3b574c6a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6377814218120882547",
+        "url": "https://lh3.googleusercontent.com/nqJdZzaTz9HJoVAxUh2oFBZOBxIWOH__0rqZGfEiXlKFLcfa3ph8iDg6UIGMAmGTBhQ",
+        "sha1": "7df42a8badfedc9ad226d489a005e1e21a7c21d6",
+        "sha256": "293c8b667beed436ec4467faa9b9a6c45278a4086f42ad05b0093a39469c4514",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6328306193742677868",
+        "url": "https://lh3.googleusercontent.com/YBw-x6eTjQNEHI8y43VSCa-nf03Enw5Wk1SInN9-hRcJX0ye8yV4LTEKCQbFCQveEA",
+        "sha1": "5c05849a71b283515c584971466d27e4e5539169",
+        "sha256": "2000ef39df5058551a13d03c6d4068d6f1e20a98a6847d2c65e8fa96d760f94a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8467145612999314461",
+        "url": "https://lh3.googleusercontent.com/K2lVOHfpGoelhHOiNAN5esRSZJINetVQeVCiI12dWUKJxprlJsVUn3fVqbJFLJh1Ew6u",
+        "sha1": "c01c83614a05d469b5d4e691de03db247c1e7297",
+        "sha256": "dad6f39e528bd162f56015fce13a9a85bfd416bf97a74cea02f33873755a0827",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "hi-IN/tenInchScreenshots": [
+      {
+        "id": "16385455998614628942",
+        "url": "https://lh3.googleusercontent.com/gXPWzvUHBWi1el5wYL6UJjS6h0PKJrHn6ACSGE5F5HCyPH-J5lOjVymteOwYTNYNlKY",
+        "sha1": "abfca91b608215215ddaa83f8fd8faef6a3106e9",
+        "sha256": "5e30e350feb628f44e85688f642587f89969d974ff93408b5e76df75d57131f6",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3215004552387475182",
+        "url": "https://lh3.googleusercontent.com/JRg8z94i2mNXiBu43r7e5UhH14Hfx8T1jcbWFDufSuOSi2X-77lP7wEpDgS8NA1NMVM",
+        "sha1": "4f8ade852f415db89cc707611d7e8b22e5c0f7ea",
+        "sha256": "df56a6c00a93996155773a2913264dc2cb0181944a6ec7ac2cea7f555b55838e",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "17128208921729418489",
+        "url": "https://lh3.googleusercontent.com/_Fer4EMF0BH1_vA8CINZsquu9yQ0zKc10KC86mc6tdX8Q0dftZ1henhSfBflymZg4KBb",
+        "sha1": "5508d7d859d12cd8fe68407caeeaee00416f78e9",
+        "sha256": "305e60389500551e87be4e4ea5c6739389d6c1167d93c573d70d8f9a6f654c94",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5688412564938905401",
+        "url": "https://lh3.googleusercontent.com/YacT9lUko0leZ9ImNWdHF-X0aySAXJpweHyJc0NmAy1dkdhmkorx7jKa_GgilCXKpRE",
+        "sha1": "7feb53a32886607da4929fdcbb3f5be84b4af7f5",
+        "sha256": "7ec165550a66762bf911a0015659bcfbb6d55532738b96b9f9d04c695c384f61",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "hi-IN/tvScreenshots": [],
+    "hi-IN/wearScreenshots": [],
+    "hi-IN/icon": [
+      {
+        "id": "17717745634512224376",
+        "url": "https://lh3.googleusercontent.com/SJ92WT6xwTigxVnVFHNWxjcBWWxwDfTRPBwYwhs3H0gamEyGnFdwv8Lwy_-8EvX3-Vqt",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "hi-IN/featureGraphic": [
+      {
+        "id": "6552378920815120250",
+        "url": "https://lh3.googleusercontent.com/eBR4yI8iez03mhTZTKbV0KD9e7GfnahSiXOEgO2ODWX5PcZk0gDfYOkoP1Ebn5cEZzQ",
+        "sha1": "f3da8859534ef3a37996d50f098ac12bb5c8a36c",
+        "sha256": "84127afe739a324d1f92c2f9cdee328c05b9a00059b78cadfac840a441452a1b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "hi-IN/tvBanner": [],
+    "id/phoneScreenshots": [
+      {
+        "id": "15869612477356471698",
+        "url": "https://lh3.googleusercontent.com/WW5AmBFWipzYdJQXruxH3cjxb_wVQGL9zgnriYk_XbNcRDA8Cvqr-N7rLrEVQhsTZFE",
+        "sha1": "4e40255069d5a0cd9f068255ca92d55208e911da",
+        "sha256": "64be1c0684450ed89499cefbde208b9a33527dd8b14b17220925485fbca2a5f5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "10230368617249381672",
+        "url": "https://lh3.googleusercontent.com/1JR7ED8MXFXL1NYjH842Gf5XSkZUrs12kdGmkUCtPLPo9mgZIT5j81l7YCqwaluPxWiO",
+        "sha1": "c401826987f36b321d8cdf5510608a80b46b653a",
+        "sha256": "1abe0b917ebc9920427686ae034a1834294394ba493651639440664ec785f499",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16763751029526508425",
+        "url": "https://lh3.googleusercontent.com/RnfedOge36_cYwTV_EzsQmawMhts08y-8T-3aMOCEfQY5kB4Vf-pyZFMd66ewUVxJw",
+        "sha1": "93f3a724e96a0f105e41f69d2d785cbbb4ac69bc",
+        "sha256": "e817f92137dce4b1e1d1b7f93311b0df67783231f0bda9a1a4d84c57f1a3b88e",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1499556328373844427",
+        "url": "https://lh3.googleusercontent.com/3SjORv-OPsx_fLghFSblt4FXAqC9851ysE6oZyEL5lTUUggxh36JFGmV3GsFekxAA2Bv",
+        "sha1": "7623f6b0e790c7c4ae486d4b5ca70642719bff8c",
+        "sha256": "130f46e73a13e2c7df7057e986150c96f610b674b2f75257a0751a97ff4346e2",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "id/sevenInchScreenshots": [
+      {
+        "id": "7625906130143415812",
+        "url": "https://lh3.googleusercontent.com/1b4Nz4HvuFLlCRo1Kz62ceo-H6MV_3pvyWpCY8NVDSiZVQGOnL4u2mtYJsq9rThqxw",
+        "sha1": "9ac2aeec2619c0f4b8df62b2e1fcbb09fa09d286",
+        "sha256": "247f736bfe2cee2b4ec9763fedf98588aec01ee08997d0643ea9147b33a5b510",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9969057527147757555",
+        "url": "https://lh3.googleusercontent.com/aGWjU3i4Nz1Eh-xQXkilBZ1THkTiknanW81SgZ6eUO-h3KFY1Zj-SjFKBKWMKWwVZMOh",
+        "sha1": "3b0b715b0b4e2ddfc72a18fb4ff6bd729961e068",
+        "sha256": "c938974df2bc8020d400cfef35936fec9f839ff8ed642079d2f1b1909f7efaba",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7040956647760381459",
+        "url": "https://lh3.googleusercontent.com/3VOV9ucgh6-Mu6k20iE5ywJI9fnnQ1sAbQceq5ac7uXgZr-FGxb0Gw2yCAgt4VXBJa8",
+        "sha1": "994ea75f1993fc7681c301acdf7b61fda892568a",
+        "sha256": "f18086ab6b9e643b9c251ba2dcf81ad3ae22338e85b495d3fc99a24386964be5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "562726478747754291",
+        "url": "https://lh3.googleusercontent.com/EopGGsIi7isEU-XVUmnYjgRLdqXNVDzcrSlQejwosyN6L8x3hKGNW60CDaBP9QpIXrs",
+        "sha1": "de4d8eb180a9bb4f701378b67e67093b41ffb5a6",
+        "sha256": "d8fc8b2b468f11edbf9528d393dc8efe1fa015ab1867edf696eea81cf98d6d77",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "id/tenInchScreenshots": [
+      {
+        "id": "8713610850660803772",
+        "url": "https://lh3.googleusercontent.com/gwHxYcuQYu84y-SZ7AZgJXknG1CRiNrb1plD9keYM-oidJPKn1tziMwAMB1b49f9dg",
+        "sha1": "57e030da4e4fff3331a61772c1f21621c215e753",
+        "sha256": "ba2677cdd709e078f7c7d621d2833cfdb76955075490db63f87a477c96b13c2e",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6055828411736586888",
+        "url": "https://lh3.googleusercontent.com/wLQdGxs283J9LjVtmlc-bQXFDqxan-A73kG1IVvt0v1m4gxSAWzqmt8rCsn-VB4zZQ",
+        "sha1": "c27bab46234560bc5ef20d233e3fee095ebc478e",
+        "sha256": "3dceb52a04cc223f3216172f3ab802d92c2fb4945347b7444bc876c7937ae870",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "11822659438538257745",
+        "url": "https://lh3.googleusercontent.com/I0Sbyx5yv-VEid_mA9mEK5ZzZJ5cUXO-fsfLFi3XO4n0bfpcTLJHUJYVoPMqTfWrgh0",
+        "sha1": "d553ac567fbdd7930dfb59a1081bc8d77094bda2",
+        "sha256": "ffc8a47326d2a4f68d022095bf347c88d6ca119597b94ef28d50654ad1bd3430",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9886222431881067308",
+        "url": "https://lh3.googleusercontent.com/5NKtwp48jHJaL6wAW8wY0NM0oiOGyC2W5PeyqpqvNmHp9YAIrW6moc6DkKZ9gHRTqyjR",
+        "sha1": "a2a2d1d7496b01a8ca11d9fa129eb786b34a83a4",
+        "sha256": "3834dc0478bd5da521949f5b28040cbde8be17d6559ad86283c228cf7f18c478",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "id/tvScreenshots": [],
+    "id/wearScreenshots": [],
+    "id/icon": [
+      {
+        "id": "11798297257661919658",
+        "url": "https://lh3.googleusercontent.com/GPtl8FsmuWn8EMM1plGKHrbX45HyKC6o-KMLhjXzIXBJsUVPApOEWvJ5Fn3TvrdhGbet",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "id/featureGraphic": [
+      {
+        "id": "13993023217148766757",
+        "url": "https://lh3.googleusercontent.com/4iClSy11jQ9L6vr94cGjbTCG-py3VqANIkL0LNoDoKrnGJR6xq2EcR-RGsgWWaI7kQ",
+        "sha1": "dfc8d4e5d97a5c6f2eccddbc67c4d0ed5eeae159",
+        "sha256": "1fd37ef116cc5b5c1a6cc0b81fdf29fed738ab231e13c61939d6f30f8e1fbed8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "id/tvBanner": [],
+    "it-IT/phoneScreenshots": [
+      {
+        "id": "13899528799083816373",
+        "url": "https://lh3.googleusercontent.com/AfuHy7lfmCAZZB1EneojM-GWrIHNrd_5q3HUtJAaRjA_q2Kt8w16q5858Yq1GUvDseM",
+        "sha1": "37ed72bec0a95acfe07c79d291d3be94e5b4b95e",
+        "sha256": "0a02e790f67aec8fe642625470bbe41f1c13be98b80b7ddcc6aac23b8aec7f85",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1354039477941326644",
+        "url": "https://lh3.googleusercontent.com/FXdW7RnVREk7HNqdelHp4EhHYE2xakL8NUhT2_hIlmNfm3Q4eGCzJeHrt8Pv_Z3NJgPm",
+        "sha1": "7f5a3d0b4ebba00a10f10a447d99e1e4680ec8d2",
+        "sha256": "221a7d70b2db7be6414d40f2cf21889e4403bdc297fb6f7e965b999901526fc0",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "10208411372017052139",
+        "url": "https://lh3.googleusercontent.com/t3rTzuqd0IzHkh8CAwXRNBCCPRR5o8MsoUY3uUZmzRieYg0X1BVW5a03dfJGRGzsgA",
+        "sha1": "9112c86ea6b457217df38a8a9d6e9670f545ead4",
+        "sha256": "872869bee7891f9b9640f599ff436f6dd30db041735a1ebf21c1611d64550006",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "13878042317714774201",
+        "url": "https://lh3.googleusercontent.com/x0qkdcIe2k60MNzUyIKNGzPFCr0yu1y_q9xm0IFReIor3DfBQg4qxag7-w9-oKSsqjGO",
+        "sha1": "8989bed24e5a4101f5138ea3ce28fb430188c9bd",
+        "sha256": "f2328ccaa6e25da7aafe3bbd73f2d3a5ee4c9e627b2034a75cd75dbfb0758ca8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "it-IT/sevenInchScreenshots": [
+      {
+        "id": "4360918641358962195",
+        "url": "https://lh3.googleusercontent.com/O6qztgJXkWc1EpqwcDrigzUIODr91XIJs8GycJFb5M5e2WjREcygzYtUA0mFut9jals",
+        "sha1": "cda0f32e00d11f0f0bd83e98ce62f11b750aeb3e",
+        "sha256": "f94438d29ea84a264d6420bf010b0f46c4a9b06fa9928aadd9756e6e5b88bbe7",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12141491509116928039",
+        "url": "https://lh3.googleusercontent.com/Z4C8iwO29xlIMnTQglcccqxXAlFQON97OhN2Qu4FB9muT-0yysy7WKKD_Ns0n40IyWBP",
+        "sha1": "a5bdac0efbf26fdd51020e01231e980bd5641212",
+        "sha256": "56ea36d6262368cf033a091a5106dcc5be4ed3b12db053139a0220fe62449cbe",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4678474063904730975",
+        "url": "https://lh3.googleusercontent.com/UOnGDaiA3xHCQr9tLC5knn-mqVncYVACsOWUp2dgaKeg3Zo7th-nSLn-anEz8yLNhw",
+        "sha1": "cda0f32e00d11f0f0bd83e98ce62f11b750aeb3e",
+        "sha256": "f94438d29ea84a264d6420bf010b0f46c4a9b06fa9928aadd9756e6e5b88bbe7",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14965304970132231351",
+        "url": "https://lh3.googleusercontent.com/FsLOzBFt5KnJgVCRThlnXMszd3lfiByEwIkVSBddlkAjhHlUGTOIQQfwBg8IhzR0yw",
+        "sha1": "8285a6f2e692cbedc2eb65c405e7e8803cc51574",
+        "sha256": "2c4af1c5692227ef721c7c01549fa8819c1164a838c4d762855c3ceeb6d4409d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "it-IT/tenInchScreenshots": [
+      {
+        "id": "7695633879150267878",
+        "url": "https://lh3.googleusercontent.com/7A6fcOjmYSJEHLHf3LrY5pvZGvqD5a2MSHNpfrG6qOj0XPndhZ91JojEt0KaiGzJ6cM",
+        "sha1": "4eeb0b6778ee0fcec3779ff2d41d44c31beb8f80",
+        "sha256": "d262078d60abcc58e9976fc086fb948f0230a10d4da32f8a40f11c951653f6c9",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3798929949289485878",
+        "url": "https://lh3.googleusercontent.com/SOYNsY2HRbAgqiQvFHn4s2-DoUz8aanj7_WxTrtPIraKFcvpxYAIIjDJD7n4mWHIgA",
+        "sha1": "589a354ae977378ac1e6962b0dac7c9811adf780",
+        "sha256": "82e9374104aee6e4d31ffadf83216658321c2d9947d57190ceb6945234b42b5b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2620414371028876853",
+        "url": "https://lh3.googleusercontent.com/uZvMTR09hjc0T4kwaDhCLTq0mF8z_c-MxppD7DmyphDR2Hrvm8U2VqkSeT45kRigAMo6",
+        "sha1": "cd2e4fdbe208d40a2561f6623e0afd27c73edf05",
+        "sha256": "d5798dca8f8d692d40d54bef6d8c6fe73fd8d1d50f1093e4039e9957d2f9f6f0",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16687227787540295427",
+        "url": "https://lh3.googleusercontent.com/MBnpVEm0NB54RkqBxXeADoP-5rB5mep0BuVmZ3yNQrjpRNiYF2AJjj7fEUVqexgGszc",
+        "sha1": "389f259cfb8e88e11b193dc67dc8c9743d5e85d1",
+        "sha256": "46665b9c21ca849da47ad38653eb0c44ff6dacdf2abe92cce656d2dc8ca5a906",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "it-IT/tvScreenshots": [],
+    "it-IT/wearScreenshots": [],
+    "it-IT/icon": [
+      {
+        "id": "15341861778099145152",
+        "url": "https://lh3.googleusercontent.com/sytMx7LAf1VzmByOGYzSuNz8JafTq-ewoqEYyCWl_hGV89pUeeOa1vRO8VLv4HLtIbI",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "it-IT/featureGraphic": [
+      {
+        "id": "2361491967251027484",
+        "url": "https://lh3.googleusercontent.com/pZ8EBKa_QjpELHSrw51n4mLrzIunLLV9JU9DJMgCGUgFBDam_mLy7j4_sJunpkH4X1Q",
+        "sha1": "420120f0570e5c10a07d19e93c1310144a3b9a11",
+        "sha256": "ea35ac7dc9c9833e85c73e8e1814826b00f90f9c3847f1c2025de3cb08b433a2",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "it-IT/tvBanner": [],
+    "ja-JP/phoneScreenshots": [
+      {
+        "id": "5648354305111018474",
+        "url": "https://lh3.googleusercontent.com/IgAvf7HmG47yMLtHVxcPvIdU9gb9QpNxc6Xy-ZOQpU_GOh7RkuZZSolj-TBJ2YnizmqT",
+        "sha1": "31080eed15b61a663d6cad8899ca10f06e373442",
+        "sha256": "dff3be11feadf319b3e2e1bf4ac70221fe4cc2d1ccc6d048b72314a0179aff2d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9878040096762180399",
+        "url": "https://lh3.googleusercontent.com/kz525S8lbZ1Mc0JyNpHWwgVEl1ES5Ybv3vXbbVN7C4AHiV2GcnmLAC_AkVa6317hw3g",
+        "sha1": "9458ec5e249e6cf070b8b62aa99e0c83584696c9",
+        "sha256": "38259f050d12b0ef01850c5db36963885bb32204b0ed239d2e96ca07b033e388",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12562225568228221418",
+        "url": "https://lh3.googleusercontent.com/ts_OSIUovAhfcRdUHGTS9raTijxF3sekg5Sm4cml3kJ4jjfEXJW0XS_bmxEHXpTRSNA",
+        "sha1": "e9749797d076cfdbc6970d320114dee1efc2987e",
+        "sha256": "c885cb1fc661f52fc7e11b0b96bdd83b02cf4536ed48518dfa38551ff29997da",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "13274652441723455575",
+        "url": "https://lh3.googleusercontent.com/jy1HoScu8wG_j9NCGE2OaaY3I2ZyUCYoU1ic9IeLXZ3CxWoAXSejePg1PVrSW27aS3wy",
+        "sha1": "b963fbf95cb6eaceff79b293cdd962b46447bac1",
+        "sha256": "afdf1b1776cca0468c8cb4019bc5359bc3a3f1d0cc91e0c5540969e757bc2779",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ja-JP/sevenInchScreenshots": [
+      {
+        "id": "8879858448049702306",
+        "url": "https://lh3.googleusercontent.com/Ki-gZy6mXfz7zKES_1A78YRTC3qAslsEQkSa-t43zg62tCAhZ4dMvCNLnCtrXOZu7A",
+        "sha1": "8cbca0fd8c3e6521f8cff66a1ebf058317b107f3",
+        "sha256": "3ef06c341c2e77b654055c0d977bf9909708c1702b0f7af4af8b1c897d2be2ed",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "11208428612943438069",
+        "url": "https://lh3.googleusercontent.com/aQ-RG5Akl14tj1eTsUtADLOybP4m741qCGlyxGGOV1DHzWfVppCWYUoA1Hs9Svv7pfM",
+        "sha1": "f32d1eba4d4c0069ac98ae5283b7bf499e6a0f11",
+        "sha256": "b02b80c127ce4885548434d38f5dbf160840988a789303dd384f9df2cd322884",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "11786355933589515886",
+        "url": "https://lh3.googleusercontent.com/qs52NIdNP2mvUIrE6YUQ4GR21rpFnz6ecvosYwcfR2aWhAams5lMzI0cQDOUOyb0hg4",
+        "sha1": "c249b492b64c525a9bf8ed4de0243b8259016c70",
+        "sha256": "13254117ceda92d5eb3de2113a2335937c341babefc44de25f8ed51f6d769a01",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16628104781269022059",
+        "url": "https://lh3.googleusercontent.com/TL678VTJ_GbySeXLUOvg_0Ua5dXnDXjxNtT7pJz818n_EM-ptiMv1r4WK3x4QDRv5Ag",
+        "sha1": "2c390b5ef60dcf1e9a100be75836e88933861a51",
+        "sha256": "21eb5929d745515477ec8429fa0ac761a8c490ceab0cb9f30f07930d1e164c6a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ja-JP/tenInchScreenshots": [
+      {
+        "id": "12784887504773021788",
+        "url": "https://lh3.googleusercontent.com/eIPmlIJznL5PQp2LkrJ6XUt353eZQ-PsSMFNmQjfYEUJbYdO--hDg2SJ6BFyGw3Tkxu-",
+        "sha1": "5e9f10466cce45513aafc3b2628d3819e9c791f4",
+        "sha256": "f9a6f18de837aa64cd56435ef05ed8bd60384faaf17767adf0b4c73fcb850b46",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1538039134285236628",
+        "url": "https://lh3.googleusercontent.com/9YkIsivbfmyJUnx1CJLj3NzULdLUPFxmjpnJmW8vkWBcx2VtNeFIMU0ufSvUpsYhb-lF",
+        "sha1": "d474e1ed3199d7dbb5d57c379f12e554f12a5467",
+        "sha256": "0230a7b2ffb0fa196979b5a85b404662afba265f86872eee8fbdea17813f957c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4732178454205432283",
+        "url": "https://lh3.googleusercontent.com/5X51GVes_qP3zBjPgVKgov-1BDylv-knuTh7KbmelFpPn-l0wxxx9FZ8lgpccp86iC4",
+        "sha1": "d4d95fdd5ff778c514aaa9e405c9d915df69f346",
+        "sha256": "7ce2af750444cfa633a4701dfa85bfb59a435408ff108f457856f1ddc076d4ab",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7044541566897653018",
+        "url": "https://lh3.googleusercontent.com/dmT-fm9as-lbh090BC70x13LGOmcWxRIJHTHVM12ngfL_PO7eZk0NUfuimOetnb8fw",
+        "sha1": "b2bc9b9f9848585d2612e805d9d7ef66da6dc214",
+        "sha256": "b9460c334b578ba8273341591cad80a1959ef5b194893f35265e338aa12f63ae",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ja-JP/tvScreenshots": [],
+    "ja-JP/wearScreenshots": [],
+    "ja-JP/icon": [
+      {
+        "id": "10885920152820472363",
+        "url": "https://lh3.googleusercontent.com/isEuN2XkAt9JjfBdzPiposuqYS7ExbL7KG7jSUj0T6-_GgUNPfDo6_vGffbgqQF8ypY",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ja-JP/featureGraphic": [
+      {
+        "id": "11444228584926711655",
+        "url": "https://lh3.googleusercontent.com/BlWZgSNCegLBlXhpWyV9i0-7B-L0kEyrOe6_2GWb1tUudjjg7Wr2xaqIPBPM21f0gds",
+        "sha1": "9990f0831c27fefba295d68dd91585072bf3ea13",
+        "sha256": "c641cbc3afb2f99cb286af65f8ba194db6abbf4e6c608a984c288d7b464ced3a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ja-JP/tvBanner": [],
+    "ko-KR/phoneScreenshots": [
+      {
+        "id": "964731870067801786",
+        "url": "https://lh3.googleusercontent.com/qNPxSWW2gBWrYDnLWtvi2_PQnz4J7XwF19l3MGU0PBUahbWFaIm9_Is3p63WW9CH9TM",
+        "sha1": "39fc68fe31d85c3dc576abe41ef64dd10bb99245",
+        "sha256": "10df83b3cdfc648df049b6c07e473dd07b2d4c70ee9e29048c3ce33a627a8e65",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2668472678156063966",
+        "url": "https://lh3.googleusercontent.com/hjgo0XFe6gPorivSh2lwCa0QSUbuLsu3Vq7j3nWzc-qd5jxqKejxaheGzm5lzd5RZXE",
+        "sha1": "313cc9507c60c825b259077e6444e26dd8e6886b",
+        "sha256": "dfa8872a3683e1faa677c843768d9fd166dd83d547abbefc9397dc3ac272ddd3",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1105893043377476913",
+        "url": "https://lh3.googleusercontent.com/-jqS6YXdz5tRnmBGN78QNVw_Ycz88IV_zRN7NrqLWPNAzAMVYsowZG0NCGaiZqgKFdc",
+        "sha1": "35640c35a572a958f249e567e7c25fec9bd6ad38",
+        "sha256": "05175b090e2a4f6f65ac23507d11f1db2e83c2d4f10be057a89e7eeded59c29a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5300626231968516969",
+        "url": "https://lh3.googleusercontent.com/I8bnxhao2BS7rJ-o-PfLJvx8fZjs8SmuyVAQcJhahoMRfVa_RSVQDNba3CRLIPVHxKs",
+        "sha1": "85e65e6f787abd9488d7f0a93499c3985749525b",
+        "sha256": "df625a7695ba79b4daf24397e72d0c5bcd05b7cfc6a91a63c9021c5b42679ab5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ko-KR/sevenInchScreenshots": [
+      {
+        "id": "11100647547465642865",
+        "url": "https://lh3.googleusercontent.com/L0yRauDnioS1jYyViAaOuCFgcbiE2Wp9H3Q01yPGbNhudCoFfAJmJprrcB0ic62ZVz8",
+        "sha1": "071c16847705b7ef2dcc12309fb1890b3dc442d7",
+        "sha256": "1ee36c1c6cdb26f8225671f24404afc70686828211c473d40fa4178ca2d2c6c8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3952181606889680293",
+        "url": "https://lh3.googleusercontent.com/Kpgxo-q8Yj_UZjcRH9OAHJlIBV7FyK0HqYQGuU1KQXFAv6eKnKP8YxBvdYqTLVm-CuU",
+        "sha1": "5030956ac1c683e0c65aafe5cb8db376b89fc919",
+        "sha256": "463c9e0cf8d40f7231ad0a26e15c8ede1d17731a822deb5eb91cf3b7f20eb461",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "387555588276066253",
+        "url": "https://lh3.googleusercontent.com/QGQ8PibOnUVqPAH_bPJa8sWEYS2yQA0FLggPeFiw5b5s6l5SGjUCFPRPfRrJYT-zAnk",
+        "sha1": "5d791e1881488f6c6caf0811ddea8d5fcce3b2bf",
+        "sha256": "89f5fcbcffd2784d991ae54ad3b59d0da6811b1b57a2a03249137815186a13c6",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4728698287996947991",
+        "url": "https://lh3.googleusercontent.com/LzgsxZJhygNBP07aQsVk7bFb-DE47v2Vhr4a6h_dy52J9-oaBmxBMpeLoFeo7hIbFA",
+        "sha1": "409fdb4aa667e0e8970d87ed8d89031e30e5eeee",
+        "sha256": "bb5b91a70d640de32a5ed63c97b39375a9e9967543cf64ee689a1851199a3dc6",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ko-KR/tenInchScreenshots": [
+      {
+        "id": "15084646067925636349",
+        "url": "https://lh3.googleusercontent.com/0UZNMxNiqdOBZdNZIeAoUnAfXZyT887sGpb0U4axAfyhBTpse94Ec__b1l9II_pViwgy",
+        "sha1": "4f467e625a057861b4a90b9eeaf6aba2777a1963",
+        "sha256": "552f47b7a175aebdefb2a6abdcc0a8f6773a2cda46f799704fd5619e41fb5974",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4397276865691023602",
+        "url": "https://lh3.googleusercontent.com/gguFqadEWqlkSyP5SbN0FUFQBmHs8WReo1vRUfjT8VRAe1uV_TjJ0XXj4f0UeB_hsMYX",
+        "sha1": "1bf45ade45d430f86ba3d6d7370e1827e90df4d1",
+        "sha256": "2b38dd8434630089f36042b4ba8c910b7518590c72999f9842dc5401a2012df9",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2381220459898736989",
+        "url": "https://lh3.googleusercontent.com/LHEHp3tp-p7f5iRzOCGAz4_NuZPZc5EaR7nsoHhq6vIQxVTmArF7sNC_o7ZKdwaRiTk",
+        "sha1": "0fb7745142aaa656d2435d196b616b6f07776fcc",
+        "sha256": "94117a3bcaea88f629da8d4011ef38dee7e9f4b6c7d6211101e288d8ff092962",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9623933215399677198",
+        "url": "https://lh3.googleusercontent.com/ICc6DJHPEOkkeYVarw2IjKrzX4276UthFFxmRmH6giXW8wlxrUISRgAUd5mPKWTfQM8",
+        "sha1": "4fe90a38d091ebcb26bb3d4e0baefbf03f13c1c3",
+        "sha256": "888796fa689daabd700b50f5e57d17fe69adfb2e7dd327e714818e8d8fec92f5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ko-KR/tvScreenshots": [],
+    "ko-KR/wearScreenshots": [],
+    "ko-KR/icon": [
+      {
+        "id": "1897190059509230357",
+        "url": "https://lh3.googleusercontent.com/hGu0g7ulbe_vjhVuX7dTnP4XoMdw4-SmjS2V8HwmFvPLbJfMAbW6QkDoNFTbtme7ypM",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ko-KR/featureGraphic": [
+      {
+        "id": "12301657118182284325",
+        "url": "https://lh3.googleusercontent.com/b9I6tiFv2xNlrmPenQ7JM_t9nhu-TWY0QlRZvOL0xy3ELa7x9W6J_SV2eaomE7Sc8wE",
+        "sha1": "f08be23cc114f133221d2827816be918be9e77ca",
+        "sha256": "15195b94bbe0da883397935e9657646901b645874aa27dc5a77925fb6081b957",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ko-KR/tvBanner": [],
+    "pl-PL/phoneScreenshots": [
+      {
+        "id": "8319206374632713249",
+        "url": "https://lh3.googleusercontent.com/ZoGNolaj7DinYGHpcUbNFuBHSZ3NkwcifBKm8gIXMB0w80awioM5GrqonWzGgbV_jKI",
+        "sha1": "0a3453adcd7291168e98b2fce049bbfe234448e4",
+        "sha256": "99cb4f30f0f296ce248773b3e72573af59ccf3ba1a0d1ba62f07e537d3410295",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6766619428459511388",
+        "url": "https://lh3.googleusercontent.com/mFw9eYDUBhe8eBKg14NZ6nhr6DtLv2BQOFL62xYgGUi855g5iedtB015cqAou0y-",
+        "sha1": "d490b7803433aff2c64824ab9e755c47e30fd4c2",
+        "sha256": "80b78e8441048359f35e5f0c6daca36fd83ececcb82f45a4d782bf71e7eab766",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12153083562935029010",
+        "url": "https://lh3.googleusercontent.com/XZIKk83WBNJac1H1HKZCtpXQeMgzn7M4n-tYmkUHhEQR1kepyUQidZAWiOJ_l0GG5A",
+        "sha1": "6825f242b3067bec721179f15ebdab35ca226402",
+        "sha256": "3f590451122222cb86efa161456099f576d16072e8375923ff8c66c48cefafaa",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9113277000642805368",
+        "url": "https://lh3.googleusercontent.com/SzWTo_jmu77kozectKfUNwbJliZ0oT_ByOwBKa5ktZmrbcaJcg7V75MW5hyU5DvC4fDO",
+        "sha1": "c973766f394a2142c37f355a3e3afd8401cd4cf1",
+        "sha256": "2b3b3a26f424775e6028b1d01eccec93522033363e95c14d75e4a29afb1a955f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pl-PL/sevenInchScreenshots": [
+      {
+        "id": "3991336293787695992",
+        "url": "https://lh3.googleusercontent.com/Ah2GQwmXnM3B_0LspjpEQcjCYEQzz9nexL2K5hcmNonrjYMhKd8AzNDDiRELppMyNKAG",
+        "sha1": "7d61a16c0139321c1d8c7c4660e33ed1963810c0",
+        "sha256": "fe85ced5fc68a545aebd7d2dc93011bebdf5551cc8fe66f0fd80a914398773de",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8420779618193486280",
+        "url": "https://lh3.googleusercontent.com/9k3I2GFcktIp_FtNQVxbZvBZ15VuDOZVecOc78xYckp5UnJv9vY1jj4cE2OnrBgWr1g",
+        "sha1": "08c2123fe11edd6733bff9aef1e45c851a19695b",
+        "sha256": "2f9300ce8bf16af139e7c24e01fc2c84f0ef66dc31c234a67f9e67df98e31c4a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2422601571217701621",
+        "url": "https://lh3.googleusercontent.com/8YUqVDkG6NXvwURS_rWzJfiNNFdvckOonPUeqhDa2Wd2N4dhZP46VeYs8C3s6CSzvO0",
+        "sha1": "4c6c48a2d844ab86f29ba5e4864ef9b7c545f0ce",
+        "sha256": "992c71ca2ec25e268cb865f8771a18400dc26a055be8976bb72dc463256adabc",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9439274014274364063",
+        "url": "https://lh3.googleusercontent.com/ulJUW6II7ERG4b1gkG_qsXTPXaEs7mDsXUkmO7tFI0HtpgmFkdm0T62_uZGeaeuV8Rk",
+        "sha1": "04f544e35e20ecf0216b3ff98410b1869ff6eb4e",
+        "sha256": "9fe5c956523bc498fc01e43c7690ea26a1bf7b4504e36568e0230a609354f116",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pl-PL/tenInchScreenshots": [
+      {
+        "id": "15147544016741787156",
+        "url": "https://lh3.googleusercontent.com/OJ0Qmtm_iZ37BOLwy2V-NwvGW8dD2gGaTnWWpYEeU_o0Hx1OxyhkJo9goLP6179hDw",
+        "sha1": "8bffee5fe0eb217f826388b2b6cc086d54b90844",
+        "sha256": "b2ab7e97d64bb4eda64b7f826293d9e94f40f81d741f6f16920aecaf6f2a4db7",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "11347326556370292089",
+        "url": "https://lh3.googleusercontent.com/Tj1lTdxMnFpGgUCRt7z4o0CX72hsV_HwtFF3Iif7mK_Dt8h0I9DJ9LbrdfZqqE-97w",
+        "sha1": "30d7fcb643615ab3f4f7b1eabbbddab8a6c54ddd",
+        "sha256": "7d5c7bfc3c4de9d2bd1a9e5e3739cad3e464790dbbb054e5acb8c4a70aeec462",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12533409049853058058",
+        "url": "https://lh3.googleusercontent.com/SmF5xwON_WX9ZqjybtM09CzgZ3kP1wDS8x__ysr0YjCx7tJx9f8BTLEk2v_3D8ie4KM",
+        "sha1": "9f6fd5c4f36e0d23401655ce8a2eb5b02bce7707",
+        "sha256": "91eac2004b693d49caa0f4135f8f7c2258be4f5b7cafdbcb03a23023f540cb67",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2066810074529046469",
+        "url": "https://lh3.googleusercontent.com/iCutgJr_3xdnsmMQq8VFJVAlKccOkf1G_qHX7Mzg28k8XemOscxbwvjraio-2xzl3aQ",
+        "sha1": "01b3122221211a9fc4b18e340e16203aa906fb0b",
+        "sha256": "597715c57a7fcce2c60c251538175a6e60a7748d7205fd975b469453197577e5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pl-PL/tvScreenshots": [],
+    "pl-PL/wearScreenshots": [],
+    "pl-PL/icon": [
+      {
+        "id": "4159715966067146958",
+        "url": "https://lh3.googleusercontent.com/5BmWOveddQZCewuWDzHLpe7Ega8qUnX7EUXjSqHR0_2KJuKaKUt5NtOrRU-50H_MI_x0",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pl-PL/featureGraphic": [
+      {
+        "id": "17963206987465529436",
+        "url": "https://lh3.googleusercontent.com/z2N3SR_CuO2ChRGnxMZ3F0PdespDWvRjGKqilwtBVRfIZrLh2o8etWOpHTKtKzlq71A",
+        "sha1": "45bb44079cf9e3e311b7755b3baf2fe0f0418d64",
+        "sha256": "fa602a08d5fa82f3c842cf86a54457e682a4ce91a1b6aada6627994dd968efe3",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pl-PL/tvBanner": [],
+    "pt-BR/phoneScreenshots": [
+      {
+        "id": "12601615778799895157",
+        "url": "https://lh3.googleusercontent.com/N5vVKuH8kykb6mQ7i7L2v9hTEUIUMpSgxvc8yrOkqplU0P3Q5cWf6lxYequlH5dcc9Ba",
+        "sha1": "4a37d0b9909ee4b46f83a65d716c1ca91de4f8cd",
+        "sha256": "9b8dfdd84d72377d304b1212b08679101513a2b80ccc460f000bcb792fd8e37d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "17285556347754368740",
+        "url": "https://lh3.googleusercontent.com/H5nU55dBZyLEIVbwV4BUnqNW_D_ZsXtDYtOG6mRG_4WfD_HSvRLgV07FqbrrLxPqBfw",
+        "sha1": "83c60e522997d8fc9271e2275d95ed6e33d4f5b0",
+        "sha256": "013da362d96bcc9fa4b04bc5fda453c75ced0bf2c860300621ba3c2996e97d8d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8680009130773430289",
+        "url": "https://lh3.googleusercontent.com/tUNjp2NX-VFWCC4lIo--zl-AguP9Y-zyPljxiGgZvx-vyQ04fjWg4EzdbBNHxV2RM_o",
+        "sha1": "3c72d5553c3a991b0b4d529db8815059ed8c0a57",
+        "sha256": "11d42420ed55f5bc0b92b6133a18c33d21eb3287624fc3589702fc6c6521810d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2506395363610171212",
+        "url": "https://lh3.googleusercontent.com/zdpECfdGu-aB_19Ye86_vspS6YAJ8MSjm9-6SuuBWMyO19dNz13NsA10DuHWt_zVHQgJ",
+        "sha1": "dca01e624bff42eda75bf3edbdd95f587afaa5c7",
+        "sha256": "648fb1a4827e5c7ce074550e1bf213907260d1e91e3f068b61a38fc08c6db4a0",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pt-BR/sevenInchScreenshots": [
+      {
+        "id": "6495545752255833327",
+        "url": "https://lh3.googleusercontent.com/r-FkgFi6vz4NrFi5gPFWhdT_KqSN5ljTLsPlEOvoyJUVokZAfQkJtosGzNV7VfbYkEI",
+        "sha1": "17e67e5187eec40ca57d6eeb5525fb864063067d",
+        "sha256": "7f1c7a96097bc92090436f253ea06d5fefd10c475a55dc16f2f8907e661d307d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "34793092252065472",
+        "url": "https://lh3.googleusercontent.com/YB-oBT4TSPhAc3VtZd2w8bgLGStjG5pFRqQ1PhZwIKjoB_JD2jfyKsamNqTruEYbIIrq",
+        "sha1": "ccd53f18855d946f2b581ede49a578e61e9bad2e",
+        "sha256": "003f80b20dec7ec158124867a2c8babf48b46ca5694ed85306aca098c59d9729",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8420855423465785996",
+        "url": "https://lh3.googleusercontent.com/p82vNH4fcaW00R8SgpdnN2Z5VOwQ6IYQuYSuUwoUdp8fMCOH6mQmc42yRO1hdkMwkPU",
+        "sha1": "4ec015a068fadaca45ff2d6d141c90ccdc7583ca",
+        "sha256": "304ec33c3fa540ef9629b4c0ffc30e8138ab925f5ce109dbc4506bb5835a18e5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3181967326724293942",
+        "url": "https://lh3.googleusercontent.com/Uy67J56eBwNP0tGd054csAQ4EMi4srPY8beTIfkq9E41-3kKpHxNfGKR1rHc81qfxzQ",
+        "sha1": "c2bc6bb2da2a9448d9a9153f438ce6e917d25b16",
+        "sha256": "7ca70c8ef2606b41b33d15213df6c4c0fa5a38baaffa6a303db7b0cd2acb2b47",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pt-BR/tenInchScreenshots": [
+      {
+        "id": "2891325556833697099",
+        "url": "https://lh3.googleusercontent.com/0boszJvGgqEmEbOu8PvZf4Vqa2_-nUDduOmfo4hAQPTlgx-YT3u_HBrnINoe_Q84oESo",
+        "sha1": "4584c43418bde80c83af65ec4fede6da2a28f139",
+        "sha256": "826b63410bff6e76d8a95353622fe463ed22333e14da194ff7df9e2ba6bb7d8b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7130411099475503831",
+        "url": "https://lh3.googleusercontent.com/5C2HhI2OpXfpVWjjFOP1nDbCPV1ye0mq9wulgZI4UkO8aDDbXkA0ch0uVL7dTd_L9tg",
+        "sha1": "a4d45af32e94dcaa04902faacf8c0e0413f4b825",
+        "sha256": "69f85095da38eef6c28430645213810180b3f4feecf3e9e7b694a18e0986fbc3",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5449343746223546833",
+        "url": "https://lh3.googleusercontent.com/jx9LJhtnxZtqfFEgAHd5HV5EFuRQGbTcOobr51V14klbNv1olu1T3jy7GI_C7YvK_zk",
+        "sha1": "409e1cc5efd6262ced900997481ea9c3e8252bc3",
+        "sha256": "268ad558ebfdcb75dbd2a2981241bbeaa1d18a325648059e0759b19c20046dfe",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12420271682937592627",
+        "url": "https://lh3.googleusercontent.com/U1PLM0Hku_I_Sw4SofFajbZaZXBIQOPrJo9GKxvFr8i6d7dqj3iywK2C7I6cCQZpLtE",
+        "sha1": "5c15c8f601d5a82ab1d5de1da83f1a91aa56e033",
+        "sha256": "43bb1a2af5a5616c451fec8a7472c1a57d66eb3ff336ec672b2326260c06957d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pt-BR/tvScreenshots": [],
+    "pt-BR/wearScreenshots": [],
+    "pt-BR/icon": [
+      {
+        "id": "12708499094013450148",
+        "url": "https://lh3.googleusercontent.com/8vArnz8y4j_W1it4PKKCGUfuQXM1VvPnCDc5pJ9MvW4wd773XEsKjggDJVQYGk5UUA",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pt-BR/featureGraphic": [
+      {
+        "id": "1072585575027764021",
+        "url": "https://lh3.googleusercontent.com/NNU-dzQf_StHBQOTUlTlGMnPJzqr09E0kcQ3_7dk5WgpMha8DnJ16yjM2TvwXNhBTk8",
+        "sha1": "e5b161c6aa2cfac8dc9f878b100912b2f4265ec6",
+        "sha256": "2c39ded7c7d3aab8c7bae8314ed22d3f94bef8ad1756b8d4ac6002db41245b44",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "pt-BR/tvBanner": [],
+    "ru-RU/phoneScreenshots": [
+      {
+        "id": "6086824058853146087",
+        "url": "https://lh3.googleusercontent.com/IAzRosknJllNWiZElTIMtA488mO5ebnUoFFOVvrJdjAMuIdxLIC6gv5t_zxX8-NoHw",
+        "sha1": "0b8495c0a5692fe8a3147ede8dbe7605cecec1bd",
+        "sha256": "2afc07a880f180205d7e2a7b8805953cebaa133522c359af323f4eb6ea336447",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "8889580881077394802",
+        "url": "https://lh3.googleusercontent.com/tEyDjAyCPXWFwoyCvoK3Tp0Xaw7nltHRy_Ubu3nh0tbCjIqKrH4iUJROtZBBYcFuf_8",
+        "sha1": "292703e5d0e193e247be7789f8ed7d931f908a48",
+        "sha256": "04a5ebe0d92adccb4a0fdaea327acf2e06e843706e2943cd0c89ea8a9d8dd038",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16985534875175006199",
+        "url": "https://lh3.googleusercontent.com/KbWjgs6AZ8b8e23_s0uKjatJOXTE0YVThwjiR70Cc-0FuhE1mBA2tfhYxECDCKw9hRw",
+        "sha1": "62b22faf164e2d722f21dd804c80f9b5fbfe6762",
+        "sha256": "dd9bcde03a0753dd8a2715d8e7b248ba1cbd8fa89c10b02db52d91ad8fccb20c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16258960850977266732",
+        "url": "https://lh3.googleusercontent.com/T3KwWNQpz1Cj2G_xidYJuJMninNCwVYlI_RmJ0CCYcNR6scuhSJeWNWabsqhKHxpOhF5",
+        "sha1": "2c1d7da43cfd4fb04dc030e20b0e1c8161b3b542",
+        "sha256": "f5474273cfbdd591c7bf3a4abdfa73f8919bbd0440d8107b754902fb98fe2d17",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ru-RU/sevenInchScreenshots": [
+      {
+        "id": "18062610696714584772",
+        "url": "https://lh3.googleusercontent.com/vVyf-sxbK0wkAHbJSuOyWspKBVavf242aL2bteURT4N8vA8jPAJewsHIkxFcBWyGNfA",
+        "sha1": "9571c3b724f5d89366f01e1cd9dcf80d849179a0",
+        "sha256": "3b3d8a6c80f725599ea1cbb857f39b354ffbf0ed41151cbf2db8dbc3dd7fd13d",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "16999356756552951398",
+        "url": "https://lh3.googleusercontent.com/aS6i58f9A7H0l_cMrTUbBDqBS8ouWQP4EVKlbnX60YAJ4DpnO4hWW8USBLuUuaSFCdli",
+        "sha1": "3395799b9c115717c5b5c9fd68d1c07d95720987",
+        "sha256": "aba38b65829f5eee596ef03c13abf9a9d0e07393f8e3a19c822cefb22de7284c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2997146758999030638",
+        "url": "https://lh3.googleusercontent.com/BFwkXpEu2igpw0ezrehuofxrBQG7BVmYbNM_Gz_BUpKdPm8nRDQOfU9l1VFh25atA5XY",
+        "sha1": "f7f6c1d8eaa750e5341ce37dda87183e75f42d39",
+        "sha256": "4df4c60823d36bb869928625f434039fd1ca6f810021af3c79347b5aed0d679c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14545241153607283750",
+        "url": "https://lh3.googleusercontent.com/cLv3Fy8_FQNFG_oCpuOgaFvYz5Vd1Ym5maEYmYWZB5Me-4wGZPEDcLxYvB-5fRONpQ",
+        "sha1": "5632d91036229e623946e397abce3df9e4dfd43d",
+        "sha256": "d88c2c87468ba2beac44d737ee58e44f96486e3a39b1cbc5d3e32cbbb6e42c25",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ru-RU/tenInchScreenshots": [
+      {
+        "id": "15948192746863967381",
+        "url": "https://lh3.googleusercontent.com/1z-IElYHvX4v5-VP4Bir4YHzxj_TBYwQKZyk2wPkGAYI7Sjva0BqpeKull1pF65U9OnX",
+        "sha1": "7fc2c95b4f9cdbc9465dfc207e9c939a78988e33",
+        "sha256": "3b1368b2dede0cd4a73a7e9e1fd6c2f67a9f279a9cc06bd5853e9ba2db93864f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5080374157431718285",
+        "url": "https://lh3.googleusercontent.com/FDxGRuy2--ITQ7UPMhFFrFO1XZ4Q0h0DsJ3KO1wHSsw7Z1FP_bWtWglEFExEt5sfziw",
+        "sha1": "f8caf3a37e885cbf003ed5d86240805fda7bd4d9",
+        "sha256": "fe892bb5cf2d73030960bc28af3c5fccd89beb71b3735b9c2b767051efe64d81",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3092164918686289088",
+        "url": "https://lh3.googleusercontent.com/Iyn29bxfuX3iKdbi2SPMELZx9P31Lu7csd_5Cfa2Fl7FA267zQ58myAcQ8s4UujplUdV",
+        "sha1": "1972ea077d10a57248560607e9aca7bbb9e74c76",
+        "sha256": "9d4937bf246f32477a3587a3336aa0dc8e5d7132a153031d4218ce8ead8335e8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "858006779851007273",
+        "url": "https://lh3.googleusercontent.com/5fMfI0l6O0zWUqTAcVKPC4jdzWfILFqP4vLhitJRdKtcTtV7f0Q6IFjveF6o_SeS2R0_",
+        "sha1": "a5f1e77a14fdc7d7fc98f533d129210831ecf239",
+        "sha256": "3850b457fa96125dc58e2a0c556c0adc871349be5862eb65249e7bafdabb79d8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ru-RU/tvScreenshots": [],
+    "ru-RU/wearScreenshots": [],
+    "ru-RU/icon": [
+      {
+        "id": "8205730325234290549",
+        "url": "https://lh3.googleusercontent.com/gf_q4nFhsnYIL_Ku8dkooTKusONc5qj95kH22TB0iUQG76K5NbAVb9b42rEbV5ll3UKO",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ru-RU/featureGraphic": [
+      {
+        "id": "15201693725605198746",
+        "url": "https://lh3.googleusercontent.com/NbtwHcKqD4vUhMLh_dNLgjGpLWKYIXjaLAfNGK4j-8KefORmteLui99Pv9cdOsZ-8Dw",
+        "sha1": "27fcc4226d95a26c10b869d583479a68fb3d6c48",
+        "sha256": "6312fc7d312a28fdea7caa6ea7addf96c57a93636fb7d6354743242c9547a5f8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "ru-RU/tvBanner": [],
+    "es-ES/phoneScreenshots": [
+      {
+        "id": "8037189989179762885",
+        "url": "https://lh3.googleusercontent.com/NouKztSR2qx6I_hEDxd-onf_XXTyL5ZqFbGTuuo20pKyYloVJaQriik6d0CGvWZqTu4",
+        "sha1": "c513f860f02e1957325ef2d2c687510862cd61a0",
+        "sha256": "bdafbdf62600f13e54929263d83458ab1ea62b490af7d0e52ff36aed8ba83018",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2888463218027966151",
+        "url": "https://lh3.googleusercontent.com/q-DT_nKepGWTB1rC-c2JNQ5wiD9P0ZMDhipMWuhVBtG6h4rgyS1Ef4vt0dTNzeGbANp1",
+        "sha1": "e8c18267b5838cc9564d3686cdf473cb21066c02",
+        "sha256": "e9222d2662048af2ab48f70e2a198ef28f5b972db4fae77eec54aeaf09286343",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2493992793039578261",
+        "url": "https://lh3.googleusercontent.com/k4mrkgtZghd3nlQTs8Zuw7DlHlTWTphp2B2nY6b0CpAasGm4tQiaUTlSt7Tu0WA011g",
+        "sha1": "62b3b7289ad45d422a4fbaef48eade36da766bad",
+        "sha256": "4b72dff1c50552d838b572de5d5b3a66913486c3f9e7036e01583260975c9294",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "13874876251291505218",
+        "url": "https://lh3.googleusercontent.com/HTluuwKKFzLi1A2xZruNqW4qRLg-wBLydCKTu1gDIOTZ7MAUn_TLzEL6638iqrZU7Wt3",
+        "sha1": "4fd91c1d0ecec7c5a1f9a8575f04d07152a26c63",
+        "sha256": "b5a42b8623d6f95d80825e15e4906e483ec7a02603ac3feeb4976ec93478853b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "es-ES/sevenInchScreenshots": [
+      {
+        "id": "12796659923928474527",
+        "url": "https://lh3.googleusercontent.com/uL6hSPobOX2pJWalOLpk_0xPcrjF7Vp8wUEoyEe6lllSsDwZvHz8vbqJ6wNfnNJcFZw",
+        "sha1": "0d5a20546a22ce009ec38c1fb77f0bf8c6a2867b",
+        "sha256": "c37f09533f55ef9ce25b6c259861ecf3d18f02492fd0d1018ec1ec3a62177d7f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4715387347409662735",
+        "url": "https://lh3.googleusercontent.com/NaFIc4J77C4p8X02qUUuWrVfK0g3-gDNYGmvk3jHOdqFqu0o_p4SN8UTgyruVirVbg",
+        "sha1": "a84998e8bec28319b3b11d60ad460befea8a0fc3",
+        "sha256": "1b43e15ab8a8f1032e8e7bee0ad69459c5957b0f7815bd0c838c29f7e2ca9818",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4740191431718977237",
+        "url": "https://lh3.googleusercontent.com/RHzaeyv4OWlQdAs2AMl_WmduldxkTYECeHPIsY4XXca8mdjdNlW-sjfJzt-BrjxPDq1D",
+        "sha1": "1c3891a71524768b512bacc396957525fbbeede8",
+        "sha256": "50dd1ecf8e23d37794b920b711938e552c144ddda39b3bb2b65c5ba86be25633",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "11406711721504312124",
+        "url": "https://lh3.googleusercontent.com/BTJPmdYktR14z6U-J2e_fxFpHRQnjfsUlyP8S0sPR3wna8l2j6urznoAfzDNbKCLU7A",
+        "sha1": "b276848e5a1a1ec51583dfaaf8abe6d08078eedf",
+        "sha256": "947a14de686e68eb7d87ba03a1d87020315bb561203cdc4216dd4cdbfd86e6e7",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "es-ES/tenInchScreenshots": [
+      {
+        "id": "7951616508974624694",
+        "url": "https://lh3.googleusercontent.com/ljAqx5mDOrLPlISarZ9EjkyCZQLfvalRf4jVEZsU8_evimCfEiYnvFkZpzuriymRS_U",
+        "sha1": "6f04ec4806e0f9156f261f12c708626f721a901c",
+        "sha256": "def309a20af4cc479f522d1e184884a063feb73f72db5353fc3aae62e5c90efe",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6155475866471514487",
+        "url": "https://lh3.googleusercontent.com/1U0jAyejFfVap_I0zwtcdHe3rMkM49jRa_WHtNfVmCL0Tchb_dh488ox4qwcVFbLAw",
+        "sha1": "98d53bf1581bdd6de76f5f8f49d09aab2f424b07",
+        "sha256": "7b79360556f84da26a07659338250a2b0606ceb319837a4ecaa936431e1994a9",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "13483176437986872438",
+        "url": "https://lh3.googleusercontent.com/xUS62TFmU0rfM1DpQZMSR6u5GLaWwGIiotd_iuzki164QlIsfpBsbYcI_LFRdlrIJ8E",
+        "sha1": "be724002d6fde03704db0d7988b603e6c1081d65",
+        "sha256": "a59f0384ce6b2857e32f03553780f1f9fc455e2d29b565b46abdca52a876a1ab",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "166448964824855194",
+        "url": "https://lh3.googleusercontent.com/GQVRTXbD_BWnAKDSozso09-qBy51rYCD80_0cR-38BMyZ72zTT3eFaXqAsgGcFiJizD5",
+        "sha1": "c941ff360d89699fbb1e072446beaef7d17955f2",
+        "sha256": "9e5681b98342b55f8f6320287bd17773472b5e13af202d780e10c3915d209e27",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "es-ES/tvScreenshots": [],
+    "es-ES/wearScreenshots": [],
+    "es-ES/icon": [
+      {
+        "id": "13259177436391080516",
+        "url": "https://lh3.googleusercontent.com/dMjiawGkFjeZCZNm7zddIRJSG8uIhZJXD-0ttMnN7Q4YuAv4V3aWVpCauzomDXULlrY",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "es-ES/featureGraphic": [
+      {
+        "id": "8708610437067634380",
+        "url": "https://lh3.googleusercontent.com/dMN9E1cSdtXJSaf2PXKlDvHSlViz3xOI6ISOIbqKUwmcQKMzq-Jpgxy7Mp6yzsmNxfw",
+        "sha1": "d3f48a8cd5aefff56b8c8cefdaffc7b132b6aebe",
+        "sha256": "4f21a1f80554124cd4a81e06c11bf2d944d5b91947ed490f40c66f2960c4ee8f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "es-ES/tvBanner": [],
+    "th/phoneScreenshots": [
+      {
+        "id": "16184219935639033885",
+        "url": "https://lh3.googleusercontent.com/IM7SqtX1TWv2JoF1m7MQScEDeeSGg4U_GQwwLARF5ps30jIqgERIMEArGsxWKj62lLNf",
+        "sha1": "f818dc10064af0242f51a50a965cf986485e8a13",
+        "sha256": "b512c92708785e6cdff190809c740eae40e8c314c474e6a0b1a756bb4c4a399e",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "11967527560626342993",
+        "url": "https://lh3.googleusercontent.com/h47xOv_o4nOe7ti0uIYInOH7OwtR41fpUGHH-8llc8DEsoT0rOCCf0OdK9YqaXOHtg",
+        "sha1": "fbc3424cd049d147d66cc733e94c4b97c1551b1d",
+        "sha256": "ab437df18127ff51f561f3481c1c208e97b4d768dc2ec746fb2a1583b44c79b8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9870051181166277301",
+        "url": "https://lh3.googleusercontent.com/_bjjXG5x6say-e0m6Ub6nwx1YzCgwYUoss1gJv2aJm2Cc6R111wUtLZe7NmNK31eib8",
+        "sha1": "afb911034189c2aeb02a02adbb0ebca912183897",
+        "sha256": "d19f655509b240d99e1270ca9d3fe30c45dd7e9e2862cf7657da9551a9c209b8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9106933126853438064",
+        "url": "https://lh3.googleusercontent.com/6qcuisqhCn41ryB76R9lILIuI4jjpO20luZFQZlk4Jnjs7nCRTJm7i2Wq9P1ddw8A8k",
+        "sha1": "1af75fc828b96883fc5f95633a55ac57e661ddb6",
+        "sha256": "ddcd3180d5a451e1ab647fe4686ba096c5bd1db92242968c14880b4e448a5092",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "th/sevenInchScreenshots": [
+      {
+        "id": "9092200705457591776",
+        "url": "https://lh3.googleusercontent.com/9POZW15S3e9JerkM1abGYteiqzHfC1wLeeQ4TOs-LlTYzYGw9-c88xpK3EPT85kx_BS7",
+        "sha1": "0a36646c114c949f97c2b41095c55906d094a1b7",
+        "sha256": "7c44221179fd147b7fe01c54d4c4ebebcb62d5d0e0b4081234efc3e6176d8473",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5565135727407785603",
+        "url": "https://lh3.googleusercontent.com/ADCMYTG6PfnEWJtBEPcR-Evj2KfUvmhtnkr7JhgaZK9m7pvDvrv9Yqh2enV7PgYUJC8",
+        "sha1": "6a0330bdbbbebaf039a9d128a3b7b882f5ac41ea",
+        "sha256": "ad4fcf64fb67d2e9edbdeecaef6d0f98b104210af235afd605932cea3a55d674",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14460469606782262904",
+        "url": "https://lh3.googleusercontent.com/OfG_lplgZ4Z4encOc36a6nveW9v26DPdHPIwJH8NBJ0whOacBcXsnB9w8HaKV83ldiXs",
+        "sha1": "dfdd717b9b38fde85e45831cdc1a284b04437646",
+        "sha256": "f33fcf503a7992a5a729c0a70a62b2990170c696efc961d71c1ce634758ac1d5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14996000015477437301",
+        "url": "https://lh3.googleusercontent.com/A4o018TAPwuHiAtIU8zoM9dvvHiNOHZwtWAN4KoTUkgWAEWvrD1lmQfDisEusQ2JFnDL",
+        "sha1": "0acf0eeb4ee51c0d570cb4df0540e0537047c982",
+        "sha256": "eff73ebb8b5a394b235b607e0081cb039ea1b93fa339b5cb8e7090d8f5a0a9b2",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "th/tenInchScreenshots": [
+      {
+        "id": "3238170851452604126",
+        "url": "https://lh3.googleusercontent.com/YB-3iNgSAwZSAQLxKdVOb8Mb9jaRmxBaU36Ccf-MVsUCjMzVrIZAnamqnRpMrzPumCqO",
+        "sha1": "151805998b40eda5ded99630f5078cc6f2cc7b3c",
+        "sha256": "cf8342761c6c82b63989687ce4d222ac980b0eeb9c166f2e6020102c3c68ffe0",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1105682786450178012",
+        "url": "https://lh3.googleusercontent.com/ULcTpVftMyxAEqc-unFGdCycXrTkwQywAnR42xbao8Nh_mJaJ_p5CxEPjqWuCQN0MCyd",
+        "sha1": "92658c2d2030f31d148c8290e602cc867a7c32d6",
+        "sha256": "5aa0dc7828f806c9c2d8eab00cfdd0d981226e0e1048a46a33295bb0305e6ceb",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12657798187675131426",
+        "url": "https://lh3.googleusercontent.com/SWcLs0ObtN-fMqEo3mYHu48XrzmVK56qbESoFALSi3WRe8QRFrrvfAbsKPBHFMxdIw",
+        "sha1": "b88f47eb0ad3399ac3e187e82930ac7e3f5f2a40",
+        "sha256": "e15e7761ba25a1f4ad3195ae5d8d648252f602321d2f96b1e4c5592f98bc5bfe",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1582098492857330464",
+        "url": "https://lh3.googleusercontent.com/61jF6_D5Vt4KUtDaYpf1P4R_4PYeqNkPov1IPI6qpB2YPkEQZ-78kW4q4fULYYwsyQ",
+        "sha1": "cc57a7bf18af1de4f38d8fdf5fb4c9dcffe50285",
+        "sha256": "5a06a5afb86ac244f85a2c7776576477e3f9027d9e0e78c05d2c676825344b51",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "th/tvScreenshots": [],
+    "th/wearScreenshots": [],
+    "th/icon": [
+      {
+        "id": "9512705001855802470",
+        "url": "https://lh3.googleusercontent.com/S-w7oy43Kbt725pAVQ1fwlpJcIE6MYx-tOd60yxWBqhMbq4LURDT-tqJPG29b4DCmLI",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "th/featureGraphic": [
+      {
+        "id": "4746194739905065416",
+        "url": "https://lh3.googleusercontent.com/Bf7iuuI4flFUulbLZxenD6N9nFiTDJke66bybP2H3YVH5uqChmxb3Xfo4aWafUGw3g",
+        "sha1": "93e9df6555ead856069a07aad2f2dd25e809c7bb",
+        "sha256": "66812309f2f14cb6442d74f86f3d9a39afc3bba777bfba79b64c60555b3e8229",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "th/tvBanner": [],
+    "tr-TR/phoneScreenshots": [
+      {
+        "id": "12574589932264185715",
+        "url": "https://lh3.googleusercontent.com/URPkj_PaFlP-XCPRON8RDrL01RjYVtgAAdQNewwMpXMhh9LAoSI0inTpNTr1eicPnZs",
+        "sha1": "4509f0085595d7afb6302d8709f373d11d98093b",
+        "sha256": "48c8bd5cde451474e7eadbcecdbb5d6a625157a794fa6d68e74a657feb77e5da",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7253388412784384198",
+        "url": "https://lh3.googleusercontent.com/6M4pIbRczjmowt2FAXCC1FYfRa0Ztn9MZQLUUn61lBEPkONnKYO4jnL0Z-YMPv9mqLU",
+        "sha1": "e04005360a68ff59fc20e320bcc9ac855e895395",
+        "sha256": "d2aca130529b59a6f1a21f5c697d7a663b0fad641aacd9eabdcb0117dc196cac",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "10373652242674292817",
+        "url": "https://lh3.googleusercontent.com/euBLod00B-njy608tZNqU3DLIkT2Dp_4dzbjTxiiWWGawu9FUBLtspWRqnITPO8gfB4I",
+        "sha1": "66e751fb5a6d29624b8e7e2ae2ce9754089fb97e",
+        "sha256": "fcc1e7e803adc8aaa5bf35a2e2c4c274a3c02766eec766e1e3da1885ca6fdab8",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "5492399295399490644",
+        "url": "https://lh3.googleusercontent.com/kKS4kb9AfhaDmB46bKTg2ZGfDyGvUUkYWfWOZih_9sT2rsmCUb0sy8IhYvAYQWGHzpE",
+        "sha1": "6f7f43c30269f9d32775a175d1527ffad3a6a914",
+        "sha256": "1244453169c95e6eda1bb61b1409ec9e294b55a08bd452b29675bed4920a2c85",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "tr-TR/sevenInchScreenshots": [
+      {
+        "id": "17947779359082994987",
+        "url": "https://lh3.googleusercontent.com/4bGiIdf7KjdMvFUbB663n8g-GLRR8gxYY-4hdV3zROs3Jaf9o4Agei5INcFCah-W44s",
+        "sha1": "855f6aa7def645e453932688d957497e6b8d0efc",
+        "sha256": "43f6cd25e46cb42bc14914522a9ce9814cf4c53db0a30cfe45e4e40604c4813c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9811108247462457497",
+        "url": "https://lh3.googleusercontent.com/bW4576QSooXBSsaG86EvBpiFKlIcmScWCjl1KJ-FQ6AeHhzeUmb96dQp4A6HyZTCXA",
+        "sha1": "38b37c32a50c90b17c657930eec5179869941224",
+        "sha256": "60b01161cee4c44a225f58b600a3c49ac8649f5337c59b43aad1dd623e4c998f",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7474385536136697551",
+        "url": "https://lh3.googleusercontent.com/YDhHP92eYUDI03l064oDO0agRsNus26qwb20fd9djr9QLxvDiCRMSVyWQUpMsvNLxd2Q",
+        "sha1": "38ace2289a23da1903787cfd2abbb323af11e77b",
+        "sha256": "90bba43d8ce0b0ec768095185e384129ce075f5a6922afb71a70be6926ad0229",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3776333468959977859",
+        "url": "https://lh3.googleusercontent.com/_c5f36VvjLu-ybtsHRmRcZJHeCIAmICRlmmfjLnWoqF4JHoRgDfDHC1cQ7dFWXOtjoY",
+        "sha1": "a617c472e61d65e76fad5cadd12b246f0f343090",
+        "sha256": "ad76fc0704d3052ec966fbd1ba8ddda9a712a64afcf4e6cdcf53ad4b5840a4e7",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "tr-TR/tenInchScreenshots": [
+      {
+        "id": "15006215513812262982",
+        "url": "https://lh3.googleusercontent.com/NbGMUEUR6huJXz3_HSklG1fObjHHMv4XKErzF3i49eNlS_Ms2ppRtzCofVfj8hVsXos",
+        "sha1": "e6080c3a981bcbb41a4fa4d94b48658ff09b888f",
+        "sha256": "2400882e0b780966bc7801b9a15dac16177791ca4e6d7635a6cdc2a9461d37e0",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9387641174876137096",
+        "url": "https://lh3.googleusercontent.com/YPghkhnz76s9HnmvclYRI_5TIcbtP40g_L-mL_sSbZsq8ksVKGz768743KeORnHesNM",
+        "sha1": "c065257bffa8fadf48b54ba5708936797565a8c2",
+        "sha256": "6db28d85bcc09ee921e42a98b6a1e5e852d5a30c37791604cc3454af2fe43225",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7908891226886677552",
+        "url": "https://lh3.googleusercontent.com/pv-Gz_VrFyEscfRTZ-6g9s-5pFENXseToGJVpa4L8uibUcxfMr0WL7e5kmi46zh79w",
+        "sha1": "cb578636c16a48d6971b45d5a4b07bf96e62b251",
+        "sha256": "06b8781a5c862f992cb0f762f0a89bdd70bfc4d7835e1c38a00c07751d86dcfa",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1702284374417238224",
+        "url": "https://lh3.googleusercontent.com/R9oMLPuR3ZkNlPbB6tG0nIo7Jg_Nlf7piS0Jk5_pUKr7hfDQeW-Pvxs2euzv0RQh190",
+        "sha1": "d16e54d4a0ff01a07fa6cf56e2385fe69b549904",
+        "sha256": "d87afbdec04184ee96de5e52a957e5761e153c8896e8287d95281b83a7e88657",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "tr-TR/tvScreenshots": [],
+    "tr-TR/wearScreenshots": [],
+    "tr-TR/icon": [
+      {
+        "id": "17875306603778807966",
+        "url": "https://lh3.googleusercontent.com/9B5OpMSir1jNtFS5x0Ssm3tbGhKoQKjrNZqqEkJcIvs3Zth_vIKCj4p9AC91otz3FYM",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "tr-TR/featureGraphic": [
+      {
+        "id": "14663857911007881779",
+        "url": "https://lh3.googleusercontent.com/WYbLRIYAJtAusOKdx-pBHj2TB2ufhFEdRWd-Sx6XtRZc-l-djv7DLuomcuKkIPZOvQ",
+        "sha1": "ad08d61e68e3f142631865dcf5b03d78e787d3d4",
+        "sha256": "9c26440e4350674b2037c726b35e0c57372480d6a01a2f6e273cc0419fdda2da",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "tr-TR/tvBanner": [],
+    "uk/phoneScreenshots": [
+      {
+        "id": "8296500365664698768",
+        "url": "https://lh3.googleusercontent.com/_FTdsOjXYSVWbchvDBYZVZSjV3UFfM1cZ5VzUkh3Nz4cdVLq7ihPW0RBDSsqUCGqNQ",
+        "sha1": "0fefa2a92045286cdd7ff95e524ae02f6587ec9d",
+        "sha256": "340a3a145d6b4e25a064a0e77cae1f9a5cc16183b76beb190584d7a9144f526a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "13078323902842814552",
+        "url": "https://lh3.googleusercontent.com/vGSj44fBhazxfd0_aTk3ReMw9GFqGrnfNmzLEbfLY_m7VY6F5VbVDj07gkCu0KCAzg",
+        "sha1": "f92c345f8d2c495877f99680bb3c55f0e82bf8f5",
+        "sha256": "507071ba322d6f07f417181b0508e0f82734095d8e25231f7d87418219cdb298",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4815996117166160467",
+        "url": "https://lh3.googleusercontent.com/CE9dwFJwjK-WXMnrhvjLlMu7VuiRxg-cR6i2vUoqLV9ItUmgz_MALsLmK_4EnjC9f14",
+        "sha1": "fe28233c97e3cc4d6ea8e16fab61624f46aab87f",
+        "sha256": "5ed83e0d3ef7fee9bff120f5591d8e0d546a8a3527122d8f3b0e805401fc5d70",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "12033435328330764890",
+        "url": "https://lh3.googleusercontent.com/LhOrmxOo_BAbTxxj6l9vmbLgctvKz_8PCcXxrXc1ua69qnlYclDvHkd6uFUG66N8RLY",
+        "sha1": "ebe0d7cca279e436045beed906245d247780c9ec",
+        "sha256": "e2364ba6ac52e64f00769a3bc6dcab20e8f2f32aab67178bf8f7bf9729cb7ca4",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "uk/sevenInchScreenshots": [
+      {
+        "id": "5425723303745279390",
+        "url": "https://lh3.googleusercontent.com/0CjgLGqxemvroWYosen7vRJe-w9irQYzIiTSmUdF_-Et_6FiR9y8S3syiDK_wy6y1A",
+        "sha1": "a77aff303caf478a6c69b0e996e11f5ea78cfe5c",
+        "sha256": "625c5604e9897b45e36c8166199674811d8726a7a442e2568f60cfe22f8f74e0",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "676566910651415667",
+        "url": "https://lh3.googleusercontent.com/rvf-vjA4fxUe41RfEo5sRh-aCgcKXVPxGfWiupLSKFkvnT3n5DPgcS_18HZFcd759ZA",
+        "sha1": "3ef2ceb1097ac9fc80ac695581c5da74de6b72bb",
+        "sha256": "80187bc810c68de8b52f589d57433ae000d02f2bb7242a5a6c807032208715eb",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "14408967102133250647",
+        "url": "https://lh3.googleusercontent.com/15S-I2BEp_1LrfnBqQWAlkzvlBzob8a4DhwrYgOMZmLglkGzQfkwV8GKyYaYa44jgA",
+        "sha1": "6c2bf967d1efdf76ef4175803379818b899597f1",
+        "sha256": "0f646c669431bc11eda71c30ec8225784d21aaac7e4aa3741249ba3e7db96bb6",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "15867078163917942341",
+        "url": "https://lh3.googleusercontent.com/knJ45C33b7KzE6vpERLlxV9WjFeCeiOt3MFAnLjKBkEvgAshG1_SgicUhxlvA7PJ7Nk",
+        "sha1": "e49e7555871807b13131aea4bdde0625ce57d463",
+        "sha256": "d0a31f376cb0054ba173661ce63199fcb4b5bf3c740869a2ea3da29eb292a9f2",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "uk/tenInchScreenshots": [
+      {
+        "id": "15828516464170891341",
+        "url": "https://lh3.googleusercontent.com/9N5UimCG7JGanDJb32DOQ0KV2iwfOy47Qllk_F4Hn-sgZgrjHgyJ9r0Ke-KzXE5kq80",
+        "sha1": "bc2d0f496f7a702c27eafef59e824e256b3f31fe",
+        "sha256": "527db9acf4aec57320ba1a09dbec01512138e132fc06e350070e8337bb41488c",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "1972833963135364948",
+        "url": "https://lh3.googleusercontent.com/tVx-y8y_YlfMWYI7PKEbfbgC2yIv1u8fSoWCpq0Pf_yULD5B4L1aIKDlhC_KraNS50Y",
+        "sha1": "c8e9bfa9679c59802e7362ac06ccfce7fbdf737b",
+        "sha256": "84bbe4ff24feab037dd7898dde860e6aeb2411e984cb471293f0772408b34bf5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7411118798452902154",
+        "url": "https://lh3.googleusercontent.com/AZK4FhClOs5GVf3et8G2o4Bzj7Gc9hggr-k3GcKqbk4ETxS9jZM8Pg-YSaKQP-GJP-w",
+        "sha1": "04d51d64421a504f2b903521456c7c25ae0ab9dd",
+        "sha256": "28f6f51ef0d0e1d7826b9d8baf820851bb2014eefd1faa8eeaa98be0cb68bcae",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "13307618591800962394",
+        "url": "https://lh3.googleusercontent.com/q_xSrJo-OQ8ZRTOzgVyIRy_fYfXc1D6X4_D2UuOPlwN-JLLWfl4LDDh6M6PYYhNq8A8",
+        "sha1": "c36591df29333333cdaa184e333c1b8e78f340fc",
+        "sha256": "8fa9592863a4d6d3d5b0b4a0871bdeca4667f35e90ebe0b711092b13fae000b1",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "uk/tvScreenshots": [],
+    "uk/wearScreenshots": [],
+    "uk/icon": [
+      {
+        "id": "6735303198454483442",
+        "url": "https://lh3.googleusercontent.com/MD7A7uFDdCg1dggpvGjYnGEzDONhf22OVHR6HPtoG-EDs77adWdg85M5W4GMzWWg8xKP",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "uk/featureGraphic": [
+      {
+        "id": "16501461300611432074",
+        "url": "https://lh3.googleusercontent.com/G3DHS6fG0YEQ2ORGtib53IUeGKN912OoelRy1HeOgIeiMVe1bFr1bYEHguXRRD7Mc08",
+        "sha1": "15efcc2b42f6f64195f96b185c7bcc5d0813a959",
+        "sha256": "7d9229c6772939dc6513cb7f02bc32f77302c738b55a5d817a3a8575f1c82663",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "uk/tvBanner": [],
+    "vi/phoneScreenshots": [
+      {
+        "id": "9253386024058404973",
+        "url": "https://lh3.googleusercontent.com/OSZCNKEtpjcvq7AeEw00Djr93XfJZzB4dV3lH8j_MmFypW2j9F5y-D2CHRL4tBurvN0",
+        "sha1": "6c53c025b01d8ec06bbbee77bea0a1363107825e",
+        "sha256": "3b7de8315abef99a9e8ecfdbc02f271cd7c505895ef7038f1f4c4ac7a6b6faf5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "7394616151201316007",
+        "url": "https://lh3.googleusercontent.com/enm_niFOO5pdGNOUR867tok6Ww0mI15CuFTlwkNjyqQF1aDpGm5No16ZlbUArUJDcg",
+        "sha1": "a4ae2a9207f4a2c6d0ae8b66a1ef41846cffb229",
+        "sha256": "96f3d1da491b371a7e23ce9e1ff745a9a60ce4d7ebe1f4b74aebf1ba9d47bbc5",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "6118803801028971910",
+        "url": "https://lh3.googleusercontent.com/6Woq-FeNY8fNMVSVWVxYJwYa9k_dsxDF_eESAqKms4UsGoUtM6VBgCeQl6YYVFe7ZMIJ",
+        "sha1": "3fa8a024c81db7c24ffbbca481f17467b7461164",
+        "sha256": "0ad6104f9bfd222d0384a6a0b6a689fee1ee872a3c2e239622db649552190a00",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "4407923208814199457",
+        "url": "https://lh3.googleusercontent.com/EeOYf-UUXScDVSL8uUq4elsCOJ8UGBVZOe5ak7Atwz5J6H84guH2D31489pNAVvpv4c",
+        "sha1": "1ab371bc80bd10f616af9d118285ef5b093c6729",
+        "sha256": "1f513c0e1ce4bf58f6710411a8fa58c87fc0f6e4446c811ae72db32fddd3f6d9",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "vi/sevenInchScreenshots": [
+      {
+        "id": "2325978836135901449",
+        "url": "https://lh3.googleusercontent.com/6G6TY08zk5UvyXjuFY3c0XLsBCmdD_sGBlvBp3yI0Ah8IRGRfIz6tAJ66yKfAsDu3Pw",
+        "sha1": "083da3dac398a174503bd195a21d23a3305cb087",
+        "sha256": "5efe4e3edc1161216e486345fdfdf7a9cc3bc26cab8a6089cca4814a3e3438e4",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "17098337610290850512",
+        "url": "https://lh3.googleusercontent.com/TkFzqlWrM3H_8zWg31amq4ZHEUCgM-ohiSQJ7hb89ItTBw2WtqmcORIfQWS7qptWDNQ",
+        "sha1": "4f2e42c2034e195c4ff5f1c929f78201443a8ae4",
+        "sha256": "a991e51da65415ce5a02f4b2d3c6f6f92ba12434a087e190dddb4acfb22e45e1",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "9616863451721351799",
+        "url": "https://lh3.googleusercontent.com/QAhW478zBnIUN8zRuDbuwsXly-gSkp_mwE0o13bbW8kp_LEJK_BEKO-QkkU6b5Z_Pw",
+        "sha1": "513646e07d99c6cc9153cab93431dcedd5399fe7",
+        "sha256": "56170db0ca4e12e688e82390a1173cda45c94e01354637ce95333d34c1fc2f1a",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "15977875166233770799",
+        "url": "https://lh3.googleusercontent.com/3KkGNShqXFoA_jb9aV7ptEs3fGxMImlzwEnLdkRRh2323wBNRJaY-hJxe8FrEfHW",
+        "sha1": "ccacda3e8c23085c8adadb9680e200341962a720",
+        "sha256": "270f572b939d158fd2f1664d89e261fc112caa34793510ce5d8888d6acd56ff0",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "vi/tenInchScreenshots": [
+      {
+        "id": "7040526680923727532",
+        "url": "https://lh3.googleusercontent.com/0fv4GOA_x8V4yF2ted0HR97uwzPIh5ijuayqpm4AdFpexosnojLlYFOqXjdNHQLWKqs",
+        "sha1": "8d2ee43da888adcf3c9ef79aba7b6e4d2025c714",
+        "sha256": "abe48156171e3685ac6c0bf8c9f5c4d6b09006f221b2add9ae57b1d2dd439385",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2367863579509306342",
+        "url": "https://lh3.googleusercontent.com/pt-eIvTZQ6Y5lzuqqKvCr4T1hFSxNrJtwXtU0ZySfKpYwOyvdoiw6pKrSbRpAg0s0GQ",
+        "sha1": "aacc2674e5e3b6cf90c440e7a91768862940d214",
+        "sha256": "e06746706eada76ea442dcc54e7d6ed9942764d06b9ded67f27f7bf20af67b35",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "2116715972182804813",
+        "url": "https://lh3.googleusercontent.com/ccBESLM2mGmkArmbbQg9L5ReVTbiQ9FQAvJChOJ1cI8xDY2VbUIknj29TJKZ7ptxGJSh",
+        "sha1": "160e0da2e7b88e788108f1870b62429cc1924f5e",
+        "sha256": "b501add8abd01fdd9df186b045ec670c6367f65a538ba7d0d3d383567beeea35",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      },
+      {
+        "id": "3454264757595397591",
+        "url": "https://lh3.googleusercontent.com/veUw_s9YK4daKEs2o0FNFR0eqT9xJL6y22dJIhDwp_57SSM3e2Iycp6HLYa-JZadnA",
+        "sha1": "ee445048e19acc0b2dc59319dd4ffb7318fb5906",
+        "sha256": "4df31e6846023690ea7c9bbf83e332a6d7ce3d06fe07920a3aa45122c63afe27",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "vi/tvScreenshots": [],
+    "vi/wearScreenshots": [],
+    "vi/icon": [
+      {
+        "id": "8446503148145193058",
+        "url": "https://lh3.googleusercontent.com/Q_2WpFhRvErViEtW3d-ObtrGzvyhhsKT8bNkCJtRDOgzHYjl7cpreLTjNMKXW6eRMg",
+        "sha1": "28d464fa4bdcadcc7c6ab33a8999a81dc718a3cb",
+        "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "vi/featureGraphic": [
+      {
+        "id": "1381829417231227354",
+        "url": "https://lh3.googleusercontent.com/-olif8Idi1ZWC8tVMVDf5xaMHKJPJ_7XlSCkElS6u-7YxI1-SkvwIWlqaH0-_eZ6Ds4",
+        "sha1": "5751bc8fd4b49033746f5cb35484ce0b3571df75",
+        "sha256": "62fa6bedb826009f422ae5476e9dbb81d0b0365a837ea4e1c8cac98a6aa54b9b",
+        "aiGeneratedState": "aiGeneratedStateUnspecified"
+      }
+    ],
+    "vi/tvBanner": []
+  },
+  "tracks": [
+    {
+      "track": "production",
+      "releases": [
+        {
+          "name": "16.0",
+          "versionCodes": [
+            "292"
+          ],
+          "releaseNotes": [
+            {
+              "language": "en-US",
+              "text": "NewsBlur's interface now supports 21 languages. Choose yours in the app, with a preview in your language and English. Arabic and Hebrew read right to left. Stories stay exactly as published.\n\nNext story controls stay in a fixed position, including when Next becomes Done. Sign-in buttons are easier to read in dark themes."
+            },
+            {
+              "language": "es-ES",
+              "text": "\nLa interfaz de NewsBlur ya admite 21 idiomas. Elige el tuyo en la app, con una vista previa en tu idioma y en inglés. El árabe y el hebreo se leen de derecha a izquierda. Los artículos siguen tal como se publicaron.\n\nLos controles del siguiente artículo permanecen fijos, incluso cuando Siguiente cambia a Hecho. Los botones de inicio de sesión se leen mejor en los temas oscuros."
+            },
+            {
+              "language": "fr-FR",
+              "text": "\nL’interface de NewsBlur est disponible en 21 langues. Choisissez la vôtre dans l’application, avec un aperçu dans votre langue et en anglais. L’arabe et l’hébreu se lisent de droite à gauche. Les articles restent tels que publiés.\n\nLes commandes de l’article suivant restent fixes, même lorsque Suivant devient Terminé. Les boutons de connexion sont plus lisibles dans les thèmes sombres."
+            },
+            {
+              "language": "de-DE",
+              "text": "\nNewsBlurs Oberfläche unterstützt jetzt 21 Sprachen. Wähle deine in der App, mit Vorschau in deiner Sprache und auf Englisch. Arabisch und Hebräisch laufen von rechts nach links. Artikel bleiben unverändert.\n\nDie Steuerung zum nächsten Artikel bleibt an derselben Stelle, auch wenn Weiter zu Fertig wird. Anmeldeschaltflächen sind in dunklen Designs besser lesbar."
+            },
+            {
+              "language": "pt-BR",
+              "text": "\nA interface do NewsBlur agora tem 21 idiomas. Escolha o seu no app, com uma prévia no seu idioma e em inglês. Árabe e hebraico são lidos da direita para a esquerda. Os artigos permanecem como publicados.\n\nOs controles do próximo artigo ficam na mesma posição, mesmo quando Próximo muda para Concluído. Os botões de login estão mais legíveis nos temas escuros."
+            },
+            {
+              "language": "it-IT",
+              "text": "\nL’interfaccia di NewsBlur ora supporta 21 lingue. Scegli la tua nell’app, con un’anteprima nella tua lingua e in inglese. Arabo ed ebraico si leggono da destra a sinistra. Gli articoli restano come pubblicati.\n\nI controlli dell’articolo successivo restano fissi, anche quando Avanti diventa Fatto. I pulsanti di accesso sono più leggibili nei temi scuri."
+            },
+            {
+              "language": "nl-NL",
+              "text": "\nDe interface van NewsBlur ondersteunt nu 21 talen. Kies je taal in de app, met een voorbeeld in je taal en in het Engels. Arabisch en Hebreeuws lezen van rechts naar links. Artikelen blijven zoals gepubliceerd.\n\nDe knoppen voor het volgende artikel blijven op hun plek, ook wanneer Volgende verandert in Klaar. Aanmeldknoppen zijn beter leesbaar in donkere thema’s."
+            },
+            {
+              "language": "pl-PL",
+              "text": "\nInterfejs NewsBlur obsługuje teraz 21 języków. Wybierz swój w aplikacji, z podglądem w Twoim języku i po angielsku. Arabski i hebrajski czyta się od prawej do lewej. Artykuły pozostają bez zmian.\n\nPrzyciski następnego artykułu pozostają na miejscu, także gdy Dalej zmienia się w Gotowe. Przyciski logowania są czytelniejsze w ciemnych motywach."
+            },
+            {
+              "language": "tr-TR",
+              "text": "\nNewsBlur arayüzü artık 21 dili destekliyor. Dilinizi uygulama içinden seçin; önizlemeyi seçtiğiniz dilde ve İngilizce görün. Arapça ve İbranice sağdan sola okunur. Haberler yayımlandıkları haliyle kalır.\n\nSonraki haber kontrolleri, İleri düğmesi Tamam’a dönüştüğünde de aynı konumda kalır. Koyu temalarda giriş düğmeleri daha kolay okunur."
+            },
+            {
+              "language": "ru-RU",
+              "text": "\nИнтерфейс NewsBlur теперь на 21 языке. Выберите язык в приложении: предпросмотр доступен на нём и на английском. Арабский и иврит отображаются справа налево. Статьи остаются в исходном виде.\n\nКнопки перехода к следующей статье остаются на месте, даже когда «Далее» меняется на «Готово». Кнопки входа стали разборчивее в тёмных темах."
+            },
+            {
+              "language": "uk",
+              "text": "\nІнтерфейс NewsBlur тепер підтримує 21 мову. Виберіть мову в застосунку із попереднім переглядом нею та англійською. Арабська й іврит відображаються справа наліво. Статті залишаються такими, якими їх опублікували.\n\nКнопки переходу до наступної статті залишаються на місці, навіть коли «Далі» змінюється на «Готово». Кнопки входу краще видно в темних темах."
+            },
+            {
+              "language": "ar",
+              "text": "\nواجهة NewsBlur تدعم الآن 21 لغة. اختر لغتك داخل التطبيق مع معاينة بلغتك وبالإنجليزية. تُعرض العربية والعبرية من اليمين إلى اليسار. تبقى القصص كما نُشرت.\n\nتبقى عناصر الانتقال إلى القصة التالية في موضع ثابت، حتى عندما يتحول زر «التالي» إلى «تم». أصبحت أزرار تسجيل الدخول أوضح في المظاهر الداكنة."
+            },
+            {
+              "language": "iw-IL",
+              "text": "\nממשק NewsBlur תומך עכשיו ב־21 שפות. בחרו שפה באפליקציה עם תצוגה מקדימה בשפה שלכם ובאנגלית. ערבית ועברית מוצגות מימין לשמאל. הכתבות נשארות כפי שפורסמו.\n\nכפתורי המעבר לכתבה הבאה נשארים באותו מקום, גם כש״הבא״ הופך ל״סיום״. קל יותר לקרוא את כפתורי ההתחברות בערכות נושא כהות."
+            },
+            {
+              "language": "hi-IN",
+              "text": "\nNewsBlur का इंटरफ़ेस अब 21 भाषाओं में है। ऐप में भाषा चुनें और उसका पूर्वावलोकन अपनी भाषा और अंग्रेज़ी में देखें। अरबी और हिब्रू दाएँ से बाएँ दिखती हैं। लेख जैसे प्रकाशित हुए थे, वैसे ही रहते हैं।\n\nअगले लेख के बटन अब एक ही जगह रहते हैं, तब भी जब “अगला” बदलकर “हो गया” हो जाता है। गहरी थीम में साइन-इन बटन पढ़ना आसान हुआ है।"
+            },
+            {
+              "language": "id",
+              "text": "\nAntarmuka NewsBlur kini mendukung 21 bahasa. Pilih bahasa di aplikasi, dengan pratinjau dalam bahasa Anda dan Inggris. Arab dan Ibrani tampil dari kanan ke kiri. Artikel tetap seperti saat diterbitkan.\n\nKontrol artikel berikutnya tetap di posisi yang sama, termasuk saat Berikutnya berubah menjadi Selesai. Tombol masuk lebih mudah dibaca dalam tema gelap."
+            },
+            {
+              "language": "vi",
+              "text": "\nGiao diện NewsBlur nay hỗ trợ 21 ngôn ngữ. Chọn trong ứng dụng, với bản xem trước bằng ngôn ngữ của bạn và tiếng Anh. Tiếng Ả Rập và tiếng Do Thái hiển thị từ phải sang trái. Bài viết giữ nguyên như khi xuất bản.\n\nNút chuyển bài viết tiếp theo giữ vị trí cố định, kể cả khi Tiếp đổi thành Xong. Các nút đăng nhập dễ đọc hơn trong giao diện tối."
+            },
+            {
+              "language": "th",
+              "text": "\nอินเทอร์เฟซ NewsBlur รองรับ 21 ภาษาแล้ว เลือกภาษาในแอป พร้อมตัวอย่างในภาษาของคุณและภาษาอังกฤษ ภาษาอาหรับและฮีบรูแสดงจากขวาไปซ้าย บทความยังคงเหมือนต้นฉบับ\n\nปุ่มไปยังบทความถัดไปอยู่ในตำแหน่งเดิม แม้เปลี่ยนจาก ถัดไป เป็น เสร็จสิ้น ปุ่มลงชื่อเข้าใช้อ่านง่ายขึ้นในธีมมืด"
+            },
+            {
+              "language": "ja-JP",
+              "text": "\nNewsBlurのインターフェースが21言語に対応しました。アプリ内で言語を選び、その言語と英語でプレビューできます。アラビア語とヘブライ語は右から左に表示されます。記事の内容は公開時のまま変わりません。\n\n次の記事に進むボタンの位置が固定され、「次へ」が「完了」に変わるときも動かなくなりました。ダークテーマでログインボタンが読みやすくなりました。"
+            },
+            {
+              "language": "ko-KR",
+              "text": "\nNewsBlur 인터페이스가 이제 21개 언어를 지원합니다. 앱에서 언어를 선택하고 해당 언어와 영어로 미리 볼 수 있습니다. 아랍어와 히브리어는 오른쪽에서 왼쪽으로 표시됩니다. 스토리는 발행된 그대로 유지됩니다.\n\n다음 스토리 버튼의 위치가 고정되어 ‘다음’이 ‘완료’로 바뀔 때도 움직이지 않습니다. 어두운 테마에서 로그인 버튼이 더 잘 보입니다."
+            },
+            {
+              "language": "zh-CN",
+              "text": "\nNewsBlur 界面现已支持 21 种语言。在应用中选择语言，即可同时预览该语言和英文。阿拉伯语和希伯来语采用从右到左的界面。文章内容保持原样。\n\n下一篇文章按钮的位置现已固定，即使“下一步”变为“完成”也不会移动。深色主题中的登录按钮更加清晰易读。"
+            },
+            {
+              "language": "zh-TW",
+              "text": "\nNewsBlur 介面現已支援 21 種語言。在應用程式中選擇語言，即可同時預覽該語言和英文。阿拉伯文和希伯來文採用從右至左的介面。文章內容維持發佈時的原樣。\n\n下一篇文章按鈕的位置現已固定，即使「下一步」變成「完成」也不會移動。深色佈景主題中的登入按鈕更加清楚易讀。"
+            }
+          ],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "track": "beta",
+      "releases": [
+        {
+          "name": "15.0.4",
+          "versionCodes": [
+            "289"
+          ],
+          "releaseNotes": [
+            {
+              "language": "en-US",
+              "text": "Add sites from a compact panel, with Popular, Trending, and more.\nDiscover and Related Sites share rich previews, folder selection, and remembered list/grid layouts.\nStory previews open the selected article and return to loaded titles; empty feeds fetch automatically.\nMenus fade and expand smoothly.\nTap article images to zoom and swipe to dismiss, with stable status and navigation bars.\nImproved reading controls, folder upgrades, and unread-state reliability."
+            }
+          ],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "track": "alpha"
+    },
+    {
+      "track": "internal",
+      "releases": [
+        {
+          "name": "175 (10.1b7)",
+          "versionCodes": [
+            "175"
+          ],
+          "releaseNotes": [
+            {
+              "language": "en-US",
+              "text": "Version 10.1 brings the following:\n* Premium subscriptions are now available on Android! Read by folder, saved story tags, searching, and more is exclusive to premium subscribers.\n* Saved searches\n* In-app browser, so you don't need to leave NewsBlur\n* Auto-theme option for dark mode so it can turn on automatically at night\n* You can now delete and rename folders and add a folder while adding a feed\n* Fixed issues around the intelligence trainer, HTML in comments, some images not loading"
+            }
+          ],
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "details": {
+    "defaultLanguage": "en-US",
+    "contactWebsite": "https://www.newsblur.com",
+    "contactEmail": "samuel@newsblur.com"
+  }
+}

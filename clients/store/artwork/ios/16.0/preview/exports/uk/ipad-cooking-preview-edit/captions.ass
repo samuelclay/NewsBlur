@@ -1,0 +1,19 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1200
+PlayResY: 1600
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Helvetica Neue,43,&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,12,0,2,72,72,248,1
+Style: Disclosure,Helvetica Neue,33,&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,9,0,2,72,72,120,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:04.00,Title,,0,0,0,,Дім для ваших улюблених джерел.
+Dialogue: 0,0:00:04.00,0:00:09.00,Title,,0,0,0,,Ваше щоденне читання в одному місці.
+Dialogue: 0,0:00:09.00,0:00:16.00,Title,,0,0,0,,Влаштуйтеся зручніше й читайте.
+Dialogue: 0,0:00:16.00,0:00:20.00,Title,,0,0,0,,Збережіть цікаву статтю на потім.
+Dialogue: 1,0:00:16.00,0:00:20.00,Disclosure,,0,0,0,,Потрібен обліковий запис NewsBlur. Для деяких функцій потрібна платна підписка.

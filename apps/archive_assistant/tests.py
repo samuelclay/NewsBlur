@@ -2,6 +2,7 @@
 """
 Unit tests for the Archive Assistant app.
 """
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from django.test import TestCase
@@ -193,3 +194,86 @@ class Test_ConversationManagement(TestCase):
         # Should only return conversations for the specified user
         mock_conversation.objects.filter(user_id=self.user_id)
         mock_conversation.objects.filter.assert_called_with(user_id=self.user_id)
+
+
+class _FakeStream:
+    """Stands in for client.messages.stream(): yields events, then returns a final message."""
+
+    def __init__(self, events, final_message):
+        self.events = events
+        self.final_message = final_message
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return False
+
+    def __iter__(self):
+        return iter(self.events)
+
+    def get_final_message(self):
+        return self.final_message
+
+
+class Test_ClaudeToolLoop(TestCase):
+    """_call_claude_with_tools in apps/archive_assistant/tasks.py."""
+
+    def _usage(self):
+        return SimpleNamespace(input_tokens=100, output_tokens=20)
+
+    @patch("apps.archive_assistant.tasks.get_system_prompt", return_value="system")
+    @patch("apps.archive_assistant.tasks.execute_tool", return_value={"count": 0, "archives": []})
+    @patch("apps.archive_assistant.tasks.anthropic.Anthropic")
+    def test_tool_turn_is_sent_back_with_its_thinking_blocks(self, mock_anthropic, mock_execute, mock_prompt):
+        """Sonnet 5.5 thinks by default; its thinking blocks must go back unchanged with tool results."""
+        from apps.archive_assistant.tasks import _call_claude_with_tools
+
+        thinking_block = SimpleNamespace(type="thinking", thinking="", signature="sig-1")
+        tool_use_block = SimpleNamespace(
+            type="tool_use", id="toolu_1", name="search_archives", input={"query": "python"}
+        )
+        first_turn = SimpleNamespace(content=[thinking_block, tool_use_block], usage=self._usage())
+        first_events = [
+            SimpleNamespace(type="content_block_start", content_block=SimpleNamespace(type="thinking")),
+            SimpleNamespace(type="content_block_stop"),
+            SimpleNamespace(
+                type="content_block_start",
+                content_block=SimpleNamespace(type="tool_use", name="search_archives", id="toolu_1"),
+            ),
+            SimpleNamespace(
+                type="content_block_delta", delta=SimpleNamespace(partial_json='{"query": "python"}')
+            ),
+            SimpleNamespace(type="content_block_stop"),
+        ]
+
+        answer_block = SimpleNamespace(type="text", text="Nothing found.")
+        second_turn = SimpleNamespace(content=[answer_block], usage=self._usage())
+        second_events = [
+            SimpleNamespace(type="content_block_start", content_block=SimpleNamespace(type="text")),
+            SimpleNamespace(type="content_block_delta", delta=SimpleNamespace(text="Nothing found.")),
+            SimpleNamespace(type="content_block_stop"),
+        ]
+
+        client = mock_anthropic.return_value
+        client.messages.stream.side_effect = [
+            _FakeStream(first_events, first_turn),
+            _FakeStream(second_events, second_turn),
+        ]
+
+        response_text, tool_calls, *_ = _call_claude_with_tools(
+            user_id=1,
+            messages=[{"role": "user", "content": "Find python articles"}],
+            model="claude-sonnet-5-5",
+            publish_event=MagicMock(),
+        )
+
+        self.assertEqual(response_text, "Nothing found.")
+        self.assertEqual([call["tool"] for call in tool_calls], ["search_archives"])
+        mock_execute.assert_called_once_with("search_archives", {"query": "python"}, 1)
+
+        second_request_messages = client.messages.stream.call_args_list[1].kwargs["messages"]
+        assistant_turn, tool_result_turn = second_request_messages[-2:]
+        self.assertEqual(assistant_turn["role"], "assistant")
+        self.assertEqual(assistant_turn["content"], [thinking_block, tool_use_block])
+        self.assertEqual(tool_result_turn["content"][0]["tool_use_id"], "toolu_1")

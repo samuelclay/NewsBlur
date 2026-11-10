@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "フォルダーをまとめて読む、検索、保存した記事へのタグ付け"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "記事の永久アーカイブと週1時間の読み上げ"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "頻繁なフィード更新と週10時間の読み上げ"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlurのサブスクリプション",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premiumのサブスクリプション",
+        "description": "フォルダー内の記事を1つの一覧で読み、フィードを検索し、保存した記事をタグで整理できます。フィードの更新も速くなります。",
+        "benefits": [
+          "フォルダー内の記事を1つの一覧で読む",
+          "複数のフィードを横断検索",
+          "保存した記事にタグを付ける",
+          "フィードをより速く更新"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archiveのサブスクリプション",
+        "description": "Premiumの全機能、検索できる永久記事アーカイブ、週1時間の読み上げを利用できます。記事を好きなだけ未読のまま残せます。読み上げの利用枠は日曜日にリセットされます。",
+        "benefits": [
+          "Premiumのすべての機能",
+          "記事をいつまでも未読のまま残せる",
+          "検索できる永久記事アーカイブ",
+          "週1時間の読み上げ"
+        ]
+      }
+    }
+  }
+}

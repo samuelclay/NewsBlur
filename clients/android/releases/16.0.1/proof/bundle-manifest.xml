@@ -1,0 +1,935 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:compileSdkVersion="36" android:compileSdkVersionCodename="16" android:versionCode="293" android:versionName="16.0.1" package="com.newsblur" platformBuildVersionCode="36" platformBuildVersionName="16">
+      
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="36"/>
+      
+  <uses-permission android:name="android.permission.INTERNET"/>
+      
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+      
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+      
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+      
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+      
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+      
+  <uses-permission android:maxSdkVersion="28" android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+      
+  <uses-permission android:name="com.android.vending.BILLING"/>
+      
+  <queries>
+            
+    <intent>
+                  
+      <action android:name="com.android.vending.billing.InAppBillingService.BIND"/>
+              
+    </intent>
+            
+    <intent>
+                  
+      <action android:name="com.google.android.apps.play.billingtestcompanion.BillingOverrideService.BIND"/>
+              
+    </intent>
+        
+  </queries>
+      
+  <permission android:name="com.newsblur.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="0x00000002"/>
+      
+  <uses-permission android:name="com.newsblur.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
+      
+  <application android:allowBackup="true" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:dataExtractionRules="@xml/data_extraction_rules" android:enableOnBackInvokedCallback="true" android:extractNativeLibs="false" android:fullBackupContent="@xml/backupscheme" android:icon="@mipmap/app_icon_sunrise_gold" android:label="@string/app_name" android:localeConfig="@xml/locales_config" android:name="com.newsblur.NbApplication" android:supportsRtl="true" android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            
+    <service android:enabled="false" android:exported="false" android:name="androidx.appcompat.app.AppLocalesMetadataHolderService">
+                  
+      <meta-data android:name="autoStoreLocales" android:value="true"/>
+              
+    </service>
+            
+    <profileable android:shell="true"/>
+            
+        
+    <property android:name="android.window.PROPERTY_ACTIVITY_EMBEDDING_SPLITS_ENABLED" android:value="true"/>
+            
+    <activity android:exported="true" android:name="com.newsblur.activity.InitActivity" android:noHistory="true" android:theme="@style/splashScreen">
+                  
+      <intent-filter android:autoVerify="true">
+                        
+        <action android:name="android.intent.action.VIEW"/>
+                        
+        <category android:name="android.intent.category.DEFAULT"/>
+                        
+        <category android:name="android.intent.category.BROWSABLE"/>
+                        
+        <data android:host="newsblur.com" android:pathPrefix="/briefing" android:scheme="https"/>
+                        
+        <data android:host="www.newsblur.com" android:pathPrefix="/briefing" android:scheme="https"/>
+                        
+        <data android:host="newsblur.com" android:pathPrefix="/briefing" android:scheme="http"/>
+                        
+        <data android:host="www.newsblur.com" android:pathPrefix="/briefing" android:scheme="http"/>
+                    
+      </intent-filter>
+              
+    </activity>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_plum_berry_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherPlumBerryDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_plum_berry_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherPlumBerryLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_arctic_cyan_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherArcticCyanDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_arctic_cyan_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherArcticCyanLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_sepia_cocoa_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSepiaCocoaDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_sepia_cocoa_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSepiaCocoaLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_slate_gray_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSlateGrayDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_slate_gray_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSlateGrayLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_lavender_iris_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherLavenderIrisDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_lavender_iris_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherLavenderIrisLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_teal_mint_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherTealMintDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_teal_mint_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherTealMintLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_ember_orange_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherEmberOrangeDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_ember_orange_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherEmberOrangeLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_ruby_red_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherRubyRedDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_ruby_red_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherRubyRedLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_coral_rose_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherCoralRoseDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_coral_rose_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherCoralRoseLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_atlantic_blue_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherAtlanticBlueDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_atlantic_blue_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherAtlanticBlueLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_meadow_sage_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherMeadowSageDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_meadow_sage_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherMeadowSageLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_sunrise_gold_dark" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSunriseGoldDark" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_sunrise_gold_light" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSunriseGoldLight" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_plum_berry" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherPlumBerry" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_arctic_cyan" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherArcticCyan" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_sepia_cocoa" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSepiaCocoa" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_slate_gray" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSlateGray" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_lavender_iris" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherLavenderIris" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_teal_mint" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherTealMint" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_ember_orange" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherEmberOrange" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_ruby_red" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherRubyRed" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_coral_rose" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherCoralRose" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_atlantic_blue" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherAtlanticBlue" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="false" android:exported="true" android:icon="@mipmap/app_icon_meadow_sage" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherMeadowSage" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity-alias android:enabled="true" android:exported="true" android:icon="@mipmap/app_icon_sunrise_gold" android:label="@string/app_name" android:name="com.newsblur.activity.LauncherSunriseGold" android:targetActivity="com.newsblur.activity.InitActivity">
+                  
+      <intent-filter>
+                        
+        <category android:name="android.intent.category.LAUNCHER"/>
+                        
+        <action android:name="android.intent.action.MAIN"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>
+              
+    </activity-alias>
+            
+    <activity android:exported="true" android:launchMode="2" android:name="com.newsblur.activity.LoginActivity" android:windowSoftInputMode="0x00000010">
+                  
+      <intent-filter>
+                        
+        <action android:name="android.intent.action.VIEW"/>
+                        
+        <category android:name="android.intent.category.DEFAULT"/>
+                        
+        <category android:name="android.intent.category.BROWSABLE"/>
+                        
+        <data android:host="complete" android:scheme="newsblur-auth-android"/>
+                    
+      </intent-filter>
+              
+    </activity>
+            
+    <activity android:alwaysRetainTaskState="true" android:launchMode="2" android:name="com.newsblur.activity.Main"/>
+            
+    <activity android:name="com.newsblur.activity.DailyBriefingActivity"/>
+            
+    <activity android:label="@string/profile" android:name="com.newsblur.activity.Profile"/>
+            
+    <activity android:label="@string/settings" android:name="com.newsblur.activity.Settings"/>
+            
+    <activity android:name="com.newsblur.activity.ImportExportActivity"/>
+            
+    <activity android:exported="false" android:name="com.newsblur.activity.ContactActivity"/>
+            
+    <activity android:name="com.newsblur.activity.NotificationsActivity"/>
+            
+    <activity android:label="@string/menu_widget" android:launchMode="2" android:name="com.newsblur.activity.WidgetConfig"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.FeedItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:launchMode="2" android:name="com.newsblur.activity.AllStoriesItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.InfrequentItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.WidelyReadStoriesItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.LongReadsItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.GoodReadsItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.ReadStoriesItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.SavedStoriesItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.AllSharedStoriesItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.GlobalSharedStoriesItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.FolderItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.SocialFeedItemsList" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.FeedReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.AllStoriesReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.DailyBriefingReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.InfrequentReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.WidelyReadStoriesReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.LongReadsReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.GoodReadsReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.ReadStoriesReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.SavedStoriesReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.AllSharedStoriesReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.GlobalSharedStoriesReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.FolderReading" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:name="com.newsblur.activity.SubscriptionActivity"/>
+            
+    <activity android:label="@string/mute_sites" android:launchMode="2" android:name="com.newsblur.activity.MuteConfig"/>
+            
+    <activity android:launchMode="1" android:name="com.newsblur.activity.FeedSearchActivity"/>
+            
+    <activity android:launchMode="1" android:name="com.newsblur.activity.DiscoverFeedsActivity"/>
+            
+    <activity android:exported="false" android:name="com.newsblur.activity.OnboardingActivity"/>
+            
+    <activity android:name="com.newsblur.activity.DiscoverSitesActivity" android:windowSoftInputMode="0x00000010"/>
+            
+    <activity android:name="com.newsblur.activity.ReadingPlaceholder"/>
+            
+        
+    <activity android:configChanges="0x00000db0" android:launchMode="1" android:name="com.newsblur.activity.FeedListDrawer" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.image.StoryImageViewerHost" android:theme="@style/Theme.Translucent"/>
+            
+    <activity android:configChanges="0x00000db0" android:name="com.newsblur.activity.SocialFeedReading" android:theme="@style/Theme.Translucent"/>
+            
+    <service android:name="com.newsblur.service.SyncService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+            
+    <service android:name="com.newsblur.widget.WidgetRemoteViewsService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            
+    <service android:exported="false" android:name="com.newsblur.service.SubscriptionSyncService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+            
+    <receiver android:exported="true" android:name="com.newsblur.service.BootReceiver">
+                  
+      <intent-filter>
+                        
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                    
+      </intent-filter>
+              
+    </receiver>
+            
+    <receiver android:exported="true" android:name="com.newsblur.util.DownloadCompleteReceiver">
+                  
+      <intent-filter>
+                        
+        <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+                    
+      </intent-filter>
+              
+    </receiver>
+            
+    <receiver android:exported="false" android:name="com.newsblur.util.NotifyDismissReceiver"/>
+            
+    <receiver android:exported="false" android:name="com.newsblur.util.NotifySaveReceiver"/>
+            
+    <receiver android:exported="false" android:name="com.newsblur.util.NotifyMarkreadReceiver"/>
+            
+    <receiver android:exported="false" android:name="com.newsblur.util.NotifyShareReceiver"/>
+            
+    <receiver android:exported="false" android:name="com.newsblur.widget.WidgetProvider">
+                  
+      <intent-filter>
+                        
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                    
+      </intent-filter>
+                  
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/newsblur_appwidget_info"/>
+              
+    </receiver>
+            
+    <receiver android:exported="true" android:name="com.newsblur.service.TimeChangeReceiver">
+                  
+      <intent-filter>
+                        
+        <action android:name="android.intent.action.TIME_SET"/>
+                    
+      </intent-filter>
+              
+    </receiver>
+            
+    <receiver android:enabled="true" android:exported="false" android:name="com.newsblur.widget.WidgetUpdateReceiver"/>
+            
+    <provider android:authorities="com.newsblur.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
+                  
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
+              
+    </provider>
+            
+    <activity android:exported="true" android:name="com.newsblur.activity.AddFeedExternal">
+                  
+      <intent-filter>
+                        
+        <action android:name="android.intent.action.VIEW"/>
+                        
+        <category android:name="android.intent.category.DEFAULT"/>
+                        
+        <category android:name="android.intent.category.BROWSABLE"/>
+                        
+        <data android:scheme="http"/>
+                        
+        <data android:scheme="https"/>
+                        
+        <data android:host="*"/>
+                        
+        <data android:pathPattern=".*xml"/>
+                        
+        <data android:pathPattern=".*rss"/>
+                        
+        <data android:pathPattern=".*atom"/>
+                        
+        <data android:pathPattern=".*json"/>
+                        
+        <data android:pathPattern=".*/feed.*"/>
+                    
+      </intent-filter>
+                  
+      <intent-filter>
+                        
+        <action android:name="android.intent.action.VIEW"/>
+                        
+        <category android:name="android.intent.category.DEFAULT"/>
+                        
+        <category android:name="android.intent.category.BROWSABLE"/>
+                        
+        <data android:scheme="feed"/>
+                        
+        <data android:scheme="rss"/>
+                    
+      </intent-filter>
+                  
+      <intent-filter>
+                        
+        <action android:name="android.intent.action.VIEW"/>
+                        
+        <category android:name="android.intent.category.DEFAULT"/>
+                        
+        <category android:name="android.intent.category.BROWSABLE"/>
+                        
+        <data android:scheme="http"/>
+                        
+        <data android:scheme="https"/>
+                        
+        <data android:host="feeds.feedburner.com"/>
+                        
+        <data android:host="feeds2.feedburner.com"/>
+                    
+      </intent-filter>
+                  
+      <intent-filter>
+                        
+        <data android:scheme="http"/>
+                        
+        <data android:scheme="https"/>
+                        
+        <action android:name="android.intent.action.VIEW"/>
+                        
+        <category android:name="android.intent.category.DEFAULT"/>
+                        
+        <category android:name="android.intent.category.BROWSABLE"/>
+                        
+        <data android:mimeType="text/xml"/>
+                        
+        <data android:mimeType="application/rss+xml"/>
+                        
+        <data android:mimeType="application/atom+xml"/>
+                        
+        <data android:mimeType="application/xml"/>
+                        
+        <data android:mimeType="application/json"/>
+                        
+        <data android:mimeType="application/feed+json"/>
+                        
+        <data android:scheme="http"/>
+                        
+        <data android:scheme="https"/>
+                    
+      </intent-filter>
+              
+    </activity>
+            
+    <activity android:exported="true" android:launchMode="3" android:name="com.newsblur.activity.ShareExternalStoryActivity" android:theme="@style/Theme.Translucent" android:windowSoftInputMode="0x00000010">
+                  
+      <intent-filter>
+                        
+        <action android:name="android.intent.action.SEND"/>
+                        
+        <category android:name="android.intent.category.DEFAULT"/>
+                        
+        <data android:mimeType="text/plain"/>
+                    
+      </intent-filter>
+              
+    </activity>
+            
+    <service android:directBootAware="true" android:exported="false" android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService">
+                  
+      <meta-data android:name="com.google.firebase.components:com.google.mlkit.nl.languageid.bundled.internal.ThickLanguageIdRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+                  
+      <meta-data android:name="com.google.firebase.components:com.google.mlkit.nl.languageid.internal.LanguageIdRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+                  
+      <meta-data android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+              
+    </service>
+            
+    <meta-data android:name="com.google.android.play.billingclient.version" android:value="8.0.0"/>
+            
+    <activity android:configChanges="0x000005b0" android:exported="false" android:name="com.android.billingclient.api.ProxyBillingActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            
+    <activity android:configChanges="0x000005b0" android:exported="false" android:name="com.android.billingclient.api.ProxyBillingActivityV2" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            
+    <provider android:authorities="com.newsblur.mlkitinitprovider" android:exported="false" android:initOrder="99" android:name="com.google.mlkit.common.internal.MlKitInitProvider"/>
+            
+    <activity android:exported="false" android:name="com.google.android.gms.common.api.GoogleApiActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            
+    <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+            
+    <uses-library android:name="androidx.window.extensions" android:required="false"/>
+            
+    <uses-library android:name="androidx.window.sidecar" android:required="false"/>
+            
+    <uses-library android:name="wear-sdk" android:required="false"/>
+            
+    <provider android:authorities="com.newsblur.androidx-startup" android:exported="false" android:name="androidx.startup.InitializationProvider">
+                  
+      <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup"/>
+                  
+      <meta-data android:name="androidx.lifecycle.ProcessLifecycleInitializer" android:value="androidx.startup"/>
+                  
+      <meta-data android:name="okhttp3.internal.platform.PlatformInitializer" android:value="androidx.startup"/>
+                  
+      <meta-data android:name="androidx.profileinstaller.ProfileInstallerInitializer" android:value="androidx.startup"/>
+              
+    </provider>
+            
+    <receiver android:directBootAware="false" android:enabled="true" android:exported="true" android:name="androidx.profileinstaller.ProfileInstallReceiver" android:permission="android.permission.DUMP">
+                  
+      <intent-filter>
+                        
+        <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE"/>
+                    
+      </intent-filter>
+                  
+      <intent-filter>
+                        
+        <action android:name="androidx.profileinstaller.action.SKIP_FILE"/>
+                    
+      </intent-filter>
+                  
+      <intent-filter>
+                        
+        <action android:name="androidx.profileinstaller.action.SAVE_PROFILE"/>
+                    
+      </intent-filter>
+                  
+      <intent-filter>
+                        
+        <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
+                    
+      </intent-filter>
+              
+    </receiver>
+            
+    <service android:exported="false" android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery">
+                  
+      <meta-data android:name="backend:com.google.android.datatransport.cct.CctBackendFactory" android:value="cct"/>
+              
+    </service>
+            
+    <service android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService" android:permission="android.permission.BIND_JOB_SERVICE">
+        </service>
+            
+    <receiver android:exported="false" android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"/>
+     
+        
+    <activity android:exported="false" android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity" android:stateNotNeeded="true" android:theme="@style/Theme.PlayCore.Transparent"/>
+        
+  </application>
+  
+</manifest>

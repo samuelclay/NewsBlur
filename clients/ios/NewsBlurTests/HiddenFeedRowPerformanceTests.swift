@@ -44,8 +44,13 @@ import UIKit
         fixture.controller.view.addSubview(fixture.table)
         fixture.table.dataSource = fixture.controller
         fixture.table.delegate = fixture.controller
+        // HiddenFeedRowPerformanceTests.swift lets the controller install any native-mode table header before recording row geometry.
+        fixture.controller.view.setNeedsLayout()
+        fixture.controller.view.layoutIfNeeded()
         fixture.table.reloadData()
         fixture.table.layoutIfNeeded()
+        let originalHeader = fixture.table.tableHeaderView
+        let originalHeaderFrame = originalHeader?.frame
         let paths = (0..<3).map { IndexPath(row: $0, section: 2) }
         let originalRects = paths.map { fixture.table.rectForRow(at: $0) }
         XCTAssertTrue(originalRects.allSatisfy { $0.height > 0 })
@@ -63,6 +68,10 @@ import UIKit
         fixture.table.layoutIfNeeded()
         attachTable(fixture.table, name: "feed-rows-after-return-to-top")
 
+        XCTAssertTrue(fixture.table.tableHeaderView === originalHeader,
+                      "The read/scroll cycle must not replace the settled table header")
+        XCTAssertEqual(fixture.table.tableHeaderView?.frame, originalHeaderFrame,
+                       "A late header insertion or resize must not masquerade as retained row geometry")
         for (row, path) in paths.enumerated() {
             XCTAssertEqual(fixture.table.rectForRow(at: path), originalRects[row])
             let cell = try XCTUnwrap(fixture.table.cellForRow(at: path))

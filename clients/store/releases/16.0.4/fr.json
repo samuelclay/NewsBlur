@@ -1,0 +1,6 @@
+{
+  "ios": null,
+  "android": {
+    "release_notes": "Corrige des plantages à l’ouverture de NewsBlur, à la consultation du nombre de non lus, à la confirmation d’actions de lecture et à la restauration du lecteur. Les mises à niveau de la base préservent les articles en cache et les actions hors ligne en attente.\n\nInclut le plein écran sur tablette, la largeur mémorisée des volets, 21 langues d’interface et des commandes d’article suivant à position fixe."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-10-25",
+  "production_version": "16.0.4",
+  "version_code": 296,
+  "rollout": "completed (100%)",
+  "managed_publishing": false,
+  "pending_changes": [],
+  "last_published": "2026-10-19",
+  "source": "Live Play Console publishing overview and Publisher API snapshot",
+  "custom_listings": [],
+  "custom_listing_inventory": "Live Store listings page shows only Default store listing and Create custom store listing prompt"
+}

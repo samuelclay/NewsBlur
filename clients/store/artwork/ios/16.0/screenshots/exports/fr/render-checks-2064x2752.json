@@ -1,0 +1,162 @@
+[
+  {
+    "language": "fr",
+    "size": "2064x2752",
+    "panel": 1,
+    "captured_at": "2026-10-16T22:49:24.908Z",
+    "capture": "captures/localized/fr/ipad-stories.png",
+    "capture_sha256": "367f34327c6ee0621c8f0fefcd2d979e95691940c1af0b9acec460c5fd25ac7f",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "a4106a9ea0ef8b0cf4a22331ea6a57ab1dafcf758557832b35ff36e38f935086",
+    "screenshot_sha256": "1bb5b3df323c2ac29d4e5960c07b8d7dec4ff7b3d0f3fcded517c82b41bd8490",
+    "capture_bounds": {
+      "height": 1728.734375,
+      "width": 1296.5625,
+      "x": 383.7109375,
+      "y": 766.5
+    },
+    "headline": "Vos lectures quotidiennes, au même endroit.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2752,
+        "src": "captures/localized/fr/ipad-stories.png",
+        "width": 2064
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/ipad-pro-m5.png",
+        "width": 2300
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      2064,
+      2752
+    ]
+  },
+  {
+    "language": "fr",
+    "size": "2064x2752",
+    "panel": 2,
+    "captured_at": "2026-10-16T22:49:33.019Z",
+    "capture": "captures/localized/fr/ipad-feeds.png",
+    "capture_sha256": "b96a9bf6286ffc163e1fa4e7c7226706766101628e8832d76ca35ce1aaef1e76",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "a4106a9ea0ef8b0cf4a22331ea6a57ab1dafcf758557832b35ff36e38f935086",
+    "screenshot_sha256": "452b60a7ee68d77b3944529af39992cd1ba91e450e43fac2a6425a51ae8500ec",
+    "capture_bounds": {
+      "height": 1728.734375,
+      "width": 1296.5625,
+      "x": 383.7109375,
+      "y": 766.5
+    },
+    "headline": "Un lieu pour vos sources préférées.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2752,
+        "src": "captures/localized/fr/ipad-feeds.png",
+        "width": 2064
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/ipad-pro-m5.png",
+        "width": 2300
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      2064,
+      2752
+    ]
+  },
+  {
+    "language": "fr",
+    "size": "2064x2752",
+    "panel": 3,
+    "captured_at": "2026-10-16T22:49:37.512Z",
+    "capture": "captures/localized/fr/ipad-reader.png",
+    "capture_sha256": "76f20549cb769fd6fcb731057e60dc97e53bbedc565c0ba108a26443c725ebed",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "a4106a9ea0ef8b0cf4a22331ea6a57ab1dafcf758557832b35ff36e38f935086",
+    "screenshot_sha256": "60e48ef2b298528bb1b1bb5069fc9ccaf1a68a85bb5183329aa7b18b2624d588",
+    "capture_bounds": {
+      "height": 1728.734375,
+      "width": 1296.5625,
+      "x": 383.7109375,
+      "y": 766.5
+    },
+    "headline": "Installez-vous pour une bonne lecture.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2752,
+        "src": "captures/localized/fr/ipad-reader.png",
+        "width": 2064
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/ipad-pro-m5.png",
+        "width": 2300
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      2064,
+      2752
+    ]
+  },
+  {
+    "language": "fr",
+    "size": "2064x2752",
+    "panel": 4,
+    "captured_at": "2026-10-16T22:49:38.859Z",
+    "capture": "captures/localized/fr/ipad-saved.png",
+    "capture_sha256": "c52b7f306c3c73496161d5ea4de594d6c0445fe5fbcbfa800f2633b8f0fc1829",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "a4106a9ea0ef8b0cf4a22331ea6a57ab1dafcf758557832b35ff36e38f935086",
+    "screenshot_sha256": "c28f8f8e71b34c15e5eb75ce71ed3328cf23cf5058059d42d7c28c0ebcfdce3b",
+    "capture_bounds": {
+      "height": 1728.734375,
+      "width": 1296.5625,
+      "x": 383.7109375,
+      "y": 766.5
+    },
+    "headline": "Gardez une bonne lecture pour plus tard.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2752,
+        "src": "captures/localized/fr/ipad-saved.png",
+        "width": 2064
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/ipad-pro-m5.png",
+        "width": 2300
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      2064,
+      2752
+    ]
+  }
+]

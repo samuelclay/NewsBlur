@@ -1,0 +1,32 @@
+[
+  {
+    "type": "reviewSubmissionItems",
+    "id": "MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDE4fGVmOTc2YTYxLWU5M2UtNGIzYi04N2FiLWM1YjFiZDJmYmQwZg",
+    "attributes": {
+      "state": "READY_FOR_REVIEW"
+    },
+    "links": {
+      "self": "https://api.appstoreconnect.apple.com/v1/reviewSubmissionItems/MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDE4fGVmOTc2YTYxLWU5M2UtNGIzYi04N2FiLWM1YjFiZDJmYmQwZg"
+    }
+  },
+  {
+    "type": "reviewSubmissionItems",
+    "id": "MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDE4fDVkMDhjYzZkLTg4MTEtNGNiYi1hMzhhLTY5N2E0Y2U3NDZiOQ",
+    "attributes": {
+      "state": "READY_FOR_REVIEW"
+    },
+    "links": {
+      "self": "https://api.appstoreconnect.apple.com/v1/reviewSubmissionItems/MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDE4fDVkMDhjYzZkLTg4MTEtNGNiYi1hMzhhLTY5N2E0Y2U3NDZiOQ"
+    }
+  },
+  {
+    "type": "reviewSubmissionItems",
+    "id": "MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDZ8ODk0MzQxNDM4",
+    "attributes": {
+      "state": "READY_FOR_REVIEW"
+    },
+    "links": {
+      "self": "https://api.appstoreconnect.apple.com/v1/reviewSubmissionItems/MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDZ8ODk0MzQxNDM4"
+    }
+  }
+]

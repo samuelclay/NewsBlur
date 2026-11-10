@@ -107,13 +107,13 @@ import QuartzCore
         }
         let presented = expectation(description: "Related Sites is presented before the pending page completes")
         navigation.present(related, animated: false) { presented.fulfill() }
-        await fulfillment(of: [presented], timeout: 3)
+        await fulfillment(of: [presented], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertTrue(navigation.presentedViewController === related)
         XCTAssertNotNil(related.view.window)
 
         fixture.controller.renderStories(makeStories(12..<24))
         finishNextPage()
-        await fulfillment(of: [drawn], timeout: 3)
+        await fulfillment(of: [drawn], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertEqual(next.activeStoryId, "pagination-12")
         XCTAssertEqual(next.initializations, 1, "The actual story init must run through share-composer cleanup")
@@ -395,7 +395,7 @@ import QuartzCore
             let nextPage = expectation(description: "Request page \(page) after a filtered response")
             fixture.controller.onOfflinePageLoad = { nextPage.fulfill() }
             fixture.controller.renderStories(makeHiddenStories(indices))
-            wait(for: [nextPage], timeout: 1)
+            wait(for: [nextPage], timeout: SimulatorTestTiming.realWorkTimeout)
             fixture.controller.onOfflinePageLoad = nil
 
             XCTAssertEqual(fixture.controller.offlinePageLoads, page - 2)
@@ -534,6 +534,20 @@ import QuartzCore
         fixture.resetMeasurements()
         XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), newHeight)
         XCTAssertEqual(fixture.appDelegate.fontLookups, 0)
+    }
+
+    func test_finishedScrollReadRowRemainsValidDuringCollapsedLayout() {
+        let fixture = makeFixture(storyCount: 1)
+        fixture.controller.pageFinished = true
+        let path = IndexPath(row: fixture.table.numberOfRows(inSection: 0) - 1, section: 0)
+
+        // StoryPaginationPerformanceTests.swift reproduces the transient zero-height view during Duo navigation restoration.
+        for height: CGFloat in [0, 20, 40, 80, 780] {
+            fixture.controller.view.bounds.size.height = height
+            let rowHeight = fixture.controller.tableView(fixture.table, heightForRowAt: path)
+            XCTAssertGreaterThanOrEqual(rowHeight, 40, "A finished feed must never return a negative table row height")
+        }
+        XCTAssertEqual(fixture.controller.tableView(fixture.table, heightForRowAt: path), 740)
     }
 
     func test_appendedStoryCannotReuseFormerLoadingRowHeight() throws {

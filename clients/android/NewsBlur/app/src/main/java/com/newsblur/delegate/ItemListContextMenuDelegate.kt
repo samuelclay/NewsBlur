@@ -25,7 +25,6 @@ import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.ThumbnailStyle
-import com.newsblur.util.UIUtils
 
 interface ItemListContextMenuDelegate {
     fun onCreateMenuOptions(
@@ -261,19 +260,14 @@ open class ItemListContextMenuDelegateImpl(
             return true;
         } else if (item.itemId == R.id.menu_theme_auto) {
             prefsRepo.setSelectedTheme(ThemeValue.AUTO)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_light) {
             prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_sepia) {
             prefsRepo.setSelectedTheme(ThemeValue.SEPIA)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_dark) {
             prefsRepo.setSelectedTheme(ThemeValue.DARK)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_black) {
             prefsRepo.setSelectedTheme(ThemeValue.BLACK)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_spacing_comfortable) {
             updateSpacingStyle(fragment, SpacingStyle.COMFORTABLE)
         } else if (item.itemId == R.id.menu_spacing_compact) {

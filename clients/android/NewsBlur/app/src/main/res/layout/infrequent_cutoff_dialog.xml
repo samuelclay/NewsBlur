@@ -19,9 +19,9 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="8dp"
         android:orientation="vertical"
-        android:paddingLeft="25dip"
+        android:paddingStart="25dip"
         android:paddingTop="10dip"
-        android:paddingRight="25dip"
+        android:paddingEnd="25dip"
         android:paddingBottom="10dip">
 
         <RadioButton

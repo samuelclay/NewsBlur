@@ -1,0 +1,19 @@
+{
+  "test": "NewsBlurTests/Test_Onboarding/test_newAppleSignupDoesNotRequireAnotherPersonalInformationForm",
+  "result": "failed",
+  "reason": "Apple signup must provide an automatic username instead of requiring another form.",
+  "source": "c37bbad226",
+  "log": "/tmp/newsblur-apple-signin-red.log",
+  "backendExistingSuite": {
+    "tests": 61,
+    "result": "passed"
+  },
+  "rejection": {
+    "submission": "2665ed57-b2bd-43d1-9b3c-d503f3972616",
+    "version": "16.1.1",
+    "build": 353,
+    "guideline": "4.0 Design",
+    "device": "iPad Air 11-inch (M3)",
+    "reportedIssue": "Name and/or email requested after Sign in with Apple"
+  }
+}

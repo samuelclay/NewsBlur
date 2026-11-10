@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Đọc thư mục, tìm kiếm, gắn thẻ bài đã lưu"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Kho bài viết vĩnh viễn và 1 giờ Nghe mỗi tuần"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Cập nhật nguồn cấp thường xuyên, 10 giờ Nghe mỗi tuần"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "Gói đăng ký NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "Đăng ký NewsBlur Premium",
+        "description": "Đọc thư mục trong một danh sách, tìm kiếm nguồn cấp, sắp xếp bài viết đã lưu bằng thẻ và nhận cập nhật nguồn cấp nhanh hơn.",
+        "benefits": [
+          "Đọc thư mục trong một danh sách bài viết",
+          "Tìm kiếm trên các nguồn cấp",
+          "Gắn thẻ bài viết đã lưu",
+          "Cập nhật nguồn cấp nhanh hơn"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "Đăng ký NewsBlur Premium Archive",
+        "description": "Mọi tính năng Premium, kho bài viết vĩnh viễn có thể tìm kiếm và 1 giờ Nghe mỗi tuần. Giữ bài viết chưa đọc bao lâu tùy thích. Hạn mức nghe đặt lại Chủ nhật.",
+        "benefits": [
+          "Mọi tính năng của Premium",
+          "Giữ bài viết chưa đọc mãi mãi",
+          "Kho bài viết vĩnh viễn, có tìm kiếm",
+          "1 giờ Nghe mỗi tuần"
+        ]
+      }
+    }
+  }
+}

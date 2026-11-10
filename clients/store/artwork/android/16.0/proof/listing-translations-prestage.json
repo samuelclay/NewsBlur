@@ -1,0 +1,134 @@
+{
+  "checked_at": "2026-10-17T16:48:02Z",
+  "source_snapshot": "play-assets-prestage-20261017.json",
+  "fields_per_locale": 3,
+  "locales": [
+    {
+      "language": "en",
+      "locale": "en-US",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "es",
+      "locale": "es-ES",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "fr",
+      "locale": "fr-FR",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "de",
+      "locale": "de-DE",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "pt-BR",
+      "locale": "pt-BR",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "it",
+      "locale": "it-IT",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "nl",
+      "locale": "nl-NL",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "pl",
+      "locale": "pl-PL",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "tr",
+      "locale": "tr-TR",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "ru",
+      "locale": "ru-RU",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "uk",
+      "locale": "uk",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "ar",
+      "locale": "ar",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "he",
+      "locale": "iw-IL",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "hi",
+      "locale": "hi-IN",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "id",
+      "locale": "id",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "vi",
+      "locale": "vi",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "th",
+      "locale": "th",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "ja",
+      "locale": "ja-JP",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "ko",
+      "locale": "ko-KR",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "zh-Hans",
+      "locale": "zh-CN",
+      "matched": true,
+      "mismatched_fields": []
+    },
+    {
+      "language": "zh-Hant",
+      "locale": "zh-TW",
+      "matched": true,
+      "mismatched_fields": []
+    }
+  ],
+  "status": "all_21_canonical_listing_translations_match_store_snapshot"
+}

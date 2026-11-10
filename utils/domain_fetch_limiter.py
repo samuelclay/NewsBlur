@@ -11,10 +11,10 @@ serving thousands of distinct legitimate feeds (youtube.com, feeds.feedburner.co
 Hosts that can take more than the default — multi-tenant hosts and large sites with
 legitimate power users — get raised budgets via DOMAIN_FETCHES_PER_MINUTE_OVERRIDES.
 
-This is modeled on the shared Reddit API budget in utils/reddit_fetcher.py: a fixed
-one-minute window in Redis (settings.REDIS_FEED_UPDATE_POOL, shared by every task
+This is modeled on the shared per-minute RedListen window in utils/redlisten.py: a
+fixed one-minute window in Redis (settings.REDIS_FEED_UPDATE_POOL, shared by every task
 server) counts fetch attempts per domain. The difference is what happens when the
-budget is spent: Reddit records a 429 in fetch history, but recording errors for
+budget is spent: Reddit feeds record a 429 in fetch history, but recording errors for
 expected backpressure poisons fetch history and eventually flags feed exceptions, so
 here the fetch is silently deferred instead. Feed.update() in apps/rss_feeds/models.py
 asks reserve_fetch_slot() for a slot before fetching; when the budget is spent it
@@ -103,8 +103,8 @@ def reserve_fetch_slot(feed_address):
     in which case defer_seconds is 0. When the budget is spent, allowed is False and
     defer_seconds says how long the caller should wait before retrying this feed.
 
-    Uses the same fixed one-minute window as reserve_rate_limit_slot() in
-    utils/reddit_fetcher.py: the first claim of a window sets a 60s TTL, and at most
+    Uses the same fixed one-minute window as RedListenBudget.reserve_minute_slot() in
+    utils/redlisten.py: the first claim of a window sets a 60s TTL, and at most
     budget claims succeed before the window rolls over. Rejected claims still
     increment the counter, so each rejected feed learns its position in the backlog:
     the deferral grows with the overage, which staggers a stampeding domain (1,100
@@ -112,6 +112,10 @@ def reserve_fetch_slot(feed_address):
     """
     host = feed_host(feed_address)
     if not host:
+        return True, 0
+    # Reddit feeds never fetch from reddit.com: they read the RedListen poller's cache or
+    # spend the RedListen budget, which is their real limit (utils/redlisten.py).
+    if host == "reddit.com" or host.endswith(".reddit.com"):
         return True, 0
 
     budget = host_budget_per_minute(host)

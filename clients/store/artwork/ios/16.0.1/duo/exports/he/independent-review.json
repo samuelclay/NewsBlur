@@ -1,0 +1,30 @@
+{
+  "language": "he",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:15:26Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Hebrew captions are right-aligned and fit with intact words; punctuation remains at the appropriate RTL end.",
+    "Native Hebrew controls and mirrored layout visible; all food photographs and article content loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-he-duo-inner-2853x2007-01.png",
+      "sha256": "459f371db90798bdda40a3c33b09406a7d31c480f2f693efb35eabe2b8b1369f"
+    },
+    {
+      "filename": "newsblur-16.0.1-he-duo-inner-2853x2007-02.png",
+      "sha256": "15647dff7e63d1cc57bcdb3d6f07443566c57004a0303ec3bcbff29aab897e7c"
+    },
+    {
+      "filename": "newsblur-16.0.1-he-duo-inner-2853x2007-03.png",
+      "sha256": "8bc427d6f1748b41f0223d0ace0c931ea216e5ccc48de148dfe505e3eecdf332"
+    },
+    {
+      "filename": "newsblur-16.0.1-he-duo-inner-2853x2007-04.png",
+      "sha256": "4ad660e8356128eae848612ec0251503d53d25c647a867380bc895efc56da91f"
+    }
+  ],
+  "contact_sha256": "373f67d0a843be3e934890d36e94c963cea8a753fc38c6749014f3a231844ad2"
+}

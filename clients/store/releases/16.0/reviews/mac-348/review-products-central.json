@@ -1,0 +1,145 @@
+{
+  "reviewer": "mac_sidebar_margins",
+  "independent_of_translation": true,
+  "english_source": "clients/store/products/en.json",
+  "scope": "Existing product translations only; no product files changed",
+  "status": "pass",
+  "reviews": [
+    {
+      "lang": "tr",
+      "status": "pass",
+      "source": "clients/store/products/tr.json",
+      "reviewed_fields": [
+        "ios.subscriptions: names and descriptions",
+        "ios.subscription_groups: name and app_name",
+        "android.subscriptions: titles, descriptions and benefits"
+      ],
+      "checks": [
+        "Meaning matches English folder reading, search, saved article tagging and faster feed updates",
+        "Archive includes Premium, a permanent searchable archive, and unlimited unread retention where specified",
+        "Pro interval remains 5 to 15 minutes",
+        "Plan names, immutable identifiers and NewsBlur brand preserved",
+        "Terminology matches the language glossary",
+        "iOS subscription and group field lengths satisfy supplied limits"
+      ],
+      "issues": []
+    },
+    {
+      "lang": "ru",
+      "status": "pass",
+      "source": "clients/store/products/ru.json",
+      "reviewed_fields": [
+        "ios.subscriptions: names and descriptions",
+        "ios.subscription_groups: name and app_name",
+        "android.subscriptions: titles, descriptions and benefits"
+      ],
+      "checks": [
+        "Meaning matches English folder reading, search, saved article tagging and faster feed updates",
+        "Archive includes Premium, a permanent searchable archive, and unlimited unread retention where specified",
+        "Pro interval remains 5 to 15 minutes",
+        "Plan names, immutable identifiers and NewsBlur brand preserved",
+        "Terminology matches the language glossary",
+        "iOS subscription and group field lengths satisfy supplied limits"
+      ],
+      "issues": []
+    },
+    {
+      "lang": "uk",
+      "status": "pass",
+      "source": "clients/store/products/uk.json",
+      "reviewed_fields": [
+        "ios.subscriptions: names and descriptions",
+        "ios.subscription_groups: name and app_name",
+        "android.subscriptions: titles, descriptions and benefits"
+      ],
+      "checks": [
+        "Meaning matches English folder reading, search, saved article tagging and faster feed updates",
+        "Archive includes Premium, a permanent searchable archive, and unlimited unread retention where specified",
+        "Pro interval remains 5 to 15 minutes",
+        "Plan names, immutable identifiers and NewsBlur brand preserved",
+        "Terminology matches the language glossary",
+        "iOS subscription and group field lengths satisfy supplied limits"
+      ],
+      "issues": []
+    },
+    {
+      "lang": "ar",
+      "status": "pass",
+      "source": "clients/store/products/ar.json",
+      "reviewed_fields": [
+        "ios.subscriptions: names and descriptions",
+        "ios.subscription_groups: name and app_name",
+        "android.subscriptions: titles, descriptions and benefits"
+      ],
+      "checks": [
+        "Meaning matches English folder reading, search, saved article tagging and faster feed updates",
+        "Archive includes Premium, a permanent searchable archive, and unlimited unread retention where specified",
+        "Pro interval remains 5 to 15 minutes",
+        "Plan names, immutable identifiers and NewsBlur brand preserved",
+        "Terminology matches the language glossary",
+        "iOS subscription and group field lengths satisfy supplied limits"
+      ],
+      "issues": []
+    },
+    {
+      "lang": "he",
+      "status": "pass",
+      "source": "clients/store/products/he.json",
+      "reviewed_fields": [
+        "ios.subscriptions: names and descriptions",
+        "ios.subscription_groups: name and app_name",
+        "android.subscriptions: titles, descriptions and benefits"
+      ],
+      "checks": [
+        "Meaning matches English folder reading, search, saved article tagging and faster feed updates",
+        "Archive includes Premium, a permanent searchable archive, and unlimited unread retention where specified",
+        "Pro interval remains 5 to 15 minutes",
+        "Plan names, immutable identifiers and NewsBlur brand preserved",
+        "Terminology matches the language glossary",
+        "iOS subscription and group field lengths satisfy supplied limits"
+      ],
+      "issues": []
+    },
+    {
+      "lang": "hi",
+      "status": "pass",
+      "source": "clients/store/products/hi.json",
+      "reviewed_fields": [
+        "ios.subscriptions: names and descriptions",
+        "ios.subscription_groups: name and app_name",
+        "android.subscriptions: titles, descriptions and benefits"
+      ],
+      "checks": [
+        "Meaning matches English folder reading, search, saved article tagging and faster feed updates",
+        "Archive includes Premium, a permanent searchable archive, and unlimited unread retention where specified",
+        "Pro interval remains 5 to 15 minutes",
+        "Plan names, immutable identifiers and NewsBlur brand preserved",
+        "Terminology matches the language glossary",
+        "iOS subscription and group field lengths satisfy supplied limits"
+      ],
+      "issues": []
+    },
+    {
+      "lang": "id",
+      "status": "pass",
+      "source": "clients/store/products/id.json",
+      "reviewed_fields": [
+        "ios.subscriptions: names and descriptions",
+        "ios.subscription_groups: name and app_name",
+        "android.subscriptions: titles, descriptions and benefits"
+      ],
+      "checks": [
+        "Meaning matches English folder reading, search, saved article tagging and faster feed updates",
+        "Archive includes Premium, a permanent searchable archive, and unlimited unread retention where specified",
+        "Pro interval remains 5 to 15 minutes",
+        "Plan names, immutable identifiers and NewsBlur brand preserved",
+        "Terminology matches the language glossary",
+        "iOS subscription and group field lengths satisfy supplied limits"
+      ],
+      "issues": []
+    }
+  ],
+  "limitations": [
+    "Text and metadata review only; live App Store Connect readback and rendered RTL inspection belong to the release coordinator."
+  ]
+}

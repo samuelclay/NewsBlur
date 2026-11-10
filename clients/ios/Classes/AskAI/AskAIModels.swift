@@ -24,19 +24,19 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .anthropic: return "Anthropic Claude Sonnet 5"
-        case .openai: return "OpenAI GPT-5.6 Luna"
-        case .google: return "Google Gemini 3.6 Flash"
-        case .xai: return "xAI Grok 4.6"
+        case .anthropic: return "Anthropic Claude Sonnet 5.5"
+        case .openai: return "OpenAI GPT-6 Luna"
+        case .google: return "Google Gemini 3.8 Flash"
+        case .xai: return "SpaceXSI Grok 4.7"
         }
     }
 
     var shortName: String {
         switch self {
-        case .anthropic: return "Sonnet 5"
-        case .openai: return "GPT-5.6 Luna"
-        case .google: return "Gemini 3.6"
-        case .xai: return "Grok 4.6"
+        case .anthropic: return "Sonnet 5.5"
+        case .openai: return "GPT-6 Luna"
+        case .google: return "Gemini 3.8"
+        case .xai: return "Grok 4.7"
         }
     }
 

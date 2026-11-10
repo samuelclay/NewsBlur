@@ -1,25 +1,25 @@
-{% load utils_tags %}{% block body %}{% endblock body %}
+{% load i18n utils_tags %}{% block body %}{% endblock body %}
 
 -----------------------------------------------------------------------------
 
-NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.
+{% trans "NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument." %}
 
-Stay up to date and in touch with a few different ways:
+{% trans "Stay up to date and in touch with a few different ways:" %}
 
-    * Follow @newsblur on Twitter: https://twitter.com/newsblur
-    * Follow @samuelclay on GitHub: https://github.com/samuelclay
+    * {% blocktrans with handle="@newsblur" %}Follow {{ handle }} on X{% endblocktrans %}: https://x.com/newsblur
+    * {% blocktrans with handle="@samuelclay" %}Follow {{ handle }} on GitHub{% endblocktrans %}: https://github.com/samuelclay
 
-{% block resources_header %}To get the most out of NewsBlur, here are a few resources:{% endblock resources_header %}
+{% block resources_header %}{% trans "To get the most out of NewsBlur, here are a few resources:" %}{% endblock resources_header %}
 
-    * Read the NewsBlur Blog: https://blog.newsblur.com
-    * Get support on NewsBlur's support forum: https://forum.newsblur.com
+    * {% trans "Read the NewsBlur Blog" %}: https://blog.newsblur.com
+    * {% trans "Get support on NewsBlur's support forum" %}: https://forum.newsblur.com
 
-There are plenty of ways to use NewsBlur beyond the website:
+{% trans "There are plenty of ways to use NewsBlur beyond the website:" %}
 
-    * Download the free iPad/iPhone App: https://{% current_domain %}/ios/
-    * Download the free Android App: https://{% current_domain %}/android/
-    * Download browser extensions for Safari, Firefox, and Chrome: https://{% current_domain %}{{ user.profile.autologin_url }}?next=goodies
+    * {% trans "Download the free iPad/iPhone App" %}: https://{% current_domain %}/ios/
+    * {% trans "Download the free Android App" %}: https://{% current_domain %}/android/
+    * {% trans "Download browser extensions for Safari, Firefox, and Chrome" %}: https://{% current_domain %}{{ user.profile.autologin_url }}?next=goodies
 
 -----------------------------------------------------------------------------
 
-Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: https://{% current_domain %}{% if user.profile.email_optout_url %}{{ user.profile.email_optout_url }}{% else %}{% url "profile-email-optout" %}{% endif %}
+{% trans "Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur:" %} https://{% current_domain %}{% if user.profile.email_optout_url %}{{ user.profile.email_optout_url }}{% else %}{% url "profile-email-optout" %}{% endif %}

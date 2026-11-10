@@ -1,0 +1,587 @@
+{
+  "updated_at": "2026-10-17T02:17:08Z",
+  "renderer": "CoreGraphics/CoreText canonical for unfinished sets; existing approved browser exports preserved",
+  "capture_status": "complete",
+  "required_next_steps": [
+    "Upload the prepared screenshots to each matching store locale and display size",
+    "Verify persisted placement after a fresh store reload"
+  ],
+  "store_placement_tracking": "Coordinator owns resubmission.json and /tmp/newsblur-ios16-ready-uploads/manifest.json; preparation status here does not establish store placement.",
+  "completed_sets": [
+    {
+      "language": "ar",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "ar",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "ar",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "de",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "de",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "de",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "en",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "legacy_review_evidence",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-en-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "en",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "legacy_review_evidence",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-en-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "en",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-en-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "es",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "es",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "es",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "fr",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "legacy_review_evidence",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-fr-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "fr",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "legacy_review_evidence",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-fr-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "fr",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-fr-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "he",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "he",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "he",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "hi",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-hi-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "hi",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-hi-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "hi",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-hi-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "id",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-id-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "id",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-id-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "id",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-id-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "it",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-it-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "it",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-it-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "it",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-it-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "ja",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ja-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "ja",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ja-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "ja",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ja-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "ko",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ko-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "ko",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ko-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "ko",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ko-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "nl",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-nl-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "nl",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-nl-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "nl",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-nl-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "pl",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pl-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "pl",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pl-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "pl",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pl-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "pt-BR",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pt-BR-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "pt-BR",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pt-BR-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "pt-BR",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pt-BR-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "ru",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ru-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "ru",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ru-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "ru",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ru-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "th",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-th-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "th",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-th-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "th",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-th-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "tr",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-tr-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "tr",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-tr-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "tr",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-tr-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "uk",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-uk-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "uk",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-uk-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "uk",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-uk-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "vi",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-vi-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "vi",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-vi-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "vi",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-vi-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "zh-Hans",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hans-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "zh-Hans",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hans-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "zh-Hans",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hans-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "zh-Hant",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hant-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "zh-Hant",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hant-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "zh-Hant",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hant-2064x2752-0[1-4].png"
+    }
+  ],
+  "remaining_batch": [],
+  "counts": {
+    "expected_panels": 252,
+    "staged_panels": 252,
+    "complete_sets": 63,
+    "pending_sets": 0
+  },
+  "capture_checkpoint": "343652d24"
+}

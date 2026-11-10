@@ -1,0 +1,134 @@
+{
+  "checked_at": "2026-10-16T23:19:23Z",
+  "artifact_hash_failures": [],
+  "submission_ready": false,
+  "note": "Prepared files and verified placements are distinct. Readback still pending for recent iPad uploads. Primary English placement remains unresolved.",
+  "locales": {
+    "en": {
+      "screenshots_prepared": 12,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 2,
+      "previews_verified_saved": 0
+    },
+    "es": {
+      "screenshots_prepared": 4,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "fr": {
+      "screenshots_prepared": 12,
+      "screenshots_verified_saved": 12,
+      "previews_prepared": 1,
+      "previews_verified_saved": 1
+    },
+    "de": {
+      "screenshots_prepared": 12,
+      "screenshots_verified_saved": 12,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "pt-BR": {
+      "screenshots_prepared": 4,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "it": {
+      "screenshots_prepared": 4,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "nl": {
+      "screenshots_prepared": 4,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "pl": {
+      "screenshots_prepared": 4,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "tr": {
+      "screenshots_prepared": 4,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "ru": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "uk": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "ar": {
+      "screenshots_prepared": 12,
+      "screenshots_verified_saved": 12,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "he": {
+      "screenshots_prepared": 4,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "hi": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "id": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "vi": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "th": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "ja": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "ko": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "zh-Hans": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    },
+    "zh-Hant": {
+      "screenshots_prepared": 0,
+      "screenshots_verified_saved": 0,
+      "previews_prepared": 0,
+      "previews_verified_saved": 0
+    }
+  }
+}

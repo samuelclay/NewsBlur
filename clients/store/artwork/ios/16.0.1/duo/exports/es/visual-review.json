@@ -1,0 +1,10 @@
+{
+  "language": "es",
+  "reviewed_at": "2026-10-26T04:01:30Z",
+  "reviewer": "duo_renderer agent",
+  "scope": "All four exported panels inspected visually at contact-sheet scale; native UI language, loaded photographs and article content, caption layout, hardware fit, absence of loading/errors/blank capture checked.",
+  "status": "passed",
+  "notes": [
+    "Native UI verified through Buscar feeds, Añadir + descubrir sitios, Artículos leídos, and NO LEÍDOS controls; source/story names remain English."
+  ]
+}

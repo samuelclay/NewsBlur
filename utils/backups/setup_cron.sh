@@ -15,11 +15,15 @@
 
 SCRIPTS_DIR="/config/scripts"
 VENV_DIR="${SCRIPTS_DIR}/venv"
-CRON_ENTRY='0 6 * * * /config/scripts/mount_backup_drive.sh && /config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup_run.log 2>&1; /config/scripts/unmount_backup_drive.sh >> /media/newsblur-backup/backup_run.log 2>&1'
+# run_offsite_backup.sh mounts the drive, pulls, unmounts, and writes its own
+# logs (on and off the drive). Cron output must not be redirected onto the
+# drive: an open log file there keeps the drive from unmounting cleanly.
+CRON_ENTRY='0 6 * * * /config/scripts/run_offsite_backup.sh > /dev/null 2>> /config/scripts/offsite_backup_runs.log'
 
 # --- 1. Cron ---
-# Remove any existing offsite_pull entry, then add the current one
-(crontab -l 2>/dev/null | grep -v offsite_pull; echo "${CRON_ENTRY}") | crontab -
+# Remove any existing backup entry (before October 2026 it called
+# offsite_pull.sh directly), then add the current one
+(crontab -l 2>/dev/null | grep -v -E 'offsite_pull|run_offsite_backup'; echo "${CRON_ENTRY}") | crontab -
 echo "NewsBlur backup cron job installed (daily 6:00 AM)"
 
 # Start crond if not already running (HAOS SSH add-on doesn't start it by default)

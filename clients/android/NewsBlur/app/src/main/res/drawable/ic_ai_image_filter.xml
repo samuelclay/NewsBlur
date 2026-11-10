@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ic_ai_image_filter.xml: the Natural Language Image Classifier icon from media/js/newsblur/reader/reader_classifier.js. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M1,12s4,-8 11,-8 11,8 11,8 -4,8 -11,8 -11,-8 -11,-8z"
+        android:strokeWidth="2"
+        android:strokeColor="#FF95968E"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M9,12a3,3 0,1 0,6 0a3,3 0,1 0,-6 0z"
+        android:strokeWidth="2"
+        android:strokeColor="#FF95968E" />
+</vector>

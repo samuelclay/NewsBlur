@@ -51,6 +51,7 @@
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 
 - (void)updateStoryTitleSwipePreference;
+- (void)updateDuoFullscreenSidebarGestures;
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic) NSIndexPath *swipingIndexPath;
@@ -157,6 +158,7 @@
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
 - (void)cancelMarkStoryReadTimer;
 - (BOOL)markStoryReadIfNeeded:(NSDictionary *)story isScrolling:(BOOL)isScrolling;
+- (void)prepareStorySelectionAtLocation:(NSInteger)location;
 - (void)finishMarkAsSaved:(NSDictionary *)params;
 - (void)failedMarkAsSaved:(NSDictionary *)params;
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;

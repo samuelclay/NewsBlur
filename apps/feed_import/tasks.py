@@ -2,6 +2,7 @@
 
 from django.contrib.auth.models import User
 from django.db import connection
+from django.utils.translation import gettext_lazy
 
 from apps.feed_import.models import OPMLImporter, UploadedOPML
 from apps.reader.models import UserSubscription
@@ -79,6 +80,6 @@ def ProcessOPMLExport(user_id):
     user = User.objects.get(pk=user_id)
     logging.user(user, "~FR~SBOPML export (task) starting...")
 
-    user.profile.send_opml_export_email(reason="Your OPML export is ready.", force=True)
+    user.profile.send_opml_export_email(reason=gettext_lazy("Your OPML export is ready."), force=True)
 
     logging.user(user, "~FR~SBOPML export (task) complete: sent email to %s" % user.email)

@@ -7,6 +7,7 @@ and account import/export (OPML).
 
 import calendar
 import datetime
+import functools
 import json as python_json
 import re
 from urllib.parse import urlencode
@@ -23,11 +24,17 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import (
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.views.decorators.http import require_POST
+from django.utils.translation import gettext, gettext_lazy
+from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
+from django.views.decorators.http import require_GET, require_POST
 from paypal.standard.forms import PayPalPaymentsForm
 from paypal.standard.ipn.views import ipn as paypal_standard_ipn
 
@@ -39,6 +46,7 @@ from apps.analyzer.models import (
     MClassifierTitle,
     MClassifierUrl,
 )
+from apps.api.social_auth import APP_SCHEMES, AppRedirect
 from apps.profile.forms import (
     PLANS,
     AccountSettingsForm,
@@ -61,15 +69,10 @@ from apps.profile.models import (
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
-from apps.social.models import (
-    MActivity,
-    MSharedStory,
-    MSocialProfile,
-    MSocialServices,
-    MSocialSubscription,
-)
+from apps.social.models import MActivity, MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
 from utils import json_functions as json
 from utils import log as logging
+from utils.languages import normalize_language
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import is_true, render_to
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -85,6 +88,7 @@ SINGLE_FIELD_PREFS = (
     "has_trained_intelligence",
 )
 SPECIAL_PREFERENCES = (
+    "invoice_text",
     "old_password",
     "new_password",
     "autofollow_friends",
@@ -99,9 +103,13 @@ def set_preference(request):
     code = 1
     message = ""
     new_preferences = request.POST
+    if "language" in new_preferences and normalize_language(new_preferences["language"]) is None:
+        return dict(code=-1, message=gettext("Unsupported language"))
 
     preferences = json.decode(request.user.profile.preferences)
     for preference_name, preference_value in list(new_preferences.items()):
+        if preference_name == "language":
+            preference_value = normalize_language(preference_value)
         if preference_value in ["true", "false"]:
             preference_value = True if preference_value == "true" else False
         if preference_name in SINGLE_FIELD_PREFS:
@@ -184,6 +192,7 @@ def login(request):
 
 
 @csrf_exempt
+@ensure_csrf_cookie
 def signup(request):
     form = SignupForm(prefix="signup")
     recaptcha = request.POST.get("g-recaptcha-response", None)
@@ -207,7 +216,7 @@ def signup(request):
     if request.method == "POST":
         form = SignupForm(data=request.POST, prefix="signup")
         if form.is_valid() and not recaptcha_error:
-            new_user = form.save()
+            new_user = form.save(request=request)
             login_user(request, new_user, backend="django.contrib.auth.backends.ModelBackend")
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             new_user.profile.activate_free()
@@ -284,10 +293,18 @@ def set_account_settings(request):
     else:
         message = form.errors[list(form.errors.keys())[0]][0]
 
+    if "invoice_text" in form.errors:
+        code = -4
+        message = form.errors["invoice_text"][0]
+
+    preferences = json.decode(request.user.profile.preferences)
     payload = {
         "username": request.user.username,
         "email": request.user.email,
         "social_profile": MSocialProfile.profile(request.user.pk),
+        "invoice_text": preferences.get("invoice_text", ""),
+        "send_emails": request.user.profile.send_emails,
+        "notify_before_renewal": preferences.get("notify_before_renewal", False),
     }
     return dict(code=code, message=message, payload=payload)
 
@@ -1165,14 +1182,61 @@ def stripe_checkout(request):
     return HttpResponseRedirect(checkout_session.url, status=303)
 
 
-@login_required
+# views.py: The iOS and Android apps post a platform to setup_usage_billing and
+# manage_usage_billing and get JSON with the Stripe URL back, since they open it in an
+# in-app browser (ASWebAuthenticationSession on iOS, a Custom Tab on Android) instead
+# of following a redirect. Stripe then returns that browser to usage_billing_app_return,
+# which hands off to the app's fixed scheme from apps/api/social_auth.py APP_SCHEMES.
+USAGE_BILLING_APP_RETURN_STATUSES = ("setup_complete", "cancelled", "portal_return")
+
+
+def _usage_billing_app_platform(request):
+    """views.py: The app platform a usage billing request came from, or None for the web."""
+    platform = request.POST.get("platform")
+    if platform in APP_SCHEMES:
+        return platform
+    return None
+
+
+def _usage_billing_app_return_url(domain, platform, status):
+    return "https://%s%s?%s" % (
+        domain,
+        reverse("usage-billing-app-return"),
+        urlencode({"platform": platform, "status": status}),
+    )
+
+
+def _usage_billing_app_error(message, status=200):
+    # views.py: Errors stay HTTP 200 with code -1, like json_view, because the Android
+    # client drops the body of any non-200 response and would lose the message.
+    return JsonResponse({"code": -1, "message": message}, status=status)
+
+
+def _usage_billing_login_required(view_func):
+    """views.py: login_required for the web. The apps get a JSON 403 instead of a
+    redirect to the login page, which their HTTP clients can't follow."""
+    web_view = login_required(view_func)
+
+    @functools.wraps(view_func)
+    def _view(request, *args, **kwargs):
+        if not request.user.is_authenticated and _usage_billing_app_platform(request):
+            return _usage_billing_app_error(gettext("Please log in to NewsBlur again."), status=403)
+        return web_view(request, *args, **kwargs)
+
+    return _view
+
+
+@_usage_billing_login_required
 @require_POST
 def setup_usage_billing(request):
     stripe.api_key = settings.STRIPE_SECRET
     domain = Site.objects.get_current().domain
+    app_platform = _usage_billing_app_platform(request)
 
     if not settings.STRIPE_PRICE_TEXT_CLASSIFICATION or not settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
         logging.user(request, "~BR~FRStripe usage billing prices not configured")
+        if app_platform:
+            return _usage_billing_app_error(gettext("Usage-based billing isn't available right now."))
         return HttpResponseRedirect(reverse("index"))
 
     # Guard against duplicate subscriptions. Meter events are customer-scoped,
@@ -1195,12 +1259,21 @@ def setup_usage_billing(request):
                             request,
                             "~BR~FRUsage billing already active; redirecting to portal",
                         )
+                        if app_platform:
+                            return JsonResponse({"code": 0, "already_active": True})
                         return HttpResponseRedirect(
                             "https://%s%s?next=payments&usage_billing=already_active"
                             % (domain, reverse("index"))
                         )
         except stripe.error.StripeError as e:
             logging.user(request, f"~BR~FRStripe subscription list failed: {e}")
+
+    if app_platform:
+        success_url = _usage_billing_app_return_url(domain, app_platform, "setup_complete")
+        cancel_url = _usage_billing_app_return_url(domain, app_platform, "cancelled")
+    else:
+        success_url = "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index"))
+        cancel_url = "https://%s%s?next=payments" % (domain, reverse("index"))
 
     session_dict = {
         "line_items": [
@@ -1213,36 +1286,76 @@ def setup_usage_billing(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk, "purpose": "usage_billing"},
-        "success_url": "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index")),
-        "cancel_url": "https://%s%s?next=payments" % (domain, reverse("index")),
+        "success_url": success_url,
+        "cancel_url": cancel_url,
     }
     if request.user.profile.stripe_id:
         session_dict["customer"] = request.user.profile.stripe_id
     else:
         session_dict["customer_email"] = request.user.email
 
-    checkout_session = stripe.checkout.Session.create(**session_dict)
+    try:
+        checkout_session = stripe.checkout.Session.create(**session_dict)
+    except stripe.error.StripeError as e:
+        if not app_platform:
+            raise
+        logging.user(request, f"~BR~FRStripe usage billing checkout failed: {e}")
+        return _usage_billing_app_error(gettext("Couldn't reach Stripe. Please try again."))
 
     logging.user(request, "~BM~FBLoading Stripe usage billing checkout")
 
+    if app_platform:
+        return JsonResponse({"code": 0, "url": checkout_session.url})
     return HttpResponseRedirect(checkout_session.url, status=303)
 
 
-@login_required
+@_usage_billing_login_required
 @require_POST
 def manage_usage_billing(request):
     stripe.api_key = settings.STRIPE_SECRET
     domain = Site.objects.get_current().domain
+    app_platform = _usage_billing_app_platform(request)
 
     if not request.user.profile.stripe_id:
+        if app_platform:
+            return _usage_billing_app_error(gettext("No usage billing set up."))
         return HttpResponseRedirect(reverse("index"))
 
-    portal_session = stripe.billing_portal.Session.create(
-        customer=request.user.profile.stripe_id,
-        return_url="https://%s%s?next=payments" % (domain, reverse("index")),
-    )
+    if app_platform:
+        return_url = _usage_billing_app_return_url(domain, app_platform, "portal_return")
+    else:
+        return_url = "https://%s%s?next=payments" % (domain, reverse("index"))
 
+    try:
+        portal_session = stripe.billing_portal.Session.create(
+            customer=request.user.profile.stripe_id,
+            return_url=return_url,
+        )
+    except stripe.error.StripeError as e:
+        if not app_platform:
+            raise
+        logging.user(request, f"~BR~FRStripe billing portal failed: {e}")
+        return _usage_billing_app_error(gettext("Couldn't reach Stripe. Please try again."))
+
+    if app_platform:
+        return JsonResponse({"code": 0, "url": portal_session.url})
     return HttpResponseRedirect(portal_session.url, status=303)
+
+
+@require_GET
+def usage_billing_app_return(request):
+    """views.py: Where Stripe sends the in-app browser after checkout or the billing
+    portal. Redirecting to the app's scheme closes ASWebAuthenticationSession on iOS and
+    reopens the app from its Custom Tab on Android. This needs no login, since the in-app
+    browser has no NewsBlur session, and the destination is only ever a fixed scheme from
+    apps/api/social_auth.py APP_SCHEMES plus a whitelisted status."""
+    platform = request.GET.get("platform")
+    status = request.GET.get("status")
+    if platform not in APP_SCHEMES or status not in USAGE_BILLING_APP_RETURN_STATUSES:
+        logging.user(request, "~BR~FRUnknown usage billing app return: %s / %s" % (platform, status))
+        return HttpResponseRedirect(reverse("index"))
+
+    return AppRedirect("%s://usage-billing?%s" % (APP_SCHEMES[platform], urlencode({"status": status})))
 
 
 @ajax_login_required
@@ -1378,7 +1491,7 @@ def save_usage_billing_limit(request):
 
     user = request.user
     if not user.profile.can_use_ai_classifiers:
-        return {"code": -1, "message": "Usage billing not enabled"}
+        return {"code": -1, "message": gettext("Usage billing not enabled")}
 
     limit_str = request.POST.get("limit", "").strip()
 
@@ -1392,13 +1505,13 @@ def save_usage_billing_limit(request):
     try:
         limit = Decimal(limit_str)
     except (InvalidOperation, ValueError):
-        return {"code": -1, "message": "Invalid amount"}
+        return {"code": -1, "message": gettext("Invalid amount")}
 
     if limit <= 0:
-        return {"code": -1, "message": "Limit must be a positive amount"}
+        return {"code": -1, "message": gettext("Limit must be a positive amount")}
 
     if limit > 10000:
-        return {"code": -1, "message": "Limit cannot exceed $10,000"}
+        return {"code": -1, "message": gettext("Limit cannot exceed $10,000")}
 
     user.profile.usage_billing_limit = limit
     user.profile.save()
@@ -1519,6 +1632,7 @@ def invoice(request, payment_id):
         {
             "payment": payment,
             "invoice_number": invoice_number,
+            "invoice_text": json.decode(payment.user.profile.preferences).get("invoice_text", ""),
             "user": payment.user,
             "coverage_start": coverage_start,
             "coverage_end": coverage_end,
@@ -1824,7 +1938,9 @@ def delete_classifiers(request):
 @json.json_view
 def delete_all_sites(request):
     request.user.profile.send_opml_export_email(
-        reason="You have deleted all of your sites, so here's a backup of all of your subscriptions just in case."
+        reason=gettext_lazy(
+            "You have deleted all of your sites, so here's a backup of all of your subscriptions just in case."
+        )
     )
 
     subs = UserSubscription.objects.filter(user=request.user)
@@ -1893,14 +2009,33 @@ def email_optout_token(request, username, secret):
     }
 
 
+@csrf_exempt
+@require_POST
 @json.json_view
 def ios_subscription_status(request):
-    logging.debug(" ---> iOS Subscription Status: %s" % request.body)
-    data = json.decode(request.body)
-    subject = "iOS Subscription Status: %s" % data.get("notification_type", "[missing]")
-    message = """%s""" % (request.body)
-    mail_admins(subject, message)
+    from appstoreserverlibrary.signed_data_verifier import VerificationException, VerificationStatus
 
+    from apps.profile.apple_notifications import process_apple_notification
+
+    try:
+        if len(request.body) > 128 * 1024:
+            raise ValueError("Oversized notification")
+        data = json.decode(request.body)
+        if not isinstance(data, dict) or not isinstance(data.get("signedPayload"), str):
+            raise ValueError("Missing signed payload")
+        result = process_apple_notification(data["signedPayload"])
+    except VerificationException as exc:
+        # Never log signed receipts or secrets from requests in apps/profile/views.py.
+        logging.debug(" ---> Apple notification verification failed: %s" % exc.status.name)
+        status = 503 if exc.status == VerificationStatus.RETRYABLE_VERIFICATION_FAILURE else 400
+        return HttpResponse(status=status)
+    except (ValueError, TypeError, UnicodeDecodeError):
+        return HttpResponse(status=400)
+
+    logging.debug(" ---> Apple notification processed: %s" % result)
+    if result["status"] in ("unmatched", "ambiguous"):
+        # Apple retries while a newly purchased subscription reaches save_ios_receipt.
+        return HttpResponse(status=503)
     return {"code": 1}
 
 
@@ -1938,7 +2073,7 @@ def gift_checkout(request):
     gift_duration = request.POST.get("gift_duration", "year")
 
     if gift_tier not in ("premium", "archive", "pro"):
-        return {"code": -1, "message": "Invalid gift tier."}
+        return {"code": -1, "message": gettext("Invalid gift tier.")}
 
     tier_prices = {"premium": 36, "archive": 99, "pro": 299}
     payment_amount = tier_prices[gift_tier]

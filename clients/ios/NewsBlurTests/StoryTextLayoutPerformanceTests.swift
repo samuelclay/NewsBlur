@@ -143,7 +143,8 @@ import ObjectiveC.runtime
         let prefetcher = try XCTUnwrap(fixture.controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(fixture.table, prefetchRowsAt: [IndexPath(row: 0, section: 0)])
         fixture.queue.sync {}
-        XCTAssertEqual(fixture.controller.normalizations, 0)
+        XCTAssertEqual(fixture.controller.normalizationCounts.counts.main, 0,
+                       "A missing preview is normalized by the background preview queue, never during prefetch on main.")
         XCTAssertEqual(fixture.cache.cachedEntryCount, 0)
     }
 
@@ -189,7 +190,7 @@ import ObjectiveC.runtime
         let story = controller.getStoryAtLocation(0)
         let boundTable = controller.storyTitlesTable.map { String(describing: ObjectIdentifier($0)) } ?? "nil"
         let previewIdentity = previews.map { String(describing: ObjectIdentifier($0)) } ?? "nil"
-        print("TEXT_PREFETCH_CONTEXT phase=\(phase) requested=0:0 table=\(ObjectIdentifier(table)) bound_table=\(boundTable) matches=\(table === controller.storyTitlesTable) width=\(table.bounds.width) legacy=\(controller.isLegacyTable) dashboard=\(controller.isDashboard) briefing=\(controller.storiesCollection.isDailyBriefing) intelligence=\(controller.appDelegate.selectedIntelligence) visible_locations=\(controller.storiesCollection.activeFeedStoryLocations ?? []) descriptors=\(rows) story_present=\(story != nil) preview_cache=\(previewIdentity) preview_present=\(preview != nil) preview_length=\(preview?.length ?? 0) pending=\(cache.pendingRowCount) cached=\(cache.cachedEntryCount) normalizations=\(controller.normalizations)")
+        print("TEXT_PREFETCH_CONTEXT phase=\(phase) requested=0:0 table=\(ObjectIdentifier(table)) bound_table=\(boundTable) matches=\(table === controller.storyTitlesTable) width=\(table.bounds.width) legacy=\(controller.isLegacyTable) dashboard=\(controller.isDashboard) briefing=\(controller.storiesCollection.isDailyBriefing) intelligence=\(controller.appDelegate.selectedIntelligence) visible_locations=\(controller.storiesCollection.activeFeedStoryLocations ?? []) descriptors=\(rows) story_present=\(story != nil) preview_cache=\(previewIdentity) preview_present=\(preview != nil) preview_length=\(preview?.length ?? 0) pending=\(cache.pendingRowCount) cached=\(cache.cachedEntryCount) main_normalizations=\(controller.normalizationCounts.counts.main) worker_normalizations=\(controller.normalizationCounts.counts.worker)")
     }
 
     func test_clusterCellsKeepTheirDistinctDrawingPath() throws {
@@ -360,15 +361,33 @@ private final class TextLayoutAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private final class TextLayoutController: FeedDetailViewController {
-    var normalizations = 0
+    // StoryTextLayoutPerformanceTests.swift counts by thread because the preview prefetch queue normalizes off main
+    // while the test is still running, so a plain counter races with that worker.
+    nonisolated let normalizationCounts = TextLayoutNormalizationCounts()
     override var isLegacyTable: Bool { true }
     override var isDashboard: Bool { false }
     override func viewDidLoad() {}
     override func checkScroll() {}
     @objc(normalizedPreviewTextForStory:)
-    func recordNormalization(_ story: NSDictionary) -> String {
-        normalizations += 1
+    nonisolated func recordNormalization(_ story: NSDictionary) -> String {
+        normalizationCounts.record(main: Thread.isMainThread)
         return story["story_content"] as? String ?? ""
+    }
+}
+
+private final class TextLayoutNormalizationCounts: @unchecked Sendable {
+    private let lock = NSLock()
+    private var main = 0
+    private var worker = 0
+    func record(main isMain: Bool) {
+        lock.lock()
+        if isMain { main += 1 } else { worker += 1 }
+        lock.unlock()
+    }
+    var counts: (main: Int, worker: Int) {
+        lock.lock()
+        defer { lock.unlock() }
+        return (main, worker)
     }
 }
 

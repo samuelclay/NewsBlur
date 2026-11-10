@@ -4,6 +4,154 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedUnreadCountRefresh: XCTestCase {
+    func test_retainedArticleReadActionUpdatesItsFeedWithoutChangingBrowsedSource() throws {
+        let fixture = try makeFixture()
+        defer { fixture.controller.reloadWorkItem?.cancel() }
+        let stories = StoriesCollection()
+        stories.appDelegate = fixture.app
+        stories.activeFeed = fixture.app.dictFeeds["2"] as? [AnyHashable: Any]
+        let retained: [AnyHashable: Any] = ["story_hash": "retained-1", "story_feed_id": 1,
+                                         "read_status": 0, "intelligence": ["feed": 0]]
+        let browsed: [AnyHashable: Any] = ["story_hash": "browsed-2", "story_feed_id": 2,
+                                        "read_status": 0, "intelligence": ["feed": 0]]
+        stories.activeFeedStories = [browsed]
+        stories.activeFeedStoryLocations = [0]
+        stories.activeFeedStoryLocationIds = ["browsed-2"]
+        stories.visibleUnreadCount = 1
+        fixture.app.storiesCollection = stories
+        fixture.app.activeStory = retained
+        fixture.app.activeUsername = "retained-read-" + UUID().uuidString
+
+        // FeedUnreadCountRefreshTests.swift models the mounted article after Duo's overlay switches to another source.
+        stories.markStoryRead(retained)
+
+        XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 1)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 9)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["2"] as? [String: Int])?["nt"], 1)
+        XCTAssertEqual(stories.visibleUnreadCount, 1, "Reading the retained article must not decrement the browsed source")
+        XCTAssertEqual(stories.activeFeedStories.count, 1)
+        XCTAssertEqual((stories.activeFeedStories.first as? [String: Any])?["story_hash"] as? String, "browsed-2")
+        XCTAssertEqual((stories.activeFeedStories.first as? [String: Any])?["read_status"] as? Int, 0)
+        XCTAssertEqual(fixture.app.recentlyReadStories["retained-1"] as? Bool, true)
+        XCTAssertEqual(try cachedReadStatus(retained, fixture: fixture), 1)
+    }
+
+    func test_retainedArticleUnreadAndReadUpdateSharedFeedsWithoutChangingBrowsedProgress() throws {
+        let fixture = try makeFixture()
+        defer { fixture.controller.reloadWorkItem?.cancel() }
+        let retained: [AnyHashable: Any] = ["story_hash": "retained-1", "story_feed_id": 1,
+                                         "read_status": 1, "intelligence": ["feed": 0], "shared_by_friends": [3]]
+        let browsed: [AnyHashable: Any] = ["story_hash": "browsed-2", "story_feed_id": 2,
+                                        "read_status": 0, "intelligence": ["feed": 0]]
+        let stories = makeCollection(fixture: fixture, story: browsed)
+        fixture.app.activeStory = retained
+        fixture.app.originalStoryCount = 7
+        fixture.app.recentlyReadStories["retained-1"] = true
+        fixture.app.activeUsername = "retained-unread-" + UUID().uuidString
+        let page = StoryDetailViewController()
+        page.activeStory = NSMutableDictionary(dictionary: retained)
+        fixture.pages.currentPage = page
+
+        stories.markStoryUnread(retained)
+
+        XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 0)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 11)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["social:3"] as? [String: Int])?["nt"], 6)
+        XCTAssertNil(fixture.app.recentlyReadStories["retained-1"])
+        XCTAssertEqual(try cachedReadStatus(retained, fixture: fixture), 0)
+        XCTAssertTrue(page.isRecentlyUnread)
+        XCTAssertEqual(stories.visibleUnreadCount, 1)
+        XCTAssertEqual(fixture.app.originalStoryCount, 7)
+        XCTAssertEqual(fixture.pages.navigationRefreshes, 0)
+        XCTAssertEqual(stories.activeFeedStories as NSArray, [browsed] as NSArray)
+
+        // FeedUnreadCountRefreshTests.swift repeats the reader action using its newly updated activeStory.
+        stories.markStoryRead(fixture.app.activeStory)
+
+        XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 1)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 10)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["social:3"] as? [String: Int])?["nt"], 5)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["2"] as? [String: Int])?["nt"], 1)
+        XCTAssertEqual(try cachedReadStatus(retained, fixture: fixture), 1)
+        XCTAssertFalse(page.isRecentlyUnread)
+        XCTAssertEqual(stories.visibleUnreadCount, 1)
+        XCTAssertEqual(fixture.app.originalStoryCount, 7)
+        XCTAssertEqual(stories.activeFeedStories as NSArray, [browsed] as NSArray)
+    }
+
+    func test_dictionaryReadActionKeepsItsStoryWhenActiveStoryHasChanged() throws {
+        let fixture = try makeFixture()
+        defer { fixture.controller.reloadWorkItem?.cancel() }
+        let supplied: [AnyHashable: Any] = ["story_hash": "retained-1", "story_feed_id": 1,
+                                         "read_status": 0, "intelligence": ["feed": 0]]
+        let browsed: [AnyHashable: Any] = ["story_hash": "browsed-2", "story_feed_id": 2,
+                                        "read_status": 0, "intelligence": ["feed": 0]]
+        let stories = makeCollection(fixture: fixture, story: browsed)
+        fixture.app.activeStory = browsed
+
+        stories.markStoryRead(supplied)
+
+        XCTAssertEqual(fixture.app.activeStory as NSDictionary, browsed as NSDictionary)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 9)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["2"] as? [String: Int])?["nt"], 1)
+        XCTAssertEqual(fixture.app.recentlyReadStories["retained-1"] as? Bool, true)
+        XCTAssertEqual(stories.visibleUnreadCount, 1)
+        XCTAssertEqual(stories.activeFeedStories as NSArray, [browsed] as NSArray)
+    }
+
+    func test_idReadActionsResolveRetainedStoryAndIgnoreAnUnknownHash() throws {
+        let fixture = try makeFixture()
+        defer { fixture.controller.reloadWorkItem?.cancel() }
+        let retained: [AnyHashable: Any] = ["story_hash": "retained-1", "story_feed_id": 1,
+                                         "read_status": 0, "intelligence": ["feed": 0]]
+        let browsed: [AnyHashable: Any] = ["story_hash": "browsed-2", "story_feed_id": 2,
+                                        "read_status": 0, "intelligence": ["feed": 0]]
+        let stories = makeCollection(fixture: fixture, story: browsed)
+        fixture.app.activeStory = retained
+
+        stories.markStoryRead("retained-1", feedId: 1)
+        XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 1)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 9)
+        stories.markStoryUnread("retained-1", feedId: 1)
+        XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 0)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 10)
+        stories.markStoryUnread("missing", feedId: 1)
+        stories.markStoryRead("missing", feedId: 1)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 10)
+        XCTAssertEqual(stories.visibleUnreadCount, 1)
+        XCTAssertEqual(stories.activeFeedStories as NSArray, [browsed] as NSArray)
+    }
+
+    func test_inListReadAndUnreadStillUpdateVisibleCountAndProgress() throws {
+        let fixture = try makeFixture()
+        defer { fixture.controller.reloadWorkItem?.cancel() }
+        let listed: [AnyHashable: Any] = ["story_hash": "listed-1", "story_feed_id": 1,
+                                       "read_status": 0, "intelligence": ["feed": 0], "story_title": "Current title"]
+        let stories = makeCollection(fixture: fixture, story: listed)
+        fixture.app.activeStory = listed
+        fixture.app.originalStoryCount = 7
+        var stale = listed
+        stale["story_title"] = "Old title"
+
+        stories.markStoryRead(stale)
+
+        XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 1)
+        XCTAssertEqual(fixture.app.activeStory["story_title"] as? String, "Current title")
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 9)
+        XCTAssertEqual(stories.visibleUnreadCount, 0)
+        // FeedUnreadCountRefreshTests.swift expects NewsBlurAppDelegate.m to refresh Next/Done after a read, so Done appears at zero unread.
+        XCTAssertEqual(fixture.pages.navigationRefreshes, 1)
+
+        stories.markStoryUnread(fixture.app.activeStory)
+
+        XCTAssertEqual(fixture.app.activeStory["read_status"] as? Int, 0)
+        XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 10)
+        XCTAssertEqual(stories.visibleUnreadCount, 1)
+        XCTAssertEqual(fixture.app.originalStoryCount, 8)
+        XCTAssertEqual(fixture.pages.navigationRefreshes, 2)
+        XCTAssertEqual(stories.activeFeedStories as NSArray, [listed] as NSArray)
+    }
+
     func test_refreshUpdatesEveryVisibleFeedAndDuplicateWithoutReloading() throws {
         let fixture = try makeFixture()
         let cells = try [0, 1, 2].map { try fixture.cell(row: $0) }
@@ -108,7 +256,8 @@ import UIKit
         stories.markStoryRead(story)
 
         XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 9)
-        await fulfillment(of: [refreshed], timeout: 2)
+        // FeedUnreadCountRefreshTests.swift waits on FeedsViewController.swift's throttled main-queue refresh, which a stalled simulator can delay for seconds.
+        await fulfillment(of: [refreshed], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertEqual(cell.value(forKey: "neutralCount") as? Int, 9)
         XCTAssertFalse(fixture.pages.isViewLoaded)
         XCTAssertEqual(fixture.table.reloads, 0)
@@ -129,7 +278,7 @@ import UIKit
             fixture.app.dictUnreadCounts["1"] = ["nt": count, "ps": 0, "ng": 0]
             fixture.app.finishMark(asRead: ["story_hash": "count-\(count)"])
         }
-        await fulfillment(of: [refreshed], timeout: 2)
+        await fulfillment(of: [refreshed], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertEqual(cell.value(forKey: "neutralCount") as? Int, 0)
         XCTAssertEqual(fixture.controller.refreshes, 1)
@@ -157,12 +306,31 @@ import UIKit
         fixture.controller.onRefresh = { refreshed.fulfill() }
 
         fixture.app.finishMark(asRead: ["story_hash": "count-1"])
-        await fulfillment(of: [refreshed], timeout: 2)
+        await fulfillment(of: [refreshed], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertFalse(page.isRecentlyUnread)
         XCTAssertEqual(fixture.pages.headerRefreshes, 1)
         XCTAssertFalse(page.isViewLoaded)
         fixture.controller.reloadWorkItem?.cancel()
+    }
+
+    private func makeCollection(fixture: CountFixture, story: [AnyHashable: Any]) -> StoriesCollection {
+        let stories = StoriesCollection()
+        stories.appDelegate = fixture.app
+        stories.activeFeed = fixture.app.dictFeeds[String(describing: story["story_feed_id"]!)] as? [AnyHashable: Any]
+        stories.activeFeedStories = [story]
+        stories.activeFeedStoryLocations = [0]
+        stories.activeFeedStoryLocationIds = [story["story_hash"]!]
+        stories.visibleUnreadCount = story["read_status"] as? Int == 0 ? 1 : 0
+        fixture.app.storiesCollection = stories
+        return stories
+    }
+
+    private func cachedReadStatus(_ story: [AnyHashable: Any], fixture: CountFixture) throws -> Int? {
+        let request = try XCTUnwrap(StoryFirstPageRequest(account: fixture.app.activeUsername, host: fixture.app.url,
+                                                        url: fixture.app.url + "/reader/feed/1/?page=1"))
+        let response = StoryFirstPageCache.shared.overlay(["stories": [story]], request: request, revision: 0)
+        return (response["stories"] as? [[String: Any]])?.first?["read_status"] as? Int
     }
 
     private func makeFixture(savedMode: Bool = false) throws -> CountFixture {
@@ -239,6 +407,7 @@ private final class CountAppDelegate: NewsBlurAppDelegate {
     weak var testFeeds: CountFeedsController?
     weak var testPages: CountPagesController?
     let icon = UIImage()
+    override var url: String! { "https://feed-count-fixture.invalid" }
     override var feedsViewController: FeedsViewController! {
         get { testFeeds }
         set {}
@@ -273,9 +442,10 @@ private final class CountAppDelegate: NewsBlurAppDelegate {
 
 @MainActor private final class CountPagesController: StoryPagesViewController {
     var headerRefreshes = 0
+    var navigationRefreshes = 0
     override func reloadWidget() {}
     override func refreshHeaders() { headerRefreshes += 1 }
-    override func setNextPreviousButtons() {}
+    override func setNextPreviousButtons() { navigationRefreshes += 1 }
 }
 
 @MainActor private final class CountTable: UITableView {

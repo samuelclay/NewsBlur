@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Découvrez quels filtres d’IA pour le contenu et les images correspondent à un article, et gérez vos filtres dans l’entraîneur. Masquer l’emporte désormais sur les correspondances des filtres d’IA.\n\nÉcoutez des podcasts dans le lecteur Listen de NewsBlur, avec des commandes de saut, AirPlay et une file d’attente mêlant podcasts et articles lus à voix haute. Reprenez la lecture où vous l’avez laissée, sur tous vos appareils.\n\nListen peut désormais lire par-dessus la musique d’autres apps. Activez Lire par-dessus les autres contenus audio dans À l’écoute, choisissez si le volume de la musique doit baisser pendant la lecture de la voix et réglez l’équilibre Musique / Voix."
+  },
+  "android": {
+    "release_notes": "Consultez les correspondances des filtres d’IA et gérez vos filtres dans l’entraîneur repensé. Masquer l’emporte sur les correspondances des filtres d’IA. Écoutez des podcasts dans Listen avec des commandes de saut, une file d’attente mêlant podcasts et articles et une position de lecture synchronisée sur tous vos appareils. Listen peut lire par-dessus la musique d’autres apps, avec baisse facultative de la musique et réglage de l’équilibre Musique / Voix."
+  },
+  "macos": {
+    "whats_new": "Découvrez quels filtres d’IA pour le contenu et les images correspondent à un article, et gérez vos filtres dans l’entraîneur. Masquer l’emporte désormais sur les correspondances des filtres d’IA.\n\nÉcoutez des podcasts dans le lecteur Listen de NewsBlur, avec des commandes de saut, AirPlay et une file d’attente mêlant podcasts et articles lus à voix haute. Reprenez la lecture où vous l’avez laissée, sur tous vos appareils."
+  }
+}

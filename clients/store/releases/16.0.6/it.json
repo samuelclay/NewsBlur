@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Risolve un problema sui tablet per cui segnare un feed come letto poteva mandare NewsBlur in background. Sia il pulsante in basso sia il menu del feed ora mantengono l’app aperta, così puoi continuare a leggere."
+  }
+}

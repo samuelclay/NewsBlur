@@ -1,0 +1,1 @@
+Corrige falhas em tablets Samsung antigos e outros dispositivos ao abrir o NewsBlur ou voltar aos feeds. Também corrige falhas com artigos grandes, prévias de feeds, pastas com um só feed, widgets e contagens de comentários traduzidas. Reduz travamentos ao iniciar, sincronizar e verificar assinaturas.

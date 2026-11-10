@@ -10,6 +10,7 @@
         android:layout_height="40dp"
         android:gravity="start|center_vertical"
         android:paddingStart="16dp"
+        android:paddingEnd="0dp"
         android:text="@string/archive_subscription_header"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -152,7 +153,7 @@
             style="?subscriptionIcon"
             android:layout_width="26dp"
             android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center_vertical|start"
             android:src="@drawable/ic_hand_pointing_right" />
 
         <LinearLayout
@@ -206,7 +207,7 @@
         <ImageView
             android:layout_width="22dp"
             android:layout_height="22dp"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center_vertical|start"
             android:src="@drawable/ic_check_green" />
 
         <androidx.appcompat.widget.AppCompatTextView

@@ -1,0 +1,80 @@
+{
+  "language": "th",
+  "checked_at": "2026-10-26T04:19:40Z",
+  "capture_format": "CoreGraphics/CoreText opaque PNG",
+  "note": "Technical validation does not establish visual approval or store persistence.",
+  "files": [
+    {
+      "path": "exports/th/newsblur-16.0.1-th-duo-inner-2853x2007-01.png",
+      "panel": 1,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1199645,
+      "sha256": "d5fa77ef1ddcd131513dfda31a23577db3a2f503e121bc8afcd5ca6f0f4dce8c",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.9624,
+        "largest_tile_error": 1.5625,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/th/newsblur-16.0.1-th-duo-inner-2853x2007-02.png",
+      "panel": 2,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1224324,
+      "sha256": "554a8dfe8d2359db1220af90767ee0c56079cbb405d1d7b69af3e00e325e44a2",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.9148,
+        "largest_tile_error": 1.9167,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/th/newsblur-16.0.1-th-duo-inner-2853x2007-03.png",
+      "panel": 3,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1907305,
+      "sha256": "09647dc8db45fa66edf52e395c96b9f07b366f3196de1c582cc1969f5ae06d55",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 1.0799,
+        "largest_tile_error": 2.4714,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/th/newsblur-16.0.1-th-duo-inner-2853x2007-04.png",
+      "panel": 4,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1182217,
+      "sha256": "578228689cdb0275aaaed9b5b8c4ae4e2f1bc959eb99a171b17646296e373199",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.8875,
+        "largest_tile_error": 1.9167,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    }
+  ]
+}

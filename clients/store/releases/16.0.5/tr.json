@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Eski Samsung tabletlerde ve diğer cihazlarda NewsBlur açılırken veya akışlara dönülürken yaşanan çökmeler düzeltildi. Büyük makaleler, akış önizlemeleri, tek akışlı klasörler, widget’lar ve çevrilmiş yorum sayılarıyla ilgili çökmeler de giderildi. Başlatma, eşitleme ve abonelik kontrolleri sırasındaki donmalar azaltıldı."
+  }
+}

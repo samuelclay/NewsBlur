@@ -1,0 +1,19 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 886
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Arial Hebrew,34,&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,4,0,12,2,53,53,298,-1
+Style: Disclosure,Arial Hebrew,26,&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,4,0,9,2,53,53,144,-1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:04.00,Title,,0,0,0,,בית למקורות האהובים עליך.
+Dialogue: 0,0:00:04.00,0:00:09.00,Title,,0,0,0,,הקריאה היומית שלך, במקום אחד.
+Dialogue: 0,0:00:09.00,0:00:16.00,Title,,0,0,0,,התרווחו עם משהו טוב לקרוא.
+Dialogue: 0,0:00:16.00,0:00:20.00,Title,,0,0,0,,שמרו כתבה טובה לקריאה מאוחר יותר.
+Dialogue: 1,0:00:16.00,0:00:20.00,Disclosure,,0,0,0,,נדרש חשבון NewsBlur. חלק מהתכונות דורשות מינוי בתשלום.

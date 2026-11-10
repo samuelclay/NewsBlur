@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Dossiers, recherche, tags d’articles enregistrés"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Archive permanente et 1 h d’écoute par semaine"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Mises à jour fréquentes et 10 h d’écoute par semaine"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "Abonnements NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "Abonnement NewsBlur Premium",
+        "description": "Lisez vos dossiers dans une seule liste, recherchez dans vos flux, organisez les articles enregistrés avec des tags et profitez de mises à jour des flux plus rapides.",
+        "benefits": [
+          "Lisez un dossier dans une seule liste",
+          "Recherchez dans tous vos flux",
+          "Tags sur vos articles enregistrés",
+          "Mises à jour des flux plus fréquentes"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "Abonnement NewsBlur Premium Archive",
+        "description": "Toutes les fonctions Premium, une archive permanente avec recherche et 1 h d’écoute par semaine. Gardez vos articles non lus sans limite de durée. Quota d’écoute réinitialisé le dimanche.",
+        "benefits": [
+          "Toutes les fonctions Premium",
+          "Articles non lus sans limite de durée",
+          "Archive permanente avec recherche",
+          "1 h d’écoute par semaine"
+        ]
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@ import sys
 import zlib
 from unittest.mock import MagicMock, patch
 
+import httpx
 import redis
 import requests
 from django.conf import settings
@@ -21,6 +22,7 @@ from apps.profile.models import Profile
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MAX_STORY_CONTENT_BYTES, Feed, MFeedIcon, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
+from apps.search.models import SearchFeed
 from utils import json_functions as json
 from utils.feed_functions import (
     is_openrss_feed_address,
@@ -604,6 +606,189 @@ class Test_PublicUrlSafety(TestCase):
             safe_requests_get("http://example.com/start")
 
         mock_request.assert_called_once()
+
+
+class Test_SafeHttp2Get(TestCase):
+    """dumbingofage.com answers every HTTP/1.1 request with 426 Upgrade Required and only
+    serves the feed over HTTP/2 (forum #13858). requests speaks HTTP/1.1 and nothing else,
+    so utils/url_safety.py has an httpx GET over HTTP/2 with the same public address and
+    per redirect checks as safe_requests_get, handed back as a plain requests.Response so
+    the feed fetcher reads it exactly like any other fetch."""
+
+    PUBLIC_DNS = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))]
+    ADDRESS = "https://comic.example.com/feed/"
+
+    def _client_factory(self, handler, client_kwargs):
+        real_client = httpx.Client
+
+        def factory(**kwargs):
+            client_kwargs.append(kwargs)
+            return real_client(transport=httpx.MockTransport(handler), **kwargs)
+
+        return factory
+
+    def _get(self, handler, **kwargs):
+        from utils.url_safety import safe_http2_get
+
+        client_kwargs = []
+        with patch("utils.url_safety.httpx.Client", side_effect=self._client_factory(handler, client_kwargs)):
+            response = safe_http2_get(self.ADDRESS, **kwargs)
+        return response, client_kwargs
+
+    def test_http2_transport_is_available(self):
+        # The other tests hand httpx a mock transport, which skips its h2 import check. In
+        # production a missing h2 package is swallowed as requests.ConnectionError and the
+        # 426 stays, so check the image can really build an HTTP/2 transport.
+        with httpx.HTTPTransport(http2=True):
+            pass
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__returns_a_requests_response(self, mock_getaddrinfo):
+        requests_seen = []
+
+        def handler(request):
+            requests_seen.append(request)
+            return httpx.Response(
+                200,
+                headers={"Content-Type": "application/rss+xml; charset=UTF-8", "ETag": '"f79cc06d"'},
+                content=b"<rss><channel><title>Comic</title></channel></rss>",
+                extensions={"http_version": b"HTTP/2"},
+            )
+
+        response, client_kwargs = self._get(
+            handler, headers={"User-Agent": "NewsBlur Feed Fetcher", "If-None-Match": '"old"'}, timeout=15
+        )
+
+        self.assertIsInstance(response, requests.Response)
+        self.assertEqual(response.status_code, 200)
+        # The protocol httpx really spoke is kept for the fetch log.
+        self.assertEqual(response.http_version, "HTTP/2")
+        self.assertEqual(response.content, b"<rss><channel><title>Comic</title></channel></rss>")
+        # Fully read like a requests response: streaming serves the body instead of raw.
+        self.assertEqual(
+            b"".join(response.iter_content(8)), b"<rss><channel><title>Comic</title></channel></rss>"
+        )
+        self.assertEqual(response.headers["content-type"], "application/rss+xml; charset=UTF-8")
+        self.assertEqual(response.headers["ETag"], '"f79cc06d"')
+        self.assertEqual(response.url, self.ADDRESS)
+        self.assertEqual(response.encoding, "UTF-8")
+        self.assertTrue(client_kwargs[0]["http2"])
+        self.assertFalse(client_kwargs[0]["follow_redirects"])
+        self.assertEqual(client_kwargs[0]["timeout"], 15)
+        self.assertEqual(requests_seen[0].headers["User-Agent"], "NewsBlur Feed Fetcher")
+        self.assertEqual(requests_seen[0].headers["If-None-Match"], '"old"')
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__decodes_gzip_like_requests(self, mock_getaddrinfo):
+        body = b"<rss><channel><title>Comic</title></channel></rss>"
+        compressor = zlib.compressobj(wbits=16 + zlib.MAX_WBITS)
+        gzipped = compressor.compress(body) + compressor.flush()
+
+        def handler(request):
+            return httpx.Response(
+                200,
+                headers={"Content-Type": "application/rss+xml", "Content-Encoding": "gzip"},
+                content=gzipped,
+            )
+
+        response, client_kwargs = self._get(handler)
+
+        self.assertEqual(response.content, body)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__follows_a_public_redirect(self, mock_getaddrinfo):
+        def handler(request):
+            if request.url.path == "/feed/":
+                return httpx.Response(301, headers={"Location": "/comic/feed/"})
+            return httpx.Response(200, headers={"Content-Type": "application/rss+xml"}, content=b"<rss/>")
+
+        response, client_kwargs = self._get(handler)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.url, "https://comic.example.com/comic/feed/")
+        self.assertEqual([hop.status_code for hop in response.history], [301])
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__stops_after_max_redirects(self, mock_getaddrinfo):
+        # A feed that bounces forever is cut off at the same cap as safe_requests_get,
+        # not left to a 15 second timeout per hop inside the Celery worker.
+        from utils.url_safety import MAX_REDIRECTS
+
+        requests_seen = []
+
+        def loop(request):
+            requests_seen.append(request)
+            return httpx.Response(302, headers={"Location": "/feed/?hop=%d" % len(requests_seen)})
+
+        with self.assertRaises(requests.TooManyRedirects):
+            self._get(loop)
+        self.assertEqual(len(requests_seen), MAX_REDIRECTS + 1)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__rejects_private_redirect(self, mock_getaddrinfo):
+        requests_seen = []
+
+        def handler(request):
+            requests_seen.append(request)
+            return httpx.Response(302, headers={"Location": "http://127.0.0.1:9966/secret"})
+
+        with self.assertRaises(UnsafeUrlError):
+            self._get(handler)
+
+        self.assertEqual(len(requests_seen), 1)
+
+    @patch(
+        "utils.url_safety.socket.getaddrinfo",
+        return_value=[(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("10.0.0.5", 443))],
+    )
+    def test_safe_http2_get__rejects_a_private_address_before_connecting(self, mock_getaddrinfo):
+        def handler(request):
+            raise AssertionError("a private address was requested")
+
+        with self.assertRaises(UnsafeUrlError):
+            self._get(handler)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__network_errors_are_requests_errors(self, mock_getaddrinfo):
+        # utils/feed_fetcher.py catches requests.RequestException around every fetch, so an
+        # httpx failure has to look like one or it escapes the fallback.
+        def refuse(request):
+            raise httpx.ConnectError("connection refused", request=request)
+
+        def stall(request):
+            raise httpx.ReadTimeout("read timed out", request=request)
+
+        with self.assertRaises(requests.ConnectionError):
+            self._get(refuse)
+        with self.assertRaises(requests.Timeout):
+            self._get(stall)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__missing_h2_and_bad_urls_are_requests_errors(self, mock_getaddrinfo):
+        # Neither is an httpx.HTTPError, and both must still reach the fetcher as a
+        # requests.RequestException so its usual retries run.
+        from utils.url_safety import safe_http2_get
+
+        missing_h2 = ImportError("Using http2=True, but the 'h2' package is not installed.")
+        with patch("utils.url_safety.httpx.Client", side_effect=missing_h2):
+            with self.assertRaises(requests.ConnectionError):
+                safe_http2_get(self.ADDRESS)
+
+        def bad_url(request):
+            raise httpx.InvalidURL("Invalid non-printable ASCII character in URL")
+
+        with self.assertRaises(requests.ConnectionError):
+            self._get(bad_url)
+
+    @patch("utils.url_safety.socket.getaddrinfo", return_value=PUBLIC_DNS)
+    def test_safe_http2_get__non_ascii_validator_is_a_requests_error(self, mock_getaddrinfo):
+        # httpx encodes header values as ASCII where requests uses latin-1, so an odd ETag a
+        # feed once sent must fail as a requests error, not escape the fetcher.
+        def handler(request):
+            raise AssertionError("a header httpx can't encode was sent")
+
+        with self.assertRaises(requests.ConnectionError):
+            self._get(handler, headers={"If-None-Match": 'W/"café"'})
 
 
 class Test_ProcessFeedQueries(TestCase):
@@ -5100,6 +5285,7 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         from utils.feed_fetcher import FeedFetcherWorker, ProcessFeed
 
         feed = self._feed("https://rss.example.com/lineup/archive.xml")
+        self._clear_requeue_count(feed)
         options = dict(self.options, archive_page=2)
         worker = FeedFetcherWorker(options)
         pfeed = ProcessFeed(feed.pk, self._parsed('"archive"'), options)
@@ -5129,10 +5315,67 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
             self.assertFalse(worker.process_archive_page(pfeed, feed))
         self.assertEqual(always_locked.call_count, feed_fetcher.ARCHIVE_PAGE_LOCK_ATTEMPTS)
         # The walk stops here, and the import is queued again so the missing pages are
-        # fetched once the lock is free.
+        # fetched once the lock is free. It goes back to the archive queue with the archive
+        # time limits: on the default queue it ran on the work servers under the 360 second
+        # global limit, which a long walk never finishes inside.
         requeued.assert_called_once_with(
-            args=[[feed.pk]], kwargs={"user_id": None}, countdown=feed_fetcher.FETCH_LOCK_DEFERRAL_SECONDS
+            args=[[feed.pk]],
+            kwargs={"user_id": None},
+            queue="search_indexer",
+            countdown=feed_fetcher.ARCHIVE_WALK_REQUEUE_DELAY_SECONDS,
+            time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
         )
+        # The walk that queued the retry goes on to the other page styles and holds the feed's
+        # walk lock until it ends, at most the lock's lifetime. A retry arriving before then
+        # would find the lock taken and exit without fetching the missing pages.
+        self.assertGreater(
+            feed_fetcher.ARCHIVE_WALK_REQUEUE_DELAY_SECONDS, settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED
+        )
+
+    def _clear_requeue_count(self, feed):
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        key = "archive_walk_requeues:%s" % feed.pk
+        r.delete(key)
+        self.addCleanup(r.delete, key)
+
+    def test_a_locked_archive_walk_is_queued_again_only_a_few_times(self):
+        """A feed whose lock stays taken would otherwise queue its archive walk again every
+        five minutes forever. On 2026-10-11 one feed's walk kept itself queued all night,
+        76 copies deep, hitting the time limit on every run."""
+        from utils import feed_fetcher
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        feed = self._feed("https://rss.example.com/lineup/archive-capped.xml")
+        self._clear_requeue_count(feed)
+        worker = FeedFetcherWorker(dict(self.options, archive_page=2))
+
+        with patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async") as requeued:
+            for _ in range(feed_fetcher.ARCHIVE_WALK_MAX_REQUEUES + 2):
+                worker.reschedule_archive_walk(feed)
+
+        self.assertEqual(requeued.call_count, feed_fetcher.ARCHIVE_WALK_MAX_REQUEUES)
+
+    def test_an_archive_requeue_count_always_expires(self):
+        """A count left without an expiry, say by a worker that died between counting and
+        setting the window, would stop the feed's archive requeues for good once it passed
+        the cap. Counting a requeue gives the count its window back."""
+        from utils import feed_fetcher
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        feed = self._feed("https://rss.example.com/lineup/archive-expiring.xml")
+        self._clear_requeue_count(feed)
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        key = "archive_walk_requeues:%s" % feed.pk
+        r.set(key, 1)
+        self.assertEqual(r.ttl(key), -1)
+
+        with patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async") as requeued:
+            FeedFetcherWorker(dict(self.options, archive_page=2)).reschedule_archive_walk(feed)
+
+        requeued.assert_called_once()
+        self.assertGreater(r.ttl(key), 0)
+        self.assertLessEqual(r.ttl(key), feed_fetcher.ARCHIVE_WALK_REQUEUE_WINDOW_SECONDS)
 
     @patch("apps.rss_feeds.models.MStory.remove_from_search_index")
     @patch("apps.rss_feeds.models.MStory.remove_from_redis")
@@ -5206,6 +5449,73 @@ class Test_FetchWritesUnderTheMergeLock(TestCase):
         pfeed.refresh_feed()
 
         self.assertIsNone(pfeed.feed)
+
+
+class Test_ArchiveWalkRunsOncePerFeed(TestCase):
+    """Every copy of a feed's archive walk that ran at once fought over the feed's lock,
+    held a worker for a minute and a half waiting on it, then queued the walk again
+    (apps/rss_feeds/models.py fill_out_archive_stories)."""
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/archive-once.xml",
+            feed_link="https://www.example.com/archive-once",
+            feed_title="Example | Archive once",
+            archive_subscribers=1,
+        )
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        self.addCleanup(r.delete, "archive_walk:%s" % self.feed.pk)
+
+    def test_a_second_walk_of_a_feed_being_walked_exits_without_walking(self):
+        walks = []
+
+        def walk(**kwargs):
+            walks.append(kwargs)
+            if len(walks) == 1:
+                # A duplicate delivery of the same backfill starts while this walk runs.
+                Feed.objects.get(pk=self.feed.pk).fill_out_archive_stories()
+
+        with patch.object(Feed, "update", side_effect=walk):
+            self.feed.fill_out_archive_stories()
+            self.assertEqual(len(walks), 1, "the duplicate must not walk the feed again")
+
+            # Once the walk is done the feed can be walked again.
+            self.feed.fill_out_archive_stories()
+        self.assertEqual(len(walks), 2)
+
+
+class Test_TaskFeedsNeverStrandsFeeds(TestCase):
+    """A feed must not leave the queue of feeds waiting for a fetch until its fetch task is
+    published. Publishing gives up after about a second of broker connection errors, and the
+    broker shares its Redis with these keys, so nothing can undo the bookkeeping afterwards.
+    A feed left counted as tasked with no fetch behind it waits for TaskBrokenFeeds, which
+    runs every 6 hours, and enough of them stop TaskFeeds from tasking anything
+    (apps/rss_feeds/models.py task_feeds)."""
+
+    # Feed ids nothing else uses, since these keys are shared with the running dev stacks.
+    feed_ids = ["990000101", "990000102", "990000103"]
+
+    def setUp(self):
+        self.r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        self.addCleanup(self.r.srem, "queued_feeds", *self.feed_ids)
+        self.addCleanup(self.r.zrem, "tasked_feeds", *self.feed_ids)
+
+    def test_feeds_whose_fetch_was_not_published_stay_queued(self):
+        self.r.sadd("queued_feeds", *self.feed_ids)
+
+        with patch(
+            "apps.rss_feeds.tasks.UpdateFeeds.apply_async",
+            side_effect=[None, redis.exceptions.ConnectionError("broker dropped")],
+        ):
+            with self.assertRaises(redis.exceptions.ConnectionError):
+                Feed.task_feeds(self.feed_ids, verbose=False)
+
+        # The two feeds whose fetches never went out stay queued for the next TaskFeeds run. The
+        # first went out and is tasked; it may stay queued too and be fetched twice, which is
+        # harmless, where a feed fetched never is not.
+        self.assertTrue(self.r.sismember("queued_feeds", "990000102"))
+        self.assertTrue(self.r.sismember("queued_feeds", "990000103"))
+        self.assertIsNotNone(self.r.zscore("tasked_feeds", "990000101"))
 
 
 class Test_MergeFeedsSurvivesAnalyticsOutage(TestCase):
@@ -5291,6 +5601,479 @@ class Test_BranchFromFeedDoesNotCascade(TestCase):
         child.refresh_from_db()
         self.assertEqual(child.branch_from_feed_id, parent.pk)
         self.assertTrue(Feed.objects.filter(pk=parent.pk).exists())
+
+
+class Test_ChangeAddressLeavesExistingFeedsAlone(TestCase):
+    """A reader on a small copy of a feed (Hacker News through RSSHub) used Change Feed Address
+    to point it at the real feed's URL. The view found the real feed by its hash and made it a
+    branch of the small copy, so the real feed and its 17,000 readers dropped out of search
+    and later lost a merge to the empty copy (forum #13860). Switching a reader onto a feed
+    that already exists must not re-parent or lock that feed."""
+
+    def setUp(self):
+        from apps.rss_feeds.models import MFetchHistory
+
+        self.client = Client()
+        self.user = User.objects.create_user(username="copy-reader", password="testpass")
+        self.client.login(username="copy-reader", password="testpass")
+        self.copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        self.real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        self.real_link = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/best",
+            feed_title="Hacker News (RSSHub) Best",
+        )
+        UserSubscription.objects.create(user=self.user, feed=self.copy)
+        empty_history = {"feed_fetch_history": [], "page_fetch_history": [], "push_history": []}
+        for patcher in (
+            patch.object(Feed, "update", autospec=True, side_effect=lambda feed, *a, **kw: feed),
+            patch.object(Feed, "update_all_statistics"),
+            patch.object(UserSubscription, "calculate_feed_scores"),
+            patch.object(MFetchHistory, "feed", return_value=empty_history),
+            patch("apps.rss_feeds.views.validate_public_url"),
+            patch("apps.reader.models.redis"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_changing_the_address_to_an_existing_feed_does_not_make_it_a_branch(self):
+        response = self.client.post(
+            reverse("exception-change-feed-address"),
+            {"feed_id": self.copy.pk, "feed_address": self.real.feed_address},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["new_feed_id"], self.real.pk)
+        self.real.refresh_from_db()
+        self.assertIsNone(self.real.branch_from_feed_id)
+        self.assertFalse(self.real.feed_address_locked)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=self.real).exists())
+
+    def test_changing_the_link_to_an_existing_feed_does_not_make_it_a_branch(self):
+        response = self.client.post(
+            reverse("exception-change-feed-link"),
+            {"feed_id": self.copy.pk, "feed_link": self.real_link.feed_link},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["new_feed_id"], self.real_link.pk)
+        self.real_link.refresh_from_db()
+        self.assertIsNone(self.real_link.branch_from_feed_id)
+        self.assertFalse(self.real_link.feed_link_locked)
+
+    def test_a_feed_created_at_the_address_meanwhile_is_not_made_a_branch(self):
+        """Another request creates the feed between this request's lookup and its create.
+        Feed.save folds the new row into that feed and leaves the instance without an id; the
+        view must switch the reader onto that feed and leave it alone."""
+        real_get = Feed.objects.get
+        missed = []
+
+        def miss_the_first_hash_lookup(*args, **kwargs):
+            if "hash_address_and_link" in kwargs and not missed:
+                missed.append(kwargs)
+                raise Feed.DoesNotExist
+            return real_get(*args, **kwargs)
+
+        with patch.object(Feed.objects, "get", side_effect=miss_the_first_hash_lookup):
+            response = self.client.post(
+                reverse("exception-change-feed-address"),
+                {"feed_id": self.copy.pk, "feed_address": self.real.feed_address},
+            )
+        content = json.decode(response.content)
+
+        self.assertEqual(len(missed), 1)
+        self.assertEqual(content["new_feed_id"], self.real.pk)
+        self.real.refresh_from_db()
+        self.assertIsNone(self.real.branch_from_feed_id)
+        self.assertFalse(self.real.feed_address_locked)
+
+    def test_a_create_that_lands_nowhere_leaves_the_reader_on_their_feed(self):
+        """Feed.save can also come back without an id when its collision found no feed to fold
+        into. The view must answer that nothing changed instead of failing the request."""
+        unsaved = Feed(feed_address="https://news.example.com/rss?points=50", feed_link=self.copy.feed_link)
+
+        with patch.object(Feed.objects, "create", return_value=unsaved):
+            response = self.client.post(
+                reverse("exception-change-feed-address"),
+                {"feed_id": self.copy.pk, "feed_address": "https://news.example.com/rss?points=50"},
+            )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["code"], -1)
+        self.assertEqual(content["new_feed_id"], self.copy.pk)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=self.copy).exists())
+
+    def test_changing_the_address_to_a_new_url_still_branches_a_private_copy(self):
+        response = self.client.post(
+            reverse("exception-change-feed-address"),
+            {"feed_id": self.copy.pk, "feed_address": "https://news.example.com/rss?points=100"},
+        )
+        content = json.decode(response.content)
+
+        branch = Feed.objects.get(pk=content["new_feed_id"])
+        self.assertNotIn(branch.pk, (self.copy.pk, self.real.pk))
+        self.assertEqual(branch.branch_from_feed_id, self.copy.pk)
+        self.assertTrue(branch.feed_address_locked)
+
+
+class Test_AddressCheckMergesOnTheCallingThread(TransactionTestCase):
+    """check_feed_link_for_feed_address saves the feed with the address it discovered, and
+    that save merges when another feed already holds the address. The save ran inside the
+    10 second timelimit thread, so a merge of a popular feed outlasted the limit, the caller
+    gave up, and the abandoned thread died partway through moving subscriptions (forum
+    #13860). Only discovery belongs under the time limit."""
+
+    def setUp(self):
+        for patcher in (
+            patch("apps.rss_feeds.models.validate_public_url"),
+            patch.object(Feed, "count_subscribers"),
+            patch.object(Feed, "save_feed_history"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_a_merge_that_outlasts_the_discovery_limit_finishes_on_the_callers_thread(self):
+        import threading
+        import time
+
+        from apps.rss_feeds import models as feed_models
+        from utils.feed_functions import timelimit
+
+        real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        caller = threading.get_ident()
+        merges = []
+
+        def slow_merge(original_feed_id, duplicate_feed_id, *args, **kwargs):
+            # Longer than the shortened discovery limit below, as a popular feed's merge is.
+            time.sleep(0.5)
+            merges.append((original_feed_id, duplicate_feed_id, threading.get_ident()))
+            return original_feed_id
+
+        with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
+            with patch.object(feed_models, "timelimit", lambda seconds: timelimit(0.2)):
+                with patch.object(feed_models, "merge_feeds", side_effect=slow_merge):
+                    fixed, feed = copy.check_feed_link_for_feed_address()
+
+        self.assertEqual(merges, [(real.pk, copy.pk, caller)])
+        self.assertTrue(fixed)
+        self.assertEqual(feed.pk, real.pk)
+
+    def make_heavier_copy(self, readers):
+        """The real feed at the address the check discovers, and a copy with `readers`
+        subscriptions and more family readers, so the copy is the heavier feed."""
+        real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=0)
+        Feed.objects.filter(pk=copy.pk).update(num_subscribers=100)
+        real.refresh_from_db()
+        copy.refresh_from_db()
+        for index in range(readers):
+            UserSubscription.objects.create(
+                user=User.objects.create_user(username="copy-%s" % index), feed=copy
+            )
+        return real, copy
+
+    def test_a_merge_that_would_move_many_subscriptions_is_queued_as_its_own_task(self):
+        """Hacker News moved 15,492 readers in 13 minutes, longer than a fetch task's 9 minute
+        soft limit. A merge that big goes to MergeFeeds and the fetch moves on, with this feed
+        left at its old address until the merge settles which feed survives."""
+        from apps.rss_feeds import models as feed_models
+
+        real, copy = self.make_heavier_copy(readers=3)
+        # The real feed is the heavier one here, so the copy's 3 readers are the ones to move.
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=1000)
+
+        with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
+            with patch.object(feed_models, "MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS", 3):
+                with patch("apps.rss_feeds.models.redis") as mock_redis:
+                    mock_redis.Redis.return_value.set.return_value = True
+                    with patch.object(feed_models.MergeFeeds, "apply_async") as queued:
+                        with patch.object(feed_models, "merge_feeds") as inline_merge:
+                            fixed, feed = copy.check_feed_link_for_feed_address()
+
+        queued.assert_called_once_with(args=(real.pk, copy.pk, "https://news.example.com/rss"))
+        inline_merge.assert_not_called()
+        self.assertFalse(fixed)
+        self.assertEqual(feed.pk, copy.pk)
+        copy.refresh_from_db()
+        self.assertEqual(copy.feed_address, "https://rsshub.example.com/hackernews/index")
+
+    def test_a_merge_already_queued_for_the_pair_is_not_queued_again(self):
+        """The feed keeps failing while its merge runs, and each failing fetch comes back here.
+        Only the first one queues MergeFeeds."""
+        from apps.rss_feeds import models as feed_models
+
+        real, copy = self.make_heavier_copy(readers=3)
+        Feed.objects.filter(pk=real.pk).update(num_subscribers=1000)
+
+        with patch.object(feed_models.feedfinder_forman, "find_feeds", return_value=[real.feed_address]):
+            with patch.object(feed_models, "MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS", 3):
+                with patch("apps.rss_feeds.models.redis") as mock_redis:
+                    mock_redis.Redis.return_value.set.side_effect = [True, False]
+                    with patch.object(feed_models.MergeFeeds, "apply_async") as queued:
+                        copy.check_feed_link_for_feed_address()
+                        copy.check_feed_link_for_feed_address()
+
+        self.assertEqual(queued.call_count, 1)
+        key, _ = mock_redis.Redis.return_value.set.call_args_list[0][0]
+        self.assertEqual(key, "merge_feeds_queued:%s:%s" % tuple(sorted([real.pk, copy.pk])))
+
+    def test_this_feed_winning_the_merge_takes_the_discovered_address(self):
+        """A merge keeps the heavier feed's own address. When that is this failing feed, the
+        address the check discovered is free once the other feed is folded in, and the check
+        must move this feed onto it rather than report a fix it did not make."""
+        from apps.rss_feeds.models import MFetchHistory
+
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(MFetchHistory, "delete_for_feed", return_value=0),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        real, copy = self.make_heavier_copy(readers=2)
+
+        with patch("apps.rss_feeds.models.feedfinder_forman.find_feeds", return_value=[real.feed_address]):
+            fixed, feed = copy.check_feed_link_for_feed_address()
+
+        self.assertTrue(fixed)
+        self.assertEqual(feed.pk, copy.pk)
+        self.assertFalse(Feed.objects.filter(pk=real.pk).exists())
+        copy.refresh_from_db()
+        self.assertEqual(copy.feed_address, "https://news.example.com/rss")
+        self.assertFalse(copy.has_feed_exception)
+
+    def test_the_merge_task_settles_the_survivor_and_releases_the_pair(self):
+        """MergeFeeds finishes the way the inline check does: the survivor is at the discovered
+        address and marked healthy. It releases the pair's queued key however it ends."""
+        from redis.exceptions import LockError
+
+        from apps.rss_feeds.tasks import MergeFeeds
+
+        real, copy = self.make_heavier_copy(readers=0)
+        Feed.objects.filter(pk=real.pk).update(has_feed_exception=True, active=False)
+        key = "merge_feeds_queued:%s:%s" % tuple(sorted([real.pk, copy.pk]))
+
+        with patch("apps.rss_feeds.models.redis") as mock_redis:
+            with patch("apps.rss_feeds.models.merge_feeds", return_value=real.pk) as merge:
+                MergeFeeds(real.pk, copy.pk, "https://news.example.com/rss")
+            with patch("apps.rss_feeds.models.merge_feeds", side_effect=LockError("held")):
+                MergeFeeds(real.pk, copy.pk, "https://news.example.com/rss")
+
+        merge.assert_called_once_with(real.pk, copy.pk)
+        real.refresh_from_db()
+        self.assertFalse(real.has_feed_exception)
+        self.assertTrue(real.active)
+        self.assertEqual([c.args[0] for c in mock_redis.Redis.return_value.delete.call_args_list], [key, key])
+        self.assertTrue(settings.CELERY_TASK_ROUTES["merge-feeds"]["queue"].endswith("work_queue"))
+
+    def test_a_feed_whose_row_vanished_during_the_check_reports_no_fix(self):
+        """Feed.save returns None when the row was deleted and nothing replaced it; the check
+        runs on the fetcher's thread now, so that must not raise into the fetch."""
+        from apps.rss_feeds import models as feed_models
+
+        copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/vanished",
+            feed_link="https://news.example.com/vanished",
+            feed_title="Hacker News (RSSHub)",
+        )
+
+        with patch.object(
+            feed_models.feedfinder_forman, "find_feeds", return_value=["https://news.example.com/rss"]
+        ):
+            with patch.object(Feed, "save", return_value=None):
+                fixed, feed = copy.check_feed_link_for_feed_address()
+
+        self.assertFalse(fixed)
+        self.assertEqual(feed.pk, copy.pk)
+
+
+class Test_MergeKeepsTheBranchWithTheReaders(TransactionTestCase):
+    """merge_feeds lets a branched feed give way to the unbranched one, which is right for a
+    reader's private copy. When the branch link is inverted (the real feed marked as a
+    branch of a small copy, forum #13860), that rule made the empty copy the survivor and
+    moved every reader onto it. num_subscribers is summed over the whole branch family, so
+    it cannot tell the two apart; the real subscription counts can, and a private copy is
+    read by too few accounts to be mistaken for the real feed."""
+
+    def setUp(self):
+        from apps.rss_feeds.models import (
+            MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS,
+            MFetchHistory,
+        )
+
+        for patcher in (
+            patch("apps.rss_feeds.models.redis"),
+            patch("apps.reader.models.redis"),
+            patch.object(Feed, "count_subscribers"),
+            patch.object(MFetchHistory, "delete_for_feed", return_value=0),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        # As on production, the real feed is years older than the copy it was re-parented
+        # under (Hacker News 6327282 under RSSHub 10015475).
+        self.real = Feed.objects.create(
+            feed_address="https://news.example.com/rss",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News",
+        )
+        self.copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/hackernews/index",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (RSSHub)",
+        )
+        Feed.objects.filter(pk=self.real.pk).update(branch_from_feed=self.copy)
+        # The family total, the same on both feeds, as count_subscribers leaves it.
+        Feed.objects.filter(pk__in=[self.copy.pk, self.real.pk]).update(num_subscribers=20)
+        self.copy.refresh_from_db()
+        self.real.refresh_from_db()
+        self.real_readers = MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS + 2
+        self.readers = [
+            User.objects.create_user(username="hn-reader-%s" % index) for index in range(self.real_readers)
+        ]
+        for reader in self.readers:
+            UserSubscription.objects.create(user=reader, feed=self.real)
+        self.copy_reader = User.objects.create_user(username="rsshub-reader")
+        UserSubscription.objects.create(user=self.copy_reader, feed=self.copy)
+
+    def test_orientation_keeps_an_inverted_branch_with_more_readers(self):
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        original, duplicate, address, _, _, _ = merge_feeds_orientation(self.real, self.copy)
+
+        self.assertEqual((original.pk, duplicate.pk), (self.real.pk, self.copy.pk))
+        self.assertEqual(address, "https://news.example.com/rss")
+
+    def test_orientation_keeps_an_inverted_branch_passed_as_the_duplicate(self):
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        original, duplicate, address, _, _, _ = merge_feeds_orientation(self.copy, self.real)
+
+        self.assertEqual((original.pk, duplicate.pk), (self.real.pk, self.copy.pk))
+        self.assertEqual(address, "https://news.example.com/rss")
+
+    def test_an_inverted_branch_newer_than_its_copy_also_keeps_its_readers(self):
+        """The old view re-parented feeds under older copies too (Ars Technica, Wired and
+        Lifehacker on production), so creation order cannot be the test."""
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        older_copy = Feed.objects.create(
+            feed_address="https://rsshub.example.com/ars/index",
+            feed_link="https://ars.example.com/",
+            feed_title="Ars (RSSHub)",
+        )
+        newer_real = Feed.objects.create(
+            feed_address="https://ars.example.com/feed",
+            feed_link="https://ars.example.com/",
+            feed_title="Ars",
+            branch_from_feed=older_copy,
+        )
+        UserSubscription.objects.filter(feed=self.real).update(feed=newer_real)
+
+        for pair in ((newer_real, older_copy), (older_copy, newer_real)):
+            original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
+            self.assertEqual((original.pk, duplicate.pk), (newer_real.pk, older_copy.pk))
+
+    def test_a_private_branch_with_fewer_readers_still_gives_way(self):
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        private = Feed.objects.create(
+            feed_address="https://news.example.com/rss?_=12345",
+            feed_link="https://news.example.com/private",
+            feed_title="Hacker News (private)",
+            branch_from_feed=self.real,
+        )
+        Feed.objects.filter(pk=self.real.pk).update(branch_from_feed=None)
+        self.real.refresh_from_db()
+        UserSubscription.objects.create(user=self.copy_reader, feed=private)
+
+        original, duplicate, address, _, _, _ = merge_feeds_orientation(private, self.real)
+
+        self.assertEqual((original.pk, duplicate.pk), (self.real.pk, private.pk))
+        self.assertEqual(address, "https://news.example.com/rss")
+
+    def test_a_private_branch_with_more_readers_than_its_parent_still_gives_way(self):
+        """A private branch shared by a few accounts can outnumber a parent that lost its
+        readers. It must not survive a merge with that parent: the survivor loses its parent
+        and the private address would turn public."""
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        Feed.objects.filter(pk=self.real.pk).update(branch_from_feed=None)
+        self.real.refresh_from_db()
+        private = Feed.objects.create(
+            feed_address="https://news.example.com/rss?token=SECRET-TOKEN",
+            feed_link="https://news.example.com/",
+            feed_title="Hacker News (private)",
+            branch_from_feed=self.real,
+        )
+        UserSubscription.objects.filter(user__in=self.readers[:3]).update(feed=private)
+        UserSubscription.objects.filter(feed=self.real).delete()
+
+        for pair in ((private, self.real), (self.real, private)):
+            original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
+            self.assertEqual((original.pk, duplicate.pk), (self.real.pk, private.pk))
+
+    def test_a_re_parented_private_branch_older_than_its_parent_still_gives_way(self):
+        """merge_feeds re-parents a deleted feed's branches onto the survivor, which can be
+        newer than they are. Being the older feed must not let a private branch survive."""
+        from apps.rss_feeds.models import merge_feeds_orientation
+
+        private = Feed.objects.create(
+            feed_address="https://news.example.com/rss?token=SECRET-TOKEN",
+            feed_link="https://news.example.com/private",
+            feed_title="Hacker News (private)",
+        )
+        survivor = Feed.objects.create(
+            feed_address="https://news.example.com/rss?survivor=1",
+            feed_link="https://news.example.com/private",
+            feed_title="Hacker News",
+        )
+        Feed.objects.filter(pk=private.pk).update(branch_from_feed=survivor)
+        private.refresh_from_db()
+        UserSubscription.objects.filter(user__in=self.readers[:3]).update(feed=private)
+        UserSubscription.objects.create(user=self.copy_reader, feed=survivor)
+
+        for pair in ((private, survivor), (survivor, private)):
+            original, duplicate, _, _, _, _ = merge_feeds_orientation(*pair)
+            self.assertEqual((original.pk, duplicate.pk), (survivor.pk, private.pk))
+
+    def test_the_copy_colliding_with_the_real_feed_folds_into_the_real_feed(self):
+        """The incident end to end: the copy's address check finds the real feed's URL and
+        saves it, the save collides, and the merge must keep the feed with the readers."""
+        self.copy.feed_address = self.real.feed_address
+        survivor = self.copy.save()
+
+        self.assertEqual(survivor.pk, self.real.pk)
+        self.assertFalse(Feed.objects.filter(pk=self.copy.pk).exists())
+        self.real.refresh_from_db()
+        self.assertIsNone(self.real.branch_from_feed_id)
+        self.assertEqual(self.real.feed_address, "https://news.example.com/rss")
+        self.assertEqual(UserSubscription.objects.filter(feed=self.real).count(), self.real_readers + 1)
 
 
 class Test_YouTubeFavicons(TestCase):
@@ -7063,6 +7846,316 @@ class Test_PlainUserAgentRetryOnBlockedFetch(TestCase):
         self.assertEqual(len(self.user_agents), 2)
 
 
+class Test_Http2RetryOnUpgradeRequired(TestCase):
+    """dumbingofage.com started answering every HTTP/1.1 request with 426 Upgrade Required
+    and serves the feed only over HTTP/2 (forum #13858). The fetcher's requests client
+    speaks HTTP/1.1 only, so ~990 subscribers across two feeds saw nothing but HTTP errors.
+    FetchFeed.fetch now retries a 426 once over HTTP/2 with the same headers, so an HTTP/2
+    304 or 200 is handled like any other fetch. utils/feed_fetcher.py"""
+
+    ADDRESS = "https://www.comic.example.com/feed/"
+    HTTP_ADDRESS = "http://www.comic.example.com/feed/"
+    RSS = (
+        b'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Comic</title>'
+        b"<link>https://www.comic.example.com/</link>"
+        b"<item><title>Only over HTTP/2</title><link>https://www.comic.example.com/comic/1/</link>"
+        b"<guid>https://www.comic.example.com/?p=1</guid></item></channel></rss>"
+    )
+    UPGRADE_REQUIRED = (
+        b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"><html><head><title>426 Upgrade Required'
+        b"</title></head><body><h1>Upgrade Required</h1><p>The requested resource can only be "
+        b"retrieved using SSL.</p></body></html>"
+    )
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address=self.ADDRESS, feed_link="https://www.comic.example.com/", feed_title="Comic"
+        )
+        self.feed.num_subscribers = 495
+        self.feed.save()
+
+    def _response(self, status_code, content, content_type):
+        response = requests.Response()
+        response.status_code = status_code
+        response._content = content
+        response.encoding = "utf-8"
+        response.url = self.ADDRESS
+        response.headers["Content-Type"] = content_type
+        return response
+
+    def _upgrade_required(self, url, headers=None, **kwargs):
+        response = self._response(426, self.UPGRADE_REQUIRED, "text/html; charset=iso-8859-1")
+        response.url = url
+        return response
+
+    def _fetch(self, http1, http2):
+        from utils.feed_fetcher import FetchFeed
+
+        fetcher = FetchFeed(self.feed.pk, {"verbose": False, "force": False})
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=http1) as mock_http1, patch(
+            "utils.feed_fetcher.safe_http2_get", side_effect=http2
+        ) as mock_http2, patch(
+            "utils.feed_fetcher.FetchFeed.fetch_scrapingbee", side_effect=AssertionError("paid proxy used")
+        ):
+            result, fpf = fetcher.fetch()
+        return result, fpf, mock_http1, mock_http2
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_site_that_refuses_http1_is_fetched_over_http2(self, mock_skip, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_OK
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            lambda url, **kwargs: self._response(200, self.RSS, "application/rss+xml; charset=UTF-8"),
+        )
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(len(fpf.entries), 1)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        # One HTTP/1.1 request, one HTTP/2 retry of the same address with the same headers,
+        # and none of the fake header retries that only make sense for a refused UA.
+        self.assertEqual(mock_http1.call_count, 1)
+        self.assertEqual(mock_http2.call_count, 1)
+        self.assertEqual(mock_http2.call_args.args[0], self.ADDRESS)
+        self.assertEqual(mock_http2.call_args.kwargs["headers"], mock_http1.call_args.kwargs["headers"])
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["User-Agent"], self.feed.user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_an_unchanged_feed_over_http2_is_not_modified(self, mock_skip, mock_random, mock_validate):
+        from utils.feed_fetcher import FEED_SAME
+
+        # Validators are only sent for a feed that has fetched cleanly before.
+        self.feed.etag = '"f79cc06dfefde930693fd77636f13d57"'
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+
+        # fetch() runs in a @timelimit thread with its own DB connection, so a real save
+        # there can't see this test's uncommitted feed row. Stub the save and the history.
+        with patch.object(
+            Feed, "save", autospec=True, side_effect=lambda feed, *args, **kwargs: feed
+        ), patch.object(Feed, "save_feed_history") as mock_history:
+            result, fpf, mock_http1, mock_http2 = self._fetch(
+                self._upgrade_required, lambda url, **kwargs: self._response(304, b"", "application/rss+xml")
+            )
+
+        self.assertEqual(result, FEED_SAME)
+        mock_history.assert_called_once_with(304, "Not modified")
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["If-None-Match"], self.feed.etag)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_failed_http2_retry_keeps_the_usual_error_path(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_ERRHTTP
+
+        def refuse(url, **kwargs):
+            raise requests.ConnectionError("HTTP/2 connection refused")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(self._upgrade_required, refuse)
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertEqual(mock_http2.call_count, 1)
+        # The 426 is kept, so the fake header retry still runs as it did before.
+        self.assertEqual(mock_http1.call_count, 2)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_other_errors_never_try_http2(self, mock_parse, mock_skip, mock_random, mock_validate):
+        def missing(url, **kwargs):
+            return self._response(404, b"<html>Not Found</html>", "text/html")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            missing, AssertionError("HTTP/2 is only for 426 Upgrade Required")
+        )
+
+        self.assertEqual(mock_http2.call_count, 0)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_retries_after_an_http2_answer_stay_on_http2(self, mock_skip, mock_random, mock_validate):
+        # A site that refuses HTTP/1.1 and also refuses browser UAs (forum #13835) needs the
+        # fake and plain UA retries over HTTP/2 too, or each one gets the 426 again.
+        from utils.feed_fetcher import FEED_OK
+
+        def refuses_browser_user_agents(url, headers=None, **kwargs):
+            if "Mozilla/" in (headers or {}).get("User-Agent", ""):
+                return self._response(403, b"<html>Forbidden</html>", "text/html")
+            return self._response(200, self.RSS, "application/rss+xml; charset=UTF-8")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(self._upgrade_required, refuses_browser_user_agents)
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertEqual(mock_http1.call_count, 1)
+        # default UA, fake UA, then the plain UA that worked, all over HTTP/2
+        self.assertEqual(mock_http2.call_count, 3)
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["User-Agent"], self.feed.plain_user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_426_over_plain_http_gets_no_http2_retry(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        # An archive fetch skips the https probe, and httpx can't speak HTTP/2 without TLS,
+        # so an HTTP/2 retry of a 426 served over plain http would just repeat HTTP/1.1.
+        from utils.feed_fetcher import FetchFeed
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+        options = {
+            "verbose": False,
+            "force": True,
+            "archive_page": "rfc5005",
+            "archive_page_link": self.HTTP_ADDRESS + "?page=2",
+        }
+        fetcher = FetchFeed(self.feed.pk, options)
+        with patch("utils.feed_fetcher.safe_requests_get", side_effect=self._upgrade_required), patch(
+            "utils.feed_fetcher.safe_http2_get", side_effect=AssertionError("HTTP/2 needs TLS")
+        ) as mock_http2:
+            fetcher.fetch()
+
+        self.assertEqual(mock_http2.call_count, 0)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_plain_http_address_refused_with_426_is_fetched_from_https(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        # httpx speaks HTTP/2 only over TLS, so retrying the http address itself would just
+        # repeat HTTP/1.1. The https copy is probed over HTTP/2 without validators, the way
+        # the dead port 80 probe works, and tagged for migration once it parses to a feed.
+        from utils.feed_fetcher import FEED_OK
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.etag = '"f79cc06dfefde930693fd77636f13d57"'
+        self.feed.fetched_once = True
+        self.feed.known_good = True
+        self.feed.save()
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            lambda url, **kwargs: self._response(200, self.RSS, "application/rss+xml; charset=UTF-8"),
+        )
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.ADDRESS)
+        self.assertEqual(mock_http1.call_count, 1)
+        self.assertEqual(mock_http1.call_args.args[0], self.HTTP_ADDRESS)
+        self.assertEqual(mock_http2.call_count, 1)
+        self.assertEqual(mock_http2.call_args.args[0], self.ADDRESS)
+        self.assertNotIn("If-None-Match", mock_http2.call_args.kwargs["headers"])
+
+    def _plain_http_always_426(self, https_handler):
+        """HTTP/2 needs TLS, so the plain http address answers 426 whatever the transport;
+        only the https copy is served, by https_handler."""
+
+        def get(url, headers=None, **kwargs):
+            if url.startswith("http://"):
+                return self._upgrade_required(url)
+            return https_handler(url, headers=headers or {})
+
+        return get
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_plain_http_426_whose_https_copy_is_not_a_feed_is_not_adopted(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            self._plain_http_always_426(
+                lambda url, headers: self._response(200, b"<html><body>Parked</body></html>", "text/html")
+            ),
+        )
+
+        # A landing page parses to no stories, so the https address is never saved.
+        self.assertFalse(fpf and fpf.entries)
+        self.assertFalse(fpf and fpf.get("upgraded_to_https"))
+        # The 426 is kept, so the fake header retry still runs, against the https copy over
+        # HTTP/2 since the http address can only answer 426.
+        self.assertEqual(mock_http1.call_count, 1)
+        self.assertEqual([call.args[0] for call in mock_http2.call_args_list], [self.ADDRESS, self.ADDRESS])
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    def test_a_plain_http_426_that_refuses_browser_user_agents_gets_the_http2_ua_retries(
+        self, mock_skip, mock_random, mock_validate
+    ):
+        # The https probe is refused for the browser UA, so it is not adopted, but the site
+        # did answer over HTTP/2: the fake and plain UA retries go to the https copy there,
+        # and the plain UA's feed earns the https address.
+        from utils.feed_fetcher import FEED_OK
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+
+        def refuses_browser_user_agents(url, headers):
+            if "Mozilla/" in headers.get("User-Agent", ""):
+                return self._response(403, b"<html>Forbidden</html>", "text/html")
+            return self._response(200, self.RSS, "application/rss+xml; charset=UTF-8")
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required, self._plain_http_always_426(refuses_browser_user_agents)
+        )
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(fpf.entries[0].title, "Only over HTTP/2")
+        self.assertTrue(fpf.get("upgraded_to_https"))
+        self.assertEqual(fpf.get("href"), self.ADDRESS)
+        self.assertEqual(mock_http1.call_count, 1)
+        # https probe, then the fake and plain UA retries, all against the https copy
+        self.assertEqual(
+            [call.args[0] for call in mock_http2.call_args_list], [self.ADDRESS, self.ADDRESS, self.ADDRESS]
+        )
+        self.assertEqual(mock_http2.call_args.kwargs["headers"]["User-Agent"], self.feed.plain_user_agent)
+
+    @patch("utils.feed_fetcher.validate_public_url")
+    @patch("utils.feed_fetcher.random.random", return_value=0.5)
+    @patch("utils.feed_fetcher.FetchFeed.should_skip_paid_proxy", return_value=True)
+    @patch("utils.feed_fetcher.feedparser.parse", return_value=None)
+    def test_a_plain_http_426_whose_https_copy_refuses_everyone_is_not_adopted(
+        self, mock_parse, mock_skip, mock_random, mock_validate
+    ):
+        from utils.feed_fetcher import FEED_ERRHTTP
+
+        self.feed.feed_address = self.HTTP_ADDRESS
+        self.feed.save()
+
+        result, fpf, mock_http1, mock_http2 = self._fetch(
+            self._upgrade_required,
+            self._plain_http_always_426(
+                lambda url, headers: self._response(403, b"<html>Forbidden</html>", "text/html")
+            ),
+        )
+
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertFalse(fpf)
+        self.assertEqual(
+            [call.args[0] for call in mock_http2.call_args_list], [self.ADDRESS, self.ADDRESS, self.ADDRESS]
+        )
+
+
 @override_settings(SCRAPINGBEE_API_KEY="test-scrapingbee-key")
 class Test_TextImporterBlockedFallsBackToProxy(TestCase):
     """TMZ's CDN answers every article-page request from NewsBlur's servers with a 403
@@ -7478,3 +8571,661 @@ class Test_TextImporterBlockedFallsBackToProxy(TestCase):
         self.assertIn("Chris Brown is slamming", result["content"])
         self.assertNotIn("Checking your browser", result["content"])
         self.assertEqual(mock_scrapingbee_get.call_count, 1)
+
+
+class Test_TrimKeepsTheFetchedBatch(TestCase):
+    """Forum #13884: IEEE publishes each issue's table of contents as one batch of about 50
+    items, dated by each article's online publication, with the issue's front matter dated
+    newest. A feed nobody has read lately is capped at 10 stories (Feed.number_of_stories_to_store)
+    and the fetch trims right after saving (utils/feed_fetcher.py), so most of the issue was
+    deleted the moment it arrived and only the front matter was left to read."""
+
+    options = {"verbose": False, "force": False, "updates_off": False}
+    FRONT_MATTER = 7
+    ARTICLES = 43
+
+    def _item(self, guid, title, published, description):
+        return (
+            "<item><title>%s</title><link>https://ieee.example.com/document/%s</link>"
+            "<guid>https://ieee.example.com/document/%s</guid><description>%s</description>"
+            "<pubDate>%s</pubDate></item>"
+            % (title, guid, guid, description, published.strftime("%a, %d %b %Y %H:%M:%S GMT"))
+        )
+
+    def _feed_xml(self, items):
+        return (
+            '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>'
+            "<title>IEEE Transactions - new TOC</title><link>https://ieee.example.com</link>%s"
+            "</channel></rss>" % "".join(items)
+        )
+
+    def _issue_xml(self, issue, front_matter_date, first_article_date):
+        """One issue: front matter dated newest, then one article a day from first_article_date."""
+        items = []
+        for number in range(self.FRONT_MATTER):
+            published = front_matter_date + datetime.timedelta(seconds=number)
+            items.append(
+                self._item(
+                    "%s-f%s" % (issue, number), "%s front matter %s" % (issue, number), published, "null"
+                )
+            )
+        for number in range(self.ARTICLES):
+            published = first_article_date + datetime.timedelta(days=number)
+            title = "%s article %s" % (issue, number)
+            items.append(self._item("%s-a%s" % (issue, number), title, published, "Abstract of %s." % title))
+        return self._feed_xml(items)
+
+    def _feed(self):
+        feed = Feed.objects.create(
+            feed_address="https://ieee.example.com/rss/TOC63.XML",
+            feed_link="https://ieee.example.com",
+            feed_title="IEEE Transactions - new TOC",
+        )
+        # One active Premium reader who hasn't opened the feed in weeks, like the forum report.
+        Feed.objects.filter(pk=feed.pk).update(
+            active_subscribers=1,
+            active_premium_subscribers=1,
+            premium_subscribers=1,
+            average_stories_per_month=73,
+            stories_last_month=7,
+        )
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        return Feed.objects.get(pk=feed.pk)
+
+    def _fetch(self, feed, xml):
+        import feedparser
+
+        from utils.feed_fetcher import FEED_OK, ProcessFeed
+
+        pfeed = ProcessFeed(feed.pk, feedparser.parse(xml), dict(self.options))
+        pfeed.refresh_feed()
+        ret_feed, ret_values = pfeed.process()
+        self.assertEqual(ret_feed, FEED_OK)
+        return ret_values
+
+    def _titles(self, feed, prefix):
+        return MStory.objects(story_feed_id=feed.pk, story_title__startswith=prefix).count()
+
+    @override_settings(TEST_DEBUG=False)
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_fetched_issue_survives_the_trim_on_a_feed_nobody_has_read_lately(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        feed = self._feed()
+        # No reads recorded in any recent week (the fR:<feed>:<week> counters are empty).
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        self.assertEqual(feed.number_of_stories_to_store(), 10)
+
+        september = self._issue_xml(
+            "September", datetime.datetime(2026, 9, 10, 5, 7), datetime.datetime(2026, 7, 20)
+        )
+        ret_values = self._fetch(feed, september)
+
+        self.assertEqual(ret_values["new"], self.FRONT_MATTER + self.ARTICLES)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), self.FRONT_MATTER + self.ARTICLES)
+        self.assertEqual(self._titles(feed, "September article"), self.ARTICLES)
+
+    @override_settings(TEST_DEBUG=False)
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_the_next_issue_survives_even_when_its_articles_are_dated_before_the_last_issue(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        """The October issue's articles went online in August, before September's front matter.
+        Ranked by date alone, September's leftovers would push them past the cutoff."""
+        feed = self._feed()
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        self._fetch(
+            feed,
+            self._issue_xml(
+                "September", datetime.datetime(2026, 9, 10, 5, 7), datetime.datetime(2026, 7, 20)
+            ),
+        )
+
+        october = self._issue_xml(
+            "October", datetime.datetime(2026, 10, 10, 5, 7), datetime.datetime(2026, 8, 1)
+        )
+        ret_values = self._fetch(feed, october)
+
+        self.assertEqual(ret_values["new"], self.FRONT_MATTER + self.ARTICLES)
+        self.assertEqual(self._titles(feed, "October article"), self.ARTICLES)
+        self.assertEqual(self._titles(feed, "October front matter"), self.FRONT_MATTER)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), self.FRONT_MATTER + self.ARTICLES)
+
+    def _store(self, feed, guid, title, published):
+        MStory(
+            story_feed_id=feed.pk,
+            story_guid="https://ieee.example.com/document/%s" % guid,
+            story_title=title,
+            story_permalink="https://ieee.example.com/document/%s" % guid,
+            story_date=published,
+        ).save()
+
+    @override_settings(TEST_DEBUG=False)
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_an_unread_feed_with_a_short_response_still_trims_to_ten(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        feed = self._feed()
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        for number in range(20):
+            published = datetime.datetime(2026, 9, 1) + datetime.timedelta(hours=number)
+            self._store(feed, "old-%s" % number, "Old story %s" % number, published)
+
+        newest = self._item("fresh", "Fresh story", datetime.datetime(2026, 10, 1), "A single new story.")
+        ret_values = self._fetch(feed, self._feed_xml([newest]))
+
+        self.assertEqual(ret_values["new"], 1)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 10)
+        self.assertEqual(self._titles(feed, "Fresh story"), 1)
+
+    @override_settings(TEST_DEBUG=False)
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_refetching_an_unread_feed_after_a_trim_keeps_its_newest_stories(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        """The old trim left the newest 10 of a 20 entry feed, so every fetch re-added the other 10
+        as new. Refetching the same response must keep the newest stories every time."""
+        feed = self._feed()
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        entries = []
+        for number in range(20):
+            published = datetime.datetime(2026, 9, 1) + datetime.timedelta(days=number)
+            entries.append(
+                self._item("daily-%s" % number, "Daily %02d" % number, published, "Day %s." % number)
+            )
+            if number >= 10:
+                self._store(feed, "daily-%s" % number, "Daily %02d" % number, published)
+        newest_titles = ["Daily %02d" % number for number in range(10, 20)]
+
+        for attempt in range(3):
+            self._fetch(feed, self._feed_xml(entries))
+            stored = MStory.objects(story_feed_id=feed.pk)
+            self.assertEqual(stored.count(), 20, "fetch %s" % attempt)
+            self.assertEqual(MStory.objects(story_feed_id=feed.pk, story_title__in=newest_titles).count(), 10)
+
+    @override_settings(TEST_DEBUG=False)
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_read_feed_still_trims_backdated_new_stories_by_date(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        """Feeds people read keep their normal cutoff and trim by date alone, so a few republished
+        old items can't push out the newest stories subscribers haven't read yet."""
+        feed = self._feed()
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        self.assertEqual(feed.number_of_stories_to_store(), 200)
+        for number in range(200):
+            published = datetime.datetime(2026, 9, 1) + datetime.timedelta(hours=number)
+            self._store(feed, "recent-%s" % number, "Recent story %s" % number, published)
+
+        backdated = [
+            self._item(
+                "republished-%s" % number,
+                "Republished %s" % number,
+                datetime.datetime(2020, 1, 1 + number),
+                "Old.",
+            )
+            for number in range(3)
+        ]
+        ret_values = self._fetch(feed, self._feed_xml(backdated))
+
+        self.assertEqual(ret_values["new"], 3)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 200)
+        self.assertEqual(self._titles(feed, "Recent story"), 200)
+        self.assertEqual(self._titles(feed, "Republished"), 0)
+
+    @patch("apps.rss_feeds.models.redis")
+    def test_the_unread_cap_grows_to_the_current_response_but_not_past_the_normal_cutoff(self, mock_redis):
+        feed = self._feed()
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+
+        self.assertEqual(feed.story_retention(), (10, True))
+        self.assertEqual(feed.number_of_stories_to_store(published_count=4), 10)
+        self.assertEqual(feed.number_of_stories_to_store(published_count=50), 50)
+        # One active Premium subscriber stores up to 200 when the feed is read, and no more here.
+        self.assertEqual(feed.number_of_stories_to_store(published_count=500), 200)
+
+        # A feed with recent reads keeps its normal cutoff and isn't under the no-reads cap.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        self.assertEqual(feed.story_retention(published_count=50), (200, False))
+
+
+# Docker installs count every subscriber as active (Feed.count_subscribers), and test settings keep
+# unread stories for 9999 days, so count and keep them like production.
+@override_settings(DOCKERBUILD=False, DAYS_OF_UNREAD=30)
+@patch("apps.rss_feeds.models.MStory.remove_from_search_index")
+@patch("apps.rss_feeds.models.MStory.remove_from_redis")
+@patch("apps.profile.models.Profile.count_feed_subscribers")
+@patch("apps.rss_feeds.models.redis")
+class Test_TrimAbandonedFeeds(TestCase):
+    """A feed with no active subscribers is never fetched again (apps/rss_feeds/tasks.py only
+    schedules feeds with active subscribers), so the trim that follows each fetch
+    (utils/feed_fetcher.py) never runs on it. A feed an Archive subscriber left kept up to
+    10,000 stories forever, which filled the Mongo secondaries' disks in October 2026. Readers
+    keep DAYS_OF_UNREAD days of unread stories, so a feed is only trimmed once nobody has been
+    seen in that long."""
+
+    STORIES = 30
+
+    def _feed(self, name, last_fetch_days_ago=33, **counts):
+        feed = Feed.objects.create(
+            feed_address="https://rss.example.com/quiet/%s.xml" % name,
+            feed_link="https://www.example.com/%s" % name,
+            feed_title=name,
+        )
+        Feed.objects.filter(pk=feed.pk).update(
+            last_update=datetime.datetime.now() - datetime.timedelta(days=last_fetch_days_ago),
+            **dict({"active_subscribers": 0, "num_subscribers": 0}, **counts),
+        )
+        for number in range(self.STORIES):
+            MStory(
+                story_feed_id=feed.pk,
+                story_guid="%s-%s" % (name, number),
+                story_title="%s %s" % (name, number),
+                story_permalink="https://www.example.com/%s/%s" % (name, number),
+                story_date=datetime.datetime(2026, 9, 1) + datetime.timedelta(hours=number),
+            ).save()
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        return Feed.objects.get(pk=feed.pk)
+
+    def _subscribe(self, feed, username, last_seen_days_ago, is_archive=False):
+        user = User.objects.create_user(username, "%s@example.com" % username, "password")
+        Profile.objects.filter(user=user).update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=last_seen_days_ago),
+            is_premium=True,
+            is_archive=is_archive,
+        )
+        UserSubscription.objects.create(user=user, feed=feed, active=True)
+
+    def _stored(self, feed):
+        return MStory.objects(story_feed_id=feed.pk).count()
+
+    def _no_reads_and_postgres_counts(self, mock_redis):
+        # No fR:<feed>:<week> read counters, so a quiet feed is under the no-reads cap of 10,
+        # and no Redis subscriber sets, so count_subscribers counts from Postgres.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        mock_redis.Redis.return_value.zscore.return_value = None
+
+    def test_a_feed_nobody_has_seen_in_the_unread_window_is_trimmed(self, mock_redis, *mocks):
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("gone", num_subscribers=1)
+        self._subscribe(feed, "longgone", last_seen_days_ago=40)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), self.STORIES - 10)
+
+        kept = sorted(int(s.story_guid.split("-")[-1]) for s in MStory.objects(story_feed_id=feed.pk))
+        self.assertEqual(kept, list(range(self.STORIES - 10, self.STORIES)))
+
+    def test_the_last_fetch_before_a_reader_returns_keeps_their_unread_stories(self, mock_redis, *mocks):
+        """The fetch that finds the only reader away SUBSCRIBER_EXPIRE days is the feed's last, and
+        it used to cut the feed to 25 stories, or 10 without recent reads, while a Premium reader
+        still had 30 days of unread stories in it."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("last-fetch", last_fetch_days_ago=0, active_subscribers=1, num_subscribers=1)
+        self._subscribe(feed, "awayontrip", last_seen_days_ago=10)
+        # The fetch recounts (Feed.update_all_statistics) before it trims (utils/feed_fetcher.py).
+        feed.count_subscribers()
+        self.assertEqual(feed.active_subscribers, 0)
+
+        self.assertEqual(feed.trim_feed(fetched_story_hashes=[]), 0)
+        self.assertEqual(self._stored(feed), self.STORIES)
+
+        # Once the unread window has passed, the same trim cuts it down.
+        Profile.objects.filter(user__username="awayontrip").update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=40)
+        )
+        self.assertEqual(feed.trim_feed(fetched_story_hashes=[]), self.STORIES - 10)
+
+    def test_a_feed_already_trimmed_to_its_cutoff_is_not_recounted_every_day(self, mock_redis, *mocks):
+        self._no_reads_and_postgres_counts(mock_redis)
+        # Its last reader read it within story_retention's read window, so it keeps more than 10.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        feed = self._feed("trimmed-yesterday")
+        Feed.trim_if_abandoned(feed.pk)
+        self.assertEqual(self._stored(feed), feed.story_cutoff)
+        self.assertGreater(self._stored(feed), 10)
+
+        with patch.object(Feed, "count_subscribers") as recount:
+            self.assertEqual(Feed.trim_if_abandoned(feed.pk), 0)
+        recount.assert_not_called()
+
+    def test_a_stale_archive_count_is_recounted_before_its_cutoff_is_trusted(self, mock_redis, *mocks):
+        """trim_feeds --feed can name a feed whose last Archive subscriber left but whose stored
+        count still says 1, which gives it the 10,000 story Archive cutoff until it's recounted."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("archive-left", archive_subscribers=1)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), self.STORIES - 10)
+        self.assertEqual(Feed.objects.get(pk=feed.pk).archive_subscribers, 0)
+
+    def test_a_dry_run_estimates_what_the_real_run_deletes_despite_stale_counts(self, mock_redis, *mocks):
+        """A dry run doesn't recount, so stale counts made it report 0 for a feed the real run
+        trims, or a negative number when a stale reader raised the cutoff past what's stored."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        # Read within story_retention's read window, so a counted reader would raise the cutoff to 100.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        stale_archive = self._feed("stale-archive-dry", archive_subscribers=1)
+        stale_reader = self._feed("stale-reader-dry", active_subscribers=1)
+
+        for feed in (stale_archive, stale_reader):
+            estimate = Feed.trim_if_abandoned(feed.pk, dryrun=True)
+            self.assertEqual(self._stored(feed), self.STORIES)
+            self.assertGreater(estimate, 0)
+            self.assertEqual(Feed.trim_if_abandoned(feed.pk), estimate)
+
+        # A real Archive subscriber found the same way keeps a dry run at 0.
+        archived = self._feed("archived-dry", archive_subscribers=0)
+        self._subscribe(archived, "dryarchive", last_seen_days_ago=60, is_archive=True)
+        self.assertEqual(Feed.trim_if_abandoned(archived.pk, dryrun=True), 0)
+
+    def test_a_reader_away_for_less_than_the_unread_window_keeps_their_stories(self, mock_redis, *mocks):
+        """A Premium reader on an 8 day vacation no longer counts as active (SUBSCRIBER_EXPIRE),
+        but still has 30 days of unread stories waiting."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("vacation", num_subscribers=1)
+        self._subscribe(feed, "onvacation", last_seen_days_ago=8)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), 0)
+        self.assertEqual(self._stored(feed), self.STORIES)
+
+    def test_an_archive_subscriber_hidden_by_stale_counts_keeps_every_story(self, mock_redis, *mocks):
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("stale-counts", archive_subscribers=0)
+        self._subscribe(feed, "quietarchive", last_seen_days_ago=60, is_archive=True)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), 0)
+        self.assertEqual(self._stored(feed), self.STORIES)
+        self.assertEqual(Feed.objects.get(pk=feed.pk).archive_subscribers, 1)
+
+    def test_the_daily_task_trims_feeds_that_went_quiet_in_the_last_month_or_two(self, mock_redis, *mocks):
+        from apps.rss_feeds.tasks import TrimAbandonedFeeds
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        quiet = self._feed("quiet-a-month", last_fetch_days_ago=33)
+        just_quiet = self._feed("quiet-a-week", last_fetch_days_ago=10)
+        long_quiet = self._feed("quiet-for-months", last_fetch_days_ago=90)
+
+        # Out of time before the first feed: nothing is trimmed, and tomorrow picks it up.
+        TrimAbandonedFeeds(time_budget_seconds=-1)
+        self.assertEqual(self._stored(quiet), self.STORIES)
+
+        TrimAbandonedFeeds()
+
+        self.assertEqual(self._stored(quiet), 10)
+        # Its last reader may still come back within the unread window.
+        self.assertEqual(self._stored(just_quiet), self.STORIES)
+        # Left to manage.py trim_feeds, so the daily task doesn't re-check millions of old feeds.
+        self.assertEqual(self._stored(long_quiet), self.STORIES)
+
+    def test_trimming_keeps_no_record_of_every_mongo_command_it_ran(self, mock_redis, *mocks):
+        """The global Mongo command monitor (utils/mongo_command_monitor.py) kept every command it
+        saw, and nothing resets it outside a request or a Celery task, so a trim_feeds pass over
+        millions of feeds ran a 3 GB task server out of memory near feed 800,000."""
+        import io
+
+        from django.db import connection
+
+        from apps.rss_feeds.tasks import TrimAbandonedFeeds
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        for number in range(4):
+            self._feed("quiet-%s" % number)
+        monitor = settings.MONGO_COMMAND_LOGGER
+        # Nothing is profiling this process, as in a management command or most Celery tasks.
+        connection.queriesx = None
+        self.addCleanup(setattr, connection, "queriesx", None)
+        commands_before = len(monitor.seen_request_ids)
+
+        management.call_command("trim_feeds", threads=1, stdout=io.StringIO())
+        self.assertLessEqual(len(monitor.seen_request_ids), commands_before)
+        self.assertIsNone(connection.queriesx)
+
+        for number in range(4, 8):
+            self._feed("quiet-%s" % number)
+        TrimAbandonedFeeds()
+        self.assertLessEqual(len(monitor.seen_request_ids), commands_before)
+        self.assertIsNone(connection.queriesx)
+
+        # A profiled request or task turns recording on, and then its commands are kept for it.
+        connection.queriesx = []
+        MStory.objects(story_feed_id=0).count()
+        self.assertEqual({q["mongo"]["collection"] for q in connection.queriesx}, {"stories"})
+
+    def test_trim_feeds_catches_up_on_the_backlog(self, mock_redis, *mocks):
+        import io
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        long_quiet = self._feed("backlog", last_fetch_days_ago=400)
+        archived = self._feed("archived", archive_subscribers=1)
+        stale = self._feed("stale-archive")
+        self._subscribe(stale, "stalearchive", last_seen_days_ago=60, is_archive=True)
+        returning = self._feed("returning")
+        self._subscribe(returning, "returning", last_seen_days_ago=8)
+
+        management.call_command("trim_feeds", threads=1, dryrun=True, stdout=io.StringIO())
+        self.assertEqual(self._stored(long_quiet), self.STORIES)
+
+        management.call_command("trim_feeds", threads=1, stdout=io.StringIO())
+
+        self.assertEqual(self._stored(long_quiet), 10)
+        self.assertEqual(self._stored(archived), self.STORIES)
+        self.assertEqual(self._stored(stale), self.STORIES)
+        self.assertEqual(self._stored(returning), self.STORIES)
+
+
+class Test_TrimOldSavedStories(TestCase):
+    """MStarredStory.trim_old_stories (apps/rss_feeds/models.py) deletes saved stories nobody can
+    come back for: the copies unsaving leaves under user_id 0, saves left by deleted accounts, and
+    the saves of free accounts that never had premium and haven't been seen in two years. Accounts
+    that paid, or had premium any other way, keep theirs, since they may come back."""
+
+    def _user(self, username, last_seen_days_ago, premium=False, paid=False, granted=False):
+        from apps.profile.models import PaymentHistory
+
+        user = User.objects.create_user(username, "%s@example.com" % username, "password")
+        Profile.objects.filter(user=user).update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=last_seen_days_ago),
+            is_premium=premium,
+            # A grant, an extension or a trial sets premium_expire without a PaymentHistory row.
+            premium_expire=datetime.datetime.now() - datetime.timedelta(days=900) if granted else None,
+        )
+        if paid:
+            PaymentHistory.objects.create(
+                user=user,
+                payment_date=datetime.datetime.now() - datetime.timedelta(days=1500),
+                payment_amount=36,
+                payment_provider="stripe",
+            )
+        return user.pk
+
+    def _save(self, user_id, count, name):
+        from apps.rss_feeds.models import MStarredStory
+
+        for number in range(count):
+            MStarredStory(
+                user_id=user_id,
+                story_feed_id=42,
+                story_guid="https://www.example.com/%s/%s" % (name, number),
+                story_title="%s %s" % (name, number),
+                story_permalink="https://www.example.com/%s/%s" % (name, number),
+                story_date=datetime.datetime(2020, 1, 1),
+                starred_date=datetime.datetime(2020, 1, 1) + datetime.timedelta(minutes=number),
+            ).save()
+        self.addCleanup(lambda: MStarredStory.objects(user_id=user_id).delete())
+
+    def _saved(self, user_id):
+        from apps.rss_feeds.models import MStarredStory
+
+        return MStarredStory.objects(user_id=user_id).count()
+
+    def test_only_saves_nobody_can_come_back_for_are_deleted(self):
+        from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
+
+        gone = self._user("gonefree", last_seen_days_ago=800)
+        lapsed = self._user("lapsedpaid", last_seen_days_ago=800, paid=True)
+        premium = self._user("stillpremium", last_seen_days_ago=800, premium=True)
+        recent = self._user("recentfree", last_seen_days_ago=100)
+        few = self._user("fewsaves", last_seen_days_ago=800)
+        granted = self._user("grantedonce", last_seen_days_ago=800, granted=True)
+        deleted_account = User.objects.order_by("-pk").first().pk + 1000
+        self._save(0, 4, "unsaved")
+        self._save(deleted_account, 3, "deleted-account")
+        for user_id in (gone, lapsed, premium, recent, granted):
+            self._save(user_id, 12, "user-%s" % user_id)
+        self._save(few, 5, "few")
+        MStarredStoryCounts.count_for_user(gone)
+        self.assertTrue(MStarredStoryCounts.objects(user_id=gone).count())
+
+        estimate = MStarredStory.trim_old_stories(dryrun=True, batch_size=3)
+        self.assertEqual(self._saved(0), 4)
+        self.assertEqual(self._saved(gone), 12)
+
+        trimmed = MStarredStory.trim_old_stories(batch_size=3)
+
+        self.assertEqual(trimmed, estimate)
+        self.assertEqual(self._saved(0), 0)
+        self.assertEqual(self._saved(deleted_account), 0)
+        self.assertEqual(self._saved(gone), 0)
+        counts, total = MStarredStoryCounts.user_counts(gone, include_total=True, try_counting=False)
+        self.assertEqual(total, 0)
+        self.assertFalse([c for c in counts if c["feed_id"] or c["tag"]])
+        for kept in (lapsed, premium, recent, granted):
+            self.assertEqual(self._saved(kept), 12)
+        self.assertEqual(self._saved(few), 5)
+
+    @patch("apps.rss_feeds.models.time.sleep")
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_deletes_wait_while_the_secondaries_lag(self, mock_lag, mock_sleep):
+        from apps.rss_feeds.models import MStarredStory
+
+        self._save(0, 4, "lagging")
+        # Behind by 45 seconds once, then caught up.
+        mock_lag.side_effect = [45] + [0] * 50
+
+        MStarredStory.trim_old_stories(batch_size=2)
+
+        self.assertEqual(self._saved(0), 0)
+        # Checked after each of the two batches, and once more after waiting out the 45 seconds.
+        self.assertEqual(mock_lag.call_count, 3)
+        mock_sleep.assert_any_call(5)
+
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_an_account_that_comes_back_mid_trim_keeps_the_rest_of_its_saves(self, mock_lag):
+        from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
+
+        returning = self._user("comesback", last_seen_days_ago=800)
+        self._save(returning, 12, "returning")
+
+        def comes_back_during_the_first_wait(connection):
+            if mock_lag.call_count == 1:
+                Profile.objects.filter(user_id=returning).update(last_seen_on=datetime.datetime.now())
+            return 0
+
+        mock_lag.side_effect = comes_back_during_the_first_wait
+
+        MStarredStory.trim_old_stories(batch_size=5)
+
+        # The first batch went before they came back; the rest stay, and the counts match them.
+        self.assertEqual(self._saved(returning), 7)
+        counts, total = MStarredStoryCounts.user_counts(returning, include_total=True, try_counting=False)
+        self.assertEqual(total, 7)
+
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_a_story_saved_during_the_trim_is_kept(self, mock_lag):
+        """An app can save a story without the profile's last_seen_on catching up first."""
+        from apps.rss_feeds.models import MStarredStory
+
+        quiet = self._user("savesquietly", last_seen_days_ago=800)
+        self._save(quiet, 12, "quiet")
+
+        def saves_during_the_first_wait(connection):
+            if mock_lag.call_count == 1:
+                MStarredStory(
+                    user_id=quiet,
+                    story_feed_id=42,
+                    story_guid="https://www.example.com/quiet/new",
+                    story_title="Saved mid-trim",
+                    story_permalink="https://www.example.com/quiet/new",
+                    story_date=datetime.datetime.now(),
+                    starred_date=datetime.datetime.now(),
+                ).save()
+            return 0
+
+        mock_lag.side_effect = saves_during_the_first_wait
+
+        MStarredStory.trim_old_stories(batch_size=5)
+
+        self.assertEqual([s.story_title for s in MStarredStory.objects(user_id=quiet)], ["Saved mid-trim"])
+
+    def test_a_batch_size_below_one_is_refused(self):
+        """pymongo reads a limit of 0 as no limit, which would delete everything in one request."""
+        import io
+
+        from apps.rss_feeds.models import MStarredStory
+
+        self._save(0, 2, "refused")
+        with self.assertRaises(ValueError):
+            MStarredStory.trim_old_stories(batch_size=0)
+        with self.assertRaises(CommandError):
+            management.call_command("trim_saved_stories", batch=0, stdout=io.StringIO())
+        self.assertEqual(self._saved(0), 2)
+
+    def test_each_batch_is_deleted_by_id_alone(self):
+        """A delete that also filtered on user_id let Mongo plan it on the (user_id, -starred_date)
+        index, so every batch of user 0's unsaved copies walked all 6.9 million of them and the first
+        production run stalled for minutes per batch. The batch's ids come from the filtered find."""
+        import pymongo.collection
+
+        from apps.rss_feeds.models import MStarredStory
+
+        gone = self._user("deletedbyid", last_seen_days_ago=800)
+        self._save(0, 3, "by-id")
+        self._save(gone, 12, "by-id-account")
+        filters = []
+        delete_many = pymongo.collection.Collection.delete_many
+
+        def recording(collection, filter, *args, **kwargs):
+            if collection.name == "starred_stories":
+                filters.append(filter)
+            return delete_many(collection, filter, *args, **kwargs)
+
+        with patch.object(pymongo.collection.Collection, "delete_many", recording):
+            MStarredStory.trim_old_stories(batch_size=5)
+
+        self.assertTrue(filters)
+        self.assertEqual({tuple(f) for f in filters}, {("_id",)})
+        self.assertEqual(self._saved(0), 0)
+        self.assertEqual(self._saved(gone), 0)
+
+
+class Test_FeedAutocomplete(TestCase):
+    """Feed.autocomplete runs the hybrid search unless the caller only needs text matching."""
+
+    def test_hybrid_search_by_default(self):
+        hits = [{"_source": {"feed_id": 7}}, {"_source": {"feed_id": 9}}]
+        with patch.object(SearchFeed, "hybrid_query", return_value=hits) as hybrid_query, patch.object(
+            SearchFeed, "query"
+        ) as query:
+            self.assertEqual(Feed.autocomplete("kottke"), [7, 9])
+
+        hybrid_query.assert_called_once_with("kottke", max_results=10)
+        query.assert_not_called()
+
+    def test_semantic_false_skips_the_embedding(self):
+        hits = [{"_source": {"feed_id": 7}}, {"_source": {"feed_id": 9}}]
+        with patch.object(SearchFeed, "hybrid_query") as hybrid_query, patch.object(
+            SearchFeed, "query", return_value=hits
+        ) as query:
+            self.assertEqual(Feed.autocomplete("kottke.org", limit=1, semantic=False), [7])
+
+        query.assert_called_once_with("kottke.org", max_results=1)
+        hybrid_query.assert_not_called()

@@ -3,6 +3,7 @@ import uuid
 
 import redis
 from django.conf import settings
+from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
 
 from apps.rss_feeds.models import Feed
@@ -10,11 +11,7 @@ from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
 from utils import feedfinder_forman
 from utils import json_functions as json
 from utils import log as logging
-from utils.url_safety import (
-    BLOCKED_PRIVATE_URL_MESSAGE,
-    UnsafeUrlError,
-    validate_public_url,
-)
+from utils.url_safety import BLOCKED_PRIVATE_URL_MESSAGE, UnsafeUrlError, validate_public_url
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
 
@@ -44,7 +41,7 @@ def analyze(request):
 
     if request_id:
         if not REQUEST_ID_RE.match(request_id):
-            return {"code": -1, "message": "Invalid request identifier"}
+            return {"code": -1, "message": gettext("Invalid request identifier")}
     else:
         request_id = str(uuid.uuid4())
 
@@ -57,7 +54,7 @@ def analyze(request):
         logging.user(request.user, f"~BB~FWWeb Feed: ~SB{url}~SN is already a feed, redirecting to subscribe")
         return {
             "code": 2,
-            "message": "This is already an RSS feed. Subscribing directly.",
+            "message": gettext("This is already an RSS feed. Subscribing directly."),
             "feed_address": url,
         }
 
@@ -80,7 +77,7 @@ def analyze(request):
 
     return {
         "code": 1,
-        "message": "Analyzing page",
+        "message": gettext("Analyzing page"),
         "request_id": request_id,
     }
 
@@ -95,7 +92,7 @@ def subscribe(request):
 
     profile = Profile.objects.get(user=request.user)
     if not profile.is_archive:
-        return {"code": -1, "message": "Web Feed requires a Premium Archive subscription."}
+        return {"code": -1, "message": gettext("Web Feed requires a Premium Archive subscription.")}
 
     url = request.POST.get("url", "").strip()
     variant_index = int(request.POST.get("variant_index", 0))
@@ -115,7 +112,7 @@ def subscribe(request):
     feed_title = request.POST.get("feed_title", "").strip()
 
     if not URL_RE.match(url):
-        return {"code": -1, "message": "Invalid URL"}
+        return {"code": -1, "message": gettext("Invalid URL")}
     try:
         validate_public_url(url)
     except UnsafeUrlError:
@@ -128,7 +125,7 @@ def subscribe(request):
             "story_container=%s title=%s link=%s POST keys=%s"
             % (repr(story_container_xpath), repr(title_xpath), repr(link_xpath), list(request.POST.keys())),
         )
-        return {"code": -1, "message": "Missing XPath expressions for story extraction"}
+        return {"code": -1, "message": gettext("Missing XPath expressions for story extraction")}
 
     if is_degenerate_container_xpath(story_container_xpath):
         logging.user(
@@ -139,8 +136,10 @@ def subscribe(request):
         return {
             "code": -1,
             "message": (
-                "That story pattern is tied to the exact items on the page right now, "
-                "so it would never find new stories. Please analyze the page again."
+                gettext(
+                    "That story pattern is tied to the exact items on the page right now, "
+                    "so it would never find new stories. Please analyze the page again."
+                )
             ),
         }
 
@@ -231,7 +230,7 @@ def subscribe(request):
     return {
         "code": 1,
         "feed": feed.canonical(),
-        "message": "Subscribed to web feed",
+        "message": gettext("Subscribed to web feed"),
     }
 
 
@@ -246,17 +245,17 @@ def reanalyze(request):
 
     if request_id:
         if not REQUEST_ID_RE.match(request_id):
-            return {"code": -1, "message": "Invalid request identifier"}
+            return {"code": -1, "message": gettext("Invalid request identifier")}
     else:
         request_id = str(uuid.uuid4())
 
     try:
         feed = Feed.objects.get(pk=feed_id)
     except Feed.DoesNotExist:
-        return {"code": -1, "message": "Feed not found"}
+        return {"code": -1, "message": gettext("Feed not found")}
 
     if not feed.feed_address.startswith("webfeed:"):
-        return {"code": -1, "message": "Not a web feed"}
+        return {"code": -1, "message": gettext("Not a web feed")}
 
     url = feed.feed_address[len("webfeed:") :]
 
@@ -275,7 +274,7 @@ def reanalyze(request):
 
     return {
         "code": 1,
-        "message": "Re-analyzing page",
+        "message": gettext("Re-analyzing page"),
         "request_id": request_id,
         "feed_id": feed_id,
     }

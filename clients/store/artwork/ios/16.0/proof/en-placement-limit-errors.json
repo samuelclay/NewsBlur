@@ -1,0 +1,54 @@
+[
+  {
+    "status": 409,
+    "path": "https://appstoreconnect.apple.com/iris/v1/appAssetLibraryPlacements",
+    "errors": [
+      {
+        "id": "967b7b17-7022-4787-b3b0-3ce8f0ae9c78",
+        "status": "409",
+        "code": "STATE_ERROR.ASSETS_PER_PLACEMENT_LIMIT_EXCEEDED",
+        "title": "The request cannot be fulfilled because of the state of another resource.",
+        "detail": "This placement group allows at most 10 APP_SCREENSHOT placements. Delete a placement from the group, then try again."
+      }
+    ]
+  },
+  {
+    "status": 409,
+    "path": "https://appstoreconnect.apple.com/iris/v1/appAssetLibraryPlacements",
+    "errors": [
+      {
+        "id": "ecb5a047-c079-4a80-972d-bdb215be6e1c",
+        "status": "409",
+        "code": "STATE_ERROR.ASSETS_PER_PLACEMENT_LIMIT_EXCEEDED",
+        "title": "The request cannot be fulfilled because of the state of another resource.",
+        "detail": "This placement group allows at most 10 APP_SCREENSHOT placements. Delete a placement from the group, then try again."
+      }
+    ]
+  },
+  {
+    "status": 409,
+    "path": "https://appstoreconnect.apple.com/iris/v1/appAssetLibraryPlacements",
+    "errors": [
+      {
+        "id": "87f97a05-4d79-4e30-9008-970389c7243e",
+        "status": "409",
+        "code": "STATE_ERROR.ASSETS_PER_PLACEMENT_LIMIT_EXCEEDED",
+        "title": "The request cannot be fulfilled because of the state of another resource.",
+        "detail": "This placement group allows at most 10 APP_SCREENSHOT placements. Delete a placement from the group, then try again."
+      }
+    ]
+  },
+  {
+    "status": 409,
+    "path": "https://appstoreconnect.apple.com/iris/v1/appAssetLibraryPlacements",
+    "errors": [
+      {
+        "id": "6a1a759b-b62e-4d42-b656-5de24d38c3f2",
+        "status": "409",
+        "code": "STATE_ERROR.ASSETS_PER_PLACEMENT_LIMIT_EXCEEDED",
+        "title": "The request cannot be fulfilled because of the state of another resource.",
+        "detail": "This placement group allows at most 10 APP_SCREENSHOT placements. Delete a placement from the group, then try again."
+      }
+    ]
+  }
+]

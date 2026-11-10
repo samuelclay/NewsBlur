@@ -1,0 +1,342 @@
+{
+ "about": "Media files in this folder live in S3, not git. Run `make assets-pull` (utils/repo_assets.py).",
+ "bucket": "newsblur-repo-assets",
+ "files": {
+  "ftux-2026-10-01/claypad-edge-flick-before.png": {
+   "sha256": "b9bd1f60d8f10c1100d76c44bd4e8df35ffb8be531f2210592e670294446bdf7",
+   "size": 3009911
+  },
+  "ftux-2026-10-01/claypad-edge-flick-first-attempt.png": {
+   "sha256": "e450f61fe6455000ee605485afd201e41e85ec2ca015514cf228bd837bbe4fbf",
+   "size": 2702554
+  },
+  "ftux-2026-10-01/claypad-first-edge-after.png": {
+   "sha256": "19affd603048edff06528fb09b69fe7a30f2d48044c82ed7044c9b554c1830b8",
+   "size": 338162
+  },
+  "ftux-2026-10-01/claypad-first-edge-before.png": {
+   "sha256": "1c427659f379281701d2c3239982e6ae748c981ba71972a139b366d89694e55e",
+   "size": 134387
+  },
+  "ftux-2026-10-01/import-menu.png": {
+   "sha256": "8db7d46dd6ace4860022ff746e06ff90a68b385bc23909c1ec36cb1ed4c8e6e1",
+   "size": 350825
+  },
+  "ftux-2026-10-01/ipad-edge-before.png": {
+   "sha256": "28fc367c86715af5458b15fefe07b15379a96872863b2fa2faf1bb2f3c50fbef",
+   "size": 276810
+  },
+  "ftux-2026-10-01/ipad-edge-revealed.png": {
+   "sha256": "746229548e74088f473fe6f7cf017f738c484a9f512428619a217b29293e22a8",
+   "size": 544838
+  },
+  "ftux-2026-10-01/ipad-edge-save-preserved.png": {
+   "sha256": "8ffb1bde6d8653874c7dd6bdf33158e8dac0ff7e52038b059e64e331da6ddb8c",
+   "size": 554038
+  },
+  "ftux-2026-10-01/onboarding-account.png": {
+   "sha256": "f8dfe61854ad0d348a24fc8a66ba3cb00fd7cc71acf01afb329dc77641be14b2",
+   "size": 798076
+  },
+  "ftux-2026-10-01/onboarding-bundle-dark.png": {
+   "sha256": "5fed59a4aac91eeceebd676ebc21cd630af6a95f04536c276d4d72bb6dcba17c",
+   "size": 322061
+  },
+  "ftux-2026-10-01/onboarding-bundle-light.png": {
+   "sha256": "4535c9f7731e8baf906fc025af3146a9b0d4100988105e945ffb3af089d195cb",
+   "size": 361642
+  },
+  "ftux-2026-10-01/onboarding-bundle-medium.png": {
+   "sha256": "226e2e32aa9d8d017ba80b4fc06f84e911ee699e6cc8018efbdc65d715e0aa56",
+   "size": 318063
+  },
+  "ftux-2026-10-01/onboarding-bundle-sepia.png": {
+   "sha256": "814ea21a84821c7f12d58f3035867ef7c1f67486e879ffecf0693f900fff073d",
+   "size": 364665
+  },
+  "ftux-2026-10-01/onboarding-complete-dark.png": {
+   "sha256": "d745ed8218270944c91e91ea7477a14fece682c05bec8a145caabbcdf8ef8261",
+   "size": 170127
+  },
+  "ftux-2026-10-01/onboarding-complete-light.png": {
+   "sha256": "6d37604231cc190eba2746d3f83c039e273cd052969f80bcc5907f47c6e2d3e2",
+   "size": 181103
+  },
+  "ftux-2026-10-01/onboarding-complete-medium.png": {
+   "sha256": "7e653b2b92626243fab741082cedd04b9e39c926dff1271742d7820f3578f73e",
+   "size": 168345
+  },
+  "ftux-2026-10-01/onboarding-complete-sepia.png": {
+   "sha256": "a401bc317d80f5460e4c97b36720c589fae955054a733a4ef44467e4d3825b26",
+   "size": 179870
+  },
+  "ftux-2026-10-01/onboarding-discovery-dark.png": {
+   "sha256": "2747e9f9302c1d051dbf39926e944e677f56e35314bf5cce5d9a36a6745dd17d",
+   "size": 198593
+  },
+  "ftux-2026-10-01/onboarding-discovery-light.png": {
+   "sha256": "531e7322111e43a8c10e84f851f1e380f4d62d85905c1416da3d5c51975a8208",
+   "size": 201830
+  },
+  "ftux-2026-10-01/onboarding-discovery-medium.png": {
+   "sha256": "8ed3de88b9c3ed2fb187fa55de9846313786e7bc2d6d6420f22c0499e93c9a83",
+   "size": 194982
+  },
+  "ftux-2026-10-01/onboarding-discovery-sepia.png": {
+   "sha256": "3a2bfe036622752d693a447a47a224f52ac0ab7bc6058ca7bdd4c0ab43dd0f82",
+   "size": 204650
+  },
+  "ftux-2026-10-01/onboarding-import-dark.png": {
+   "sha256": "2e636eece59f50f6c81997976a7e7fd9da22acae55e1fc116dc490639247e87c",
+   "size": 189375
+  },
+  "ftux-2026-10-01/onboarding-import-light.png": {
+   "sha256": "b25406ef4054c7730f9bcd4a4ceed0bd78dcb61b0e104ba505ab51e8e22cc3be",
+   "size": 201668
+  },
+  "ftux-2026-10-01/onboarding-import-medium.png": {
+   "sha256": "9806cb9fe01c9383d8c36bbcfa05651f0ad13d91964725055334acd4c07fdb15",
+   "size": 185627
+  },
+  "ftux-2026-10-01/onboarding-import-sepia.png": {
+   "sha256": "b6f0ea8f6bea0c244a109b7e0f2bdca799d6f7a0b97d1720c6c591194a40f9d0",
+   "size": 199966
+  },
+  "ftux-2026-10-01/onboarding-last-used.png": {
+   "sha256": "bd331a58859a41e70066e79481a7c66e827fe3220ef84fdc44d8aa0d5ff57b22",
+   "size": 792326
+  },
+  "ftux-2026-10-01/onboarding-loading-final.png": {
+   "sha256": "b11e9212254d82a7ce279ff74b2ac6e603a0dcf6f23298e47464261180d5c32e",
+   "size": 204326
+  },
+  "ftux-2026-10-01/onboarding-loading-reader-finished.png": {
+   "sha256": "5efa3b5322b4d0b30b96365d6d5b0f48c6daaa9eab5ae7c8bad977e66e2fba0d",
+   "size": 251528
+  },
+  "ftux-2026-10-01/onboarding-loading-reader.png": {
+   "sha256": "10d3fef397449d6e4b0c1cb23dc8c89f53b5978b8a58e14ab5958f74c9aabd74",
+   "size": 256462
+  },
+  "ftux-2026-10-01/redesigned-import-claypad.png": {
+   "sha256": "421ea343ec184fd2d2acfe9e1840f66f453c054d1e7c2050822a1a810be5841a",
+   "size": 346345
+  },
+  "ftux-2026-10-01/redesigned-import-dark.png": {
+   "sha256": "cfbe172f09b19ae08538478c99f91c454d36c42a2a63085432b1e643e8de478c",
+   "size": 178448
+  },
+  "ftux-2026-10-02/bundle-redesign-dark.png": {
+   "sha256": "d03efa1919f693304b6000c52d64a535700bb93b0939dd432df07ffbed6ab12c",
+   "size": 276946
+  },
+  "ftux-2026-10-02/bundle-redesign-empty-selection.png": {
+   "sha256": "8332f70bc1538c44feda87857d38c322b4edc9e0f1355d9d2fce25489d502550",
+   "size": 344795
+  },
+  "ftux-2026-10-02/bundle-redesign-light.png": {
+   "sha256": "255ab25c76f0225754e2b2f1d8850211e042c7bd5530ff67b879e8def033a846",
+   "size": 341248
+  },
+  "ftux-2026-10-02/bundle-redesign-loading.png": {
+   "sha256": "7807ea258f6ed6b5e54779bacead86c4098b71cce9ad1a585441679d45e09bc1",
+   "size": 241811
+  },
+  "ftux-2026-10-02/bundle-redesign-medium.png": {
+   "sha256": "0e5ebeb5e038dc8ba0401e28c266613f9545ab86235794f32b17c5b46b7ca10b",
+   "size": 281917
+  },
+  "ftux-2026-10-02/bundle-redesign-renamed-folder.png": {
+   "sha256": "17c5d8710c2e998bf74980b826e007288a039fce17d1abb0d681276be0c38ee0",
+   "size": 346974
+  },
+  "ftux-2026-10-02/bundle-redesign-sepia.png": {
+   "sha256": "78bb2c005de3f4371dced026d94d30c7e49816a9b916c1e800b30287fa9c6e90",
+   "size": 338991
+  },
+  "ftux-2026-10-02/category-audit.png": {
+   "sha256": "ecced8b26b6062a8cc812b388ac9108c94844dd648a87cf9e0b916260c13d65b",
+   "size": 5829576
+  },
+  "ftux-2026-10-02/category-first-icon-ipad.png": {
+   "sha256": "c3ea2f2fcc4bb4346ad6cb56730ed0bada1f40b98ca59c01eca25da4ee80a3fc",
+   "size": 199249
+  },
+  "ftux-2026-10-02/category-first-icon-phone.png": {
+   "sha256": "e145f99e100607e6d08411cd0a7d52cb06a264e81455e722dfffac2f3fe6e747",
+   "size": 182869
+  },
+  "ftux-2026-10-02/category-five-icons-phone.png": {
+   "sha256": "8e77dd1aa089855510bd365ba3bf668c6e6be28947dc194efb0b720fd16e793e",
+   "size": 183733
+  },
+  "ftux-2026-10-02/claypad-bundle-folder.png": {
+   "sha256": "c7fe744a83bb246f13588e13125306e06b4500e13a7fad9078afe21202813bfe",
+   "size": 1442252
+  },
+  "ftux-2026-10-02/claypad-cooking-bundle.png": {
+   "sha256": "07c01b2c3c284ec7a9e846e7408f97c1efd6af525953abdc9d2893df635a89ab",
+   "size": 1511337
+  },
+  "ftux-2026-10-02/claypad-cooking-icons.png": {
+   "sha256": "8be6213f9149ad2846db21d7e63cfd196f959673a8dc437d88d298388fbfb0b5",
+   "size": 987059
+  },
+  "ftux-2026-10-02/claypad-economics-progressive.png": {
+   "sha256": "6ad10285017bd41b31a0c9806c50c4dc80faf0f10034f2a17dd49fa364eb934a",
+   "size": 1443585
+  },
+  "ftux-2026-10-02/claypad-fresh-category-icons.png": {
+   "sha256": "710673c1361f92622ee63601a8674db5965f518a632788e9b560598fccf2d321",
+   "size": 1336673
+  },
+  "ftux-2026-10-02/claypad-import-category-header.png": {
+   "sha256": "75baa70470c6919396027ae444517e911f608ad062e2b2b76e591c46c26c65da",
+   "size": 919111
+  },
+  "ftux-2026-10-02/claypad-progressive-icons-and-swipe.png": {
+   "sha256": "dfbdc82bcb9c5845dca5a01460cd63fbbd7fa7e43e5abdf15607cde160ff7f30",
+   "size": 1249712
+  },
+  "ftux-2026-10-02/completion-single-spinner-phone.png": {
+   "sha256": "70f0da7726014c5669bea7b9bbc961bbe8a243f34670104f7cca67726474353a",
+   "size": 194011
+  },
+  "ftux-2026-10-02/ipad-auto-sidebar-hidden.png": {
+   "sha256": "4334278862c5ca71eecda1f218e924d541b6581d0ce951881d4345b99b114133",
+   "size": 571270
+  },
+  "ftux-2026-10-02/ipad-auto-sidebar-overlay.png": {
+   "sha256": "175bacfaff835f56bf6434ddaecafebeb18924e817e5a5449258e43b96221437",
+   "size": 551250
+  },
+  "ftux-2026-10-02/ipad-compact-sync-header.png": {
+   "sha256": "a7f32e877401f3b871a836bc38e85a0c9e6738a9ddd52270def5256bd3f9bf70",
+   "size": 208979
+  },
+  "ftux-2026-10-02/notifier-right-aligned-phone.png": {
+   "sha256": "0f4801772f0227654c75213dfa05f8b76e217c360c221869f8a51dff2698bdc1",
+   "size": 258779
+  },
+  "ftux-2026-10-02/onboarding-catalog-loading-dark.png": {
+   "sha256": "e50ddae8e4d8d93fc210e8b9b126e273bfe1b3d08726289a27067cba50dfcb99",
+   "size": 137137
+  },
+  "ftux-2026-10-02/onboarding-catalog-loading-light.png": {
+   "sha256": "9091eb17d81a73f8bcc2736b6cc8881f646d84354a85603de180505404702871",
+   "size": 147189
+  },
+  "ftux-2026-10-02/onboarding-catalog-loading-medium.png": {
+   "sha256": "92e59e620a99acaa9140c5baa8d70629d6b31dc8e192acec22a9d0b596b23282",
+   "size": 133280
+  },
+  "ftux-2026-10-02/onboarding-catalog-loading-sepia.png": {
+   "sha256": "2bc5c2c183efb578760da8f2e55cc719f3f4d33186bdaa001f5a6837630634f3",
+   "size": 146130
+  },
+  "ftux-2026-10-02/onboarding-catalog-ready-dark.png": {
+   "sha256": "c66ad20b4298a44b3eddb820df8ac9e43ac23a7a99caedc414d6825e49d3f2e3",
+   "size": 187436
+  },
+  "ftux-2026-10-02/onboarding-catalog-ready-light.png": {
+   "sha256": "92c5c66b3f732ba204b56a6f344ed8a857dfde101cadbe95d58d9b72c91cc0a9",
+   "size": 203042
+  },
+  "ftux-2026-10-02/onboarding-catalog-ready-medium.png": {
+   "sha256": "69ce88b288dc8e31d19c776658a2b1e64b00ca51311a61f8047f963b4ae7e41d",
+   "size": 182976
+  },
+  "ftux-2026-10-02/onboarding-catalog-ready-sepia.png": {
+   "sha256": "47d8037f551d11f6a891c2c2f4e0d40c0374b07b9082f2691f53e084610edb4c",
+   "size": 203396
+  },
+  "ftux-2026-10-02/onboarding-category-added-dark.png": {
+   "sha256": "3d0fdfcd792408f0ce9c0d13e028be7ae92b878f017e7b836ce2dd18f4d106a5",
+   "size": 207216
+  },
+  "ftux-2026-10-02/onboarding-category-added-light.png": {
+   "sha256": "7b5720fcc6650b40a3f3229301c16bb4ec739150782efa9f6172f1e01a72bfe4",
+   "size": 222438
+  },
+  "ftux-2026-10-02/onboarding-category-added-medium.png": {
+   "sha256": "07683717ddb03c2f3c448c245613167018e3d12d2206211a96328ba5b5cb7be8",
+   "size": 202467
+  },
+  "ftux-2026-10-02/onboarding-category-added-sepia.png": {
+   "sha256": "07142c5a9675b49a83bd32b4febcee3e0f1fb257523b5fb036d87a2f63db66b4",
+   "size": 221676
+  },
+  "ftux-2026-10-02/onboarding-complete-community-phone.png": {
+   "sha256": "94da8defd70c4e066fcff595fa72f5fdb5cab244bdfb43ee4644fda0bb63a103",
+   "size": 241125
+  },
+  "ftux-2026-10-02/onboarding-complete-empty-phone.png": {
+   "sha256": "7b5fcaf0507815dd37c4eb2c5572ab3da3db4b56371e8f80831e4855c9eade4c",
+   "size": 241820
+  },
+  "ftux-2026-10-02/onboarding-quiet-completion.png": {
+   "sha256": "c951ebf1ba17735b66423c8349af1535155849b6d4651f91e284d1bae33a3d01",
+   "size": 149786
+  },
+  "ftux-2026-10-02/onboarding-recap-dark.png": {
+   "sha256": "6152eb4febb91b82796adc1166e4dfa9bfd40352b0efefde9e29a33a8840a192",
+   "size": 212980
+  },
+  "ftux-2026-10-02/onboarding-recap-light.png": {
+   "sha256": "58a067ab291b1ad9f8c727f7aee7a5f212704067b716175a5383364e6cbe6b13",
+   "size": 225774
+  },
+  "ftux-2026-10-02/onboarding-recap-medium.png": {
+   "sha256": "dfc0f23afd07173df1b5abe1fdbecb0a9d6c5fc4a8e1019f701a4b5472adbfef",
+   "size": 209488
+  },
+  "ftux-2026-10-02/onboarding-recap-sepia.png": {
+   "sha256": "385e88132e8d8a4c96c73ae938aa995108dd35e2da1fd9c635f04945f05b461f",
+   "size": 224986
+  },
+  "ftux-2026-10-02/onboarding-returned-to-interests.png": {
+   "sha256": "f04a8f3127bbc2d74fddcb3b7142d2e37faac3f9872fb498063399da6d70d3a7",
+   "size": 207116
+  },
+  "ftux-2026-10-02/onboarding-whole-card-excluded-dark.png": {
+   "sha256": "7947c72cc75214bf978cad1730c97216668748ae5274063d7634c3f25de01aed",
+   "size": 278459
+  },
+  "ftux-2026-10-02/onboarding-whole-card-excluded-light.png": {
+   "sha256": "34613307e40c259ec3e7c8d7cf6edf9516cab9e5c2ab50ab84f6fc2f65a48621",
+   "size": 342480
+  },
+  "ftux-2026-10-02/onboarding-whole-card-excluded-medium.png": {
+   "sha256": "62001b1c445a61e7f01683bfc75d76439fd27b2ae6d2f581d0564c53c08d1629",
+   "size": 282143
+  },
+  "ftux-2026-10-02/onboarding-whole-card-excluded-sepia.png": {
+   "sha256": "d7b3346a55c44467c59f76109aa363d4863ed00e5ab567b2608a1cffcc49e13b",
+   "size": 340390
+  },
+  "ftux-2026-10-02/onboarding-whole-card-included-dark.png": {
+   "sha256": "89b07e76b7bb1b3fc9c71a6dcc6829acf08d3685f6c1b8bfff5ecab29ad7c3ad",
+   "size": 299398
+  },
+  "ftux-2026-10-02/onboarding-whole-card-included-light.png": {
+   "sha256": "a1103f359e49e13c60633d712fe34f2f38cfffda6b786389b88b66e573948165",
+   "size": 390777
+  },
+  "ftux-2026-10-02/onboarding-whole-card-included-medium.png": {
+   "sha256": "fc93be349fcb6b9beb95efbf742f845b1daa3a1b848e5e0c890a48b7fcdb0243",
+   "size": 302555
+  },
+  "ftux-2026-10-02/onboarding-whole-card-included-sepia.png": {
+   "sha256": "c1a0beab6816dae3db98bfa9af630f7c961d7ba1a9bc9e767491bf87531cc0e2",
+   "size": 387740
+  },
+  "ftux-2026-10-02/progressive-editable-bundle-phone.png": {
+   "sha256": "86429afcfa0bcc743f02e93ebe41d799564e3c3f70a214487b9dfe406d1b5b9f",
+   "size": 396878
+  },
+  "ftux-2026-10-02/quiet-background-bundle-phone.png": {
+   "sha256": "3f9e9f4203679b6f071ba4f238a393fae102dfdb000d56fbb1769a0a965d5fa0",
+   "size": 137945
+  }
+ }
+}

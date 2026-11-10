@@ -13,6 +13,7 @@ import com.newsblur.databinding.ViewDiscoverFeedRowBinding
 import com.newsblur.databinding.ViewDiscoverStoryRowBinding
 import com.newsblur.domain.DiscoverFeedPayload
 import com.newsblur.domain.DiscoverStory
+import com.newsblur.util.BidiText
 import com.newsblur.util.DiscoverFeedFreshnessFormatter
 import com.newsblur.util.DiscoverStoryTextFormatter
 import com.newsblur.util.DiscoverThemePalette
@@ -183,7 +184,8 @@ class DiscoverFeedAdapter(
         private fun buildStoryMeta(story: DiscoverStory): String {
             val parts = mutableListOf<String>()
             if (story.storyAuthors.isNotBlank()) {
-                parts.add(story.storyAuthors)
+                // DiscoverFeedAdapter.kt isolates the author so the bullet stays between it and the date in either direction.
+                parts.add(BidiText.isolate(story.storyAuthors))
             }
             DiscoverFeedFreshnessFormatter.parseApiDateMillis(story.storyDate)?.let { storyDateMillis ->
                 parts.add(

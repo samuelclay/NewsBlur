@@ -36,7 +36,7 @@ var linkAt = function(x, y, attribute) {
     return el && el[attribute];
 };
 
-// StoryImageViewerController.swift uses viewport coordinates, including after rotation.
+// StoryImageViewerController.swift converts document coordinates through the native scroll offset.
 var newsblur_image_sequence = 0;
 function newsblurImageRect(token, load_id) {
     var load = document.querySelector('meta[name="newsblur-story-load"]');
@@ -44,15 +44,19 @@ function newsblurImageRect(token, load_id) {
     var image = document.querySelector('img[data-newsblur-image-token="' + token + '"]');
     if (!image) return null;
     var rect = image.getBoundingClientRect();
-    return {x: rect.left, y: rect.top, width: rect.width, height: rect.height,
+    return {x: rect.left + window.scrollX, y: rect.top + window.scrollY, width: rect.width, height: rect.height,
             viewportWidth: window.innerWidth};
 }
 
-function newsblurOpenImage(image) {
+function newsblurIsStoryImage(image) {
+    return image && image.tagName === 'IMG' && image.closest('.NB-story') &&
+        image.complete && image.naturalWidth > 1 && image.naturalHeight > 1;
+}
+
+function newsblurOpenImage(image, accessibility_activation, show_actions) {
     var bridge = window.webkit && window.webkit.messageHandlers.newsblurStoryImage;
     var load = document.querySelector('meta[name="newsblur-story-load"]');
-    if (!bridge || !load || !image || image.tagName !== 'IMG' || !image.closest('.NB-story') ||
-        !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
+    if (!bridge || !load || !newsblurIsStoryImage(image)) return false;
     var token = image.getAttribute('data-newsblur-image-token');
     if (!token) {
         token = String(++newsblur_image_sequence);
@@ -60,22 +64,30 @@ function newsblurOpenImage(image) {
     }
     var link = image.closest('a[href]');
     bridge.postMessage({loadID: load.content, token: token,
+        accessibilityActivation: accessibility_activation === true,
+        showActions: show_actions === true,
         src: image.currentSrc || image.src,
         originalURL: image.getAttribute('data-newsblur-original-src') || image.currentSrc || image.src,
         link: link ? link.href : '', title: image.alt || image.title || 'Story image',
+        hoverText: image.title || '',
         naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
         rect: newsblurImageRect(token, load.content)});
     return true;
 }
 
-function newsblurOpenImageAt(x, y) {
-    return newsblurOpenImage(document.elementFromPoint(x, y));
+function newsblurOpenImageAt(x, y, offset_x, offset_y, view_width, show_actions) {
+    var scale = window.innerWidth / view_width;
+    return newsblurOpenImage(document.elementFromPoint(
+        (x + offset_x) * scale - window.scrollX,
+        (y + offset_y) * scale - window.scrollY), false, show_actions);
 }
 
 document.addEventListener('click', function(event) {
-    if (newsblurOpenImage(event.target)) {
+    if (newsblurIsStoryImage(event.target)) {
         event.preventDefault();
         event.stopImmediatePropagation();
+        // StoryDetailObjCViewController.m owns pointer taps after scroll and double-tap recognition.
+        if (event.detail === 0) newsblurOpenImage(event.target, true);
     }
 }, true);
 
@@ -98,6 +110,14 @@ $('.NB-read-button a').live('click', function () {
 $('.NB-train-button a').live('click', function () {
     var offset = $(this).offset();
     console.log(offset);
+    var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
+    window.location = url;
+    return false;
+});
+
+// storyDetailView.js sends a tapped AI classifier header pill's position so StoryDetailObjCViewController.m anchors the trainer to it.
+$('a.NB-story-ai-classifier').live('click', function () {
+    var offset = $(this).offset();
     var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
     window.location = url;
     return false;
@@ -130,6 +150,14 @@ $('.NB-ask-ai-button').live('click', function () {
     var offset = $('a', this).offset();
     var url = $('a', this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
     window.location = url;
+    return false;
+});
+
+// storyDetailView.js: the Listen button holds Listen itself and, while another story plays, the + for Up Next.
+$('.NB-listen-button').live('click', function (e) {
+    var link = $(e.target).closest('a');
+    if (!link.length) link = $('a', this).first();
+    window.location = link.attr('href');
     return false;
 });
 
@@ -280,6 +308,10 @@ function attachFastClick() {
     Array.prototype.slice.call(tags, 0).forEach(function(tag) {
                                                 new NoClickDelay(tag);
                                                 });
+    var aiClassifiers = document.getElementsByClassName("NB-story-ai-classifier");
+    Array.prototype.slice.call(aiClassifiers, 0).forEach(function(pill) {
+                                                new NoClickDelay(pill);
+                                                });
     var userTags = document.getElementsByClassName("NB-user-tag");
     Array.prototype.slice.call(userTags, 0).forEach(function(tag) {
                                                 new NoClickDelay(tag);
@@ -379,6 +411,380 @@ function applyClassifierHighlights(classifiers) {
     } catch (e) {
         // ignore highlight errors
     }
+}
+
+// storyDetailView.js follow-along for Listen (Classes/Listen/ListenStoryBridge.swift). Blocks are found the way
+// apps/listen/text.py finds paragraphs, and each server paragraph is matched to the next block that starts with
+// the same 40 characters.
+var NEWSBLUR_LISTEN_BLOCKS = {p: 1, h1: 1, h2: 1, h3: 1, h4: 1, h5: 1, h6: 1, li: 1, blockquote: 1, dd: 1, dt: 1};
+var NEWSBLUR_LISTEN_CONTAINERS = {div: 1, section: 1, article: 1, main: 1, header: 1, ul: 1, ol: 1, dl: 1,
+    center: 1, details: 1, summary: 1};
+var NEWSBLUR_LISTEN_SKIP = {script: 1, style: 1, noscript: 1, svg: 1, canvas: 1, iframe: 1, pre: 1, table: 1,
+    figure: 1, figcaption: 1, audio: 1, video: 1, object: 1, embed: 1, form: 1, button: 1, nav: 1, aside: 1,
+    footer: 1, img: 1, picture: 1, select: 1, textarea: 1};
+var NEWSBLUR_LISTEN_BLOCK_SELECTOR = 'p,h1,h2,h3,h4,h5,h6,li,blockquote,dd,dt,div,section,article,main,header,ul,ol,dl,center,details,summary';
+var newsblur_listen = {elements: {}, last_user_scroll: 0, mini_player: false};
+var NEWSBLUR_LISTEN_NOT_PROSE = /caption|credit|gallery/i;
+var NEWSBLUR_LISTEN_MAX_CAPTION_CHARACTERS = 1000;
+
+// Mirrors apps/listen/text.py _is_skipped: skip tags, aria-hidden decoration, and short elements whose class or
+// id marks them as image captions, credits or galleries (a long one is an article wrapper, which is read).
+function newsblurListenIsSkipped(element) {
+    var tag = element.tagName.toLowerCase();
+    if (NEWSBLUR_LISTEN_SKIP[tag] || element.getAttribute('aria-hidden') === 'true') return true;
+    var marker = (element.getAttribute('class') || '') + ' ' + (element.getAttribute('id') || '');
+    if (!NEWSBLUR_LISTEN_NOT_PROSE.test(marker)) return false;
+    return (element.textContent || '').length < NEWSBLUR_LISTEN_MAX_CAPTION_CHARACTERS;
+}
+
+// A tap isn't scrolling; only drags and wheel scrolls hold off the follow-along scroll.
+['touchmove', 'wheel'].forEach(function (type) {
+    window.addEventListener(type, function () {
+        newsblur_listen.last_user_scroll = Date.now();
+    }, {passive: true});
+});
+
+function newsblurListenNormalize(text) {
+    return (text || '').replace(/\s+/g, ' ').trim();
+}
+
+function newsblurListenKey(text) {
+    return newsblurListenNormalize(text).substring(0, 40).toLowerCase();
+}
+
+function newsblurListenText(node) {
+    if (node.nodeType === 3) return node.nodeValue;
+    if (node.nodeType !== 1) return '';
+    if (node.tagName.toLowerCase() === 'br') return ' ';
+    if (newsblurListenIsSkipped(node)) return '';
+    var pieces = [];
+    for (var child = node.firstChild; child; child = child.nextSibling) {
+        pieces.push(newsblurListenText(child));
+    }
+    return pieces.join('');
+}
+
+function newsblurListenIsContainer(element) {
+    var tag = element.tagName.toLowerCase();
+    return NEWSBLUR_LISTEN_BLOCKS[tag] || NEWSBLUR_LISTEN_CONTAINERS[tag] ||
+        !!element.querySelector(NEWSBLUR_LISTEN_BLOCK_SELECTOR);
+}
+
+function newsblurListenCollect(container, blocks) {
+    var run = [];
+    var flush = function () {
+        var text = newsblurListenNormalize(run.map(newsblurListenText).join(''));
+        if (text && /\p{L}/u.test(text)) {
+            var element;
+            var elements = run.filter(function (node) { return node.nodeType === 1; });
+            // A skipped block, like a captioned figure, keeps its place: the span covers the first stretch of
+            // text beside it rather than wrapping the block.
+            var chunks = [[]];
+            run.forEach(function (node) {
+                if (node.nodeType === 1 && newsblurListenIsSkipped(node) &&
+                    window.getComputedStyle(node).display.indexOf('inline') !== 0) {
+                    chunks.push([]);
+                } else {
+                    chunks[chunks.length - 1].push(node);
+                }
+            });
+            var wrapped = chunks.filter(function (chunk) {
+                return newsblurListenNormalize(chunk.map(newsblurListenText).join(''));
+            })[0];
+            if (!wrapped) {
+                run = [];
+                return;
+            }
+            if (wrapped.length === 1 && wrapped[0].nodeType === 1 && elements.length === 1) {
+                element = wrapped[0];
+            } else {
+                // Loose text beside blocks gets its own span so just that run highlights.
+                element = document.createElement('span');
+                element.className = 'NB-listen-run';
+                container.insertBefore(element, wrapped[0]);
+                wrapped.forEach(function (node) { element.appendChild(node); });
+            }
+            blocks.push({element: element, text: text});
+        }
+        run = [];
+    };
+    Array.prototype.slice.call(container.childNodes).forEach(function (child) {
+        if (child.nodeType === 3) {
+            run.push(child);
+            return;
+        }
+        if (child.nodeType !== 1) return;
+        var tag = child.tagName.toLowerCase();
+        if (tag === 'br' || newsblurListenIsSkipped(child)) {
+            run.push(child);
+        } else if (NEWSBLUR_LISTEN_BLOCKS[tag] && !child.querySelector(NEWSBLUR_LISTEN_BLOCK_SELECTOR)) {
+            flush();
+            blocks.push({element: child, text: newsblurListenNormalize(newsblurListenText(child))});
+        } else if (newsblurListenIsContainer(child)) {
+            flush();
+            newsblurListenCollect(child, blocks);
+        } else {
+            run.push(child);
+        }
+    });
+    flush();
+}
+
+function newsblurListenElement(index) {
+    var element = newsblur_listen.elements[index];
+    if (element === 'title') return document.querySelector('#NB-header-container .NB-story-title');
+    return element && element.isConnected ? element : null;
+}
+
+function newsblurListenClearHighlight() {
+    var highlighted = document.querySelectorAll('.NB-listen-highlight');
+    for (var i = 0; i < highlighted.length; i++) {
+        highlighted[i].classList.remove('NB-listen-highlight');
+    }
+}
+
+function newsblurListenClear() {
+    newsblurListenClearHighlight();
+    var mapped = document.querySelectorAll('[data-nb-listen-index]');
+    for (var i = 0; i < mapped.length; i++) {
+        mapped[i].removeAttribute('data-nb-listen-index');
+    }
+    newsblur_listen.elements = {};
+    document.body.classList.remove('NB-listen-active');
+    return true;
+}
+
+function newsblurListenPrepare(paragraphs) {
+    newsblurListenClear();
+    var story = document.getElementById('NB-story');
+    if (!story) return 0;
+    var blocks = [];
+    newsblurListenCollect(story, blocks);
+    var cursor = 0;
+    var matched = 0;
+    paragraphs.forEach(function (paragraph) {
+        if (paragraph.kind === 'title') {
+            newsblur_listen.elements[paragraph.index] = 'title';
+            matched += 1;
+            return;
+        }
+        var key = newsblurListenKey(paragraph.text);
+        if (!key) return;
+        for (var i = cursor; i < blocks.length; i++) {
+            if (newsblurListenKey(blocks[i].text) === key) {
+                newsblur_listen.elements[paragraph.index] = blocks[i].element;
+                blocks[i].element.setAttribute('data-nb-listen-index', paragraph.index);
+                cursor = i + 1;
+                matched += 1;
+                return;
+            }
+        }
+    });
+    document.body.classList.add('NB-listen-active');
+    return matched;
+}
+
+function newsblurListenScrollTo(element) {
+    var rect = element.getBoundingClientRect();
+    var view = window.innerHeight;
+    var top_margin = 90;
+    var bottom_margin = newsblur_listen.mini_player ? 170 : 110;
+    if (rect.top >= top_margin && rect.bottom <= view - bottom_margin) return;
+    // A tall paragraph that has already started on screen stays where it is.
+    if (rect.top >= top_margin && rect.top < view - bottom_margin && rect.height > view - top_margin - bottom_margin) return;
+    window.scrollTo({top: Math.max(0, window.scrollY + rect.top - view * 0.25), behavior: 'smooth'});
+}
+
+function newsblurListenHighlight(indices, scroll) {
+    newsblurListenClearHighlight();
+    var first = null;
+    indices.forEach(function (index) {
+        var element = newsblurListenElement(index);
+        if (!element) return;
+        element.classList.add('NB-listen-highlight');
+        if (!first) first = element;
+    });
+    // Leave the page alone while the reader is scrolling it themselves.
+    if (scroll && first && Date.now() - newsblur_listen.last_user_scroll > 2500) {
+        newsblurListenScrollTo(first);
+    }
+    return !!first;
+}
+
+function newsblurListenIndexAt(x, y, offset_x, offset_y, view_width) {
+    var scale = window.innerWidth / view_width;
+    var element = document.elementFromPoint((x + offset_x) * scale - window.scrollX,
+                                            (y + offset_y) * scale - window.scrollY);
+    if (!element || element.closest('a[href], img, video, iframe, .NB-sideoptions, .NB-button')) return -1;
+    var block = element.closest('[data-nb-listen-index]');
+    if (block) return parseInt(block.getAttribute('data-nb-listen-index'), 10);
+    if (newsblur_listen.elements[0] === 'title' && element.closest('#NB-header-container .NB-story-title')) return 0;
+    return -1;
+}
+
+function newsblurListenSetMiniPlayer(shown) {
+    newsblur_listen.mini_player = !!shown;
+    document.body.classList.toggle('NB-listen-mini-player', !!shown);
+    return true;
+}
+
+// storyDetailView.js: a narrow Listen button drops its "30s preview" pill before its label gets cut off. It
+// measures rather than using a width breakpoint because the label and pill change length with the language.
+function newsblurListenFitPill() {
+    var buttons = document.querySelectorAll('.NB-listen-has-pill');
+    for (var i = 0; i < buttons.length; i++) {
+        var button = buttons[i];
+        button.classList.remove('NB-listen-pill-hidden');
+        var label = button.querySelector('.NB-sideoption-text');
+        if (label && label.scrollWidth > label.clientWidth + 1) {
+            button.classList.add('NB-listen-pill-hidden');
+        }
+    }
+}
+
+// StoryDetailObjCViewController.m refreshSideOptions replaces the buttons' HTML, so the new Listen button is
+// watched again whenever the container's children change.
+function newsblurListenWatchPill() {
+    var container = document.getElementById('NB-sideoptions-container');
+    if (!container || typeof ResizeObserver !== 'function') return;
+    var resize_observer = new ResizeObserver(newsblurListenFitPill);
+    var observe_buttons = function () {
+        resize_observer.disconnect();
+        var buttons = container.querySelectorAll('.NB-listen-has-pill');
+        for (var i = 0; i < buttons.length; i++) {
+            resize_observer.observe(buttons[i]);
+        }
+    };
+    new MutationObserver(observe_buttons).observe(container, { childList: true, subtree: true });
+    observe_buttons();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', newsblurListenWatchPill);
+} else {
+    newsblurListenWatchPill();
+}
+
+// storyDetailView.js: Podcast episodes and other story audio play in the app's own player
+// (Listen/ListenMediaPlayer.swift), with lock screen controls, skips and a place shared with the web, so each
+// <audio> becomes a card. Its buttons go to Listen/ListenMediaStoryBridge.swift, which also sends the card states.
+var NEWSBLUR_MEDIA_ICONS = {
+    play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.6-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.2"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.2"/></svg>'
+};
+
+function newsblurMediaBridge() {
+    return window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.newsblurStoryMedia;
+}
+
+// storyDetailView.js reads the src the way media_player_view.js detect_media_in_story does, so every platform
+// names the episode with the same media_url.
+function newsblurMediaSource(audio) {
+    var source = audio.querySelector('source[src]');
+    return (source && source.getAttribute('src')) || audio.getAttribute('src') || '';
+}
+
+function newsblurMediaButton(className, action, label) {
+    // storyDetailView.js: no href, so a long press doesn't preview a link; StoryDetailObjCViewController.m still
+    // ignores taps on an A for the reader's chrome.
+    var button = document.createElement('a');
+    button.className = className;
+    button.setAttribute('tabindex', '0');
+    button.setAttribute('role', 'button');
+    button.setAttribute('data-nb-media-action', action);
+    if (label) button.textContent = label;
+    return button;
+}
+
+function newsblurPrepareMedia() {
+    var config = window.newsblurMediaConfig;
+    if (!config || !newsblurMediaBridge()) return;
+    var labels = config.labels || {};
+    var audios = document.querySelectorAll('#NB-story audio');
+    Array.prototype.forEach.call(audios, function (audio) {
+        var url = newsblurMediaSource(audio);
+        if (!url || audio.getAttribute('data-nb-media-card')) return;
+        audio.setAttribute('data-nb-media-card', 'true');
+        audio.removeAttribute('autoplay');
+        audio.setAttribute('preload', 'none');
+        try { audio.pause(); } catch (e) { }
+
+        var card = document.createElement('div');
+        card.className = 'NB-media-card';
+        card.setAttribute('data-nb-media-url', url);
+        var play = newsblurMediaButton('NB-media-card-play', 'toggle');
+        var icon = document.createElement('span');
+        icon.className = 'NB-media-card-icon';
+        var label = document.createElement('span');
+        label.className = 'NB-media-card-label';
+        play.appendChild(icon);
+        play.appendChild(label);
+        var actions = document.createElement('div');
+        actions.className = 'NB-media-card-actions';
+        actions.appendChild(newsblurMediaButton('NB-media-card-next', 'next', labels.play_next));
+        actions.appendChild(newsblurMediaButton('NB-media-card-last', 'last', labels.play_last));
+        var queued = newsblurMediaButton('NB-media-card-queued', 'unqueue', labels.queued);
+        queued.setAttribute('aria-label', labels.remove_queued || labels.queued || '');
+        actions.appendChild(queued);
+        card.appendChild(play);
+        card.appendChild(actions);
+        card.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var button = event.target.closest('[data-nb-media-action]');
+            if (!button) return;
+            var bridge = newsblurMediaBridge();
+            try {
+                bridge.postMessage({action: button.getAttribute('data-nb-media-action'), url: url});
+            } catch (e) {
+                newsblurMediaFallback(url);
+            }
+        });
+        audio.parentNode.insertBefore(card, audio);
+        audio.style.display = 'none';
+    });
+    newsblurMediaSetState(config.state);
+}
+
+// storyDetailView.js puts the story's own player back when the app's player can't take the audio
+// (Listen/ListenMediaStoryBridge.swift calls this too), so the episode still plays inline.
+function newsblurMediaFallback(url) {
+    var cards = document.querySelectorAll('.NB-media-card');
+    Array.prototype.forEach.call(cards, function (card) {
+        if (card.getAttribute('data-nb-media-url') !== url) return;
+        var audio = card.nextElementSibling;
+        if (audio && audio.tagName === 'AUDIO') audio.style.display = '';
+        card.parentNode.removeChild(card);
+    });
+}
+
+// Listen/ListenMediaStoryBridge.swift cardState: {current, status: playing|loading|paused, queued: [urls], loaded}.
+function newsblurMediaSetState(state) {
+    state = state || {};
+    var labels = (window.newsblurMediaConfig && window.newsblurMediaConfig.labels) || {};
+    var queued = state.queued || [];
+    var cards = document.querySelectorAll('.NB-media-card');
+    Array.prototype.forEach.call(cards, function (card) {
+        var url = card.getAttribute('data-nb-media-url');
+        var status = state.current && url === state.current ? state.status : '';
+        var playing = status === 'playing' || status === 'loading';
+        var is_queued = !status && queued.indexOf(url) !== -1;
+        card.classList.toggle('NB-media-playing', playing);
+        card.classList.toggle('NB-media-loading', status === 'loading');
+        card.classList.toggle('NB-media-paused', status === 'paused');
+        card.classList.toggle('NB-media-queued', is_queued);
+        card.classList.toggle('NB-media-can-queue', !!state.loaded && !status && !is_queued);
+        var icon = card.querySelector('.NB-media-card-icon');
+        var label = card.querySelector('.NB-media-card-label');
+        if (icon) icon.innerHTML = playing ? NEWSBLUR_MEDIA_ICONS.pause : NEWSBLUR_MEDIA_ICONS.play;
+        if (label) label.textContent = playing ? labels.pause : (status === 'paused' ? labels.resume : labels.play);
+    });
+}
+
+try {
+    newsblurPrepareMedia();
+} catch (e) {
+    console.log(['Media cards failed', e]);
 }
 
 loadImages();

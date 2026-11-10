@@ -1,0 +1,58 @@
+{
+  "language": "it",
+  "revision": "v2",
+  "checked_at": "2026-10-26T15:23:27Z",
+  "note": "Only panels 1 and 4 are new. Panels 2 and 3 reference unchanged original exports. Visual review and store readback remain required.",
+  "files": [
+    {
+      "path": "revisions/v2/exports/it/newsblur-16.0.1-it-duo-closed-2853x2007-01-v2.png",
+      "panel": 1,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1266062,
+      "sha256": "8cac6152230b70a5712f646f51b7a4bbd29aec4c2edf3da65eacc974e05d3e83",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.5428,
+        "largest_tile_error": 0.9258,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/it/newsblur-16.0.1-it-duo-inner-2853x2007-02.png",
+      "panel": 2,
+      "sha256": "4fe3b4ad707df102ec23fbb59d3337f4d99379ef0c3a2b0246dbc6b20318a829",
+      "disposition": "original_preserved_byte_for_byte",
+      "bytes": 1178119
+    },
+    {
+      "path": "exports/it/newsblur-16.0.1-it-duo-inner-2853x2007-03.png",
+      "panel": 3,
+      "sha256": "3a1b37b4e79c49e8b74bd7cdce4e4cddcdacb1099c59eb869feebf9d06d53b57",
+      "disposition": "original_preserved_byte_for_byte",
+      "bytes": 1904118
+    },
+    {
+      "path": "revisions/v2/exports/it/newsblur-16.0.1-it-duo-inner-2853x2007-04-v2.png",
+      "panel": 4,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 2144108,
+      "sha256": "10d50910b9d0cf30fe1f618c07c58718e4404f42cb28fc6b0cc293fc3f656dde",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.7883,
+        "largest_tile_error": 1.2174,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    }
+  ]
+}

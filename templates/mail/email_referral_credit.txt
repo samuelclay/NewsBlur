@@ -1,11 +1,13 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}Great news, {{ username }}!
+{% load i18n %}
 
-{{ referred_username }} just signed up for a premium subscription through your referral link.
+{% block body %}{% blocktrans %}Great news, {{ username }}!{% endblocktrans %}
 
-You've earned {{ credit_text }} of free {{ tier_name }} as a thank you for spreading the word about NewsBlur.
+{% blocktrans %}{{ referred_username }} just signed up for a premium subscription through your referral link.{% endblocktrans %}
 
-Keep sharing your referral link to earn more free subscription time. Every referral adds up!
+{% blocktrans %}You've earned {{ credit_text }} of free {{ tier_name }} as a thank you for spreading the word about NewsBlur.{% endblocktrans %}
+
+{% trans "Keep sharing your referral link to earn more free subscription time. Every referral adds up!" %}
 
 Sam{% endblock body %}

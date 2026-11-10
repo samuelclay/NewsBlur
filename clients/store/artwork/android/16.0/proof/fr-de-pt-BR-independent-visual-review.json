@@ -1,0 +1,104 @@
+{
+  "reviewed_at": "2026-10-17T15:43:42Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/de/featureGraphic/panel-01.png",
+      "sha256": "b3758ae875645367cf33d65997b15470fece4e39568f7b59ab84ec3b583e8569",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/de/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "review": "identical to inspected English icon"
+    },
+    {
+      "path": "exports/de/phoneScreenshots/panel-01.png",
+      "sha256": "1cc2ccf3c7a3362d7b44a93f95bcd5837dde4b1dc4d47e6cd342eed23bfc8b46",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/de/phoneScreenshots/panel-02.png",
+      "sha256": "0c65c88ecd3e529bd2678628d7b66479828c61eacd0b4e112dcfca14ff8f385a",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/de/phoneScreenshots/panel-03.png",
+      "sha256": "c4292008d8d62ef45760e94abd2d27a868e3207d5e16773e3b05a60b7807b9f6",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/de/phoneScreenshots/panel-04.png",
+      "sha256": "3b99d889cac13b66acd43c95dd5ed9e62289b0eba09ab5a6b2e8985431024f8e",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/featureGraphic/panel-01.png",
+      "sha256": "a40da09b1eefd8326506b743600a2b8d4963bb9a9d9e51606a87fd1a563e0a3b",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "review": "identical to inspected English icon"
+    },
+    {
+      "path": "exports/fr/phoneScreenshots/panel-01.png",
+      "sha256": "66a174ba6c9e6d69f324cc43b673b0432de2c710afff91638c97b0cb754d3c17",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/phoneScreenshots/panel-02.png",
+      "sha256": "537a1c7b8f248dd05bee253a035014d51a67f7e04958ba74aedcbb1349ec6451",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/phoneScreenshots/panel-03.png",
+      "sha256": "223459d588e6f4ca6d540cdb38b66a418da2919707af562999ebb04a34465e77",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/phoneScreenshots/panel-04.png",
+      "sha256": "1218c877ecd3c4b2d7acad8e8ce644105b21de42082eeefedbca261660e6578f",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/featureGraphic/panel-01.png",
+      "sha256": "2c39ded7c7d3aab8c7bae8314ed22d3f94bef8ad1756b8d4ac6002db41245b44",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "review": "identical to inspected English icon"
+    },
+    {
+      "path": "exports/pt-BR/phoneScreenshots/panel-01.png",
+      "sha256": "9b8dfdd84d72377d304b1212b08679101513a2b80ccc460f000bcb792fd8e37d",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/phoneScreenshots/panel-02.png",
+      "sha256": "013da362d96bcc9fa4b04bc5fda453c75ced0bf2c860300621ba3c2996e97d8d",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/phoneScreenshots/panel-03.png",
+      "sha256": "11d42420ed55f5bc0b92b6133a18c33d21eb3287624fc3589702fc6c6521810d",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pt-BR/phoneScreenshots/panel-04.png",
+      "sha256": "648fb1a4827e5c7ce074550e1bf213907260d1e91e3f068b61a38fc08c6db4a0",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "French, German and Brazilian Portuguese headline meaning matches approved English; all accents and glyphs render correctly.",
+    "Native titles, feed search, saved labels, tag actions, dates and Next controls are localized.",
+    "Marketing text fits without clipping, native content is genuine and original article prose remains English.",
+    "Long native article lists extend under the app navigation as they do at runtime."
+  ],
+  "scope": "These phone and feature exports only; tablet, video playback and upload are separate"
+}

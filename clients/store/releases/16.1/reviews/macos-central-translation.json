@@ -1,0 +1,200 @@
+{
+  "version": "16.0.2",
+  "platform": "macos",
+  "build": "352",
+  "role": "translator",
+  "locales": [
+    {
+      "language": "tr",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "keywords",
+        "promotional_text",
+        "whats_new"
+      ],
+      "retained_fields": [
+        "name",
+        "subtitle",
+        "keywords"
+      ],
+      "changed_fields": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "description_chars": 2955,
+      "promotion_chars": 156,
+      "keywords_bytes": 78,
+      "notes_chars": 558,
+      "urls_unchanged": true,
+      "non_macos_fields_unchanged": true
+    },
+    {
+      "language": "ru",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "keywords",
+        "promotional_text",
+        "whats_new"
+      ],
+      "retained_fields": [
+        "name",
+        "subtitle",
+        "keywords"
+      ],
+      "changed_fields": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "description_chars": 2941,
+      "promotion_chars": 161,
+      "keywords_bytes": 90,
+      "notes_chars": 563,
+      "urls_unchanged": true,
+      "non_macos_fields_unchanged": true
+    },
+    {
+      "language": "uk",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "keywords",
+        "promotional_text",
+        "whats_new"
+      ],
+      "retained_fields": [
+        "name",
+        "subtitle",
+        "keywords"
+      ],
+      "changed_fields": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "description_chars": 2965,
+      "promotion_chars": 156,
+      "keywords_bytes": 94,
+      "notes_chars": 552,
+      "urls_unchanged": true,
+      "non_macos_fields_unchanged": true
+    },
+    {
+      "language": "ar",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "keywords",
+        "promotional_text",
+        "whats_new"
+      ],
+      "retained_fields": [
+        "name",
+        "subtitle",
+        "keywords"
+      ],
+      "changed_fields": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "description_chars": 2308,
+      "promotion_chars": 130,
+      "keywords_bytes": 82,
+      "notes_chars": 452,
+      "urls_unchanged": true,
+      "non_macos_fields_unchanged": true
+    },
+    {
+      "language": "he",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "keywords",
+        "promotional_text",
+        "whats_new"
+      ],
+      "retained_fields": [
+        "name",
+        "subtitle",
+        "keywords"
+      ],
+      "changed_fields": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "description_chars": 2252,
+      "promotion_chars": 136,
+      "keywords_bytes": 86,
+      "notes_chars": 429,
+      "urls_unchanged": true,
+      "non_macos_fields_unchanged": true
+    },
+    {
+      "language": "hi",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "keywords",
+        "promotional_text",
+        "whats_new"
+      ],
+      "retained_fields": [
+        "name",
+        "subtitle",
+        "keywords"
+      ],
+      "changed_fields": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "description_chars": 2790,
+      "promotion_chars": 148,
+      "keywords_bytes": 87,
+      "notes_chars": 504,
+      "urls_unchanged": true,
+      "non_macos_fields_unchanged": true
+    },
+    {
+      "language": "id",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "keywords",
+        "promotional_text",
+        "whats_new"
+      ],
+      "retained_fields": [
+        "name",
+        "subtitle",
+        "keywords"
+      ],
+      "changed_fields": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "description_chars": 2888,
+      "promotion_chars": 169,
+      "keywords_bytes": 86,
+      "notes_chars": 530,
+      "urls_unchanged": true,
+      "non_macos_fields_unchanged": true
+    }
+  ],
+  "status": "translated_and_self_reviewed",
+  "independent_review": "pending",
+  "products_review": "All assigned existing iOS product and subscription-group translations accurately preserve English names, descriptions, plan facts and immutable IDs; no changes needed."
+}

@@ -27,6 +27,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         var quote_html = extracted.quote
             ? '<blockquote>' + extracted.quote.replace(/\n/g, '<br>') + '</blockquote>'
             : '';
+        // story_comment_view.js: the username and comment below get dir="auto", so mixed scripts read correctly in LTR and RTL.
         var comments = quote_html + extracted.comments.replace(/\n+/g, '<br><br>');
         var reshare_class = this.model.get('source_user_id') ? 'NB-story-comment-reshare' : '';
         var has_likes = _.any(this.model.get('liking_users'));
@@ -40,16 +41,16 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 (this.model.get('source_user_id') && $.make('div', { className: 'NB-story-comment-reshares' }, [
                     profile_thumb && profile_thumb.render().el
                 ])),
-                $.make('div', { className: 'NB-story-comment-username' }, this.user.get('username')),
-                $.make('div', { className: 'NB-story-comment-date' }, this.model.get('shared_date') + ' ago'),
+                $.make('div', { className: 'NB-story-comment-username', dir: 'auto' }, this.user.get('username')),
+                $.make('div', { className: 'NB-story-comment-date' }, interpolate(gettext("%(value_1)s ago"), {value_1: this.model.get('shared_date')}, true)),
                 $.make('div', { className: 'NB-story-comment-reply-button' }, [
                     $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, [
                         (this.user.get('protected') && $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_lock.png' })),
-                        'reply'
+                        gettext('reply')
                     ])
                 ]),
                 (this.model.get('user_id') == NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-edit-button NB-story-comment-share-edit-button' }, [
-                    $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
+                    $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, gettext('edit'))
                 ])),
                 (has_likes && $.make('div', { className: 'NB-story-comment-likes NB-right' }, [
                     $.make('div', { className: 'NB-story-comment-like ' + (liked ? 'NB-active' : '') }),
@@ -60,7 +61,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 ])),
                 $.make('div', { className: 'NB-story-comment-error' })
             ]),
-            $.make('div', { className: 'NB-story-comment-content' }, comments),
+            $.make('div', { className: 'NB-story-comment-content', dir: 'auto' }, comments),
             this.make_story_share_comment_replies()
         ]);
 
@@ -98,7 +99,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         var $like = this.$('.NB-story-comment-like');
         var liked = _.contains(this.model.get('liking_users'), NEWSBLUR.Globals.user_id);
 
-        $like.attr({ 'title': liked ? 'Favorited!' : 'Unfavorited' });
+        $like.attr({ 'title': liked ? gettext('Favorited!') : gettext('Unfavorited') });
         $like.tipsy({
             gravity: 'sw',
             fade: true,
@@ -148,7 +149,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
 
         if (this.user.get('protected') && this.options.public_comment) {
             var $error = this.$('.NB-story-comment-error');
-            $error.text("You must be following " + this.user.get('username') + " to reply");
+            $error.text(interpolate(gettext("You must be following %(value_1)s to reply"), {value_1: this.user.get('username')}, true));
             return;
         }
         var reply_comments = options.reply && options.reply.stripped_comments();
@@ -157,8 +158,8 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
             $.make('img', { className: 'NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
             $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: reply_comments }),
-            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? 'Save' : 'Post'),
-            (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-modal-submit-delete' }, 'Delete'))
+            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? gettext('Save') : gettext('Post')),
+            (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-grey NB-modal-submit-delete' }, gettext('Delete')))
         ]);
         this.remove_social_comment_reply_form();
 
@@ -213,7 +214,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         }
 
         $delete_button.hide();
-        $submit.addClass('NB-disabled').text('Posting...');
+        $submit.addClass('NB-disabled').text(gettext('Posting...'));
         NEWSBLUR.assets.save_comment_reply(this.options.story.id, this.options.story.get('story_feed_id'),
             comment_user_id, comment_reply,
             reply_id,
@@ -226,12 +227,12 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                     NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                 }
             }, this), _.bind(function (data) {
-                var message = data && data.message || "Sorry, this reply could not be posted. Probably Adblock.";
+                var message = data && data.message || gettext("Sorry, this reply could not be posted. Probably Adblock.");
                 if (!NEWSBLUR.Globals.is_authenticated) {
-                    message = "You need to be logged in to reply to a comment.";
+                    message = gettext("You need to be logged in to reply to a comment.");
                 }
                 var $error = $.make('div', { className: 'NB-error' }, message);
-                $submit.removeClass('NB-disabled').text('Post');
+                $submit.removeClass('NB-disabled').text(gettext('Post'));
                 $form.find('.NB-error').remove();
                 $form.append($error);
                 if (NEWSBLUR.app.story_list) {
@@ -252,7 +253,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         }
 
         $submit.addClass('NB-disabled');
-        $delete_button.addClass('NB-disabled').text('Deleting...');
+        $delete_button.addClass('NB-disabled').text(gettext('Deleting...'));
         NEWSBLUR.assets.delete_comment_reply(this.options.story.id,
             this.options.story.get('story_feed_id'),
             comment_user_id, reply_id,
@@ -265,10 +266,10 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                     NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                 }
             }, this), _.bind(function (data) {
-                var message = data && data.message || "Sorry, this reply could not be deleted.";
+                var message = data && data.message || gettext("Sorry, this reply could not be deleted.");
                 var $error = $.make('div', { className: 'NB-error' }, message);
-                $submit.removeClass('NB-disabled').text('Post');
-                $delete_button.removeClass('NB-disabled').text('Delete');
+                $submit.removeClass('NB-disabled').text(gettext('Post'));
+                $delete_button.removeClass('NB-disabled').text(gettext('Delete'));
                 $form.find('.NB-error').remove();
                 $form.append($error);
                 if (NEWSBLUR.app.story_list) {

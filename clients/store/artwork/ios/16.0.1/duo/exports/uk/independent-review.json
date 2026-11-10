@@ -1,0 +1,30 @@
+{
+  "language": "uk",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:11:26Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Ukrainian headlines and labels fit intact, including long Влаштуйтеся.",
+    "Ukrainian navigation/search/source/filter/date controls visible; cooking content loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-uk-duo-inner-2853x2007-01.png",
+      "sha256": "ae70769704ec42f6665c89d8c5cfad6ce0f0b8b039627878093a70e855383ec7"
+    },
+    {
+      "filename": "newsblur-16.0.1-uk-duo-inner-2853x2007-02.png",
+      "sha256": "4ea79f5836bad819d8de2c7a74fdfca6b411156cb4803bd00445660135a608d1"
+    },
+    {
+      "filename": "newsblur-16.0.1-uk-duo-inner-2853x2007-03.png",
+      "sha256": "dc405238b4da4fb733d451b9b9a8e19cd1ec971ac7dd7c716eb6e05c622ff684"
+    },
+    {
+      "filename": "newsblur-16.0.1-uk-duo-inner-2853x2007-04.png",
+      "sha256": "74d5a8a5b629b1197aab848aacbf6909c247a82e57d33d69be2379727b1106a3"
+    }
+  ],
+  "contact_sha256": "6b1b7cc607be1965ec4f9865e70a2041383d11c93d9cb5a02cc467b7034372aa"
+}

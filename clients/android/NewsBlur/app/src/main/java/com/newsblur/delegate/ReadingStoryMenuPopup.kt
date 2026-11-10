@@ -112,6 +112,8 @@ class ReadingStoryMenuPopup(
         menu: Menu,
     ): List<ReadingActionRow> =
         buildList {
+            maybeAddActionRow(menu, R.id.menu_reading_listen, R.drawable.ic_listen)?.let(::add)
+            maybeAddActionRow(menu, R.id.menu_reading_up_next, R.drawable.ic_add)?.let(::add)
             maybeAddActionRow(menu, R.id.menu_reading_save, R.drawable.ic_saved)?.let(::add)
             maybeAddActionRow(menu, R.id.menu_reading_markunread, R.drawable.ic_indicator_unread)?.let(::add)
             maybeAddActionRow(menu, R.id.menu_send_story, R.drawable.ic_send_to)?.let(::add)

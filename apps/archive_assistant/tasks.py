@@ -220,7 +220,6 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
             tools=ARCHIVE_TOOLS,
             messages=messages,
         ) as stream:
-            current_text = ""
             tool_use_blocks = []
             current_tool_input = ""
             current_tool_name = None
@@ -244,7 +243,6 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                                 last_space = truncated.rfind(" ")
                                 if last_space > remaining // 2:
                                     truncated = truncated[:last_space]
-                                current_text += truncated
                                 full_response += truncated
                                 total_chars += len(truncated)
                                 publish_event("chunk", {"content": truncated})
@@ -252,7 +250,6 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                                 was_truncated = True
                                 break
 
-                        current_text += chunk
                         full_response += chunk
                         total_chars += len(chunk)
                         logging.debug(f"Streaming chunk ({len(chunk)} chars): {chunk[:50]}...")
@@ -321,26 +318,16 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
 
             # Build tool results for Claude and publish events
             tool_results = []
-            assistant_content = []
 
-            # Add any text from this turn
-            if current_text:
-                assistant_content.append({"type": "text", "text": current_text})
+            # Send the assistant turn back exactly as Claude returned it. Sonnet 5.5
+            # thinks by default, and a tool loop has to pass its thinking blocks back
+            # unchanged (even the empty ones) alongside the text and tool_use blocks.
+            assistant_content = final_message.content
 
             for tool_block in tool_use_blocks:
                 _, result = tool_execution_results[tool_block["id"]]
                 tool_name = tool_block["name"]
                 tool_input = tool_block["input"]
-
-                # Add tool use to assistant content
-                assistant_content.append(
-                    {
-                        "type": "tool_use",
-                        "id": tool_block["id"],
-                        "name": tool_name,
-                        "input": tool_input,
-                    }
-                )
 
                 # Build summary and preview
                 result_summary, preview = _build_tool_summary(tool_name, result)

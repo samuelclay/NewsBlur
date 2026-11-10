@@ -21,6 +21,7 @@
 @property (nonatomic, readonly) BOOL fromDashboardStory;
 @property (nonatomic, readonly) BOOL isFeedShown;
 @property (nonatomic, readonly) BOOL isStoryShown;
+- (BOOL)readerKeyboardContextAvailable;
 
 - (void)informError:(id)error;
 - (void)informError:(id)error statusCode:(NSInteger)statusCode;
@@ -97,6 +98,9 @@
 - (IBAction)showSendTo:(id)sender;
 - (IBAction)showTrain:(id)sender;
 - (IBAction)showShare:(id)sender;
+- (IBAction)toggleListen:(id)sender;
+- (IBAction)toggleListenPlayback:(id)sender;
+- (IBAction)toggleListenQueue:(id)sender;
 - (IBAction)nextUnreadStory:(id)sender;
 - (IBAction)nextStory:(id)sender;
 - (IBAction)previousStory:(id)sender;

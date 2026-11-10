@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  FTUXAddFriendsViewController.m
 //  NewsBlur
@@ -35,11 +36,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip this step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:[NBLocalization text:@"Skip this step"] style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Friends";
+    self.navigationItem.title = [NBLocalization text:@"Friends"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -80,17 +81,17 @@
 
 
 - (void)selectTwitterButton {
-    self.nextButton.title = @"Next";
+    self.nextButton.title = [NBLocalization text:@"Next"];
     self.twitterButton.userInteractionEnabled = NO;
-    [self.twitterButton setTitle:@"Connecting" forState:UIControlStateNormal];
+    [self.twitterButton setTitle:[NBLocalization text:@"Connecting"] forState:UIControlStateNormal];
     [self.twitterActivityIndicator startAnimating];
     [self connectToSocial];
 }
 
 - (void)selectFacebookButton {
-    self.nextButton.title = @"Next";
+    self.nextButton.title = [NBLocalization text:@"Next"];
     self.facebookButton.userInteractionEnabled = NO;
-    [self.facebookButton setTitle:@"Connecting" forState:UIControlStateNormal];
+    [self.facebookButton setTitle:[NBLocalization text:@"Connecting"] forState:UIControlStateNormal];
     [self.facebookActivityIndicator startAnimating];
     [self connectToSocial];
 }
@@ -136,7 +137,7 @@
     [self.facebookActivityIndicator stopAnimating];
     self.friendsLabel.textColor = UIColorFromRGB(0x333333);
     self.facebookButton.selected = YES;
-    self.friendsLabel.text = @"You have successfully connected to Facebook.";
+    self.friendsLabel.text = [NBLocalization text:@"You have successfully connected to Facebook."];
     UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
     UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
     checkmarkView.frame = CGRectMake(self.facebookButton.frame.origin.x + self.facebookButton.frame.size.width - 24,
@@ -150,7 +151,7 @@
 - (void)finishTwitterConnect {
     [self.twitterActivityIndicator stopAnimating];
     self.friendsLabel.textColor = UIColorFromRGB(0x333333);
-    self.friendsLabel.text = @"You have successfully connected to Twitter.";
+    self.friendsLabel.text = [NBLocalization text:@"You have successfully connected to Twitter."];
     
     self.twitterButton.selected = YES;
     UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];

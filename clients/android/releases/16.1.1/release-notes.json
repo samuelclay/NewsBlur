@@ -1,0 +1,5 @@
+{
+  "version": "16.1.1",
+  "versionCode": 300,
+  "notes": "Listen improvements: start from the reading toolbar and skip with the mini player’s Next story button. Auto-continue follows your sort order in Saved Stories and Read Stories, moving down the list. Repeated headlines are read once. Weekly listening: 1 hour with Premium Archive, 10 hours with Premium Pro, resetting Sunday. Settings show remaining hours and minutes."
+}

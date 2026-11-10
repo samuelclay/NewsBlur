@@ -40,6 +40,9 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         this.$popover.addClass(this.options.placement.replace('-', '').replace(' ', '-'));
         this.$popover.addClass(this.options.popover_class);
         this.$popover.align(this.anchor(), this.options.placement, this.options.offset);
+        // reader_popover.js: in RTL, flip the popover around its anchor. The arrow keeps
+        // its placement class and the mirrored CSS (utils/rtl_css.py) moves it to the other side.
+        NEWSBLUR.utils.mirror_aligned_element(this.$popover, this.anchor());
         this.autohide = this.$popover.autohide({
             clickable: true,
             onHide: _.bind(this.close, this)

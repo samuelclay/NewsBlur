@@ -5,12 +5,14 @@ enum class StoryRowThumbnailVerticalMode {
     MATCH_ROW_HEIGHT,
 }
 
+// StoryRowThumbnailLayout.kt uses start and end margins, so a "left" thumbnail sits on the
+// reading start side (the right) in right-to-left languages.
 data class StoryRowThumbnailLayout(
     val widthPx: Int,
     val fixedHeightPx: Int?,
-    val leftMarginPx: Int,
+    val startMarginPx: Int,
     val topMarginPx: Int,
-    val rightMarginPx: Int,
+    val endMarginPx: Int,
     val bottomMarginPx: Int,
     val verticalMode: StoryRowThumbnailVerticalMode,
     val rowHeightFraction: Float = 1f,
@@ -27,9 +29,9 @@ fun ThumbnailStyle.storyRowLayout(
             StoryRowThumbnailLayout(
                 widthPx = smallWidthPx,
                 fixedHeightPx = null,
-                leftMarginPx = sideMarginPx,
+                startMarginPx = sideMarginPx,
                 topMarginPx = 0,
-                rightMarginPx = 0,
+                endMarginPx = 0,
                 bottomMarginPx = 0,
                 verticalMode = StoryRowThumbnailVerticalMode.CENTERED,
                 rowHeightFraction = 0.8f,
@@ -38,9 +40,9 @@ fun ThumbnailStyle.storyRowLayout(
             StoryRowThumbnailLayout(
                 widthPx = largeWidthPx,
                 fixedHeightPx = null,
-                leftMarginPx = 0,
+                startMarginPx = 0,
                 topMarginPx = 0,
-                rightMarginPx = 0,
+                endMarginPx = 0,
                 bottomMarginPx = 0,
                 verticalMode = StoryRowThumbnailVerticalMode.MATCH_ROW_HEIGHT,
             )
@@ -48,9 +50,9 @@ fun ThumbnailStyle.storyRowLayout(
             StoryRowThumbnailLayout(
                 widthPx = smallWidthPx,
                 fixedHeightPx = null,
-                leftMarginPx = 0,
+                startMarginPx = 0,
                 topMarginPx = 0,
-                rightMarginPx = sideMarginPx,
+                endMarginPx = sideMarginPx,
                 bottomMarginPx = 0,
                 verticalMode = StoryRowThumbnailVerticalMode.CENTERED,
                 rowHeightFraction = 0.8f,
@@ -59,9 +61,9 @@ fun ThumbnailStyle.storyRowLayout(
             StoryRowThumbnailLayout(
                 widthPx = largeWidthPx,
                 fixedHeightPx = null,
-                leftMarginPx = 0,
+                startMarginPx = 0,
                 topMarginPx = 0,
-                rightMarginPx = 0,
+                endMarginPx = 0,
                 bottomMarginPx = 0,
                 verticalMode = StoryRowThumbnailVerticalMode.MATCH_ROW_HEIGHT,
             )
@@ -69,9 +71,9 @@ fun ThumbnailStyle.storyRowLayout(
             StoryRowThumbnailLayout(
                 widthPx = 0,
                 fixedHeightPx = 0,
-                leftMarginPx = 0,
+                startMarginPx = 0,
                 topMarginPx = 0,
-                rightMarginPx = 0,
+                endMarginPx = 0,
                 bottomMarginPx = 0,
                 verticalMode = StoryRowThumbnailVerticalMode.CENTERED,
             )

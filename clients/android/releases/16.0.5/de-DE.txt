@@ -1,0 +1,1 @@
+Behebt Abstürze auf älteren Samsung-Tablets und anderen Geräten beim Öffnen von NewsBlur oder der Rückkehr zu Feeds. Behebt außerdem Abstürze bei großen Artikeln, Feed-Vorschauen, Ordnern mit nur einem Feed, Widgets und übersetzten Kommentarzählern. Reduziert Hänger beim Start, beim Synchronisieren und bei Abo-Prüfungen.

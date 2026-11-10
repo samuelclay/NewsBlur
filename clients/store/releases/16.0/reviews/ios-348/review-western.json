@@ -1,0 +1,64 @@
+{
+  "scope": "Independent iOS 16.0 build 348 review of Western translations",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "files": [
+    "clients/store/metadata/es.json",
+    "clients/store/releases/16.0/es.json",
+    "clients/store/products/es.json",
+    "clients/store/metadata/fr.json",
+    "clients/store/releases/16.0/fr.json",
+    "clients/store/products/fr.json",
+    "clients/store/metadata/de.json",
+    "clients/store/releases/16.0/de.json",
+    "clients/store/products/de.json",
+    "clients/store/metadata/pt-BR.json",
+    "clients/store/releases/16.0/pt-BR.json",
+    "clients/store/products/pt-BR.json",
+    "clients/store/metadata/it.json",
+    "clients/store/releases/16.0/it.json",
+    "clients/store/products/it.json",
+    "clients/store/metadata/nl.json",
+    "clients/store/releases/16.0/nl.json",
+    "clients/store/products/nl.json",
+    "clients/store/metadata/pl.json",
+    "clients/store/releases/16.0/pl.json",
+    "clients/store/products/pl.json"
+  ],
+  "source": [
+    "clients/store/metadata/en.json",
+    "clients/store/releases/16.0/en.json",
+    "clients/store/products/en.json"
+  ],
+  "independence": "Reviewer translated the Asian batch and did not produce this Western batch.",
+  "result": "pass_after_correction",
+  "findings": [
+    {
+      "file": "clients/store/products/fr.json",
+      "field": "ios.subscriptions.newsblur_premium_auto_renew_36.description",
+      "before": "Dossiers, recherche, tags d’articles gardés",
+      "after": "Dossiers, recherche, tags d’articles enregistrés",
+      "reason": "Use the established French saved-article term enregistrés for natural terminology."
+    }
+  ],
+  "checks": [
+    "All listing fields and notes reviewed against finalized English, including source selection per widget, All Site Stories default, signed-in account, hidden-story refresh reliability, removal/re-addition and long-press editing.",
+    "Language chooser preview, 21 languages, Arabic/Hebrew direction, unchanged article content and N shortcut retained.",
+    "Billing disclosure retains payment at confirmation, auto-renewal, 24-hour cancellation and charge timing, and management in Apple Account settings.",
+    "Products retain names, IDs, permanent archive claim and 5 to 15 minute fetch interval.",
+    "App name/subtitle <= 30 characters, promotional text <= 170, description/notes <= 4000; keywords <= 100 UTF-8 bytes.",
+    "Subscription names <= 35 characters and descriptions <= 55; subscription group names <= 35 and app names <= 30.",
+    "No macOS or Android fields changed."
+  ],
+  "limits": [
+    "Text and structured-file review only; no native-speaker review or rendered App Store verification.",
+    "No upload performed by this reviewer."
+  ]
+}

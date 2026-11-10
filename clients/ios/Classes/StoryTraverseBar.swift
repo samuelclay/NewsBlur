@@ -22,6 +22,7 @@ class StoryTraverseBar: NSObject {
     let sendButton = UIButton(type: .system)
     let previousButton = UIButton(type: .system)
     let nextButton = UIButton(type: .system)
+    private(set) var showsDone = false
 
     private(set) var circularProgressView: THCircularProgressView!
     let loadingIndicator: UIActivityIndicatorView = {
@@ -145,9 +146,9 @@ class StoryTraverseBar: NSObject {
         installHighlightHandler(nextButton)
 
         previousButton.accessibilityIdentifier = "story-traverse-previous-button"
-        previousButton.accessibilityLabel = "Previous story"
+        previousButton.accessibilityLabel = NBLocalization.text("Previous story")
         nextButton.accessibilityIdentifier = "story-traverse-next-button"
-        nextButton.accessibilityLabel = "Next story"
+        nextButton.accessibilityLabel = NBLocalization.text("Next story")
 
         // On Catalyst, buttons are inset from the pill edge; round their corners
         // so the highlight background matches the pill's inner curve.
@@ -182,7 +183,7 @@ class StoryTraverseBar: NSObject {
         // Text / Story toggle button
         var textConfig = UIButton.Configuration.plain()
         textConfig.image = sym("doc.plaintext")
-        textConfig.title = "Text"
+        textConfig.title = NBLocalization.text("Text")
         textConfig.imagePadding = 6
         textConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
         textConfig.titleTextAttributesTransformer = fontTransformer()
@@ -214,7 +215,7 @@ class StoryTraverseBar: NSObject {
 
         // Previous story button (icon only with generous padding)
         var prevConfig = UIButton.Configuration.plain()
-        prevConfig.image = sym("chevron.left", size: 14, weight: .semibold)
+        prevConfig.image = sym("chevron.backward", size: 14, weight: .semibold)
         prevConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14, bottom: 0, trailing: 14)
         previousButton.configuration = prevConfig
         previousButton.translatesAutoresizingMaskIntoConstraints = false
@@ -251,20 +252,17 @@ class StoryTraverseBar: NSObject {
         // Next / Done button
         nextButton.translatesAutoresizingMaskIntoConstraints = false
         var nextConfig = UIButton.Configuration.plain()
-        nextConfig.title = "Next"
+        nextConfig.title = NBLocalization.text("Next")
         nextConfig.titleTextAttributesTransformer = fontTransformer()
         #if targetEnvironment(macCatalyst)
-        // UIButton.Configuration ignores layout on Catalyst (contentInsets,
-        // contentHorizontalAlignment, imagePlacement all broken). Keep a Configuration
-        // with invisible text so the button sizes properly; manual label/chevron provide
-        // the visible content positioned via constraints.
-        nextConfig.title = "Next"
-        nextConfig.baseForegroundColor = .clear
+        // StoryTraverseBar.swift uses the constrained manual label on Catalyst. A transparent native title
+        // becomes visible again when UIKit applies its disabled appearance, so omit it entirely.
+        nextConfig.title = nil
         nextConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 6 + macPadding, bottom: 0, trailing: 14 + macPadding)
         nextButton.configuration = nextConfig
         nextButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
         #else
-        nextConfig.image = sym("chevron.right", size: 12, weight: .semibold)
+        nextConfig.image = sym("chevron.forward", size: 12, weight: .semibold)
         nextConfig.imagePlacement = .trailing
         nextConfig.imagePadding = 4
         nextConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 6 + macPadding, bottom: 0, trailing: 14 + macPadding)
@@ -276,14 +274,14 @@ class StoryTraverseBar: NSObject {
         // Label and chevron in rightGroupView on top of the invisible button.
         // isUserInteractionEnabled = false so taps pass through to the button.
         let nextLabel = UILabel()
-        nextLabel.text = "Next"
+        nextLabel.text = NBLocalization.text("Next")
         nextLabel.font = buttonFont
         nextLabel.translatesAutoresizingMaskIntoConstraints = false
         nextLabel.isUserInteractionEnabled = false
         rightGroupView.addSubview(nextLabel)
         nextLabelView = nextLabel
 
-        let chevron = UIImageView(image: sym("chevron.right", size: 12, weight: .semibold))
+        let chevron = UIImageView(image: sym("chevron.forward", size: 12, weight: .semibold))
         chevron.translatesAutoresizingMaskIntoConstraints = false
         chevron.contentMode = .scaleAspectFit
         chevron.isUserInteractionEnabled = false
@@ -442,18 +440,19 @@ class StoryTraverseBar: NSObject {
     }
 
     func updateNextShowDone(_ showDone: Bool) {
+        showsDone = showDone
         let tint = ThemeManager.shared?.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
-        nextButton.accessibilityLabel = showDone ? "Done with stories" : "Next story"
+        nextButton.accessibilityLabel = showDone ? NBLocalization.text("Done with stories") : NBLocalization.text("Next story")
 
         #if targetEnvironment(macCatalyst)
-        nextLabelView?.text = showDone ? "Done" : "Next"
+        nextLabelView?.text = showDone ? NBLocalization.text("Done") : NBLocalization.text("Next")
         nextLabelView?.textColor = tint
-        nextChevronView?.image = showDone ? sym("checkmark", size: 12, weight: .semibold) : sym("chevron.right", size: 12, weight: .semibold)
+        nextChevronView?.image = showDone ? sym("checkmark", size: 12, weight: .semibold) : sym("chevron.forward", size: 12, weight: .semibold)
         nextChevronView?.tintColor = tint
         #else
         guard var config = nextButton.configuration else { return }
-        config.title = showDone ? "Done" : "Next"
-        config.image = showDone ? sym("checkmark", size: 12, weight: .semibold) : sym("chevron.right", size: 12, weight: .semibold)
+        config.title = showDone ? NBLocalization.text("Done") : NBLocalization.text("Next")
+        config.image = showDone ? sym("checkmark", size: 12, weight: .semibold) : sym("chevron.forward", size: 12, weight: .semibold)
         config.imagePlacement = .trailing
         config.imagePadding = 4
         config.baseForegroundColor = tint
@@ -471,10 +470,10 @@ class StoryTraverseBar: NSObject {
 
         guard var config = textButton.configuration else { return }
         if inTextView {
-            config.title = "Story"
+            config.title = NBLocalization.text("Story")
             config.image = sym("doc.richtext")
         } else {
-            config.title = "Text"
+            config.title = NBLocalization.text("Text")
             config.image = sym("doc.plaintext")
         }
 

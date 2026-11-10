@@ -48,6 +48,7 @@ from redis.exceptions import LockError
 
 from apps.rss_feeds.tasks import (
     IndexDiscoverStories,
+    MergeFeeds,
     PushFeeds,
     ScheduleCountTagsForUser,
     UpdateFeeds,
@@ -64,6 +65,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils import urlnorm
 from utils.analytics_degradation import skip_when_analytics_down
+from utils.db_functions import mongo_max_replication_lag
 from utils.feed_functions import (
     TimeoutError,
     is_openrss_feed_address,
@@ -76,6 +78,7 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.fields import AutoOneToOneField
+from utils.reddit_fetcher import reddit_fetch_floor_minutes
 from utils.story_functions import (
     create_imageproxy_signed_url,
     htmldiff,
@@ -92,6 +95,12 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
 # text blobs, so no one of them may exceed 2MB. A multi-megabyte story is broken scraped
 # content and not an article, so cutting it down is safe. apps/rss_feeds/models.py
 MAX_STORY_CONTENT_BYTES = 2 * 1024 * 1024
+# Feed.task_feeds marks and publishes feeds this many at a time, which caps how many feeds a
+# failed publish can leave counted as tasked without a fetch. apps/rss_feeds/models.py
+TASK_FEEDS_CHUNK_SIZE = 100
+# Feed.story_retention never keeps fewer stories than this (its no-reads cap), so a feed holding
+# no more than this has nothing to trim. apps/rss_feeds/models.py
+FEWEST_STORIES_KEPT = 10
 
 
 def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
@@ -662,11 +671,16 @@ class Feed(models.Model):
         return [f for f in feed_ids if f not in briefing_ids]
 
     @classmethod
-    def autocomplete(cls, prefix, limit=10):
+    def autocomplete(cls, prefix, limit=10, semantic=True):
         # Use hybrid search to combine text matching with semantic similarity
         # This returns both exact matches (e.g., "cooking" in title) and
-        # semantically related feeds (e.g., "smitten kitchen" for "cooking")
-        results = SearchFeed.hybrid_query(prefix, max_results=limit)
+        # semantically related feeds (e.g., "smitten kitchen" for "cooking").
+        # A hostname lookup (see apps/discover/views.py) only needs the text
+        # half, so semantic=False skips the embedding call.
+        if semantic:
+            results = SearchFeed.hybrid_query(prefix, max_results=limit)
+        else:
+            results = SearchFeed.query(prefix, max_results=limit)
 
         feed_ids = [result["_source"]["feed_id"] for result in results[:limit]]
         return feed_ids
@@ -1023,16 +1037,21 @@ class Feed(models.Model):
         if isinstance(feeds, QuerySet):
             feeds = [f.pk for f in feeds]
 
-        r.srem("queued_feeds", *feeds)
-        now = datetime.datetime.now().strftime("%s")
-        p = r.pipeline()
-        for feed_id in feeds:
-            p.zadd("tasked_feeds", {feed_id: now})
-        p.execute()
-
-        # for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
-        for feed_id in feeds:
-            UpdateFeeds.apply_async(args=(feed_id,), queue="update_feeds")
+        # A feed leaves queued_feeds only after its fetch task is published. Publishing gives up
+        # after about a second of broker connection errors (newsblur_web/settings.py
+        # CELERY_BROKER_TRANSPORT_OPTIONS), and the broker shares its Redis with these keys, so
+        # nothing could put an unpublished feed back. A feed taken off the queue without a fetch
+        # waited for TaskBrokenFeeds, every 6 hours, and enough of them stopped TaskFeeds tasking.
+        # Feeds are marked tasked before their fetches go out, so a fetch that finishes first
+        # can't have its tasked entry written back after it; chunks keep a failed publish to at
+        # most TASK_FEEDS_CHUNK_SIZE feeds counted as tasked, all still queued to be tasked again.
+        for start in range(0, len(feeds), TASK_FEEDS_CHUNK_SIZE):
+            chunk = feeds[start : start + TASK_FEEDS_CHUNK_SIZE]
+            now = datetime.datetime.now().strftime("%s")
+            r.zadd("tasked_feeds", {feed_id: now for feed_id in chunk})
+            for feed_id in chunk:
+                UpdateFeeds.apply_async(args=(feed_id,), queue="update_feeds")
+            r.srem("queued_feeds", *chunk)
 
     @classmethod
     def drain_task_feeds(cls):
@@ -1134,10 +1153,13 @@ class Feed(models.Model):
         if "%(NEWSBLUR_DIR)s" in self.feed_address:
             return False, self
 
+        # Only the network lookup runs under the time limit. The save below can merge this
+        # feed into another one that already holds the discovered address, and a merge run
+        # inside the timelimit thread was abandoned when the limit passed and died partway
+        # through moving a popular feed's readers (forum #13860). apps/rss_feeds/models.py
         @timelimit(10)
         def _1():
             feed_address = None
-            feed = self
             found_feed_urls = []
             try:
                 logging.debug(" ---> Checking: %s" % self.feed_address)
@@ -1155,46 +1177,57 @@ class Feed(models.Model):
                     found_feed_urls = []
                 if len(found_feed_urls) and found_feed_urls[0] != self.feed_address:
                     feed_address = found_feed_urls[0]
-
-            if feed_address:
-                if any(
-                    ignored_domain in feed_address
-                    for ignored_domain in [
-                        "feedburner.com/atom.xml",
-                        "feedburner.com/feed/",
-                        "feedsportal.com",
-                    ]
-                ):
-                    logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
-                    return False, self
-                try:
-                    self.feed_address = strip_underscore_from_feed_address(feed_address)
-                    feed = self.save()
-                    feed.count_subscribers()
-                    # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
-                    feed.has_feed_exception = False
-                    feed.active = True
-                    feed = feed.save()
-                except IntegrityError:
-                    original_feed = Feed.objects.get(feed_address=feed_address, feed_link=self.feed_link)
-                    original_feed.has_feed_exception = False
-                    original_feed.active = True
-                    original_feed.save()
-                    merge_feeds(original_feed.pk, self.pk)
-            return feed_address, feed
+            return feed_address
 
         if self.feed_address_locked:
             return False, self
 
         try:
-            feed_address, feed = _1()
+            feed_address = _1()
         except TimeoutError as e:
             logging.debug("   ---> [%-30s] Feed address check timed out..." % (self.log_title[:30]))
             self.save_feed_history(505, "Timeout", e)
-            feed = self
-            feed_address = None
+            return False, self
 
-        return bool(feed_address), feed
+        if not feed_address:
+            return False, self
+        if any(
+            ignored_domain in feed_address
+            for ignored_domain in [
+                "feedburner.com/atom.xml",
+                "feedburner.com/feed/",
+                "feedsportal.com",
+            ]
+        ):
+            logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
+            return False, self
+
+        feed_address = strip_underscore_from_feed_address(feed_address)
+        # Feed.save merges into a feed that already holds this address rather than raising.
+        # A merge that would move MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS or more readers goes to
+        # its own task instead, so it gets a time limit it can finish in and this fetch batch
+        # moves on; this feed keeps its old address until the merge settles which feed
+        # survives. A smaller merge cut short leaves this feed's row with its old address too,
+        # so its next failing fetch lands here again and the merge carries on.
+        holder = Feed.feed_holding_address(feed_address, self.feed_link, exclude_ids=[self.pk])
+        if holder:
+            from apps.reader.models import UserSubscription
+
+            _, losing_feed, _, _, _, _ = merge_feeds_orientation(holder, self)
+            moving = UserSubscription.objects.filter(feed_id=losing_feed.pk).count()
+            if moving >= MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS:
+                if queue_merge_feeds_once(holder.pk, self.pk, feed_address):
+                    logging.debug(
+                        "   ---> [%-30s] ~FRAddress belongs to feed %s, queued a merge that moves %s "
+                        "subscriptions" % (self.log_title[:30], holder.pk, moving)
+                    )
+                return False, self
+        self.feed_address = feed_address
+        feed = self.save()
+        if not feed:
+            # The row was deleted while this check ran and nothing took its place.
+            return False, self
+        return settle_address_check_merge(feed, feed_address)
 
     def save_feed_history(self, status_code, message, exception=None, date=None):
         fetch_history = MFetchHistory.add(
@@ -1592,7 +1625,31 @@ class Feed(models.Model):
             )
             return before_story_count, before_story_count
 
-        self.update(archive_page=starting_page)
+        # One walk per feed at a time. Copies of the same walk that run together only fight over
+        # the feed's lock, wait on it, and queue the walk again (utils/feed_fetcher.py
+        # process_archive_page). The lock lasts as long as the backfill task's time limit, so a
+        # walk killed at that limit frees the feed for the next one.
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        walk_lock = r.lock(
+            "archive_walk:%s" % self.pk,
+            timeout=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            blocking=False,
+        )
+        if not walk_lock.acquire():
+            logging.debug(
+                "   ---> [%-30s] ~FBNot filling out archive stories, another walk of this feed is running"
+                % (self.log_title[:30])
+            )
+            return before_story_count, before_story_count
+
+        try:
+            self.update(archive_page=starting_page)
+        finally:
+            try:
+                walk_lock.release()
+            except LockError:
+                # The walk outlasted the lock, which has already expired.
+                pass
 
         after_story_count = MStory.objects(story_feed_id=self.pk).count()
         logging.debug(
@@ -1821,6 +1878,10 @@ class Feed(models.Model):
             "timeout": 10,
             "single_threaded": kwargs.get("single_threaded", True),
             "force": kwargs.get("force"),
+            # Who asked: utils/feed_fetcher.py also forces a random 1% of scheduled fetches,
+            # and Reddit feeds only spend RedListen's reserved one-off budget on fetches a
+            # reader asked for (utils/reddit_fetcher.py).
+            "reader_requested": kwargs.get("reader_requested", bool(kwargs.get("force"))),
             "force_fp": kwargs.get("force_fp"),
             "compute_scores": kwargs.get("compute_scores", True),
             "mongodb_replication_lag": kwargs.get("mongodb_replication_lag", None),
@@ -1847,7 +1908,7 @@ class Feed(models.Model):
                 self.save(update_fields=["feed_address", "feed_link"])
 
         # Per-domain fetch budget shared across all task servers, modeled on the
-        # Reddit API budget in utils/reddit_fetcher.py. When a domain's per-minute
+        # RedListen minute window in utils/redlisten.py. When a domain's per-minute
         # budget is spent, silently defer this fetch (no fetch history, no exception)
         # instead of hammering the site: one Pro user's 1,100 abebooks.com web feeds
         # at Pro speed added up to ~175,000 fetches/day against a single domain.
@@ -2343,9 +2404,16 @@ class Feed(models.Model):
     def story_cutoff(self):
         return self.number_of_stories_to_store()
 
-    def number_of_stories_to_store(self, pre_archive=False):
+    def number_of_stories_to_store(self, pre_archive=False, published_count=0):
+        cutoff, _ = self.story_retention(pre_archive=pre_archive, published_count=published_count)
+        return cutoff
+
+    def story_retention(self, pre_archive=False, published_count=0):
+        """How many stories this feed keeps, and whether the no-reads cap set that number.
+        published_count is the number of stories in the feed's current response.
+        apps/rss_feeds/models.py"""
         if self.archive_subscribers and self.archive_subscribers > 0 and not pre_archive:
-            return 10000
+            return 10000, False
 
         cutoff = 500
         if self.active_subscribers <= 0:
@@ -2385,9 +2453,14 @@ class Feed(models.Model):
             pipeline.get(feed_read_key)
         read_stories_per_week = pipeline.execute()
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
+        unread_capped = False
         if not pre_archive and read_stories_last_month == 0:
+            unread_capped = True
             original_cutoff = cutoff
-            cutoff = min(cutoff, 10)
+            # apps/rss_feeds/models.py still keeps every story in the feed's current response, so a feed that
+            # posts a whole issue at once (forum #13884) isn't cut to its newest 10 the moment it arrives, and
+            # stories it trimmed aren't re-added as new on every fetch.
+            cutoff = min(cutoff, max(FEWEST_STORIES_KEPT, published_count))
             try:
                 logging.debug(
                     "   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)"
@@ -2409,18 +2482,120 @@ class Feed(models.Model):
         if getattr(settings, "OVERRIDE_STORY_COUNT_MAX", None):
             cutoff = settings.OVERRIDE_STORY_COUNT_MAX
 
-        return int(cutoff)
+        return int(cutoff), unread_capped
 
-    def trim_feed(self, verbose=False, cutoff=None):
+    def trim_feed(self, verbose=False, cutoff=None, fetched_story_hashes=None):
+        if not cutoff and self.active_subscribers <= 0 and self.has_reader_within_unread_window():
+            # The fetch that finds every reader away SUBSCRIBER_EXPIRE days is the feed's last until
+            # one comes back, but they keep DAYS_OF_UNREAD days of unread stories, which story_retention's
+            # no-readers cutoff of 25 would delete. Feed.trim_if_abandoned trims it once that has passed.
+            return 0
+
+        fetched_story_hashes = fetched_story_hashes or []
+        keep_story_hashes = None
         if not cutoff:
-            cutoff = self.story_cutoff
+            cutoff, unread_capped = self.story_retention(published_count=len(fetched_story_hashes))
+            if unread_capped:
+                # apps/rss_feeds/models.py ranks the current response first only under the no-reads cap;
+                # read and archive feeds keep trimming purely by date.
+                keep_story_hashes = fetched_story_hashes
 
-        stories_removed = MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
+        stories_removed = MStory.trim_feed(
+            feed=self, cutoff=cutoff, verbose=verbose, keep_story_hashes=keep_story_hashes
+        )
 
         if not self.fs_size_bytes:
             self.count_fs_size_bytes()
 
         return stories_removed
+
+    def subscriber_feed_ids(self):
+        """The original feed and its branches, which count_subscribers counts subscribers across.
+        apps/rss_feeds/models.py"""
+        feed_ids = list(
+            Feed.objects.filter(branch_from_feed=self.original_feed_id).values_list("pk", flat=True)
+        )
+        feed_ids.append(self.original_feed_id)
+        return feed_ids
+
+    def has_reader_within_unread_window(self):
+        """Whether anyone subscribed has been seen in the last DAYS_OF_UNREAD days and so may still
+        have unread stories here. apps/rss_feeds/models.py"""
+        from apps.reader.models import UserSubscription
+
+        unread_window_start = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        return UserSubscription.objects.filter(
+            feed__in=self.subscriber_feed_ids(),
+            active=True,
+            user__profile__last_seen_on__gte=unread_window_start,
+        ).exists()
+
+    def has_archive_subscriber(self):
+        """Whether an Archive subscriber still keeps this feed's stories, asked of Postgres directly
+        as count_subscribers counts archive_subscribers, so stale stored counts don't matter.
+        apps/rss_feeds/models.py"""
+        from apps.reader.models import UserSubscription
+
+        return UserSubscription.objects.filter(
+            feed__in=self.subscriber_feed_ids(), active=True, user__profile__is_archive=True
+        ).exists()
+
+    @classmethod
+    def abandoned_feed_candidates(cls):
+        """Feeds that may be abandoned: no active or Archive subscribers, and no fetch in
+        DAYS_OF_UNREAD - SUBSCRIBER_EXPIRE days. A feed stops being fetched once its last reader
+        has been away SUBSCRIBER_EXPIRE days, so a last fetch that old means nobody has been seen
+        in DAYS_OF_UNREAD days. Feed.trim_if_abandoned confirms that before deleting anything.
+        apps/rss_feeds/models.py"""
+        unfetched_since = datetime.datetime.now() - datetime.timedelta(
+            days=settings.DAYS_OF_UNREAD - settings.SUBSCRIBER_EXPIRE
+        )
+        return cls.objects.filter(active_subscribers__lte=0, last_update__lte=unfetched_since).exclude(
+            archive_subscribers__gt=0
+        )
+
+    @classmethod
+    def trim_if_abandoned(cls, feed_id, dryrun=False):
+        """Trims a feed nobody can still read and returns how many stories went, or in a dry run,
+        about how many would. Nothing fetches a feed without active subscribers, so the trim after
+        each fetch (utils/feed_fetcher.py) stops once its last reader leaves, and a feed an Archive
+        subscriber left kept up to 10,000 stories. Readers keep DAYS_OF_UNREAD days of unread
+        stories and Archive subscribers keep everything, so a feed is abandoned only once it has no
+        Archive subscriber and no subscriber has been seen in that long.
+        apps/rss_feeds/models.py"""
+        stored = MStory.objects(story_feed_id=feed_id).count()
+        if stored <= FEWEST_STORIES_KEPT:
+            return 0
+        feed = cls.objects.filter(pk=feed_id).first()
+        if not feed:
+            return 0
+        # A feed trimmed on an earlier day sits at its cutoff, often above the floor when its last
+        # reader read it recently. trim_feed would delete nothing, so skip the recount and the
+        # reader lookup. That only holds while the stored counts show no readers and no Archive
+        # subscriber, as every daily candidate's do: a recount can then only raise the cutoff. A
+        # feed named to trim_feeds --feed can carry a stale Archive count, so it's recounted first.
+        cutoff = feed.story_cutoff
+        stored_counts_are_quiet = feed.active_subscribers <= 0 and not (feed.archive_subscribers or 0) > 0
+        if stored_counts_are_quiet and stored <= cutoff:
+            return 0
+
+        if dryrun:
+            # A dry run writes nothing, so instead of recounting it asks what a recount would find,
+            # then estimates with the counts that recount would store for an abandoned feed.
+            if feed.has_archive_subscriber() or feed.has_reader_within_unread_window():
+                return 0
+            feed.active_subscribers = 0
+            feed.active_premium_subscribers = 0
+            feed.archive_subscribers = 0
+            return max(0, stored - feed.story_cutoff)
+
+        # Stored counts go stale, and an Archive subscriber they missed still needs every story.
+        feed.count_subscribers()
+        if (feed.archive_subscribers or 0) > 0:
+            return 0
+        if feed.has_reader_within_unread_window():
+            return 0
+        return feed.trim_feed()
 
     def count_fs_size_bytes(self):
         stories = MStory.objects.filter(story_feed_id=self.pk)
@@ -3556,6 +3731,16 @@ class Feed(models.Model):
                     % (before_forbidden, total, hours, self.num_subscribers)
                 )
 
+        # Reddit feeds come from RedListen on a monthly budget (utils/reddit_fetcher.py).
+        # Subreddit and user feeds read the hourly poller's cache, which schedules them as
+        # soon as new posts land, so fetching them faster than the poll only re-reads it.
+        # Comment-thread and search feeds spend their own requests, so they fetch at most
+        # twice a day, overriding the Pro boost above.
+        reddit_floor = reddit_fetch_floor_minutes(self.feed_address)
+        if reddit_floor and total < reddit_floor:
+            adjustments.append("Reddit via RedListen minimum: %s min -> %s min" % (total, reddit_floor))
+            total = reddit_floor
+
         if verbose and adjustments:
             logging.debug(
                 "   ---> [%-30s] ~FBDecay adjustments applied:~SN\n         %s"
@@ -4193,7 +4378,7 @@ class MStory(mongo.Document):
             pass
 
     @classmethod
-    def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
+    def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True, keep_story_hashes=None):
         extra_stories_count = 0
         cutoff = int(cutoff)
         if not feed_id and not feed:
@@ -4211,17 +4396,32 @@ class MStory(mongo.Document):
                 "   ---> [%-30s] ~FMFound %s stories. Trimming to ~SB%s~SN..."
                 % (str(feed)[:30], stories.count(), cutoff)
             )
-            try:
-                story_trim_date = stories[cutoff].story_date
-                if story_trim_date == stories[0].story_date:
-                    # Handle case where every story is the same time
-                    story_trim_date = story_trim_date - datetime.timedelta(seconds=1)
-            except IndexError as e:
-                logging.debug(" ***> [%-30s] ~BRError trimming feed: %s" % (str(feed)[:30], e))
-                return extra_stories_count
+            if keep_story_hashes:
+                # apps/rss_feeds/models.py ranks the stories in the feed's current response ahead of older stored
+                # ones, so an issue whose articles are dated before the previous issue survives the cutoff
+                # (forum #13884). Both date-ordered lookups load only the stories past the cutoff.
+                keep_story_hashes = list(set(keep_story_hashes))
+                current = cls.objects(story_feed_id=feed_id, story_hash__in=keep_story_hashes).order_by(
+                    "-story_date"
+                )
+                older = cls.objects(story_feed_id=feed_id, story_hash__nin=keep_story_hashes).order_by(
+                    "-story_date"
+                )
+                current_count = current.count()
+                extra_stories = list(current.skip(cutoff)) + list(older.skip(max(0, cutoff - current_count)))
+                extra_stories_count = len(extra_stories)
+            else:
+                try:
+                    story_trim_date = stories[cutoff].story_date
+                    if story_trim_date == stories[0].story_date:
+                        # Handle case where every story is the same time
+                        story_trim_date = story_trim_date - datetime.timedelta(seconds=1)
+                except IndexError as e:
+                    logging.debug(" ***> [%-30s] ~BRError trimming feed: %s" % (str(feed)[:30], e))
+                    return extra_stories_count
 
-            extra_stories = cls.objects(story_feed_id=feed_id, story_date__lte=story_trim_date)
-            extra_stories_count = extra_stories.count()
+                extra_stories = cls.objects(story_feed_id=feed_id, story_date__lte=story_trim_date)
+                extra_stories_count = extra_stories.count()
             shared_story_count = 0
             for story in extra_stories:
                 if story.share_count:
@@ -4924,49 +5124,159 @@ class MStarredStory(mongo.DynamicDocument):
         return stories
 
     @classmethod
-    def trim_old_stories(cls, stories=10, days=90, dryrun=False):
-        print(" ---> Fetching starred story counts...")
-        stats = settings.MONGODB.newsblur.starred_stories.aggregate(
-            [
-                {
-                    "$group": {
-                        "_id": "$user_id",
-                        "stories": {"$sum": 1},
-                    },
-                },
-                {
-                    "$match": {"stories": {"$gte": stories}},
-                },
-            ]
-        )
-        month_ago = datetime.datetime.now() - datetime.timedelta(days=days)
-        user_ids = list(stats)
-        user_ids = sorted(user_ids, key=lambda x: x["stories"], reverse=True)
-        print(" ---> Found %s users with more than %s starred stories" % (len(user_ids), stories))
+    def trim_old_stories(cls, days=730, min_stories=10, batch_size=1000, max_lag_seconds=10, dryrun=False):
+        """Deletes the saved stories nobody can come back for and returns how many went, or in a
+        dry run, about how many would:
+        - the copies unsaving leaves behind under user_id 0 (apps/reader/views.py reassigns an
+          unsaved story to user 0 instead of deleting it),
+        - the saves of accounts that no longer exist, and
+        - the saves of a free account that never had premium and hasn't been seen in `days` days,
+          when it has at least `min_stories` of them.
+        An account that paid, or had premium any other way, keeps its saves, since it may come back.
+        Each account is checked again before every batch of its saves goes, and only saves made
+        before the trim started are deleted, so one that comes back mid-trim keeps the rest. Deletes
+        go `batch_size` at a time and wait while the secondaries are more than `max_lag_seconds`
+        behind, and a trimmed account's saved story counts are recounted. manage.py
+        trim_saved_stories runs it. apps/rss_feeds/models.py"""
+        if batch_size < 1:
+            # pymongo reads a limit of 0 as no limit, which would delete everything in one request.
+            raise ValueError("batch_size must be at least 1, not %s" % batch_size)
 
-        total = 0
-        for stat in user_ids:
-            try:
-                user = User.objects.select_related("profile").get(pk=stat["_id"])
-            except User.DoesNotExist:
-                user = None
-
-            if user and (user.profile.is_premium or user.profile.last_seen_on > month_ago):
-                continue
-
-            total += stat["stories"]
-            username = "%s (%s)" % (user and user.username or " - ", stat["_id"])
-            print(
-                " ---> %19.19s: %-20.20s %s stories"
-                % (user and user.profile.last_seen_on or "Deleted", username, stat["stories"])
+        started = datetime.datetime.now()
+        saved_by_user = cls.saved_story_counts_by_user()
+        user_ids = [user_id for user_id in saved_by_user if user_id]
+        existing_user_ids = set()
+        for start in range(0, len(user_ids), 5000):
+            existing_user_ids.update(
+                User.objects.filter(pk__in=user_ids[start : start + 5000]).values_list("pk", flat=True)
             )
-            if not dryrun and stat["_id"]:
-                cls.objects.filter(user_id=stat["_id"]).delete()
-            elif not dryrun and stat["_id"] == 0:
-                print(" ---> Deleting unstarred stories (user_id = 0)")
-                cls.objects.filter(user_id=stat["_id"]).delete()
+        ownerless_ids = [user_id for user_id in saved_by_user if user_id not in existing_user_ids]
+        candidate_ids = [
+            user_id
+            for user_id in user_ids
+            if user_id in existing_user_ids and saved_by_user[user_id] >= min_stories
+        ]
+        logging.debug(
+            " ---> ~FBSaved stories: ~SB%s~SN users, ~SB%s~SN unsaved copies, ~SB%s~SN deleted accounts, "
+            "~SB%s~SN accounts to check"
+            % (
+                len(saved_by_user),
+                saved_by_user.get(0, 0),
+                len([user_id for user_id in ownerless_ids if user_id]),
+                len(candidate_ids),
+            )
+        )
 
-        print(" ---> Deleted %s stories in total." % total)
+        trimmed = 0
+        for user_id in ownerless_ids:
+            trimmed += cls.delete_saved_stories(
+                user_id, saved_by_user[user_id], batch_size, max_lag_seconds, dryrun
+            )
+        ownerless_trimmed = trimmed
+
+        seen_since = started - datetime.timedelta(days=days)
+        trimmed_accounts = 0
+        for user_id in candidate_ids:
+            if not cls.saves_are_abandoned(user_id, seen_since):
+                continue
+            trimmed += cls.delete_saved_stories(
+                user_id,
+                saved_by_user[user_id],
+                batch_size,
+                max_lag_seconds,
+                dryrun,
+                saved_before=started,
+                still_abandoned=lambda: cls.saves_are_abandoned(user_id, seen_since),
+            )
+            trimmed_accounts += 1
+            if not dryrun:
+                # Recounted rather than cleared, in case the account kept saves by coming back.
+                MStarredStoryCounts.count_for_user(user_id)
+
+        logging.debug(
+            " ---> ~FB%s ~SB%s~SN saved stories, ~SB%s~SN of them from %s abandoned accounts"
+            % (
+                "Would delete" if dryrun else "Deleted",
+                trimmed,
+                trimmed - ownerless_trimmed,
+                trimmed_accounts,
+            )
+        )
+        return trimmed
+
+    @classmethod
+    def saved_story_counts_by_user(cls):
+        """How many saved stories each user_id has, read off the (user_id, -starred_date) index on
+        a secondary instead of scanning every saved story on the primary. apps/rss_feeds/models.py"""
+        collection = cls._get_collection().with_options(
+            read_preference=pymongo.ReadPreference.SECONDARY_PREFERRED
+        )
+        pipeline = [
+            # Sorting on the index's leading field lets $group read user_ids from the index alone.
+            {"$sort": {"user_id": 1}},
+            {"$group": {"_id": "$user_id", "stories": {"$sum": 1}}},
+        ]
+        return {row["_id"]: row["stories"] for row in collection.aggregate(pipeline, allowDiskUse=True)}
+
+    @classmethod
+    def saves_are_abandoned(cls, user_id, seen_since):
+        """Whether a still existing account's saves can go: it's free, hasn't been seen since
+        seen_since, never paid, and never had premium any other way (a grant, an extension or a
+        trial all set premium_expire), so it has nothing to come back to. apps/rss_feeds/models.py"""
+        from apps.profile.models import PaymentHistory, Profile
+
+        profile = (
+            Profile.objects.filter(user_id=user_id)
+            .values("is_premium", "premium_expire", "last_seen_on")
+            .first()
+        )
+        if not profile or profile["is_premium"] or profile["premium_expire"]:
+            return False
+        if not profile["last_seen_on"] or profile["last_seen_on"] > seen_since:
+            return False
+        return not PaymentHistory.objects.filter(user_id=user_id).exists()
+
+    @classmethod
+    def delete_saved_stories(
+        cls,
+        user_id,
+        saved_count,
+        batch_size,
+        max_lag_seconds,
+        dryrun,
+        saved_before=None,
+        still_abandoned=None,
+    ):
+        """Deletes the saved stories of user_id in batches, waiting after each one while the
+        secondaries catch up, and returns how many went, or in a dry run, saved_count. With
+        saved_before, only saves made before then go; with still_abandoned, it stops as soon as that
+        says the account came back. apps/rss_feeds/models.py"""
+        if dryrun:
+            return saved_count
+        query = {"user_id": user_id}
+        if saved_before:
+            # $not keeps old saves that never got a starred_date in the trim.
+            query["starred_date"] = {"$not": {"$gte": saved_before}}
+        collection = cls._get_collection()
+        deleted = 0
+        while True:
+            if still_abandoned and not still_abandoned():
+                return deleted
+            batch = [doc["_id"] for doc in collection.find(query, {"_id": 1}).limit(batch_size)]
+            if not batch:
+                return deleted
+            # By _id alone: the ids came from the filtered find above, and adding user_id lets Mongo plan
+            # the delete on the (user_id, -starred_date) index, which for user 0's 6.9 million unsaved
+            # copies walked all of them on every batch.
+            deleted += collection.delete_many({"_id": {"$in": batch}}).deleted_count
+            cls.wait_for_replication(max_lag_seconds)
+
+    @classmethod
+    def wait_for_replication(cls, max_lag_seconds):
+        """Waits while any secondary is more than max_lag_seconds behind the primary, so a big trim
+        can't leave the secondaries serving stale reads. apps/rss_feeds/models.py"""
+        while mongo_max_replication_lag(settings.MONGODB) > max_lag_seconds:
+            time.sleep(5)
 
     @property
     def guid_hash(self):
@@ -5824,6 +6134,22 @@ FETCH_DEFERRAL_KEY = "fetch_deferred:%s"
 # A merge that keeps finding yet another feed for the survivor's final save to collide with
 # stops widening its lock set here. apps/rss_feeds/models.py
 MERGE_FEEDS_MAX_LOCKS = 6
+# A branch needs at least this many subscriptions before it can outlive the feed it is branched
+# from in a merge (merge_feeds_inverted_branch). Surviving clears its parent and makes its
+# address public, and a reader's private URL (a token in the address) is read by one account,
+# maybe a few; 12,170 branches on production had exactly one reader in September 2026. A feed wrongly
+# re-parented under a copy has hundreds or thousands. apps/rss_feeds/models.py
+MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS = 10
+# A merge that would move at least this many subscriptions is too big for a fetch task: the
+# address check queues it as its own task (apps/rss_feeds/tasks.py MergeFeeds), and
+# merge_feeds_locked logs the call that finishes it if it is cut short. apps/rss_feeds/models.py
+MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS = 1000
+# Set while a MergeFeeds for a pair of feeds is queued or running, so each failing fetch of the
+# feed during a long merge does not queue another one (queue_merge_feeds_once). It lives as
+# long as the task's hard time limit, so a merge killed without clearing it can be queued again
+# after that. apps/rss_feeds/models.py
+MERGE_FEEDS_QUEUED_KEY = "merge_feeds_queued:%s:%s"
+MERGE_FEEDS_QUEUED_SECONDS = 65 * 60
 # The merge locks this thread holds, by feed id. merge_feeds_locked ends with a full
 # Feed.save of the survivor, which merges again on a hash collision; that nested merge must
 # not wait on locks its own caller holds, and a long merge renews the leases of all of them.
@@ -5970,8 +6296,11 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
     merge runs with. A feed parked by restore_merged_feed always folds into the other one
     with the other one's parent kept; otherwise the feed with more readers survives, and a
     feed branched from another gives way to the unbranched one and lends it its address
-    without the underscore. merge_feeds_locked applies the result; merge_feeds uses it to find
-    the third feed the survivor's final save would merge with. apps/rss_feeds/models.py
+    without the underscore, unless the unbranched feed is the branch's own parent and the
+    branch has more subscriptions and at least MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS of
+    them (see merge_feeds_inverted_branch). merge_feeds_locked applies the result;
+    merge_feeds uses it to find the third feed the survivor's final save would merge with.
+    apps/rss_feeds/models.py
     """
     # A feed parked by restore_merged_feed carries a placeholder hash while the original row
     # comes back; Feed.save keeps that hash and folds the row into the restored feed on any
@@ -5985,12 +6314,92 @@ def merge_feeds_orientation(original_feed, duplicate_feed, force=False, preserve
     heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
     branched_original = original_feed.branch_from_feed and not duplicate_feed.branch_from_feed
     survivor_address = original_feed.feed_address
-    if (heavier_dupe or branched_original) and not force:
+    inverted_branch = None if force else merge_feeds_inverted_branch(original_feed, duplicate_feed)
+    if inverted_branch:
+        # The branch is the feed people actually read, so it survives with its own address;
+        # merge_feeds_locked clears its parent, which is the other feed being folded in.
+        if inverted_branch.pk == duplicate_feed.pk:
+            original_feed, duplicate_feed = duplicate_feed, original_feed
+        survivor_address = original_feed.feed_address
+    elif (heavier_dupe or branched_original) and not force:
         original_feed, duplicate_feed = duplicate_feed, original_feed
         survivor_address = original_feed.feed_address
         if branched_original:
             survivor_address = strip_underscore_from_feed_address(duplicate_feed.feed_address)
     return original_feed, duplicate_feed, survivor_address, force, preserve_branch_from_feed, parked_duplicate
+
+
+def queue_merge_feeds_once(original_feed_id, duplicate_feed_id, feed_address=None):
+    """Queue MergeFeeds for this pair unless one is already queued or running, and say whether
+    this call queued it. The key is the same whichever way round the pair is given.
+    apps/rss_feeds/models.py
+    """
+    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+    key = MERGE_FEEDS_QUEUED_KEY % tuple(sorted([original_feed_id, duplicate_feed_id]))
+    if not r.set(key, 1, nx=True, ex=MERGE_FEEDS_QUEUED_SECONDS):
+        return False
+    MergeFeeds.apply_async(args=(original_feed_id, duplicate_feed_id, feed_address))
+    return True
+
+
+def clear_merge_feeds_queued(original_feed_id, duplicate_feed_id):
+    """Let the next collision of this pair queue a merge again (MergeFeeds calls this when it
+    ends, however it ends). apps/rss_feeds/models.py"""
+    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+    r.delete(MERGE_FEEDS_QUEUED_KEY % tuple(sorted([original_feed_id, duplicate_feed_id])))
+
+
+def settle_address_check_merge(feed, feed_address):
+    """Finish check_feed_link_for_feed_address once its save, and any merge that save set off
+    inline or through MergeFeeds, is done: the surviving feed takes the discovered address
+    when it does not already have it (a merge keeps the heavier feed's own address, and the
+    feed that held the discovered one is gone now) and is marked healthy only if it did.
+    Returns (fixed, feed) for the fetcher, which records an error when nothing was fixed.
+    apps/rss_feeds/models.py
+    """
+    if feed.feed_address != feed_address:
+        if Feed.feed_holding_address(feed_address, feed.feed_link, exclude_ids=[feed.pk]):
+            # A merge cut short left the other feed in place; the next collision resumes it.
+            return False, feed
+        feed.feed_address = feed_address
+        feed = feed.save() or feed
+    feed.count_subscribers()
+    # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
+    feed.has_feed_exception = False
+    feed.active = True
+    feed = feed.save() or feed
+    return True, feed
+
+
+def merge_feeds_inverted_branch(original_feed, duplicate_feed):
+    """The branched one of the two feeds when it is branched from the other one, the other one
+    is unbranched, and the branch has more subscriptions than the other one and at least
+    MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS of them, or None. A reader's private branch
+    normally gives way in a merge, but Change Feed Address used to re-parent an existing feed
+    under the reader's copy, which left popular feeds branched from small or empty ones;
+    Hacker News was one, and it lost a merge to an empty RSSHub copy (forum #13860). Which of
+    the two was created first says nothing either way (a merge re-parents branches onto a
+    newer survivor, and the bug re-parented feeds under older copies too), so the readers
+    decide. num_subscribers is summed over the whole branch family, so it reads the same on
+    both feeds; the subscription rows tell them apart. apps/rss_feeds/models.py
+    """
+    from apps.reader.models import UserSubscription
+
+    if original_feed.branch_from_feed_id == duplicate_feed.pk:
+        branch, trunk = original_feed, duplicate_feed
+    elif duplicate_feed.branch_from_feed_id == original_feed.pk:
+        branch, trunk = duplicate_feed, original_feed
+    else:
+        return None
+    if trunk.branch_from_feed_id:
+        return None
+    branch_readers = UserSubscription.objects.filter(feed_id=branch.pk).count()
+    if branch_readers < MERGE_FEEDS_INVERTED_BRANCH_MIN_READERS:
+        return None
+    trunk_readers = UserSubscription.objects.filter(feed_id=trunk.pk).count()
+    if branch_readers > trunk_readers:
+        return branch
+    return None
 
 
 def merge_feeds_collision_id(
@@ -6125,6 +6534,20 @@ def merge_feeds_locked(original_feed_id, duplicate_feed_id, force=False, preserv
         original_feed.branch_from_feed = None
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by("-pk")
+    moving_subscriptions = user_subs.count()
+    if moving_subscriptions >= MERGE_FEEDS_LARGE_MOVE_SUBSCRIPTIONS:
+        logging.info(
+            " ---> merge_feeds is moving %s subscriptions from %s to %s; if it is stopped partway, "
+            "rerun merge_feeds(%s, %s, force=%s) to finish it"
+            % (
+                moving_subscriptions,
+                duplicate_feed.pk,
+                original_feed.pk,
+                original_feed.pk,
+                duplicate_feed.pk,
+                force,
+            )
+        )
     for user_sub in user_subs:
         renew_merge_feeds_locks()
         user_sub.switch_feed(original_feed, duplicate_feed)

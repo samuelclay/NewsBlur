@@ -7,7 +7,7 @@ from xml.etree.ElementTree import Comment, Element, SubElement, tostring
 
 import mongoengine as mongo
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 from lxml import etree
 from mongoengine.queryset import OperationError
 from oauth2client.client import Error as OAuthError
@@ -132,17 +132,46 @@ class OPMLImporter(Importer):
         # self.clear_feeds()
 
         outline = opml.from_string(self.opml_xml)
-        folders = self.get_folders()
         try:
-            folders = self.process_outline(outline, folders)
+            # apps/feed_import/models.py collects only imported placements while resolving feeds without row locks.
+            imported = self.process_outline(outline, [])
         except AttributeError:
             folders = None
         else:
-            # self.clear_folders()
-            self.usf.folders = json.encode(folders)
-            self.usf.save()
+            with transaction.atomic():
+                # Match subscription_batch.py's lock order, then merge into the latest committed folder tree.
+                User.objects.select_for_update().get(pk=self.user.pk)
+                self.usf, _ = UserSubscriptionFolders.objects.get_or_create(user=self.user)
+                self.usf = UserSubscriptionFolders.objects.select_for_update().get(pk=self.usf.pk)
+                folders = json.decode(self.usf.folders or "[]")
+                self.merge_folders(folders, imported)
+                self.usf.folders = json.encode(folders)
+                self.usf.save(update_fields=["folders"])
 
         return folders
+
+    @classmethod
+    def merge_folders(cls, destination, imported):
+        # apps/feed_import/models.py merges corresponding paths without replacing concurrent placements.
+        for item in imported:
+            if isinstance(item, dict):
+                for name, children in item.items():
+                    existing = next(
+                        (
+                            contents
+                            for folder in destination
+                            if isinstance(folder, dict)
+                            for title, contents in folder.items()
+                            if title.lower() == name.lower()
+                        ),
+                        None,
+                    )
+                    if existing is None:
+                        destination.append({name: children})
+                    else:
+                        cls.merge_folders(existing, children)
+            elif item not in destination:
+                destination.append(item)
 
     def process_outline(self, outline, folders, in_folder=""):
         for item in outline:

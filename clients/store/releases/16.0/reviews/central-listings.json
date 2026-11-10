@@ -1,0 +1,22 @@
+{
+  "reviewer": "Independent release_skills agent",
+  "languages": [
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id"
+  ],
+  "fields_reviewed": 70,
+  "status": "passed_after_corrections",
+  "source": "Reviewer report supplied through agent collaboration; summary retained here.",
+  "corrections": {
+    "ru_uk": "Naturalized the wording that stories remain as published.",
+    "hi": "Corrected the grammatical form of the Preferences label.",
+    "hi_id_he": "Corrected the meaning of hiding unwanted stories rather than all remaining stories.",
+    "android": "Used generic language selection in the app to avoid naming the wrong menu."
+  },
+  "validation": "All seven languages revalidated; final combined validator passes all 630 fields."
+}

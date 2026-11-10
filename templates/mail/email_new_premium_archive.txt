@@ -1,11 +1,13 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}Thank you, thank you, thank you!
+{% load i18n %}
 
-A *huge* thanks for subscribing to the premium archive tier!
+{% block body %}{% trans "Thank you, thank you, thank you!" %}
 
-Your subscription helps pay for the machines which store and process your archive.
+{% trans "A *huge* thanks for subscribing to the premium archive tier!" %}
 
-NewsBlur is an archive for the web you follow. Search it, clip highlights and share notes, and rest assured that your data will remain even as the web it pulls from may not. Thanks again for supporting NewsBlur.
+{% trans "Your subscription helps pay for the machines which store and process your archive." %}
+
+{% trans "NewsBlur is an archive for the web you follow. Search it, clip highlights and share notes, and rest assured that your data will remain even as the web it pulls from may not. Thanks again for supporting NewsBlur." %}
 
 - Sam Clay{% endblock body %}

@@ -1,0 +1,3 @@
+La interfaz de NewsBlur ya admite 21 idiomas. Elige el tuyo en la app, con una vista previa en tu idioma y en inglés. El árabe y el hebreo se leen de derecha a izquierda. Los artículos siguen tal como se publicaron.
+
+Los controles del siguiente artículo permanecen fijos, incluso cuando Siguiente cambia a Hecho. Los botones de inicio de sesión se leen mejor en los temas oscuros.

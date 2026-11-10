@@ -1,0 +1,29 @@
+{
+  "languages": [
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id"
+  ],
+  "source": "clients/store/releases/16.1.1/en.json",
+  "translator": "translate_mid",
+  "status": "translated and self-reviewed; independent review pending",
+  "checks": [
+    "All listing and product fields compared with English; accurate existing text retained",
+    "Weekly Archive 1 hour and Pro 10 hours; Sunday reset",
+    "Saved and Read Stories order and downward continuation",
+    "Duplicate headlines spoken once",
+    "Mac notes omit reading-toolbar claim",
+    "Brand, product identifiers, URLs, billing disclosures preserved",
+    "Arabic and Hebrew use natural RTL text without embedded bidi control characters",
+    "Field lengths checked"
+  ],
+  "validation": {
+    "ios": "21 languages, 294 fields passed",
+    "macos": "21 languages, 294 fields passed",
+    "android": "21 languages, 336 fields passed"
+  }
+}

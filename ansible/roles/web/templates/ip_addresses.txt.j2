@@ -1,5 +1,8 @@
 {%- for item in hostvars %}
 {% if "happ" in item or "hnode" in item or "hwww" in item or "htask" in item %}
 {{ hostvars[item].ansible_host }}
+{% if hostvars[item].public_ipv6 | default('') %}
+{{ hostvars[item].public_ipv6 }}
+{% endif %}
 {% endif %}
 {%- endfor %}

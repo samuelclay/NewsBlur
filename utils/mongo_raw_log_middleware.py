@@ -11,6 +11,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.mongo_replica_set_client import MongoReplicaSetClient
 
 from utils import log as logging
+from utils.mongo_command_monitor import recording_queries
 
 
 class MongoDumpMiddleware(object):
@@ -71,14 +72,16 @@ class MongoDumpMiddleware(object):
             result = original_method(*args, **kwargs)
             stop = time()
             duration = stop - start
-            if not getattr(connection, "queriesx", False):
-                connection.queriesx = []
-            connection.queriesx.append(
-                {
-                    "mongo": message,
-                    "time": "%.6f" % duration,
-                }
-            )
+            # Recorded only while a profiled request or task has turned recording on
+            # (utils/mongo_command_monitor.py recording_queries); this instrumentation stays installed
+            # for the life of the process once any profiled request has installed it.
+            if recording_queries():
+                connection.queriesx.append(
+                    {
+                        "mongo": message,
+                        "time": "%.6f" % duration,
+                    }
+                )
             return result
 
         return instrumented_method

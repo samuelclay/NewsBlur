@@ -48,7 +48,9 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import feedgenerator
 from django.utils.encoding import smart_str
+from django.utils.translation import gettext, gettext_lazy, ngettext
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 from mongoengine.queryset import NotUniqueError, OperationError
 
 from apps.analyzer.models import (
@@ -75,14 +77,7 @@ from apps.analyzer.models import (
     sort_classifiers_by_feed,
 )
 from apps.notifications.models import MUserFeedNotification
-from apps.profile.models import (
-    MCustomStyling,
-    MDashboardRiver,
-    MGiftCode,
-    MRedeemedCode,
-    MReferral,
-    Profile,
-)
+from apps.profile.models import MCustomStyling, MDashboardRiver, MGiftCode, MRedeemedCode, MReferral, Profile
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.metrics import (
     READER_LOAD_PHASE_DURATION,
@@ -109,13 +104,7 @@ from apps.statistics.rtrending import RTrendingStory
 
 # from apps.search.models import SearchStarredStory
 try:
-    from apps.rss_feeds.models import (
-        DuplicateFeed,
-        Feed,
-        MFeedPage,
-        MStarredStory,
-        MStory,
-    )
+    from apps.rss_feeds.models import DuplicateFeed, Feed, MFeedPage, MStarredStory, MStory
 except:
     pass
 import tweepy
@@ -146,22 +135,13 @@ from utils.ratelimit import ratelimit, ratelimit_by_url_user
 from utils.story_functions import (
     format_story_link_date__long,
     format_story_link_date__short,
+    localized_date,
     strip_tags,
     strip_tags_preserve_blockquote,
 )
-from utils.url_safety import (
-    BLOCKED_PRIVATE_URL_MESSAGE,
-    UnsafeUrlError,
-    validate_public_url,
-)
+from utils.url_safety import BLOCKED_PRIVATE_URL_MESSAGE, UnsafeUrlError, validate_public_url
 from utils.user_functions import ajax_login_required, extract_user_agent, get_user
-from utils.view_functions import (
-    RequestDeduplicator,
-    get_argument_or_404,
-    is_true,
-    render_to,
-    required_params,
-)
+from utils.view_functions import RequestDeduplicator, get_argument_or_404, is_true, render_to, required_params
 from vendor.timezones.utilities import localtime_for_timezone
 
 BANNED_URLS = [
@@ -358,6 +338,7 @@ def filter_stories_by_classifier(stories, classifier_type, classifier_value):
 
 
 @never_cache
+@ensure_csrf_cookie
 @render_to("reader/dashboard.xhtml")
 def index(request, **kwargs):
     subdomain = get_subdomain(request)
@@ -425,6 +406,7 @@ def dashboard(request, **kwargs):
     }, "reader/dashboard.xhtml"
 
 
+@ensure_csrf_cookie
 @render_to("reader/dashboard.xhtml")
 def welcome_req(request, **kwargs):
     return welcome(request, **kwargs)
@@ -436,7 +418,8 @@ def welcome(request, **kwargs):
     social_profile = MSocialProfile.get_user(user.pk)
 
     if request.method == "POST":
-        if request.POST.get("submit", "").startswith("log"):
+        # views.py tells the two welcome forms apart by their fields, since the button label is translated.
+        if "login-username" in request.POST:
             login_form = LoginForm(request.POST, prefix="login")
             signup_form = SignupForm(prefix="signup")
         else:
@@ -485,6 +468,7 @@ def login(request):
 
 
 @never_cache
+@ensure_csrf_cookie
 @render_to("accounts/signup.html")
 def signup(request):
     if request.method == "POST":
@@ -494,7 +478,7 @@ def signup(request):
 
         form = SignupForm(prefix="signup", data=request.POST)
         if form.is_valid():
-            new_user = form.save()
+            new_user = form.save(request=request)
             login_user(request, new_user, backend="django.contrib.auth.backends.ModelBackend")
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
 
@@ -1088,12 +1072,18 @@ def refresh_feed(request, feed_id):
     return load_single_feed(request, feed_id)
 
 
-def get_prompt_scores_or_queue(user, stories, feed_ids):
+def get_prompt_scores_or_queue(user, stories, feed_ids, folder_feed_ids=None):
     """Read cached AI prompt classifier scores (cache-read-only).
 
     Classification happens at FeedFetch time, not at read time.
     This function only reads from Redis cache and returns whatever
     scores are available. Uncached stories get no score.
+
+    A prompt's score is only read for feeds the prompt covers (its own feed, every
+    feed for a global prompt, the sites in its folder for a folder prompt), matching
+    MClassifierPrompt.classify_stories in apps/analyzer/models.py. Pass the view's
+    folder_feed_ids map when it has one; otherwise it's loaded only if a folder prompt
+    needs it.
 
     Returns dict with:
       "scores": {story_hash: prompt_score} - aggregate score per story
@@ -1111,16 +1101,19 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
     if not prompt_count:
         return empty_result
 
-    # Get applicable prompts
-    prompts = MClassifierPrompt.get_prompts_for_user(user.pk, feed_ids=feed_ids)
-    feed_prompts = prompts["feed_prompts"]
-    if not feed_prompts:
-        return empty_result
-
     # Group stories by feed
     stories_by_feed = defaultdict(list)
     for story in stories:
         stories_by_feed[story["story_feed_id"]].append(story)
+
+    # Get the prompts that apply to each story's feed (feed-specific, global, and folder
+    # prompts whose folder holds the feed). Keyed by the stories' own feed ids, which the
+    # fetcher caches scores under, even when the request named a duplicate feed id.
+    prompts_by_feed = MClassifierPrompt.get_prompts_by_feed(
+        user.pk, list(stories_by_feed.keys()), folder_feed_ids=folder_feed_ids
+    )
+    if not prompts_by_feed:
+        return empty_result
 
     # Check cache for all prompts
     prompt_scores = {}  # {story_hash: aggregated_score}
@@ -1129,14 +1122,7 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
     for feed_id, feed_stories in stories_by_feed.items():
         story_hashes = [s["story_hash"] for s in feed_stories]
 
-        # Collect prompts that apply to this feed (feed-specific + global)
-        applicable_prompts = []
-        if 0 in feed_prompts:
-            applicable_prompts.extend(feed_prompts[0])
-        if feed_id in feed_prompts:
-            applicable_prompts.extend(feed_prompts[feed_id])
-
-        for prompt in applicable_prompts:
+        for prompt in prompts_by_feed.get(feed_id, []):
             prompt_id = str(prompt.id)
             cached = MClassifierPrompt.get_cached_scores(user.pk, prompt_id, feed_id, story_hashes)
 
@@ -1153,7 +1139,10 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
                     elif prompt.classifier_type == "hidden" and score == -1:
                         effective_score = -1
                     if effective_score != 0:
-                        prompt_scores[sh] = effective_score
+                        # views.py: Several prompts can match one story. A focus match is a
+                        # like and a hidden match is a dislike, and as with any other pair of
+                        # classifiers the like wins, so the story keeps the strongest score.
+                        prompt_scores[sh] = max(prompt_scores.get(sh, effective_score), effective_score)
                         prompt_details[sh].append(
                             {
                                 "prompt": prompt.prompt,
@@ -1175,12 +1164,14 @@ def load_single_feed(request, feed_id):
     limit = 6
     page = int_or_default(request.GET.get("page", 1), 1)
     delay = int_or_default(request.GET.get("delay", 0), 0)
-    classifier_filter_type, classifier_filter_value, _classifier_filter_scope = (
-        normalize_classifier_filter_params(
-            request.GET.get("classifier_filter_type"),
-            request.GET.get("classifier_filter_value"),
-            request.GET.get("classifier_filter_scope"),
-        )
+    (
+        classifier_filter_type,
+        classifier_filter_value,
+        _classifier_filter_scope,
+    ) = normalize_classifier_filter_params(
+        request.GET.get("classifier_filter_type"),
+        request.GET.get("classifier_filter_value"),
+        request.GET.get("classifier_filter_scope"),
     )
     # Inflate the fetch window so the post-query filter has enough raw
     # stories to find matches. Offset scales with the inflated page so
@@ -1435,13 +1426,20 @@ def load_single_feed(request, feed_id):
     user_is_pro = user.profile.is_pro
 
     # AI prompt classifiers (cached in Redis, async classification for uncached)
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=[feed_id])
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=[feed_id], folder_feed_ids=folder_feed_ids
+    )
 
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, feed),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -2191,6 +2189,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -2566,22 +2569,26 @@ def load_river_stories__redis(request):
         date_filter_end = None
 
     query = get_post.get("query", "").strip()
-    classifier_filter_type, classifier_filter_value, classifier_filter_scope = (
-        normalize_classifier_filter_params(
-            get_post.get("classifier_filter_type"),
-            get_post.get("classifier_filter_value"),
-            get_post.get("classifier_filter_scope"),
-        )
+    (
+        classifier_filter_type,
+        classifier_filter_value,
+        classifier_filter_scope,
+    ) = normalize_classifier_filter_params(
+        get_post.get("classifier_filter_type"),
+        get_post.get("classifier_filter_value"),
+        get_post.get("classifier_filter_scope"),
     )
-    classifier_filter_source_story = (
-        get_post.get("classifier_filter_source_story") or ""
-    ).strip()
+    classifier_filter_source_story = (get_post.get("classifier_filter_source_story") or "").strip()
     # Folder/global scopes are a Premium Archive feature (mirrors classifier
     # scoping in apps/analyzer/models.py). Silently coerce anyone else.
     if classifier_filter_scope != "feed" and not (user.is_authenticated and user.profile.is_archive):
         classifier_filter_scope = "feed"
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
+    # views.py: include_story_content=false returns stories without their content, like
+    # load_single_feed's flag. The iOS score refresh after a classifier save
+    # (clients/ios StoryScoreRefresher.swift) only needs each story's scores.
+    include_story_content = is_true(get_post.get("include_story_content", True))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
     infrequent = is_true(get_post.get("infrequent", False))
     if infrequent:
@@ -2687,6 +2694,7 @@ def load_river_stories__redis(request):
         feeds_hash = hashlib.md5(",".join(str(f) for f in sorted(feed_ids)).encode()).hexdigest()[:12]
         cache_key = (
             f"river:{user.pk}:{feeds_hash}:{page}:{order}:{read_filter}:{date_filter_start}:{date_filter_end}"
+            f":{int(include_story_content)}"
         )
         deduper = RequestDeduplicator(request, cache_key)
         cached = deduper.check_for_duplicate()
@@ -2756,9 +2764,7 @@ def load_river_stories__redis(request):
                 )
 
             if indexed_tag_story_hashes is not None:
-                story_hashes = include_indexed_tag_source_story(
-                    indexed_tag_story_hashes, feed_ids
-                )
+                story_hashes = include_indexed_tag_source_story(indexed_tag_story_hashes, feed_ids)
                 mstories = MStarredStory.objects(
                     user_id=user.pk,
                     story_feed_id__in=feed_ids,
@@ -2805,16 +2811,12 @@ def load_river_stories__redis(request):
                 )
 
             if indexed_tag_story_hashes is not None:
-                story_hashes = include_indexed_tag_source_story(
-                    indexed_tag_story_hashes, feed_ids
-                )
-                unread_feed_story_hashes = (
-                    UserSubscription.unread_story_hashes_for_story_hashes(
-                        user.pk,
-                        story_hashes,
-                        usersubs=usersubs,
-                        cutoff_date=user.profile.unread_cutoff,
-                    )
+                story_hashes = include_indexed_tag_source_story(indexed_tag_story_hashes, feed_ids)
+                unread_feed_story_hashes = UserSubscription.unread_story_hashes_for_story_hashes(
+                    user.pk,
+                    story_hashes,
+                    usersubs=usersubs,
+                    cutoff_date=user.profile.unread_cutoff,
                 )
                 if read_filter == "unread":
                     unread_story_hashes = set(unread_feed_story_hashes)
@@ -2984,7 +2986,9 @@ def load_river_stories__redis(request):
     user_is_pro = user.profile.is_pro
 
     # AI prompt classifiers (cached in Redis, async classification for uncached)
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=found_feed_ids)
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=found_feed_ids, folder_feed_ids=folder_feed_ids
+    )
 
     # Look up actual read status for starred stories from Redis
     if read_filter == "starred":
@@ -3024,6 +3028,11 @@ def load_river_stories__redis(request):
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -3187,6 +3196,13 @@ def load_river_stories__redis(request):
         if hasattr(request, "start_time"):
             seconds = time.time() - request.start_time
             RStats.add("page_load", duration=seconds)
+
+    if not include_story_content:
+        # views.py drops content only now, after clustering has read it for member previews.
+        for story in stories:
+            story.pop("story_content", None)
+            for member in story.get("cluster_stories", []):
+                member.pop("story_content", None)
 
     data = dict(
         code=code,
@@ -3488,7 +3504,7 @@ def mark_story_hashes_as_read(request):
     try:
         story_hashes = request.POST.getlist("story_hash") or request.POST.getlist("story_hash[]")
     except UnreadablePostError:
-        return dict(code=-1, message="Missing `story_hash` list parameter.")
+        return dict(code=-1, message=gettext("Missing `story_hash` list parameter."))
 
     # Filter out story hashes already marked as read to avoid redundant work.
     # Some clients (e.g. NetNewsWire) re-send all read hashes on every sync cycle.
@@ -3568,10 +3584,7 @@ def mark_story_hashes_as_read(request):
 
             clustering_reads_disabled = MStatistics.get("clustering_reads_disabled")
             if not clustering_reads_disabled:
-                from apps.clustering.models import (
-                    get_cluster_for_story,
-                    get_cluster_members,
-                )
+                from apps.clustering.models import get_cluster_for_story, get_cluster_members
 
                 # Use the same cluster universe the user reads in the river.
                 cluster_mode = user_prefs.get("cluster_mode", "related")
@@ -3646,7 +3659,7 @@ def mark_feed_stories_as_read(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     feeds_stories = request.POST.get("feeds_stories", "{}")
     feeds_stories = json.decode(feeds_stories)
-    data = {"code": -1, "message": "Nothing was marked as read"}
+    data = {"code": -1, "message": gettext("Nothing was marked as read")}
 
     for feed_id, story_ids in list(feeds_stories.items()):
         try:
@@ -3744,7 +3757,7 @@ def mark_story_as_unread(request):
 
     if not story:
         logging.user(request, "~FY~SBUnread~SN story in feed: %s (NOT FOUND)" % (feed))
-        return dict(code=-1, message="Story not found.")
+        return dict(code=-1, message=gettext("Story not found."))
 
     message = RUserStory.story_can_be_marked_unread_by_user(story, request.user)
     if message:
@@ -3784,7 +3797,7 @@ def mark_story_hash_as_unread(request):
         if not story:
             data = dict(
                 code=-1,
-                message="That story has been removed from the feed, no need to mark it unread.",
+                message=gettext("That story has been removed from the feed, no need to mark it unread."),
                 story_hash=story_hash,
             )
             if not is_list:
@@ -3838,10 +3851,10 @@ def mark_stories_as_unread(request):
     try:
         days = int(request.POST.get("days", 0))
     except ValueError:
-        return dict(code=-1, message="Days parameter must be an integer.")
+        return dict(code=-1, message=gettext("Days parameter must be an integer."))
 
     if days <= 0:
-        return dict(code=-1, message="Days must be a positive integer.")
+        return dict(code=-1, message=gettext("Days must be a positive integer."))
 
     profile = request.user.profile
     if profile.is_archive:
@@ -3862,7 +3875,7 @@ def mark_stories_as_unread(request):
         try:
             feed_id = int(feed_id)
         except ValueError:
-            return dict(code=-1, message="Invalid feed_id.")
+            return dict(code=-1, message=gettext("Invalid feed_id."))
         feed_ids = [feed_id]
         total = UserSubscription.mark_stories_as_unread(request.user.pk, feed_ids, days)
         logging.user(request, "~FY~SBUnread~SN %s stories in feed %s (%s days)" % (total, feed_id, days))
@@ -3884,7 +3897,7 @@ def mark_stories_as_unread(request):
     else:
         feed_ids = list(UserSubscription.objects.filter(user=request.user).values_list("feed_id", flat=True))
         if not feed_ids:
-            return dict(code=-1, message="No feeds found.")
+            return dict(code=-1, message=gettext("No feeds found."))
         MarkStoriesAsUnread.delay(request.user.pk, feed_ids, days)
         is_async = True
         logging.user(request, "~FY~SBUnread~SN stories in all %s feeds (%s days)" % (len(feed_ids), days))
@@ -4045,6 +4058,40 @@ def add_url(request):
 @ajax_login_required
 @json.json_view
 @folder_path_errors
+def add_feeds(request):
+    """Subscribe a discovery selection in one request, using already known feed IDs."""
+    from django.http import HttpResponseNotAllowed
+
+    from apps.reader.subscription_batch import add_feed_ids
+
+    if request.method == "GET":
+        return {"batch_add_supported": True, "max_feeds": 100}
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["GET", "POST"])
+    feed_ids = request.POST.getlist("feed_ids") or request.POST.getlist("feed_ids[]")
+    if len(feed_ids) == 1 and feed_ids[0].startswith("["):
+        try:
+            feed_ids = json.decode(feed_ids[0])
+        except (ValueError, TypeError):
+            feed_ids = None
+    if not isinstance(feed_ids, list) or not 1 <= len(feed_ids) <= 100:
+        return {"code": -1, "message": "Provide between 1 and 100 feed IDs.", "results": []}
+    if any(not isinstance(value, (str, int)) for value in feed_ids):
+        return {"code": -1, "message": "Invalid feed IDs.", "results": []}
+    return add_feed_ids(
+        request.user,
+        feed_ids,
+        folder_path=parse_folder_path(request, "folder_path"),
+        folder=request.POST.get("folder", "").replace("river:", ""),
+        new_folder=request.POST.get("new_folder", "").strip(),
+        auto_active=is_true(request.POST.get("auto_active", 1)),
+        banned_urls=BANNED_URLS,
+    )
+
+
+@ajax_login_required
+@json.json_view
+@folder_path_errors
 def add_folder(request):
     folder = request.POST["folder"].replace("river:", "")
     parent_folder = request.POST.get("parent_folder", "").replace("river:", "")
@@ -4139,7 +4186,9 @@ def delete_folder(request):
     feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
 
     request.user.profile.send_opml_export_email(
-        reason="You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case."
+        reason=gettext_lazy(
+            "You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case."
+        )
     )
 
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
@@ -4166,7 +4215,9 @@ def delete_feeds_by_folder(request):
     feeds_by_folder = json.decode(request.POST["feeds_by_folder"])
 
     request.user.profile.send_opml_export_email(
-        reason="You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+        reason=gettext_lazy(
+            "You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+        )
     )
 
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
@@ -4187,7 +4238,7 @@ def rename_feed(request):
     feed_id = request.POST.get("feed_id")
     feed_title = request.POST.get("feed_title")
     if not feed_id or not feed_title:
-        return dict(code=-1, message="Missing feed_id or feed_title")
+        return dict(code=-1, message=gettext("Missing feed_id or feed_title"))
 
     feed = get_object_or_404(Feed, pk=int(feed_id))
     try:
@@ -4372,7 +4423,9 @@ def move_feeds_by_folder_to_folder(request):
     new_folder = request.POST.get("new_folder", None)
 
     request.user.profile.send_opml_export_email(
-        reason="You have moved a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+        reason=gettext_lazy(
+            "You have moved a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+        )
     )
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
@@ -4499,7 +4552,7 @@ def save_folder_icon(request):
     icon_set = request.POST.get("icon_set", "lucide")  # lucide, heroicons-solid
 
     if not folder_title:
-        return {"code": -1, "message": "Folder title required"}
+        return {"code": -1, "message": gettext("Folder title required")}
 
     icon_payload, error_message = _clean_icon_payload(icon_type, icon_data, icon_color, icon_set)
     if error_message:
@@ -4539,7 +4592,7 @@ def upload_folder_icon(request):
     photo = request.FILES.get("photo")
 
     if not folder_title or not photo:
-        return {"code": -1, "message": "Folder title and photo required"}
+        return {"code": -1, "message": gettext("Folder title and photo required")}
 
     try:
         icon_data, error_message = _process_icon_upload(photo)
@@ -4564,7 +4617,7 @@ def upload_folder_icon(request):
         }
     except Exception as e:
         logging.user(request, "~FRFolder icon upload error: %s" % e)
-        return {"code": -1, "message": "Invalid image file"}
+        return {"code": -1, "message": gettext("Invalid image file")}
 
 
 @ajax_login_required
@@ -4578,12 +4631,12 @@ def save_feed_icon(request):
     icon_set = request.POST.get("icon_set", "lucide")  # lucide, heroicons-solid
 
     if not feed_id:
-        return {"code": -1, "message": "Feed ID required"}
+        return {"code": -1, "message": gettext("Feed ID required")}
 
     try:
         feed_id = int(feed_id)
     except (ValueError, TypeError):
-        return {"code": -1, "message": "Invalid feed ID"}
+        return {"code": -1, "message": gettext("Invalid feed ID")}
 
     icon_payload, error_message = _clean_icon_payload(icon_type, icon_data, icon_color, icon_set)
     if error_message:
@@ -4623,12 +4676,12 @@ def upload_feed_icon(request):
     photo = request.FILES.get("photo")
 
     if not feed_id or not photo:
-        return {"code": -1, "message": "Feed ID and photo required"}
+        return {"code": -1, "message": gettext("Feed ID and photo required")}
 
     try:
         feed_id = int(feed_id)
     except (ValueError, TypeError):
-        return {"code": -1, "message": "Invalid feed ID"}
+        return {"code": -1, "message": gettext("Invalid feed ID")}
 
     try:
         icon_data, error_message = _process_icon_upload(photo)
@@ -4653,7 +4706,7 @@ def upload_feed_icon(request):
         }
     except Exception as e:
         logging.user(request, "~FRFeed icon upload error: %s" % e)
-        return {"code": -1, "message": "Invalid image file"}
+        return {"code": -1, "message": gettext("Invalid image file")}
 
 
 @login_required
@@ -4682,7 +4735,7 @@ def load_features(request):
     features = [
         {
             "description": f["description"],
-            "date": localtime_for_timezone(f["date"], user.profile.timezone).strftime("%b %d, %Y"),
+            "date": localized_date(localtime_for_timezone(f["date"], user.profile.timezone), "%b %d, %Y"),
         }
         for f in features
     ]
@@ -4695,11 +4748,11 @@ def find_story_by_permalink(request):
     url = request.GET.get("story_url", "").strip()
 
     if not url:
-        return dict(code=-1, message="No URL provided.")
+        return dict(code=-1, message=gettext("No URL provided."))
 
     parsed = urllib.parse.urlparse(url)
     if not parsed.scheme or not parsed.netloc:
-        return dict(code=-1, message="Invalid URL.")
+        return dict(code=-1, message=gettext("Invalid URL."))
 
     from apps.archive_extension.matching import _get_url_variants
 
@@ -4715,7 +4768,7 @@ def find_story_by_permalink(request):
         .first()
     )
     if not feed:
-        return dict(code=-1, message="No feed found for this URL.")
+        return dict(code=-1, message=gettext("No feed found for this URL."))
 
     # Search for the story in this single feed
     story = None
@@ -4731,7 +4784,7 @@ def find_story_by_permalink(request):
                 break
 
     if not story:
-        return dict(code=-1, message="Story not found.")
+        return dict(code=-1, message=gettext("Story not found."))
 
     is_subscribed = UserSubscription.objects.filter(user=user, feed_id=feed.pk, active=True).exists()
 
@@ -5153,29 +5206,29 @@ def set_feed_mute(request):
     mute_duration_days = request.POST.get("mute_duration_days")
 
     if not feed_id:
-        return {"code": -1, "message": "feed_id is required"}
+        return {"code": -1, "message": gettext("feed_id is required")}
 
     try:
         feed_id = int(feed_id)
     except (ValueError, TypeError):
-        return {"code": -1, "message": "Invalid feed_id"}
+        return {"code": -1, "message": gettext("Invalid feed_id")}
 
     try:
         sub = UserSubscription.objects.get(user=request.user, feed_id=feed_id)
     except UserSubscription.DoesNotExist:
-        return {"code": -1, "message": "You are not subscribed to this feed"}
+        return {"code": -1, "message": gettext("You are not subscribed to this feed")}
 
     if mute_duration_days:
         try:
             mute_duration_days = int(mute_duration_days)
         except (ValueError, TypeError):
-            return {"code": -1, "message": "Invalid mute_duration_days"}
+            return {"code": -1, "message": gettext("Invalid mute_duration_days")}
 
     is_premium = request.user.profile.is_premium
     if not mute and not is_premium and not sub.active:
         active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
         if active_count >= 64:
-            return {"code": -1, "message": "Free accounts are limited to 64 active sites."}
+            return {"code": -1, "message": gettext("Free accounts are limited to 64 active sites.")}
 
     if mute:
         sub.active = False
@@ -5283,13 +5336,15 @@ def _mark_story_as_starred(request):
             story_hashes = [story.story_hash]
 
     if not len(story_hashes):
-        return {"code": -1, "message": "Could not find story to save."}
+        return {"code": -1, "message": gettext("Could not find story to save.")}
 
     for story_hash in story_hashes:
         story, _ = MStory.find_story(story_hash=story_hash)
         if not story:
             logging.user(request, "~FCStarring ~FRfailed~FC: %s not found" % (story_hash))
-            datas.append({"code": -1, "message": "Could not save story, not found", "story_hash": story_hash})
+            datas.append(
+                {"code": -1, "message": gettext("Could not save story, not found"), "story_hash": story_hash}
+            )
             continue
 
         feed_id = story and story.story_feed_id
@@ -5448,7 +5503,11 @@ def _mark_story_as_unstarred(request):
         if not starred_story:
             logging.user(request, "~FCUnstarring ~FRfailed~FC: %s not found" % (story_hash))
             datas.append(
-                {"code": -1, "message": "Could not unsave story, not found", "story_hash": story_hash}
+                {
+                    "code": -1,
+                    "message": gettext("Could not unsave story, not found"),
+                    "story_hash": story_hash,
+                }
             )
             continue
 
@@ -5459,7 +5518,11 @@ def _mark_story_as_unstarred(request):
             # story between the check above and this fetch, leaving an empty cursor.
             logging.user(request, "~FCUnstarring ~FRfailed~FC: %s not found" % (story_hash))
             datas.append(
-                {"code": -1, "message": "Could not unsave story, not found", "story_hash": story_hash}
+                {
+                    "code": -1,
+                    "message": gettext("Could not unsave story, not found"),
+                    "story_hash": story_hash,
+                }
             )
             continue
 
@@ -5518,20 +5581,20 @@ def rename_starred_tag(request):
     new_tag = request.POST.get("new_tag_name", "").strip()
 
     if not old_tag:
-        return {"code": -1, "message": "Original tag name is required."}
+        return {"code": -1, "message": gettext("Original tag name is required.")}
 
     if not new_tag:
-        return {"code": -1, "message": "New tag name is required."}
+        return {"code": -1, "message": gettext("New tag name is required.")}
 
     if len(new_tag) > 128:
-        return {"code": -1, "message": "Tag name must be 128 characters or less."}
+        return {"code": -1, "message": gettext("Tag name must be 128 characters or less.")}
 
     logging.user(request, "~FCRenaming starred tag: ~SB%s~SN to ~SB%s" % (old_tag, new_tag))
 
     starred_counts = MStarredStoryCounts.rename_tag(request.user.pk, old_tag, new_tag)
 
     if starred_counts is None:
-        return {"code": -1, "message": "Failed to rename tag."}
+        return {"code": -1, "message": gettext("Failed to rename tag.")}
 
     return {"code": 1, "starred_counts": starred_counts}
 
@@ -5543,14 +5606,14 @@ def delete_starred_tag(request):
     tag_name = request.POST.get("tag_name", "").strip()
 
     if not tag_name:
-        return {"code": -1, "message": "Tag name is required."}
+        return {"code": -1, "message": gettext("Tag name is required.")}
 
     logging.user(request, "~FCDeleting starred tag: ~SB%s" % tag_name)
 
     starred_counts = MStarredStoryCounts.delete_tag(request.user.pk, tag_name)
 
     if starred_counts is None:
-        return {"code": -1, "message": "Failed to delete tag."}
+        return {"code": -1, "message": gettext("Failed to delete tag.")}
 
     return {"code": 1, "starred_counts": starred_counts}
 
@@ -5583,9 +5646,15 @@ def send_story_email(request):
     if share_user_profile.over_story_email_quota(quota=quota):
         code = -1
         if user.profile.is_premium:
-            message = "You can only send %s stories per day by email." % quota
+            message = ngettext(
+                "You can only send %(count)s story per day by email.",
+                "You can only send %(count)s stories per day by email.",
+                quota,
+            ) % {"count": quota}
         else:
-            message = "Upgrade to a premium subscription to send more than one story per day by email."
+            message = gettext(
+                "Upgrade to a premium subscription to send more than one story per day by email."
+            )
         logging.user(
             request,
             "~BRNOT ~BMSharing story by email to %s recipient, over quota: %s/%s"
@@ -5593,16 +5662,16 @@ def send_story_email(request):
         )
     elif not to_addresses:
         code = -1
-        message = "Please provide at least one email address."
+        message = gettext("Please provide at least one email address.")
     elif not all(validate_email_as_bool(to_address) for to_address in to_addresses if to_addresses):
         code = -1
-        message = "You need to send the email to a valid email address."
+        message = gettext("You need to send the email to a valid email address.")
     elif not validate_email_as_bool(from_email):
         code = -1
-        message = "You need to provide your email address."
+        message = gettext("You need to provide your email address.")
     elif not from_name:
         code = -1
-        message = "You need to provide your name."
+        message = gettext("You need to provide your name.")
     else:
         story, _ = MStory.find_story(feed_id, story_id)
         story = Feed.format_story(story, feed_id, text=True)
@@ -5769,22 +5838,25 @@ def save_dashboard_rivers(request):
         data = json.decode(request.body)
         dashboard_rivers = data["dashboard_rivers"]
     except KeyError:
-        return {"code": -1, "message": "Invalid JSON data"}
+        return {"code": -1, "message": gettext("Invalid JSON data")}
 
     if not isinstance(dashboard_rivers, list):
-        return {"code": -1, "message": "dashboard_rivers must be a list"}
+        return {"code": -1, "message": gettext("dashboard_rivers must be a list")}
 
     # Validate all rivers first
     for river_data in dashboard_rivers:
         if not all(k in river_data for k in ["river_id", "river_side", "river_order"]):
-            return {"code": -1, "message": "Each river must have river_id, river_side, and river_order"}
+            return {
+                "code": -1,
+                "message": gettext("Each river must have river_id, river_side, and river_order"),
+            }
 
         try:
             river_order = int(river_data["river_order"])
             if river_order < 0:
-                return {"code": -1, "message": "river_order must be non-negative"}
+                return {"code": -1, "message": gettext("river_order must be non-negative")}
         except ValueError:
-            return {"code": -1, "message": "river_order must be an integer"}
+            return {"code": -1, "message": gettext("river_order must be an integer")}
 
     logging.user(request, "~FCSaving dashboard rivers: ~SB%s~SN" % dashboard_rivers)
 
@@ -5983,7 +6055,9 @@ def load_trending_stories(request):
     )
 
     user_is_pro = user.profile.is_pro
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=story_feed_ids)
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=story_feed_ids, folder_feed_ids=folder_feed_ids
+    )
 
     # Look up starred stories
     story_hash_list = [s["story_hash"] for s in stories]
@@ -6095,22 +6169,22 @@ def save_feed_auto_mark_read(request):
     days = request.POST.get("auto_mark_read_days")
 
     if not feed_id:
-        return {"code": -1, "message": "Feed ID required"}
+        return {"code": -1, "message": gettext("Feed ID required")}
 
     # Check if user is archive tier (required for this feature)
     if not user.profile.is_archive:
-        return {"code": -1, "message": "This feature requires the Archive subscription"}
+        return {"code": -1, "message": gettext("This feature requires the Archive subscription")}
 
     try:
         feed_id = int(feed_id)
     except (ValueError, TypeError):
-        return {"code": -1, "message": "Invalid feed ID"}
+        return {"code": -1, "message": gettext("Invalid feed ID")}
 
     # Get the user subscription
     try:
         sub = UserSubscription.objects.get(user=user, feed_id=feed_id)
     except UserSubscription.DoesNotExist:
-        return {"code": -1, "message": "Feed not found in subscriptions"}
+        return {"code": -1, "message": gettext("Feed not found in subscriptions")}
 
     # Parse days value
     if days is None or days == "" or days == "null":
@@ -6119,10 +6193,10 @@ def save_feed_auto_mark_read(request):
         try:
             days = int(days)
             if days < 0 or days > 365:
-                return {"code": -1, "message": "Days must be between 0 and 365"}
+                return {"code": -1, "message": gettext("Days must be between 0 and 365")}
             sub.auto_mark_read_days = days
         except (ValueError, TypeError):
-            return {"code": -1, "message": "Invalid days value"}
+            return {"code": -1, "message": gettext("Invalid days value")}
 
     sub.needs_unread_recalc = True
     sub.save()
@@ -6160,11 +6234,11 @@ def save_folder_auto_mark_read(request):
     days = request.POST.get("auto_mark_read_days")
 
     if not folder_title:
-        return {"code": -1, "message": "Folder title required"}
+        return {"code": -1, "message": gettext("Folder title required")}
 
     # Check if user is archive tier (required for this feature)
     if not user.profile.is_archive:
-        return {"code": -1, "message": "This feature requires the Archive subscription"}
+        return {"code": -1, "message": gettext("This feature requires the Archive subscription")}
 
     # Parse days value
     if days is None or days == "" or days == "null":
@@ -6176,12 +6250,12 @@ def save_folder_auto_mark_read(request):
         try:
             days = int(days)
             if days < 0 or days > 365:
-                return {"code": -1, "message": "Days must be between 0 and 365"}
+                return {"code": -1, "message": gettext("Days must be between 0 and 365")}
             MFolderAutoMarkRead.save_folder_setting(user.pk, folder_title, days)
             effective_days = days if days > 0 else None
             source = f"folder:{folder_title}"
         except (ValueError, TypeError):
-            return {"code": -1, "message": "Invalid days value"}
+            return {"code": -1, "message": gettext("Invalid days value")}
 
     # Trigger recalc for all feeds in this folder
     try:

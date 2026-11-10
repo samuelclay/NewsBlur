@@ -29,19 +29,19 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
         var is_archive = NEWSBLUR.Globals.is_archive;
         var $content = $.make('div', { className: 'NB-classifier-notif-controls' + (!is_archive ? ' NB-notif-gated' : '') }, [
             $.make('div', { className: 'NB-classifier-notif-header' }, [
-                $.make('span', { className: 'NB-classifier-notif-label' }, 'Notify on match')
+                $.make('span', { className: 'NB-classifier-notif-label' }, gettext('Notify on match'))
             ]),
             $.make('ul', { className: 'segmented-control NB-classifier-notif-types' }, [
                 $.make('li', {
                     className: 'NB-classifier-notif-option NB-classifier-notif-email NB-notification-channel-option' +
                         (this.channels.email ? ' NB-active' : ''),
                     role: 'button'
-                }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('email', 'Email')),
+                }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('email', gettext('Email'))),
                 $.make('li', {
                     className: 'NB-classifier-notif-option NB-classifier-notif-web NB-notification-channel-option' +
                         (this.channels.web ? ' NB-active' : ''),
                     role: 'button'
-                }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('web', 'Web')),
+                }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('web', gettext('Web'))),
                 $.make('li', {
                     className: 'NB-classifier-notif-option NB-classifier-notif-ios NB-notification-channel-option' +
                         (this.channels.ios ? ' NB-active' : ''),
@@ -80,7 +80,7 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
 
                 // 2. Show a brief "Requires Premium Archive" tooltip above the bell
                 $('.NB-scope-tooltip').remove();
-                var $tip = $('<div class="NB-scope-tooltip NB-scope-tooltip-denied">Requires Premium Archive</div>');
+                var $tip = $('<div class="NB-scope-tooltip NB-scope-tooltip-denied">' + _.escape(gettext('Requires Premium Archive')) + '</div>');
                 $('body').append($tip);
                 var tip_rect = $bell[0].getBoundingClientRect();
                 $tip.css({

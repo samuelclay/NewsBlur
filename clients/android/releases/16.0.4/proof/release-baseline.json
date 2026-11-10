@@ -1,0 +1,49 @@
+{
+  "capturedAt": "2026-10-17T22:52:29.088000+00:00",
+  "packageName": "com.newsblur",
+  "production": [
+    {
+      "name": "16.0.2",
+      "versionCodes": [
+        "294"
+      ],
+      "status": "completed"
+    }
+  ],
+  "managedPublishing": false,
+  "pendingChanges": 0,
+  "customStoreListings": 0,
+  "listingLocales": [
+    "en-US",
+    "ar",
+    "zh-CN",
+    "zh-TW",
+    "nl-NL",
+    "fr-FR",
+    "de-DE",
+    "iw-IL",
+    "hi-IN",
+    "id",
+    "it-IT",
+    "ja-JP",
+    "ko-KR",
+    "pl-PL",
+    "pt-BR",
+    "ru-RU",
+    "es-ES",
+    "th",
+    "tr-TR",
+    "uk",
+    "vi"
+  ],
+  "subscriptionIds": [
+    "nb.premium.36",
+    "nb.premium.archive.99"
+  ],
+  "oneTimeProducts": 0,
+  "plannedVersion": "16.0.4",
+  "plannedVersionCode": 296,
+  "sourceCommit": "1b32c5b65bdf577402c055d34246691d53e534d9",
+  "rollout": "full production",
+  "notes": "Console baseline: 16.0.2 available; no pending publishing changes; default listing only. No billing configuration or artwork changes authorized or included."
+}

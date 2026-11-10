@@ -38,6 +38,13 @@ For debugging sessions: always take a screenshot first, reproduce the issue, the
 ## Bug Fixing Workflow
 When I report a bug, don't start by trying to fix it. Instead, start by writing a test that reproduces the bug. Then, have subagents try to fix the bug and prove it with a passing test.
 
+## NewsBlur Forum Investigations
+- When I provide one or more `forum.newsblur.com` URLs, investigate each topic and implement the appropriate fixes.
+- Ask before deploying any forum fix. Prepare and test the changes first so I can review the concrete result before approving deployment.
+- Always write a short, concise reply for each topic, with enough detail to explain what happened and what happens next. Match the natural language and style of my previous forum replies.
+- Present reply drafts as plain text, never block quotes, so they are easy to copy and paste. Do not post them to the forum unless I explicitly ask.
+- Follow the Writing Forum Replies guidelines in AGENTS.md, and describe deployment status accurately.
+
 ## Git Branching
 - **Do not automatically create branches**: Work on the current branch unless I explicitly ask you to create or switch to a branch. If you think a branch would help, ask first.
 
@@ -120,6 +127,10 @@ adb -s emulator-5554 exec-out screencap -p > /tmp/newsblur-launch-02.png
 - **Find worktree containers**: `docker ps --format '{{.Names}}' | grep <worktree-name>`
 - The worktree name is the directory name (e.g., `search-by-phrase` → `newsblur_web_search-by-phrase`)
 
+## Repository Assets
+- Images and video (png, jpg, mp4, mov, gif, webp) under `clients/store/artwork`, `clients/android/Performance` and `clients/ios/Performance` live in the private bucket `s3://newsblur-repo-assets`, not git. They are gitignored; each folder has a committed `<folder>.manifest.json`.
+- `make assets-pull` downloads them, `make assets-push` uploads new or changed files and rewrites the manifests (commit those), `make assets-status` shows what differs. Never commit those media files to git.
+
 ## Build & Test Commands
 - `make` - Smart default: starts/updates NewsBlur, applies migrations (safe to run after git pull)
 - `make rebuild` - Full rebuild with all images (for Docker config changes)
@@ -153,6 +164,7 @@ Note: All docker commands must use `-t` instead of `-it` to avoid interactive mo
 - `make deploy` - Deploy to the web/app servers. Runs `ansible-playbook ansible/deploy.yml -l app`. This is the command for regular web code changes (views, models, settings served by web).
 - `make celery` - Deploy to the task/Celery servers. Runs `ansible-playbook ansible/deploy.yml -l task`. Required whenever the change touches code that runs inside a Celery task (tasks, models called by tasks, scoring, etc.).
 - A change spanning both web and task code needs **both** `make deploy` and `make celery`.
+- Both migrate the database first. `ansible/playbooks/deploy_migrate.yml` checks out the code being deployed into `/srv/newsblur_migrate` on one server, runs `manage.py migrate` from it in a throwaway container, and stops the whole deploy if that fails, all before any server pulls code or restarts. So `make deploy` and `make celery` are safe in either order, and no server ever runs models its database lacks. `make deploy_migrate` runs just that step. The catch: every migration must keep the previous release working (see Database Migrations below).
 
 **Do NOT run the full `apd`/`ansible-playbook ansible/deploy.yml` (no `-l`) for routine deploys.** A full apd can strand prod web servers in HAProxy MAINT if the hstaging disable step fails. Prefer the scoped `make deploy` / `make celery` targets above.
 
@@ -162,6 +174,21 @@ Note: All docker commands must use `-t` instead of `-it` to avoid interactive mo
 - Grafana dashboard changes deploy separately via `aps -l hdb-metrics -t prometheus,grafana`.
 
 Unless asked, don't run any of these. Assume I will deploy or ask you to deploy when ready.
+
+## Database Migrations
+Deploys migrate before restarting anything, so the release already in production keeps running against the new schema: web Group B while Group A restarts, every Celery worker until `make celery` finishes, and any rollback. **Every migration must be backward compatible with the code currently in production.** `apps/test_migration_safety.py` enforces this in CI.
+
+- **Add columns with `null=True`.** Django 3.1 adds a column's `default` only while creating it, then drops it, so a NOT NULL column makes the old release's inserts fail. Backfill and tighten to NOT NULL in a later deploy, once no running code omits it.
+- **New tables are always safe.** So are nullable columns, new indexes and loosening a constraint.
+- **Never drop or rename a column or table in the deploy that stops using it.** Expand, then contract:
+  1. Deploy code that no longer reads or writes it. Leave the field on the model, made `null=True` first if it isn't, so inserts that leave it out still work.
+  2. In a later deploy, remove the field with a migration whose `Migration` class sets `contract_step = "<what stopped using it, and the deploy that shipped that>"`. The safety test lets an explained contract step through.
+  - For a rename, add the new column, write both, backfill, switch reads, then contract the old one. Keeping the old column name with `db_column` is usually simpler.
+- **Don't tighten constraints** (NOT NULL, unique, a narrower type) until no running code can write values that break them. `RunSQL` that drops, renames or sets NOT NULL is flagged like the matching operations.
+- **Bound the lock on busy tables.** Even an instant ALTER needs a brief exclusive lock, and while it waits behind a long query every new query on that table queues behind it. Start schema changes to hot tables (`profile_profile`, `auth_user`, `reader_usersubscription`) with `migrations.RunSQL("SET LOCAL lock_timeout = '5s'", migrations.RunSQL.noop)` so the migration fails fast and the deploy stops instead of stalling the site.
+- **Index large tables concurrently.** A plain `AddIndex` locks writes on Postgres while it builds. Use `AddIndexConcurrently` from `django.contrib.postgres.operations` in a migration with `atomic = False`.
+- **Keep data migrations idempotent and fast.** The deploy waits on them. Large backfills belong in a management command or Celery task run after the deploy.
+- **Mongo has no migrations, but the same rule applies.** mongoengine loads documents strictly by default, so the old release raises `FieldDoesNotExist` on any document carrying a field it doesn't define. Unless the document's `meta` sets `"strict": False`, add a new field to the model in one deploy and start writing it in the next.
 
 ## SSH Access to Servers
 To SSH into NewsBlur servers non-interactively:
@@ -208,6 +235,9 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 ## Blog
 - Posts live in `blog/_posts/`, drafts in `blog/_drafts/`
 - `blog/_site/` contains generated output and **must be committed** — it's how the blog gets deployed
+- Regenerate `blog/_site/` with `make blog-build`, never a plain `jekyll build`. The fonts, Google Analytics and Disqus comments only render with `JEKYLL_ENV=production`, so a plain build strips them from every page.
+- Give every post an explicit `date: YYYY-MM-DD 09:00:00 -0700` (`-0800` outside daylight time) that matches its filename. `blog/_config.yml` uses `timezone: America/New_York`, so a post dated only by its filename publishes at midnight Eastern, which feed readers in Pacific time show as the evening before.
+- Deploy with `make blog` after the regenerated `_site` is on `main`; the blog server pulls `main`.
 
 ## API Testing
 - Test API endpoints: `make api URL=/reader/feeds`
@@ -381,3 +411,9 @@ When load times are elevated but the site isn't down, read `SLOW_LOAD_TIMES.md` 
 ## Writing Forum Replies
 - Keep replies free of AI slop: no em dashes, no hyphens as punctuation, no overly polished language. Restructure sentences instead.
 - Be concise and direct, matching a natural conversational tone
+
+## Internationalization
+- All new user-visible interface text must use the platform localization API described in `localization/README.md`.
+- Translate complete messages with named/positional placeholders and native plurals. Never localize identifiers, FormData keys, DOM attribute names, preference values, URLs, usernames, feed titles or story content.
+- After adding or changing UI text, run `localization/manage.py translate`, `check`, and `compile` inside the worktree Docker container. Commit translation memory and generated catalogs with the UI change. The Localization workflow also creates incremental translation update PRs.
+- Verify language detection, the login and preferences overrides, English fallback, layout expansion, and Arabic/Hebrew direction. Android language controls must work in light, dark and black themes.

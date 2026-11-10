@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
 import com.newsblur.network.AuthApi
 import com.newsblur.network.UserApi
@@ -130,11 +131,14 @@ class LoginRegisterViewModel
         fun getCustomServer() = prefsRepo.getCustomServer()
 
         fun saveCustomServer(value: String) {
+            // A different server is a different account, so Listen's story can't keep playing (ListenManager.kt).
+            ListenManager.from(context).stopForAccountChange()
             APIConstants.setCustomServer(value)
             prefsRepo.saveCustomServer(value)
         }
 
         fun clearCustomServer() {
+            ListenManager.from(context).stopForAccountChange()
             APIConstants.unsetCustomServer()
             prefsRepo.clearCustomServer()
         }

@@ -1,0 +1,54 @@
+{
+  "role": "translation_and_self_review",
+  "independent_review": false,
+  "locales": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "files": [
+    "clients/store/metadata/es.json",
+    "clients/store/releases/16.0/es.json",
+    "clients/store/metadata/fr.json",
+    "clients/store/releases/16.0/fr.json",
+    "clients/store/metadata/de.json",
+    "clients/store/releases/16.0/de.json",
+    "clients/store/metadata/pt-BR.json",
+    "clients/store/releases/16.0/pt-BR.json",
+    "clients/store/metadata/it.json",
+    "clients/store/releases/16.0/it.json",
+    "clients/store/metadata/nl.json",
+    "clients/store/releases/16.0/nl.json",
+    "clients/store/metadata/pl.json",
+    "clients/store/releases/16.0/pl.json"
+  ],
+  "english_sources": {
+    "clients/store/metadata/en.json": "9edce2ada0cd57b0332fba4ad84fef3e81d0d57333e32a502c767afb4c7b7f65",
+    "clients/store/releases/16.0/en.json": "f74e76a18538dec3ae8cb2e3311b92395d32d4a5f5522c30e40139e84a3390d7"
+  },
+  "checks": [
+    "Translated Home Screen widget description and updated language preview paragraph",
+    "Translated complete widget release paragraph including separate sources, account default, hidden-story refresh, remove and re-add migration, and touch-and-hold Edit Widget action",
+    "Reviewed unchanged iOS listing fields against English; preserved shared names/subtitles, subscription disclosures and URLs",
+    "Reviewed existing iOS subscription and group copy against English in all seven product files; no billing or entitlement changes needed",
+    "Followed locale glossary register and story/site/folder terminology; standardized German keyboard-shortcut term"
+  ],
+  "products_reviewed": [
+    "clients/store/products/es.json",
+    "clients/store/products/fr.json",
+    "clients/store/products/de.json",
+    "clients/store/products/pt-BR.json",
+    "clients/store/products/it.json",
+    "clients/store/products/nl.json",
+    "clients/store/products/pl.json"
+  ],
+  "limitations": [
+    "Independent reviewer still required",
+    "No live App Store upload or readback performed by this translation task",
+    "No native-speaker or rendered-device validation claimed"
+  ]
+}

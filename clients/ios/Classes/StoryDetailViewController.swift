@@ -23,6 +23,8 @@ final class StoryReadyMessageHandler: NSObject, WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "newsblurStoryImage" {
             (page as? StoryDetailViewController)?.receiveImageMessage(message)
+        } else if message.name == "newsblurStoryMedia" {
+            (page as? StoryDetailViewController)?.receiveMediaMessage(message)
         } else {
             page?.receiveStoryReadyMessage(message)
         }
@@ -32,6 +34,44 @@ final class StoryReadyMessageHandler: NSObject, WKScriptMessageHandler {
 /// An individual story.
 class StoryDetailViewController: StoryDetailObjCViewController {
     var openingImage = false
+    private var imageLongPressStartedDuringScroll = false
+    /// Listen/ListenStoryBridge.swift: the manifest whose paragraphs this page has mapped for follow-along.
+    var listenMappedManifestId: String?
+    /// Listen/ListenStoryBridge.swift: the Listen button state last drawn, so only real changes redraw it.
+    var listenButtonState: String?
+    var listenObservers: [NSObjectProtocol] = []
+
+    deinit {
+        listenObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        listenObservePlayer()
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressImage(_:)))
+        longPress.delegate = self
+        longPress.cancelsTouchesInView = false
+        // StoryDetailViewController.swift preserves WebKit text selection while giving images their own preview.
+        for case let tap as UITapGestureRecognizer in webView.gestureRecognizers ?? [] where tap.numberOfTapsRequired == 1 {
+            tap.require(toFail: longPress)
+        }
+        webView.addGestureRecognizer(longPress)
+    }
+
+    override func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if gestureRecognizer is UILongPressGestureRecognizer {
+            imageLongPressStartedDuringScroll = webView.scrollView.isDragging || webView.scrollView.isDecelerating
+        }
+        return super.gestureRecognizer(gestureRecognizer, shouldReceive: touch)
+    }
+
+    @objc func longPressImage(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began, !imageLongPressStartedDuringScroll,
+              canOpenStoryImage(accessibility: true), presentedViewController == nil else { return }
+        let point = gesture.location(in: webView)
+        let offset = webView.scrollView.contentOffset
+        webView.evaluateJavaScript("newsblurOpenImageAt(\(point.x), \(point.y), \(offset.x), \(offset.y), \(webView.bounds.width), true)")
+    }
     /// Convenience initializer to load a new instance of this class from the XIB.
     ///
     /// - Parameter pageIndex: The page index of the story.

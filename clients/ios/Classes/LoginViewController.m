@@ -64,6 +64,7 @@ static NSString *const kWaveShaderSource =
 @property (nonatomic, strong) id<MTLCommandQueue> commandQueue;
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
 @property (nonatomic, assign) CFTimeInterval startTime;
+@property (nonatomic, assign) BOOL loginBackgroundActive;
 @property (nonatomic, strong) NSLayoutConstraint *emailHeightConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *emailTopSpacingConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *formBottomToButton;
@@ -80,6 +81,61 @@ static NSString *const kWaveShaderSource =
 
 #pragma mark - Metal Setup
 
+- (void)setupLoginBackground {
+    self.view.backgroundColor = UIColorFromFixedRGB(NB_LOGIN_GRADIENT_BOTTOM);
+    self.startTime = CACurrentMediaTime();
+
+    // === Gradient background (fallback if Metal unavailable) ===
+    UIView *gradientBg = [[UIView alloc] init];
+    gradientBg.translatesAutoresizingMaskIntoConstraints = NO;
+    gradientBg.tag = 200;
+    [self.view addSubview:gradientBg];
+
+    self.backgroundGradientLayer = [CAGradientLayer layer];
+    self.backgroundGradientLayer.colors = @[
+        (id)[UIColorFromFixedRGB(NB_LOGIN_GRADIENT_TOP) CGColor],
+        (id)[UIColorFromFixedRGB(NB_LOGIN_GRADIENT_BOTTOM) CGColor],
+        (id)[UIColorFromFixedRGB(NB_LOGIN_GRADIENT_BOTTOM) CGColor]
+    ];
+    self.backgroundGradientLayer.locations = @[@0.0, @0.5, @1.0];
+    self.backgroundGradientLayer.startPoint = CGPointMake(0.5, 0.0);
+    self.backgroundGradientLayer.endPoint = CGPointMake(0.5, 1.0);
+    [gradientBg.layer addSublayer:self.backgroundGradientLayer];
+
+    // === Metal animated wave background ===
+    [self setupMetalBackground];
+
+    [NSLayoutConstraint activateConstraints:@[
+        [gradientBg.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+        [gradientBg.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+        [gradientBg.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+        [gradientBg.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+    ]];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLoginBackgroundAnimation)
+                                                 name:UIAccessibilityReduceMotionStatusDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLoginBackgroundAnimation)
+                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pauseLoginBackgroundAnimation)
+                                                 name:UIApplicationWillResignActiveNotification object:nil];
+}
+
+- (void)setLoginBackgroundActive:(BOOL)active {
+    _loginBackgroundActive = active;
+    [self updateLoginBackgroundAnimation];
+}
+
+- (void)pauseLoginBackgroundAnimation {
+    self.metalView.paused = YES;
+}
+
+- (void)updateLoginBackgroundAnimation {
+    BOOL visible = self.loginBackgroundActive && UIApplication.sharedApplication.applicationState == UIApplicationStateActive;
+    self.metalView.paused = !visible || UIAccessibilityIsReduceMotionEnabled();
+    if (visible && UIAccessibilityIsReduceMotionEnabled()) {
+        [self.metalView draw];
+    }
+}
+
 - (void)setupMetalBackground {
     self.metalDevice = MTLCreateSystemDefaultDevice();
     if (!self.metalDevice) return;
@@ -92,6 +148,7 @@ static NSString *const kWaveShaderSource =
     self.metalView.opaque = YES;
     self.metalView.clearColor = MTLClearColorMake(0.106, 0.141, 0.141, 1.0);
     self.metalView.preferredFramesPerSecond = 60;
+    self.metalView.paused = YES;
     self.metalView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
     [self.view insertSubview:self.metalView aboveSubview:[self.view viewWithTag:200]];
 
@@ -139,7 +196,7 @@ static NSString *const kWaveShaderSource =
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:rpd];
     [encoder setRenderPipelineState:self.pipelineState];
 
-    float time = (float)(CACurrentMediaTime() - self.startTime) * 0.4;
+    float time = UIAccessibilityIsReduceMotionEnabled() ? 0 : (float)(CACurrentMediaTime() - self.startTime) * 0.4;
     [encoder setFragmentBytes:&time length:sizeof(float) atIndex:0];
 
     [encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
@@ -150,6 +207,7 @@ static NSString *const kWaveShaderSource =
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
+    if (self.loginBackgroundActive && UIAccessibilityIsReduceMotionEnabled()) [view draw];
 }
 
 #pragma mark - View Setup
@@ -157,28 +215,7 @@ static NSString *const kWaveShaderSource =
 - (void)loadView {
     [super loadView];
 
-    self.view.backgroundColor = UIColorFromFixedRGB(NB_LOGIN_GRADIENT_BOTTOM);
-    self.startTime = CACurrentMediaTime();
-
-    // === Gradient background (fallback if Metal unavailable) ===
-    UIView *gradientBg = [[UIView alloc] init];
-    gradientBg.translatesAutoresizingMaskIntoConstraints = NO;
-    gradientBg.tag = 200;
-    [self.view addSubview:gradientBg];
-
-    self.backgroundGradientLayer = [CAGradientLayer layer];
-    self.backgroundGradientLayer.colors = @[
-        (id)[UIColorFromFixedRGB(NB_LOGIN_GRADIENT_TOP) CGColor],
-        (id)[UIColorFromFixedRGB(NB_LOGIN_GRADIENT_BOTTOM) CGColor],
-        (id)[UIColorFromFixedRGB(NB_LOGIN_GRADIENT_BOTTOM) CGColor]
-    ];
-    self.backgroundGradientLayer.locations = @[@0.0, @0.5, @1.0];
-    self.backgroundGradientLayer.startPoint = CGPointMake(0.5, 0.0);
-    self.backgroundGradientLayer.endPoint = CGPointMake(0.5, 1.0);
-    [gradientBg.layer addSublayer:self.backgroundGradientLayer];
-
-    // === Metal animated wave background ===
-    [self setupMetalBackground];
+    [self setupLoginBackground];
 
     // === Scroll view ===
     self.scrollView = [[UIScrollView alloc] init];
@@ -216,7 +253,7 @@ static NSString *const kWaveShaderSource =
 
     // === Tagline in ChronicleSSm italic ===
     UILabel *taglineLabel = [[UILabel alloc] init];
-    taglineLabel.text = @"A personal news reader bringing\npeople together to talk about the world.";
+    taglineLabel.text = [NBLocalization text:@"A personal news reader bringing\npeople together to talk about the world."];
     taglineLabel.font = [UIFont fontWithName:@"ChronicleSSm-BookItalic" size:16] ?: [UIFont italicSystemFontOfSize:16];
     taglineLabel.textColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE);
     taglineLabel.textAlignment = NSTextAlignmentCenter;
@@ -241,7 +278,7 @@ static NSString *const kWaveShaderSource =
     UIView *formContentView = formCard.contentView;
 
     // === Segmented control ===
-    self.loginControl = [[UISegmentedControl alloc] initWithItems:@[@"Log In", @"Sign Up"]];
+    self.loginControl = [[UISegmentedControl alloc] initWithItems:@[[NBLocalization text:@"Log In"], [NBLocalization text:@"Sign Up"]]];
     self.loginControl.selectedSegmentIndex = 0;
     self.loginControl.translatesAutoresizingMaskIntoConstraints = NO;
     self.loginControl.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.08];
@@ -280,7 +317,7 @@ static NSString *const kWaveShaderSource =
 
     // === Submit button (flat gold) ===
     UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [submitButton setTitle:@"Log In" forState:UIControlStateNormal];
+    [submitButton setTitle:[NBLocalization text:@"Log In"] forState:UIControlStateNormal];
     submitButton.titleLabel.font = [UIFont fontWithName:@"GothamNarrow-Medium" size:17] ?: [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
     [submitButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     submitButton.backgroundColor = UIColorFromFixedRGB(NB_LOGIN_GOLD_BUTTON);
@@ -302,7 +339,7 @@ static NSString *const kWaveShaderSource =
 
     // === Forgot password button ===
     self.forgotPasswordButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.forgotPasswordButton setTitle:@"Forgot Password?" forState:UIControlStateNormal];
+    [self.forgotPasswordButton setTitle:[NBLocalization text:@"Forgot Password?"] forState:UIControlStateNormal];
     self.forgotPasswordButton.titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:14] ?: [UIFont systemFontOfSize:14];
     [self.forgotPasswordButton setTitleColor:UIColorFromFixedRGB(NB_LOGIN_GOLD_TAGLINE) forState:UIControlStateNormal];
     self.forgotPasswordButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -328,12 +365,6 @@ static NSString *const kWaveShaderSource =
     formCardPreferredWidth.priority = UILayoutPriorityDefaultHigh;
 
     [NSLayoutConstraint activateConstraints:@[
-        // Gradient background
-        [gradientBg.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-        [gradientBg.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-        [gradientBg.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-        [gradientBg.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
-
         // Scroll view
         [self.scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
         [self.scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
@@ -493,7 +524,7 @@ static NSString *const kWaveShaderSource =
     [self showError:nil];
     [super viewWillAppear:animated];
 
-    self.metalView.paused = NO;
+    [self setLoginBackgroundActive:YES];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
@@ -515,7 +546,7 @@ static NSString *const kWaveShaderSource =
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
 
-    self.metalView.paused = YES;
+    [self setLoginBackgroundActive:NO];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
@@ -598,7 +629,7 @@ static NSString *const kWaveShaderSource =
     [self showError:nil];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Authenticating";
+    HUD.labelText = [NBLocalization text:@"Authenticating"];
 
     NSString *urlString = [NSString stringWithFormat:@"%@/api/login",
                            self.appDelegate.url];
@@ -635,7 +666,7 @@ static NSString *const kWaveShaderSource =
 - (void)registerAccount {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Registering...";
+    HUD.labelText = [NBLocalization text:@"Registering..."];
     [self showError:nil];
     NSString *urlString = [NSString stringWithFormat:@"%@/api/signup",
                            self.appDelegate.url];
@@ -705,7 +736,7 @@ static NSString *const kWaveShaderSource =
     BOOL isLogin = [self.loginControl selectedSegmentIndex] == 0;
 
     UIButton *submitButton = [self.view viewWithTag:100];
-    [submitButton setTitle:(isLogin ? @"Log In" : @"Sign Up") forState:UIControlStateNormal];
+    [submitButton setTitle:(isLogin ? [NBLocalization text:@"Log In"] : [NBLocalization text:@"Sign Up"]) forState:UIControlStateNormal];
 
     // Animate email field expand/collapse
     self.emailHeightConstraint.constant = isLogin ? 0 : 50;
@@ -723,12 +754,12 @@ static NSString *const kWaveShaderSource =
 
         if (isLogin) {
             self.usernameInput.attributedPlaceholder = [[NSAttributedString alloc]
-                initWithString:@"Username or Email" attributes:placeholderAttrs];
+                initWithString:[NBLocalization text:@"Username or Email"] attributes:placeholderAttrs];
             self.usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
             self.passwordInput.returnKeyType = UIReturnKeyGo;
         } else {
             self.usernameInput.attributedPlaceholder = [[NSAttributedString alloc]
-                initWithString:@"Username" attributes:placeholderAttrs];
+                initWithString:[NBLocalization text:@"Username"] attributes:placeholderAttrs];
             self.usernameInput.keyboardType = UIKeyboardTypeDefault;
             self.passwordInput.returnKeyType = UIReturnKeyNext;
         }

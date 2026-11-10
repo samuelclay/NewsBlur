@@ -1,9 +1,10 @@
 NEWSBLUR.AssetModel = Backbone.Router.extend({
 
+    // assetmodel.js translates the generic actions; service names stay as their brands.
     third_party_sharing_services: {
-        "copyurl": "Copy URL",
-        "copytext": "Copy Text",
-        "print": "Print",
+        "copyurl": gettext("Copy URL"),
+        "copytext": gettext("Copy Text"),
+        "print": gettext("Print"),
         "facebook": "Facebook",
         "twitter": "X / Twitter",
         "reddit": "Reddit",
@@ -484,7 +485,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'new_tag_name': new_tag_name
             }, callback, error_callback);
         } else {
-            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+            if ($.isFunction(callback)) callback({ code: -1, message: gettext('Not authenticated') });
         }
     },
 
@@ -494,7 +495,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'tag_name': tag_name
             }, callback, error_callback);
         } else {
-            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+            if ($.isFunction(callback)) callback({ code: -1, message: gettext('Not authenticated') });
         }
     },
 
@@ -1544,9 +1545,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return user;
     },
 
-    save_classifier: function (data, callback) {
+    save_classifier: function (data, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/classifier/save', data, callback);
+            this.make_request('/classifier/save', data, callback, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
@@ -1643,7 +1644,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'url': url,
             'in_folder': in_folder || ''
         }, callback, function () {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this site. Please try a different URL.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : gettext('There was a problem trying to add this site. Please try a different URL.') });
         });
     },
 
@@ -1728,7 +1729,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'folder': folder,
             'auto_active': options.auto_active
         }, callback, function (data) {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this site. Please try a different URL.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : data.message || 'There was a problem trying to add this site. Please try a different URL.' });
         });
     },
 
@@ -1737,7 +1738,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'folder': folder,
             'parent_folder': parent_folder
         }, callback, function (data) {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this folder.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : data.message || 'There was a problem trying to add this folder.' });
         });
     },
 
@@ -2192,7 +2193,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/send_story_email', data, callback, error_callback, { 'timeout': 6000 });
         } else {
-            callback({ 'code': -1, 'message': 'You must be logged in to send a story over email.' });
+            callback({ 'code': -1, 'message': gettext('You must be logged in to send a story over email.') });
         }
     },
 
@@ -2777,6 +2778,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     // = Media Playback  =
     // ===================
 
+    // assetmodel.js: The shared media player state, re-read so items queued on another device
+    // (a phone's Up Next) show up here.
+    fetch_playback_state: function (callback, error_callback) {
+        this.make_request('/media_player/playback_state', {}, _.bind(function (response) {
+            if (response && _.has(response, 'playback_state')) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback, { request_type: 'GET', ajax_group: 'rapid', retry: false });
+    },
+
     save_playback_state: function (state_data, callback, error_callback) {
         this.make_request('/media_player/save_playback_state', state_data, _.bind(function (response) {
             if (response.playback_state) {
@@ -2862,6 +2874,54 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             callback && callback(response);
         }, this), error_callback);
+    },
+
+    // ==========
+    // = Listen =
+    // ==========
+
+    // assetmodel.js: Listen (apps/listen) requests go through the unqueued 'rapid' group so a
+    // segment request never waits behind mark-as-read or other queued calls, and they don't
+    // auto-retry: listen_engine.js decides when a retry is safe.
+    listen_request: function (url, data, callback, error_callback, options) {
+        this.make_request(url, data, callback, error_callback, _.extend({
+            ajax_group: 'rapid',
+            retry: false,
+            timeout: 30000
+        }, options));
+    },
+
+    listen_manifest: function (params, callback, error_callback) {
+        this.listen_request('/listen/manifest', params, callback, error_callback, { timeout: 60000 });
+    },
+
+    listen_segment: function (manifest_id, index, callback, error_callback) {
+        this.listen_request('/listen/segment', {
+            manifest_id: manifest_id,
+            index: index
+        }, callback, error_callback, { timeout: 60000 });
+    },
+
+    listen_voice_preview: function (params, callback, error_callback) {
+        this.listen_request('/listen/preview', params, callback, error_callback, { timeout: 60000 });
+    },
+
+    listen_voices: function (language, callback, error_callback) {
+        var params = language ? { language: language } : {};
+        this.listen_request('/listen/voices', params, callback, error_callback, { request_type: 'GET' });
+    },
+
+    listen_library: function (params, callback, error_callback) {
+        this.listen_request('/listen/library', params, callback, error_callback, { request_type: 'GET' });
+    },
+
+    listen_usage: function (callback, error_callback) {
+        this.listen_request('/listen/usage', {}, callback, error_callback, { request_type: 'GET' });
+    },
+
+    // assetmodel.js: Listening analytics (listen_engine.js send_progress); never shown to anyone.
+    listen_progress: function (params, callback, error_callback) {
+        this.listen_request('/listen/progress', params, callback, error_callback, { timeout: 15000 });
     }
 
 });

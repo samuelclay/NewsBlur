@@ -241,7 +241,7 @@ class OpenAIProvider(LLMProvider):
 
 
 class XAIProvider(LLMProvider):
-    """xAI/Grok provider implementation (OpenAI-compatible API)."""
+    """SpaceXSI (formerly xAI) Grok provider implementation (OpenAI-compatible API)."""
 
     def is_configured(self) -> bool:
         key = getattr(settings, "XAI_GROK_API_KEY", None)
@@ -300,15 +300,15 @@ class XAIProvider(LLMProvider):
 
     def format_error(self, error: Exception) -> str:
         if isinstance(error, openai.APITimeoutError):
-            return "xAI API timeout"
+            return "SpaceXSI API timeout"
         if isinstance(error, openai.APIStatusError):
             if error.status_code == 401:
-                return "xAI API key is invalid. Please check your XAI_GROK_API_KEY setting."
+                return "SpaceXSI API key is invalid. Please check your XAI_GROK_API_KEY setting."
             if error.status_code == 403:
-                return "xAI API access denied. Your API key may be invalid or lack permissions. Please check your XAI_GROK_API_KEY setting."
+                return "SpaceXSI API access denied. The account may be out of credits, or your API key may be invalid or lack permissions. Please check your XAI_GROK_API_KEY setting."
             if error.status_code == 429:
-                return "xAI API rate limit exceeded. Please try again later."
-        return f"xAI API error: {str(error)}"
+                return "SpaceXSI API rate limit exceeded. Please try again later."
+        return f"SpaceXSI API error: {str(error)}"
 
 
 class GeminiProvider(LLMProvider):
@@ -416,6 +416,20 @@ LLM_EXCEPTIONS = (
     genai_errors.APIError,
 )
 
+
+def is_refused_llm_error(error):
+    """
+    Did the provider refuse to serve the account: a bad key, no credits left, a spending
+    limit, or a rate limit? Retrying the same provider won't help, but another one can.
+    SpaceXSI (formerly xAI) answers 403 once its credits run out. apps/ask_ai/providers.py
+    """
+    status_code = getattr(error, "status_code", None)
+    if status_code is None:
+        # providers.py: google-genai reports the HTTP status as `code` instead
+        status_code = getattr(error, "code", None)
+    return status_code in (401, 402, 403, 429)
+
+
 # Provider classes by vendor slug, used for settings override resolution
 PROVIDER_CLASSES = {
     "anthropic": AnthropicProvider,
@@ -471,7 +485,7 @@ _DEFAULT_MODELS = {
         "model_id": XAI_MODEL,
         "display_name": XAI_MODEL_DISPLAY,
         "vendor": "xai",
-        "vendor_display": "xAI",
+        "vendor_display": "SpaceXSI",
         "order": 4,
     },
 }
@@ -489,7 +503,7 @@ MODEL_ALIASES = {
     # providers.py: "haiku" users picked the cheap Anthropic tier back when the
     # briefing's Claude option was Haiku. The "anthropic" registry entry is now
     # Sonnet-class (chat tier), so route them to the cheap default (Luna)
-    # instead of silently upgrading them to a ~40x more expensive model.
+    # instead of silently upgrading them to a ~20x more expensive model.
     "haiku": "openai",
     "gpt-5-mini": "openai",
     "gemini-flash-lite": "google",
@@ -643,7 +657,7 @@ _DEFAULT_BRIEFING_MODELS = {
         "model_id": XAI_MODEL,
         "display_name": XAI_MODEL_DISPLAY,
         "vendor": "xai",
-        "vendor_display": "xAI",
+        "vendor_display": "SpaceXSI",
         "order": 4,
     },
 }

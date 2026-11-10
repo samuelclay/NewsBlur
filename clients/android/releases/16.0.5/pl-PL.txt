@@ -1,0 +1,1 @@
+Naprawia awarie na starszych tabletach Samsung i innych urządzeniach przy otwieraniu NewsBlur lub powrocie do kanałów. Naprawia też awarie przy dużych artykułach, podglądach kanałów, folderach z jednym kanałem, widżetach i przetłumaczonych licznikach komentarzy. Ogranicza zawieszanie podczas uruchamiania, synchronizacji i sprawdzania subskrypcji.

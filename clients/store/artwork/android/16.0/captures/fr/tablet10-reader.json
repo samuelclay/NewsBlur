@@ -1,0 +1,12 @@
+{
+  "language": "fr",
+  "device": "tablet10",
+  "serial": "R8YW810E3FF",
+  "scene": "reader",
+  "package": "com.newsblur.storecapture",
+  "captured_at": "2026-10-17 15:44:10 UTC",
+  "sha256": "b3ae979953365ac93989b94485412dbf958f0eb0f37fd13b75c97ccb1a458856",
+  "native_readiness": "expected fixture content visible",
+  "tablet_composition": "populated_native_split",
+  "visual_review": "passed_native_ui"
+}

@@ -1,0 +1,18 @@
+{
+  "restored_at": "2026-10-26T04:26:11Z",
+  "udid": "D570C816-B762-48E2-AC94-C592153A896D",
+  "state": "Shutdown",
+  "container_metadata": "preserved_current_identity",
+  "data": [
+    {
+      "identifier": "com.newsblur.NewsBlur",
+      "restored_files": 957,
+      "hash_verification": "passed"
+    },
+    {
+      "identifier": "group.com.newsblur.NewsBlur-Group",
+      "restored_files": 1,
+      "hash_verification": "passed"
+    }
+  ]
+}

@@ -1,0 +1,237 @@
+{
+  "checked_at": "2026-10-17T15:45:34Z",
+  "assets": [
+    {
+      "language": "en",
+      "locale": "en-US",
+      "imageType": "sevenInchScreenshots",
+      "position": 1,
+      "path": "en/sevenInchScreenshots/panel-01.png",
+      "sha256": "db259bacb6bdb50e0904eb8ba0a70f6df0d4fcfed36743a00e4d2367fe253fb3",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1995250,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/en.json": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/en/tablet7-stories.png": "1220fc30f017c4614d84e231e945da24738df7c2cc7ef3ad7ae28afffbb12cd4",
+        "captures/en/tablet7-feeds.png": "7d0cba37a8600d5a4ebab87a368cdce426fe68c1c6d98db879e2b5a7436f5ed9",
+        "captures/en/tablet7-reader.png": "f91136c7d784b11e900b68f1d41fe47272d214a416101408714b98d80c330d49",
+        "captures/en/tablet7-saved.png": "55872dd68c4f4101c23195b0c862ab4a7500b6e4f90d9c89a315cddf6b145c70"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.0,
+          "largest_tile_error": 0.0,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/en/tablet7-stories.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1920,
+              "width": 1080,
+              "x": 0,
+              "y": 0
+            },
+            "path": "captures/en/tablet7-stories.png",
+            "source_height": 1920,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "en",
+        "panel": 1,
+        "placement": "sevenInchScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:49:11Z",
+      "visual_review_note": "All four native tablet captures visually inspected: populated panes, localized controls, source aspect, no external captions or clipping."
+    },
+    {
+      "language": "en",
+      "locale": "en-US",
+      "imageType": "sevenInchScreenshots",
+      "position": 2,
+      "path": "en/sevenInchScreenshots/panel-02.png",
+      "sha256": "a8d2f058c0a7b6f14873ca7c8cb7c27cedf867b8794207a02bc6d12d6cb5d699",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1194619,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/en.json": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/en/tablet7-stories.png": "1220fc30f017c4614d84e231e945da24738df7c2cc7ef3ad7ae28afffbb12cd4",
+        "captures/en/tablet7-feeds.png": "7d0cba37a8600d5a4ebab87a368cdce426fe68c1c6d98db879e2b5a7436f5ed9",
+        "captures/en/tablet7-reader.png": "f91136c7d784b11e900b68f1d41fe47272d214a416101408714b98d80c330d49",
+        "captures/en/tablet7-saved.png": "55872dd68c4f4101c23195b0c862ab4a7500b6e4f90d9c89a315cddf6b145c70"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.0,
+          "largest_tile_error": 0.0,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/en/tablet7-feeds.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1920,
+              "width": 1080,
+              "x": 0,
+              "y": 0
+            },
+            "path": "captures/en/tablet7-feeds.png",
+            "source_height": 1920,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "en",
+        "panel": 2,
+        "placement": "sevenInchScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:49:11Z",
+      "visual_review_note": "All four native tablet captures visually inspected: populated panes, localized controls, source aspect, no external captions or clipping."
+    },
+    {
+      "language": "en",
+      "locale": "en-US",
+      "imageType": "sevenInchScreenshots",
+      "position": 3,
+      "path": "en/sevenInchScreenshots/panel-03.png",
+      "sha256": "c869bbe336364c258fdb05e7984bbea6a890cba38884dac4119fdf543b6f2718",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1994896,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/en.json": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/en/tablet7-stories.png": "1220fc30f017c4614d84e231e945da24738df7c2cc7ef3ad7ae28afffbb12cd4",
+        "captures/en/tablet7-feeds.png": "7d0cba37a8600d5a4ebab87a368cdce426fe68c1c6d98db879e2b5a7436f5ed9",
+        "captures/en/tablet7-reader.png": "f91136c7d784b11e900b68f1d41fe47272d214a416101408714b98d80c330d49",
+        "captures/en/tablet7-saved.png": "55872dd68c4f4101c23195b0c862ab4a7500b6e4f90d9c89a315cddf6b145c70"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.0,
+          "largest_tile_error": 0.0,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/en/tablet7-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1920,
+              "width": 1080,
+              "x": 0,
+              "y": 0
+            },
+            "path": "captures/en/tablet7-reader.png",
+            "source_height": 1920,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "en",
+        "panel": 3,
+        "placement": "sevenInchScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:49:11Z",
+      "visual_review_note": "All four native tablet captures visually inspected: populated panes, localized controls, source aspect, no external captions or clipping."
+    },
+    {
+      "language": "en",
+      "locale": "en-US",
+      "imageType": "sevenInchScreenshots",
+      "position": 4,
+      "path": "en/sevenInchScreenshots/panel-04.png",
+      "sha256": "d7fefbc3a00b7cdf5cd1405e879715b3724b97a0e1fb1be69f54b27ff8940958",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1874118,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/en.json": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/en/tablet7-stories.png": "1220fc30f017c4614d84e231e945da24738df7c2cc7ef3ad7ae28afffbb12cd4",
+        "captures/en/tablet7-feeds.png": "7d0cba37a8600d5a4ebab87a368cdce426fe68c1c6d98db879e2b5a7436f5ed9",
+        "captures/en/tablet7-reader.png": "f91136c7d784b11e900b68f1d41fe47272d214a416101408714b98d80c330d49",
+        "captures/en/tablet7-saved.png": "55872dd68c4f4101c23195b0c862ab4a7500b6e4f90d9c89a315cddf6b145c70"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.0,
+          "largest_tile_error": 0.0,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/en/tablet7-saved.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1920,
+              "width": 1080,
+              "x": 0,
+              "y": 0
+            },
+            "path": "captures/en/tablet7-saved.png",
+            "source_height": 1920,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "en",
+        "panel": 4,
+        "placement": "sevenInchScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:49:11Z",
+      "visual_review_note": "All four native tablet captures visually inspected: populated panes, localized controls, source aspect, no external captions or clipping."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "reviewer": "independent store_locales agent (did not author these seven translations)",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "fields_reviewed": 70,
+  "status": "passed_after_corrections",
+  "corrections": {
+    "es": "Next/Done label: Listo -> Hecho, matching overlay_done.",
+    "it": "Next/Done label: Fine -> Fatto, matching overlay_done.",
+    "nl": "Done label Gereed -> Klaar. Save action copy now uses opslaan (sla op), matching glossary; updated heading/promo/short description.",
+    "pl": "Next label Następny -> Dalej, matching overlay_next.",
+    "de": "Capitalized product name NewsBlur-Blurblog, matching German glossary."
+  },
+  "semantic_review": "Read all descriptions and release notes against English. Account required, free/optional paid plans, paid feature qualification, AI plan limits, interface localization versus unchanged stories, platform-specific devices/tablet layout, keyboard fixes versus Android navigation/sign-in fixes, subscription renewal timing, URLs all retained. Registers and key glossary terminology reviewed. No remaining material semantic issues found.",
+  "validation": "Ruby: schemas and URLs match; all 70 fields within limits, Apple keywords <=100 UTF-8 bytes, Play notes <=500 Unicode characters.",
+  "skills_review": "Both refreshed release skills use dynamic localization/languages.json coverage, explicit official locale mappings, independent review and readback. No conflicting hardcoded mappings found; iOS keyword bytes correctly called out."
+}

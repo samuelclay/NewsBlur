@@ -1,0 +1,63 @@
+{
+  "checked_at": "2026-10-26T04:25:37Z",
+  "status": "all_technical_checks_passed",
+  "locales": [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "locale_count": 21,
+  "native_capture_count": 84,
+  "export_count": 84,
+  "dimensions": [
+    2853,
+    2007
+  ],
+  "all_exports_opaque": true,
+  "source_commits": [
+    "bf81b82315d2d35384e79fcfebc0c0664104dc8d"
+  ],
+  "native_capture_and_export_sha256_reverified": true,
+  "all_native_pixel_comparisons": "passed",
+  "maximum_mean_rgb_error": 1.0827,
+  "maximum_tile_rgb_error": 2.4831,
+  "preserved_source_revisions": [
+    {
+      "locale": "en",
+      "original_path": "native-render.swift",
+      "preserved_path": "renderer-revisions/21cbb6bcf06b93c0c858dfa5f23796741e759cec805bea3d8b55bb83e2f042a5.swift",
+      "sha256": "21cbb6bcf06b93c0c858dfa5f23796741e759cec805bea3d8b55bb83e2f042a5"
+    },
+    {
+      "locale": "en",
+      "original_path": "export-native.rb",
+      "preserved_path": "renderer-revisions/b9b49a0e735451e555106f2f9b2dc7a204aa136b825d6556b3206d281c3fd1c6.rb",
+      "sha256": "b9b49a0e735451e555106f2f9b2dc7a204aa136b825d6556b3206d281c3fd1c6"
+    },
+    {
+      "locale": "es",
+      "original_path": "native-render.swift",
+      "preserved_path": "renderer-revisions/21cbb6bcf06b93c0c858dfa5f23796741e759cec805bea3d8b55bb83e2f042a5.swift",
+      "sha256": "21cbb6bcf06b93c0c858dfa5f23796741e759cec805bea3d8b55bb83e2f042a5"
+    }
+  ],
+  "note": "Technical validation only. Independent visual-review records and App Store readbacks are separate evidence."
+}

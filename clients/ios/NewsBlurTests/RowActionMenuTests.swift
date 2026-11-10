@@ -4,6 +4,120 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_RowActionMenus: XCTestCase {
+    func test_storyOptionsKeepTheSameFontAfterReusingFontPickerRow() throws {
+        let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
+        let controller = controllerType.init(nibName: "FontSettingsViewController", bundle: nil)
+        controller.loadViewIfNeeded()
+        let app = GoToFeedMenuApp()
+        app.dictFeeds = [:]
+        app.storiesCollection = StoriesCollection()
+        app.activeStory = ["story_feed_id": 42, "read_status": 1, "starred": false]
+        controller.setValue(app, forKey: "appDelegate")
+        let style = UserDefaults.standard.string(forKey: "fontStyle") ?? "GothamNarrow-Book"
+        controller.setValue([["style": style, "name": NSAttributedString(string: "Gotham Narrow",
+            attributes: [.font: UIFont(name: "GothamNarrow-Book", size: 16)!])]], forKey: "fonts")
+        let source = try XCTUnwrap(controller as? UITableViewDataSource)
+        let table = StoryOptionsReuseTable(frame: CGRect(x: 0, y: 0, width: 300, height: 700), style: .plain)
+        let expectedSize = UIFontMetrics(forTextStyle: .body).scaledValue(for: 16)
+        print("Story menu Dynamic Type: \(UIApplication.shared.preferredContentSizeCategory.rawValue), \(expectedSize)pt")
+        table.reusedCell = source.tableView(table, cellForRowAt: IndexPath(row: 0, section: 0))
+        // RowActionMenuTests.swift sends the font-preview cell through the real action-row reuse path twice.
+        for _ in 0..<2 {
+            let preview = source.tableView(table, cellForRowAt: IndexPath(row: 0, section: 3))
+            XCTAssertEqual(preview.textLabel!.font.pointSize, expectedSize, accuracy: 0.01,
+                           "The font preview must scale with the action labels")
+            XCTAssertEqual(preview.textLabel!.font.fontName, "GothamNarrow-Book",
+                           "The font preview must retain the selected typeface")
+            for section in 0..<3 {
+                for row in 0..<source.tableView(table, numberOfRowsInSection: section) {
+                    let cell = source.tableView(table, cellForRowAt: IndexPath(row: row, section: section))
+                    XCTAssertEqual(cell.textLabel!.font.pointSize, expectedSize, accuracy: 0.01,
+                                   "\(cell.textLabel!.text ?? "") must retain the menu's Dynamic Type size")
+                    XCTAssertEqual(cell.textLabel!.font.fontName, "WhitneySSm-Medium",
+                                   "The font preview must not change the font of reused action rows")
+                }
+            }
+        }
+    }
+
+    func test_storySettingsMenuRowsAnchorToVisibleNativeReaderBar() throws {
+        try verifyStorySettingsMenuAnchors(vertical: true)
+    }
+
+    func test_storySettingsMenuRowsKeepHorizontalReaderAnchors() throws {
+        try verifyStorySettingsMenuAnchors(vertical: false)
+    }
+
+    private func verifyStorySettingsMenuAnchors(vertical: Bool) throws {
+        let app = StorySettingsAnchorApp()
+        let pages = StorySettingsAnchorPages()
+        pages.simulatedVerticalToolbar = vertical
+        pages.appDelegate = app
+        app.fixturePages = pages
+        app.storiesCollection = StoriesCollection()
+        app.activeStory = ["story_hash": "42:anchor", "story_feed_id": "42"]
+
+        let nativeView = UIButton(type: .system)
+        nativeView.setImage(UIImage(systemName: "textformat.size"), for: .normal)
+        nativeView.frame.size = CGSize(width: 44, height: 44)
+        let nativeItem = UIBarButtonItem(customView: nativeView)
+        let horizontalView = UIButton(type: .system)
+        horizontalView.setImage(UIImage(systemName: "textformat.size"), for: .normal)
+        horizontalView.frame.size = CGSize(width: 44, height: 44)
+        let horizontalItem = UIBarButtonItem(customView: horizontalView)
+        pages.setValue(nativeItem, forKey: "verticalSettingsButton")
+        pages.fontSettingsButton = horizontalItem
+        let expected = vertical ? nativeItem : horizontalItem
+        let detached = vertical ? horizontalItem : nativeItem
+
+        // RowActionMenuTests.swift mounts only the active toolbar item; the obsolete item deliberately has no window.
+        let host = UIViewController()
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 440, height: 44))
+        toolbar.items = [expected]
+        host.view.addSubview(toolbar)
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 440, height: 678))
+        window.rootViewController = host
+        window.isHidden = false
+        window.layoutIfNeeded()
+        toolbar.layoutIfNeeded()
+        defer {
+            NSObject.cancelPreviousPerformRequests(withTarget: pages)
+            window.isHidden = true
+            window.rootViewController = nil
+            toolbar.items = nil
+            app.fixturePages = nil
+            pages.appDelegate = nil
+        }
+        XCTAssertTrue(expected.customView?.window === window)
+        XCTAssertNil(detached.customView?.window)
+
+        let controllerType = try XCTUnwrap(NSClassFromString("FontSettingsViewController") as? UIViewController.Type)
+        let menu = controllerType.init(nibName: "FontSettingsViewController", bundle: nil)
+        // FontSettingsViewController.m installs the shared app in viewDidLoad, before this fixture injects its app.
+        menu.loadViewIfNeeded()
+        menu.setValue(app, forKey: "appDelegate")
+        defer { menu.setValue(nil, forKey: "appDelegate") }
+        let groups = try XCTUnwrap(menu.value(forKey: "menuGroups") as? [[NSNumber]])
+        let source = try XCTUnwrap(menu as? UITableViewDataSource)
+        let delegate = try XCTUnwrap(menu as? UITableViewDelegate)
+        let table = UITableView()
+        for (action, label) in [(3, "Train this story"), (2, "Send to...")] {
+            let section = try XCTUnwrap(groups.firstIndex { $0.contains(NSNumber(value: action)) })
+            let row = try XCTUnwrap(groups[section].firstIndex(of: NSNumber(value: action)))
+            let path = IndexPath(row: row, section: section)
+            XCTAssertEqual(source.tableView(table, cellForRowAt: path).textLabel?.text, label)
+            app.presentedAnchor = nil
+            delegate.tableView?(table, didSelectRowAt: path)
+            XCTAssertTrue((menu.value(forKey: "appDelegate") as? NewsBlurAppDelegate) === app,
+                          "\(label) must retain the menu's fixture app through dismissal")
+            XCTAssertTrue(pages.appDelegate === app,
+                          "\(label) must retain the reader's fixture app")
+            XCTAssertTrue(app.presentedAnchor === expected, "\(label) must use the currently mounted settings item")
+            XCTAssertTrue((app.presentedAnchor as? UIBarButtonItem)?.customView?.window === window,
+                          "\(label) must retain a visible presentation anchor after leaving Story Options")
+        }
+    }
+
     func test_goToFeedFromUnsubscribedSharedStoryOpensFeedPreview() throws {
         let app = GoToFeedMenuApp()
         app.dictFeeds = [:]
@@ -438,8 +552,13 @@ import UIKit
     func test_storyMenuGroupsReadSaveAndShareWithoutSelectingStory() throws {
         let defaults = UserDefaults.standard
         let previous = defaults.object(forKey: "show_ask_ai")
-        defer { defaults.set(previous, forKey: "show_ask_ai") }
+        let previousListen = defaults.object(forKey: "show_sideoption_listen")
+        defer {
+            defaults.set(previous, forKey: "show_ask_ai")
+            defaults.set(previousListen, forKey: "show_sideoption_listen")
+        }
         defaults.set(true, forKey: "show_ask_ai")
+        defaults.set(true, forKey: "show_sideoption_listen")
         let (app, _) = feedFixture()
         let controller = FeedDetailViewController()
         controller.appDelegate = app
@@ -449,7 +568,7 @@ import UIKit
         story.isRead = false
         story.isSaved = false
         let groups = RowActionMenus.story(story, controller: controller, source: UIView())
-        XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save"],
+        XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save", "up-next"],
                                                    ["share-link", "share-story", "share-newsblur"], ["train", "ask-ai"]])
         XCTAssertNil(app.activeStory)
         for action in groups.flatMap({ $0 }) { XCTAssertNotNil(action.native.image, action.symbol) }
@@ -554,6 +673,26 @@ import UIKit
         controller.appDelegate = app
         return (app, controller)
     }
+}
+
+@MainActor private final class StorySettingsAnchorPages: StoryPagesViewController {
+    var simulatedVerticalToolbar = false
+    override var usesVerticalReaderToolbar: Bool { simulatedVerticalToolbar }
+}
+
+@MainActor private final class StorySettingsAnchorApp: NewsBlurAppDelegate {
+    var fixturePages: StoryPagesViewController?
+    var presentedAnchor: AnyObject?
+    override var storyPagesViewController: StoryPagesViewController! { fixturePages }
+    override func openTrainStory(_ sender: Any!) { presentedAnchor = sender as AnyObject? }
+    override func showSend(to controller: UIViewController!, sender: Any!) {
+        presentedAnchor = sender as AnyObject?
+    }
+}
+
+@MainActor private final class StoryOptionsReuseTable: UITableView {
+    var reusedCell: UITableViewCell?
+    override func dequeueReusableCell(withIdentifier identifier: String) -> UITableViewCell? { reusedCell }
 }
 
 @MainActor private final class GoToFeedMenuApp: NewsBlurAppDelegate {

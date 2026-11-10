@@ -11,6 +11,7 @@ Upgrade path:  {{ transition_label }}
 == Usage ==
 Feeds:         {{ feed_count|commify }} total, {{ active_feed_count|commify }} active
 Stories read:  {{ stories_read|commify }}
+Listened:      {{ listen_minutes_week|commify }} min past week, {{ listen_minutes_total|commify }} min all time
 Feed opens:    {{ feed_opens|commify }}
 Saved stories: {{ starred_count|commify }}
 Shared:        {{ shared_count|commify }}

@@ -46,8 +46,10 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)finishStoryPresentation;
 - (void)beginStoryPresentationFade;
 - (void)cancelStoryPresentationFade;
+- (void)cancelStoryPresentationFadePreservingStory;
 - (void)receiveStoryReadyMessage:(WKScriptMessage *)message;
 - (BOOL)isCurrentStoryImageLoad:(NSString *)loadID;
+- (BOOL)canOpenStoryImageForAccessibility:(BOOL)accessibility NS_SWIFT_NAME(canOpenStoryImage(accessibility:));
 @property (nonatomic) BOOL lastDragDirectionDown;
 @property (nonatomic,  readonly) BOOL isSinglePage;
 
@@ -59,6 +61,7 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)drawStory;
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
 - (void)updateStoryTheme;
+- (void)updateStoryDirection;
 - (void)drawFeedGradient;
 - (void)updateFeedTitleGradientPosition;
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha;

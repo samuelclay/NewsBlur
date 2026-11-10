@@ -143,6 +143,10 @@ a:active {
     border-left-color: #676264;
     background-color: #6c696a;
 }
+/* storyDetailViewMedium.css colors the right-hand quote border of right-to-left story text (storyDetailView.css). */
+html[dir="rtl"] .NB-story blockquote:dir(rtl) {
+    border-right-color: #676264;
+}
 
 .NB-story blockquote p {
     background-color: #6c696a;
@@ -255,6 +259,10 @@ del {
     color: rgba(200, 200, 200, 0.8);
     background: rgba(255, 255, 255, 0.12);
     text-shadow: none;
+}
+/* storyDetailViewMedium.css: a story queued in Listen's Up Next shades its + like an active button. */
+.NB-button.NB-share-button a.NB-listen-queue.NB-listen-queued div {
+    background: rgba(255, 255, 255, 0.12);
 }
 
 /* Story Comments */
@@ -370,4 +378,44 @@ del {
 
 .NB-cluster-locked-upsell {
     background-color: rgba(255, 255, 255, .04);
+}
+
+/* Listen (Classes/Listen/ListenStoryBridge.swift) */
+.NB-listen-highlight {
+    background-color: rgba(255, 210, 90, 0.14);
+    box-shadow: 0 0 0 5px rgba(255, 210, 90, 0.14);
+}
+span.NB-listen-run.NB-listen-highlight {
+    box-shadow: none;
+}
+.NB-listen-pill {
+    background: rgba(190, 140, 242, 0.2);
+    color: rgba(215, 185, 248, 0.95);
+}
+
+
+/* AI Classifier Pills: storyDetailViewMedium.css deepens the fills so white text stays readable on the dark header */
+.NB-story-ai-classifier.NB-score-1 {
+    background-color: #5F9150;
+    border-color: rgba(255, 255, 255, .15) transparent rgba(0, 0, 0, .4);
+}
+
+.NB-story-ai-classifier.NB-score--1 {
+    background-color: #A85A5C;
+    border-color: rgba(255, 255, 255, .15) transparent rgba(0, 0, 0, .4);
+}
+
+/* storyDetailViewMedium.css: story audio pills (storyDetailView.css .NB-media-card), shaded like this theme's
+   .NB-story-tag and .NB-story-tag-positive. */
+#NB-story .NB-media-card-play {
+    border-color: rgba(255, 255, 255, .2) transparent rgba(0, 0, 0, .1);
+}
+#NB-story .NB-media-card-actions a {
+    background-color: rgba(40, 40, 40, .2);
+    border-color: rgba(186, 186, 186, .2) transparent rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-shadow: 0 1px 0 #505050;
+}
+#NB-story .NB-media-card-actions a:active {
+    background-color: rgba(40, 40, 40, .4);
 }

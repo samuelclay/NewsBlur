@@ -1,0 +1,7 @@
+Sign in with Apple or Google, or connect either one to your existing NewsBlur account.
+
+Getting started is easier: pick your interests, preview collections of feeds, or import your subscriptions.
+
+On tablets, expand stories to the full reader width. Your story list now scrolls smoothly as you swipe between stories. You can also keep reading controls visible.
+
+Includes fixes for sign-in errors, image links, reading controls, and crashes.

@@ -1,5 +1,6 @@
 package com.newsblur.activity;
 
+import static com.newsblur.service.NbSyncManager.UPDATE_METADATA;
 import static com.newsblur.service.NbSyncManager.UPDATE_REBUILD;
 import static com.newsblur.service.NbSyncManager.UPDATE_STATUS;
 import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
@@ -62,6 +63,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.LastStoryList;
 import com.newsblur.util.Log;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PendingTransitionUtils;
@@ -76,6 +78,7 @@ import com.newsblur.util.StoryHeaderPillAppearanceResolver;
 import com.newsblur.util.StoryHeaderOptionsTitleFormatter;
 import com.newsblur.util.StoryHeaderPillLayoutDecider;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StorySplitView;
 import com.newsblur.util.TryFeedSessionResetter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.viewModel.ItemListViewModel;
@@ -87,10 +90,16 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import java.lang.ref.WeakReference;
-@AndroidEntryPoint
-public abstract class ItemsList extends NbActivity implements ReadingActionListener {
+import java.util.HashMap;
+import java.util.Map;
 
-    private static WeakReference<ItemsList> readingLaunchParentRef = new WeakReference<>(null);
+@AndroidEntryPoint
+public abstract class ItemsList extends NbActivity implements ReadingActionListener,
+        com.newsblur.fragment.InfrequentCutoffDialogFragment.InfrequentCutoffChangedListener {
+
+    // The story list each task's reader belongs to, keyed by task so two NewsBlur windows (desktop
+    // mode, system split screen) each keep their own.
+    private static final Map<Integer, WeakReference<ItemsList>> readingLaunchParents = new HashMap<>();
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -116,7 +125,16 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     public static final String EXTRA_AUTO_OPEN_STORY = "auto_open_story";
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
     public static final String EXTRA_SESSION_DATA_KEY = "session_data_key";
+    // Slide the feed list over this story list as soon as it opens (tablet launch, FeedListDrawer.kt).
+    public static final String EXTRA_OPEN_FEED_DRAWER = "open_feed_drawer";
+    // The tablet's launch story list waits under the feed list slide-over without loading
+    // anything (FeedListDrawer.kt) until a feed is picked or the slide-over closes.
+    public static final String EXTRA_DEFER_STORIES = "defer_stories";
+    private static final String BUNDLE_STORIES_DEFERRED = "storiesDeferred";
+    private static final String BUNDLE_STORY_LIST_INTENT = "storyListIntent";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
+    private static final String BUNDLE_SPLIT_READING_STORY_HASH = "splitReadingStoryHash";
+    private static final String BUNDLE_FEED_DRAWER_PENDING = "feedDrawerPending";
     private static final long STORY_STATUS_FETCH_DELAY_MS = 1000L;
     private static final long STORY_STATUS_SHOW_DURATION_MS = 300L;
     private static final long STORY_STATUS_HIDE_DURATION_MS = 250L;
@@ -132,6 +150,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     protected ItemListViewModel viewModel;
     protected FeedSet fs;
+    // What this list shows: its toolbar, its own menu items, its saved search id (StoryListKind.kt).
+    protected StoryListKind kind;
+    private boolean storiesDeferred = false;
+    // Set once switchStoryList shows another feed here, so a rotation reopens that one.
+    private boolean switchedStoryList = false;
+    // The load held back until the feed list has slid away (loadAfterFeedListSlide).
+    @Nullable
+    private Runnable pendingSwitchLoad;
 
     private ItemSetFragment itemSetFragment;
     protected ActivityItemslistBinding binding;
@@ -164,10 +190,19 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private boolean suppressNextExitTransition = false;
     private boolean awaitingInitialFetchingBanner = false;
     private boolean readerToolbarHidden = false;
+    private boolean opaqueTabletWindow = false;
+    private boolean storyListWindowBackgroundSet = false;
     private com.newsblur.view.FloatingStoryToolbar floatingStoryToolbar;
     private boolean storyToolbarAtBottom;
     @Nullable
     private String preparedReturnStoryHash;
+    // Whether FeedListDrawer.kt still has to slide over this story list after launch.
+    private boolean feedDrawerPending = false;
+    // Whether this tablet story list already reloaded for the sync housekeeping now running.
+    private boolean rebuildHandled = false;
+    // The story the reader beside this list was showing before a rotation recreated the list.
+    @Nullable
+    private String restoredSplitReadingStoryHash;
     private boolean fetchingBannerDelayElapsed = false;
     @Nullable
     private ImageView interactiveSwipeUnderlay;
@@ -191,6 +226,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     protected void onCreate(Bundle bundle) {
         Trace.beginSection("ItemsListOnCreate");
         super.onCreate(bundle);
+        Intent switchedIntent = bundle != null ? androidx.core.os.BundleCompat.getParcelable(bundle, BUNDLE_STORY_LIST_INTENT, Intent.class) : null;
+        if (switchedIntent != null) {
+            setIntent(switchedIntent);
+            switchedStoryList = true;
+        }
+        storiesDeferred = bundle != null
+                ? bundle.getBoolean(BUNDLE_STORIES_DEFERRED, false)
+                : getIntent().getBooleanExtra(EXTRA_DEFER_STORIES, false);
         readerToolbarHidden = bundle != null
                 ? bundle.getBoolean(Reading.EXTRA_TOOLBAR_HIDDEN, false)
                 : getIntent().getBooleanExtra(Reading.EXTRA_TOOLBAR_HIDDEN, false);
@@ -200,6 +243,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo, syncServiceState);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
         fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
+        kind = StoryListKind.fromIntent(getIntent(), fs);
         sessionDataKey = getIntent().getStringExtra(EXTRA_SESSION_DATA_KEY);
         SessionDataSourceRegistry.Entry sessionDataEntry = SessionDataSourceRegistry.get(sessionDataKey);
         if (sessionDataEntry != null) {
@@ -211,24 +255,22 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             TryFeedSessionResetter.INSTANCE.reset(syncServiceState, dbHelper, fs);
         }
 
-        // this is not strictly necessary, since our first refresh with the fs will swap in
-        // the correct session, but that can be delayed by sync backup, so we try here to
-        // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        feedUtils.prepareReadingSession(fs, false);
-        if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false) ||
-            getIntent().getBooleanExtra(EXTRA_AUTO_OPEN_STORY, false)) {
-            String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
-            launchReadingActivity(fs, hash);
-        } else if (prefsRepo.isAutoOpenFirstUnread()) {
-            StateFilter intelState = prefsRepo.getStateFilter();
-            if (dbHelper.getUnreadCount(fs, intelState) > 0) {
-                launchReadingActivity(fs, Reading.FIND_FIRST_UNREAD);
-            }
+        if (!storiesDeferred) {
+            // this is not strictly necessary, since our first refresh with the fs will swap in
+            // the correct session, but that can be delayed by sync backup, so we try here to
+            // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
+            feedUtils.prepareReadingSession(fs, false);
+            // FolderItemsList.java and FeedItemsList.kt share the "folderName" extra.
+            LastStoryList.remember(this, this, fs, getIntent().getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME));
+            openLaunchStory();
         }
 
         binding = ActivityItemslistBinding.inflate(getLayoutInflater());
-        EdgeToEdgeUtil.applyView(this, binding);
-        binding.getRoot().post(() -> getWindow().setBackgroundDrawableResource(android.R.color.transparent));
+        installStoryListLayout();
+        findViewById(R.id.toolbar_fullscreen_button).setOnClickListener(v -> {
+            StorySplitView.setStoryListFullscreen(this, !StorySplitView.isStoryListFullscreen(this));
+            updateStoryListFullscreenButton();
+        });
         View toolbarSettingsButton = findViewById(R.id.toolbar_settings_button);
         if (toolbarSettingsButton != null) {
             toolbarSettingsButton.setOnClickListener(this::showItemListSettingsPopup);
@@ -246,6 +288,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         String activeSearchQuery;
         if (bundle != null) {
             activeSearchQuery = bundle.getString(BUNDLE_ACTIVE_SEARCH_QUERY);
+            restoredSplitReadingStoryHash = bundle.getString(BUNDLE_SPLIT_READING_STORY_HASH);
         } else {
             activeSearchQuery = fs.getSearchQuery();
         }
@@ -270,7 +313,43 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         refreshStoryHeaderControls();
         scheduleInitialFetchingBanner();
         setupOnBackPressed();
+        // Joining the split recreates this story list moments after launch, so the pending feed
+        // list slide-over rides along in the saved state until onResume opens it.
+        feedDrawerPending = bundle != null
+                ? bundle.getBoolean(BUNDLE_FEED_DRAWER_PENDING, false)
+                : getIntent().getBooleanExtra(EXTRA_OPEN_FEED_DRAWER, false);
+        kind.setupToolbar(this);
+        viewModel.getNextSession().observe(this, session -> kind.onNextSession(this, session));
+        if (storiesDeferred) showDeferredContent(false);
         Trace.endSection();
+    }
+
+    private void installStoryListLayout() {
+        // EdgeToEdgeUtil.kt replaces the content view; attach the split divider only afterward.
+        EdgeToEdgeUtil.applyView(this, binding);
+        updateStoryListWindowBackground();
+        // ItemsList.java refreshes after ComponentActivity updates resources for the new pane bounds.
+        addOnConfigurationChangedListener(configuration -> {
+            updateStoryListWindowBackground();
+            updateStoryListFullscreenButton();
+            updateStoryHeaderPillLabels();
+        });
+        StorySplitView.trackSplit(this, () -> {
+            updateStoryListWindowBackground();
+            updateStoryListFullscreenButton();
+            return kotlin.Unit.INSTANCE;
+        });
+    }
+
+    private void updateStoryListWindowBackground() {
+        // StorySplitView.kt keeps embedded windows opaque even when a narrow window hides the split.
+        boolean shouldBeOpaque = opaqueTabletWindow || StorySplitView.isInSplit(this) || StorySplitView.slidesOverFeedDrawer(this);
+        if (storyListWindowBackgroundSet && shouldBeOpaque == opaqueTabletWindow) return;
+        opaqueTabletWindow = shouldBeOpaque;
+        getWindow().setBackgroundDrawableResource(opaqueTabletWindow
+                ? UIUtils.getThemedResource(this, R.attr.layoutBackground, android.R.attr.background)
+                : android.R.color.transparent);
+        storyListWindowBackgroundSet = true;
     }
 
     @Override
@@ -280,6 +359,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         String q = binding.itemlistSearchQuery.getText().toString().trim();
         if (!q.isEmpty()) {
             savedInstanceState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
+        }
+        savedInstanceState.putBoolean(BUNDLE_FEED_DRAWER_PENDING, feedDrawerPending);
+        savedInstanceState.putBoolean(BUNDLE_STORIES_DEFERRED, storiesDeferred);
+        if (switchedStoryList) {
+            savedInstanceState.putParcelable(BUNDLE_STORY_LIST_INTENT, getIntent());
+        }
+        if (preparedReturnStoryHash != null && Reading.peekSplitReader(getTaskId()) != null && StorySplitView.isInSplit(this)) {
+            savedInstanceState.putString(BUNDLE_SPLIT_READING_STORY_HASH, preparedReturnStoryHash);
         }
     }
 
@@ -312,12 +399,38 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             recreate();
             return;
         }
-        if (syncServiceState.isHousekeepingRunning()) finish();
+        if (!syncServiceState.isHousekeepingRunning()) {
+            rebuildHandled = false;
+        } else if (!rebuildHandled) {
+            // The UPDATE_REBUILD broadcast only reaches a resumed list, so one paused under the
+            // reader or feed list catches up here, once per housekeeping run.
+            leaveForRebuild();
+        }
         applyStoryHeaderTheme();
         refreshStoryHeaderControls();
         updateStatusIndicators();
         if (itemSetFragment != null) {
             itemSetFragment.refreshLoadingIndicators();
+        }
+        // The first story tapped beside this list shouldn't wait for WebView to start up.
+        if (slidesOverFeedDrawer() || StorySplitView.isInSplit(this)) {
+            com.newsblur.util.WebViewPrewarm.startWhenIdle(this);
+        }
+        if (feedDrawerPending) {
+            feedDrawerPending = false;
+            // At launch the feed list is the first screen, already open over the waiting list.
+            FeedListDrawer.open(this, getIntent().getStringExtra(Main.EXTRA_FORCE_SHOW_FEED_ID));
+        }
+        if (slidesOverFeedDrawer() || StorySplitView.isInSplit(this)) {
+            // A rotation recreates this list but not the reader beside it, which still reports
+            // back through peekReadingLaunchParent, so claim that role and restore its highlight.
+            // ReadingPlaceholder.kt also finds this list there to hand it Back. The first resume can
+            // come before the split is reported, so a root list claims it without waiting for that.
+            claimReadingLaunchParent();
+            if (restoredSplitReadingStoryHash != null) {
+                prepareReturnToStory(restoredSplitReadingStoryHash);
+                restoredSplitReadingStoryHash = null;
+            }
         }
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
@@ -326,6 +439,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     public void refreshStoryHeaderControls() {
         if (binding == null) return;
+        updateStoryListFullscreenButton();
 
         Menu menu = buildItemListMenuModel();
         boolean showDiscover = shouldShowDiscoverAction();
@@ -381,19 +495,30 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             showItemListSettingsPopup(findViewById(R.id.toolbar));
             return true;
         }
-        return contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId());
+        if (contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId())) {
+            return true;
+        }
+        return kind.onOptionsItemSelected(this, item);
     }
 
     protected boolean prepareItemListMenuModel(Menu menu) {
         boolean showSavedSearch = !TextUtils.isEmpty(binding.itemlistSearchQuery.getText());
-        return contextMenuDelegate.onPrepareMenuOptions(menu, fs, showSavedSearch);
+        boolean prepared = contextMenuDelegate.onPrepareMenuOptions(menu, fs, showSavedSearch);
+        return kind.prepareMenu(this, menu) || prepared;
+    }
+
+    @Override
+    public void infrequentCutoffChanged(int newValue) {
+        prefsRepo.setInfrequentCutoff(newValue);
+        dbHelper.clearInfrequentSession();
+        restartReadingSession();
     }
 
     // infix fun Int.has(flag: Int) = (this and flag) != 0
     @Override
     public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
-            finish();
+            leaveForRebuild();
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             updateStatusIndicators();
@@ -406,6 +531,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 itemSetFragment.hasUpdated();
             }
         }
+        if ((updateType & UPDATE_METADATA) != 0) {
+            kind.onMetadataUpdated(this);
+        }
     }
 
     @Override
@@ -414,8 +542,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             Session session = sessionDataSource.getNextSession();
             if (session != null) {
                 applyNextSession(session);
-            } else finish();
-        } else finish();
+                return;
+            }
+        }
+        // ItemsList.java action completion returns to feeds without treating an already open
+        // FeedListDrawer.kt as a request to leave the app, as explicit Back navigation does.
+        if (slidesOverFeedDrawer()) FeedListDrawer.open(this);
+        else finish();
     }
 
     @Nullable
@@ -434,7 +567,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private boolean openDifferentStoryListActivity(@NonNull Session session) {
-        if (session.getFeedSet().isFolder() && !(this instanceof FolderItemsList)) {
+        if (session.getFeedSet().isFolder() && !(kind instanceof StoryListKind.Folder)) {
             if (sessionDataSource != null) {
                 sessionDataSource.setSession(session);
             }
@@ -442,7 +575,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             intent.putExtra(EXTRA_FEED_SET, session.getFeedSet());
             intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, session.getFolderName());
             putSessionDataKeyExtra(intent, sessionDataSource, storyListSessionDataSource);
-            startActivity(intent);
+            StorySplitView.startStoryList(this, intent);
             finish();
             return true;
         }
@@ -450,9 +583,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void applyNextSession(@NonNull Session session) {
+        closeSplitReader();
         // set the next session on the parent activity
         fs = session.getFeedSet();
         feedUtils.prepareReadingSession(fs, false);
+        LastStoryList.remember(this, this, fs, session.getFolderName() != null ? session.getFolderName() : fs.getFolderName());
         triggerSync();
         scheduleInitialFetchingBanner();
 
@@ -855,6 +990,16 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         showItemListPopup(anchor, ItemListMenuPopup.Content.ACTIONS);
     }
 
+    private void updateStoryListFullscreenButton() {
+        if (binding == null) return;
+        android.widget.ImageButton button = findViewById(R.id.toolbar_fullscreen_button);
+        boolean fullscreen = StorySplitView.isStoryListFullscreen(this);
+        button.setVisibility(StorySplitView.canToggleStoryListFullscreen(this) ? View.VISIBLE : View.GONE);
+        button.setImageResource(fullscreen ? R.drawable.ic_reader_fullscreen_exit : R.drawable.ic_reader_fullscreen);
+        button.setContentDescription(getString(fullscreen ? R.string.story_list_exit_fullscreen : R.string.story_list_enter_fullscreen));
+        androidx.appcompat.widget.TooltipCompat.setTooltipText(button, button.getContentDescription());
+    }
+
     private void updateToolbarSettingsButtonVisibility() {
         View settingsButton = findViewById(R.id.toolbar_settings_button);
         if (settingsButton == null) {
@@ -954,7 +1099,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             return;
         }
 
-        if (fs.isSingleNormal()) {
+        if (fs.isFolder()) {
+            DiscoverFeedsActivity.startForFeeds(this, fs.getAllFeeds());
+        } else if (fs.isSingleNormal()) {
             String feedId = fs.getSingleFeed();
             com.newsblur.domain.Feed sourceFeed = dbHelper.getFeed(feedId);
             if (sourceFeed != null) {
@@ -962,8 +1109,6 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             } else {
                 DiscoverFeedsActivity.startForFeed(this, feedId);
             }
-        } else if (fs.isFolder()) {
-            DiscoverFeedsActivity.startForFeeds(this, fs.getAllFeeds());
         }
     }
 
@@ -1107,6 +1252,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         fs.setSearchQuery(q);
         boolean queryChanged = !TextUtils.equals(q, oldQuery);
         if (queryChanged) {
+            closeSplitReader();
             feedUtils.prepareReadingSession(fs, true);
             triggerSync();
             scheduleInitialFetchingBanner();
@@ -1143,6 +1289,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     public void restartReadingSession() {
+        closeSplitReader();
         syncServiceState.resetFetchState(fs);
         feedUtils.prepareReadingSession(fs, true);
         triggerSync();
@@ -1153,27 +1300,218 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         refreshStoryHeaderControls();
     }
 
+    // A list waiting under the feed list slide-over shows only its background, so no toolbar or
+    // empty list flashes in the pane before the slide-over covers it (ItemsList.java).
+    private void showDeferredContent(boolean show) {
+        ViewGroup root = (ViewGroup) binding.getRoot();
+        for (int i = 0; i < root.getChildCount(); i++) {
+            root.getChildAt(i).setAlpha(show ? 1f : 0f);
+        }
+    }
+
+    // A story the launch intent asks for (a widget tap, a notification), or the first unread one.
+    private void openLaunchStory() {
+        if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false) ||
+            getIntent().getBooleanExtra(EXTRA_AUTO_OPEN_STORY, false)) {
+            String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
+            launchReadingActivity(fs, hash);
+        } else if (prefsRepo.isAutoOpenFirstUnread()) {
+            StateFilter intelState = prefsRepo.getStateFilter();
+            if (dbHelper.getUnreadCount(fs, intelState) > 0) {
+                launchReadingActivity(fs, Reading.FIND_FIRST_UNREAD);
+            }
+        }
+    }
+
+    /** True while this list waits under the feed list slide-over without loading (EXTRA_DEFER_STORIES). */
+    public boolean areStoriesDeferred() {
+        // Also while a switch to a picked feed waits for the feed list to slide away.
+        return storiesDeferred || pendingSwitchLoad != null;
+    }
+
+    /** The feed list slide-over closed without a pick, so load the stories this list waited on. */
+    public void startDeferredStories() {
+        if (!storiesDeferred) return;
+        storiesDeferred = false;
+        showDeferredContent(true);
+        // As after a pick (switchStoryList), the stories load once the feed list has slid away.
+        loadAfterFeedListSlide(() -> {
+            feedUtils.prepareReadingSession(fs, false);
+            LastStoryList.remember(this, this, fs, getIntent().getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME));
+            triggerSync();
+            scheduleInitialFetchingBanner();
+            // While it waited, the empty list laid out just its footer, which the stories would then
+            // load in above, leaving the list scrolled to the end. Start it empty at the top instead.
+            itemSetFragment.resetEmptyState();
+            itemSetFragment.scrollToTop();
+            itemSetFragment.hasUpdated();
+            refreshStoryHeaderControls();
+            openLaunchStory();
+        });
+    }
+
+    // The feed list slides away over this list on the same main thread, so work that would stall
+    // its slide (switching the reading session, loading and laying out stories) waits until it is
+    // gone. Until then areStoriesDeferred() keeps the story list from loading on its own.
+    private void loadAfterFeedListSlide(Runnable load) {
+        View root = binding.getRoot();
+        if (pendingSwitchLoad != null) root.removeCallbacks(pendingSwitchLoad);
+        pendingSwitchLoad = () -> {
+            pendingSwitchLoad = null;
+            if (isFinishing() || isDestroyed()) return;
+            load.run();
+        };
+        root.postDelayed(pendingSwitchLoad, FeedListDrawer.SLIDE_DURATION_MS);
+    }
+
+    /**
+     * Shows another feed, folder or river in this story list instead of opening a new one. The
+     * tablet's feed list slide-over (FeedListDrawer.kt) hands its picks here, so the story list
+     * pane stays in place as the feed list slides away and only its stories change, the way the
+     * iPad reloads its story titles. [next] is the intent that would have opened the pick.
+     */
+    public void switchStoryList(Intent next) {
+        FeedSet nextFs = (FeedSet) next.getSerializableExtra(EXTRA_FEED_SET);
+        if (nextFs == null) return;
+        // The reader beside this list fades to the empty pane's look alongside the slide and parks,
+        // leaving the reading session, which switches to the pick, alone (Reading.park).
+        Reading splitReader = Reading.peekSplitReader(getTaskId());
+        if (splitReader != null && StorySplitView.isInSplit(this)) {
+            if (prefsRepo.isStoryListFullscreenEnabled()) {
+                splitReader.finish();
+            } else {
+                splitReader.fadeToPlaceholder(FeedListDrawer.SLIDE_DURATION_MS);
+                splitReader.park();
+            }
+        }
+        setIntent(next);
+        switchedStoryList = true;
+        if (storiesDeferred) showDeferredContent(true);
+        storiesDeferred = false;
+        fs = nextFs;
+        kind = StoryListKind.fromIntent(next, fs);
+        sessionDataKey = next.getStringExtra(EXTRA_SESSION_DATA_KEY);
+        SessionDataSourceRegistry.Entry sessionDataEntry = SessionDataSourceRegistry.get(sessionDataKey);
+        sessionDataSource = sessionDataEntry != null ? sessionDataEntry.getSessionDataSource() : null;
+        storyListSessionDataSource = sessionDataEntry != null ? sessionDataEntry.getStoryListSessionDataSource() : null;
+        if (isStorySearchVisible() || !TextUtils.isEmpty(binding.itemlistSearchQuery.getText())) {
+            hideStorySearch(true);
+        }
+        String folderName = next.getStringExtra(FolderItemsList.EXTRA_FOLDER_NAME);
+        LastStoryList.remember(this, this, fs, folderName);
+        kind.setupToolbar(this);
+        // A rotation replays the view model's last session into the kind, so keep it on this pick.
+        viewModel.updateSession(new Session(fs, folderName, (com.newsblur.domain.Feed) next.getSerializableExtra(FeedItemsList.EXTRA_FEED)));
+        itemSetFragment.resetEmptyState();
+        // Each feed set keeps its own list, grid or magazine style.
+        itemSetFragment.updateListStyle();
+        itemSetFragment.scrollToTop();
+        refreshStoryHeaderControls();
+        loadAfterFeedListSlide(() -> {
+            feedUtils.prepareReadingSession(fs, false);
+            triggerSync();
+            scheduleInitialFetchingBanner();
+            itemSetFragment.hasUpdated();
+            openLaunchStory();
+        });
+    }
+
     public void startReadingActivity(FeedSet feedSet, String storyHash) {
         launchReadingActivity(feedSet, storyHash);
     }
 
     public void animateBackToFeedListFromReading() {
+        // On a tablet the feed list slides over instead of this story list sliding away
+        // (FeedListDrawer.kt). In any other split this story list is one pane, so just close it
+        // and its reader.
+        if (slidesOverFeedDrawer()) {
+            FeedListDrawer.open(this);
+            return;
+        }
+        if (StorySplitView.isInSplit(this)) {
+            finish();
+            return;
+        }
         beginInteractiveStoryListSwipe();
         completeInteractiveStoryListSwipe();
     }
 
     @Nullable
-    public static ItemsList peekReadingLaunchParent() {
-        return readingLaunchParentRef.get();
+    public static ItemsList peekReadingLaunchParent(int taskId) {
+        WeakReference<ItemsList> parent = readingLaunchParents.get(taskId);
+        return parent != null ? parent.get() : null;
+    }
+
+    private void claimReadingLaunchParent() {
+        readingLaunchParents.put(getTaskId(), new WeakReference<>(this));
     }
 
     private void launchReadingActivity(FeedSet feedSet, String storyHash) {
         preparedReturnStoryHash = null;
-        readingLaunchParentRef = new WeakReference<>(this);
+        claimReadingLaunchParent();
+        // In a tablet split the reader already beside this list pages over to the tapped story,
+        // as the iPad does, instead of a new reader replacing it (Reading.kt).
+        Reading splitReader = Reading.peekSplitReader(getTaskId());
+        if (splitReader != null && StorySplitView.isInSplit(this) && splitReader.showStoryFromStoryList(feedSet, storyHash)) {
+            return;
+        }
         UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch, readerToolbarHidden);
     }
 
+    // On a tablet this story list is the task's root and the feed list slides over it
+    // (FeedListDrawer.kt), so going back to feeds opens that panel instead of finishing.
+    public boolean slidesOverFeedDrawer() {
+        return StorySplitView.slidesOverFeedDrawer(this);
+    }
+
+    /** Back, and the toolbar's back arrow, icon, and title (UIUtils.java), all leave through here. */
+    public void backToFeedList() {
+        if (slidesOverFeedDrawer()) {
+            if (FeedListDrawer.peek(getTaskId()) != null) moveTaskToBack(true);
+            else FeedListDrawer.open(this);
+        } else {
+            finish();
+        }
+    }
+
+    /**
+     * A deleted or missing feed leaves this story list with nothing to show. A phone finishes back
+     * to Main.java. A tablet's root story list has no feed list underneath, so All Site Stories
+     * takes its place with the feed list slid over it (FeedListDrawer.kt).
+     */
+    public void replaceWithFeedList() {
+        if (!slidesOverFeedDrawer()) {
+            finish();
+            return;
+        }
+        Intent allStories = new Intent(this, AllStoriesItemsList.class);
+        allStories.putExtra(EXTRA_FEED_SET, FeedSet.allFeeds());
+        allStories.putExtra(EXTRA_OPEN_FEED_DRAWER, true);
+        allStories.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(allStories);
+    }
+
+    /**
+     * Sync housekeeping cleans up the stories under this list (UPDATE_REBUILD). A phone finishes back
+     * to Main.java. A tablet's root story list reloads in place instead, because a replacement would
+     * close again while housekeeping runs, and slides the feed list over it as Main.java would show.
+     */
+    private void leaveForRebuild() {
+        if (!slidesOverFeedDrawer()) {
+            finish();
+            return;
+        }
+        feedDrawerPending = false;
+        rebuildHandled = true;
+        restartReadingSession();
+        FeedListDrawer.open(this);
+    }
+
     public void beginInteractiveStoryListSwipe() {
+        // The swipe back to feeds pulls the feed list over instead of sliding this list away.
+        if (slidesOverFeedDrawer()) {
+            return;
+        }
         prepareInteractiveSwipeUnderlay();
         View surface = getInteractiveSwipeSurface();
         surface.animate().cancel();
@@ -1182,24 +1520,35 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     public void updateInteractiveStoryListSwipe(float offsetPx) {
+        if (slidesOverFeedDrawer()) {
+            return;
+        }
         View surface = getInteractiveSwipeSurface();
         float clampedOffset = Math.max(0f, offsetPx);
         int width = surface.getWidth();
         if (width > 0) {
             clampedOffset = Math.min(clampedOffset, width);
         }
-        surface.setTranslationX(clampedOffset);
+        // The offset counts toward the end edge, so the list slides left in right-to-left layouts.
+        surface.setTranslationX(clampedOffset * UIUtils.towardEndSign(this));
         surface.setTranslationZ(clampedOffset > 0f ? UIUtils.dp2px(this, STORY_LIST_SWIPE_ELEVATION_DP) : 0f);
     }
 
     public void cancelInteractiveStoryListSwipe() {
+        if (slidesOverFeedDrawer()) {
+            return;
+        }
         animateInteractiveStoryListSwipe(0f, false);
     }
 
     public void completeInteractiveStoryListSwipe() {
+        if (slidesOverFeedDrawer()) {
+            backToFeedList();
+            return;
+        }
         View surface = getInteractiveSwipeSurface();
-        float targetTranslation = surface.getWidth() > 0 ? surface.getWidth() : getResources().getDisplayMetrics().widthPixels;
-        animateInteractiveStoryListSwipe(targetTranslation, true);
+        float slideDistance = surface.getWidth() > 0 ? surface.getWidth() : getResources().getDisplayMetrics().widthPixels;
+        animateInteractiveStoryListSwipe(slideDistance * UIUtils.towardEndSign(this), true);
     }
 
     protected boolean interceptBackPress(boolean isGestureNavigation) {
@@ -1210,10 +1559,27 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         return true;
     }
 
+    // A reader beside this list in a tablet split shows a story from the list's current reading
+    // session. Close it before the list switches or resets sessions (search, next feed, story
+    // order and read filter changes, retry), so the list and the reader never fight over the one
+    // shared session. StorySplitView.kt brings back the placeholder pane.
+    private void closeSplitReader() {
+        Reading reader = Reading.peekSplitReader(getTaskId());
+        if (reader != null && StorySplitView.isInSplit(this)) {
+            reader.finish();
+        }
+    }
+
     public void prepareReturnToStory(@Nullable String storyHash) {
         if (storyHash == null || storyHash.equals(preparedReturnStoryHash) || itemSetFragment == null) return;
         preparedReturnStoryHash = storyHash;
         itemSetFragment.prepareReturnToStory(storyHash);
+    }
+
+    public void followReadingStory(@Nullable String storyHash) {
+        if (storyHash == null || storyHash.equals(preparedReturnStoryHash) || itemSetFragment == null) return;
+        preparedReturnStoryHash = storyHash;
+        itemSetFragment.followReadingStory(storyHash);
     }
 
     private void handleReadingActivityResult(ActivityResult result) {
@@ -1225,6 +1591,16 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 Log.d(this.getClass().getName(), "Checking returned story position for " + lastReadingStoryHash);
                 itemSetFragment.scrollToStoryHashIfOffScreen(lastReadingStoryHash);
             }
+        }
+        if (slidesOverFeedDrawer()) {
+            // ItemsList.java returns to browsing after an article closes. A replacement reader
+            // or a feed already opening must not be displaced by this result callback.
+            binding.getRoot().postDelayed(() -> {
+                if (!isFinishing() && !isDestroyed() && !prefsRepo.isStoryListFullscreenEnabled()
+                        && Reading.peekReader(getTaskId()) == null && FeedListDrawer.peek(getTaskId()) == null) {
+                    FeedListDrawer.open(this, null, false);
+                }
+            }, FeedListDrawer.SLIDE_DURATION_MS);
         }
     }
 
@@ -1341,7 +1717,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             storyStatusBannerAnimator.cancel();
             storyStatusBannerAnimator = null;
         }
-        binding.itemlistStoryStatusBanner.animate().cancel();
+        // NbActivity.kt can finish for missing login credentials before ItemsList.java inflates its layout.
+        if (binding != null) {
+            binding.itemlistStoryStatusBanner.animate().cancel();
+        }
     }
 
     private void setupOnBackPressed() {
@@ -1351,7 +1730,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 predictiveBackInProgress = supportsPredictiveStoryListBack()
                         && isInteractiveStoryListBackEnabled()
                         && shouldHandlePredictiveBack()
-                        && backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT;
+                        && backEvent.getSwipeEdge() == storyListBackSwipeEdge();
                 if (predictiveBackInProgress) {
                     beginInteractiveStoryListSwipe();
                 }
@@ -1374,7 +1753,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             public void handleOnBackPressed() {
                 predictiveBackInProgress = false;
                 View surface = getInteractiveSwipeSurface();
-                boolean isGestureNavigation = surface.getTranslationX() > 0f;
+                boolean isGestureNavigation = surface.getTranslationX() != 0f;
                 if (interceptBackPress(isGestureNavigation)) {
                     if (isGestureNavigation) {
                         cancelInteractiveStoryListSwipe();
@@ -1384,10 +1763,15 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 if (isGestureNavigation) {
                     completeInteractiveStoryListSwipe();
                 } else {
-                    finish();
+                    backToFeedList();
                 }
             }
         });
+    }
+
+    // ItemsList.java follows the system back swipe from the start edge, the right edge in Arabic and Hebrew.
+    private int storyListBackSwipeEdge() {
+        return UIUtils.towardEndSign(this) < 0f ? BackEventCompat.EDGE_RIGHT : BackEventCompat.EDGE_LEFT;
     }
 
     private void animateInteractiveStoryListSwipe(float targetTranslationX, boolean finishWhenComplete) {
@@ -1415,7 +1799,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private boolean isInteractiveStoryListBackEnabled() {
-        return binding != null && !isTaskRoot() && !isFinishing();
+        // The swipe back draws a full screen feed list snapshot, which doesn't fit a split pane.
+        return binding != null && !isTaskRoot() && !isFinishing() && !StorySplitView.isInSplit(this);
     }
 
     @Override
@@ -1424,9 +1809,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             interactiveSwipeSurface.animate().cancel();
         }
         hideInteractiveSwipeUnderlay();
-        if (readingLaunchParentRef.get() == this) {
-            readingLaunchParentRef.clear();
-        }
+        // A finishing activity can already be out of its task, so match by list rather than task id.
+        readingLaunchParents.values().removeIf(parent -> parent.get() == null || parent.get() == this);
         if (!isChangingConfigurations()) {
             SessionDataSourceRegistry.remove(sessionDataKey);
         }
@@ -1514,6 +1898,28 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistStoryStatusSpinner.setIndicatorColor(textColor);
     }
 
+    @Override
+    protected boolean showsListenMiniPlayer() {
+        return true;
+    }
+
+    @Override
+    protected View listenMiniPlayerAnchor() {
+        // ItemsList.java's story toolbar floats at the bottom unless it was moved to the top in Settings.
+        return binding != null && storyToolbarAtBottom ? binding.itemlistStoryHeader : null;
+    }
+
+    @Override
+    protected boolean showsListenMiniPlayerInThisPane() {
+        return !(StorySplitView.isInSplit(this) && Reading.peekSplitReader(getTaskId()) != null);
+    }
+
+    @Override
+    protected void onListenMiniPlayerInsetChanged(int insetPx) {
+        // ItemsList.java pads the story list like Main.java pads the feed list, only while the mini player shows.
+        if (itemSetFragment != null) itemSetFragment.setListenMiniPlayerInset(insetPx);
+    }
+
     private static class StoryHeaderPalette {
         final int headerBackgroundColor;
         final int pillBackgroundColor;
@@ -1548,6 +1954,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         }
     }
 
-    abstract String getSaveSearchFeedId();
+    String getSaveSearchFeedId() {
+        return kind.saveSearchFeedId();
+    }
 
 }

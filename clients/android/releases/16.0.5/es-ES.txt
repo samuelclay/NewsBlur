@@ -1,0 +1,1 @@
+Corrige cierres inesperados en tabletas Samsung antiguas y otros dispositivos al abrir NewsBlur o volver a los feeds. También corrige fallos con artículos grandes, vistas previas de feeds, carpetas con un solo feed, widgets y recuentos de comentarios traducidos. Reduce bloqueos al iniciar, sincronizar y comprobar suscripciones.

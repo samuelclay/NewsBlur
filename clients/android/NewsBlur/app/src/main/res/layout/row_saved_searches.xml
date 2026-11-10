@@ -8,20 +8,22 @@
         android:id="@+id/row_folder_icon"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/ic_search" />
 
     <TextView
         android:id="@+id/row_foldername"
+        android:textDirection="firstStrong"
+        android:textAlignment="viewStart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/row_folder_icon"
-        android:layout_toLeftOf="@id/row_folder_indicator"
+        android:layout_toEndOf="@id/row_folder_icon"
+        android:layout_toStartOf="@id/row_folder_indicator"
         android:text="@string/saved_searches_title"
         android:letterSpacing="@dimen/extra_letter_spacing" />
 
@@ -29,11 +31,11 @@
         android:id="@+id/row_folder_indicator"
         android:layout_width="26dp"
         android:layout_height="22dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="4dp"
-        android:paddingLeft="6dp"
-        android:paddingRight="8dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="8dp"
         android:src="@drawable/ic_arrow_up" />
 
 </RelativeLayout>

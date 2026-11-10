@@ -228,6 +228,6 @@ data class Session(
     val feed: Feed? = null,
 ) : Serializable
 
-interface ReadingActionListener : Serializable {
+interface ReadingActionListener {
     fun onReadingActionCompleted()
 }

@@ -14,6 +14,7 @@ from django.contrib.sites.models import Site
 # from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.utils.translation import gettext
 from mongoengine.errors import ValidationError
 from oauth2client.client import FlowExchangeError, OAuth2WebServerFlow
 
@@ -108,7 +109,9 @@ def opml_export(request):
                 json.encode(
                     {
                         "code": 2,
-                        "message": "Your OPML export is being processed. You will receive an email shortly with your subscription backup.",
+                        "message": gettext(
+                            "Your OPML export is being processed. You will receive an email shortly with your subscription backup."
+                        ),
                     }
                 ),
                 content_type="application/json",

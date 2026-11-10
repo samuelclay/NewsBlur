@@ -1,4 +1,5 @@
 import UIKit
+import WebKit
 import XCTest
 
 @testable import NewsBlur
@@ -60,9 +61,68 @@ import XCTest
         }
     }
 
+    func test_horizontalPagingKeepsArticlePanDisabledUntilPagingFinishes() {
+        UserDefaults.standard.set(true, forKey: keys[1])
+        let (pages, _) = makeReaderWithArticles()
+        pages.scrollViewWillBeginDragging(pages.scrollView)
+        for page in [pages.currentPage!, pages.nextPage!, pages.previousPage!] {
+            XCTAssertFalse(page.webView.scrollView.isScrollEnabled)
+            XCTAssertFalse(page.webView.scrollView.panGestureRecognizer.isEnabled,
+                           "A disabled article must not compete with the active horizontal page gesture")
+        }
+        pages.scrollViewDidEndDecelerating(pages.scrollView)
+        XCTAssertFalse(pages.isDraggingScrollview)
+        XCTAssertTrue(pages.currentPage.webView.scrollView.isScrollEnabled)
+        XCTAssertTrue(pages.currentPage.webView.scrollView.panGestureRecognizer.isEnabled)
+    }
+
+    func test_changingOrientationAfterInterruptedPagingRestoresArticleScrolling() {
+        UserDefaults.standard.set(true, forKey: keys[1])
+        let (pages, _) = makeReaderWithArticles()
+        pages.scrollViewWillBeginDragging(pages.scrollView)
+        UserDefaults.standard.set(false, forKey: keys[1])
+        pages.changedScrollOrientation()
+        XCTAssertFalse(pages.isDraggingScrollview)
+        for page in [pages.currentPage!, pages.nextPage!, pages.previousPage!] {
+            XCTAssertTrue(page.webView.scrollView.isScrollEnabled)
+        }
+    }
+
+    func test_articleScrollRestorationDoesNotInterruptHorizontalPaging() {
+        UserDefaults.standard.set(true, forKey: keys[1])
+        let (pages, _) = makeReaderWithArticles()
+        pages.scrollViewWillBeginDragging(pages.scrollView)
+        for page in [pages.currentPage!, pages.nextPage!, pages.previousPage!] {
+            page.perform(NSSelectorFromString("deferredEnableScrolling"))
+            XCTAssertFalse(page.webView.scrollView.isScrollEnabled,
+                           "Article readiness and double-tap callbacks must respect active paging")
+        }
+        pages.scrollViewDidEndDragging(pages.scrollView, willDecelerate: true)
+        pages.currentPage.perform(NSSelectorFromString("deferredEnableScrolling"))
+        XCTAssertFalse(pages.currentPage.webView.scrollView.isScrollEnabled)
+        pages.scrollViewDidEndDecelerating(pages.scrollView)
+        XCTAssertTrue(pages.currentPage.webView.scrollView.isScrollEnabled)
+    }
+
+    private func makeReaderWithArticles() -> (ReaderPopGesturePages, UINavigationController) {
+        let (pages, navigation) = makeReader()
+        let articles = (0..<3).map { _ -> StoryDetailViewController in
+            let page = ReaderScrollArticle()
+            page.appDelegate = pages.appDelegate
+            page.webView = WKWebView(frame: pages.view.bounds)
+            return page
+        }
+        pages.currentPage = articles[0]
+        pages.nextPage = articles[1]
+        pages.previousPage = articles[2]
+        return (pages, navigation)
+    }
+
     private func makeReader() -> (ReaderPopGesturePages, UINavigationController) {
         let pages = ReaderPopGesturePages()
-        pages.appDelegate = ReaderPopGestureAppDelegate()
+        let app = ReaderPopGestureAppDelegate()
+        app.reader = pages
+        pages.appDelegate = app
         pages.loadViewIfNeeded()
         pages.scrollView = UIScrollView(frame: pages.view.bounds)
         pages.view.addSubview(pages.scrollView)
@@ -82,7 +142,7 @@ import XCTest
     }
 }
 
-@MainActor private final class ReaderPopGesturePages: StoryPagesObjCViewController {
+@MainActor private final class ReaderPopGesturePages: StoryPagesViewController {
     // StoryReaderPopGestureTests.swift exercises real appearance and gesture setup without loading article content.
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 375, height: 667)) }
     override func viewDidLoad() {}
@@ -90,9 +150,21 @@ import XCTest
     override func viewWillLayoutSubviews() {}
     override func viewDidLayoutSubviews() {}
     override func reorientPages() {}
+    override func setStoryFromScroll() {}
+}
+
+@MainActor private final class ReaderScrollArticle: StoryDetailViewController {
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+    deinit {
+        // StoryReaderPopGestureTests.swift creates the web view without the production KVO observer.
+        webView = nil
+    }
 }
 
 private final class ReaderPopGestureAppDelegate: NewsBlurAppDelegate {
+    weak var reader: StoryPagesViewController?
+    override var storyPagesViewController: StoryPagesViewController! { reader }
     override var isCompactWidth: Bool { true }
     override func adjustStoryDetailWebView() {}
 }

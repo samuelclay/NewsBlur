@@ -5,9 +5,11 @@
 # on SSH add-on startup via init_commands in the add-on config.
 #
 # Cron entry (daily 6 AM):
-#   0 6 * * * /config/scripts/mount_backup_drive.sh && \
-#     /config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup_run.log 2>&1; \
-#     /config/scripts/unmount_backup_drive.sh >> /media/newsblur-backup/backup_run.log 2>&1
+#   0 6 * * * /config/scripts/run_offsite_backup.sh > /dev/null \
+#     2>> /config/scripts/offsite_backup_runs.log
+# run_offsite_backup.sh mounts the drive, runs offsite_pull.sh (output to
+# /media/newsblur-backup/backup_run.log), then unmounts and powers it off.
+# Its own mount/unmount log is /config/scripts/offsite_backup_runs.log.
 #
 # SSH add-on config (/data/options.json):
 #   "init_commands": ["/config/scripts/setup_cron.sh"]
