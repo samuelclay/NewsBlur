@@ -29,11 +29,11 @@ from utils.redlisten_poller import (
     RedListenPoller,
     allocate,
     build_batches,
-    utc_timestamp,
+    epoch_seconds,
 )
 
 NOW = datetime.datetime(2026, 11, 10, 12, 0, 0)
-NOW_TS = utc_timestamp(NOW)
+NOW_TS = epoch_seconds(NOW)
 
 # A small plan so the 99% line is easy to hit: 99 requests and 990 results in the background.
 SMALL_PLAN = dict(
@@ -95,8 +95,9 @@ class Test_RedListenBudget(SimpleTestCase):
         self.assertFalse(self.budget.reserve(ONE_OFF, 0))
 
     def test_settle_replaces_the_estimate_and_adopts_redlistens_counters(self):
-        self.assertTrue(self.budget.reserve(POLLER, 25))
-        self.budget.settle(POLLER, 25, 7, {})
+        month = self.budget.reserve(POLLER, 25)
+        self.assertEqual(month, "202611")
+        self.budget.settle(POLLER, month, 25, 7, {})
         self.assertEqual(self.budget.usage()["results"], 7)
         self.assertEqual(self.budget.spend()["poller_results"], 7)
 
@@ -107,19 +108,48 @@ class Test_RedListenBudget(SimpleTestCase):
             "x-quota-limit": "50000",
             "x-items-limit": "1000000",
         }
-        self.budget.settle(POLLER, 7, 7, headers)
+        self.budget.settle(POLLER, month, 7, 7, headers)
         usage = self.budget.usage()
         self.assertEqual((usage["requests"], usage["results"]), (41, 507))
         self.assertEqual((usage["request_limit"], usage["result_limit"]), (50000, 1000000))
 
         # Counters that trail ours never pull usage back down.
-        self.budget.settle(POLLER, 0, 0, {"x-quota-used": "3", "x-items-used": "10"})
+        self.budget.settle(POLLER, month, 0, 0, {"x-quota-used": "3", "x-items-used": "10"})
         self.assertEqual(self.budget.usage()["results"], 507)
 
     def test_unlimited_headers_keep_the_configured_limits(self):
-        self.budget.settle(POLLER, 0, 0, {"x-quota-limit": "unlimited", "x-items-limit": "unlimited"})
+        self.budget.settle(
+            POLLER, "202611", 0, 0, {"x-quota-limit": "unlimited", "x-items-limit": "unlimited"}
+        )
         usage = self.budget.usage()
         self.assertEqual((usage["request_limit"], usage["result_limit"]), (100, 1000))
+
+    def test_redlistens_counters_count_toward_the_cap(self):
+        # Another key on the account spent 985 results; our own reservations are 0.
+        self.r.zadd(self.budget.observed_key(), {"results": 985})
+        self.assertIsNone(self.budget.reserve(POLLER, 10))
+        self.assertTrue(self.budget.reserve(POLLER, 5))
+
+    def test_a_stale_header_never_undoes_reservations_or_newer_counters(self):
+        month = self.budget.reserve(POLLER, 10)
+        self.budget.reserve(POLLER, 10)
+        # A worker reports counters from before both reservations, then an older one.
+        self.budget.sync_headers({"x-quota-used": "500", "x-items-used": "600"}, 0, month)
+        self.budget.sync_headers({"x-quota-used": "0", "x-items-used": "0"}, 0, month)
+        usage = self.budget.usage()
+        self.assertEqual((usage["requests"], usage["results"]), (501, 600))
+        self.assertEqual(self.r.hgetall(self.budget.usage_key())["requests"], "2")
+
+    def test_a_request_crossing_midnight_settles_in_the_month_it_started(self):
+        self.budget.fixed_now = datetime.datetime(2026, 11, 30, 23, 59, 59)
+        month = self.budget.reserve(POLLER, 25)
+        self.budget.fixed_now = datetime.datetime(2026, 12, 1, 0, 0, 5)
+        self.budget.settle(POLLER, month, 25, 3, {"x-quota-used": "49000", "x-items-used": "989000"})
+
+        december = self.budget.usage()
+        self.assertEqual((december["requests"], december["results"]), (0, 0))
+        november = self.budget.usage("202611")
+        self.assertEqual((november["requests"], november["results"]), (49001, 989003))
 
     def test_exhausted_quota_stops_everyone(self):
         self.budget.mark_exhausted("items_quota_exceeded")
@@ -261,6 +291,7 @@ class Test_BuildBatches(SimpleTestCase):
         path, params = batch.request(10, after="t3_x")
         self.assertEqual(path, "/search.json")
         self.assertEqual(params["q"], "author:alice OR author:bob")
+        self.assertEqual(params["sort"], "new")
         self.assertEqual(params["after"], "t3_x")
 
 
@@ -364,6 +395,16 @@ class Test_RedListenPoller(SimpleTestCase):
         self.assertIn("r:python", self.r.hgetall(STATS_KEY))
         self.assertEqual(json.loads(self.r.get(LAST_POLL_KEY))["polled_batches"], 1)
         self.assertIsNone(self.r.get("redlisten:poll_lock"))
+
+    def test_a_poll_that_outlived_its_lock_leaves_the_next_polls_lock(self, _sleep):
+        poller, _ = self.poller([])
+
+        def next_poll_takes_the_lock():
+            self.r.set("redlisten:poll_lock", "next-poll")
+
+        with patch.object(RedListenPoller, "run", side_effect=next_poll_takes_the_lock):
+            poller.poll()
+        self.assertEqual(self.r.get("redlisten:poll_lock"), "next-poll")
 
     def test_no_poll_in_development_or_while_another_runs(self, _sleep):
         poller, client = self.poller([])

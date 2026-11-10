@@ -71,9 +71,11 @@ class FakeRedis:
         hash_ = self.data.get(key) or {}
         return sum(1 for field in fields if hash_.pop(field, None) is not None)
 
-    def zadd(self, key, mapping):
+    def zadd(self, key, mapping, gt=False):
         zset = self.data.setdefault(key, {})
         for member, score in mapping.items():
+            if gt and str(member) in zset and float(score) <= zset[str(member)]:
+                continue
             zset[str(member)] = float(score)
         return len(mapping)
 

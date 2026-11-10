@@ -18,8 +18,9 @@ month rolls over. So every call goes through RedListenBudget:
 
 Usage lives in Redis (settings.REDIS_FEED_UPDATE_POOL) so every web and task server
 shares it. A request reserves one request and the most results it can return before
-it is sent, then trues up against what came back and against the x-quota-used and
-x-items-used headers, which count every key on the RedListen account. Running out
+it is sent, then trues up against what came back. RedListen's x-quota-used and
+x-items-used headers, which count every key on the account, are kept alongside as the
+highest values seen, and usage is whichever is higher. Running out
 of budget is expected backpressure, so it is reported on the result, never raised.
 See utils/redlisten.py.
 """
@@ -43,7 +44,8 @@ SPEND_KINDS = (POLLER, SCHEDULED, ONE_OFF)
 BACKGROUND_KINDS = (POLLER, SCHEDULED)
 
 # Redis keys (settings.REDIS_FEED_UPDATE_POOL, db 4).
-USAGE_KEY = "redlisten:usage:%s"  # hash per UTC month (YYYYMM): requests, items, request_limit, item_limit
+USAGE_KEY = "redlisten:usage:%s"  # hash per UTC month (YYYYMM): our reservations, and the plan limits
+OBSERVED_KEY = "redlisten:observed:%s"  # sorted set per UTC month: RedListen's own counters, highest seen
 SPEND_KEY = "redlisten:spend:%s"  # hash per UTC day (YYYYMMDD): <kind>_requests, <kind>_items
 RATE_LIMIT_KEY = "redlisten:ratelimit"  # fixed one-minute window shared by every server
 USAGE_TTL = 60 * 60 * 24 * 40
@@ -126,22 +128,36 @@ class RedListenBudget:
     def now(self):
         return self.fixed_now or utcnow()
 
-    def usage_key(self):
-        return USAGE_KEY % self.now().strftime("%Y%m")
+    def month(self):
+        """The UTC billing month (YYYYMM) a request starting now is billed to."""
+        return self.now().strftime("%Y%m")
+
+    def usage_key(self, month=None):
+        return USAGE_KEY % (month or self.month())
+
+    def observed_key(self, month=None):
+        return OBSERVED_KEY % (month or self.month())
 
     def spend_key(self, day=None):
         return SPEND_KEY % (day or self.now()).strftime("%Y%m%d")
 
-    def usage(self):
-        """This month's usage and limits. Limits come from RedListen's own headers once
-        a response has carried them, so a plan change applies without a deploy."""
-        data = self.r.hgetall(self.usage_key()) or {}
+    def usage(self, month=None):
+        """A month's usage and limits. Usage is the higher of our own reservations and
+        RedListen's account-wide counters. Limits come from RedListen's headers once a
+        response has carried them, so a plan change applies without a deploy."""
+        data = self.r.hgetall(self.usage_key(month)) or {}
+        observed = self.observed(month)
         return {
-            "requests": int(data.get("requests") or 0),
-            "results": int(data.get("results") or 0),
+            "requests": max(int(data.get("requests") or 0), observed["requests"]),
+            "results": max(int(data.get("results") or 0), observed["results"]),
             "request_limit": int(data.get("request_limit") or settings.REDLISTEN_MONTHLY_REQUESTS),
             "result_limit": int(data.get("result_limit") or settings.REDLISTEN_MONTHLY_RESULTS),
         }
+
+    def observed(self, month=None):
+        """RedListen's own counters, as the highest values its headers have reported."""
+        key = self.observed_key(month)
+        return {field: int(self.r.zscore(key, field) or 0) for field in ("requests", "results")}
 
     def caps(self, kind, usage=None):
         """(request cap, result cap) this kind of spending may reach this month."""
@@ -161,68 +177,81 @@ class RedListenBudget:
         return not settings.DEBUG or getattr(settings, "REDLISTEN_BACKGROUND_IN_DEBUG", False)
 
     def reserve(self, kind, results):
-        """Claim one request and up to `results` results. Returns False, claiming
-        nothing, when that would cross this kind's cap."""
+        """Claim one request and up to `results` results. Returns the billing month the
+        claim was made in, which settle() and mark_exhausted() take back so a request that
+        finishes after midnight on the 1st is still counted in the month it started. Returns
+        None, claiming nothing, when the claim would cross this kind's cap."""
         if kind in BACKGROUND_KINDS and not self.background_allowed():
-            return False
-        key = self.usage_key()
+            return None
+        month = self.month()
+        key = self.usage_key(month)
         pipe = self.r.pipeline()
         pipe.hincrby(key, "requests", 1)
         pipe.hincrby(key, "results", results)
         pipe.expire(key, USAGE_TTL)
         requests_used, results_used, _ = pipe.execute()
 
-        usage = self.usage()
+        # RedListen's counters predate this claim, so it goes on top of them too.
+        usage = self.usage(month)
+        observed = self.observed(month)
         request_cap, result_cap = self.caps(kind, usage)
-        if requests_used > request_cap or results_used > result_cap:
+        over_requests = max(requests_used, observed["requests"] + 1) > request_cap
+        over_results = max(results_used, observed["results"] + results) > result_cap
+        if over_requests or over_results:
             pipe = self.r.pipeline()
             pipe.hincrby(key, "requests", -1)
             pipe.hincrby(key, "results", -results)
             pipe.execute()
-            return False
+            return None
 
         self.record_spend(kind, 1, results)
-        return True
+        return month
 
-    def settle(self, kind, reserved_results, returned_results, headers):
+    def settle(self, kind, month, reserved_results, returned_results, headers):
         """Replace a reservation's result estimate with what actually came back, then
-        catch up with RedListen's account-wide counters."""
+        catch up with RedListen's account-wide counters, all in the reservation's month."""
         correction = returned_results - reserved_results
         if correction:
-            self.r.hincrby(self.usage_key(), "results", correction)
+            self.r.hincrby(self.usage_key(month), "results", correction)
             self.record_spend(kind, 0, correction)
-        self.sync_headers(headers, returned_results)
+        self.sync_headers(headers, returned_results, month)
 
-    def sync_headers(self, headers, returned_results):
-        """Adopt RedListen's counters when they are ahead of ours (other keys on the
-        account, or requests we never saw). The headers report usage from before the
-        request they arrive on, so that request is added back in."""
-        key = self.usage_key()
-        current = self.usage()
-        updates = {}
+    def sync_headers(self, headers, returned_results, month):
+        """Record RedListen's counters when they are ahead (other keys on the account, or
+        requests we never saw). The headers report usage from before the request they
+        arrive on, so that request is added back in. ZADD GT keeps the highest value any
+        worker has seen without a read-then-write race, and never touches our own
+        reservations."""
+        observed = {}
         quota_used = int_header(headers, "x-quota-used")
-        if quota_used is not None and quota_used + 1 > current["requests"]:
-            updates["requests"] = quota_used + 1
+        if quota_used is not None:
+            observed["requests"] = quota_used + 1
         items_used = int_header(headers, "x-items-used")
-        if items_used is not None and items_used + returned_results > current["results"]:
-            updates["results"] = items_used + returned_results
+        if items_used is not None:
+            observed["results"] = items_used + returned_results
+        if observed:
+            self.r.zadd(self.observed_key(month), observed, gt=True)
+            self.r.expire(self.observed_key(month), USAGE_TTL)
+
+        limits = {}
         quota_limit = int_header(headers, "x-quota-limit")
         if quota_limit:
-            updates["request_limit"] = quota_limit
+            limits["request_limit"] = quota_limit
         items_limit = int_header(headers, "x-items-limit")
         if items_limit:
-            updates["result_limit"] = items_limit
-        if updates:
-            self.r.hset(key, mapping=updates)
-            self.r.expire(key, USAGE_TTL)
+            limits["result_limit"] = items_limit
+        if limits:
+            self.r.hset(self.usage_key(month), mapping=limits)
+            self.r.expire(self.usage_key(month), USAGE_TTL)
 
-    def mark_exhausted(self, error_code):
+    def mark_exhausted(self, error_code, month=None):
         """RedListen says a quota is gone; stop spending until the month rolls over."""
-        usage = self.usage()
+        usage = self.usage(month)
         if error_code == "quota_exceeded":
-            self.r.hset(self.usage_key(), "requests", usage["request_limit"])
+            self.r.zadd(self.observed_key(month), {"requests": usage["request_limit"]}, gt=True)
         elif error_code == "items_quota_exceeded":
-            self.r.hset(self.usage_key(), "results", usage["result_limit"])
+            self.r.zadd(self.observed_key(month), {"results": usage["result_limit"]}, gt=True)
+        self.r.expire(self.observed_key(month), USAGE_TTL)
 
     def record_spend(self, kind, requests_spent, results_spent):
         key = self.spend_key()
@@ -283,7 +312,8 @@ class RedListenClient:
             return RedListenResult(denied=DENIED_NOT_CONFIGURED)
         if not self.budget.reserve_minute_slot():
             return RedListenResult(denied=DENIED_RATE_LIMIT)
-        if not self.budget.reserve(kind, max_results):
+        month = self.budget.reserve(kind, max_results)
+        if not month:
             return RedListenResult(denied=DENIED_BUDGET)
 
         headers = {"Authorization": "Bearer %s" % api_key, "User-Agent": USER_AGENT}
@@ -291,7 +321,7 @@ class RedListenClient:
             response = requests.get(BASE_URL + path, params=params, headers=headers, timeout=timeout)
         except requests.RequestException as e:
             # Nothing came back, so nothing was returned to bill; keep the request counted.
-            self.budget.settle(kind, max_results, 0, {})
+            self.budget.settle(kind, month, max_results, 0, {})
             logging.debug("   ***> ~FRRedListen request failed: %s: %s" % (path[:120], e))
             return RedListenResult()
 
@@ -307,9 +337,9 @@ class RedListenClient:
             error_code = (body.get("error") or {}).get("code")
 
         results = count_results(payload)
-        self.budget.settle(kind, max_results, results, response.headers)
+        self.budget.settle(kind, month, max_results, results, response.headers)
         if response.status_code == 429 and error_code in ("quota_exceeded", "items_quota_exceeded"):
-            self.budget.mark_exhausted(error_code)
+            self.budget.mark_exhausted(error_code, month)
         if response.status_code != 200:
             logging.debug(
                 "   ***> ~FRRedListen HTTP %s%s: %s"

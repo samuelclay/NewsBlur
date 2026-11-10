@@ -1878,6 +1878,10 @@ class Feed(models.Model):
             "timeout": 10,
             "single_threaded": kwargs.get("single_threaded", True),
             "force": kwargs.get("force"),
+            # Who asked: utils/feed_fetcher.py also forces a random 1% of scheduled fetches,
+            # and Reddit feeds only spend RedListen's reserved one-off budget on fetches a
+            # reader asked for (utils/reddit_fetcher.py).
+            "reader_requested": kwargs.get("reader_requested", bool(kwargs.get("force"))),
             "force_fp": kwargs.get("force_fp"),
             "compute_scores": kwargs.get("compute_scores", True),
             "mongodb_replication_lag": kwargs.get("mongodb_replication_lag", None),

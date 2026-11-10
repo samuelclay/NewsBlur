@@ -33,10 +33,12 @@ unless settings.REDLISTEN_BACKGROUND_IN_DEBUG is on, since every key on the acco
 spends the production quota. See utils/redlisten_poller.py.
 """
 
+import calendar
 import datetime
 import json
 import math
 import time
+import uuid
 
 import redis
 from django.conf import settings
@@ -90,8 +92,14 @@ MAX_AUTHOR_QUERY_CHARS = 3000
 REQUEST_SPACING_SECONDS = 0.7
 
 
-def utc_timestamp(when):
-    """Seconds since the epoch the way the feed scheduler counts them (apps/rss_feeds/tasks.py)."""
+def epoch_seconds(when):
+    """A naive UTC datetime as true epoch seconds, comparable with Reddit's created_utc."""
+    return calendar.timegm(when.utctimetuple())
+
+
+def scheduler_timestamp(when):
+    """Seconds since the epoch the way the feed scheduler counts them for scheduled_updates
+    (apps/rss_feeds/tasks.py TaskFeeds), which must match it to the second."""
     return int(when.strftime("%s"))
 
 
@@ -214,6 +222,8 @@ class PollBatch:
         if self.is_user:
             params["q"] = " OR ".join("author:%s" % target.name for target in self.targets)
             params["type"] = "link"
+            # Paging and rate learning need newest first; Reddit's search defaults to relevance.
+            params["sort"] = "new"
             return "/search.json", params
         return "/r/%s/new.json" % "+".join(target.name for target in self.targets), params
 
@@ -251,7 +261,8 @@ class RedListenPoller:
         self.client = client or RedListenClient(budget=self.budget)
         self.cache = cache or RedditPostCache(r=self.r)
         self.now = now or datetime.datetime.utcnow()
-        self.now_ts = utc_timestamp(self.now)
+        self.now_ts = epoch_seconds(self.now)
+        self.lock_token = uuid.uuid4().hex
         self.spent_requests = 0
         self.spent_results = 0
         self.feeds_to_schedule = set()
@@ -304,13 +315,16 @@ class RedListenPoller:
         if not self.budget.background_allowed():
             logging.debug(" ---> ~FYRedListen poll skipped in development (REDLISTEN_BACKGROUND_IN_DEBUG)")
             return None
-        if not self.r.set(POLL_LOCK_KEY, self.now_ts, nx=True, ex=CYCLE_SECONDS - 5 * 60):
+        if not self.r.set(POLL_LOCK_KEY, self.lock_token, nx=True, ex=CYCLE_SECONDS - 5 * 60):
             logging.debug(" ---> ~FYRedListen poll skipped: the previous poll is still running")
             return None
         try:
             return self.run()
         finally:
-            self.r.delete(POLL_LOCK_KEY)
+            # Only release our own lock: if this poll outlived the lock's expiry, the next
+            # poll may hold it now.
+            if self.r.get(POLL_LOCK_KEY) == self.lock_token:
+                self.r.delete(POLL_LOCK_KEY)
 
     def run(self):
         started = time.time()
@@ -444,7 +458,6 @@ class RedListenPoller:
         """Queue every feed whose targets gained a post, the way
         Feed.schedule_feed_fetch_immediately does (apps/rss_feeds/models.py)."""
         feed_ids = list(self.feeds_to_schedule)
+        now = scheduler_timestamp(self.now)
         for start in range(0, len(feed_ids), 1000):
-            self.r.zadd(
-                "scheduled_updates", {feed_id: self.now_ts for feed_id in feed_ids[start : start + 1000]}
-            )
+            self.r.zadd("scheduled_updates", {feed_id: now for feed_id in feed_ids[start : start + 1000]})

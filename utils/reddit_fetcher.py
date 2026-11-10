@@ -7,8 +7,9 @@ the normal feedparser pipeline ingests, and each kind of feed spends differently
 
   * Subreddit, multireddit and user feeds read the posts the hourly poller
     (utils/redlisten_poller.py) cached in utils/reddit_post_cache.py, so a scheduled
-    fetch spends nothing. A fetch a reader asked for (force: insta-fetch, refresh,
-    retry) or a brand-new feed's first fetch asks RedListen directly as a one-off.
+    fetch spends nothing. A fetch a reader asked for (insta-fetch, refresh, retry:
+    options["reader_requested"], set by Feed.update in apps/rss_feeds/models.py) or a
+    brand-new feed's first fetch asks RedListen directly as a one-off.
   * Comment-thread feeds (/comments/<id>/) and search feeds (/search?q=) cannot be
     batched, so each fetch is its own request, sized by how many new items the feed's
     last fetch found. The scheduler fetches them at most every 12 hours
@@ -36,9 +37,9 @@ from django.utils import feedgenerator
 
 from utils import log as logging
 from utils.reddit_post_cache import RedditPostCache, subreddit_target, user_target
-from utils.redlisten import ONE_OFF, SCHEDULED, RedListenClient
+from utils.redlisten import DENIED_BUDGET, ONE_OFF, SCHEDULED, RedListenClient
 
-# How many posts a feed shows per fetch, matching the size of Reddit's default .rss page.
+# How many posts a one-off live listing fetch asks for, the size of Reddit's .rss page.
 LISTING_LIMIT = 25
 
 # Matches the Reddit addresses utils/feed_fetcher.py routes here. Also used as a Postgres
@@ -118,7 +119,10 @@ def scrub_control_chars(value):
 
 
 MARKDOWN_LINK_RE = re.compile(r"\[([^\]\n]+)\]\((https?://[^\s)]+)\)")
-BARE_URL_RE = re.compile(r"(?<![\"'=])\b(https?://[^\s<]+[^\s<.,;:!?)\]'\"])")
+BARE_URL_RE = re.compile(r"\bhttps?://[^\s<]+")
+# Where a bare URL ends: at an escaped quote or angle bracket, and before trailing punctuation.
+URL_STOPS = ("&quot;", "&#x27;", "&lt;", "&gt;")
+URL_TRAILING_PUNCTUATION = ".,;:!?)]"
 LIST_ITEM_RE = re.compile(r"^\s*([*+-]|\d+[.)])\s+")
 HEADING_RE = re.compile(r"^#{1,6}\s+")
 
@@ -131,9 +135,18 @@ def markdown_inline(text):
         placeholders.append(markup)
         return "\x00%s\x00" % (len(placeholders) - 1)
 
+    def bare_link(match):
+        url = match.group(0)
+        for stop in URL_STOPS:
+            url = url.split(stop)[0]
+        url = url.rstrip(URL_TRAILING_PUNCTUATION)
+        if not url:
+            return match.group(0)
+        return hold('<a href="%s">%s</a>' % (url, url)) + match.group(0)[len(url) :]
+
     text = re.sub(r"`([^`\n]+)`", lambda m: hold("<code>%s</code>" % m.group(1)), text)
     text = MARKDOWN_LINK_RE.sub(lambda m: hold('<a href="%s">%s</a>' % (m.group(2), m.group(1))), text)
-    text = BARE_URL_RE.sub(lambda m: hold('<a href="%s">%s</a>' % (m.group(1), m.group(1))), text)
+    text = BARE_URL_RE.sub(bare_link, text)
     text = re.sub(r"\*\*(?=\S)(.+?)(?<=\S)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"(?<![\w*])\*(?=\S)(.+?)(?<=\S)\*(?![\w*])", r"<em>\1</em>", text)
     text = re.sub(r"~~(?=\S)(.+?)(?<=\S)~~", r"<del>\1</del>", text)
@@ -146,12 +159,12 @@ def markdown_to_html(text):
     RedListen sends Reddit text as markdown only (selftext_html and body_html are
     null), and no markdown library ships in the image, so this covers what Reddit
     posts lean on: paragraphs, line breaks, links, emphasis, code, quotes, lists and
-    headings. The text is escaped first, so no markup from the post itself survives.
-    See utils/reddit_fetcher.py.
+    headings. The text is escaped first, quotes included, so no markup from the post
+    survives and a quote in a link cannot leave its href. See utils/reddit_fetcher.py.
     """
     if not text:
         return ""
-    escaped = html.escape(html.unescape(text), quote=False)
+    escaped = html.escape(html.unescape(text), quote=True)
     escaped = escaped.replace("\r\n", "\n").replace("&amp;#x200B;", "").replace("&#x200B;", "")
     blocks = []
     for block in re.split(r"\n[ \t]*\n", escaped.strip()):
@@ -290,15 +303,24 @@ class RedditFetcher:
         listing_path, _, _ = self.extract_listing_request()
         return listing_targets(listing_path)
 
+    def reader_requested(self):
+        """True for a fetch a reader asked for (insta-fetch, refresh, retry). Not the
+        same as options["force"], which utils/feed_fetcher.py also sets on a random 1% of
+        scheduled fetches; Feed.update records the caller's intent before that."""
+        return bool(self.options.get("reader_requested"))
+
     def spend_kind(self):
-        """A fetch a reader asked for (force) may spend the reserved last 1%."""
-        return ONE_OFF if self.options.get("force") else SCHEDULED
+        """A fetch a reader asked for may spend the reserved last 1%."""
+        return ONE_OFF if self.reader_requested() else SCHEDULED
 
     def note_failure(self, result):
         """Carry a failed RedListen call into the flags utils/feed_fetcher.py reads."""
         if result.throttled:
             self.rate_limited = True
-            if result.denied == "budget" or result.error_code in ("quota_exceeded", "items_quota_exceeded"):
+            if result.denied == DENIED_BUDGET or result.error_code in (
+                "quota_exceeded",
+                "items_quota_exceeded",
+            ):
                 self.error_message = "Monthly Reddit budget reached"
         elif result.status and result.status != 200:
             self.http_error_status = result.status
@@ -533,7 +555,8 @@ class RedditFetcher:
     def fetch_search_feed(self, path, q, time_filter):
         """Fetch the newest posts matching a Reddit search as an Atom feed string."""
         limit = self.single_feed_limit()
-        params = {"q": q, "type": "link", "limit": limit}
+        # Reddit's search sorts by relevance by default; a feed wants the newest.
+        params = {"q": q, "type": "link", "sort": "new", "limit": limit}
         if time_filter:
             params["t"] = time_filter
         result = RedListenClient().get(path, params=params, kind=self.spend_kind(), max_results=limit)
@@ -557,18 +580,19 @@ class RedditFetcher:
     def fetch_listing_feed(self, listing_path):
         """Render a subreddit, multireddit or user feed from the poller's cache.
 
-        A fetch a reader asked for (force), or the first fetch of a feed the poller has
-        not reached yet, asks RedListen directly as a one-off first. If that fails, the
-        cache still serves whatever it has. See utils/reddit_post_cache.py.
+        Every post the cache retains is rendered, so a busy subreddit's whole hourly batch
+        reaches the feed. A fetch a reader asked for, or the first fetch of a feed the
+        poller has not reached yet, asks RedListen directly as a one-off first. If that
+        fails, the cache still serves whatever it has. See utils/reddit_post_cache.py.
         """
         targets = listing_targets(listing_path)
         cache = RedditPostCache()
         first_fetch = not getattr(self.feed, "fetched_once", True) and not cache.has_any(targets)
         live_failed = False
-        if self.options.get("force") or first_fetch:
+        if self.reader_requested() or first_fetch:
             live_failed = not self.fetch_live_listing(listing_path, targets, cache)
 
-        posts = cache.posts(targets, limit=LISTING_LIMIT)
+        posts = cache.posts(targets)
         if live_failed and not posts:
             return None
         # Served from the cache after all, so a failed live call is not this fetch's result.
@@ -881,7 +905,7 @@ class RedditFetcher:
         """How many items to ask for: every item returned is billed, so a thread that
         has gone quiet asks for a few and a busy one asks for more. A fetch a reader
         asked for always takes the full page."""
-        if self.options.get("force"):
+        if self.reader_requested():
             return SINGLE_FEED_MAX_LIMIT
         return self.single_feed_state().get("limit") or SINGLE_FEED_FIRST_LIMIT
 

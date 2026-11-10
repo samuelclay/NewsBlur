@@ -22945,7 +22945,7 @@
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "100 * redlisten{metric=\"results_used\"} / redlisten{metric=\"results_limit\"}",
+     "expr": "100 * redlisten{metric=\"results_used\"} / ignoring(metric) redlisten{metric=\"results_limit\"}",
      "legendFormat": "results",
      "refId": "A",
      "interval": "5m"
@@ -22955,7 +22955,7 @@
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "100 * redlisten{metric=\"requests_used\"} / redlisten{metric=\"requests_limit\"}",
+     "expr": "100 * redlisten{metric=\"requests_used\"} / ignoring(metric) redlisten{metric=\"requests_limit\"}",
      "legendFormat": "requests",
      "refId": "B",
      "interval": "5m"

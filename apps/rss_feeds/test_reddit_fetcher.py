@@ -7,6 +7,7 @@ RSS path patches requests. See utils/reddit_fetcher.py.
 
 import datetime
 import json
+import time
 from unittest.mock import MagicMock, patch
 
 import feedparser
@@ -302,8 +303,9 @@ class FetcherTestCase(SimpleTestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
 
-    def fetcher(self, address, force=False, fetched_once=True):
-        return RedditFetcher(StubFeed(address, fetched_once=fetched_once), {"force": force})
+    def fetcher(self, address, reader_requested=False, fetched_once=True, options=None):
+        options = options if options is not None else {"reader_requested": reader_requested}
+        return RedditFetcher(StubFeed(address, fetched_once=fetched_once), options)
 
     def redlisten(self, result):
         patcher, client = patched_redlisten(result)
@@ -336,7 +338,7 @@ class TestListingFeedsReadThePollerCache(FetcherTestCase):
         client = self.redlisten(RedListenResult(status=200, payload=payload, results=1))
 
         parsed = feedparser.parse(
-            self.fetcher("https://www.reddit.com/r/python+golang/.rss", force=True).fetch()
+            self.fetcher("https://www.reddit.com/r/python+golang/.rss", reader_requested=True).fetch()
         )
 
         self.assertEqual(parsed.entries[0].id, "reddit_post:fresh")
@@ -347,7 +349,7 @@ class TestListingFeedsReadThePollerCache(FetcherTestCase):
 
     def test_forced_user_fetch_reads_their_submissions(self):
         client = self.redlisten(RedListenResult(status=200, payload={"data": {"children": []}}))
-        self.fetcher("https://www.reddit.com/user/Spez/.rss", force=True).fetch()
+        self.fetcher("https://www.reddit.com/user/Spez/.rss", reader_requested=True).fetch()
         self.assertEqual(client.get.call_args[0][0], "/user/spez/submitted.json")
 
     def test_first_fetch_of_a_new_feed_goes_live(self):
@@ -358,7 +360,7 @@ class TestListingFeedsReadThePollerCache(FetcherTestCase):
     def test_failed_one_off_falls_back_to_the_cache(self):
         self.cache.add("r:python", [make_post(id="cached")])
         self.redlisten(RedListenResult(denied=DENIED_BUDGET))
-        fetcher = self.fetcher("https://www.reddit.com/r/python/.rss", force=True)
+        fetcher = self.fetcher("https://www.reddit.com/r/python/.rss", reader_requested=True)
 
         parsed = feedparser.parse(fetcher.fetch())
 
@@ -367,10 +369,59 @@ class TestListingFeedsReadThePollerCache(FetcherTestCase):
 
     def test_failed_one_off_with_an_empty_cache_is_throttled(self):
         self.redlisten(RedListenResult(denied=DENIED_BUDGET))
-        fetcher = self.fetcher("https://www.reddit.com/r/python/.rss", force=True)
+        fetcher = self.fetcher("https://www.reddit.com/r/python/.rss", reader_requested=True)
         self.assertIsNone(fetcher.fetch())
         self.assertTrue(fetcher.rate_limited)
         self.assertEqual(fetcher.error_message, "Monthly Reddit budget reached")
+
+
+class TestCachedBatchesReachFeeds(FetcherTestCase):
+    def test_a_busy_hour_reaches_the_feed_whole(self):
+        now = int(time.time())
+        posts = [make_post(id="p%d" % i, created_utc=now - 60 * i) for i in range(60)]
+        self.assertEqual(self.cache.add("r:python", posts), 60)
+        self.redlisten(RedListenResult(status=200, payload={}))
+
+        parsed = feedparser.parse(self.fetcher("https://www.reddit.com/r/python/.rss").fetch())
+
+        self.assertEqual(len(parsed.entries), 60)
+
+    def test_old_posts_beyond_the_newest_25_age_out(self):
+        posts = [make_post(id="old%d" % i, created_utc=1700000000 - i) for i in range(40)]
+        self.cache.add("r:python", posts)
+        self.assertEqual(len(self.cache.posts(["r:python"])), 25)
+
+    def test_edited_posts_replace_their_cached_copy(self):
+        self.cache.add("r:python", [make_post(id="p1", selftext="first draft")])
+        self.assertEqual(self.cache.add("r:python", [make_post(id="p1", selftext="edited")]), 0)
+        self.assertEqual(self.cache.posts(["r:python"])[0]["selftext"], "edited")
+
+
+class TestRandomlyForcedFetchesStayScheduled(FetcherTestCase):
+    """utils/feed_fetcher.py forces a random 1% of scheduled fetches; those must not
+    spend the one-off reserve."""
+
+    def test_forced_but_not_reader_requested_listing_reads_the_cache(self):
+        self.cache.add("r:python", [make_post(id="cached")])
+        client = self.redlisten(RedListenResult(status=200, payload={}))
+        self.fetcher("https://www.reddit.com/r/python/.rss", options={"force": True}).fetch()
+        client.get.assert_not_called()
+
+    def test_feed_fetcher_random_force_keeps_comment_fetches_scheduled(self):
+        payload = comments_payload(make_post(id="abc123"), [])
+        client = self.redlisten(RedListenResult(status=200, payload=payload))
+        address = "https://www.reddit.com/r/python/comments/abc123/t/.rss"
+        feed = Feed(pk=1, feed_address=address, feed_title="Reddit", last_update=datetime.datetime.now())
+        with patch.object(Feed, "get_by_id", return_value=feed), patch.object(
+            Feed, "save", return_value=feed
+        ), patch.object(Feed, "save_feed_history"), patch("utils.feed_fetcher.validate_public_url"), patch(
+            "utils.feed_fetcher.random.random", return_value=0.0
+        ):
+            fetch = FetchFeed(feed.pk, {})
+            fetch.fetch()
+        self.assertTrue(fetch.options["force"])
+        self.assertEqual(client.get.call_args[1]["kind"], SCHEDULED)
+        self.assertEqual(client.get.call_args[1]["params"]["limit"], SINGLE_FEED_FIRST_LIMIT)
 
 
 class TestCommentThreadFeeds(FetcherTestCase):
@@ -398,7 +449,7 @@ class TestCommentThreadFeeds(FetcherTestCase):
 
     def test_forced_fetch_takes_a_full_page_on_the_reserve(self):
         client = self.redlisten(self.thread("c1"))
-        self.fetcher(self.address, force=True).fetch()
+        self.fetcher(self.address, reader_requested=True).fetch()
         self.assertEqual(client.get.call_args[1]["params"]["limit"], SINGLE_FEED_MAX_LIMIT)
         self.assertEqual(client.get.call_args[1]["kind"], ONE_OFF)
 
@@ -441,7 +492,7 @@ class TestSearchFeeds(FetcherTestCase):
         self.assertEqual(client.get.call_args[0][0], "/search.json")
         self.assertEqual(
             client.get.call_args[1]["params"],
-            {"q": "newsblur", "type": "link", "limit": SINGLE_FEED_FIRST_LIMIT},
+            {"q": "newsblur", "type": "link", "sort": "new", "limit": SINGLE_FEED_FIRST_LIMIT},
         )
 
     def test_restricted_subreddit_search_keeps_its_time_filter(self):
@@ -530,6 +581,16 @@ class TestMarkdownToHtml(SimpleTestCase):
         self.assertIn("<ol><li>first</li></ol>", html_out)
         self.assertIn("<pre><code>code &lt;b&gt;</code></pre>", html_out)
         self.assertIn("<p><strong>Title</strong></p>", html_out)
+
+    def test_a_quote_cannot_leave_an_href(self):
+        for text in ('[x](https://a.com/"onmouseover="alert(1))', 'https://a.com/"onmouseover="alert(1)'):
+            with self.subTest(text=text):
+                html_out = markdown_to_html(text)
+                self.assertNotIn('"onmouseover', html_out)
+                self.assertNotIn('" onmouseover', html_out)
+        self.assertIn(
+            '<a href="https://a.com/">https://a.com/</a>&quot;', markdown_to_html('https://a.com/"x')
+        )
 
     def test_markup_in_the_post_is_escaped(self):
         html_out = markdown_to_html("<script>alert(1)</script> &amp; [x](javascript:alert(1))")
