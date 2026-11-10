@@ -45,6 +45,10 @@ When I report a bug, don't start by trying to fix it. Instead, start by writing 
 - Present reply drafts as plain text, never block quotes, so they are easy to copy and paste. Do not post them to the forum unless I explicitly ask.
 - Follow the Writing Forum Replies guidelines in AGENTS.md, and describe deployment status accurately.
 
+## Skills
+- This repo's own skills live in `.agents/skills/` and are linked into `.claude/skills/`. Use `commit-pr` for commits and pull requests and `deslopify-tests` to review or prune tests.
+- Never use a skill whose name starts with `_skillshare__` in this repo. Those are another organization's shared skills, installed machine-wide by the skillshare CLI, and their conventions (conventional commit titles, Linear tickets, their PR templates) are wrong here. `.claude/hooks/ignore-skillshare-skills.py` turns them off for Claude Code on every session start; Codex still lists them, so skip them.
+
 ## Git Branching
 - **Do not automatically create branches**: Work on the current branch unless I explicitly ask you to create or switch to a branch. If you think a branch would help, ask first.
 
