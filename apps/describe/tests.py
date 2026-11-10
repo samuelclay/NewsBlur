@@ -300,6 +300,8 @@ class Test_DescribePipeline(DescribeMongoTestCase):
                     "story_title": f"{feed.feed_title} headline",
                     "story_permalink": feed.feed_link,
                     "story_date": datetime.datetime(2026, 11, 1, 9, 0),
+                    "story_content": f'<p><img src="{feed.feed_link}shot.png"> {feed.feed_title} <b>body</b> &amp; more</p>',
+                    "image_urls": [],
                 }
             ],
         )
@@ -386,6 +388,10 @@ class Test_DescribePipeline(DescribeMongoTestCase):
         self.assertEqual(self.search.results[0]["reason"], "Site 1 matches")
         self.assertEqual(self.search.results[0]["stories"][0]["story_title"], "Site 1 headline")
         self.assertEqual(self.search.results[0]["stories"][0]["story_date"], "2026-11-01T09:00:00")
+        # The shared Add Site card draws an image, the title and a text preview from these keys.
+        story = self.search.results[0]["stories"][0]
+        self.assertEqual(story["image_urls"], ["https://site1.example.com/shot.png"])
+        self.assertEqual(story["story_content"], "Site 1 body &amp; more")
 
         resolve.assert_called_once()
         self.assertEqual(resolve.call_args.args[0], "https://webfound.example.com/")
@@ -570,7 +576,8 @@ class Test_DescribeWebPreview(TestCase):
         <title>Brand New Blog</title><link>https://brandnew.example.com/</link>
         <description>Fresh writing</description>
         <item><title>Hello world</title><link>https://brandnew.example.com/hello</link>
-        <pubDate>Mon, 02 Nov 2026 08:00:00 GMT</pubDate></item>
+        <pubDate>Mon, 02 Nov 2026 08:00:00 GMT</pubDate><description>Hello body</description>
+        <enclosure url="https://brandnew.example.com/hello.jpg" type="image/jpeg" length="1"/></item>
         <item><title>Second post</title><link>https://brandnew.example.com/second</link></item>
         </channel></rss>"""
 
@@ -599,6 +606,8 @@ class Test_DescribeWebPreview(TestCase):
         )
         self.assertEqual(preview["stories"][0]["story_date"], datetime.datetime(2026, 11, 2, 8, 0))
         self.assertIsNone(preview["stories"][1]["story_date"])
+        self.assertIn("Hello body", preview["stories"][0]["story_content"])
+        self.assertEqual(preview["stories"][0]["image_urls"], ["https://brandnew.example.com/hello.jpg"])
 
     def test_a_feed_newsblur_already_has_is_returned_without_fetching(self):
         feed = make_feed(50)

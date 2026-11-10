@@ -7,9 +7,12 @@ without re-running the pipeline in apps/describe/pipeline.py.
 """
 
 import datetime
+import html
+import re
 
 import mongoengine as mongo
 from bson.objectid import ObjectId
+from django.utils.html import escape, strip_tags
 from django.utils.translation import gettext
 
 # apps/describe/models.py: only the most recent searches are kept per user.
@@ -26,6 +29,10 @@ STATUS_QUEUED = "queued"
 STATUS_RUNNING = "running"
 STATUS_COMPLETE = "complete"
 STATUS_ERROR = "error"
+
+# apps/describe/models.py: plain text kept per story for the card's content preview (three lines at most).
+STORY_PREVIEW_CHARS = 300
+FIRST_IMAGE_RE = re.compile(r"<img[^>]+src=[\"']([^\"']+)[\"']", re.IGNORECASE)
 
 SOURCE_INDEX = "index"
 SOURCE_WEB = "web"
@@ -271,11 +278,38 @@ class MDescribeUsage(mongo.Document):
     }
 
 
+def story_snapshot(story):
+    """The stored form of one story: what the Add Site feed card needs to draw its story preview.
+
+    add_site_view.js render_feed_card reads story_title, image_urls and
+    story_content, the same keys Feed.get_stories gives the other Discover
+    tabs. A whole story body is far too big to keep on every row, so the
+    content is cut down to its first image and a short run of plain text.
+    """
+    content = story.get("story_content") or ""
+    images = [url for url in (story.get("image_urls") or []) if url][:1]
+    if not images:
+        first_image = FIRST_IMAGE_RE.search(content)
+        if first_image:
+            images = [first_image.group(1)]
+    text = " ".join(html.unescape(strip_tags(content)).split())[:STORY_PREVIEW_CHARS]
+    story_date = story.get("story_date")
+    return {
+        "story_title": story.get("story_title") or "",
+        "story_permalink": story.get("story_permalink") or "",
+        "story_date": story_date.isoformat()
+        if isinstance(story_date, datetime.datetime)
+        else (story_date or None),
+        "image_urls": images,
+        "story_content": escape(text),
+    }
+
+
 def make_result_row(feed, source, matched_query="", similarity=None, stories=None):
     """Build the stored row for a feed found by the pipeline.
 
     Rows stay small on purpose: ids, scores, the judge's reason and three
-    story titles. Everything else is hydrated per request.
+    story snapshots. Everything else is hydrated per request.
     """
     stories = stories or []
     return {
@@ -289,16 +323,7 @@ def make_result_row(feed, source, matched_query="", similarity=None, stories=Non
         "score": None,
         "reason": None,
         "judged": False,
-        "stories": [
-            {
-                "story_title": story.get("story_title") or "",
-                "story_permalink": story.get("story_permalink") or "",
-                "story_date": story["story_date"].isoformat()
-                if isinstance(story.get("story_date"), datetime.datetime)
-                else (story.get("story_date") or None),
-            }
-            for story in stories[:3]
-        ],
+        "stories": [story_snapshot(story) for story in stories[:3]],
     }
 
 
@@ -322,16 +347,7 @@ def make_unsaved_row(row_key, preview, matched_query=""):
         "score": None,
         "reason": None,
         "judged": False,
-        "stories": [
-            {
-                "story_title": story.get("story_title") or "",
-                "story_permalink": story.get("story_permalink") or "",
-                "story_date": story["story_date"].isoformat()
-                if isinstance(story.get("story_date"), datetime.datetime)
-                else (story.get("story_date") or None),
-            }
-            for story in (preview.get("stories") or [])[:3]
-        ],
+        "stories": [story_snapshot(story) for story in (preview.get("stories") or [])[:3]],
     }
     return row
 

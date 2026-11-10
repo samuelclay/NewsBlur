@@ -79,6 +79,8 @@ def preview_site(url):
                 "story_title": entry.get("title", "").strip()[:255],
                 "story_permalink": entry.get("link") or "",
                 "story_date": entry_date(entry),
+                "story_content": entry_content(entry),
+                "image_urls": entry_images(entry),
             }
             for entry in entries[:PREVIEW_STORIES]
         ],
@@ -99,6 +101,24 @@ def existing_feed(address):
 @timelimit(10)
 def find_feed_addresses(url):
     return feedfinder_forman.find_feeds(url)
+
+
+def entry_content(entry):
+    bodies = entry.get("content") or []
+    if bodies and bodies[0].get("value"):
+        return bodies[0]["value"]
+    return entry.get("summary") or ""
+
+
+def entry_images(entry):
+    """Image URLs the feed declares for an entry (media:thumbnail, media:content, image enclosures)."""
+    images = [item.get("url") for item in entry.get("media_thumbnail") or []]
+    images += [
+        item.get("url")
+        for item in (entry.get("media_content") or []) + (entry.get("enclosures") or [])
+        if (item.get("type") or "").startswith("image/") or item.get("medium") == "image"
+    ]
+    return [url for url in images if url]
 
 
 def entry_date(entry):
