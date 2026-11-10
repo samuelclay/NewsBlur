@@ -361,6 +361,72 @@ class Test_Describe {
         assertFalse(model.state.value.describe.starting)
     }
 
+    // Test_Describe.kt: the composer stays enabled while a search runs, and the server allows one search per user, so a
+    // second "Find feeds" is rejected. DiscoveryViewModel.kt must keep polling the search that is still on screen.
+    @Test fun test_rejected_start_keeps_polling_the_running_search() = runTest {
+        val rejection = "You already have a search running."
+        coEvery { describe.history() } returns DescribeHistory(emptyList(), null)
+        coEvery { describe.start("reviews of iOS apps", null, any()) } returns DescribeStart.Started(search("queued", "queued"), null)
+        coEvery { describe.start("indie game devlogs", null, any()) } returns DescribeStart.Denied(rejection, false, null)
+        coEvery { describe.status("abc123") } returnsMany
+            listOf(
+                search("running", "searching", "[$pendingRow]"),
+                search("running", "judging", "[$judgedRow,$pendingRow]"),
+                search("complete", "complete", "[$judgedRow]"),
+            )
+        val model = model()
+        model.selectTab(DiscoveryTab.DESCRIBE)
+        model.describeStart("reviews of iOS apps")
+        runCurrent()
+        advanceTimeBy(2600)
+        runCurrent()
+        assertEquals(listOf("7"), model.state.value.describe.search?.results?.map { it.feedId })
+
+        model.describeStart("indie game devlogs")
+        runCurrent()
+        assertEquals(DescribeError.Message(rejection), model.state.value.describe.error)
+        assertFalse(model.state.value.describe.starting)
+        assertEquals("abc123", model.state.value.describe.search?.id)
+        assertTrue(model.state.value.describe.search!!.running)
+
+        advanceTimeBy(2500)
+        runCurrent()
+        assertEquals(listOf("42", "7"), model.state.value.describe.search?.results?.map { it.feedId })
+        // Test_Describe.kt: a poll of the running search must not wipe the rejection before it can be read.
+        assertEquals(DescribeError.Message(rejection), model.state.value.describe.error)
+        advanceUntilIdle()
+        assertEquals("complete", model.state.value.describe.search?.status)
+        assertEquals(listOf("42"), model.state.value.describe.search?.results?.map { it.feedId })
+        assertEquals(DescribeError.Message(rejection), model.state.value.describe.error)
+        coVerify(exactly = 3) { describe.status("abc123") }
+    }
+
+    @Test fun test_failed_start_keeps_polling_the_running_search() = runTest {
+        coEvery { describe.history() } returns DescribeHistory(emptyList(), null)
+        coEvery { describe.start("reviews of iOS apps", null, any()) } returns DescribeStart.Started(search("queued", "queued"), null)
+        coEvery { describe.start("offline", null, any()) } throws DescribeRequestException(null)
+        coEvery { describe.status("abc123") } returnsMany
+            listOf(search("running", "searching", "[$pendingRow]"), search("complete", "complete", "[$judgedRow]"))
+        val model = model()
+        model.selectTab(DiscoveryTab.DESCRIBE)
+        model.describeStart("reviews of iOS apps")
+        runCurrent()
+        advanceTimeBy(2600)
+        runCurrent()
+        assertTrue(model.state.value.describe.search!!.running)
+
+        model.describeStart("offline")
+        runCurrent()
+        assertEquals(DescribeError.StartFailed, model.state.value.describe.error)
+        assertFalse(model.state.value.describe.starting)
+
+        advanceUntilIdle()
+        assertEquals("complete", model.state.value.describe.search?.status)
+        assertEquals(listOf("42"), model.state.value.describe.search?.results?.map { it.feedId })
+        assertEquals(DescribeError.StartFailed, model.state.value.describe.error)
+        coVerify(exactly = 2) { describe.status("abc123") }
+    }
+
     @Test fun test_open_search_is_restored_from_history_after_recreation() = runTest {
         val summary = DescribeSummary("abc123", "reviews of iOS apps", "complete", "complete", "2026-11-04T22:32:57", "", 1)
         coEvery { describe.history() } returns DescribeHistory(listOf(summary), null)

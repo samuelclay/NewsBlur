@@ -578,38 +578,42 @@ class DiscoveryViewModel
         ) {
             val text = prompt.trim()
             if (text.isBlank() || state.value.describe.starting) return
-            describeJob?.cancel()
-            val token = ++describeGeneration
+            // DiscoveryViewModel.kt: the search on screen keeps its poll until the server accepts this start. The composer in
+            // DescribeTab.kt stays enabled while a search runs and the server allows one search per user, so a rejected or
+            // failed start must leave the running search updating. The generation only moves once a new search replaces it.
+            val token = describeGeneration
             describeEdit(text)
             describeUpdate { it.copy(starting = true, error = null, upgradeMessage = null) }
-            describeJob =
-                viewModelScope.launch {
-                    try {
-                        val result = withContext(workerDispatcher) { describeApi.start(text, searchId, UUID.randomUUID().toString()) }
-                        if (token != describeGeneration) return@launch
-                        when (result) {
-                            is DescribeStart.Started -> {
-                                describeShow(result.search, result.usage, toTop = true, syncPrompt = true)
-                                describePoll(token)
+            viewModelScope.launch {
+                try {
+                    val result = withContext(workerDispatcher) { describeApi.start(text, searchId, UUID.randomUUID().toString()) }
+                    if (token != describeGeneration) return@launch
+                    when (result) {
+                        is DescribeStart.Started -> {
+                            describeJob?.cancel()
+                            val started = ++describeGeneration
+                            describeJob = coroutineContext[Job]
+                            describeShow(result.search, result.usage, toTop = true, syncPrompt = true)
+                            describePoll(started)
+                        }
+                        is DescribeStart.Denied ->
+                            describeUpdate {
+                                it.copy(
+                                    starting = false,
+                                    usage = result.usage ?: it.usage,
+                                    upgradeMessage = if (result.upgrade) result.message else null,
+                                    error = if (result.upgrade) null else describeError(result.message, DescribeError.StartFailed),
+                                )
                             }
-                            is DescribeStart.Denied ->
-                                describeUpdate {
-                                    it.copy(
-                                        starting = false,
-                                        usage = result.usage ?: it.usage,
-                                        upgradeMessage = if (result.upgrade) result.message else null,
-                                        error = if (result.upgrade) null else describeError(result.message, DescribeError.StartFailed),
-                                    )
-                                }
-                        }
-                    } catch (cancelled: CancellationException) {
-                        throw cancelled
-                    } catch (error: Exception) {
-                        if (token == describeGeneration) {
-                            describeUpdate { it.copy(starting = false, error = describeError(error, DescribeError.StartFailed)) }
-                        }
+                    }
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: Exception) {
+                    if (token == describeGeneration) {
+                        describeUpdate { it.copy(starting = false, error = describeError(error, DescribeError.StartFailed)) }
                     }
                 }
+            }
         }
 
         fun describeAgain() {
@@ -692,6 +696,7 @@ class DiscoveryViewModel
             usage: DescribeUsage?,
             toTop: Boolean,
             syncPrompt: Boolean,
+            polled: Boolean = false,
         ) {
             saved[DESCRIBE_SEARCH_ID] = search.id
             if (syncPrompt) saved[DESCRIBE_PROMPT] = search.prompt
@@ -701,9 +706,11 @@ class DiscoveryViewModel
                     search = search,
                     history = describeHistoryWith(it.history, search.summary, toTop),
                     usage = usage ?: it.usage,
-                    starting = false,
+                    // DiscoveryViewModel.kt: a poll can land while describeStart is in flight or just after it was rejected,
+                    // so it leaves the start flag and the rejection message alone.
+                    starting = if (polled) it.starting else false,
                     loading = false,
-                    error = null,
+                    error = if (polled) it.error else null,
                 )
             }
         }
@@ -729,7 +736,7 @@ class DiscoveryViewModel
                 try {
                     val search = withContext(workerDispatcher) { describeApi.status(searchId) }
                     if (token != describeGeneration) return
-                    describeShow(search, null, toTop = false, syncPrompt = false)
+                    describeShow(search, null, toTop = false, syncPrompt = false, polled = true)
                 } catch (cancelled: CancellationException) {
                     throw cancelled
                 } catch (error: DescribeRequestException) {
