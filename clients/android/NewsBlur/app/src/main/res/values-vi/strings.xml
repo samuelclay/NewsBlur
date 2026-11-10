@@ -1460,4 +1460,55 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="settings_listen_speed">Tốc độ phát</string>
     <string name="archive_listen">Nghe bài viết được đọc thành tiếng 1 giờ mỗi tuần</string>
     <string name="pro_listen">Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần</string>
+    <string name="discover_tab_describe">Mô tả</string>
+    <string name="describe_placeholder">Mô tả các nguồn cấp bạn đang tìm, chẳng hạn “đánh giá ứng dụng iOS mới kèm ảnh chụp màn hình”</string>
+    <string name="describe_find_feeds">Tìm nguồn cấp</string>
+    <string name="describe_starting">Đang bắt đầu…</string>
+    <string name="describe_composer_hint">NewsBlur đọc mô tả của bạn, tìm kiếm trong chỉ mục nguồn cấp và trên web, rồi đánh giá từng kết quả. Quá trình này có thể mất một phút.</string>
+    <string name="describe_your_searches">Các tìm kiếm của bạn</string>
+    <string name="describe_new_search">Mới</string>
+    <string name="describe_history_empty">Các lượt tìm kiếm bạn thực hiện sẽ được lưu ở đây.</string>
+    <string name="describe_history_searching">Đang tìm kiếm…</string>
+    <string name="describe_history_failed">Thất bại</string>
+    <plurals name="describe_history_feeds">
+        <item quantity="other">%d nguồn cấp</item>
+    </plurals>
+    <string name="describe_remove_from_history">Xóa khỏi lịch sử</string>
+    <string name="describe_usage_unlimited">Tìm kiếm không giới hạn</string>
+    <string name="describe_usage_remaining">Hôm nay bạn còn %1$d trên %2$d lượt tìm kiếm</string>
+    <string name="describe_upgrade_title">Tìm nguồn cấp bằng cách mô tả chúng</string>
+    <string name="describe_upgrade_message">Mô tả nguồn cấp bạn muốn tìm là tính năng Premium. Nâng cấp để tìm kiếm theo mô tả.</string>
+    <string name="describe_upgrade_button">Nâng cấp lên Premium</string>
+    <string name="describe_examples_title">Thử mô tả một nội dung như</string>
+    <string name="describe_example_apps">Đánh giá các ứng dụng iOS mới với nhiều ảnh chụp màn hình</string>
+    <string name="describe_example_cities">Những bài luận dài về thành phố, nhà ở và giao thông công cộng</string>
+    <string name="describe_example_games">Các nhà phát triển game độc lập viết về những dự án đang thực hiện</string>
+    <string name="describe_phase_reading">Đang đọc</string>
+    <string name="describe_phase_searching">Đang tìm kiếm nguồn cấp</string>
+    <string name="describe_phase_judging">Đang đánh giá</string>
+    <string name="describe_phase_hunting">Đang tìm trên web</string>
+    <string name="describe_phase_done">Xong</string>
+    <string name="describe_status_starting">Đang bắt đầu tìm kiếm…</string>
+    <string name="describe_status_error">Đã xảy ra lỗi khi tìm kiếm.</string>
+    <plurals name="describe_status_found">
+        <item quantity="other">Tìm thấy %d nguồn cấp phù hợp với mô tả của bạn</item>
+    </plurals>
+    <string name="describe_status_none">Không tìm thấy nguồn cấp nào khớp với mô tả đó. Hãy thử mô tả theo cách khác.</string>
+    <plurals name="describe_status_so_far">
+        <item quantity="other">Hiện có %d nguồn cấp</item>
+    </plurals>
+    <string name="describe_search_again">Tìm kiếm lại</string>
+    <string name="describe_searching_for">Đang tìm</string>
+    <string name="describe_loading_search">Đang tải tìm kiếm của bạn…</string>
+    <string name="describe_start_failed">Không thể bắt đầu tìm kiếm.</string>
+    <string name="describe_load_failed">Không thể tải tìm kiếm đó.</string>
+    <string name="describe_delete_failed">Không thể xóa lượt tìm kiếm đó.</string>
+    <string name="describe_score">%d/10</string>
+    <string name="describe_score_description">Nguồn cấp này phù hợp với mô tả của bạn đến mức nào</string>
+    <string name="describe_judging">Đang đánh giá…</string>
+    <string name="describe_source_web">Tìm thấy trên web</string>
+    <string name="describe_source_index">Chỉ mục NewsBlur</string>
+    <string name="describe_matched_query">Khớp với “%1$s”</string>
+    <string name="describe_waiting_verdict">Đang chờ kết luận…</string>
+    <string name="add_site_describe_row">Tìm nguồn cấp về “%1$s”</string>
 </resources>

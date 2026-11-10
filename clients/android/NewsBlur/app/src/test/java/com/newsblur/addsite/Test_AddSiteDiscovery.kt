@@ -3,6 +3,8 @@ package com.newsblur.addsite
 import androidx.lifecycle.SavedStateHandle
 import com.google.gson.JsonParser
 import com.newsblur.MainDispatcherRule
+import com.newsblur.discover.DescribeApi
+import com.newsblur.discover.DescribeHistory
 import com.newsblur.discover.DiscoveryApi
 import com.newsblur.discover.DiscoveryTab
 import com.newsblur.discover.DiscoveryViewModel
@@ -23,16 +25,18 @@ class Test_AddSiteDiscovery {
     @get:Rule val main = MainDispatcherRule()
     private val api = mockk<DiscoveryApi>()
     private val feeds = mockk<FeedApi>()
+    private val describe = mockk<DescribeApi>()
     private val viewPreferences = DiscoveryPreferencesFixture().preference
 
     private fun model(saved: SavedStateHandle, freshLaunch: Boolean = false) =
-        DiscoveryViewModel(api, feeds, saved, viewPreferences).apply {
+        DiscoveryViewModel(api, feeds, describe, saved, viewPreferences).apply {
             workerDispatcher = main.dispatcher
             if (freshLaunch) seedFolder(saved[DiscoveryViewModel.FOLDER] ?: com.newsblur.util.AppConstants.ROOT_FOLDER)
         }
 
     @Test fun test_shortcuts_open_their_destination_with_the_chosen_folder() = runTest {
         coEvery { api.request(any(), any(), any()) } returns JsonParser.parseString("{}").asJsonObject
+        coEvery { describe.history() } returns DescribeHistory(emptyList(), null)
         AddSiteDiscoveryShortcut.entries.forEach { shortcut ->
             val saved = SavedStateHandle(mapOf(DiscoveryViewModel.TAB to shortcut.tab.name, DiscoveryViewModel.FOLDER to "Reading ▸ Science"))
             val model = model(saved, freshLaunch = true)

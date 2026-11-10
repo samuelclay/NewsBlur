@@ -1732,4 +1732,60 @@ people together to talk about the world.</string>
     <string name="settings_listen_speed">Playback speed</string>
     <string name="archive_listen">Listen to 1 hour of stories read aloud a week</string>
     <string name="pro_listen">Listen to 10 hours of stories read aloud a week</string>
+
+    <!-- Describe feeds: DescribeTab.kt, DescribeModels.kt and the add-site row in AddSiteSheet.kt -->
+    <string name="discover_tab_describe">Describe</string>
+    <string name="describe_placeholder">Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”</string>
+    <string name="describe_find_feeds">Find feeds</string>
+    <string name="describe_starting">Starting…</string>
+    <string name="describe_composer_hint">NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute.</string>
+    <string name="describe_your_searches">Your searches</string>
+    <string name="describe_new_search">New</string>
+    <string name="describe_history_empty">Searches you run will be kept here.</string>
+    <string name="describe_history_searching">Searching…</string>
+    <string name="describe_history_failed">Failed</string>
+    <plurals name="describe_history_feeds">
+        <item quantity="one">%d feed</item>
+        <item quantity="other">%d feeds</item>
+    </plurals>
+    <string name="describe_remove_from_history">Remove from history</string>
+    <string name="describe_usage_unlimited">Unlimited searches</string>
+    <string name="describe_usage_remaining">%1$d of %2$d searches left today</string>
+    <string name="describe_upgrade_title">Find feeds by describing them</string>
+    <string name="describe_upgrade_message">Describing the feeds you want is a premium feature. Upgrade to search by description.</string>
+    <string name="describe_upgrade_button">Upgrade to Premium</string>
+    <string name="describe_examples_title">Try describing something like</string>
+    <string name="describe_example_apps">Reviews of new iOS apps with lots of screenshots</string>
+    <string name="describe_example_cities">Long essays about cities, housing and public transit</string>
+    <string name="describe_example_games">Indie game developers writing about their work in progress</string>
+    <string name="describe_phase_reading">Reading</string>
+    <string name="describe_phase_searching">Searching feeds</string>
+    <string name="describe_phase_judging">Judging</string>
+    <string name="describe_phase_hunting">Searching the web</string>
+    <string name="describe_phase_done">Done</string>
+    <string name="describe_status_starting">Starting your search…</string>
+    <string name="describe_status_error">Something went wrong while searching.</string>
+    <plurals name="describe_status_found">
+        <item quantity="one">Found %d feed that matches your description</item>
+        <item quantity="other">Found %d feeds that match your description</item>
+    </plurals>
+    <string name="describe_status_none">No feeds matched that description. Try describing it another way.</string>
+    <plurals name="describe_status_so_far">
+        <item quantity="one">%d feed so far</item>
+        <item quantity="other">%d feeds so far</item>
+    </plurals>
+    <string name="describe_search_again">Search again</string>
+    <string name="describe_searching_for">Searching for</string>
+    <string name="describe_loading_search">Loading your search…</string>
+    <string name="describe_start_failed">The search could not be started.</string>
+    <string name="describe_load_failed">That search could not be loaded.</string>
+    <string name="describe_delete_failed">That search could not be removed.</string>
+    <string name="describe_score">%d/10</string>
+    <string name="describe_score_description">How well this feed matches your description</string>
+    <string name="describe_judging">Judging…</string>
+    <string name="describe_source_web">Found on the web</string>
+    <string name="describe_source_index">NewsBlur index</string>
+    <string name="describe_matched_query">Matched “%1$s”</string>
+    <string name="describe_waiting_verdict">Waiting for a verdict…</string>
+    <string name="add_site_describe_row">Find feeds about “%1$s”</string>
 </resources>

@@ -1460,4 +1460,55 @@
     <string name="settings_listen_speed">再生速度</string>
     <string name="archive_listen">読み上げ記事を週1時間聴取</string>
     <string name="pro_listen">読み上げ記事を週10時間聴取</string>
+    <string name="discover_tab_describe">説明から検索</string>
+    <string name="describe_placeholder">探しているフィードについて説明してください。例：「スクリーンショット付きの新しい iOS アプリのレビュー」</string>
+    <string name="describe_find_feeds">フィードを探す</string>
+    <string name="describe_starting">開始中…</string>
+    <string name="describe_composer_hint">NewsBlurが説明を読み、フィードのインデックスとウェブ全体を検索し、一致した候補を評価します。1分ほどかかる場合があります。</string>
+    <string name="describe_your_searches">検索履歴</string>
+    <string name="describe_new_search">新規</string>
+    <string name="describe_history_empty">実行した検索はここに保存されます。</string>
+    <string name="describe_history_searching">検索中…</string>
+    <string name="describe_history_failed">失敗しました</string>
+    <plurals name="describe_history_feeds">
+        <item quantity="other">%d件のフィード</item>
+    </plurals>
+    <string name="describe_remove_from_history">履歴から削除</string>
+    <string name="describe_usage_unlimited">検索回数無制限</string>
+    <string name="describe_usage_remaining">本日の検索残り %1$d 件／%2$d 件</string>
+    <string name="describe_upgrade_title">説明からフィードを検索</string>
+    <string name="describe_upgrade_message">希望するフィードを説明して検索する機能はプレミアム機能です。アップグレードすると、説明から検索できます。</string>
+    <string name="describe_upgrade_button">プレミアムにアップグレード</string>
+    <string name="describe_examples_title">次のように説明してみてください</string>
+    <string name="describe_example_apps">スクリーンショットが豊富な新しいiOSアプリのレビュー</string>
+    <string name="describe_example_cities">都市、住宅、公共交通についての長いエッセイ</string>
+    <string name="describe_example_games">開発中の作品について発信するインディーゲーム開発者</string>
+    <string name="describe_phase_reading">読み取り中</string>
+    <string name="describe_phase_searching">フィードを検索中</string>
+    <string name="describe_phase_judging">判定中</string>
+    <string name="describe_phase_hunting">ウェブを検索中</string>
+    <string name="describe_phase_done">完了</string>
+    <string name="describe_status_starting">検索を開始しています…</string>
+    <string name="describe_status_error">検索中に問題が発生しました。</string>
+    <plurals name="describe_status_found">
+        <item quantity="other">説明に一致するフィードが%d件見つかりました</item>
+    </plurals>
+    <string name="describe_status_none">説明に一致するフィードがありません。別の表現でお試しください。</string>
+    <plurals name="describe_status_so_far">
+        <item quantity="other">現在までに %d 件のフィード</item>
+    </plurals>
+    <string name="describe_search_again">もう一度検索</string>
+    <string name="describe_searching_for">検索対象</string>
+    <string name="describe_loading_search">検索を読み込み中…</string>
+    <string name="describe_start_failed">検索を開始できませんでした。</string>
+    <string name="describe_load_failed">検索を読み込めませんでした。</string>
+    <string name="describe_delete_failed">この検索を削除できませんでした。</string>
+    <string name="describe_score">%d/10</string>
+    <string name="describe_score_description">このフィードが説明にどれほど一致するか</string>
+    <string name="describe_judging">判定中…</string>
+    <string name="describe_source_web">ウェブで見つかったフィード</string>
+    <string name="describe_source_index">NewsBlurのインデックス</string>
+    <string name="describe_matched_query">「%1$s」に一致</string>
+    <string name="describe_waiting_verdict">判定を待っています…</string>
+    <string name="add_site_describe_row">「%1$s」に関するフィードを検索</string>
 </resources>

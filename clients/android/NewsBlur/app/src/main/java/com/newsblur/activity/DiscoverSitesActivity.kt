@@ -30,11 +30,18 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DiscoverSitesActivity : NbActivity() {
     companion object {
-        fun intent(context: Context, tab: DiscoveryTab, folder: String): Intent =
+        fun intent(
+            context: Context,
+            tab: DiscoveryTab,
+            folder: String,
+            describePrompt: String = "",
+        ): Intent =
             Intent(context, DiscoverSitesActivity::class.java).apply {
                 // DiscoverSitesActivity.kt restores the tab and seeds only an explicit fresh folder context.
                 putExtra(DiscoveryViewModel.TAB, tab.name)
                 putExtra(DiscoveryViewModel.FOLDER, folder)
+                // A description typed into AddSiteSheet.kt opens the Describe tab and runs the search right away.
+                if (describePrompt.isNotBlank()) putExtra(DiscoveryViewModel.DESCRIBE_PROMPT, describePrompt)
             }
     }
 
@@ -50,7 +57,10 @@ class DiscoverSitesActivity : NbActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) model.seedFolder(intent.getStringExtra(DiscoveryViewModel.FOLDER).orEmpty())
+        if (savedInstanceState == null) {
+            model.seedFolder(intent.getStringExtra(DiscoveryViewModel.FOLDER).orEmpty())
+            intent.getStringExtra(DiscoveryViewModel.DESCRIBE_PROMPT)?.takeIf { it.isNotBlank() }?.let(model::describeSeed)
+        }
         model.start()
         setContent {
             NewsBlurTheme(variant = prefsRepo.getSelectedTheme().toVariant(), dynamic = false) {
@@ -64,9 +74,9 @@ class DiscoverSitesActivity : NbActivity() {
         if (updateType and (UPDATE_METADATA or UPDATE_REBUILD) != 0) refreshSubscriptions()
     }
 
-    fun showDiscovery(tab: DiscoveryTab, folder: String) {
+    fun showDiscovery(tab: DiscoveryTab, folder: String, describePrompt: String = "") {
         model.seedFolder(folder)
-        model.selectTab(tab)
+        if (describePrompt.isNotBlank()) model.describeSeed(describePrompt) else model.selectTab(tab)
     }
 
     private fun refreshSubscriptions() {
@@ -95,6 +105,7 @@ class DiscoverSitesActivity : NbActivity() {
                     AddFeedFragment.newInstance(parent = state.folder).show(supportFragmentManager, "add_site")
                 }
             },
+            onUpgrade = { startActivity(Intent(this, SubscriptionActivity::class.java)) },
         )
     }
 }

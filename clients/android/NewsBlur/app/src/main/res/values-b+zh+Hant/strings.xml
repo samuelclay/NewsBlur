@@ -1460,4 +1460,55 @@
     <string name="settings_listen_speed">播放速度</string>
     <string name="archive_listen">每週聆聽朗讀文章最多 1 小時</string>
     <string name="pro_listen">每週聆聽朗讀文章最多 10 小時</string>
+    <string name="discover_tab_describe">描述</string>
+    <string name="describe_placeholder">描述你想找的訂閱來源，例如「附有螢幕截圖的新 iOS App 評論」</string>
+    <string name="describe_find_feeds">尋找訂閱來源</string>
+    <string name="describe_starting">正在開始…</string>
+    <string name="describe_composer_hint">NewsBlur 會讀取你的描述，搜尋訂閱來源索引和開放網路，接著評估每個符合項目。這可能需要一分鐘。</string>
+    <string name="describe_your_searches">你的搜尋</string>
+    <string name="describe_new_search">新增</string>
+    <string name="describe_history_empty">你進行的搜尋會保存在這裡。</string>
+    <string name="describe_history_searching">正在搜尋…</string>
+    <string name="describe_history_failed">失敗</string>
+    <plurals name="describe_history_feeds">
+        <item quantity="other">%d 個訂閱來源</item>
+    </plurals>
+    <string name="describe_remove_from_history">從記錄中移除</string>
+    <string name="describe_usage_unlimited">不限搜尋次數</string>
+    <string name="describe_usage_remaining">今天還能搜尋 %1$d 次，共 %2$d 次</string>
+    <string name="describe_upgrade_title">透過描述尋找訂閱來源</string>
+    <string name="describe_upgrade_message">依描述尋找訂閱來源是進階功能。升級即可依描述搜尋。</string>
+    <string name="describe_upgrade_button">升級至 Premium</string>
+    <string name="describe_examples_title">試著描述類似這樣的內容</string>
+    <string name="describe_example_apps">新 iOS App 的評測，附有大量螢幕截圖</string>
+    <string name="describe_example_cities">關於城市、住宅與大眾運輸的長篇文章</string>
+    <string name="describe_example_games">撰寫開發進度的獨立遊戲開發者</string>
+    <string name="describe_phase_reading">讀取中</string>
+    <string name="describe_phase_searching">正在搜尋訂閱來源</string>
+    <string name="describe_phase_judging">正在判斷</string>
+    <string name="describe_phase_hunting">正在搜尋網路</string>
+    <string name="describe_phase_done">完成</string>
+    <string name="describe_status_starting">正在開始搜尋…</string>
+    <string name="describe_status_error">搜尋時發生錯誤。</string>
+    <plurals name="describe_status_found">
+        <item quantity="other">找到 %d 個符合你描述的訂閱來源</item>
+    </plurals>
+    <string name="describe_status_none">找不到符合此描述的訂閱來源。請換個方式描述。</string>
+    <plurals name="describe_status_so_far">
+        <item quantity="other">目前有 %d 個訂閱來源</item>
+    </plurals>
+    <string name="describe_search_again">再次搜尋</string>
+    <string name="describe_searching_for">正在搜尋</string>
+    <string name="describe_loading_search">正在載入搜尋…</string>
+    <string name="describe_start_failed">無法開始搜尋。</string>
+    <string name="describe_load_failed">無法載入該搜尋。</string>
+    <string name="describe_delete_failed">無法移除此搜尋。</string>
+    <string name="describe_score">%d/10</string>
+    <string name="describe_score_description">此訂閱來源與你的描述的符合程度</string>
+    <string name="describe_judging">判斷中…</string>
+    <string name="describe_source_web">在網路上找到</string>
+    <string name="describe_source_index">NewsBlur 個索引</string>
+    <string name="describe_matched_query">符合「%1$s」</string>
+    <string name="describe_waiting_verdict">正在等待判定…</string>
+    <string name="add_site_describe_row">尋找關於「%1$s」的訂閱來源</string>
 </resources>

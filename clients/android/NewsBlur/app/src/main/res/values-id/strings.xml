@@ -1460,4 +1460,55 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_listen_speed">Kecepatan pemutaran</string>
     <string name="archive_listen">Dengarkan artikel yang dibacakan hingga 1 jam per minggu</string>
     <string name="pro_listen">Dengarkan artikel yang dibacakan hingga 10 jam per minggu</string>
+    <string name="discover_tab_describe">Deskripsikan</string>
+    <string name="describe_placeholder">Deskripsikan feed yang Anda cari, seperti “ulasan aplikasi iOS baru dengan tangkapan layar”</string>
+    <string name="describe_find_feeds">Temukan feed</string>
+    <string name="describe_starting">Memulai…</string>
+    <string name="describe_composer_hint">NewsBlur membaca deskripsi Anda, menelusuri indeks feed dan web terbuka, lalu menilai setiap kecocokan. Proses ini dapat memakan waktu satu menit.</string>
+    <string name="describe_your_searches">Pencarian Anda</string>
+    <string name="describe_new_search">Baru</string>
+    <string name="describe_history_empty">Pencarian yang Anda lakukan akan disimpan di sini.</string>
+    <string name="describe_history_searching">Sedang mencari…</string>
+    <string name="describe_history_failed">Gagal</string>
+    <plurals name="describe_history_feeds">
+        <item quantity="other">%d feed</item>
+    </plurals>
+    <string name="describe_remove_from_history">Hapus dari riwayat</string>
+    <string name="describe_usage_unlimited">Pencarian tanpa batas</string>
+    <string name="describe_usage_remaining">%1$d dari %2$d pencarian tersisa hari ini</string>
+    <string name="describe_upgrade_title">Temukan feed dengan mendeskripsikannya</string>
+    <string name="describe_upgrade_message">Menjelaskan feed yang Anda inginkan adalah fitur premium. Upgrade ke fitur pencarian berdasarkan deskripsi.</string>
+    <string name="describe_upgrade_button">Tingkatkan ke Premium</string>
+    <string name="describe_examples_title">Coba deskripsikan sesuatu seperti</string>
+    <string name="describe_example_apps">Ulasan aplikasi iOS baru dengan banyak tangkapan layar</string>
+    <string name="describe_example_cities">Esai panjang tentang kota, perumahan, dan transportasi umum</string>
+    <string name="describe_example_games">Pengembang game indie yang menulis tentang proyek mereka yang sedang dikerjakan</string>
+    <string name="describe_phase_reading">Membaca</string>
+    <string name="describe_phase_searching">Mencari feed</string>
+    <string name="describe_phase_judging">Menilai</string>
+    <string name="describe_phase_hunting">Mencari di web</string>
+    <string name="describe_phase_done">Selesai</string>
+    <string name="describe_status_starting">Memulai pencarian Anda…</string>
+    <string name="describe_status_error">Terjadi kesalahan saat mencari.</string>
+    <plurals name="describe_status_found">
+        <item quantity="other">Ditemukan %d feed yang cocok dengan deskripsi Anda</item>
+    </plurals>
+    <string name="describe_status_none">Tidak ada feed yang cocok dengan deskripsi tersebut. Coba deskripsikan dengan cara lain.</string>
+    <plurals name="describe_status_so_far">
+        <item quantity="other">Sejauh ini %d feed</item>
+    </plurals>
+    <string name="describe_search_again">Cari lagi</string>
+    <string name="describe_searching_for">Mencari</string>
+    <string name="describe_loading_search">Memuat pencarian Anda…</string>
+    <string name="describe_start_failed">Pencarian tidak dapat dimulai.</string>
+    <string name="describe_load_failed">Pencarian tersebut tidak dapat dimuat.</string>
+    <string name="describe_delete_failed">Pencarian tersebut tidak dapat dihapus.</string>
+    <string name="describe_score">%d/10</string>
+    <string name="describe_score_description">Seberapa cocok feed ini dengan deskripsi Anda</string>
+    <string name="describe_judging">Menilai…</string>
+    <string name="describe_source_web">Ditemukan di web</string>
+    <string name="describe_source_index">Indeks NewsBlur</string>
+    <string name="describe_matched_query">Cocok dengan “%1$s”</string>
+    <string name="describe_waiting_verdict">Menunggu keputusan…</string>
+    <string name="add_site_describe_row">Temukan feed tentang “%1$s”</string>
 </resources>
