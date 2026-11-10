@@ -216,8 +216,12 @@ class RedListenBudget:
 
     def background_allowed(self):
         """Automatic fetching stays off in development unless explicitly turned on, since
-        every key on the account draws on the same production quota."""
-        return not settings.DEBUG or getattr(settings, "REDLISTEN_BACKGROUND_IN_DEBUG", False)
+        every key on the account draws on the same production quota. Production celery
+        turns settings.DEBUG on for the 1% of feed tasks it profiles
+        (DBProfilerMiddleware.process_celery in apps/profile/middleware.py), so the server's
+        own setting is read from ORIGINAL_DEBUG when profiling has saved it."""
+        debug = getattr(settings, "ORIGINAL_DEBUG", settings.DEBUG)
+        return not debug or getattr(settings, "REDLISTEN_BACKGROUND_IN_DEBUG", False)
 
     def reserve(self, kind, results):
         """Claim one request and up to `results` results. Returns a Reservation, which

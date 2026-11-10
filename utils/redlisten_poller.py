@@ -473,9 +473,15 @@ class RedListenPoller:
             target_posts = by_target.get(target.key, [])
             seen = sum(1 for post in target_posts if (post.get("created_utc") or 0) >= window_start)
             target.observe(seen, self.now_ts - window_start, self.now_ts)
+            # A target's first complete poll schedules its feeds even with no new posts, so
+            # a feed still backed off from an old error (Reddit's 401s before RedListen) or
+            # one that is new rereads the cache and clears it instead of waiting out its
+            # backoff, up to a week, for the next post.
+            first_poll = complete and not target.last_polled
             if complete:
                 target.last_polled = self.now_ts
-            if target_posts and self.cache.add(target.key, target_posts):
+            added = self.cache.add(target.key, target_posts) if target_posts else 0
+            if added or first_poll:
                 self.feeds_to_schedule.update(target.feed_ids)
         return True
 

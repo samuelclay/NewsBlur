@@ -219,6 +219,13 @@ class Test_RedListenBudget(SimpleTestCase):
         with self.settings(DEBUG=True, REDLISTEN_BACKGROUND_IN_DEBUG=True):
             self.assertTrue(self.budget.reserve(POLLER, 1))
 
+    def test_a_profiled_production_task_still_spends_in_the_background(self):
+        # DBProfilerMiddleware.process_celery saves the real DEBUG and turns DEBUG on.
+        with self.settings(DEBUG=True, ORIGINAL_DEBUG=False):
+            self.assertTrue(self.budget.reserve(SCHEDULED, 1))
+        with self.settings(DEBUG=True, ORIGINAL_DEBUG=True):
+            self.assertFalse(self.budget.reserve(SCHEDULED, 1))
+
     def test_minute_window(self):
         with self.settings(REDLISTEN_REQUESTS_PER_MINUTE=2):
             self.assertTrue(self.budget.reserve_minute_slot())
@@ -418,6 +425,19 @@ class Test_RedListenPoller(SimpleTestCase):
         self.assertEqual(client.calls[0][1]["limit"], 3)
         # Three posts span the 300 seconds back to the oldest of them.
         self.assertEqual((busy.posts, busy.window), (3, 300))
+
+    def test_a_first_poll_schedules_feeds_even_without_new_posts(self, _sleep):
+        """A feed still backed off from Reddit's 401s rereads the cache and clears its error
+        once its subreddit is first polled, even if nothing new was posted."""
+        quiet = target("r:quiet", feed_ids=[41])
+        batch = PollBatch(drain=True, is_user=False)
+        batch.add(quiet, 1, 1)
+        poller, _ = self.poller([listing([])])
+
+        poller.poll_batch(batch)
+
+        self.assertEqual(poller.feeds_to_schedule, {41})
+        self.assertEqual(quiet.last_polled, NOW_TS)
 
     def test_posts_already_cached_do_not_reschedule_feeds(self, _sleep):
         quiet = target("r:quiet", feed_ids=[31], last_polled=NOW_TS - 3600)
