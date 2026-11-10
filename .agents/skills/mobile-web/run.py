@@ -43,7 +43,7 @@ DEFAULT_ALL = [
     "smoke",
     "modals",
     "player",
-    "rtl",
+    "page_scroll", "rtl",
     "landscape",
     "tablet",
     "resize",

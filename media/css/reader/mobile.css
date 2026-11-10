@@ -153,6 +153,90 @@ body.NB-mobile.NB-mobile-under-chrome #simplemodal-container .NB-modal {
     padding-bottom: calc(24px + var(--nb-mobile-screen-bottom)) !important;
 }
 
+/* ==================== */
+/* = Page scrolling   = */
+/* ==================== */
+
+/* mobile.css: a phone browser shrinks its own toolbar only when the page itself scrolls, never
+   for a list scrolling inside the page. So while the feed list or story list is at rest
+   (mobile_layout_view.js sync_page_scroll sets NB-mobile-page-scroll), that screen is laid out
+   in the page's flow, its list is as tall as its rows, and the page scrolls in its place. The
+   screen's bars stick to the top. Slides between screens, edge swipes, sheets and modals take
+   the screen back to the fixed layout above and below this section, with the list scrolled to
+   the same place, so nothing on screen moves when the two trade. */
+html:has(> body.NB-mobile.NB-mobile-page-scroll) {
+    height: auto !important;
+    overflow: visible !important;
+    /* No browser pull-to-refresh behind views/mobile_pull_to_refresh.js. */
+    overscroll-behavior-y: contain;
+    background-color: #F7F8F5;
+}
+
+html:has(> body.NB-mobile.NB-mobile-page-scroll.NB-dark) {
+    background-color: #2a2b2d;
+}
+
+body.NB-mobile.NB-mobile-page-scroll {
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+    overscroll-behavior-y: contain;
+}
+
+body.NB-mobile.NB-mobile-page-scroll .NB-layout {
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+body.NB-mobile.NB-mobile-page-scroll .NB-mobile-screen.NB-mobile-pos-center {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    height: auto !important;
+    /* The screen's own color reaches the bottom of the largest viewport under a short list. */
+    min-height: 100vh;
+    min-height: 100lvh;
+    overflow: visible !important;
+    transform: none;
+}
+
+/* The nav bar or account header sticks to the top, and the bar of controls beneath it sticks
+   under that (mobile_layout_view.js measure_page_bars sets how far down). */
+body.NB-mobile.NB-mobile-page-scroll .NB-mobile-pos-center > .NB-mobile-bar,
+body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-north {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+}
+
+body.NB-mobile.NB-mobile-page-scroll .right-pane.NB-mobile-pos-center > .content-north,
+body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-south {
+    position: sticky !important;
+    top: var(--nb-mobile-page-bar-top, 48px) !important;
+    z-index: 49 !important;
+}
+
+body.NB-mobile.NB-mobile-page-scroll .right-pane.NB-mobile-pos-center > .content-pane,
+body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-center {
+    flex: none;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+body.NB-mobile.NB-mobile-page-scroll .right-pane.NB-mobile-pos-center > .content-pane > #story_titles,
+body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-center > .left-center-content {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
 /* ============= */
 /* = Screens   = */
 /* ============= */
@@ -881,6 +965,8 @@ body.NB-mobile .right-pane > .content-north {
     display: flex !important;
     align-items: center;
     gap: 5px;
+    /* A pill's height, so the bar holds its row before the list's header renders. */
+    min-height: 44px;
     z-index: 3 !important;
     overflow: visible !important;
     margin: 0 !important;
@@ -889,6 +975,12 @@ body.NB-mobile .right-pane > .content-north {
     border-bottom: 1px solid var(--nb-mobile-bar-border) !important;
     background: var(--nb-mobile-bar-bg) !important;
     box-shadow: none !important;
+}
+
+/* mobile.css: while a list loads, the bar keeps its row but not its half-drawn pills
+   (mobile_layout_view.js set_pills_pending), so they first appear at their final size. */
+body.NB-mobile .right-pane > .content-north.NB-mobile-pills-pending > * {
+    visibility: hidden;
 }
 
 /* The open search field takes a row of its own at the bottom of the bar. */

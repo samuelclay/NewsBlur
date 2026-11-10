@@ -231,7 +231,8 @@ class Context:
         self.wait(1400)
 
     def tap_story(self, index):
-        titles = self.page.locator("#story_titles .NB-story-title")
+        # Rows of other sites' versions of a story, listed under it, open those sites instead.
+        titles = self.page.locator("#story_titles .NB-story-title:not(.NB-story-title-cluster)")
         index = min(index, titles.count() - 1)
         titles.nth(index).tap()
         self.wait(1300)

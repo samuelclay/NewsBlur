@@ -3,6 +3,8 @@ regressions.py: bugs found in code review of the phone layout (PR #2189), each c
 before its fix. smoke.py runs these too.
 """
 
+import time
+
 FEEDS_SCREEN_X = (
     "(() => { var m = getComputedStyle(document.querySelector('.left-pane')).transform; "
     "return m === 'none' ? 0 : parseFloat(m.split(',')[4]); })()"
@@ -658,11 +660,12 @@ def check_inline_scrolls_to_story(ctx):
     ctx.tap_story(4)
     ctx.wait(600)
     place = ctx.evaluate(
-        "(() => { var list = document.querySelector('#story_titles').getBoundingClientRect(); "
+        # The list shows from under the bar of pills, whether it scrolls itself or the page does.
+        "(() => { var top = document.querySelector('.right-pane > .content-north').getBoundingClientRect().bottom; "
         "var container = document.querySelector('#story_titles .NB-story-title.NB-selected').closest('.NB-story-title-container'); "
         "var detail = container.querySelector('.NB-story-detail').getBoundingClientRect(); "
         "var row = container.querySelector('.NB-story-title').getBoundingClientRect(); "
-        "return {detail_top: Math.round(detail.top - list.top), row_bottom: Math.round(row.bottom - list.top)}; })()"
+        "return {detail_top: Math.round(detail.top - top), row_bottom: Math.round(row.bottom - top)}; })()"
     )
     ctx.check(
         "an inline story scrolls to the top of the list, past its title row",
@@ -1066,7 +1069,56 @@ def check_discovery_back(ctx):
     ctx.wait(1200)
 
 
+PILL_STATE = """(() => {
+  var bar = document.querySelector('.right-pane > .content-north');
+  var pills = bar.querySelectorAll('.NB-feedbar-discover-container, .NB-feedbar-options, .NB-search-container, .NB-taskbar-nav');
+  return {
+    pending: bar.classList.contains('NB-mobile-pills-pending'),
+    height: Math.round(bar.getBoundingClientRect().height),
+    visible_pills: Array.prototype.filter.call(pills, function (el) {
+      return el.offsetWidth && getComputedStyle(el).visibility !== 'hidden';
+    }).length,
+    stories: NEWSBLUR.assets.stories.length
+  };
+})()"""
+
+
+def check_pills_wait_for_list(ctx, feed_id):
+    """While a story list loaded, its bar showed the pills half drawn: squeezed, or without the
+    ones the layout adds, before settling. The bar now keeps its row and shows the pills once the
+    list has loaded. Expects the feed list. The feed's request is held so the wait is visible."""
+    page = ctx.page
+    pattern = "**/reader/feed/**"
+
+    def hold(route):
+        time.sleep(2)
+        route.continue_()
+
+    page.route(pattern, hold)
+    ctx.feed_row(feed_id).tap()
+    ctx.wait(700)
+    loading = ctx.evaluate(PILL_STATE)
+    page.wait_for_function("NEWSBLUR.assets.stories.length > 0", timeout=30000)
+    ctx.wait(800)
+    loaded = ctx.evaluate(PILL_STATE)
+    page.unroute(pattern)
+    if loading["stories"]:
+        print("SKIP the pills wait for a loading list: the list drew from its cache before the request")
+    else:
+        ctx.check(
+            "a loading story list keeps its bar's row and hides the pills",
+            loading["pending"] and not loading["visible_pills"] and loading["height"] == loaded["height"],
+            (loading, loaded),
+        )
+    ctx.check(
+        "a loaded story list shows its pills", not loaded["pending"] and loaded["visible_pills"] >= 3, loaded
+    )
+
+
 def run(ctx):
     ctx.login("/")
-    check_regressions(ctx, ctx.pick_feed())
+    feed_id = ctx.pick_feed()
+    check_regressions(ctx, feed_id)
+    ctx.login("/")
+    check_pills_wait_for_list(ctx, feed_id)
     ctx.check_no_page_errors()

@@ -4,8 +4,9 @@ edges itself. navigator.standalone is false there (true for a home screen web ap
 the Chromium the other scenarios run), so this scenario sets it before the reader loads.
 
 Safari's toolbar and the status bar also take SAFARI_CHROME pixels of the screen that the page
-doesn't get, so the screen is made that much taller than the window, and the screens have to
-reach under the toolbar with their controls above it (mobile.css Under Safari's toolbar).
+doesn't get, so the screen is made that much taller than the window. The feed list and story list
+are laid out in the page, which Safari draws under its toolbar by itself, and the fixed screens
+have to reach under it (mobile.css Page scrolling and Under Safari's toolbar).
 """
 
 SAFARI_CHROME = 160
@@ -114,8 +115,9 @@ def run(ctx):
     ctx.check_no_page_errors()
 
 
-# Where a screen, its bottom controls and the end of its list sit, as page coordinates.
-GEOMETRY = """((screen, controls, list) => {
+# Where a screen, the bar of controls under its nav bar and the end of its list sit, as page
+# coordinates, with the list scrolled to its end.
+GEOMETRY = """((screen, nav, controls, list) => {
   var rect = function (selector) {
     var el = document.querySelector(selector);
     return el ? el.getBoundingClientRect() : null;
@@ -125,43 +127,48 @@ GEOMETRY = """((screen, controls, list) => {
   var rows = Array.prototype.filter.call(scroller.querySelectorAll('.feed, .NB-story-title, .NB-feeds-header, p, li'),
     function (el) { return el.offsetParent && el.getBoundingClientRect().height; });
   var last = rows.length ? rows[rows.length - 1].getBoundingClientRect().bottom : null;
-  return {window: window.innerHeight, screen: rect(screen).bottom, controls_top: rect(controls).top,
-          controls_bottom: rect(controls).bottom, last_row: last};
+  return {window: window.innerHeight, screen: Math.round(rect(screen).bottom), nav_top: Math.round(rect(nav).top),
+          nav_bottom: Math.round(rect(nav).bottom), controls_top: Math.round(rect(controls).top),
+          under_chrome: document.body.classList.contains('NB-mobile-under-chrome'),
+          page_scroll: document.body.classList.contains('NB-mobile-page-scroll'),
+          page_y: Math.round(window.scrollY), last_row: last === null ? null : Math.round(last)};
 })"""
 
 
 def check_under_toolbar(ctx, feed_id):
-    """The screens reach SAFARI_CHROME below the window, under Safari's toolbar, while the feed
-    list's filter pills, the story list's pills and the story toolbar stay 8px above it, and
-    each list scrolls its last row clear of them."""
+    """The feed list and story list are laid out in the page at rest, which Safari draws under its
+    toolbar and scrolls itself, so its toolbar shrinks (mobile.css Page scrolling). Their bars of
+    controls stay stuck under the nav bar. The story screen and anything covering a screen are
+    fixed, so they reach SAFARI_CHROME below the window to run under the toolbar."""
     page = ctx.page
-    ctx.check(
-        "the screens reach under Safari's toolbar",
-        ctx.evaluate(
-            "document.body.classList.contains('NB-mobile-under-chrome') && "
-            "getComputedStyle(document.body).getPropertyValue('--nb-mobile-chrome-bottom').trim()"
-        )
-        == f"{SAFARI_CHROME}px",
+    feeds = ctx.evaluate(
+        GEOMETRY + "('.left-pane', '.left-north', '.left-south', '.left-center-content')"
     )
-    feeds = ctx.evaluate(GEOMETRY + "('.left-pane', '.left-south .NB-intelligence-slider', '.left-center-content')")
     ctx.shot("under-toolbar-feeds")
     ctx.check(
-        "the feed list runs under the toolbar with its filter pills above it",
-        feeds["screen"] == feeds["window"] + SAFARI_CHROME
-        and feeds["controls_bottom"] == feeds["window"] - 8
-        and feeds["last_row"] <= feeds["controls_top"],
+        "the feed list is laid out in the page, which scrolls to its last row under the stuck bars",
+        feeds["page_scroll"]
+        and not feeds["under_chrome"]
+        and feeds["page_y"] > 0
+        and feeds["nav_top"] == 0
+        and feeds["controls_top"] == feeds["nav_bottom"]
+        and feeds["last_row"] <= feeds["window"],
         feeds,
     )
 
     ctx.open_feed(feed_id)
     ctx.set_layout("list")
-    titles = ctx.evaluate(GEOMETRY + "('.right-pane', '.right-pane > .content-north .NB-feedbar-options', '#story_titles')")
+    titles = ctx.evaluate(
+        GEOMETRY + "('.right-pane', '.NB-mobile-titles-bar', '.right-pane > .content-north', '#story_titles')"
+    )
     ctx.shot("under-toolbar-titles")
     ctx.check(
-        "the story list runs under the toolbar with its pills above it",
-        titles["screen"] == titles["window"] + SAFARI_CHROME
-        and titles["controls_bottom"] == titles["window"] - 8
-        and titles["last_row"] <= titles["controls_top"],
+        "the story list is laid out in the page, which scrolls under the stuck nav bar and pills",
+        titles["page_scroll"]
+        and not titles["under_chrome"]
+        and titles["page_y"] > 0
+        and titles["nav_top"] == 0
+        and titles["controls_top"] == titles["nav_bottom"],
         titles,
     )
 
@@ -169,15 +176,24 @@ def check_under_toolbar(ctx, feed_id):
     ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
     ctx.tap_story(1)
     ctx.wait(1500)
+    ctx.check(
+        "the fixed story screen reaches under Safari's toolbar",
+        ctx.evaluate(
+            "document.body.classList.contains('NB-mobile-under-chrome') && "
+            "getComputedStyle(document.body).getPropertyValue('--nb-mobile-chrome-bottom').trim()"
+        )
+        == f"{SAFARI_CHROME}px",
+    )
     story = ctx.evaluate(
-        GEOMETRY + "('.NB-mobile-story-screen', '.NB-mobile-story-toolbar', '.NB-mobile-story-page-current')"
+        GEOMETRY
+        + "('.NB-mobile-story-screen', '.NB-mobile-story-bar', '.NB-mobile-story-toolbar', '.NB-mobile-story-page-current')"
     )
     ctx.shot("under-toolbar-story")
     ctx.check(
-        "the story runs under the toolbar with its own toolbar above it",
+        "the story runs under the toolbar and scrolls its last row clear of it, its own toolbar under the nav bar",
         story["screen"] == story["window"] + SAFARI_CHROME
-        and story["controls_bottom"] == story["window"] - 8
-        and story["last_row"] <= story["controls_top"],
+        and story["controls_top"] == story["nav_bottom"]
+        and story["last_row"] <= story["window"],
         story,
     )
 

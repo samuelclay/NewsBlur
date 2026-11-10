@@ -16,13 +16,14 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     BROWSER_SWIPE_MS: 8000,
     PRESS_DELAY_MS: 120,
     PRESS_FLASH_MS: 160,
+    PILLS_PENDING_MS: 4000,
 
     initialize: function () {
         _.bindAll(this, 'check_mode', 'handle_popstate', 'handle_touchstart', 'handle_touchmove',
             'handle_touchend', 'handle_touchcancel', 'handle_long_press_start', 'handle_long_press_cancel',
             'handle_long_press_click', 'fit_pills', 'handle_search_close', 'update_titles_actions',
             'handle_story_button', 'handle_sheet_touchstart', 'handle_sheet_touchmove', 'handle_sheet_touchend',
-            'measure_browser_chrome', 'scroll_page_to_top');
+            'measure_browser_chrome', 'scroll_page_to_top', 'sync_page_scroll', 'handle_page_scroll');
         this.utils = NEWSBLUR.mobile_utils;
         this.active = false;
         this.screen = null;
@@ -38,6 +39,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.following_unread = null;
         this.awaiting_story = null;
         this.$pressed = null;
+        // The screen whose list the page is scrolling in place of, if any (Page scroll below).
+        this.page_scroll_screen = null;
 
         this.$body = $('body');
         this.$screens = {
@@ -68,6 +71,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         window.addEventListener('resize', _.debounce(this.fit_pills, 100));
         window.addEventListener('resize', this.measure_browser_chrome);
         window.addEventListener('scroll', this.scroll_page_to_top, { passive: true });
+        window.addEventListener('scroll', this.handle_page_scroll, { passive: true });
         document.addEventListener('focusout', function () {
             _.defer(this.scroll_page_to_top);
         }.bind(this));
@@ -83,6 +87,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.setup_sheet_edits();
         this.setup_pull_to_refresh();
         this.setup_player();
+        this.setup_page_scroll();
 
         this.check_mode();
     },
@@ -132,10 +137,12 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.update_titles_bar();
         this.refresh_story_layout();
         this.dock_player(true);
+        this.sync_page_scroll();
     },
 
     deactivate: function () {
         this.finish_transition();
+        this.leave_page_scroll();
         this.story_pager.close();
         this.active = false;
         NEWSBLUR.reader.flags.mobile = false;
@@ -202,6 +209,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             $screen.removeClass('NB-mobile-pos-left NB-mobile-pos-right NB-mobile-animating')
                 .toggleClass('NB-mobile-pos-center', name === screen);
         });
+        this.sync_page_scroll();
     },
 
     // Slides between screens. A push brings the new screen in from the trailing edge over the
@@ -220,6 +228,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             return;
         }
         this.finish_transition();
+        // Both screens slide as fixed, window-sized boxes.
+        this.leave_page_scroll();
 
         var $from = this.$screens[from];
         var $to = this.$screens[screen];
@@ -250,6 +260,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             $from.removeClass('NB-mobile-pos-left NB-mobile-pos-right NB-mobile-animating');
             $to.removeClass('NB-mobile-animating');
             self.$body.removeClass('NB-mobile-transitioning');
+            self.sync_page_scroll();
             if (options.complete) options.complete();
         };
         var timer = setTimeout(done, this.transition_duration() + 120);
@@ -418,7 +429,9 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // NEWSBLUR.assets.stories reset: a story list finished loading. reader.js reset_feed empties
     // the collection with a bare reset first, which passes no count of added stories.
     stories_reset: function (stories, options) {
-        if (!this.awaiting_story || !options || options.added === undefined) return;
+        var loaded = !!options && options.added !== undefined;
+        this.set_pills_pending(!loaded);
+        if (!this.awaiting_story || !loaded) return;
         var story_hash = this.awaiting_story;
         this.awaiting_story = null;
         clearTimeout(this.awaiting_story_timer);
@@ -436,6 +449,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // on it gives up after 15 seconds too, offline requests can take that long to fail, and so
     // does a Next unread waiting on the next feed's list.
     stories_failed: function () {
+        this.set_pills_pending(false);
         var waiting = !!this.awaiting_story || this.is_following_unread();
         this.awaiting_story = null;
         this.following_unread = null;
@@ -784,7 +798,9 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // the toolbar. Measured against the whole screen, which also counts the status bar above
     // the page, so the screens reach a little past the bottom of the glass, where no one sees.
     measure_browser_chrome: function () {
-        var under_chrome = this.active && this.browser_owns_edge_swipe();
+        // A screen the page scrolls for is in the page's flow, where the browser already draws it
+        // under its toolbar.
+        var under_chrome = this.active && this.browser_owns_edge_swipe() && !this.page_scroll_screen;
         var chrome_bottom = 0;
         if (under_chrome) {
             var screen_sides = [window.screen.width, window.screen.height];
@@ -801,6 +817,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             style.removeProperty('--nb-mobile-chrome-bottom');
             style.removeProperty('--nb-mobile-screen-height');
         }
+        this.measure_page_bars();
     },
 
     // The screens hanging under Safari's toolbar make the page taller than the window, so it
@@ -811,6 +828,156 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (!window.scrollX && !window.scrollY) return;
         if ($(document.activeElement).is('input, textarea, select, [contenteditable="true"]')) return;
         window.scrollTo(0, 0);
+    },
+
+    // ===============
+    // = Page scroll =
+    // ===============
+
+    // mobile.css (Page scrolling): a phone browser shrinks its toolbar only when the page itself
+    // scrolls. While the feed list or story list is at rest, its screen is laid out in the page's
+    // flow and the page scrolls in place of the list. Anything that moves or covers the screen (a
+    // slide, an edge swipe, a sheet, a modal, the player) puts it back in the fixed layout first,
+    // with the list scrolled to where the page was, and it returns to the page afterwards.
+    page_scroller: function (screen) {
+        if (screen === 'feeds') return this.$screens.feeds.find('.left-center-content')[0];
+        if (screen === 'titles') return NEWSBLUR.reader.$s.$story_titles[0];
+        return null;
+    },
+
+    // Whether the page is scrolling in place of this list right now.
+    page_scrolls: function (el) {
+        return !!this.page_scroll_screen && !!el && this.page_scroller(this.page_scroll_screen) === el;
+    },
+
+    wants_page_scroll: function () {
+        if (!this.active || this.transition || this.$body.hasClass('NB-mobile-transitioning')) return false;
+        if (!_.contains(['feeds', 'titles'], this.screen) || this.is_overlay_open()) return false;
+        // Add + Discover replaces the story list with tab panes that scroll themselves.
+        if (this.screen === 'titles' && $('.NB-layout').hasClass('NB-add-site-active')) return false;
+        return !!this.page_scroller(this.screen);
+    },
+
+    // Code all over the reader reads and sets these lists' scrollTop and listens for their
+    // scroll (story_titles_view.js, mobile_pull_to_refresh.js, jQuery's scrollTo). While the
+    // page scrolls for a list, its scrollTop is the page's, so that code keeps working.
+    setup_page_scroll: function () {
+        var self = this;
+        var native_scroll_top = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
+        _.each(['feeds', 'titles'], function (screen) {
+            var el = self.page_scroller(screen);
+            if (!el) return;
+            Object.defineProperty(el, 'scrollTop', {
+                configurable: true,
+                get: function () {
+                    return self.page_scrolls(el) ? window.scrollY : native_scroll_top.get.call(el);
+                },
+                set: function (value) {
+                    if (self.page_scrolls(el)) {
+                        window.scrollTo({ top: value, left: 0, behavior: 'instant' });
+                    } else {
+                        native_scroll_top.set.call(el, value);
+                    }
+                }
+            });
+            // Capture runs first on the list itself, ahead of its jQuery listeners.
+            el.addEventListener('scroll', function (e) {
+                if (self.page_scroll_handoff) e.stopImmediatePropagation();
+            }, true);
+        });
+        // jquery.scrollTo.js won't scroll a list past its own overflow, which a list the page
+        // scrolls for doesn't have. Its limit there is the page's.
+        var scroll_to_max = $.scrollTo.max;
+        $.scrollTo.max = function (el, axis) {
+            if (axis === 'y' && self.page_scrolls(el)) {
+                return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            }
+            return scroll_to_max.apply(this, arguments);
+        };
+        // Sheets, modals, the player and edge swipes mark the body or add themselves to it.
+        var observer = new MutationObserver(this.sync_page_scroll);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'], childList: true });
+        var layout = $('.NB-layout')[0];
+        if (layout) observer.observe(layout, { attributes: true, attributeFilter: ['class'] });
+    },
+
+    sync_page_scroll: function () {
+        var screen = this.wants_page_scroll() ? this.screen : null;
+        if (screen === this.page_scroll_screen) return;
+        this.leave_page_scroll();
+        if (screen) this.enter_page_scroll(screen);
+    },
+
+    // Trading the scroll between the list and the page moves nothing on screen, but each side
+    // reports a scroll of its own a frame later. Listeners that act on a scroll, like the feed
+    // menu that closes when its list moves (reader.js show_manage_menu), must not hear those.
+    hold_page_scroll_events: function () {
+        var self = this;
+        var token = this.page_scroll_handoff = {};
+        var release = function () {
+            if (self.page_scroll_handoff === token) self.page_scroll_handoff = null;
+        };
+        // Scroll events go out before a frame's animation callbacks, so the second frame is clear.
+        window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(release);
+        });
+        setTimeout(release, 400);
+    },
+
+    enter_page_scroll: function (screen) {
+        var top = this.page_scroller(screen).scrollTop;
+        this.hold_page_scroll_events();
+        this.page_scroll_screen = screen;
+        this.$body.addClass('NB-mobile-page-scroll');
+        this.measure_browser_chrome();
+        this.measure_page_bars();
+        window.scrollTo({ top: top, left: 0, behavior: 'instant' });
+    },
+
+    leave_page_scroll: function () {
+        if (!this.page_scroll_screen) return;
+        var el = this.page_scroller(this.page_scroll_screen);
+        var top = window.scrollY;
+        this.hold_page_scroll_events();
+        this.page_scroll_screen = null;
+        this.$body.removeClass('NB-mobile-page-scroll');
+        this.measure_browser_chrome();
+        el.scrollTop = top;
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    },
+
+    // The two bars stuck to the top of a screen the page scrolls for: its nav bar or account
+    // header, then its bar of controls.
+    page_bars: function () {
+        if (this.page_scroll_screen === 'feeds') {
+            return [this.$screens.feeds.children('.left-north')[0], this.$screens.feeds.children('.left-south')[0]];
+        }
+        if (this.page_scroll_screen === 'titles') {
+            return [this.$titles_bar[0], this.$screens.titles.children('.content-north')[0]];
+        }
+        return [];
+    },
+
+    // mobile.css sticks the second bar this far down, under the first.
+    measure_page_bars: function () {
+        var bars = this.page_bars();
+        if (!bars[0]) return;
+        this.$body[0].style.setProperty('--nb-mobile-page-bar-top', bars[0].offsetHeight + 'px');
+    },
+
+    // How much of the window the list shows under its bars, which is what its own height was
+    // while it scrolled itself.
+    page_viewport_height: function () {
+        var bars_height = _.reduce(this.page_bars(), function (sum, bar) {
+            return sum + (bar ? bar.offsetHeight : 0);
+        }, 0);
+        return Math.max(0, window.innerHeight - bars_height);
+    },
+
+    // The list's own scroll listeners hear the page's scroll.
+    handle_page_scroll: function () {
+        if (!this.page_scroll_screen || this.page_scroll_handoff) return;
+        $(this.page_scroller(this.page_scroll_screen)).triggerHandler('scroll');
     },
 
     is_browser_edge_touch: function (x) {
@@ -1180,6 +1347,26 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (clipped()) $bar.addClass('NB-mobile-nav-compact');
         if (clipped()) $row.addClass('NB-mobile-options-icon');
         $row.removeClass('NB-mobile-options-measure');
+    },
+
+    // The story list's pills are drawn in stages while a list loads: the header renders, the
+    // layout decides whether Previous and Next unread show, then fit_pills sizes the options
+    // pill. mobile.css NB-mobile-pills-pending keeps the bar's row but hides those stages, so
+    // the pills first appear at their final size. A list that never reports back (a dashboard
+    // river handed over without a count) shows them after PILLS_PENDING_MS.
+    set_pills_pending: function (pending) {
+        var $bar = $('.right-pane > .content-north');
+        clearTimeout(this.pills_pending_timer);
+        if (pending) {
+            $bar.addClass('NB-mobile-pills-pending');
+            this.pills_pending_timer = setTimeout(_.bind(this.set_pills_pending, this, false), this.PILLS_PENDING_MS);
+            return;
+        }
+        // story_titles_header_view.js renders the list's header right after its stories arrive.
+        _.defer(_.bind(function () {
+            this.fit_pills();
+            $bar.removeClass('NB-mobile-pills-pending');
+        }, this));
     },
 
     // The story list's search field closes from its x or from its pill. iOS dismisses the keyboard
