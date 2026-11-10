@@ -79,6 +79,22 @@ class FakeRedis:
             zset[str(member)] = float(score)
         return len(mapping)
 
+    def zrangebyscore(self, key, minimum, maximum):
+        low = float("-inf") if minimum == "-inf" else float(minimum)
+        high = float("inf") if maximum == "+inf" else float(maximum)
+        zset = self.data.get(key) or {}
+        return [
+            member for member, score in sorted(zset.items(), key=lambda kv: kv[1]) if low <= score <= high
+        ]
+
+    def zrem(self, key, *members):
+        zset = self.data.get(key) or {}
+        return sum(1 for member in members if zset.pop(str(member), None) is not None)
+
+    def zremrangebyscore(self, key, minimum, maximum):
+        removed = self.zrangebyscore(key, minimum, maximum)
+        return self.zrem(key, *removed) if removed else 0
+
     def zscore(self, key, member):
         return (self.data.get(key) or {}).get(str(member))
 

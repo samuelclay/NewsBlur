@@ -36,7 +36,12 @@ from django.conf import settings
 from django.utils import feedgenerator
 
 from utils import log as logging
-from utils.reddit_post_cache import RedditPostCache, subreddit_target, user_target
+from utils.reddit_post_cache import (
+    MAX_POSTS_PER_TARGET,
+    RedditPostCache,
+    subreddit_target,
+    user_target,
+)
 from utils.redlisten import DENIED_BUDGET, ONE_OFF, SCHEDULED, RedListenClient
 
 # How many posts a one-off live listing fetch asks for, the size of Reddit's .rss page.
@@ -221,6 +226,18 @@ def reddit_fetch_floor_minutes(address):
         return SINGLE_FEED_FLOOR_MINUTES
     if kind == KIND_LISTING:
         return POLLED_FEED_FLOOR_MINUTES
+    return None
+
+
+def reddit_max_entries(address):
+    """How many entries ProcessFeed (utils/feed_fetcher.py) may take from one fetch of
+    this feed, or None for its usual cap. A subreddit or user feed renders every post the
+    poller cached, up to one poll's worth for a target, and each was paid for, so all of
+    them are processed."""
+    if not is_reddit_address(address):
+        return None
+    if RedditFetcher.for_address(address).feed_kind() == KIND_LISTING:
+        return MAX_POSTS_PER_TARGET
     return None
 
 

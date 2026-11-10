@@ -4,6 +4,7 @@ patched, so nothing here spends the real RedListen quota."""
 
 import datetime
 import json
+import time
 from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase, override_settings
@@ -95,32 +96,32 @@ class Test_RedListenBudget(SimpleTestCase):
         self.assertFalse(self.budget.reserve(ONE_OFF, 0))
 
     def test_settle_replaces_the_estimate_and_adopts_redlistens_counters(self):
-        month = self.budget.reserve(POLLER, 25)
-        self.assertEqual(month, "202611")
-        self.budget.settle(POLLER, month, 25, 7, {})
+        reservation = self.budget.reserve(POLLER, 25)
+        self.assertEqual(reservation.month, "202611")
+        self.assertEqual(self.budget.usage()["results"], 25)
+        self.budget.settle(POLLER, reservation, 7, {})
         self.assertEqual(self.budget.usage()["results"], 7)
         self.assertEqual(self.budget.spend()["poller_results"], 7)
+        self.assertEqual(self.budget.pending(), (0, 0))
 
-        # Other keys on the account spent more; the headers predate this request.
+        # Other keys on the account spent more; the headers predate the request they came on.
         headers = {
             "x-quota-used": "40",
             "x-items-used": "500",
             "x-quota-limit": "50000",
             "x-items-limit": "1000000",
         }
-        self.budget.settle(POLLER, month, 7, 7, headers)
+        self.budget.sync_headers(headers, 7, reservation.month)
         usage = self.budget.usage()
         self.assertEqual((usage["requests"], usage["results"]), (41, 507))
         self.assertEqual((usage["request_limit"], usage["result_limit"]), (50000, 1000000))
 
         # Counters that trail ours never pull usage back down.
-        self.budget.settle(POLLER, month, 0, 0, {"x-quota-used": "3", "x-items-used": "10"})
+        self.budget.sync_headers({"x-quota-used": "3", "x-items-used": "10"}, 0, reservation.month)
         self.assertEqual(self.budget.usage()["results"], 507)
 
     def test_unlimited_headers_keep_the_configured_limits(self):
-        self.budget.settle(
-            POLLER, "202611", 0, 0, {"x-quota-limit": "unlimited", "x-items-limit": "unlimited"}
-        )
+        self.budget.sync_headers({"x-quota-limit": "unlimited", "x-items-limit": "unlimited"}, 0, "202611")
         usage = self.budget.usage()
         self.assertEqual((usage["request_limit"], usage["result_limit"]), (100, 1000))
 
@@ -130,21 +131,39 @@ class Test_RedListenBudget(SimpleTestCase):
         self.assertIsNone(self.budget.reserve(POLLER, 10))
         self.assertTrue(self.budget.reserve(POLLER, 5))
 
+    def test_concurrent_reservations_see_each_other(self):
+        self.r.zadd(self.budget.observed_key(), {"results": 985})
+        first = self.budget.reserve(POLLER, 5)
+        self.assertTrue(first)
+        # A second worker reserving before the first settles would make 995.
+        self.assertIsNone(self.budget.reserve(POLLER, 5))
+        # Once the first settles, RedListen's counters include it.
+        self.budget.settle(POLLER, first, 5, {"x-items-used": "985"})
+        self.assertEqual(self.budget.usage()["results"], 990)
+        self.assertIsNone(self.budget.reserve(POLLER, 1))
+
+    def test_an_abandoned_reservation_stops_counting(self):
+        self.r.zadd(self.budget.observed_key(), {"results": 900})
+        self.r.zadd(self.budget.pending_key(), {"dead-worker:80": time.time() - 10 * 60})
+        self.r.zadd(self.budget.pending_key(), {"live-worker:5": time.time()})
+        self.assertEqual(self.budget.pending(), (1, 5))
+        self.assertEqual(self.budget.usage()["results"], 905)
+
     def test_a_stale_header_never_undoes_reservations_or_newer_counters(self):
-        month = self.budget.reserve(POLLER, 10)
-        self.budget.reserve(POLLER, 10)
+        for _ in range(2):
+            self.budget.settle(POLLER, self.budget.reserve(POLLER, 10), 10, {})
         # A worker reports counters from before both reservations, then an older one.
-        self.budget.sync_headers({"x-quota-used": "500", "x-items-used": "600"}, 0, month)
-        self.budget.sync_headers({"x-quota-used": "0", "x-items-used": "0"}, 0, month)
+        self.budget.sync_headers({"x-quota-used": "500", "x-items-used": "600"}, 0, "202611")
+        self.budget.sync_headers({"x-quota-used": "0", "x-items-used": "0"}, 0, "202611")
         usage = self.budget.usage()
         self.assertEqual((usage["requests"], usage["results"]), (501, 600))
         self.assertEqual(self.r.hgetall(self.budget.usage_key())["requests"], "2")
 
     def test_a_request_crossing_midnight_settles_in_the_month_it_started(self):
         self.budget.fixed_now = datetime.datetime(2026, 11, 30, 23, 59, 59)
-        month = self.budget.reserve(POLLER, 25)
+        reservation = self.budget.reserve(POLLER, 25)
         self.budget.fixed_now = datetime.datetime(2026, 12, 1, 0, 0, 5)
-        self.budget.settle(POLLER, month, 25, 3, {"x-quota-used": "49000", "x-items-used": "989000"})
+        self.budget.settle(POLLER, reservation, 3, {"x-quota-used": "49000", "x-items-used": "989000"})
 
         december = self.budget.usage()
         self.assertEqual((december["requests"], december["results"]), (0, 0))

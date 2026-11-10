@@ -84,7 +84,7 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.json_fetcher import JSONFetcher
-from utils.reddit_fetcher import RedditFetcher
+from utils.reddit_fetcher import RedditFetcher, reddit_max_entries
 from utils.story_functions import (
     extract_story_date,
     linkify,
@@ -1436,6 +1436,26 @@ class ProcessFeed:
         stories = MStory.objects(story_hash__in=story_hashes).order_by()
         return {story.story_hash: story for story in stories}
 
+    def entry_limit(self):
+        """How many of this fetch's entries to process, newest first."""
+        # A caller can ask for a specific limit (e.g. bootstrap_popular_feeds)
+        if self.options.get("max_stories"):
+            return self.options["max_stories"]
+        # Subreddit and user feeds carry every post RedListen was paid for since the last
+        # fetch, up to one poll's worth. See utils/reddit_fetcher.py.
+        reddit_limit = reddit_max_entries(self.feed.feed_address)
+        if reddit_limit:
+            return reddit_limit
+        # High-volume feeds can handle more stories
+        feed_address_lower = self.feed.feed_address.lower()
+        for high_volume_url in HIGH_VOLUME_FEED_URLS:
+            if high_volume_url in feed_address_lower:
+                logging.debug(
+                    f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {MAX_ENTRIES_HIGH_VOLUME} stories"
+                )
+                return MAX_ENTRIES_HIGH_VOLUME
+        return MAX_ENTRIES_TO_PROCESS
+
     def process(self):
         """Downloads and parses a feed."""
         start = time.time()
@@ -1489,20 +1509,7 @@ class ProcessFeed:
         if is_bluesky_feed(self.feed.feed_address):
             enrich_bluesky_entries(self.feed.feed_address, self.feed_entries)
 
-        # Check if caller requested a specific max_stories limit (e.g. bootstrap_popular_feeds)
-        max_entries = MAX_ENTRIES_TO_PROCESS
-        if self.options.get("max_stories"):
-            max_entries = self.options["max_stories"]
-        else:
-            # Check if this is a high-volume feed that can handle more stories
-            feed_address_lower = self.feed.feed_address.lower()
-            for high_volume_url in HIGH_VOLUME_FEED_URLS:
-                if high_volume_url in feed_address_lower:
-                    max_entries = MAX_ENTRIES_HIGH_VOLUME
-                    logging.debug(
-                        f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories"
-                    )
-                    break
+        max_entries = self.entry_limit()
 
         # If there are more than max_entries, we should sort the entries in date descending order and cut them off
         if len(self.feed_entries) > max_entries:

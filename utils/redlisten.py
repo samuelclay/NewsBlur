@@ -26,6 +26,8 @@ See utils/redlisten.py.
 """
 
 import datetime
+import time
+import uuid
 
 import redis
 import requests
@@ -46,9 +48,13 @@ BACKGROUND_KINDS = (POLLER, SCHEDULED)
 # Redis keys (settings.REDIS_FEED_UPDATE_POOL, db 4).
 USAGE_KEY = "redlisten:usage:%s"  # hash per UTC month (YYYYMM): our reservations, and the plan limits
 OBSERVED_KEY = "redlisten:observed:%s"  # sorted set per UTC month: RedListen's own counters, highest seen
+PENDING_KEY = "redlisten:pending:%s"  # sorted set per UTC month: reservations not yet settled, by start time
 SPEND_KEY = "redlisten:spend:%s"  # hash per UTC day (YYYYMMDD): <kind>_requests, <kind>_items
 RATE_LIMIT_KEY = "redlisten:ratelimit"  # fixed one-minute window shared by every server
 USAGE_TTL = 60 * 60 * 24 * 40
+# A reservation still pending after this long belongs to a worker that died mid-request
+# (requests time out after 30 seconds), so it stops counting.
+PENDING_SECONDS = 5 * 60
 SPEND_TTL = 60 * 60 * 24 * 40
 
 # Why a request was not sent. See RedListenResult.denied.
@@ -118,6 +124,15 @@ class RedListenResult:
         return self.denied in (DENIED_BUDGET, DENIED_RATE_LIMIT) or self.status == 429
 
 
+class Reservation:
+    """A claim on the budget: the billing month it was made in, and its pending entry."""
+
+    def __init__(self, month, token, results):
+        self.month = month
+        self.token = token
+        self.results = results
+
+
 class RedListenBudget:
     """Monthly request and result accounting shared through Redis. See utils/redlisten.py."""
 
@@ -141,15 +156,20 @@ class RedListenBudget:
     def spend_key(self, day=None):
         return SPEND_KEY % (day or self.now()).strftime("%Y%m%d")
 
+    def pending_key(self, month=None):
+        return PENDING_KEY % (month or self.month())
+
     def usage(self, month=None):
         """A month's usage and limits. Usage is the higher of our own reservations and
-        RedListen's account-wide counters. Limits come from RedListen's headers once a
+        RedListen's account-wide counters plus the reservations still in flight, which
+        those counters cannot include yet. Limits come from RedListen's headers once a
         response has carried them, so a plan change applies without a deploy."""
         data = self.r.hgetall(self.usage_key(month)) or {}
         observed = self.observed(month)
+        pending_requests, pending_results = self.pending(month)
         return {
-            "requests": max(int(data.get("requests") or 0), observed["requests"]),
-            "results": max(int(data.get("results") or 0), observed["results"]),
+            "requests": max(int(data.get("requests") or 0), observed["requests"] + pending_requests),
+            "results": max(int(data.get("results") or 0), observed["results"] + pending_results),
             "request_limit": int(data.get("request_limit") or settings.REDLISTEN_MONTHLY_REQUESTS),
             "result_limit": int(data.get("result_limit") or settings.REDLISTEN_MONTHLY_RESULTS),
         }
@@ -158,6 +178,12 @@ class RedListenBudget:
         """RedListen's own counters, as the highest values its headers have reported."""
         key = self.observed_key(month)
         return {field: int(self.r.zscore(key, field) or 0) for field in ("requests", "results")}
+
+    def pending(self, month=None):
+        """(requests, results) reserved but not yet settled, ignoring abandoned ones."""
+        since = time.time() - PENDING_SECONDS
+        tokens = self.r.zrangebyscore(self.pending_key(month), since, "+inf")
+        return len(tokens), sum(int(token.rsplit(":", 1)[1]) for token in tokens)
 
     def caps(self, kind, usage=None):
         """(request cap, result cap) this kind of spending may reach this month."""
@@ -177,44 +203,53 @@ class RedListenBudget:
         return not settings.DEBUG or getattr(settings, "REDLISTEN_BACKGROUND_IN_DEBUG", False)
 
     def reserve(self, kind, results):
-        """Claim one request and up to `results` results. Returns the billing month the
-        claim was made in, which settle() and mark_exhausted() take back so a request that
-        finishes after midnight on the 1st is still counted in the month it started. Returns
-        None, claiming nothing, when the claim would cross this kind's cap."""
+        """Claim one request and up to `results` results. Returns a Reservation, which
+        settle() and mark_exhausted() take back so a request that finishes after midnight
+        on the 1st is still counted in the month it started, or None, claiming nothing,
+        when the claim would cross this kind's cap.
+
+        The claim is written before it is checked: to our own counters, and as a pending
+        entry on top of RedListen's counters. Two workers reserving at once therefore each
+        see the other's claim, so together they can never pass the cap."""
         if kind in BACKGROUND_KINDS and not self.background_allowed():
             return None
         month = self.month()
         key = self.usage_key(month)
+        token = "%s:%d" % (uuid.uuid4().hex, results)
         pipe = self.r.pipeline()
         pipe.hincrby(key, "requests", 1)
         pipe.hincrby(key, "results", results)
         pipe.expire(key, USAGE_TTL)
-        requests_used, results_used, _ = pipe.execute()
+        pipe.zadd(self.pending_key(month), {token: time.time()})
+        pipe.expire(self.pending_key(month), USAGE_TTL)
+        pipe.execute()
 
-        # RedListen's counters predate this claim, so it goes on top of them too.
         usage = self.usage(month)
-        observed = self.observed(month)
         request_cap, result_cap = self.caps(kind, usage)
-        over_requests = max(requests_used, observed["requests"] + 1) > request_cap
-        over_results = max(results_used, observed["results"] + results) > result_cap
-        if over_requests or over_results:
+        if usage["requests"] > request_cap or usage["results"] > result_cap:
             pipe = self.r.pipeline()
             pipe.hincrby(key, "requests", -1)
             pipe.hincrby(key, "results", -results)
+            pipe.zrem(self.pending_key(month), token)
             pipe.execute()
             return None
 
         self.record_spend(kind, 1, results)
-        return month
+        return Reservation(month, token, results)
 
-    def settle(self, kind, month, reserved_results, returned_results, headers):
-        """Replace a reservation's result estimate with what actually came back, then
-        catch up with RedListen's account-wide counters, all in the reservation's month."""
-        correction = returned_results - reserved_results
+    def settle(self, kind, reservation, returned_results, headers):
+        """Replace a reservation's result estimate with what actually came back, catch up
+        with RedListen's counters, and only then drop the pending entry, so the request is
+        never missing from both. All in the reservation's month."""
+        month = reservation.month
+        correction = returned_results - reservation.results
         if correction:
             self.r.hincrby(self.usage_key(month), "results", correction)
             self.record_spend(kind, 0, correction)
         self.sync_headers(headers, returned_results, month)
+        self.r.zrem(self.pending_key(month), reservation.token)
+        # Abandoned entries stop counting after PENDING_SECONDS; clear them out too.
+        self.r.zremrangebyscore(self.pending_key(month), 0, time.time() - PENDING_SECONDS)
 
     def sync_headers(self, headers, returned_results, month):
         """Record RedListen's counters when they are ahead (other keys on the account, or
@@ -312,8 +347,8 @@ class RedListenClient:
             return RedListenResult(denied=DENIED_NOT_CONFIGURED)
         if not self.budget.reserve_minute_slot():
             return RedListenResult(denied=DENIED_RATE_LIMIT)
-        month = self.budget.reserve(kind, max_results)
-        if not month:
+        reservation = self.budget.reserve(kind, max_results)
+        if not reservation:
             return RedListenResult(denied=DENIED_BUDGET)
 
         headers = {"Authorization": "Bearer %s" % api_key, "User-Agent": USER_AGENT}
@@ -321,7 +356,7 @@ class RedListenClient:
             response = requests.get(BASE_URL + path, params=params, headers=headers, timeout=timeout)
         except requests.RequestException as e:
             # Nothing came back, so nothing was returned to bill; keep the request counted.
-            self.budget.settle(kind, month, max_results, 0, {})
+            self.budget.settle(kind, reservation, 0, {})
             logging.debug("   ***> ~FRRedListen request failed: %s: %s" % (path[:120], e))
             return RedListenResult()
 
@@ -337,9 +372,9 @@ class RedListenClient:
             error_code = (body.get("error") or {}).get("code")
 
         results = count_results(payload)
-        self.budget.settle(kind, month, max_results, results, response.headers)
+        self.budget.settle(kind, reservation, results, response.headers)
         if response.status_code == 429 and error_code in ("quota_exceeded", "items_quota_exceeded"):
-            self.budget.mark_exhausted(error_code, month)
+            self.budget.mark_exhausted(error_code, reservation.month)
         if response.status_code != 200:
             logging.debug(
                 "   ***> ~FRRedListen HTTP %s%s: %s"

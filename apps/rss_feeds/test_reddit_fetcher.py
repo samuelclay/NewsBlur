@@ -11,11 +11,18 @@ import time
 from unittest.mock import MagicMock, patch
 
 import feedparser
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
 from apps.rss_feeds.fake_redis import FakeRedis
-from apps.rss_feeds.models import Feed
-from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
+from apps.rss_feeds.models import Feed, MStory
+from utils.feed_fetcher import (
+    FEED_ERRHTTP,
+    FEED_OK,
+    MAX_ENTRIES_HIGH_VOLUME,
+    MAX_ENTRIES_TO_PROCESS,
+    FetchFeed,
+    ProcessFeed,
+)
 from utils.reddit_fetcher import (
     MAX_COMMENTS,
     SINGLE_FEED_FIRST_LIMIT,
@@ -25,7 +32,7 @@ from utils.reddit_fetcher import (
     markdown_to_html,
     reddit_fetch_floor_minutes,
 )
-from utils.reddit_post_cache import RedditPostCache
+from utils.reddit_post_cache import MAX_POSTS_PER_TARGET, RedditPostCache
 from utils.redlisten import (
     DENIED_BUDGET,
     DENIED_RATE_LIMIT,
@@ -395,6 +402,52 @@ class TestCachedBatchesReachFeeds(FetcherTestCase):
         self.cache.add("r:python", [make_post(id="p1", selftext="first draft")])
         self.assertEqual(self.cache.add("r:python", [make_post(id="p1", selftext="edited")]), 0)
         self.assertEqual(self.cache.posts(["r:python"])[0]["selftext"], "edited")
+
+
+class Test_ProcessFeedEntryLimit(SimpleTestCase):
+    def limit(self, address, options=None):
+        process = ProcessFeed(1, None, options or {})
+        process.feed = Feed(feed_address=address, feed_title="Feed")
+        return process.entry_limit()
+
+    def test_reddit_listings_take_a_whole_poll_batch(self):
+        self.assertEqual(self.limit("https://www.reddit.com/r/python/.rss"), MAX_POSTS_PER_TARGET)
+        self.assertEqual(self.limit("https://old.reddit.com/user/spez/.rss"), MAX_POSTS_PER_TARGET)
+
+    def test_other_feeds_keep_their_caps(self):
+        self.assertEqual(
+            self.limit("https://www.reddit.com/r/python/comments/abc123/t/.rss"), MAX_ENTRIES_TO_PROCESS
+        )
+        self.assertEqual(self.limit("https://example.com/feed"), MAX_ENTRIES_TO_PROCESS)
+        self.assertEqual(self.limit("https://export.arxiv.org/rss/cs.AI"), MAX_ENTRIES_HIGH_VOLUME)
+        self.assertEqual(self.limit("https://www.reddit.com/r/python/.rss", {"max_stories": 7}), 7)
+
+
+class Test_RedditBatchIngestion(TestCase):
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_poll_batch_over_100_posts_is_all_stored(self, mock_redis, mock_statistics, mock_history):
+        mock_redis.Redis.return_value.zrevrangebyscore.return_value = []
+        feed = Feed.objects.create(
+            feed_address="https://www.reddit.com/r/python/.rss",
+            feed_link="https://www.reddit.com/r/python/",
+            feed_title="r/python",
+        )
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        now = int(time.time())
+        children = [
+            child(make_post(id="b%d" % i, title="Batch post %d" % i, created_utc=now - 30 * i))
+            for i in range(150)
+        ]
+        fpf = feedparser.parse(RedditFetcher(StubFeed(feed.feed_address)).build_feed("r/python", children))
+
+        process = ProcessFeed(feed.pk, fpf, {"verbose": False, "force": False, "updates_off": False})
+        process.refresh_feed()
+        result, counts = process.process()
+
+        self.assertEqual(result, FEED_OK)
+        self.assertEqual(counts["new"], 150)
 
 
 class TestRandomlyForcedFetchesStayScheduled(FetcherTestCase):
