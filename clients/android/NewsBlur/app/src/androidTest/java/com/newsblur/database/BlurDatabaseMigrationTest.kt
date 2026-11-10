@@ -10,6 +10,7 @@ import com.newsblur.domain.Story
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -67,6 +68,7 @@ class BlurDatabaseMigrationTest {
         context.deleteDatabase(dbName)
         BlurDatabase(context, dbName).use { helper ->
             val database = helper.writableDatabase
+            restorePreVersionTwelveTables(database)
             database.execSQL("DROP TABLE ${DatabaseConstants.CUSTOM_ICON_TABLE}")
             database.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ContentValues().apply {
                 put(DatabaseConstants.ACTION_TIME, 3000L)
@@ -78,6 +80,7 @@ class BlurDatabaseMigrationTest {
         BlurDatabase(context, dbName).use { helper ->
             val database = helper.writableDatabase
             assertEquals(BlurDatabase.VERSION, database.version)
+            assertVersionTwelveColumns(database)
             database.query(DatabaseConstants.CUSTOM_ICON_TABLE, null, null, null, null, null, null).use {
                 assertFalse(it.moveToFirst())
             }
@@ -150,6 +153,7 @@ class BlurDatabaseMigrationTest {
         val clusterJson = Gson().toJson(children)
         SQLiteDatabase.openOrCreateDatabase(dbFile, null).use { database ->
             BlurDatabase(context, dbName).use { it.onCreate(database) }
+            restorePreVersionTwelveTables(database)
             ClusterReadStore.dropTables(database)
             // BlurDatabaseMigrationTest.kt reconstructs the v8/v9 membership schema before upgrading.
             database.execSQL("CREATE TABLE ${ClusterReadStore.MEMBERS} (parent_hash TEXT NOT NULL, child_hash TEXT NOT NULL, PRIMARY KEY(parent_hash, child_hash))")
@@ -176,6 +180,7 @@ class BlurDatabaseMigrationTest {
         BlurDatabase(context, dbName).use { helper ->
             val database = helper.writableDatabase
             assertEquals(BlurDatabase.VERSION, database.version)
+            assertVersionTwelveColumns(database)
             database.rawQuery("SELECT title, read, cluster_stories FROM ${DatabaseConstants.STORY_TABLE} WHERE story_hash = '1:parent'", null).use {
                 assertTrue(it.moveToFirst())
                 assertEquals("Cached parent", it.getString(0))
@@ -208,6 +213,28 @@ class BlurDatabaseMigrationTest {
                 assertFalse(it.moveToNext())
             }
         }
+    }
+
+    // BlurDatabaseMigrationTest.kt builds older databases from today's onCreate, so the stories and
+    // feeds tables are rebuilt as they were before BlurDatabase.java version 12 added
+    // prompt_classifiers and stories_last_month. Otherwise the upgrade's ALTER TABLE would find
+    // columns no real older install has.
+    private fun restorePreVersionTwelveTables(database: SQLiteDatabase) {
+        val storySql = DatabaseConstants.STORY_SQL.replace(", ${DatabaseConstants.STORY_PROMPT_CLASSIFIERS} TEXT", "")
+        val feedSql = DatabaseConstants.FEED_SQL.replace(", ${DatabaseConstants.FEED_STORIES_LAST_MONTH} INTEGER", "")
+        assertNotEquals(DatabaseConstants.STORY_SQL, storySql)
+        assertNotEquals(DatabaseConstants.FEED_SQL, feedSql)
+        ClusterReadStore.dropTables(database)
+        database.execSQL("DROP TABLE ${DatabaseConstants.STORY_TABLE}")
+        database.execSQL("DROP TABLE ${DatabaseConstants.FEED_TABLE}")
+        database.execSQL(storySql)
+        database.execSQL(feedSql)
+        ClusterReadStore.createTables(database)
+    }
+
+    private fun assertVersionTwelveColumns(database: SQLiteDatabase) {
+        assertTrue(hasColumn(database, DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_PROMPT_CLASSIFIERS))
+        assertTrue(hasColumn(database, DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_STORIES_LAST_MONTH))
     }
 
     private fun clusterChild(hash: String, read: Boolean, timestampMillis: Long) = Story.ClusterStory().apply {

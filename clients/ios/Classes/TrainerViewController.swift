@@ -23,6 +23,9 @@ import SwiftUI
 
     private var retainedStoryContext: RetainedStoryContext?
     private var retainedStoryCache: StoryCache?
+
+    /// TrainerAIPromptSection.swift's drafts, prompt tests and cost estimates for the site or story being trained.
+    lazy var aiPrompts = TrainerAIPromptModel()
     
     lazy var hostingController = makeHostingController()
     
@@ -62,6 +65,8 @@ import SwiftUI
     @objc func resetForAccountChange() {
         retainedStoryContext = nil
         retainedStoryCache?.reloadForTraining(story: nil)
+        // TrainerAIPromptSection.swift's drafts, prompt tests and scope choices belong to the account that made them.
+        aiPrompts.resetForAccountChange()
     }
 
     @objc func restoreRetainedStoryClassifiers() {
@@ -110,6 +115,9 @@ import SwiftUI
 
     @objc func reload() {
         reloadTrainerContext()
+        let cache = storyCache
+        let feed = cache.currentFeed ?? cache.selected?.feed
+        aiPrompts.prepare(feedId: feed?.id, storyHash: isStoryTrainer ? cache.selected?.hash : nil)
         let freshView = TrainerView(interaction: self, cache: storyCache)
         hostingController.rootView = freshView
     }

@@ -2,12 +2,14 @@ package com.newsblur.network
 
 import android.content.Context
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.newsblur.listen.ListenError
 import com.newsblur.listen.ListenLibraryResponse
 import com.newsblur.listen.ListenManifest
 import com.newsblur.listen.ListenPlaybackState
+import com.newsblur.listen.ListenPositionSync
 import com.newsblur.listen.ListenPlayedTime
 import com.newsblur.listen.ListenProgressResponse
 import com.newsblur.listen.ListenQueueItem
@@ -152,10 +154,13 @@ class ListenApiImpl(
         return mediaPlayerRequest(Request.Builder().url(url).get())
     }
 
-    override suspend fun addToUpNext(item: ListenQueueItem): ListenPlaybackState? =
+    override suspend fun addToUpNext(
+        item: ListenQueueItem,
+        position: Int?,
+    ): ListenPlaybackState? =
         mediaPlayerPost(
             APIConstants.PATH_MEDIA_ADD_TO_QUEUE,
-            mediaItemForm(item),
+            mediaItemForm(item) + listOfNotNull(position?.let { "position" to it.toString() }),
         )
 
     override suspend fun removeFromUpNext(item: ListenQueueItem): ListenPlaybackState? =
@@ -184,6 +189,59 @@ class ListenApiImpl(
         return mediaPlayerPost(APIConstants.PATH_MEDIA_ADD_TO_HISTORY, form) != null
     }
 
+    override suspend fun savePlaybackState(
+        item: ListenQueueItem,
+        positionSeconds: Double,
+        durationSeconds: Double,
+        playbackRate: Double?,
+        isPlaying: Boolean,
+    ): ListenPlaybackState? {
+        val form =
+            mapOf(
+                "current_story_hash" to item.storyHash,
+                "current_media_url" to item.mediaUrl,
+                "current_media_type" to item.mediaType,
+                "current_media_title" to item.title,
+                // apps/media_player/views.py reads current_feed_id as a number.
+                "current_feed_id" to (item.feedId?.toLongOrNull()?.toString() ?: "0"),
+                "current_image_url" to item.imageUrl.orEmpty(),
+                "current_position" to secondsField(positionSeconds),
+                "current_duration" to secondsField(durationSeconds),
+                "is_playing" to isPlaying.toString(),
+            ) + listOfNotNull(playbackRate?.let { "current_playback_rate" to ListenSpeed.prefString(it) })
+        return mediaPlayerPost(APIConstants.PATH_MEDIA_SAVE_PLAYBACK_STATE, form)
+    }
+
+    override suspend fun syncPlaybackPosition(
+        mediaUrl: String,
+        positionSeconds: Double,
+        durationSeconds: Double,
+        playbackRate: Double,
+        isPlaying: Boolean,
+    ): ListenPositionSync {
+        val form =
+            mapOf(
+                "media_url" to mediaUrl,
+                "position" to secondsField(positionSeconds),
+                "duration" to secondsField(durationSeconds),
+                "playback_rate" to ListenSpeed.prefString(playbackRate),
+                "is_playing" to isPlaying.toString(),
+            )
+        val body =
+            FormBody
+                .Builder()
+                .apply { form.forEach { (key, value) -> add(key, value) } }
+                .build()
+        val url = APIConstants.buildUrl(APIConstants.PATH_MEDIA_SYNC_PLAYBACK_POSITION)
+        val json = mediaPlayerJson(Request.Builder().url(url).post(body)) ?: return ListenPositionSync.FAILED
+        // The endpoint answers {"code": 1}, or code -1 when another item has become current since.
+        return when (json.get("code")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asInt) {
+            1 -> ListenPositionSync.SYNCED
+            -1 -> ListenPositionSync.NOT_CURRENT
+            else -> ListenPositionSync.FAILED
+        }
+    }
+
     private fun mediaItemForm(item: ListenQueueItem): Map<String, String> =
         buildMap {
             put("story_hash", item.storyHash)
@@ -210,21 +268,22 @@ class ListenApiImpl(
     }
 
     /** /media_player answers {"playback_state": ...} without Listen's code field, so it's read on its own. */
-    private suspend fun mediaPlayerRequest(builder: Request.Builder): ListenPlaybackState? {
+    private suspend fun mediaPlayerRequest(builder: Request.Builder): ListenPlaybackState? =
+        ListenUpNextQueue.parseResponse(mediaPlayerJson(builder))
+
+    private suspend fun mediaPlayerJson(builder: Request.Builder): JsonObject? {
         if (!NetworkUtils.isOnline(context)) return null
         networkClient.addCookieHeader(builder)
         builder.header("User-Agent", userAgent)
         LanguageSettings.addLanguageHeader(builder, context)
         val request = builder.build()
         val body = withContext(Dispatchers.IO) { fetchBody(request) } ?: return null
-        val json =
-            try {
-                JsonParser.parseString(body).takeIf { it.isJsonObject }?.asJsonObject
-            } catch (error: JsonParseException) {
-                Log.w(this.javaClass.name, "Media player response from ${request.url.encodedPath} was not JSON: ${error.message}")
-                null
-            }
-        return ListenUpNextQueue.parseResponse(json)
+        return try {
+            JsonParser.parseString(body).takeIf { it.isJsonObject }?.asJsonObject
+        } catch (error: JsonParseException) {
+            Log.w(this.javaClass.name, "Media player response from ${request.url.encodedPath} was not JSON: ${error.message}")
+            null
+        }
     }
 
     override fun resolveAudioUrl(url: String): String = resolveListenAudioUrl(url, APIConstants.buildUrl(""))

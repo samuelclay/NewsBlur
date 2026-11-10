@@ -1072,12 +1072,18 @@ def refresh_feed(request, feed_id):
     return load_single_feed(request, feed_id)
 
 
-def get_prompt_scores_or_queue(user, stories, feed_ids):
+def get_prompt_scores_or_queue(user, stories, feed_ids, folder_feed_ids=None):
     """Read cached AI prompt classifier scores (cache-read-only).
 
     Classification happens at FeedFetch time, not at read time.
     This function only reads from Redis cache and returns whatever
     scores are available. Uncached stories get no score.
+
+    A prompt's score is only read for feeds the prompt covers (its own feed, every
+    feed for a global prompt, the sites in its folder for a folder prompt), matching
+    MClassifierPrompt.classify_stories in apps/analyzer/models.py. Pass the view's
+    folder_feed_ids map when it has one; otherwise it's loaded only if a folder prompt
+    needs it.
 
     Returns dict with:
       "scores": {story_hash: prompt_score} - aggregate score per story
@@ -1095,16 +1101,19 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
     if not prompt_count:
         return empty_result
 
-    # Get applicable prompts
-    prompts = MClassifierPrompt.get_prompts_for_user(user.pk, feed_ids=feed_ids)
-    feed_prompts = prompts["feed_prompts"]
-    if not feed_prompts:
-        return empty_result
-
     # Group stories by feed
     stories_by_feed = defaultdict(list)
     for story in stories:
         stories_by_feed[story["story_feed_id"]].append(story)
+
+    # Get the prompts that apply to each story's feed (feed-specific, global, and folder
+    # prompts whose folder holds the feed). Keyed by the stories' own feed ids, which the
+    # fetcher caches scores under, even when the request named a duplicate feed id.
+    prompts_by_feed = MClassifierPrompt.get_prompts_by_feed(
+        user.pk, list(stories_by_feed.keys()), folder_feed_ids=folder_feed_ids
+    )
+    if not prompts_by_feed:
+        return empty_result
 
     # Check cache for all prompts
     prompt_scores = {}  # {story_hash: aggregated_score}
@@ -1113,14 +1122,7 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
     for feed_id, feed_stories in stories_by_feed.items():
         story_hashes = [s["story_hash"] for s in feed_stories]
 
-        # Collect prompts that apply to this feed (feed-specific + global)
-        applicable_prompts = []
-        if 0 in feed_prompts:
-            applicable_prompts.extend(feed_prompts[0])
-        if feed_id in feed_prompts:
-            applicable_prompts.extend(feed_prompts[feed_id])
-
-        for prompt in applicable_prompts:
+        for prompt in prompts_by_feed.get(feed_id, []):
             prompt_id = str(prompt.id)
             cached = MClassifierPrompt.get_cached_scores(user.pk, prompt_id, feed_id, story_hashes)
 
@@ -1137,7 +1139,10 @@ def get_prompt_scores_or_queue(user, stories, feed_ids):
                     elif prompt.classifier_type == "hidden" and score == -1:
                         effective_score = -1
                     if effective_score != 0:
-                        prompt_scores[sh] = effective_score
+                        # views.py: Several prompts can match one story. A focus match is a
+                        # like and a hidden match is a dislike, and as with any other pair of
+                        # classifiers the like wins, so the story keeps the strongest score.
+                        prompt_scores[sh] = max(prompt_scores.get(sh, effective_score), effective_score)
                         prompt_details[sh].append(
                             {
                                 "prompt": prompt.prompt,
@@ -1421,13 +1426,20 @@ def load_single_feed(request, feed_id):
     user_is_pro = user.profile.is_pro
 
     # AI prompt classifiers (cached in Redis, async classification for uncached)
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=[feed_id])
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=[feed_id], folder_feed_ids=folder_feed_ids
+    )
 
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, feed),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -2177,6 +2189,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -2568,6 +2585,10 @@ def load_river_stories__redis(request):
         classifier_filter_scope = "feed"
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
+    # views.py: include_story_content=false returns stories without their content, like
+    # load_single_feed's flag. The iOS score refresh after a classifier save
+    # (clients/ios StoryScoreRefresher.swift) only needs each story's scores.
+    include_story_content = is_true(get_post.get("include_story_content", True))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
     infrequent = is_true(get_post.get("infrequent", False))
     if infrequent:
@@ -2673,6 +2694,7 @@ def load_river_stories__redis(request):
         feeds_hash = hashlib.md5(",".join(str(f) for f in sorted(feed_ids)).encode()).hexdigest()[:12]
         cache_key = (
             f"river:{user.pk}:{feeds_hash}:{page}:{order}:{read_filter}:{date_filter_start}:{date_filter_end}"
+            f":{int(include_story_content)}"
         )
         deduper = RequestDeduplicator(request, cache_key)
         cached = deduper.check_for_duplicate()
@@ -2964,7 +2986,9 @@ def load_river_stories__redis(request):
     user_is_pro = user.profile.is_pro
 
     # AI prompt classifiers (cached in Redis, async classification for uncached)
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=found_feed_ids)
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=found_feed_ids, folder_feed_ids=folder_feed_ids
+    )
 
     # Look up actual read status for starred stories from Redis
     if read_filter == "starred":
@@ -3004,6 +3028,11 @@ def load_river_stories__redis(request):
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "author_regex": (
+                apply_classifier_author_regex(classifier_authors, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -3167,6 +3196,13 @@ def load_river_stories__redis(request):
         if hasattr(request, "start_time"):
             seconds = time.time() - request.start_time
             RStats.add("page_load", duration=seconds)
+
+    if not include_story_content:
+        # views.py drops content only now, after clustering has read it for member previews.
+        for story in stories:
+            story.pop("story_content", None)
+            for member in story.get("cluster_stories", []):
+                member.pop("story_content", None)
 
     data = dict(
         code=code,
@@ -6019,7 +6055,9 @@ def load_trending_stories(request):
     )
 
     user_is_pro = user.profile.is_pro
-    prompt_data = get_prompt_scores_or_queue(user, stories, feed_ids=story_feed_ids)
+    prompt_data = get_prompt_scores_or_queue(
+        user, stories, feed_ids=story_feed_ids, folder_feed_ids=folder_feed_ids
+    )
 
     # Look up starred stories
     story_hash_list = [s["story_hash"] for s in stories]

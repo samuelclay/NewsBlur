@@ -500,6 +500,16 @@ msgstr ""
 "weiter nutzen."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> speichert für immer jeden Artikel von jeder Website, der du folgst. Du bekommst "
+"alles aus Premium und zusätzlich:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> ist für Power-User gemacht. Du bekommst alles aus Archive und zusätzlich:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -801,6 +811,18 @@ msgstr ""
 " Suchen und Blurblog-Beiträge in Datenbanken, die du kontrollierst. Es gibt auf keiner Ebene eine "
 "Anbieterbindung. Wenn du den gehosteten Dienst nutzt, kannst du jederzeit deine OPML-Datei exportieren und "
 "mit demselben Open-Source-Code, der newsblur.com antreibt, eine eigene Instanz einrichten."
+
+msgid "All of this for $29/month."
+msgstr "Das alles für 29 $ pro Monat."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "Das alles für <b>29 $ pro Monat</b>."
+
+msgid "All of this for just $99/year."
+msgstr "Das alles für nur 99 $ pro Jahr."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "Das alles für nur <b>99 $ pro Jahr</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1540,6 +1562,12 @@ msgstr "Artikel konnte nicht gespeichert werden: nicht gefunden"
 msgid "Could not unsave story, not found"
 msgstr "Artikel konnte nicht aus den gespeicherten entfernt werden: nicht gefunden"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe konnte nicht erreicht werden. Bitte versuche es erneut."
+
+msgid "Couldn't save the position"
+msgstr "Position konnte nicht gespeichert werden"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Abdeckungszeitraum: %(start)s &ndash; %(end)s"
@@ -2023,9 +2051,6 @@ msgstr "Erweitere dein Netzwerk"
 
 msgid "Explore Archive"
 msgstr "Archive entdecken"
-
-msgid "Explore NewsBlur:"
-msgstr "Entdecke NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "Premium entdecken"
@@ -3086,6 +3111,9 @@ msgstr "Ungültige Bilddatei"
 msgid "Invalid mute_duration_days"
 msgstr "Ungültige mute_duration_days"
 
+msgid "Invalid position"
+msgstr "Ungültige Position"
+
 msgid "Invalid request identifier"
 msgstr "Ungültige Anfrage-ID"
 
@@ -3608,6 +3636,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Durchsuche dein Archiv mithilfe von Datumsfiltern. Finde Artikel aus jedem beliebigen Zeitraum."
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "Du brauchst noch mehr? Entdecke Premium Pro."
 
 msgid "Neutral"
 msgstr "Neutral"
@@ -4254,6 +4285,9 @@ msgstr "Kein Trainingssystem"
 msgid "No uncategorized archives found"
 msgstr "Keine nicht kategorisierten Archive gefunden"
 
+msgid "No usage billing set up."
+msgstr "Keine nutzungsbasierte Abrechnung eingerichtet."
+
 msgid "No user has that email address."
 msgstr "Es gibt keinen Benutzer mit dieser E-Mail-Adresse."
 
@@ -4497,6 +4531,9 @@ msgstr "Bitte gib eine Suchanfrage mit Stichworten ein."
 msgid "Please enter in an email address."
 msgstr "Bitte gib eine E-Mail-Adresse ein."
 
+msgid "Please log in to NewsBlur again."
+msgstr "Bitte melde dich erneut bei NewsBlur an."
+
 msgid "Please login to continue."
 msgstr "Bitte melde dich an, um fortzufahren."
 
@@ -4575,6 +4612,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive – NewsBlur-Preise"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"Premium Archive speichert für immer jeden Artikel von jeder Website, der du folgst. Du bekommst alles aus "
+"Premium und zusätzlich:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "Premium Archive für Klassifikator-Benachrichtigungen erforderlich"
 
@@ -4603,6 +4645,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro – Preise von NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro ist für Power-User gemacht. Du bekommst alles aus Archive und zusätzlich:"
 
 msgid "Premium Pro subscription"
 msgstr "Premium-Pro-Abonnement"
@@ -5887,6 +5932,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Danke!"
 
+msgid "That item isn't playing"
+msgstr "Dieser Eintrag wird nicht abgespielt"
+
 msgid "That part of the story doesn't exist."
 msgstr "Dieser Teil des Artikels ist nicht vorhanden."
 
@@ -6436,12 +6484,18 @@ msgstr "Jetzt upgraden:"
 msgid "Upgrade to Premium"
 msgstr "Auf Premium upgraden"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Auf Premium Archive upgraden"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Upgrade auf Premium Archive (99 $/Jahr) – darin enthalten sind bis zu 4.096 Websites, eine Volltextsuche "
 "und Zugriff auf dein vollständiges Artikelarchiv."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Auf Premium Archive upgraden:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "Upgrade auf ein Premium-Konto für nur 36 $/Jahr"
@@ -6463,6 +6517,9 @@ msgstr "Nutzungsabhängige Abrechnung nicht aktiviert"
 msgid "Usage billing required for AI classifiers"
 msgstr "Nutzungsabrechnung für KI-Klassifikatoren erforderlich"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "Nutzungsbasierte Abrechnung ist derzeit nicht verfügbar."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Verwenden"
@@ -6476,6 +6533,9 @@ msgstr ""
 " lire, Fiery Feeds, Newsify und vielen weiteren Apps. Gelesen-Status, gespeicherte Artikel und "
 "Trainingsdaten werden in allen Apps synchronisiert. Die offene API von NewsBlur ermöglicht Dutzende Clients"
 " von Drittanbietern."
+
+msgid "Use POST"
+msgstr "POST verwenden"
 
 msgid "Use prompt templates"
 msgstr "Prompt-Vorlagen verwenden"
@@ -6555,6 +6615,9 @@ msgstr "Visuelles Training (Daumen hoch/runter)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "Visuelles Training vs. regelbasierte Filterung"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "Du willst noch mehr? Entdecke Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "Möchtest du mehr CLI-Funktionen?"

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Veja quais filtros de conteúdo e imagem com IA corresponderam a um artigo e gerencie seus filtros no treinador. Ocultar agora se sobrepõe às correspondências dos filtros de IA.\n\nOuça podcasts no player Listen de NewsBlur, com controles para avançar e retroceder, AirPlay e uma fila que combina podcasts com artigos lidos em voz alta. Retome de onde parou em todos os dispositivos.\n\nAgora o Listen pode ler sobre a música de outros apps. Ative Reproduzir sobre outro áudio em Reproduzindo, escolha se quer diminuir o volume da música enquanto a voz fala e ajuste o equilíbrio entre Música e Voz."
+  },
+  "android": {
+    "release_notes": "Veja as correspondências dos filtros de IA e gerencie os filtros no treinador redesenhado. Ocultar se sobrepõe às correspondências dos filtros de IA. Ouça podcasts no Listen com controles para avançar e retroceder, uma fila que combina podcasts e artigos e a posição de reprodução sincronizada entre dispositivos. O Listen pode ler sobre a música de outros apps, com opção para diminuir o volume da música e ajustar o equilíbrio entre Música e Voz."
+  },
+  "macos": {
+    "whats_new": "Veja quais filtros de conteúdo e imagem com IA corresponderam a um artigo e gerencie seus filtros no treinador. Ocultar agora se sobrepõe às correspondências dos filtros de IA.\n\nOuça podcasts no player Listen de NewsBlur, com controles para avançar e retroceder, AirPlay e uma fila que combina podcasts com artigos lidos em voz alta. Retome de onde parou em todos os dispositivos."
+  }
+}

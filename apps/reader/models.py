@@ -33,6 +33,7 @@ from apps.analyzer.models import (
     MClassifierText,
     MClassifierTitle,
     MClassifierUrl,
+    apply_classifier_author_regex,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
@@ -2163,6 +2164,13 @@ class UserSubscription(models.Model):
                         "author": apply_classifier_authors(
                             classifier_authors, story, folder_feed_ids=folder_feed_map
                         ),
+                        "author_regex": (
+                            apply_classifier_author_regex(
+                                classifier_authors, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
+                        ),
                         "tags": apply_classifier_tags(
                             classifier_tags, story, folder_feed_ids=folder_feed_map
                         ),
@@ -2204,6 +2212,7 @@ class UserSubscription(models.Model):
 
                 max_score = max(
                     scores["author"],
+                    scores["author_regex"],
                     scores["tags"],
                     scores["title"],
                     scores["title_regex"],
@@ -2214,6 +2223,7 @@ class UserSubscription(models.Model):
                 )
                 min_score = min(
                     scores["author"],
+                    scores["author_regex"],
                     scores["tags"],
                     scores["title"],
                     scores["title_regex"],
@@ -2328,12 +2338,11 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
-        # AI prompt classifier takes absolute priority
-        prompt = scores.get("prompt", 0)
-        if prompt != 0:
-            return prompt
-
-        max_score = max(
+        # models.py: Same order as apps/analyzer/models.py compute_story_score. The AI
+        # prompt score is a classifier like any other (+1 focus match, -1 hidden match,
+        # 0 when it didn't match), so a manual Hide (-2) beats everything, then the
+        # strongest like, then the strongest dislike, then the feed.
+        classifier_scores = [
             scores["author"],
             scores.get("author_regex", 0),
             scores["tags"],
@@ -2343,22 +2352,15 @@ class UserSubscription(models.Model):
             scores.get("text_regex", 0),
             scores.get("url", 0),
             scores.get("url_regex", 0),
-        )
-        min_score = min(
-            scores["author"],
-            scores.get("author_regex", 0),
-            scores["tags"],
-            scores["title"],
-            scores.get("title_regex", 0),
-            scores.get("text", 0),
-            scores.get("text_regex", 0),
-            scores.get("url", 0),
-            scores.get("url_regex", 0),
-        )
+            scores.get("prompt") or 0,
+        ]
+        max_score = max(classifier_scores)
+        min_score = min(classifier_scores)
 
         if min_score <= -2:
             return min_score  # super downvote wins; keep -2 so clients can tell it from a -1 dislike
-        elif max_score > 0:
+
+        if max_score > 0:
             return 1
         elif min_score < 0:
             return -1

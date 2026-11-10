@@ -462,6 +462,14 @@ msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying 
 msgstr "<b>신용카드는 필요하지 않습니다.</b> 30일 후에도 연 $36에 이 기능을 계속 이용하실 수 있습니다."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr "<b>프리미엄 아카이브</b>에서는 팔로우하는 모든 사이트의 모든 스토리를 영구적으로 보관합니다. 프리미엄의 모든 혜택에 더해 다음을 이용할 수 있습니다:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>프리미엄 프로</b>는 파워 유저를 위해 설계되었습니다. 아카이브의 모든 혜택에 더해 다음을 이용할 수 있습니다:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr "<b>프리미엄 아카이브로 업그레이드(연 $99)</b> - 사이트 최대 4,096개, 전체 텍스트 검색, 전체 스토리 아카이브 이용이 포함됩니다."
@@ -742,6 +750,18 @@ msgstr ""
 "네 가지 리더 모두 OPML 가져오기와 내보내기를 지원하므로 피드 목록을 자유롭게 옮길 수 있습니다. NewsBlur는 MIT 라이선스에 따라 애플리케이션 전체의 소스 코드에 접근할 수 있도록"
 " 해 한 걸음 더 나아갑니다. 직접 호스팅하면 스토리, 지능형 학습 데이터, 저장된 검색 및 Blurblog 게시물이 모두 직접 관리하는 데이터베이스에 저장됩니다. 어느 단계에서도 특정 "
 "공급업체에 종속되지 않습니다. 호스팅 서비스를 이용하더라도 언제든 OPML을 내보내고 newsblur.com을 구동하는 것과 동일한 오픈 소스 코드로 자체 인스턴스를 운영할 수 있습니다."
+
+msgid "All of this for $29/month."
+msgstr "이 모든 혜택을 월 $29에 이용하세요."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "이 모든 혜택을 월 <b>$29</b>에 이용하세요."
+
+msgid "All of this for just $99/year."
+msgstr "이 모든 혜택을 연 $99에 이용하세요."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "이 모든 혜택을 연 <b>$99</b>에 이용하세요."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1428,6 +1448,12 @@ msgstr "스토리를 찾을 수 없어 저장할 수 없습니다"
 msgid "Could not unsave story, not found"
 msgstr "스토리를 저장 취소할 수 없습니다. 스토리를 찾을 수 없습니다."
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe에 연결할 수 없습니다. 다시 시도하세요."
+
+msgid "Couldn't save the position"
+msgstr "위치를 저장하지 못했습니다"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "기간: %(start)s &ndash; %(end)s"
@@ -1883,9 +1909,6 @@ msgstr "네트워크를 확장하세요"
 
 msgid "Explore Archive"
 msgstr "아카이브 둘러보기"
-
-msgid "Explore NewsBlur:"
-msgstr "NewsBlur 둘러보기:"
 
 msgid "Explore Premium"
 msgstr "프리미엄 둘러보기"
@@ -2858,6 +2881,9 @@ msgstr "잘못된 이미지 파일"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days 값이 유효하지 않습니다"
 
+msgid "Invalid position"
+msgstr "잘못된 위치입니다"
+
 msgid "Invalid request identifier"
 msgstr "잘못된 요청 식별자"
 
@@ -3341,6 +3367,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "날짜 필터로 아카이브를 탐색하세요. 원하는 기간의 스토리를 찾아보세요."
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "최고의 혜택을 원하시나요? 프리미엄 프로를 만나보세요."
 
 msgid "Neutral"
 msgstr "중립"
@@ -3900,6 +3929,9 @@ msgstr "학습 시스템 없음"
 msgid "No uncategorized archives found"
 msgstr "분류되지 않은 아카이브가 없습니다"
 
+msgid "No usage billing set up."
+msgstr "사용량 결제가 설정되지 않았습니다."
+
 msgid "No user has that email address."
 msgstr "해당 이메일 주소를 사용하는 사용자가 없습니다."
 
@@ -4133,6 +4165,9 @@ msgstr "키워드 검색어를 입력해 주세요."
 msgid "Please enter in an email address."
 msgstr "이메일 주소를 입력해 주세요."
 
+msgid "Please log in to NewsBlur again."
+msgstr "NewsBlur에 다시 로그인하세요."
+
 msgid "Please login to continue."
 msgstr "계속하려면 로그인해 주세요."
 
@@ -4210,6 +4245,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "프리미엄 아카이브 - NewsBlur 요금제"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr "프리미엄 아카이브에서는 팔로우하는 모든 사이트의 모든 스토리를 영구적으로 보관합니다. 프리미엄의 모든 혜택에 더해 다음을 이용할 수 있습니다:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "분류기 알림을 사용하려면 프리미엄 아카이브가 필요합니다"
 
@@ -4236,6 +4274,9 @@ msgstr "프리미엄 프로(월 $29)를 이용하면 모든 피드를 5~15분마
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "프리미엄 프로 - NewsBlur 요금제"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "프리미엄 프로는 파워 유저를 위해 설계되었습니다. 아카이브의 모든 혜택에 더해 다음을 이용할 수 있습니다:"
 
 msgid "Premium Pro subscription"
 msgstr "프리미엄 프로 구독"
@@ -5449,6 +5490,9 @@ msgstr "NewsBlur를 사용해 주셔서 감사합니다! NewsBlur가 매일의 �
 msgid "Thanks!"
 msgstr "감사합니다!"
 
+msgid "That item isn't playing"
+msgstr "해당 항목이 재생 중이 아닙니다"
+
 msgid "That part of the story doesn't exist."
 msgstr "스토리의 해당 부분이 존재하지 않습니다."
 
@@ -5947,10 +5991,16 @@ msgstr "지금 업그레이드하세요:"
 msgid "Upgrade to Premium"
 msgstr "프리미엄으로 업그레이드"
 
+msgid "Upgrade to Premium Archive"
+msgstr "프리미엄 아카이브로 업그레이드"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr "프리미엄 아카이브로 업그레이드(연 $99) - 사이트 최대 4,096개, 전체 텍스트 검색 및 전체 스토리 아카이브 이용이 포함됩니다."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "프리미엄 아카이브로 업그레이드:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "연 $36만 내고 프리미엄 계정으로 업그레이드하세요"
@@ -5970,6 +6020,9 @@ msgstr "사용량 결제가 활성화되지 않았습니다"
 msgid "Usage billing required for AI classifiers"
 msgstr "AI 분류기에는 사용량 기반 결제가 필요합니다"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "현재 사용량 기반 결제를 이용할 수 없습니다."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "사용"
@@ -5981,6 +6034,9 @@ msgid ""
 msgstr ""
 "즐겨 사용하는 독서 앱에서 NewsBlur를 이용하세요. Reeder, ReadKit, Unread, lire, Fiery Feeds, Newsify 등 다양한 앱과 완벽하게 동기화됩니다. "
 "읽음 상태, 저장한 스토리, 학습 데이터가 모든 앱에서 동기화됩니다. NewsBlur의 공개 API로 수십 가지 서드파티 클라이언트를 사용할 수 있습니다."
+
+msgid "Use POST"
+msgstr "POST 사용"
 
 msgid "Use prompt templates"
 msgstr "프롬프트 템플릿 사용"
@@ -6054,6 +6110,9 @@ msgstr "시각적 학습 (좋아요/싫어요)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "시각적 학습과 규칙 기반 필터링 비교"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "더 많은 혜택을 원하시나요? 프리미엄 아카이브를 만나보세요."
 
 msgid "Want more CLI features?"
 msgstr "CLI 기능을 더 원하시나요?"

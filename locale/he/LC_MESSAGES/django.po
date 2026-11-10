@@ -491,6 +491,16 @@ msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying 
 msgstr "<b>אין צורך בכרטיס אשראי.</b> אחרי 30 יום, אפשר להמשיך ליהנות מהתכונות האלה תמורת $36 לשנה בלבד."
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> שומר את כל הכתבות מכל האתרים שבמעקב שלך, לתמיד. הוא כולל את כל מה שכלול ב־Premium, "
+"ועוד:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> נועד למשתמשים מתקדמים. הוא כולל את כל מה שכלול ב־Archive, ועוד:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -780,6 +790,18 @@ msgstr ""
 "נתוני אימון הבינה, החיפושים השמורים והפוסטים ב־Blurblog שלכם נשמרים כולם במסדי נתונים שבשליטתכם. אין תלות "
 "בספק באף שכבה. אם אתם משתמשים בשירות המתארח, תוכלו לייצא את קובץ ה-OPML שלכם בכל עת ולהקים מופע משלכם "
 "באמצעות אותו קוד פתוח שמפעיל את newsblur.com."
+
+msgid "All of this for $29/month."
+msgstr "כל זה תמורת 29$ לחודש."
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "כל זה תמורת <b>29$ לחודש</b>."
+
+msgid "All of this for just $99/year."
+msgstr "כל זה תמורת 99$ לשנה בלבד."
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "כל זה תמורת <b>99$ לשנה בלבד</b>."
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1490,6 +1512,12 @@ msgstr "שמירת הכתבה נכשלה: הכתבה לא נמצאה"
 msgid "Could not unsave story, not found"
 msgstr "לא ניתן להסיר את הכתבה מהשמורים; היא לא נמצאה"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "החיבור ל־Stripe נכשל. נסו שוב."
+
+msgid "Couldn't save the position"
+msgstr "אי אפשר לשמור את המיקום"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "תקופת הכיסוי: %(start)s &ndash; %(end)s"
@@ -1955,9 +1983,6 @@ msgstr "הרחיבו את הרשת שלכם"
 
 msgid "Explore Archive"
 msgstr "גלו את Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "גלו את NewsBlur:"
 
 msgid "Explore Premium"
 msgstr "גלו את Premium"
@@ -2964,6 +2989,9 @@ msgstr "קובץ תמונה לא תקין"
 msgid "Invalid mute_duration_days"
 msgstr "ערך mute_duration_days אינו תקין"
 
+msgid "Invalid position"
+msgstr "מיקום לא תקין"
+
 msgid "Invalid request identifier"
 msgstr "מזהה בקשה לא תקין"
 
@@ -3462,6 +3490,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "נווטו בארכיון באמצעות מסנני תאריכים. מצאו כתבות מכל תקופה."
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "צריכים את המיטב? הכירו את Premium Pro."
 
 msgid "Neutral"
 msgstr "ניטרלי"
@@ -4064,6 +4095,9 @@ msgstr "ללא מערכת אימון"
 msgid "No uncategorized archives found"
 msgstr "לא נמצאו ארכיונים ללא קטגוריה"
 
+msgid "No usage billing set up."
+msgstr "לא הוגדר חיוב לפי שימוש."
+
 msgid "No user has that email address."
 msgstr "לא נמצא משתמש עם כתובת האימייל הזו."
 
@@ -4297,6 +4331,9 @@ msgstr "נא להזין שאילתת חיפוש לפי מילות מפתח."
 msgid "Please enter in an email address."
 msgstr "נא להזין כתובת אימייל."
 
+msgid "Please log in to NewsBlur again."
+msgstr "התחברו שוב אל NewsBlur."
+
 msgid "Please login to continue."
 msgstr "יש להתחבר כדי להמשיך."
 
@@ -4374,6 +4411,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - תמחור NewsBlur"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr "Premium Archive שומר את כל הכתבות מכל האתרים שבמעקב שלך, לתמיד. הוא כולל את כל מה שכלול ב־Premium, ועוד:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "נדרש Premium Archive לקבלת התראות על מסווגים"
 
@@ -4402,6 +4442,9 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - תמחור NewsBlur"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro נועד למשתמשים מתקדמים. הוא כולל את כל מה שכלול ב־Archive, ועוד:"
 
 msgid "Premium Pro subscription"
 msgstr "מינוי Premium Pro"
@@ -5642,6 +5685,9 @@ msgstr "תודה שניסית את NewsBlur! מקווה ש־NewsBlur יהפוך 
 msgid "Thanks!"
 msgstr "תודה!"
 
+msgid "That item isn't playing"
+msgstr "הפריט הזה לא מתנגן"
+
 msgid "That part of the story doesn't exist."
 msgstr "החלק הזה בכתבה לא קיים."
 
@@ -6165,10 +6211,16 @@ msgstr "שדרוג עכשיו:"
 msgid "Upgrade to Premium"
 msgstr "שדרוג ל-Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "שדרוג ל־Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr "שדרוג ל־Premium Archive ($99 לשנה) - כולל עד 4,096 אתרים, חיפוש בטקסט המלא וגישה לארכיון הכתבות המלא שלך."
+
+msgid "Upgrade to Premium Archive:"
+msgstr "שדרוג ל־Premium Archive:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "שדרגו לחשבון Premium תמורת $36 לשנה בלבד"
@@ -6188,6 +6240,9 @@ msgstr "חיוב לפי שימוש לא מופעל"
 msgid "Usage billing required for AI classifiers"
 msgstr "נדרש חיוב לפי שימוש עבור מסווגי AI"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "חיוב לפי שימוש אינו זמין כרגע."
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "השתמשו"
@@ -6200,6 +6255,9 @@ msgstr ""
 "השתמשו ב-NewsBlur עם אפליקציות הקריאה המועדפות עליכם. תמיכה מלאה בסנכרון עבור Reeder, ReadKit, Unread, "
 "lire, Fiery Feeds, Newsify ועוד רבות. מצב הקריאה, הכתבות השמורות והאימון שלכם מסתנכרנים בכל האפליקציות. "
 "ה-API הפתוח של NewsBlur מפעיל עשרות אפליקציות צד שלישי."
+
+msgid "Use POST"
+msgstr "שימוש ב־POST"
 
 msgid "Use prompt templates"
 msgstr "השתמש בתבניות הנחיה"
@@ -6275,6 +6333,9 @@ msgstr "אימון חזותי (אגודל למעלה/למטה)"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "אימון חזותי לעומת סינון מבוסס כללים"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "רוצים עוד? הכירו את Premium Archive."
 
 msgid "Want more CLI features?"
 msgstr "רוצים עוד תכונות CLI?"

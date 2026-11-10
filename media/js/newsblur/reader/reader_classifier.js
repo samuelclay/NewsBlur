@@ -12,6 +12,10 @@ NEWSBLUR.ClassifierConstants = {
     // surface shows the same stacked-stories icon.
     MATCHING_STORIES_ICON: '<svg aria-hidden="true" viewBox="0 0 256 256" focusable="false"><path d="M224,104v96a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V104A16,16,0,0,1,48,88H208A16,16,0,0,1,224,104ZM56,72H200a8,8,0,0,0,0-16H56a8,8,0,0,0,0,16ZM72,40H184a8,8,0,0,0,0-16H72a8,8,0,0,0,0,16Z"/></svg>',
 
+    // reader_classifier.js: Robot glyph for natural language (AI) filters, used by
+    // the content filter section header.
+    AI_FILTER_ICON: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>',
+
     // Scope toggle icons rendered inside every classifier pill (trainer,
     // manage tab, filter banner). One entry per scope with its tooltip
     // label and inline SVG source.
@@ -149,7 +153,7 @@ NEWSBLUR.ReaderClassifierTrainer = function (options) {
     this.all_classifiers_data = null;
     this.manage_dirty_feeds = {};
     // Manage tab filter state
-    this.manage_filter_sentiment = 'all'; // 'all', 'like', 'dislike'
+    this.manage_filter_sentiment = 'all'; // 'all', 'like', 'dislike', 'hide'
     this.manage_filter_types = 'all'; // 'all' or specific type: 'title', 'text', 'tag', 'author', 'feed', 'url'
     this.manage_filter_scope = 'all'; // 'all', 'feed', 'folder', 'global'
     this.manage_filter_feed = null; // null = all feeds/folders, or specific feed_id/folder path
@@ -270,6 +274,7 @@ var classifier_prototype = {
         this.find_story_and_feed();
         this.make_modal_feed();
         this.make_modal_title();
+        this.handle_scoring_info_hover();
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
@@ -307,6 +312,7 @@ var classifier_prototype = {
         this.handle_text_highlight();
         this.handle_regex_input();
         this.make_modal_title();
+        this.handle_scoring_info_hover();
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
@@ -1051,6 +1057,9 @@ var classifier_prototype = {
             ]);
         };
 
+        // reader_classifier.js: Two examples cover the whole order, Hide beats Like beats
+        // Dislike. An AI filter match is a like or a dislike in that order, like a title
+        // or tag match, so it needs no example of its own.
         return $.make('div', { className: 'NB-scoring-popover' }, [
             $.make('div', { className: 'NB-scoring-popover-content' }, [
                 // Section 1: Like beats dislikes
@@ -1237,7 +1246,7 @@ var classifier_prototype = {
         var story = this.story;
         var can_use_ai = NEWSBLUR.Globals.can_use_ai_classifiers;
 
-        var ai_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
+        var ai_svg = NEWSBLUR.ClassifierConstants.AI_FILTER_ICON;
 
         var $prompt_classifier = this.make_prompt_classifier(
             '<span class="NB-classifier-content-prompt-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt) + '</span>', '', 'content'
@@ -2020,6 +2029,9 @@ var classifier_prototype = {
                         $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike NB-explainer-icon-super-dislike-shadow' })
                     ])
                 ]),
+                // reader_classifier.js: Hide beats Like beats Dislike, the order of
+                // compute_story_score in reader_utils.js. An AI filter match is a like or a
+                // dislike in that order, so it has no level of its own.
                 $.make('span', { className: 'NB-explainer-separator' }, [
                     $.make('span', { className: 'NB-explainer-separator-line' }),
                     $.make('span', { className: 'NB-explainer-separator-label' }, gettext('beats any')),
@@ -3620,9 +3632,17 @@ var classifier_prototype = {
                 }
             }, 100);
         });
+    },
 
-        // Handle scoring info icon hover - show popover on mouseenter, hide on mouseleave
-        $modal.on('mouseenter', '.NB-explainer-scoring-info', function (e) {
+    // reader_classifier.js: Show the scoring popover while hovering the explainer's ⓘ.
+    // Called by runner_feed and runner_story, which both build the explainer in
+    // make_modal_title. The handlers are namespaced and unbound first, so calling
+    // this again never stacks a second set on the modal or the document.
+    handle_scoring_info_hover: function () {
+        var $modal = this.$modal;
+
+        $modal.off('.scoring_info');
+        $modal.on('mouseenter.scoring_info', '.NB-explainer-scoring-info', function (e) {
             var $icon = $(this);
             var $popover = $icon.data('popover') || $icon.closest('.NB-classifier-explainer').find('.NB-scoring-popover');
 
@@ -3644,7 +3664,7 @@ var classifier_prototype = {
             $icon.data('popover', $popover);
         });
 
-        $modal.on('mouseleave', '.NB-explainer-scoring-info', function (e) {
+        $modal.on('mouseleave.scoring_info', '.NB-explainer-scoring-info', function (e) {
             var $icon = $(this);
             var $popover = $icon.data('popover');
 
@@ -3657,7 +3677,8 @@ var classifier_prototype = {
             }, 100);
         });
 
-        $(document).on('mouseleave', '.NB-scoring-popover', function (e) {
+        $(document).off('mouseleave.scoring_info');
+        $(document).on('mouseleave.scoring_info', '.NB-scoring-popover', function (e) {
             var $popover = $(this);
 
             setTimeout(function () {
@@ -5446,6 +5467,7 @@ var classifier_prototype = {
             all: 0,
             likes: 0,
             dislikes: 0,
+            hides: 0,
             title: 0,
             author: 0,
             tag: 0,
@@ -5466,9 +5488,12 @@ var classifier_prototype = {
 
         var countItems = function (items, type, feed_id) {
             _.each(items || [], function (item) {
+                // Hide is the super dislike (score <= -2) and gets its own bucket, so
+                // Likes + Dislikes + Hide add up to All in the sentiment filter
                 var is_like = item.score > 0;
-                var is_dislike = item.score < 0;
-                var sentiment = is_like ? 'like' : (is_dislike ? 'dislike' : 'neutral');
+                var is_hide = item.score <= -2;
+                var is_dislike = item.score < 0 && !is_hide;
+                var sentiment = is_like ? 'like' : (is_hide ? 'hide' : (is_dislike ? 'dislike' : 'neutral'));
                 var item_scope = item.scope || 'feed';
 
                 var sentiment_match = !sentiment_filter || sentiment_filter === 'all' || sentiment_filter === sentiment;
@@ -5510,6 +5535,7 @@ var classifier_prototype = {
                     counts[type]++;
                     if (is_like) counts.likes++;
                     if (is_dislike) counts.dislikes++;
+                    if (is_hide) counts.hides++;
                 }
                 // Scope counts: filtered by sentiment, type, feed, search (but NOT scope)
                 if (sentiment_match && type_match && feed_match && search_match) {
@@ -5590,6 +5616,7 @@ var classifier_prototype = {
             sentiment_all: sentiment_counts.all,
             sentiment_likes: sentiment_counts.likes,
             sentiment_dislikes: sentiment_counts.dislikes,
+            sentiment_hides: sentiment_counts.hides,
             // Type control counts (filtered by sentiment + scope)
             type_all: type_counts.all,
             type_title: type_counts.title,
@@ -5623,6 +5650,7 @@ var classifier_prototype = {
         updateCount('.NB-manage-filter-sentiment-all', counts.sentiment_all);
         updateCount('.NB-manage-filter-sentiment-like', counts.sentiment_likes);
         updateCount('.NB-manage-filter-sentiment-dislike', counts.sentiment_dislikes);
+        updateCount('.NB-manage-filter-sentiment-hide', counts.sentiment_hides);
 
         // Update type control counts
         updateCount('.NB-manage-filter-type-all', counts.type_all);
@@ -5759,6 +5787,18 @@ var classifier_prototype = {
                             $.make('span', { className: 'NB-manage-filter-icon NB-icon-dislike' }),
                             $.make('span', { className: 'NB-type-label' }, gettext('Dislikes')),
                             $.make('span', { className: 'NB-type-count' }, counts.sentiment_dislikes)
+                        ]),
+                        $.make('li', {
+                            className: 'NB-manage-filter-sentiment-hide' + (this.manage_filter_sentiment === 'hide' ? ' NB-active' : '') + (counts.sentiment_hides === 0 ? ' NB-zero-count' : ''),
+                            'data-sentiment': 'hide'
+                        }, [
+                            // Two stacked thumbs down, the same hide icon the Add form and filter banner use
+                            $.make('span', { className: 'NB-manage-filter-icon NB-icon-hide' }, [
+                                $.make('span', { className: 'NB-icon-hide-back' }),
+                                $.make('span', { className: 'NB-icon-hide-front' })
+                            ]),
+                            $.make('span', { className: 'NB-type-label' }, gettext('Hide')),
+                            $.make('span', { className: 'NB-type-count' }, counts.sentiment_hides)
                         ])
                     ])
                 ]),
@@ -5912,7 +5952,8 @@ var classifier_prototype = {
             var feed_id = $item.data('feed-id');
             var item_scope = $item.data('scope') || 'feed';
             var value = String($item.data('value') || '').toLowerCase();
-            var sentiment = score > 0 ? 'like' : 'dislike';
+            // Mirrors count_classifiers: hide is score <= -2, dislike is -1, like is positive
+            var sentiment = score > 0 ? 'like' : (score <= -2 ? 'hide' : 'dislike');
 
             var type_match = self.manage_filter_types === 'all' || self.manage_filter_types === type;
             var sentiment_match = self.manage_filter_sentiment === 'all' || self.manage_filter_sentiment === sentiment;

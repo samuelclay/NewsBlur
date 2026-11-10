@@ -128,20 +128,22 @@ struct PremiumView: View {
         PremiumFeature(title: NBLocalization.text("Everything in the premium subscription, of course"), icon: "sparkles", iconColor: .yellow),
         PremiumFeature(title: NBLocalization.text("Follow up to 4,096 sites"), icon: "square.stack.3d.up.fill", iconColor: .blue),
         PremiumFeature(title: NBLocalization.text("Web Feeds from any website, even without RSS"), icon: "web-feed-100", iconColor: .purple, isCustomImage: true),
+        PremiumFeature(title: NBLocalization.text("Listen to 1 hour of stories read aloud a week"), icon: "headphones", iconColor: .purple),
+        PremiumFeature(title: NBLocalization.text("Ask AI questions about stories"), icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
+        PremiumFeature(title: NBLocalization.text("Apply training across a folder"), icon: "folder.fill", iconColor: .mint),
+        PremiumFeature(title: NBLocalization.text("Apply training globally"), icon: "globe", iconColor: .indigo),
+        PremiumFeature(title: NBLocalization.text("Daily briefing with your top stories and keywords"), icon: "briefing", iconColor: .orange, isCustomImage: true),
+        PremiumFeature(title: NBLocalization.text("Every story from every site is archived and searchable forever"), icon: "archivebox.fill", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("Cluster duplicate stories across all your feeds"), icon: "circle.grid.2x2.fill", iconColor: .green),
+        PremiumFeature(title: NBLocalization.text("Train stories on full text content"), icon: "doc.text.fill", iconColor: .cyan),
+        PremiumFeature(title: NBLocalization.text("Notifications on trained intelligence classifiers"), icon: "bell.fill", iconColor: .yellow),
         PremiumFeature(title: NBLocalization.text("Choose when stories are automatically marked as read"), icon: "book.fill", iconColor: .blue),
         PremiumFeature(title: NBLocalization.text("Customize auto-read by site or folder"), icon: "slider.horizontal.3", iconColor: .green),
-        PremiumFeature(title: NBLocalization.text("Every story from every site is archived and searchable forever"), icon: "archivebox.fill", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("Feeds that support paging are back-filled in for a complete archive"), icon: "arrow.clockwise.circle.fill", iconColor: .teal),
-        PremiumFeature(title: NBLocalization.text("Train stories on full text content"), icon: "doc.text.fill", iconColor: .cyan),
         PremiumFeature(title: NBLocalization.text("Discover related stories across your archive"), icon: "arrow.triangle.branch", iconColor: .teal),
         PremiumFeature(title: NBLocalization.text("Export trained stories from folders as RSS feeds"), icon: "square.and.arrow.up.fill", iconColor: .orange),
         PremiumFeature(title: NBLocalization.text("Stories can stay unread forever"), icon: "calendar.badge.clock", iconColor: .red),
-        PremiumFeature(title: NBLocalization.text("Ask AI questions about stories"), icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
-        PremiumFeature(title: NBLocalization.text("Listen to 1 hour of stories read aloud a week"), icon: "headphones", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("Filter stories by date range"), icon: "calendar", iconColor: .pink),
-        PremiumFeature(title: NBLocalization.text("Apply training across a folder"), icon: "folder.fill", iconColor: .mint),
-        PremiumFeature(title: NBLocalization.text("Apply training globally"), icon: "globe", iconColor: .indigo),
         PremiumFeature(title: NBLocalization.text("Connect AI agents with MCP server and CLI"), icon: "cable.connector", iconColor: .indigo)
     ]
 
@@ -601,6 +603,21 @@ struct PremiumView: View {
 
     private var footerSection: some View {
         VStack(spacing: 12) {
+            // PremiumView.swift links to natural language classifier billing (UsageBillingView.swift), which is
+            // separate from the subscription, unless UsageBillingFeature.swift holds it out of this release.
+            if UsageBillingFeature.isEnabled {
+                Button(action: {
+                    NewsBlurAppDelegate.shared?.showUsageBillingDialog()
+                }) {
+                    Text(NBLocalization.text("Natural language classifier billing"))
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(PremiumColors.textSecondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(PremiumColors.cardBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+            }
             linkButton(title: NBLocalization.text("Privacy Policy"), url: "https://newsblur.com/privacy/")
             linkButton(title: NBLocalization.text("Terms of Use"), url: "https://newsblur.com/tos/")
         }

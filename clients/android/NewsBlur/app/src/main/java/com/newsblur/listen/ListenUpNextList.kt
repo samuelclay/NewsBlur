@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DragHandle
+import androidx.compose.material.icons.rounded.Podcasts
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -65,7 +66,9 @@ import kotlin.math.roundToInt
 
 /**
  * ListenUpNextList.kt is Now Playing's Up Next: your queue first (drag the handle to reorder, swipe away to remove,
- * tap to play now), then a dimmer list of the unread stories auto-continue would play from the same feed or folder.
+ * tap to play now), stories read aloud and podcast episodes alike, then a dimmer list of the unread stories
+ * auto-continue would play from the same feed or folder. Rows go by entryId, since a story and its own episode
+ * can both be queued. A podcast episode continues only through the queue, so it has no "Then from".
  */
 @Composable
 fun ListenUpNextSection(
@@ -94,6 +97,7 @@ fun ListenUpNextSection(
         )
     }
 
+    if (state.isMedia) return
     Spacer(Modifier.height(14.dp))
     Text(
         text =
@@ -122,7 +126,7 @@ fun ListenUpNextSection(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .clickable(role = Role.Button) { onPlay(item.storyHash) }
+                            .clickable(role = Role.Button) { onPlay(item.entryId) }
                             .padding(horizontal = 14.dp, vertical = 10.dp),
                 ) {
                     StoryLines(item = item, colors = colors, dimmed = true)
@@ -152,26 +156,26 @@ private fun QueueList(
     val moveDown = stringResource(R.string.listen_up_next_move_down)
     val remove = stringResource(R.string.listen_remove_from_up_next)
 
-    fun startDrag(storyHash: String) {
+    fun startDrag(entryId: String) {
         order = currentItems
-        dragging = storyHash
+        dragging = entryId
         dragOffset = 0f
     }
 
     fun drag(amount: Float) {
         val hash = dragging ?: return
         dragOffset += amount
-        val index = order.indexOfFirst { it.storyHash == hash }
+        val index = order.indexOfFirst { it.entryId == hash }
         if (index < 0) return
         // Passing half of a neighbor's height swaps with it, and the offset carries over so the row stays under the finger.
         if (dragOffset > 0 && index < order.lastIndex) {
-            val next = heights[order[index + 1].storyHash] ?: return
+            val next = heights[order[index + 1].entryId] ?: return
             if (dragOffset > next / 2f) {
                 order = order.toMutableList().apply { add(index + 1, removeAt(index)) }
                 dragOffset -= next
             }
         } else if (dragOffset < 0 && index > 0) {
-            val previous = heights[order[index - 1].storyHash] ?: return
+            val previous = heights[order[index - 1].entryId] ?: return
             if (-dragOffset > previous / 2f) {
                 order = order.toMutableList().apply { add(index - 1, removeAt(index)) }
                 dragOffset += previous
@@ -181,8 +185,8 @@ private fun QueueList(
 
     fun endDrag() {
         val hash = dragging ?: return
-        val from = currentItems.indexOfFirst { it.storyHash == hash }
-        val to = order.indexOfFirst { it.storyHash == hash }
+        val from = currentItems.indexOfFirst { it.entryId == hash }
+        val to = order.indexOfFirst { it.entryId == hash }
         dragging = null
         dragOffset = 0f
         if (from >= 0 && to >= 0 && from != to) currentOnMove(from, to)
@@ -191,14 +195,14 @@ private fun QueueList(
     Surface(shape = RoundedCornerShape(14.dp), color = colors.cardBackground) {
         Column(modifier = Modifier.fillMaxWidth()) {
             shown.forEachIndexed { index, item ->
-                key(item.storyHash) {
-                    val isDragging = dragging == item.storyHash
+                key(item.entryId) {
+                    val isDragging = dragging == item.entryId
                     Column(
                         modifier =
                             Modifier
                                 .zIndex(if (isDragging) 1f else 0f)
                                 .graphicsLayer { translationY = if (isDragging) dragOffset else 0f }
-                                .onSizeChanged { heights[item.storyHash] = it.height }
+                                .onSizeChanged { heights[item.entryId] = it.height }
                                 .semantics {
                                     customActions =
                                         buildList {
@@ -220,7 +224,7 @@ private fun QueueList(
                                             }
                                             add(
                                                 CustomAccessibilityAction(remove) {
-                                                    onRemove(item.storyHash)
+                                                    onRemove(item.entryId)
                                                     true
                                                 },
                                             )
@@ -232,9 +236,9 @@ private fun QueueList(
                             item = item,
                             colors = colors,
                             lifted = isDragging,
-                            onPlay = { onPlay(item.storyHash) },
-                            onRemove = { onRemove(item.storyHash) },
-                            onDragStart = { startDrag(item.storyHash) },
+                            onPlay = { onPlay(item.entryId) },
+                            onRemove = { onRemove(item.entryId) },
+                            onDragStart = { startDrag(item.entryId) },
                             onDrag = ::drag,
                             onDragEnd = ::endDrag,
                         )
@@ -275,7 +279,7 @@ private fun QueueRow(
                     .offset { IntOffset(swipe.value.roundToInt(), 0) }
                     .fillMaxWidth()
                     .background(if (lifted) colors.chipBackground else colors.cardBackground)
-                    .pointerInput(item.storyHash) {
+                    .pointerInput(item.entryId) {
                         val velocity = VelocityTracker()
                         detectHorizontalDragGestures(
                             onDragStart = { velocity.resetTracking() },
@@ -317,7 +321,7 @@ private fun QueueRow(
                                 awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
                                 view.parent?.requestDisallowInterceptTouchEvent(true)
                             }
-                        }.pointerInput(item.storyHash) {
+                        }.pointerInput(item.entryId) {
                             detectVerticalDragGestures(
                                 onDragStart = { onDragStart() },
                                 onDragEnd = onDragEnd,
@@ -354,14 +358,28 @@ private fun StoryLines(
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
     )
-    item.feedTitle?.takeIf { it.isNotBlank() }?.let {
-        Text(
-            it,
-            color = colors.textSecondary.copy(alpha = alpha),
-            fontSize = 12.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+    val feedTitle = item.feedTitle?.takeIf { it.isNotBlank() }
+    if (feedTitle != null || item.media != null) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // A podcast episode plays its own audio rather than being read aloud.
+            if (item.media != null) {
+                Icon(
+                    Icons.Rounded.Podcasts,
+                    contentDescription = null,
+                    tint = colors.textSecondary.copy(alpha = alpha),
+                    modifier = Modifier.padding(end = 4.dp).size(13.dp),
+                )
+            }
+            feedTitle?.let {
+                Text(
+                    it,
+                    color = colors.textSecondary.copy(alpha = alpha),
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }
 

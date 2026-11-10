@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Scopri quali filtri AI per contenuti e immagini corrispondono a un articolo e gestisci i filtri nell'addestramento. Nascondi ha ora la precedenza sulle corrispondenze dei filtri AI.\n\nRiproduci i podcast nel player Listen di NewsBlur, con controlli per saltare, AirPlay e una coda che alterna podcast e articoli letti ad alta voce. Riprendi da dove avevi interrotto su tutti i dispositivi.\n\nOra Listen può leggere sopra la musica di altre app. Attiva Riproduci sopra altri audio in In riproduzione, scegli se abbassare la musica mentre la voce parla e regola il bilanciamento Musica/Voce."
+  },
+  "android": {
+    "release_notes": "Scopri le corrispondenze dei filtri AI e gestiscili nell'addestramento rinnovato. Nascondi ha la precedenza sulle corrispondenze dei filtri AI. Riproduci i podcast in Listen con controlli per saltare, una coda mista di podcast e articoli e la posizione di riproduzione sincronizzata tra dispositivi. Listen può leggere sopra la musica di altre app, con la possibilità di abbassarla e regolare il bilanciamento Musica/Voce."
+  },
+  "macos": {
+    "whats_new": "Scopri quali filtri AI per contenuti e immagini corrispondono a un articolo e gestisci i filtri nell'addestramento. Nascondi ha ora la precedenza sulle corrispondenze dei filtri AI.\n\nRiproduci i podcast nel player Listen di NewsBlur, con controlli per saltare, AirPlay e una coda che alterna podcast e articoli letti ad alta voce. Riprendi da dove avevi interrotto su tutti i dispositivi."
+  }
+}

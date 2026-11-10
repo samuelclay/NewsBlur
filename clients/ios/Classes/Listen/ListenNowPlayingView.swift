@@ -8,8 +8,8 @@
 
 import SwiftUI
 
-/// ListenNowPlayingView.swift is the expanded player: scrubber, skips, speed, voice settings, Up Next, the
-/// preview banner and upgrade button, inline errors with Retry, and the listening allowance.
+/// ListenNowPlayingView.swift is the expanded player: scrubber, skips, speed, voice settings, playing over other
+/// apps' music, Up Next, the preview banner and upgrade button, inline errors with Retry, and the listening allowance.
 struct ListenNowPlayingView: View {
     @ObservedObject private var player = ListenPlayer.shared
     @ObservedObject private var queue = ListenQueue.shared
@@ -38,7 +38,12 @@ struct ListenNowPlayingView: View {
                 scrubber
                 transport
                 secondaryControls
-                if !queue.listenItems.isEmpty {
+                // ListenNowPlayingView.swift: Listen can read over music from other apps (iPhone and iPad only,
+                // since a Mac mixes apps on its own).
+                if ListenAudioMix.isAvailable {
+                    ListenMusicCard()
+                }
+                if !queue.playableItems.isEmpty {
                     queueSection
                 }
                 if !upNext.isEmpty {
@@ -90,10 +95,8 @@ struct ListenNowPlayingView: View {
         .onReceive(queue.$items) { _ in
             DispatchQueue.main.async(execute: refreshUpNext)
         }
-        .onReceive(player.$storyHash) { hash in
-            if hash == nil {
-                ListenPresenter.dismissNowPlaying()
-            }
+        .onReceive(player.$storyHash) { _ in
+            // ListenMediaNowPlayingView.swift (ListenNowPlayingRoot) closes Now Playing once nothing is loaded.
             DispatchQueue.main.async(execute: refreshUpNext)
         }
         .onReceive(player.$status) { _ in
@@ -287,30 +290,19 @@ struct ListenNowPlayingView: View {
         }
     }
 
+    /// The skips use the intervals from the web's player settings, as for podcasts (ListenQueue.swift settings).
     private var transport: some View {
         HStack(spacing: 36) {
-            Button {
-                player.skip(by: -15)
-            } label: {
-                Image(systemName: "gobackward.15")
-                    .font(.system(size: 28, weight: .regular))
-                    .foregroundColor(ListenColors.textPrimary)
+            ListenSkipButton(direction: .backward, seconds: queue.settings.skipBackSeconds, pointSize: 28) {
+                player.skipBackward()
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NBLocalization.text("Back 15 seconds"))
             .disabled(player.manifest == nil)
 
             ListenPlayPauseButton(size: 68, filled: true)
 
-            Button {
-                player.skip(by: 30)
-            } label: {
-                Image(systemName: "goforward.30")
-                    .font(.system(size: 28, weight: .regular))
-                    .foregroundColor(ListenColors.textPrimary)
+            ListenSkipButton(direction: .forward, seconds: queue.settings.skipForwardSeconds, pointSize: 28) {
+                player.skipForward()
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(NBLocalization.text("Forward 30 seconds"))
             .disabled(player.manifest == nil)
         }
         .padding(.vertical, 4)
@@ -347,6 +339,13 @@ struct ListenNowPlayingView: View {
 
             Spacer()
 
+            // ListenMediaNowPlayingView.swift: AirPlay and the choice of speaker or headphones.
+            ListenRoutePicker()
+                .frame(width: 40, height: 36)
+                .background(Capsule().fill(ListenColors.card))
+
+            Spacer()
+
             Button {
                 player.playNextStory()
             } label: {
@@ -376,30 +375,32 @@ struct ListenNowPlayingView: View {
             .padding(.horizontal, 4)
     }
 
-    /// Your queue, shared with the web and Android: drag to reorder, swipe or × to remove, tap to play now.
+    /// Your queue, shared with the web and Android: drag to reorder, swipe or × to remove, tap to play now. It holds
+    /// the stories read aloud and the podcast episodes this device plays, in the order they'll play
+    /// (ListenPlayer.swift takeNextQueued); videos stay queued for the web.
     private var queueSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionTitle(NBLocalization.text("Up Next"))
             List {
-                ForEach(queue.listenItems) { item in
+                ForEach(queue.playableItems) { item in
                     queueRow(item)
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(ListenColors.card)
                         .listRowSeparatorTint(ListenColors.textSecondary.opacity(0.2))
-                        .listRowSeparator(item.id == queue.listenItems.last?.id ? .hidden : .visible, edges: .bottom)
+                        .listRowSeparator(item.id == queue.playableItems.last?.id ? .hidden : .visible, edges: .bottom)
                 }
                 .onMove { source, destination in
-                    queue.moveListenItems(fromOffsets: source, toOffset: destination)
+                    queue.movePlayableItems(fromOffsets: source, toOffset: destination)
                 }
                 .onDelete { offsets in
-                    queue.removeListenItems(atOffsets: offsets)
+                    queue.removePlayableItems(atOffsets: offsets)
                 }
             }
             .listStyle(.plain)
             .scrollDisabled(true)
             .scrollContentBackground(.hidden)
             .environment(\.defaultMinListRowHeight, Self.queueRowHeight)
-            .frame(height: CGFloat(queue.listenItems.count) * Self.queueRowHeight)
+            .frame(height: CGFloat(queue.playableItems.count) * Self.queueRowHeight)
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .accessibilityIdentifier("listen-up-next-queue")
         }
@@ -417,10 +418,18 @@ struct ListenNowPlayingView: View {
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(ListenColors.textPrimary)
                             .lineLimit(1)
-                        Text(feedTitle(forFeedId: item.feedId))
-                            .font(.system(size: 12))
-                            .foregroundColor(ListenColors.textSecondary)
-                            .lineLimit(1)
+                        HStack(spacing: 4) {
+                            if item.isAudio {
+                                // ListenNowPlayingView.swift marks podcast episodes among the stories read aloud.
+                                Image(systemName: "headphones")
+                                    .font(.system(size: 10))
+                                    .accessibilityHidden(true)
+                            }
+                            Text(feedTitle(forFeedId: item.feedId))
+                                .lineLimit(1)
+                        }
+                        .font(.system(size: 12))
+                        .foregroundColor(ListenColors.textSecondary)
                     }
                     Spacer(minLength: 0)
                 }
@@ -430,7 +439,7 @@ struct ListenNowPlayingView: View {
             .accessibilityHint(NBLocalization.text("Plays this story now"))
 
             Button {
-                queue.remove(storyHash: item.storyHash)
+                queue.remove(item: item)
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 11, weight: .semibold))
@@ -540,8 +549,8 @@ private struct ListenQueueRowActions: ViewModifier {
     @ObservedObject var queue: ListenQueue
     let player: ListenPlayer
 
-    private var index: Int? { queue.listenItems.firstIndex { $0.id == item.id } }
-    private var count: Int { queue.listenItems.count }
+    private var index: Int? { queue.playableItems.firstIndex { $0.id == item.id } }
+    private var count: Int { queue.playableItems.count }
 
     func body(content: Content) -> some View {
         let actions = content
@@ -575,7 +584,7 @@ private struct ListenQueueRowActions: ViewModifier {
                 .disabled(index == count - 1)
                 Divider()
                 Button(role: .destructive) {
-                    queue.remove(storyHash: item.storyHash)
+                    queue.remove(item: item)
                 } label: {
                     Label(NBLocalization.text("Remove from Up Next"), systemImage: "xmark")
                 }
@@ -587,7 +596,7 @@ private struct ListenQueueRowActions: ViewModifier {
 
     private func moveToTop() {
         guard let index, index > 0 else { return }
-        queue.moveListenItems(fromOffsets: IndexSet(integer: index), toOffset: 0)
+        queue.movePlayableItems(fromOffsets: IndexSet(integer: index), toOffset: 0)
     }
 
     private func move(by offset: Int) {
@@ -595,6 +604,6 @@ private struct ListenQueueRowActions: ViewModifier {
         let target = index + offset
         guard target >= 0, target < count else { return }
         // ListenQueue.swift takes List-style offsets: moving down lands after the next item.
-        queue.moveListenItems(fromOffsets: IndexSet(integer: index), toOffset: offset > 0 ? target + 1 : target)
+        queue.movePlayableItems(fromOffsets: IndexSet(integer: index), toOffset: offset > 0 ? target + 1 : target)
     }
 }

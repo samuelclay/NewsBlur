@@ -497,6 +497,18 @@ msgstr ""
 " रख सकते हैं।"
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr ""
+"<b>Premium Archive</b> आपके फ़ॉलो किए गए हर साइट के सभी लेख हमेशा के लिए सहेजकर रखता है। इसमें Premium की "
+"सभी सुविधाएँ और ये अतिरिक्त सुविधाएँ मिलती हैं:"
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr ""
+"<b>Premium Pro</b> उन पावर यूज़र के लिए बना है जिन्हें ज़्यादा चाहिए। इसमें Archive की सभी सुविधाएँ और ये "
+"अतिरिक्त सुविधाएँ मिलती हैं:"
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
@@ -793,6 +805,18 @@ msgstr ""
 " जिनका नियंत्रण आपके पास होता है। किसी भी स्तर पर आप किसी विक्रेता के साथ बँधे नहीं रहते। यदि आप होस्ट की "
 "गई सेवा का उपयोग करते हैं, तो आप किसी भी समय अपना OPML निर्यात कर सकते हैं और उसी ओपन सोर्स कोड से अपना "
 "इंस्टेंस चला सकते हैं जो newsblur.com को संचालित करता है।"
+
+msgid "All of this for $29/month."
+msgstr "यह सब $29/महीने में।"
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "यह सब <b>$29/महीने में</b>।"
+
+msgid "All of this for just $99/year."
+msgstr "यह सब केवल $99/वर्ष में।"
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "यह सब केवल <b>$99/वर्ष में</b>।"
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1526,6 +1550,12 @@ msgstr "लेख सहेजा नहीं जा सका, नहीं �
 msgid "Could not unsave story, not found"
 msgstr "लेख को सहेजे गए लेखों से हटाया नहीं जा सका; लेख नहीं मिला"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe से संपर्क नहीं हो सका। कृपया फिर से कोशिश करें।"
+
+msgid "Couldn't save the position"
+msgstr "स्थिति सहेजी नहीं जा सकी"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "कवरेज अवधि: %(start)s &ndash; %(end)s"
@@ -2001,9 +2031,6 @@ msgstr "अपना नेटवर्क बढ़ाएँ"
 
 msgid "Explore Archive"
 msgstr "Archive देखें"
-
-msgid "Explore NewsBlur:"
-msgstr "NewsBlur देखें:"
 
 msgid "Explore Premium"
 msgstr "Premium देखें"
@@ -3041,6 +3068,9 @@ msgstr "अमान्य छवि फ़ाइल"
 msgid "Invalid mute_duration_days"
 msgstr "अमान्य mute_duration_days"
 
+msgid "Invalid position"
+msgstr "अमान्य स्थिति"
+
 msgid "Invalid request identifier"
 msgstr "अनुरोध पहचानकर्ता अमान्य है"
 
@@ -3548,6 +3578,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "तारीख फ़िल्टर से अपना आर्काइव देखें। किसी भी समयावधि के लेख खोजें।"
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "सबसे ज़्यादा चाहिए? Premium Pro से मिलिए।"
 
 msgid "Neutral"
 msgstr "तटस्थ"
@@ -4181,6 +4214,9 @@ msgstr "कोई प्रशिक्षण प्रणाली नहीं
 msgid "No uncategorized archives found"
 msgstr "कोई अवर्गीकृत संग्रह नहीं मिला"
 
+msgid "No usage billing set up."
+msgstr "उपयोग-आधारित बिलिंग सेट अप नहीं है।"
+
 msgid "No user has that email address."
 msgstr "इस ईमेल पते से कोई उपयोगकर्ता जुड़ा नहीं है।"
 
@@ -4420,6 +4456,9 @@ msgstr "कृपया कीवर्ड खोज क्वेरी दर�
 msgid "Please enter in an email address."
 msgstr "कृपया ईमेल पता दर्ज करें।"
 
+msgid "Please log in to NewsBlur again."
+msgstr "कृपया NewsBlur में फिर से लॉग इन करें।"
+
 msgid "Please login to continue."
 msgstr "जारी रखने के लिए कृपया लॉग इन करें।"
 
@@ -4497,6 +4536,11 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - NewsBlur की कीमतें"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr ""
+"Premium Archive आपके फ़ॉलो किए गए हर साइट के सभी लेख हमेशा के लिए सहेजकर रखता है। इसमें Premium की सभी "
+"सुविधाएँ और ये अतिरिक्त सुविधाएँ मिलती हैं:"
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "क्लासिफ़ायर सूचनाओं के लिए Premium Archive आवश्यक है"
 
@@ -4525,6 +4569,11 @@ msgstr ""
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - NewsBlur की कीमतें"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr ""
+"Premium Pro उन पावर यूज़र के लिए बना है जिन्हें ज़्यादा चाहिए। इसमें Archive की सभी सुविधाएँ और ये अतिरिक्त"
+" सुविधाएँ मिलती हैं:"
 
 msgid "Premium Pro subscription"
 msgstr "Premium Pro सदस्यता"
@@ -5787,6 +5836,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "धन्यवाद!"
 
+msgid "That item isn't playing"
+msgstr "वह आइटम चल नहीं रहा है"
+
 msgid "That part of the story doesn't exist."
 msgstr "लेख का यह हिस्सा मौजूद नहीं है।"
 
@@ -6329,12 +6381,18 @@ msgstr "अभी अपग्रेड करें:"
 msgid "Upgrade to Premium"
 msgstr "Premium में अपग्रेड करें"
 
+msgid "Upgrade to Premium Archive"
+msgstr "Premium Archive में अपग्रेड करें"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr ""
 "Premium Archive ($99/वर्ष) में अपग्रेड करें - इसमें 4,096 तक साइटें, साथ ही पूर्ण-पाठ खोज और आपके पूरे लेख "
 "संग्रह तक पहुँच शामिल है।"
+
+msgid "Upgrade to Premium Archive:"
+msgstr "Premium Archive में अपग्रेड करें:"
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "सिर्फ़ $36/वर्ष में Premium खाते पर अपग्रेड करें"
@@ -6354,6 +6412,9 @@ msgstr "उपयोग बिलिंग सक्षम नहीं है"
 msgid "Usage billing required for AI classifiers"
 msgstr "AI क्लासिफ़ायर के लिए उपयोग-आधारित बिलिंग आवश्यक है"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "उपयोग-आधारित बिलिंग अभी उपलब्ध नहीं है।"
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "उपयोग"
@@ -6366,6 +6427,9 @@ msgstr ""
 "अपने पसंदीदा रीडिंग ऐप्स के साथ NewsBlur का उपयोग करें। Reeder, ReadKit, Unread, lire, Fiery Feeds, Newsify"
 " और कई अन्य ऐप्स के लिए पूर्ण सिंक समर्थन। आपकी पढ़ने की स्थिति, सहेजे गए लेख और प्रशिक्षण सभी ऐप्स में "
 "सिंक होते हैं। NewsBlur का ओपन API दर्जनों तृतीय-पक्ष क्लाइंट को शक्ति देता है।"
+
+msgid "Use POST"
+msgstr "POST का उपयोग करें"
 
 msgid "Use prompt templates"
 msgstr "प्रॉम्प्ट टेम्पलेट इस्तेमाल करें"
@@ -6441,6 +6505,9 @@ msgstr "दृश्य प्रशिक्षण (अंगूठा ऊप�
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "दृश्य प्रशिक्षण बनाम नियम-आधारित फ़िल्टरिंग"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "और भी ज़्यादा चाहिए? Premium Archive से मिलिए।"
 
 msgid "Want more CLI features?"
 msgstr "क्या आपको और CLI सुविधाएँ चाहिए?"

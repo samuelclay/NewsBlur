@@ -30,6 +30,9 @@ class ListenNowPlayingFragment : BottomSheetDialogFragment() {
     @Inject
     lateinit var listenManager: ListenManager
 
+    @Inject
+    lateinit var audioMix: ListenAudioMix
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog = NewsBlurBottomSheet.createDialog(this)
 
     override fun onStart() {
@@ -55,6 +58,7 @@ class ListenNowPlayingFragment : BottomSheetDialogFragment() {
                 NewsBlurTheme(variant = prefsRepo.getSelectedTheme().toVariant(), dynamic = false) {
                     val state by listenManager.state.collectAsStateWithLifecycle()
                     val icon by listenManager.icon.collectAsStateWithLifecycle()
+                    val mix by audioMix.settings.collectAsStateWithLifecycle()
                     LaunchedEffect(state.isActive) {
                         if (!state.isActive) dismissAllowingStateLoss()
                     }
@@ -78,8 +82,13 @@ class ListenNowPlayingFragment : BottomSheetDialogFragment() {
                         onRetry = listenManager::retry,
                         onUpgrade = { UIUtils.startSubscriptionActivity(requireContext()) },
                         onPlayQueued = listenManager::playQueued,
-                        onRemoveQueued = listenManager::removeFromUpNext,
+                        onRemoveQueued = listenManager::removeQueued,
                         onMoveQueued = listenManager::moveInUpNext,
+                        audioMix = mix,
+                        onMusicSectionCollapsed = audioMix::setMusicSectionCollapsed,
+                        onPlayOverOtherAudio = audioMix::setPlaysOverOtherAudio,
+                        onLowerMusic = audioMix::setLowersMusicWhileSpeaking,
+                        onVoiceVolume = audioMix::setVoiceVolume,
                     )
                 }
             }

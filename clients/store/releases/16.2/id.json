@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Lihat filter konten AI dan gambar yang cocok dengan artikel, lalu kelola filter Anda di Pelatih. Sembunyikan kini mengesampingkan kecocokan filter AI.\n\nPutar podcast di pemutar Listen milik NewsBlur dengan kontrol lewati, AirPlay, dan antrean yang menggabungkan podcast dengan artikel yang dibacakan. Lanjutkan dari posisi terakhir di berbagai perangkat.\n\nListen kini dapat membacakan artikel di atas musik dari aplikasi lain. Aktifkan Putar di atas audio lain di Sedang Diputar, pilih apakah musik akan dikecilkan saat suara berbicara, lalu sesuaikan keseimbangan Musik / Suara."
+  },
+  "android": {
+    "release_notes": "Lihat kecocokan filter AI dan kelola filter di Pelatih yang didesain ulang. Sembunyikan mengesampingkan kecocokan filter AI. Putar podcast di Listen dengan kontrol lewati, antrean podcast dan artikel, serta posisi pemutaran yang disinkronkan di berbagai perangkat. Listen dapat membacakan artikel di atas musik dari aplikasi lain, dengan opsi untuk mengecilkan musik dan mengatur keseimbangan Musik / Suara."
+  },
+  "macos": {
+    "whats_new": "Lihat filter konten AI dan gambar yang cocok dengan artikel, lalu kelola filter Anda di Pelatih. Sembunyikan kini mengesampingkan kecocokan filter AI.\n\nPutar podcast di pemutar Listen milik NewsBlur dengan kontrol lewati, AirPlay, dan antrean yang menggabungkan podcast dengan artikel yang dibacakan. Lanjutkan dari posisi terakhir di berbagai perangkat."
+  }
+}

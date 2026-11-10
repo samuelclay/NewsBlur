@@ -50,6 +50,7 @@ object StoryUtil {
         enableHighlights: Boolean,
         classifier: Classifier? = null,
         interfaceRtl: Boolean = false,
+        mediaLabels: Map<String, String> = emptyMap(),
     ): String =
         withContext(Dispatchers.Default) {
             val sb = StringBuilder(8 * 1024)
@@ -85,6 +86,8 @@ object StoryUtil {
                     else -> PrefConstants.ThemeValue.LIGHT
                 }
             sb.append("<style>").append(ListenPalette.highlightCss(highlightTheme)).append("</style>")
+            // StoryUtil.kt styles storyMedia.js's audio card the same way.
+            sb.append("<style>").append(ListenPalette.mediaCardCss(highlightTheme)).append("</style>")
             sb.append("</head><body><div class=\"NB-story\" dir=\"auto\">")
             sb.append(storyHtml)
             sb.append("<script src=\"mark.min.js\"></script>")
@@ -99,6 +102,10 @@ object StoryUtil {
             }
             sb.append("<script type=\"text/javascript\" src=\"storyDetailView.js\"></script>")
             sb.append("<script type=\"text/javascript\" src=\"listenFollowAlong.js\"></script>")
+            // storyMedia.js labels its audio cards in the interface language, from strings.xml. Gson escapes < and >,
+            // so a label can't close the script.
+            sb.append("<script>window.NB_media_labels=").append(Gson().toJson(mediaLabels)).append(";</script>")
+            sb.append("<script type=\"text/javascript\" src=\"storyMedia.js\"></script>")
             sb.append("</div></body></html>")
             sb.toString()
         }

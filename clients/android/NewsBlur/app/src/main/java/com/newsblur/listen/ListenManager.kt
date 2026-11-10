@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -74,7 +75,13 @@ data class ListenStory(
     val feedFade: String?,
     /** This device's copy of the story, or null for one queued elsewhere; ListenStoryRead.kt marks either read. */
     val story: Story?,
-)
+    /** The story's audio file, like a podcast episode, playing instead of the story read aloud (ListenMedia.kt). */
+    val media: ListenMedia? = null,
+) {
+    /** Up Next's identity for this entry, which tells a story read aloud from its own podcast episode. */
+    val entryId: String
+        get() = ListenUpNextQueue.entryId(storyHash, media?.url ?: ListenUpNextQueue.mediaUrl(storyHash))
+}
 
 enum class ListenPhase {
     IDLE,
@@ -111,15 +118,26 @@ data class ListenUiState(
     val queued: List<ListenStory> = emptyList(),
     /** The feed or folder upNext comes from, for "Then from …". */
     val upNextSource: String? = null,
+    /** The web media player's skip intervals (ListenMediaSync.kt), for stories read aloud and podcasts alike. */
+    val skipBackSeconds: Int = ListenMediaSettings.DEFAULT_SKIP_BACK_SECONDS,
+    val skipForwardSeconds: Int = ListenMediaSettings.DEFAULT_SKIP_FORWARD_SECONDS,
 ) {
-    fun isQueued(storyHash: String?): Boolean = storyHash != null && queued.any { it.storyHash == storyHash }
+    /** Whether a story is queued to be read aloud; its podcast episode queued on its own doesn't count. */
+    fun isQueued(storyHash: String?): Boolean = storyHash != null && queued.any { it.media == null && it.storyHash == storyHash }
 
     /** What the next button and the lock screen's next play: Up Next first, then auto-continue. */
     val nextStory: ListenStory?
-        get() = queued.firstOrNull { !isStory(it.storyHash) } ?: upNext.firstOrNull { !isStory(it.storyHash) }
+        get() = queued.firstOrNull { it.entryId != story?.entryId } ?: upNext.firstOrNull { it.entryId != story?.entryId }
 
     val isActive: Boolean
         get() = story != null
+
+    /** Whether a podcast episode or other audio file is playing rather than a story read aloud. */
+    val isMedia: Boolean
+        get() = story?.media != null
+
+    /** Whether this audio file is the one loaded, for its card in the story (storyMedia.js). */
+    fun isMediaLoaded(mediaUrl: String?): Boolean = mediaUrl != null && story?.media?.url == mediaUrl
 
     val isLoading: Boolean
         get() = phase == ListenPhase.LOADING || phase == ListenPhase.BUFFERING
@@ -138,7 +156,8 @@ data class ListenUiState(
                 segments.getOrNull(segmentIndex)?.paragraphs.orEmpty()
             }
 
-    fun isStory(storyHash: String?): Boolean = storyHash != null && story?.storyHash == storyHash
+    /** Whether Listen is reading this story aloud; its podcast episode playing doesn't count. */
+    fun isStory(storyHash: String?): Boolean = storyHash != null && story?.storyHash == storyHash && story?.media == null
 }
 
 sealed interface ListenEvent {
@@ -167,6 +186,7 @@ class ListenManager
         private val dbHelper: BlurDatabaseHelper,
         @param:IconFileCache private val iconCache: FileCache,
         private val storyRead: ListenStoryRead,
+        private val audioMix: ListenAudioMix,
     ) {
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         private val mutableState =
@@ -186,6 +206,13 @@ class ListenManager
         }
 
         private var exoPlayer: ExoPlayer? = null
+
+        // The Music section's boost past 100% and the focus Listen holds itself while playing over other audio.
+        private val voiceBoost = ListenVoiceBoost()
+        private var exoTakesAudioFocus = true
+        private val audioFocus by lazy {
+            ListenAudioFocus(context, onPause = { setPlayWhenReady(false) }, onResume = { setPlayWhenReady(true) })
+        }
         private var controllerFuture: ListenableFuture<MediaController>? = null
 
         // One story's playback. Every async result checks generation so a stale story can't touch a newer one.
@@ -241,6 +268,24 @@ class ListenManager
         private val playedTime = ListenPlayedTime()
         private var lastProgressReportAt = 0L
 
+        // A podcast episode (ListenMedia.kt) plays its file straight through the same ExoPlayer, and ListenMediaSync.kt
+        // keeps the web media player's state in step: where it is, the skip intervals and the podcast rate.
+        private val mediaSync = ListenMediaSync(listenApi, NBScope, SystemClock::elapsedRealtime)
+
+        // Where the episode starts, or stands while ExoPlayer doesn't hold it yet, and its length once ExoPlayer knows.
+        private var episodeStartMs = 0L
+        private var episodeDurationMs = 0L
+
+        // Whether ExoPlayer was handed the episode, so stopping it has a position worth saving.
+        private var episodeStarted = false
+
+        // A seek before the episode loaded wins over the position the server remembered.
+        private var episodePositionChosen = false
+
+        // The episode's end already went to History; playing it again clears this.
+        private var episodeRecorded = false
+        private var episodeRetried = false
+
         init {
             scope.launch {
                 // Up Next can change on the web or iOS while the app is away, so it's read again on return.
@@ -249,14 +294,21 @@ class ListenManager
                         override fun onStart(owner: LifecycleOwner) {
                             if (story != null) refreshUpNextQueue()
                         }
+
+                        // The app going away may be the last chance to save where an episode is.
+                        override fun onStop(owner: LifecycleOwner) = saveEpisodePosition()
                     },
                 )
             }
             scope.launch {
                 listenPreferences.settings.collect { settings ->
-                    // Speed changed from Settings or another device's sync.
-                    if (ListenSpeed.clamp(settings.speed) != speed) applySpeed(settings.speed, save = false)
+                    // Speed changed from Settings or another device's sync. Podcasts keep their own rate.
+                    if (story?.media == null && ListenSpeed.clamp(settings.speed) != speed) applySpeed(settings.speed, save = false)
                 }
+            }
+            scope.launch {
+                // The Music section changed playing over other audio, lowering the music, or the balance.
+                audioMix.settings.collect { applyAudioMix() }
             }
         }
 
@@ -274,16 +326,58 @@ class ListenManager
             sourceName: String? = null,
             followsListOrder: Boolean = false,
         ) {
-            if (this.story?.storyHash == story.storyHash) {
+            if (this.story?.storyHash == story.storyHash && this.story?.media == null) {
                 togglePlayPause()
                 return
             }
-            // Listen always plays now; the story that was playing goes to History (startStory).
+            // Listen always plays now; the story or episode that was playing goes to History (startStory).
             val target = storyFor(story)
             queue = queueStories.ifEmpty { listOf(story) }
             queueSource = sourceName
             queueFollowsListOrder = followsListOrder
             startStory(target, startParagraph = 0, language = null, voiceId = null)
+        }
+
+        /**
+         * Plays an audio file from a story, like a podcast episode, in place of whatever is playing; the file already
+         * loaded toggles instead. It picks up where the web, iOS or this app left it (ListenMediaResume.kt).
+         */
+        @MainThread
+        fun playMedia(
+            source: Story,
+            mediaUrl: String,
+        ) {
+            if (story?.media?.url == mediaUrl) {
+                togglePlayPause()
+                return
+            }
+            startStory(mediaStoryFor(source, mediaUrl), startParagraph = 0, language = null, voiceId = null)
+        }
+
+        /**
+         * The web's Play Next and Play Last for an audio file (story_detail_view.js): first or last in Up Next, or
+         * playing right away when nothing else is. Returns where it landed, 1 for first, or null when it plays now
+         * or already is.
+         */
+        @MainThread
+        fun queueMedia(
+            source: Story,
+            mediaUrl: String,
+            playNext: Boolean,
+        ): Int? {
+            val target = mediaStoryFor(source, mediaUrl)
+            if (story == null) {
+                startStory(target, startParagraph = 0, language = null, voiceId = null)
+                return null
+            }
+            if (story?.entryId == target.entryId) return null
+            val item = queueItemFor(target)
+            upNextQueue =
+                if (playNext) ListenUpNextQueue.prepended(upNextQueue, item) else ListenUpNextQueue.appended(upNextQueue, item)
+            val position = ListenUpNextQueue.positionOf(upNextQueue, item.entryId) ?: 1
+            queueChanged()
+            sendQueueChange { listenApi.addToUpNext(item, position = if (playNext) 0 else null) }
+            return position
         }
 
         @MainThread
@@ -311,7 +405,7 @@ class ListenManager
             }
             playWhenReady = play
             exoPlayer?.let { player ->
-                if (play) player.volume = previewVolume()
+                if (play) player.volume = playerVolume()
                 // While a seek settles, ExoPlayer still holds the old position; playSegment starts the new one.
                 if (seekJob?.isActive != true) player.playWhenReady = play
             }
@@ -321,6 +415,10 @@ class ListenManager
 
         @MainThread
         fun seekTo(positionMs: Long) {
+            if (story?.media != null) {
+                seekEpisode(positionMs)
+                return
+            }
             val player = exoPlayer
             val loadedManifest = manifest
             if (story == null || loadedManifest == null) return
@@ -355,7 +453,7 @@ class ListenManager
             if (seekJob == null) player?.playWhenReady = playWhenReady
             currentSegment = location.segmentIndex
             lastOffsetMs = location.offsetMs
-            exoPlayer?.volume = previewVolume()
+            exoPlayer?.volume = playerVolume()
             publish()
         }
 
@@ -381,13 +479,14 @@ class ListenManager
                 }
         }
 
+        /** Skips back by the web media player's interval (skip_back_seconds), for stories and podcasts alike. */
         @MainThread
         fun skipBack() =
             seekTo(
                 ListenSeek.target(
                     logicalPositionMs(),
-                    -ListenSeek.SKIP_BACK_MS,
-                    seekableDurationMs(),
+                    -mediaSync.settings.skipBackMs,
+                    skipRangeMs(),
                 ),
             )
 
@@ -396,10 +495,13 @@ class ListenManager
             seekTo(
                 ListenSeek.target(
                     logicalPositionMs(),
-                    ListenSeek.SKIP_FORWARD_MS,
-                    seekableDurationMs(),
+                    mediaSync.settings.skipForwardMs,
+                    skipRangeMs(),
                 ),
             )
+
+        /** How far a skip may land; an episode whose length isn't known yet skips forward without a limit. */
+        private fun skipRangeMs(): Long = if (story?.media != null && episodeDurationMs <= 0L) Long.MAX_VALUE else seekableDurationMs()
 
         /** Paragraph taps in the story (listenFollowAlong.js) jump to the first segment reading that paragraph. */
         @MainThread
@@ -423,13 +525,15 @@ class ListenManager
             startStory(next, startParagraph = 0, language = null, voiceId = null)
         }
 
-        /** Plays a story from Up Next or the auto-continue list now; a queued one leaves Up Next as it starts. */
+        /** Plays an entry from Up Next or the auto-continue list now, by entryId; a queued one leaves Up Next as it starts. */
         @MainThread
-        fun playQueued(storyHash: String) {
+        fun playQueued(entryId: String) {
             val target =
-                queuedStories.firstOrNull { it.storyHash == storyHash }
-                    ?: upNext.firstOrNull { it.storyHash == storyHash }
-                    ?: queue.firstOrNull { it.storyHash == storyHash }?.let(::storyFor)
+                queuedStories.firstOrNull { it.entryId == entryId }
+                    ?: upNext.firstOrNull { it.entryId == entryId }
+                    ?: queue
+                        .firstOrNull { ListenUpNextQueue.entryId(it.storyHash, ListenUpNextQueue.mediaUrl(it.storyHash)) == entryId }
+                        ?.let(::storyFor)
                     ?: return
             startStory(target, startParagraph = 0, language = null, voiceId = null)
         }
@@ -439,21 +543,29 @@ class ListenManager
         fun addToUpNext(source: Story): Int {
             val item = queueItemFor(storyFor(source))
             upNextQueue = ListenUpNextQueue.appended(upNextQueue, item)
-            val position = ListenUpNextQueue.positionOf(upNextQueue, item.storyHash) ?: 1
+            val position = ListenUpNextQueue.positionOf(upNextQueue, item.entryId) ?: 1
             queueChanged()
             sendQueueChange { listenApi.addToUpNext(item) }
             return position
         }
 
+        /** Takes a story queued to be read aloud out of Up Next; its podcast episode, if queued, stays. */
         @MainThread
         fun removeFromUpNext(storyHash: String) {
             val item = ListenUpNextQueue.listenItems(upNextQueue).firstOrNull { it.storyHash == storyHash } ?: return
-            upNextQueue = ListenUpNextQueue.without(upNextQueue, storyHash)
+            removeQueued(item.entryId)
+        }
+
+        /** Takes any Up Next entry out, a story read aloud or a podcast episode, by its entryId. */
+        @MainThread
+        fun removeQueued(entryId: String) {
+            val item = upNextQueue.firstOrNull { it.entryId == entryId } ?: return
+            upNextQueue = ListenUpNextQueue.withoutEntry(upNextQueue, entryId)
             queueChanged()
             sendQueueChange { listenApi.removeFromUpNext(item) }
         }
 
-        /** Moves an Up Next story, counting positions as Up Next shows them; podcasts queued on the web stay put. */
+        /** Moves an Up Next entry, counting positions as Up Next shows them; videos queued on the web stay put. */
         @MainThread
         fun moveInUpNext(
             from: Int,
@@ -472,9 +584,15 @@ class ListenManager
             if (pendingQueueChanges > 0) return
             scope.launch {
                 val state = listenApi.getPlaybackState() ?: return@launch
+                // The skip intervals and auto-play may have changed on the web.
+                mediaSync.applyState(state)
                 // A change made while this was on its way is newer than what came back.
-                if (pendingQueueChanges > 0) return@launch
+                if (pendingQueueChanges > 0) {
+                    publish()
+                    return@launch
+                }
                 applyServerQueue(state.queue)
+                publish()
             }
         }
 
@@ -482,6 +600,10 @@ class ListenManager
         fun retry() {
             val current = story ?: return
             error = null
+            if (current.media != null) {
+                retryEpisode(current.media)
+                return
+            }
             val loadedManifest = manifest
             if (loadedManifest == null) {
                 startStory(current, startParagraph = 0, language = null, voiceId = null)
@@ -520,9 +642,10 @@ class ListenManager
             )
         }
 
-        /** Stops Listen and hides the mini player. */
+        /** Stops Listen and hides the mini player; what was playing stays the server's current item, paused. */
         @MainThread
         fun close() {
+            saveListenCurrent(isPlaying = false)
             story?.let(::recordHistory)
             reportProgress()
             playedTime.reset()
@@ -542,7 +665,10 @@ class ListenManager
             artworkPng = null
             exoPlayer?.release()
             exoPlayer = null
+            voiceBoost.release()
             publish()
+            // ListenManager.kt: an interruption can still hold focus or a call watch; closing gives both back.
+            audioFocus.release()
             controllerFuture?.let { MediaController.releaseFuture(it) }
             controllerFuture = null
             context.stopService(Intent(context, ListenPlaybackService::class.java))
@@ -564,9 +690,12 @@ class ListenManager
         @MainThread
         private fun resetForAccountChange() {
             playedTime.reset()
-            // Without a manifest, close() records no History and reports nothing for the old account.
+            // Without a manifest, close() records no History and reports nothing for the old account, and an episode
+            // that never started saves no position under it.
             manifest = null
+            episodeStarted = false
             close()
+            mediaSync.reset()
             usage = null
             upNextQueue = emptyList()
             queuedStories = emptyList()
@@ -574,14 +703,23 @@ class ListenManager
             publish()
         }
 
-        /** ListenPlaybackService.kt sends what played so far as it stops or the app's task is swiped away. */
+        /** ListenPlaybackService.kt sends what played so far, and where an episode is, as it stops or the app's task is swiped away. */
         @MainThread
-        fun flushProgress() = reportProgress()
+        fun flushProgress() {
+            reportProgress()
+            saveEpisodePosition()
+        }
 
         /** Refreshes Up Next's read states, for Now Playing as it opens. */
         @MainThread
         fun refreshUpNext() {
             val current = story ?: return
+            // A podcast episode continues only through Up Next, never down the story list.
+            if (current.media != null) {
+                upNext = emptyList()
+                publish()
+                return
+            }
             val expected = generation
             scope.launch {
                 val next = withContext(Dispatchers.IO) { continueAfter(current) }
@@ -611,9 +749,12 @@ class ListenManager
                 speed = speed.toFloat(),
                 artwork = artworkPng,
                 discontinuity = discontinuity,
+                skipBackMs = mediaSync.settings.skipBackMs,
+                skipForwardMs = mediaSync.settings.skipForwardMs,
             )
 
         fun logicalPositionMs(): Long {
+            if (story?.media != null) return episodePositionMs()
             if (manifest == null) return 0L
             val player = exoPlayer
             val offset =
@@ -627,6 +768,7 @@ class ListenManager
 
         fun logicalBufferedPositionMs(): Long {
             val player = exoPlayer ?: return logicalPositionMs()
+            if (story?.media != null) return if (isEpisodeItem(player.currentMediaItem)) player.bufferedPosition else logicalPositionMs()
             if (segmentOfItem(player.currentMediaItem) != currentSegment) return logicalPositionMs()
             return timeline
                 .positionMs(
@@ -647,14 +789,23 @@ class ListenManager
             play: Boolean = true,
         ) {
             val previous = story
-            if (previous != null && previous.storyHash != target.storyHash) recordHistory(previous)
+            // Switching between a story read aloud and its own podcast episode counts as switching too.
+            if (previous != null && previous.entryId != target.entryId) recordHistory(previous)
             // Switching stories, or restarting this one in a new voice or delivery, reports the old manifest.
             reportProgress()
             playedTime.reset()
             lastProgressReportAt = SystemClock.elapsedRealtime()
             invalidateStory()
             story = target
-            if (queue.any { it.storyHash == target.storyHash }) continueFromHash = target.storyHash
+            if (target.media == null && queue.any { it.storyHash == target.storyHash }) continueFromHash = target.storyHash
+            episodeStartMs = 0L
+            episodeDurationMs = 0L
+            episodeStarted = false
+            episodePositionChosen = false
+            episodeRecorded = false
+            episodeRetried = false
+            // Podcasts play at their own rate, the web's media_playback_rate, and stories read aloud at Listen's.
+            speed = if (target.media != null) mediaSync.speed else listenPreferences.current().speed
             manifest = null
             timeline = ListenTimeline(emptyList())
             currentSegment = 0
@@ -672,12 +823,18 @@ class ListenManager
                 it.stop()
                 it.clearMediaItems()
             }
-            // A queued story leaves Up Next as it starts playing.
-            if (ListenUpNextQueue.isQueued(upNextQueue, target.storyHash)) removeFromUpNext(target.storyHash)
-            if (!upNextQueueLoaded) refreshUpNextQueue()
+            applyAudioMix()
+            // A queued story or episode leaves Up Next as it starts playing.
+            if (ListenUpNextQueue.containsEntry(upNextQueue, target.entryId)) removeQueued(target.entryId)
+            // An episode reads the playback state itself, for where to resume (loadEpisode).
+            if (!upNextQueueLoaded && target.media == null) refreshUpNextQueue()
             ensureService()
             publish()
             refreshUpNext()
+            if (target.media != null) {
+                loadEpisode(target, target.media)
+                return
+            }
 
             val expected = generation
             launchForStory {
@@ -697,6 +854,7 @@ class ListenManager
                             fail(ListenError(ListenError.REASON_NO_TEXT, null, result.value.usage))
                             return@launchForStory
                         }
+                        saveListenCurrent(isPlaying = playWhenReady)
                         val startSegment =
                             if (startParagraph >
                                 0
@@ -749,7 +907,7 @@ class ListenManager
                 val player = ensureExoPlayer()
                 player.setMediaItem(mediaItem(segmentIndex, url), offsetMs)
                 player.playbackParameters = PlaybackParameters(speed.toFloat())
-                player.volume = previewVolume()
+                player.volume = playerVolume()
                 player.prepare()
                 player.playWhenReady = playWhenReady
                 prefetch(segmentIndex + 1)
@@ -987,13 +1145,63 @@ class ListenManager
                             DefaultDataSource.Factory(context, http),
                             extractors,
                         ),
-                    ).setAudioAttributes(ListenSessionPlayer.AUDIO_ATTRIBUTES, true)
+                    ).setAudioAttributes(ListenSessionPlayer.AUDIO_ATTRIBUTES, takesAudioFocus.also { exoTakesAudioFocus = it })
                     .setHandleAudioBecomingNoisy(true)
                     .setWakeMode(C.WAKE_MODE_NETWORK)
                     .build()
             player.addListener(exoListener)
             exoPlayer = player
+            voiceBoost.attach(player.audioSessionId)
+            voiceBoost.setGain(ListenAudioMixMath.boostMillibels(playbackAudioMix.effectiveVoiceVolume))
             return player
+        }
+
+        /**
+         * Whether Listen's players take audio focus, pausing other apps. Not while Listen plays over other audio
+         * (ListenAudioMix.kt), where ListenAudioFocus.kt handles focus instead; the voice preview in
+         * ListenVoiceSettingsViewModel.kt follows the same rule.
+         */
+        private val playbackAudioMix: ListenAudioMixSettings
+            get() = audioMix.current().forPlayback(isMedia = story?.media != null)
+
+        /** ListenVoiceSettingsViewModel.kt samples always follow narration preferences, even with a podcast loaded. */
+        val previewTakesAudioFocus: Boolean
+            get() = audioMix.current().focusMode == ListenFocusMode.EXCLUSIVE
+
+        val takesAudioFocus: Boolean
+            get() = playbackAudioMix.focusMode == ListenFocusMode.EXCLUSIVE
+
+        /** The Music section changed: ExoPlayer's focus handling, the voice's volume and its boost follow. */
+        private fun applyAudioMix() {
+            exoPlayer?.let { player ->
+                // The balance slider saves on every step, but focus handling only changes with Play over other audio.
+                if (takesAudioFocus != exoTakesAudioFocus) {
+                    exoTakesAudioFocus = takesAudioFocus
+                    player.setAudioAttributes(ListenSessionPlayer.AUDIO_ATTRIBUTES, takesAudioFocus)
+                }
+                player.volume = playerVolume()
+            }
+            voiceBoost.setGain(ListenAudioMixMath.boostMillibels(playbackAudioMix.effectiveVoiceVolume))
+            updateAudioFocus()
+        }
+
+        /** The preview fade times the balance's share of the voice volume (the boost does the rest). */
+        private fun playerVolume(): Float = previewVolume() * ListenAudioMixMath.playerVolume(playbackAudioMix.effectiveVoiceVolume)
+
+        /** While Listen plays over other audio, ListenAudioFocus.kt lowers that audio only while the voice plays. */
+        private fun updateAudioFocus() {
+            val speaking =
+                story != null &&
+                    playWhenReady &&
+                    phase != ListenPhase.IDLE &&
+                    phase != ListenPhase.ENDED &&
+                    phase != ListenPhase.PREVIEW_ENDED &&
+                    phase != ListenPhase.ERROR
+            audioFocus.update(
+                mode = playbackAudioMix.focusMode,
+                speaking = speaking,
+                abandonDelayMs = if (phase == ListenPhase.ENDED) AUTO_CONTINUE_FOCUS_GRACE_MS else 0L,
+            )
         }
 
         private val exoListener =
@@ -1032,7 +1240,9 @@ class ListenManager
                             ) {
                                 phase = ListenPhase.READY
                             }
-                            if (player.isCurrentMediaItemSeekable &&
+                            if (isEpisodeItem(player.currentMediaItem)) {
+                                if (player.duration != C.TIME_UNSET && player.duration > 0L) episodeDurationMs = player.duration
+                            } else if (player.isCurrentMediaItemSeekable &&
                                 player.duration != C.TIME_UNSET
                             ) {
                                 timeline =
@@ -1043,16 +1253,34 @@ class ListenManager
                                     )
                             }
                         }
-                        Player.STATE_ENDED -> onSegmentsEnded()
+                        Player.STATE_ENDED -> if (isEpisodeItem(player.currentMediaItem)) finishEpisode() else onSegmentsEnded()
                         Player.STATE_IDLE -> Unit
                     }
                     updateTicking()
                     publish()
                 }
 
+                override fun onAudioSessionIdChanged(audioSessionId: Int) {
+                    voiceBoost.attach(audioSessionId)
+                }
+
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     // Pausing, a stall or headphones coming out all report what played up to now.
                     if (!isPlaying) reportProgress()
+                    val player = exoPlayer
+                    val playing = story
+                    // A pause, whether from a button, audio focus or headphones; a stall or a seek keeps playWhenReady.
+                    val paused = !isPlaying && !this@ListenManager.playWhenReady
+                    if (player != null && playing?.media != null && episodeStarted && isEpisodeItem(player.currentMediaItem)) {
+                        if (isPlaying) {
+                            // Played again after it finished, so its end can go to History again.
+                            episodeRecorded = false
+                        } else if (paused) {
+                            mediaSync.paused(queueItemFor(playing), player.currentPosition, episodeDurationMs)
+                        }
+                    } else if (paused && phase != ListenPhase.ENDED) {
+                        saveListenCurrent(isPlaying = false)
+                    }
                     updateTicking()
                     publish()
                 }
@@ -1071,6 +1299,10 @@ class ListenManager
                 }
 
                 override fun onPlayerError(playbackError: PlaybackException) {
+                    if (story?.media != null) {
+                        onEpisodeError(playbackError)
+                        return
+                    }
                     Log.w(
                         this@ListenManager.javaClass.name,
                         "Listen playback error in segment $currentSegment: ${playbackError.errorCodeName}",
@@ -1144,9 +1376,17 @@ class ListenManager
             stopTicking()
             publish()
             NBScope.launch(Dispatchers.IO) { storyRead.markFinished(finished) }
-            // Up Next plays first, whether or not auto-continue is on; then the list's next story (ListenAutoContinue.kt).
-            val queuedNext = ListenUpNextQueue.next(upNextQueue)
-            if (queuedNext == null && !listenPreferences.current().autoContinue) return
+            advanceAfter(finished)
+        }
+
+        /**
+         * What plays when a story or episode ends: Up Next first, a story read aloud or a podcast alike, when the web's
+         * auto-play (auto_play_next) is on; then, after a story read aloud, the list's next story (ListenAutoContinue.kt).
+         */
+        private fun advanceAfter(finished: ListenStory) {
+            val queuedNext = ListenUpNextQueue.next(upNextQueue, mediaSync.settings.autoPlayNext)
+            val continuesList = finished.media == null && listenPreferences.current().autoContinue
+            if (queuedNext == null && !continuesList) return
             val expected = generation
             scope.launch {
                 val next =
@@ -1155,9 +1395,158 @@ class ListenManager
                     } ?: return@launch
                 if (expected != generation) return@launch
                 startStory(next, startParagraph = 0, language = null, voiceId = null)
-                mutableEvents.tryEmit(ListenEvent.Advanced(finished.storyHash, next))
+                // A reader following a story read aloud turns to the next one; podcasts don't turn pages.
+                if (finished.media == null && next.media == null) mutableEvents.tryEmit(ListenEvent.Advanced(finished.storyHash, next))
             }
         }
+
+        // region Podcast episodes
+
+        /**
+         * Starts a podcast episode: playback_state says where it was left (ListenMediaResume.kt), then ExoPlayer streams
+         * the file from there and ListenMediaSync.kt makes it the server's current item. Without an answer in time it
+         * starts from the top rather than keep the listener waiting.
+         */
+        private fun loadEpisode(
+            target: ListenStory,
+            media: ListenMedia,
+        ) {
+            val expected = generation
+            launchForStory {
+                val state = withTimeoutOrNull(RESUME_LOOKUP_TIMEOUT_MS) { listenApi.getPlaybackState() }
+                if (expected != generation) return@launchForStory
+                if (state != null) {
+                    mediaSync.applyState(state)
+                    mediaSync.keepReplacedInHistory(state.current, queueItemFor(target))
+                    if (pendingQueueChanges == 0) applyServerQueue(state.queue)
+                }
+                speed = mediaSync.speed
+                if (!episodePositionChosen) {
+                    episodeStartMs = ListenMediaResume.startPositionMs(state, target.storyHash, media.url, media.type)
+                }
+                val player = ensureExoPlayer()
+                player.setMediaItem(episodeItem(media), episodeStartMs)
+                player.playbackParameters = PlaybackParameters(speed.toFloat())
+                player.volume = 1f
+                player.prepare()
+                player.playWhenReady = playWhenReady
+                episodeStarted = true
+                phase = ListenPhase.BUFFERING
+                discontinuity++
+                mediaSync.started(queueItemFor(target), episodeStartMs, episodeDurationMs, isPlaying = playWhenReady)
+                publish()
+            }
+        }
+
+        private fun seekEpisode(positionMs: Long) {
+            val target = if (episodeDurationMs > 0L) positionMs.coerceIn(0L, episodeDurationMs - 1L) else positionMs.coerceAtLeast(0L)
+            discontinuity++
+            val player = exoPlayer
+            val playing = story
+            if (playing != null && episodeStarted && player != null && isEpisodeItem(player.currentMediaItem)) {
+                player.seekTo(target)
+                mediaSync.seeked(queueItemFor(playing), target, episodeDurationMs, isPlaying = playWhenReady)
+            } else {
+                // Not loaded yet: it starts here instead of where the server left it.
+                episodeStartMs = target
+                episodePositionChosen = true
+            }
+            publish()
+        }
+
+        /** Retry after a failed episode: the same file again from where it stopped. */
+        private fun retryEpisode(media: ListenMedia) {
+            if (!episodeStarted) {
+                story?.let { startStory(it, startParagraph = 0, language = null, voiceId = null) }
+                return
+            }
+            episodeRetried = false
+            playWhenReady = true
+            reloadEpisode(media)
+        }
+
+        private fun reloadEpisode(media: ListenMedia) {
+            val player = ensureExoPlayer()
+            val position = episodePositionMs()
+            episodeStartMs = position
+            phase = ListenPhase.BUFFERING
+            player.setMediaItem(episodeItem(media), position)
+            player.playbackParameters = PlaybackParameters(speed.toFloat())
+            player.prepare()
+            player.playWhenReady = playWhenReady
+            publish()
+        }
+
+        /** A stream that drops gets one more try from where it was; a second failure shows Retry. */
+        private fun onEpisodeError(playbackError: PlaybackException) {
+            val media = story?.media ?: return
+            Log.w(this.javaClass.name, "Episode playback error: ${playbackError.errorCodeName}")
+            if (episodeRetried) {
+                fail(ListenError(ListenError.REASON_PLAYBACK, null))
+                return
+            }
+            episodeRetried = true
+            reloadEpisode(media)
+        }
+
+        private fun tickEpisode() {
+            val playing = story ?: return
+            val player = exoPlayer ?: return
+            if (!isEpisodeItem(player.currentMediaItem)) return
+            if (player.duration != C.TIME_UNSET && player.duration > 0L) episodeDurationMs = player.duration
+            mediaSync.playing(queueItemFor(playing), player.currentPosition, episodeDurationMs)
+            publish()
+        }
+
+        /** The episode played to its end: it goes to History, and Up Next plays when auto-play is on. */
+        private fun finishEpisode() {
+            val finished = story ?: return
+            if (episodeDurationMs <= 0L) episodeDurationMs = episodePositionMs()
+            phase = ListenPhase.ENDED
+            playWhenReady = false
+            exoPlayer?.playWhenReady = false
+            stopTicking()
+            publish()
+            if (!episodeRecorded) {
+                mediaSync.finished(queueItemFor(finished), episodeDurationMs)
+                episodeRecorded = true
+            }
+            advanceAfter(finished)
+        }
+
+        /**
+         * A story read aloud is the server's current item too, as on the web and iOS: saved as it starts and pauses,
+         * with where it is in Listen's audio.
+         */
+        private fun saveListenCurrent(isPlaying: Boolean) {
+            val playing = story ?: return
+            if (playing.media != null || manifest == null) return
+            mediaSync.listening(queueItemFor(playing), logicalPositionMs(), displayDurationMs(), isPlaying)
+        }
+
+        /** Saves where an episode is now, whatever the throttle: the app going to the background, or being swiped away. */
+        private fun saveEpisodePosition() {
+            val playing = story ?: return
+            if (playing.media == null || !episodeStarted || episodeRecorded) return
+            mediaSync.saveNow(queueItemFor(playing), episodePositionMs(), episodeDurationMs, isPlaying = exoPlayer?.isPlaying == true)
+        }
+
+        private fun episodePositionMs(): Long {
+            val player = exoPlayer
+            if (!episodeStarted || player == null || !isEpisodeItem(player.currentMediaItem)) return episodeStartMs
+            return player.currentPosition
+        }
+
+        private fun episodeItem(media: ListenMedia): MediaItem =
+            MediaItem
+                .Builder()
+                .setMediaId("$EPISODE_ID_PREFIX${++loadAttempt}")
+                .setUri(media.streamUrl)
+                .build()
+
+        private fun isEpisodeItem(item: MediaItem?): Boolean = item?.mediaId?.startsWith(EPISODE_ID_PREFIX) == true
+
+        // endregion
 
         // region Up Next
 
@@ -1166,23 +1555,39 @@ class ListenManager
          * still be listed for a moment after it starts, and the lock screen's playlist can't hold it twice.
          */
         private fun nextAfterCurrent(): ListenStory? {
-            val playing = story?.storyHash
-            return queuedStories.firstOrNull { it.storyHash != playing } ?: upNext.firstOrNull { it.storyHash != playing }
+            val playing = story?.entryId
+            val queued = queuedStories.firstOrNull { it.entryId != playing }
+            // A podcast episode continues only through Up Next.
+            if (story?.media != null) return queued
+            return queued ?: upNext.firstOrNull { it.entryId != playing }
         }
 
-        /** The queue entry for a story: what apps/media_player stores for Listen (ListenUpNext.kt). */
-        private fun queueItemFor(target: ListenStory): ListenQueueItem =
-            ListenQueueItem(
+        /**
+         * The queue entry for a story or episode: what apps/media_player stores (ListenUpNext.kt). Like the web, an
+         * episode carries the story's first image and a story read aloud its feed's icon.
+         */
+        private fun queueItemFor(target: ListenStory): ListenQueueItem {
+            val media = target.media
+            return ListenQueueItem(
                 storyHash = target.storyHash,
-                mediaUrl = ListenUpNextQueue.mediaUrl(target.storyHash),
-                mediaType = ListenUpNextQueue.MEDIA_TYPE_LISTEN,
+                mediaUrl = media?.url ?: ListenUpNextQueue.mediaUrl(target.storyHash),
+                mediaType = media?.type ?: ListenUpNextQueue.MEDIA_TYPE_LISTEN,
                 title = target.title,
                 feedId = target.feedId,
-                imageUrl = target.faviconUrl,
+                imageUrl = if (media != null) media.imageUrl else target.faviconUrl,
             )
+        }
 
-        /** The story that stopped playing goes to History with where it stopped, so it can be resumed. */
+        /** The story or episode that stopped playing goes to History with where it stopped, so it can be resumed. */
         private fun recordHistory(played: ListenStory) {
+            if (played.media != null) {
+                // An episode also saves where it stopped as the server's current item (ListenMediaSync.kt).
+                if (episodeStarted && !episodeRecorded) {
+                    mediaSync.stopped(queueItemFor(played), episodePositionMs(), episodeDurationMs)
+                    episodeRecorded = true
+                }
+                return
+            }
             if (manifest == null) return
             val item = queueItemFor(played)
             val positionSeconds = logicalPositionMs() / 1000.0
@@ -1208,38 +1613,42 @@ class ListenManager
 
         private fun applyServerQueue(serverQueue: List<ListenQueueItem>) {
             upNextQueueLoaded = true
-            val playing = story?.storyHash
-            if (playing != null && ListenUpNextQueue.isQueued(serverQueue, playing)) {
+            val playing = story?.entryId
+            if (playing != null && ListenUpNextQueue.containsEntry(serverQueue, playing)) {
                 // Queued elsewhere before it started here: it's playing, so it leaves Up Next.
                 upNextQueue = serverQueue
-                removeFromUpNext(playing)
+                removeQueued(playing)
                 return
             }
-            if (serverQueue == upNextQueue && queuedStories.size == ListenUpNextQueue.listenItems(serverQueue).size) return
+            if (serverQueue == upNextQueue && queuedStories.size == ListenUpNextQueue.playableItems(serverQueue).size) return
             upNextQueue = serverQueue
             queueChanged()
         }
 
         /** Shows Up Next at once from what the queue carries, then fills in feed details from the database. */
         private fun queueChanged() {
-            val items = ListenUpNextQueue.listenItems(upNextQueue)
-            val known = queuedStories.associateBy { it.storyHash }
-            queuedStories = items.map { known[it.storyHash] ?: storyFromQueueEntry(it, feed = null) }
+            val items = ListenUpNextQueue.playableItems(upNextQueue)
+            val known = queuedStories.associateBy { it.entryId }
+            queuedStories = items.map { known[it.entryId] ?: storyFromQueueEntry(it, feed = null) }
             publish()
             val expected = upNextQueue
             scope.launch {
                 val resolved = withContext(Dispatchers.IO) { items.map(::storyForQueueItem) }
                 if (expected != upNextQueue) return@launch
                 queuedStories = resolved
-                upNext = upNext.filterNot { candidate -> resolved.any { it.storyHash == candidate.storyHash } }
+                upNext = upNext.filterNot { candidate -> resolved.any { it.entryId == candidate.entryId } }
                 publish()
             }
         }
 
         /** Runs on Dispatchers.IO: the local copy of a queued story when this device has it, for marking it read. */
         private fun storyForQueueItem(item: ListenQueueItem): ListenStory =
-            dbHelper.getStoryByHash(item.storyHash)?.let { storyFor(it) }
+            dbHelper.getStoryByHash(item.storyHash)?.let { storyFor(it).copy(media = mediaOf(item)) }
                 ?: storyFromQueueEntry(item, feedUtils.getFeed(item.feedId))
+
+        /** A queued podcast episode's file; null for a story queued to be read aloud. */
+        private fun mediaOf(item: ListenQueueItem): ListenMedia? =
+            if (item.isListen) null else ListenMedia(url = item.mediaUrl, type = item.mediaType, imageUrl = item.imageUrl)
 
         private fun storyFromQueueEntry(
             item: ListenQueueItem,
@@ -1254,6 +1663,7 @@ class ListenManager
                 feedColor = feed?.faviconColor,
                 feedFade = feed?.faviconFade,
                 story = null,
+                media = mediaOf(item),
             )
 
         // endregion
@@ -1280,6 +1690,10 @@ class ListenManager
         }
 
         private fun tick() {
+            if (story?.media != null) {
+                tickEpisode()
+                return
+            }
             val player = exoPlayer ?: return
             if (segmentOfItem(player.currentMediaItem) != currentSegment) return
             lastOffsetMs = player.currentPosition
@@ -1298,7 +1712,7 @@ class ListenManager
             }
             if (manifest?.isPreview == true) {
                 val position = logicalPositionMs()
-                player.volume = previewVolume()
+                player.volume = playerVolume()
                 if (ListenPreviewFade.isFinished(position, previewLimitMs())) {
                     finishPreview()
                     return
@@ -1318,7 +1732,20 @@ class ListenManager
             speed = clamped
             // PlaybackParameters keeps the voice's pitch while the rate changes.
             exoPlayer?.playbackParameters = PlaybackParameters(clamped.toFloat())
-            if (save) listenPreferences.saveSpeed(clamped)
+            val playing = story
+            when {
+                !save -> Unit
+                // A podcast's rate is the web's media_playback_rate, saved with the episode (ListenMediaSync.kt).
+                playing?.media != null ->
+                    mediaSync.changeSpeed(
+                        clamped,
+                        queueItemFor(playing).takeIf { episodeStarted },
+                        episodePositionMs(),
+                        episodeDurationMs,
+                        isPlaying = playWhenReady,
+                    )
+                else -> listenPreferences.saveSpeed(clamped)
+            }
             publish()
         }
 
@@ -1395,6 +1822,7 @@ class ListenManager
 
         /** Previews end at their limit even when their segments run a little longer. */
         private fun displayDurationMs(): Long {
+            if (story?.media != null) return episodeDurationMs
             val total = timeline.totalMs
             val limit = previewLimitMs()
             return if (limit > 0L) minOf(total, limit) else total
@@ -1428,6 +1856,12 @@ class ListenManager
                     )
                 }
         }
+
+        /** A story's audio file as a ListenStory: the story's title and feed, playing the file. */
+        private fun mediaStoryFor(
+            source: Story,
+            mediaUrl: String,
+        ): ListenStory = storyFor(source).copy(media = ListenMedia(url = mediaUrl, imageUrl = source.imageUrls?.firstOrNull()))
 
         private fun storyFor(
             source: Story,
@@ -1512,10 +1946,13 @@ class ListenManager
                     error = error,
                     usage = usage,
                     upNext = upNext,
-                    queued = queuedStories.filterNot { it.storyHash == story?.storyHash },
+                    queued = queuedStories.filterNot { it.entryId == story?.entryId },
                     upNextSource = queueSource,
+                    skipBackSeconds = mediaSync.settings.skipBackSeconds,
+                    skipForwardSeconds = mediaSync.settings.skipForwardSeconds,
                 )
             sessionPlayer.refresh()
+            updateAudioFocus()
         }
 
         // endregion
@@ -1536,6 +1973,10 @@ class ListenManager
 
         companion object {
             private const val MEDIA_ID_PREFIX = "listen-segment:"
+            private const val EPISODE_ID_PREFIX = "listen-episode:"
+
+            // How long an episode waits for playback_state to say where to resume before starting from the top.
+            private const val RESUME_LOOKUP_TIMEOUT_MS = 4_000L
             private const val TICK_MS = 200L
             private const val PROGRESS_REPORT_MS = 30_000L
             private const val PROGRESS_RETRY_DELAY_MS = 5_000L
@@ -1548,6 +1989,9 @@ class ListenManager
             private const val HTTP_TIMEOUT_MS = 30_000
             private const val DEFAULT_PREVIEW_SECONDS = 30.0
             private const val UP_NEXT_LIMIT = 10
+
+            // Auto-continue starts the next story within a moment, so the other app's music stays lowered between.
+            private const val AUTO_CONTINUE_FOCUS_GRACE_MS = 2_000L
 
             /** For classes Hilt doesn't build, like StoryViewAdapter.kt's gesture handler. */
             @JvmStatic

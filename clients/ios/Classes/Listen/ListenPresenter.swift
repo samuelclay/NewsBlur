@@ -14,11 +14,11 @@ enum ListenPresenter {
     private static weak var nowPlaying: UIViewController?
 
     static func presentNowPlaying() {
-        guard ListenPlayer.shared.isActive else { return }
+        guard ListenPlayer.shared.isActive || ListenMediaPlayer.shared.isActive else { return }
         if let nowPlaying, nowPlaying.presentingViewController != nil { return }
         let controller = ListenHostingController(rootView: AnyView(
             NavigationStack {
-                ListenNowPlayingView()
+                ListenNowPlayingRoot()
             }
         ))
         nowPlaying = controller

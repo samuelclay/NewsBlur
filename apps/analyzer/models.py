@@ -381,6 +381,23 @@ def classifier_matches_story_feed(classifier, story_feed_id, folder_feed_ids=Non
     return classifier.feed_id == story_feed_id
 
 
+def load_folder_feed_ids(user_id):
+    """Map each of the user's folder paths to the set of feed_ids filed directly in it.
+
+    models.py: The same flatten_folders() map the story views build for folder-scoped
+    classifiers, so a folder only covers the sites filed directly in it, not the sites in
+    its subfolders ("Tech" does not cover a site in "Tech - Swift"). Returns {} when the
+    user has no folders yet.
+    """
+    from apps.reader.models import UserSubscriptionFolders
+
+    try:
+        usf = UserSubscriptionFolders.objects.get(user_id=user_id)
+    except UserSubscriptionFolders.DoesNotExist:
+        return {}
+    return {name: set(fids) for name, fids in usf.flatten_folders().items()}
+
+
 class ScopedClassifiers:
     """Pre-bucketed classifier collection for fast per-story scoring.
 
@@ -511,12 +528,14 @@ def compute_story_score(
 
     score = 0
 
-    # If we have a prompt score, it takes priority
-    if "prompt" in intelligence and intelligence["prompt"] != 0:
-        return intelligence["prompt"]
-
-    # Otherwise use the traditional classifier logic
-    score_max = max(
+    # models.py: Scoring order. The AI prompt is a classifier like any other: a
+    # matching focus prompt is a +1 like, a matching hidden prompt is a -1 dislike,
+    # and a prompt that didn't match is 0 and changes nothing. A manual Hide (-2)
+    # beats everything, then the strongest like, then the strongest dislike, then
+    # the feed classifier. Mirrored in apps/reader/models.py
+    # UserSubscription.score_story and
+    # media/js/newsblur/reader/reader_utils.js compute_story_score.
+    classifier_scores = [
         intelligence["title"],
         intelligence["title_regex"],
         intelligence["author"],
@@ -526,21 +545,14 @@ def compute_story_score(
         intelligence["text_regex"],
         intelligence["url"],
         intelligence["url_regex"],
-    )
-    score_min = min(
-        intelligence["title"],
-        intelligence["title_regex"],
-        intelligence["author"],
-        intelligence["author_regex"],
-        intelligence["tags"],
-        intelligence["text"],
-        intelligence["text_regex"],
-        intelligence["url"],
-        intelligence["url_regex"],
-    )
+        intelligence.get("prompt") or 0,
+    ]
+    score_max = max(classifier_scores)
+    score_min = min(classifier_scores)
     if score_min <= -2:
-        score = score_min  # super downvote beats any positive
-    elif score_max > 0:
+        return score_min  # a Hide beats any like; keep -2 so clients can tell it from a -1 dislike
+
+    if score_max > 0:
         score = score_max
     elif score_min < 0:
         score = score_min
@@ -890,6 +902,28 @@ class MClassifierPrompt(mongo.Document):
         target = f"Feed: {self.feed_id}" if self.feed_id else f"Folder: {self.folder_id}"
         return f"{user} - {target}: ({self.classifier_type}) {self.prompt[:50]}..."
 
+    @property
+    def is_folder_scoped(self):
+        return not self.feed_id and bool(self.folder_id)
+
+    def applies_to_feed(self, feed_id, folder_feed_ids=None):
+        """Whether this prompt covers stories from the given feed.
+
+        models.py: A non-zero feed_id scopes the prompt to that one feed. feed_id=0 with a
+        folder_id scopes it to the sites filed in that folder, checked against
+        folder_feed_ids ({folder path: set(feed_ids)}, see load_folder_feed_ids), the same
+        rule classifier_matches_story_feed applies to folder-scoped title, author, tag,
+        text and url classifiers. feed_id=0 with no folder_id is global. Without a folder
+        map a folder prompt covers nothing, so it can never run or score by accident.
+        """
+        if self.feed_id:
+            return self.feed_id == feed_id
+        if self.folder_id:
+            if not folder_feed_ids:
+                return False
+            return feed_id in folder_feed_ids.get(self.folder_id, ())
+        return True
+
     @classmethod
     def _cache_key(cls, user_id, prompt_id, feed_id):
         return f"{cls.CACHE_KEY_PREFIX}:{user_id}:{prompt_id}:{feed_id}"
@@ -967,54 +1001,67 @@ class MClassifierPrompt(mongo.Document):
 
     @classmethod
     def feed_has_prompt_subscribers(cls, feed_id):
-        """Quick check: do any users have prompt classifiers for this feed (or global)?
+        """Quick check: which of this feed's subscribers have prompt classifiers that could apply?
+
+        models.py: A prompt on this feed, or any global or folder prompt (feed_id=0), makes
+        a user a candidate, and only the feed's active subscribers count, the same active
+        filter count_unreads_for_subscribers in utils/feed_fetcher.py scores with, so a
+        muted feed isn't classified either. Every user with a feed_id=0 prompt used to come
+        back for every feed, so each fetch anywhere on NewsBlur ran and billed their prompts
+        against feeds they don't subscribe to.
 
         Returns set of user_ids with applicable prompts, or empty set.
         """
+        from apps.reader.models import UserSubscription
+
         feed_users = set(cls.objects.filter(feed_id=feed_id).distinct("user_id"))
         global_users = set(cls.objects.filter(feed_id=0).distinct("user_id"))
-        return feed_users | global_users
+        candidate_user_ids = feed_users | global_users
+        if not candidate_user_ids:
+            return set()
+        return set(
+            UserSubscription.objects.filter(
+                feed_id=feed_id, active=True, user_id__in=candidate_user_ids
+            ).values_list("user_id", flat=True)
+        )
 
     @classmethod
-    def get_prompts_for_user(cls, user_id, feed_ids=None, folder_ids=None):
-        """
-        Get all applicable prompt classifiers for a user and specific feeds/folders.
+    def get_prompts_by_feed(cls, user_id, feed_ids, folder_feed_ids=None):
+        """Map each feed to the user's prompt classifiers that apply to it.
+
+        models.py: One query fetches the prompts scoped to these feeds plus every feed_id=0
+        prompt, then applies_to_feed() decides which ones cover each feed. Folder prompts
+        are saved with feed_id=0 too, so without that check a prompt scoped to one folder
+        ran, billed and scored on every feed the user reads.
 
         Args:
             user_id: The ID of the user
-            feed_ids: Optional list of feed IDs to filter by
-            folder_ids: Optional list of folder IDs to filter by
+            feed_ids: Feed IDs to resolve prompts for
+            folder_feed_ids: The user's {folder path: set(feed_ids)} map if the caller
+                already has it. When None and a folder prompt turns up, the map is loaded
+                once here. Users without folder prompts never pay for that lookup.
 
         Returns:
-            Dictionary with feed_id/folder_id keys and lists of prompts as values
+            {feed_id: [prompts]} for feeds with at least one applicable prompt. Global and
+            folder prompts come before the feed's own prompts, so a feed prompt's verdict
+            is applied last.
         """
-        params = {"user_id": user_id}
+        feed_ids = [int(feed_id) for feed_id in feed_ids]
+        if not feed_ids:
+            return {}
+        prompts = list(cls.objects.filter(user_id=user_id, feed_id__in=feed_ids + [0]))
+        if not prompts:
+            return {}
 
-        # Get feed-specific prompts
-        feed_prompts = {}
-        if feed_ids:
-            params["feed_id__in"] = feed_ids + [0]  # Include feed-specific and global prompts
-            feed_classifiers = list(cls.objects.filter(**params))
+        if folder_feed_ids is None and any(prompt.is_folder_scoped for prompt in prompts):
+            folder_feed_ids = load_folder_feed_ids(user_id)
 
-            # Group by feed_id
-            for prompt in feed_classifiers:
-                if prompt.feed_id not in feed_prompts:
-                    feed_prompts[prompt.feed_id] = []
-                feed_prompts[prompt.feed_id].append(prompt)
-
-        # Get folder-specific prompts
-        folder_prompts = {}
-        if folder_ids:
-            params["folder_id__in"] = folder_ids + [""]  # Include folder-specific and global prompts
-            folder_classifiers = list(cls.objects.filter(**params))
-
-            # Group by folder_id
-            for prompt in folder_classifiers:
-                if prompt.folder_id not in folder_prompts:
-                    folder_prompts[prompt.folder_id] = []
-                folder_prompts[prompt.folder_id].append(prompt)
-
-        return {"feed_prompts": feed_prompts, "folder_prompts": folder_prompts}
+        prompts_by_feed = {}
+        for feed_id in feed_ids:
+            applicable = [prompt for prompt in prompts if prompt.applies_to_feed(feed_id, folder_feed_ids)]
+            if applicable:
+                prompts_by_feed[feed_id] = sorted(applicable, key=lambda prompt: bool(prompt.feed_id))
+        return prompts_by_feed
 
     @classmethod
     def _compute_feed_ttl(cls, user_id, feed_id):
@@ -1031,7 +1078,7 @@ class MClassifierPrompt(mongo.Document):
         return cls.CACHE_TTL_DEFAULT
 
     @classmethod
-    def classify_stories(cls, user_id, stories, feed_ids=None, folder_ids=None):
+    def classify_stories(cls, user_id, stories, feed_ids=None, folder_feed_ids=None):
         """
         Apply AI-based classification to a list of stories based on user's prompts.
         Uses Redis caching so each story is only classified once per prompt.
@@ -1042,8 +1089,10 @@ class MClassifierPrompt(mongo.Document):
         Args:
             user_id: The ID of the user
             stories: List of story dictionaries
-            feed_ids: Optional list of feed IDs the stories belong to
-            folder_ids: Optional list of folder IDs the stories belong to
+            feed_ids: Optional list of feed IDs to classify stories for. Defaults to
+                every feed the stories come from.
+            folder_feed_ids: Optional {folder path: set(feed_ids)} map for the user, see
+                get_prompts_by_feed. Loaded on demand when a folder prompt needs it.
 
         Returns:
             Dictionary mapping story_hashes to scores (1 for focus, 0 for neutral, -1 for hidden)
@@ -1076,50 +1125,25 @@ class MClassifierPrompt(mongo.Document):
         for story in stories:
             stories_by_feed[story["story_feed_id"]].append(story)
 
-        # Get all applicable prompts
-        prompts = cls.get_prompts_for_user(user_id, feed_ids=feed_ids, folder_ids=folder_ids)
-        feed_prompts = prompts["feed_prompts"]
-        folder_prompts = prompts["folder_prompts"]
+        # Only the prompts that cover each feed run (and bill): the feed's own prompts,
+        # global prompts, and folder prompts whose folder holds the feed.
+        if feed_ids is None:
+            feed_ids = list(stories_by_feed.keys())
+        prompts_by_feed = cls.get_prompts_by_feed(user_id, feed_ids, folder_feed_ids=folder_feed_ids)
 
         # Final classifications keyed by story_hash
         classifications = {story["story_hash"]: 0 for story in stories}
 
-        # Apply feed-specific prompts
         for feed_id, feed_stories in stories_by_feed.items():
+            feed_prompts = prompts_by_feed.get(feed_id)
+            if not feed_prompts:
+                continue
             ttl_seconds = cls._compute_feed_ttl(user_id, feed_id)
-
-            # Apply global prompts (feed_id=0)
-            if 0 in feed_prompts:
-                for prompt in feed_prompts[0]:
-                    results = cls._run_classifier(
-                        prompt, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
-                    )
-                    cls._update_classifications(classifications, results, prompt.classifier_type)
-
-            # Apply feed-specific prompts
-            if feed_id in feed_prompts:
-                for prompt in feed_prompts[feed_id]:
-                    results = cls._run_classifier(
-                        prompt, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
-                    )
-                    cls._update_classifications(classifications, results, prompt.classifier_type)
-
-        # Apply folder-specific prompts if we have folder_ids
-        if folder_ids and folder_prompts:
-            for folder_id in folder_ids:
-                if folder_id in folder_prompts:
-                    for prompt in folder_prompts[folder_id]:
-                        # For folder prompts, classify per-feed for correct cache keys
-                        for feed_id, feed_stories in stories_by_feed.items():
-                            ttl_seconds = cls._compute_feed_ttl(user_id, feed_id)
-                            results = cls._run_classifier(
-                                prompt,
-                                feed_stories,
-                                user_id=user_id,
-                                feed_id=feed_id,
-                                ttl_seconds=ttl_seconds,
-                            )
-                            cls._update_classifications(classifications, results, prompt.classifier_type)
+            for prompt in feed_prompts:
+                results = cls._run_classifier(
+                    prompt, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
+                )
+                cls._update_classifications(classifications, results, prompt.classifier_type)
 
         return classifications
 

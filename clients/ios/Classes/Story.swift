@@ -329,14 +329,26 @@ import SwiftUI
         return string(for: "story_permalink")
     }
 
+    private struct RegexSearch: Hashable {
+        let pattern: String
+        let text: String
+    }
+
+    /// Saved regex searches, kept so redrawing the story trainer doesn't run a slow pattern again.
+    private var regexOutcomes: [RegexSearch: TrainerRegexMatcher.Outcome] = [:]
+
+    /// The story trainer lists a saved regex unless it clearly doesn't match. One that runs out of time
+    /// in TrainerRegexInput.swift's matcher stays listed, since it may match and the reader may be here to remove it.
     private func regexMatches(_ pattern: String, in text: String) -> Bool {
-        do {
-            let regex = try NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
-            let range = NSRange(text.startIndex..<text.endIndex, in: text)
-            return regex.firstMatch(in: text, options: [], range: range) != nil
-        } catch {
+        let search = RegexSearch(pattern: pattern, text: text)
+        if let outcome = regexOutcomes[search] {
+            return outcome != .noMatch
+        }
+        guard let outcome = TrainerRegexMatcher.outcome(of: pattern, in: text, budget: TrainerRegexMatcher.drawingBudget) else {
             return false
         }
+        regexOutcomes[search] = outcome
+        return outcome != .noMatch
     }
 
     private func training(name: String, classifierKey: String, score: Int) -> Feed.Training {

@@ -5763,9 +5763,15 @@ a.mention, a.mention-group {
     filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(90%) contrast(110%);
 }
 
+/* Hide's deep crimson reads too dark on a dark background, so lift it toward the dislike red */
+.NB-dark .NB-manage-filter-icon.NB-icon-hide > span {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(80%) contrast(110%);
+}
+
 /* Yellowish-orange when active/selected in dark mode */
 .NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-like,
-.NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-dislike {
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-dislike,
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-hide > span {
     filter: invert(67%) sepia(89%) saturate(497%) hue-rotate(2deg) brightness(103%) contrast(104%);
 }
 

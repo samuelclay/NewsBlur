@@ -134,8 +134,13 @@ extension ToolbarDelegate: NSToolbarDelegate {
     }
 
     @MainActor func updateListenItem() {
+        // ToolbarDelegate.swift: the item also plays and pauses a podcast (Listen/ListenMediaPlayer.swift).
         let player = ListenPlayer.shared
-        if player.wantsToPlay {
+        let media = ListenMediaPlayer.shared
+        if media.isActive {
+            listenToolbarItem?.image = UIImage(systemName: media.wantsToPlay ? "pause.fill" : "play.fill")
+            listenToolbarItem?.label = media.wantsToPlay ? NBLocalization.text("Pause") : NBLocalization.text("Play")
+        } else if player.wantsToPlay {
             listenToolbarItem?.image = UIImage(systemName: "pause.fill")
             listenToolbarItem?.label = NBLocalization.text("Pause Listening")
         } else if player.isActive {

@@ -461,6 +461,14 @@ msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying 
 msgstr "<b>クレジットカードは不要です。</b>30日後も、年額36ドルでこれらの機能を引き続きご利用いただけます。"
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr "<b>プレミアムアーカイブ</b>では、フォローしているすべてのサイトの記事を永久に保存できます。プレミアムのすべての機能に加えて、次の機能をご利用いただけます："
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>プレミアム Pro</b>は、ヘビーユーザー向けです。アーカイブのすべての機能に加えて、次の機能をご利用いただけます："
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr "<b>プレミアムアーカイブにアップグレード（年額99ドル）</b> - 最大4,096件のサイト、全文検索、記事アーカイブ全体へのアクセスが含まれます。"
@@ -736,6 +744,18 @@ msgid ""
 "your OPML at any time and stand up your own instance with the same open source code that powers "
 "newsblur.com."
 msgstr "4つのリーダーはいずれもOPMLのインポートとエクスポートに対応しているため、フィードリストを自由に移行できます。NewsBlurではさらに、MITライセンスのもとでアプリケーションのソースコード全体を利用できます。セルフホスティングの場合、記事、インテリジェンス学習データ、保存した検索、Blurblogの投稿はすべて、管理下のデータベースに保存されます。どの層にもベンダーロックインはありません。ホスト型サービスをご利用の場合も、いつでもOPMLをエクスポートし、newsblur.comを支えるものと同じオープンソースコードで独自のインスタンスを立ち上げられます。"
+
+msgid "All of this for $29/month."
+msgstr "これらすべてを月額29ドルでご利用いただけます。"
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "これらすべてを月額<b>$29</b>でご利用いただけます。"
+
+msgid "All of this for just $99/year."
+msgstr "これらすべてを年額わずか99ドルでご利用いただけます。"
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "これらすべてを年額わずか<b>$99</b>でご利用いただけます。"
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1397,6 +1417,12 @@ msgstr "記事を保存できませんでした。見つかりません。"
 msgid "Could not unsave story, not found"
 msgstr "記事を保存解除できませんでした。見つかりません。"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripeに接続できませんでした。もう一度お試しください。"
+
+msgid "Couldn't save the position"
+msgstr "位置を保存できませんでした"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "対象期間: %(start)s &ndash; %(end)s"
@@ -1842,9 +1868,6 @@ msgstr "つながりを広げる"
 
 msgid "Explore Archive"
 msgstr "アーカイブプランを詳しく見る"
-
-msgid "Explore NewsBlur:"
-msgstr "NewsBlurをご覧ください："
 
 msgid "Explore Premium"
 msgstr "プレミアムをチェック"
@@ -2787,6 +2810,9 @@ msgstr "無効な画像ファイル"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days が無効です"
 
+msgid "Invalid position"
+msgstr "無効な位置です"
+
 msgid "Invalid request identifier"
 msgstr "無効なリクエスト識別子"
 
@@ -3257,6 +3283,9 @@ msgstr "マウスを使わずにすべての操作を行えます。フィード
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "日付フィルターでアーカイブを閲覧できます。いつの時期の記事でも見つけられます。"
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "最上位のプランをお探しですか？プレミアム Proをご紹介します。"
 
 msgid "Neutral"
 msgstr "標準"
@@ -3762,6 +3791,9 @@ msgstr "学習システムなし"
 msgid "No uncategorized archives found"
 msgstr "未分類のアーカイブは見つかりませんでした"
 
+msgid "No usage billing set up."
+msgstr "従量課金は設定されていません。"
+
 msgid "No user has that email address."
 msgstr "そのメールアドレスのユーザーはいません。"
 
@@ -3991,6 +4023,9 @@ msgstr "キーワード検索のクエリを入力してください。"
 msgid "Please enter in an email address."
 msgstr "メールアドレスを入力してください。"
 
+msgid "Please log in to NewsBlur again."
+msgstr "もう一度NewsBlurにログインしてください。"
+
 msgid "Please login to continue."
 msgstr "続行するにはログインしてください。"
 
@@ -4066,6 +4101,9 @@ msgstr "プレミアムアーカイブ（年額99ドル）では、すべての�
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "プレミアムアーカイブ - NewsBlurの料金"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr "プレミアムアーカイブでは、フォローしているすべてのサイトの記事を永久に保存できます。プレミアムのすべての機能に加えて、次の機能をご利用いただけます："
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "分類器の通知にはプレミアムアーカイブが必要です"
 
@@ -4092,6 +4130,9 @@ msgstr "プレミアム Pro（月額29ドル）では、すべてのフィード
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "プレミアム Pro - NewsBlurの料金"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "プレミアム Proは、ヘビーユーザー向けです。アーカイブのすべての機能に加えて、次の機能をご利用いただけます："
 
 msgid "Premium Pro subscription"
 msgstr "プレミアムProサブスクリプション"
@@ -5286,6 +5327,9 @@ msgstr "NewsBlurをお試しいただきありがとうございます！NewsBlu
 msgid "Thanks!"
 msgstr "ありがとうございます！"
 
+msgid "That item isn't playing"
+msgstr "その項目は再生中ではありません"
+
 msgid "That part of the story doesn't exist."
 msgstr "記事のその部分は存在しません。"
 
@@ -5768,10 +5812,16 @@ msgstr "今すぐアップグレード："
 msgid "Upgrade to Premium"
 msgstr "プレミアムにアップグレード"
 
+msgid "Upgrade to Premium Archive"
+msgstr "プレミアムアーカイブにアップグレード"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr "プレミアムアーカイブにアップグレード（年額99ドル）— 最大4,096サイトに加え、全文検索と記事アーカイブ全体へのアクセスが利用できます。"
+
+msgid "Upgrade to Premium Archive:"
+msgstr "プレミアムアーカイブにアップグレード："
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "プレミアムアカウントにアップグレード（年額36ドル）"
@@ -5791,6 +5841,9 @@ msgstr "従量課金は有効になっていません"
 msgid "Usage billing required for AI classifiers"
 msgstr "AI分類器の利用には従量課金の設定が必要です"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "従量課金は現在ご利用いただけません。"
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "使用方法"
@@ -5802,6 +5855,9 @@ msgid ""
 msgstr ""
 "お気に入りの読書アプリでNewsBlurを使いましょう。Reeder、ReadKit、Unread、lire、Fiery "
 "Feeds、Newsifyなど、多数のアプリと完全に同期できます。既読状態、保存した記事、学習内容はすべてのアプリ間で同期されます。NewsBlurのオープンAPIを使ったサードパーティ製クライアントは数十種類あります。"
+
+msgid "Use POST"
+msgstr "POSTを使用"
 
 msgid "Use prompt templates"
 msgstr "プロンプトテンプレートを使用"
@@ -5875,6 +5931,9 @@ msgstr "ビジュアル学習（高評価／低評価）"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "ビジュアル学習とルールベースのフィルタリング"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "さらに充実したプランをお探しですか？プレミアムアーカイブをご紹介します。"
 
 msgid "Want more CLI features?"
 msgstr "CLIの機能をもっと使いたいですか？"

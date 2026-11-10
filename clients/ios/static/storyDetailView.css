@@ -489,6 +489,76 @@ body.NB-iphone {
     font-style: normal;
 }
 
+/* AI Classifier Pills: storyDetailView.css mirrors the web's .NB-feed-story-ai-classifier in media/css/reader/reader.css */
+.NB-story-ai-classifiers {
+    margin: 6px 0 2px;
+    line-height: 0;
+}
+
+.NB-story-ai-classifier {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 4px 4px 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: .75em;
+    font-weight: normal;
+    line-height: 1.3em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    background-color: rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.NB-story-ai-classifier .NB-story-ai-classifier-label {
+    font-weight: bold;
+}
+
+.NB-story-ai-classifier.NB-score-1 {
+    background-color: #A3CA87;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
+.NB-story-ai-classifier.NB-score--1 {
+    background-color: #D58586;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+
+.NB-story-ai-classifier.NB-score--2 {
+    background-color: #8B2020;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+
+.NB-story-ai-classifier.NB-score-1.pressed {
+    background-color: #34912E;
+}
+
+.NB-story-ai-classifier.NB-score--1.pressed,
+.NB-story-ai-classifier.NB-score--2.pressed {
+    background-color: #A90103;
+}
+
+@media (hover: hover) {
+    .NB-story-ai-classifier.NB-score-1:hover {
+        background-color: #34912E;
+    }
+
+    .NB-story-ai-classifier.NB-score--1:hover,
+    .NB-story-ai-classifier.NB-score--2:hover {
+        background-color: #A90103;
+    }
+}
+
 .NB-middot {
     display: inline-block;
     color: #A0A0A0;
@@ -2007,6 +2077,9 @@ html[dir="rtl"] .NB-story-url-match {
     padding-left: 0;
     padding-right: 12px;
 }
+html[dir="rtl"] .NB-story-ai-classifier {
+    margin: 0 0 4px 4px;
+}
 html[dir="rtl"] .NB-score-icon,
 html[dir="rtl"] .NB-score-icon-double {
     margin-left: 0;
@@ -2267,4 +2340,114 @@ html[dir="rtl"] .NB-cluster-feed-border-outer {
 html[dir="rtl"] .NB-cluster-feed-border-inner {
     left: auto;
     right: 4px;
+}
+
+/* storyDetailView.css: a story's audio as a row of pills (storyDetailView.js newsblurPrepareMedia), played by
+   Listen/ListenMediaPlayer.swift. The pills follow the story header's tag and AI classifier pills: the story
+   font, 4px corners, the same bevel, the neutral tag shade, and the positive green for Play. Only the pills take
+   taps, so a tap beside them is neither a press nor the reader's tap-to-hide-chrome
+   (StoryDetailObjCViewController.m continueTapAtPoint:). Every rule starts at #NB-story to win over the story
+   content rules (.NB-story span, .NB-story div). */
+#NB-story .NB-media-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 20px;
+    line-height: 1.2;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+#NB-story .NB-media-card * {
+    pointer-events: none;
+}
+#NB-story .NB-media-card a {
+    pointer-events: auto;
+    cursor: pointer;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+#NB-story .NB-media-card a * {
+    pointer-events: none;
+}
+#NB-story .NB-media-card-play,
+#NB-story .NB-media-card-actions a {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 34px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+#NB-story .NB-media-card-play {
+    gap: 8px;
+    padding: 7px 14px 7px 11px;
+    max-width: 100%;
+    background-color: #88B383;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    color: #FFFFFF;
+    text-shadow: 0 1px 0 #588353;
+    font-size: .8em;
+    font-weight: bold;
+}
+#NB-story .NB-media-playing .NB-media-card-play {
+    background-color: #6F9D69;
+}
+#NB-story .NB-media-card-play:active {
+    background-color: #34912E;
+}
+#NB-story .NB-media-card-label {
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#NB-story .NB-media-card-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    overflow: visible;
+    width: 14px !important;
+    min-width: 14px !important;
+    height: 14px;
+}
+#NB-story .NB-media-card-icon svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .2));
+}
+#NB-story .NB-media-loading .NB-media-card-icon {
+    animation: NB-media-card-pulse 1.2s ease-in-out infinite;
+}
+@keyframes NB-media-card-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+#NB-story .NB-media-card-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 8px;
+    margin: 0;
+}
+#NB-story .NB-media-card-actions a {
+    display: none;
+    padding: 7px 11px;
+    background-color: rgba(0, 0, 0, .1);
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    font-size: .75em;
+    font-weight: normal;
+}
+#NB-story .NB-media-can-queue .NB-media-card-next,
+#NB-story .NB-media-can-queue .NB-media-card-last,
+#NB-story .NB-media-queued .NB-media-card-queued {
+    display: inline-flex;
+}
+#NB-story .NB-media-card-actions a:active {
+    background-color: rgba(0, 0, 0, .18);
+}
+#NB-story .NB-media-card-queued::before {
+    content: "\2713\00a0";
 }

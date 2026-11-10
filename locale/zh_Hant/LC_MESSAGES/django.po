@@ -459,6 +459,14 @@ msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying 
 msgstr "<b>不需要信用卡。</b>試用 30 天後，只要每年 $36，就能繼續使用這些功能。"
 
 msgid ""
+"<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in "
+"Premium, plus:"
+msgstr "<b>Premium Archive</b> 會永久保留你追蹤的每個網站上的所有文章。你可享有 Premium 的所有功能，另外還有："
+
+msgid "<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:"
+msgstr "<b>Premium Pro</b> 專為進階使用者打造。你可享有 Archive 的所有功能，另外還有："
+
+msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr "<b>升級至 Premium Archive（每年 $99）</b>：包含最多 4,096 個網站、全文搜尋，以及完整文章封存的存取權。"
@@ -732,6 +740,18 @@ msgid ""
 msgstr ""
 "這四款閱讀器都支援匯入和匯出 OPML，因此你可以自由地在它們之間移轉訂閱來源清單。NewsBlur 更進一步，依 MIT 授權條款提供完整的應用程式原始碼。自行架設時，你的文章、智慧分類訓練資料、已儲存的搜尋和 "
 "Blurblog 貼文都存放在由你掌控的資料庫中。各個層面都不會受到供應商綁定。若你使用代管服務，隨時都可以匯出 OPML，並使用支援 newsblur.com 的相同開源程式碼架設自己的服務。"
+
+msgid "All of this for $29/month."
+msgstr "以上所有功能，每月只要 $29。"
+
+msgid "All of this for <b>$29/month</b>."
+msgstr "以上所有功能，每月只要 <b>$29/month</b>。"
+
+msgid "All of this for just $99/year."
+msgstr "以上所有功能，每年只要 $99。"
+
+msgid "All of this for just <b>$99/year</b>."
+msgstr "以上所有功能，每年只要 <b>$99/year</b>。"
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
@@ -1402,6 +1422,12 @@ msgstr "無法儲存文章，找不到該文章"
 msgid "Could not unsave story, not found"
 msgstr "找不到文章，無法取消儲存"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "無法連線至 Stripe。請再試一次。"
+
+msgid "Couldn't save the position"
+msgstr "無法儲存播放位置"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "涵蓋期間：%(start)s &ndash; %(end)s"
@@ -1851,9 +1877,6 @@ msgstr "拓展你的社群"
 
 msgid "Explore Archive"
 msgstr "探索 Archive"
-
-msgid "Explore NewsBlur:"
-msgstr "探索 NewsBlur："
 
 msgid "Explore Premium"
 msgstr "探索 Premium"
@@ -2802,6 +2825,9 @@ msgstr "圖片檔案無效"
 msgid "Invalid mute_duration_days"
 msgstr "mute_duration_days 無效"
 
+msgid "Invalid position"
+msgstr "播放位置無效"
+
 msgid "Invalid request identifier"
 msgstr "無效的請求識別碼"
 
@@ -3279,6 +3305,9 @@ msgstr ""
 
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "使用日期篩選瀏覽封存內容，尋找任何時段的文章。"
+
+msgid "Need the most? Meet Premium Pro."
+msgstr "需要最完整的方案嗎？認識一下 Premium Pro。"
 
 msgid "Neutral"
 msgstr "中性"
@@ -3810,6 +3839,9 @@ msgstr "無訓練系統"
 msgid "No uncategorized archives found"
 msgstr "找不到未分類的封存項目"
 
+msgid "No usage billing set up."
+msgstr "尚未設定用量計費。"
+
 msgid "No user has that email address."
 msgstr "沒有使用者使用此電子郵件地址。"
 
@@ -4039,6 +4071,9 @@ msgstr "請輸入關鍵字搜尋查詢。"
 msgid "Please enter in an email address."
 msgstr "請輸入電子郵件地址。"
 
+msgid "Please log in to NewsBlur again."
+msgstr "請重新登入 NewsBlur。"
+
 msgid "Please login to continue."
 msgstr "請先登入以繼續。"
 
@@ -4112,6 +4147,9 @@ msgstr "Premium Archive（每年 $99）提供永久封存並可搜尋的所有�
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - NewsBlur 價格"
 
+msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
+msgstr "Premium Archive 會永久保留你追蹤的每個網站上的所有文章。你可享有 Premium 的所有功能，另外還有："
+
 msgid "Premium Archive required for classifier notifications"
 msgstr "分類器通知需要 Premium Archive"
 
@@ -4138,6 +4176,9 @@ msgstr "Premium Pro（每月 $29）提供所有訂閱來源每 5–15 分鐘擷�
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - NewsBlur 價格"
+
+msgid "Premium Pro is built for power users. You get everything in Archive, plus:"
+msgstr "Premium Pro 專為進階使用者打造。你可享有 Archive 的所有功能，另外還有："
 
 msgid "Premium Pro subscription"
 msgstr "Premium Pro 訂閱"
@@ -5335,6 +5376,9 @@ msgstr "感謝你試用 NewsBlur！希望 NewsBlur 能讓你的日常閱讀更�
 msgid "Thanks!"
 msgstr "謝謝！"
 
+msgid "That item isn't playing"
+msgstr "該項目目前未播放"
+
 msgid "That part of the story doesn't exist."
 msgstr "文章的這個部分不存在。"
 
@@ -5815,10 +5859,16 @@ msgstr "立即升級："
 msgid "Upgrade to Premium"
 msgstr "升級至 Premium"
 
+msgid "Upgrade to Premium Archive"
+msgstr "升級至 Premium Archive"
+
 msgid ""
 "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
 "to your complete story archive."
 msgstr "升級至 Premium Archive（每年 $99）：包含最多 4,096 個網站、全文搜尋，以及完整的文章封存存取權。"
+
+msgid "Upgrade to Premium Archive:"
+msgstr "升級至 Premium Archive："
 
 msgid "Upgrade to a premium account for only $36/year"
 msgstr "只要每年 $36，即可升級為進階帳戶"
@@ -5838,6 +5888,9 @@ msgstr "未啟用用量計費"
 msgid "Usage billing required for AI classifiers"
 msgstr "AI 分類器需使用量計費"
 
+msgid "Usage-based billing isn't available right now."
+msgstr "目前無法使用依用量計費。"
+
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "使用"
@@ -5849,6 +5902,9 @@ msgid ""
 msgstr ""
 "在你最喜愛的閱讀應用程式中使用 NewsBlur。完整支援與 Reeder、ReadKit、Unread、lire、Fiery Feeds、Newsify "
 "等眾多應用程式同步。你的已讀狀態、已儲存文章和訓練資料會在所有應用程式間同步。NewsBlur 的開放 API 為數十款第三方用戶端提供支援。"
+
+msgid "Use POST"
+msgstr "使用 POST"
 
 msgid "Use prompt templates"
 msgstr "使用提示範本"
@@ -5922,6 +5978,9 @@ msgstr "視覺訓練（按讚／倒讚）"
 
 msgid "Visual training vs. rule-based filtering"
 msgstr "視覺化訓練與規則式篩選"
+
+msgid "Want even more? Meet Premium Archive."
+msgstr "想要更多嗎？認識一下 Premium Archive。"
 
 msgid "Want more CLI features?"
 msgstr "想要更多 CLI 功能嗎？"

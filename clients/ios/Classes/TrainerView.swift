@@ -11,6 +11,8 @@ import SwiftUI
 /// A protocol of interaction between the trainer view and the enclosing view controller.
 @MainActor protocol TrainerInteraction {
     var isStoryTrainer: Bool { get set }
+    /// TrainerViewController.swift keeps the natural language prompt state across TrainerView reloads.
+    var aiPrompts: TrainerAIPromptModel { get }
     func reloadTrainerContext()
 }
 
@@ -248,6 +250,18 @@ struct TrainerView: View {
                     header(story: "Story URL", feed: "URLs")
                 })
 
+                ForEach(PromptClassifierKind.allCases, id: \.self) { kind in
+                    Section(content: {
+                        TrainerAIPromptSection(kind: kind, model: interaction.aiPrompts, feed: feed,
+                                               story: interaction.isStoryTrainer ? cache.selected : nil,
+                                               isPremiumArchive: isArchive, currentFolderName: currentFolderName,
+                                               fontBuilder: font)
+                            .listRowBackground(rowBackground)
+                    }, header: {
+                        TrainerAIPromptHeader(kind: kind, font: font(named: "WhitneySSm-Medium", size: 16), color: textColor)
+                    })
+                }
+
                 Section(content: {
                     HStack {
                         if let feed = feed {
@@ -282,6 +296,7 @@ struct TrainerView: View {
     func reload() {
         interaction.reloadTrainerContext()
         addingTitle = ""
+        interaction.aiPrompts.prepare(feedId: feed?.id, storyHash: interaction.isStoryTrainer ? cache.selected?.hash : nil)
     }
 
     // MARK: - Classifier Row
@@ -346,17 +361,28 @@ struct TrainerView: View {
         }
     }
 
+    /// TrainerView.swift orders the levels like compute_story_score in NewsBlurAppDelegate.m: Hide beats Like beats
+    /// Dislike. An AI filter match is a like or a dislike in that order, so it has no level of its own. Narrow
+    /// trainers drop the BEATS labels so the levels fit.
     var explainerHierarchyChain: some View {
-        HStack(spacing: 0) {
-            explainerPill(NBLocalization.text("Hide", context: "training level"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
-            explainerSeparator
-            explainerPill(NBLocalization.text("Like"), color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9)
-            explainerSeparator
-            explainerPill(NBLocalization.text("Dislike"), color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9)
+        ViewThatFits(in: .horizontal) {
+            explainerHierarchyChain(compact: false)
+            explainerHierarchyChain(compact: true)
         }
     }
 
-    func explainerPill(_ label: String, color: Color, bgOpacity: Double, icon: String, iconSize: CGFloat, isSuperDislike: Bool = false) -> some View {
+    func explainerHierarchyChain(compact: Bool) -> some View {
+        HStack(spacing: 0) {
+            explainerPill(NBLocalization.text("Hide", context: "training level"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true, compact: compact)
+            explainerSeparator(compact: compact)
+            explainerPill(NBLocalization.text("Like"), color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9, compact: compact)
+            explainerSeparator(compact: compact)
+            explainerPill(NBLocalization.text("Dislike"), color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9, compact: compact)
+        }
+        .fixedSize()
+    }
+
+    func explainerPill(_ label: String, color: Color, bgOpacity: Double, icon: String, iconSize: CGFloat, isSuperDislike: Bool = false, compact: Bool = false) -> some View {
         HStack(spacing: 3) {
             Text(label)
                 .font(.system(size: 11, weight: .bold))
@@ -369,7 +395,7 @@ struct TrainerView: View {
                     .foregroundColor(color)
             }
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, compact ? 6 : 8)
         .padding(.vertical, 4)
         .background(
             RoundedRectangle(cornerRadius: 6)
@@ -377,14 +403,20 @@ struct TrainerView: View {
         )
     }
 
-    var explainerSeparator: some View {
+    func explainerSeparator(compact: Bool) -> some View {
         HStack(spacing: 3) {
-            Rectangle().fill(explainerLineColor).frame(width: 8, height: 1)
-            Text(NBLocalization.text("BEATS"))
-                .font(.system(size: 7, weight: .medium))
-                .tracking(0.5)
-                .foregroundColor(separatorTextColor)
-            Rectangle().fill(explainerLineColor).frame(width: 8, height: 1)
+            Rectangle().fill(explainerLineColor).frame(width: compact ? 4 : 8, height: 1)
+            if compact {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 7, weight: .bold))
+                    .foregroundColor(separatorTextColor)
+            } else {
+                Text(NBLocalization.text("BEATS"))
+                    .font(.system(size: 7, weight: .medium))
+                    .tracking(0.5)
+                    .foregroundColor(separatorTextColor)
+            }
+            Rectangle().fill(explainerLineColor).frame(width: compact ? 4 : 8, height: 1)
         }
         .padding(.horizontal, 1)
     }
@@ -536,10 +568,10 @@ struct TrainerView: View {
         return cache.appDelegate.isPremiumArchive
     }
 
+    /// The folder every folder scope saves to, by the full path apps/reader/models.py flatten_folders gives it.
     var currentFolderName: String {
         guard let feedId = feed?.id else { return "" }
-        let folders = cache.appDelegate.parentFolders(forFeed: feedId) as? [String] ?? []
-        return folders.first ?? ""
+        return ClassifierFolderPath.serverPath(forFeed: feedId, appDelegate: cache.appDelegate)
     }
 
     // MARK: - Scope
@@ -684,3 +716,12 @@ struct TrainerView: View {
 //#Preview {
 //    TrainerViewController()
 //}
+
+extension ClassifierFolderPath {
+    /// TrainerView.swift's folder for the site being trained, which every folder scope it saves names. It lives here,
+    /// not in ClassifierScope.swift, because Package.swift compiles that file without NewsBlurAppDelegate.
+    @MainActor static func serverPath(forFeed feedId: String, appDelegate: NewsBlurAppDelegate) -> String {
+        serverPath(forFeed: feedId, folderOrder: appDelegate.dictFoldersArray as? [String] ?? [],
+                   folders: appDelegate.dictFolders as? [String: Any] ?? [:])
+    }
+}

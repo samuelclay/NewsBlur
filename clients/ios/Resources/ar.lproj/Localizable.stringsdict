@@ -98,6 +98,30 @@
 			<string>%@ تعليق</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ من فلاتر المحتوى</string>
+			<key>many</key>
+			<string>%@ من فلاتر المحتوى</string>
+			<key>one</key>
+			<string>%@ فلتر محتوى</string>
+			<key>other</key>
+			<string>%@ فلاتر المحتوى</string>
+			<key>two</key>
+			<string>%@ مرشّحَي محتوى</string>
+			<key>zero</key>
+			<string>%@ من فلاتر المحتوى</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -312,6 +336,30 @@
 			<string>تبقّت لك معاينات مجانية لـ %@ قصص اليوم</string>
 			<key>zero</key>
 			<string>تبقّى %@ معاينة مجانية للقصص اليوم</string>
+		</dict>
+	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ من فلاتر الصور</string>
+			<key>many</key>
+			<string>%@ من فلاتر الصور</string>
+			<key>one</key>
+			<string>%@ فلتر صور</string>
+			<key>other</key>
+			<string>%@ فلتر صورة</string>
+			<key>two</key>
+			<string>%@ من فلاتر الصور</string>
+			<key>zero</key>
+			<string>%@ من فلاتر الصور</string>
 		</dict>
 	</dict>
 	<key>%@ match</key>
@@ -530,6 +578,30 @@
 			<string>تبقّى %@ قصة</string>
 		</dict>
 	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ قصص/شهر</string>
+			<key>many</key>
+			<string>%@ قصة شهريًا</string>
+			<key>one</key>
+			<string>%@ قصة/شهر</string>
+			<key>other</key>
+			<string>%@ قصة/شهر</string>
+			<key>two</key>
+			<string>%@ قصةً/الشهر</string>
+			<key>zero</key>
+			<string>%@ قصة/شهر</string>
+		</dict>
+	</dict>
 	<key>%@ stories/month</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -746,6 +818,30 @@
 			<string>نُشر أيضًا على %@ موقع</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>رجوع %@ ثوانٍ</string>
+			<key>many</key>
+			<string>رجوع %@ ثانية</string>
+			<key>one</key>
+			<string>رجوع %@ ثانية</string>
+			<key>other</key>
+			<string>رجوع %@ ثانية</string>
+			<key>two</key>
+			<string>رجوع %@ ثانيتين</string>
+			<key>zero</key>
+			<string>رجوع %@ ثانية</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -792,6 +888,30 @@
 			<string>متابعان</string>
 			<key>zero</key>
 			<string>متابعون</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>تقديم %@ ثوانٍ</string>
+			<key>many</key>
+			<string>تقديم %@ ثانية</string>
+			<key>one</key>
+			<string>تقديم %@ ثانية</string>
+			<key>other</key>
+			<string>تقديم %@ ثانية</string>
+			<key>two</key>
+			<string>تقديم %@ ثانيتين</string>
+			<key>zero</key>
+			<string>تقديم %@ ثانية</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
@@ -1152,6 +1272,30 @@
 			<string>أنت مشترك في %@ موقعين</string>
 			<key>zero</key>
 			<string>أنت مشترك في %@ موقع</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة هذا الفلتر</string>
+			<key>many</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة هذا الفلتر</string>
+			<key>one</key>
+			<string>✓ تطابق %2$@ صورة واحدة من أصل %1$@ مع هذا الفلتر</string>
+			<key>other</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة مع هذا الفلتر</string>
+			<key>two</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة مع هذا الفلتر</string>
+			<key>zero</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة هذا الفلتر</string>
 		</dict>
 	</dict>
 </dict>
