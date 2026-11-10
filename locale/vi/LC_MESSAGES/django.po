@@ -6018,6 +6018,9 @@ msgstr "Bài viết gốc từ các nguồn cấp RSS bị cắt ngắn được
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Giống như các nguồn cấp thông thường. Người dùng Premium và Pro được cập nhật thường xuyên hơn."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "Không thể kết nối đến các dịch vụ cần thiết để tìm kiếm. Vui lòng thử lại."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "Tìm kiếm đã hết thời gian, nên đây là những gì tìm được cho đến lúc này."
 

@@ -6090,6 +6090,9 @@ msgstr "تُوسَّع القصة الأصلية بسلاسة في خلاصات 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "مثل الخلاصات العادية. يحصل مستخدمو Premium وPro على تحديثات بوتيرة أسرع."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "تعذّر على البحث الوصول إلى الخدمات التي يعتمد عليها. يُرجى المحاولة مرة أخرى."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "انتهى وقت البحث، وهذه هي النتائج التي عُثر عليها حتى الآن."
 

@@ -5675,6 +5675,9 @@ msgstr "잘린 RSS 피드의 원본 스토리를 매끄럽게 확장해 보여�
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "일반 피드와 동일합니다. 프리미엄 및 프로 사용자는 더 자주 업데이트됩니다."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "검색에 필요한 서비스에 연결할 수 없습니다. 다시 시도해 주세요."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "검색 시간이 초과되어 현재까지 찾은 결과를 표시합니다."
 

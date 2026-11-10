@@ -6077,6 +6077,9 @@ msgstr "Het oorspronkelijke artikel uit afgekorte RSS-feeds wordt naadloos uitge
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Hetzelfde als gewone feeds. Premium- en Pro-gebruikers krijgen updates vaker."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "De zoekopdracht kon de benodigde services niet bereiken. Probeer het opnieuw."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "De zoekopdracht duurde te lang. Dit is wat er tot nu toe is gevonden."
 

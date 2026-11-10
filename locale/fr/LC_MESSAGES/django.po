@@ -6194,6 +6194,9 @@ msgstr "L’article original des flux RSS tronqués est développé de manière 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Identique aux flux classiques. Les utilisateurs Premium et Pro bénéficient de mises à jour plus fréquentes."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "La recherche n’a pas pu accéder aux services dont elle dépend. Veuillez réessayer."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "La recherche a expiré. Voici les résultats trouvés jusqu’à présent."
 

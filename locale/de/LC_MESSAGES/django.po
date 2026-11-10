@@ -6136,6 +6136,9 @@ msgstr "Der Originalartikel aus gekürzten RSS-Feeds wird nahtlos erweitert"
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Wie bei regulären Feeds. Premium- und Pro-Nutzer erhalten häufigere Aktualisierungen."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "Die Suche konnte die benötigten Dienste nicht erreichen. Bitte versuche es erneut."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "Die Suche hat das Zeitlimit überschritten. Das wurde bisher gefunden:"
 

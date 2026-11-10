@@ -5505,6 +5505,9 @@ msgstr "省略されたRSSフィードの記事を、元の記事からシーム
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "通常のフィードと同じです。プレミアムおよびProユーザーは、より短い間隔で更新されます。"
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "検索に必要なサービスに接続できませんでした。もう一度お試しください。"
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "検索がタイムアウトしたため、現時点で見つかった結果を表示しています。"
 

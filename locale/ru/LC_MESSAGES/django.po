@@ -6148,6 +6148,9 @@ msgstr "Оригинал статьи из усеченной RSS-ленты р�
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "То же, что и обычные ленты. Пользователи Premium и Pro получают обновления чаще."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "Не удалось подключиться к сервисам, необходимым для поиска. Повторите попытку."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "Время поиска истекло. Вот что удалось найти."
 

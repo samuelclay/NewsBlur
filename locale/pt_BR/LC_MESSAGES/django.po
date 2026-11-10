@@ -6085,6 +6085,9 @@ msgstr "O artigo original de feeds RSS truncados é expandido sem interrupções
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "O mesmo que os feeds comuns. Usuários Premium e Pro recebem atualizações com mais frequência."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "Não foi possível acessar os serviços necessários para a pesquisa. Tente novamente."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "A busca expirou. Estes são os resultados encontrados até agora."
 

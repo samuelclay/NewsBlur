@@ -5881,6 +5881,9 @@ msgstr "הכתבה המקורית מפידי RSS מקוצרים מורחבת ב�
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "כמו פידים רגילים. משתמשי Premium ו-Pro מקבלים עדכונים בתדירות גבוהה יותר."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "החיפוש לא הצליח להתחבר לשירותים הנדרשים. נסו שוב."
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "החיפוש הסתיים בגלל חריגה ממגבלת הזמן, ולכן אלה התוצאות שנמצאו עד כה."
 

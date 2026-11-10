@@ -5556,6 +5556,9 @@ msgstr "无缝展开 RSS 订阅源截断的原文"
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "与常规订阅源相同。高级版和专业版用户可享受更快的更新频率。"
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "搜索无法连接所依赖的服务。请重试。"
+
 msgid "The search ran out of time, so this is what was found so far."
 msgstr "搜索超时了，以下是目前找到的结果。"
 
