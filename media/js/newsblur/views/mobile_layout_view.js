@@ -839,14 +839,23 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // ===============
 
     // mobile.css (Page scrolling): a phone browser shrinks its toolbar only when the page itself
-    // scrolls. While the feed list or story list is at rest, its screen is laid out in the page's
-    // flow and the page scrolls in place of the list. Anything that moves or covers the screen (a
-    // slide, an edge swipe, a sheet, a modal, the player) puts it back in the fixed layout first,
-    // with the list scrolled to where the page was, and it returns to the page afterwards.
+    // scrolls. While the feed list, the story list or an open story is at rest, its screen is
+    // laid out in the page's flow and the page scrolls in place of the list or story. Anything
+    // that moves or covers the screen (a slide, an edge swipe, a swipe between stories, a sheet,
+    // a modal, the player) puts it back in the fixed layout first, scrolled to where the page
+    // was, and it returns to the page afterwards.
     page_scroller: function (screen) {
         if (screen === 'feeds') return this.$screens.feeds.find('.left-center-content')[0];
         if (screen === 'titles') return NEWSBLUR.reader.$s.$story_titles[0];
+        // mobile_story_pager_view.js rotates its three pages, so this is whichever holds the story.
+        if (screen === 'story') return this.story_pager.pages.current.$el[0];
         return null;
+    },
+
+    // Every element the page can scroll in place of.
+    page_scrollers: function () {
+        return [this.page_scroller('feeds'), this.page_scroller('titles')]
+            .concat(_.map(this.story_pager.pages, function (page) { return page.$el[0]; }));
     },
 
     // Whether the page is scrolling in place of this list right now.
@@ -856,9 +865,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     wants_page_scroll: function () {
         if (!this.active || this.transition || this.$body.hasClass('NB-mobile-transitioning')) return false;
-        if (!_.contains(['feeds', 'titles'], this.screen) || this.is_overlay_open()) return false;
+        if (!_.contains(['feeds', 'titles', 'story'], this.screen) || this.is_overlay_open()) return false;
         // Add + Discover replaces the story list with tab panes that scroll themselves.
         if (this.screen === 'titles' && $('.NB-layout').hasClass('NB-add-site-active')) return false;
+        if (this.screen === 'story' && !this.story_pager.can_page_scroll()) return false;
         return !!this.page_scroller(this.screen);
     },
 
@@ -868,8 +878,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     setup_page_scroll: function () {
         var self = this;
         var native_scroll_top = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
-        _.each(['feeds', 'titles'], function (screen) {
-            var el = self.page_scroller(screen);
+        _.each(this.page_scrollers(), function (el) {
             if (!el) return;
             Object.defineProperty(el, 'scrollTop', {
                 configurable: true,
@@ -958,6 +967,9 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         }
         if (this.page_scroll_screen === 'titles') {
             return [this.$titles_bar[0], this.$screens.titles.children('.content-north')[0]];
+        }
+        if (this.page_scroll_screen === 'story') {
+            return [this.story_pager.$('.NB-mobile-story-bar')[0], this.story_pager.$('.NB-mobile-story-toolbar')[0]];
         }
         return [];
     },
@@ -1370,6 +1382,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     set_pills_pending: function (pending) {
         var $bar = $('.right-pane > .content-north');
         clearTimeout(this.pills_pending_timer);
+        // A search reloads the list under the field being typed in, which has to stay put.
+        if (pending && (NEWSBLUR.reader.flags.search || $bar.find('.NB-story-titles-header.NB-searching').length)) {
+            pending = false;
+        }
         if (pending) {
             $bar.addClass('NB-mobile-pills-pending');
             this.pills_pending_timer = setTimeout(_.bind(this.set_pills_pending, this, false), this.PILLS_PENDING_MS);
