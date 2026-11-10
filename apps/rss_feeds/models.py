@@ -78,6 +78,7 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.fields import AutoOneToOneField
+from utils.reddit_fetcher import reddit_fetch_floor_minutes
 from utils.story_functions import (
     create_imageproxy_signed_url,
     htmldiff,
@@ -1877,6 +1878,10 @@ class Feed(models.Model):
             "timeout": 10,
             "single_threaded": kwargs.get("single_threaded", True),
             "force": kwargs.get("force"),
+            # Who asked: utils/feed_fetcher.py also forces a random 1% of scheduled fetches,
+            # and Reddit feeds only spend RedListen's reserved one-off budget on fetches a
+            # reader asked for (utils/reddit_fetcher.py).
+            "reader_requested": kwargs.get("reader_requested", bool(kwargs.get("force"))),
             "force_fp": kwargs.get("force_fp"),
             "compute_scores": kwargs.get("compute_scores", True),
             "mongodb_replication_lag": kwargs.get("mongodb_replication_lag", None),
@@ -1903,7 +1908,7 @@ class Feed(models.Model):
                 self.save(update_fields=["feed_address", "feed_link"])
 
         # Per-domain fetch budget shared across all task servers, modeled on the
-        # Reddit API budget in utils/reddit_fetcher.py. When a domain's per-minute
+        # RedListen minute window in utils/redlisten.py. When a domain's per-minute
         # budget is spent, silently defer this fetch (no fetch history, no exception)
         # instead of hammering the site: one Pro user's 1,100 abebooks.com web feeds
         # at Pro speed added up to ~175,000 fetches/day against a single domain.
@@ -3725,6 +3730,16 @@ class Feed(models.Model):
                     "Forbidden penalty: %s min -> %s min (%s hour min for %s subs)"
                     % (before_forbidden, total, hours, self.num_subscribers)
                 )
+
+        # Reddit feeds come from RedListen on a monthly budget (utils/reddit_fetcher.py).
+        # Subreddit and user feeds read the hourly poller's cache, which schedules them as
+        # soon as new posts land, so fetching them faster than the poll only re-reads it.
+        # Comment-thread and search feeds spend their own requests, so they fetch at most
+        # twice a day, overriding the Pro boost above.
+        reddit_floor = reddit_fetch_floor_minutes(self.feed_address)
+        if reddit_floor and total < reddit_floor:
+            adjustments.append("Reddit via RedListen minimum: %s min -> %s min" % (total, reddit_floor))
+            total = reddit_floor
 
         if verbose and adjustments:
             logging.debug(

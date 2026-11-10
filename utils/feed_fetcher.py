@@ -84,7 +84,7 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.json_fetcher import JSONFetcher
-from utils.reddit_fetcher import RedditFetcher
+from utils.reddit_fetcher import RedditFetcher, reddit_max_entries
 from utils.story_functions import (
     extract_story_date,
     linkify,
@@ -475,20 +475,23 @@ class FetchFeed:
                 )
             self.fpf = feedparser.parse(processed_facebook_feed)
         elif re.match(r"(https?://)?(\w+\.)?reddit\.com/", clean_address):
-            reddit_feed, reddit_rate_limited, reddit_http_error_status = self.fetch_reddit()
+            reddit_feed, reddit_rate_limited, reddit_http_error_status, reddit_error = self.fetch_reddit()
             if reddit_rate_limited:
-                # The shared 100 req/min Reddit budget is spent. Record the throttle so
-                # the feed backs off and the stall is visible in fetch history, instead
+                # The RedListen budget or per-minute limit is spent. Record the throttle
+                # so the feed backs off and the stall is visible in fetch history, instead
                 # of silently showing no new stories. See utils/reddit_fetcher.py.
-                logging.debug("   ***> [%-30s] ~FRReddit API rate limit reached" % (self.feed.log_title[:30]))
-                self.feed.save_feed_history(429, "Reddit API rate limit reached")
+                message = reddit_error or "Reddit API rate limit reached"
+                logging.debug("   ***> [%-30s] ~FR%s" % (self.feed.log_title[:30], message))
+                self.feed.save_feed_history(429, message)
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
             if not reddit_feed:
                 logging.debug(
                     "   ***> [%-30s] ~FRReddit fetch failed: %s" % (self.feed.log_title[:30], address)
                 )
-                self.feed.save_feed_history(reddit_http_error_status or 404, "Reddit fetch failed")
+                self.feed.save_feed_history(
+                    reddit_http_error_status or 404, reddit_error or "Reddit fetch failed"
+                )
                 self.feed = self.feed.save()
                 return FEED_ERRHTTP, None
             # Apply encoding preprocessing to special feed content
@@ -968,10 +971,15 @@ class FetchFeed:
         return facebook_fetcher.fetch()
 
     def fetch_reddit(self):
-        # Preserve HTTP errors and local throttling for fetch history. See utils/reddit_fetcher.py.
+        # Preserve HTTP errors, throttling and the reason for fetch history. See utils/reddit_fetcher.py.
         reddit_fetcher = RedditFetcher(self.feed, self.options)
         reddit_feed = reddit_fetcher.fetch()
-        return reddit_feed, reddit_fetcher.rate_limited, reddit_fetcher.http_error_status
+        return (
+            reddit_feed,
+            reddit_fetcher.rate_limited,
+            reddit_fetcher.http_error_status,
+            reddit_fetcher.error_message,
+        )
 
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
@@ -1428,6 +1436,26 @@ class ProcessFeed:
         stories = MStory.objects(story_hash__in=story_hashes).order_by()
         return {story.story_hash: story for story in stories}
 
+    def entry_limit(self):
+        """How many of this fetch's entries to process, newest first."""
+        # A caller can ask for a specific limit (e.g. bootstrap_popular_feeds)
+        if self.options.get("max_stories"):
+            return self.options["max_stories"]
+        # Subreddit and user feeds carry every post RedListen was paid for since the last
+        # fetch, up to one poll's worth. See utils/reddit_fetcher.py.
+        reddit_limit = reddit_max_entries(self.feed.feed_address)
+        if reddit_limit:
+            return reddit_limit
+        # High-volume feeds can handle more stories
+        feed_address_lower = self.feed.feed_address.lower()
+        for high_volume_url in HIGH_VOLUME_FEED_URLS:
+            if high_volume_url in feed_address_lower:
+                logging.debug(
+                    f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {MAX_ENTRIES_HIGH_VOLUME} stories"
+                )
+                return MAX_ENTRIES_HIGH_VOLUME
+        return MAX_ENTRIES_TO_PROCESS
+
     def process(self):
         """Downloads and parses a feed."""
         start = time.time()
@@ -1481,20 +1509,7 @@ class ProcessFeed:
         if is_bluesky_feed(self.feed.feed_address):
             enrich_bluesky_entries(self.feed.feed_address, self.feed_entries)
 
-        # Check if caller requested a specific max_stories limit (e.g. bootstrap_popular_feeds)
-        max_entries = MAX_ENTRIES_TO_PROCESS
-        if self.options.get("max_stories"):
-            max_entries = self.options["max_stories"]
-        else:
-            # Check if this is a high-volume feed that can handle more stories
-            feed_address_lower = self.feed.feed_address.lower()
-            for high_volume_url in HIGH_VOLUME_FEED_URLS:
-                if high_volume_url in feed_address_lower:
-                    max_entries = MAX_ENTRIES_HIGH_VOLUME
-                    logging.debug(
-                        f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories"
-                    )
-                    break
+        max_entries = self.entry_limit()
 
         # If there are more than max_entries, we should sort the entries in date descending order and cut them off
         if len(self.feed_entries) > max_entries:
