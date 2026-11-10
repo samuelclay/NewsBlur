@@ -23,7 +23,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             'handle_touchend', 'handle_touchcancel', 'handle_long_press_start', 'handle_long_press_cancel',
             'handle_long_press_click', 'fit_pills', 'handle_search_close', 'update_titles_actions',
             'handle_story_button', 'handle_sheet_touchstart', 'handle_sheet_touchmove', 'handle_sheet_touchend',
-            'measure_browser_chrome', 'scroll_page_to_top', 'sync_page_scroll', 'handle_page_scroll');
+            'measure_browser_chrome', 'scroll_page_to_top', 'sync_page_scroll', 'handle_page_scroll',
+            'skip_toolbar_resize');
         this.utils = NEWSBLUR.mobile_utils;
         this.active = false;
         this.screen = null;
@@ -68,6 +69,9 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             this.media_query.addListener(this.check_mode);
         }
         window.addEventListener('popstate', this.handle_popstate);
+        // Capture runs ahead of every other resize listener, jquery.layout's included.
+        this.resize_width = window.innerWidth;
+        window.addEventListener('resize', this.skip_toolbar_resize, true);
         window.addEventListener('resize', _.debounce(this.fit_pills, 100));
         window.addEventListener('resize', this.measure_browser_chrome);
         window.addEventListener('scroll', this.scroll_page_to_top, { passive: true });
@@ -972,6 +976,18 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             return sum + (bar ? bar.offsetHeight : 0);
         }, 0);
         return Math.max(0, window.innerHeight - bars_height);
+    },
+
+    // A phone browser's toolbar shrinks and returns as the page scrolls, and each time the window
+    // gets taller or shorter and reports a resize. Nothing in a screen laid out in the page
+    // depends on the window's height, but jquery.layout answers every resize by measuring and
+    // rewriting all its panes (and reader.js resize_window after it), in the middle of the
+    // scroll that caused it, which makes the scroll stutter. Only a change of width goes on.
+    skip_toolbar_resize: function (e) {
+        var width = window.innerWidth;
+        var same_width = width === this.resize_width;
+        this.resize_width = width;
+        if (this.page_scroll_screen && same_width) e.stopImmediatePropagation();
     },
 
     // The list's own scroll listeners, jQuery's and native ones alike, hear the page's scroll.

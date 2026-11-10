@@ -76,6 +76,9 @@ class Context:
         self.errors = []
         self.results = []
         page.on("pageerror", lambda error: self.errors.append(str(error)))
+        # An alert is how jquery.layout reports a pane it could not lay out. Playwright dismisses
+        # one nobody listens for, which would hide it.
+        page.on("dialog", self.record_dialog)
 
     # ============
     # = Basics   =
@@ -86,6 +89,10 @@ class Context:
 
     def wait(self, ms):
         self.page.wait_for_timeout(ms)
+
+    def record_dialog(self, dialog):
+        self.errors.append(f"{dialog.type}: {dialog.message}")
+        dialog.dismiss()
 
     def shot(self, name):
         path = self.out / f"{self.scenario}-{name}.png"
