@@ -660,11 +660,12 @@ def check_inline_scrolls_to_story(ctx):
     ctx.tap_story(4)
     ctx.wait(600)
     place = ctx.evaluate(
-        "(() => { var list = document.querySelector('#story_titles').getBoundingClientRect(); "
+        # The list shows from under the bar of pills, whether it scrolls itself or the page does.
+        "(() => { var top = document.querySelector('.right-pane > .content-north').getBoundingClientRect().bottom; "
         "var container = document.querySelector('#story_titles .NB-story-title.NB-selected').closest('.NB-story-title-container'); "
         "var detail = container.querySelector('.NB-story-detail').getBoundingClientRect(); "
         "var row = container.querySelector('.NB-story-title').getBoundingClientRect(); "
-        "return {detail_top: Math.round(detail.top - list.top), row_bottom: Math.round(row.bottom - list.top)}; })()"
+        "return {detail_top: Math.round(detail.top - top), row_bottom: Math.round(row.bottom - top)}; })()"
     )
     ctx.check(
         "an inline story scrolls to the top of the list, past its title row",

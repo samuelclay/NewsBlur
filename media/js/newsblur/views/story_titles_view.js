@@ -540,7 +540,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             if (this.pre_load_page_scroll_position > 0) {
                 this.pre_load_page_scroll_position += $endline.outerHeight();
             }
-            $story_titles.stop().scrollTo($endline, {
+            // jQuery's scrollTo adds the list's scroll to an element's offset, which already counts
+            // the page's scroll, so a list the page scrolls for gets the row's place in it instead.
+            var loadbar = this.page_scrolls() ? $endline.offset().top - $story_titles.offset().top : $endline;
+            $story_titles.stop().scrollTo(loadbar, {
                 duration: 0,
                 axis: 'y',
                 easing: 'easeInOutQuint',
@@ -687,6 +690,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         });
     },
 
+    // story_titles_view.js: on a phone at rest the page scrolls in place of this list
+    // (mobile_layout_view.js Page scroll). The list is then as tall as its rows, its scrollTop is
+    // the page's, and the part of it on screen is the window under the screen's bars.
+    page_scrolls: function () {
+        return !!NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.page_scrolls(this.$story_titles[0]);
+    },
+
+    viewport_height: function () {
+        return this.page_scrolls() ? NEWSBLUR.app.mobile.page_viewport_height() : this.$story_titles.height();
+    },
+
     snap_back_scroll_position: function () {
         var $story_titles = this.$story_titles;
         if (this.post_load_page_scroll_position == $story_titles.scrollTop() &&
@@ -743,11 +757,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $selected_story = $story_detail;
             scroll = $story_detail.offset().top - this.$story_titles.offset().top;
         }
+        // Measured from the top of the list, where a list scrolling itself measures from its own
+        // top edge on screen.
+        if (this.page_scrolls()) scroll -= this.$story_titles.scrollTop();
         var position = NEWSBLUR.story_titles_scroll_utils &&
             NEWSBLUR.story_titles_scroll_utils.compute_selected_story_scroll_position({
                 element_top: scroll,
                 element_height: $selected_story.outerHeight(),
-                viewport_height: this.$story_titles.outerHeight(),
+                viewport_height: this.page_scrolls() ? this.viewport_height() : this.$story_titles.outerHeight(),
                 container_scroll: this.$story_titles.scrollTop(),
                 force: options.force,
                 always_scroll: is_always_scroll_layout,
@@ -791,7 +808,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (!position) return;
 
         var container_offset = position.top;
-        var visible_height = $story_titles.height() * 2;
+        var visible_height = this.viewport_height() * 2;
         var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
 
         // console.log(["scroll titles", this.options.on_dashboard ? "dashboard" : "stories", visible_height, scroll_y, ">", total_height, this.$el, container_offset]);
@@ -818,7 +835,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             point.top + offset.top
         )).closest('.' + NEWSBLUR.Views.StoryTitleView.prototype.className);
         var reached_bottom = this.collection.no_more_stories &&
-            this.$el.height() - $story_titles.height() - scroll_y <= 0;
+            this.$el.height() - this.viewport_height() - scroll_y <= 0;
         var topstory = _.detect(this.stories, function (view) {
             if (!reached_bottom && view.el == $story_title[0]) return true;
             if (view.model.get('read_status') == 0 && view.model.score() >= score) {

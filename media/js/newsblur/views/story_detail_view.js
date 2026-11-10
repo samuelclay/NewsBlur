@@ -1284,7 +1284,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 } else {
                     $scroll = NEWSBLUR.reader.$s.$feed_scroll;
                 }
-                offset += $scroll.scrollTop();
+                // story_detail_view.js: a footnote's offset already counts the page's scroll when the
+                // page scrolls in place of the list (mobile_layout_view.js Page scroll).
+                if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.page_scrolls($scroll[0])) {
+                    offset -= $scroll.offset().top;
+                } else {
+                    offset += $scroll.scrollTop();
+                }
                 $scroll.stop().scrollTo(offset - 60, {
                     duration: 340,
                     axis: 'y',

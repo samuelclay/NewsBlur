@@ -33,6 +33,7 @@ Node unit tests for the pure helpers are separate: `node --test node/tests/mobil
 | `tour` | Screenshots of every screen in order. `--args dark` for the dark theme, applied in the page and never saved |
 | `modals` | The 19 modals plus the activity sheet: each opens full width with nothing hanging off the screen |
 | `player` | The Listen and podcast player floats as a one-row bar at the bottom of each screen, clear of the toolbar row under the nav bar, opens as a bottom sheet and closes from the shade. Uses whatever the account's player already holds and skips when it's empty |
+| `page_scroll` | The feed list and story list scroll the page itself while at rest, which is what lets a phone browser shrink its toolbar: bars stay stuck to the top, more stories load, and a sheet or slide holds each list where it was |
 | `rtl` | Arabic: screens slide from the left, swipe directions reverse, the edge swipe starts at the right edge |
 | `landscape` | 852×393 keeps the phone layout |
 | `tablet` | iPad portrait gets the phone layout with a two-column grid |
@@ -56,6 +57,7 @@ Other data does change and is not restored: opening stories marks them read, and
 - **A tap during momentum scrolling only stops the scroll**, as on a real phone. Wait about a second after a vertical swipe before tapping a button, or the tap is swallowed.
 - **`page.evaluate` invokes a snippet whose value is a function.** Wrap snippets that assign functions in `(() => { ... })()`.
 - **A feed can appear in several folders.** Locate rows with `>> visible=true` (`ctx.feed_row` does).
+- **A list at rest is not its own scroller.** While the feed list or story list sits still, the page scrolls in its place (`body.NB-mobile-page-scroll`), so `window.scrollY` moves and the list's `scrollTop` reads and sets the page's. During a slide, an edge swipe, a sheet or a modal the list scrolls itself again.
 - **Emulated Chromium is not Safari.** iOS Safari's own edge swipe-back, rubber banding and the soft keyboard still need a real iPhone. When the browser animates its own swipe-back, popstate carries `hasUAVisualTransition` and the layout switches screens without a second slide.
 - **CDP touch events never set `:hover` or `:active`**, but real phones apply both the moment a thumb lands. To test what a touch looks like, force the states with `CSS.forcePseudoState` (`hover_changes` in `scenarios/regressions.py`).
 - **A `backdrop-filter`, like `transform` or `filter`, makes an element the containing block** of its absolutely positioned descendants. The story list's search pill drops its glass while its field is open for that reason.
