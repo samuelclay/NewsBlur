@@ -33,10 +33,20 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         { id: 'complete', label: function () { return gettext('Done'); } }
     ],
 
+    // describe_feeds_view.js: shown before a first search. Varied on purpose, so a newcomer sees that a
+    // description can name a subject, a format, a voice or a kind of author, not just a keyword.
     EXAMPLES: [
         function () { return gettext('Reviews of new iOS apps with lots of screenshots'); },
         function () { return gettext('Long essays about cities, housing and public transit'); },
-        function () { return gettext('Indie game developers writing about their work in progress'); }
+        function () { return gettext('Indie game developers writing about their work in progress'); },
+        function () { return gettext('Weeknight vegetarian recipes with step-by-step photos'); },
+        function () { return gettext('Scientists explaining new research in plain language'); },
+        function () { return gettext('Personal blogs about restoring old houses'); },
+        function () { return gettext('Film photography with notes on cameras and film stocks'); },
+        function () { return gettext('Local news and events in Portland, Oregon'); },
+        function () { return gettext('Book reviews of new science fiction and fantasy'); },
+        function () { return gettext('Engineers writing about how large systems fail'); },
+        function () { return gettext('Bike touring and long-distance cycling trip reports'); }
     ],
 
     initialize: function (options) {

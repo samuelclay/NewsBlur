@@ -1913,6 +1913,9 @@ msgstr "بناءً على اهتماماتك"
 msgid "Begin Training"
 msgstr "بدء التدريب"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "تقارير عن جولات بالدراجات ورحلات طويلة المسافة"
+
 msgid "Bio"
 msgstr "نبذة"
 
@@ -1961,6 +1964,9 @@ msgstr "عنوان Blurblog"
 
 msgid "Blurblogs"
 msgstr "مدونات Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "مراجعات لكتب خيال علمي وفانتازيا جديدة"
 
 msgid "Bookmarklet"
 msgstr "أداة الإشارات المرجعية"
@@ -2958,6 +2964,9 @@ msgstr "تفعيل تجميع القصص"
 msgid "Enable the sites you want"
 msgstr "فعّل المواقع التي تريدها"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "مهندسون يكتبون عن كيفية تعطل الأنظمة الكبيرة"
+
 msgid "English"
 msgstr "الإنجليزية"
 
@@ -3310,6 +3319,9 @@ msgstr "الملفات"
 
 msgid "Filled Icons"
 msgstr "أيقونات ممتلئة"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "تصوير فوتوغرافي بالأفلام مع ملاحظات عن الكاميرات وأنواع الأفلام"
 
 msgid "Filter by date range"
 msgstr "تصفية حسب النطاق الزمني"
@@ -4320,6 +4332,9 @@ msgstr "جارٍ التحميل..."
 
 msgid "Loading…"
 msgstr "جارٍ التحميل…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "أخبار وفعاليات محلية في بورتلاند، أوريغون"
 
 msgid "Location"
 msgstr "الموقع"
@@ -5523,6 +5538,9 @@ msgstr "حسب الموقع"
 msgid "Per-feed notification settings"
 msgstr "إعدادات الإشعارات لكل خلاصة"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "مدونات شخصية عن ترميم المنازل القديمة"
+
 msgid "Phrase to match in story text"
 msgstr "عبارة لمطابقتها في نص القصة"
 
@@ -6324,6 +6342,9 @@ msgstr "التسليم المجدول (يوميًا أو مرتين يوميًا
 msgid "Science"
 msgstr "علوم"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "علماء يشرحون الأبحاث الجديدة بلغة واضحة"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "المصنّفات ذات النطاق المخصص متاحة فقط لمشتركي %(plan)s."
@@ -6784,8 +6805,8 @@ msgstr "إشعارات الموقع"
 msgid "Site Settings"
 msgstr "إعدادات الموقع"
 
-msgid "Site URL or search by name..."
-msgstr "عنوان الموقع أو ابحث بالاسم..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "عنوان الموقع أو اسمه، أو صف ما تريد قراءته"
 
 msgid "Site by Site"
 msgstr "موقعًا تلو الآخر"
@@ -8333,6 +8354,9 @@ msgstr "الأربعاء"
 
 msgid "Weekly"
 msgstr "أسبوعيًا"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "وصفات نباتية لعشاء أيام الأسبوع مع صور توضيحية خطوة بخطوة"
 
 msgid "Welcome to NewsBlur"
 msgstr "مرحبًا بك في NewsBlur"

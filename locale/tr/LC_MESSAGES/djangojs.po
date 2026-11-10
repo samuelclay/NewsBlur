@@ -1520,6 +1520,9 @@ msgstr "İlgi alanlarınıza göre"
 msgid "Begin Training"
 msgstr "Eğitimi başlat"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Bisiklet turları ve uzun mesafeli bisiklet gezisi yazıları"
+
 msgid "Bio"
 msgstr "Hakkında"
 
@@ -1568,6 +1571,9 @@ msgstr "Blurblog başlığı"
 
 msgid "Blurblogs"
 msgstr "Blurblog'lar"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Yeni bilim kurgu ve fantastik kitapları hakkında incelemeler"
 
 msgid "Bookmarklet"
 msgstr "Yer imi uygulaması"
@@ -2547,6 +2553,9 @@ msgstr "Haber kümelemeyi etkinleştir"
 msgid "Enable the sites you want"
 msgstr "İstediğiniz siteleri etkinleştirin"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "Büyük sistemlerin nasıl arızalandığını anlatan mühendisler"
+
 msgid "English"
 msgstr "İngilizce"
 
@@ -2903,6 +2912,9 @@ msgstr "Dosyalar"
 
 msgid "Filled Icons"
 msgstr "Dolu Simgeler"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Fotoğraf makineleri ve film türleri hakkında notlarla analog fotoğrafçılık"
 
 msgid "Filter by date range"
 msgstr "Tarih aralığına göre filtrele"
@@ -3901,6 +3913,9 @@ msgstr "Yükleniyor..."
 
 msgid "Loading…"
 msgstr "Yükleniyor…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Portland, Oregon'daki yerel haberler ve etkinlikler"
 
 msgid "Location"
 msgstr "Konum"
@@ -5043,6 +5058,9 @@ msgstr "Site başına"
 msgid "Per-feed notification settings"
 msgstr "Akış bazında bildirim ayarları"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Eski evleri yenileme üzerine kişisel bloglar"
+
 msgid "Phrase to match in story text"
 msgstr "Haber metninde eşleştirilecek ifade"
 
@@ -5817,6 +5835,9 @@ msgstr "Planlanmış gönderim (günde bir veya iki kez)"
 msgid "Science"
 msgstr "Bilim"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Yeni araştırmaları sade bir dille açıklayan bilim insanları"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Kapsamlı sınıflandırıcılar yalnızca %(plan)s abonelerine sunulur."
@@ -6276,8 +6297,8 @@ msgstr "Site Bildirimleri"
 msgid "Site Settings"
 msgstr "Site ayarları"
 
-msgid "Site URL or search by name..."
-msgstr "Site URL'si veya ada göre arayın..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "Site URL'si, adı veya okumak istediklerinizi açıklayın"
 
 msgid "Site by Site"
 msgstr "Siteye Göre"
@@ -7767,6 +7788,9 @@ msgstr "Çarşamba"
 
 msgid "Weekly"
 msgstr "Haftalık"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Hafta içi akşamları için adım adım fotoğraflı vejetaryen tarifler"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur'a hoş geldiniz"

@@ -1685,6 +1685,9 @@ msgstr "На основе ваших интересов"
 msgid "Begin Training"
 msgstr "Начать обучение"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Отчёты о велопоходах и дальних поездках на велосипеде"
+
 msgid "Bio"
 msgstr "О себе"
 
@@ -1735,6 +1738,9 @@ msgstr "Название Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Рецензии на новые научно-фантастические и фэнтези-книги"
 
 msgid "Bookmarklet"
 msgstr "Букмарклет"
@@ -2725,6 +2731,9 @@ msgstr "Включить группировку статей"
 msgid "Enable the sites you want"
 msgstr "Включите нужные сайты"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "Инженеры рассказывают о сбоях крупных систем"
+
 msgid "English"
 msgstr "Английский"
 
@@ -3079,6 +3088,9 @@ msgstr "Файлы"
 
 msgid "Filled Icons"
 msgstr "Залитые значки"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Плёночная фотография с заметками о камерах и фотоплёнке"
 
 msgid "Filter by date range"
 msgstr "Фильтр по диапазону дат"
@@ -4085,6 +4097,9 @@ msgstr "Загрузка..."
 
 msgid "Loading…"
 msgstr "Загрузка…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Местные новости и события в Портленде, штат Орегон"
 
 msgid "Location"
 msgstr "Местоположение"
@@ -5257,6 +5272,9 @@ msgstr "Для каждого сайта"
 msgid "Per-feed notification settings"
 msgstr "Настройки уведомлений для каждой ленты"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Личные блоги о восстановлении старых домов"
+
 msgid "Phrase to match in story text"
 msgstr "Фраза для поиска в тексте статьи"
 
@@ -6049,6 +6067,9 @@ msgstr "Запланированная доставка (ежедневно ил
 msgid "Science"
 msgstr "Наука"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Учёные простым языком рассказывают о новых исследованиях"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Классификаторы с ограниченной областью действия доступны только подписчикам %(plan)s."
@@ -6514,8 +6535,8 @@ msgstr "Уведомления сайта"
 msgid "Site Settings"
 msgstr "Настройки сайта"
 
-msgid "Site URL or search by name..."
-msgstr "URL сайта или поиск по названию..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL сайта, его название или опишите, что вы хотите читать"
 
 msgid "Site by Site"
 msgstr "По сайтам"
@@ -8036,6 +8057,9 @@ msgstr "Среда"
 
 msgid "Weekly"
 msgstr "Еженедельно"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Вегетарианские рецепты для будней с пошаговыми фотографиями"
 
 msgid "Welcome to NewsBlur"
 msgstr "Добро пожаловать в NewsBlur"

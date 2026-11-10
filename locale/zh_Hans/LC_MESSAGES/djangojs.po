@@ -1504,6 +1504,9 @@ msgstr "根据你的兴趣"
 msgid "Begin Training"
 msgstr "开始训练"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "自行车旅行与长途骑行游记"
+
 msgid "Bio"
 msgstr "简介"
 
@@ -1552,6 +1555,9 @@ msgstr "Blurblog 标题"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "新科幻与奇幻小说书评"
 
 msgid "Bookmarklet"
 msgstr "书签工具"
@@ -2507,6 +2513,9 @@ msgstr "启用文章聚类"
 msgid "Enable the sites you want"
 msgstr "启用你想要的网站"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "撰写大型系统故障分析的工程师"
+
 msgid "English"
 msgstr "英语"
 
@@ -2857,6 +2866,9 @@ msgstr "文件"
 
 msgid "Filled Icons"
 msgstr "实心图标"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "胶片摄影，以及相机和胶片型号笔记"
 
 msgid "Filter by date range"
 msgstr "按日期范围筛选"
@@ -3835,6 +3847,9 @@ msgstr "正在加载……"
 
 msgid "Loading…"
 msgstr "正在加载…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "俄勒冈州波特兰的本地新闻和活动"
 
 msgid "Location"
 msgstr "位置"
@@ -4955,6 +4970,9 @@ msgstr "按网站"
 msgid "Per-feed notification settings"
 msgstr "单个订阅源的通知设置"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "记录老房修复过程的个人博客"
+
 msgid "Phrase to match in story text"
 msgstr "要在文章文本中匹配的短语"
 
@@ -5715,6 +5733,9 @@ msgstr "定时发送（每天一次或两次）"
 msgid "Science"
 msgstr "科学"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "用通俗语言解读最新研究的科学家"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "范围限定分类器仅对 %(plan)s 订阅用户开放。"
@@ -6168,8 +6189,8 @@ msgstr "网站通知"
 msgid "Site Settings"
 msgstr "网站设置"
 
-msgid "Site URL or search by name..."
-msgstr "网站 URL 或按名称搜索…"
+msgid "Site URL, name, or describe what you want to read"
+msgstr "网站网址、名称，或描述你想阅读的内容"
 
 msgid "Site by Site"
 msgstr "逐个网站"
@@ -7618,6 +7639,9 @@ msgstr "星期三"
 
 msgid "Weekly"
 msgstr "每周"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "工作日晚餐素食食谱，附分步照片"
 
 msgid "Welcome to NewsBlur"
 msgstr "欢迎使用 NewsBlur"

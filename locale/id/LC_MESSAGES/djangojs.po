@@ -1600,6 +1600,9 @@ msgstr "Berdasarkan minat Anda"
 msgid "Begin Training"
 msgstr "Mulai Pelatihan"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Catatan perjalanan bersepeda jarak jauh dan tur sepeda"
+
 msgid "Bio"
 msgstr "Bio"
 
@@ -1648,6 +1651,9 @@ msgstr "Judul Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Ulasan buku fiksi ilmiah dan fantasi terbaru"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
@@ -2632,6 +2638,9 @@ msgstr "Aktifkan pengelompokan artikel"
 msgid "Enable the sites you want"
 msgstr "Aktifkan situs yang Anda inginkan"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "Insinyur yang menulis tentang cara sistem besar mengalami kegagalan"
+
 msgid "English"
 msgstr "Bahasa Inggris"
 
@@ -2986,6 +2995,9 @@ msgstr "File"
 
 msgid "Filled Icons"
 msgstr "Ikon Terisi"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Fotografi film dengan catatan tentang kamera dan jenis film"
 
 msgid "Filter by date range"
 msgstr "Filter berdasarkan rentang tanggal"
@@ -3988,6 +4000,9 @@ msgstr "Memuat..."
 
 msgid "Loading…"
 msgstr "Memuat…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Berita dan acara lokal di Portland, Oregon"
 
 msgid "Location"
 msgstr "Lokasi"
@@ -5143,6 +5158,9 @@ msgstr "Per Situs"
 msgid "Per-feed notification settings"
 msgstr "Pengaturan notifikasi per feed"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Blog pribadi tentang merestorasi rumah-rumah tua"
+
 msgid "Phrase to match in story text"
 msgstr "Frasa yang cocok dalam teks artikel"
 
@@ -5924,6 +5942,9 @@ msgstr "Pengiriman terjadwal (harian atau dua kali sehari)"
 msgid "Science"
 msgstr "Sains"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Ilmuwan yang menjelaskan penelitian baru dengan bahasa sederhana"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Pengklasifikasi dengan cakupan folder atau global hanya tersedia bagi pelanggan %(plan)s."
@@ -6386,8 +6407,8 @@ msgstr "Notifikasi Situs"
 msgid "Site Settings"
 msgstr "Pengaturan Situs"
 
-msgid "Site URL or search by name..."
-msgstr "URL situs atau cari berdasarkan nama..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL situs, nama, atau jelaskan apa yang ingin Anda baca"
 
 msgid "Site by Site"
 msgstr "Situs per Situs"
@@ -7900,6 +7921,9 @@ msgstr "Rabu"
 
 msgid "Weekly"
 msgstr "Mingguan"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Resep vegetarian untuk hari kerja dengan foto langkah demi langkah"
 
 msgid "Welcome to NewsBlur"
 msgstr "Selamat datang di NewsBlur"

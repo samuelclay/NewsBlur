@@ -1602,6 +1602,9 @@ msgstr "In base ai tuoi interessi"
 msgid "Begin Training"
 msgstr "Inizia l'addestramento"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Diari di viaggi in bicicletta e di tour a lunga distanza"
+
 msgid "Bio"
 msgstr "Biografia"
 
@@ -1650,6 +1653,9 @@ msgstr "Titolo del Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Recensioni di nuovi libri di fantascienza e fantasy"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
@@ -2632,6 +2638,9 @@ msgstr "Attiva il raggruppamento degli articoli"
 msgid "Enable the sites you want"
 msgstr "Attiva i siti che vuoi"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "Ingegneri che raccontano come si guastano i sistemi complessi"
+
 msgid "English"
 msgstr "Inglese"
 
@@ -2986,6 +2995,9 @@ msgstr "File"
 
 msgid "Filled Icons"
 msgstr "Icone piene"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Fotografia analogica con note su fotocamere e pellicole"
 
 msgid "Filter by date range"
 msgstr "Filtra per intervallo di date"
@@ -3990,6 +4002,9 @@ msgstr "Caricamento..."
 
 msgid "Loading…"
 msgstr "Caricamento…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Notizie ed eventi locali a Portland, Oregon"
 
 msgid "Location"
 msgstr "Posizione"
@@ -5151,6 +5166,9 @@ msgstr "Per sito"
 msgid "Per-feed notification settings"
 msgstr "Impostazioni di notifica per ogni feed"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Blog personali sul restauro di vecchie case"
+
 msgid "Phrase to match in story text"
 msgstr "Frase da trovare nel testo dell'articolo"
 
@@ -5938,6 +5956,9 @@ msgstr "Consegna programmata (una o due volte al giorno)"
 msgid "Science"
 msgstr "Scienza"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Scienziati che spiegano le nuove ricerche con parole semplici"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "I classificatori con ambito limitato sono disponibili solo per gli abbonati %(plan)s."
@@ -6400,8 +6421,8 @@ msgstr "Notifiche del sito"
 msgid "Site Settings"
 msgstr "Impostazioni del sito"
 
-msgid "Site URL or search by name..."
-msgstr "URL del sito o cerca per nome..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL del sito, nome o descrivi cosa vuoi leggere"
 
 msgid "Site by Site"
 msgstr "Sito per sito"
@@ -7912,6 +7933,9 @@ msgstr "Mercoledì"
 
 msgid "Weekly"
 msgstr "Settimanale"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Ricette vegetariane per le sere in settimana, con foto passo passo"
 
 msgid "Welcome to NewsBlur"
 msgstr "Benvenuto su NewsBlur"

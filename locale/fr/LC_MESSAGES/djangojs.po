@@ -1606,6 +1606,9 @@ msgstr "Selon vos centres d’intérêt"
 msgid "Begin Training"
 msgstr "Commencer l’entraînement"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Récits de voyages à vélo et de randonnées cyclistes au long cours"
+
 msgid "Bio"
 msgstr "Biographie"
 
@@ -1654,6 +1657,9 @@ msgstr "Titre du Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblogs"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Critiques de nouveaux romans de science-fiction et de fantasy"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
@@ -2645,6 +2651,9 @@ msgstr "Activer le regroupement des articles"
 msgid "Enable the sites you want"
 msgstr "Activez les sites de votre choix"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "Des ingénieurs qui racontent les défaillances des grands systèmes"
+
 msgid "English"
 msgstr "Anglais"
 
@@ -3000,6 +3009,9 @@ msgstr "Fichiers"
 
 msgid "Filled Icons"
 msgstr "Icônes pleines"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Photographie argentique, avec des notes sur les appareils et les pellicules"
 
 msgid "Filter by date range"
 msgstr "Filtrer par période"
@@ -4010,6 +4022,9 @@ msgstr "Chargement..."
 
 msgid "Loading…"
 msgstr "Chargement…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Actualités et événements locaux à Portland, dans l’Oregon"
 
 msgid "Location"
 msgstr "Localisation"
@@ -5171,6 +5186,9 @@ msgstr "Par site"
 msgid "Per-feed notification settings"
 msgstr "Paramètres de notification par flux"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Blogs personnels sur la restauration de vieilles maisons"
+
 msgid "Phrase to match in story text"
 msgstr "Expression à rechercher dans le texte de l’article"
 
@@ -5966,6 +5984,9 @@ msgstr "Envoi programmé (quotidien ou deux fois par jour)"
 msgid "Science"
 msgstr "Sciences"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Des scientifiques qui expliquent les nouvelles recherches en langage clair"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Les classificateurs par dossier ou globaux sont réservés aux abonnés %(plan)s."
@@ -6428,8 +6449,8 @@ msgstr "Notifications du site"
 msgid "Site Settings"
 msgstr "Paramètres du site"
 
-msgid "Site URL or search by name..."
-msgstr "URL du site ou recherche par nom..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL ou nom du site, ou décrivez ce que vous souhaitez lire"
 
 msgid "Site by Site"
 msgstr "Site par site"
@@ -7960,6 +7981,9 @@ msgstr "mercredi"
 
 msgid "Weekly"
 msgstr "Hebdomadaire"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Recettes végétariennes pour les soirs de semaine, avec des photos étape par étape"
 
 msgid "Welcome to NewsBlur"
 msgstr "Bienvenue sur NewsBlur"

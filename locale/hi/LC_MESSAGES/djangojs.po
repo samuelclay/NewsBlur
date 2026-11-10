@@ -1598,6 +1598,9 @@ msgstr "आपकी रुचियों के आधार पर"
 msgid "Begin Training"
 msgstr "प्रशिक्षण शुरू करें"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "साइकिल यात्रा और लंबी दूरी की साइकिल यात्राओं की रिपोर्टें"
+
 msgid "Bio"
 msgstr "परिचय"
 
@@ -1646,6 +1649,9 @@ msgstr "Blurblog शीर्षक"
 
 msgid "Blurblogs"
 msgstr "Blurblogs"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "नई साइंस फ़िक्शन और फ़ैंटेसी किताबों की समीक्षाएँ"
 
 msgid "Bookmarklet"
 msgstr "बुकमार्कलेट"
@@ -2623,6 +2629,9 @@ msgstr "लेख क्लस्टरिंग सक्षम करें"
 msgid "Enable the sites you want"
 msgstr "अपनी पसंद की साइटें सक्षम करें"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "इंजीनियर बड़े सिस्टम कैसे विफल होते हैं, इस बारे में लिखते हैं"
+
 msgid "English"
 msgstr "अंग्रेज़ी"
 
@@ -2977,6 +2986,9 @@ msgstr "फ़ाइलें"
 
 msgid "Filled Icons"
 msgstr "भरे हुए आइकन"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "कैमरों और फ़िल्म के प्रकारों पर टिप्पणियों वाली फ़िल्म फ़ोटोग्राफ़ी"
 
 msgid "Filter by date range"
 msgstr "तिथि-सीमा के अनुसार फ़िल्टर करें"
@@ -3973,6 +3985,9 @@ msgstr "लोड हो रहा है..."
 
 msgid "Loading…"
 msgstr "लोड हो रहा है…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "पोर्टलैंड, ओरेगन की स्थानीय ख़बरें और कार्यक्रम"
 
 msgid "Location"
 msgstr "स्थान"
@@ -5126,6 +5141,9 @@ msgstr "प्रति साइट"
 msgid "Per-feed notification settings"
 msgstr "हर फ़ीड के लिए अलग सूचना सेटिंग"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "पुराने घरों की मरम्मत करने के बारे में निजी ब्लॉग"
+
 msgid "Phrase to match in story text"
 msgstr "लेख के टेक्स्ट में मिलाने के लिए वाक्यांश"
 
@@ -5905,6 +5923,9 @@ msgstr "निर्धारित डिलीवरी (रोज़ाना
 msgid "Science"
 msgstr "विज्ञान"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "वैज्ञानिक नए शोध को सरल भाषा में समझाते हुए"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "स्कोप्ड क्लासिफ़ायर केवल %(plan)s ग्राहकों के लिए उपलब्ध हैं।"
@@ -6365,8 +6386,8 @@ msgstr "साइट सूचनाएँ"
 msgid "Site Settings"
 msgstr "साइट सेटिंग्स"
 
-msgid "Site URL or search by name..."
-msgstr "साइट URL या नाम से खोजें..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "साइट का URL, नाम, या बताएं कि आप क्या पढ़ना चाहते हैं"
 
 msgid "Site by Site"
 msgstr "साइट दर साइट"
@@ -7864,6 +7885,9 @@ msgstr "बुधवार"
 
 msgid "Weekly"
 msgstr "साप्ताहिक"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "सप्ताह के दिनों की शामों के लिए चरण-दर-चरण तस्वीरों वाली शाकाहारी रेसिपी"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur में आपका स्वागत है"

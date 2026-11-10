@@ -1516,6 +1516,9 @@ msgstr "อิงตามความสนใจของคุณ"
 msgid "Begin Training"
 msgstr "เริ่มฝึก"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "บันทึกการเดินทางท่องเที่ยวด้วยจักรยานและการปั่นระยะไกล"
+
 msgid "Bio"
 msgstr "ประวัติส่วนตัว"
 
@@ -1564,6 +1567,9 @@ msgstr "ชื่อ Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "รีวิวหนังสือนิยายวิทยาศาสตร์และแฟนตาซีเล่มใหม่"
 
 msgid "Bookmarklet"
 msgstr "บุ๊กมาร์กเล็ต"
@@ -2529,6 +2535,9 @@ msgstr "เปิดใช้การจัดกลุ่มบทความ
 msgid "Enable the sites you want"
 msgstr "เปิดใช้งานเว็บไซต์ที่คุณต้องการ"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "วิศวกรเขียนเกี่ยวกับความล้มเหลวของระบบขนาดใหญ่"
+
 msgid "English"
 msgstr "ภาษาอังกฤษ"
 
@@ -2881,6 +2890,9 @@ msgstr "ไฟล์"
 
 msgid "Filled Icons"
 msgstr "ไอคอนแบบทึบ"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "การถ่ายภาพด้วยฟิล์ม พร้อมบันทึกเกี่ยวกับกล้องและชนิดของฟิล์ม"
 
 msgid "Filter by date range"
 msgstr "กรองตามช่วงวันที่"
@@ -3871,6 +3883,9 @@ msgstr "กำลังโหลด..."
 
 msgid "Loading…"
 msgstr "กำลังโหลด…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "ข่าวท้องถิ่นและกิจกรรมในพอร์ตแลนด์ รัฐออริกอน"
 
 msgid "Location"
 msgstr "ตำแหน่งที่ตั้ง"
@@ -4997,6 +5012,9 @@ msgstr "แยกตามเว็บไซต์"
 msgid "Per-feed notification settings"
 msgstr "ตั้งค่าการแจ้งเตือนแยกตามฟีด"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "บล็อกส่วนตัวเกี่ยวกับการบูรณะบ้านเก่า"
+
 msgid "Phrase to match in story text"
 msgstr "วลีที่ตรงกับข้อความในบทความ"
 
@@ -5765,6 +5783,9 @@ msgstr "กำหนดเวลาส่ง (ทุกวันหรือว�
 msgid "Science"
 msgstr "วิทยาศาสตร์"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "นักวิทยาศาสตร์อธิบายงานวิจัยใหม่ด้วยภาษาที่เข้าใจง่าย"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "ตัวจัดประเภทแบบกำหนดขอบเขตมีให้เฉพาะสมาชิก %(plan)s เท่านั้น"
@@ -6220,8 +6241,8 @@ msgstr "การแจ้งเตือนจากเว็บไซต์"
 msgid "Site Settings"
 msgstr "การตั้งค่าเว็บไซต์"
 
-msgid "Site URL or search by name..."
-msgstr "URL ของเว็บไซต์ หรือค้นหาด้วยชื่อ..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL เว็บไซต์ ชื่อเว็บไซต์ หรืออธิบายสิ่งที่ต้องการอ่าน"
 
 msgid "Site by Site"
 msgstr "ทีละเว็บไซต์"
@@ -7694,6 +7715,9 @@ msgstr "วันพุธ"
 
 msgid "Weekly"
 msgstr "รายสัปดาห์"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "สูตรอาหารมังสวิรัติสำหรับมื้อเย็นวันธรรมดา พร้อมภาพทีละขั้นตอน"
 
 msgid "Welcome to NewsBlur"
 msgstr "ยินดีต้อนรับสู่ NewsBlur"

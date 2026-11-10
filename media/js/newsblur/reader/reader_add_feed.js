@@ -72,7 +72,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                         ])
                     ]),
                     $.make('div', { className: 'NB-add-input-row' }, [
-                        $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url', value: self.options.url, placeholder: gettext('Site URL or search by name...') }),
+                        $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url', value: self.options.url, placeholder: gettext('Site URL, name, or describe what you want to read') }),
                         $.make('div', { className: 'NB-loading' }),
                         $.make('div', { className: 'NB-add-url-submit' }, gettext('Add site'))
                     ]),
@@ -226,7 +226,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                         $.make('img', { className: 'NB-add-autocomplete-favicon NB-autocomplete-describe-icon', src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/lucide/sparkles.svg' }),
                         $.make('div', { className: 'NB-autocomplete-content' }, [
                             $.make('div', { className: 'NB-autocomplete-top-row' }, [
-                                $.make('div', { className: 'NB-add-autocomplete-title' }, interpolate(gettext('Find feeds about \u201c%(term)s\u201d'), {term: item.term}, true))
+                                $.make('div', { className: 'NB-add-autocomplete-title' }, interpolate(gettext('Find feeds about \u201c%(term)s\u201d'), {term: _.escape(item.term)}, true))
                             ]),
                             $.make('div', { className: 'NB-autocomplete-bottom-row' }, [
                                 $.make('div', { className: 'NB-add-autocomplete-address' }, gettext('Describe what you want to read and let NewsBlur find matching feeds'))

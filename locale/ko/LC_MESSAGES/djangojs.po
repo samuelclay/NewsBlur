@@ -1504,6 +1504,9 @@ msgstr "관심사 기반"
 msgid "Begin Training"
 msgstr "학습 시작"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "자전거 여행과 장거리 라이딩 여행기"
+
 msgid "Bio"
 msgstr "소개"
 
@@ -1552,6 +1555,9 @@ msgstr "Blurblog 제목"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "새로운 SF와 판타지 도서 리뷰"
 
 msgid "Bookmarklet"
 msgstr "북마클릿"
@@ -2511,6 +2517,9 @@ msgstr "스토리 클러스터링 사용"
 msgid "Enable the sites you want"
 msgstr "원하는 사이트를 활성화하세요"
 
+msgid "Engineers writing about how large systems fail"
+msgstr "대규모 시스템이 어떻게 실패하는지 다루는 엔지니어들의 글"
+
 msgid "English"
 msgstr "영어"
 
@@ -2863,6 +2872,9 @@ msgstr "파일"
 
 msgid "Filled Icons"
 msgstr "채워진 아이콘"
+
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "카메라와 필름 종류에 관한 메모가 담긴 필름 사진"
 
 msgid "Filter by date range"
 msgstr "날짜 범위로 필터링"
@@ -3843,6 +3855,9 @@ msgstr "불러오는 중..."
 
 msgid "Loading…"
 msgstr "불러오는 중…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "오리건주 포틀랜드의 지역 뉴스와 행사"
 
 msgid "Location"
 msgstr "위치"
@@ -4963,6 +4978,9 @@ msgstr "사이트별"
 msgid "Per-feed notification settings"
 msgstr "피드별 알림 설정"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "오래된 집을 수리하는 개인 블로그"
+
 msgid "Phrase to match in story text"
 msgstr "스토리 본문에서 일치시킬 구문"
 
@@ -5723,6 +5741,9 @@ msgstr "예약 전송(매일 또는 하루 두 번)"
 msgid "Science"
 msgstr "과학"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "새로운 연구를 쉬운 말로 설명하는 과학자들"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "범위 지정 분류기는 %(plan)s 구독자만 사용할 수 있습니다."
@@ -6176,8 +6197,8 @@ msgstr "사이트 알림"
 msgid "Site Settings"
 msgstr "사이트 설정"
 
-msgid "Site URL or search by name..."
-msgstr "사이트 URL을 입력하거나 이름으로 검색..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "사이트 URL이나 이름을 입력하거나 읽고 싶은 내용을 설명하세요"
 
 msgid "Site by Site"
 msgstr "사이트별"
@@ -7630,6 +7651,9 @@ msgstr "수요일"
 
 msgid "Weekly"
 msgstr "매주"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "단계별 사진이 포함된 평일 저녁 채식 요리법"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur에 오신 것을 환영합니다"
