@@ -249,6 +249,12 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - **Frontend model selectors**: Search for `data-model="gemini` to find all dropdown locations
 - **CSS for model pills**: Search for `NB-provider-` to find pill styles
 
+## Describe Feeds Development
+- Describe (search for feeds by written description) lives in `apps/describe/`: `pipeline.py` runs the expand → vector search → judge → web hunt phases, `tasks.py` streams them over Redis pubsub (`describe:` prefix, relayed by `node/describe.coffee`), and `views.py` serves `/discover/describe/{start,status,history,delete}` for the web tab (`media/js/newsblur/views/describe_feeds_view.js`), iOS and Android.
+- **Restart Celery after changes** to anything under `apps/describe/`: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>`).
+- A real search costs about five cents (Claude Haiku calls plus up to four Anthropic web searches) and takes 60 to 90 seconds; `apps/describe/tests.py` mocks every external call.
+- Quotas live in `apps/describe/usage.py` (free 0, premium 10, archive 30, pro unlimited per day); history is capped at 20 searches per user in `apps/describe/models.py`.
+
 ## Sentry
 - **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
 - **Always use sentry-cli** when given a Sentry issue URL
