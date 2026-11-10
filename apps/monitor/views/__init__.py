@@ -18,6 +18,7 @@ from apps.monitor.views.newsblur_loadtimes import LoadTimes
 from apps.monitor.views.newsblur_mcp_usage import MCPUsage
 from apps.monitor.views.newsblur_media_player import MediaPlayer
 from apps.monitor.views.newsblur_notifications import Notifications
+from apps.monitor.views.newsblur_redlisten import RedListen
 from apps.monitor.views.newsblur_referrals import Referrals
 from apps.monitor.views.newsblur_scrapingbee import ScrapingBeeUsage
 from apps.monitor.views.newsblur_stories import Stories

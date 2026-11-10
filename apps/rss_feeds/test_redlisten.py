@@ -305,6 +305,9 @@ class Test_RedListenPoller(SimpleTestCase):
         self.assertEqual(len(client.calls), 2)
         self.assertEqual(client.calls[0][0], "/r/python+golang/new.json")
         self.assertEqual(client.calls[1][1]["after"], "t3_last")
+        # The first page posted 12 in 720 seconds, so the 3,180 seconds left back to the
+        # previous poll should hold about 53 posts: ceil(53 * 1.3) + 5.
+        self.assertEqual(client.calls[1][1]["limit"], 74)
         self.assertEqual(client.calls[0][2], POLLER)
         cache = RedditPostCache(r=self.r)
         self.assertEqual([p["id"] for p in cache.posts(["r:golang"])], ["g1"])

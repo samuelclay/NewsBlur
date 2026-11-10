@@ -61,10 +61,12 @@ LAST_POLL_KEY = "redlisten:last_poll"  # JSON summary of the latest poll, for /m
 POLL_LOCK_KEY = "redlisten:poll_lock"
 
 # Posting rates: decayed counts over decayed observed seconds, plus a weak prior of
-# PRIOR_POSTS_PER_DAY over PRIOR_SECONDS so a target seen for minutes is not judged on them.
+# PRIOR_POSTS_PER_DAY over PRIOR_SECONDS for targets not seen yet. The prior is short so
+# that a single hour's poll outweighs it: a two-hour prior held a sub posting 3,600 a day
+# to an estimate of 1,500 in testing.
 RATE_HALF_LIFE_SECONDS = 3 * 24 * 60 * 60
 PRIOR_POSTS_PER_DAY = 10.0
-PRIOR_SECONDS = 2 * 60 * 60
+PRIOR_SECONDS = 15 * 60
 
 # A drained batch starts this far before the previous poll, since RedListen delivers a
 # post a few seconds after Reddit timestamps it, and never reaches back further than
@@ -410,7 +412,11 @@ class RedListenPoller:
                 complete = True
                 break
             after = listing["after"]
-            remaining = expected_per_second * max(0, min(created) - poll_from)
+            # Size the next page from how fast the batch is actually posting too, since the
+            # learned rates know nothing yet about a new or suddenly busy target.
+            oldest = min(post.get("created_utc") or self.now_ts for post in posts)
+            observed_per_second = len(posts) / max(60, self.now_ts - oldest)
+            remaining = max(expected_per_second, observed_per_second) * max(0, min(created) - poll_from)
             limit = max(5, min(PAGE_SIZE, math.ceil(remaining * 1.3) + 5))
         time.sleep(REQUEST_SPACING_SECONDS)
         if not posts and not complete:
