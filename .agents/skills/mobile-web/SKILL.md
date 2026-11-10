@@ -34,6 +34,7 @@ Node unit tests for the pure helpers are separate: `node --test node/tests/mobil
 | `modals` | The 19 modals plus the activity sheet: each opens full width with nothing hanging off the screen |
 | `player` | The Listen and podcast player floats as a one-row bar at the bottom of each screen, clear of the toolbar row under the nav bar, opens as a bottom sheet and closes from the shade. Uses whatever the account's player already holds and skips when it's empty |
 | `page_scroll` | The feed list and story list scroll the page itself while at rest, which is what lets a phone browser shrink its toolbar: bars stay stuck to the top, more stories load, and a sheet or slide holds each list where it was |
+| `sheets` | A story's Share form, Save tags and notes, and Related stories slide up as bottom sheets over the shade instead of opening inside the story, the share field takes the cursor without iOS zooming in, and the shade closes each. Saves and unsaves one story, shares nothing |
 | `rtl` | Arabic: screens slide from the left, swipe directions reverse, the edge swipe starts at the right edge |
 | `landscape` | 852×393 keeps the phone layout |
 | `tablet` | iPad portrait gets the phone layout with a two-column grid |

@@ -1035,6 +1035,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story) {
             return this.select_story(e);
         }
+        // story_title_view.js: another site's version of a story, listed inside the open story,
+        // is not one of the list's own stories, which reader.js make_manage_menu builds a menu
+        // from. It threw there, after a phone had already dimmed the screen for the menu.
+        if (!NEWSBLUR.assets.get_story(this.model.id)) return;
 
         // NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu('story', this.$st, {

@@ -92,6 +92,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.setup_pull_to_refresh();
         this.setup_player();
         this.setup_page_scroll();
+        this.setup_sideoption_sheets();
 
         this.check_mode();
     },
@@ -150,6 +151,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.story_pager.close();
         this.active = false;
         NEWSBLUR.reader.flags.mobile = false;
+        this.close_sideoption_sheet();
         this.$body.removeClass('NB-mobile NB-mobile-transitioning NB-mobile-sheet-open');
         this.$body.removeClass(this.screen_body_classes());
         this.measure_browser_chrome();
@@ -206,6 +208,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // Jumps straight to a screen with no animation.
     set_screen: function (screen) {
         this.finish_transition();
+        this.close_sideoption_sheet();
         this.clear_drag();
         this.screen = screen;
         this.$body.removeClass(this.screen_body_classes()).addClass('NB-mobile-screen-is-' + screen);
@@ -232,6 +235,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             return;
         }
         this.finish_transition();
+        this.close_sideoption_sheet();
         // Both screens slide as fixed, window-sized boxes.
         this.leave_page_scroll();
 
@@ -434,6 +438,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // the collection with a bare reset first, which passes no count of added stories.
     stories_reset: function (stories, options) {
         var loaded = !!options && options.added !== undefined;
+        // Another list is opening, as when a related story is tapped in its sheet.
+        if (!loaded) this.close_sideoption_sheet();
         this.set_pills_pending(!loaded);
         if (!this.awaiting_story || !loaded) return;
         var story_hash = this.awaiting_story;
@@ -778,6 +784,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         return ($.modal && $.modal.impl && _.keys($.modal.impl.d).length) ||
             (NEWSBLUR.ReaderPopover && NEWSBLUR.ReaderPopover.is_open()) ||
             this.$body.hasClass('NB-mobile-sheet-open') ||
+            !!this.sideoption ||
             this.$body.hasClass('NB-mobile-player-open');
     },
 
@@ -974,11 +981,15 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         return [];
     },
 
-    // mobile.css sticks the second bar this far down, under the first.
+    // mobile.css sticks the second bar this far down, under the first, and sizes what waits
+    // beside the screen's content to the window under both.
     measure_page_bars: function () {
         var bars = this.page_bars();
         if (!bars[0]) return;
-        this.$body[0].style.setProperty('--nb-mobile-page-bar-top', bars[0].offsetHeight + 'px');
+        var style = this.$body[0].style;
+        style.setProperty('--nb-mobile-page-bar-top', bars[0].offsetHeight + 'px');
+        style.setProperty('--nb-mobile-page-bars-height',
+            (bars[0].offsetHeight + (bars[1] ? bars[1].offsetHeight : 0)) + 'px');
     },
 
     // How much of the window the list shows under its bars, which is what its own height was
@@ -1461,6 +1472,114 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     },
 
     // ======================
+    // = Sideoption sheets  =
+    // ======================
+
+    // A story's Share form, Save tags and notes, and Related stories open inside the story on
+    // desktop, growing a panel beside its buttons. On a phone each slides up over the screen as
+    // a bottom sheet, like Ask AI: its panel moves into a sheet on the body, above the shade,
+    // and goes back into the story when the sheet closes. The view that owns the panel finds
+    // and hears it through the sheet meanwhile.
+    //
+    // story_share_view.js, story_save_view.js and discover_stories_view.js call this from
+    // resize, which runs whenever their panel opens, changes or closes. Returns whether a phone
+    // is handling the panel, which needs no height animated in the story.
+    sideoption_sheet: function (view, $panel, options) {
+        // A story's long-press menu has a share form of its own, already inside that sheet,
+        // which reader.js fills in before the menu is on the page.
+        if (!this.active || $panel.closest('.NB-menu-manage').length) return false;
+        if ($panel.length && !$.contains(document.documentElement, $panel[0])) return false;
+        var open = this.sideoption;
+        if (options.close) {
+            if (open && open.view === view) this.dismiss_sideoption_sheet();
+            return true;
+        }
+        if (open && open.view === view) return true;
+        if (options.present === false || !$panel.length) return true;
+        if (open) open.dismiss();
+        this.present_sideoption_sheet(view, $panel, options.dismiss);
+        return true;
+    },
+
+    present_sideoption_sheet: function (view, $panel, dismiss) {
+        var $sheet = $.make('div', { className: 'NB-mobile-sideoption-sheet' }, [
+            $.make('div', { className: 'NB-mobile-sideoption-sheet-handle' })
+        ]);
+        var placeholder = document.createComment('mobile_layout_view.js sideoption sheet');
+        $panel.before(placeholder);
+        $sheet.append($panel);
+        this.$body.append($sheet).addClass('NB-mobile-sideoption-open');
+        this.sideoption = {
+            view: view,
+            $panel: $panel,
+            $sheet: $sheet,
+            $el: view.$el,
+            placeholder: placeholder,
+            dismiss: dismiss
+        };
+        // The view's lookups and delegated events now reach into the sheet as well.
+        view.setElement(view.$el.add($sheet));
+        this.fit_sideoption_sheet();
+    },
+
+    // The owning view closes its panel, whose resize comes back through sideoption_sheet.
+    close_sideoption_sheet: function (options) {
+        var open = this.sideoption;
+        if (!open) return;
+        open.dragged = !!(options && options.dragged);
+        open.dismiss();
+        // A view that could not close its panel still gives the sheet up.
+        if (this.sideoption === open) this.dismiss_sideoption_sheet();
+    },
+
+    dismiss_sideoption_sheet: function () {
+        var open = this.sideoption;
+        if (!open) return;
+        this.sideoption = null;
+        this.$body.removeClass('NB-mobile-sideoption-open');
+        var restore = function () {
+            // The story may have been drawn again while the sheet was up.
+            if (open.placeholder.parentNode) {
+                $(open.placeholder).replaceWith(open.$panel);
+            } else {
+                open.$panel.remove();
+            }
+            open.view.setElement(open.$el);
+            open.$sheet.remove();
+        };
+        var duration = open.dragged ? 0 : Math.min(260, this.transition_duration());
+        if (!duration) {
+            restore();
+            return;
+        }
+        open.$sheet.addClass('NB-mobile-sideoption-sheet-closing');
+        setTimeout(restore, duration);
+    },
+
+    // The keyboard covers the bottom of the window without resizing it, so the sheet rests on
+    // top of the keyboard, where its field and buttons stay in view.
+    fit_sideoption_sheet: function () {
+        var open = this.sideoption;
+        var viewport = window.visualViewport;
+        if (!open || !viewport) return;
+        var covered = Math.max(0, Math.round(window.innerHeight - viewport.height - viewport.offsetTop));
+        open.$sheet[0].style.bottom = covered + 'px';
+        open.$sheet[0].style.maxHeight = Math.round(viewport.height * 0.85) + 'px';
+    },
+
+    setup_sideoption_sheets: function () {
+        var self = this;
+        this.$body.on('click', '.NB-mobile-sheet-shade', function () {
+            self.close_sideoption_sheet();
+        });
+        if (window.visualViewport) {
+            var fit = _.bind(this.fit_sideoption_sheet, this);
+            window.visualViewport.addEventListener('resize', fit);
+            window.visualViewport.addEventListener('scroll', fit);
+        }
+    },
+
+    // ======================
     // = Sheet dismissal    =
     // ======================
 
@@ -1472,6 +1591,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         { selector: '.NB-popover.popover.in', overlay: '.NB-overlay', close: function () { NEWSBLUR.ReaderPopover.close(); } },
         { selector: '.NB-menu-manage-container.NB-mobile-sheet', overlay: '.NB-mobile-sheet-shade', reused: true, close: function () { NEWSBLUR.reader.hide_manage_menu(); } },
         { selector: '.NB-menu-ask-ai-container', close: function () { $(document).trigger('click.ask_ai_menu'); } },
+        { selector: '.NB-mobile-sideoption-sheet', overlay: '.NB-mobile-sheet-shade', reused: true, close: function () { NEWSBLUR.app.mobile.close_sideoption_sheet({ dragged: true }); } },
         { selector: '#simplemodal-container', overlay: '#simplemodal-overlay', holds_edits: true, close: function () { $.modal.close(); } },
         { selector: '.NB-media-player.NB-mobile-player-expanded', overlay: '.NB-mobile-player-shade', reused: true, close: function () { NEWSBLUR.app.mobile.collapse_player(); } }
     ],

@@ -149,6 +149,19 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var $sideoption = this.$('.NB-feed-story-save');
         var $tag_input = this.$('.NB-sideoption-save-tag');
 
+        // story_save_view.js: on a phone the tags and notes slide up as a sheet when a story is
+        // saved from its Save button (story_detail_view.js toggle_starred), and stay out of the
+        // story otherwise (mobile_layout_view.js Sideoption sheets).
+        var open_as_sheet = !!this.open_as_sheet;
+        this.open_as_sheet = false;
+        if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.sideoption_sheet(this, $save_wrapper, {
+            close: options.close,
+            present: open_as_sheet,
+            dismiss: _.bind(this.toggle_feed_story_save_dialog, this, { close: true })
+        })) {
+            options.immediate = true;
+        }
+
         var $save_clone = $save_wrapper.clone();
         $save_wrapper.after($save_clone.css({
             'height': options.close ? 0 : 'auto',
