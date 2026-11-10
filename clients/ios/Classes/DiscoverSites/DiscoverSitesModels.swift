@@ -358,6 +358,9 @@ struct DescribeResult: Identifiable {
         case pending
     }
 
+    // DiscoverSitesModels.swift: feedId is the row's key within its search, not always a NewsBlur feed id. A feed
+    // found on the web is not saved until someone subscribes, so its key is negative (make_result_row in
+    // apps/describe/models.py). Only feed.id may be sent to the server or looked up among the user's feeds.
     let feedId: Int
     let feed: DiscoverPopularFeed
     let source: String
@@ -371,14 +374,19 @@ struct DescribeResult: Identifiable {
     var id: Int { feedId }
 
     init?(dict: [String: Any], timeZone: TimeZone = .current) {
-        guard let feedId = (dict["feed_id"] as? NSNumber)?.intValue, feedId > 0 else { return nil }
+        guard let feedId = (dict["feed_id"] as? NSNumber)?.intValue, feedId != 0 else { return nil }
         self.feedId = feedId
         var feedDict = dict["feed"] as? [String: Any] ?? [:]
         // DiscoverSitesModels.swift keeps the row's own feed fields when a feed was not hydrated.
         for key in ["feed_title", "feed_address", "feed_link"] where (feedDict[key] as? String ?? "").isEmpty {
             feedDict[key] = dict[key] as? String ?? ""
         }
-        self.feed = DiscoverPopularFeed(feedId: String(feedId), feedDict: feedDict)
+        // DiscoverSitesModels.swift keys an unsaved feed by its address, like parsePopularFeedEntry in
+        // DiscoverSitesViewModel.swift, so resolvePreviewFeed links it by URL and the card subscribes by URL.
+        let savedFeedId = [(feedDict["id"] as? NSNumber)?.intValue, feedId].compactMap { $0 }.first { $0 > 0 }
+        let address = feedDict["feed_address"] as? String ?? ""
+        guard savedFeedId != nil || !address.isEmpty else { return nil }
+        self.feed = DiscoverPopularFeed(feedId: savedFeedId.map(String.init) ?? address, feedDict: feedDict)
         self.source = dict["source"] as? String ?? "index"
         self.matchedQuery = dict["matched_query"] as? String ?? ""
         self.similarity = (dict["similarity"] as? NSNumber)?.doubleValue

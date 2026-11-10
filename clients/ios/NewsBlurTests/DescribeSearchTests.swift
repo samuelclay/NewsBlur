@@ -100,6 +100,88 @@ final class Test_DescribeSearchParsing: XCTestCase {
         XCTAssertEqual(search.results.first?.feed.feedAddress, "https://appadvice.example/feed")
     }
 
+    // DescribeSearchTests.swift: a feed found on the web is not saved until someone subscribes, so its row carries a
+    // negative key in feed_id and a feed dictionary without an id (make_result_row in apps/describe/models.py).
+    static func unsavedWebRow(rowKey: Int = -1, title: String = "Pixel Envy") -> [String: Any] {
+        let address = "https://\(title.lowercased().replacingOccurrences(of: " ", with: "")).example/feed.xml"
+        let link = "https://\(title.lowercased().replacingOccurrences(of: " ", with: "")).example"
+        return [
+            "feed_id": rowKey, "feed_title": title, "feed_address": address, "feed_link": link, "source": "web",
+            "matched_query": "", "similarity": NSNull(), "score": NSNull(), "reason": NSNull(), "judged": false,
+            "stories": [["story_title": "A week with the new iPad", "story_permalink": "\(link)/ipad", "story_date": NSNull()]],
+            "feed": ["feed_title": title, "feed_address": address, "feed_link": link, "num_subscribers": 0,
+                     "tagline": "Design and technology commentary."] as [String: Any],
+        ]
+    }
+
+    func test_unsavedWebRowParsesAndIsKeyedByItsAddress() throws {
+        let result = try XCTUnwrap(DescribeResult(dict: Self.unsavedWebRow()), "A negative row key is not a missing feed")
+
+        XCTAssertEqual(result.feedId, -1, "The row keeps the server's key for this search")
+        XCTAssertEqual(result.id, -1)
+        XCTAssertTrue(result.isFromWeb)
+        XCTAssertEqual(result.feed.feedTitle, "Pixel Envy")
+        XCTAssertEqual(result.feed.feedAddress, "https://pixelenvy.example/feed.xml")
+        XCTAssertEqual(result.feed.feedLink, "https://pixelenvy.example")
+        XCTAssertEqual(result.feed.numSubscribers, 0)
+        XCTAssertEqual(result.stories.map(\.title), ["A week with the new iPad"])
+        XCTAssertEqual(result.feed.id, "https://pixelenvy.example/feed.xml", "An unsaved feed is keyed by its address")
+        XCTAssertNil(Int(result.feed.id), "The row key must never pass for a NewsBlur feed id")
+        XCTAssertEqual(result.feed.rawFeedDict["id"] as? String, "https://pixelenvy.example/feed.xml")
+        XCTAssertNil(result.feed.rawFeedDict["id"] as? Int)
+    }
+
+    func test_unsavedWebRowUsesTheRealFeedIdOnceTheFeedExists() throws {
+        var row = Self.unsavedWebRow(rowKey: -3)
+        var feed = try XCTUnwrap(row["feed"] as? [String: Any])
+        feed["id"] = 9001
+        row["feed"] = feed
+        let result = try XCTUnwrap(DescribeResult(dict: row))
+
+        XCTAssertEqual(result.feedId, -3, "The row key stays negative for the life of the search")
+        XCTAssertEqual(result.feed.id, "9001")
+        XCTAssertEqual(result.feed.rawFeedDict["id"] as? Int, 9001)
+        XCTAssertEqual(result.feed.feedAddress, "https://pixelenvy.example/feed.xml")
+    }
+
+    func test_rowsWithoutAKeyOrAnyWayToReachTheFeedAreRejected() throws {
+        XCTAssertNil(DescribeResult(dict: ["feed_id": 0, "feed_address": "https://zero.example/feed"]))
+        XCTAssertNil(DescribeResult(dict: ["feed_address": "https://missing.example/feed", "feed": ["id": 12]]))
+        XCTAssertNil(DescribeResult(dict: ["feed_id": NSNull(), "feed_address": "https://null.example/feed"]))
+        XCTAssertNil(DescribeResult(dict: ["feed_id": -4, "feed_title": "No address", "feed": ["feed_title": "No address"]]),
+                     "An unsaved feed without an address can be neither previewed nor subscribed to")
+
+        var bare = Self.unsavedWebRow(rowKey: -5)
+        bare["feed"] = nil
+        let result = try XCTUnwrap(DescribeResult(dict: bare), "The row's own address is enough")
+        XCTAssertEqual(result.feed.id, "https://pixelenvy.example/feed.xml")
+    }
+
+    func test_negativeRowKeysKeepOrderIdentityVerdictsAndRemovals() throws {
+        let first = Self.unsavedWebRow(rowKey: -1, title: "Pixel Envy")
+        let second = Self.unsavedWebRow(rowKey: -2, title: "Six Colors")
+        let running = try XCTUnwrap(DescribeSearch(dict: Self.payload(results: [first, Self.judgedRow(), second, first])))
+
+        XCTAssertEqual(running.results.map(\.feedId), [-1, 42, -2], "Server order is kept, with one card per row key")
+        XCTAssertEqual(running.results.map(\.feed.id),
+                       ["https://pixelenvy.example/feed.xml", "42", "https://sixcolors.example/feed.xml"])
+        XCTAssertEqual(running.resultsSignature, "-1:-,42:9,-2:-")
+
+        var verdict = second
+        verdict["judged"] = true
+        verdict["score"] = 8
+        verdict["reason"] = "Daily Apple coverage with hands-on reviews."
+        let judged = try XCTUnwrap(DescribeSearch(dict: Self.payload(results: [first, Self.judgedRow(), verdict])))
+        XCTAssertTrue(judged.differs(from: running), "A verdict on a negative key is a change")
+        XCTAssertEqual(judged.results.map(\.feedId), [-1, 42, -2], "The verdict lands on the same card")
+        XCTAssertEqual(judged.results[2].scoreTone, .high)
+        XCTAssertEqual(judged.resultsSignature, "-1:-,42:9,-2:8")
+
+        let pruned = try XCTUnwrap(DescribeSearch(dict: Self.payload(results: [Self.judgedRow(), verdict])))
+        XCTAssertTrue(pruned.differs(from: judged))
+        XCTAssertEqual(pruned.results.map(\.feedId), [42, -2], "Removing a negative key drops only that card")
+    }
+
     func test_signatureTracksVerdictsPhasesAndPrunedFeeds() throws {
         let running = try XCTUnwrap(DescribeSearch(dict: Self.payload(results: [Self.judgedRow(), Self.pendingRow()])))
         let unchanged = try XCTUnwrap(DescribeSearch(dict: Self.payload(results: [Self.judgedRow(), Self.pendingRow()])))
@@ -294,6 +376,49 @@ final class Test_DescribeSearchPolling: XCTestCase {
         await waitUntil { startBody.contains("search_id=") }
         XCTAssertTrue(startBody.contains("search_id=6720f0c1c3b2a4d5e6f70001"), "Search again re-runs the same history entry")
         model.stopDescribePolling()
+    }
+
+    // DescribeSearchTests.swift: the negative row key of an unsaved web find never reaches the server. Previewing links
+    // the feed by its address (/discover/link_popular_feed) and subscribing posts the address to /reader/add_url.
+    func test_unsavedWebResultPreviewsAndSubscribesByAddress() async throws {
+        let model = makeModel()
+        let address = "https://pixelenvy.example/feed.xml"
+        var requests: [String] = []
+        var linkedURL: String?
+        var addBody = ""
+        DescribeURLProtocol.handler = { [self] request in
+            let body = String(data: DescribeURLProtocol.body(of: request) ?? Data(), encoding: .utf8) ?? ""
+            requests.append("\(request.url?.absoluteString ?? "") \(body)")
+            switch request.url?.path {
+            case "/discover/link_popular_feed":
+                let items = URLComponents(url: try XCTUnwrap(request.url), resolvingAgainstBaseURL: false)?.queryItems ?? []
+                XCTAssertEqual(items.map(\.name), ["feed_url"])
+                linkedURL = items.first?.value
+                return try respond(request, ["code": 1, "feed_id": 9001])
+            case "/reader/add_url":
+                addBody = body
+                return try respond(request, ["code": 1])
+            default:
+                XCTFail("Unexpected request \(request.url?.absoluteString ?? "")")
+                return try respond(request, ["code": -1])
+            }
+        }
+        let result = try XCTUnwrap(DescribeResult(dict: Test_DescribeSearchParsing.unsavedWebRow()))
+
+        let resolved = await model.resolvePreviewFeed(result.feed)
+        XCTAssertEqual(linkedURL, address, "An unsaved feed is linked by its address before it can be previewed")
+        XCTAssertEqual(resolved?.id, "9001")
+        XCTAssertEqual(resolved?.rawFeedDict["id"] as? Int, 9001)
+        XCTAssertEqual(resolved?.feedTitle, "Pixel Envy")
+
+        model.addFeed(url: result.feed.feedAddress)
+        await waitUntil { model.addedSuccess }
+        XCTAssertTrue(model.addedSuccess)
+        XCTAssertTrue(model.addedFeedURLs.contains(address), "The card shows as subscribed by its address")
+        let addItems = URLComponents(string: "?\(addBody)")?.queryItems ?? []
+        XCTAssertEqual(addItems.first { $0.name == "url" }?.value, address)
+        XCTAssertEqual(requests.count, 2)
+        XCTAssertFalse(requests.contains { $0.contains("-1") || $0.contains("feed_id") }, "The row key is never sent: \(requests)")
     }
 
     func test_freeAccountsSeeTheUpgradeStateInsteadOfAnError() async throws {
