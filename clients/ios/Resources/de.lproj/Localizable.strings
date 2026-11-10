@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "Ordner %1$@, eingeklappt, %2$@";
 "%1$@ followed %2$@." = "%1$@ folgt jetzt %2$@.";
 "%1$@ of %2$@ of listening left this week" = "Diese Woche sind noch %1$@ von %2$@ Hörzeit übrig";
+"%1$@ of %2$@ searches left today" = "Heute noch %1$@ von %2$@ Suchanfragen übrig";
 "%1$@ of %2$@ sites indexed" = "%1$@ von %2$@ Websites indexiert";
 "%1$@ of %2$@ story previews used today" = "Heute verwendete Artikelvorschauen: %1$@ von %2$@";
 "%1$@ on all sites (%2$@)" = "%1$@ auf allen Websites (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "%@ Feeds hinzugefügt.";
 "%@ feeds couldn’t be added." = "%@ Feeds konnten nicht hinzugefügt werden.";
 "%@ feeds selected" = "%@ Feeds ausgewählt";
+"%@ feeds so far" = "Bisher %@ Feeds";
 "%@ focused stories" = "%@ Fokus-Artikel";
 "%@ folder" = "Ordner %@";
 "%@ free story previews left today" = "Heute noch %@ kostenlose Artikelvorschauen";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ Abonnenten";
 "%@ unread stories" = "%@ ungelesene Artikel";
 "%@ voice previews left" = "Noch %@ Sprachvorschauen übrig";
+"%@/10" = "%@/10";
 "%@/story" = "%@/Artikel";
+"%@d ago" = "vor %@ Tagen";
+"%@w ago" = "vor %@ Wo.";
 "%@×" = "%@×";
 "%ldd ago" = "vor %ld Tg.";
 "%ldh ago" = "vor %ld Std.";
@@ -310,9 +315,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Wenn du dein Konto löschst, werden deine Feeds, gespeicherten Artikel und Kontodaten dauerhaft entfernt. Dieser Vorgang kann nicht rückgängig gemacht werden.";
 "Deleting..." = "Wird gelöscht...";
 "Delivery" = "Sprechweise";
+"Describe" = "Beschreiben";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Beschreibe ein Thema, und die KI bewertet jeden Artikel anhand deiner Eingabe, um passende Artikel hervorzuheben oder auszublenden.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "Beschreibe die Feeds, nach denen du suchst, zum Beispiel „Rezensionen neuer iOS-Apps mit Screenshots“";
 "Describe what to focus or hide" = "Beschreibe, worauf du dich konzentrieren oder was du ausblenden möchtest";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "Beschreibe, wonach gesucht werden soll, und die KI vergleicht die Bilder jedes Artikels mit deiner Beschreibung.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "Beschreibe, was du lesen möchtest, und NewsBlur findet passende Feeds";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "Feeds nach deinen Wünschen zu beschreiben, ist eine Premium-Funktion. Führe ein Upgrade durch, um per Beschreibung zu suchen.";
 "Discover" = "Entdecken";
 "Discover more to read" = "Weitere Leseempfehlungen entdecken";
 "Discover related sites" = "Ähnliche Websites entdecken";
@@ -373,6 +382,7 @@
 "Extra Small" = "Extra klein";
 "Extra Tall" = "Sehr hoch";
 "Extra small" = "Extra klein";
+"Failed" = "Fehlgeschlagen";
 "Faster" = "Schneller";
 "Favorited" = "Zu Favoriten hinzugefügt";
 "Favoriting" = "Wird favorisiert";
@@ -390,6 +400,9 @@
 "Filter" = "Filtern";
 "Filter stories by date range" = "Artikel nach Zeitraum filtern";
 "Find Friends" = "Freunde finden";
+"Find feeds" = "Feeds finden";
+"Find feeds about “%@”" = "Feeds zu „%@“ finden";
+"Find feeds by describing them" = "Feeds durch Beschreibung finden";
 "Find in Feed" = "Im Feed suchen";
 "Find in Sites" = "In Websites suchen";
 "Find in feed" = "Im Feed suchen";
@@ -429,6 +442,8 @@
 "Forgot Password?" = "Passwort vergessen?";
 "Forgot your password?" = "Passwort vergessen?";
 "Forward %@ seconds" = "%@ Sekunden vorspulen";
+"Found %@ feeds that match your description" = "%@ Feeds gefunden, die zu deiner Beschreibung passen";
+"Found on the web" = "Im Web gefunden";
 "Frequency" = "Häufigkeit";
 "Friday" = "Freitag";
 "Friends" = "Freunde";
@@ -484,6 +499,7 @@
 "Import or upload sites" = "Websites importieren oder hochladen";
 "Imported %@ sites" = "%@ Websites importiert";
 "Importing sites..." = "Websites werden importiert...";
+"In progress" = "Wird verarbeitet";
 "In-app Safari" = "Safari in der App";
 "In-app browser" = "In-App-Browser";
 "Include" = "Einschließen";
@@ -492,6 +508,7 @@
 "Include in bundle" = "Ins Paket aufnehmen";
 "Included in bundle" = "Im Paket enthalten";
 "Increase or remove your limit" = "Erhöhe oder entferne dein Limit";
+"Indie game developers writing about their work in progress" = "Indie-Spieleentwickler, die über ihre laufenden Projekte schreiben";
 "Infrequent Site Stories" = "Artikel selten aktiver Websites";
 "Infrequent Stories" = "Artikel selten aktiver Websites";
 "Infrequent stories per month" = "Grenze für selten aktive Websites";
@@ -502,6 +519,8 @@
 "Interactions" = "Interaktionen";
 "Invalid: %@" = "Ungültig: %@";
 "Invoice" = "Rechnung";
+"Judging" = "Wird beurteilt";
+"Judging…" = "Wird beurteilt…";
 "Keeps the dark icon no matter how your device is set." = "Behält das dunkle Symbol unabhängig von den Geräteeinstellungen bei.";
 "Keeps the light icon no matter how your device is set." = "Behält das helle Symbol bei, unabhängig von den Geräteeinstellungen.";
 "Keyboard Shortcuts" = "Tastenkombinationen";
@@ -540,6 +559,7 @@
 "Loading sources" = "Quellen werden geladen";
 "Loading voices…" = "Stimmen werden geladen…";
 "Loading your feeds…" = "Deine Feeds werden geladen …";
+"Loading your search…" = "Deine Suche wird geladen…";
 "Loading..." = "Wird geladen …";
 "Loading…" = "Wird geladen…";
 "Log In" = "Anmelden";
@@ -553,6 +573,7 @@
 "Logout" = "Abmelden";
 "Long Reads" = "Lange Artikel";
 "Long [preview length]" = "Lang";
+"Long essays about cities, housing and public transit" = "Lange Essays über Städte, Wohnraum und öffentlichen Nahverkehr";
 "Long press" = "Lange drücken";
 "Long press on feeds and folders" = "Feeds und Ordner lange drücken";
 "Long press on story titles" = "Artikeltitel lange drücken";
@@ -608,6 +629,8 @@
 "Mark this site as read" = "Diese Website als gelesen markieren";
 "Mark this story as read" = "Diesen Artikel als gelesen markieren";
 "Match" = "Übereinstimmung";
+"Match score %@" = "Übereinstimmungswert %@";
+"Matched “%@”" = "„%@“ gefunden";
 "Matches story" = "Passt zum Artikel";
 "Meadow Sage" = "Wiesensalbei";
 "Medium [grid height]" = "Mittel";
@@ -666,6 +689,7 @@
 "Natural language text and image classifiers" = "Klassifikatoren für natürliche Sprache und Bilder";
 "Nested" = "Verschachtelt";
 "Never" = "Nie";
+"New" = "Neu";
 "New Folder" = "Neuer Ordner";
 "New Site" = "Neue Website";
 "New folder name" = "Name des neuen Ordners";
@@ -676,7 +700,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur prüft auf Änderungen und liefert neue Artikel in deinen Feed.";
 "NewsBlur detected %@ from your device." = "NewsBlur hat %@ auf deinem Gerät erkannt.";
+"NewsBlur index" = "NewsBlur-Index";
 "NewsBlur password" = "NewsBlur-Passwort";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur liest deine Beschreibung, durchsucht seinen Feed-Index und das offene Web und bewertet anschließend jeden Treffer. Das kann eine Minute dauern.";
 "Next" = "Weiter";
 "Next Folder" = "Nächster Ordner";
 "Next Site" = "Nächste Website";
@@ -693,6 +719,7 @@
 "No Story Lists" = "Keine Artikellisten";
 "No Widget Sites" = "Keine Widget-Websites";
 "No briefings yet" = "Noch keine Briefings";
+"No feeds matched that description. Try describing it another way." = "Keine Feeds passen zu dieser Beschreibung. Versuch, es anders zu beschreiben.";
 "No feeds to show yet. Try another interest or search all sites." = "Noch keine Feeds vorhanden. Wähle ein anderes Interesse oder durchsuche alle Websites.";
 "No friends to suggest." = "Keine Freunde zum Vorschlagen.";
 "No interests or sites found. Try another search." = "Keine Interessen oder Websites gefunden. Versuche es mit einer anderen Suche.";
@@ -800,6 +827,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium-Abonnement";
+"Premium feature" = "Premium-Funktion";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium-Abonnenten können ein benutzerdefiniertes NewsBlur-Symbol auswählen. Jede Variante gibt es in einer hellen und einer dunklen Ausführung.";
 "Preparing audio…" = "Audio wird vorbereitet …";
 "Preview ended. Premium Archive unlocks full stories" = "Die Vorschau ist beendet. Premium Archive schaltet vollständige Artikel frei";
@@ -838,6 +866,7 @@
 "Read Widely Read Stories" = "Viel gelesene Artikel lesen";
 "Read Widget Site Stories" = "Artikel der Widget-Websites lesen";
 "Read by %@" = "Vorgelesen von %@";
+"Reading" = "Wird gelesen";
 "Reading Stories" = "Artikel lesen";
 "Reading a story" = "Einen Artikel lesen";
 "Reading by folder is only available to" = "Das Lesen nach Ordnern ist nur verfügbar für";
@@ -859,6 +888,7 @@
 "Reloading..." = "Wird neu geladen …";
 "Remove This List" = "Diese Liste entfernen";
 "Remove from Up Next" = "Aus der Wiedergabeliste entfernen";
+"Remove from history" = "Aus dem Verlauf entfernen";
 "Removed from Up Next" = "Aus der Wiedergabeliste entfernt";
 "Rename" = "Umbenennen";
 "Rename \"%@\"" = "„%@“ umbenennen";
@@ -882,6 +912,7 @@
 "Retry" = "Erneut versuchen";
 "Retry Google Reader" = "Google Reader erneut versuchen";
 "Retry icons" = "Symbole erneut laden";
+"Reviews of new iOS apps with lots of screenshots" = "Rezensionen zu neuen iOS-Apps mit vielen Screenshots";
 "River of News (reading by folder)" = "Nachrichtenstrom (Lesen nach Ordnern)";
 "Rows" = "Zeilen";
 "Ruby Red" = "Rubinrot";
@@ -913,6 +944,7 @@
 "Scroll to Comments" = "Zu den Kommentaren scrollen";
 "Scroll to comments" = "Zu den Kommentaren scrollen";
 "Search YouTube channels..." = "YouTube-Kanäle durchsuchen …";
+"Search again" = "Erneut suchen";
 "Search feeds" = "Feeds suchen";
 "Search interests and sites" = "Interessen und Websites durchsuchen";
 "Search newsletters..." = "Newsletter durchsuchen …";
@@ -921,6 +953,10 @@
 "Search stories" = "Artikel durchsuchen";
 "Search subreddits..." = "Subreddits durchsuchen …";
 "Search voices" = "Stimmen suchen";
+"Searches you run will be kept here." = "Deine Suchanfragen werden hier gespeichert.";
+"Searching feeds" = "Feeds werden durchsucht";
+"Searching for" = "Suche nach";
+"Searching the web" = "Im Web suchen";
 "Searching…" = "Suche läuft …";
 "Sections" = "Abschnitte";
 "Select All" = "Alle auswählen";
@@ -1008,6 +1044,7 @@
 "Small Right" = "Klein rechts";
 "Small [text size]" = "Klein";
 "Some feed icons couldn’t load." = "Einige Feed-Symbole konnten nicht geladen werden.";
+"Something went wrong while searching." = "Bei der Suche ist etwas schiefgelaufen.";
 "Sources" = "Quellen";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Leertaste und Umschalt+Leertaste scrollen um diesen Prozentsatz des sichtbaren Artikels. Am unteren Rand öffnet die Leertaste den nächsten ungelesenen Artikel. Am oberen Rand öffnet Umschalt+Leertaste den vorherigen Artikel.";
 "Space scroll amount" = "Scrollweite der Leertaste";
@@ -1021,6 +1058,8 @@
 "Standard" = "Standard";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Starte Musik in der Musik-App oder Spotify. Listen liest darüber. Die Steuerung dieser App wird auf dem Sperrbildschirm angezeigt.";
 "Start reading" = "Mit dem Lesen beginnen";
+"Starting your search…" = "Suche wird gestartet…";
+"Starting…" = "Wird gestartet…";
 "Statistics" = "Statistiken";
 "Statistics…" = "Statistiken…";
 "Stay connected" = "In Verbindung bleiben";
@@ -1112,6 +1151,7 @@
 "Text from yesterday" = "Text von gestern";
 "Text view" = "Textansicht";
 "Text view conveniently extracts the story" = "Die Textansicht extrahiert den Artikel bequem";
+"That search could not be loaded." = "Diese Suche konnte nicht geladen werden.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "Das war eine 30-Sekunden-Vorschau. Mit Premium Archive kannst du ganze Artikel anhören.";
 "The audio couldn't be loaded. Try again in a moment." = "Der Ton konnte nicht geladen werden. Versuch es gleich noch einmal.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Die vollständige Textansicht ist eine <a href=\"http://ios.newsblur.com/premium\">Premium-Funktion</a>";
@@ -1119,6 +1159,9 @@
 "The icon follows your device's light and dark appearance." = "Das Symbol passt sich dem hellen oder dunklen Erscheinungsbild deines Geräts an.";
 "The most important stories from your feeds" = "Die wichtigsten Artikel aus deinen Feeds";
 "The request failed. Please try again." = "Die Anfrage ist fehlgeschlagen. Bitte versuche es erneut.";
+"The search could not be started." = "Die Suche konnte nicht gestartet werden.";
+"The search could not be started: %@" = "Die Suche konnte nicht gestartet werden: %@";
+"The search is taking too long. Try searching again." = "Die Suche dauert zu lange. Versuche es noch einmal.";
 "The story doesn't link anywhere." = "Der Artikel verweist nirgendwohin.";
 "Theme" = "Design";
 "Theme variant for dark mode" = "Design-Variante für den Dunkelmodus";
@@ -1143,6 +1186,7 @@
 "Title only" = "Nur Titel";
 "Titles in grid" = "Titel im Raster";
 "Titles in list" = "Titel in der Liste";
+"Today" = "Heute";
 "Toggle Full Screen" = "Vollbildmodus umschalten";
 "Toggle Read/Unread" = "Gelesen/Ungelesen umschalten";
 "Toggle read/unread" = "Gelesen/ungelesen umschalten";
@@ -1168,6 +1212,7 @@
 "Try %@" = "%@ ausprobieren";
 "Try again" = "Erneut versuchen";
 "Try another name, or paste a site URL in Search." = "Versuche einen anderen Namen oder füge eine Website-URL in die Suche ein.";
+"Try describing something like" = "Versuche, etwas zu beschreiben, zum Beispiel";
 "Try search again" = "Erneut suchen";
 "Trying Feed" = "Feed wird geladen";
 "Tuesday" = "Dienstag";
@@ -1192,6 +1237,7 @@
 "Unable to save notification settings." = "Benachrichtigungseinstellungen konnten nicht gespeichert werden.";
 "Understand" = "Verstehen";
 "Unfavorited" = "Nicht mehr favorisiert";
+"Unlimited searches" = "Unbegrenzte Suchen";
 "Unlock full discovery" = "Vollständige Entdeckung freischalten";
 "Unmute All" = "Stummschaltung für alle aufheben";
 "Unmute site" = "Website nicht mehr stummschalten";
@@ -1243,6 +1289,7 @@
 "Voice" = "Stimme";
 "Voice and music balance" = "Balance zwischen Sprache und Musik";
 "Voice settings" = "Spracheinstellungen";
+"Waiting for a verdict…" = "Warte auf ein Urteil…";
 "Warm" = "Warm";
 "Web" = "Web";
 "Web Feeds from any website, even without RSS" = "Web-Feeds von jeder Website, auch ohne RSS";
@@ -1286,6 +1333,7 @@
 "Your premium pro subscription is active" = "Dein Premium-Pro-Abo ist aktiv";
 "Your premium subscription is active" = "Dein Premium-Abo ist aktiv";
 "Your reading list" = "Deine Leseliste";
+"Your searches" = "Deine Suchen";
 "You’re all set up." = "Alles ist eingerichtet.";
 "at %@" = "um %@";
 "by %@" = "von %@";

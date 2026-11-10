@@ -194,6 +194,22 @@
 			<string>%@ Feeds ausgewählt</string>
 		</dict>
 	</dict>
+	<key>%@ feeds so far</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_feeds_so_far@</string>
+		<key>describe_feeds_so_far</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Bisher %@ Feed</string>
+			<key>other</key>
+			<string>Bisher %@ Feeds</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -608,6 +624,22 @@
 			<string>%@ Sekunde vorspulen</string>
 			<key>other</key>
 			<string>%@ Sekunden vorspulen</string>
+		</dict>
+	</dict>
+	<key>Found %@ feeds that match your description</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_found_feeds@</string>
+		<key>describe_found_feeds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ Feed gefunden, der zu deiner Beschreibung passt</string>
+			<key>other</key>
+			<string>%@ Feeds gefunden, die zu deiner Beschreibung passen</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

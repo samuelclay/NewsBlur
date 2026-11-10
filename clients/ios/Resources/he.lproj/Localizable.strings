@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "תיקיית %1$@, מכווצת, %2$@";
 "%1$@ followed %2$@." = "%1$@ התחיל/ה לעקוב אחרי %2$@.";
 "%1$@ of %2$@ of listening left this week" = "נותרו %1$@ מתוך %2$@ להאזנה השבוע";
+"%1$@ of %2$@ searches left today" = "נותרו %1$@ מתוך %2$@ חיפושים להיום";
 "%1$@ of %2$@ sites indexed" = "אונדקסו %1$@ מתוך %2$@ אתרים";
 "%1$@ of %2$@ story previews used today" = "נעשה שימוש היום בתצוגות מקדימות של %1$@ מתוך %2$@ כתבות";
 "%1$@ on all sites (%2$@)" = "%1$@ בכל האתרים (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "נוספו %@ פידים.";
 "%@ feeds couldn’t be added." = "לא ניתן להוסיף %@ פידים.";
 "%@ feeds selected" = "נבחרו %@ פידים";
+"%@ feeds so far" = "%@ פידים עד כה";
 "%@ focused stories" = "%@ כתבות ממוקדות";
 "%@ folder" = "תיקיית %@";
 "%@ free story previews left today" = "נותרו להיום %@ תצוגות מקדימות של כתבות בחינם";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ מנויים";
 "%@ unread stories" = "%@ כתבות שלא נקראו";
 "%@ voice previews left" = "נותרו %@ תצוגות קול מקדימות";
+"%@/10" = "%@/10";
 "%@/story" = "%@/כתבה";
+"%@d ago" = "לפני %@ ימים";
+"%@w ago" = "לפני %@ שבועות";
 "%@×" = "%@×";
 "%ldd ago" = "לפני %ld ימים";
 "%ldh ago" = "לפני %ld שעות";
@@ -310,9 +315,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "מחיקת החשבון לצמיתות תסיר את הפידים, הכתבות השמורות ונתוני החשבון שלך. אי אפשר לבטל את הפעולה.";
 "Deleting..." = "מוחק...";
 "Delivery" = "אופן ההקראה";
+"Describe" = "תיאור";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "תארו נושא והבינה המלאכותית תדרג כל כתבה לפי מידת ההתאמה להנחיה שלך, כדי למקד או להסתיר התאמות.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "תארו את הפידים שאתם מחפשים, למשל ״ביקורות על אפליקציות iOS חדשות עם צילומי מסך״";
 "Describe what to focus or hide" = "תארו מה למקד או להסתיר";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "תארו מה לחפש, ו-AI ינתח את תמונות כל כתבה בהתאם להנחיה שלך.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "תארו מה תרצו לקרוא ו־NewsBlur ימצא פידים מתאימים";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "תיאור הפידים הרצויים הוא תכונת Premium. שדרגו כדי לחפש לפי תיאור.";
 "Discover" = "גילוי";
 "Discover more to read" = "גלו עוד דברים לקריאה";
 "Discover related sites" = "גילוי אתרים קשורים";
@@ -373,6 +382,7 @@
 "Extra Small" = "קטן במיוחד";
 "Extra Tall" = "גבוה במיוחד";
 "Extra small" = "קטן במיוחד";
+"Failed" = "נכשל";
 "Faster" = "מהיר יותר";
 "Favorited" = "נוסף למועדפים";
 "Favoriting" = "מוסיף למועדפים";
@@ -390,6 +400,9 @@
 "Filter" = "סינון";
 "Filter stories by date range" = "סינון כתבות לפי טווח תאריכים";
 "Find Friends" = "מציאת חברים";
+"Find feeds" = "מציאת פידים";
+"Find feeds about “%@”" = "מציאת פידים בנושא ״%@״";
+"Find feeds by describing them" = "מציאת פידים באמצעות תיאור";
 "Find in Feed" = "חיפוש בפיד";
 "Find in Sites" = "חיפוש באתרים";
 "Find in feed" = "חיפוש בפיד";
@@ -429,6 +442,8 @@
 "Forgot Password?" = "שכחתם את הסיסמה?";
 "Forgot your password?" = "שכחת את הסיסמה?";
 "Forward %@ seconds" = "קדימה %@ שניות";
+"Found %@ feeds that match your description" = "נמצאו %@ פידים שמתאימים לתיאור שלך";
+"Found on the web" = "נמצא באינטרנט";
 "Frequency" = "תדירות";
 "Friday" = "יום שישי";
 "Friends" = "חברים";
@@ -484,6 +499,7 @@
 "Import or upload sites" = "ייבוא או העלאת אתרים";
 "Imported %@ sites" = "יובאו %@ אתרים";
 "Importing sites..." = "מייבא אתרים...";
+"In progress" = "בתהליך";
 "In-app Safari" = "Safari בתוך האפליקציה";
 "In-app browser" = "דפדפן בתוך האפליקציה";
 "Include" = "לכלול";
@@ -492,6 +508,7 @@
 "Include in bundle" = "הכללה בחבילה";
 "Included in bundle" = "כלול בחבילה";
 "Increase or remove your limit" = "הגדלת המגבלה או הסרתה";
+"Indie game developers writing about their work in progress" = "מפתחי משחקים עצמאיים הכותבים על העבודה שלהם שנמצאת בתהליך";
 "Infrequent Site Stories" = "כתבות מאתרים שמפרסמים לעיתים רחוקות";
 "Infrequent Stories" = "כתבות מאתרים שמתעדכנים לעיתים רחוקות";
 "Infrequent stories per month" = "כתבות בחודש באתרים שמתעדכנים לעיתים רחוקות";
@@ -502,6 +519,8 @@
 "Interactions" = "אינטראקציות";
 "Invalid: %@" = "לא תקין: %@";
 "Invoice" = "חשבונית";
+"Judging" = "שופטים";
+"Judging…" = "שופטים…";
 "Keeps the dark icon no matter how your device is set." = "משאיר את הסמל הכהה ללא קשר להגדרות המכשיר שלך.";
 "Keeps the light icon no matter how your device is set." = "הסמל יישאר בהיר ללא קשר להגדרות המכשיר שלכם.";
 "Keyboard Shortcuts" = "קיצורי מקלדת";
@@ -540,6 +559,7 @@
 "Loading sources" = "מקורות נטענים";
 "Loading voices…" = "הקולות נטענים…";
 "Loading your feeds…" = "הפידים שלך נטענים…";
+"Loading your search…" = "טוען את החיפוש שלך…";
 "Loading..." = "טוען...";
 "Loading…" = "בטעינה…";
 "Log In" = "התחברות";
@@ -553,6 +573,7 @@
 "Logout" = "התנתקות";
 "Long Reads" = "קריאות ארוכות";
 "Long [preview length]" = "ארוך";
+"Long essays about cities, housing and public transit" = "מסות ארוכות על ערים, דיור ותחבורה ציבורית";
 "Long press" = "לחיצה ממושכת";
 "Long press on feeds and folders" = "לחיצה ממושכת על פידים ותיקיות";
 "Long press on story titles" = "לחיצה ממושכת על כותרות כתבות";
@@ -608,6 +629,8 @@
 "Mark this site as read" = "סמן את האתר הזה כנקרא";
 "Mark this story as read" = "סמן את הכתבה הזו כנקראה";
 "Match" = "התאמה";
+"Match score %@" = "ציון התאמה %@";
+"Matched “%@”" = "התאמה ל״%@״";
 "Matches story" = "תואם לכתבה";
 "Meadow Sage" = "ירוק מרווה";
 "Medium [grid height]" = "בינוני";
@@ -666,6 +689,7 @@
 "Natural language text and image classifiers" = "מסווגי טקסט ותמונות בשפה טבעית";
 "Nested" = "מקונן";
 "Never" = "אף פעם";
+"New" = "חדש";
 "New Folder" = "תיקייה חדשה";
 "New Site" = "אתר חדש";
 "New folder name" = "שם תיקייה חדש";
@@ -676,7 +700,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur מחפש שינויים ומציג כתבות חדשות בפיד שלכם.";
 "NewsBlur detected %@ from your device." = "NewsBlur זיהה במכשיר שלכם את השפה %@.";
+"NewsBlur index" = "אינדקס NewsBlur";
 "NewsBlur password" = "הסיסמה של NewsBlur";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur קורא את התיאור שלך, מחפש באינדקס הפידים שלו וברשת הפתוחה, ואז מדרג כל תוצאה. זה עשוי לקחת דקה.";
 "Next" = "הבא";
 "Next Folder" = "התיקייה הבאה";
 "Next Site" = "האתר הבא";
@@ -693,6 +719,7 @@
 "No Story Lists" = "אין רשימות כתבות";
 "No Widget Sites" = "אין אתרים לווידג׳ט";
 "No briefings yet" = "אין עדיין תדריכים";
+"No feeds matched that description. Try describing it another way." = "לא נמצאו פידים שתואמים לתיאור הזה. נסו לתאר אותו בדרך אחרת.";
 "No feeds to show yet. Try another interest or search all sites." = "אין עדיין פידים להצגה. נסו תחום עניין אחר או חפשו בכל האתרים.";
 "No friends to suggest." = "אין חברים להציע.";
 "No interests or sites found. Try another search." = "לא נמצאו תחומי עניין או אתרים. נסו חיפוש אחר.";
@@ -800,6 +827,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "מינוי Premium";
+"Premium feature" = "תכונת Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "מנויי Premium יכולים לבחור סמל NewsBlur מותאם אישית. כל סגנון כולל גרסה בהירה וכהה.";
 "Preparing audio…" = "מכינים את השמע…";
 "Preview ended. Premium Archive unlocks full stories" = "התצוגה המקדימה הסתיימה. Premium Archive פותח גישה לכתבות המלאות";
@@ -838,6 +866,7 @@
 "Read Widely Read Stories" = "קריאת כתבות שנקראו רבות";
 "Read Widget Site Stories" = "קריאת כתבות מאתרי הווידג׳ט";
 "Read by %@" = "מוקרא על ידי %@";
+"Reading" = "קריאה";
 "Reading Stories" = "קריאת כתבות";
 "Reading a story" = "קריאת כתבה";
 "Reading by folder is only available to" = "קריאה לפי תיקייה זמינה רק עבור";
@@ -859,6 +888,7 @@
 "Reloading..." = "טוען מחדש...";
 "Remove This List" = "הסרת הרשימה הזו";
 "Remove from Up Next" = "הסרה מהתור הבא";
+"Remove from history" = "הסרה מההיסטוריה";
 "Removed from Up Next" = "הוסר מהתור הבא";
 "Rename" = "שינוי שם";
 "Rename \"%@\"" = "שינוי השם של \"%@\"";
@@ -882,6 +912,7 @@
 "Retry" = "ניסיון חוזר";
 "Retry Google Reader" = "ניסיון חוזר עם Google Reader";
 "Retry icons" = "ניסיון חוזר לטעון סמלים";
+"Reviews of new iOS apps with lots of screenshots" = "ביקורות על אפליקציות iOS חדשות עם הרבה צילומי מסך";
 "River of News (reading by folder)" = "זרם החדשות (קריאה לפי תיקייה)";
 "Rows" = "שורות";
 "Ruby Red" = "אדום אודם";
@@ -913,6 +944,7 @@
 "Scroll to Comments" = "גלילה לתגובות";
 "Scroll to comments" = "גלול לתגובות";
 "Search YouTube channels..." = "חיפוש בערוצי YouTube...";
+"Search again" = "חיפוש מחדש";
 "Search feeds" = "חיפוש בפידים";
 "Search interests and sites" = "חיפוש בתחומי עניין ובאתרים";
 "Search newsletters..." = "חיפוש בניוזלטרים...";
@@ -921,6 +953,10 @@
 "Search stories" = "חיפוש כתבות";
 "Search subreddits..." = "חיפוש ב-subreddits...";
 "Search voices" = "חיפוש קולות";
+"Searches you run will be kept here." = "החיפושים שתבצעו יישמרו כאן.";
+"Searching feeds" = "מחפש פידים";
+"Searching for" = "חיפוש אחר";
+"Searching the web" = "מחפשים באינטרנט";
 "Searching…" = "מחפש…";
 "Sections" = "מקטעים";
 "Select All" = "בחירת הכול";
@@ -1008,6 +1044,7 @@
 "Small Right" = "קטן מימין";
 "Small [text size]" = "קטן";
 "Some feed icons couldn’t load." = "חלק מסמלי הפידים לא נטענו.";
+"Something went wrong while searching." = "משהו השתבש במהלך החיפוש.";
 "Sources" = "מקורות";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "רווח ו-Shift-Rווח גוללים באחוז הזה של הכתבה המוצגת. בתחתית, רווח פותח את הכתבה הבאה שלא נקראה. בראש, Shift-Rווח פותח את הכתבה הקודמת.";
 "Space scroll amount" = "כמות הגלילה באמצעות רווח";
@@ -1021,6 +1058,8 @@
 "Standard" = "רגיל";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "הפעילו מוזיקה באפליקציית Music או ב-Spotify, ו-Listen יקרא מעליה. הפקדים של אותה אפליקציה ישתלטו על מסך הנעילה.";
 "Start reading" = "התחל לקרוא";
+"Starting your search…" = "מתחילים את החיפוש שלך…";
+"Starting…" = "מתחילים…";
 "Statistics" = "סטטיסטיקה";
 "Statistics…" = "סטטיסטיקה…";
 "Stay connected" = "הישארו מחוברים";
@@ -1112,6 +1151,7 @@
 "Text from yesterday" = "טקסט מאתמול";
 "Text view" = "תצוגת טקסט";
 "Text view conveniently extracts the story" = "תצוגת הטקסט מחלצת את הכתבה בנוחות";
+"That search could not be loaded." = "לא ניתן לטעון את החיפוש הזה.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "זו הייתה תצוגה מקדימה של 30 שניות. Premium Archive פותח גישה לכתבות המלאות.";
 "The audio couldn't be loaded. Try again in a moment." = "לא ניתן לטעון את השמע. נסו שוב בעוד רגע.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "תצוגת הטקסט המלא היא <a href=\"http://ios.newsblur.com/premium\">תכונת Premium</a>";
@@ -1119,6 +1159,9 @@
 "The icon follows your device's light and dark appearance." = "הסמל מתאים את עצמו למראה הבהיר או הכהה של המכשיר.";
 "The most important stories from your feeds" = "הכתבות החשובות ביותר מהפידים שלך";
 "The request failed. Please try again." = "הבקשה נכשלה. נא לנסות שוב.";
+"The search could not be started." = "לא ניתן היה להתחיל את החיפוש.";
+"The search could not be started: %@" = "לא ניתן להתחיל את החיפוש: %@";
+"The search is taking too long. Try searching again." = "החיפוש מתמשך זמן רב מדי. נסו לחפש שוב.";
 "The story doesn't link anywhere." = "הכתבה לא מובילה לשום מקום.";
 "Theme" = "ערכת נושא";
 "Theme variant for dark mode" = "וריאציית ערכת נושא למצב כהה";
@@ -1143,6 +1186,7 @@
 "Title only" = "כותרת בלבד";
 "Titles in grid" = "כותרות בתצוגת רשת";
 "Titles in list" = "כותרות ברשימה";
+"Today" = "היום";
 "Toggle Full Screen" = "החלפת מצב מסך מלא";
 "Toggle Read/Unread" = "החלף בין נקרא ללא נקרא";
 "Toggle read/unread" = "החלפה בין נקרא ללא נקרא";
@@ -1168,6 +1212,7 @@
 "Try %@" = "נסה %@";
 "Try again" = "לנסות שוב";
 "Try another name, or paste a site URL in Search." = "נסה שם אחר, או הדבק כתובת אתר בחיפוש.";
+"Try describing something like" = "נסו לתאר משהו כמו";
 "Try search again" = "נסו לחפש שוב";
 "Trying Feed" = "מנסה את הפיד";
 "Tuesday" = "יום שלישי";
@@ -1192,6 +1237,7 @@
 "Unable to save notification settings." = "לא ניתן לשמור את הגדרות ההתראות.";
 "Understand" = "הבנתי";
 "Unfavorited" = "הוסר מהמועדפים";
+"Unlimited searches" = "חיפושים ללא הגבלה";
 "Unlock full discovery" = "פתחו את כל אפשרויות הגילוי";
 "Unmute All" = "בטל השתקה של הכול";
 "Unmute site" = "ביטול השתקת אתר";
@@ -1243,6 +1289,7 @@
 "Voice" = "קול";
 "Voice and music balance" = "איזון בין קול למוזיקה";
 "Voice settings" = "הגדרות קול";
+"Waiting for a verdict…" = "ממתינים להכרעה…";
 "Warm" = "חם";
 "Web" = "אינטרנט";
 "Web Feeds from any website, even without RSS" = "פידי אינטרנט מכל אתר, גם בלי RSS";
@@ -1286,6 +1333,7 @@
 "Your premium pro subscription is active" = "מינוי ה־Premium Pro שלך פעיל";
 "Your premium subscription is active" = "המינוי שלך ל-Premium פעיל";
 "Your reading list" = "רשימת הקריאה שלך";
+"Your searches" = "החיפושים שלך";
 "You’re all set up." = "הכול מוכן.";
 "at %@" = "ב־%@";
 "by %@" = "מאת %@";

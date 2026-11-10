@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "Папка %1$@, згорнута, %2$@";
 "%1$@ followed %2$@." = "%1$@ тепер стежить за %2$@.";
 "%1$@ of %2$@ of listening left this week" = "Залишилося %1$@ із %2$@ прослуховування на цей тиждень";
+"%1$@ of %2$@ searches left today" = "%1$@ із %2$@ пошукових запитів залишилося на сьогодні";
 "%1$@ of %2$@ sites indexed" = "Проіндексовано сайтів: %1$@ із %2$@";
 "%1$@ of %2$@ story previews used today" = "Сьогодні використано попередніх прослуховувань статей: %1$@ із %2$@";
 "%1$@ on all sites (%2$@)" = "%1$@ на всіх сайтах (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "Додано %@ стрічок.";
 "%@ feeds couldn’t be added." = "Не вдалося додати %@ стрічок.";
 "%@ feeds selected" = "Вибрано %@ стрічок";
+"%@ feeds so far" = "Поки що стрічок: %@";
 "%@ focused stories" = "%@ вибраних статей";
 "%@ folder" = "Папка %@";
 "%@ free story previews left today" = "Сьогодні залишилося безкоштовних попередніх прослуховувань статей: %@";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ підписників";
 "%@ unread stories" = "%@ непрочитаних статей";
 "%@ voice previews left" = "Залишилося голосових попередніх прослуховувань: %@";
+"%@/10" = "%@/10";
 "%@/story" = "%@/статтю";
+"%@d ago" = "%@ дн. тому";
+"%@w ago" = "%@ тиж. тому";
 "%@×" = "%@×";
 "%ldd ago" = "%ld дн. тому";
 "%ldh ago" = "%ld год тому";
@@ -310,9 +315,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Після видалення облікового запису назавжди буде видалено ваші стрічки, збережені статті та дані облікового запису. Цю дію не можна скасувати.";
 "Deleting..." = "Видалення...";
 "Delivery" = "Манера мовлення";
+"Describe" = "Описати";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Опишіть тему, і ШІ оцінить кожну статтю за вашим запитом, щоб виділяти або приховувати відповідні статті.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "Опишіть стрічки, які ви шукаєте, наприклад: «огляди нових програм для iOS зі знімками екрана»";
 "Describe what to focus or hide" = "Опишіть, що виділяти або приховувати";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "Опишіть, що потрібно знайти, і ШІ аналізуватиме зображення в кожній статті відповідно до вашого запиту.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "Опишіть, що ви хочете читати, і NewsBlur знайде відповідні стрічки";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "Пошук стрічок за описом — це функція Premium. Перейдіть на вищий план, щоб шукати за описом.";
 "Discover" = "Знайти сайти";
 "Discover more to read" = "Знайдіть ще більше цікавого";
 "Discover related sites" = "Знайти схожі сайти";
@@ -373,6 +382,7 @@
 "Extra Small" = "Дуже малий";
 "Extra Tall" = "Дуже високий";
 "Extra small" = "Дуже малий";
+"Failed" = "Не вдалося";
 "Faster" = "Швидше";
 "Favorited" = "Додано до обраного";
 "Favoriting" = "Додавання в обране";
@@ -390,6 +400,9 @@
 "Filter" = "Фільтр";
 "Filter stories by date range" = "Фільтрувати статті за діапазоном дат";
 "Find Friends" = "Знайти друзів";
+"Find feeds" = "Знайти стрічки";
+"Find feeds about “%@”" = "Знайти стрічки за запитом «%@»";
+"Find feeds by describing them" = "Знаходьте стрічки за описом";
 "Find in Feed" = "Знайти у стрічці";
 "Find in Sites" = "Пошук на сайтах";
 "Find in feed" = "Знайти в стрічці";
@@ -429,6 +442,8 @@
 "Forgot Password?" = "Забули пароль?";
 "Forgot your password?" = "Забули пароль?";
 "Forward %@ seconds" = "Перемотати вперед на %@ секунд";
+"Found %@ feeds that match your description" = "Знайдено %@ стрічок, що відповідають вашому опису";
+"Found on the web" = "Знайдено в інтернеті";
 "Frequency" = "Частота";
 "Friday" = "П’ятниця";
 "Friends" = "Друзі";
@@ -484,6 +499,7 @@
 "Import or upload sites" = "Імпортувати або завантажити сайти";
 "Imported %@ sites" = "Імпортовано сайтів: %@";
 "Importing sites..." = "Імпорт сайтів...";
+"In progress" = "У процесі";
 "In-app Safari" = "Safari у застосунку";
 "In-app browser" = "Вбудований браузер";
 "Include" = "Додати";
@@ -492,6 +508,7 @@
 "Include in bundle" = "Додати до добірки";
 "Included in bundle" = "Входить до добірки";
 "Increase or remove your limit" = "Збільшити ліміт або прибрати його";
+"Indie game developers writing about their work in progress" = "Незалежні розробники ігор, які пишуть про розробку своїх ігор";
 "Infrequent Site Stories" = "Статті з нечасто оновлюваних сайтів";
 "Infrequent Stories" = "Нечасто оновлювані сайти";
 "Infrequent stories per month" = "Поріг нечасто оновлюваних сайтів";
@@ -502,6 +519,8 @@
 "Interactions" = "Взаємодії";
 "Invalid: %@" = "Недійсне значення: %@";
 "Invoice" = "Рахунок";
+"Judging" = "Оцінювання";
+"Judging…" = "Оцінювання…";
 "Keeps the dark icon no matter how your device is set." = "Завжди використовує темну іконку, незалежно від налаштувань пристрою.";
 "Keeps the light icon no matter how your device is set." = "Завжди використовує світлу іконку, незалежно від налаштувань вашого пристрою.";
 "Keyboard Shortcuts" = "Комбінації клавіш";
@@ -540,6 +559,7 @@
 "Loading sources" = "Завантаження джерел";
 "Loading voices…" = "Завантаження голосів…";
 "Loading your feeds…" = "Завантаження ваших стрічок…";
+"Loading your search…" = "Завантаження результатів пошуку…";
 "Loading..." = "Завантаження...";
 "Loading…" = "Завантаження…";
 "Log In" = "Увійти";
@@ -553,6 +573,7 @@
 "Logout" = "Вийти";
 "Long Reads" = "Довгі статті";
 "Long [preview length]" = "Довгий";
+"Long essays about cities, housing and public transit" = "Довгі есе про міста, житло та громадський транспорт";
 "Long press" = "Натисніть і утримуйте";
 "Long press on feeds and folders" = "Натисніть і утримуйте стрічки та папки";
 "Long press on story titles" = "Натисніть і утримуйте заголовок статті";
@@ -608,6 +629,8 @@
 "Mark this site as read" = "Позначити цей сайт як прочитаний";
 "Mark this story as read" = "Позначити цю статтю як прочитану";
 "Match" = "Збіг";
+"Match score %@" = "Оцінка відповідності %@";
+"Matched “%@”" = "Збіг: «%@»";
 "Matches story" = "Відповідає статті";
 "Meadow Sage" = "Лугова шавлія";
 "Medium [grid height]" = "Середній";
@@ -666,6 +689,7 @@
 "Natural language text and image classifiers" = "Класифікатори тексту й зображень на основі природної мови";
 "Nested" = "Вкладений";
 "Never" = "Ніколи";
+"New" = "Нові";
 "New Folder" = "Нова папка";
 "New Site" = "Новий сайт";
 "New folder name" = "Назва нової папки";
@@ -676,7 +700,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur перевіряє наявність змін і додає нові статті до вашої стрічки.";
 "NewsBlur detected %@ from your device." = "NewsBlur визначив мову вашого пристрою: %@.";
+"NewsBlur index" = "індекс NewsBlur";
 "NewsBlur password" = "Пароль NewsBlur";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur читає ваш опис, шукає у своєму індексі стрічок та у відкритому інтернеті, а потім оцінює кожен результат. Це може тривати хвилину.";
 "Next" = "Далі";
 "Next Folder" = "Наступна папка";
 "Next Site" = "Наступний сайт";
@@ -693,6 +719,7 @@
 "No Story Lists" = "Немає списків статей";
 "No Widget Sites" = "Немає сайтів для віджета";
 "No briefings yet" = "Оглядів поки немає";
+"No feeds matched that description. Try describing it another way." = "За вашим описом не знайдено стрічок. Спробуйте описати це інакше.";
 "No feeds to show yet. Try another interest or search all sites." = "Стрічок поки немає. Спробуйте вибрати інший інтерес або пошукати на всіх сайтах.";
 "No friends to suggest." = "Немає друзів, яких можна запропонувати.";
 "No interests or sites found. Try another search." = "Інтересів або сайтів не знайдено. Спробуйте інший пошуковий запит.";
@@ -800,6 +827,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Підписка Premium";
+"Premium feature" = "Функція Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Передплатники Premium можуть вибрати власну іконку NewsBlur. Для кожного варіанта доступні світла й темна версії.";
 "Preparing audio…" = "Підготовка аудіо…";
 "Preview ended. Premium Archive unlocks full stories" = "Попередній перегляд завершено. Premium Archive відкриває повний текст статей";
@@ -838,6 +866,7 @@
 "Read Widely Read Stories" = "Читати популярні статті";
 "Read Widget Site Stories" = "Читати статті із сайтів віджета";
 "Read by %@" = "Читає %@";
+"Reading" = "Читання";
 "Reading Stories" = "Читання статей";
 "Reading a story" = "Читання статті";
 "Reading by folder is only available to" = "Читання за папками доступне лише для";
@@ -859,6 +888,7 @@
 "Reloading..." = "Перезавантаження...";
 "Remove This List" = "Видалити цей список";
 "Remove from Up Next" = "Видалити з черги «Далі»";
+"Remove from history" = "Видалити з історії";
 "Removed from Up Next" = "Видалено з черги «Далі»";
 "Rename" = "Перейменувати";
 "Rename \"%@\"" = "Перейменувати «%@»";
@@ -882,6 +912,7 @@
 "Retry" = "Повторити спробу";
 "Retry Google Reader" = "Повторити спробу з Google Reader";
 "Retry icons" = "Повторити завантаження значків";
+"Reviews of new iOS apps with lots of screenshots" = "Огляди нових програм для iOS із великою кількістю знімків екрана";
 "River of News (reading by folder)" = "Потік новин (читання за папками)";
 "Rows" = "Рядки";
 "Ruby Red" = "Рубіново-червоний";
@@ -913,6 +944,7 @@
 "Scroll to Comments" = "Перейти до коментарів";
 "Scroll to comments" = "Прокрутити до коментарів";
 "Search YouTube channels..." = "Пошук каналів YouTube...";
+"Search again" = "Шукати знову";
 "Search feeds" = "Пошук стрічок";
 "Search interests and sites" = "Пошук за інтересами та сайтами";
 "Search newsletters..." = "Шукати розсилки...";
@@ -921,6 +953,10 @@
 "Search stories" = "Шукати статті";
 "Search subreddits..." = "Пошук у сабредітах...";
 "Search voices" = "Пошук голосів";
+"Searches you run will be kept here." = "Ваші пошукові запити зберігатимуться тут.";
+"Searching feeds" = "Пошук стрічок";
+"Searching for" = "Пошук за запитом";
+"Searching the web" = "Шукаємо в інтернеті";
 "Searching…" = "Пошук…";
 "Sections" = "Розділи";
 "Select All" = "Вибрати все";
@@ -1008,6 +1044,7 @@
 "Small Right" = "Маленький праворуч";
 "Small [text size]" = "Малий";
 "Some feed icons couldn’t load." = "Не вдалося завантажити деякі значки стрічок.";
+"Something went wrong while searching." = "Під час пошуку сталася помилка.";
 "Sources" = "Джерела";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Пробіл і Shift+Пробіл прокручують видиму статтю на цей відсоток. Унизу пробіл відкриває наступну непрочитану статтю. Угорі Shift+Пробіл відкриває попередню статтю.";
 "Space scroll amount" = "Величина прокручування пробілом";
@@ -1021,6 +1058,8 @@
 "Standard" = "Стандартний";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Увімкніть музику в застосунку «Музика» або Spotify — «Прослуховування» читатиме поверх неї. Елементи керування цього застосунку відображатимуться на екрані блокування.";
 "Start reading" = "Почати читання";
+"Starting your search…" = "Починаємо пошук…";
+"Starting…" = "Починаємо…";
 "Statistics" = "Статистика";
 "Statistics…" = "Статистика…";
 "Stay connected" = "Залишайтеся на зв’язку";
@@ -1112,6 +1151,7 @@
 "Text from yesterday" = "Текст за вчора";
 "Text view" = "Текстовий вигляд";
 "Text view conveniently extracts the story" = "Режим перегляду тексту зручно витягує текст статті";
+"That search could not be loaded." = "Не вдалося завантажити цей пошуковий запит.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "Це був 30-секундний попередній перегляд. Premium Archive відкриває повний доступ до статей.";
 "The audio couldn't be loaded. Try again in a moment." = "Не вдалося завантажити аудіо. Спробуйте ще раз за мить.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Повний перегляд тексту — це <a href=\"http://ios.newsblur.com/premium\">функція Premium</a>";
@@ -1119,6 +1159,9 @@
 "The icon follows your device's light and dark appearance." = "Піктограма відповідає світлому чи темному оформленню вашого пристрою.";
 "The most important stories from your feeds" = "Найважливіші статті з ваших стрічок";
 "The request failed. Please try again." = "Не вдалося виконати запит. Спробуйте ще раз.";
+"The search could not be started." = "Не вдалося розпочати пошук.";
+"The search could not be started: %@" = "Не вдалося розпочати пошук: %@";
+"The search is taking too long. Try searching again." = "Пошук триває надто довго. Спробуйте виконати пошук ще раз.";
 "The story doesn't link anywhere." = "У цієї статті немає посилання.";
 "Theme" = "Тема";
 "Theme variant for dark mode" = "Варіант теми для темного режиму";
@@ -1143,6 +1186,7 @@
 "Title only" = "Лише заголовок";
 "Titles in grid" = "Заголовки в сітці";
 "Titles in list" = "Заголовки у списку";
+"Today" = "Сьогодні";
 "Toggle Full Screen" = "Увімкнути/вимкнути повноекранний режим";
 "Toggle Read/Unread" = "Перемкнути прочитане/непрочитане";
 "Toggle read/unread" = "Перемкнути прочитане/непрочитане";
@@ -1168,6 +1212,7 @@
 "Try %@" = "Спробуйте %@";
 "Try again" = "Спробувати ще раз";
 "Try another name, or paste a site URL in Search." = "Спробуйте іншу назву або вставте URL сайту в пошук.";
+"Try describing something like" = "Спробуйте описати щось на кшталт";
 "Try search again" = "Спробувати пошук ще раз";
 "Trying Feed" = "Спроба відкрити стрічку";
 "Tuesday" = "Вівторок";
@@ -1192,6 +1237,7 @@
 "Unable to save notification settings." = "Не вдалося зберегти налаштування сповіщень.";
 "Understand" = "Зрозуміло";
 "Unfavorited" = "Знято позначку «Вподобане»";
+"Unlimited searches" = "Необмежена кількість пошуків";
 "Unlock full discovery" = "Відкрийте повний доступ до пошуку";
 "Unmute All" = "Увімкнути всі";
 "Unmute site" = "Увімкнути сайт";
@@ -1243,6 +1289,7 @@
 "Voice" = "Голос";
 "Voice and music balance" = "Баланс голосу та музики";
 "Voice settings" = "Налаштування голосу";
+"Waiting for a verdict…" = "Очікування на результат…";
 "Warm" = "Теплий";
 "Web" = "Веб";
 "Web Feeds from any website, even without RSS" = "Вебстрічки з будь-якого сайту, навіть без RSS";
@@ -1286,6 +1333,7 @@
 "Your premium pro subscription is active" = "Ваша підписка Premium Pro активна";
 "Your premium subscription is active" = "Ваша преміум-підписка активна";
 "Your reading list" = "Ваш список для читання";
+"Your searches" = "Ваші пошукові запити";
 "You’re all set up." = "Усе готово.";
 "at %@" = "о %@";
 "by %@" = "від %@";

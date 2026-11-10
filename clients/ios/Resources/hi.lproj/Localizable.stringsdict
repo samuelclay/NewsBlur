@@ -194,6 +194,22 @@
 			<string>%@ फ़ीड चुनी गईं</string>
 		</dict>
 	</dict>
+	<key>%@ feeds so far</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_feeds_so_far@</string>
+		<key>describe_feeds_so_far</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>अब तक %@ फ़ीड</string>
+			<key>other</key>
+			<string>अब तक %@ फ़ीड</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -608,6 +624,22 @@
 			<string>%@ सेकंड आगे बढ़ें</string>
 			<key>other</key>
 			<string>%@ सेकंड आगे बढ़ें</string>
+		</dict>
+	</dict>
+	<key>Found %@ feeds that match your description</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_found_feeds@</string>
+		<key>describe_found_feeds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>आपके वर्णन से मेल खाने वाली %@ फ़ीड मिली</string>
+			<key>other</key>
+			<string>आपके विवरण से मेल खाने वाली %@ फ़ीड मिलीं</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "Папка %1$@, свёрнута, %2$@";
 "%1$@ followed %2$@." = "%1$@ подписывается на обновления %2$@.";
 "%1$@ of %2$@ of listening left this week" = "На этой неделе осталось %1$@ из %2$@ прослушивания";
+"%1$@ of %2$@ searches left today" = "Сегодня осталось %1$@ из %2$@ поисковых запросов";
 "%1$@ of %2$@ sites indexed" = "Проиндексировано %1$@ из %2$@ сайтов";
 "%1$@ of %2$@ story previews used today" = "Сегодня использовано %1$@ из %2$@ предпрослушиваний статей";
 "%1$@ on all sites (%2$@)" = "%1$@ на всех сайтах (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "Добавлено лент: %@.";
 "%@ feeds couldn’t be added." = "Не удалось добавить ленты: %@.";
 "%@ feeds selected" = "Выбрано %@ лент";
+"%@ feeds so far" = "Пока найдено лент: %@";
 "%@ focused stories" = "%@ публикаций с фокусом";
 "%@ folder" = "Папка %@";
 "%@ free story previews left today" = "Сегодня осталось бесплатных предпросмотров статей: %@";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "Подписчиков: %@";
 "%@ unread stories" = "%@ непрочитанных статей";
 "%@ voice previews left" = "Осталось голосовых предпрослушиваний: %@";
+"%@/10" = "%@/10";
 "%@/story" = "%@/статья";
+"%@d ago" = "%@ дн. назад";
+"%@w ago" = "%@ нед. назад";
 "%@×" = "%@×";
 "%ldd ago" = "%ld дн. назад";
 "%ldh ago" = "%ld ч. назад";
@@ -310,9 +315,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "При удалении аккаунта навсегда будут удалены ваши ленты, сохранённые статьи и данные аккаунта. Это действие нельзя отменить.";
 "Deleting..." = "Удаление...";
 "Delivery" = "Подача";
+"Describe" = "Описать";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Опишите тему, и ИИ оценит каждую статью по вашему запросу, чтобы выделять подходящие или скрывать их.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "Опишите, какие ленты вы ищете, например: «обзоры новых приложений для iOS со скриншотами»";
 "Describe what to focus or hide" = "Опишите, что выделять или скрывать";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "Опишите, что нужно искать, и ИИ будет анализировать изображения в каждой статье с учётом вашего запроса.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "Опишите, что вы хотите читать, и NewsBlur найдёт подходящие ленты";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "Поиск нужных вам лент по описанию — функция Premium. Перейдите на Premium, чтобы искать ленты по описанию.";
 "Discover" = "Обзор";
 "Discover more to read" = "Найдите, что ещё почитать";
 "Discover related sites" = "Найти похожие сайты";
@@ -373,6 +382,7 @@
 "Extra Small" = "Очень мелкий";
 "Extra Tall" = "Очень высокая";
 "Extra small" = "Очень мелкий";
+"Failed" = "Не удалось";
 "Faster" = "Быстрее";
 "Favorited" = "В избранном";
 "Favoriting" = "Добавление в избранное";
@@ -390,6 +400,9 @@
 "Filter" = "Фильтр";
 "Filter stories by date range" = "Фильтровать статьи по диапазону дат";
 "Find Friends" = "Найти друзей";
+"Find feeds" = "Найти ленты";
+"Find feeds about “%@”" = "Найти ленты по запросу «%@»";
+"Find feeds by describing them" = "Находить ленты по описанию";
 "Find in Feed" = "Найти в ленте";
 "Find in Sites" = "Найти на сайтах";
 "Find in feed" = "Найти в ленте";
@@ -429,6 +442,8 @@
 "Forgot Password?" = "Забыли пароль?";
 "Forgot your password?" = "Забыли пароль?";
 "Forward %@ seconds" = "Вперёд на %@ секунд";
+"Found %@ feeds that match your description" = "Найдено %@ лент, подходящих под ваше описание";
+"Found on the web" = "Найдено в интернете";
 "Frequency" = "Частота";
 "Friday" = "Пятница";
 "Friends" = "Друзья";
@@ -484,6 +499,7 @@
 "Import or upload sites" = "Импортировать или загрузить сайты";
 "Imported %@ sites" = "Импортировано сайтов: %@";
 "Importing sites..." = "Импорт сайтов...";
+"In progress" = "Выполняется";
 "In-app Safari" = "Safari внутри приложения";
 "In-app browser" = "Встроенный браузер";
 "Include" = "Включить";
@@ -492,6 +508,7 @@
 "Include in bundle" = "Добавить в подборку";
 "Included in bundle" = "Включено в подборку";
 "Increase or remove your limit" = "Увеличьте лимит или снимите ограничение";
+"Indie game developers writing about their work in progress" = "Независимые разработчики игр рассказывают о своих проектах в разработке";
 "Infrequent Site Stories" = "Статьи с редко обновляемых сайтов";
 "Infrequent Stories" = "Редко обновляемые сайты";
 "Infrequent stories per month" = "Порог редко обновляемых сайтов";
@@ -502,6 +519,8 @@
 "Interactions" = "Взаимодействия";
 "Invalid: %@" = "Недопустимо: %@";
 "Invoice" = "Счёт";
+"Judging" = "Оценка";
+"Judging…" = "Оцениваем…";
 "Keeps the dark icon no matter how your device is set." = "Тёмный значок будет отображаться независимо от настроек устройства.";
 "Keeps the light icon no matter how your device is set." = "Всегда использует светлый значок независимо от настроек устройства.";
 "Keyboard Shortcuts" = "Сочетания клавиш";
@@ -540,6 +559,7 @@
 "Loading sources" = "Загрузка источников";
 "Loading voices…" = "Загрузка голосов…";
 "Loading your feeds…" = "Загрузка ваших лент…";
+"Loading your search…" = "Загрузка поиска…";
 "Loading..." = "Загрузка...";
 "Loading…" = "Загрузка…";
 "Log In" = "Войти";
@@ -553,6 +573,7 @@
 "Logout" = "Выйти";
 "Long Reads" = "Длинные статьи";
 "Long [preview length]" = "Длинный";
+"Long essays about cities, housing and public transit" = "Большие эссе о городах, жилье и общественном транспорте";
 "Long press" = "Нажмите и удерживайте";
 "Long press on feeds and folders" = "Нажмите и удерживайте ленты и папки";
 "Long press on story titles" = "Нажмите и удерживайте заголовки статей";
@@ -608,6 +629,8 @@
 "Mark this site as read" = "Отметить этот сайт как прочитанный";
 "Mark this story as read" = "Отметить эту статью как прочитанную";
 "Match" = "Совпадение";
+"Match score %@" = "Оценка соответствия: %@";
+"Matched “%@”" = "Совпадение: «%@»";
 "Matches story" = "Совпадает со статьёй";
 "Meadow Sage" = "Луговой шалфей";
 "Medium [grid height]" = "Средняя";
@@ -666,6 +689,7 @@
 "Natural language text and image classifiers" = "Классификаторы текста на естественном языке и изображений";
 "Nested" = "Вложенный";
 "Never" = "Никогда";
+"New" = "Новое";
 "New Folder" = "Новая папка";
 "New Site" = "Новый сайт";
 "New folder name" = "Название новой папки";
@@ -676,7 +700,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur проверяет обновления и добавляет новые статьи в вашу ленту.";
 "NewsBlur detected %@ from your device." = "NewsBlur определил язык вашего устройства: %@.";
+"NewsBlur index" = "Индекс NewsBlur";
 "NewsBlur password" = "Пароль NewsBlur";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur читает ваше описание, ищет совпадения в своём индексе лент и в интернете, а затем оценивает каждое из них. Это может занять минуту.";
 "Next" = "Далее";
 "Next Folder" = "Следующая папка";
 "Next Site" = "Следующий сайт";
@@ -693,6 +719,7 @@
 "No Story Lists" = "Нет списков статей";
 "No Widget Sites" = "Нет сайтов для виджета";
 "No briefings yet" = "Пока нет сводок";
+"No feeds matched that description. Try describing it another way." = "По вашему описанию не найдено подходящих лент. Попробуйте описать иначе.";
 "No feeds to show yet. Try another interest or search all sites." = "Пока нет лент для отображения. Выберите другой интерес или выполните поиск по всем сайтам.";
 "No friends to suggest." = "Некого предложить в друзья.";
 "No interests or sites found. Try another search." = "Интересы или сайты не найдены. Попробуйте другой запрос.";
@@ -800,6 +827,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Подписка Premium";
+"Premium feature" = "Функция Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Подписчики Premium могут выбрать собственный значок NewsBlur. Для каждого варианта доступны светлая и тёмная версии.";
 "Preparing audio…" = "Подготовка аудио…";
 "Preview ended. Premium Archive unlocks full stories" = "Предварительный просмотр завершён. Premium Archive открывает полный текст статей";
@@ -838,6 +866,7 @@
 "Read Widely Read Stories" = "Читать популярные статьи";
 "Read Widget Site Stories" = "Читать статьи сайтов из виджета";
 "Read by %@" = "Читает %@";
+"Reading" = "Чтение";
 "Reading Stories" = "Чтение статей";
 "Reading a story" = "Чтение статьи";
 "Reading by folder is only available to" = "Чтение по папкам доступно только для";
@@ -859,6 +888,7 @@
 "Reloading..." = "Перезагрузка...";
 "Remove This List" = "Удалить этот список";
 "Remove from Up Next" = "Убрать из очереди «Далее»";
+"Remove from history" = "Удалить из истории";
 "Removed from Up Next" = "Убрано из очереди «Далее»";
 "Rename" = "Переименовать";
 "Rename \"%@\"" = "Переименовать «%@»";
@@ -882,6 +912,7 @@
 "Retry" = "Повторить";
 "Retry Google Reader" = "Повторить попытку подключения к Google Reader";
 "Retry icons" = "Повторить загрузку значков";
+"Reviews of new iOS apps with lots of screenshots" = "Обзоры новых приложений для iOS с большим количеством скриншотов";
 "River of News (reading by folder)" = "Поток новостей (чтение по папкам)";
 "Rows" = "Строки";
 "Ruby Red" = "Рубиново-красный";
@@ -913,6 +944,7 @@
 "Scroll to Comments" = "Прокрутить до комментариев";
 "Scroll to comments" = "Прокрутить до комментариев";
 "Search YouTube channels..." = "Поиск каналов YouTube...";
+"Search again" = "Повторить поиск";
 "Search feeds" = "Поиск по лентам";
 "Search interests and sites" = "Поиск интересов и сайтов";
 "Search newsletters..." = "Поиск по рассылкам...";
@@ -921,6 +953,10 @@
 "Search stories" = "Искать статьи";
 "Search subreddits..." = "Поиск сабреддитов...";
 "Search voices" = "Поиск голосов";
+"Searches you run will be kept here." = "Ваши поисковые запросы будут храниться здесь.";
+"Searching feeds" = "Поиск лент";
+"Searching for" = "Поиск по запросу";
+"Searching the web" = "Поиск в интернете";
 "Searching…" = "Поиск…";
 "Sections" = "Разделы";
 "Select All" = "Выбрать все";
@@ -1008,6 +1044,7 @@
 "Small Right" = "Маленький справа";
 "Small [text size]" = "Мелкий";
 "Some feed icons couldn’t load." = "Не удалось загрузить некоторые значки лент.";
+"Something went wrong while searching." = "Во время поиска произошла ошибка.";
 "Sources" = "Источники";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Пробел и Shift+Пробел прокручивают видимую часть статьи на указанный процент. Внизу Пробел открывает следующую непрочитанную статью. Вверху Shift+Пробел открывает предыдущую статью.";
 "Space scroll amount" = "Шаг прокрутки клавишей «Пробел»";
@@ -1021,6 +1058,8 @@
 "Standard" = "Стандартный";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Включите музыку в приложении «Музыка» или Spotify — Listen будет читать поверх неё. Элементы управления этого приложения появятся на экране блокировки.";
 "Start reading" = "Начать чтение";
+"Starting your search…" = "Начинаем поиск…";
+"Starting…" = "Начинаем…";
 "Statistics" = "Статистика";
 "Statistics…" = "Статистика…";
 "Stay connected" = "Оставайтесь на связи";
@@ -1112,6 +1151,7 @@
 "Text from yesterday" = "Текст за вчера";
 "Text view" = "Текстовый вид";
 "Text view conveniently extracts the story" = "Вид «Текст» удобно извлекает текст статьи";
+"That search could not be loaded." = "Не удалось загрузить этот поисковый запрос.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "Это был 30-секундный фрагмент. Premium Archive открывает полный доступ к статьям.";
 "The audio couldn't be loaded. Try again in a moment." = "Не удалось загрузить аудио. Попробуйте ещё раз через некоторое время.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Полный текстовый режим — <a href=\"http://ios.newsblur.com/premium\">функция Premium</a>";
@@ -1119,6 +1159,9 @@
 "The icon follows your device's light and dark appearance." = "Значок подстраивается под светлое и тёмное оформление устройства.";
 "The most important stories from your feeds" = "Самые важные статьи из ваших лент";
 "The request failed. Please try again." = "Не удалось выполнить запрос. Повторите попытку.";
+"The search could not be started." = "Не удалось начать поиск.";
+"The search could not be started: %@" = "Не удалось запустить поиск: %@";
+"The search is taking too long. Try searching again." = "Поиск занимает слишком много времени. Попробуйте выполнить его ещё раз.";
 "The story doesn't link anywhere." = "У этой статьи нет ссылки.";
 "Theme" = "Тема";
 "Theme variant for dark mode" = "Вариант темы для тёмного режима";
@@ -1143,6 +1186,7 @@
 "Title only" = "Только заголовок";
 "Titles in grid" = "Заголовки в сетке";
 "Titles in list" = "Заголовки в списке";
+"Today" = "Сегодня";
 "Toggle Full Screen" = "Переключить полноэкранный режим";
 "Toggle Read/Unread" = "Отметить как прочитанное/непрочитанное";
 "Toggle read/unread" = "Переключить прочитанное/непрочитанное";
@@ -1168,6 +1212,7 @@
 "Try %@" = "Попробовать %@";
 "Try again" = "Попробовать ещё раз";
 "Try another name, or paste a site URL in Search." = "Попробуйте другое название или вставьте URL сайта в поиск.";
+"Try describing something like" = "Попробуйте описать что-нибудь, например";
 "Try search again" = "Повторить поиск";
 "Trying Feed" = "Пробная лента";
 "Tuesday" = "Вторник";
@@ -1192,6 +1237,7 @@
 "Unable to save notification settings." = "Не удалось сохранить настройки уведомлений.";
 "Understand" = "Понятно";
 "Unfavorited" = "Убрано из избранного";
+"Unlimited searches" = "Неограниченное количество поисков";
 "Unlock full discovery" = "Откройте все возможности поиска";
 "Unmute All" = "Включить всё";
 "Unmute site" = "Включить сайт";
@@ -1243,6 +1289,7 @@
 "Voice" = "Голос";
 "Voice and music balance" = "Баланс голоса и музыки";
 "Voice settings" = "Настройки голоса";
+"Waiting for a verdict…" = "Ожидание результата…";
 "Warm" = "Тёплый";
 "Web" = "Веб";
 "Web Feeds from any website, even without RSS" = "Веб-ленты с любых сайтов, даже без RSS";
@@ -1286,6 +1333,7 @@
 "Your premium pro subscription is active" = "Ваша подписка Premium Pro активна";
 "Your premium subscription is active" = "Ваша премиум-подписка активна";
 "Your reading list" = "Ваш список для чтения";
+"Your searches" = "Ваши поисковые запросы";
 "You’re all set up." = "Всё готово.";
 "at %@" = "в %@";
 "by %@" = "автор: %@";

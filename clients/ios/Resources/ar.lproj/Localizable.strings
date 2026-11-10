@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "مجلد %1$@، مطوي، %2$@";
 "%1$@ followed %2$@." = "بدأ %1$@ بمتابعة %2$@.";
 "%1$@ of %2$@ of listening left this week" = "تبقّى %1$@ من %2$@ من وقت الاستماع هذا الأسبوع";
+"%1$@ of %2$@ searches left today" = "تبقّى لك %1$@ من أصل %2$@ عملية بحث اليوم";
 "%1$@ of %2$@ sites indexed" = "تمت فهرسة %1$@ من أصل %2$@ موقعًا";
 "%1$@ of %2$@ story previews used today" = "تم استخدام %1$@ من أصل %2$@ معاينة قصة اليوم";
 "%1$@ on all sites (%2$@)" = "%1$@ على كل المواقع (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "أُضيفت خلاصات %@.";
 "%@ feeds couldn’t be added." = "تعذرت إضافة %@ من الخلاصات.";
 "%@ feeds selected" = "تم تحديد %@ من الخلاصات";
+"%@ feeds so far" = "حتى الآن: %@ من الخلاصات";
 "%@ focused stories" = "%@ قصة مركّزة";
 "%@ folder" = "مجلد %@";
 "%@ free story previews left today" = "تبقّى لك اليوم %@ معاينات مجانية للقصص";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ مشتركًا";
 "%@ unread stories" = "%@ قصة غير مقروءة";
 "%@ voice previews left" = "تبقّى %@ معاينة صوتية";
+"%@/10" = "%@/10";
 "%@/story" = "%@/قصة";
+"%@d ago" = "منذ %@ يوم";
+"%@w ago" = "منذ %@ أسبوع";
 "%@×" = "%@×";
 "%ldd ago" = "قبل %ld يوم";
 "%ldh ago" = "قبل %ld ساعة";
@@ -310,9 +315,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "يؤدي حذف حسابك نهائيًا إلى إزالة خلاصاتك والقصص المحفوظة وبيانات الحساب. لا يمكن التراجع عن ذلك.";
 "Deleting..." = "جارٍ الحذف...";
 "Delivery" = "طريقة الإلقاء";
+"Describe" = "وصف";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "صِف موضوعًا، وسيقيّم الذكاء الاصطناعي كل قصة وفقًا لطلبك لتركيز القصص المطابقة أو إخفائها.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "صِف الخلاصات التي تبحث عنها، مثل «مراجعات لتطبيقات iOS الجديدة مع لقطات شاشة»";
 "Describe what to focus or hide" = "صِف ما تريد التركيز عليه أو إخفاءه";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "صِف ما تريد البحث عنه، وسيحلّل الذكاء الاصطناعي صور كل قصة وفقًا لوصفك.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "صِف ما تريد قراءته، وسيعثر NewsBlur على الخلاصات المطابقة";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "وصف الخلاصات التي تريدها ميزة مدفوعة. رقِّ للبحث باستخدام الوصف.";
 "Discover" = "استكشف";
 "Discover more to read" = "اكتشف المزيد لتقرأه";
 "Discover related sites" = "اكتشاف مواقع ذات صلة";
@@ -373,6 +382,7 @@
 "Extra Small" = "صغير جدًا";
 "Extra Tall" = "طويل جدًا";
 "Extra small" = "صغير جدًا";
+"Failed" = "فشل";
 "Faster" = "أسرع";
 "Favorited" = "تمت الإضافة إلى المفضّلة";
 "Favoriting" = "جارٍ الإضافة إلى المفضّلة";
@@ -390,6 +400,9 @@
 "Filter" = "تصفية";
 "Filter stories by date range" = "تصفية القصص حسب النطاق الزمني";
 "Find Friends" = "اعثر على أصدقاء";
+"Find feeds" = "العثور على خلاصات";
+"Find feeds about “%@”" = "العثور على خلاصات حول «%@»";
+"Find feeds by describing them" = "اعثر على خلاصات بوصفها";
 "Find in Feed" = "البحث في الخلاصة";
 "Find in Sites" = "البحث في المواقع";
 "Find in feed" = "البحث في الخلاصة";
@@ -429,6 +442,8 @@
 "Forgot Password?" = "هل نسيت كلمة المرور؟";
 "Forgot your password?" = "هل نسيت كلمة المرور؟";
 "Forward %@ seconds" = "تقديم %@ ثانية";
+"Found %@ feeds that match your description" = "عُثر على %@ من الخلاصات المطابقة لوصفك";
+"Found on the web" = "عُثر عليه على الويب";
 "Frequency" = "التكرار";
 "Friday" = "الجمعة";
 "Friends" = "الأصدقاء";
@@ -484,6 +499,7 @@
 "Import or upload sites" = "استيراد المواقع أو تحميلها";
 "Imported %@ sites" = "تم استيراد %@ من المواقع";
 "Importing sites..." = "جارٍ استيراد المواقع...";
+"In progress" = "قيد التنفيذ";
 "In-app Safari" = "Safari داخل التطبيق";
 "In-app browser" = "المتصفح داخل التطبيق";
 "Include" = "تضمين";
@@ -492,6 +508,7 @@
 "Include in bundle" = "تضمين في الحزمة";
 "Included in bundle" = "مضمّن في الحزمة";
 "Increase or remove your limit" = "زِد حدّك أو أزِله";
+"Indie game developers writing about their work in progress" = "مطوّرو ألعاب مستقلون يكتبون عن أعمالهم قيد التطوير";
 "Infrequent Site Stories" = "قصص المواقع قليلة التحديث";
 "Infrequent Stories" = "قصص المواقع قليلة التحديث";
 "Infrequent stories per month" = "حد القصص الشهري للمواقع قليلة التحديث";
@@ -502,6 +519,8 @@
 "Interactions" = "التفاعلات";
 "Invalid: %@" = "غير صالح: %@";
 "Invoice" = "فاتورة";
+"Judging" = "التقييم";
+"Judging…" = "جارٍ التقييم…";
 "Keeps the dark icon no matter how your device is set." = "يُبقي الأيقونة داكنة مهما كان إعداد جهازك.";
 "Keeps the light icon no matter how your device is set." = "يُبقي الأيقونة فاتحة مهما كانت إعدادات جهازك.";
 "Keyboard Shortcuts" = "اختصارات لوحة المفاتيح";
@@ -540,6 +559,7 @@
 "Loading sources" = "جارٍ تحميل المصادر";
 "Loading voices…" = "جارٍ تحميل الأصوات…";
 "Loading your feeds…" = "جارٍ تحميل خلاصاتك…";
+"Loading your search…" = "جارٍ تحميل بحثك…";
 "Loading..." = "جارٍ التحميل...";
 "Loading…" = "جارٍ التحميل…";
 "Log In" = "تسجيل الدخول";
@@ -553,6 +573,7 @@
 "Logout" = "تسجيل الخروج";
 "Long Reads" = "قراءات طويلة";
 "Long [preview length]" = "طويل";
+"Long essays about cities, housing and public transit" = "مقالات طويلة عن المدن والإسكان ووسائل النقل العام";
 "Long press" = "اضغط مطولًا";
 "Long press on feeds and folders" = "اضغط مطولًا على الخلاصات والمجلدات";
 "Long press on story titles" = "اضغط مطولًا على عناوين القصص";
@@ -608,6 +629,8 @@
 "Mark this site as read" = "وضع علامة مقروء على هذا الموقع";
 "Mark this story as read" = "وضع علامة «مقروءة» على هذه القصة";
 "Match" = "مطابقة";
+"Match score %@" = "درجة التطابق %@";
+"Matched “%@”" = "تطابق «%@»";
 "Matches story" = "يطابق القصة";
 "Meadow Sage" = "مريمية المروج";
 "Medium [grid height]" = "متوسط";
@@ -666,6 +689,7 @@
 "Natural language text and image classifiers" = "مصنفات النصوص والصور باللغة الطبيعية";
 "Nested" = "متداخل";
 "Never" = "أبدًا";
+"New" = "جديد";
 "New Folder" = "مجلد جديد";
 "New Site" = "موقع جديد";
 "New folder name" = "اسم مجلد جديد";
@@ -676,7 +700,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "يتحقق NewsBlur من التغييرات ويعرض القصص الجديدة في خلاصتك.";
 "NewsBlur detected %@ from your device." = "اكتشف NewsBlur أن لغة جهازك هي %@.";
+"NewsBlur index" = "فهرس NewsBlur";
 "NewsBlur password" = "كلمة مرور NewsBlur";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "يقرأ NewsBlur وصفك، ويبحث في فهرسه للخلاصات وعلى الويب المفتوح، ثم يقيّم كل نتيجة. قد يستغرق ذلك دقيقة.";
 "Next" = "التالي";
 "Next Folder" = "المجلد التالي";
 "Next Site" = "الموقع التالي";
@@ -693,6 +719,7 @@
 "No Story Lists" = "لا توجد قوائم قصص";
 "No Widget Sites" = "لا توجد مواقع للأدوات المصغّرة";
 "No briefings yet" = "لا توجد موجزات بعد";
+"No feeds matched that description. Try describing it another way." = "لم تطابق أي خلاصة هذا الوصف. جرّب وصفه بطريقة أخرى.";
 "No feeds to show yet. Try another interest or search all sites." = "لا توجد خلاصات لعرضها بعد. جرّب اهتمامًا آخر أو ابحث في جميع المواقع.";
 "No friends to suggest." = "لا يوجد أصدقاء لاقتراحهم.";
 "No interests or sites found. Try another search." = "لم يُعثر على اهتمامات أو مواقع. جرّب بحثًا آخر.";
@@ -800,6 +827,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "اشتراك Premium";
+"Premium feature" = "ميزة مدفوعة";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "يمكن لمشتركي Premium اختيار أيقونة مخصصة لـ NewsBlur. يتضمن كل نمط نسختين فاتحة وداكنة.";
 "Preparing audio…" = "جارٍ تجهيز الصوت…";
 "Preview ended. Premium Archive unlocks full stories" = "انتهت المعاينة. يتيح لك Premium Archive فتح القصص كاملة";
@@ -838,6 +866,7 @@
 "Read Widely Read Stories" = "قراءة القصص الأكثر قراءة";
 "Read Widget Site Stories" = "قراءة قصص مواقع الأداة";
 "Read by %@" = "يقرأها %@";
+"Reading" = "القراءة";
 "Reading Stories" = "قراءة القصص";
 "Reading a story" = "قراءة قصة";
 "Reading by folder is only available to" = "القراءة حسب المجلد متاحة فقط لـ";
@@ -859,6 +888,7 @@
 "Reloading..." = "جارٍ إعادة التحميل...";
 "Remove This List" = "إزالة هذه القائمة";
 "Remove from Up Next" = "إزالة من التالي";
+"Remove from history" = "إزالة من السجل";
 "Removed from Up Next" = "أُزيلت من التالي";
 "Rename" = "إعادة التسمية";
 "Rename \"%@\"" = "إعادة تسمية \"%@\"";
@@ -882,6 +912,7 @@
 "Retry" = "إعادة المحاولة";
 "Retry Google Reader" = "إعادة محاولة Google Reader";
 "Retry icons" = "إعادة محاولة تحميل الأيقونات";
+"Reviews of new iOS apps with lots of screenshots" = "مراجعات لتطبيقات iOS الجديدة مع الكثير من لقطات الشاشة";
 "River of News (reading by folder)" = "تدفّق الأخبار (القراءة حسب المجلد)";
 "Rows" = "صفوف";
 "Ruby Red" = "أحمر ياقوتي";
@@ -913,6 +944,7 @@
 "Scroll to Comments" = "انتقل إلى التعليقات";
 "Scroll to comments" = "انتقل إلى التعليقات";
 "Search YouTube channels..." = "ابحث عن قنوات YouTube...";
+"Search again" = "البحث مجددًا";
 "Search feeds" = "البحث في الخلاصات";
 "Search interests and sites" = "البحث في الاهتمامات والمواقع";
 "Search newsletters..." = "البحث في النشرات البريدية...";
@@ -921,6 +953,10 @@
 "Search stories" = "البحث في القصص";
 "Search subreddits..." = "ابحث عن مجتمعات Reddit...";
 "Search voices" = "البحث عن الأصوات";
+"Searches you run will be kept here." = "ستُحفظ عمليات البحث التي تجريها هنا.";
+"Searching feeds" = "البحث في الخلاصات";
+"Searching for" = "جارٍ البحث عن";
+"Searching the web" = "جارٍ البحث على الويب";
 "Searching…" = "جارٍ البحث…";
 "Sections" = "الأقسام";
 "Select All" = "تحديد الكل";
@@ -1008,6 +1044,7 @@
 "Small Right" = "صغير إلى اليمين";
 "Small [text size]" = "صغير";
 "Some feed icons couldn’t load." = "تعذّر تحميل بعض أيقونات الخلاصات.";
+"Something went wrong while searching." = "حدث خطأ أثناء البحث.";
 "Sources" = "المصادر";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "يمرّر مفتاح المسافة ومفتاح المسافة مع Shift هذه النسبة من القصة الظاهرة. عند الأسفل، يفتح مفتاح المسافة القصة التالية غير المقروءة. عند الأعلى، يفتح مفتاح المسافة مع Shift القصة السابقة.";
 "Space scroll amount" = "مقدار التمرير بمفتاح المسافة";
@@ -1021,6 +1058,8 @@
 "Standard" = "قياسي";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "ابدأ تشغيل الموسيقى في تطبيق «الموسيقى» أو Spotify، وسيقرأ «استمع» فوقها. ستظهر عناصر التحكم الخاصة بهذا التطبيق على شاشة القفل.";
 "Start reading" = "ابدأ القراءة";
+"Starting your search…" = "جارٍ بدء البحث…";
+"Starting…" = "جارٍ البدء…";
 "Statistics" = "الإحصاءات";
 "Statistics…" = "الإحصاءات…";
 "Stay connected" = "ابقَ على اتصال";
@@ -1112,6 +1151,7 @@
 "Text from yesterday" = "نص من الأمس";
 "Text view" = "عرض نصي";
 "Text view conveniently extracts the story" = "يستخرج عرض النص القصة كاملةً بسهولة";
+"That search could not be loaded." = "تعذّر تحميل عملية البحث هذه.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "كانت تلك معاينة مدتها 30 ثانية. يتيح Premium Archive القصص كاملة.";
 "The audio couldn't be loaded. Try again in a moment." = "تعذّر تحميل الصوت. حاول مرة أخرى بعد قليل.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "عرض النص الكامل هو <a href=\"http://ios.newsblur.com/premium\">ميزة مدفوعة</a>";
@@ -1119,6 +1159,9 @@
 "The icon follows your device's light and dark appearance." = "يتوافق رمز التطبيق مع المظهر الفاتح أو الداكن لجهازك.";
 "The most important stories from your feeds" = "أهم القصص من خلاصاتك";
 "The request failed. Please try again." = "فشل الطلب. يُرجى المحاولة مرة أخرى.";
+"The search could not be started." = "تعذّر بدء البحث.";
+"The search could not be started: %@" = "تعذّر بدء البحث: %@";
+"The search is taking too long. Try searching again." = "يستغرق البحث وقتًا طويلًا. حاول البحث مرة أخرى.";
 "The story doesn't link anywhere." = "لا تحتوي القصة على أي رابط.";
 "Theme" = "السمة";
 "Theme variant for dark mode" = "تنويعة السمة للوضع الداكن";
@@ -1143,6 +1186,7 @@
 "Title only" = "العنوان فقط";
 "Titles in grid" = "العناوين في الشبكة";
 "Titles in list" = "العناوين في القائمة";
+"Today" = "اليوم";
 "Toggle Full Screen" = "تبديل وضع ملء الشاشة";
 "Toggle Read/Unread" = "تبديل حالة القراءة/عدم القراءة";
 "Toggle read/unread" = "تبديل حالة القراءة/غير المقروء";
@@ -1168,6 +1212,7 @@
 "Try %@" = "جرّب %@";
 "Try again" = "أعِد المحاولة";
 "Try another name, or paste a site URL in Search." = "جرّب اسمًا آخر، أو الصق رابط الموقع في البحث.";
+"Try describing something like" = "جرّب وصف شيء مثل";
 "Try search again" = "جرّب البحث مجددًا";
 "Trying Feed" = "جارٍ تجربة الخلاصة";
 "Tuesday" = "الثلاثاء";
@@ -1192,6 +1237,7 @@
 "Unable to save notification settings." = "تعذّر حفظ إعدادات الإشعارات.";
 "Understand" = "فهم";
 "Unfavorited" = "تمت إزالة التفضيل";
+"Unlimited searches" = "عمليات بحث غير محدودة";
 "Unlock full discovery" = "افتح كامل إمكانات الاستكشاف";
 "Unmute All" = "إلغاء كتم الكل";
 "Unmute site" = "إلغاء كتم الموقع";
@@ -1243,6 +1289,7 @@
 "Voice" = "الصوت";
 "Voice and music balance" = "التوازن بين الصوت والموسيقى";
 "Voice settings" = "إعدادات الصوت";
+"Waiting for a verdict…" = "بانتظار النتيجة…";
 "Warm" = "دافئ";
 "Web" = "الويب";
 "Web Feeds from any website, even without RSS" = "خلاصات ويب من أي موقع، حتى دون RSS";
@@ -1286,6 +1333,7 @@
 "Your premium pro subscription is active" = "اشتراكك في Premium Pro نشط";
 "Your premium subscription is active" = "اشتراكك في Premium نشط";
 "Your reading list" = "قائمة القراءة";
+"Your searches" = "عمليات البحث";
 "You’re all set up." = "تم إعداد كل شيء.";
 "at %@" = "في %@";
 "by %@" = "بواسطة %@";

@@ -290,6 +290,30 @@
 			<string>تم تحديد %@ من الخلاصات</string>
 		</dict>
 	</dict>
+	<key>%@ feeds so far</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_feeds_so_far@</string>
+		<key>describe_feeds_so_far</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ خلاصة حتى الآن</string>
+			<key>many</key>
+			<string>%@ خلاصة حتى الآن</string>
+			<key>one</key>
+			<string>حتى الآن: %@ من الخلاصات</string>
+			<key>other</key>
+			<string>%@ خلاصة حتى الآن</string>
+			<key>two</key>
+			<string>حتى الآن: %@ من الخلاصات</string>
+			<key>zero</key>
+			<string>حتى الآن: %@ من الخلاصات</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -912,6 +936,30 @@
 			<string>تقديم %@ ثانيتين</string>
 			<key>zero</key>
 			<string>تقديم %@ ثانية</string>
+		</dict>
+	</dict>
+	<key>Found %@ feeds that match your description</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_found_feeds@</string>
+		<key>describe_found_feeds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>عُثر على %@ خلاصات مطابقة لوصفك</string>
+			<key>many</key>
+			<string>عُثر على %@ خلاصات مطابقة لوصفك</string>
+			<key>one</key>
+			<string>تم العثور على %@ خلاصة تطابق وصفك</string>
+			<key>other</key>
+			<string>عُثر على %@ من الخلاصات التي تطابق وصفك</string>
+			<key>two</key>
+			<string>عُثر على %@ خلاصتين تطابقان وصفك</string>
+			<key>zero</key>
+			<string>عُثر على %@ من الخلاصات المطابقة لوصفك</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

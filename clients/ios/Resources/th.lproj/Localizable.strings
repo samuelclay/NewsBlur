@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "โฟลเดอร์ %1$@ ยุบอยู่ %2$@";
 "%1$@ followed %2$@." = "%1$@ ติดตาม %2$@";
 "%1$@ of %2$@ of listening left this week" = "สัปดาห์นี้เหลือเวลาฟัง %1$@ จาก %2$@";
+"%1$@ of %2$@ searches left today" = "วันนี้เหลือการค้นหาอีก %1$@ จาก %2$@ ครั้ง";
 "%1$@ of %2$@ sites indexed" = "จัดทำดัชนีแล้ว %1$@ จาก %2$@ เว็บไซต์";
 "%1$@ of %2$@ story previews used today" = "ใช้ตัวอย่างบทความไปแล้ว %1$@ จาก %2$@ รายการในวันนี้";
 "%1$@ on all sites (%2$@)" = "%1$@ ในทุกเว็บไซต์ (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "เพิ่มฟีดแล้ว %@ รายการ";
 "%@ feeds couldn’t be added." = "เพิ่มฟีดไม่ได้ %@ รายการ";
 "%@ feeds selected" = "เลือกฟีดแล้ว %@ รายการ";
+"%@ feeds so far" = "พบฟีดแล้ว %@ รายการ";
 "%@ focused stories" = "บทความโฟกัส %@ รายการ";
 "%@ folder" = "โฟลเดอร์ %@";
 "%@ free story previews left today" = "วันนี้ยังดูตัวอย่างบทความฟรีได้อีก %@ ครั้ง";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "ผู้ติดตาม %@ คน";
 "%@ unread stories" = "ยังไม่อ่าน %@ เรื่อง";
 "%@ voice previews left" = "เหลือการลองฟังเสียง %@ ครั้ง";
+"%@/10" = "%@/10";
 "%@/story" = "%@/บทความ";
+"%@d ago" = "%@ วันก่อน";
+"%@w ago" = "%@ สัปดาห์ที่แล้ว";
 "%@×" = "%@×";
 "%ldd ago" = "%ld วันที่แล้ว";
 "%ldh ago" = "%ld ชั่วโมงที่แล้ว";
@@ -310,9 +315,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "การลบบัญชีของคุณอย่างถาวรจะลบฟีด บทความที่บันทึกไว้ และข้อมูลบัญชีทั้งหมด การดำเนินการนี้ไม่สามารถยกเลิกได้";
 "Deleting..." = "กำลังลบ...";
 "Delivery" = "การอ่านออกเสียง";
+"Describe" = "อธิบาย";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "อธิบายหัวข้อ แล้ว AI จะให้คะแนนแต่ละบทความตามข้อความที่ระบุ เพื่อโฟกัสหรือซ่อนบทความที่ตรงกัน";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "อธิบายฟีดที่กำลังมองหา เช่น “รีวิวแอป iOS ใหม่พร้อมภาพหน้าจอ”";
 "Describe what to focus or hide" = "อธิบายสิ่งที่ต้องการให้โฟกัสหรือซ่อน";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "อธิบายสิ่งที่ต้องการค้นหา แล้ว AI จะวิเคราะห์ภาพในแต่ละบทความตามข้อความที่ระบุ";
+"Describe what you want to read and NewsBlur finds matching feeds" = "อธิบายสิ่งที่คุณต้องการอ่าน แล้ว NewsBlur จะค้นหาฟีดที่ตรงกัน";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "การอธิบายฟีดที่ต้องการเป็นฟีเจอร์สำหรับสมาชิก Premium อัปเกรดเพื่อค้นหาด้วยคำอธิบาย";
 "Discover" = "ค้นพบ";
 "Discover more to read" = "ค้นพบเรื่องใหม่น่าอ่าน";
 "Discover related sites" = "ค้นพบเว็บไซต์ที่เกี่ยวข้อง";
@@ -373,6 +382,7 @@
 "Extra Small" = "เล็กมาก";
 "Extra Tall" = "สูงมาก";
 "Extra small" = "เล็กมาก";
+"Failed" = "ไม่สำเร็จ";
 "Faster" = "เร็วขึ้น";
 "Favorited" = "ถูกใจแล้ว";
 "Favoriting" = "กำลังกดถูกใจ";
@@ -390,6 +400,9 @@
 "Filter" = "ตัวกรอง";
 "Filter stories by date range" = "กรองบทความตามช่วงวันที่";
 "Find Friends" = "ค้นหาเพื่อน";
+"Find feeds" = "ค้นหาฟีด";
+"Find feeds about “%@”" = "ค้นหาฟีดเกี่ยวกับ “%@”";
+"Find feeds by describing them" = "ค้นหาฟีดด้วยการอธิบาย";
 "Find in Feed" = "ค้นหาในฟีด";
 "Find in Sites" = "ค้นหาในเว็บไซต์";
 "Find in feed" = "ค้นหาในฟีด";
@@ -429,6 +442,8 @@
 "Forgot Password?" = "ลืมรหัสผ่าน?";
 "Forgot your password?" = "ลืมรหัสผ่านใช่ไหม?";
 "Forward %@ seconds" = "ข้ามไปข้างหน้า %@ วินาที";
+"Found %@ feeds that match your description" = "พบฟีด %@ รายการที่ตรงกับคำอธิบายของคุณ";
+"Found on the web" = "พบบนเว็บ";
 "Frequency" = "ความถี่";
 "Friday" = "วันศุกร์";
 "Friends" = "เพื่อน";
@@ -484,6 +499,7 @@
 "Import or upload sites" = "นำเข้าหรืออัปโหลดเว็บไซต์";
 "Imported %@ sites" = "นำเข้าไซต์แล้ว %@ แห่ง";
 "Importing sites..." = "กำลังนำเข้าเว็บไซต์...";
+"In progress" = "กำลังดำเนินการ";
 "In-app Safari" = "Safari ในแอป";
 "In-app browser" = "เบราว์เซอร์ในแอป";
 "Include" = "รวม";
@@ -492,6 +508,7 @@
 "Include in bundle" = "รวมไว้ในชุด";
 "Included in bundle" = "รวมอยู่ในชุด";
 "Increase or remove your limit" = "เพิ่มหรือยกเลิกขีดจำกัด";
+"Indie game developers writing about their work in progress" = "นักพัฒนาเกมอินดี้ที่เขียนเกี่ยวกับผลงานระหว่างพัฒนา";
 "Infrequent Site Stories" = "บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย";
 "Infrequent Stories" = "บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย";
 "Infrequent stories per month" = "บทความต่อเดือนของเว็บไซต์ที่อัปเดตไม่บ่อย";
@@ -502,6 +519,8 @@
 "Interactions" = "การโต้ตอบ";
 "Invalid: %@" = "ไม่ถูกต้อง: %@";
 "Invoice" = "ใบแจ้งหนี้";
+"Judging" = "กำลังประเมิน";
+"Judging…" = "กำลังประเมิน…";
 "Keeps the dark icon no matter how your device is set." = "คงไอคอนสีเข้มไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keeps the light icon no matter how your device is set." = "คงไอคอนสว่างไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keyboard Shortcuts" = "แป้นพิมพ์ลัด";
@@ -540,6 +559,7 @@
 "Loading sources" = "กำลังโหลดแหล่งข่าว";
 "Loading voices…" = "กำลังโหลดเสียง…";
 "Loading your feeds…" = "กำลังโหลดฟีดของคุณ…";
+"Loading your search…" = "กำลังโหลดการค้นหา…";
 "Loading..." = "กำลังโหลด...";
 "Loading…" = "กำลังโหลด…";
 "Log In" = "เข้าสู่ระบบ";
@@ -553,6 +573,7 @@
 "Logout" = "ออกจากระบบ";
 "Long Reads" = "บทความอ่านยาว";
 "Long [preview length]" = "ยาว";
+"Long essays about cities, housing and public transit" = "บทความยาวเกี่ยวกับเมือง ที่อยู่อาศัย และระบบขนส่งสาธารณะ";
 "Long press" = "กดค้าง";
 "Long press on feeds and folders" = "กดค้างที่ฟีดและโฟลเดอร์";
 "Long press on story titles" = "กดชื่อบทความค้างไว้";
@@ -608,6 +629,8 @@
 "Mark this site as read" = "ทำเครื่องหมายว่าเว็บไซต์นี้อ่านแล้ว";
 "Mark this story as read" = "ทำเครื่องหมายบทความนี้ว่าอ่านแล้ว";
 "Match" = "ตรงกัน";
+"Match score %@" = "คะแนนความตรงกัน %@";
+"Matched “%@”" = "ตรงกับ “%@”";
 "Matches story" = "ตรงกับบทความ";
 "Meadow Sage" = "เขียวเสจ";
 "Medium [grid height]" = "ปานกลาง";
@@ -666,6 +689,7 @@
 "Natural language text and image classifiers" = "ตัวจำแนกข้อความภาษาธรรมชาติและรูปภาพ";
 "Nested" = "ซ้อนกัน";
 "Never" = "ไม่เลย";
+"New" = "ใหม่";
 "New Folder" = "โฟลเดอร์ใหม่";
 "New Site" = "เว็บไซต์ใหม่";
 "New folder name" = "ชื่อโฟลเดอร์ใหม่";
@@ -676,7 +700,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur ตรวจสอบการเปลี่ยนแปลงและส่งบทความใหม่ไปยังฟีดของคุณ";
 "NewsBlur detected %@ from your device." = "NewsBlur ตรวจพบว่าอุปกรณ์ของคุณใช้ %@";
+"NewsBlur index" = "ดัชนี NewsBlur";
 "NewsBlur password" = "รหัสผ่าน NewsBlur";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur อ่านคำอธิบายของคุณ ค้นหาในดัชนีฟีดและเว็บสาธารณะ แล้วประเมินผลลัพธ์ที่ตรงกันทั้งหมด อาจใช้เวลาสักครู่";
 "Next" = "ถัดไป";
 "Next Folder" = "โฟลเดอร์ถัดไป";
 "Next Site" = "เว็บไซต์ถัดไป";
@@ -693,6 +719,7 @@
 "No Story Lists" = "ไม่มีรายการบทความ";
 "No Widget Sites" = "ไม่มีเว็บไซต์สำหรับวิดเจ็ต";
 "No briefings yet" = "ยังไม่มีสรุปข่าว";
+"No feeds matched that description. Try describing it another way." = "ไม่พบฟีดที่ตรงกับคำอธิบาย ลองอธิบายด้วยวิธีอื่น";
 "No feeds to show yet. Try another interest or search all sites." = "ยังไม่มีฟีดให้แสดง ลองเลือกความสนใจอื่นหรือค้นหาจากทุกเว็บไซต์";
 "No friends to suggest." = "ไม่มีเพื่อนให้แนะนำ";
 "No interests or sites found. Try another search." = "ไม่พบความสนใจหรือเว็บไซต์ ลองค้นหาอย่างอื่น";
@@ -800,6 +827,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "การสมัครสมาชิก Premium";
+"Premium feature" = "ฟีเจอร์ Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "สมาชิก Premium เลือกไอคอน NewsBlur แบบกำหนดเองได้ แต่ละแบบมีทั้งเวอร์ชันสว่างและมืด";
 "Preparing audio…" = "กำลังเตรียมเสียง…";
 "Preview ended. Premium Archive unlocks full stories" = "ตัวอย่างสิ้นสุดแล้ว Premium Archive ปลดล็อกบทความฉบับเต็ม";
@@ -838,6 +866,7 @@
 "Read Widely Read Stories" = "อ่านบทความที่มีผู้อ่านมาก";
 "Read Widget Site Stories" = "อ่านบทความจากเว็บไซต์สำหรับวิดเจ็ต";
 "Read by %@" = "อ่านโดย %@";
+"Reading" = "กำลังอ่าน";
 "Reading Stories" = "การอ่านบทความ";
 "Reading a story" = "ขณะอ่านบทความ";
 "Reading by folder is only available to" = "การอ่านตามโฟลเดอร์ใช้ได้เฉพาะกับ";
@@ -859,6 +888,7 @@
 "Reloading..." = "กำลังโหลดใหม่...";
 "Remove This List" = "นำรายการนี้ออก";
 "Remove from Up Next" = "นำออกจากคิวถัดไป";
+"Remove from history" = "นำออกจากประวัติ";
 "Removed from Up Next" = "นำออกจากคิวถัดไปแล้ว";
 "Rename" = "เปลี่ยนชื่อ";
 "Rename \"%@\"" = "เปลี่ยนชื่อ \"%@\"";
@@ -882,6 +912,7 @@
 "Retry" = "ลองอีกครั้ง";
 "Retry Google Reader" = "ลอง Google Reader อีกครั้ง";
 "Retry icons" = "ลองโหลดไอคอนอีกครั้ง";
+"Reviews of new iOS apps with lots of screenshots" = "รีวิวแอป iOS ใหม่ที่มีภาพหน้าจอจำนวนมาก";
 "River of News (reading by folder)" = "ฟีดข่าวรวม (อ่านตามโฟลเดอร์)";
 "Rows" = "แถว";
 "Ruby Red" = "แดงทับทิม";
@@ -913,6 +944,7 @@
 "Scroll to Comments" = "เลื่อนไปยังความคิดเห็น";
 "Scroll to comments" = "เลื่อนไปยังความคิดเห็น";
 "Search YouTube channels..." = "ค้นหาช่อง YouTube...";
+"Search again" = "ค้นหาอีกครั้ง";
 "Search feeds" = "ค้นหาฟีด";
 "Search interests and sites" = "ค้นหาความสนใจและเว็บไซต์";
 "Search newsletters..." = "ค้นหาจดหมายข่าว...";
@@ -921,6 +953,10 @@
 "Search stories" = "ค้นหาบทความ";
 "Search subreddits..." = "ค้นหาซับเรดดิต...";
 "Search voices" = "ค้นหาเสียงพูด";
+"Searches you run will be kept here." = "การค้นหาที่ทำจะแสดงที่นี่";
+"Searching feeds" = "กำลังค้นหาฟีด";
+"Searching for" = "กำลังค้นหา";
+"Searching the web" = "กำลังค้นหาเว็บ";
 "Searching…" = "กำลังค้นหา…";
 "Sections" = "ส่วนต่างๆ";
 "Select All" = "เลือกทั้งหมด";
@@ -1008,6 +1044,7 @@
 "Small Right" = "ขนาดเล็กด้านขวา";
 "Small [text size]" = "เล็ก";
 "Some feed icons couldn’t load." = "โหลดไอคอนฟีดบางรายการไม่สำเร็จ";
+"Something went wrong while searching." = "เกิดข้อผิดพลาดระหว่างค้นหา";
 "Sources" = "แหล่งที่มา";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space และ Shift-Space เลื่อนบทความที่แสดงตามเปอร์เซ็นต์นี้ เมื่อเลื่อนถึงด้านล่าง Space จะเปิดบทความถัดไปที่ยังไม่อ่าน เมื่อเลื่อนถึงด้านบน Shift-Space จะเปิดบทความก่อนหน้า";
 "Space scroll amount" = "ระยะเลื่อนด้วย Space";
@@ -1021,6 +1058,8 @@
 "Standard" = "มาตรฐาน";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "เปิดเพลงในแอป Music หรือ Spotify แล้ว Listen จะอ่านทับเพลง แอปนั้นจะควบคุมหน้าจอล็อก";
 "Start reading" = "เริ่มอ่าน";
+"Starting your search…" = "กำลังเริ่มการค้นหา…";
+"Starting…" = "กำลังเริ่ม…";
 "Statistics" = "สถิติ";
 "Statistics…" = "สถิติ…";
 "Stay connected" = "เชื่อมต่ออยู่เสมอ";
@@ -1112,6 +1151,7 @@
 "Text from yesterday" = "ข้อความจากเมื่อวาน";
 "Text view" = "มุมมองข้อความ";
 "Text view conveniently extracts the story" = "มุมมองข้อความช่วยดึงเนื้อหาบทความออกมา";
+"That search could not be loaded." = "โหลดการค้นหานั้นไม่ได้";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "นี่เป็นตัวอย่างเสียง 30 วินาที Premium Archive ปลดล็อกบทความฉบับเต็ม";
 "The audio couldn't be loaded. Try again in a moment." = "โหลดเสียงไม่ได้ โปรดลองอีกครั้งในอีกสักครู่";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "มุมมองข้อความฉบับเต็มเป็น<a href=\"http://ios.newsblur.com/premium\">ฟีเจอร์พรีเมียม</a>";
@@ -1119,6 +1159,9 @@
 "The icon follows your device's light and dark appearance." = "ไอคอนจะปรับตามโหมดสว่างหรือมืดของอุปกรณ์";
 "The most important stories from your feeds" = "บทความสำคัญที่สุดจากฟีดของคุณ";
 "The request failed. Please try again." = "คำขอล้มเหลว โปรดลองอีกครั้ง";
+"The search could not be started." = "เริ่มการค้นหาไม่ได้";
+"The search could not be started: %@" = "เริ่มการค้นหาไม่ได้: %@";
+"The search is taking too long. Try searching again." = "การค้นหาใช้เวลานานเกินไป ลองค้นหาอีกครั้ง";
 "The story doesn't link anywhere." = "บทความนี้ไม่มีลิงก์ไปที่ใด";
 "Theme" = "ธีม";
 "Theme variant for dark mode" = "รูปแบบธีมสำหรับโหมดมืด";
@@ -1143,6 +1186,7 @@
 "Title only" = "เฉพาะชื่อเรื่อง";
 "Titles in grid" = "ชื่อเรื่องในตาราง";
 "Titles in list" = "ชื่อเรื่องในรายการ";
+"Today" = "วันนี้";
 "Toggle Full Screen" = "สลับเป็นเต็มหน้าจอ";
 "Toggle Read/Unread" = "สลับสถานะอ่านแล้ว/ยังไม่อ่าน";
 "Toggle read/unread" = "สลับสถานะอ่านแล้ว/ยังไม่อ่าน";
@@ -1168,6 +1212,7 @@
 "Try %@" = "ลอง %@";
 "Try again" = "ลองอีกครั้ง";
 "Try another name, or paste a site URL in Search." = "ลองใช้ชื่ออื่น หรือวาง URL ของเว็บไซต์ในช่องค้นหา";
+"Try describing something like" = "ลองอธิบายสิ่งที่ต้องการ เช่น";
 "Try search again" = "ลองค้นหาอีกครั้ง";
 "Trying Feed" = "กำลังลองฟีด";
 "Tuesday" = "วันอังคาร";
@@ -1192,6 +1237,7 @@
 "Unable to save notification settings." = "บันทึกการตั้งค่าการแจ้งเตือนไม่ได้";
 "Understand" = "ทำความเข้าใจ";
 "Unfavorited" = "เลิกถูกใจ";
+"Unlimited searches" = "ค้นหาได้ไม่จำกัด";
 "Unlock full discovery" = "ปลดล็อกการค้นพบแบบเต็มรูปแบบ";
 "Unmute All" = "เปิดเสียงทั้งหมด";
 "Unmute site" = "เปิดเสียงเว็บไซต์";
@@ -1243,6 +1289,7 @@
 "Voice" = "เสียง";
 "Voice and music balance" = "ปรับสมดุลเสียงพูดและดนตรี";
 "Voice settings" = "การตั้งค่าเสียง";
+"Waiting for a verdict…" = "กำลังรอผลการประเมิน…";
 "Warm" = "โทนอุ่น";
 "Web" = "เว็บ";
 "Web Feeds from any website, even without RSS" = "ฟีดเว็บจากทุกเว็บไซต์ แม้ไม่มี RSS";
@@ -1286,6 +1333,7 @@
 "Your premium pro subscription is active" = "การสมัครสมาชิก Premium Pro ของคุณใช้งานอยู่";
 "Your premium subscription is active" = "การสมัครสมาชิกพรีเมียมของคุณใช้งานอยู่";
 "Your reading list" = "รายการอ่านของคุณ";
+"Your searches" = "การค้นหาของคุณ";
 "You’re all set up." = "ตั้งค่าทุกอย่างเรียบร้อยแล้ว";
 "at %@" = "ที่ %@";
 "by %@" = "โดย %@";

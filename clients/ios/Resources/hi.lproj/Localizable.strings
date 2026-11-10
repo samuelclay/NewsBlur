@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@ फ़ोल्डर, समेटा हुआ, %2$@";
 "%1$@ followed %2$@." = "%1$@ ने %2$@ को फ़ॉलो किया।";
 "%1$@ of %2$@ of listening left this week" = "इस सप्ताह सुनने के %2$@ में से %1$@ शेष";
+"%1$@ of %2$@ searches left today" = "आज %2$@ में से %1$@ खोजें बाकी हैं";
 "%1$@ of %2$@ sites indexed" = "%2$@ में से %1$@ साइटें अनुक्रमित हुईं";
 "%1$@ of %2$@ story previews used today" = "आज %2$@ में से %1$@ लेख पूर्वावलोकन इस्तेमाल किए गए";
 "%1$@ on all sites (%2$@)" = "%1$@ सभी साइटों पर (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "%@ फ़ीड जोड़ी गईं।";
 "%@ feeds couldn’t be added." = "%@ फ़ीड नहीं जोड़ी जा सकीं।";
 "%@ feeds selected" = "%@ फ़ीड चुनी गईं";
+"%@ feeds so far" = "अब तक %@ फ़ीड";
 "%@ focused stories" = "%@ केंद्रित खबरें";
 "%@ folder" = "%@ फ़ोल्डर";
 "%@ free story previews left today" = "आज %@ मुफ़्त लेख पूर्वावलोकन बाकी";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ सब्सक्राइबर";
 "%@ unread stories" = "%@ अपठित खबरें";
 "%@ voice previews left" = "आवाज़ के %@ पूर्वावलोकन बाकी हैं";
+"%@/10" = "%@/10";
 "%@/story" = "%@/लेख";
+"%@d ago" = "%@ दिन पहले";
+"%@w ago" = "%@ सप्ताह पहले";
 "%@×" = "%@×";
 "%ldd ago" = "%ld दिन पहले";
 "%ldh ago" = "%ld घंटे पहले";
@@ -310,9 +315,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "खाता हटाने से आपके फ़ीड, सहेजे गए लेख और खाते का डेटा हमेशा के लिए मिट जाएगा। इसे वापस नहीं किया जा सकता।";
 "Deleting..." = "हटाया जा रहा है...";
 "Delivery" = "बोलने का अंदाज़";
+"Describe" = "विवरण दें";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "किसी विषय का वर्णन करें और AI आपके निर्देश के आधार पर हर लेख को स्कोर करके मेल खाने वाले लेखों को फ़ोकस या छिपा देगा।";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "जिन फ़ीड को आप ढूँढ़ रहे हैं, उनका वर्णन करें, जैसे “स्क्रीनशॉट वाले नए iOS ऐप की समीक्षाएँ”";
 "Describe what to focus or hide" = "बताएँ कि किस पर फ़ोकस करना है या क्या छिपाना है";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "बताएँ कि क्या ढूँढ़ना है और AI आपके निर्देश के अनुसार प्रत्येक लेख की छवियों का विश्लेषण करेगा।";
+"Describe what you want to read and NewsBlur finds matching feeds" = "बताएँ कि आप क्या पढ़ना चाहते हैं और NewsBlur मेल खाने वाली फ़ीड ढूँढ़ेगा";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "मनचाही फ़ीड का वर्णन करना Premium सुविधा है। वर्णन के आधार पर खोजने के लिए अपग्रेड करें।";
 "Discover" = "खोजें";
 "Discover more to read" = "पढ़ने के लिए और खोजें";
 "Discover related sites" = "संबंधित साइटें खोजें";
@@ -373,6 +382,7 @@
 "Extra Small" = "अतिरिक्त छोटा";
 "Extra Tall" = "अतिरिक्त लंबा";
 "Extra small" = "अतिरिक्त छोटा";
+"Failed" = "विफल";
 "Faster" = "तेज़";
 "Favorited" = "पसंदीदा में जोड़ा गया";
 "Favoriting" = "पसंद किया जा रहा है";
@@ -390,6 +400,9 @@
 "Filter" = "फ़िल्टर";
 "Filter stories by date range" = "तिथि सीमा के अनुसार लेख फ़िल्टर करें";
 "Find Friends" = "मित्र खोजें";
+"Find feeds" = "फ़ीड खोजें";
+"Find feeds about “%@”" = "“%@” के बारे में फ़ीड खोजें";
+"Find feeds by describing them" = "वर्णन करके फ़ीड खोजें";
 "Find in Feed" = "फ़ीड में खोजें";
 "Find in Sites" = "साइटों में खोजें";
 "Find in feed" = "फ़ीड में खोजें";
@@ -429,6 +442,8 @@
 "Forgot Password?" = "पासवर्ड भूल गए?";
 "Forgot your password?" = "पासवर्ड भूल गए?";
 "Forward %@ seconds" = "%@ सेकंड आगे बढ़ें";
+"Found %@ feeds that match your description" = "आपके विवरण से मेल खाने वाली %@ फ़ीड मिलीं";
+"Found on the web" = "वेब पर मिला";
 "Frequency" = "आवृत्ति";
 "Friday" = "शुक्रवार";
 "Friends" = "मित्र";
@@ -484,6 +499,7 @@
 "Import or upload sites" = "साइटें आयात करें या अपलोड करें";
 "Imported %@ sites" = "%@ साइटें आयात की गईं";
 "Importing sites..." = "साइटें इंपोर्ट हो रही हैं...";
+"In progress" = "प्रगति में";
 "In-app Safari" = "ऐप के भीतर Safari";
 "In-app browser" = "ऐप के अंदर का ब्राउज़र";
 "Include" = "शामिल करें";
@@ -492,6 +508,7 @@
 "Include in bundle" = "बंडल में शामिल करें";
 "Included in bundle" = "बंडल में शामिल";
 "Increase or remove your limit" = "अपनी सीमा बढ़ाएँ या हटाएँ";
+"Indie game developers writing about their work in progress" = "स्वतंत्र गेम डेवलपर जो अपने निर्माणाधीन गेम के बारे में लिखते हैं";
 "Infrequent Site Stories" = "कम प्रकाशित होने वाली साइटों के लेख";
 "Infrequent Stories" = "कम प्रकाशित होने वाली साइटों के लेख";
 "Infrequent stories per month" = "प्रति माह कम आने वाले लेख";
@@ -502,6 +519,8 @@
 "Interactions" = "इंटरैक्शन";
 "Invalid: %@" = "अमान्य: %@";
 "Invoice" = "चालान";
+"Judging" = "मूल्यांकन";
+"Judging…" = "मूल्यांकन…";
 "Keeps the dark icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, गहरा आइकन बनाए रखता है।";
 "Keeps the light icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, हल्का आइकन बनाए रखता है।";
 "Keyboard Shortcuts" = "कीबोर्ड शॉर्टकट";
@@ -540,6 +559,7 @@
 "Loading sources" = "स्रोत लोड हो रहे हैं";
 "Loading voices…" = "आवाज़ें लोड हो रही हैं…";
 "Loading your feeds…" = "आपकी फ़ीड लोड हो रही हैं…";
+"Loading your search…" = "आपकी खोज लोड हो रही है…";
 "Loading..." = "लोड हो रहा है...";
 "Loading…" = "लोड हो रहा है…";
 "Log In" = "लॉग इन करें";
@@ -553,6 +573,7 @@
 "Logout" = "लॉग आउट";
 "Long Reads" = "लंबे लेख";
 "Long [preview length]" = "लंबा";
+"Long essays about cities, housing and public transit" = "शहरों, आवास और सार्वजनिक परिवहन पर लंबे निबंध";
 "Long press" = "देर तक दबाएँ";
 "Long press on feeds and folders" = "फ़ीड और फ़ोल्डर को देर तक दबाएँ";
 "Long press on story titles" = "लेखों के शीर्षक को देर तक दबाएँ";
@@ -608,6 +629,8 @@
 "Mark this site as read" = "इस साइट को पढ़ा हुआ चिह्नित करें";
 "Mark this story as read" = "इस लेख को पढ़ा हुआ चिह्नित करें";
 "Match" = "मिलान";
+"Match score %@" = "मेल स्कोर %@";
+"Matched “%@”" = "“%@” से मेल खाया";
 "Matches story" = "लेख से मेल खाता है";
 "Meadow Sage" = "मेडो सेज";
 "Medium [grid height]" = "मध्यम";
@@ -666,6 +689,7 @@
 "Natural language text and image classifiers" = "प्राकृतिक भाषा के टेक्स्ट और छवि क्लासिफ़ायर";
 "Nested" = "नेस्टेड";
 "Never" = "कभी नहीं";
+"New" = "नया";
 "New Folder" = "नया फ़ोल्डर";
 "New Site" = "नई साइट";
 "New folder name" = "नए फ़ोल्डर का नाम";
@@ -676,7 +700,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur बदलावों की जाँच करता है और नए लेख आपकी फ़ीड में पहुँचाता है।";
 "NewsBlur detected %@ from your device." = "NewsBlur ने आपके डिवाइस की भाषा %@ पहचानी।";
+"NewsBlur index" = "NewsBlur इंडेक्स";
 "NewsBlur password" = "NewsBlur पासवर्ड";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur आपका विवरण पढ़ता है, फ़ीड की अपनी सूची और खुले वेब में खोजता है, फिर हर मेल का मूल्यांकन करता है। इसमें एक मिनट लग सकता है।";
 "Next" = "अगला";
 "Next Folder" = "अगला फ़ोल्डर";
 "Next Site" = "अगली साइट";
@@ -693,6 +719,7 @@
 "No Story Lists" = "कोई लेख सूची नहीं";
 "No Widget Sites" = "कोई विजेट साइट नहीं";
 "No briefings yet" = "अभी कोई ब्रीफ़िंग नहीं";
+"No feeds matched that description. Try describing it another way." = "उस विवरण से कोई फ़ीड मेल नहीं खाई। इसे किसी और तरह से बताने की कोशिश करें।";
 "No feeds to show yet. Try another interest or search all sites." = "अभी दिखाने के लिए कोई फ़ीड नहीं है। कोई दूसरी रुचि आज़माएँ या सभी साइटों में खोजें।";
 "No friends to suggest." = "सुझाने के लिए कोई मित्र नहीं।";
 "No interests or sites found. Try another search." = "कोई रुचि या साइट नहीं मिली। कोई और खोज आज़माएँ।";
@@ -800,6 +827,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium सदस्यता";
+"Premium feature" = "Premium सुविधा";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium सदस्य अपनी पसंद का NewsBlur आइकन चुन सकते हैं। हर रूप में हल्का और गहरा, दोनों संस्करण शामिल हैं।";
 "Preparing audio…" = "ऑडियो तैयार हो रहा है…";
 "Preview ended. Premium Archive unlocks full stories" = "पूर्वावलोकन समाप्त हुआ। Premium Archive से पूरा लेख अनलॉक होता है";
@@ -838,6 +866,7 @@
 "Read Widely Read Stories" = "व्यापक रूप से पढ़े गए लेख पढ़ें";
 "Read Widget Site Stories" = "विजेट साइटों के लेख पढ़ें";
 "Read by %@" = "%@ द्वारा पढ़ा गया";
+"Reading" = "पढ़ रहा है";
 "Reading Stories" = "लेख पढ़ना";
 "Reading a story" = "लेख पढ़ते समय";
 "Reading by folder is only available to" = "फ़ोल्डर के अनुसार पढ़ना केवल इनके लिए उपलब्ध है";
@@ -859,6 +888,7 @@
 "Reloading..." = "फिर से लोड हो रहा है...";
 "Remove This List" = "यह सूची हटाएँ";
 "Remove from Up Next" = "अगला सुनें सूची से हटाएँ";
+"Remove from history" = "इतिहास से हटाएँ";
 "Removed from Up Next" = "अगला सुनें सूची से हटाया गया";
 "Rename" = "नाम बदलें";
 "Rename \"%@\"" = "\"%@\" का नाम बदलें";
@@ -882,6 +912,7 @@
 "Retry" = "फिर से कोशिश करें";
 "Retry Google Reader" = "Google Reader को फिर से आज़माएँ";
 "Retry icons" = "आइकन फिर से आज़माएँ";
+"Reviews of new iOS apps with lots of screenshots" = "ढेर सारे स्क्रीनशॉट वाले नए iOS ऐप्स की समीक्षाएँ";
 "River of News (reading by folder)" = "समाचार धारा (फ़ोल्डर के अनुसार पढ़ना)";
 "Rows" = "पंक्तियाँ";
 "Ruby Red" = "रूबी रेड";
@@ -913,6 +944,7 @@
 "Scroll to Comments" = "टिप्पणियों तक स्क्रॉल करें";
 "Scroll to comments" = "टिप्पणियों तक स्क्रॉल करें";
 "Search YouTube channels..." = "YouTube चैनल खोजें...";
+"Search again" = "फिर से खोजें";
 "Search feeds" = "फ़ीड खोजें";
 "Search interests and sites" = "रुचियों और साइटों में खोजें";
 "Search newsletters..." = "न्यूज़लेटर खोजें...";
@@ -921,6 +953,10 @@
 "Search stories" = "लेख खोजें";
 "Search subreddits..." = "सबरेडिट खोजें...";
 "Search voices" = "आवाज़ें खोजें";
+"Searches you run will be kept here." = "आपकी की गई खोजें यहाँ रखी जाएँगी।";
+"Searching feeds" = "फ़ीड खोज रहे हैं";
+"Searching for" = "खोज रहे हैं";
+"Searching the web" = "वेब पर खोज रहे हैं";
 "Searching…" = "खोज जारी है…";
 "Sections" = "अनुभाग";
 "Select All" = "सभी चुनें";
@@ -1008,6 +1044,7 @@
 "Small Right" = "छोटा दायाँ";
 "Small [text size]" = "छोटा";
 "Some feed icons couldn’t load." = "कुछ फ़ीड आइकन लोड नहीं हो सके।";
+"Something went wrong while searching." = "खोजते समय कुछ गड़बड़ हो गई।";
 "Sources" = "स्रोत";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space और Shift-Space से दिखाई दे रहे लेख को इस प्रतिशत तक स्क्रॉल करें। नीचे पहुँचने पर Space अगला अपठित लेख खोलता है। ऊपर पहुँचने पर Shift-Space पिछला लेख खोलता है।";
 "Space scroll amount" = "Space से स्क्रॉल करने की मात्रा";
@@ -1021,6 +1058,8 @@
 "Standard" = "मानक";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Music ऐप या Spotify में संगीत शुरू करें और Listen उसके ऊपर पढ़ेगा। लॉक स्क्रीन पर उस ऐप के कंट्रोल सक्रिय हो जाएँगे।";
 "Start reading" = "पढ़ना शुरू करें";
+"Starting your search…" = "आपकी खोज शुरू हो रही है…";
+"Starting…" = "शुरू हो रहा है…";
 "Statistics" = "आँकड़े";
 "Statistics…" = "आँकड़े…";
 "Stay connected" = "जुड़े रहें";
@@ -1112,6 +1151,7 @@
 "Text from yesterday" = "कल का टेक्स्ट";
 "Text view" = "पाठ दृश्य";
 "Text view conveniently extracts the story" = "टेक्स्ट दृश्य लेख को सुविधाजनक रूप से निकालता है";
+"That search could not be loaded." = "वह खोज लोड नहीं की जा सकी।";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "यह 30 सेकंड का पूर्वावलोकन था। Premium Archive में पूरे लेख अनलॉक होते हैं।";
 "The audio couldn't be loaded. Try again in a moment." = "ऑडियो लोड नहीं हो सका। थोड़ी देर बाद फिर कोशिश करें।";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "पूरा टेक्स्ट दृश्य एक <a href=\"http://ios.newsblur.com/premium\">प्रीमियम सुविधा</a> है";
@@ -1119,6 +1159,9 @@
 "The icon follows your device's light and dark appearance." = "आइकन आपके डिवाइस की लाइट या डार्क थीम के अनुसार बदलता है।";
 "The most important stories from your feeds" = "आपकी फ़ीड के सबसे महत्वपूर्ण लेख";
 "The request failed. Please try again." = "अनुरोध विफल हुआ। कृपया फिर से प्रयास करें।";
+"The search could not be started." = "खोज शुरू नहीं हो सकी।";
+"The search could not be started: %@" = "खोज शुरू नहीं हो सकी: %@";
+"The search is taking too long. Try searching again." = "खोज में बहुत समय लग रहा है। फिर से खोजने की कोशिश करें।";
 "The story doesn't link anywhere." = "इस लेख का कोई लिंक नहीं है।";
 "Theme" = "थीम";
 "Theme variant for dark mode" = "डार्क मोड के लिए थीम का रूप";
@@ -1143,6 +1186,7 @@
 "Title only" = "केवल शीर्षक";
 "Titles in grid" = "ग्रिड में शीर्षक";
 "Titles in list" = "सूची में शीर्षक";
+"Today" = "आज";
 "Toggle Full Screen" = "फ़ुल स्क्रीन टॉगल करें";
 "Toggle Read/Unread" = "पढ़ा हुआ/अपठित टॉगल करें";
 "Toggle read/unread" = "पढ़ा/अपठित टॉगल करें";
@@ -1168,6 +1212,7 @@
 "Try %@" = "%@ आज़माएँ";
 "Try again" = "फिर कोशिश करें";
 "Try another name, or paste a site URL in Search." = "कोई दूसरा नाम आज़माएँ या ‘खोजें’ में साइट URL चिपकाएँ।";
+"Try describing something like" = "कुछ इस तरह बताने की कोशिश करें";
 "Try search again" = "फिर से खोजें";
 "Trying Feed" = "फ़ीड आज़मा रहे हैं";
 "Tuesday" = "मंगलवार";
@@ -1192,6 +1237,7 @@
 "Unable to save notification settings." = "सूचना सेटिंग सहेजी नहीं जा सकीं।";
 "Understand" = "समझें";
 "Unfavorited" = "पसंदीदा से हटाया गया";
+"Unlimited searches" = "असीमित खोजें";
 "Unlock full discovery" = "खोज की पूरी सुविधा अनलॉक करें";
 "Unmute All" = "सभी को अनम्यूट करें";
 "Unmute site" = "साइट को अनम्यूट करें";
@@ -1243,6 +1289,7 @@
 "Voice" = "आवाज़";
 "Voice and music balance" = "आवाज़ और संगीत का संतुलन";
 "Voice settings" = "आवाज़ की सेटिंग्स";
+"Waiting for a verdict…" = "निर्णय की प्रतीक्षा में…";
 "Warm" = "गर्म";
 "Web" = "वेब";
 "Web Feeds from any website, even without RSS" = "किसी भी वेबसाइट से वेब फ़ीड, RSS के बिना भी";
@@ -1286,6 +1333,7 @@
 "Your premium pro subscription is active" = "आपकी Premium Pro सदस्यता सक्रिय है";
 "Your premium subscription is active" = "आपकी प्रीमियम सदस्यता सक्रिय है";
 "Your reading list" = "आपकी पठन सूची";
+"Your searches" = "आपकी खोजें";
 "You’re all set up." = "आपका सेटअप पूरा हो गया है।";
 "at %@" = "%@ पर";
 "by %@" = "%@ द्वारा";

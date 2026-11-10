@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@ 폴더, 접힘, %2$@";
 "%1$@ followed %2$@." = "%1$@님이 %2$@님을 팔로우했습니다.";
 "%1$@ of %2$@ of listening left this week" = "이번 주 청취 가능 시간 %1$@ 중 %2$@ 남음";
+"%1$@ of %2$@ searches left today" = "오늘 검색 %1$@회 중 %2$@회 남음";
 "%1$@ of %2$@ sites indexed" = "%1$@ / %2$@개 사이트 색인 완료";
 "%1$@ of %2$@ story previews used today" = "오늘 사용한 스토리 미리보기 %1$@/%2$@회";
 "%1$@ on all sites (%2$@)" = "모든 사이트에서 %1$@ (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "피드 %@개를 추가했습니다.";
 "%@ feeds couldn’t be added." = "피드 %@개를 추가하지 못했습니다.";
 "%@ feeds selected" = "피드 %@개 선택됨";
+"%@ feeds so far" = "현재 피드 %@개";
 "%@ focused stories" = "%@개의 집중 스토리";
 "%@ folder" = "%@ 폴더";
 "%@ free story previews left today" = "오늘 무료로 미리 들을 수 있는 스토리가 %@개 남았습니다";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "구독자 %@명";
 "%@ unread stories" = "읽지 않은 스토리 %@개";
 "%@ voice previews left" = "음성 미리 듣기 %@회 남음";
+"%@/10" = "%@/10";
 "%@/story" = "%@/스토리";
+"%@d ago" = "%@일 전";
+"%@w ago" = "%@주 전";
 "%@×" = "%@×";
 "%ldd ago" = "%ld일 전";
 "%ldh ago" = "%ld시간 전";
@@ -310,9 +315,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "계정을 영구적으로 삭제하면 피드, 저장한 스토리, 계정 데이터가 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.";
 "Deleting..." = "삭제 중...";
 "Delivery" = "읽기 방식";
+"Describe" = "설명";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "주제를 설명하면 AI가 각 스토리를 프롬프트에 따라 평가하고 일치하는 스토리를 집중하거나 숨깁니다.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "찾는 피드를 설명해 보세요. 예: “스크린샷이 포함된 새로운 iOS 앱 리뷰”";
 "Describe what to focus or hide" = "집중하거나 숨길 항목을 설명하세요";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "찾으려는 내용을 설명하면 AI가 각 스토리의 이미지를 프롬프트와 비교해 분석합니다.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "읽고 싶은 내용을 설명하면 NewsBlur에서 일치하는 피드를 찾습니다";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "원하는 피드를 설명하는 기능은 프리미엄 기능입니다. 설명으로 검색하려면 업그레이드하세요.";
 "Discover" = "둘러보기";
 "Discover more to read" = "더 읽을거리 찾아보기";
 "Discover related sites" = "관련 사이트 찾기";
@@ -373,6 +382,7 @@
 "Extra Small" = "아주 작게";
 "Extra Tall" = "매우 높음";
 "Extra small" = "아주 작게";
+"Failed" = "실패했습니다";
 "Faster" = "더 빠르게";
 "Favorited" = "즐겨찾기됨";
 "Favoriting" = "좋아요 표시 중";
@@ -390,6 +400,9 @@
 "Filter" = "필터";
 "Filter stories by date range" = "날짜 범위로 스토리 필터링";
 "Find Friends" = "친구 찾기";
+"Find feeds" = "피드 찾기";
+"Find feeds about “%@”" = "“%@” 관련 피드 찾기";
+"Find feeds by describing them" = "설명으로 피드 찾기";
 "Find in Feed" = "피드에서 찾기";
 "Find in Sites" = "사이트에서 찾기";
 "Find in feed" = "피드에서 찾기";
@@ -429,6 +442,8 @@
 "Forgot Password?" = "비밀번호를 잊으셨나요?";
 "Forgot your password?" = "비밀번호를 잊으셨나요?";
 "Forward %@ seconds" = "%@초 앞으로";
+"Found %@ feeds that match your description" = "설명과 일치하는 피드 %@개를 찾았습니다";
+"Found on the web" = "웹에서 찾음";
 "Frequency" = "빈도";
 "Friday" = "금요일";
 "Friends" = "친구";
@@ -484,6 +499,7 @@
 "Import or upload sites" = "사이트 가져오기 또는 업로드";
 "Imported %@ sites" = "%@개 사이트를 가져왔습니다";
 "Importing sites..." = "사이트 가져오는 중...";
+"In progress" = "진행 중";
 "In-app Safari" = "앱 내 Safari";
 "In-app browser" = "앱 내 브라우저";
 "Include" = "포함";
@@ -492,6 +508,7 @@
 "Include in bundle" = "번들에 포함";
 "Included in bundle" = "번들에 포함됨";
 "Increase or remove your limit" = "한도를 늘리거나 삭제하세요";
+"Indie game developers writing about their work in progress" = "인디 게임 개발자들이 개발 중인 게임에 관해 쓰는 글";
 "Infrequent Site Stories" = "업데이트가 드문 사이트의 스토리";
 "Infrequent Stories" = "드물게 올라오는 스토리";
 "Infrequent stories per month" = "업데이트가 드문 사이트 기준(월 스토리 수)";
@@ -502,6 +519,8 @@
 "Interactions" = "상호작용";
 "Invalid: %@" = "유효하지 않음: %@";
 "Invoice" = "청구서";
+"Judging" = "판별 중";
+"Judging…" = "판별 중…";
 "Keeps the dark icon no matter how your device is set." = "기기 설정과 관계없이 어두운 아이콘을 유지합니다.";
 "Keeps the light icon no matter how your device is set." = "기기 설정과 관계없이 밝은 아이콘을 유지합니다.";
 "Keyboard Shortcuts" = "키보드 단축키";
@@ -540,6 +559,7 @@
 "Loading sources" = "소스 불러오는 중";
 "Loading voices…" = "음성 불러오는 중…";
 "Loading your feeds…" = "피드를 불러오는 중…";
+"Loading your search…" = "검색을 불러오는 중…";
 "Loading..." = "불러오는 중...";
 "Loading…" = "불러오는 중…";
 "Log In" = "로그인";
@@ -553,6 +573,7 @@
 "Logout" = "로그아웃";
 "Long Reads" = "긴 글";
 "Long [preview length]" = "길게";
+"Long essays about cities, housing and public transit" = "도시, 주거 및 대중교통에 관한 긴 에세이";
 "Long press" = "길게 누르기";
 "Long press on feeds and folders" = "피드와 폴더를 길게 누르기";
 "Long press on story titles" = "스토리 제목을 길게 누르기";
@@ -608,6 +629,8 @@
 "Mark this site as read" = "이 사이트를 읽음으로 표시";
 "Mark this story as read" = "이 스토리를 읽음으로 표시";
 "Match" = "일치";
+"Match score %@" = "일치 점수 %@";
+"Matched “%@”" = "“%@” 일치";
 "Matches story" = "스토리와 일치합니다";
 "Meadow Sage" = "메도우 세이지";
 "Medium [grid height]" = "중간";
@@ -666,6 +689,7 @@
 "Natural language text and image classifiers" = "자연어 텍스트 및 이미지 분류기";
 "Nested" = "중첩";
 "Never" = "안 함";
+"New" = "새 항목";
 "New Folder" = "새 폴더";
 "New Site" = "새 사이트";
 "New folder name" = "새 폴더 이름";
@@ -676,7 +700,9 @@
 "NewsBlur Premium" = "NewsBlur 프리미엄";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur가 변경 사항을 확인해 새 스토리를 피드로 전달합니다.";
 "NewsBlur detected %@ from your device." = "NewsBlur에서 기기의 %@ 언어를 감지했습니다.";
+"NewsBlur index" = "NewsBlur 인덱스";
 "NewsBlur password" = "NewsBlur 비밀번호";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur에서 설명을 읽고 피드 색인과 공개 웹을 검색한 다음 모든 결과를 평가합니다. 최대 1분 정도 걸릴 수 있습니다.";
 "Next" = "다음";
 "Next Folder" = "다음 폴더";
 "Next Site" = "다음 사이트";
@@ -693,6 +719,7 @@
 "No Story Lists" = "스토리 목록 없음";
 "No Widget Sites" = "위젯 사이트 없음";
 "No briefings yet" = "아직 브리핑이 없습니다";
+"No feeds matched that description. Try describing it another way." = "설명에 맞는 피드가 없습니다. 다른 방식으로 설명해 보세요.";
 "No feeds to show yet. Try another interest or search all sites." = "표시할 피드가 아직 없습니다. 다른 관심사를 선택하거나 모든 사이트를 검색해 보세요.";
 "No friends to suggest." = "추천할 친구가 없습니다.";
 "No interests or sites found. Try another search." = "관심사나 사이트를 찾을 수 없습니다. 다른 검색어를 입력해 보세요.";
@@ -800,6 +827,7 @@
 "Premium Archive" = "프리미엄 아카이브";
 "Premium Pro" = "프리미엄 프로";
 "Premium Subscription" = "프리미엄 구독";
+"Premium feature" = "프리미엄 기능";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "프리미엄 구독자는 NewsBlur 아이콘을 직접 선택할 수 있습니다. 각 스타일에는 밝은 테마와 어두운 테마가 포함됩니다.";
 "Preparing audio…" = "오디오를 준비하는 중…";
 "Preview ended. Premium Archive unlocks full stories" = "미리보기가 끝났습니다. 프리미엄 아카이브에서 전체 스토리를 이용할 수 있습니다.";
@@ -838,6 +866,7 @@
 "Read Widely Read Stories" = "많이 읽힌 스토리 읽기";
 "Read Widget Site Stories" = "위젯 사이트 스토리 읽기";
 "Read by %@" = "%@이(가) 읽음";
+"Reading" = "읽는 중";
 "Reading Stories" = "스토리 읽기";
 "Reading a story" = "스토리 읽기";
 "Reading by folder is only available to" = "폴더별 읽기는 다음 사용자만 이용할 수 있습니다";
@@ -859,6 +888,7 @@
 "Reloading..." = "새로고침 중...";
 "Remove This List" = "이 목록 삭제";
 "Remove from Up Next" = "다음 재생 목록에서 삭제";
+"Remove from history" = "기록에서 삭제";
 "Removed from Up Next" = "다음 재생 목록에서 삭제됨";
 "Rename" = "이름 변경";
 "Rename \"%@\"" = "\"%@\" 이름 변경";
@@ -882,6 +912,7 @@
 "Retry" = "다시 시도";
 "Retry Google Reader" = "Google Reader 다시 시도";
 "Retry icons" = "아이콘 다시 불러오기";
+"Reviews of new iOS apps with lots of screenshots" = "스크린샷이 많은 신규 iOS 앱 리뷰";
 "River of News (reading by folder)" = "뉴스 스트림(폴더별로 읽기)";
 "Rows" = "행";
 "Ruby Red" = "루비 레드";
@@ -913,6 +944,7 @@
 "Scroll to Comments" = "댓글로 이동";
 "Scroll to comments" = "댓글로 이동";
 "Search YouTube channels..." = "YouTube 채널 검색...";
+"Search again" = "다시 검색";
 "Search feeds" = "피드 검색";
 "Search interests and sites" = "관심사 및 사이트 검색";
 "Search newsletters..." = "뉴스레터 검색...";
@@ -921,6 +953,10 @@
 "Search stories" = "스토리 검색";
 "Search subreddits..." = "서브레딧 검색...";
 "Search voices" = "음성 검색";
+"Searches you run will be kept here." = "실행한 검색이 여기에 저장됩니다.";
+"Searching feeds" = "피드 검색 중";
+"Searching for" = "검색어";
+"Searching the web" = "웹을 검색하고 있습니다";
 "Searching…" = "검색 중…";
 "Sections" = "섹션";
 "Select All" = "모두 선택";
@@ -1008,6 +1044,7 @@
 "Small Right" = "오른쪽 작게";
 "Small [text size]" = "작게";
 "Some feed icons couldn’t load." = "일부 피드 아이콘을 불러오지 못했습니다.";
+"Something went wrong while searching." = "검색 중 문제가 발생했습니다.";
 "Sources" = "출처";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "스페이스와 Shift-스페이스를 누르면 표시된 스토리에서 이 비율만큼 스크롤합니다. 아래쪽에서 스페이스를 누르면 다음 읽지 않은 스토리가 열립니다. 위쪽에서 Shift-스페이스를 누르면 이전 스토리가 열립니다.";
 "Space scroll amount" = "스페이스 스크롤 양";
@@ -1021,6 +1058,8 @@
 "Standard" = "표준";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Music 앱 또는 Spotify에서 음악을 재생하면 Listen이 음악 위에 뉴스를 읽어 줍니다. 해당 앱의 컨트롤이 잠금 화면을 제어합니다.";
 "Start reading" = "읽기 시작";
+"Starting your search…" = "검색을 시작합니다…";
+"Starting…" = "시작 중…";
 "Statistics" = "통계";
 "Statistics…" = "통계…";
 "Stay connected" = "계속 연결하기";
@@ -1112,6 +1151,7 @@
 "Text from yesterday" = "어제의 텍스트";
 "Text view" = "텍스트 보기";
 "Text view conveniently extracts the story" = "텍스트 보기는 스토리 내용을 편리하게 추출합니다";
+"That search could not be loaded." = "해당 검색을 불러올 수 없습니다.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "30초 미리 듣기를 이용하셨습니다. 프리미엄 아카이브에서 전체 스토리를 이용할 수 있습니다.";
 "The audio couldn't be loaded. Try again in a moment." = "오디오를 불러오지 못했습니다. 잠시 후 다시 시도하세요.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "전체 텍스트 보기는 <a href=\"http://ios.newsblur.com/premium\">프리미엄 기능</a>입니다";
@@ -1119,6 +1159,9 @@
 "The icon follows your device's light and dark appearance." = "아이콘은 기기의 라이트 모드와 다크 모드 설정을 따릅니다.";
 "The most important stories from your feeds" = "피드에서 가장 중요한 스토리";
 "The request failed. Please try again." = "요청에 실패했습니다. 다시 시도해 주세요.";
+"The search could not be started." = "검색을 시작할 수 없습니다.";
+"The search could not be started: %@" = "검색을 시작할 수 없습니다: %@";
+"The search is taking too long. Try searching again." = "검색에 시간이 너무 오래 걸립니다. 다시 검색해 보세요.";
 "The story doesn't link anywhere." = "이 스토리에는 연결된 링크가 없습니다.";
 "Theme" = "테마";
 "Theme variant for dark mode" = "다크 모드 테마 변형";
@@ -1143,6 +1186,7 @@
 "Title only" = "제목만";
 "Titles in grid" = "그리드에 제목 표시";
 "Titles in list" = "목록에 제목 표시";
+"Today" = "오늘";
 "Toggle Full Screen" = "전체 화면 전환";
 "Toggle Read/Unread" = "읽음/읽지 않음 전환";
 "Toggle read/unread" = "읽음/읽지 않음 전환";
@@ -1168,6 +1212,7 @@
 "Try %@" = "%@ 사용해 보기";
 "Try again" = "다시 시도";
 "Try another name, or paste a site URL in Search." = "다른 이름을 입력하거나 검색에 사이트 URL을 붙여넣으세요.";
+"Try describing something like" = "다음과 같이 설명해 보세요";
 "Try search again" = "다시 검색";
 "Trying Feed" = "피드 시험 중";
 "Tuesday" = "화요일";
@@ -1192,6 +1237,7 @@
 "Unable to save notification settings." = "알림 설정을 저장할 수 없습니다.";
 "Understand" = "이해하기";
 "Unfavorited" = "즐겨찾기 해제됨";
+"Unlimited searches" = "무제한 검색";
 "Unlock full discovery" = "전체 탐색 기능 이용";
 "Unmute All" = "모두 음소거 해제";
 "Unmute site" = "사이트 음소거 해제";
@@ -1243,6 +1289,7 @@
 "Voice" = "음성";
 "Voice and music balance" = "음성과 음악의 균형";
 "Voice settings" = "음성 설정";
+"Waiting for a verdict…" = "판정을 기다리는 중…";
 "Warm" = "따뜻함";
 "Web" = "웹";
 "Web Feeds from any website, even without RSS" = "RSS가 없어도 모든 웹사이트의 웹 피드 이용";
@@ -1286,6 +1333,7 @@
 "Your premium pro subscription is active" = "프리미엄 프로 구독이 활성화되었습니다";
 "Your premium subscription is active" = "프리미엄 구독이 활성화되었습니다";
 "Your reading list" = "내 읽기 목록";
+"Your searches" = "내 검색";
 "You’re all set up." = "설정이 완료되었습니다.";
 "at %@" = "%@에";
 "by %@" = "%@ 작성";
