@@ -1483,6 +1483,14 @@
     <string name="describe_example_apps">新 iOS App 的評測，附有大量螢幕截圖</string>
     <string name="describe_example_cities">關於城市、住宅與大眾運輸的長篇文章</string>
     <string name="describe_example_games">撰寫開發進度的獨立遊戲開發者</string>
+    <string name="describe_example_recipes">平日晚餐的蔬食食譜，附上逐步照片</string>
+    <string name="describe_example_research">科學家以淺白易懂的語言解說最新研究</string>
+    <string name="describe_example_houses">記錄老屋修復的個人部落格</string>
+    <string name="describe_example_film">底片攝影，分享相機與底片種類的筆記</string>
+    <string name="describe_example_local">美國奧勒岡州波特蘭的地方新聞與活動</string>
+    <string name="describe_example_books">新科幻與奇幻作品的書評</string>
+    <string name="describe_example_systems">工程師撰文探討大型系統如何故障</string>
+    <string name="describe_example_cycling">單車旅行與長途騎乘遊記</string>
     <string name="describe_phase_reading">讀取中</string>
     <string name="describe_phase_searching">正在搜尋訂閱來源</string>
     <string name="describe_phase_judging">正在判斷</string>

@@ -1758,6 +1758,14 @@ people together to talk about the world.</string>
     <string name="describe_example_apps">Reviews of new iOS apps with lots of screenshots</string>
     <string name="describe_example_cities">Long essays about cities, housing and public transit</string>
     <string name="describe_example_games">Indie game developers writing about their work in progress</string>
+    <string name="describe_example_recipes">Weeknight vegetarian recipes with step-by-step photos</string>
+    <string name="describe_example_research">Scientists explaining new research in plain language</string>
+    <string name="describe_example_houses">Personal blogs about restoring old houses</string>
+    <string name="describe_example_film">Film photography with notes on cameras and film stocks</string>
+    <string name="describe_example_local">Local news and events in Portland, Oregon</string>
+    <string name="describe_example_books">Book reviews of new science fiction and fantasy</string>
+    <string name="describe_example_systems">Engineers writing about how large systems fail</string>
+    <string name="describe_example_cycling">Bike touring and long-distance cycling trip reports</string>
     <string name="describe_phase_reading">Reading</string>
     <string name="describe_phase_searching">Searching feeds</string>
     <string name="describe_phase_judging">Judging</string>

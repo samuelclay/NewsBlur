@@ -202,7 +202,9 @@
 "Back %@ seconds" = "%@ सेकंड पीछे जाएँ";
 "Back to story titles" = "लेख शीर्षकों पर वापस जाएँ";
 "Based on your interests" = "आपकी रुचियों के आधार पर";
+"Bike touring and long-distance cycling trip reports" = "बाइक से लंबी यात्राओं और लंबी दूरी की साइकिलिंग के यात्रा-वृत्तांत";
 "Black" = "काला";
+"Book reviews of new science fiction and fantasy" = "नई साइंस फ़िक्शन और फ़ैंटेसी पुस्तकों की समीक्षाएँ";
 "Bottom" = "नीचे";
 "Brightness Override" = "चमक ओवरराइड";
 "Brightness threshold" = "चमक सीमा";
@@ -353,6 +355,7 @@
 "Email" = "ईमेल";
 "Ember Orange" = "एम्बर ऑरेंज";
 "Enabled" = "सक्षम";
+"Engineers writing about how large systems fail" = "इंजीनियर बड़े सिस्टम की विफलताओं के बारे में लिखते हुए";
 "Enter URL phrase..." = "URL वाक्यांश दर्ज करें...";
 "Enter a custom search query..." = "कस्टम खोज क्वेरी दर्ज करें...";
 "Enter a web page URL..." = "वेब पेज का URL दर्ज करें...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "हाल के लेख लाए जा रहे हैं...";
 "Fetching stories from this site..." = "इस साइट से लेख लाए जा रहे हैं...";
 "Fetching text..." = "टेक्स्ट फ़ेच हो रहा है...";
+"Film photography with notes on cameras and film stocks" = "कैमरों और फ़िल्म के प्रकारों पर टिप्पणियों के साथ फ़िल्म फ़ोटोग्राफ़ी";
 "Filter" = "फ़िल्टर";
 "Filter stories by date range" = "तिथि सीमा के अनुसार लेख फ़िल्टर करें";
 "Find Friends" = "मित्र खोजें";
@@ -562,6 +566,7 @@
 "Loading your search…" = "आपकी खोज लोड हो रही है…";
 "Loading..." = "लोड हो रहा है...";
 "Loading…" = "लोड हो रहा है…";
+"Local news and events in Portland, Oregon" = "पोर्टलैंड, ओरेगन की स्थानीय खबरें और कार्यक्रम";
 "Log In" = "लॉग इन करें";
 "Log Out" = "लॉग आउट";
 "Logged in as %@" = "%@ के रूप में लॉग इन हैं";
@@ -800,6 +805,7 @@
 "Pause Listening" = "सुनना रोकें";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Space या Shift-Space से दिखाई दे रहे लेख का स्क्रॉल किया जाने वाला प्रतिशत";
 "Permanently delete account" = "खाता हमेशा के लिए हटाएँ";
+"Personal blogs about restoring old houses" = "पुराने घरों के नवीनीकरण के बारे में व्यक्तिगत ब्लॉग";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "वह भाषा चुनें जिसका उपयोग आप NewsBlur से करवाना चाहते हैं। आप इसे कभी भी प्राथमिकताओं में बदल सकते हैं।";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur में इस्तेमाल करने के लिए अपनी पसंद की भाषा चुनें। आप इसे कभी भी NewsBlur मेनू में बदल सकते हैं।";
 "Pick which model writes your Daily Briefing" = "चुनें कि आपकी दैनिक ब्रीफ़िंग कौन-सा मॉडल लिखे";
@@ -940,6 +946,7 @@
 "Saving search..." = "खोज सहेजी जा रही है...";
 "Saving..." = "सहेजा जा रहा है...";
 "Schedule" = "शेड्यूल";
+"Scientists explaining new research in plain language" = "वैज्ञानिक नए शोध को सरल भाषा में समझाते हुए";
 "Scroll horizontally" = "क्षैतिज रूप से स्क्रॉल करें";
 "Scroll to Comments" = "टिप्पणियों तक स्क्रॉल करें";
 "Scroll to comments" = "टिप्पणियों तक स्क्रॉल करें";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "किसी भी वेबसाइट से वेब फ़ीड, RSS के बिना भी";
 "Wednesday" = "बुधवार";
 "Weekly" = "साप्ताहिक";
+"Weeknight vegetarian recipes with step-by-step photos" = "कामकाजी दिनों की शाम के लिए शाकाहारी व्यंजन, चरण-दर-चरण तस्वीरों के साथ";
 "Welcome back" = "वापसी पर स्वागत है";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "इस साइट में आपको क्या 👍 %1$@ है और क्या 👎 %2$@?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "इस लेख में आपको क्या 👍 %1$@ है और क्या 👎 %2$@?";

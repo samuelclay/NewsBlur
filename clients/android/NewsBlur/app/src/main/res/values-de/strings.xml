@@ -1518,6 +1518,14 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="describe_example_apps">Rezensionen zu neuen iOS-Apps mit vielen Screenshots</string>
     <string name="describe_example_cities">Lange Essays über Städte, Wohnraum und öffentlichen Nahverkehr</string>
     <string name="describe_example_games">Indie-Spieleentwickler, die über ihre laufenden Projekte schreiben</string>
+    <string name="describe_example_recipes">Vegetarische Rezepte für unter der Woche mit Schritt-für-Schritt-Fotos</string>
+    <string name="describe_example_research">Wissenschaftler erklären neue Forschung in verständlicher Sprache</string>
+    <string name="describe_example_houses">Persönliche Blogs über die Restaurierung alter Häuser</string>
+    <string name="describe_example_film">Analoge Fotografie mit Notizen zu Kameras und Filmsorten</string>
+    <string name="describe_example_local">Lokale Nachrichten und Veranstaltungen in Portland, Oregon</string>
+    <string name="describe_example_books">Buchrezensionen zu neuer Science-Fiction und Fantasy</string>
+    <string name="describe_example_systems">Ingenieure schreiben darüber, wie große Systeme versagen</string>
+    <string name="describe_example_cycling">Berichte über Radtouren und mehrtägige Fernradreisen</string>
     <string name="describe_phase_reading">Liest</string>
     <string name="describe_phase_searching">Feeds werden durchsucht</string>
     <string name="describe_phase_judging">Wird beurteilt</string>

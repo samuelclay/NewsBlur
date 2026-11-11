@@ -550,11 +550,20 @@ enum DescribePhase: String, CaseIterable {
         }
     }
 
+    // DiscoverSitesModels.swift: the same eleven examples as describe_feeds_view.js EXAMPLES, in the same order.
     static var examplePrompts: [String] {
         [
             NBLocalization.text("Reviews of new iOS apps with lots of screenshots"),
             NBLocalization.text("Long essays about cities, housing and public transit"),
             NBLocalization.text("Indie game developers writing about their work in progress"),
+            NBLocalization.text("Weeknight vegetarian recipes with step-by-step photos"),
+            NBLocalization.text("Scientists explaining new research in plain language"),
+            NBLocalization.text("Personal blogs about restoring old houses"),
+            NBLocalization.text("Film photography with notes on cameras and film stocks"),
+            NBLocalization.text("Local news and events in Portland, Oregon"),
+            NBLocalization.text("Book reviews of new science fiction and fantasy"),
+            NBLocalization.text("Engineers writing about how large systems fail"),
+            NBLocalization.text("Bike touring and long-distance cycling trip reports"),
         ]
     }
 }

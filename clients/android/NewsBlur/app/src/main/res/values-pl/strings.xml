@@ -1588,6 +1588,14 @@
     <string name="describe_example_apps">Recenzje nowych aplikacji na iOS z dużą liczbą zrzutów ekranu</string>
     <string name="describe_example_cities">Długie eseje o miastach, mieszkalnictwie i transporcie publicznym</string>
     <string name="describe_example_games">Niezależni twórcy gier piszący o postępach w swojej pracy</string>
+    <string name="describe_example_recipes">Wegetariańskie przepisy na kolację w tygodniu ze zdjęciami kolejnych kroków</string>
+    <string name="describe_example_research">Naukowcy przystępnie objaśniający wyniki nowych badań</string>
+    <string name="describe_example_houses">Prywatne blogi o odnawianiu starych domów</string>
+    <string name="describe_example_film">Fotografia analogowa z opisami aparatów i rodzajów filmów</string>
+    <string name="describe_example_local">Lokalne wiadomości i wydarzenia z Portland w stanie Oregon</string>
+    <string name="describe_example_books">Recenzje nowych książek science fiction i fantasy</string>
+    <string name="describe_example_systems">Inżynierowie piszący o awariach dużych systemów</string>
+    <string name="describe_example_cycling">Relacje z wypraw rowerowych i długodystansowych podróży rowerowych</string>
     <string name="describe_phase_reading">Czytanie</string>
     <string name="describe_phase_searching">Wyszukiwanie kanałów</string>
     <string name="describe_phase_judging">Ocenianie</string>

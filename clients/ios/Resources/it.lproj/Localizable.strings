@@ -202,7 +202,9 @@
 "Back %@ seconds" = "Indietro di %@ secondi";
 "Back to story titles" = "Torna ai titoli degli articoli";
 "Based on your interests" = "In base ai tuoi interessi";
+"Bike touring and long-distance cycling trip reports" = "Viaggi in bici e resoconti di escursioni ciclistiche a lunga distanza";
 "Black" = "Nero";
+"Book reviews of new science fiction and fantasy" = "Recensioni di nuovi libri di fantascienza e fantasy";
 "Bottom" = "In basso";
 "Brightness Override" = "Tema in base alla luminosità";
 "Brightness threshold" = "Soglia di luminosità";
@@ -353,6 +355,7 @@
 "Email" = "Email";
 "Ember Orange" = "Arancione brace";
 "Enabled" = "Attivato";
+"Engineers writing about how large systems fail" = "Ingegneri che raccontano come si guastano i sistemi complessi";
 "Enter URL phrase..." = "Inserisci una frase URL...";
 "Enter a custom search query..." = "Inserisci una query di ricerca personalizzata...";
 "Enter a web page URL..." = "Inserisci l'URL di una pagina web...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "Recupero degli articoli recenti...";
 "Fetching stories from this site..." = "Recupero degli articoli da questo sito...";
 "Fetching text..." = "Recupero del testo...";
+"Film photography with notes on cameras and film stocks" = "Fotografia analogica con appunti su fotocamere e pellicole";
 "Filter" = "Filtro";
 "Filter stories by date range" = "Filtra gli articoli per intervallo di date";
 "Find Friends" = "Trova amici";
@@ -562,6 +566,7 @@
 "Loading your search…" = "Caricamento della ricerca…";
 "Loading..." = "Caricamento...";
 "Loading…" = "Caricamento…";
+"Local news and events in Portland, Oregon" = "Notizie ed eventi locali a Portland, Oregon";
 "Log In" = "Accedi";
 "Log Out" = "Esci";
 "Logged in as %@" = "Accesso effettuato come %@";
@@ -800,6 +805,7 @@
 "Pause Listening" = "Metti in pausa l’ascolto";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Percentuale dell’articolo visibile scorsa con la barra spaziatrice o Maiusc+barra spaziatrice";
 "Permanently delete account" = "Elimina definitivamente l’account";
+"Personal blogs about restoring old houses" = "Blog personali sul restauro di vecchie case";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Scegli la lingua che vuoi che NewsBlur utilizzi. Puoi modificarla in qualsiasi momento nelle Preferenze.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Scegli la lingua che vuoi usare in NewsBlur. Puoi cambiarla in qualsiasi momento dal menu NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Scegli quale modello scrive il tuo briefing quotidiano";
@@ -940,6 +946,7 @@
 "Saving search..." = "Salvataggio della ricerca...";
 "Saving..." = "Salvataggio...";
 "Schedule" = "Programma";
+"Scientists explaining new research in plain language" = "Scienziati che spiegano le nuove ricerche con parole semplici";
 "Scroll horizontally" = "Scorrimento orizzontale";
 "Scroll to Comments" = "Scorri fino ai commenti";
 "Scroll to comments" = "Scorri fino ai commenti";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "Feed web da qualsiasi sito, anche senza RSS";
 "Wednesday" = "Mercoledì";
 "Weekly" = "Settimanale";
+"Weeknight vegetarian recipes with step-by-step photos" = "Ricette vegetariane per le sere infrasettimanali con foto passo passo";
 "Welcome back" = "Bentornato";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Cosa 👍 %1$@ e cosa 👎 %2$@ di questo sito?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "Cosa 👍 %1$@ e cosa 👎 %2$@ di questo articolo?";

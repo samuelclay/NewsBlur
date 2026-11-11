@@ -202,7 +202,9 @@
 "Back %@ seconds" = "%@ seconden terug";
 "Back to story titles" = "Terug naar de artikeltitels";
 "Based on your interests" = "Op basis van je interesses";
+"Bike touring and long-distance cycling trip reports" = "Fietstochten en reisverslagen van langeafstandsritten";
 "Black" = "Zwart";
+"Book reviews of new science fiction and fantasy" = "Boekbesprekingen van nieuwe sciencefiction en fantasy";
 "Bottom" = "Onderaan";
 "Brightness Override" = "Helderheid overschrijven";
 "Brightness threshold" = "Helderheidsdrempel";
@@ -353,6 +355,7 @@
 "Email" = "E-mail";
 "Ember Orange" = "Gloeiend oranje";
 "Enabled" = "Ingeschakeld";
+"Engineers writing about how large systems fail" = "Ingenieurs die schrijven over hoe grote systemen falen";
 "Enter URL phrase..." = "Voer een URL-frase in...";
 "Enter a custom search query..." = "Voer een aangepaste zoekopdracht in...";
 "Enter a web page URL..." = "Voer de URL van een webpagina in...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "Recente artikelen ophalen...";
 "Fetching stories from this site..." = "Artikelen van deze site ophalen...";
 "Fetching text..." = "Tekst ophalen...";
+"Film photography with notes on cameras and film stocks" = "Analoge fotografie met informatie over camera’s en films";
 "Filter" = "Filteren";
 "Filter stories by date range" = "Artikelen filteren op datumbereik";
 "Find Friends" = "Vrienden zoeken";
@@ -562,6 +566,7 @@
 "Loading your search…" = "Je zoekopdracht wordt geladen…";
 "Loading..." = "Laden...";
 "Loading…" = "Laden…";
+"Local news and events in Portland, Oregon" = "Lokaal nieuws en evenementen in Portland, Oregon";
 "Log In" = "Inloggen";
 "Log Out" = "Uitloggen";
 "Logged in as %@" = "Ingelogd als %@";
@@ -800,6 +805,7 @@
 "Pause Listening" = "Luisteren pauzeren";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Percentage van het zichtbare artikel waarover je scrolt met Spatie of Shift-Spatie";
 "Permanently delete account" = "Account definitief verwijderen";
+"Personal blogs about restoring old houses" = "Persoonlijke blogs over het opknappen van oude huizen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Kies de taal die NewsBlur moet gebruiken. Je kunt dit altijd wijzigen in Voorkeuren.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Kies de taal die je in NewsBlur wilt gebruiken. Je kunt deze op elk moment wijzigen via het NewsBlur-menu.";
 "Pick which model writes your Daily Briefing" = "Kies welk model je dagelijkse briefing schrijft";
@@ -940,6 +946,7 @@
 "Saving search..." = "Zoekopdracht opslaan...";
 "Saving..." = "Opslaan...";
 "Schedule" = "Planning";
+"Scientists explaining new research in plain language" = "Wetenschappers die nieuw onderzoek in begrijpelijke taal uitleggen";
 "Scroll horizontally" = "Horizontaal scrollen";
 "Scroll to Comments" = "Scroll naar reacties";
 "Scroll to comments" = "Naar de reacties scrollen";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "Webfeeds van elke website, zelfs zonder RSS";
 "Wednesday" = "woensdag";
 "Weekly" = "Wekelijks";
+"Weeknight vegetarian recipes with step-by-step photos" = "Vegetarische recepten voor doordeweeks, met stap-voor-stapfoto’s";
 "Welcome back" = "Welkom terug";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Wat vind je 👍 %1$@ en 👎 %2$@ aan deze site?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "Wat vind je 👍 %1$@ en 👎 %2$@ aan dit artikel?";

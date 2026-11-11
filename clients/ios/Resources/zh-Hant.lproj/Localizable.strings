@@ -202,7 +202,9 @@
 "Back %@ seconds" = "往回 %@ 秒";
 "Back to story titles" = "返回文章標題";
 "Based on your interests" = "根據你的興趣";
+"Bike touring and long-distance cycling trip reports" = "單車旅行與長途騎乘遊記";
 "Black" = "黑色";
+"Book reviews of new science fiction and fantasy" = "新科幻與奇幻作品的書評";
 "Bottom" = "底部";
 "Brightness Override" = "亮度覆寫";
 "Brightness threshold" = "亮度閾值";
@@ -353,6 +355,7 @@
 "Email" = "電子郵件";
 "Ember Orange" = "餘燼橘";
 "Enabled" = "已啟用";
+"Engineers writing about how large systems fail" = "工程師撰文探討大型系統如何故障";
 "Enter URL phrase..." = "輸入網址詞組…";
 "Enter a custom search query..." = "輸入自訂搜尋條件…";
 "Enter a web page URL..." = "輸入網頁網址…";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "正在擷取最近的文章…";
 "Fetching stories from this site..." = "正在擷取此網站的文章…";
 "Fetching text..." = "正在擷取文字…";
+"Film photography with notes on cameras and film stocks" = "底片攝影，分享相機與底片種類的筆記";
 "Filter" = "篩選";
 "Filter stories by date range" = "依日期範圍篩選文章";
 "Find Friends" = "尋找朋友";
@@ -562,6 +566,7 @@
 "Loading your search…" = "正在載入你的搜尋…";
 "Loading..." = "載入中…";
 "Loading…" = "載入中…";
+"Local news and events in Portland, Oregon" = "美國奧勒岡州波特蘭的地方新聞與活動";
 "Log In" = "登入";
 "Log Out" = "登出";
 "Logged in as %@" = "目前登入身分：%@";
@@ -800,6 +805,7 @@
 "Pause Listening" = "暫停聆聽";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "按空白鍵或 Shift-空白鍵時，捲動目前顯示文章的百分比";
 "Permanently delete account" = "永久刪除帳戶";
+"Personal blogs about restoring old houses" = "記錄老屋修復的個人部落格";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在「偏好設定」中變更。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在 NewsBlur 選單中變更。";
 "Pick which model writes your Daily Briefing" = "選擇用來撰寫每日簡報的模型";
@@ -940,6 +946,7 @@
 "Saving search..." = "正在儲存搜尋…";
 "Saving..." = "正在儲存…";
 "Schedule" = "排程";
+"Scientists explaining new research in plain language" = "科學家以淺白易懂的語言解說最新研究";
 "Scroll horizontally" = "水平捲動";
 "Scroll to Comments" = "捲動至留言";
 "Scroll to comments" = "捲動至留言";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "任何網站的網頁訂閱來源，即使沒有 RSS 也可以";
 "Wednesday" = "星期三";
 "Weekly" = "每週";
+"Weeknight vegetarian recipes with step-by-step photos" = "平日晚餐的蔬食食譜，附上逐步照片";
 "Welcome back" = "歡迎回來";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "你 👍 %1$@ 和 👎 %2$@ 這個網站的哪些地方？";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "你 👍 %1$@ 和 👎 %2$@ 這篇文章的哪些地方？";

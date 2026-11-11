@@ -1658,6 +1658,14 @@
     <string name="describe_example_apps">مراجعات لتطبيقات iOS الجديدة مع الكثير من لقطات الشاشة</string>
     <string name="describe_example_cities">مقالات مطوّلة عن المدن والإسكان والنقل العام</string>
     <string name="describe_example_games">مطوّرو ألعاب مستقلة يكتبون عن أعمالهم قيد التطوير</string>
+    <string name="describe_example_recipes">وصفات نباتية لعشاء أيام الأسبوع، مع صور توضيحية لكل خطوة</string>
+    <string name="describe_example_research">علماء يشرحون أبحاثًا جديدة بلغة واضحة</string>
+    <string name="describe_example_houses">مدونات شخصية عن ترميم المنازل القديمة</string>
+    <string name="describe_example_film">التصوير الفوتوغرافي بالأفلام، مع ملاحظات عن الكاميرات وأنواع الأفلام</string>
+    <string name="describe_example_local">أخبار وفعاليات محلية في بورتلاند، أوريغون</string>
+    <string name="describe_example_books">مراجعات كتب لأعمال الخيال العلمي والفانتازيا الجديدة</string>
+    <string name="describe_example_systems">مهندسون يكتبون عن أسباب تعطل الأنظمة الكبيرة</string>
+    <string name="describe_example_cycling">تقارير عن جولات بالدراجات ورحلات طويلة المسافات</string>
     <string name="describe_phase_reading">جارٍ القراءة</string>
     <string name="describe_phase_searching">جارٍ البحث في الخلاصات</string>
     <string name="describe_phase_judging">جارٍ التقييم</string>

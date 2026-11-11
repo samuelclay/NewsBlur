@@ -202,7 +202,9 @@
 "Back %@ seconds" = "%@ saniye geri";
 "Back to story titles" = "Haber başlıklarına dön";
 "Based on your interests" = "İlgi alanlarınıza göre";
+"Bike touring and long-distance cycling trip reports" = "Bisiklet turları ve uzun mesafeli bisiklet gezisi günlükleri";
 "Black" = "Siyah";
+"Book reviews of new science fiction and fantasy" = "Yeni bilim kurgu ve fantastik kitap incelemeleri";
 "Bottom" = "Alt";
 "Brightness Override" = "Parlaklık Ayarı";
 "Brightness threshold" = "Parlaklık eşiği";
@@ -353,6 +355,7 @@
 "Email" = "E-posta";
 "Ember Orange" = "Kor Turuncusu";
 "Enabled" = "Etkin";
+"Engineers writing about how large systems fail" = "Büyük sistemlerin nasıl arızalandığını yazan mühendisler";
 "Enter URL phrase..." = "URL ifadesi girin...";
 "Enter a custom search query..." = "Özel arama sorgusu girin...";
 "Enter a web page URL..." = "Bir web sayfası URL'si girin...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "Son haberler alınıyor...";
 "Fetching stories from this site..." = "Bu siteden haberler alınıyor...";
 "Fetching text..." = "Metin alınıyor...";
+"Film photography with notes on cameras and film stocks" = "Fotoğraf makineleri ve film türleri hakkında notlarla analog fotoğrafçılık";
 "Filter" = "Filtre";
 "Filter stories by date range" = "Haberleri tarih aralığına göre filtrele";
 "Find Friends" = "Arkadaş Bul";
@@ -562,6 +566,7 @@
 "Loading your search…" = "Aramanız yükleniyor…";
 "Loading..." = "Yükleniyor...";
 "Loading…" = "Yükleniyor…";
+"Local news and events in Portland, Oregon" = "Portland, Oregon'dan yerel haberler ve etkinlikler";
 "Log In" = "Giriş Yap";
 "Log Out" = "Oturumu kapat";
 "Logged in as %@" = "%@ olarak giriş yapıldı";
@@ -800,6 +805,7 @@
 "Pause Listening" = "Dinlemeyi duraklat";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Boşluk veya Shift-Boşluk ile görüntülenen haberin kaydırılacağı yüzde";
 "Permanently delete account" = "Hesabı kalıcı olarak sil";
+"Personal blogs about restoring old houses" = "Eski evleri restore etmeyi anlatan kişisel bloglar";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur’da kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman NewsBlur menüsünden değiştirebilirsiniz.";
 "Pick which model writes your Daily Briefing" = "Günlük Özetinizi hangi modelin yazacağını seçin";
@@ -940,6 +946,7 @@
 "Saving search..." = "Arama kaydediliyor...";
 "Saving..." = "Kaydediliyor...";
 "Schedule" = "Zamanla";
+"Scientists explaining new research in plain language" = "Yeni araştırmaları herkesin anlayacağı bir dille açıklayan bilim insanları";
 "Scroll horizontally" = "Yatay kaydır";
 "Scroll to Comments" = "Yorumlara kaydır";
 "Scroll to comments" = "Yorumlara kaydır";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "RSS olmasa bile herhangi bir web sitesinden web akışları";
 "Wednesday" = "Çarşamba";
 "Weekly" = "Haftalık";
+"Weeknight vegetarian recipes with step-by-step photos" = "Adım adım fotoğraflarla hafta içi akşamlarına uygun vejetaryen tarifler";
 "Welcome back" = "Tekrar hoş geldiniz";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Bu sitede neyi 👍 %1$@, neyi 👎 %2$@?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "Bu haberde neyi 👍 %1$@, neyi 👎 %2$@?";

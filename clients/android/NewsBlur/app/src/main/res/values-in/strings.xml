@@ -1483,6 +1483,14 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="describe_example_apps">Ulasan aplikasi iOS baru dengan banyak tangkapan layar</string>
     <string name="describe_example_cities">Esai panjang tentang kota, perumahan, dan transportasi umum</string>
     <string name="describe_example_games">Pengembang game indie yang menulis tentang proyek mereka yang sedang dikerjakan</string>
+    <string name="describe_example_recipes">Resep vegetarian untuk makan malam hari kerja dengan foto langkah demi langkah</string>
+    <string name="describe_example_research">Ilmuwan menjelaskan penelitian baru dengan bahasa sederhana</string>
+    <string name="describe_example_houses">Blog pribadi tentang renovasi rumah tua</string>
+    <string name="describe_example_film">Fotografi film dengan catatan tentang kamera dan jenis film</string>
+    <string name="describe_example_local">Berita dan acara lokal di Portland, Oregon</string>
+    <string name="describe_example_books">Ulasan buku fiksi ilmiah dan fantasi terbaru</string>
+    <string name="describe_example_systems">Insinyur menulis tentang penyebab kegagalan sistem berskala besar</string>
+    <string name="describe_example_cycling">Tur sepeda dan laporan perjalanan bersepeda jarak jauh</string>
     <string name="describe_phase_reading">Membaca</string>
     <string name="describe_phase_searching">Mencari feed</string>
     <string name="describe_phase_judging">Menilai</string>

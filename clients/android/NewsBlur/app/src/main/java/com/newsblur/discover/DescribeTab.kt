@@ -543,6 +543,22 @@ private fun DescribeSourceBadge(
     }
 }
 
+// DescribeTab.kt: the same eleven examples as describe_feeds_view.js EXAMPLES, in the same order.
+private val describeExamples =
+    listOf(
+        R.string.describe_example_apps,
+        R.string.describe_example_cities,
+        R.string.describe_example_games,
+        R.string.describe_example_recipes,
+        R.string.describe_example_research,
+        R.string.describe_example_houses,
+        R.string.describe_example_film,
+        R.string.describe_example_local,
+        R.string.describe_example_books,
+        R.string.describe_example_systems,
+        R.string.describe_example_cycling,
+    )
+
 @Composable
 private fun DescribeExamples(
     describe: DescribeState,
@@ -552,7 +568,7 @@ private fun DescribeExamples(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(stringResource(R.string.describe_examples_title), color = colors.textSecondary, style = MaterialTheme.typography.titleSmall)
-        listOf(R.string.describe_example_apps, R.string.describe_example_cities, R.string.describe_example_games).forEach { example ->
+        describeExamples.forEach { example ->
             val text = stringResource(example)
             Row(
                 Modifier

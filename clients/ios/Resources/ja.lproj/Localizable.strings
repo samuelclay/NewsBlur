@@ -202,7 +202,9 @@
 "Back %@ seconds" = "%@秒戻る";
 "Back to story titles" = "記事タイトルに戻る";
 "Based on your interests" = "興味に基づく";
+"Bike touring and long-distance cycling trip reports" = "自転車ツーリングや長距離サイクリングの旅行記";
 "Black" = "黒";
+"Book reviews of new science fiction and fantasy" = "新作のSF・ファンタジー小説の書評";
 "Bottom" = "下";
 "Brightness Override" = "明るさの上書き";
 "Brightness threshold" = "明るさのしきい値";
@@ -353,6 +355,7 @@
 "Email" = "メール";
 "Ember Orange" = "エンバーオレンジ";
 "Enabled" = "有効";
+"Engineers writing about how large systems fail" = "大規模システムの障害について書くエンジニア";
 "Enter URL phrase..." = "URLのフレーズを入力...";
 "Enter a custom search query..." = "カスタム検索クエリを入力...";
 "Enter a web page URL..." = "ウェブページのURLを入力...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "最近の記事を取得中...";
 "Fetching stories from this site..." = "このサイトの記事を取得中...";
 "Fetching text..." = "テキストを取得中...";
+"Film photography with notes on cameras and film stocks" = "カメラやフィルムの種類についてのメモを添えたフィルム写真";
 "Filter" = "フィルター";
 "Filter stories by date range" = "日付範囲で記事を絞り込む";
 "Find Friends" = "友達を探す";
@@ -562,6 +566,7 @@
 "Loading your search…" = "検索を読み込み中…";
 "Loading..." = "読み込み中...";
 "Loading…" = "読み込み中…";
+"Local news and events in Portland, Oregon" = "オレゴン州ポートランドの地域ニュースとイベント";
 "Log In" = "ログイン";
 "Log Out" = "ログアウト";
 "Logged in as %@" = "%@としてログイン中";
@@ -800,6 +805,7 @@
 "Pause Listening" = "読み上げを一時停止";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "SpaceキーまたはShift-Spaceキーでスクロールする、表示中の記事に対する割合";
 "Permanently delete account" = "アカウントを完全に削除";
+"Personal blogs about restoring old houses" = "古い家の修復について書く個人ブログ";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlurで使用する言語を選択してください。この設定はいつでも「設定」で変更できます。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlurで使用する言語を選択してください。この設定はいつでもNewsBlurメニューで変更できます。";
 "Pick which model writes your Daily Briefing" = "デイリーブリーフィングの生成に使用するモデルを選択";
@@ -940,6 +946,7 @@
 "Saving search..." = "検索を保存中...";
 "Saving..." = "保存中…";
 "Schedule" = "スケジュール";
+"Scientists explaining new research in plain language" = "新しい研究をわかりやすく解説する科学者";
 "Scroll horizontally" = "横スクロール";
 "Scroll to Comments" = "コメントまでスクロール";
 "Scroll to comments" = "コメントまでスクロール";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "RSSがなくても、あらゆるウェブサイトのウェブフィードを購読";
 "Wednesday" = "水曜日";
 "Weekly" = "週ごと";
+"Weeknight vegetarian recipes with step-by-step photos" = "手順ごとの写真付き、平日の夜に作るベジタリアンレシピ";
 "Welcome back" = "おかえりなさい";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "このサイトで👍 %1$@するもの、👎 %2$@するものは？";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "この記事で👍 %1$@するもの、👎 %2$@するものは？";

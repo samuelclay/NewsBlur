@@ -1483,6 +1483,14 @@
     <string name="describe_example_apps">รีวิวแอป iOS ใหม่ที่มีภาพหน้าจอจำนวนมาก</string>
     <string name="describe_example_cities">บทความยาวเกี่ยวกับเมือง ที่อยู่อาศัย และระบบขนส่งสาธารณะ</string>
     <string name="describe_example_games">นักพัฒนาเกมอินดี้ที่เขียนเกี่ยวกับผลงานที่กำลังพัฒนา</string>
+    <string name="describe_example_recipes">สูตรอาหารมังสวิรัติสำหรับมื้อเย็นวันธรรมดา พร้อมภาพประกอบทีละขั้นตอน</string>
+    <string name="describe_example_research">นักวิทยาศาสตร์อธิบายงานวิจัยใหม่ด้วยภาษาที่เข้าใจง่าย</string>
+    <string name="describe_example_houses">บล็อกส่วนตัวเกี่ยวกับการบูรณะบ้านเก่า</string>
+    <string name="describe_example_film">การถ่ายภาพด้วยฟิล์ม พร้อมบันทึกเกี่ยวกับกล้องและฟิล์มแต่ละชนิด</string>
+    <string name="describe_example_local">ข่าวท้องถิ่นและกิจกรรมในพอร์ตแลนด์ รัฐออริกอน</string>
+    <string name="describe_example_books">รีวิวหนังสือแนววิทยาศาสตร์และแฟนตาซีออกใหม่</string>
+    <string name="describe_example_systems">วิศวกรเขียนถึงสาเหตุที่ระบบขนาดใหญ่ล้มเหลว</string>
+    <string name="describe_example_cycling">การท่องเที่ยวด้วยจักรยานและบันทึกการเดินทางระยะไกล</string>
     <string name="describe_phase_reading">กำลังอ่าน</string>
     <string name="describe_phase_searching">กำลังค้นหาฟีด</string>
     <string name="describe_phase_judging">กำลังประเมิน</string>

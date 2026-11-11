@@ -1588,6 +1588,14 @@
     <string name="describe_example_apps">Огляди нових програм для iOS із великою кількістю знімків екрана</string>
     <string name="describe_example_cities">Розлогі есе про міста, житло та громадський транспорт</string>
     <string name="describe_example_games">Незалежні розробники ігор, які розповідають про свої проєкти в розробці</string>
+    <string name="describe_example_recipes">Вегетаріанські рецепти для буднів із покроковими фото</string>
+    <string name="describe_example_research">Науковці простою мовою розповідають про нові дослідження</string>
+    <string name="describe_example_houses">Особисті блоги про відновлення старих будинків</string>
+    <string name="describe_example_film">Плівкова фотографія з нотатками про камери та фотоплівку</string>
+    <string name="describe_example_local">Місцеві новини та події в Портленді, штат Орегон</string>
+    <string name="describe_example_books">Огляди нових науково-фантастичних і фентезійних книжок</string>
+    <string name="describe_example_systems">Інженери пишуть про те, як виходять з ладу великі системи</string>
+    <string name="describe_example_cycling">Веломандрівки та звіти про далекі велосипедні подорожі</string>
     <string name="describe_phase_reading">Читання</string>
     <string name="describe_phase_searching">Пошук стрічок</string>
     <string name="describe_phase_judging">Оцінювання</string>

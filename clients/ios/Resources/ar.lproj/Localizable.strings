@@ -202,7 +202,9 @@
 "Back %@ seconds" = "رجوع %@ ثانية";
 "Back to story titles" = "العودة إلى عناوين القصص";
 "Based on your interests" = "بناءً على اهتماماتك";
+"Bike touring and long-distance cycling trip reports" = "تقارير عن جولات بالدراجات ورحلات طويلة المسافات";
 "Black" = "أسود";
+"Book reviews of new science fiction and fantasy" = "مراجعات كتب لأعمال الخيال العلمي والفانتازيا الجديدة";
 "Bottom" = "الأسفل";
 "Brightness Override" = "تجاوز السطوع";
 "Brightness threshold" = "حد السطوع";
@@ -353,6 +355,7 @@
 "Email" = "البريد الإلكتروني";
 "Ember Orange" = "برتقالي الجمر";
 "Enabled" = "مفعّل";
+"Engineers writing about how large systems fail" = "مهندسون يكتبون عن أسباب تعطل الأنظمة الكبيرة";
 "Enter URL phrase..." = "أدخل عبارة URL...";
 "Enter a custom search query..." = "أدخل استعلام بحث مخصصًا...";
 "Enter a web page URL..." = "أدخل عنوان URL لصفحة ويب...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "جارٍ جلب القصص الأخيرة...";
 "Fetching stories from this site..." = "جارٍ جلب القصص من هذا الموقع...";
 "Fetching text..." = "جارٍ جلب النص...";
+"Film photography with notes on cameras and film stocks" = "التصوير الفوتوغرافي بالأفلام، مع ملاحظات عن الكاميرات وأنواع الأفلام";
 "Filter" = "تصفية";
 "Filter stories by date range" = "تصفية القصص حسب النطاق الزمني";
 "Find Friends" = "اعثر على أصدقاء";
@@ -562,6 +566,7 @@
 "Loading your search…" = "جارٍ تحميل بحثك…";
 "Loading..." = "جارٍ التحميل...";
 "Loading…" = "جارٍ التحميل…";
+"Local news and events in Portland, Oregon" = "أخبار وفعاليات محلية في بورتلاند، أوريغون";
 "Log In" = "تسجيل الدخول";
 "Log Out" = "تسجيل الخروج";
 "Logged in as %@" = "تم تسجيل الدخول باسم %@";
@@ -800,6 +805,7 @@
 "Pause Listening" = "إيقاف الاستماع مؤقتًا";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "النسبة المئوية من القصة الظاهرة التي يمرّرها مفتاح المسافة أو مفتاح المسافة مع Shift";
 "Permanently delete account" = "حذف الحساب نهائيًا";
+"Personal blogs about restoring old houses" = "مدونات شخصية عن ترميم المنازل القديمة";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من التفضيلات.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من قائمة NewsBlur.";
 "Pick which model writes your Daily Briefing" = "اختر النموذج الذي يكتب موجزك اليومي";
@@ -940,6 +946,7 @@
 "Saving search..." = "جارٍ حفظ البحث...";
 "Saving..." = "جارٍ الحفظ...";
 "Schedule" = "جدولة";
+"Scientists explaining new research in plain language" = "علماء يشرحون أبحاثًا جديدة بلغة واضحة";
 "Scroll horizontally" = "التمرير أفقيًا";
 "Scroll to Comments" = "انتقل إلى التعليقات";
 "Scroll to comments" = "انتقل إلى التعليقات";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "خلاصات ويب من أي موقع، حتى دون RSS";
 "Wednesday" = "الأربعاء";
 "Weekly" = "أسبوعيًا";
+"Weeknight vegetarian recipes with step-by-step photos" = "وصفات نباتية لعشاء أيام الأسبوع، مع صور توضيحية لكل خطوة";
 "Welcome back" = "مرحبًا بعودتك";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "ما الذي 👍 %1$@ وما الذي 👎 %2$@ في هذا الموقع؟";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "ما الذي 👍 %1$@ وما الذي 👎 %2$@ في هذه القصة؟";

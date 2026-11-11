@@ -202,7 +202,9 @@
 "Back %@ seconds" = "%@초 뒤로";
 "Back to story titles" = "스토리 제목으로 돌아가기";
 "Based on your interests" = "관심사 기반";
+"Bike touring and long-distance cycling trip reports" = "자전거 여행과 장거리 라이딩 여행기";
 "Black" = "검정";
+"Book reviews of new science fiction and fantasy" = "신작 SF 및 판타지 도서 리뷰";
 "Bottom" = "하단";
 "Brightness Override" = "밝기 재정의";
 "Brightness threshold" = "밝기 임계값";
@@ -353,6 +355,7 @@
 "Email" = "이메일";
 "Ember Orange" = "엠버 오렌지";
 "Enabled" = "사용";
+"Engineers writing about how large systems fail" = "대규모 시스템이 실패하는 원인을 다루는 엔지니어들의 글";
 "Enter URL phrase..." = "URL 문구 입력...";
 "Enter a custom search query..." = "맞춤 검색어 입력...";
 "Enter a web page URL..." = "웹페이지 URL 입력...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "최근 스토리를 가져오는 중...";
 "Fetching stories from this site..." = "이 사이트의 스토리를 가져오는 중...";
 "Fetching text..." = "텍스트 가져오는 중...";
+"Film photography with notes on cameras and film stocks" = "카메라와 필름 종류에 대한 설명이 담긴 필름 사진";
 "Filter" = "필터";
 "Filter stories by date range" = "날짜 범위로 스토리 필터링";
 "Find Friends" = "친구 찾기";
@@ -562,6 +566,7 @@
 "Loading your search…" = "검색을 불러오는 중…";
 "Loading..." = "불러오는 중...";
 "Loading…" = "불러오는 중…";
+"Local news and events in Portland, Oregon" = "오리건주 포틀랜드의 지역 뉴스와 행사";
 "Log In" = "로그인";
 "Log Out" = "로그아웃";
 "Logged in as %@" = "%@ 계정으로 로그인됨";
@@ -800,6 +805,7 @@
 "Pause Listening" = "듣기 일시 중지";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "스페이스 또는 Shift-스페이스로 스크롤할 표시된 스토리의 비율";
 "Permanently delete account" = "계정 영구 삭제";
+"Personal blogs about restoring old houses" = "오래된 집을 복원하는 개인 블로그";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 환경설정에서 변경할 수 있습니다.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 NewsBlur 메뉴에서 변경할 수 있습니다.";
 "Pick which model writes your Daily Briefing" = "데일리 브리핑을 작성할 모델을 선택하세요";
@@ -940,6 +946,7 @@
 "Saving search..." = "검색 저장 중...";
 "Saving..." = "저장 중...";
 "Schedule" = "일정";
+"Scientists explaining new research in plain language" = "새로운 연구를 알기 쉽게 설명하는 과학자들";
 "Scroll horizontally" = "가로로 스크롤";
 "Scroll to Comments" = "댓글로 이동";
 "Scroll to comments" = "댓글로 이동";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "RSS가 없어도 모든 웹사이트의 웹 피드 이용";
 "Wednesday" = "수요일";
 "Weekly" = "매주";
+"Weeknight vegetarian recipes with step-by-step photos" = "단계별 사진이 포함된 평일 저녁 채식 요리법";
 "Welcome back" = "다시 오신 것을 환영합니다";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "이 사이트에서 👍 %1$@와 👎 %2$@를 표시할 점은 무엇인가요?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "이 스토리에서 👍 %1$@와 👎 %2$@를 표시할 점은 무엇인가요?";

@@ -202,7 +202,9 @@
 "Back %@ seconds" = "Назад на %@ секунд";
 "Back to story titles" = "Вернуться к заголовкам статей";
 "Based on your interests" = "На основе ваших интересов";
+"Bike touring and long-distance cycling trip reports" = "Велопутешествия и отчёты о дальних поездках на велосипеде";
 "Black" = "Чёрная";
+"Book reviews of new science fiction and fantasy" = "Рецензии на новые книги в жанрах научной фантастики и фэнтези";
 "Bottom" = "Внизу";
 "Brightness Override" = "Коррекция яркости";
 "Brightness threshold" = "Порог яркости";
@@ -353,6 +355,7 @@
 "Email" = "Электронная почта";
 "Ember Orange" = "Огненно-оранжевый";
 "Enabled" = "Включено";
+"Engineers writing about how large systems fail" = "Инженеры пишут о том, как выходят из строя крупные системы";
 "Enter URL phrase..." = "Введите часть URL…";
 "Enter a custom search query..." = "Введите собственный поисковый запрос...";
 "Enter a web page URL..." = "Введите URL веб-страницы...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "Загрузка последних статей...";
 "Fetching stories from this site..." = "Загрузка статей с этого сайта...";
 "Fetching text..." = "Загрузка текста...";
+"Film photography with notes on cameras and film stocks" = "Плёночная фотография: заметки о камерах и фотоплёнке";
 "Filter" = "Фильтр";
 "Filter stories by date range" = "Фильтровать статьи по диапазону дат";
 "Find Friends" = "Найти друзей";
@@ -562,6 +566,7 @@
 "Loading your search…" = "Загрузка поиска…";
 "Loading..." = "Загрузка...";
 "Loading…" = "Загрузка…";
+"Local news and events in Portland, Oregon" = "Местные новости и события в Портленде, штат Орегон";
 "Log In" = "Войти";
 "Log Out" = "Выйти";
 "Logged in as %@" = "Вы вошли как %@";
@@ -800,6 +805,7 @@
 "Pause Listening" = "Приостановить прослушивание";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Процент видимой части статьи, прокручиваемый клавишами «Пробел» или Shift+Пробел";
 "Permanently delete account" = "Удалить аккаунт навсегда";
+"Personal blogs about restoring old houses" = "Личные блоги о восстановлении старых домов";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Выберите язык, который будет использовать NewsBlur. Вы можете изменить его в любое время в настройках.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Выберите язык, который хотите использовать в NewsBlur. Его можно изменить в любой момент в меню NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Выберите модель для создания ежедневной сводки";
@@ -940,6 +946,7 @@
 "Saving search..." = "Сохранение поиска…";
 "Saving..." = "Сохранение…";
 "Schedule" = "Расписание";
+"Scientists explaining new research in plain language" = "Учёные простым языком рассказывают о новых исследованиях";
 "Scroll horizontally" = "Прокручивать по горизонтали";
 "Scroll to Comments" = "Прокрутить до комментариев";
 "Scroll to comments" = "Прокрутить до комментариев";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "Веб-ленты с любых сайтов, даже без RSS";
 "Wednesday" = "Среда";
 "Weekly" = "Еженедельно";
+"Weeknight vegetarian recipes with step-by-step photos" = "Вегетарианские рецепты с пошаговыми фотографиями для будних вечеров";
 "Welcome back" = "С возвращением";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Что вам 👍 %1$@ и 👎 %2$@ на этом сайте?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "Что вам 👍 %1$@ и 👎 %2$@ в этой статье?";

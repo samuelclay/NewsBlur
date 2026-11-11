@@ -202,7 +202,9 @@
 "Back %@ seconds" = "ย้อนกลับ %@ วินาที";
 "Back to story titles" = "กลับไปยังชื่อเรื่อง";
 "Based on your interests" = "อิงตามความสนใจของคุณ";
+"Bike touring and long-distance cycling trip reports" = "การท่องเที่ยวด้วยจักรยานและบันทึกการเดินทางระยะไกล";
 "Black" = "สีดำ";
+"Book reviews of new science fiction and fantasy" = "รีวิวหนังสือแนววิทยาศาสตร์และแฟนตาซีออกใหม่";
 "Bottom" = "ด้านล่าง";
 "Brightness Override" = "ปรับความสว่าง";
 "Brightness threshold" = "เกณฑ์ความสว่าง";
@@ -353,6 +355,7 @@
 "Email" = "อีเมล";
 "Ember Orange" = "สีส้มถ่านคุ";
 "Enabled" = "เปิดใช้งาน";
+"Engineers writing about how large systems fail" = "วิศวกรเขียนถึงสาเหตุที่ระบบขนาดใหญ่ล้มเหลว";
 "Enter URL phrase..." = "ป้อนวลี URL...";
 "Enter a custom search query..." = "ป้อนคำค้นหาที่กำหนดเอง...";
 "Enter a web page URL..." = "ป้อน URL ของหน้าเว็บ...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "กำลังดึงบทความล่าสุด...";
 "Fetching stories from this site..." = "กำลังดึงบทความจากเว็บไซต์นี้...";
 "Fetching text..." = "กำลังดึงข้อความ...";
+"Film photography with notes on cameras and film stocks" = "การถ่ายภาพด้วยฟิล์ม พร้อมบันทึกเกี่ยวกับกล้องและฟิล์มแต่ละชนิด";
 "Filter" = "ตัวกรอง";
 "Filter stories by date range" = "กรองบทความตามช่วงวันที่";
 "Find Friends" = "ค้นหาเพื่อน";
@@ -562,6 +566,7 @@
 "Loading your search…" = "กำลังโหลดการค้นหา…";
 "Loading..." = "กำลังโหลด...";
 "Loading…" = "กำลังโหลด…";
+"Local news and events in Portland, Oregon" = "ข่าวท้องถิ่นและกิจกรรมในพอร์ตแลนด์ รัฐออริกอน";
 "Log In" = "เข้าสู่ระบบ";
 "Log Out" = "ออกจากระบบ";
 "Logged in as %@" = "เข้าสู่ระบบในชื่อ %@";
@@ -800,6 +805,7 @@
 "Pause Listening" = "หยุดฟังชั่วคราว";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "เปอร์เซ็นต์ของบทความที่แสดงซึ่งเลื่อนด้วย Space หรือ Shift-Space";
 "Permanently delete account" = "ลบบัญชีอย่างถาวร";
+"Personal blogs about restoring old houses" = "บล็อกส่วนตัวเกี่ยวกับการบูรณะบ้านเก่า";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในเมนู NewsBlur";
 "Pick which model writes your Daily Briefing" = "เลือกโมเดลที่จะเขียนสรุปข่าวประจำวันของคุณ";
@@ -940,6 +946,7 @@
 "Saving search..." = "กำลังบันทึกการค้นหา...";
 "Saving..." = "กำลังบันทึก…";
 "Schedule" = "กำหนดเวลา";
+"Scientists explaining new research in plain language" = "นักวิทยาศาสตร์อธิบายงานวิจัยใหม่ด้วยภาษาที่เข้าใจง่าย";
 "Scroll horizontally" = "เลื่อนแนวนอน";
 "Scroll to Comments" = "เลื่อนไปยังความคิดเห็น";
 "Scroll to comments" = "เลื่อนไปยังความคิดเห็น";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "ฟีดเว็บจากทุกเว็บไซต์ แม้ไม่มี RSS";
 "Wednesday" = "วันพุธ";
 "Weekly" = "รายสัปดาห์";
+"Weeknight vegetarian recipes with step-by-step photos" = "สูตรอาหารมังสวิรัติสำหรับมื้อเย็นวันธรรมดา พร้อมภาพประกอบทีละขั้นตอน";
 "Welcome back" = "ยินดีต้อนรับกลับมา";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "คุณ 👍 %1$@ และ 👎 %2$@ อะไรเกี่ยวกับเว็บไซต์นี้?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "คุณ 👍 %1$@ และ 👎 %2$@ อะไรเกี่ยวกับบทความนี้?";

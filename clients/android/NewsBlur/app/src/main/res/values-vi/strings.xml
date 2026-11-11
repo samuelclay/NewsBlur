@@ -1483,6 +1483,14 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="describe_example_apps">Đánh giá các ứng dụng iOS mới với nhiều ảnh chụp màn hình</string>
     <string name="describe_example_cities">Những bài luận dài về thành phố, nhà ở và giao thông công cộng</string>
     <string name="describe_example_games">Các nhà phát triển game độc lập viết về những dự án đang thực hiện</string>
+    <string name="describe_example_recipes">Công thức món chay cho bữa tối ngày thường, kèm ảnh hướng dẫn từng bước</string>
+    <string name="describe_example_research">Các nhà khoa học giải thích nghiên cứu mới bằng ngôn ngữ dễ hiểu</string>
+    <string name="describe_example_houses">Blog cá nhân về việc cải tạo nhà cũ</string>
+    <string name="describe_example_film">Nhiếp ảnh phim cùng ghi chú về máy ảnh và các loại phim</string>
+    <string name="describe_example_local">Tin tức và sự kiện địa phương tại Portland, Oregon</string>
+    <string name="describe_example_books">Đánh giá sách khoa học viễn tưởng và kỳ ảo mới</string>
+    <string name="describe_example_systems">Kỹ sư viết về cách các hệ thống lớn gặp sự cố</string>
+    <string name="describe_example_cycling">Du lịch bằng xe đạp và ký sự những chuyến đạp xe đường dài</string>
     <string name="describe_phase_reading">Đang đọc</string>
     <string name="describe_phase_searching">Đang tìm kiếm nguồn cấp</string>
     <string name="describe_phase_judging">Đang đánh giá</string>

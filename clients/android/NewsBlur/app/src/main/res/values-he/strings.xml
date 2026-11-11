@@ -1553,6 +1553,14 @@
     <string name="describe_example_apps">ביקורות על אפליקציות iOS חדשות עם הרבה צילומי מסך</string>
     <string name="describe_example_cities">מסות ארוכות על ערים, דיור ותחבורה ציבורית</string>
     <string name="describe_example_games">מפתחי משחקי אינדי שכותבים על העבודה שלהם בתהליך</string>
+    <string name="describe_example_recipes">מתכונים צמחוניים לערבי השבוע, עם תמונות של כל שלב</string>
+    <string name="describe_example_research">מדענים מסבירים מחקרים חדשים בשפה פשוטה</string>
+    <string name="describe_example_houses">בלוגים אישיים על שיפוץ בתים ישנים</string>
+    <string name="describe_example_film">צילום בפילם, עם הערות על מצלמות וסוגי פילם</string>
+    <string name="describe_example_local">חדשות מקומיות ואירועים בפורטלנד, אורגון</string>
+    <string name="describe_example_books">ביקורות ספרים על ספרי מדע בדיוני ופנטזיה חדשים</string>
+    <string name="describe_example_systems">מהנדסים כותבים על כשלים במערכות גדולות</string>
+    <string name="describe_example_cycling">יומני מסעות מטיולי אופניים ומרכיבות למרחקים ארוכים</string>
     <string name="describe_phase_reading">קריאה</string>
     <string name="describe_phase_searching">חיפוש בפידים</string>
     <string name="describe_phase_judging">שופטים</string>

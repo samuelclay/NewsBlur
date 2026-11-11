@@ -202,7 +202,9 @@
 "Back %@ seconds" = "Перемотати назад на %@ секунд";
 "Back to story titles" = "Назад до заголовків статей";
 "Based on your interests" = "На основі ваших інтересів";
+"Bike touring and long-distance cycling trip reports" = "Веломандрівки та звіти про далекі велосипедні подорожі";
 "Black" = "Чорна";
+"Book reviews of new science fiction and fantasy" = "Огляди нових науково-фантастичних і фентезійних книжок";
 "Bottom" = "Унизу";
 "Brightness Override" = "Перевизначення яскравості";
 "Brightness threshold" = "Поріг яскравості";
@@ -353,6 +355,7 @@
 "Email" = "Електронна пошта";
 "Ember Orange" = "Бурштиново-помаранчевий";
 "Enabled" = "Увімкнено";
+"Engineers writing about how large systems fail" = "Інженери пишуть про те, як виходять з ладу великі системи";
 "Enter URL phrase..." = "Введіть фразу з URL…";
 "Enter a custom search query..." = "Введіть власний пошуковий запит...";
 "Enter a web page URL..." = "Введіть URL вебсторінки...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "Завантаження останніх статей...";
 "Fetching stories from this site..." = "Завантаження статей із цього сайту...";
 "Fetching text..." = "Завантаження тексту...";
+"Film photography with notes on cameras and film stocks" = "Плівкова фотографія з нотатками про камери та фотоплівку";
 "Filter" = "Фільтр";
 "Filter stories by date range" = "Фільтрувати статті за діапазоном дат";
 "Find Friends" = "Знайти друзів";
@@ -562,6 +566,7 @@
 "Loading your search…" = "Завантаження результатів пошуку…";
 "Loading..." = "Завантаження...";
 "Loading…" = "Завантаження…";
+"Local news and events in Portland, Oregon" = "Місцеві новини та події в Портленді, штат Орегон";
 "Log In" = "Увійти";
 "Log Out" = "Вийти";
 "Logged in as %@" = "Ви увійшли як %@";
@@ -800,6 +805,7 @@
 "Pause Listening" = "Призупинити прослуховування";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Відсоток видимої статті, на який прокручує пробіл або Shift+Пробіл";
 "Permanently delete account" = "Назавжди видалити обліковий запис";
+"Personal blogs about restoring old houses" = "Особисті блоги про відновлення старих будинків";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Виберіть мову, якою має користуватися NewsBlur. Ви можете будь-коли змінити її в налаштуваннях.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Виберіть мову, яку хочете використовувати в NewsBlur. Її можна змінити будь-коли в меню NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Виберіть модель для створення щоденного огляду";
@@ -940,6 +946,7 @@
 "Saving search..." = "Збереження пошуку...";
 "Saving..." = "Збереження…";
 "Schedule" = "Розклад";
+"Scientists explaining new research in plain language" = "Науковці простою мовою розповідають про нові дослідження";
 "Scroll horizontally" = "Прокручувати горизонтально";
 "Scroll to Comments" = "Перейти до коментарів";
 "Scroll to comments" = "Прокрутити до коментарів";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "Вебстрічки з будь-якого сайту, навіть без RSS";
 "Wednesday" = "Середа";
 "Weekly" = "Щотижня";
+"Weeknight vegetarian recipes with step-by-step photos" = "Вегетаріанські рецепти для буднів із покроковими фото";
 "Welcome back" = "З поверненням";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Що вам 👍 %1$@ і 👎 %2$@ на цьому сайті?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "Що вам 👍 %1$@ і 👎 %2$@ у цій статті?";

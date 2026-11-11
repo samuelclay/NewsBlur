@@ -1483,6 +1483,14 @@
     <string name="describe_example_apps">스크린샷이 많은 신규 iOS 앱 리뷰</string>
     <string name="describe_example_cities">도시, 주택, 대중교통에 관한 긴 에세이</string>
     <string name="describe_example_games">개발 중인 작업에 관해 글을 쓰는 인디 게임 개발자</string>
+    <string name="describe_example_recipes">단계별 사진이 포함된 평일 저녁 채식 요리법</string>
+    <string name="describe_example_research">새로운 연구를 알기 쉽게 설명하는 과학자들</string>
+    <string name="describe_example_houses">오래된 집을 복원하는 개인 블로그</string>
+    <string name="describe_example_film">카메라와 필름 종류에 대한 설명이 담긴 필름 사진</string>
+    <string name="describe_example_local">오리건주 포틀랜드의 지역 뉴스와 행사</string>
+    <string name="describe_example_books">신작 SF 및 판타지 도서 리뷰</string>
+    <string name="describe_example_systems">대규모 시스템이 실패하는 원인을 다루는 엔지니어들의 글</string>
+    <string name="describe_example_cycling">자전거 여행과 장거리 라이딩 여행기</string>
     <string name="describe_phase_reading">읽는 중</string>
     <string name="describe_phase_searching">피드 검색 중</string>
     <string name="describe_phase_judging">판별 중</string>

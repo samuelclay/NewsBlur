@@ -1483,6 +1483,14 @@
     <string name="describe_example_apps">スクリーンショットが豊富な新しいiOSアプリのレビュー</string>
     <string name="describe_example_cities">都市、住宅、公共交通についての長いエッセイ</string>
     <string name="describe_example_games">開発中の作品について発信するインディーゲーム開発者</string>
+    <string name="describe_example_recipes">手順ごとの写真付き、平日の夜に作るベジタリアンレシピ</string>
+    <string name="describe_example_research">新しい研究をわかりやすく解説する科学者</string>
+    <string name="describe_example_houses">古い家の修復について書く個人ブログ</string>
+    <string name="describe_example_film">カメラやフィルムの種類についてのメモを添えたフィルム写真</string>
+    <string name="describe_example_local">オレゴン州ポートランドの地域ニュースとイベント</string>
+    <string name="describe_example_books">新作のSF・ファンタジー小説の書評</string>
+    <string name="describe_example_systems">大規模システムの障害について書くエンジニア</string>
+    <string name="describe_example_cycling">自転車ツーリングや長距離サイクリングの旅行記</string>
     <string name="describe_phase_reading">読み取り中</string>
     <string name="describe_phase_searching">フィードを検索中</string>
     <string name="describe_phase_judging">判定中</string>

@@ -1518,6 +1518,14 @@
     <string name="describe_example_apps">ढेर सारे स्क्रीनशॉट वाले नए iOS ऐप्स की समीक्षाएँ</string>
     <string name="describe_example_cities">शहरों, आवास और सार्वजनिक परिवहन पर लंबे निबंध</string>
     <string name="describe_example_games">स्वतंत्र गेम डेवलपर जो अपने अधूरे काम के बारे में लिखते हैं</string>
+    <string name="describe_example_recipes">कामकाजी दिनों की शाम के लिए शाकाहारी व्यंजन, चरण-दर-चरण तस्वीरों के साथ</string>
+    <string name="describe_example_research">वैज्ञानिक नए शोध को सरल भाषा में समझाते हुए</string>
+    <string name="describe_example_houses">पुराने घरों के नवीनीकरण के बारे में व्यक्तिगत ब्लॉग</string>
+    <string name="describe_example_film">कैमरों और फ़िल्म के प्रकारों पर टिप्पणियों के साथ फ़िल्म फ़ोटोग्राफ़ी</string>
+    <string name="describe_example_local">पोर्टलैंड, ओरेगन की स्थानीय खबरें और कार्यक्रम</string>
+    <string name="describe_example_books">नई साइंस फ़िक्शन और फ़ैंटेसी पुस्तकों की समीक्षाएँ</string>
+    <string name="describe_example_systems">इंजीनियर बड़े सिस्टम की विफलताओं के बारे में लिखते हुए</string>
+    <string name="describe_example_cycling">बाइक से लंबी यात्राओं और लंबी दूरी की साइकिलिंग के यात्रा-वृत्तांत</string>
     <string name="describe_phase_reading">पढ़ा जा रहा है</string>
     <string name="describe_phase_searching">फ़ीड खोजी जा रही हैं</string>
     <string name="describe_phase_judging">मूल्यांकन</string>

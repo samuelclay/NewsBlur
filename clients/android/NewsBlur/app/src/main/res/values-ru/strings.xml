@@ -1588,6 +1588,14 @@
     <string name="describe_example_apps">Обзоры новых приложений для iOS с большим количеством скриншотов</string>
     <string name="describe_example_cities">Большие эссе о городах, жилье и общественном транспорте</string>
     <string name="describe_example_games">Независимые разработчики игр рассказывают о своих проектах в процессе разработки</string>
+    <string name="describe_example_recipes">Вегетарианские рецепты с пошаговыми фотографиями для будних вечеров</string>
+    <string name="describe_example_research">Учёные простым языком рассказывают о новых исследованиях</string>
+    <string name="describe_example_houses">Личные блоги о восстановлении старых домов</string>
+    <string name="describe_example_film">Плёночная фотография: заметки о камерах и фотоплёнке</string>
+    <string name="describe_example_local">Местные новости и события в Портленде, штат Орегон</string>
+    <string name="describe_example_books">Рецензии на новые книги в жанрах научной фантастики и фэнтези</string>
+    <string name="describe_example_systems">Инженеры пишут о том, как выходят из строя крупные системы</string>
+    <string name="describe_example_cycling">Велопутешествия и отчёты о дальних поездках на велосипеде</string>
     <string name="describe_phase_reading">Чтение</string>
     <string name="describe_phase_searching">Поиск лент</string>
     <string name="describe_phase_judging">Оцениваем</string>

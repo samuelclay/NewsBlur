@@ -202,7 +202,9 @@
 "Back %@ seconds" = "后退 %@ 秒";
 "Back to story titles" = "返回文章标题";
 "Based on your interests" = "根据你的兴趣";
+"Bike touring and long-distance cycling trip reports" = "自行车旅行与长途骑行游记";
 "Black" = "黑色";
+"Book reviews of new science fiction and fantasy" = "新科幻与奇幻作品书评";
 "Bottom" = "底部";
 "Brightness Override" = "按亮度切换主题";
 "Brightness threshold" = "亮度阈值";
@@ -353,6 +355,7 @@
 "Email" = "电子邮件";
 "Ember Orange" = "余烬橙";
 "Enabled" = "已启用";
+"Engineers writing about how large systems fail" = "工程师撰写大型系统故障分析";
 "Enter URL phrase..." = "输入网址短语…";
 "Enter a custom search query..." = "输入自定义搜索查询…";
 "Enter a web page URL..." = "输入网页 URL…";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "正在获取近期文章…";
 "Fetching stories from this site..." = "正在从此网站获取文章…";
 "Fetching text..." = "正在获取文本…";
+"Film photography with notes on cameras and film stocks" = "胶片摄影，以及相机和胶卷的使用心得";
 "Filter" = "筛选";
 "Filter stories by date range" = "按日期范围筛选文章";
 "Find Friends" = "查找好友";
@@ -562,6 +566,7 @@
 "Loading your search…" = "正在加载你的搜索…";
 "Loading..." = "正在加载…";
 "Loading…" = "正在加载…";
+"Local news and events in Portland, Oregon" = "俄勒冈州波特兰市的本地新闻与活动";
 "Log In" = "登录";
 "Log Out" = "退出登录";
 "Logged in as %@" = "已以 %@ 身份登录";
@@ -800,6 +805,7 @@
 "Pause Listening" = "暂停收听";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "按空格键或 Shift-Space 滚动可见文章的百分比";
 "Permanently delete account" = "永久删除账户";
+"Personal blogs about restoring old houses" = "记录老房子修复过程的个人博客";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "选择你希望 NewsBlur 使用的语言。你可以随时在“偏好设置”中更改。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "选择你希望 NewsBlur 使用的语言。你可以随时在 NewsBlur 菜单中更改。";
 "Pick which model writes your Daily Briefing" = "选择用于撰写每日简报的模型";
@@ -940,6 +946,7 @@
 "Saving search..." = "正在保存搜索…";
 "Saving..." = "正在保存…";
 "Schedule" = "安排";
+"Scientists explaining new research in plain language" = "科学家用通俗易懂的语言解读最新研究";
 "Scroll horizontally" = "横向滚动";
 "Scroll to Comments" = "滚动到评论";
 "Scroll to comments" = "滚动到评论";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "来自任何网站的网页订阅源，即使没有 RSS";
 "Wednesday" = "星期三";
 "Weekly" = "每周";
+"Weeknight vegetarian recipes with step-by-step photos" = "适合工作日晚餐的素食食谱，附分步照片";
 "Welcome back" = "欢迎回来";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "你对这个网站中哪些内容 👍 %1$@，又有哪些内容 👎 %2$@？";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "你对这篇文章中哪些内容 👍 %1$@，又有哪些内容 👎 %2$@？";

@@ -1553,6 +1553,14 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="describe_example_apps">Análises de novos apps para iOS com muitas capturas de tela</string>
     <string name="describe_example_cities">Ensaios longos sobre cidades, moradia e transporte público</string>
     <string name="describe_example_games">Desenvolvedores independentes de jogos escrevendo sobre o desenvolvimento de seus jogos</string>
+    <string name="describe_example_recipes">Receitas vegetarianas para dias de semana com fotos passo a passo</string>
+    <string name="describe_example_research">Cientistas explicando novas pesquisas em linguagem simples</string>
+    <string name="describe_example_houses">Blogs pessoais sobre a restauração de casas antigas</string>
+    <string name="describe_example_film">Fotografia analógica com notas sobre câmeras e filmes</string>
+    <string name="describe_example_local">Notícias locais e eventos em Portland, Oregon</string>
+    <string name="describe_example_books">Resenhas de novos livros de ficção científica e fantasia</string>
+    <string name="describe_example_systems">Engenheiros escrevendo sobre como grandes sistemas falham</string>
+    <string name="describe_example_cycling">Relatos de viagens de bicicleta e ciclismo de longa distância</string>
     <string name="describe_phase_reading">Lendo</string>
     <string name="describe_phase_searching">Pesquisando feeds</string>
     <string name="describe_phase_judging">Avaliando</string>

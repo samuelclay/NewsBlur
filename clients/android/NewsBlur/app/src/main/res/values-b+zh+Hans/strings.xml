@@ -1483,6 +1483,14 @@
     <string name="describe_example_apps">配有大量截图的新 iOS 应用评测</string>
     <string name="describe_example_cities">关于城市、住房和公共交通的长篇文章</string>
     <string name="describe_example_games">分享开发工作进展的独立游戏开发者</string>
+    <string name="describe_example_recipes">适合工作日晚餐的素食食谱，附分步照片</string>
+    <string name="describe_example_research">科学家用通俗易懂的语言解读最新研究</string>
+    <string name="describe_example_houses">记录老房子修复过程的个人博客</string>
+    <string name="describe_example_film">胶片摄影，以及相机和胶卷的使用心得</string>
+    <string name="describe_example_local">俄勒冈州波特兰市的本地新闻与活动</string>
+    <string name="describe_example_books">新科幻与奇幻作品书评</string>
+    <string name="describe_example_systems">工程师撰写大型系统故障分析</string>
+    <string name="describe_example_cycling">自行车旅行与长途骑行游记</string>
     <string name="describe_phase_reading">正在读取</string>
     <string name="describe_phase_searching">正在搜索订阅源</string>
     <string name="describe_phase_judging">正在判断</string>

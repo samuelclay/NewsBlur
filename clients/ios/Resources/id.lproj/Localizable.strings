@@ -202,7 +202,9 @@
 "Back %@ seconds" = "Mundur %@ detik";
 "Back to story titles" = "Kembali ke judul artikel";
 "Based on your interests" = "Berdasarkan minat Anda";
+"Bike touring and long-distance cycling trip reports" = "Tur sepeda dan laporan perjalanan bersepeda jarak jauh";
 "Black" = "Hitam";
+"Book reviews of new science fiction and fantasy" = "Ulasan buku fiksi ilmiah dan fantasi terbaru";
 "Bottom" = "Bawah";
 "Brightness Override" = "Penyesuaian Kecerahan";
 "Brightness threshold" = "Ambang kecerahan";
@@ -353,6 +355,7 @@
 "Email" = "Email";
 "Ember Orange" = "Oranye Bara";
 "Enabled" = "Diaktifkan";
+"Engineers writing about how large systems fail" = "Insinyur menulis tentang penyebab kegagalan sistem berskala besar";
 "Enter URL phrase..." = "Masukkan frasa URL...";
 "Enter a custom search query..." = "Masukkan kueri penelusuran khusus...";
 "Enter a web page URL..." = "Masukkan URL halaman web...";
@@ -397,6 +400,7 @@
 "Fetching recent stories..." = "Mengambil artikel terbaru...";
 "Fetching stories from this site..." = "Mengambil artikel dari situs ini...";
 "Fetching text..." = "Mengambil teks...";
+"Film photography with notes on cameras and film stocks" = "Fotografi film dengan catatan tentang kamera dan jenis film";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter artikel berdasarkan rentang tanggal";
 "Find Friends" = "Cari Teman";
@@ -562,6 +566,7 @@
 "Loading your search…" = "Memuat pencarian Anda…";
 "Loading..." = "Memuat...";
 "Loading…" = "Memuat…";
+"Local news and events in Portland, Oregon" = "Berita dan acara lokal di Portland, Oregon";
 "Log In" = "Masuk";
 "Log Out" = "Keluar";
 "Logged in as %@" = "Masuk sebagai %@";
@@ -800,6 +805,7 @@
 "Pause Listening" = "Jeda mendengarkan";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Persentase artikel yang terlihat yang digulir dengan Space atau Shift-Space";
 "Permanently delete account" = "Hapus akun secara permanen";
+"Personal blogs about restoring old houses" = "Blog pribadi tentang renovasi rumah tua";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pilih bahasa yang ingin digunakan oleh NewsBlur. Anda dapat mengubahnya kapan saja di Preferensi.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pilih bahasa yang ingin Anda gunakan di NewsBlur. Anda dapat mengubahnya kapan saja di menu NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Pilih model yang menulis Ringkasan Harian Anda";
@@ -940,6 +946,7 @@
 "Saving search..." = "Menyimpan pencarian...";
 "Saving..." = "Menyimpan...";
 "Schedule" = "Jadwal";
+"Scientists explaining new research in plain language" = "Ilmuwan menjelaskan penelitian baru dengan bahasa sederhana";
 "Scroll horizontally" = "Gulir horizontal";
 "Scroll to Comments" = "Gulir ke Komentar";
 "Scroll to comments" = "Gulir ke komentar";
@@ -1295,6 +1302,7 @@
 "Web Feeds from any website, even without RSS" = "Feed web dari situs apa pun, bahkan tanpa RSS";
 "Wednesday" = "Rabu";
 "Weekly" = "Mingguan";
+"Weeknight vegetarian recipes with step-by-step photos" = "Resep vegetarian untuk makan malam hari kerja dengan foto langkah demi langkah";
 "Welcome back" = "Selamat datang kembali";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Apa yang Anda 👍 %1$@ dan 👎 %2$@ tentang situs ini?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "Apa yang Anda 👍 %1$@ dan 👎 %2$@ dari artikel ini?";

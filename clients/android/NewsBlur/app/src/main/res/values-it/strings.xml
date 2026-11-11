@@ -1553,6 +1553,14 @@ le persone per parlare del mondo.</string>
     <string name="describe_example_apps">Recensioni di nuove app iOS con molte schermate</string>
     <string name="describe_example_cities">Saggi approfonditi su città, alloggi e trasporti pubblici</string>
     <string name="describe_example_games">Sviluppatori indipendenti di videogiochi che raccontano il loro lavoro in corso</string>
+    <string name="describe_example_recipes">Ricette vegetariane per le sere infrasettimanali con foto passo passo</string>
+    <string name="describe_example_research">Scienziati che spiegano le nuove ricerche con parole semplici</string>
+    <string name="describe_example_houses">Blog personali sul restauro di vecchie case</string>
+    <string name="describe_example_film">Fotografia analogica con appunti su fotocamere e pellicole</string>
+    <string name="describe_example_local">Notizie ed eventi locali a Portland, Oregon</string>
+    <string name="describe_example_books">Recensioni di nuovi libri di fantascienza e fantasy</string>
+    <string name="describe_example_systems">Ingegneri che raccontano come si guastano i sistemi complessi</string>
+    <string name="describe_example_cycling">Viaggi in bici e resoconti di escursioni ciclistiche a lunga distanza</string>
     <string name="describe_phase_reading">Lettura in corso</string>
     <string name="describe_phase_searching">Ricerca dei feed</string>
     <string name="describe_phase_judging">Valutazione</string>

@@ -1518,6 +1518,14 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="describe_example_apps">Ekran görüntüsü bol yeni iOS uygulamalarının incelemeleri</string>
     <string name="describe_example_cities">Şehirler, konut ve toplu taşıma hakkında uzun yazılar</string>
     <string name="describe_example_games">Yapım aşamasındaki çalışmaları hakkında yazan bağımsız oyun geliştiricileri</string>
+    <string name="describe_example_recipes">Adım adım fotoğraflarla hafta içi akşamlarına uygun vejetaryen tarifler</string>
+    <string name="describe_example_research">Yeni araştırmaları herkesin anlayacağı bir dille açıklayan bilim insanları</string>
+    <string name="describe_example_houses">Eski evleri restore etmeyi anlatan kişisel bloglar</string>
+    <string name="describe_example_film">Fotoğraf makineleri ve film türleri hakkında notlarla analog fotoğrafçılık</string>
+    <string name="describe_example_local">Portland, Oregon\'dan yerel haberler ve etkinlikler</string>
+    <string name="describe_example_books">Yeni bilim kurgu ve fantastik kitap incelemeleri</string>
+    <string name="describe_example_systems">Büyük sistemlerin nasıl arızalandığını yazan mühendisler</string>
+    <string name="describe_example_cycling">Bisiklet turları ve uzun mesafeli bisiklet gezisi günlükleri</string>
     <string name="describe_phase_reading">Okunuyor</string>
     <string name="describe_phase_searching">Akışlar aranıyor</string>
     <string name="describe_phase_judging">Değerlendiriliyor</string>
