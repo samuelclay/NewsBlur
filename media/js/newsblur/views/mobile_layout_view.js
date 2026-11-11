@@ -119,6 +119,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     activate: function () {
         this.active = true;
         NEWSBLUR.reader.flags.mobile = true;
+        this.own_scroll_restoration();
         this.$body.addClass('NB-mobile');
         this.measure_browser_chrome();
         _.each(this.$screens, function ($screen) {
@@ -151,6 +152,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.story_pager.close();
         this.active = false;
         NEWSBLUR.reader.flags.mobile = false;
+        if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'auto';
         this.close_sideoption_sheet();
         this.$body.removeClass('NB-mobile NB-mobile-transitioning NB-mobile-sheet-open');
         this.$body.removeClass(this.screen_body_classes());
@@ -379,6 +381,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     handle_popstate: function (e) {
         if (!this.active) return;
+        this.own_scroll_restoration();
         var target = this.utils.read_history_state(e.state, window.location.pathname);
         var from = { screen: this.screen, depth: this.depth, story_hash: this.story_pager.story_hash() };
         var direction = this.utils.transition_direction(from, target);
@@ -844,6 +847,15 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // ===============
     // = Page scroll =
     // ===============
+
+    // A browser puts the page back where it was scrolled when a history entry was left. For the
+    // story list that is where it was when a story was opened, not the story since paged to, so
+    // going back showed the old place first and then moved. The layout places every screen
+    // itself (enter_page_scroll), so the browser is told to leave the scroll alone. The setting
+    // belongs to the entry on screen, so each entry landed on is told again.
+    own_scroll_restoration: function () {
+        if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
+    },
 
     // mobile.css (Page scrolling): a phone browser shrinks its toolbar only when the page itself
     // scrolls. While the feed list, the story list or an open story is at rest, its screen is

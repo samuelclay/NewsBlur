@@ -206,4 +206,49 @@ def check_story_screen(ctx):
     ctx.wait(1300)
     state = ctx.evaluate(STATE)
     ctx.check("back from a story returns the story list to the page", state["page_screen"] == "titles", state)
+    check_back_lands_on_story(ctx)
     ctx.set_layout("list")
+
+
+# Where the story being read sits in the list: how far its row is under the bar of pills, and
+# whether the stories before it show as read.
+PLACE = """(() => {
+  var story = NEWSBLUR.reader.active_story;
+  var bar = document.querySelector('.right-pane > .content-north').getBoundingClientRect().bottom;
+  var row = story.story_title_view.$el[0].getBoundingClientRect();
+  var index = NEWSBLUR.assets.stories.indexOf(story);
+  return {screen: NEWSBLUR.app.mobile.screen, index: index, row_offset: Math.round(row.top - bar),
+    page_y: Math.round(window.scrollY), restoration: window.history.scrollRestoration,
+    unread_before: NEWSBLUR.assets.stories.first(index).filter(function (s) { return !s.get('read_status'); }).length};
+})()"""
+
+
+def check_back_lands_on_story(ctx):
+    """After paging several stories ahead on the story screen, going back with the browser showed
+    the story list where it was when the first story was opened, then moved it to the story being
+    read: the browser had put the page back where that history entry was left. Expects the story
+    list in a grid."""
+    page = ctx.page
+    width = ctx.viewport["width"]
+    ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
+    ctx.wait(300)
+    ctx.tap_story(0)
+    for _ in range(6):
+        ctx.touch.swipe(width - 60, 600, 60, 610, steps=10)
+        ctx.wait(900)
+    # The browser's own back, as Safari's edge swipe is: the history moves and nothing slides.
+    page.evaluate("window.history.back()")
+    ctx.wait(60)
+    first = ctx.evaluate(PLACE)
+    ctx.wait(900)
+    settled = ctx.evaluate(PLACE)
+    ctx.check(
+        "back from stories paged ahead shows the list already on the story being read",
+        first["screen"] == "titles"
+        and first["index"] >= 5
+        and first["restoration"] == "manual"
+        and abs(first["row_offset"]) <= 2
+        and abs(settled["row_offset"]) <= 2
+        and not first["unread_before"],
+        (first, settled),
+    )
