@@ -79,7 +79,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         document.addEventListener('focusout', function () {
             _.defer(this.scroll_page_to_top);
         }.bind(this));
-        document.addEventListener('touchstart', this.handle_touchstart, { passive: true });
+        // Not passive: claims_browser_edge takes the story screen's edge swipe from the browser.
+        document.addEventListener('touchstart', this.handle_touchstart, { passive: false });
         document.addEventListener('touchstart', this.handle_sheet_touchstart, { passive: true });
         document.addEventListener('touchmove', this.handle_sheet_touchmove, { passive: false });
         document.addEventListener('touchend', this.handle_sheet_touchend, { passive: true });
@@ -1051,13 +1052,34 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (!this.active || e.touches.length !== 1) return;
         var touch = e.touches[0];
         var browser_edge = this.browser_owns_edge_swipe() && this.is_browser_edge_touch(touch.clientX);
+        var claimed = browser_edge && !this.transition && !this.is_overlay_open() &&
+            this.claims_browser_edge(e, touch);
         if (browser_edge) {
+            // Kept even for a claimed touch: a browser that swipes anyway cancels the touch, and
+            // its popstate then switches screens without a second slide.
             this.browser_edge_touch_at = Date.now();
-            return;
+            if (!claimed) return;
         }
         if (this.transition) return;
         if (this.screen === 'feeds' || this.is_overlay_open()) return;
         if ($(e.target).closest('.NB-media-player').length) return;
+        if (claimed) {
+            // Cancelling the touch's start is what keeps iOS Safari from beginning its own swipe.
+            // It also takes the touch's scroll and click, which handle_touchmove and
+            // handle_touchend give back.
+            e.preventDefault();
+            this.swipe = {
+                claimed: true,
+                target: e.target,
+                start_x: touch.clientX,
+                start_y: touch.clientY,
+                last_y: touch.clientY,
+                axis: null,
+                dx: 0,
+                samples: [{ x: touch.clientX, t: e.timeStamp }]
+            };
+            return;
+        }
         // The story list and dashboard go back from a swipe anywhere on them, as in the iOS and
         // Android apps. The story screen's own swipe pages stories, so it goes back from the edge.
         // In an iOS browser the edges are the browser's own swipe, so only the rest is the layout's.
@@ -1070,6 +1092,18 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             dx: 0,
             samples: [{ x: touch.clientX, t: e.timeStamp }]
         };
+    },
+
+    // iOS Safari's swipe back slides in a picture of the screen beneath, taken when it was left.
+    // For the story list under the story screen that is the list as it was before any stories
+    // were paged through: the old place, its stories still unread, until the swipe ends and the
+    // real list replaces it. So on the story screen the layout takes the swipe from the back
+    // edge for itself, which slides the story away over the list as it is now.
+    claims_browser_edge: function (e, touch) {
+        if (this.screen !== 'story' || !e.cancelable || !this.is_edge_touch(touch.clientX)) return false;
+        var $target = $(e.target);
+        if (!$target.closest('.NB-mobile-story-pager').length) return false;
+        return !$target.closest('input, textarea, select, [contenteditable="true"]').length;
     },
 
     // Anywhere except text fields, sliders and things that scroll sideways, such as a wide table
@@ -1086,10 +1120,22 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var direction = NEWSBLUR.utils.is_rtl() ? -1 : 1;
         var dx = (touch.clientX - swipe.start_x) * direction;
         var dy = touch.clientY - swipe.start_y;
+        if (swipe.scrolling) {
+            // A claimed touch that turned out to be a scroll moves the story by hand.
+            e.preventDefault();
+            this.page_scroller('story').scrollTop += swipe.last_y - touch.clientY;
+            swipe.last_y = touch.clientY;
+            return;
+        }
         if (!swipe.axis) {
             swipe.axis = this.utils.gesture_axis(dx, dy);
             if (!swipe.axis) return;
             if (swipe.axis !== 'horizontal' || dx <= 0) {
+                if (swipe.claimed && swipe.axis === 'vertical') {
+                    swipe.scrolling = true;
+                    swipe.last_y = touch.clientY;
+                    return;
+                }
                 this.swipe = null;
                 return;
             }
@@ -1106,6 +1152,11 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var swipe = this.swipe;
         this.swipe = null;
         this.browser_edge_touch_at = null;
+        // A claimed touch that went nowhere was a tap, whose click was cancelled with its start.
+        if (swipe && swipe.claimed && !swipe.axis && swipe.target.isConnected) {
+            swipe.target.click();
+            return;
+        }
         if (!swipe || !swipe.dragging) return;
         var first = swipe.samples[0];
         var last = swipe.samples[swipe.samples.length - 1];

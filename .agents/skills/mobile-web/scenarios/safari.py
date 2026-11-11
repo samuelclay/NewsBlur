@@ -115,6 +115,41 @@ def run(ctx):
     ctx.check_no_page_errors()
 
 
+def check_story_edge_swipe(ctx):
+    """Safari's own swipe back from a story slid in its picture of the story list from before any
+    stories were paged through. On the story screen the layout takes the back-edge swipe itself,
+    over the live list, and gives the touch's tap and scroll back. Expects the story screen, and
+    leaves the story list."""
+    ctx.evaluate(
+        "(() => { document.querySelector('.NB-mobile-story-page-current').scrollTop = 0; window.__nb_edge = {clicks: 0}; "
+        "document.addEventListener('touchstart', function (e) { window.__nb_edge.prevented = e.defaultPrevented; }); "
+        "document.querySelector('.NB-mobile-story-pager').addEventListener('click', function () { window.__nb_edge.clicks += 1; }); })()"
+    )
+    ctx.wait(300)
+    ctx.touch.swipe(5, 600, 6, 300, steps=10)
+    ctx.wait(500)
+    scrolled = ctx.evaluate("Math.round(document.querySelector('.NB-mobile-story-page-current').scrollTop)")
+    ctx.touch._send("touchStart", 5, 400)
+    ctx.touch._send("touchEnd")
+    ctx.wait(300)
+    edge = ctx.evaluate("window.__nb_edge")
+    ctx.check(
+        "a touch at a story's back edge is taken from Safari, and still scrolls and taps",
+        edge["prevented"] and scrolled > 200 and edge["clicks"] == 1 and ctx.state()["screen"] == "story",
+        (edge, scrolled, ctx.state()),
+    )
+    release = ctx.touch.drag(5, 400, 240, 404, steps=10)
+    ctx.wait(60)
+    dragging = ctx.evaluate("$('.NB-mobile-story-screen.NB-mobile-dragging').length")
+    release()
+    ctx.wait(1000)
+    ctx.check(
+        "a swipe from a story's back edge slides it away over the live story list",
+        dragging == 1 and ctx.state()["screen"] == "titles",
+        (dragging, ctx.state()),
+    )
+
+
 # Where a screen, the bar of controls under its nav bar and the end of its list sit, as page
 # coordinates, with the list scrolled to its end.
 GEOMETRY = """((screen, nav, controls, list) => {
@@ -190,8 +225,7 @@ def check_under_toolbar(ctx, feed_id):
         and story["last_row"] <= story["window"],
         story,
     )
-    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
-    ctx.wait(900)
+    check_story_edge_swipe(ctx)
 
     # A full-screen modal covers the part under the toolbar too, instead of leaving the screen
     # beneath showing there.
