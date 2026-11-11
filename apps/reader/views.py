@@ -1753,7 +1753,11 @@ def load_feed_page(request, feed_id):
                 logging.user(request, "~FYLoading original page, non-proxied")
                 return HttpResponseRedirect("//%s/%s" % (settings.S3_PAGES_BUCKET_NAME, feed.s3_pages_key))
 
-    data = MFeedPage.get_data(feed_id=feed_id)
+    # Mongo is only where pages are stored when they aren't on the page server. When they
+    # are, its feed_pages collection holds copies from before that move, which are a last
+    # resort behind a live fetch.
+    pages_in_mongo = not settings.BACKED_BY_AWS.get("pages_on_node")
+    data = MFeedPage.get_data(feed_id=feed_id) if pages_in_mongo else None
 
     if not data and feed and feed.has_page and not feed.has_page_exception:
         # Nothing stored: the page was never opened before, or it went unopened long enough
@@ -1763,6 +1767,9 @@ def load_feed_page(request, feed_id):
             logging.user(request, "~FYLoading original page (%s), ~SBfetched live" % feed_id)
             return HttpResponse(data, content_type="text/html; charset=utf-8")
         feed = Feed.get_by_id(feed_id)
+
+    if not data and not pages_in_mongo:
+        data = MFeedPage.get_data(feed_id=feed_id)
 
     if not data or not feed or not feed.has_page or feed.has_page_exception:
         logging.user(request, "~FYLoading original page, ~FRmissing")

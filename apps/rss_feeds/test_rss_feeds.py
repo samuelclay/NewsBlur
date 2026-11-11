@@ -9338,3 +9338,24 @@ class Test_OriginalPageUsage(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("original page", smart_str(response.content))
         self.assertIn("original page", smart_str(MFeedPage.get_data(feed_id=self.feed.pk)))
+
+    @patch("apps.rss_feeds.page_importer.requests.post")
+    @patch("apps.reader.views.requests.get")
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
+    def test_missing_node_page_is_fetched_live_not_served_from_the_old_mongo_copy(
+        self, mock_site_get, mock_node_get, mock_node_post
+    ):
+        """Production keeps pages on the page server, and Mongo's feed_pages still holds
+        copies from before that move. One of those must not stand in for a deleted page."""
+        from apps.rss_feeds.models import MFeedPage
+
+        MFeedPage.objects.create(feed_id=self.feed.pk, page_data=zlib.compress(b"<html>years old</html>"))
+        mock_node_get.return_value = MagicMock(status_code=404)
+        mock_node_post.return_value = MagicMock(status_code=200)
+        mock_site_get.return_value = self._site_response()
+
+        with override_settings(BACKED_BY_AWS=dict(settings.BACKED_BY_AWS, pages_on_node=True)):
+            response = self.client.get(reverse("load-feed-page", kwargs={"feed_id": self.feed.pk}))
+
+        self.assertIn("original page", smart_str(response.content))
+        self.assertNotIn("years old", smart_str(response.content))
