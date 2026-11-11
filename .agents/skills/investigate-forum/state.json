@@ -487,6 +487,20 @@
       "note": "PK1 found the Nov 24 slate dark theme too bright; Sam promised a gray option and a sepia theme in the thread. #2234 adds Gray (the new dark structure in neutral grays, softer text) and Warm (sepia) to the web, an iOS style picker (Auto plus four circles), Auto remembering a light and a dark theme, and a redesigned Preferences dialog. Merged ecc1254163 after two review rounds, plus one follow-up fix on main (adefc3223e). Web deployed with make deploy_static on 2026-11-26 (all 14 app hosts ok, new bundles verified live). The blog post is on main and goes out with the #2235 session's deploy (make blog). Reply is ready to post: Gray is live.",
       "reply": "Gray is live on the web now. It's the new dark mode with the blue taken out, in neutral grays a little lighter than the old dark mode, and the text is a soft gray instead of bright white. Warm, the sepia theme from the apps, is in too.\n\nThe theme row in the manage menu (the gear at the bottom left) is now Auto followed by four circles: Light, Warm, Gray and Dark. Auto remembers which dark theme you picked, so choose Gray once and Auto will use Gray whenever your system goes dark. Let me know if the contrast still feels off and I'll tune it.",
       "question": null
+    },
+    "13927": {
+      "title": "[Android] Opening a folder intermittently marks top ~6 stories as read",
+      "url": "https://forum.newsblur.com/t/android-opening-a-folder-intermittently-marks-top-6-stories-as-read/13927",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-11-11T16:25:00Z",
+      "last_posted_at": "2026-11-10T20:36:41.328Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2208",
+      "branch": "forum-13927-android-mark-read-replay",
+      "worktree": ".worktree/forum-13927-android-mark-read-replay",
+      "note": "Synced mark-all-read followup was replayed unbounded after each story page, marking page 1 of a reopened folder read. Proven by unit test, not reproduced on device (needs mark all read on prod account). PR left draft: Android Tests CI is red on main too (asadmansr/android-test-report-action Docker build cannot reach bionic apt), so review bots have not run. Reply assumes the fix shipped in an Android release.",
+      "reply": "Found it, and it has nothing to do with scrolling. When you mark a folder as read, the Android app holds on to that action for a little while and reapplies it whenever a page of stories loads, so a slow response can't undo your mark. The bug is that it reapplied it to everything in the folder, including stories that were published after you marked it read. So if you came back to the folder soon after, the first page of new stories (about six) got marked read and the rest loaded normally. That also explains why backing out only sometimes fixed it. It now only reapplies to stories that existed when you hit mark as read. The fix will be in the next Android release.",
+      "question": null
     }
   }
 }
