@@ -2010,6 +2010,39 @@ class FeedFetcherWorker:
                 **settings.MONGO_ANALYTICS_TIMEOUTS,
             )
 
+    def fetch_original_page(self, feed):
+        """Fetch and store the feed's original page, but only while somebody is opening the
+        Original view (Feed.page_last_read_date). A page nobody has opened in a month is
+        deleted instead. Returns the page's html for the favicon importer, or None."""
+        if not feed.is_original_page_in_use:
+            feed.expire_original_page()
+            logging.debug(
+                "   ---> [%-30s] ~FBSkipping page fetch: nobody is reading the original page"
+                % (feed.log_title[:30])
+            )
+            return None
+
+        logging.debug("   ---> [%-30s] ~FYFetching page: %s" % (feed.log_title[:30], feed.feed_link))
+        page_importer = PageImporter(feed)
+        try:
+            return page_importer.fetch_page()
+        except SoftTimeLimitExceeded as e:
+            logging.debug(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
+            feed.save_feed_history(557, "Timeout", e)
+        except TimeoutError:
+            logging.debug("   ---> [%-30s] ~FRPage fetch timed out..." % (feed.log_title[:30]))
+            feed.save_page_history(555, "Timeout", "")
+        except Exception as e:
+            logging.debug("[%d] ! -------------------------" % (feed.pk,))
+            tb = traceback.format_exc()
+            logging.error(tb)
+            logging.debug("[%d] ! -------------------------" % (feed.pk,))
+            feed.save_page_history(550, "Page Error", tb)
+            if not settings.DEBUG and hasattr(settings, "SENTRY_DSN") and settings.SENTRY_DSN:
+                capture_exception(e)
+                flush()
+        return None
+
     def process_feed_wrapper(self, feed_queue):
         self.reset_database_connections()
 
@@ -2220,33 +2253,9 @@ class FeedFetcherWorker:
                     and (ret_feed == FEED_OK or (ret_feed == FEED_SAME and feed.stories_last_month > 10))
                 )
             ):
-                logging.debug("   ---> [%-30s] ~FYFetching page: %s" % (feed.log_title[:30], feed.feed_link))
-                page_importer = PageImporter(feed)
-                try:
-                    page_data = page_importer.fetch_page()
+                page_data = self.fetch_original_page(feed)
+                if page_data:
                     page_duration = time.time() - start_duration
-                except SoftTimeLimitExceeded as e:
-                    logging.debug(
-                        " ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed
-                    )
-                    page_data = None
-                    feed.save_feed_history(557, "Timeout", e)
-                except TimeoutError:
-                    logging.debug("   ---> [%-30s] ~FRPage fetch timed out..." % (feed.log_title[:30]))
-                    page_data = None
-                    feed.save_page_history(555, "Timeout", "")
-                except Exception as e:
-                    logging.debug("[%d] ! -------------------------" % (feed_id,))
-                    tb = traceback.format_exc()
-                    logging.error(tb)
-                    logging.debug("[%d] ! -------------------------" % (feed_id,))
-                    feed.save_page_history(550, "Page Error", tb)
-                    fetched_feed = None
-                    page_data = None
-                    # mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    if not settings.DEBUG and hasattr(settings, "SENTRY_DSN") and settings.SENTRY_DSN:
-                        capture_exception(e)
-                        flush()
 
                 feed = self.refresh_feed(feed.pk)
                 logging.debug("   ---> [%-30s] ~FYFetching icon: %s" % (feed.log_title[:30], feed.feed_link))
