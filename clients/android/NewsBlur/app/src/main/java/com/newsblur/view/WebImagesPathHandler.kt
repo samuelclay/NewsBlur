@@ -10,11 +10,15 @@ class WebImagesPathHandler(
     private val storyImagesDir: File,
 ) : WebViewAssetLoader.PathHandler {
     override fun handle(path: String): WebResourceResponse? {
-        val file = File(storyImagesDir, path)
-        val exists = file.exists()
-        if (!exists) return null
+        val file = cachedImage(path) ?: return null
 
         val mimeType = URLConnection.guessContentTypeFromName(file.name) ?: "image/*"
         return WebResourceResponse(mimeType, null, FileInputStream(file))
     }
+
+    // WebImagesPathHandler.kt receives the decoded URL path, so "..%2f" must not reach files outside the image cache.
+    internal fun cachedImage(path: String): File? =
+        runCatching {
+            File(storyImagesDir, path).canonicalFile.takeIf { it.isFile && it.parentFile == storyImagesDir.canonicalFile }
+        }.getOrNull()
 }
