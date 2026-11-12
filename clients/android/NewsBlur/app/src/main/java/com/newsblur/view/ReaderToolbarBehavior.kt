@@ -31,7 +31,7 @@ internal class ReaderToolbarRevealGate(private val threshold: Int) {
 }
 
 class ReaderToolbarBehavior(context: Context, attrs: AttributeSet?) : AppBarLayout.Behavior(context, attrs) {
-    private val revealGate = ReaderToolbarRevealGate((30 * context.resources.displayMetrics.density).toInt())
+    private val revealGate = ReaderToolbarRevealGate((20 * context.resources.displayMetrics.density).toInt())
     var onReaderScroll: ((Int) -> Unit)? = null
 
     override fun onStartNestedScroll(
