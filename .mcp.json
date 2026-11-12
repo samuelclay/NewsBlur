@@ -1,3 +1,12 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "newsblur": {
+      "type": "http",
+      "url": "https://newsblur.com/mcp/"
+    },
+    "newsblur-dev": {
+      "type": "http",
+      "url": "http://localhost:9117/mcp"
+    }
+  }
 }
