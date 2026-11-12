@@ -67,17 +67,19 @@ class ReaderTapGestures(
             }
             MotionEvent.ACTION_UP -> {
                 checkMovement(event)
-                if (moved || event.eventTime - downTime > ViewConfiguration.getTapTimeout() * 2) {
+                val duration = event.eventTime - downTime
+                if (moved || duration >= ViewConfiguration.getLongPressTimeout()) {
                     priorTime = 0
                     return false
                 }
+                val fastTap = duration <= ViewConfiguration.getTapTimeout() * 2
                 val double =
-                    priorTime != 0L &&
+                    fastTap && priorTime != 0L &&
                         downTime - priorTime <= ViewConfiguration.getDoubleTapTimeout() &&
                         priorFingers == fingers &&
                         abs(downX - priorX) < doubleSlop &&
                         abs(downY - priorY) < doubleSlop
-                priorTime = event.eventTime
+                priorTime = if (fastTap) event.eventTime else 0L
                 priorX = downX
                 priorY = downY
                 priorFingers = fingers

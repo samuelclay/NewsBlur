@@ -26,6 +26,7 @@ class ReaderTapGesturesTest {
         every { ViewConfiguration.get(context) } returns config
         every { ViewConfiguration.getTapTimeout() } returns 100
         every { ViewConfiguration.getDoubleTapTimeout() } returns 300
+        every { ViewConfiguration.getLongPressTimeout() } returns 500
         gestures =
             ReaderTapGestures(view) {
                 actions.add(it)
@@ -132,6 +133,35 @@ class ReaderTapGesturesTest {
         event(MotionEvent.ACTION_CANCEL, 3160)
         finishTimeout()
         assertTrue(singles.isEmpty())
+    }
+
+    @Test fun test_stationarySlowTapRevealsButLongPressAndSlowDoubleTapDoNotAct() {
+        val pending = mutableListOf<Runnable>()
+        var singles = 0
+        every { view.postDelayed(any(), any()) } answers { pending.add(firstArg()); true }
+        every { view.removeCallbacks(any()) } answers { pending.remove(firstArg<Runnable>()) }
+        gestures = ReaderTapGestures(view, prepareSingleTap = { _, _ -> Runnable { singles++ } }) {
+            actions.add(it)
+            true
+        }
+        fun finishTimeout() = pending.toList().also { pending.clear() }.forEach { it.run() }
+
+        event(MotionEvent.ACTION_DOWN, 100)
+        event(MotionEvent.ACTION_UP, 400)
+        finishTimeout()
+        assertEquals("A stationary 300ms touch is a single tap, not a long press", 1, singles)
+
+        event(MotionEvent.ACTION_DOWN, 1000)
+        event(MotionEvent.ACTION_UP, 1500)
+        finishTimeout()
+        assertEquals("The long-press boundary belongs to selection and context menus", 1, singles)
+
+        tap(2000)
+        event(MotionEvent.ACTION_DOWN, 2150)
+        event(MotionEvent.ACTION_UP, 2450)
+        finishTimeout()
+        assertTrue("A slow second release must not trigger the configured double-tap action", actions.isEmpty())
+        assertEquals(2, singles)
     }
 
     @Test fun dragAndPinchCannotTriggerDoubleTap() {
