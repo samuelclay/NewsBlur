@@ -26,6 +26,9 @@ jobs:
           java-version: "21"
           cache: gradle
 
+      - name: Test story traversal tap handling
+        run: node --test app/src/test/js/storyTraversalTap.test.cjs
+
       - name: Run Android unit tests
         run: ./gradlew -Pci --console=plain :app:testDebugUnitTest
 

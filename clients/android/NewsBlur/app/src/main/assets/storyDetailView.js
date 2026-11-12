@@ -59,6 +59,19 @@ function NB_open_story_image(image, show_actions) {
     return true;
 }
 
+// storyDetailView.js leaves links, media, selection, and configured double taps to their own handlers.
+document.addEventListener('click', function(event) {
+    var target = event.target;
+    var selection = window.getSelection && window.getSelection();
+    if (!window.NewsBlurReader || !event.isTrusted || event.defaultPrevented || event.detail > 1 ||
+        !target || !target.closest || !target.closest('.NB-story') ||
+        target.closest('a,button,input,textarea,select,label,summary,img,video,audio,iframe,' +
+            '[contenteditable],[role="button"],[role="link"],.NB-media-card') ||
+        (selection && !selection.isCollapsed)) return;
+    var load = document.querySelector('meta[name="newsblur-image-generation"]');
+    if (load) window.NewsBlurReader.postMessage(load.content);
+});
+
 document.addEventListener('click', function(event) {
     if (NB_open_story_image(event.target, false)) {
         event.preventDefault();

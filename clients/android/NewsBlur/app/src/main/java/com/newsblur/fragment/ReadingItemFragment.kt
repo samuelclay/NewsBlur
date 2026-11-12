@@ -2453,6 +2453,12 @@ class ReadingItemFragment :
         }
     }
 
+    fun onBlankStoryTap(webview: NewsblurWebview, generation: String) {
+        if (readingWebview !== webview || view == null || !isResumed || storyImageViewer != null ||
+            generation.toLongOrNull() != webview.documentGeneration) return
+        (activity as? Reading)?.onStoryBlankTap(this)
+    }
+
     fun openStoryImage(webview: NewsblurWebview, json: String) {
         val host = activity ?: return
         if (view == null || readingWebview !== webview || !isResumed || storyImageViewer != null || host.isFinishing) return
