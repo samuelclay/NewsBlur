@@ -76,13 +76,6 @@ public class NewsblurWebview extends WebView {
         webChromeClient = new NewsblurWebChromeClient();
         setWebChromeClient(webChromeClient);
         if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
-            WebViewCompat.addWebMessageListener(this, "NewsBlurReader",
-                    java.util.Collections.singleton("https://appassets.androidplatform.net"),
-                    (view, message, origin, mainFrame, reply) -> {
-                        if (mainFrame && fragment != null && message.getData() != null) {
-                            fragment.onBlankStoryTap(this, message.getData());
-                        }
-                    });
             WebViewCompat.addWebMessageListener(this, "NewsBlurImages",
                     java.util.Collections.singleton("https://appassets.androidplatform.net"),
                     (view, message, origin, mainFrame, reply) -> {

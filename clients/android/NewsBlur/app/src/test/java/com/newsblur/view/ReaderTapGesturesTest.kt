@@ -90,6 +90,50 @@ class ReaderTapGesturesTest {
         assertTrue(actions.isEmpty())
     }
 
+    @Test fun test_singleTapWaitsForConfirmationAndConsumedDoubleTapNeverReveals() {
+        val pending = mutableListOf<Runnable>()
+        val singles = mutableListOf<Pair<Float, Float>>()
+        every { view.postDelayed(any(), any()) } answers {
+            pending.add(firstArg())
+            true
+        }
+        every { view.removeCallbacks(any()) } answers {
+            pending.remove(firstArg<Runnable>())
+        }
+        gestures = ReaderTapGestures(view, prepareSingleTap = { x, y -> Runnable { singles.add(x to y) } }) {
+            actions.add(it)
+            true
+        }
+        fun finishTimeout() {
+            pending.toList().also { pending.clear() }.forEach { it.run() }
+        }
+
+        tap(100)
+        assertTrue(singles.isEmpty())
+        finishTimeout()
+        assertEquals(listOf(100f to 100f), singles)
+        singles.clear()
+
+        tap(1000)
+        event(MotionEvent.ACTION_DOWN, 1150)
+        assertTrue("The configured double tap consumes its second release", event(MotionEvent.ACTION_UP, 1200))
+        finishTimeout()
+        assertTrue(singles.isEmpty())
+        assertEquals(listOf(false), actions)
+
+        tap(2000)
+        event(MotionEvent.ACTION_DOWN, 2150)
+        event(MotionEvent.ACTION_MOVE, 2160, x = 130f)
+        event(MotionEvent.ACTION_UP, 2200, x = 130f)
+        finishTimeout()
+        assertTrue(singles.isEmpty())
+
+        tap(3000)
+        event(MotionEvent.ACTION_CANCEL, 3160)
+        finishTimeout()
+        assertTrue(singles.isEmpty())
+    }
+
     @Test fun dragAndPinchCannotTriggerDoubleTap() {
         tap(100)
         event(MotionEvent.ACTION_DOWN, 250)
