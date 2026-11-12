@@ -15,6 +15,7 @@ final class Test_StoryImageViewer: XCTestCase {
         <body><div class="NB-story" id="NB-story">
         <p id="blank">Ordinary story text</p><a href="https://example.com"><span id="link">Linked text</span></a>
         <button><span id="button">Action</span></button><div contenteditable="true" id="editor">Editable</div>
+        <div class="NB-media-card"><span id="media-label">Embedded video</span></div>
         </div><script>\(script[start.lowerBound..<end.lowerBound])
         function blank_tap(id) {
             var r = document.getElementById(id).getBoundingClientRect();
@@ -30,7 +31,7 @@ final class Test_StoryImageViewer: XCTestCase {
         }
         let blank = try await web.evaluateJavaScript("blank_tap('blank')") as? Bool
         XCTAssertEqual(blank, true)
-        for id in ["link", "button", "editor"] {
+        for id in ["link", "button", "editor", "media-label"] {
             let result = try await web.evaluateJavaScript("blank_tap('\(id)')") as? Bool
             XCTAssertEqual(result, false, "Interactive ancestors must keep their own tap behavior")
         }

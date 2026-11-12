@@ -46,7 +46,7 @@ function newsblur_is_blank_story_tap_at(x, y, offset_x, offset_y, view_width) {
                                            (y + offset_y) * scale - window.scrollY);
     return !!(target && target.closest('.NB-story') &&
         !target.closest('a,button,input,textarea,select,label,summary,img,video,audio,iframe,' +
-                        '[contenteditable],[role="button"],[role="link"]'));
+                        '[contenteditable],[role="button"],[role="link"],.NB-media-card'));
 }
 
 // StoryImageViewerController.swift converts document coordinates through the native scroll offset.
