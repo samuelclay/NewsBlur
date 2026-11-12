@@ -4,6 +4,41 @@ import WebKit
 @testable import NewsBlur
 
 final class Test_StoryImageViewer: XCTestCase {
+    @MainActor func test_blankTapHitTestingExcludesInteractiveAncestorsAndSelectedText() async throws {
+        let web = WKWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        let scriptURL = try XCTUnwrap(Bundle.main.url(forResource: "storyDetailView", withExtension: "js"))
+        let script = try String(contentsOf: scriptURL, encoding: .utf8)
+        let start = try XCTUnwrap(script.range(of: "var linkAt"))
+        let end = try XCTUnwrap(script.range(of: "var newsblur_image_sequence"))
+        web.loadHTMLString("""
+        <html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+        <body><div class="NB-story" id="NB-story">
+        <p id="blank">Ordinary story text</p><a href="https://example.com"><span id="link">Linked text</span></a>
+        <button><span id="button">Action</span></button><div contenteditable="true" id="editor">Editable</div>
+        </div><script>\(script[start.lowerBound..<end.lowerBound])
+        function blank_tap(id) {
+            var r = document.getElementById(id).getBoundingClientRect();
+            return newsblur_is_blank_story_tap_at(r.x + r.width / 2, r.y + r.height / 2, 0, 0, window.innerWidth);
+        }
+        </script></body></html>
+        """, baseURL: nil)
+        defer { web.stopLoading() }
+        let deadline = CACurrentMediaTime() + SimulatorTestTiming.realWorkTimeout
+        while CACurrentMediaTime() < deadline {
+            if (try? await web.evaluateJavaScript("typeof blank_tap === 'function'")) as? Bool == true { break }
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        let blank = try await web.evaluateJavaScript("blank_tap('blank')") as? Bool
+        XCTAssertEqual(blank, true)
+        for id in ["link", "button", "editor"] {
+            let result = try await web.evaluateJavaScript("blank_tap('\(id)')") as? Bool
+            XCTAssertEqual(result, false, "Interactive ancestors must keep their own tap behavior")
+        }
+        _ = try await web.evaluateJavaScript("var range = document.createRange(); range.selectNodeContents(document.getElementById('blank')); window.getSelection().addRange(range);")
+        let selected = try await web.evaluateJavaScript("blank_tap('blank')") as? Bool
+        XCTAssertEqual(selected, false)
+    }
+
     @MainActor func test_nativeImageHitTestingMatchesInsetWebViewBeforeAndAfterScrolling() async throws {
         let web = WKWebView(frame: CGRect(x: 0, y: 0, width: 390, height: 844), configuration: WKWebViewConfiguration())
         web.scrollView.contentInsetAdjustmentBehavior = .never
@@ -94,7 +129,7 @@ final class Test_StoryImageViewer: XCTestCase {
         page.beginTouch(gesture)
         page.longPressImage(gesture)
         XCTAssertTrue(page.probe.scripts.contains { $0.hasPrefix("newsblurOpenImageAt") && $0.hasSuffix(", true)") })
-        XCTAssertFalse(page.probe.scripts.contains { $0.contains("linkAt") })
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("newsblur_is_blank_story_tap_at") })
     }
 
     @MainActor func test_longPressStoppingMomentumDoesNotOpenImage() {
@@ -111,18 +146,30 @@ final class Test_StoryImageViewer: XCTestCase {
     }
 
     @MainActor func test_imageTapDoesNotAlsoToggleReaderChrome() {
-        let page = ImageScrollTapPage()
+        let (page, reader) = makeImageTapReader()
+        defer { reader.currentPage = nil }
         page.probe.imageHitResult = true
         page.perform(NSSelectorFromString("tap:"), with: ImageScrollTapGesture())
-        XCTAssertFalse(page.probe.scripts.contains { $0.contains("linkAt") },
+        XCTAssertFalse(page.probe.scripts.contains { $0.contains("newsblur_is_blank_story_tap_at") },
                        "Reader chrome must not shift the scroll inset while the photo snapshot is pending")
     }
 
     @MainActor func test_nonImageTapStillChecksReaderChrome() {
-        let page = ImageScrollTapPage()
+        let (page, reader) = makeImageTapReader()
+        defer { reader.currentPage = nil }
         page.probe.imageHitResult = false
         page.perform(NSSelectorFromString("tap:"), with: ImageScrollTapGesture())
-        XCTAssertTrue(page.probe.scripts.contains { $0.contains("linkAt") })
+        XCTAssertTrue(page.probe.scripts.contains { $0.contains("newsblur_is_blank_story_tap_at") })
+    }
+
+    @MainActor private func makeImageTapReader() -> (ImageScrollTapPage, StoryPagesViewController) {
+        let page = ImageScrollTapPage()
+        let pages = StoryPagesViewController()
+        let app = ImageTapAppDelegate()
+        app.reader = pages
+        page.appDelegate = app
+        pages.currentPage = page
+        return (page, pages)
     }
 
     @MainActor func test_touchStoppingMomentumDoesNotBecomeAnImageTap() {
@@ -432,6 +479,11 @@ final class Test_StoryImageViewer: XCTestCase {
 }
 
 // StoryImageViewerTests.swift replays the native tap callback while the article still has momentum.
+@MainActor private final class ImageTapAppDelegate: NewsBlurAppDelegate {
+    weak var reader: StoryPagesViewController?
+    override var storyPagesViewController: StoryPagesViewController! { reader }
+}
+
 @MainActor private final class ImageScrollTapPage: StoryDetailViewController {
     let probe = ImageScrollTapWebView(frame: .zero, configuration: WKWebViewConfiguration())
     init() {

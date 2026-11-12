@@ -104,12 +104,81 @@ import XCTest
         XCTAssertTrue(pages.currentPage.webView.scrollView.isScrollEnabled)
     }
 
+    func test_blankStoryTapRestoresTraversalWithoutEnablingAutoscroll() {
+        let (pages, _) = makeReaderWithArticles()
+        pages.traverseView = UIView()
+        pages.traverseView.alpha = 0
+        pages.traverseFadeAccumulator = 80
+
+        pages.tappedStory()
+
+        XCTAssertEqual(pages.traverseView.alpha, 1)
+        XCTAssertEqual(pages.traverseFadeAccumulator, 0)
+        XCTAssertFalse(pages.autoscrollActive)
+    }
+
+    func test_cancelledHorizontalPeekRestoresTraversalOnTheSameStory() {
+        UserDefaults.standard.set(true, forKey: keys[1])
+        let (pages, _) = makeReaderWithArticles()
+        pages.currentPage.pageIndex = 0
+        pages.traverseView = UIView()
+        pages.traverseView.alpha = 0
+        pages.traverseFadeAccumulator = 80
+        pages.scrollViewWillBeginDragging(pages.scrollView)
+        pages.scrollView.contentOffset.x = 30
+        var target = CGPoint.zero
+        pages.scrollViewWillEndDragging(pages.scrollView, withVelocity: .zero, targetContentOffset: &target)
+        pages.scrollView.contentOffset = target
+        pages.scrollViewDidEndDecelerating(pages.scrollView)
+
+        XCTAssertEqual(pages.currentPage.pageIndex, 0)
+        XCTAssertEqual(pages.traverseView.alpha, 1)
+        XCTAssertEqual(pages.traverseFadeAccumulator, 0)
+
+        pages.traverseView.alpha = 0
+        pages.traverseFadeAccumulator = 80
+        pages.scrollViewWillBeginDragging(pages.scrollView)
+        pages.scrollViewDidEndDecelerating(pages.scrollView)
+        XCTAssertEqual(pages.traverseView.alpha, 0, "A stationary touch is not a horizontal peek")
+    }
+
+    func test_upwardTraversalRevealWaitsForIntentAndDownwardScrollFadesAgain() {
+        let (pages, _) = makeReaderWithArticles()
+        pages.traverseView = UIView()
+        pages.traverseView.alpha = 0
+        pages.traverseFadeAccumulator = 80
+        let page = pages.currentPage!
+        let scroll = page.webView.scrollView as! ReaderTraversalScroll
+        scroll.contentSize = CGSize(width: 375, height: 4000)
+        scroll.contentOffset.y = 700
+        scroll.simulatesDragging = true
+        page.lastDragDirectionDown = false
+        func scrollBy(_ delta: CGFloat) {
+            let old = scroll.contentOffset
+            scroll.contentOffset.y += delta
+            page.observeValue(forKeyPath: "contentOffset", of: scroll,
+                              change: [.oldKey: NSValue(cgPoint: old), .newKey: NSValue(cgPoint: scroll.contentOffset)],
+                              context: nil)
+        }
+
+        scrollBy(-10)
+        XCTAssertEqual(pages.traverseView.alpha, 0, "Small direction changes must not flash navigation")
+        page.scrollViewWillBeginDragging(scroll)
+        scrollBy(-20)
+        XCTAssertGreaterThan(pages.traverseView.alpha, 0)
+        scrollBy(-80)
+        XCTAssertEqual(pages.traverseView.alpha, 1)
+        scrollBy(30)
+        XCTAssertGreaterThan(pages.traverseView.alpha, 0)
+        XCTAssertLessThan(pages.traverseView.alpha, 1)
+    }
+
     private func makeReaderWithArticles() -> (ReaderPopGesturePages, UINavigationController) {
         let (pages, navigation) = makeReader()
         let articles = (0..<3).map { _ -> StoryDetailViewController in
             let page = ReaderScrollArticle()
             page.appDelegate = pages.appDelegate
-            page.webView = WKWebView(frame: pages.view.bounds)
+            page.webView = ReaderTraversalWebView(frame: pages.view.bounds)
             return page
         }
         pages.currentPage = articles[0]
@@ -151,6 +220,7 @@ import XCTest
     override func viewDidLayoutSubviews() {}
     override func reorientPages() {}
     override func setStoryFromScroll() {}
+    override func resizeScrollView() {}
 }
 
 @MainActor private final class ReaderScrollArticle: StoryDetailViewController {
@@ -167,4 +237,14 @@ private final class ReaderPopGestureAppDelegate: NewsBlurAppDelegate {
     override var storyPagesViewController: StoryPagesViewController! { reader }
     override var isCompactWidth: Bool { true }
     override func adjustStoryDetailWebView() {}
+}
+
+@MainActor private final class ReaderTraversalWebView: WKWebView {
+    private let trackedScroll = ReaderTraversalScroll()
+    override var scrollView: UIScrollView { trackedScroll }
+}
+
+@MainActor private final class ReaderTraversalScroll: UIScrollView {
+    var simulatesDragging = false
+    override var isDragging: Bool { simulatesDragging }
 }
