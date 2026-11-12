@@ -491,16 +491,16 @@
     "13927": {
       "title": "[Android] Opening a folder intermittently marks top ~6 stories as read",
       "url": "https://forum.newsblur.com/t/android-opening-a-folder-intermittently-marks-top-6-stories-as-read/13927",
-      "status": "merged",
+      "status": "tier2-pending",
       "tier": 1,
       "handled_at": "2026-11-11T16:25:00Z",
       "last_posted_at": "2026-11-10T20:36:41.328Z",
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2208",
       "branch": "forum-13927-android-mark-read-replay",
       "worktree": ".worktree/forum-13927-android-mark-read-replay",
-      "note": "Synced mark-all-read followup was replayed unbounded after each story page, marking page 1 of a reopened folder read. Proven by unit test, not reproduced on device. PR #2208 merged 2026-11-11; reply assumes the fix shipped in an Android release.",
-      "reply": "Found it, and it has nothing to do with scrolling. When you mark a folder as read, the Android app holds on to that action for a little while and reapplies it whenever a page of stories loads, so a slow response can't undo your mark. The bug is that it reapplied it to everything in the folder, including stories that were published after you marked it read. So if you came back to the folder soon after, the first page of new stories (about six) got marked read and the rest loaded normally. That also explains why backing out only sometimes fixed it. It now only reapplies to stories that existed when you hit mark as read. The fix will be in the next Android release.",
-      "question": null
+      "note": "PR #2208 merged 2026-11-11 bounds replayed mark-all-read, but an emulator repro on 2026-11-12 (pre-fix build, Slashdot marked read, new story arrived) showed the new story unread, and logging showed the followup is added, replayed and cleared within 7ms in the normal flow. The merged fix is a narrow hardening and probably NOT the cause of this report. Real cause still unknown. Do not post the earlier 'Found it' reply.",
+      "reply": "I haven't been able to reproduce this yet. A few things would help narrow it down: is the folder set to Unread or All stories, and newest or oldest first? Do you usually mark the folder as read when you finish, or read stories one at a time? And do you use the home screen widget, notifications, or Listen? If it happens again, the names of one or two of the stories that showed up read would let me check what the server thinks happened to them.",
+      "question": "Forum #13927: merged fix is probably not the cause (could not reproduce; followup clears in 7ms). Keep digging, or post a reply asking JeremyCouch for details?"
     }
   }
 }
