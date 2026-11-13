@@ -4918,14 +4918,19 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
+    // FeedsViewController.swift reuses the active collection for each background dashboard module.
+    BOOL isDashboard = self.detailViewController.storyTitlesInDashboard ||
+        (storiesCollection.isRiverView && [storiesCollection.activeFolder isEqualToString:@"dashboard"]);
     // Return nil if no feed is provided and no special folder is active
-    if (!feed && !storiesCollection.activeFolder) {
+    if (!feed && !storiesCollection.activeFolder && !isDashboard) {
         return nil;
     }
 
     UILabel *titleLabel = [[UILabel alloc] init];
     // NewsBlurAppDelegate.m indents titles in code so each title reuses its unpadded translation.
-    if (storiesCollection.isSocialRiverView &&
+    if (isDashboard) {
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"NewsBlur Dashboard"]];
+    } else if (storiesCollection.isSocialRiverView &&
         [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
         titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"All Shared Stories"]];
     } else if (storiesCollection.isSocialRiverView &&
@@ -4940,9 +4945,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
         titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Good Reads"]];
-    } else if (storiesCollection.isRiverView &&
-               [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
-        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"NewsBlur Dashboard"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"All Site Stories"]];
@@ -4988,11 +4990,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     titleLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     titleLabel.shadowOffset = CGSizeMake(0, 1);
     titleLabel.center = CGPointMake(0, -2);
-    if (!storiesCollection.isSocialView) {
+    if (!storiesCollection.isSocialView || isDashboard) {
         titleLabel.center = CGPointMake(28, -2);
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage;
-        if (storiesCollection.isSocialRiverView &&
+        if (isDashboard) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+        } else if (storiesCollection.isSocialRiverView &&
             [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleImage = [UIImage imageNamed:@"global-shares"];
         } else if (storiesCollection.isRiverView &&
@@ -5010,9 +5014,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
-        } else if (storiesCollection.isRiverView &&
-                   [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
-            titleImage = [UIImage imageNamed:@"saved-stories"];
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
