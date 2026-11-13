@@ -223,7 +223,7 @@ collectstatic:
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 bounce:
 	docker compose down
-	@[[ -d config/certificates ]] && $(call log,~SB~FG✓ keys exist~ST) || make keys
+	@$(MAKE) --no-print-directory keys
 	docker compose up -d --build --remove-orphans
 
 bounce-fast:
