@@ -150,6 +150,10 @@ interface SyncServiceState {
     fun isHousekeepingRunning(): Boolean
 
     fun isFeedCountSyncRunning(): Boolean
+
+    fun isSyncRunning(): Boolean
+
+    fun isStoryContentSyncRunning(): Boolean
 }
 
 @Singleton
@@ -433,6 +437,15 @@ class DefaultSyncServiceState
         override fun isHousekeepingRunning(): Boolean = serviceState.value is ServiceState.Housekeeping
 
         override fun isFeedCountSyncRunning(): Boolean = isFeedFolderSyncRunning() || serviceState.value is ServiceState.RecountsSync
+
+        // SyncServiceState.kt keeps message-less prefetch phases active until the service explicitly goes idle.
+        override fun isSyncRunning(): Boolean = serviceState.value != ServiceState.Idle
+
+        // SyncServiceState.kt leaves offline unread-download counts visible on the feed list.
+        override fun isStoryContentSyncRunning(): Boolean = when (serviceState.value) {
+            ServiceState.StorySync, ServiceState.ImagePrefetchSync -> true
+            else -> false
+        }
     }
 
 interface ServiceState {

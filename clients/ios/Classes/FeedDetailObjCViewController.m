@@ -84,6 +84,8 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (nonatomic) NSInteger retainedFirstPageLocation;
 @property (readwrite) BOOL inPullToRefresh_;
 @property (nonatomic) BOOL isFadingTable;
+@property (nonatomic, strong) NBLoadingCell *storyLoadingCell;
+@property (nonatomic, copy) NSString *navigationTheme;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
 @property (nonatomic) NSUInteger deferredLoadStoryCount;
@@ -711,6 +713,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     
     CFTimeInterval reloadStartedAt = shouldLogDailyBriefingRender ? NBDailyBriefingNow() : 0;
+    // FeedDetailObjCViewController.m keeps the same pulse alive while a loading-only table reloads.
+    if (storiesCollection.storyLocationsCount > 0 || self.pageFinished) {
+        [ReaderMotion retireLoadingRows:self.storyTitlesTable];
+    }
     [self.storyTitlesTable reloadData];
     if (shouldLogDailyBriefingRender) {
         self.dailyBriefingReloadDataMs = NBDailyBriefingElapsedMs(reloadStartedAt);
@@ -888,6 +894,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         [indexPaths addObject:[NSIndexPath indexPathForRow:row inSection:0]];
     }
     // FeedDetailObjCViewController.m inserts before the loading row, preserving cells and the scroll-read anchor.
+    [ReaderMotion retireLoadingRows:self.storyTitlesTable];
     [UIView performWithoutAnimation:^{
         [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
     }];
@@ -1187,8 +1194,6 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.storyTitlesTable.refreshControl = nil;
     }
 #endif
-    
-    [self updateTheme];
     
     if (self.isPhoneOrCompact) {
         // Async to let the view be added to the view hierarchy.
@@ -1922,6 +1927,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 #pragma mark Initialization
 
 - (void)resetFeedDetail {
+    [self.storyLoadingCell endAnimation];
+    self.storyLoadingCell = nil;
     [self resetNotificationStoryLookup];
     self.deferredLoadStoryCount = 0;
     self.firstPageLoad = nil;
@@ -4365,8 +4372,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         
         return cell;
     } else {
-        NBLoadingCell *loadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, height)];
-        return loadingCell;
+        if (!self.storyLoadingCell) {
+            self.storyLoadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, height)];
+        }
+        return self.storyLoadingCell;
     }
     
     return cell;
@@ -5219,18 +5228,18 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
             appDelegate.activeStory &&
             [[story objectForKey:@"story_hash"]
              isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
-            if ([self markStoryReadIfNeeded:story isScrolling:NO] && !isGridView) {
-                [self reloadStoryRowsForLocation:location rowAnimation:UITableViewRowAnimationFade];
+            if ([self markStoryReadIfNeeded:story isScrolling:NO]) {
+                if (isGridView) [self reload];
+                else [self reloadStoryRowsForLocation:location rowAnimation:UITableViewRowAnimationFade];
             }
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row" animated:YES];
             
-            if (!appDelegate.isPhone) {
-                [appDelegate.storyPagesViewController viewWillAppear:NO];
-                [appDelegate.storyPagesViewController viewDidAppear:NO];
-            }
-            
-            if (!isGridView) {
+            // FeedDetailObjCViewController.m leaves appearance callbacks to UIKit: replaying them resets
+            // StoryPagesObjCViewController.m's entrance animation and restyles the already visible article.
+            StoryPagesViewController *reader = appDelegate.storyPagesViewController;
+            BOOL readerIsVisible = reader.viewIfLoaded.window && ![reader hasHiddenReaderAncestor];
+            if (!isGridView || readerIsVisible) {
                 [appDelegate.detailViewController dismissFullscreenSidebarOverlayAfterStorySelection];
                 [appDelegate.detailViewController restoreStoryKeyboardFocusIfNeeded];
                 return;
@@ -5261,8 +5270,15 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell isKindOfClass:[FeedDetailTableCell class]]) {
+        FeedDetailTableCell *storyCell = (FeedDetailTableCell *)cell;
+        if (storyCell.storyHash) [ReaderMotion row:cell.contentView key:storyCell.storyHash owner:self scrolling:tableView.dragging || tableView.decelerating position:[ReaderMotion positionForIndexPath:indexPath table:tableView]];
+    }
     if ([cell class] == [NBLoadingCell class]) {
+        [ReaderMotion row:cell key:[NSString stringWithFormat:@"loading-%ld", (long)storiesCollection.storyLocationsCount] owner:self scrolling:NO];
         [(NBLoadingCell *)cell animate];
+    } else if (![cell isKindOfClass:[FeedDetailTableCell class]]) {
+        [ReaderMotion row:cell key:[NSString stringWithFormat:@"status-%ld-%ld-%ld", (long)indexPath.section, (long)indexPath.row, (long)storiesCollection.storyLocationsCount] owner:self scrolling:tableView.dragging || tableView.decelerating];
     }
     if (tableView == self.storyTitlesTable &&
         storiesCollection.isDailyBriefing &&
@@ -5490,6 +5506,9 @@ finish_height_measurement:
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scroll {
+    if (scroll == self.storyTitlesTable && (scroll.dragging || scroll.decelerating)) {
+        [[ReaderMotion session:self] stopEntrances];
+    }
     BOOL isBottomPulling = scroll == self.storyTitlesTable &&
         [self isActivelyDraggingBottomNextFeedForScroll:scroll] &&
         [self bottomNextFeedRevealDistanceForScroll:scroll] > 0.0f &&
@@ -5504,6 +5523,7 @@ finish_height_measurement:
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scroll {
     if (scroll == self.storyTitlesTable) {
+        [[ReaderMotion session:self] stopEntrances];
         self.pendingNotificationAnchorHash = nil;
         self.notificationSelectionAnchorHash = nil;
     }
@@ -5512,6 +5532,7 @@ finish_height_measurement:
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scroll {
     if (scroll == self.storyTitlesTable) {
+        [[ReaderMotion session:self] stopEntrances];
         self.pendingNotificationAnchorHash = nil;
         self.notificationSelectionAnchorHash = nil;
         self.bottomNextFeedReady = NO;
@@ -7469,6 +7490,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)updateTheme {
     [super updateTheme];
 
+    BOOL navigationThemeChanged = ![self.navigationTheme isEqualToString:ThemeManager.shared.effectiveTheme];
+    self.navigationTheme = ThemeManager.shared.effectiveTheme;
+
     [self applyToolbarButtonTint];
     
     UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);    UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
@@ -7485,15 +7509,25 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         appearance.doneButtonAppearance = buttonAppearance;
     }
     
-    self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
-    self.navigationController.navigationBar.standardAppearance = appearance;
-    self.navigationController.navigationBar.compactAppearance = appearance;
-    self.navigationController.navigationBar.tintColor = toolbarButtonTint;
-    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
-    self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
+    UINavigationBar *bar = self.navigationController.navigationBar;
+    UINavigationBarAppearance *current = bar.standardAppearance;
+    BOOL sameBackground = current.backgroundColor == appearance.backgroundColor || [current.backgroundColor isEqual:appearance.backgroundColor];
+    BOOL sameTitle = current.titleTextAttributes == appearance.titleTextAttributes || [current.titleTextAttributes isEqualToDictionary:appearance.titleTextAttributes];
+    BOOL sameButtons = [current.backButtonAppearance.normal.titleTextAttributes isEqualToDictionary:appearance.backButtonAppearance.normal.titleTextAttributes];
+    if (navigationThemeChanged || !sameBackground || !sameTitle || !sameButtons) {
+        // FeedDetailObjCViewController.m keeps repeated theme/layout updates from restarting UIKit's back-button fade.
+        [UIView performWithoutAnimation:^{
+            bar.scrollEdgeAppearance = appearance;
+            bar.standardAppearance = appearance;
+            bar.compactAppearance = appearance;
+            bar.tintColor = toolbarButtonTint;
+            bar.barTintColor = [UINavigationBar appearance].barTintColor;
+            bar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
+        }];
+    }
     self.navigationController.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     
-    if (self.isPhoneOrCompact) {
+    if (self.isPhoneOrCompact && (navigationThemeChanged || !self.navigationItem.titleView)) {
         self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
     }
     // FeedDetailObjCViewController.m applies the owned fullscreen rendering to a fresh themed title immediately.
@@ -7517,7 +7551,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self.storyTitlesHeaderBar updateTheme];
     [self.bottomNextFeedControl updateTheme];
 
-    self.appDelegate.detailViewController.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
+    if (navigationThemeChanged || !self.appDelegate.detailViewController.navigationItem.titleView) {
+        self.appDelegate.detailViewController.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
+    }
 
     if ([ThemeManager themeManager].isDarkTheme) {
         self.storyTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleWhite;
@@ -7662,7 +7698,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)finishRefresh {
     self.inPullToRefresh_ = NO;
 #if !TARGET_OS_MACCATALYST
-    [self.refreshControl endRefreshing];
+    [ReaderMotion finishRefresh:self.refreshControl];
 #endif
 }
 

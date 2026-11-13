@@ -43,8 +43,17 @@ class StateToggleButton(
     }
 
     fun setState(state: StateFilter) {
+        val changed = this.state != state
         this.state = state
         updateButtonStates()
+        if (changed) {
+            ReaderMotion.pop(when (state) {
+                StateFilter.ALL -> binding.toggleAll
+                StateFilter.BEST -> binding.toggleFocus
+                StateFilter.SAVED -> binding.toggleSaved
+                else -> binding.toggleSome
+            })
+        }
         requestLayout()
         stateChangedListener?.changedState(this.state)
     }

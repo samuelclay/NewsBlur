@@ -66,6 +66,7 @@ struct CardView: View {
                     }
             }
         }
+        .modifier(ReaderEntrance(session: cache.motionSession, key: story.hash))
         .if(!story.isClusterStory && !cache.isNonGridStoryTitlesLayout && !usesCustomSwipes && swipeActionsEnabled) { view in
             view.swipeActions(edge: .trailing, allowsFullSwipe: true) {
                 Button {
