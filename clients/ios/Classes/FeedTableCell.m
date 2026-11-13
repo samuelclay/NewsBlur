@@ -190,7 +190,8 @@ static UIFont *textFont = nil;
     cell.backgroundColor = backgroundColor;
     
     if (isHighlighted) {
-        UIColor *highlightColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xF7E9D8, 0x304050, 0x000022);
+        // FeedTableCell.m matches the composited Sepia folder highlight in FolderTitleView.m.
+        UIColor *highlightColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xF5D1A2, 0x304050, 0x000022);
         
         CGContextSetFillColorWithColor(context, highlightColor.CGColor);
         UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:r cornerRadius:8];
