@@ -34,6 +34,10 @@ import SwiftUI
     func prepareForAppearance() { if !hasPresented { presentationReady = false } }
     func didAppear() { hasPresented = true; presentationReady = true }
     func hasSeen(_ key: String) -> Bool { seen.contains(key) }
+    func markSeen(_ key: String) {
+        seen.insert(key)
+        starts.removeValue(forKey: key)
+    }
     func recordStart(_ start: CFTimeInterval, key: String) { starts[key] = start }
     func start(for key: String, at time: CFTimeInterval) -> CFTimeInterval? {
         guard !entrancesStopped, presentationReady, seen.insert(key).inserted else { return nil }
@@ -167,6 +171,8 @@ import SwiftUI
             // ReaderMotion.swift holds cached story content through preparation/push without changing reusable view alpha.
             // ReaderMotion.swift keeps rows prepared behind the article visible when returning to an already presented list.
             if UIAccessibility.isReduceMotionEnabled || session.hasPresented {
+                session.markSeen(key)
+                view.layer.removeAnimation(forKey: "readerEntrance")
                 view.layer.removeAnimation(forKey: "readerWaitingForAppearance")
                 waitingViews.remove(view)
             } else if owner is FeedDetailObjCViewController, !session.hasSeen(key) {

@@ -868,13 +868,30 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
 
         // StoryReadStateAnimationTests.swift models next-story navigation preparing rows while the list is detached.
         ReaderMotion.row(cell.contentView, key: cell.storyHash!, owner: owner, scrolling: false, position: 0)
-        let window = motionWindow(containing: [cell])
-        defer { window.isHidden = true }
+        let table = ReaderMotionFeedOrderTable(frame: CGRect(x: 0, y: 0, width: 320, height: 500))
+        table.displayedCells = [cell]
+        table.delegate = owner
+        table.addSubview(cell)
+        let window = motionWindow(containing: [table])
+        defer {
+            window.isHidden = true
+            NSObject.cancelPreviousPerformRequests(withTarget: owner)
+        }
         window.layoutIfNeeded()
 
         XCTAssertNil(cell.contentView.layer.animation(forKey: "readerWaitingForAppearance"),
                      "Returning to an already presented list must show prepared rows without waiting for another display callback.")
         XCTAssertEqual(cell.contentView.layer.opacity, 1)
+
+        // StoryReadStateAnimationTests.swift follows viewDidAppear's display replay after the pop already showed these rows.
+        ReaderMotion.presentRows(table, owner: owner)
+        XCTAssertNil(cell.contentView.layer.animation(forKey: "readerEntrance"),
+                     "Returning rows must stay visible when the list replays its display callbacks.")
+
+        session.reset()
+        ReaderMotion.presentRows(table, owner: owner)
+        XCTAssertNotNil(cell.contentView.layer.animation(forKey: "readerEntrance"),
+                        "Opening the list as a new visit must still present its rows.")
     }
 
     func test_nativeToolbarFollowsVisualOrderAndReentersOnlyAfterBeingHidden() throws {
