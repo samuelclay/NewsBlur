@@ -6,7 +6,7 @@
     },
     "newsblur-dev": {
       "type": "http",
-      "url": "http://localhost:9117/mcp"
+      "url": "https://localhost/mcp/"
     }
   }
 }
