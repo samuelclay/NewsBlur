@@ -48,6 +48,46 @@ OVERFLOW = """(() => {
 })()"""
 
 
+def check_dialog_actions(ctx):
+    # modals.py: phone users must be able to reach dialog navigation and subscription actions.
+    # A desktop flex header or fixed-width onboarding table can hide them behind overflow:hidden.
+    original = ctx.page.viewport_size
+    try:
+        for width in (393, 320):
+            ctx.page.set_viewport_size({"width": width, "height": 852})
+            for name, opening, selector in (
+                ("trainer navigation", "open_trainer_modal()", ".NB-modal-tab-manage"),
+                (
+                    "onboarding subscription",
+                    "open_intro_modal({page_number: 3})",
+                    ".NB-intro-uptodate-follow-blog",
+                ),
+            ):
+                ctx.evaluate("NEWSBLUR.reader." + opening)
+                ctx.wait(800)
+                control = ctx.page.locator(selector)
+                reach = control.evaluate(
+                    "el => { const r = el.getBoundingClientRect(); "
+                    "return {left: r.left, right: r.right, width: innerWidth}; }"
+                )
+                reachable = reach["left"] >= 0 and reach["right"] <= reach["width"]
+                ctx.check(f"{name} is touch-reachable at {width}px", reachable, reach)
+                if reachable:
+                    # modals.py: trial checks hit testing without subscribing the dev account.
+                    control.click(trial=True, timeout=3000)
+                    if name == "trainer navigation":
+                        control.tap()
+                        ctx.wait(500)
+                        ctx.check(
+                            f"Manage Training activates at {width}px",
+                            "NB-active" in (control.get_attribute("class") or ""),
+                        )
+                ctx.close_overlays()
+    finally:
+        ctx.close_overlays()
+        ctx.page.set_viewport_size(original)
+
+
 def run(ctx):
     ctx.login("/")
     feed_id = ctx.pick_feed()
@@ -69,4 +109,5 @@ def run(ctx):
     )
     ctx.check("the activity popover is a bottom sheet", sheet is not None and abs(sheet) <= 1, sheet)
     ctx.close_overlays()
+    check_dialog_actions(ctx)
     ctx.check_no_page_errors()

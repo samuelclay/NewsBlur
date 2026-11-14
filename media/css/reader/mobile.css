@@ -82,11 +82,20 @@ body.NB-mobile.NB-no-animations {
     --nb-mobile-spinner-animation: none;
 }
 
+/* mobile.css: darkmode.css also animates a finished list's end line, independently of loading. */
+body.NB-mobile.NB-no-animations .NB-end-line {
+    animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
     body.NB-mobile {
         --nb-mobile-duration: 0ms;
         --nb-mobile-motion-factor: 0;
         --nb-mobile-spinner-animation: none;
+    }
+
+    body.NB-mobile .NB-end-line {
+        animation: none;
     }
 }
 
@@ -1066,6 +1075,59 @@ body.NB-mobile .content-pane > #story_titles {
 
 /* mobile.css: Add + Discover replaces the story list and its pills with tab panes that scroll
    themselves, so they end clear of the Listen player and Safari's toolbar the same way. */
+body.NB-mobile .NB-add-site-active .right-pane > .content-north,
+body.NB-mobile .NB-add-site-active .NB-mobile-titles-bar .NB-mobile-bar-actions {
+    display: none !important;
+}
+
+body.NB-mobile .NB-add-site-tabs-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+}
+
+body.NB-mobile .NB-add-site-tabs-container {
+    width: 100%;
+}
+
+body.NB-mobile .NB-add-site-tabs {
+    flex: 1;
+}
+
+body.NB-mobile .NB-add-site-controls {
+    flex-wrap: wrap;
+}
+
+body.NB-mobile .NB-add-site-tabs-overflow-menu {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+}
+
+/* mobile.css: discovery search fields shrink with their rows; source filters wrap below titles. */
+body.NB-mobile .NB-add-site-search-wrapper,
+body.NB-mobile .NB-add-site-search-input,
+body.NB-mobile .NB-add-site-tab-search-input {
+    min-width: 0;
+}
+
+body.NB-mobile .NB-add-site-section-header,
+body.NB-mobile .NB-add-site-section-title {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+body.NB-mobile .NB-add-site-section-search {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+body.NB-mobile .NB-add-site-section-search-input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+}
+
 body.NB-mobile .NB-add-site-tab-pane {
     padding-bottom: calc(48px + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom));
 }
@@ -2092,6 +2154,33 @@ body.NB-mobile #simplemodal-container .NB-modal .NB-modal-tabs .NB-modal-tab {
     float: none !important;
 }
 
+/* mobile.css: classifier and settings headers give their navigation a full row. */
+body.NB-mobile #simplemodal-container .NB-modal-classifiers .NB-modal-header,
+body.NB-mobile #simplemodal-container .NB-modal-trainer .NB-trainer-header {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-exception .NB-modal-subtitle {
+    float: none;
+    display: flex;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-classifiers .NB-modal-tabs,
+body.NB-mobile #simplemodal-container .NB-modal-exception .NB-modal-tabs {
+    clear: both;
+    flex-wrap: wrap;
+    min-width: 0;
+    width: 100%;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-classifiers .NB-modal-tab,
+body.NB-mobile #simplemodal-container .NB-modal-exception .NB-modal-tab {
+    white-space: normal;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 body.NB-mobile #simplemodal-container .NB-modal .NB-preference .NB-preference-label,
 body.NB-mobile #simplemodal-container .NB-modal .NB-preference .NB-preference-options {
     float: none !important;
@@ -2121,12 +2210,168 @@ body.NB-mobile #simplemodal-container .NB-modal-goodies .NB-goodies-apps {
     grid-template-columns: minmax(0, 1fr);
 }
 
+body.NB-mobile #simplemodal-container .NB-modal-goodies .NB-tab-extras .NB-goodies-app-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-goodies .NB-tab-extras .NB-goodies-app-info {
+    padding-right: 0;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-goodies .NB-goodies-custom-input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    flex-shrink: 1;
+}
+
+/* mobile.css: reader_intro.js shrinks the logo inline after the welcome page. Center its
+   initial size without a margin that would also move the smaller logo offscreen. */
 body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-spinning-logo {
-    left: 50%;
+    top: 150px;
+    left: calc(50% - 100px);
     width: 200px;
     height: 200px;
-    margin-left: -100px;
+    margin-left: 0;
     background-size: contain;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-modal-title {
+    padding-inline-end: 0;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro.NB-intro-language {
+    padding: 56px 0 var(--nb-mobile-safe-bottom) !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro.NB-intro-language .NB-page {
+    min-height: 0;
+}
+
+/* mobile.css: leave enough label width beside the language chooser's selection check. */
+body.NB-mobile #simplemodal-container .NB-modal-intro.NB-intro-language .NB-language-option {
+    padding-inline: 8px;
+    gap: 4px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro.NB-intro-language .NB-language-option-check {
+    width: 12px;
+    height: 12px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-module-container {
+    float: none;
+    width: auto;
+    margin-bottom: 16px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-follows,
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-follows tbody,
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-follows tr,
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-uptodate-follow {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-uptodate-follow {
+    border-right: none;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-uptodate-subscribe .NB-intro-uptodate-follow:first-child {
+    border-bottom: 1px solid var(--nb-mobile-card-border);
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-uptodate-follow iframe {
+    display: block;
+    max-width: 100%;
+    margin: 6px auto 0;
+}
+
+/* mobile.css: the intro grows with stacked cards, so its footer must follow the page content. */
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-modal-submit-bottom {
+    position: relative;
+    display: flow-root;
+    margin-top: 16px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro.NB-intro-language .NB-modal-submit-bottom {
+    display: none;
+}
+
+/* mobile.css: organizer actions and statistics must not consume the feed title's column. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-sidebar {
+    float: none;
+    width: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-sidebar-title {
+    margin-top: 0;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-sidebar-container {
+    min-width: 0;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-actionbar {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-sorts,
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-selects {
+    float: none;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-feedlist {
+    width: 100%;
+    margin-right: 0;
+    box-sizing: border-box;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-feedlist .feed {
+    padding-bottom: 18px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-feedlist .feed_title {
+    /* mobile.css: rtl_css.py mirrors this independently of each feed title's dir="auto". */
+    padding-right: 40px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-feed-organizer-sort {
+    top: auto;
+    bottom: 4px;
+    inset-inline-start: 32px;
+    inset-inline-end: 40px;
+    width: auto;
+    font-size: 11px;
+}
+
+/* mobile.css: every Blurblog background swatch remains available inside the phone sheet. */
+body.NB-mobile #simplemodal-container .NB-modal-profile-editor .NB-profile-blurblog-colors {
+    float: none;
+    clear: both;
+    width: auto;
+    margin: 0 0 12px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-profile-editor .NB-profile-blurblog-colorline {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-profile-editor .NB-profile-blurblog-color {
+    float: none;
+    flex: none;
 }
 
 body.NB-mobile #simplemodal-container .NB-modal fieldset {
@@ -2137,6 +2382,30 @@ body.NB-mobile #simplemodal-container .NB-modal fieldset {
 
 body.NB-mobile .NB-add-discover-sources {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* mobile.css: the Add Site folder picker gets its own line below the heading. */
+body.NB-mobile .NB-add-header {
+    flex-wrap: wrap;
+}
+
+body.NB-mobile .NB-add-header-icon {
+    flex-shrink: 0;
+}
+
+body.NB-mobile .NB-add-header > span:not(.NB-add-header-icon) {
+    flex: 1;
+    min-width: 0;
+}
+
+body.NB-mobile .NB-add-folder-row {
+    width: 100%;
+    margin-left: 0;
+}
+
+body.NB-mobile .NB-add-folder-row .NB-feed-folder-picker {
+    flex: 1;
+    min-width: 0;
 }
 
 body.NB-mobile .NB-popover .popover-content {

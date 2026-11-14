@@ -733,10 +733,14 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         // The story list's own controls render right after this.
         _.defer(this.update_titles_actions);
         var feed_id = NEWSBLUR.reader.active_feed;
-        var title = feed_id && NEWSBLUR.reader.feed_title(feed_id);
+        var is_discovery = feed_id === 'add-site';
+        // mobile_layout_view.js: discovery has no feed title; reuse the localized sidebar label.
+        var title = is_discovery ?
+            NEWSBLUR.reader.$s.$add_site_header.find('.NB-feeds-header-title').text().trim() :
+            feed_id && NEWSBLUR.reader.feed_title(feed_id);
         this.$titles_bar.find('.NB-mobile-bar-title-text').text(title || '');
         var $favicon = this.$titles_bar.find('.NB-mobile-bar-favicon').empty();
-        if (feed_id === 'add-site') {
+        if (is_discovery) {
             // jquery.newsblur.js $.favicon knows feeds, rivers and the saved, read and archive
             // lists, but Add + Discover is a view of its own, so it gets the sidebar's add icon.
             $favicon.html($.make('img', {
@@ -750,7 +754,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.$titles_bar.find('.NB-mobile-bar-back-label').text(back_label);
 
         this.$titles_bar.find('.NB-mobile-layout-toggle')
-            .toggleClass('NB-hidden', !feed_id || !!NEWSBLUR.reader.flags.briefing_view)
+            .toggleClass('NB-hidden', !feed_id || is_discovery || !!NEWSBLUR.reader.flags.briefing_view)
             .attr('aria-label', gettext('Layout'))
             .find('.NB-mobile-icon')
             .removeClass('NB-mobile-icon-layout-list NB-mobile-icon-layout-page NB-mobile-icon-layout-grid')
@@ -1501,7 +1505,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     update_titles_actions: function () {
         if (!this.$titles_bar) return;
         var $header = $('.right-pane .NB-story-titles-header');
-        var can_mark_read = $header.find('.NB-feedbar-mark-feed-read').length > 0 &&
+        var can_mark_read = NEWSBLUR.reader.active_feed !== 'add-site' &&
+            $header.find('.NB-feedbar-mark-feed-read').length > 0 &&
             !$header.find('.NB-folder-fake').length;
         this.$titles_bar.find('.NB-mobile-mark-read').toggleClass('NB-hidden', !can_mark_read);
         this.fit_pills();

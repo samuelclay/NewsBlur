@@ -1044,6 +1044,20 @@ def check_discovery_back(ctx):
     ctx.wait(900)
     ctx.page.locator(".NB-feeds-header-add-site").tap()
     ctx.wait(2500)
+    # regressions.py: discovery must identify itself and expose the active source tab.
+    # The desktop controls can consume the whole header, clipping the only visible tab.
+    discovery_header = ctx.evaluate(
+        "(() => { const title = document.querySelector('.NB-mobile-titles-bar .NB-mobile-bar-title-text'); "
+        "const tab = document.querySelector('.NB-add-site-tab.NB-active'); "
+        "return {title: title.textContent.trim(), tab_width: tab.offsetWidth, "
+        "available_width: tab.parentElement.clientWidth}; })()"
+    )
+    ctx.check("discovery has a navigation heading", bool(discovery_header["title"]), discovery_header)
+    ctx.check(
+        "the active discovery source is visible",
+        discovery_header["available_width"] >= discovery_header["tab_width"],
+        discovery_header,
+    )
     # A phone shows only the current tab; the rest live under More (add_site_view.js). Visit two
     # other tabs so Back crosses an entry written by a tab change.
     paths = [ctx.evaluate("location.pathname")]
