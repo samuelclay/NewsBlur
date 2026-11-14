@@ -3337,6 +3337,9 @@
     self.webView.accessibilityElementsHidden = NO;
     if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] fadePreparedStory hash=%@ page=%p gen=%lu", self.activeStoryId, self, (unsigned long)self.storyLoadGeneration);
     // StoryDetailObjCViewController.m reveals only the finished document; native reader controls are already usable.
+    if (!UIAccessibilityIsReduceMotionEnabled()) {
+        [self.webView evaluateJavaScript:@"newsblurAnimateStoryEntrance()" completionHandler:nil];
+    }
     [UIView animateWithDuration:UIAccessibilityIsReduceMotionEnabled() ? 0 : .14
                           delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                      animations:^{ self.webView.alpha = 1; } completion:nil];
@@ -3890,7 +3893,7 @@
                           shareBarString];
     NSString *shareType = appDelegate.activeShareType;
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError * _Nullable error) {
-        [self.webView evaluateJavaScript:@"attachFastClick();" completionHandler:^(id result, NSError * _Nullable error) {
+        [self.webView evaluateJavaScript:@"attachFastClick(); newsblurRefreshStoryMotion();" completionHandler:^(id result, NSError * _Nullable error) {
             // HACK to make the scroll event happen after the replace innerHTML event above happens.
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^{
@@ -4125,7 +4128,7 @@
                           clusterStoriesString];
 
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
-        [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); }" completionHandler:nil];
+        [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); } newsblurRefreshStoryMotion();" completionHandler:nil];
         [self applyClassifierHighlights];
     }];
 }
@@ -4137,7 +4140,7 @@
                           sideOptionsString];
     
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
-        [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); }" completionHandler:nil];
+        [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); } newsblurRefreshStoryMotion();" completionHandler:nil];
     }];
 }
 

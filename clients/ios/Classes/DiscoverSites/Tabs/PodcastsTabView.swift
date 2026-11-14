@@ -25,17 +25,17 @@ struct PodcastsTabView: View {
                     onSubmit: {
                         viewModel.searchFeeds(type: "podcast", query: viewModel.podcastsState.searchQuery)
                     },
-                    viewMode: $viewModel.feedViewMode
+                    viewMode: showsCategories && UIDevice.current.userInterfaceIdiom != .phone ? nil : $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
 
-                if !viewModel.podcastsState.categories.isEmpty && viewModel.podcastsState.searchQuery.isEmpty
-                {
+                if showsCategories {
                     DiscoverCategoryPillsView(
                         categories: viewModel.podcastsState.categories,
                         selectedCategory: $viewModel.podcastsState.selectedCategory,
-                        selectedSubcategory: $viewModel.podcastsState.selectedSubcategory
+                        selectedSubcategory: $viewModel.podcastsState.selectedSubcategory,
+                        viewMode: UIDevice.current.userInterfaceIdiom == .phone ? nil : $viewModel.feedViewMode
                     )
                     .onChange(of: viewModel.podcastsState.selectedCategory) { _ in
                         reloadFeeds()
@@ -81,6 +81,10 @@ struct PodcastsTabView: View {
                 reloadFeeds()
             }
         }
+    }
+
+    private var showsCategories: Bool {
+        !viewModel.podcastsState.categories.isEmpty && viewModel.podcastsState.searchQuery.isEmpty
     }
 
     @ViewBuilder

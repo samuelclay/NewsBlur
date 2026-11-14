@@ -18,18 +18,21 @@ struct PopularTabView: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    DiscoverViewModePicker(viewMode: $viewModel.feedViewMode)
+                if viewModel.popularState.categories.isEmpty || UIDevice.current.userInterfaceIdiom == .phone {
+                    HStack {
+                        Spacer()
+                        DiscoverViewModePicker(viewMode: $viewModel.feedViewMode)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
 
                 if !viewModel.popularState.categories.isEmpty {
                     DiscoverCategoryPillsView(
                         categories: viewModel.popularState.categories,
                         selectedCategory: $viewModel.popularState.selectedCategory,
-                        selectedSubcategory: $viewModel.popularState.selectedSubcategory
+                        selectedSubcategory: $viewModel.popularState.selectedSubcategory,
+                        viewMode: UIDevice.current.userInterfaceIdiom == .phone ? nil : $viewModel.feedViewMode
                     )
                     .onChange(of: viewModel.popularState.selectedCategory) { _ in
                         reloadFeeds()

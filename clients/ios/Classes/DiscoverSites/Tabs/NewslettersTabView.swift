@@ -26,7 +26,7 @@ struct NewslettersTabView: View {
                         viewModel.searchFeeds(
                             type: "newsletter", query: viewModel.newslettersState.searchQuery)
                     },
-                    viewMode: $viewModel.feedViewMode
+                    viewMode: showsCategories && UIDevice.current.userInterfaceIdiom != .phone ? nil : $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
@@ -37,13 +37,12 @@ struct NewslettersTabView: View {
                     platformPillsSection
                 }
 
-                if !viewModel.newslettersState.categories.isEmpty
-                    && viewModel.newslettersState.searchQuery.isEmpty
-                {
+                if showsCategories {
                     DiscoverCategoryPillsView(
                         categories: viewModel.newslettersState.categories,
                         selectedCategory: $viewModel.newslettersState.selectedCategory,
-                        selectedSubcategory: $viewModel.newslettersState.selectedSubcategory
+                        selectedSubcategory: $viewModel.newslettersState.selectedSubcategory,
+                        viewMode: UIDevice.current.userInterfaceIdiom == .phone ? nil : $viewModel.feedViewMode
                     )
                     .onChange(of: viewModel.newslettersState.selectedCategory) { _ in
                         reloadFeeds()
@@ -93,6 +92,10 @@ struct NewslettersTabView: View {
     }
 
     // MARK: - Platform Pills
+
+    private var showsCategories: Bool {
+        !viewModel.newslettersState.categories.isEmpty && viewModel.newslettersState.searchQuery.isEmpty
+    }
 
     private var platformPillsSection: some View {
         ScrollView(.horizontal, showsIndicators: false) {

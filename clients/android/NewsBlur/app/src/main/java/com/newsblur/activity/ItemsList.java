@@ -295,6 +295,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (activeSearchQuery != null) {
             binding.itemlistSearchQuery.setText(activeSearchQuery);
             binding.itemlistSearchContainer.setVisibility(View.VISIBLE);
+        com.newsblur.view.ReaderMotion.enter(binding.itemlistSearchContainer, 0, 8f);
         } else if (getIntent().getBooleanExtra(EXTRA_VISIBLE_SEARCH, false)) {
             binding.itemlistSearchContainer.setVisibility(View.VISIBLE);
             binding.itemlistSearchQuery.requestFocus();
@@ -642,6 +643,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         updateStatusIndicators();
     }
 
+    @Override protected boolean isThemeTransitionReady() {
+        return areStoriesDeferred() || (itemSetFragment != null && itemSetFragment.isThemeContentReady());
+    }
+
     public void toggleStorySearch() {
         if (isStorySearchVisible()) {
             hideStorySearch(true);
@@ -655,9 +660,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (storyToolbarAtBottom) floatingStoryToolbar = new com.newsblur.view.FloatingStoryToolbar(binding, prefsRepo.getResolvedTheme(this));
         discoverPillExpandedAppearance = captureStoryHeaderPillAppearance(binding.itemlistDiscoverPill);
         searchPillExpandedAppearance = captureStoryHeaderPillAppearance(binding.itemlistSearchPill);
-        binding.itemlistDiscoverPill.setOnClickListener(view -> openDiscoverFeeds());
+        binding.itemlistDiscoverPill.setOnClickListener(view -> { com.newsblur.view.ReaderMotion.pop(view); openDiscoverFeeds(); });
         binding.itemlistOptionsPill.setOnClickListener(this::showItemListMenuPopup);
-        binding.itemlistSearchPill.setOnClickListener(view -> toggleStorySearch());
+        binding.itemlistSearchPill.setOnClickListener(view -> { com.newsblur.view.ReaderMotion.pop(view); toggleStorySearch(); });
         binding.itemlistMarkReadButton.setOnClickListener(view ->
                 feedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, this)
         );
@@ -666,6 +671,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             binding.itemlistSearchQuery.setText("");
             binding.itemlistSearchQuery.requestFocus();
         });
+        binding.itemlistStoryHeaderBar.post(() -> com.newsblur.view.ReaderMotion.cascade(java.util.Arrays.asList(binding.itemlistDiscoverPill, binding.itemlistOptionsPill, binding.itemlistSearchPill, binding.itemlistMarkReadContainer)));
         binding.itemlistStoryHeaderBar.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
                 updateStoryHeaderPillLabels()
         );

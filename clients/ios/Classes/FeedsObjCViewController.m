@@ -132,6 +132,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 @property (nonatomic, strong) UIView *scrollingFeedHeaderView;
 @property (nonatomic) CGFloat horizontalFeedTopMargin;
 @property (nonatomic) BOOL hidNavigationBarForFeedHeader;
+@property (nonatomic) BOOL feedMotionPresentationScheduled;
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
 @property (nonatomic, strong) NSLayoutConstraint *intelligenceControlWidthConstraint;
 @property (nonatomic, strong) NSOperationQueue *faviconPrefetchQueue;
@@ -700,6 +701,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 //    }
 //    NSLog(@"Feed List timing 0: %f", [NSDate timeIntervalSinceReferenceDate] - start);
     [super viewWillAppear:animated];
+    [[ReaderMotion session:self] prepareForAppearance];
     [self updateFeedNavigationBarForHeader];
     
 #if TARGET_OS_MACCATALYST
@@ -770,6 +772,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     
 //    NSLog(@"Feed List timing 2: %f", [NSDate timeIntervalSinceReferenceDate] - start);
+}
+
+- (void)viewIsAppearing:(BOOL)animated {
+    [super viewIsAppearing:animated];
+    [ReaderMotion presentFeedRows:self.feedTitlesTable owner:self];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -856,6 +863,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    [ReaderMotion presentFeedRows:self.feedTitlesTable owner:self];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
@@ -3020,6 +3028,38 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self prepareVisibleFeedFavicons];
 }
 
+// FeedsObjCViewController.m keys entrances by feed identity so count refreshes never replay them.
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *key = cell.accessibilityIdentifier;
+    if (key.length == 0) key = [NSString stringWithFormat:@"feed-section-%ld-row-%ld", (long)indexPath.section, (long)indexPath.row];
+    [ReaderMotion registerFeedView:cell key:key owner:self];
+    [self scheduleFeedMotionPresentation];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    NSString *key = [NSString stringWithFormat:@"folder-%@", section < appDelegate.dictFoldersArray.count ? appDelegate.dictFoldersArray[section] : @(section)];
+    [ReaderMotion registerFeedView:view key:key owner:self];
+    [self scheduleFeedMotionPresentation];
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [ReaderMotion removeFeedView:cell owner:self];
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingHeaderView:(UIView *)view forSection:(NSInteger)section {
+    [ReaderMotion removeFeedView:view owner:self];
+}
+
+- (void)scheduleFeedMotionPresentation {
+    if (self.feedMotionPresentationScheduled) return;
+    self.feedMotionPresentationScheduled = YES;
+    // FeedsObjCViewController.m presents one settled batch after UIKit attaches and positions all visible headers and cells.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [ReaderMotion presentFeedRows:self.feedTitlesTable owner:self];
+        self.feedMotionPresentationScheduled = NO;
+    });
+}
+
 - (void)refreshFolderCounts {
     [appDelegate.folderCountCache removeAllObjects];
 
@@ -4006,6 +4046,7 @@ heightForHeaderInSection:(NSInteger)section {
 #pragma mark - Table Actions
 
 - (void)didCollapseFolder:(UIButton *)button {
+    [ReaderMotion pop:button];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 
     NSString *folderName = appDelegate.dictFoldersArray[button.tag];
@@ -4028,6 +4069,15 @@ heightForHeaderInSection:(NSInteger)section {
                         withRowAnimation:UITableViewRowAnimationFade];
     [self.feedTitlesTable endUpdates];
 
+    if (isFolderCollapsed) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableArray *rows = [NSMutableArray array];
+            for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
+                if ([self.feedTitlesTable indexPathForCell:cell].section == button.tag) [rows addObject:cell.contentView];
+            }
+            [ReaderMotion cascade:rows];
+        });
+    }
     [self updateAllStoriesCollapseButton];
 }
 
@@ -4184,83 +4234,64 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (IBAction)selectIntelligence {
+    NSInteger selectedSegmentIndex = self.intelligenceControl.selectedSegmentIndex;
+    NSInteger previousSegmentIndex = self.viewShowingAllFeeds ? 0 : appDelegate.selectedIntelligence + 1;
+    if (selectedSegmentIndex == previousSegmentIndex) return;
     [self updateVerticalFeedToolbarSelection];
 #if TARGET_OS_MACCATALYST
     [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
 #endif
-    [MBProgressHUD hideHUDForView:self.feedTitlesTable animated:NO];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	hud.mode = MBProgressHUDModeText;
-	hud.removeFromSuperViewOnHide = YES;
-    
-    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
-        hud.xOffset = 50;
-    }
-    
-    NSIndexPath *topRow;
-    if ([[self.feedTitlesTable indexPathsForVisibleRows] count]) {
-        topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
-    }
-    NSInteger selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
+    NSIndexPath *topRow = self.feedTitlesTable.indexPathsForVisibleRows.firstObject;
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    int direction;
     if (selectedSegmentIndex == 0) {
-        hud.labelText = [NBLocalization text:@"All Site Stories"];
         [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        direction = -1;
         self.viewShowingAllFeeds = YES;
         [appDelegate setSelectedIntelligence:0];
     } else if (selectedSegmentIndex == 1) {
-        hud.labelText = [NBLocalization text:@"Unread Stories"];
         [userPreferences setInteger:0 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        direction = self.viewShowingAllFeeds ? 1 : -1;
         self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:0];
     } else if (selectedSegmentIndex == 2) {
-        hud.labelText = [NBLocalization text:@"Focus Stories"];
         [userPreferences setInteger:1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        direction = 1;
         self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:1];
     } else {
-        hud.labelText = [NBLocalization text:@"Saved Stories"];
         [userPreferences setInteger:2 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        direction = 1;
         self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:2];
     }
     
+    [[ReaderMotion session:self] reset];
     [self calculateFeedLocations];
     [self reloadFeedTitlesTable];
 
-    NSIndexPath *newMiddleRow;
-    if (topRow && [self.feedTitlesTable numberOfRowsInSection:topRow.section] == 0) {
-        newMiddleRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
-    } else if (topRow) {
-        newMiddleRow = [NSIndexPath indexPathForRow:0 inSection:topRow.section];
+    NSIndexPath *newMiddleRow = nil;
+    if (topRow && topRow.section < self.feedTitlesTable.numberOfSections) {
+        if ([self.feedTitlesTable numberOfRowsInSection:topRow.section] == 0) {
+            newMiddleRow = self.feedTitlesTable.indexPathsForVisibleRows.firstObject;
+        } else {
+            newMiddleRow = [NSIndexPath indexPathForRow:0 inSection:topRow.section];
+        }
     }
     if (newMiddleRow) {
         [self.feedTitlesTable scrollToRowAtIndexPath:newMiddleRow
                                     atScrollPosition:UITableViewScrollPositionTop
                                             animated:NO];
     }
-    [self.feedTitlesTable
-     reloadRowsAtIndexPaths:[self.feedTitlesTable indexPathsForVisibleRows]
-     withRowAnimation:direction == 1 ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight];
     for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
         [cell setNeedsDisplay];
     }
-	[hud hide:YES afterDelay:0.5];
+    [ReaderMotion presentFeedRows:self.feedTitlesTable owner:self];
     [self showExplainerOnEmptyFeedlist];
     
 //    if (!self.isPhone) {
@@ -4505,7 +4536,7 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)finishRefresh {
     self.inPullToRefresh_ = NO;
 #if !TARGET_OS_MACCATALYST
-    [self.refreshControl endRefreshing];
+    [ReaderMotion finishRefresh:self.refreshControl];
 #endif
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.syncNotifier updateFrameInSuperview];

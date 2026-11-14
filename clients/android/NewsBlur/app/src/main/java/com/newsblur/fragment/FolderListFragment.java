@@ -607,9 +607,17 @@ public void checkOpenFolderPreferences() {
     }
 
 	public void changeState(StateFilter state) {
+		if (currentState == state) return;
 		currentState = state;
         prefsRepo.setStateFilter(state);
-        adapter.changeState(state);
+        Runnable update = () -> {
+            adapter.changeState(state);
+            // FolderListFragment.java filters cached feeds in this frame so the transition does not wait for a database refresh.
+            adapter.forceRecount();
+            checkOpenFolderPreferences();
+        };
+        if (binding != null) binding.folderfeedList.animateFilterChange(update);
+        else update.run();
 		hasUpdated();
 	}
 

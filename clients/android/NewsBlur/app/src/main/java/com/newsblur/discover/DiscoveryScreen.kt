@@ -66,6 +66,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -91,6 +92,7 @@ fun DiscoveryScreen(
     onQuickAdd: () -> Unit,
 ) {
     val colors = ReaderSheetPalette.colors(theme)
+    val compact = LocalConfiguration.current.screenWidthDp < 600
     CompositionLocalProvider(LocalContentColor provides colors.textPrimary) {
         Column(
             Modifier
@@ -108,13 +110,7 @@ fun DiscoveryScreen(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                IconButton(onClick = model::toggleGrid) {
-                    Icon(
-                        painterResource(if (state.grid) R.drawable.ic_discover_view_list else R.drawable.ic_discover_view_grid),
-                        stringResource(if (state.grid) R.string.discover_show_list else R.string.discover_show_grid),
-                        Modifier.size(24.dp),
-                    )
-                }
+                if (!compact) DiscoveryViewMode(state.grid, model::toggleGrid)
                 IconButton(onClick = onQuickAdd) { Icon(Icons.Rounded.Add, stringResource(R.string.discover_quick_add)) }
             }
             Row(
@@ -165,7 +161,20 @@ fun DiscoveryScreen(
                         else -> {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    DiscoveryInput(state.page.query, stringResource(tabHint(state.tab)), colors, model::queryChanged, model::retry)
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    ) {
+                                        DiscoveryInput(
+                                            state.page.query,
+                                            stringResource(tabHint(state.tab)),
+                                            colors,
+                                            model::queryChanged,
+                                            model::retry,
+                                            modifier = Modifier.weight(1f),
+                                        )
+                                        if (compact) DiscoveryViewMode(state.grid, model::toggleGrid)
+                                    }
                                     if (state.tab == DiscoveryTab.NEWSLETTERS && state.page.platforms.isNotEmpty()) {
                                         val allPlatforms = stringResource(R.string.discover_all_platforms)
                                         DiscoveryChoice(
@@ -266,6 +275,20 @@ fun DiscoveryScreen(
 }
 
 @Composable
+private fun DiscoveryViewMode(
+    grid: Boolean,
+    onToggle: () -> Unit,
+) {
+    IconButton(onClick = onToggle) {
+        Icon(
+            painterResource(if (grid) R.drawable.ic_discover_view_list else R.drawable.ic_discover_view_grid),
+            stringResource(if (grid) R.string.discover_show_list else R.string.discover_show_grid),
+            Modifier.size(24.dp),
+        )
+    }
+}
+
+@Composable
 private fun DiscoveryAddRow(
     state: DiscoveryState,
     model: DiscoveryViewModel,
@@ -337,12 +360,13 @@ internal fun DiscoveryInput(
     onChange: (String) -> Unit,
     onSubmit: () -> Unit = {},
     enabled: Boolean = true,
+    modifier: Modifier = Modifier,
 ) {
     val clearDescription = stringResource(R.string.discover_clear_input, hint)
     OutlinedTextField(
         value,
         onChange,
-        Modifier.fillMaxWidth().semantics { contentDescription = hint },
+        modifier.fillMaxWidth().semantics { contentDescription = hint },
         enabled = enabled,
         placeholder = { Text(hint) },
         singleLine = true,

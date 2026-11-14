@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -113,12 +112,12 @@ fun AskAiSheet(
         shape = RoundedCornerShape(0.dp),
         color = palette.background,
     ) {
+        // AskAiSheet.kt uses NewsBlurBottomSheet's resized window; adding IME padding again collapses the composer.
         Column(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .imePadding(),
+                    .navigationBarsPadding(),
         ) {
             Box(
                 modifier =

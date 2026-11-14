@@ -167,8 +167,11 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                // TabletPaneDivider.kt's wider invisible strip must leave toolbar buttons usable.
-                for (id in listOf(R.id.toolbar, R.id.bottom_toolbar, R.id.itemlist_story_header, R.id.bottom_next_feed_control)) {
+                // TabletPaneDivider.kt's wider invisible strip must leave toolbar and feed-search controls usable.
+                for (id in listOf(
+                    R.id.toolbar, R.id.bottom_toolbar, R.id.itemlist_story_header, R.id.bottom_next_feed_control,
+                    R.id.input_search_query, R.id.clear_search_query
+                )) {
                     val controls = activity.findViewById<View>(id) ?: continue
                     if (!controls.isShown) continue
                     val location = IntArray(2)

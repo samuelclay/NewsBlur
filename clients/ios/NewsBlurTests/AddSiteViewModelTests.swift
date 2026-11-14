@@ -244,6 +244,115 @@ final class Test_DiscoverPanePresentation: XCTestCase {
         XCTAssertEqual(leading.constant, detail.verticalDividerPosition)
     }
 
+    func test_dashboardModuleLoadDoesNotRevealAnEmptyStoryTitleColumn() {
+        let (app, detail, _, _) = fixture()
+        let titles = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 820))
+        let divider = UIView(frame: CGRect(x: 0, y: 0, width: 1, height: 820))
+        detail.view.addSubview(titles)
+        detail.view.addSubview(divider)
+        detail.leftContainerView = titles
+        detail.verticalDividerView = divider
+        let leading = divider.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor, constant: -13)
+        detail.view.addConstraint(leading)
+        detail.verticalDividerViewLeadingConstraint = leading
+        detail.feedDetailViewController = DiscoveryPreviewTestFeedDetail()
+        app.splitViewController = SplitViewController(style: .tripleColumn)
+        detail.storyTitlesInDashboard = true
+        titles.isHidden = true
+        divider.isHidden = true
+
+        // AddSiteViewModelTests.swift exercises the selection hook also called by background dashboard module loads.
+        UIView.performWithoutAnimation { detail.dismissFullscreenSidebarOverlayAfterFeedSelection() }
+        // DetailViewController.swift receives another layout pass when the dashboard's loaded modules resize.
+        UIView.performWithoutAnimation { detail.viewDidLayoutSubviews() }
+
+        XCTAssertTrue(titles.isHidden, "Dashboard modules own their titles; a standalone column must remain hidden")
+        XCTAssertTrue(divider.isHidden)
+        XCTAssertEqual(leading.constant, -13, "Loading a dashboard module must preserve the dashboard's full width")
+
+        leading.constant = -13
+        detail.viewWillTransition(to: CGSize(width: 1024, height: 820), with: DashboardResizeCoordinator())
+        XCTAssertEqual(leading.constant, -13, "Resizing Dashboard must not restore the remembered reader column width")
+
+        detail.storyTitlesInDashboard = false
+        UIView.performWithoutAnimation { detail.dismissFullscreenSidebarOverlayAfterFeedSelection() }
+
+        XCTAssertFalse(titles.isHidden, "Selecting a source after Dashboard must restore its story column")
+        XCTAssertFalse(divider.isHidden)
+        XCTAssertEqual(leading.constant, detail.verticalDividerPosition)
+        withExtendedLifetime(app) {}
+    }
+
+    func test_dashboardNavigationTitleDoesNotFollowBackgroundModuleSelection() throws {
+        let (app, detail, _, _) = fixture()
+        detail.storyTitlesInDashboard = true
+        app.storiesCollection.isRiverView = true
+        app.storiesCollection.activeFolder = "dashboard"
+        let dashboardTitle = try XCTUnwrap((app.makeFeedTitle(nil) as? UILabel)?.text)
+
+        // AddSiteViewModelTests.swift models successive folder, social, and feed modules sharing the active collection.
+        app.storiesCollection.activeFolder = "infrequent"
+        XCTAssertEqual((app.makeFeedTitle(nil) as? UILabel)?.text, dashboardTitle)
+        app.storiesCollection.isSocialRiverView = true
+        app.storiesCollection.activeFolder = "river_global"
+        XCTAssertEqual((app.makeFeedTitle(nil) as? UILabel)?.text, dashboardTitle)
+        app.storiesCollection.isSocialRiverView = false
+        app.storiesCollection.isRiverView = false
+        app.storiesCollection.activeFolder = nil
+        let feed: [AnyHashable: Any] = ["id": 42, "feed_title": "Subscribed site"]
+        XCTAssertEqual((app.makeFeedTitle(feed) as? UILabel)?.text, dashboardTitle)
+
+        detail.storyTitlesInDashboard = false
+        let feedTitle = try XCTUnwrap((app.makeFeedTitle(feed) as? UILabel)?.text)
+        XCTAssertNotEqual(feedTitle, dashboardTitle, "An explicit selection must show the selected source again")
+        withExtendedLifetime(app) {}
+    }
+
+    func test_dashboardSidebarButtonOpensFeedsAndReaderSidebarStillRevealsTitles() throws {
+        let (app, detail, _, _) = fixture()
+        let titles = UIView()
+        let divider = UIView()
+        detail.view.addSubview(titles)
+        detail.view.addSubview(divider)
+        detail.leftContainerView = titles
+        detail.verticalDividerView = divider
+        let leading = divider.leadingAnchor.constraint(equalTo: detail.view.leadingAnchor, constant: -13)
+        detail.view.addConstraint(leading)
+        detail.verticalDividerViewLeadingConstraint = leading
+        titles.isHidden = true
+        divider.isHidden = true
+        detail.storyTitlesInDashboard = true
+        let split = DashboardSidebarTestSplit(style: .tripleColumn)
+        app.splitViewController = split
+        let stories = DashboardSidebarTestFeedDetail()
+        stories.fixtureApp = app
+        stories.appDelegate = app
+        stories.settingsBarButton = UIBarButtonItem(title: "Settings", style: .plain, target: nil, action: nil)
+        detail.feedDetailViewController = stories
+
+        func tapSidebar() throws {
+            stories.updateSidebarButton(for: .secondaryOnly)
+            let button = try XCTUnwrap(detail.feedDetailNavigationItem.leftBarButtonItems?.first)
+            let action = try XCTUnwrap(button.action)
+            UIView.performWithoutAnimation {
+                UIApplication.shared.sendAction(action, to: button.target, from: button, for: nil)
+            }
+        }
+
+        // AddSiteViewModelTests.swift dispatches the actual toolbar action instead of invoking the intended destination directly.
+        try tapSidebar()
+        XCTAssertEqual(split.shownColumns, [.primary], "Dashboard's Sidebar must open feeds instead of its nonexistent title column")
+        XCTAssertEqual(leading.constant, -13)
+
+        detail.storyTitlesInDashboard = false
+        leading.constant = 0
+        try tapSidebar()
+        XCTAssertEqual(split.shownColumns, [.primary], "A collapsed reader must reveal its story titles before opening feeds")
+        XCTAssertFalse(titles.isHidden)
+        XCTAssertEqual(leading.constant, detail.verticalDividerPosition)
+        withExtendedLifetime(app) {}
+    }
+
     func test_discoveryStatusBackgroundCoversNavigationSafeAreaAcrossThemesAndSizes() throws {
         let (app, detail, _, _) = fixture()
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
@@ -499,6 +608,53 @@ final class Test_DiscoverPanePresentation: XCTestCase {
     private func descendants(of controller: UIViewController) -> [UIViewController] {
         controller.children.flatMap { [$0] + descendants(of: $0) }
     }
+}
+
+@MainActor private final class DashboardResizeCoordinator: NSObject, UIViewControllerTransitionCoordinator {
+    let containerView = UIView()
+    let isAnimated = false
+    let presentationStyle = UIModalPresentationStyle.none
+    let initiallyInteractive = false
+    let isInterruptible = true
+    let isInteractive = false
+    let isCancelled = false
+    let transitionDuration: TimeInterval = 0
+    let percentComplete: CGFloat = 1
+    let completionVelocity: CGFloat = 1
+    let completionCurve = UIView.AnimationCurve.linear
+    let targetTransform = CGAffineTransform.identity
+
+    func animate(alongsideTransition animation: ((UIViewControllerTransitionCoordinatorContext) -> Void)?,
+                 completion: ((UIViewControllerTransitionCoordinatorContext) -> Void)? = nil) -> Bool {
+        animation?(self)
+        completion?(self)
+        return true
+    }
+    func animateAlongsideTransition(in view: UIView?, animation: ((UIViewControllerTransitionCoordinatorContext) -> Void)?,
+                                    completion: ((UIViewControllerTransitionCoordinatorContext) -> Void)? = nil) -> Bool {
+        animate(alongsideTransition: animation, completion: completion)
+    }
+    func notifyWhenInteractionChanges(_ handler: @escaping (UIViewControllerTransitionCoordinatorContext) -> Void) {}
+    func notifyWhenInteractionEnds(_ handler: @escaping (UIViewControllerTransitionCoordinatorContext) -> Void) {}
+    func viewController(forKey key: UITransitionContextViewControllerKey) -> UIViewController? { nil }
+    func view(forKey key: UITransitionContextViewKey) -> UIView? { nil }
+}
+
+@MainActor private final class DashboardSidebarTestSplit: SplitViewController {
+    var shownColumns: [UISplitViewController.Column] = []
+    override var displayMode: UISplitViewController.DisplayMode { .secondaryOnly }
+    override func show(_ column: UISplitViewController.Column) { shownColumns.append(column) }
+}
+
+@MainActor private final class DashboardSidebarTestFeedDetail: FeedDetailViewController {
+    var fixtureApp: NewsBlurAppDelegate?
+    override var appDelegate: NewsBlurAppDelegate! {
+        get { super.appDelegate }
+        set { super.appDelegate = fixtureApp ?? newValue }
+    }
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+    override func viewDidLayoutSubviews() {}
 }
 
 @MainActor private final class DiscoverySidebarSelectionTestApp: NewsBlurAppDelegate {

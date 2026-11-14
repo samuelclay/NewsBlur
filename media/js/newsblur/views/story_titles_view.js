@@ -110,6 +110,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             return story.el;
         });
         this.$el.html($stories);
+        NEWSBLUR.motion.watch(this, stories, this.$story_titles[0], NEWSBLUR.reader.active_feed, { animate_on_scroll: false });
         this.render_explainer();
         // console.log(['Rendered story titles', this.$el, $stories]);
         this.end_loading();
@@ -418,6 +419,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 return story.el;
             });
             this.$el.append($stories);
+            NEWSBLUR.motion.watch(this, stories, this.$story_titles[0], NEWSBLUR.reader.active_feed, { animate_on_scroll: false });
             if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story || this.options.on_trending_feed) {
                 var $extras = this.$el.find('.NB-story-title-container .NB-story-title:not(.NB-hidden)').slice(5);
                 $extras.addClass('NB-hidden');
@@ -429,6 +431,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     clear: function () {
         // console.log(['clear story titles', this.stories.length, this.$el]);
+        NEWSBLUR.motion.depart(this.el, { snapshot_layout: true });
+        if (this.motion_observer) this.motion_observer.disconnect();
         _.invoke(this.stories, 'destroy');
         this.cache = {};
         this.collection.page_fill_outs = 0;
@@ -530,17 +534,21 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (this.collection.no_more_stories) return;
 
         var $story_titles = this.$story_titles;
-        this.$('.NB-end-line').remove();
+        NEWSBLUR.motion.remove(this.$('.NB-end-line'));
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
         this.$el.append($endline);
+        NEWSBLUR.motion.enter($endline[0], 0, 10);
 
         if (options.scroll_to_loadbar) {
             this.pre_load_page_scroll_position = $('#story_titles').scrollTop();
             if (this.pre_load_page_scroll_position > 0) {
                 this.pre_load_page_scroll_position += $endline.outerHeight();
             }
-            $story_titles.stop().scrollTo($endline, {
+            // jQuery's scrollTo adds the list's scroll to an element's offset, which already counts
+            // the page's scroll, so a list the page scrolls for gets the row's place in it instead.
+            var loadbar = this.page_scrolls() ? $endline.offset().top - $story_titles.offset().top : $endline;
+            $story_titles.stop().scrollTo(loadbar, {
                 duration: 0,
                 axis: 'y',
                 easing: 'easeInOutQuint',
@@ -575,7 +583,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     end_loading: function () {
         var $endbar = this.$story_titles.find('.NB-end-line');
-        $endbar.remove();
+        NEWSBLUR.motion.remove($endbar);
 
         if (this.collection.no_more_stories) {
             this.show_no_more_stories();
@@ -604,7 +612,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
 
     show_no_more_stories: function () {
-        this.$('.NB-end-line, .NB-classifier-filter-empty').remove();
+        NEWSBLUR.motion.remove(this.$('.NB-end-line, .NB-classifier-filter-empty'));
         var filter = NEWSBLUR.reader.flags['classifier_filter'];
         if (filter && !this.collection.length) {
             this.show_classifier_filter_empty(filter);
@@ -616,7 +624,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var story_layout = this.options.override_layout ||
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         if (_.contains(['list', 'grid', 'magazine'], story_layout) || NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
-            var pane_height = this.$story_titles.height();
+            var pane_height = this.viewport_height();
             var endbar_height = 20;
             var last_story_height = 80;
             endbar_height = pane_height - last_story_height;
@@ -632,6 +640,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
 
         this.$el.append($end_stories_line);
+        NEWSBLUR.motion.enter($end_stories_line.find(".NB-fleuron")[0], 0, 10);
     },
 
     show_classifier_filter_empty: function (filter) {
@@ -687,6 +696,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         });
     },
 
+    // story_titles_view.js: on a phone at rest the page scrolls in place of this list
+    // (mobile_layout_view.js Page scroll). The list is then as tall as its rows, its scrollTop is
+    // the page's, and the part of it on screen is the window under the screen's bars.
+    page_scrolls: function () {
+        return !!NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.page_scrolls(this.$story_titles[0]);
+    },
+
+    viewport_height: function () {
+        return this.page_scrolls() ? NEWSBLUR.app.mobile.page_viewport_height() : this.$story_titles.height();
+    },
+
     snap_back_scroll_position: function () {
         var $story_titles = this.$story_titles;
         if (this.post_load_page_scroll_position == $story_titles.scrollTop() &&
@@ -704,6 +724,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ============
     // = Bindings =
     // ============
+
+    is_mobile_inline_list: function () {
+        return !this.options.override_layout && !!NEWSBLUR.app.mobile &&
+            NEWSBLUR.app.mobile.layout() === 'list';
+    },
 
     scroll_to_selected_story: function (story, options) {
         options = options || {};
@@ -730,11 +755,22 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (!$selected_story.length) return;
 
         var scroll = $selected_story.position().top;
+        // story_titles_view.js: a phone's inline list has little height to spare, so it scrolls
+        // past the title row, which the expanded story repeats, to the story itself.
+        var $story_detail = !options.scroll_to_comments && this.is_mobile_inline_list() &&
+            story_title_view.$el.find('.NB-story-detail').first();
+        if ($story_detail && $story_detail.find('.NB-feed-story').length) {
+            $selected_story = $story_detail;
+            scroll = $story_detail.offset().top - this.$story_titles.offset().top;
+        }
+        // Measured from the top of the list, where a list scrolling itself measures from its own
+        // top edge on screen.
+        if (this.page_scrolls()) scroll -= this.$story_titles.scrollTop();
         var position = NEWSBLUR.story_titles_scroll_utils &&
             NEWSBLUR.story_titles_scroll_utils.compute_selected_story_scroll_position({
                 element_top: scroll,
                 element_height: $selected_story.outerHeight(),
-                viewport_height: this.$story_titles.outerHeight(),
+                viewport_height: this.page_scrolls() ? this.viewport_height() : this.$story_titles.outerHeight(),
                 container_scroll: this.$story_titles.scrollTop(),
                 force: options.force,
                 always_scroll: is_always_scroll_layout,
@@ -778,7 +814,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (!position) return;
 
         var container_offset = position.top;
-        var visible_height = $story_titles.height() * 2;
+        var visible_height = this.viewport_height() * 2;
         var total_height = this.$el.outerHeight() + NEWSBLUR.reader.$s.$feedbar.innerHeight();
 
         // console.log(["scroll titles", this.options.on_dashboard ? "dashboard" : "stories", visible_height, scroll_y, ">", total_height, this.$el, container_offset]);
@@ -805,7 +841,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             point.top + offset.top
         )).closest('.' + NEWSBLUR.Views.StoryTitleView.prototype.className);
         var reached_bottom = this.collection.no_more_stories &&
-            this.$el.height() - $story_titles.height() - scroll_y <= 0;
+            this.$el.height() - this.viewport_height() - scroll_y <= 0;
         var topstory = _.detect(this.stories, function (view) {
             if (!reached_bottom && view.el == $story_title[0]) return true;
             if (view.model.get('read_status') == 0 && view.model.score() >= score) {

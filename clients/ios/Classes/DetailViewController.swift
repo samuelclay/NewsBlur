@@ -789,7 +789,8 @@ class DetailViewController: BaseViewController {
     }
 
     @objc var areStoryTitlesCollapsed: Bool {
-        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+        // FeedDetailObjCViewController.m must route Dashboard's Sidebar button to Feeds, not an absent title column.
+        guard storyTitlesOnLeft, !storyTitlesInDashboard, !isPhoneOrCompact else {
             return false
         }
         if isDuoFullscreenReader { return true }
@@ -1516,6 +1517,8 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterFeedSelection() {
+        // FeedsViewController.swift loads dashboard modules through this hook without selecting a reader source.
+        guard !storyTitlesInDashboard else { return }
         finishDuoSourceEntrance()
         expandedFeedsReveal = nil
         if isDuoFullscreenReader { applyDuoFullscreenSidebar(.storyTitles, animated: true); return }
@@ -1853,6 +1856,8 @@ class DetailViewController: BaseViewController {
     private var isAdjustingStoryTitleColumns = false
 
     private func setStoryTitlesCollapsed(_ requestedCollapse: Bool, animated: Bool) {
+        // DetailViewController.swift's layout callbacks must not reopen the standalone column while Dashboard owns the titles.
+        guard !storyTitlesInDashboard else { return }
         if !showsStoryTitlesBesideTiledFeeds { restoreReaderBesideStoryTitles() }
         guard storyTitlesOnLeft, !isPhoneOrCompact else {
             return
@@ -1940,13 +1945,13 @@ class DetailViewController: BaseViewController {
             return
         }
         
-        if [.left].contains(layout) {
+        if !storyTitlesInDashboard, [.left].contains(layout) {
             coordinator.animate { context in
                 self.verticalDividerViewLeadingConstraint.constant = (self.isTemporaryFullScreen || self.isDuoFullscreenReader)
                     ? 0
                     : self.verticalDividerPosition
             }
-        } else if [.top, .bottom].contains(layout) {
+        } else if !storyTitlesInDashboard, [.top, .bottom].contains(layout) {
             coordinator.animate { context in
                 self.horizontalDividerViewBottomConstraint.constant = self.horizontalDividerPosition
             }
