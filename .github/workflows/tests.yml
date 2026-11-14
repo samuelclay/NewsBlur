@@ -54,7 +54,6 @@ jobs:
           mkdir -p docker/volumes/db_mongo
           mkdir -p docker/volumes/db_postgres
           mkdir -p docker/volumes/db_redis
-          mkdir -p docker/volumes/elasticsearch
           chmod -R 777 docker/volumes
 
       - name: Start services

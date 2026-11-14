@@ -123,9 +123,23 @@ services:
   #     - ./docker/volumes/redis_prod:/data
   #   command: redis-server /etc/redis/redis.conf --port 6579
 
+  # Docker creates a missing bind mount directory as root, and Elasticsearch runs as uid 1000.
+  # Docker Desktop ignores that ownership but Linux enforces it, so hand the data dir to uid 1000 first.
+  newsblur_db_elasticsearch_permissions:
+    container_name: newsblur_db_elasticsearch_permissions
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.6
+    user: root
+    entrypoint: ["chown", "-R", "1000:0", "/usr/share/elasticsearch/data"]
+    restart: "no"
+    volumes:
+      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+
   newsblur_db_elasticsearch:
     container_name: newsblur_db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.19.6
+    depends_on:
+      newsblur_db_elasticsearch_permissions:
+        condition: service_completed_successfully
     mem_limit: 2g
     mem_reservation: 512m
     restart: unless-stopped
