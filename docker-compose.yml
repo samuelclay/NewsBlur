@@ -209,6 +209,8 @@ services:
   haproxy:
     container_name: newsblur_haproxy
     image: haproxy:latest
+    # docker/haproxy/local.d holds machine-only backends; haproxy loads every *.cfg in it
+    command: haproxy -f /usr/local/etc/haproxy/haproxy.cfg -f /srv/newsblur/docker/haproxy/local.d
     restart: unless-stopped
     depends_on:
       - nginx
