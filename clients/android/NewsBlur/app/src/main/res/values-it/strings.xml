@@ -727,7 +727,6 @@ le persone per parlare del mondo.</string>
     <string name="intel_feed_header">Tutti gli articoli dell\'editore</string>
     <string name="intel_super_dislike">Nascondi gli articoli corrispondenti</string>
     <string name="explainer_super_dislike">Nascondi</string>
-    <string name="explainer_ai_filter">Filtro IA</string>
     <string name="explainer_like">Mi piace</string>
     <string name="explainer_dislike">Non mi piace</string>
     <string name="explainer_beats">batte</string>
@@ -735,7 +734,6 @@ le persone per parlare del mondo.</string>
     <string name="explainer_example1_result">L’articolo appare nella vista In evidenza</string>
     <string name="explainer_example2_header">Nascondi prevale su tutto, anche su Mi piace</string>
     <string name="explainer_example2_result">L’articolo è sempre nascosto</string>
-    <string name="explainer_example3_header">Un filtro IA prevale su Mi piace e Non mi piace, ma non su Nascondi</string>
     <string name="trainer_question_story">Cosa ti piace 👍 %1$s e cosa non ti piace 👎 %2$s di questo articolo?</string>
     <string name="trainer_question_site">Cosa ti piace 👍 %1$s e cosa non ti piace 👎 %2$s di questo sito?</string>
     <string name="trainer_question_like">Mi piace</string>

@@ -40,6 +40,16 @@ test('a super dislike stays -2 alongside an AI hidden match', function () {
     assert.equal(utils.compute_story_score(story_with({ author: -2, prompt: -1 })), -2);
 });
 
-test('an AI hidden match outranks a liked title', function () {
-    assert.equal(utils.compute_story_score(story_with({ title: 1, prompt: -1 })), -1);
+// story_score_ai_priority.test.js: an AI hidden match is a dislike like any other, so a like beats it.
+test('a liked title beats an AI hidden match', function () {
+    assert.equal(utils.compute_story_score(story_with({ title: 1, prompt: -1 })), 1);
+});
+
+test('an AI hidden match alone hides the story', function () {
+    assert.equal(utils.compute_story_score(story_with({ feed: 1, prompt: -1 })), -1);
+});
+
+test('a prompt that did not match changes nothing', function () {
+    assert.equal(utils.compute_story_score(story_with({ author: -1, prompt: 0 })), -1);
+    assert.equal(utils.compute_story_score(story_with({ feed: 1 })), 1);
 });

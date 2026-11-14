@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-11-10T01:03:22.900Z",
+  "version_code": 302,
+  "signed_bundle_built": true,
+  "uploaded_by_this_task": true,
+  "submitted_for_review_by_this_task": true,
+  "release_name": "16.2",
+  "console_release_id": "103",
+  "track": "production",
+  "rollout_percentage": 100,
+  "managed_publishing": false,
+  "state": "Changes in review",
+  "automatic_checks": "Running; Play Console says changes will be sent for review automatically when checks complete successfully",
+  "localized_release_notes": 21,
+  "console_url": "https://play.google.com/console/u/1/developers/6280481402178293168/app/4972990522498280751/publishing",
+  "warning": "Non-blocking Play warning: native debug symbols not uploaded; ReTrace mapping file is attached."
+}

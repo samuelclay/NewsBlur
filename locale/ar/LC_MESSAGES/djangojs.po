@@ -1604,9 +1604,6 @@ msgstr "أظهر دائمًا أزرار التدريب والحفظ والمش�
 msgid "Always show unread counts on folders"
 msgstr "إظهار أعداد غير المقروء دائمًا على المجلدات"
 
-msgid "An AI filter overrides likes and dislikes, but not Hide"
-msgstr "يتجاوز فلتر الذكاء الاصطناعي الإعجاب وعدم الإعجاب، لكنه لا يتجاوز الإخفاء"
-
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
 "topics, and custom sections you define."

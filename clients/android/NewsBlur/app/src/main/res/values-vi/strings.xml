@@ -711,7 +711,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="intel_feed_header">Tất cả nội dung từ nhà xuất bản</string>
     <string name="intel_super_dislike">Ẩn các bài viết khớp</string>
     <string name="explainer_super_dislike">Ẩn</string>
-    <string name="explainer_ai_filter">Bộ lọc AI</string>
     <string name="explainer_like">Thích</string>
     <string name="explainer_dislike">Không thích</string>
     <string name="explainer_beats">thắng</string>
@@ -719,7 +718,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="explainer_example1_result">Bài viết hiển thị trong chế độ Tập trung</string>
     <string name="explainer_example2_header">“Ẩn” được ưu tiên hơn mọi thứ, kể cả lượt thích</string>
     <string name="explainer_example2_result">Bài viết luôn bị ẩn</string>
-    <string name="explainer_example3_header">Bộ lọc AI ghi đè lượt Thích và Không thích, nhưng không ghi đè Ẩn</string>
     <string name="trainer_question_story">Bạn 👍 %1$s và 👎 %2$s điều gì về bài viết này?</string>
     <string name="trainer_question_site">Bạn 👍 %1$s và 👎 %2$s điều gì về trang web này?</string>
     <string name="trainer_question_like">Thích</string>

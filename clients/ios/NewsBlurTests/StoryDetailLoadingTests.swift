@@ -1817,6 +1817,83 @@ import XCTest
         XCTAssertEqual(fixture.pages.unreadyAtNavigation, [false])
     }
 
+#if targetEnvironment(macCatalyst)
+    func test_macPreparationStaysBehindTheReaderWhenTheWindowChromeIsTransparent() async throws {
+        // StoryDetailLoadingTests.swift protects translucent chrome from the live WebView used to prepare the next story.
+        // Staging at the window origin, or returning there after a resize, exposes that document through the sidebar.
+        let fixture = makePresentationFixture(width: 500)
+        fixture.pages.regularPane = true
+        fixture.app.compactWidthOverride = false
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = trackFixtureWindow(UIWindow(windowScene: scene))
+        let root = UIViewController()
+        root.view.backgroundColor = .clear
+        window.backgroundColor = .clear
+        window.rootViewController = root
+        root.addChild(fixture.pages)
+        root.view.addSubview(fixture.pages.view)
+        fixture.pages.didMove(toParent: root)
+        window.makeKeyAndVisible()
+        fixture.pages.view.frame = CGRect(x: 550, y: 70, width: 500, height: 650)
+        fixture.pages.view.backgroundColor = .white
+        fixture.pages.scrollView.frame = fixture.pages.view.bounds
+        defer {
+            fixture.pages.cancelPendingStoryPresentation()
+            window.isHidden = true
+            window.rootViewController = nil
+            previousKeyWindow?.makeKey()
+        }
+
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": false])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.value(forKey: "pendingPresentationPage") as? StoryLoadPage)
+        let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+        func assertConfinedToReader(file: StaticString = #filePath, line: UInt = #line) throws {
+            let host = try XCTUnwrap(fixture.pages.value(forKey: "storyPreparationHost") as? UIView, file: file, line: line)
+            XCTAssertTrue(web.window === window, "Preparation must stay attached so WebKit can paint", file: file, line: line)
+            XCTAssertFalse(host.isHidden, file: file, line: line)
+            XCTAssertEqual(host.alpha, 1, file: file, line: line)
+            let readerRect = fixture.pages.view.convert(fixture.pages.view.bounds, to: window)
+            var stagedRect = web.convert(web.bounds, to: window)
+            var ancestor = web.superview
+            while let view = ancestor {
+                if view.clipsToBounds {
+                    stagedRect = stagedRect.intersection(view.convert(view.bounds, to: window))
+                }
+                ancestor = view.superview
+            }
+            XCTAssertFalse(stagedRect.isEmpty, "The prepared article must remain renderable", file: file, line: line)
+            XCTAssertTrue(readerRect.contains(stagedRect), "The prepared article must not occupy sidebar or toolbar space: \(stagedRect) outside \(readerRect)", file: file, line: line)
+        }
+        try assertConfinedToReader()
+        web.defersAsyncJavaScript = true
+        sendReady(to: selected, token: try tokenFromHTML(XCTUnwrap(web.loads.last).html), mainFrame: true)
+        await drainMainQueue()
+        fixture.pages.view.frame.origin.x += 30
+        fixture.pages.view.frame.size.width -= 40
+        fixture.pages.scrollView.frame = fixture.pages.view.bounds
+        root.view.layoutIfNeeded()
+        try assertConfinedToReader()
+        let completion = try XCTUnwrap(web.asyncCompletions.first)
+        web.asyncCompletions.removeFirst()
+        completion(true, nil)
+        await drainMainQueue()
+        try assertConfinedToReader()
+        XCTAssertEqual(web.bounds.size, fixture.pages.scrollView.bounds.size)
+        XCTAssertTrue(fixture.pages.currentPage === fixture.original, "The current article stays visible while the new viewport paints")
+        for _ in 0..<4 where !web.asyncCompletions.isEmpty {
+            web.asyncCompletions.removeFirst()(true, nil)
+            await drainMainQueue()
+        }
+        XCTAssertEqual(fixture.app.presentations, 1)
+        XCTAssertTrue(fixture.pages.currentPage === selected)
+        XCTAssertNil(fixture.pages.value(forKey: "storyPreparationHost"))
+        XCTAssertTrue(web.isDescendant(of: selected.view))
+    }
+#endif
+
     func test_rapidNativeSelectionsOnlyPresentLatestDocument() async throws {
         let fixture = makePresentationFixture()
         fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]

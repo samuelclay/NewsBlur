@@ -366,6 +366,42 @@ import UIKit
         try verifyBulkRead(older: true)
     }
 
+    func test_phoneFolderOlderThanThreeDaysUpdatesCachedStoriesAndVisibleList() throws {
+        try verifyBulkRead(older: true, days: 3)
+    }
+
+    func test_phoneFolderAgeMarkReadFailureQueuesOnlyMatchingStoriesAndClearsProgress() throws {
+        try verifyBulkRead(older: true, succeeds: false, days: 3)
+    }
+
+    func test_phoneFolderAgeMarkReadAccountChangeClearsProgressWithoutChangingStories() throws {
+        try verifyBulkRead(older: true, replaceAccount: true, days: 3)
+    }
+
+    func test_phoneFolderAgeMarkReadFailureAfterAccountChangeDoesNotQueueStories() throws {
+        try verifyBulkRead(older: true, succeeds: false, replaceAccount: true, days: 3)
+    }
+
+    func test_phoneFolderAgeMarkReadNavigationChangeDoesNotReloadTheNewList() throws {
+        try verifyBulkRead(older: true, days: 3, replaceGeneration: true)
+    }
+
+    func test_infrequentAgeMarkReadReloadsServerStateWithoutMarkingOtherCachedFeeds() throws {
+        try verifyBulkRead(older: true, days: 3, infrequent: true)
+    }
+
+    func test_offlineInfrequentAgeMarkReadReportsFailureWithoutQueuingUnknownFeedScope() throws {
+        try verifyBulkRead(older: true, succeeds: false, days: 3, infrequent: true)
+    }
+
+    func test_allSiteStoriesAgeMarkReadPostsDaysOnceAndUpdatesCachedStories() throws {
+        try verifyBulkRead(older: true, days: 3, everything: true)
+    }
+
+    func test_offlineAllSiteStoriesAgeMarkReadQueuesOnlyMatchingStories() throws {
+        try verifyBulkRead(older: true, succeeds: false, days: 3, everything: true)
+    }
+
     func test_bulkReadFixtureWorksWithColdLoggedOutApplicationState() throws {
         let shared = try XCTUnwrap(NewsBlurAppDelegate.shared)
         let savedActiveFeeds = shared.dictActiveFeeds
@@ -401,8 +437,10 @@ import UIKit
         try verifyBulkRead(older: true, replaceAccount: true)
     }
 
-    private func verifyBulkRead(older: Bool, cachedCount: Int = 70, succeeds: Bool = true, replaceAccount: Bool = false) throws {
+    private func verifyBulkRead(older: Bool, cachedCount: Int = 70, succeeds: Bool = true, replaceAccount: Bool = false, days: Int? = nil, replaceGeneration: Bool = false, infrequent: Bool = false, everything: Bool = false) throws {
         let (app, _) = feedFixture()
+        // RowActionMenuTests.swift records offline queue payloads without dispatching work after the fixture database closes.
+        app.didQueueReadStories = {}
         app.activeUsername = "bulk-read-test-" + UUID().uuidString
         app.selectedIntelligence = 0
         app.dictFeeds = ["42": ["id": "42", "feed_title": "Target site", "active": true],
@@ -410,10 +448,16 @@ import UIKit
         app.dictUnreadCounts = ["42": ["ps": 0, "nt": 69, "ng": 0], "43": ["ps": 0, "nt": 5, "ng": 0]]
         app.storiesCollection.appDelegate = app
         app.storiesCollection.activeFeed = app.dictFeeds["42"] as? [AnyHashable: Any]
-        app.storiesCollection.activeFolder = "Tech"
+        // RowActionMenuTests.swift gives the global rivers a blurblog and a saved search; neither ID is a numeric feed ID.
+        let global = infrequent || everything
+        app.storiesCollection.activeFolder = infrequent ? "infrequent" : everything ? "everything" : "Tech"
+        app.dictFoldersArray = global ? ["Tech", "river_blurblogs", "saved_searches"] : ["Tech"]
+        if global { app.dictFolders = ["Tech": [42, 43], "river_blurblogs": ["social:7"], "saved_searches": ["42?bulk"]] }
+        app.storiesCollection.isRiverView = days != nil
+        let newestTimestamp = days == nil ? 1_800_000_000 : Int(Date().timeIntervalSince1970)
         let stories: [[String: Any]] = (0..<70).map { index in
             ["story_hash": "42:bulk-\(index)", "story_feed_id": 42, "story_title": "Story \(index + 1)",
-             "story_timestamp": 1_800_000_000 - index, "read_status": index == 0 ? 1 : 0,
+             "story_timestamp": newestTimestamp - index * (days == nil ? 1 : 86_400), "read_status": index == 0 ? 1 : 0,
              "intelligence": ["feed": 0, "author": 0, "tags": 0, "title": 0]]
         }
         app.storiesCollection.activeFeedStories = stories
@@ -449,25 +493,64 @@ import UIKit
         XCTAssertEqual(app.splitUnreadCount(forFolder: "Tech").nt, 74)
         let fourth = try makeStory(index: 3, dictionary: stories[3], app: app)
         XCTAssertEqual(fourth.feed?.name, "Target site")
-        XCTAssertEqual(fourth.timestamp, 1_800_000_000 - 3)
+        XCTAssertEqual(fourth.timestamp, newestTimestamp - 3 * (days == nil ? 1 : 86_400))
         fourth.isRead = false
-        let action = try XCTUnwrap(RowActionMenus.story(fourth, controller: controller, source: UIView())
-            .flatMap { $0 }.first { $0.id == (older ? "older" : "newer") })
-        action.perform()
-        XCTAssertEqual(app.lastParameters?["direction"] as? String, older ? "older" : "newest")
+        var progress: MBProgressHUD?
+        if let days {
+            // RowActionMenuTests.swift invokes the real phone footer handler, including its asynchronous completion.
+            controller.loadViewIfNeeded()
+            let handler = try XCTUnwrap(controller.storyTitlesHeaderBar.markReadHandler)
+            let before = Int(Date().timeIntervalSince1970)
+            handler(days)
+            let after = Int(Date().timeIntervalSince1970)
+            if everything {
+                XCTAssertEqual(app.lastURL?.hasSuffix("/reader/mark_all_as_read"), true, "All Site Stories marks every subscription in one server pass")
+                XCTAssertEqual(app.lastParameters?["days"] as? Int, days)
+                XCTAssertNil(app.lastParameters?["feed_id"])
+            } else {
+                if infrequent {
+                    let requested = (app.lastParameters?["feed_id"] as? [Any] ?? []).map { String(describing: $0) }
+                    XCTAssertEqual(requested, ["42", "43"], "Blurblogs and saved searches are outside the Infrequent river")
+                }
+                XCTAssertEqual(app.lastURL?.hasSuffix("/reader/mark_feed_as_read"), true)
+                let cutoff = try XCTUnwrap(app.lastParameters?["cutoff_timestamp"] as? NSNumber).intValue
+                XCTAssertGreaterThanOrEqual(cutoff, before - days * 86_400)
+                XCTAssertLessThanOrEqual(cutoff, after - days * 86_400)
+            }
+            progress = try XCTUnwrap(controller.view.subviews.compactMap { $0 as? MBProgressHUD }.first)
+            XCTAssertTrue(progress?.superview === controller.view, "The footer shows progress until the request completes")
+            XCTAssertEqual(app.unreadCount(forFeed: "42"), 69, "Pending requests must not change cached read state")
+            XCTAssertEqual(controller.reloads, 0, "The list refresh waits for the server to finish marking stories read")
+            if infrequent { XCTAssertNotNil(app.lastParameters?["infrequent"]) }
+        } else {
+            let action = try XCTUnwrap(RowActionMenus.story(fourth, controller: controller, source: UIView())
+                .flatMap { $0 }.first { $0.id == (older ? "older" : "newer") })
+            action.perform()
+            XCTAssertEqual(app.lastParameters?["direction"] as? String, older ? "older" : "newest")
+        }
         if replaceAccount { app.activeUsername = "replacement-account" }
+        if replaceGeneration { controller.fetchRequestId += 1 }
         if succeeds { app.succeedPOST?() } else { app.failPOST?() }
+        if let progress {
+            XCTAssertNil(progress.superview, "Success, failure and stale responses must dismiss their progress view")
+        }
         // RowActionMenuTests.swift models opening story one, then marking story four and everything older read.
-        let applied = succeeds && !replaceAccount
+        let reportsFailure = !succeeds && !replaceAccount && (days == nil || infrequent)
+        let completed = !replaceAccount && !reportsFailure
+        let applied = completed && !infrequent
         let marked = applied ? (older ? cachedCount - 3 : 3) : 0
         XCTAssertEqual(app.unreadCount(forFeed: "42"), 69 - marked)
         XCTAssertEqual(app.unreadCount(forFolder: "Tech"), 74 - marked, "The folder retains five unread stories in its other feed")
         XCTAssertEqual(app.splitUnreadCount(forFolder: "Tech").nt, Int32(74 - marked))
-        XCTAssertEqual(feeds.reloads, applied ? 1 : 0, "Feed and folder badges must refresh after the bulk action")
-        XCTAssertEqual(feeds.headerRefreshes, applied ? 1 : 0)
-        XCTAssertEqual(feeds.refreshedFeedIDs, applied ? ["42"] : [], "Server counts cover unread stories absent from the offline cache")
-        XCTAssertEqual(controller.reloads, applied ? 1 : 0)
-        XCTAssertEqual(controller.failures, succeeds ? 0 : 1)
+        XCTAssertEqual(feeds.reloads, completed ? 1 : 0, "Feed and folder badges must refresh after the bulk action")
+        XCTAssertEqual(feeds.headerRefreshes, completed ? 1 : 0)
+        XCTAssertEqual(feeds.refreshedFeedIDs, succeeds && !replaceAccount ? [days == nil ? "42" : "all"] : [], "Server counts cover unread stories absent from the offline cache")
+        XCTAssertEqual(controller.reloads, completed && !replaceGeneration ? 1 : 0)
+        XCTAssertEqual(controller.failures, reportsFailure ? 1 : 0, "A failure that queues nothing for replay must be shown")
+        let queued = !succeeds && applied && days != nil
+        let queuedHashes = app.queuedReadStories?.values.flatMap { $0 as? [String] ?? [] } ?? []
+        XCTAssertEqual(Set(queuedHashes), queued ? Set((3..<cachedCount).map { "42:bulk-\($0)" }) : [])
+        XCTAssertEqual(feeds.offlineNotices, !succeeds && !replaceAccount && !reportsFailure ? 1 : 0)
         database.inDatabase { db in
             guard let remaining = db?.executeQuery("SELECT story_hash FROM unread_hashes ORDER BY story_timestamp DESC", withArgumentsIn: []) else { XCTFail("Missing fixture unread rows"); return }
             var hashes: [String] = []
@@ -739,7 +822,9 @@ import UIKit
     var failPOST: (() -> Void)?
     var succeedGET: (([String: Any]) -> Void)?
     var didQueueReadStories: (() -> Void)?
+    var queuedReadStories: [AnyHashable: Any]?
     override func queueReadStories(_ feedsStories: [AnyHashable: Any]!) {
+        queuedReadStories = feedsStories
         if let didQueueReadStories { didQueueReadStories() }
         else { super.queueReadStories(feedsStories) }
     }
@@ -757,6 +842,14 @@ import UIKit
 @MainActor private final class BulkReadMenuStories: FeedDetailViewController {
     var reloads = 0
     var failures = 0
+    @objc(isPhoneOrCompact) func usesCompactLayout() -> Bool { true }
+    override func loadView() {
+        view = UIView(frame: CGRect(x: 0, y: 0, width: 375, height: 667))
+        storyTitlesTable = UITableView(frame: view.bounds)
+        view.addSubview(storyTitlesTable)
+    }
+    override func changedLayout() {}
+    override func updateTheme() {}
     override func reloadStories() { reloads += 1 }
     @objc(requestFailed:) func captureRequestFailure(_ error: NSError) { failures += 1 }
 }
@@ -765,10 +858,12 @@ import UIKit
     var reloads = 0
     var headerRefreshes = 0
     var refreshedFeedIDs: [String] = []
+    var offlineNotices = 0
+    override func showOfflineNotifier() { offlineNotices += 1 }
     override func reloadFeedTitlesTable() { reloads += 1 }
     override func deferredReloadFeedTitlesTable() { reloads += 1 }
     override func refreshHeaderCounts() { headerRefreshes += 1 }
-    override func refreshFeedList(_ feedID: Any!) { refreshedFeedIDs.append(String(describing: feedID!)) }
+    override func refreshFeedList(_ feedID: Any!) { refreshedFeedIDs.append(feedID.map { String(describing: $0) } ?? "all") }
 }
 
 @MainActor private final class PersistedReadMenuFeeds: FeedsViewController {

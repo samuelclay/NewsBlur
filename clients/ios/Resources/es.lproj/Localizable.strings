@@ -93,7 +93,6 @@
 "< 90/month" = "< 90/mes";
 "A clearer, closer sound" = "Un sonido más claro y cercano";
 "A personal news reader bringing\npeople together to talk about the world." = "Un lector de noticias personal que reúne\na las personas para hablar del mundo.";
-"AI Filter" = "Filtro de IA";
 "AI filters are saved but won't run until you %@." = "Los filtros de IA están guardados, pero no se ejecutarán hasta que %@.";
 "AI finds the stories" = "La IA encuentra los artículos";
 "ALL" = "TODO";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "¿Ya tienes una cuenta? Inicia sesión";
 "Already have feeds?" = "¿Ya tienes feeds?";
 "Also published by %@ sites" = "También publicado por %@ sitios";
-"An AI filter overrides likes and dislikes, but not Hide" = "Un filtro de IA prevalece sobre Me gusta y No me gusta, pero no sobre Ocultar";
 "Analyze" = "Analizar";
 "Analyzing images..." = "Analizando imágenes...";
 "App Badge" = "Insignia de la aplicación";
@@ -1063,7 +1061,6 @@
 "Story options" = "Opciones del artículo";
 "Story order" = "Orden de los artículos";
 "Story settings" = "Ajustes de artículos";
-"Story shows in Focus view" = "El artículo aparece en la vista Enfoque";
 "Story title preview" = "Vista previa del título del artículo";
 "Story titles" = "Títulos de los artículos";
 "Story titles layout" = "Diseño de los títulos de los artículos";

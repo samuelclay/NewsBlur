@@ -361,12 +361,9 @@ struct TrainerView: View {
         }
     }
 
-    var aiFilterColor: Color {
-        Color.themed([0x2F6FB3, 0x2F6FB3, 0x7FB2E5, 0x7FB2E5])
-    }
-
-    /// TrainerView.swift orders the levels like compute_story_score in NewsBlurAppDelegate.m: a super dislike beats an
-    /// AI filter match, which beats likes and dislikes. Narrow trainers drop the BEATS labels so all four levels fit.
+    /// TrainerView.swift orders the levels like compute_story_score in NewsBlurAppDelegate.m: Hide beats Like beats
+    /// Dislike. An AI filter match is a like or a dislike in that order, so it has no level of its own. Narrow
+    /// trainers drop the BEATS labels so the levels fit.
     var explainerHierarchyChain: some View {
         ViewThatFits(in: .horizontal) {
             explainerHierarchyChain(compact: false)
@@ -377,8 +374,6 @@ struct TrainerView: View {
     func explainerHierarchyChain(compact: Bool) -> some View {
         HStack(spacing: 0) {
             explainerPill(NBLocalization.text("Hide", context: "training level"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true, compact: compact)
-            explainerSeparator(compact: compact)
-            explainerPill(NBLocalization.text("AI Filter"), color: aiFilterColor, bgOpacity: 0.1, icon: "sparkles", iconSize: 9, compact: compact)
             explainerSeparator(compact: compact)
             explainerPill(NBLocalization.text("Like"), color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9, compact: compact)
             explainerSeparator(compact: compact)
@@ -463,45 +458,6 @@ struct TrainerView: View {
                     examplePill("Apple", color: likeColor, icon: "hand.thumbsup.fill")
                     examplePill("sponsored", color: superDislikeColor, icon: "hand.thumbsdown.fill", isSuperDislike: true)
                 }
-
-                HStack(spacing: 6) {
-                    Text("\u{2192}")
-                        .font(.system(size: 12))
-                        .foregroundColor(explainerBodyColor)
-                    Text(NBLocalization.text("Story is always hidden"))
-                        .font(.system(size: 10, weight: .medium))
-                        .italic()
-                        .foregroundColor(superDislikeColor)
-                }
-            }
-
-            // TrainerView.swift uses the web's Daring Fireball sponsor example (reader_classifier.js).
-            VStack(alignment: .leading, spacing: 4) {
-                Text(NBLocalization.text("An AI filter overrides likes and dislikes, but not Hide"))
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(textColor)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                HStack(spacing: 4) {
-                    examplePill("Non-apple related news", color: likeColor, icon: "sparkles")
-                    examplePill("DF Department of Commerce", color: dislikeColor, icon: "hand.thumbsdown.fill")
-                }
-
-                HStack(spacing: 6) {
-                    Text("\u{2192}")
-                        .font(.system(size: 12))
-                        .foregroundColor(explainerBodyColor)
-                    Text(NBLocalization.text("Story shows in Focus view"))
-                        .font(.system(size: 10, weight: .medium))
-                        .italic()
-                        .foregroundColor(likeColor)
-                }
-
-                HStack(spacing: 4) {
-                    examplePill("Non-apple related news", color: likeColor, icon: "sparkles")
-                    examplePill("DF Department of Commerce", color: superDislikeColor, icon: "hand.thumbsdown.fill", isSuperDislike: true)
-                }
-                .padding(.top, 2)
 
                 HStack(spacing: 6) {
                     Text("\u{2192}")

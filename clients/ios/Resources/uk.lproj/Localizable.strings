@@ -93,7 +93,6 @@
 "< 90/month" = "< 90/місяць";
 "A clearer, closer sound" = "Чіткіший і об’ємніший звук";
 "A personal news reader bringing\npeople together to talk about the world." = "Персональна програма для читання новин, що об’єднує\nлюдей для обговорення подій у світі.";
-"AI Filter" = "Фільтр зі ШІ";
 "AI filters are saved but won't run until you %@." = "Фільтри ШІ збережено, але вони не працюватимуть, доки ви не %@.";
 "AI finds the stories" = "ШІ знаходить статті";
 "ALL" = "УСІ";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "Уже маєте обліковий запис? Увійти";
 "Already have feeds?" = "Уже маєте стрічки?";
 "Also published by %@ sites" = "Також опубліковано на %@ сайтах";
-"An AI filter overrides likes and dislikes, but not Hide" = "Фільтр ШІ має вищий пріоритет за «Подобається» й «Не подобається», але не за «Приховати»";
 "Analyze" = "Аналізувати";
 "Analyzing images..." = "Аналіз зображень...";
 "App Badge" = "Значок програми";
@@ -1063,7 +1061,6 @@
 "Story options" = "Параметри статті";
 "Story order" = "Порядок статей";
 "Story settings" = "Налаштування статті";
-"Story shows in Focus view" = "Стаття відображається в режимі «Фокус»";
 "Story title preview" = "Попередній перегляд заголовка статті";
 "Story titles" = "Заголовки статей";
 "Story titles layout" = "Макет заголовків статей";

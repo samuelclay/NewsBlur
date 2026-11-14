@@ -14,7 +14,7 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
     private var compactRestorationGeneration: UInt?
     
     func splitViewController(_ svc: UISplitViewController, topColumnForCollapsingToProposedTopColumn proposedTopColumn: UISplitViewController.Column) -> UISplitViewController.Column {
-        guard let detailNavController = svc.viewController(for: .secondary) as? UINavigationController,
+        guard let detailNavController = (svc as? SplitViewController)?.readerNavigationController,
               let detailController = detailNavController.viewControllers[0] as? DetailViewController else {
             return .primary
         }
@@ -44,7 +44,7 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
         collapsingDetailController?.cancelCompactNavigationRestoration()
         collapsingDetailController = nil
         compactRestorationGeneration = nil
-        guard let detailNavController = svc.viewController(for: .secondary) as? UINavigationController,
+        guard let detailNavController = (svc as? SplitViewController)?.readerNavigationController,
               let detailController = detailNavController.viewControllers[0] as? DetailViewController else {
             return proposedDisplayMode
         }

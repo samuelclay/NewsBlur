@@ -326,8 +326,10 @@ public class Story implements Serializable {
 		public int intelligencePrompt = 0;
 
         public int calcTotalIntel() {
-            // Mirrors apps/analyzer/models.py:compute_story_score. A manual super dislike (-2)
-            // outranks everything, then an AI prompt match outranks the remaining manual scores.
+            // Mirrors apps/analyzer/models.py:compute_story_score. The AI prompt score is a
+            // classifier like any other (+1 focus match, -1 hidden match, 0 when it didn't match),
+            // so a manual super dislike (-2) outranks everything, then the strongest like, then
+            // the strongest dislike, then the feed.
             int min = 0;
             min = Math.min(min, intelligenceAuthors);
             min = Math.min(min, intelligenceAuthorRegex);
@@ -338,9 +340,9 @@ public class Story implements Serializable {
             min = Math.min(min, intelligenceTextRegex);
             min = Math.min(min, intelligenceUrl);
             min = Math.min(min, intelligenceUrlRegex);
+            min = Math.min(min, intelligencePrompt);
 
             if (min <= -2) return min;
-            if (intelligencePrompt != 0) return intelligencePrompt;
 
             int max = 0;
             max = Math.max(max, intelligenceAuthors);
@@ -352,6 +354,7 @@ public class Story implements Serializable {
             max = Math.max(max, intelligenceTextRegex);
             max = Math.max(max, intelligenceUrl);
             max = Math.max(max, intelligenceUrlRegex);
+            max = Math.max(max, intelligencePrompt);
 
             if (max > 0) return max;
             if (min < 0) return min;

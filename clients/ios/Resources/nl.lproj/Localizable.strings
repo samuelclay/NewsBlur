@@ -93,7 +93,6 @@
 "< 90/month" = "< 90/maand";
 "A clearer, closer sound" = "Een helderder, voller geluid";
 "A personal news reader bringing\npeople together to talk about the world." = "Een persoonlijke nieuwslezer die mensen samenbrengt\nom over de wereld te praten.";
-"AI Filter" = "AI-filter";
 "AI filters are saved but won't run until you %@." = "AI-filters zijn opgeslagen, maar worden pas uitgevoerd nadat je %@.";
 "AI finds the stories" = "AI vindt de artikelen";
 "ALL" = "ALLES";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "Heb je al een account? Log in";
 "Already have feeds?" = "Heb je al feeds?";
 "Also published by %@ sites" = "Ook gepubliceerd op %@ sites";
-"An AI filter overrides likes and dislikes, but not Hide" = "Een AI-filter overschrijft Vind ik leuk en Vind ik niet leuk, maar niet Verbergen";
 "Analyze" = "Analyseren";
 "Analyzing images..." = "Afbeeldingen analyseren...";
 "App Badge" = "Appbadge";
@@ -1063,7 +1061,6 @@
 "Story options" = "Artikelopties";
 "Story order" = "Artikelvolgorde";
 "Story settings" = "Artikelinstellingen";
-"Story shows in Focus view" = "Artikel verschijnt in de focusweergave";
 "Story title preview" = "Voorbeeld van artikeltitel";
 "Story titles" = "Artikeltitels";
 "Story titles layout" = "Indeling van artikeltitels";

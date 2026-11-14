@@ -26,7 +26,8 @@ class ReadingActionClusterReadTest {
         action.doLocal(db, mockk(relaxed = true), false)
         restored.doLocal(db, mockk(relaxed = true), true)
 
-        verify(exactly = 2) { db.markStoriesRead(action.feedSet, 500, null, 100) }
+        verify(exactly = 1) { db.markStoriesRead(action.feedSet, 500, null, 100, false) }
+        verify(exactly = 1) { db.markStoriesRead(action.feedSet, 500, null, 100, true) }
     }
 
     @Test
