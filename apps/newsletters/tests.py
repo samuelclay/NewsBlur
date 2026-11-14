@@ -398,18 +398,28 @@ Original plain newsletter body""",
         self.assertIn('href="https://example.com/guide"', content)
 
     def test_html_newsletter_with_escaped_code_sample_keeps_it_as_text(self):
-        story = self.receive(
-            "html-code-sample",
-            **{
-                "body-html": (
-                    "<div><h1>Frontend Weekly</h1><p>Lay out the card with a "
-                    "<code>&lt;div&gt;</code> and a heading.</p><p>See you next week.</p></div>"
-                ),
-                "body-plain": "Lay out the card with a <div> and a heading.",
-            },
-        )
+        sample = "<code>&lt;ul&gt;&lt;li&gt;One&lt;/li&gt;&lt;li&gt;Two&lt;/li&gt;&lt;li&gt;Three&lt;/li&gt;&lt;/ul&gt;</code>"
+        cases = [
+            (
+                "inside-plain-markup",
+                "<div><h1>Frontend Weekly</h1><p>Build the menu as %s with one item per page.</p>"
+                "<p>See you next week.</p></div>" % sample,
+            ),
+            (
+                "inside-unlisted-tags",
+                "<section><h2>Tip</h2><pre>%s</pre><footer>Frontend Weekly</footer></section>" % sample,
+            ),
+            ("inside-escaped-markup", html.escape("<div><pre>%s</pre></div>" % sample, quote=False)),
+        ]
 
-        self.assertIn("<code>&lt;div&gt;</code>", story.story_content_str)
+        for suffix, body_html in cases:
+            with self.subTest(suffix):
+                story = self.receive(
+                    "html-code-sample-%s" % suffix,
+                    **{"body-html": body_html, "body-plain": "Hi"},
+                )
+
+                self.assertIn(sample, story.story_content_str)
 
 
 class Test_EmailNewsletterMergeRace(NewsletterFixture, TransactionTestCase):

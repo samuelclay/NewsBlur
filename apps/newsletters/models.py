@@ -759,21 +759,26 @@ class EmailNewsletter:
         e.g., &lt;table&gt; instead of <table>. BeautifulSoup treats these
         as text rather than tags, causing raw HTML to display to the user.
         Some arrive encoded more than once (&amp;lt;table&amp;gt;), so this
-        unescapes while escaped tags outnumber real ones. Real markup with an
-        escaped code sample in it (<code>&lt;div&gt;</code>) is left alone, so
-        the sample stays text.
+        unescapes while escaped tags outnumber real ones, and stops as soon as
+        a pass turns up real markup. An escaped code sample in the newsletter
+        (<code>&lt;div&gt;</code>) is never decoded with it, so it stays text.
         """
-        # apps/newsletters/models.py: Entity-encoded HTML tags, up to three encodings deep
-        tags = r"(?:table|tr|td|th|div|span|p|a|img|br|hr|h[1-6]|ul|ol|li|strong|em|b|i|font|center|blockquote|html|head|body|style|meta)\b"
-        entity_tag_pattern = r"&(?:amp;)*lt;/?" + tags
-        real_tag_pattern = r"</?" + tags
+        # apps/newsletters/models.py: Entity-encoded HTML tags, up to three encodings deep,
+        # against every real tag (<section>, <pre>, </td>), whatever its name.
+        escaped_tag_pattern = re.compile(
+            r"&(?:amp;)*lt;/?(?:table|tr|td|th|div|span|p|a|img|br|hr|h[1-6]|ul|ol|li|strong|em|b|i"
+            r"|font|center|blockquote|html|head|body|style|meta)\b",
+            re.IGNORECASE,
+        )
+        real_tag_pattern = re.compile(r"</?[a-zA-Z][a-zA-Z0-9-]*(?:\s[^<>]*)?/?>")
         for _ in range(3):
-            escaped_tags = len(re.findall(entity_tag_pattern, content or "", re.IGNORECASE))
-            real_tags = len(re.findall(real_tag_pattern, content or "", re.IGNORECASE))
-            if escaped_tags <= real_tags:
+            real_tags = len(real_tag_pattern.findall(content or ""))
+            if len(escaped_tag_pattern.findall(content or "")) <= real_tags:
                 break
             logging.debug(" ---> Unescaping entity-encoded HTML in newsletter content")
             content = html_module.unescape(content)
+            if len(real_tag_pattern.findall(content)) > real_tags:
+                break
         return content
 
     def _clean_content(self, content):
