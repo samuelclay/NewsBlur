@@ -59,6 +59,8 @@ const css_cases = [
     ['body.NB-mobile .NB-popover.popover', 'transition'],
     ['body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet', 'animation'],
     ['body.NB-mobile .NB-menu-ask-ai-container', 'animation'],
+    ['body.NB-mobile .NB-mobile-sideoption-sheet', 'animation'],
+    ['body.NB-mobile .NB-mobile-sideoption-sheet', 'transition'],
     ['body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded', 'animation']
 ];
 for (const [selector, property] of css_cases) {
@@ -77,7 +79,7 @@ function fixture(disabled = true) {
         Backbone: { View: { extend: definition => definition }, Router: { extend: definition => definition } },
         _: { delay: (fn, ms) => timers.push({ fn, ms }), isNaN: Number.isNaN },
         setTimeout: (fn, ms) => timers.push({ fn, ms }), clearTimeout() {},
-        document: { body: {} },
+        document: { body: {} }, window: { addEventListener() {} },
         getComputedStyle: () => ({ getPropertyValue: () => disabled ? '0ms' : '380ms' }),
         $() {}, jQuery() {}
     };
@@ -144,7 +146,7 @@ test('Next selects the next story immediately when the CSS transition cannot emi
 
 test('a cancelled story swipe clears its animating class immediately with motion disabled', () => {
     const f = fixture();
-    const view = { $track: f.element() };
+    const view = { $track: f.element(), mobile: { sync_page_scroll() {} } };
     f.pager.snap_back.call(view);
     assert.ok(!view.$track.classes.has('NB-mobile-animating'));
     assert.equal(f.timers.length, 0);

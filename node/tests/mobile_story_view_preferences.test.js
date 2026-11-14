@@ -32,6 +32,7 @@ function pager_fixture(active_feed) {
             Router: { extend: function (methods) { return methods; } }
         },
         $: function (element) { return element; },
+        window: { addEventListener: function () {} },
         console: { log: function () {} }
     };
     context.jQuery = context.$;

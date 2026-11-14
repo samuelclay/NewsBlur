@@ -2156,9 +2156,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     toggle_starred: function () {
-        // story_detail_view.js: saving from this button on a phone slides up the tags and notes
-        // (story_save_view.js resize). The story screen's toolbar star saves without them.
+        // story_detail_view.js opens a phone's saved editor without discarding existing tags or notes.
+        // The story toolbar retains its independent save/unsave toggle.
         var save_view = this.sideoptions_view && this.sideoptions_view.save_view;
+        if (save_view && NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.active && this.model.get('starred')) {
+            save_view.open_as_sheet = true;
+            save_view.toggle_feed_story_save_dialog({ resize_open: true });
+            return;
+        }
         if (save_view) save_view.open_as_sheet = !this.model.get('starred');
         this.model.toggle_starred();
     },

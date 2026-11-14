@@ -57,17 +57,24 @@ def run(ctx):
     )
     ctx.shot("01-feeds-scrolled")
 
-    ctx.open_feed(ctx.pick_feed())
+    feed_id = ctx.pick_feed()
+    # page_scroll.py tests opening a list without auto-selecting its first unread story; prefs_guard.py restores these settings.
+    ctx.evaluate(
+        "(() => { NEWSBLUR.assets.preference('open_feed_action', 0); "
+        "NEWSBLUR.assets.save_phone_layout(%d, 'list'); })()" % feed_id
+    )
+    ctx.open_feed(feed_id)
+    opened = ctx.evaluate(STATE)
+    ctx.check(
+        "a story list opens at its top, laid out in the page",
+        opened["page"] and opened["page_screen"] == "titles" and opened["page_y"] == 0,
+        opened,
+    )
     ctx.set_layout("list")
     state = ctx.evaluate(STATE)
     # Tapping the feed's row scrolled it into view, so this is where the feed list was left.
     feeds_top = state["feeds_top"]
     loaded = state["stories"]
-    ctx.check(
-        "a story list opens at its top, laid out in the page",
-        state["page"] and state["page_screen"] == "titles" and state["page_y"] == 0,
-        state,
-    )
     for _ in range(6):
         ctx.touch.swipe(width / 2, 650, width / 2, 150, steps=10)
         ctx.wait(700)
@@ -84,24 +91,40 @@ def run(ctx):
     )
     ctx.check("scrolling the page loads the next page of stories", state["stories"] > loaded, (loaded, state))
     ctx.shot("02-titles-scrolled")
+    check_scroll_regressions(ctx)
 
-    # Safari's toolbar shrinking makes the window taller mid-scroll. The reader re-laid out every
-    # pane for it, which stuttered the scroll.
+    # page_scroll.py spies on a dynamic call: resize_window itself was captured when its handler registered.
+    ctx.wait(1200)
     ctx.evaluate(
-        "(() => { window.__nb_resizes = 0; var resize = NEWSBLUR.reader.resize_window; "
-        "NEWSBLUR.reader.resize_window = function () { window.__nb_resizes += 1; return resize.apply(this, arguments); }; })()"
+        "(() => { window.__nb_resizes = 0; "
+        "window.__nb_resize_view = NEWSBLUR.reader.switch_taskbar_view; "
+        "NEWSBLUR.reader.switch_taskbar_view = function (view, options) { "
+        "if (options && options.resize) window.__nb_resizes += 1; "
+        "return window.__nb_resize_view.apply(this, arguments); }; })()"
     )
     page.set_viewport_size({"width": width, "height": ctx.viewport["height"] + 80})
-    ctx.wait(900)
+    ctx.wait(1400)
     taller = ctx.evaluate("window.__nb_resizes")
     page.set_viewport_size({"width": width, "height": ctx.viewport["height"]})
-    ctx.wait(900)
+    ctx.wait(1400)
     state = ctx.evaluate(STATE)
     ctx.check(
         "a window that only gets taller or shorter, as when the toolbar shrinks, re-lays out nothing",
         taller == 0 and ctx.evaluate("window.__nb_resizes") == 0 and abs(state["page_y"] - titles_top) <= 2,
         (taller, state),
     )
+    # page_scroll.py proves the counter reaches the registered handler, rather than a replaced function it never calls.
+    page.set_viewport_size({"width": width - 20, "height": ctx.viewport["height"]})
+    ctx.wait(1400)
+    ctx.check("a width change reaches the reader resize handler", ctx.evaluate("window.__nb_resizes") > 0)
+    page.set_viewport_size({"width": width, "height": ctx.viewport["height"]})
+    ctx.wait(1400)
+    ctx.evaluate(
+        "(() => { NEWSBLUR.reader.switch_taskbar_view = window.__nb_resize_view; "
+        "delete window.__nb_resize_view; })()"
+    )
+    ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = %d; })()" % titles_top)
+    ctx.wait(500)
 
     page.locator(".NB-mobile-titles-bar .NB-mobile-mark-read").tap()
     ctx.wait(700)
@@ -143,6 +166,24 @@ def run(ctx):
     ctx.check_no_page_errors()
 
 
+def check_scroll_regressions(ctx):
+    """page_scroll.py exercises content-sized lists without depending on the fixture feed's article lengths."""
+    result = ctx.evaluate("""(() => {
+      var mobile = NEWSBLUR.app.mobile, titles = NEWSBLUR.app.story_titles;
+      var before = window.scrollY;
+      mobile.show_screen('dashboard', {animate: false});
+      mobile.show_screen('titles', {animate: false});
+      var after = window.scrollY;
+      var had_end = !!titles.$('.NB-end-line').length;
+      titles.show_no_more_stories();
+      var padding = parseFloat(titles.$('.NB-end-line').css('paddingBottom'));
+      if (!had_end) titles.$('.NB-end-line').remove();
+      return {before: before, after: after, padding: padding, viewport: titles.viewport_height()};
+    })()""")
+    ctx.check("immediate screen changes preserve a scrolled story list", abs(result["after"] - result["before"]) <= 2, result)
+    ctx.check("the final story spacer fits the visible viewport", 20 <= result["padding"] <= result["viewport"], result)
+
+
 def check_story_screen(ctx):
     """An open story scrolled inside the story screen, so Safari's toolbar stayed up over it and
     the story stopped short of the bottom of the phone. The page now scrolls in its place, and a
@@ -155,6 +196,14 @@ def check_story_screen(ctx):
     ctx.wait(300)
     ctx.tap_story(1)
     ctx.wait(800)
+    # page_scroll.py gives geometry fixtures explicit lengths: the busiest feed may contain only short photos.
+    # The longer neighbor must not stretch the parked first page and clamp away its saved offset.
+    ctx.evaluate(
+        "(() => { var pages = NEWSBLUR.app.mobile.story_pager.pages; "
+        "pages.current.$el[0].firstElementChild.style.minHeight = '1800px'; "
+        "pages.next.$el[0].firstElementChild.style.minHeight = "
+        "(pages.current.$el[0].firstElementChild.offsetHeight + 1200) + 'px'; })()"
+    )
     state = ctx.evaluate(STATE)
     first_story = state["story"]
     ctx.check(
@@ -182,7 +231,7 @@ def check_story_screen(ctx):
         state["story_bottom"] <= state["window_height"] and state["page_height"] > state["window_height"],
         state,
     )
-    ctx.shot("03-story-end")
+    ctx.shot("03-story-end-long-content-fixture")
     ctx.evaluate("(() => { document.querySelector('.NB-mobile-story-page-current').scrollTop = %d; })()" % story_top)
     ctx.wait(300)
 

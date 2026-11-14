@@ -2672,8 +2672,8 @@ body.NB-mobile .NB-mobile-sideoption-sheet {
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
     color: var(--nb-mobile-bar-text);
     z-index: 2001;
-    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
-    transition: transform 240ms var(--nb-mobile-ease);
+    animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
+    transition: transform calc(240ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile .NB-mobile-sideoption-sheet.NB-mobile-sideoption-sheet-closing {

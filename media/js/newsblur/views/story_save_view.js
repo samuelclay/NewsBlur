@@ -84,7 +84,12 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
             $tag_input.tagit({
                 fieldName: "tags",
                 availableTags: this.model.all_tags(),
-                autocomplete: { delay: 0, minLength: 0 },
+                // story_save_view.js moves suggestions with the phone editor into its sheet's stacking context.
+                autocomplete: {
+                    delay: 0,
+                    minLength: 0,
+                    appendTo: NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.active ? $save_wrapper : null
+                },
                 showAutocompleteOnFocus: true,
                 createTagOnBlur: false,
                 removeConfirmation: true,

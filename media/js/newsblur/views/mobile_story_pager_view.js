@@ -462,6 +462,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     snap_back: function () {
         if (!NEWSBLUR.motion.duration(320)) {
             this.$track.removeClass('NB-mobile-animating').css('transform', '');
+            this.mobile.sync_page_scroll();
             return;
         }
         this.$track.addClass('NB-mobile-animating').css('transform', '');

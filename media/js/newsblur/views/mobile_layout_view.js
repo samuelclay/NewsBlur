@@ -69,9 +69,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             this.media_query.addListener(this.check_mode);
         }
         window.addEventListener('popstate', this.handle_popstate);
-        // Capture runs ahead of every other resize listener, jquery.layout's included.
+        // mobile_layout_view.js supplies the guard reader.js registered before its resize listeners.
         this.resize_width = window.innerWidth;
-        window.addEventListener('resize', this.skip_toolbar_resize, true);
         window.addEventListener('resize', _.debounce(this.fit_pills, 100));
         window.addEventListener('resize', this.measure_browser_chrome);
         window.addEventListener('scroll', this.scroll_page_to_top, { passive: true });
@@ -212,6 +211,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     set_screen: function (screen) {
         this.finish_transition();
         this.close_sideoption_sheet();
+        // mobile_layout_view.js saves the outgoing offset before hiding it shrinks the document.
+        this.leave_page_scroll();
         this.clear_drag();
         this.screen = screen;
         this.$body.removeClass(this.screen_body_classes()).addClass('NB-mobile-screen-is-' + screen);
@@ -412,7 +413,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
                 screen = 'titles';
             }
         }
-        if (screen === 'titles' && !NEWSBLUR.reader.active_feed) {
+        if (screen === 'titles' && !NEWSBLUR.reader.active_feed && !this.router_will_route()) {
             screen = 'feeds';
         }
 
@@ -1125,7 +1126,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var dx = (touch.clientX - swipe.start_x) * direction;
         var dy = touch.clientY - swipe.start_y;
         if (swipe.scrolling) {
-            // A claimed touch that turned out to be a scroll moves the story by hand.
+            // mobile_layout_view.js gives a claimed back-edge touch its vertical drag back, but
+            // cancelling touchstart means this narrow edge has no native flick momentum.
             e.preventDefault();
             this.page_scroller('story').scrollTop += swipe.last_y - touch.clientY;
             swipe.last_y = touch.clientY;
@@ -1573,6 +1575,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     },
 
     present_sideoption_sheet: function (view, $panel, dismiss) {
+        // mobile_layout_view.js restores a closing editor before another sheet can adopt its panel.
+        if (this.pending_sideoption_restore) this.pending_sideoption_restore();
         var $sheet = $.make('div', { className: 'NB-mobile-sideoption-sheet' }, [
             $.make('div', { className: 'NB-mobile-sideoption-sheet-handle' })
         ]);
@@ -1608,9 +1612,13 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (!open) return;
         this.sideoption = null;
         this.$body.removeClass('NB-mobile-sideoption-open');
+        var self = this;
+        var timer;
         var restore = function () {
+            clearTimeout(timer);
+            if (self.pending_sideoption_restore === restore) self.pending_sideoption_restore = null;
             // The story may have been drawn again while the sheet was up.
-            if (open.placeholder.parentNode) {
+            if (open.placeholder.isConnected) {
                 $(open.placeholder).replaceWith(open.$panel);
             } else {
                 open.$panel.remove();
@@ -1624,7 +1632,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             return;
         }
         open.$sheet.addClass('NB-mobile-sideoption-sheet-closing');
-        setTimeout(restore, duration);
+        this.pending_sideoption_restore = restore;
+        timer = setTimeout(restore, duration);
     },
 
     // The keyboard covers the bottom of the window without resizing it, so the sheet rests on

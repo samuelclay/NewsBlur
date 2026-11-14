@@ -381,6 +381,8 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     resize: function (options) {
         options = options || {};
+        // discover_stories_view.js may finish fetching after dismissal; resizing must not reopen the panel.
+        if (!this.is_open && !options.close) return;
         var $sideoption_container = this.$('.NB-feed-story-sideoptions-container');
         var $discover_wrapper = this.$('.NB-story-content-discover-wrapper');
         var $discover_content = this.$('.NB-sideoption-discover');

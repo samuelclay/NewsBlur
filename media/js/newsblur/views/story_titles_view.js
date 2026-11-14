@@ -624,7 +624,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var story_layout = this.options.override_layout ||
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         if (_.contains(['list', 'grid', 'magazine'], story_layout) || NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
-            var pane_height = this.$story_titles.height();
+            var pane_height = this.viewport_height();
             var endbar_height = 20;
             var last_story_height = 80;
             endbar_height = pane_height - last_story_height;

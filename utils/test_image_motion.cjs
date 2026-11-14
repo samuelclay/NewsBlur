@@ -4,9 +4,11 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function harness() {
+function harness({ reduced_motion = true, animations = true } = {}) {
+    const image_animations = [];
+    const preferences = { animations };
     class Element {
-        constructor(tag) { this.tag = tag; this.nodeName = tag.toUpperCase(); this.listeners = {}; this.children = []; this.isConnected = true; }
+        constructor(tag) { this.tag = tag; this.nodeName = tag.toUpperCase(); this.listeners = {}; this.children = []; this.isConnected = true; this.complete = true; }
         appendChild(child) { child.parentNode = this; this.children.push(child); }
         addEventListener(type, callback, capture = false) { (this.listeners[type] ||= []).push({ callback, capture }); }
         removeEventListener(type, callback, capture = false) {
@@ -18,6 +20,12 @@ function harness() {
         remove() { this.isConnected = false; }
         focus() { document.activeElement = this; }
         getBoundingClientRect() { return { left: 0, top: 0, bottom: 100, width: 100, height: 100 }; }
+        getAnimations() { return image_animations.filter(animation => animation.element === this); }
+        animate(frames, options) {
+            const animation = { element: this, frames, options, cancel() { this.oncancel?.(); } };
+            if (this.tag === 'img') image_animations.push(animation);
+            return animation;
+        }
     }
     function dispatch(target, type, properties = {}) {
         const event = {
@@ -51,14 +59,17 @@ function harness() {
     const prior_focus = new Element('article');
     document.activeElement = prior_focus;
     let open_image;
-    vm.runInNewContext(fs.readFileSync('media/js/newsblur/common/image_motion.js', 'utf8'), {
+    const context = vm.createContext({
         document,
-        window: { HTMLDialogElement: Element, matchMedia: () => ({ matches: true }) },
+        window: { HTMLDialogElement: Element, matchMedia: () => ({ matches: reduced_motion, addEventListener() {} }) },
         innerHeight: 800,
+        requestAnimationFrame: callback => callback(),
         gettext: text => text,
         $: target => target === document ? { on: (_, selector, handler) => { open_image = handler; } } : { closest: () => ({ length: 0 }) },
-        NEWSBLUR: { motion: { enter() {} } }
+        NEWSBLUR: { Preferences: preferences }
     });
+    vm.runInContext(fs.readFileSync('media/js/newsblur/common/motion.js', 'utf8'), context);
+    vm.runInContext(fs.readFileSync('media/js/newsblur/common/image_motion.js', 'utf8'), context);
     const source = new Element('img');
     source.naturalWidth = 100;
     source.src = '/test-image.png';
@@ -78,9 +89,28 @@ function harness() {
         jQuery.event.special[type].add(registration);
         document.addEventListener(type, registration.handler);
     }
-    return { document, dialog, close, prior_focus, dispatch, bind_key, hotkeys: newsblur.hotkeys,
+    return { document, dialog, close, prior_focus, dispatch, bind_key, hotkeys: newsblur.hotkeys, preferences, image_animations,
         bind_escape: handler => bind_key('esc', handler) };
 }
+
+test('disabling reader animations opens and closes images immediately without system reduced motion', () => {
+    const h = harness({ reduced_motion: false, animations: false });
+    assert.equal(h.dialog.open, true);
+    assert.equal(h.image_animations.length, 0, 'Opening must honor the saved reader animation setting');
+    h.close.onclick();
+    assert.equal(h.image_animations.length, 0, 'Closing must also honor the saved setting');
+    assert.equal(h.dialog.isConnected, false);
+    assert.equal(h.document.activeElement, h.prior_focus);
+});
+
+test('changing the animation preference while an image is open makes dismissal immediate', () => {
+    const h = harness({ reduced_motion: false });
+    assert.equal(h.image_animations.length, 1, 'The enabled preference still permits image opening motion');
+    h.preferences.animations = false;
+    h.close.onclick();
+    assert.equal(h.image_animations.length, 1, 'Dismissal must read the current preference rather than the opening value');
+    assert.equal(h.dialog.isConnected, false);
+});
 
 test('character shortcuts stay inside the dialog while modifier tracking remains current', () => {
     const h = harness();

@@ -1,5 +1,10 @@
 (function ($) {
 
+    // reader.js registers before DOM-ready callbacks such as nav_dropdown.js create jQuery's shared window dispatcher.
+    window.addEventListener('resize', function (event) {
+        if (NEWSBLUR.app && NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.skip_toolbar_resize(event);
+    }, true);
+
     NEWSBLUR.Reader = Backbone.Router.extend({
 
         init: function (options) {
@@ -1195,7 +1200,7 @@
             amount = parseInt(amount, 10) / 100.0;
             var page_height = this.$s.$story_pane.height();
             if (_.contains(['list', 'grid', 'magazine'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
-                page_height = this.$s.$story_titles.height();
+                page_height = NEWSBLUR.app.story_titles.viewport_height();
             }
             var scroll_height = parseInt(page_height * amount, 10);
             var feed_view = NEWSBLUR.assets.preference('feed_view_single_story') &&

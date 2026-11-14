@@ -1130,9 +1130,14 @@ def check_pills_wait_for_list(ctx, feed_id):
 
 
 def run(ctx):
+    from page_scroll import check_scroll_regressions
+
     ctx.login("/")
     feed_id = ctx.pick_feed()
     check_regressions(ctx, feed_id)
     ctx.login("/")
     check_pills_wait_for_list(ctx, feed_id)
+    ctx.set_layout("list")
+    ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 600; })()")
+    check_scroll_regressions(ctx)
     ctx.check_no_page_errors()

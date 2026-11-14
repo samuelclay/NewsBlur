@@ -92,6 +92,14 @@ def run(ctx):
         typed,
     )
     ctx.shot("01-share")
+    ctx.evaluate(
+        "(() => { var view = NEWSBLUR.app.mobile.sideoption.view; "
+        "NEWSBLUR.app.mobile.close_sideoption_sheet(); "
+        "view.toggle_feed_story_share_dialog(); })()"
+    )
+    ctx.wait(600)
+    state = ctx.evaluate(SHEET)
+    ctx.check("Share can reopen while its previous sheet is still closing", as_sheet(state) and state["share"], state)
     close_sheet(ctx)
     state = ctx.evaluate(SHEET)
     ctx.check(
@@ -108,7 +116,11 @@ def run(ctx):
     ctx.check("the related sheet closes", not ctx.evaluate(SHEET)["open"])
 
     if was_starred:
-        print("SKIP the save sheet: the test story is already saved")
+        sideoption(ctx, "save")
+        state = ctx.evaluate(SHEET)
+        ctx.check("Saved opens existing tags and notes without unsaving", as_sheet(state) and state["save"] and state["starred"], state)
+        ctx.shot("03-existing-save")
+        close_sheet(ctx)
     else:
         sideoption(ctx, "save")
         state = ctx.evaluate(SHEET)
@@ -127,7 +139,12 @@ def run(ctx):
         )
         sideoption(ctx, "save")
         state = ctx.evaluate(SHEET)
-        ctx.check("tapping Saved unsaves the story without a sheet", not state["open"] and not state["starred"], state)
+        ctx.check("tapping Saved reopens tags and notes without unsaving", as_sheet(state) and state["save"] and state["starred"], state)
+        close_sheet(ctx)
+
+        page.locator(".NB-mobile-story-save").tap()
+        ctx.wait(900)
+        ctx.check("the toolbar's star still unsaves without a sheet", not ctx.evaluate(SHEET)["starred"])
 
         page.locator(".NB-mobile-story-save").tap()
         ctx.wait(900)
