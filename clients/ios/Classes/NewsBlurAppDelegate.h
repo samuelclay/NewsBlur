@@ -395,6 +395,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showRescoredStories:(NSArray *)stories;
 
 - (void)cancelRequests;
+- (void)setCustomDomainPreference:(NSString *)urlString;
 - (void)resetNetworkManagerForTesting;
 - (void)setCustomDomainForTesting:(NSString *)urlString;
 - (void)setNetworkProtocolClassesForTesting:(NSArray<Class> *)protocolClasses;
