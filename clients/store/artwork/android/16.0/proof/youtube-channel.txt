@@ -1,0 +1,134 @@
+- generic: Channel dashboard
+- banner:
+  - button "Collapse menu":
+  - link "YouTube Studio dashboard":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g
+    - img "YouTube Studio dashboard"
+  - button "Skip navigation":
+    - generic: Skip navigation
+  - button "Search":
+  - button "Help":
+  - button "Notifications":
+  - button "Ask Studio":
+    - generic: Ask Studio
+  - button "Create":
+    - generic: Create
+  - generic "Account":
+    - button "Account"
+- navigation:
+  - img "Samuel Clay"
+  - generic: Your channel
+  - generic: Samuel Clay
+  - menu:
+    - menuitem "Dashboard":
+      - generic: Dashboard
+    - menuitem "Content":
+      - generic: Content
+    - menuitem "Analytics":
+      - generic: Analytics
+    - menuitem "Community":
+      - generic: Community
+    - menuitem "Subtitles":
+      - generic: Subtitles
+    - menuitem "Content detection":
+      - generic: Content detection
+    - menuitem "Earn":
+      - generic: Earn
+    - menuitem "Customization":
+      - generic: Customization
+    - menuitem "Audio library":
+      - generic: Audio library
+  - list:
+    - button "Settings":
+      - generic: Settings
+    - button "Send feedback":
+      - generic: Send feedback
+- main:
+  - heading "Channel dashboard" [level=1]
+  - button "Upload videos":
+  - link "Go live":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g/livestreaming
+    - button "Go live":
+  - link "Create post":
+    - /url: https://www.youtube.com/channel/UCm5FhdXNAqQTpAxpWs5mF6g/posts?show_create_dialog=1
+    - button "Create post":
+  - paragraph:
+    - text: Want to see metrics on your recent video?
+    - text: Upload and publish a video to get started.
+  - button "Upload videos":
+    - generic: Upload videos
+  - heading "Channel analytics" [level=2]
+  - generic: Current subscribers
+  - generic: "0"
+  - link "View live count":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g/explore?entity_type=CHANNEL&entity_id=UCm5FhdXNAqQTpAxpWs5mF6g&time_period=4_weeks&explore_type=SUBSCRIBERS
+    - button "View live count":
+      - generic: View live count
+  - separator
+  - generic: Summary
+  - generic: Last 28 days
+  - generic: Views
+  - generic: "0"
+  - generic: —
+  - generic: Watch time (hours)
+  - generic: "0.0"
+  - generic: —
+  - link "Go to channel analytics":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g/analytics/tab-overview/period-default
+    - button "Go to channel analytics":
+      - generic: Go to channel analytics
+  - separator
+  - text: Top content
+  - generic: Last 48 hours · Views
+  - table:
+    - rowgroup
+  - link "View realtime data":
+    - /url: /channel/UCm5FhdXNAqQTpAxpWs5mF6g/explore?entity_type=CHANNEL&entity_id=UCm5FhdXNAqQTpAxpWs5mF6g&time_period=4_weeks&explore_type=LATEST_ACTIVITY
+    - button "View realtime data":
+      - generic: View realtime data
+  - button "Previous Item" [disabled]:
+  - status "Card 1 of 5": 1 / 5
+  - button "Next Item":
+  - heading "Creator Insider" [level=2]
+  - link "New 30+ YouTube updates":
+    - /url: https://www.youtube.com/watch?v=pbUkedxJPCE
+  - heading "New 30+ YouTube updates" [level=2]
+  - generic: "@ColinandSamir recap #MadeOnYouTube with CEO @nealmohan, @mkbhd, @troyesivan, @CelebritySubstitute, Chucky, @paddygalloway8780, @JennyHoyos"
+  - button "Watch on YouTube":
+    - generic: Watch on YouTube
+  - heading "What's new in Studio" [level=2]
+  - list:
+    - link "Increasing Shorts length":
+      - /url: https://support.google.com/youtube/answer/11286863?hl=en
+      - heading "Increasing Shorts length" [level=3]
+    - separator
+    - link "Expansion of channel permissions":
+      - /url: https://support.google.com/youtube/answer/11286864?hl=en
+      - heading "Expansion of channel permissions" [level=3]
+    - separator
+    - link "Upcoming changes to Community Guidelines warnings":
+      - /url: https://support.google.com/youtube/answer/11287076?hl=en
+      - heading "Upcoming changes to Community Guidelines warnings" [level=3]
+  - link "Terms of use":
+    - /url: https://www.youtube.com/t/terms
+  - link "Privacy policy":
+    - /url: https://policies.google.com/privacy?hl=en
+  - link "Policies & Safety":
+    - /url: https://www.youtube.com/yt/policyandsafety/
+- generic "Samuel Clay"
+- generic "@NewsBlurRSS"
+- link "Your channel":
+  - /url: http://www.youtube.com/@NewsBlurRSS
+  - generic: Your channel
+- link "YouTube":
+  - /url: http://www.youtube.com/
+  - generic: YouTube
+- link "Switch account":
+  - generic: Switch account
+- link "Sign out":
+  - /url: https://www.youtube.com/logout
+  - generic: Sign out
+- 'link "Appearance: Device theme"':
+  - generic: "Appearance: Device theme"
+- link "Send feedback":
+  - generic: Send feedback

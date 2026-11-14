@@ -1,0 +1,3 @@
+De tabletbediening is terug: open de feedlijst, artikeltitels of het artikel afzonderlijk op volledig scherm. Versleep de scheidingslijnen om de panelen te vergroten of verkleinen; NewsBlur onthoudt hun breedtes.
+
+Inclusief de interface in 21 talen en de vaste knoppen voor het volgende artikel uit versie 16.0.

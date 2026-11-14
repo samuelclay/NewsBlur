@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "reviewer": "duo_visual_review",
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-zh-Hans-duo-closed-2853x2007-01-v2.png",
+      "sha256": "3d75e0cf15b0bddebf655dcb592b655ced38251e38425cf908e3bac45669d47b",
+      "path": "revisions/v2/exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-closed-2853x2007-01-v2.png"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-02.png",
+      "sha256": "4c23f46eb65512ea4b96429c1176416fe9046deb1d5a7d1dba0520d971dcd25b",
+      "path": "exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-02.png"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-03.png",
+      "sha256": "2680548a5cb129ba0595642837074ecd43821685eb38aa64cea0213f281633ca",
+      "path": "exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-03.png"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-04-v2.png",
+      "sha256": "53f30803b3000390bf65b7682cef6b2cd5c57be36ba4d61ec5550246690bc6b2",
+      "path": "revisions/v2/exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-04-v2.png"
+    }
+  ],
+  "notes": [
+    "Viewed final four-panel contact sheet for this locale.",
+    "Panel 1 shows closed portrait Duo with story list only. Panels 2 and 3 show the preserved feed/story and title/article split layouts. Panel 4 shows open landscape article without sidebar overlay.",
+    "Localized captions fit without clipping or overlap. Device masking, spacing, image content and panel numbering are clean. All four file hashes verified against validation.json."
+  ]
+}

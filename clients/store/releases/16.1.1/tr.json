@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Dinle özelliğini kontrol etmek artık daha kolay. Okuma araç çubuğundan dinlemeye başlayın ve mini oynatıcının Sonraki haber düğmesiyle ilerleyin.\n\nOtomatik devam artık Kaydedilen Haberler ve Okunmuş Haberler listelerinde, eskiden yeniye dahil, seçtiğiniz sıralamayı izler. Oynatma önceki haberlere dönmeden listede aşağı doğru ilerler.\n\nDinle, makalenin başında tekrarlanan başlığı yalnızca bir kez okur.\n\nDinleme süreleri artık haftalık: Premium Archive ile 1 saat, Premium Pro ile 10 saat. Süreler her pazar yenilenir. Ayarlar ve Şimdi Çalıyor, kalan süreyi saat ve dakika olarak gösterir."
+  },
+  "macos": {
+    "whats_new": "Dinle özelliğini kontrol etmek artık daha kolay. Mini oynatıcının Sonraki haber düğmesiyle ilerleyin.\n\nOtomatik devam artık Kaydedilen Haberler ve Okunmuş Haberler listelerinde, eskiden yeniye dahil, seçtiğiniz sıralamayı izler. Oynatma önceki haberlere dönmeden listede aşağı doğru ilerler.\n\nDinle, makalenin başında tekrarlanan başlığı yalnızca bir kez okur.\n\nDinleme süreleri artık haftalık: Premium Archive ile 1 saat, Premium Pro ile 10 saat. Süreler her pazar yenilenir. Ayarlar ve Şimdi Çalıyor, kalan süreyi saat ve dakika olarak gösterir."
+  },
+  "android": {
+    "release_notes": "Dinle yenilikleri: okuma araç çubuğundan başlatın, mini oynatıcıdaki Sonraki haber ile geçin. Otomatik devam, Kaydedilen Haberler ve Okunmuş Haberler sıralamanızı izleyerek listede aşağı ilerler. Tekrarlanan başlıklar bir kez okunur. Haftalık dinleme: Premium Archive ile 1 saat, Premium Pro ile 10 saat; her pazar yenilenir. Ayarlar kalan saat ve dakikayı gösterir."
+  }
+}

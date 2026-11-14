@@ -214,7 +214,8 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     dispatch_once(&predicate, ^{
         NSString *queueName = [[NSString alloc] initWithFormat:@"%@.trash", PINDiskCachePrefix];
         trashQueue = dispatch_queue_create([queueName UTF8String], DISPATCH_QUEUE_SERIAL);
-        dispatch_set_target_queue(trashQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0));
+        // PINDiskCache.m must finish reclaiming storage while the user waits; background I/O can remain throttled indefinitely.
+        dispatch_set_target_queue(trashQueue, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0));
     });
     
     return trashQueue;
@@ -256,6 +257,11 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 
 + (void)emptyTrash
 {
+    [self emptyTrashWithCompletion:nil];
+}
+
++ (void)emptyTrashWithCompletion:(void (^)(BOOL))completion
+{
     dispatch_async([self sharedTrashQueue], ^{
         PINBackgroundTask *task = [PINBackgroundTask start];
         
@@ -265,14 +271,17 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
                                                                                  options:0
                                                                                    error:&searchTrashedItemsError];
         PINDiskCacheError(searchTrashedItemsError);
+        BOOL success = searchTrashedItemsError == nil;
         
         for (NSURL *trashedItemURL in trashedItems) {
             NSError *removeTrashedItemError = nil;
             [[NSFileManager defaultManager] removeItemAtURL:trashedItemURL error:&removeTrashedItemError];
             PINDiskCacheError(removeTrashedItemError);
+            if (removeTrashedItemError) success = NO;
         }
         
         [task end];
+        if (completion) completion(success);
     });
 }
 

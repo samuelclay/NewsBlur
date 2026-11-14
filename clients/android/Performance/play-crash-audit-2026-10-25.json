@@ -1,0 +1,2206 @@
+{
+  "capturedAt": "2026-10-25",
+  "interval": {
+    "interval_startTime_year": 2026,
+    "interval_startTime_month": 9,
+    "interval_startTime_day": 27,
+    "interval_endTime_year": 2026,
+    "interval_endTime_month": 10,
+    "interval_endTime_day": 25
+  },
+  "filters": "No version, foreground, or user-perceived restriction; all issue pages consumed. Up to three sample reports per group, with additional current-version samples for tablet and Chromium groups.",
+  "latestProduction": {
+    "name": "16.0.4",
+    "versionCode": 296,
+    "verifiedInPlayConsole": true,
+    "groups": 21,
+    "events": 99
+  },
+  "groups": 78,
+  "events": 1204,
+  "issues": [
+    {
+      "name": "apps/com.newsblur/0d0c89d4c6cc2324e2bbdbaaa597b7b7",
+      "type": "CRASH",
+      "cause": "com.google.android.material.appbar.HeaderScrollingViewBehavior.layoutChild",
+      "location": "java.lang.IndexOutOfBoundsException",
+      "errorReportCount": "596",
+      "distinctUsers": "129",
+      "lastErrorReportTime": "2026-10-18T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/0d0c89d4c6cc2324e2bbdbaaa597b7b7/details",
+      "firstOsVersion": {
+        "apiLevel": "29"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "annotations": [
+        {
+          "category": "Insight",
+          "title": "Possibly SDK-related",
+          "body": "This crash may be related to androidx.recyclerview:recyclerview (androidx.recyclerview:recyclerview)."
+        }
+      ],
+      "distinctUsersPercent": {
+        "value": "46.2366"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Older RecyclerView report. Known preview-row mismatch was fixed in v291; stripped sample cannot prove every occurrence had that cause."
+    },
+    {
+      "name": "apps/com.newsblur/21d3920ce5e84ac492e4763ad52ca786",
+      "type": "CRASH",
+      "cause": "com.newsblur.database.BlurDatabaseHelper.loadCustomIconsFromDb",
+      "location": "android.database.sqlite.SQLiteException",
+      "errorReportCount": "208",
+      "distinctUsers": "7",
+      "lastErrorReportTime": "2026-10-18T22:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/21d3920ce5e84ac492e4763ad52ca786/details",
+      "firstOsVersion": {
+        "apiLevel": "33"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "292"
+      },
+      "distinctUsersPercent": {
+        "value": "2.5090"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already repaired in schema 11: missing custom-icon table."
+    },
+    {
+      "name": "apps/com.newsblur/b805eca90679b3c5d409795123181d00",
+      "type": "CRASH",
+      "cause": "com.newsblur.activity.Reading.showUnreadSnackbar",
+      "location": "java.lang.ClassCastException",
+      "errorReportCount": "90",
+      "distinctUsers": "33",
+      "lastErrorReportTime": "2026-10-18T19:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/b805eca90679b3c5d409795123181d00/details",
+      "firstOsVersion": {
+        "apiLevel": "27"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "292"
+      },
+      "distinctUsersPercent": {
+        "value": "11.8280"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already fixed in 16.0.4: unread snackbar layout parameters."
+    },
+    {
+      "name": "apps/com.newsblur/8aa345b469f8a149d754901ffb1e5d41",
+      "type": "CRASH",
+      "cause": "com.newsblur.util.StorySplitView.prepareFeedList",
+      "location": "java.lang.UnsupportedOperationException",
+      "errorReportCount": "51",
+      "distinctUsers": "8",
+      "lastErrorReportTime": "2026-10-24T21:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/8aa345b469f8a149d754901ffb1e5d41/details",
+      "firstOsVersion": {
+        "apiLevel": "33"
+      },
+      "lastOsVersion": {
+        "apiLevel": "33"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "2.8674"
+      },
+      "latestVersionEvents": 51,
+      "disposition": "Fixed: guard unavailable tablet window API (717d66440c)."
+    },
+    {
+      "name": "apps/com.newsblur/43865057fca3ffad8af5d42baa25696b",
+      "type": "CRASH",
+      "cause": "com.newsblur.database.BlurDatabaseHelper.loadCustomIconsFromDb",
+      "location": "android.database.sqlite.SQLiteException",
+      "errorReportCount": "29",
+      "distinctUsers": "4",
+      "lastErrorReportTime": "2026-10-18T22:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/43865057fca3ffad8af5d42baa25696b/details",
+      "firstOsVersion": {
+        "apiLevel": "33"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "292"
+      },
+      "distinctUsersPercent": {
+        "value": "1.4337"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already repaired in schema 11: missing custom-icon table during service startup."
+    },
+    {
+      "name": "apps/com.newsblur/20cd0702f20a060d87f2d35837c0fbfc",
+      "type": "CRASH",
+      "cause": "com.newsblur.util.UIUtils.startReadingActivity",
+      "location": "android.os.BadParcelableException",
+      "errorReportCount": "26",
+      "distinctUsers": "11",
+      "lastErrorReportTime": "2026-10-10T12:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/20cd0702f20a060d87f2d35837c0fbfc/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "3.9427"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Prior FeedSet serialization repair; only v289-290 in this window."
+    },
+    {
+      "name": "apps/com.newsblur/ff040600f98987ee330d8bc335bcb535",
+      "type": "CRASH",
+      "cause": "chromium-SystemWebViewGoogle6432.aab-stable-801003603 - org.chromium.base.JniAndroid.handleException",
+      "location": "org.chromium.base.JniAndroid$UncaughtExceptionException",
+      "errorReportCount": "26",
+      "distinctUsers": "13",
+      "lastErrorReportTime": "2026-10-24T19:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/ff040600f98987ee330d8bc335bcb535/details",
+      "firstOsVersion": {
+        "apiLevel": "33"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "4.6595"
+      },
+      "latestVersionEvents": 10,
+      "disposition": "Chromium wrapper plus message-free IllegalStateException; no actionable app frame even in additional current-version reports."
+    },
+    {
+      "name": "apps/com.newsblur/042a5d0b82a529518d94894f6a782e69",
+      "type": "CRASH",
+      "cause": "Unknown Source - com.newsblur.database.b.<init>",
+      "location": "android.database.sqlite.SQLiteException",
+      "errorReportCount": "13",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-10T12:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/042a5d0b82a529518d94894f6a782e69/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "35"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already repaired in schema 11: matching v291 R8 map identifies loadCustomIconsFromDb."
+    },
+    {
+      "name": "apps/com.newsblur/5162cbb962a594354db87d039d3c577e",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "Native method - android.os.MessageQueue.nativePollOnce",
+      "location": "Root cause for this ANR is unknown",
+      "errorReportCount": "13",
+      "distinctUsers": "13",
+      "lastErrorReportTime": "2026-10-24T00:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/5162cbb962a594354db87d039d3c577e/details",
+      "firstOsVersion": {
+        "apiLevel": "34"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "4.6595"
+      },
+      "latestVersionEvents": 5,
+      "disposition": "ANR snapshot is idle/empty/framework queue or Binder acknowledgement; blocking cause not established."
+    },
+    {
+      "name": "apps/com.newsblur/47b6c44b29425964a2116de1a13c319f",
+      "type": "CRASH",
+      "cause": "com.newsblur.fragment.SetupCommentSectionTask.onPostExecute",
+      "location": "java.util.UnknownFormatConversionException",
+      "errorReportCount": "8",
+      "distinctUsers": "2",
+      "lastErrorReportTime": "2026-10-22T22:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/47b6c44b29425964a2116de1a13c319f/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "292"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.7168"
+      },
+      "latestVersionEvents": 6,
+      "disposition": "Fixed: native comment/share plurals across all languages (1b27cf343c)."
+    },
+    {
+      "name": "apps/com.newsblur/0488407b532ec0460e195ba22588fc5f",
+      "type": "CRASH",
+      "cause": "com.newsblur.database.FolderListAdapter.recountFeeds",
+      "location": "java.lang.UnsupportedOperationException",
+      "errorReportCount": "7",
+      "distinctUsers": "6",
+      "lastErrorReportTime": "2026-10-24T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/0488407b532ec0460e195ba22588fc5f/details",
+      "firstOsVersion": {
+        "apiLevel": "29"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "2.1505"
+      },
+      "latestVersionEvents": 6,
+      "disposition": "Fixed: mutable feed-preview placeholder lists (6419673da3)."
+    },
+    {
+      "name": "apps/com.newsblur/313659223e4fd44c9953ab2cd7b29706",
+      "type": "CRASH",
+      "cause": "android.os.BinderProxy.transactNative",
+      "location": "android.os.TransactionTooLargeException",
+      "errorReportCount": "7",
+      "distinctUsers": "5",
+      "lastErrorReportTime": "2026-10-04T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/313659223e4fd44c9953ab2cd7b29706/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "283"
+      },
+      "lastAppVersion": {
+        "versionCode": "283"
+      },
+      "distinctUsersPercent": {
+        "value": "1.7921"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Oversized saved-state transaction on v283. No bundle breakdown in report to identify payload still present."
+    },
+    {
+      "name": "apps/com.newsblur/a396dfba37650d6cad8324e13fd6b450",
+      "type": "CRASH",
+      "cause": "com.newsblur.database.BlurDatabaseHelper.getStoryContent",
+      "location": "android.database.sqlite.SQLiteBlobTooBigException",
+      "errorReportCount": "7",
+      "distinctUsers": "2",
+      "lastErrorReportTime": "2026-10-24T13:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/a396dfba37650d6cad8324e13fd6b450/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.7168"
+      },
+      "latestVersionEvents": 2,
+      "disposition": "Fixed: scalar SQLite reads bypass article/text CursorWindow limits (89b2d4ea61)."
+    },
+    {
+      "name": "apps/com.newsblur/d8563e612d891d06356aae70d534763e",
+      "type": "CRASH",
+      "cause": "com.newsblur.util.Log.offerContext",
+      "location": "java.lang.NullPointerException",
+      "errorReportCount": "7",
+      "distinctUsers": "5",
+      "lastErrorReportTime": "2026-10-18T23:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/d8563e612d891d06356aae70d534763e/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "292"
+      },
+      "distinctUsersPercent": {
+        "value": "1.7921"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already fixed in 16.0.4: log external-cache failure fallback."
+    },
+    {
+      "name": "apps/com.newsblur/22bc47245b462092c1e1cedbadf68d5b",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.subscription.SubscriptionManagerImpl.<init>",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "6",
+      "distinctUsers": "6",
+      "lastErrorReportTime": "2026-10-23T19:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/22bc47245b462092c1e1cedbadf68d5b/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "2.1505"
+      },
+      "latestVersionEvents": 3,
+      "disposition": "Fixed blocking path: billing construction on worker (1118645610)."
+    },
+    {
+      "name": "apps/com.newsblur/92685481f8379497db16c8cd82747f05",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.service.SyncRequestCoordinator.request",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "6",
+      "distinctUsers": "4",
+      "lastErrorReportTime": "2026-10-19T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/92685481f8379497db16c8cd82747f05/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "1.4337"
+      },
+      "latestVersionEvents": 2,
+      "disposition": "ANR snapshot in coroutine scheduling/cancellation; work already uses IO dispatcher, no slow owner or causal queue evidence."
+    },
+    {
+      "name": "apps/com.newsblur/cdf35f41309c4588de3b26180fea5283",
+      "type": "CRASH",
+      "cause": "java.io.ObjectOutputStream.writeObject0",
+      "location": "java.io.NotSerializableException",
+      "errorReportCount": "6",
+      "distinctUsers": "5",
+      "lastErrorReportTime": "2026-10-14T01:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/cdf35f41309c4588de3b26180fea5283/details",
+      "firstOsVersion": {
+        "apiLevel": "34"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "1.7921"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Prior saved-state serialization repair; no v296 occurrence in this window."
+    },
+    {
+      "name": "apps/com.newsblur/deaed099701f414b7fad9b2460bc723d",
+      "type": "CRASH",
+      "cause": "com.newsblur.domain.Story$ClusterStory.fromJson",
+      "location": "java.lang.OutOfMemoryError",
+      "errorReportCount": "6",
+      "distinctUsers": "4",
+      "lastErrorReportTime": "2026-10-20T19:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/deaed099701f414b7fad9b2460bc723d/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "annotations": [
+        {
+          "category": "Insight",
+          "title": "Out of memory",
+          "body": "These crashes occur when your app attempts to allocate more memory than what's available in the Android system. This typically happens when an app leaks memory or uses large assets inefficiently, such as images or videos.\n\nThere are a few ways you can optimize memory in your app to help avoid out of memory crashes. Try using smaller assets, release memory when your app enters the background, and / or debug potential memory leaks. (https://developer.android.com/guide/topics/androidgo/optimize-memory)"
+        }
+      ],
+      "distinctUsersPercent": {
+        "value": "1.4337"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "Out-of-memory report identifies allocation site, not retained-heap cause. Overlapping reader loads are a risk, not a proven fix."
+    },
+    {
+      "name": "apps/com.newsblur/f685ac1825512a7a6bb22d363af57cee",
+      "type": "CRASH",
+      "cause": "com.newsblur.util.SessionDataSource.getNextNonEmptyFolder",
+      "location": "java.lang.StackOverflowError",
+      "errorReportCount": "6",
+      "distinctUsers": "3",
+      "lastErrorReportTime": "2026-10-14T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/f685ac1825512a7a6bb22d363af57cee/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "278"
+      },
+      "lastAppVersion": {
+        "versionCode": "283"
+      },
+      "distinctUsersPercent": {
+        "value": "1.0753"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already fixed: bounded folder navigation replaces recursion."
+    },
+    {
+      "name": "apps/com.newsblur/282bc6aa6f63d040c8493913e7f66e37",
+      "type": "CRASH",
+      "cause": "[libGLES_mali.so] eglQuerySurface",
+      "location": "SIGABRT",
+      "errorReportCount": "5",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-11T19:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/282bc6aa6f63d040c8493913e7f66e37/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Native graphics/runtime abort or signal; available stack does not establish an application fix."
+    },
+    {
+      "name": "apps/com.newsblur/5f54baa2231647f50d71a9ad6e1c92d9",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.service.SyncJobRunner.launchIn",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "5",
+      "distinctUsers": "5",
+      "lastErrorReportTime": "2026-10-21T20:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/5f54baa2231647f50d71a9ad6e1c92d9/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "1.7921"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "ANR snapshot in coroutine scheduling/cancellation; work already uses IO dispatcher, no slow owner or causal queue evidence."
+    },
+    {
+      "name": "apps/com.newsblur/05a31a5ce1d6eeb177719d72627b9953",
+      "type": "CRASH",
+      "cause": "com.newsblur.widget.WidgetRemoteViewsFactory.onDataSetChanged",
+      "location": "java.lang.InterruptedException",
+      "errorReportCount": "4",
+      "distinctUsers": "4",
+      "lastErrorReportTime": "2026-10-19T12:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/05a31a5ce1d6eeb177719d72627b9953/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "1.4337"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "Fixed: launcher refresh interruption preserves widget data (725d2bc8fb)."
+    },
+    {
+      "name": "apps/com.newsblur/1a22a97e6bcec599d3d32215180ad009",
+      "type": "CRASH",
+      "cause": "com.newsblur.util.AppIconManager.componentName",
+      "location": "java.lang.NoSuchMethodError",
+      "errorReportCount": "3",
+      "distinctUsers": "3",
+      "lastErrorReportTime": "2026-10-02T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/1a22a97e6bcec599d3d32215180ad009/details",
+      "firstOsVersion": {
+        "apiLevel": "29"
+      },
+      "lastOsVersion": {
+        "apiLevel": "30"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "1.0753"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already fixed: Android 8-11 compatible app-icon class naming (c68e8691b4)."
+    },
+    {
+      "name": "apps/com.newsblur/36f66431e964113647a6db5263c580c7",
+      "type": "CRASH",
+      "cause": "Unknown Source - s9.f2.onClick",
+      "location": "java.lang.ClassCastException",
+      "errorReportCount": "3",
+      "distinctUsers": "3",
+      "lastErrorReportTime": "2026-10-10T13:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/36f66431e964113647a6db5263c580c7/details",
+      "firstOsVersion": {
+        "apiLevel": "31"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "1.0753"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already fixed in 16.0.4: matching v291 R8 map identifies showUnreadSnackbar."
+    },
+    {
+      "name": "apps/com.newsblur/7ca871ac4d7691dc27600392a2469412",
+      "type": "CRASH",
+      "cause": "com.newsblur.database.BlurDatabaseHelper.query",
+      "location": "android.database.sqlite.SQLiteException",
+      "errorReportCount": "3",
+      "distinctUsers": "2",
+      "lastErrorReportTime": "2026-10-11T03:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/7ca871ac4d7691dc27600392a2469412/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.7168"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "SQLite query preparation failure; exception message omitted, so missing table/corruption/other cause cannot be distinguished."
+    },
+    {
+      "name": "apps/com.newsblur/c2a664b202dfaa77d495a657fd1f1962",
+      "type": "CRASH",
+      "cause": "[libc.so] abort",
+      "location": "SIGABRT",
+      "errorReportCount": "3",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-11T20:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/c2a664b202dfaa77d495a657fd1f1962/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Native graphics/runtime abort or signal; available stack does not establish an application fix."
+    },
+    {
+      "name": "apps/com.newsblur/06d5c8ebcee042a9fbff13d158ab3668",
+      "type": "CRASH",
+      "cause": "Unknown Source - com.newsblur.database.b.w",
+      "location": "android.database.sqlite.SQLiteException",
+      "errorReportCount": "2",
+      "distinctUsers": "2",
+      "lastErrorReportTime": "2026-10-17T01:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/06d5c8ebcee042a9fbff13d158ab3668/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "292"
+      },
+      "distinctUsersPercent": {
+        "value": "0.7168"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already repaired in schema 11: obfuscated custom-icon table path."
+    },
+    {
+      "name": "apps/com.newsblur/33170d7da5ad120d324ca3bd94960a3e",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.database.BlurDatabase.getRW",
+      "location": "Executing service com.newsblur/.service.SyncService",
+      "errorReportCount": "2",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-09-28T11:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/33170d7da5ad120d324ca3bd94960a3e/details",
+      "firstOsVersion": {
+        "apiLevel": "29"
+      },
+      "lastOsVersion": {
+        "apiLevel": "29"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Fixed blocking path: lazy sync-service DB injection (91747b40da)."
+    },
+    {
+      "name": "apps/com.newsblur/48ddaf8ebc96cbf42ec690098d6d644a",
+      "type": "CRASH",
+      "cause": "com.newsblur.domain.Story.bindExternValues",
+      "location": "java.lang.OutOfMemoryError",
+      "errorReportCount": "2",
+      "distinctUsers": "2",
+      "lastErrorReportTime": "2026-10-13T00:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/48ddaf8ebc96cbf42ec690098d6d644a/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.7168"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Out-of-memory report identifies allocation site, not retained-heap cause. Overlapping reader loads are a risk, not a proven fix."
+    },
+    {
+      "name": "apps/com.newsblur/542d6572dc024f665564b127bc64eb6f",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.util.ExtensionsKt$executeAsyncTask$3.invokeSuspend",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "2",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-17T15:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/542d6572dc024f665564b127bc64eb6f/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "annotations": [
+        {
+          "category": "Insight",
+          "title": "Main thread idle",
+          "body": "These issues are not actionable as the stack traces do not show the blocking condition that is causing the ANR.\n\nThis type of ANR report is produced when the ANR condition has passed by the time the stack trace is captured. This is usually caused by high load or resource contention inside the Android system server, which may contribute to the root cause of the ANR.\n\nIt is not possible to determine the root cause of ANRs where the main thread is idle. These ANRs are included in Android vitals for completeness, as they help to show the number of users affected by ANRs. To fix the underlying root cause, you should look at ANRs with the same type and activity, but with different main thread states. (https://developer.android.com/topic/performance/anrs/diagnose-and-fix-anrs#nativepollonce)"
+        }
+      ],
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot is idle/empty/framework queue or Binder acknowledgement; blocking cause not established."
+    },
+    {
+      "name": "apps/com.newsblur/7ae603c452a5049a899cd150520b2ab7",
+      "type": "CRASH",
+      "cause": "androidx.recyclerview.widget.RecyclerView$Recycler.validateViewHolderForOffsetPosition",
+      "location": "java.lang.IndexOutOfBoundsException",
+      "errorReportCount": "2",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-07T15:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/7ae603c452a5049a899cd150520b2ab7/details",
+      "firstOsVersion": {
+        "apiLevel": "29"
+      },
+      "lastOsVersion": {
+        "apiLevel": "29"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Older RecyclerView report. Known preview-row mismatch was fixed in v291; stripped sample cannot prove every occurrence had that cause."
+    },
+    {
+      "name": "apps/com.newsblur/ce46dafa6bb0540e1c7a8da68759a0da",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.fragment.ItemSetFragment$StoryListBackTouchListener.onInterceptTouchEvent",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "2",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-04T15:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/ce46dafa6bb0540e1c7a8da68759a0da/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR waits on framework getTaskForActivity Binder call; no causal app-side blocking operation identified."
+    },
+    {
+      "name": "apps/com.newsblur/e98260e431ee661b352cec35fce8fb24",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.service.SyncService.onDestroy",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "2",
+      "distinctUsers": "2",
+      "lastErrorReportTime": "2026-10-22T05:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/e98260e431ee661b352cec35fce8fb24/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.7168"
+      },
+      "latestVersionEvents": 2,
+      "disposition": "ANR snapshot in coroutine scheduling/cancellation; work already uses IO dispatcher, no slow owner or causal queue evidence."
+    },
+    {
+      "name": "apps/com.newsblur/ee287e798754b10bd7e95e4ebaceb71f",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.service.SyncRequestCoordinator.request",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "2",
+      "distinctUsers": "2",
+      "lastErrorReportTime": "2026-10-09T10:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/ee287e798754b10bd7e95e4ebaceb71f/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.7168"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot in coroutine scheduling/cancellation; work already uses IO dispatcher, no slow owner or causal queue evidence."
+    },
+    {
+      "name": "apps/com.newsblur/006581c3eeb4563a541641534be0f319",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "Unknown Source - com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService.onStartJob",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-18T12:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/006581c3eeb4563a541641534be0f319/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "ANR in Google scheduling/profile-installation/library initialization; no demonstrated app remedy."
+    },
+    {
+      "name": "apps/com.newsblur/085f1589cb67f9924b827b7bf5701cd2",
+      "type": "CRASH",
+      "cause": "com.newsblur.activity.ItemsList.cancelStoryStatusBannerAnimation",
+      "location": "java.lang.NullPointerException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-24T21:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/085f1589cb67f9924b827b7bf5701cd2/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "Fixed: banner cleanup before layout inflation (9f1be79762)."
+    },
+    {
+      "name": "apps/com.newsblur/0dd187a5cb561ecbda95f2620d4c0001",
+      "type": "CRASH",
+      "cause": "com.newsblur.viewModel.ReadingViewModel$loadStories$1.invokeSuspend",
+      "location": "java.lang.OutOfMemoryError",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-05T20:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/0dd187a5cb561ecbda95f2620d4c0001/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Out-of-memory report identifies allocation site, not retained-heap cause. Overlapping reader loads are a risk, not a proven fix."
+    },
+    {
+      "name": "apps/com.newsblur/0f0d1687691e57ce743a2c2f236a8b77",
+      "type": "CRASH",
+      "cause": "Unknown Source - com.newsblur.domain.Story.d",
+      "location": "java.lang.OutOfMemoryError",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-10T13:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/0f0d1687691e57ce743a2c2f236a8b77/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Out-of-memory report identifies allocation site, not retained-heap cause. Overlapping reader loads are a risk, not a proven fix."
+    },
+    {
+      "name": "apps/com.newsblur/124188fa7748f251fd0716d27c580bcd",
+      "type": "CRASH",
+      "cause": "Unknown Source - com.newsblur.database.b.<init>",
+      "location": "android.database.sqlite.SQLiteException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-10T07:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/124188fa7748f251fd0716d27c580bcd/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "35"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already repaired in schema 11: matching v291 R8 map identifies loadCustomIconsFromDb."
+    },
+    {
+      "name": "apps/com.newsblur/15c16cdd95430974988e884c08c756c4",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "libcore.io.ForwardingOs.getpid",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-13T21:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/15c16cdd95430974988e884c08c756c4/details",
+      "firstOsVersion": {
+        "apiLevel": "34"
+      },
+      "lastOsVersion": {
+        "apiLevel": "34"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot is idle/empty/framework queue or Binder acknowledgement; blocking cause not established."
+    },
+    {
+      "name": "apps/com.newsblur/16588e0af8a34ba69bd543260d9a1c51",
+      "type": "CRASH",
+      "cause": "com.newsblur.database.BlurDatabaseHelper.getFeed",
+      "location": "java.lang.IllegalArgumentException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-18T09:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/16588e0af8a34ba69bd543260d9a1c51/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "292"
+      },
+      "lastAppVersion": {
+        "versionCode": "292"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Fixed: one-feed folders use folder discovery; null DB lookup is safe (1417de7b88)."
+    },
+    {
+      "name": "apps/com.newsblur/17ecfcd4134fa2ed028f7bf29b9e2e5a",
+      "type": "CRASH",
+      "cause": "androidx.recyclerview.widget.RecyclerView.dispatchLayoutStep3",
+      "location": "java.lang.NullPointerException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-06T02:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/17ecfcd4134fa2ed028f7bf29b9e2e5a/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Older RecyclerView report. Known preview-row mismatch was fixed in v291; stripped sample cannot prove every occurrence had that cause."
+    },
+    {
+      "name": "apps/com.newsblur/2137ef4a6eb402d344c7e8be1a357128",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "android.view.InsetsState.getDisplayCutoutSafe",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-07T01:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/2137ef4a6eb402d344c7e8be1a357128/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in framework rendering or class initialization; trace does not identify an app blocking cause."
+    },
+    {
+      "name": "apps/com.newsblur/229824112319d5bdbf28408669b612ad",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "Native method - android.os.MessageQueue.nativePollOnce",
+      "location": "Root cause for this ANR is unknown",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-09-27T13:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/229824112319d5bdbf28408669b612ad/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot is idle/empty/framework queue or Binder acknowledgement; blocking cause not established."
+    },
+    {
+      "name": "apps/com.newsblur/26227a3700a179f4ae7754fc02f19276",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.google.android.datatransport.runtime.backends.MetadataBackendRegistry_Factory.newInstance",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-09T17:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/26227a3700a179f4ae7754fc02f19276/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in Google scheduling/profile-installation/library initialization; no demonstrated app remedy."
+    },
+    {
+      "name": "apps/com.newsblur/2b9c46f37df7b1f26132540fc1298c5b",
+      "type": "CRASH",
+      "cause": "com.newsblur.service.SyncService.setSyncServiceState",
+      "location": "aa.d",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-03T22:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/2b9c46f37df7b1f26132540fc1298c5b/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already fixed: uninjected sync-service shutdown guard."
+    },
+    {
+      "name": "apps/com.newsblur/33c341f9954d529ab0b81780ee9f2123",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "Native method - android.os.MessageQueue.nativePollOnce",
+      "location": "Executing service com.newsblur/.service.SyncService",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-12T17:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/33c341f9954d529ab0b81780ee9f2123/details",
+      "firstOsVersion": {
+        "apiLevel": "31"
+      },
+      "lastOsVersion": {
+        "apiLevel": "31"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot is idle/empty/framework queue or Binder acknowledgement; blocking cause not established."
+    },
+    {
+      "name": "apps/com.newsblur/3f28c8509c18f71473d2003bd26b0361",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.util.StorySplitView.slidesOverFeedDrawer",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-12T02:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/3f28c8509c18f71473d2003bd26b0361/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR waits on framework getTaskForActivity Binder call; no causal app-side blocking operation identified."
+    },
+    {
+      "name": "apps/com.newsblur/4277ea3df7564fbed555e8930a9d9467",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.service.SyncJobRunner.<init>",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-14T19:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/4277ea3df7564fbed555e8930a9d9467/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot in coroutine scheduling/cancellation; work already uses IO dispatcher, no slow owner or causal queue evidence."
+    },
+    {
+      "name": "apps/com.newsblur/436c4423ad4a45c3ca63d65ded1132ed",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.fragment.ReadingItemFragment.destroyReadingWebviewForBackground",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-09-30T19:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/436c4423ad4a45c3ca63d65ded1132ed/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in mandatory UI-thread WebView lifecycle/history work; no safe app fix established."
+    },
+    {
+      "name": "apps/com.newsblur/44636fb999f84bad79c0a64bde23c4c4",
+      "type": "CRASH",
+      "cause": "kotlinx.coroutines.CancellableContinuationImpl.resumedState",
+      "location": "java.lang.OutOfMemoryError",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-08T11:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/44636fb999f84bad79c0a64bde23c4c4/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Out-of-memory report identifies allocation site, not retained-heap cause. Overlapping reader loads are a risk, not a proven fix."
+    },
+    {
+      "name": "apps/com.newsblur/48795fc66cc0c7ed2f5a49885c72418b",
+      "type": "CRASH",
+      "cause": "com.newsblur.util.StorySplitView.prepareFeedList",
+      "location": "java.lang.UnsupportedOperationException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-23T15:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/48795fc66cc0c7ed2f5a49885c72418b/details",
+      "firstOsVersion": {
+        "apiLevel": "33"
+      },
+      "lastOsVersion": {
+        "apiLevel": "33"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "annotations": [
+        {
+          "category": "Insight",
+          "title": "Possibly SDK-related",
+          "body": "This crash may be related to androidx.window:window (androidx.window:window)."
+        }
+      ],
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "Fixed: same tablet window API guard; Samsung Galaxy Tab S7 / Android 13 (717d66440c)."
+    },
+    {
+      "name": "apps/com.newsblur/48c5dab11ff10b2c2b24c0bff8a9b7e7",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "Native method - J.N.VJZ",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-18T02:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/48c5dab11ff10b2c2b24c0bff8a9b7e7/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "292"
+      },
+      "lastAppVersion": {
+        "versionCode": "292"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in mandatory UI-thread WebView lifecycle/history work; no safe app fix established."
+    },
+    {
+      "name": "apps/com.newsblur/502c14e3436af7792aa74cb807ce87a6",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "Unknown Source - com.newsblur.database.p.n",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-10T13:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/502c14e3436af7792aa74cb807ce87a6/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in mandatory UI-thread WebView lifecycle/history work; no safe app fix established."
+    },
+    {
+      "name": "apps/com.newsblur/54d20a76498c0f4b6b6b3393d158dbdd",
+      "type": "CRASH",
+      "cause": "[libart.so] art::Mutex::ExclusiveLock(art::Thread*)",
+      "location": "SIGBUS",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-21T05:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/54d20a76498c0f4b6b6b3393d158dbdd/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "Native graphics/runtime abort or signal; available stack does not establish an application fix."
+    },
+    {
+      "name": "apps/com.newsblur/57b598a59bd967131b5596807caded55",
+      "type": "CRASH",
+      "cause": "com.newsblur.service.SyncService.setSyncServiceState",
+      "location": "ab.d",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-17T00:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/57b598a59bd967131b5596807caded55/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Already fixed in 16.0.4: uninjected sync-service shutdown guard."
+    },
+    {
+      "name": "apps/com.newsblur/58c98531d6d211319b449debbaa61345",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "[libart.so] art::ConditionVariable::WaitHoldingLocks",
+      "location": "ANR triggered by main thread waiting for too long",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-19T08:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/58c98531d6d211319b449debbaa61345/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "35"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "annotations": [
+        {
+          "category": "Insight",
+          "title": "Slow app startup",
+          "body": "An ANR was detected during the app startup process. Slow operation during startup can result in ANRs and may be the reason behind this issue.\nImproving startup latency can reduce the occurrences of ANRs. Avoid expensive or blocking operations, such as I/O, which can delay the startup process and result in these ANRs. (https://developer.android.com/topic/performance/anrs/diagnose-and-fix-anrs#example-slow)"
+        }
+      ],
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in framework rendering or class initialization; trace does not identify an app blocking cause."
+    },
+    {
+      "name": "apps/com.newsblur/64599adb533e0c3f501e1dd5a1be0d79",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "[libart.so] art::ConditionVariable::WaitHoldingLocks",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-19T20:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/64599adb533e0c3f501e1dd5a1be0d79/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "annotations": [
+        {
+          "category": "Insight",
+          "title": "Unresponsive GPU",
+          "body": "The main thread is blocked, waiting for the rendering subsystem or the GPU to complete a requested operation. This is usually caused by the slowness of the rendering subsystem, the GPU, or its driver.\n\nThese ANRs are a source of jank, and can be caused by your app sending too much work, or  bugs in the system, kernel, or graphics drivers. These ANRs tend to be device-dependent, and difficult to action without a system trace. (https://developer.android.com/topic/performance/anrs/diagnose-and-fix-anrs#input-dispatch-common-causes)"
+        }
+      ],
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "ANR in framework rendering or class initialization; trace does not identify an app blocking cause."
+    },
+    {
+      "name": "apps/com.newsblur/6ed5fea758f710afed6c8a277a31e8e6",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.service.SyncJobRunner.launchIn",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-16T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/6ed5fea758f710afed6c8a277a31e8e6/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot in coroutine scheduling/cancellation; work already uses IO dispatcher, no slow owner or causal queue evidence."
+    },
+    {
+      "name": "apps/com.newsblur/716f679f8fcf55f95f0dccb2203d6ec5",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.database.BlurDatabase.onOpen",
+      "location": "Executing service com.newsblur/.service.SyncService",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-08T15:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/716f679f8fcf55f95f0dccb2203d6ec5/details",
+      "firstOsVersion": {
+        "apiLevel": "29"
+      },
+      "lastOsVersion": {
+        "apiLevel": "29"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Fixed blocking path: lazy sync-service DB injection (91747b40da)."
+    },
+    {
+      "name": "apps/com.newsblur/720e1ef5df8a5be2bac80d60303c9ef9",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "Native method - android.os.MessageQueue.nativePollOnce",
+      "location": "Root cause for this ANR is unknown",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-12T15:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/720e1ef5df8a5be2bac80d60303c9ef9/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot is idle/empty/framework queue or Binder acknowledgement; blocking cause not established."
+    },
+    {
+      "name": "apps/com.newsblur/79f8a75b58f677ce2fb8c70cdcf1a764",
+      "type": "CRASH",
+      "cause": "Unknown Source - com.newsblur.widget.WidgetRemoteViewsService.onGetViewFactory",
+      "location": "java.lang.IllegalStateException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-10T07:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/79f8a75b58f677ce2fb8c70cdcf1a764/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "35"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Fixed: inert widget factory when Application lacks Hilt; settings preserved (f55f7888f8). Exact system trigger unknown."
+    },
+    {
+      "name": "apps/com.newsblur/7fec5f5265671771f2a8ea115fc627cd",
+      "type": "CRASH",
+      "cause": "androidx.recyclerview.widget.RecyclerView$Recycler.validateViewHolderForOffsetPosition",
+      "location": "java.lang.IndexOutOfBoundsException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-23T13:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/7fec5f5265671771f2a8ea115fc627cd/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "Current RecyclerView position mismatch. Framework-only trace omits item/adapter details; no reproducer established."
+    },
+    {
+      "name": "apps/com.newsblur/89f0577ff17ec10538c844947f26234f",
+      "type": "CRASH",
+      "cause": "chromium-SystemWebViewGoogle.aab-stable-805904300 - org.chromium.base.JniAndroid.handleException",
+      "location": "org.chromium.base.JniAndroid$UncaughtExceptionException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-20T21:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/89f0577ff17ec10538c844947f26234f/details",
+      "firstOsVersion": {
+        "apiLevel": "33"
+      },
+      "lastOsVersion": {
+        "apiLevel": "33"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "Chromium wrapper plus message-free IllegalStateException; no actionable app frame even in additional current-version reports."
+    },
+    {
+      "name": "apps/com.newsblur/8abbe20b44957d80ebcedf9699f89629",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.service.SyncService.requestPrimarySync",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-07T10:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/8abbe20b44957d80ebcedf9699f89629/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot in coroutine scheduling/cancellation; work already uses IO dispatcher, no slow owner or causal queue evidence."
+    },
+    {
+      "name": "apps/com.newsblur/8acc1b31fae488777b43c46513d427f0",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "java.lang.ref.FinalizerReference.add",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-09-26T21:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/8acc1b31fae488777b43c46513d427f0/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in Google scheduling/profile-installation/library initialization; no demonstrated app remedy."
+    },
+    {
+      "name": "apps/com.newsblur/8eba8fbf2e8ab4cf41b4059d436f8dfe",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader.upload",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-09-26T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/8eba8fbf2e8ab4cf41b4059d436f8dfe/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in Google scheduling/profile-installation/library initialization; no demonstrated app remedy."
+    },
+    {
+      "name": "apps/com.newsblur/964aac80238fdc5a02a71d5ebdc5c362",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "android.view.ViewRootImpl.postTraversalBarrier",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-08T00:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/964aac80238fdc5a02a71d5ebdc5c362/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in framework rendering or class initialization; trace does not identify an app blocking cause."
+    },
+    {
+      "name": "apps/com.newsblur/a409aefeac3455efce15da992adc5583",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "java.util.concurrent.LinkedBlockingQueue.offer",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-09T10:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/a409aefeac3455efce15da992adc5583/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in Google scheduling/profile-installation/library initialization; no demonstrated app remedy."
+    },
+    {
+      "name": "apps/com.newsblur/af3a8d7159dac481d818a2b060372f62",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.subscription.SubscriptionManagerImpl.<init>",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-09-27T05:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/af3a8d7159dac481d818a2b060372f62/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Fixed blocking path: billing construction on worker (1118645610)."
+    },
+    {
+      "name": "apps/com.newsblur/bfe268bea228839f2eb489404d1886a8",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "android.os.BinderProxy.updateStrictModeBinderHintsIfNeeded",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-14T16:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/bfe268bea228839f2eb489404d1886a8/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "291"
+      },
+      "lastAppVersion": {
+        "versionCode": "291"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR snapshot is idle/empty/framework queue or Binder acknowledgement; blocking cause not established."
+    },
+    {
+      "name": "apps/com.newsblur/c939e67bfa2096dc5b32b7cd4103b0b6",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.google.android.material.shape.ShapeAppearancePathProvider.pathOverlapsCorner",
+      "location": "Input dispatching timed out",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-19T04:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/c939e67bfa2096dc5b32b7cd4103b0b6/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "ANR in framework rendering or class initialization; trace does not identify an app blocking cause."
+    },
+    {
+      "name": "apps/com.newsblur/cc9b1929694f079143e39ca239240dbe",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.newsblur.util.Log.offerContext",
+      "location": "ANR triggered by slow IO operations",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-04T19:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/cc9b1929694f079143e39ca239240dbe/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Fixed blocking path: log cache discovery on worker (21794e5875)."
+    },
+    {
+      "name": "apps/com.newsblur/dd09a9ad900ed814391b85b5b914c8b5",
+      "type": "CRASH",
+      "cause": "com.newsblur.database.BlurDatabaseHelper.getFeed",
+      "location": "java.lang.IllegalArgumentException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-24T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/dd09a9ad900ed814391b85b5b914c8b5/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "296"
+      },
+      "lastAppVersion": {
+        "versionCode": "296"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 1,
+      "disposition": "Fixed: one-feed folders use folder discovery; null DB lookup is safe (1417de7b88)."
+    },
+    {
+      "name": "apps/com.newsblur/df913b7f3a89535a01dda050897e7a51",
+      "type": "CRASH",
+      "cause": "[libadreno_app_profiles.so] !!!0000!eeb2e2b9905b83743e65dfbecf2d52!923a446bf8!",
+      "location": "SIGABRT",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-02T16:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/df913b7f3a89535a01dda050897e7a51/details",
+      "firstOsVersion": {
+        "apiLevel": "35"
+      },
+      "lastOsVersion": {
+        "apiLevel": "35"
+      },
+      "firstAppVersion": {
+        "versionCode": "283"
+      },
+      "lastAppVersion": {
+        "versionCode": "283"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Native graphics/runtime abort or signal; available stack does not establish an application fix."
+    },
+    {
+      "name": "apps/com.newsblur/f3531d2627e643f125e3a074470f8741",
+      "type": "CRASH",
+      "cause": "chromium-SystemWebViewGoogle6432.aab-beta-807800413 - org.chromium.base.JniAndroid.handleException",
+      "location": "org.chromium.base.JniAndroid$UncaughtExceptionException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-08T23:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/f3531d2627e643f125e3a074470f8741/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Chromium wrapper plus message-free IllegalStateException; no actionable app frame even in additional current-version reports."
+    },
+    {
+      "name": "apps/com.newsblur/fb0ea6aa66f0c30cc4a0f667da266b30",
+      "type": "APPLICATION_NOT_RESPONDING",
+      "cause": "com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig$Flag.<clinit>",
+      "location": "ANR triggered by slow operations in main thread",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-01T14:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/fb0ea6aa66f0c30cc4a0f667da266b30/details",
+      "firstOsVersion": {
+        "apiLevel": "37"
+      },
+      "lastOsVersion": {
+        "apiLevel": "37"
+      },
+      "firstAppVersion": {
+        "versionCode": "289"
+      },
+      "lastAppVersion": {
+        "versionCode": "289"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "ANR in Google scheduling/profile-installation/library initialization; no demonstrated app remedy."
+    },
+    {
+      "name": "apps/com.newsblur/fb9ced30f5b933f7b998e6d96f5630d3",
+      "type": "CRASH",
+      "cause": "Unknown Source - i5.b1.l",
+      "location": "java.lang.IndexOutOfBoundsException",
+      "errorReportCount": "1",
+      "distinctUsers": "1",
+      "lastErrorReportTime": "2026-10-04T21:00:00Z",
+      "issueUri": "https://play.google.com/console/developers/6280481402178293168/app/4972990522498280751/vitals/crashes/fb9ced30f5b933f7b998e6d96f5630d3/details",
+      "firstOsVersion": {
+        "apiLevel": "36"
+      },
+      "lastOsVersion": {
+        "apiLevel": "36"
+      },
+      "firstAppVersion": {
+        "versionCode": "290"
+      },
+      "lastAppVersion": {
+        "versionCode": "290"
+      },
+      "distinctUsersPercent": {
+        "value": "0.3584"
+      },
+      "latestVersionEvents": 0,
+      "disposition": "Older RecyclerView report. Known preview-row mismatch was fixed in v291; stripped sample cannot prove every occurrence had that cause."
+    }
+  ],
+  "validation": {
+    "unitTests": {
+      "tests": 909,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "debugApk": "built",
+    "storecaptureApk": "built",
+    "publication": "Source commits only; no push, version bump, upload, submission, or deployment.",
+    "fdroid": "compileDebugUnitTestKotlin passed with -Pfdroid; not an executed F-Droid test suite",
+    "nativePluralChecks": {
+      "cases": 315,
+      "languages": 21,
+      "result": "passed against installed APK resources"
+    },
+    "device": {
+      "model": "Samsung Galaxy Tab A8 SM-X200",
+      "android": "14",
+      "finalDebugInstalled": true,
+      "loginPreserved": true,
+      "checks": [
+        "feed sync",
+        "article reading",
+        "back navigation",
+        "light theme",
+        "dark theme",
+        "black theme",
+        "Arabic RTL in isolated fixture",
+        "Hebrew RTL in isolated fixture",
+        "sepia theme"
+      ],
+      "finalTheme": "light"
+    }
+  }
+}

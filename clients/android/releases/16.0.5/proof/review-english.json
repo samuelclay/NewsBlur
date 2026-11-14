@@ -1,0 +1,90 @@
+{
+  "version": "16.0.5",
+  "platform": "android",
+  "language": "en",
+  "reviewedAt": "2026-10-25T19:23:06Z",
+  "reviewer": "independent translate_asia agent; English authored by coordinator",
+  "status": "passed",
+  "files": [
+    {
+      "path": "clients/store/metadata/en.json",
+      "sha256": "2e0a3d9ff15dcfb7f79afdc51c1ff09200687bb3c708fc29b31bbc1ff1b37362"
+    },
+    {
+      "path": "clients/store/products/en.json",
+      "sha256": "f5de547dd5a9f1b0b693ce8631055d2adc3111fa6ea39667cee474d6870ef598"
+    },
+    {
+      "path": "clients/store/releases/16.0.5/en.json",
+      "sha256": "a3536e9f69b283963c2300ea9aad8dcadb6d54658d3145f0cb5063b5ff15cbf6"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "clients/android/Performance/play-crash-audit-2026-10-25.md",
+      "sha256": "780ac53cd2af58436cf039396f55b0d72b54779dcf1d6a0f082bf1577375be55"
+    },
+    {
+      "path": "clients/android/releases/16.0.5/proof/play-before.json",
+      "sha256": "20e076d9f4a4e72f8ca4dcb815e0f2ab092ae4919a711454380ff136895ea98b"
+    }
+  ],
+  "checks": {
+    "releaseClaimsMatchCrashAudit": true,
+    "tabletClaimDoesNotIdentifyEmailSender": true,
+    "noClaimAllCrashesFixed": true,
+    "noClaimProductionImpactMeasured": true,
+    "listingClaimsPreservedFromExistingCopy": true,
+    "productIdsMatchLiveInventory": true,
+    "productTitlesAndBenefitsMatchLiveInventory": true,
+    "productDescriptionsPreserveExistingEntitlements": true,
+    "noInventedPricesOffersOrBillingPeriods": true,
+    "urlsPreserved": true,
+    "allTextWithinConfiguredLimits": true
+  },
+  "lengths": {
+    "listing": {
+      "title": 25,
+      "short_description": 75,
+      "full_description": 1545
+    },
+    "releaseNotes": 277,
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": 29,
+        "description": 103,
+        "benefits": [
+          30,
+          19,
+          22,
+          19
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": 37,
+        "description": 128,
+        "benefits": [
+          21,
+          27,
+          31,
+          34
+        ]
+      }
+    }
+  },
+  "findings": [],
+  "sourceChanges": [],
+  "subscriptionApiReference": {
+    "url": "https://developers.google.com/android-publisher/api-ref/rest/v3/monetization.subscriptions#SubscriptionListing",
+    "verified": "2026-10-25",
+    "confirmedDescriptionMax": 200,
+    "confirmedBenefitCountMax": 4
+  },
+  "subscriptionConsoleReference": {
+    "url": "https://support.google.com/googleplay/android-developer/answer/140504?hl=en-en",
+    "verified": "2026-10-25",
+    "confirmedTitleMax": 55,
+    "confirmedBenefitMax": 40,
+    "confirmedBenefitCountMax": 4
+  }
+}

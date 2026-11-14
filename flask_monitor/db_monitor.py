@@ -23,6 +23,57 @@ app = Flask(__name__)
 PRIMARY_STATE = 1
 SECONDARY_STATE = 2
 
+# Health checks hit these endpoints every few seconds, forever. Building a new
+# MongoClient/Redis/Elasticsearch per request churned through allocations across
+# the dev server's per-request threads, which glibc never returns to the OS: on
+# hdb-mongo-secondary-3 this monitor reached 4.5GB RSS in three weeks (a fresh
+# process is ~105MB) and helped OOM the box. These drivers are all designed to
+# be long-lived singletons that reconnect internally, so build each one once.
+#
+# Postgres and MySQL are deliberately left per-request below: a raw psycopg2 or
+# pymysql connection does not transparently reconnect, so a cached one that went
+# stale would report a healthy database as down.
+_mongo_client = None
+_mongo_analytics_client = None
+_elasticsearch_client = None
+_redis_clients = {}
+
+
+def get_mongo_client():
+    global _mongo_client
+    if _mongo_client is None:
+        _mongo_client = pymongo.MongoClient(
+            f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}.node.nyc1.consul/?authSource=admin"
+        )
+    return _mongo_client
+
+
+def get_mongo_analytics_client():
+    global _mongo_analytics_client
+    if _mongo_analytics_client is None:
+        # db_monitor.py runs on the Mongo host itself. The analytics sidecar
+        # publishes container port 27017 on host port 27018.
+        _mongo_analytics_client = pymongo.MongoClient(
+            f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@127.0.0.1:27018/?authSource=admin"
+        )
+    return _mongo_analytics_client
+
+
+def get_elasticsearch_client():
+    global _elasticsearch_client
+    if _elasticsearch_client is None:
+        _elasticsearch_client = elasticsearch.Elasticsearch(
+            f"http://{settings.SERVER_NAME}.node.nyc1.consul:9200"
+        )
+    return _elasticsearch_client
+
+
+def get_redis_client(port, db):
+    key = (port, db)
+    if key not in _redis_clients:
+        _redis_clients[key] = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=db)
+    return _redis_clients[key]
+
 
 @app.route("/db_check/postgres")
 def db_check_postgres():
@@ -87,11 +138,8 @@ def db_check_mongo():
         return str(1)
 
     # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
-    client = None
     try:
-        client = pymongo.MongoClient(
-            f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}.node.nyc1.consul/?authSource=admin"
-        )
+        client = get_mongo_client()
         db = client.newsblur
 
         stories = db.stories.estimated_document_count()
@@ -127,11 +175,11 @@ def db_check_mongo():
         if "Authentication failed" in str(e):
             abort(Response("Auth failed", 506))
         abort(Response("Operation Failure", 507))
+    except HTTPException:
+        # abort() above raises HTTPException; don't mask it as a generic 508.
+        raise
     except Exception as e:
         abort(Response(f"Error checking replica status: {str(e)}", 508))
-    finally:
-        if client:
-            client.close()
 
 
 @app.route("/db_check/mongo_analytics")
@@ -139,14 +187,8 @@ def db_check_mongo_analytics():
     if request.args.get("consul") == "1":
         return str(1)
 
-    client = None
     try:
-        # db_monitor.py runs on the Mongo host itself. The analytics sidecar
-        # publishes container port 27017 on host port 27018.
-        analytics_host = "127.0.0.1:27018"
-        client = pymongo.MongoClient(
-            f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{analytics_host}/?authSource=admin"
-        )
+        client = get_mongo_analytics_client()
         db = client.nbanalytics
 
         fetches = db.feed_fetches.estimated_document_count()
@@ -167,9 +209,6 @@ def db_check_mongo_analytics():
         raise
     except Exception as e:
         abort(Response(f"Error checking analytics: {str(e)}", 507))
-    finally:
-        if client:
-            client.close()
 
 
 @app.route("/db_check/redis_user")
@@ -178,16 +217,11 @@ def db_check_redis_user():
         return str(1)
 
     port = request.args.get("port", settings.REDIS_USER_PORT)
-    r = None
 
     try:
-        r = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=0)
-        randkey = r.randomkey()
+        randkey = get_redis_client(port, 0).randomkey()
     except:
         abort(Response("Can't connect to db", 503))
-    finally:
-        if r:
-            r.close()
 
     if randkey:
         return str(randkey)
@@ -201,16 +235,11 @@ def db_check_redis_story():
         return str(1)
 
     port = request.args.get("port", settings.REDIS_STORY_PORT)
-    r = None
 
     try:
-        r = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=1)
-        randkey = r.randomkey()
+        randkey = get_redis_client(port, 1).randomkey()
     except:
         abort(Response("Can't connect to db", 503))
-    finally:
-        if r:
-            r.close()
 
     if randkey:
         return str(randkey)
@@ -224,16 +253,11 @@ def db_check_redis_sessions():
         return str(1)
 
     port = request.args.get("port", settings.REDIS_SESSION_PORT)
-    r = None
 
     try:
-        r = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=5)
-        randkey = r.randomkey()
+        randkey = get_redis_client(port, 5).randomkey()
     except:
         abort(Response("Can't connect to db", 503))
-    finally:
-        if r:
-            r.close()
 
     if randkey:
         return str(randkey)
@@ -247,16 +271,11 @@ def db_check_redis_pubsub():
         return str(1)
 
     port = request.args.get("port", settings.REDIS_PUBSUB_PORT)
-    r = None
 
     try:
-        r = redis.Redis(f"{settings.SERVER_NAME}.node.nyc1.consul", port=port, db=1)
-        pubsub_numpat = r.pubsub_numpat()
+        pubsub_numpat = get_redis_client(port, 1).pubsub_numpat()
     except:
         abort(Response("Can't connect to db", 503))
-    finally:
-        if r:
-            r.close()
 
     if pubsub_numpat or isinstance(pubsub_numpat, int):
         return str(pubsub_numpat)
@@ -269,18 +288,17 @@ def db_check_elasticsearch():
     if request.args.get("consul") == "1":
         return str(1)
 
-    conn = None
     try:
-        conn = elasticsearch.Elasticsearch(f"http://{settings.SERVER_NAME}.node.nyc1.consul:9200")
+        conn = get_elasticsearch_client()
         if conn.indices.exists(index="discover-feeds-openai-index"):
             return str("Index exists, but didn't try search")
         else:
             abort(Response("Couldn't find discover-feeds-openai-index", 504))
+    except HTTPException:
+        # abort() above raises HTTPException; don't report a healthy ES as down.
+        raise
     except:
         abort(Response("Can't connect to db", 503))
-    finally:
-        if conn:
-            conn.close()
 
 
 if __name__ == "__main__":

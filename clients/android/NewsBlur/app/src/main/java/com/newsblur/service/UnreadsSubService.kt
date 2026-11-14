@@ -4,12 +4,16 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.Log
 import com.newsblur.util.StoryOrder
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import java.math.BigDecimal
 import java.util.Collections
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.function.BiPredicate
+import java.util.function.Predicate
 
 class UnreadsSubService(
     delegate: SyncServiceDelegate,
@@ -26,7 +30,13 @@ class UnreadsSubService(
                 setServiceState(ServiceState.UnreadsSync)
 
                 if (doMeta.getAndSet(false)) {
-                    syncUnreadList()
+                    try {
+                        syncUnreadList()
+                    } catch (e: CancellationException) {
+                        // UnreadsSubService.kt retries metadata consumed by a canceled generation.
+                        doMeta.set(true)
+                        throw e
+                    }
                 }
 
                 ensureActive()
@@ -42,15 +52,22 @@ class UnreadsSubService(
     private suspend fun syncUnreadList() {
         currentCoroutineContext().ensureActive()
         // get unread hashes and dates from the API
+        val requestStartedAt = System.currentTimeMillis()
         val unreadHashes = storyApi.getUnreadStoryHashes()
 
         currentCoroutineContext().ensureActive()
+        if (unreadHashes.isError() || !unreadHashes.authenticated || unreadHashes.unreadHashes == null) {
+            Log.w(this, "Ignoring unusable unread-hash response")
+            return
+        }
 
         // get all the stories we thought were unread before. we should not enqueue a fetch of
         // stories we already have.  also, if any existing unreads fail to appear in
         // the set of unreads from the API, we will mark them as read. note that this collection
         // will be searched many times for new unreads, so it should be a Set, not a List.
-        val oldUnreadHashes = dbHelper.getUnreadStoryHashesAsSet()
+        val oldUnreadTimestamps = dbHelper.getUnreadStoryTimestamps()
+        val oldUnreadHashes = oldUnreadTimestamps.keys.toMutableSet()
+        val activeFeedIds = dbHelper.getAllActiveFeeds()
         Log.i(this, "starting unread count: " + oldUnreadHashes.size)
 
         // a place to store and then sort unread hashes we aim to fetch. note the member format
@@ -61,6 +78,7 @@ class UnreadsSubService(
         // process the api response, both bookkeeping no-longer-unread stories and populating
         // the sortation list we will use to create the fetch list for step two
         var count = 0
+        val serverUnreadHashes = mutableListOf<String>()
         feedLoop@ for (entry in unreadHashes.unreadHashes.entries) {
             // the API gives us a list of unreads, split up by feed ID. the unreads are tuples of
             // story hash and date
@@ -70,22 +88,41 @@ class UnreadsSubService(
             // ignore unreads from disabled feeds
             if (delegate.isDisabledFeed(feedId)) continue@feedLoop
             for (newUnread in entry.value) {
+                val hash = newUnread.firstOrNull()?.takeIf { it.isNotBlank() } ?: continue
+                serverUnreadHashes.add(hash)
                 // only fetch the reported unreads if we don't already have them
-                if (!oldUnreadHashes.contains(newUnread[0])) {
-                    sortationList.add(newUnread)
+                if (!oldUnreadHashes.contains(hash)) {
+                    if (newUnread.size > 1) sortationList.add(newUnread)
                 } else {
-                    oldUnreadHashes.remove(newUnread[0])
+                    oldUnreadHashes.remove(hash)
                 }
                 count++
             }
         }
         Log.i(this, "new unread count: $count")
+        // ClusterReadStore.kt also retires embedded children, whose feeds may be absent from this response.
+        val canRetireFeed = Predicate<String> { feedId ->
+            feedId in activeFeedIds && !delegate.isOrphanFeed(feedId) && !delegate.isDisabledFeed(feedId)
+        }
+        val cappedFeedCutoffs = unreadHashes.unreadHashes
+            .filterValues { it.size >= SERVER_UNREAD_HASH_LIMIT }
+            .mapValues { (_, tuples) -> oldestReturnedTimestampMillis(tuples) }
+        val canRetireTimestamp = BiPredicate<String, Long> { feedId, timestamp ->
+            feedId !in cappedFeedCutoffs || cappedFeedCutoffs[feedId]?.let { timestamp.toBigDecimal() > it } == true
+        }
+        dbHelper.reconcileServerUnreadHashes(serverUnreadHashes, requestStartedAt, canRetireFeed, canRetireTimestamp)
+        // BlurDatabaseHelper.java also propagates standalone retirement to every embedded copy.
+        oldUnreadHashes.removeAll { hash ->
+            val feedId = inferFeedId(hash)
+            feedId == null || !canRetireFeed.test(feedId) ||
+                !canRetireTimestamp.test(feedId, oldUnreadTimestamps.getValue(hash))
+        }
         Log.i(this, "new unreads found: ${sortationList.size}")
         Log.i(this, "unreads to retire: ${oldUnreadHashes.size}")
 
         // any stories that we previously thought to be unread but were not found in the
         // list, mark them read now
-        dbHelper.markStoryHashesRead(oldUnreadHashes)
+        dbHelper.markStoryHashesRead(oldUnreadHashes, requestStartedAt)
 
         currentCoroutineContext().ensureActive()
 
@@ -141,6 +178,7 @@ class UnreadsSubService(
 
             currentCoroutineContext().ensureActive()
             val response = storyApi.getStoriesByHash(hashBatch)
+            currentCoroutineContext().ensureActive()
             if (!SyncServiceUtil.isStoryResponseGood(response)) {
                 Log.e(this, "error fetching unreads batch, abandoning sync.")
                 break@unreadSyncLoop
@@ -163,7 +201,25 @@ class UnreadsSubService(
         doMeta.set(true)
     }
 
+    private fun oldestReturnedTimestampMillis(tuples: List<Array<String>>): BigDecimal? {
+        var oldest: BigDecimal? = null
+        val maximumSeconds = Long.MAX_VALUE.toBigDecimal().movePointLeft(3)
+        for (tuple in tuples) {
+            val seconds = tuple.getOrNull(1)?.toBigDecimalOrNull()
+            if (seconds == null || seconds.signum() <= 0 || seconds > maximumSeconds) return null
+            val milliseconds = seconds.movePointRight(3)
+            oldest = oldest?.min(milliseconds) ?: milliseconds
+        }
+        return oldest
+    }
+
     companion object {
+        // apps/reader/views.py uses the apps/reader/models.py story_hashes default of 500 per feed.
+        // Lowering that server default requires updating this limit first, or omitted unreads can retire.
+        // apps/reader/views.py unread_story_hashes does not accept a client-supplied limit parameter.
+        // Capped responses establish absence only strictly newer than their oldest timestamp; ties may be truncated.
+        private const val SERVER_UNREAD_HASH_LIMIT = 500
+
         /** Unread story hashes the API listed that we do not appear to have locally yet.  */
         var storyHashQueue = ConcurrentLinkedQueue<String>()
 

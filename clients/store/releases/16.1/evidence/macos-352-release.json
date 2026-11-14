@@ -1,0 +1,60 @@
+{
+  "version": "16.1",
+  "build": "352",
+  "platform": "macOS",
+  "source_base_commit": "ff18b7f34347f00e86657f2da34c473d66866d61",
+  "source_status": "Committed after submission; recorded source-file hashes match the submitted archive",
+  "source_patch": "/tmp/newsblur-mac-16.1-352-source.patch",
+  "source_patch_sha256": "be39b94af9699ed433d353b474d9848412cb2748841fa15d5d8f1766d85c8a8c",
+  "source_files_sha256": {
+    "clients/ios/Classes/NewsBlurAppDelegate.m": "e0613ee570bb09b2c06c9e1412c679c4bfc597ba3983cb202697f38f64e5d47f",
+    "clients/ios/Classes/SceneDelegate.swift": "53ad3cd8f0ae0caa631e9cd305bf477bc02f8731075986b6ced6a50822d1fe60",
+    "clients/ios/NewsBlurTests/NotificationNavigationTests.swift": "8dfd446273605a67f390e92acb2e0b7f8858d6b04d16a9899891b82e7e63b5e3",
+    "clients/ios/NewsBlurTests/StoryFirstPageLoadingTests.swift": "a5ed77b01cd0b70d29f8db23587cfc7e540f4a0c86ae2098bd86c29b8cc84446"
+  },
+  "toolchain": "Xcode 27.0 (27A266a)",
+  "archive": "/tmp/NewsBlur-Mac-16.1-352.xcarchive",
+  "build_overrides": {
+    "MARKETING_VERSION": "16.1",
+    "CURRENT_PROJECT_VERSION": "352"
+  },
+  "architectures": [
+    "arm64",
+    "x86_64"
+  ],
+  "archive_validation": "Succeeded; app and both extensions 16.1 (352); codesign deep strict verification passed",
+  "app_executable_sha256": "a2164a0c4f86055113c2d585909ec41fa80c8bbe947503c9037cf307bbfd66e2",
+  "validation": {
+    "mac_tests": 93,
+    "ios_tests": 80,
+    "failures": 0,
+    "store_locales": 21,
+    "store_fields": 294,
+    "metadata_readback": "Exact match for all version, shared app-info and subscription/group localized fields",
+    "screenshots": "5 inherited Mac screenshots match original order and content",
+    "store_export_tests": "12 tests, 85 assertions, 0 failures"
+  },
+  "app_store_version_id": "0b8d4ebe-56b7-4d05-a00d-873b8571a933",
+  "app_store_version": "16.1",
+  "state": "WAITING_FOR_REVIEW",
+  "automatic_release": true,
+  "phased_release": false,
+  "uploaded": true,
+  "submitted": true,
+  "archive_log": "/tmp/newsblur-mac-16.1-352-archive.log",
+  "previous_upload_attempts": [
+    "/tmp/newsblur-mac-352-upload.log",
+    "/tmp/newsblur-mac-352-upload-api.log"
+  ],
+  "updated_at": "2026-10-29T19:35:23Z",
+  "processing": "Complete",
+  "upload_log": "/tmp/newsblur-mac-16.1-352-upload.log",
+  "uploaded_at": "2026-10-29T12:24:25-07:00",
+  "build_id": "c439a04c-8cc1-46cd-a69f-b038ada0ef54",
+  "attached": true,
+  "submission_id": "2212308d-b596-4c52-bac7-178be1d0f988",
+  "submitted_at": "2026-10-29T19:35:06.545Z",
+  "submission_url": "https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/2212308d-b596-4c52-bac7-178be1d0f988",
+  "publicly_available": false,
+  "source_commit": "eb315c0a263210eca5f407d2b9e03b8075e9a269"
+}

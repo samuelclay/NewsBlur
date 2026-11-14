@@ -1,0 +1,30 @@
+{
+  "language": "id",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:18:18Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Indonesian captions fit with complete words and legible labels.",
+    "Native Indonesian search/source/filter/date controls visible; all cooking photos and article content loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-id-duo-inner-2853x2007-01.png",
+      "sha256": "bb462557be64577d4966384b878a1e21a2c01423ca92c829645145d77eeb6152"
+    },
+    {
+      "filename": "newsblur-16.0.1-id-duo-inner-2853x2007-02.png",
+      "sha256": "de265260faaca66294b3ecf9afd6a570f514d6d7c7ac19bf2810e7b76a446971"
+    },
+    {
+      "filename": "newsblur-16.0.1-id-duo-inner-2853x2007-03.png",
+      "sha256": "edd2e16c7a10ab6cc8918ad0f564a56d409d939e57a15a2ac83377716b069a37"
+    },
+    {
+      "filename": "newsblur-16.0.1-id-duo-inner-2853x2007-04.png",
+      "sha256": "c62366e6bb6b93f6a5d8248e51ebe2080a9caf8d3681fd4c4d12d2b7f582d0ca"
+    }
+  ],
+  "contact_sha256": "480ba44fa6a42bc744e23e5b90e4766ace00a2904eb68e6cd4de28dac86dbf86"
+}

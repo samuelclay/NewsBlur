@@ -1,0 +1,43 @@
+{
+  "reviewed_at": "2026-10-17T15:45:47Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/it/featureGraphic/panel-01.png",
+      "sha256": "ea35ac7dc9c9833e85c73e8e1814826b00f90f9c3847f1c2025de3cb08b433a2",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/it/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "review": "identical to inspected English icon"
+    },
+    {
+      "path": "exports/it/phoneScreenshots/panel-01.png",
+      "sha256": "0a02e790f67aec8fe642625470bbe41f1c13be98b80b7ddcc6aac23b8aec7f85",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/it/phoneScreenshots/panel-02.png",
+      "sha256": "221a7d70b2db7be6414d40f2cf21889e4403bdc297fb6f7e965b999901526fc0",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/it/phoneScreenshots/panel-03.png",
+      "sha256": "872869bee7891f9b9640f599ff436f6dd30db041735a1ebf21c1611d64550006",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/it/phoneScreenshots/panel-04.png",
+      "sha256": "f2328ccaa6e25da7aafe3bbd73f2d3a5ee4c9e627b2034a75cd75dbfb0758ca8",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Italian feature and all four phone captions preserve the approved English meaning and fit cleanly.",
+    "Native Italian titles, search, saved state, date, tag action and Next control are visible with genuine Android interface.",
+    "Fictional feed names and original story prose intentionally remain English."
+  ],
+  "scope": "Phone and feature stills only"
+}

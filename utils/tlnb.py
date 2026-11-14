@@ -9,8 +9,6 @@ import subprocess
 import sys
 import time
 
-from requests.exceptions import ConnectionError
-
 sys.path.insert(0, "/srv/newsblur")
 os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 
@@ -34,7 +32,11 @@ tail -n20000 logs/newsblur.log \
 def main(hostnames=None, roles=None, command=None, path=None):
     delay = 1
 
-    hosts = subprocess.check_output(["ansible-inventory", "--list"])
+    # ansible-inventory only finds ansible.cfg in the current directory, so point it at the repo's
+    # config (ansible.cfg) and let tlnb run from anywhere.
+    env = dict(os.environ)
+    env.setdefault("ANSIBLE_CONFIG", "/srv/newsblur/ansible.cfg")
+    hosts = subprocess.check_output(["ansible-inventory", "--list"], env=env)
     if not hosts:
         print(" ***> Could not load ansible-inventory!")
         return

@@ -1,0 +1,23 @@
+# Recording rules for the request volume panels in
+# docker/grafana/dashboards/newsblur_dashboard.json (panels 101, 323, 324, 325).
+#
+# Those panels aggregate rate() over the raw per-instance
+# django_http_responses_total_by_status_view_method_total counter, which fans out to
+# thousands of series (status x view x method x app server). Computed at query time
+# that took ~12s per panel per 30-day window; these rules materialize the two
+# aggregations the panels actually chart, so each panel reads a few hundred
+# precomputed series instead. The panels reconstruct longer windows with
+# avg_over_time() over these 2m rates, which is equivalent to rate() over the longer
+# window for ranking and thresholds.
+#
+# Mounted into the prometheus container by ansible/roles/prometheus/tasks/main.yml.
+groups:
+    - name: django_request_panels
+      interval: 30s
+      rules:
+          - record: view_method:django_requests:rate2m
+            expr: |
+                sum by (method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~"apps\\.static\\.views\\.haproxy_check|<unnamed view>|utils\\.view_functions\\.wrapper|utils\\.user_functions\\.wrap"}[2m]))
+          - record: status_view_method:django_errors:rate2m
+            expr: |
+                sum by (status, method, view) (rate(django_http_responses_total_by_status_view_method_total{view!~"apps\\.static\\.views\\.haproxy_check|<unnamed view>|utils\\.view_functions\\.wrapper|utils\\.user_functions\\.wrap", status=~"4..|5.."}[2m]))

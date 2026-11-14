@@ -1,0 +1,78 @@
+{
+  "packageName": "com.newsblur",
+  "capturedAt": "2026-10-17T22:05:57.089260+00:00",
+  "operation": "Fresh edit created solely for GET/list verification; never committed or modified.",
+  "readOnlyEdit": {
+    "id": "13801544904542078133",
+    "expiryTimeSeconds": "1792281956"
+  },
+  "productionTrackReleases": [
+    {
+      "name": "16.0.2",
+      "versionCodes": [
+        "294"
+      ],
+      "status": "completed",
+      "userFraction": null
+    }
+  ],
+  "release294": {
+    "releaseName": "16.0.2",
+    "versionCodes": [
+      "294"
+    ],
+    "apiStatus": "completed",
+    "userFraction": null,
+    "releaseNotesCount": 21,
+    "locales": [
+      "ar",
+      "de-DE",
+      "en-US",
+      "es-ES",
+      "fr-FR",
+      "hi-IN",
+      "id",
+      "it-IT",
+      "iw-IL",
+      "ja-JP",
+      "ko-KR",
+      "nl-NL",
+      "pl-PL",
+      "pt-BR",
+      "ru-RU",
+      "th",
+      "tr-TR",
+      "uk",
+      "vi",
+      "zh-CN",
+      "zh-TW"
+    ],
+    "notesMatchCanonical": true
+  },
+  "bundle294": {
+    "expectedSha256": "0681fe0764c8ead5d9022acca9029c6b28cb3fb762ff86adf80ef404b2af8be3",
+    "apiBundle": {
+      "versionCode": 294,
+      "sha1": "48b2bf4c4f1516290c9d2f80c4f1aa348dc048f9",
+      "sha256": "0681fe0764c8ead5d9022acca9029c6b28cb3fb762ff86adf80ef404b2af8be3"
+    },
+    "sha256Matches": true
+  },
+  "availableBundleVersionCodes": [
+    196,
+    283,
+    285,
+    286,
+    287,
+    288,
+    289,
+    290,
+    291,
+    292,
+    293,
+    294
+  ],
+  "publicationSemantics": "API release status records the requested track rollout configuration. Browser Console separately shows Changes in review and quick checks running; this is submitted for review, not proof of public availability. Managed publishing is off per browser verification.",
+  "mismatches": [],
+  "passed": true
+}

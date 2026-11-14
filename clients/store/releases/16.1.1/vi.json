@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Nghe giờ dễ điều khiển hơn. Bắt đầu nghe từ thanh công cụ đọc và chuyển bài bằng nút Bài viết tiếp theo trên trình phát thu nhỏ.\n\nTự động phát tiếp nay theo thứ tự sắp xếp bạn chọn trong Bài viết đã lưu và Bài viết đã đọc, kể cả cũ nhất trước. Phát tiếp xuống danh sách mà không quay lại các bài trước đó.\n\nNghe chỉ đọc tiêu đề một lần nếu tiêu đề được lặp lại ở đầu bài viết.\n\nHạn mức nghe nay tính theo tuần: 1 giờ với Premium Archive và 10 giờ với Premium Pro, đặt lại mỗi Chủ nhật. Cài đặt và Đang phát hiển thị thời gian còn lại bằng giờ và phút."
+  },
+  "macos": {
+    "whats_new": "Nghe giờ dễ điều khiển hơn. Chuyển bài bằng nút Bài viết tiếp theo trên trình phát thu nhỏ.\n\nTự động phát tiếp nay theo thứ tự sắp xếp bạn chọn trong Bài viết đã lưu và Bài viết đã đọc, kể cả cũ nhất trước. Phát tiếp xuống danh sách mà không quay lại các bài trước đó.\n\nNghe chỉ đọc tiêu đề một lần nếu tiêu đề được lặp lại ở đầu bài viết.\n\nHạn mức nghe nay tính theo tuần: 1 giờ với Premium Archive và 10 giờ với Premium Pro, đặt lại mỗi Chủ nhật. Cài đặt và Đang phát hiển thị thời gian còn lại bằng giờ và phút."
+  },
+  "android": {
+    "release_notes": "Cải tiến Nghe: bắt đầu từ thanh công cụ đọc và chuyển bài bằng nút Bài viết tiếp theo trên trình phát thu nhỏ. Tự động phát tiếp xuống danh sách theo thứ tự bạn chọn trong Bài viết đã lưu và Bài viết đã đọc. Tiêu đề lặp lại chỉ được đọc một lần. Mỗi tuần: 1 giờ với Premium Archive, 10 giờ với Premium Pro, đặt lại Chủ nhật. Cài đặt hiển thị giờ và phút còn lại."
+  }
+}

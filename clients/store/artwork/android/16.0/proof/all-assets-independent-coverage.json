@@ -1,0 +1,1795 @@
+{
+  "checked_at": "2026-10-17T17:16:19Z",
+  "status": "passed",
+  "manifest_sha256": "908c535d4d7f260a2b5cc91511f5097f8f8bec5ed10fdfc53c927c6602fc2e95",
+  "asset_count": 294,
+  "languages": [
+    "ar",
+    "de",
+    "en",
+    "es",
+    "fr",
+    "he",
+    "hi",
+    "id",
+    "it",
+    "ja",
+    "ko",
+    "nl",
+    "pl",
+    "pt-BR",
+    "ru",
+    "th",
+    "tr",
+    "uk",
+    "vi",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "assets": [
+    {
+      "path": "exports/ar/featureGraphic/panel-01.png",
+      "sha256": "d710126a36fd9e7d126415952eb6c7381ff8be9a188150ecc557b4d3be7b590c",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/ar/phoneScreenshots/panel-01.png",
+      "sha256": "7a4d2918c889c3ef4b1cb9e5ff4cfd03105a2c6aaec21158692a81cc9838c5b8",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/phoneScreenshots/panel-02.png",
+      "sha256": "824778e1557d334f7d3784f94eb08343ee94c7b43126f4ca666bbb5f5c127101",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/phoneScreenshots/panel-03.png",
+      "sha256": "45320321b1135944710610f13d01a9227991e1bc4324c489ca15735a17b7a45c",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/phoneScreenshots/panel-04.png",
+      "sha256": "ae28e39e3b479b56784a24a1d12e04284a4f0ce746484799346c397c4abbf49a",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-01.png",
+      "sha256": "669c17bc7f04800ae7d474394117a84f82670ff491a77bee181cea4bc36b3904",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-02.png",
+      "sha256": "4f3ed242236bd83201287f3c2d303284180facfe96e236b4100ba1f5f1723982",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-03.png",
+      "sha256": "669c17bc7f04800ae7d474394117a84f82670ff491a77bee181cea4bc36b3904",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-04.png",
+      "sha256": "30fa5f98353c04fd8d5a2c893f238bc3e37f1864b08b99fc6dc8494f6a88be1d",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/tenInchScreenshots/panel-01.png",
+      "sha256": "f082360208df41f0553c1dc4fc28d337b94a92ca32aeeccddab39f1f7d87f2bb",
+      "proof": "proof/ar-he-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/tenInchScreenshots/panel-02.png",
+      "sha256": "a8e08cb41ccac8f82c40f31fc5718609cb08df3c6fa1a71844f6759909b2df62",
+      "proof": "proof/ar-he-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/tenInchScreenshots/panel-03.png",
+      "sha256": "19c906deb47c00c3f1797b4c0b1bc799597f5675d6a0551e3bdfc295cd785cef",
+      "proof": "proof/ar-he-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ar/tenInchScreenshots/panel-04.png",
+      "sha256": "3a955c89da226c42d8d21f12771facf5df7fbddb6b1093e8368828a4b56806fe",
+      "proof": "proof/ar-he-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/featureGraphic/panel-01.png",
+      "sha256": "b3758ae875645367cf33d65997b15470fece4e39568f7b59ab84ec3b583e8569",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/phoneScreenshots/panel-01.png",
+      "sha256": "1cc2ccf3c7a3362d7b44a93f95bcd5837dde4b1dc4d47e6cd342eed23bfc8b46",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/phoneScreenshots/panel-02.png",
+      "sha256": "0c65c88ecd3e529bd2678628d7b66479828c61eacd0b4e112dcfca14ff8f385a",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/phoneScreenshots/panel-03.png",
+      "sha256": "c4292008d8d62ef45760e94abd2d27a868e3207d5e16773e3b05a60b7807b9f6",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/phoneScreenshots/panel-04.png",
+      "sha256": "3b99d889cac13b66acd43c95dd5ed9e62289b0eba09ab5a6b2e8985431024f8e",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-01.png",
+      "sha256": "ce7f762dc6be0d46f80cdcdcddb9c20f980da0160274c068b3c1389a4d8402df",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-02.png",
+      "sha256": "dc63de3a6f7a4ede36b85cf8c9da69a906a97e1b357a937d9c093967810d0fba",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-03.png",
+      "sha256": "737481850f3a0c4b55d2d6691f69dec8c218b61742274c8c6cf0b26f1fc2c50f",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-04.png",
+      "sha256": "7f43414e90b6b66b3f07c28739666da63bad4b830d5ceff40dcb0fde606fa302",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/tenInchScreenshots/panel-01.png",
+      "sha256": "406325ddca5a6af18e54cbf6d034dfe61411eab9020fe81c49a389fe61fe5ef6",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/tenInchScreenshots/panel-02.png",
+      "sha256": "bebf9498111ee190293bd0ab081b07d5e5ce02ddd08d608de2408b52f3d35e96",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/tenInchScreenshots/panel-03.png",
+      "sha256": "359c721f948e0628dd4cc9901dfd03938ceb6bdde975ee21ea50e19bf5c40eb2",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/de/tenInchScreenshots/panel-04.png",
+      "sha256": "52a6173f23f13459b99e6533213e01ddb8be166218d348e2a51b093fb9c0df15",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/featureGraphic/panel-01.png",
+      "sha256": "ae4d32ad395fdc9435db0d3cc9e9903910cf1b8041072982a20295bbaa76b89d",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/phoneScreenshots/panel-01.png",
+      "sha256": "2b69f0f098c4e33cec94d709f40c499c798062e9d0f4a883e5cbf3639c165437",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/phoneScreenshots/panel-02.png",
+      "sha256": "8446f702b213ce39998dc67a2323965a5db24a7ea1754dadfaefa3e2c275c8a4",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/phoneScreenshots/panel-03.png",
+      "sha256": "756c533fbcca41ba7be1184d832bde128cfebaf9524c492037118fd002874c4b",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/phoneScreenshots/panel-04.png",
+      "sha256": "2b65475c96c1e0b8fd5f3db235f2a82fdd8f1b3a0fac5e7356632d962800c21a",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/sevenInchScreenshots/panel-01.png",
+      "sha256": "db259bacb6bdb50e0904eb8ba0a70f6df0d4fcfed36743a00e4d2367fe253fb3",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/sevenInchScreenshots/panel-02.png",
+      "sha256": "a8d2f058c0a7b6f14873ca7c8cb7c27cedf867b8794207a02bc6d12d6cb5d699",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/sevenInchScreenshots/panel-03.png",
+      "sha256": "c869bbe336364c258fdb05e7984bbea6a890cba38884dac4119fdf543b6f2718",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/sevenInchScreenshots/panel-04.png",
+      "sha256": "d7fefbc3a00b7cdf5cd1405e879715b3724b97a0e1fb1be69f54b27ff8940958",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/tenInchScreenshots/panel-01.png",
+      "sha256": "ceb496d10c18a94187e17e6e691635963e72d1dbfc1cd37751af509926693b31",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/tenInchScreenshots/panel-02.png",
+      "sha256": "58dadf8c4d1133fe88be6ea73d06c53359641a213fc5499c7fb61be8c4bdf384",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/tenInchScreenshots/panel-03.png",
+      "sha256": "2cd6ead84a6bc443094bd65a09deb292d1ee0645a865bbb0e949b0da12ffa7fd",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/en/tenInchScreenshots/panel-04.png",
+      "sha256": "2b1b5395a522768c4529f726a701382b0946cdd6bca616d5761cb20df6867729",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/featureGraphic/panel-01.png",
+      "sha256": "4f21a1f80554124cd4a81e06c11bf2d944d5b91947ed490f40c66f2960c4ee8f",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/phoneScreenshots/panel-01.png",
+      "sha256": "bdafbdf62600f13e54929263d83458ab1ea62b490af7d0e52ff36aed8ba83018",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/phoneScreenshots/panel-02.png",
+      "sha256": "e9222d2662048af2ab48f70e2a198ef28f5b972db4fae77eec54aeaf09286343",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/phoneScreenshots/panel-03.png",
+      "sha256": "4b72dff1c50552d838b572de5d5b3a66913486c3f9e7036e01583260975c9294",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/phoneScreenshots/panel-04.png",
+      "sha256": "b5a42b8623d6f95d80825e15e4906e483ec7a02603ac3feeb4976ec93478853b",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-01.png",
+      "sha256": "c37f09533f55ef9ce25b6c259861ecf3d18f02492fd0d1018ec1ec3a62177d7f",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-02.png",
+      "sha256": "1b43e15ab8a8f1032e8e7bee0ad69459c5957b0f7815bd0c838c29f7e2ca9818",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-03.png",
+      "sha256": "50dd1ecf8e23d37794b920b711938e552c144ddda39b3bb2b65c5ba86be25633",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-04.png",
+      "sha256": "947a14de686e68eb7d87ba03a1d87020315bb561203cdc4216dd4cdbfd86e6e7",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/tenInchScreenshots/panel-01.png",
+      "sha256": "def309a20af4cc479f522d1e184884a063feb73f72db5353fc3aae62e5c90efe",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/tenInchScreenshots/panel-02.png",
+      "sha256": "7b79360556f84da26a07659338250a2b0606ceb319837a4ecaa936431e1994a9",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/tenInchScreenshots/panel-03.png",
+      "sha256": "a59f0384ce6b2857e32f03553780f1f9fc455e2d29b565b46abdca52a876a1ab",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/es/tenInchScreenshots/panel-04.png",
+      "sha256": "9e5681b98342b55f8f6320287bd17773472b5e13af202d780e10c3915d209e27",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/featureGraphic/panel-01.png",
+      "sha256": "a40da09b1eefd8326506b743600a2b8d4963bb9a9d9e51606a87fd1a563e0a3b",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/phoneScreenshots/panel-01.png",
+      "sha256": "66a174ba6c9e6d69f324cc43b673b0432de2c710afff91638c97b0cb754d3c17",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/phoneScreenshots/panel-02.png",
+      "sha256": "537a1c7b8f248dd05bee253a035014d51a67f7e04958ba74aedcbb1349ec6451",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/phoneScreenshots/panel-03.png",
+      "sha256": "223459d588e6f4ca6d540cdb38b66a418da2919707af562999ebb04a34465e77",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/phoneScreenshots/panel-04.png",
+      "sha256": "1218c877ecd3c4b2d7acad8e8ce644105b21de42082eeefedbca261660e6578f",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-01.png",
+      "sha256": "e7f48107b953a1493caa6a67532a28290ccc154d3fe1e634e262f0b9bef56ea9",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-02.png",
+      "sha256": "6a2387f4d89e750b84f088378d0a327a1ae6be15ac19bca745ec92072ca475fb",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-03.png",
+      "sha256": "e7f48107b953a1493caa6a67532a28290ccc154d3fe1e634e262f0b9bef56ea9",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-04.png",
+      "sha256": "e20af52bcbf881f1b4d321c81de25d27acca18498a1c56de40b0f6cf208b2171",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/tenInchScreenshots/panel-01.png",
+      "sha256": "6054d261f7936d690afb57986ac10983b925e380fa15d9b2d28a3439cccf6fa5",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/tenInchScreenshots/panel-02.png",
+      "sha256": "6fef2fbfa9ff6ea3d33d1777183dd5bab95576d01af470261d2872550a7a6ea3",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/tenInchScreenshots/panel-03.png",
+      "sha256": "5e4256a7cfed8c7b0c66d21f7d3021bb450f19eccf5deb709b667a45f0527714",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/fr/tenInchScreenshots/panel-04.png",
+      "sha256": "738bb3065f36cac171348a2167b1c9a7673568f8bf34bac11e72ab4e137869b8",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/featureGraphic/panel-01.png",
+      "sha256": "6ad82868f01252c65bcdeb81e61b6f36319f03e7e6e6b1a7d9705ebc7d83818c",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/he/phoneScreenshots/panel-01.png",
+      "sha256": "4c967683122ebef199b4f967068cb86051a377e13127d7a32fec19bcca2eabd6",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/phoneScreenshots/panel-02.png",
+      "sha256": "b2f0290c3145f4f4c5f3362401dd630ecd62d3b12ea1138d4ae1a150aa4500e8",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/phoneScreenshots/panel-03.png",
+      "sha256": "09fedb23caf6a8ce1aef253d300ddc4684a9dbd1f2e7d7e272a08d31eb965759",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/phoneScreenshots/panel-04.png",
+      "sha256": "08ad6331a4d9e7bb3512fd1e153f039b0e4dbcfedab6714e5cec9151bc26deee",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-01.png",
+      "sha256": "395b0f36270763e9f7ccc46a092013c8609b3e3eaa89d9ba9f1e5022f9f9a0ab",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-02.png",
+      "sha256": "be01ad32a035e08be4781c0538709407f2ab694ad2c8b8151b7df41657c5e7e3",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-03.png",
+      "sha256": "660eda9635cb830c2daa65df2fd618b3f543f98dfeef46c6cb826ae3d366daff",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-04.png",
+      "sha256": "cfcdfa2c004e0d97de855c824bec8776067b254f6e97dd4573bb748d0e4052b2",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/tenInchScreenshots/panel-01.png",
+      "sha256": "8cd01af6fdad1ec8cd00b46fad985e17b3d991d736aa826d2452044a591d4790",
+      "proof": "proof/ar-he-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/tenInchScreenshots/panel-02.png",
+      "sha256": "1a2ad8550025dc1b78300e5d74a7073d8e6128d43f9c2ad1c891d24298cde494",
+      "proof": "proof/ar-he-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/tenInchScreenshots/panel-03.png",
+      "sha256": "8cd01af6fdad1ec8cd00b46fad985e17b3d991d736aa826d2452044a591d4790",
+      "proof": "proof/ar-he-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/he/tenInchScreenshots/panel-04.png",
+      "sha256": "e9f0358a2f8367499bd34f75ab360e3e087177ac96a6640ea458ada78e84e885",
+      "proof": "proof/ar-he-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/featureGraphic/panel-01.png",
+      "sha256": "84127afe739a324d1f92c2f9cdee328c05b9a00059b78cadfac840a441452a1b",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/hi/phoneScreenshots/panel-01.png",
+      "sha256": "d6b6a44816214ba31e658a88fb16befebc57e287ea3fb5d99fb953d85c1bccde",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/phoneScreenshots/panel-02.png",
+      "sha256": "9d98dfa72aa1874b6f1e6baa1a31ea58b528dc51348a3cb0366ef18832d1f0a4",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/phoneScreenshots/panel-03.png",
+      "sha256": "7aea30f50610222dbe6d4ed3f6a65a95e28fee88a4c5792be53e599f1d1b2812",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/phoneScreenshots/panel-04.png",
+      "sha256": "40e74a339ba7e3a7c8ad9de168a95a120e6b0ba46d5a76422dee769e1b26a275",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/sevenInchScreenshots/panel-01.png",
+      "sha256": "9583e28c55e98dc771aa2ba3b658ad9f8f01b15f4e82dbba4560c44c3b574c6a",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/sevenInchScreenshots/panel-02.png",
+      "sha256": "293c8b667beed436ec4467faa9b9a6c45278a4086f42ad05b0093a39469c4514",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/sevenInchScreenshots/panel-03.png",
+      "sha256": "2000ef39df5058551a13d03c6d4068d6f1e20a98a6847d2c65e8fa96d760f94a",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/sevenInchScreenshots/panel-04.png",
+      "sha256": "dad6f39e528bd162f56015fce13a9a85bfd416bf97a74cea02f33873755a0827",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/tenInchScreenshots/panel-01.png",
+      "sha256": "5e30e350feb628f44e85688f642587f89969d974ff93408b5e76df75d57131f6",
+      "proof": "proof/uk-hi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/tenInchScreenshots/panel-02.png",
+      "sha256": "df56a6c00a93996155773a2913264dc2cb0181944a6ec7ac2cea7f555b55838e",
+      "proof": "proof/uk-hi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/tenInchScreenshots/panel-03.png",
+      "sha256": "305e60389500551e87be4e4ea5c6739389d6c1167d93c573d70d8f9a6f654c94",
+      "proof": "proof/uk-hi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/hi/tenInchScreenshots/panel-04.png",
+      "sha256": "7ec165550a66762bf911a0015659bcfbb6d55532738b96b9f9d04c695c384f61",
+      "proof": "proof/uk-hi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/featureGraphic/panel-01.png",
+      "sha256": "1fd37ef116cc5b5c1a6cc0b81fdf29fed738ab231e13c61939d6f30f8e1fbed8",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/id/phoneScreenshots/panel-01.png",
+      "sha256": "64be1c0684450ed89499cefbde208b9a33527dd8b14b17220925485fbca2a5f5",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/phoneScreenshots/panel-02.png",
+      "sha256": "1abe0b917ebc9920427686ae034a1834294394ba493651639440664ec785f499",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/phoneScreenshots/panel-03.png",
+      "sha256": "e817f92137dce4b1e1d1b7f93311b0df67783231f0bda9a1a4d84c57f1a3b88e",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/phoneScreenshots/panel-04.png",
+      "sha256": "130f46e73a13e2c7df7057e986150c96f610b674b2f75257a0751a97ff4346e2",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/sevenInchScreenshots/panel-01.png",
+      "sha256": "247f736bfe2cee2b4ec9763fedf98588aec01ee08997d0643ea9147b33a5b510",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/sevenInchScreenshots/panel-02.png",
+      "sha256": "c938974df2bc8020d400cfef35936fec9f839ff8ed642079d2f1b1909f7efaba",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/sevenInchScreenshots/panel-03.png",
+      "sha256": "f18086ab6b9e643b9c251ba2dcf81ad3ae22338e85b495d3fc99a24386964be5",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/sevenInchScreenshots/panel-04.png",
+      "sha256": "d8fc8b2b468f11edbf9528d393dc8efe1fa015ab1867edf696eea81cf98d6d77",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/tenInchScreenshots/panel-01.png",
+      "sha256": "ba2677cdd709e078f7c7d621d2833cfdb76955075490db63f87a477c96b13c2e",
+      "proof": "proof/id-vi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/tenInchScreenshots/panel-02.png",
+      "sha256": "3dceb52a04cc223f3216172f3ab802d92c2fb4945347b7444bc876c7937ae870",
+      "proof": "proof/id-vi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/tenInchScreenshots/panel-03.png",
+      "sha256": "ffc8a47326d2a4f68d022095bf347c88d6ca119597b94ef28d50654ad1bd3430",
+      "proof": "proof/id-vi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/id/tenInchScreenshots/panel-04.png",
+      "sha256": "3834dc0478bd5da521949f5b28040cbde8be17d6559ad86283c228cf7f18c478",
+      "proof": "proof/id-vi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/featureGraphic/panel-01.png",
+      "sha256": "ea35ac7dc9c9833e85c73e8e1814826b00f90f9c3847f1c2025de3cb08b433a2",
+      "proof": "proof/it-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/it-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/phoneScreenshots/panel-01.png",
+      "sha256": "0a02e790f67aec8fe642625470bbe41f1c13be98b80b7ddcc6aac23b8aec7f85",
+      "proof": "proof/it-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/phoneScreenshots/panel-02.png",
+      "sha256": "221a7d70b2db7be6414d40f2cf21889e4403bdc297fb6f7e965b999901526fc0",
+      "proof": "proof/it-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/phoneScreenshots/panel-03.png",
+      "sha256": "872869bee7891f9b9640f599ff436f6dd30db041735a1ebf21c1611d64550006",
+      "proof": "proof/it-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/phoneScreenshots/panel-04.png",
+      "sha256": "f2328ccaa6e25da7aafe3bbd73f2d3a5ee4c9e627b2034a75cd75dbfb0758ca8",
+      "proof": "proof/it-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/sevenInchScreenshots/panel-01.png",
+      "sha256": "f94438d29ea84a264d6420bf010b0f46c4a9b06fa9928aadd9756e6e5b88bbe7",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/sevenInchScreenshots/panel-02.png",
+      "sha256": "56ea36d6262368cf033a091a5106dcc5be4ed3b12db053139a0220fe62449cbe",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/sevenInchScreenshots/panel-03.png",
+      "sha256": "f94438d29ea84a264d6420bf010b0f46c4a9b06fa9928aadd9756e6e5b88bbe7",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/sevenInchScreenshots/panel-04.png",
+      "sha256": "2c4af1c5692227ef721c7c01549fa8819c1164a838c4d762855c3ceeb6d4409d",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/tenInchScreenshots/panel-01.png",
+      "sha256": "d262078d60abcc58e9976fc086fb948f0230a10d4da32f8a40f11c951653f6c9",
+      "proof": "proof/it-nl-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/tenInchScreenshots/panel-02.png",
+      "sha256": "82e9374104aee6e4d31ffadf83216658321c2d9947d57190ceb6945234b42b5b",
+      "proof": "proof/it-nl-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/tenInchScreenshots/panel-03.png",
+      "sha256": "d5798dca8f8d692d40d54bef6d8c6fe73fd8d1d50f1093e4039e9957d2f9f6f0",
+      "proof": "proof/it-nl-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/it/tenInchScreenshots/panel-04.png",
+      "sha256": "46665b9c21ca849da47ad38653eb0c44ff6dacdf2abe92cce656d2dc8ca5a906",
+      "proof": "proof/it-nl-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/featureGraphic/panel-01.png",
+      "sha256": "c641cbc3afb2f99cb286af65f8ba194db6abbf4e6c608a984c288d7b464ced3a",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/ja/phoneScreenshots/panel-01.png",
+      "sha256": "dff3be11feadf319b3e2e1bf4ac70221fe4cc2d1ccc6d048b72314a0179aff2d",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/phoneScreenshots/panel-02.png",
+      "sha256": "38259f050d12b0ef01850c5db36963885bb32204b0ed239d2e96ca07b033e388",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/phoneScreenshots/panel-03.png",
+      "sha256": "c885cb1fc661f52fc7e11b0b96bdd83b02cf4536ed48518dfa38551ff29997da",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/phoneScreenshots/panel-04.png",
+      "sha256": "afdf1b1776cca0468c8cb4019bc5359bc3a3f1d0cc91e0c5540969e757bc2779",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-01.png",
+      "sha256": "3ef06c341c2e77b654055c0d977bf9909708c1702b0f7af4af8b1c897d2be2ed",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-02.png",
+      "sha256": "b02b80c127ce4885548434d38f5dbf160840988a789303dd384f9df2cd322884",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-03.png",
+      "sha256": "13254117ceda92d5eb3de2113a2335937c341babefc44de25f8ed51f6d769a01",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-04.png",
+      "sha256": "21eb5929d745515477ec8429fa0ac761a8c490ceab0cb9f30f07930d1e164c6a",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/tenInchScreenshots/panel-01.png",
+      "sha256": "f9a6f18de837aa64cd56435ef05ed8bd60384faaf17767adf0b4c73fcb850b46",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/tenInchScreenshots/panel-02.png",
+      "sha256": "0230a7b2ffb0fa196979b5a85b404662afba265f86872eee8fbdea17813f957c",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/tenInchScreenshots/panel-03.png",
+      "sha256": "7ce2af750444cfa633a4701dfa85bfb59a435408ff108f457856f1ddc076d4ab",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ja/tenInchScreenshots/panel-04.png",
+      "sha256": "b9460c334b578ba8273341591cad80a1959ef5b194893f35265e338aa12f63ae",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/featureGraphic/panel-01.png",
+      "sha256": "15195b94bbe0da883397935e9657646901b645874aa27dc5a77925fb6081b957",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/ko/phoneScreenshots/panel-01.png",
+      "sha256": "10df83b3cdfc648df049b6c07e473dd07b2d4c70ee9e29048c3ce33a627a8e65",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/phoneScreenshots/panel-02.png",
+      "sha256": "dfa8872a3683e1faa677c843768d9fd166dd83d547abbefc9397dc3ac272ddd3",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/phoneScreenshots/panel-03.png",
+      "sha256": "05175b090e2a4f6f65ac23507d11f1db2e83c2d4f10be057a89e7eeded59c29a",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/phoneScreenshots/panel-04.png",
+      "sha256": "df625a7695ba79b4daf24397e72d0c5bcd05b7cfc6a91a63c9021c5b42679ab5",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/sevenInchScreenshots/panel-01.png",
+      "sha256": "1ee36c1c6cdb26f8225671f24404afc70686828211c473d40fa4178ca2d2c6c8",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/sevenInchScreenshots/panel-02.png",
+      "sha256": "463c9e0cf8d40f7231ad0a26e15c8ede1d17731a822deb5eb91cf3b7f20eb461",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/sevenInchScreenshots/panel-03.png",
+      "sha256": "89f5fcbcffd2784d991ae54ad3b59d0da6811b1b57a2a03249137815186a13c6",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/sevenInchScreenshots/panel-04.png",
+      "sha256": "bb5b91a70d640de32a5ed63c97b39375a9e9967543cf64ee689a1851199a3dc6",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/tenInchScreenshots/panel-01.png",
+      "sha256": "552f47b7a175aebdefb2a6abdcc0a8f6773a2cda46f799704fd5619e41fb5974",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/tenInchScreenshots/panel-02.png",
+      "sha256": "2b38dd8434630089f36042b4ba8c910b7518590c72999f9842dc5401a2012df9",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/tenInchScreenshots/panel-03.png",
+      "sha256": "94117a3bcaea88f629da8d4011ef38dee7e9f4b6c7d6211101e288d8ff092962",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ko/tenInchScreenshots/panel-04.png",
+      "sha256": "888796fa689daabd700b50f5e57d17fe69adfb2e7dd327e714818e8d8fec92f5",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/featureGraphic/panel-01.png",
+      "sha256": "154ee922833cd8c562463e4ba85b4a609ca6b951e0a25cd2996bb96a8b9f07e4",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/nl/phoneScreenshots/panel-01.png",
+      "sha256": "0df8c53e6e0bd5fe748d20f98f7f2a52a57b1abaf3c0ae130561cd08566bb591",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/phoneScreenshots/panel-02.png",
+      "sha256": "97354148fffb88f0809a03760d82fdfd7131b9bbe5cf89a9b24b4c907977db3b",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/phoneScreenshots/panel-03.png",
+      "sha256": "15d010fc3bbd0b82e1d08f4d2e6f6ea4fb3896c40adf0f1d66b854cdd8db500a",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/phoneScreenshots/panel-04.png",
+      "sha256": "bdbf79b202fb12018af9a282b90024bdcd59f10b58f9da20490188d604937c6d",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/sevenInchScreenshots/panel-01.png",
+      "sha256": "6f2bd5c66fb57a0c8eb158dfe1856d9853c0ee463102ef6ea5773ed5928d9253",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/sevenInchScreenshots/panel-02.png",
+      "sha256": "4711a5e10f03522aec8b84a2f84bfb2b929c3b4d615022724eae088afea09d29",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/sevenInchScreenshots/panel-03.png",
+      "sha256": "5207083018afc7f1053b893218106062f59ba58bdd1ee3adef1e5c4488929e96",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/sevenInchScreenshots/panel-04.png",
+      "sha256": "69f1808a967845899e6db0895493908e55bbff14a7359b0a5e232d81548e86bd",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/tenInchScreenshots/panel-01.png",
+      "sha256": "a8017cbef9b88dffcd1cf5374ab3e5c9b0aec626f9483b4caccb6a5a1e340cc2",
+      "proof": "proof/it-nl-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/tenInchScreenshots/panel-02.png",
+      "sha256": "e9318c13c56b6e1abcbb1be0e533dd1df9e587781e9e9d1fcc0ecfa960e16776",
+      "proof": "proof/it-nl-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/tenInchScreenshots/panel-03.png",
+      "sha256": "ac08eb7e27e480a8423f491ce22f1ae54549378b55ca9ee804c0f86514aa0b2c",
+      "proof": "proof/it-nl-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/nl/tenInchScreenshots/panel-04.png",
+      "sha256": "9bb704916341989cb0eb7664b0fa546925879d876d14e559d6aa2068ed4ab74a",
+      "proof": "proof/it-nl-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/featureGraphic/panel-01.png",
+      "sha256": "fa602a08d5fa82f3c842cf86a54457e682a4ce91a1b6aada6627994dd968efe3",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/pl/phoneScreenshots/panel-01.png",
+      "sha256": "99cb4f30f0f296ce248773b3e72573af59ccf3ba1a0d1ba62f07e537d3410295",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/phoneScreenshots/panel-02.png",
+      "sha256": "80b78e8441048359f35e5f0c6daca36fd83ececcb82f45a4d782bf71e7eab766",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/phoneScreenshots/panel-03.png",
+      "sha256": "3f590451122222cb86efa161456099f576d16072e8375923ff8c66c48cefafaa",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/phoneScreenshots/panel-04.png",
+      "sha256": "2b3b3a26f424775e6028b1d01eccec93522033363e95c14d75e4a29afb1a955f",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/sevenInchScreenshots/panel-01.png",
+      "sha256": "fe85ced5fc68a545aebd7d2dc93011bebdf5551cc8fe66f0fd80a914398773de",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/sevenInchScreenshots/panel-02.png",
+      "sha256": "2f9300ce8bf16af139e7c24e01fc2c84f0ef66dc31c234a67f9e67df98e31c4a",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/sevenInchScreenshots/panel-03.png",
+      "sha256": "992c71ca2ec25e268cb865f8771a18400dc26a055be8976bb72dc463256adabc",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/sevenInchScreenshots/panel-04.png",
+      "sha256": "9fe5c956523bc498fc01e43c7690ea26a1bf7b4504e36568e0230a609354f116",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/tenInchScreenshots/panel-01.png",
+      "sha256": "b2ab7e97d64bb4eda64b7f826293d9e94f40f81d741f6f16920aecaf6f2a4db7",
+      "proof": "proof/pl-tr-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/tenInchScreenshots/panel-02.png",
+      "sha256": "7d5c7bfc3c4de9d2bd1a9e5e3739cad3e464790dbbb054e5acb8c4a70aeec462",
+      "proof": "proof/pl-tr-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/tenInchScreenshots/panel-03.png",
+      "sha256": "91eac2004b693d49caa0f4135f8f7c2258be4f5b7cafdbcb03a23023f540cb67",
+      "proof": "proof/pl-tr-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pl/tenInchScreenshots/panel-04.png",
+      "sha256": "597715c57a7fcce2c60c251538175a6e60a7748d7205fd975b469453197577e5",
+      "proof": "proof/pl-tr-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/featureGraphic/panel-01.png",
+      "sha256": "2c39ded7c7d3aab8c7bae8314ed22d3f94bef8ad1756b8d4ac6002db41245b44",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/phoneScreenshots/panel-01.png",
+      "sha256": "9b8dfdd84d72377d304b1212b08679101513a2b80ccc460f000bcb792fd8e37d",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/phoneScreenshots/panel-02.png",
+      "sha256": "013da362d96bcc9fa4b04bc5fda453c75ced0bf2c860300621ba3c2996e97d8d",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/phoneScreenshots/panel-03.png",
+      "sha256": "11d42420ed55f5bc0b92b6133a18c33d21eb3287624fc3589702fc6c6521810d",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/phoneScreenshots/panel-04.png",
+      "sha256": "648fb1a4827e5c7ce074550e1bf213907260d1e91e3f068b61a38fc08c6db4a0",
+      "proof": "proof/fr-de-pt-BR-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-01.png",
+      "sha256": "7f1c7a96097bc92090436f253ea06d5fefd10c475a55dc16f2f8907e661d307d",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-02.png",
+      "sha256": "003f80b20dec7ec158124867a2c8babf48b46ca5694ed85306aca098c59d9729",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-03.png",
+      "sha256": "304ec33c3fa540ef9629b4c0ffc30e8138ab925f5ce109dbc4506bb5835a18e5",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-04.png",
+      "sha256": "7ca70c8ef2606b41b33d15213df6c4c0fa5a38baaffa6a303db7b0cd2acb2b47",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/tenInchScreenshots/panel-01.png",
+      "sha256": "826b63410bff6e76d8a95353622fe463ed22333e14da194ff7df9e2ba6bb7d8b",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/tenInchScreenshots/panel-02.png",
+      "sha256": "69f85095da38eef6c28430645213810180b3f4feecf3e9e7b694a18e0986fbc3",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/tenInchScreenshots/panel-03.png",
+      "sha256": "268ad558ebfdcb75dbd2a2981241bbeaa1d18a325648059e0759b19c20046dfe",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/pt-BR/tenInchScreenshots/panel-04.png",
+      "sha256": "43bb1a2af5a5616c451fec8a7472c1a57d66eb3ff336ec672b2326260c06957d",
+      "proof": "proof/en-es-de-pt-BR-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/featureGraphic/panel-01.png",
+      "sha256": "6312fc7d312a28fdea7caa6ea7addf96c57a93636fb7d6354743242c9547a5f8",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/ru/phoneScreenshots/panel-01.png",
+      "sha256": "2afc07a880f180205d7e2a7b8805953cebaa133522c359af323f4eb6ea336447",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/phoneScreenshots/panel-02.png",
+      "sha256": "04a5ebe0d92adccb4a0fdaea327acf2e06e843706e2943cd0c89ea8a9d8dd038",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/phoneScreenshots/panel-03.png",
+      "sha256": "dd9bcde03a0753dd8a2715d8e7b248ba1cbd8fa89c10b02db52d91ad8fccb20c",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/phoneScreenshots/panel-04.png",
+      "sha256": "f5474273cfbdd591c7bf3a4abdfa73f8919bbd0440d8107b754902fb98fe2d17",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/sevenInchScreenshots/panel-01.png",
+      "sha256": "3b3d8a6c80f725599ea1cbb857f39b354ffbf0ed41151cbf2db8dbc3dd7fd13d",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/sevenInchScreenshots/panel-02.png",
+      "sha256": "aba38b65829f5eee596ef03c13abf9a9d0e07393f8e3a19c822cefb22de7284c",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/sevenInchScreenshots/panel-03.png",
+      "sha256": "4df4c60823d36bb869928625f434039fd1ca6f810021af3c79347b5aed0d679c",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/sevenInchScreenshots/panel-04.png",
+      "sha256": "d88c2c87468ba2beac44d737ee58e44f96486e3a39b1cbc5d3e32cbbb6e42c25",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/tenInchScreenshots/panel-01.png",
+      "sha256": "3b1368b2dede0cd4a73a7e9e1fd6c2f67a9f279a9cc06bd5853e9ba2db93864f",
+      "proof": "proof/ru-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/tenInchScreenshots/panel-02.png",
+      "sha256": "fe892bb5cf2d73030960bc28af3c5fccd89beb71b3735b9c2b767051efe64d81",
+      "proof": "proof/ru-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/tenInchScreenshots/panel-03.png",
+      "sha256": "9d4937bf246f32477a3587a3336aa0dc8e5d7132a153031d4218ce8ead8335e8",
+      "proof": "proof/ru-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/ru/tenInchScreenshots/panel-04.png",
+      "sha256": "3850b457fa96125dc58e2a0c556c0adc871349be5862eb65249e7bafdabb79d8",
+      "proof": "proof/ru-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/featureGraphic/panel-01.png",
+      "sha256": "66812309f2f14cb6442d74f86f3d9a39afc3bba777bfba79b64c60555b3e8229",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/th/phoneScreenshots/panel-01.png",
+      "sha256": "b512c92708785e6cdff190809c740eae40e8c314c474e6a0b1a756bb4c4a399e",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/phoneScreenshots/panel-02.png",
+      "sha256": "ab437df18127ff51f561f3481c1c208e97b4d768dc2ec746fb2a1583b44c79b8",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/phoneScreenshots/panel-03.png",
+      "sha256": "d19f655509b240d99e1270ca9d3fe30c45dd7e9e2862cf7657da9551a9c209b8",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/phoneScreenshots/panel-04.png",
+      "sha256": "ddcd3180d5a451e1ab647fe4686ba096c5bd1db92242968c14880b4e448a5092",
+      "proof": "proof/th-ja-ko-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-01.png",
+      "sha256": "7c44221179fd147b7fe01c54d4c4ebebcb62d5d0e0b4081234efc3e6176d8473",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-02.png",
+      "sha256": "ad4fcf64fb67d2e9edbdeecaef6d0f98b104210af235afd605932cea3a55d674",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-03.png",
+      "sha256": "f33fcf503a7992a5a729c0a70a62b2990170c696efc961d71c1ce634758ac1d5",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-04.png",
+      "sha256": "eff73ebb8b5a394b235b607e0081cb039ea1b93fa339b5cb8e7090d8f5a0a9b2",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/tenInchScreenshots/panel-01.png",
+      "sha256": "cf8342761c6c82b63989687ce4d222ac980b0eeb9c166f2e6020102c3c68ffe0",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/tenInchScreenshots/panel-02.png",
+      "sha256": "5aa0dc7828f806c9c2d8eab00cfdd0d981226e0e1048a46a33295bb0305e6ceb",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/tenInchScreenshots/panel-03.png",
+      "sha256": "e15e7761ba25a1f4ad3195ae5d8d648252f602321d2f96b1e4c5592f98bc5bfe",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/th/tenInchScreenshots/panel-04.png",
+      "sha256": "5a06a5afb86ac244f85a2c7776576477e3f9027d9e0e78c05d2c676825344b51",
+      "proof": "proof/th-ja-ko-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/featureGraphic/panel-01.png",
+      "sha256": "9c26440e4350674b2037c726b35e0c57372480d6a01a2f6e273cc0419fdda2da",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/tr/phoneScreenshots/panel-01.png",
+      "sha256": "48c8bd5cde451474e7eadbcecdbb5d6a625157a794fa6d68e74a657feb77e5da",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/phoneScreenshots/panel-02.png",
+      "sha256": "d2aca130529b59a6f1a21f5c697d7a663b0fad641aacd9eabdcb0117dc196cac",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/phoneScreenshots/panel-03.png",
+      "sha256": "fcc1e7e803adc8aaa5bf35a2e2c4c274a3c02766eec766e1e3da1885ca6fdab8",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/phoneScreenshots/panel-04.png",
+      "sha256": "1244453169c95e6eda1bb61b1409ec9e294b55a08bd452b29675bed4920a2c85",
+      "proof": "proof/nl-pl-tr-ru-tablets-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/sevenInchScreenshots/panel-01.png",
+      "sha256": "43f6cd25e46cb42bc14914522a9ce9814cf4c53db0a30cfe45e4e40604c4813c",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/sevenInchScreenshots/panel-02.png",
+      "sha256": "60b01161cee4c44a225f58b600a3c49ac8649f5337c59b43aad1dd623e4c998f",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/sevenInchScreenshots/panel-03.png",
+      "sha256": "90bba43d8ce0b0ec768095185e384129ce075f5a6922afb71a70be6926ad0229",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/sevenInchScreenshots/panel-04.png",
+      "sha256": "ad76fc0704d3052ec966fbd1ba8ddda9a712a64afcf4e6cdcf53ad4b5840a4e7",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/tenInchScreenshots/panel-01.png",
+      "sha256": "2400882e0b780966bc7801b9a15dac16177791ca4e6d7635a6cdc2a9461d37e0",
+      "proof": "proof/pl-tr-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/tenInchScreenshots/panel-02.png",
+      "sha256": "6db28d85bcc09ee921e42a98b6a1e5e852d5a30c37791604cc3454af2fe43225",
+      "proof": "proof/pl-tr-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/tenInchScreenshots/panel-03.png",
+      "sha256": "06b8781a5c862f992cb0f762f0a89bdd70bfc4d7835e1c38a00c07751d86dcfa",
+      "proof": "proof/pl-tr-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/tr/tenInchScreenshots/panel-04.png",
+      "sha256": "d87afbdec04184ee96de5e52a957e5761e153c8896e8287d95281b83a7e88657",
+      "proof": "proof/pl-tr-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/featureGraphic/panel-01.png",
+      "sha256": "7d9229c6772939dc6513cb7f02bc32f77302c738b55a5d817a3a8575f1c82663",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/uk/phoneScreenshots/panel-01.png",
+      "sha256": "340a3a145d6b4e25a064a0e77cae1f9a5cc16183b76beb190584d7a9144f526a",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/phoneScreenshots/panel-02.png",
+      "sha256": "507071ba322d6f07f417181b0508e0f82734095d8e25231f7d87418219cdb298",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/phoneScreenshots/panel-03.png",
+      "sha256": "5ed83e0d3ef7fee9bff120f5591d8e0d546a8a3527122d8f3b0e805401fc5d70",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/phoneScreenshots/panel-04.png",
+      "sha256": "e2364ba6ac52e64f00769a3bc6dcab20e8f2f32aab67178bf8f7bf9729cb7ca4",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/sevenInchScreenshots/panel-01.png",
+      "sha256": "625c5604e9897b45e36c8166199674811d8726a7a442e2568f60cfe22f8f74e0",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/sevenInchScreenshots/panel-02.png",
+      "sha256": "80187bc810c68de8b52f589d57433ae000d02f2bb7242a5a6c807032208715eb",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/sevenInchScreenshots/panel-03.png",
+      "sha256": "0f646c669431bc11eda71c30ec8225784d21aaac7e4aa3741249ba3e7db96bb6",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/sevenInchScreenshots/panel-04.png",
+      "sha256": "d0a31f376cb0054ba173661ce63199fcb4b5bf3c740869a2ea3da29eb292a9f2",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/tenInchScreenshots/panel-01.png",
+      "sha256": "527db9acf4aec57320ba1a09dbec01512138e132fc06e350070e8337bb41488c",
+      "proof": "proof/uk-hi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/tenInchScreenshots/panel-02.png",
+      "sha256": "84bbe4ff24feab037dd7898dde860e6aeb2411e984cb471293f0772408b34bf5",
+      "proof": "proof/uk-hi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/tenInchScreenshots/panel-03.png",
+      "sha256": "28f6f51ef0d0e1d7826b9d8baf820851bb2014eefd1faa8eeaa98be0cb68bcae",
+      "proof": "proof/uk-hi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/uk/tenInchScreenshots/panel-04.png",
+      "sha256": "8fa9592863a4d6d3d5b0b4a0871bdeca4667f35e90ebe0b711092b13fae000b1",
+      "proof": "proof/uk-hi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/featureGraphic/panel-01.png",
+      "sha256": "62fa6bedb826009f422ae5476e9dbb81d0b0365a837ea4e1c8cac98a6aa54b9b",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/vi/phoneScreenshots/panel-01.png",
+      "sha256": "3b7de8315abef99a9e8ecfdbc02f271cd7c505895ef7038f1f4c4ac7a6b6faf5",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/phoneScreenshots/panel-02.png",
+      "sha256": "96f3d1da491b371a7e23ce9e1ff745a9a60ce4d7ebe1f4b74aebf1ba9d47bbc5",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/phoneScreenshots/panel-03.png",
+      "sha256": "0ad6104f9bfd222d0384a6a0b6a689fee1ee872a3c2e239622db649552190a00",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/phoneScreenshots/panel-04.png",
+      "sha256": "1f513c0e1ce4bf58f6710411a8fa58c87fc0f6e4446c811ae72db32fddd3f6d9",
+      "proof": "proof/uk-ar-he-hi-id-vi-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/sevenInchScreenshots/panel-01.png",
+      "sha256": "5efe4e3edc1161216e486345fdfdf7a9cc3bc26cab8a6089cca4814a3e3438e4",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/sevenInchScreenshots/panel-02.png",
+      "sha256": "a991e51da65415ce5a02f4b2d3c6f6f92ba12434a087e190dddb4acfb22e45e1",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/sevenInchScreenshots/panel-03.png",
+      "sha256": "56170db0ca4e12e688e82390a1173cda45c94e01354637ce95333d34c1fc2f1a",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/sevenInchScreenshots/panel-04.png",
+      "sha256": "270f572b939d158fd2f1664d89e261fc112caa34793510ce5d8888d6acd56ff0",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/tenInchScreenshots/panel-01.png",
+      "sha256": "abe48156171e3685ac6c0bf8c9f5c4d6b09006f221b2add9ae57b1d2dd439385",
+      "proof": "proof/id-vi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/tenInchScreenshots/panel-02.png",
+      "sha256": "e06746706eada76ea442dcc54e7d6ed9942764d06b9ded67f27f7bf20af67b35",
+      "proof": "proof/id-vi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/tenInchScreenshots/panel-03.png",
+      "sha256": "b501add8abd01fdd9df186b045ec670c6367f65a538ba7d0d3d383567beeea35",
+      "proof": "proof/id-vi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/vi/tenInchScreenshots/panel-04.png",
+      "sha256": "4df31e6846023690ea7c9bbf83e332a6d7ce3d06fe07920a3aa45122c63afe27",
+      "proof": "proof/id-vi-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/featureGraphic/panel-01.png",
+      "sha256": "9632e0537d4ace1983884f1a0a009bc2ae2f2689882fc0a0fd98849579726a4c",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/zh-Hans/phoneScreenshots/panel-01.png",
+      "sha256": "246c3bd99f752ecb3aaaad3cfb393163f3287585d112387df7f87cbe41c3b106",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/phoneScreenshots/panel-02.png",
+      "sha256": "5e580e48caaba8204e1fe235815a93846e36d6972161fc274f031293d96bdab7",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/phoneScreenshots/panel-03.png",
+      "sha256": "3624d5a94713881c34c90b82621ecc130e28e1fc85c2866fdfce29549de5f01a",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/phoneScreenshots/panel-04.png",
+      "sha256": "7701069ffa8d103d81be541530abacbc4c000c8115acb7574c77a44f23816753",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/sevenInchScreenshots/panel-01.png",
+      "sha256": "962e47379b73ae647b0c6afa61dc0ea1bf93fb4c98b36434072d6d9481063b96",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/sevenInchScreenshots/panel-02.png",
+      "sha256": "b17c146ea826d5f63921f708b5422c3f6ffa7fc5ccf632ecda5572c032cdc0de",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/sevenInchScreenshots/panel-03.png",
+      "sha256": "9ae1b17be88aa6e018ad28f47338471055069b3c007d36ce5b9b3c70da57c66c",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/sevenInchScreenshots/panel-04.png",
+      "sha256": "f12aa621f66ba67954345d4fdf7d794e7a87a17a53ceceb42cb7ca5e55b66219",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/tenInchScreenshots/panel-01.png",
+      "sha256": "3355f3297733bf785535ecee2879d063cb37b4154f7cf7bb2ce07593a374d69e",
+      "proof": "proof/zh-Hans-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/tenInchScreenshots/panel-02.png",
+      "sha256": "b8a36d6e1b399ffa5976aa9f83aca18e6dcb544929cd5d1058ee988dc63d1916",
+      "proof": "proof/zh-Hans-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/tenInchScreenshots/panel-03.png",
+      "sha256": "26e4804cf144bb33155992d3fa924b05b1bd40319367c360443c56796a5edf2d",
+      "proof": "proof/zh-Hans-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hans/tenInchScreenshots/panel-04.png",
+      "sha256": "2b57bb4618414c1aea761014db17cc868d28f460e02a2f9584da591891e36a6f",
+      "proof": "proof/zh-Hans-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/featureGraphic/panel-01.png",
+      "sha256": "4d0367d506ed7b2611c53b1c457f253863c55880256d50f54e7fa70f181a0ff8",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "proof": "proof/en-es-independent-visual-review.json",
+      "method": "Byte-identical to independently inspected English icon; no localized text"
+    },
+    {
+      "path": "exports/zh-Hant/phoneScreenshots/panel-01.png",
+      "sha256": "e54d60ef0d1442c142a76aa30286c28b05b259426ccf93bb14d4e57d369b9f8b",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/phoneScreenshots/panel-02.png",
+      "sha256": "4c6a8cd3c19bac6d377a92416804fd6be796beb8611761471bb81b37ec243033",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/phoneScreenshots/panel-03.png",
+      "sha256": "bbd49e6fc7e99a68c4c7fec02bd3f1dd96a1851f5f24099f3ef40c6d76cf43ea",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/phoneScreenshots/panel-04.png",
+      "sha256": "cfbafa0056ccf9ae9257e43bec972b29a0c1dcf752411ba716a4dedd88ec8f72",
+      "proof": "proof/zh-Hans-zh-Hant-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/sevenInchScreenshots/panel-01.png",
+      "sha256": "a3ba4c8952339db820ea6e4a466e5f6deac0914db0ac0d279d3848502d0ea27e",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/sevenInchScreenshots/panel-02.png",
+      "sha256": "d24b2d7daca18ef605e5086a14e3f128dc0e6265050d880f425e687b2a8d7794",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/sevenInchScreenshots/panel-03.png",
+      "sha256": "e322d0f35b10cade310809fa5cd023ad6a714ead6a1365767caccf16b379d4ef",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/sevenInchScreenshots/panel-04.png",
+      "sha256": "c7197431525f3ed0c2bab5e0205906d41d35e367ce49c1592d6d55ed1390182f",
+      "proof": "proof/remaining-tablet7-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/tenInchScreenshots/panel-01.png",
+      "sha256": "b637182055eccdd63bfe2194e9c3e3e74581f71b47a1b88b13e1ac3fff7d3e14",
+      "proof": "proof/zh-Hant-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/tenInchScreenshots/panel-02.png",
+      "sha256": "179635fe8ef039f95eb7e31a9944b9de9dcbe5be8ba6f95b2cf859ade7cae87f",
+      "proof": "proof/zh-Hant-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/tenInchScreenshots/panel-03.png",
+      "sha256": "2e10d9fa32f63746d59f48069d62f37e1f2f0f2fd991b72036a33abdb63a55c0",
+      "proof": "proof/zh-Hant-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    },
+    {
+      "path": "exports/zh-Hant/tenInchScreenshots/panel-04.png",
+      "sha256": "da8388716c47707ddf3fb4f964daf8534c65612aaafb07bd80740a881cc84224",
+      "proof": "proof/zh-Hant-tablet10-independent-visual-review.json",
+      "method": "Individually viewed exported image"
+    }
+  ]
+}

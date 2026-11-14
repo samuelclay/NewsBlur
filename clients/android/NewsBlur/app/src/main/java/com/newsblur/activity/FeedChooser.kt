@@ -131,6 +131,7 @@ abstract class FeedChooser : NbActivity() {
     }
 
     protected open fun setAdapterData() {
+        adapter.setFolders(folders)
         adapter.setData(folderNames, folderChildren, feeds)
     }
 

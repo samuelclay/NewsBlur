@@ -5,18 +5,31 @@ from django.db import connection
 from pymongo import monitoring
 
 
+def recording_queries():
+    """Whether a profiled request or task has turned on query recording by giving the connection a
+    connection.queriesx list (SQLLogToConsoleMiddleware in apps/profile/middleware.py, or
+    process_celery below), which SQLLogToConsoleMiddleware reads and turns off again. Recording
+    unconditionally grew the list and seen_request_ids for the life of every process, and ran a
+    3 GB task server out of memory during manage.py trim_feeds. utils/mongo_command_monitor.py"""
+    return getattr(connection, "queriesx", None) is not None
+
+
 class MongoCommandLogger(monitoring.CommandListener):
     def __init__(self):
         self.seen_request_ids = dict()
 
     def started(self, event):
+        if not recording_queries():
+            return
         self.seen_request_ids[event.request_id] = event.command
         # logging.info("Command {0.command_name} with request id "
         #              "{0.request_id} started on server "
         #              "{0.connection_id}".format(event))
 
     def succeeded(self, event):
-        command = self.seen_request_ids.get(event.request_id, None)
+        command = self.seen_request_ids.pop(event.request_id, None)
+        if not recording_queries():
+            return
         if not command:
             logging.info(f" ---> Couldn't find mongodb command: {event}")
             return
@@ -59,8 +72,6 @@ class MongoCommandLogger(monitoring.CommandListener):
 
         message = {"op": op, "query": query, "collection": collection}
 
-        if not getattr(connection, "queriesx", False):
-            connection.queriesx = []
         connection.queriesx.append(
             {
                 "mongo": message,
@@ -74,6 +85,7 @@ class MongoCommandLogger(monitoring.CommandListener):
         #              "microseconds".format(event))
 
     def failed(self, event):
+        self.seen_request_ids.pop(event.request_id, None)
         logging.info(
             "Command {0.command_name} with request id "
             "{0.request_id} on server {0.connection_id} "

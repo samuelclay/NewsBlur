@@ -344,6 +344,35 @@ class Test_SearchStoryMocked(TestCase):
         # The unbalanced quote should be escaped
         self.assertIn('\\"', query_string)
 
+    @patch.object(SearchStory, "ES")
+    def test_query_tag_matches_one_exact_tag_within_selected_feeds(self, mock_es_class):
+        """Tag browsing should query the keyword tag field rather than story body text."""
+        mock_es = MagicMock()
+        mock_es_class.return_value = mock_es
+        mock_es.search.return_value = {
+            "hits": {"hits": [{"_id": "169:first"}, {"_id": "169:second"}]}
+        }
+
+        results = SearchStory.query_tag(
+            [169, 200],
+            "sponsored posts",
+            order="oldest",
+            offset=12,
+            limit=12,
+        )
+
+        self.assertEqual(results, ["169:first", "169:second"])
+        body = mock_es.search.call_args[1]["body"]
+        self.assertIn({"terms": {"feed_id": [169, 200]}}, body["query"]["bool"]["filter"])
+        tag_filter = body["query"]["bool"]["filter"][1]["bool"]
+        self.assertEqual(tag_filter["minimum_should_match"], 1)
+        self.assertIn({"term": {"tags.raw": "sponsored posts"}}, tag_filter["should"])
+        self.assertIn({"wildcard": {"tags.raw": "sponsored posts, *"}}, tag_filter["should"])
+        self.assertIn({"wildcard": {"tags.raw": "*, sponsored posts"}}, tag_filter["should"])
+        self.assertEqual(body["from"], 12)
+        self.assertEqual(body["size"], 12)
+        self.assertEqual(body["sort"], [{"date": {"order": "asc"}}])
+
 
 class Test_BriefingCustomQuery(TestCase):
     """Tests for SearchStory.query_briefing_custom method."""

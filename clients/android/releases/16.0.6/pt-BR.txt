@@ -1,0 +1,1 @@
+Corrige um problema em tablets em que marcar um feed como lido podia enviar o NewsBlur para segundo plano. Tanto o botão inferior quanto o menu do feed agora mantêm o app aberto para você continuar lendo.

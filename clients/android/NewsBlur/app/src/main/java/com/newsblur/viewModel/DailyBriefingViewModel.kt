@@ -1,7 +1,10 @@
 package com.newsblur.viewModel
 
+import android.content.Context
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.database.DatabaseConstants
 import com.newsblur.domain.Feed
@@ -11,8 +14,8 @@ import com.newsblur.network.BriefingApi
 import com.newsblur.network.FeedApi
 import com.newsblur.network.domain.DailyBriefingBriefing
 import com.newsblur.network.domain.DailyBriefingModelOption
-import com.newsblur.network.domain.DailyBriefingStory
 import com.newsblur.network.domain.DailyBriefingStoriesResponse
+import com.newsblur.network.domain.DailyBriefingStory
 import com.newsblur.util.DailyBriefingPresentationDecision
 import com.newsblur.util.DailyBriefingPresentationState
 import com.newsblur.util.DailyBriefingSectionLayoutDecision
@@ -20,6 +23,12 @@ import com.newsblur.util.DailyBriefingTitleFormatter
 import com.newsblur.util.FeedSet
 import com.newsblur.util.StateFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,16 +36,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-import javax.inject.Inject
 
+// DailyBriefingViewModel.kt keeps section names as resources so they follow the app language.
 data class DailyBriefingSectionDefinition(
     val key: String,
-    val name: String,
-    val subtitle: String,
+    @StringRes val nameRes: Int,
+    @StringRes val subtitleRes: Int,
 )
 
 data class DailyBriefingGroupUi(
@@ -198,6 +203,7 @@ data class DailyBriefingUiState(
 class DailyBriefingViewModel
     @Inject
     constructor(
+        @ApplicationContext private val context: Context,
         private val briefingApi: BriefingApi,
         private val feedApi: FeedApi,
         private val dbHelper: BlurDatabaseHelper,
@@ -653,7 +659,7 @@ class DailyBriefingViewModel
             val updatedFeed =
                 (existing ?: Feed()).apply {
                     this.feedId = feedId
-                    this.title = "Daily Briefing"
+                    this.title = context.getString(R.string.daily_briefing_title)
                     this.active = true
                     this.faviconColor = BRIEFING_FAVICON_COLOR
                     this.faviconFade = BRIEFING_FAVICON_FADE
@@ -677,7 +683,7 @@ class DailyBriefingViewModel
             val updatedFeed =
                 (existing ?: Feed()).apply {
                     this.feedId = feedId
-                    this.title = this.title ?: "Daily Briefing"
+                    this.title = this.title ?: context.getString(R.string.daily_briefing_title)
                     this.active = true
                     this.notificationTypes = notificationTypes.toList().sorted()
                     this.notificationFilter = null
@@ -728,33 +734,33 @@ class DailyBriefingViewModel
                 listOf(
                     DailyBriefingSectionDefinition(
                         key = "top_stories",
-                        name = "Top stories",
-                        subtitle = "The most important stories from your feeds",
+                        nameRes = R.string.briefing_section_top_stories,
+                        subtitleRes = R.string.briefing_section_top_stories_subtitle,
                     ),
                     DailyBriefingSectionDefinition(
                         key = "infrequent",
-                        name = "From infrequent sites",
-                        subtitle = "Stories from feeds that rarely publish",
+                        nameRes = R.string.briefing_section_infrequent,
+                        subtitleRes = R.string.briefing_section_infrequent_subtitle,
                     ),
                     DailyBriefingSectionDefinition(
                         key = "long_read",
-                        name = "Long reads for later",
-                        subtitle = "Longer articles worth setting time aside for",
+                        nameRes = R.string.briefing_section_long_read,
+                        subtitleRes = R.string.briefing_section_long_read_subtitle,
                     ),
                     DailyBriefingSectionDefinition(
                         key = "classifier_match",
-                        name = "Based on your interests",
-                        subtitle = "Stories matching your trained topics and authors",
+                        nameRes = R.string.briefing_section_classifier_match,
+                        subtitleRes = R.string.briefing_section_classifier_match_subtitle,
                     ),
                     DailyBriefingSectionDefinition(
                         key = "follow_up",
-                        name = "Follow-ups",
-                        subtitle = "New posts from feeds you recently read",
+                        nameRes = R.string.briefing_section_follow_up,
+                        subtitleRes = R.string.briefing_section_follow_up_subtitle,
                     ),
                     DailyBriefingSectionDefinition(
                         key = "widely_covered",
-                        name = "Widely covered",
-                        subtitle = "Stories covered by 3+ feeds",
+                        nameRes = R.string.briefing_section_widely_covered,
+                        subtitleRes = R.string.briefing_section_widely_covered_subtitle,
                     ),
                 )
 

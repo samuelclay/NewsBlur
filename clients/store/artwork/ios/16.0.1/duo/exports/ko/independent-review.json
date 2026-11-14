@@ -1,0 +1,30 @@
+{
+  "language": "ko",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:22:49Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Korean captions preserve whole space-delimited words, with intact Hangul syllables and no clipping.",
+    "Native Korean navigation/search/source/filter/date controls visible; photographs and article content loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-ko-duo-inner-2853x2007-01.png",
+      "sha256": "c3f0f6c2659cde2d1540501a7cf66291c5e3e8b0c2cadc94d61b0791ae9ddde0"
+    },
+    {
+      "filename": "newsblur-16.0.1-ko-duo-inner-2853x2007-02.png",
+      "sha256": "12245301abad30ab50375d5bda3265247a0478a7b641e820597b8df5a1ad5256"
+    },
+    {
+      "filename": "newsblur-16.0.1-ko-duo-inner-2853x2007-03.png",
+      "sha256": "d7d2afe2795f01eb6f96066c518a0023bb5dec14f075987a6034268a922372e1"
+    },
+    {
+      "filename": "newsblur-16.0.1-ko-duo-inner-2853x2007-04.png",
+      "sha256": "915f33761a89765b3edf122a8c57941cce312d67e23ee863163984d206dd0912"
+    }
+  ],
+  "contact_sha256": "3c3a580f5e92c7650314d34268613277276ea952e42ddd885fe81a3d3e59660e"
+}

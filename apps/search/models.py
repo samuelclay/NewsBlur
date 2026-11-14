@@ -20,6 +20,7 @@ import redis
 import urllib3
 from django.conf import settings
 from django.contrib.auth.models import User
+from mongoengine.queryset import NotUniqueError
 from openai import APITimeoutError, OpenAI
 
 from apps.search.projection_matrix import project_vector
@@ -67,7 +68,13 @@ class MUserSearch(mongo.Document):
             user_search = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY).get(user_id=user_id)
         except cls.DoesNotExist:
             if create:
-                user_search = cls.objects.create(user_id=user_id)
+                try:
+                    user_search = cls.objects.create(user_id=user_id)
+                except NotUniqueError:
+                    # A concurrent request created it between the get and the create
+                    user_search = cls.objects.read_preference(pymongo.ReadPreference.PRIMARY).get(
+                        user_id=user_id
+                    )
             else:
                 user_search = None
 
@@ -589,6 +596,58 @@ class SearchStory:
             return []
 
         return result_ids
+
+    @classmethod
+    def query_tag(cls, feed_ids, tag, order, offset, limit):
+        """Return story hashes with one exact tag in the selected feeds.
+
+        ``tags.raw`` contains the entire comma-separated tag string. Match the
+        requested tag in each possible token position so a tag does not also
+        match a longer tag that merely contains it. ``None`` means the search
+        failed; an empty list is a successful query with no matches.
+        """
+        tag = html.unescape(tag or "").strip()
+        if not feed_ids or not tag:
+            return []
+
+        wildcard_tag = tag.replace("\\", "\\\\").replace("*", "\\*").replace("?", "\\?")
+        tag_filter = {
+            "bool": {
+                "should": [
+                    {"term": {"tags.raw": tag}},
+                    {"wildcard": {"tags.raw": f"{wildcard_tag}, *"}},
+                    {"wildcard": {"tags.raw": f"*, {wildcard_tag}"}},
+                    {"wildcard": {"tags.raw": f"*, {wildcard_tag}, *"}},
+                ],
+                "minimum_should_match": 1,
+            }
+        }
+        body = {
+            "query": {
+                "bool": {
+                    "filter": [
+                        {"terms": {"feed_id": feed_ids[:2000]}},
+                        tag_filter,
+                    ]
+                }
+            },
+            "sort": [{"date": {"order": "desc" if order == "newest" else "asc"}}],
+            "from": offset,
+            "size": limit,
+        }
+
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+            return [result["_id"] for result in results["hits"]["hits"]]
+        except (
+            elasticsearch.exceptions.TransportError,
+            urllib3.exceptions.NewConnectionError,
+            urllib3.exceptions.ConnectTimeoutError,
+            KeyError,
+            TypeError,
+        ) as e:
+            logging.error(" ***> ~FRUnable to query indexed story tags: %s" % e)
+            return None
 
     @classmethod
     def query_briefing_custom(cls, feed_ids, phrase, date_start, date_end, limit=10):
@@ -1435,7 +1494,11 @@ class SearchFeed:
 
         # Part 2: Semantic search (generate embedding for query)
         try:
-            client = OpenAI(api_key=settings.OPENAI_API_KEY)
+            # Hybrid search backs the interactive autocomplete endpoint, and the semantic
+            # half only refines the text results gathered above. Cap the embedding call
+            # instead of using the client defaults (600s read timeout, two retries), which
+            # leave a typeahead request hanging when OpenAI is slow or unreachable.
+            client = OpenAI(api_key=settings.OPENAI_API_KEY, timeout=5.0, max_retries=1)
             response = client.embeddings.create(model="text-embedding-3-small", input=text.lower())
 
             # Track embedding cost

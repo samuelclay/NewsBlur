@@ -1,14 +1,16 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}On a story entitled "{{ shared_story.story_title }}" from {{ story_feed.feed_title }}, {{ reply_user_profile.username }} replied to you:
+{% load i18n %}
 
-{{ comment.user.username }} ({{ comment.shared_date }} ago):
+{% block body %}{% blocktrans with story_title=shared_story.story_title feed_title=story_feed.feed_title username=reply_user_profile.username %}On a story entitled "{{ story_title }}" from {{ feed_title }}, {{ username }} replied to you:{% endblocktrans %}
+
+{{ comment.user.username }} ({% blocktrans with time=comment.shared_date %}{{ time }} ago{% endblocktrans %}):
 {{ comment.comments|linebreaksbr }}
 {% for reply in comment.replies %}
-    {{ reply.user.username }} ({{ reply.publish_date }} ago):
+    {{ reply.user.username }} ({% blocktrans with time=reply.publish_date %}{{ time }} ago{% endblocktrans %}):
     {{ reply.comments }}
 {% endfor %}
 
-View this conversation: {{ shared_story.blurblog_permalink }}
+{% trans "View this conversation:" %} {{ shared_story.blurblog_permalink }}
 
-Don't want any more emails from this story? Mute this conversion: {{ mute_url }}{% endblock %}
+{% trans "Don't want any more emails from this story? Mute this conversation:" %} {{ mute_url }}{% endblock %}

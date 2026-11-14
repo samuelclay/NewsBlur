@@ -24,7 +24,7 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
             NEWSBLUR.utils.is_url_iframe_buster(story.get('story_permalink'))) {
             if (!is_temporary) {
                 NEWSBLUR.reader.switch_taskbar_view('text', { skip_save_type: 'story' });
-                NEWSBLUR.app.taskbar_info.show_stories_error({}, "Sorry, the original story<br />could not be proxied.");
+                NEWSBLUR.app.taskbar_info.show_stories_error({}, gettext("Sorry, the original story<br />could not be proxied."));
             }
         } else {
             NEWSBLUR.reader.switch_taskbar_view('story', { skip_save_type: is_temporary ? 'story' : false });
@@ -81,7 +81,7 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
     show_explainer_single_story_mode: function () {
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
             $.make('div', { className: 'NB-world' }),
-            'Select a story to read'
+            gettext('Select a story to read')
         ]);
 
         this.$(".NB-story-list-empty").remove();
@@ -90,7 +90,7 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
 
     show_loading: function () {
         NEWSBLUR.app.taskbar_info.hide_stories_error();
-        NEWSBLUR.app.taskbar_info.show_stories_progress_bar(10, "Fetching story");
+        NEWSBLUR.app.taskbar_info.show_stories_progress_bar(10, gettext("Fetching story"));
     },
 
     ensure_proxied_story: function () {

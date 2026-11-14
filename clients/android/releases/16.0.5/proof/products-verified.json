@@ -1,0 +1,21 @@
+{
+  "command": "apply-products",
+  "packageName": "com.newsblur",
+  "version": "16.0.5",
+  "baseline": "/tmp/newsblur-16.0.5-before.json",
+  "completed": [
+    "nb.premium.36",
+    "nb.premium.archive.99"
+  ],
+  "status": "verified",
+  "result": [
+    {
+      "productId": "nb.premium.36",
+      "verifiedLocales": 21
+    },
+    {
+      "productId": "nb.premium.archive.99",
+      "verifiedLocales": 21
+    }
+  ]
+}

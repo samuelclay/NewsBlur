@@ -4,11 +4,36 @@ import XCTest
 @testable import StoryAutoCollapseDecision
 
 final class StoryAutoCollapseDecisionTests: XCTestCase {
-    func test_auto_in_portrait_prefers_displace_and_secondary_only() {
+    // StoryAutoCollapseDecisionTests.swift protects the Mac's three-pane default when the shared narrow-window breakpoint changes.
+    func test_mac_default_keeps_three_panes_in_narrow_and_portrait_windows() {
+        for size in [CGSize(width: 1000, height: 800), CGSize(width: 1200, height: 1400)] {
+            for preference: String? in [nil, "auto"] {
+                XCTAssertEqual(StorySplitBehaviorDecision.preferredBehavior(for: preference, width: size.width, height: size.height, isMac: true), .tile)
+                XCTAssertEqual(StorySplitBehaviorDecision.preferredDisplayMode(for: preference, width: size.width, height: size.height, isMac: true), .twoBesideSecondary)
+            }
+        }
+    }
+
+    // StoryAutoCollapseDecisionTests.swift prevents the Mac default from overriding a reader's explicit two- or one-pane choice.
+    func test_mac_keeps_explicit_two_and_one_pane_choices() {
+        for (preference, expected) in [("displace", StorySplitPreferredBehavior.displace), ("overlay", .overlay)] {
+            XCTAssertEqual(StorySplitBehaviorDecision.preferredBehavior(for: preference, width: 1400, height: 900, isMac: true), expected)
+            XCTAssertEqual(StorySplitBehaviorDecision.preferredDisplayMode(for: preference, width: 1400, height: 900, isMac: true), .secondaryOnly)
+        }
+    }
+
+    func test_narrow_auto_reader_reveals_feeds_as_overlay_without_shrinking_story() {
+        for size in [CGSize(width: 820, height: 1180), CGSize(width: 1032, height: 1376), CGSize(width: 900, height: 700)] {
+            XCTAssertEqual(StorySplitBehaviorDecision.preferredBehavior(for: "auto", width: size.width, height: size.height, isMac: false), .overlay)
+            XCTAssertEqual(StorySplitBehaviorDecision.preferredDisplayMode(for: "auto", width: size.width, height: size.height, isMac: false), .secondaryOnly)
+        }
+    }
+
+    func test_wide_auto_in_portrait_preserves_displace_and_secondary_only() {
         XCTAssertEqual(
             StorySplitBehaviorDecision.preferredBehavior(
                 for: "auto",
-                width: 1032,
+                width: 1200,
                 height: 1376,
                 isMac: false
             ),
@@ -17,12 +42,24 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         XCTAssertEqual(
             StorySplitBehaviorDecision.preferredDisplayMode(
                 for: "auto",
-                width: 1032,
+                width: 1200,
                 height: 1376,
                 isMac: false
             ),
             .secondaryOnly
         )
+    }
+
+    func test_narrow_reader_preserves_explicit_sidebar_behavior() {
+        for (preference, behavior) in [("tile", StorySplitPreferredBehavior.tile),
+                                      ("displace", .displace), ("overlay", .overlay)] {
+            XCTAssertEqual(
+                StorySplitBehaviorDecision.preferredBehavior(
+                    for: preference, width: 820, height: 1180, isMac: false
+                ),
+                behavior
+            )
+        }
     }
 
     func test_auto_in_landscape_prefers_three_column_tiled_sidebar_layout() {
@@ -951,8 +988,8 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
         )
     }
 
-    func test_overlay_story_selection_disables_animation_while_sidebar_is_visible() {
-        XCTAssertFalse(
+    func test_overlay_story_selection_keeps_animation_while_sidebar_is_visible() {
+        XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
@@ -960,7 +997,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 isMac: false
             )
         )
-        XCTAssertFalse(
+        XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: true,
@@ -968,7 +1005,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 isMac: false
             )
         )
-        XCTAssertFalse(
+        XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,
@@ -976,7 +1013,7 @@ final class StoryAutoCollapseDecisionTests: XCTestCase {
                 isMac: false
             )
         )
-        XCTAssertFalse(
+        XCTAssertTrue(
             StorySelectionAnimationDecision.shouldAnimateSelection(
                 isPhoneOrCompact: false,
                 usesNativeFullscreenSidebar: false,

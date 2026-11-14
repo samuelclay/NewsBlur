@@ -1,0 +1,494 @@
+{
+  "reviewed_at": "2026-10-17T17:14:02Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-01.png",
+      "sha256": "e7f48107b953a1493caa6a67532a28290ccc154d3fe1e634e262f0b9bef56ea9",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:48:41Z"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-02.png",
+      "sha256": "6a2387f4d89e750b84f088378d0a327a1ae6be15ac19bca745ec92072ca475fb",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:48:41Z"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-03.png",
+      "sha256": "e7f48107b953a1493caa6a67532a28290ccc154d3fe1e634e262f0b9bef56ea9",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:48:41Z"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-04.png",
+      "sha256": "e20af52bcbf881f1b4d321c81de25d27acca18498a1c56de40b0f6cf208b2171",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:48:41Z"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-01.png",
+      "sha256": "669c17bc7f04800ae7d474394117a84f82670ff491a77bee181cea4bc36b3904",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-02.png",
+      "sha256": "4f3ed242236bd83201287f3c2d303284180facfe96e236b4100ba1f5f1723982",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-03.png",
+      "sha256": "669c17bc7f04800ae7d474394117a84f82670ff491a77bee181cea4bc36b3904",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-04.png",
+      "sha256": "30fa5f98353c04fd8d5a2c893f238bc3e37f1864b08b99fc6dc8494f6a88be1d",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-01.png",
+      "sha256": "395b0f36270763e9f7ccc46a092013c8609b3e3eaa89d9ba9f1e5022f9f9a0ab",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-02.png",
+      "sha256": "be01ad32a035e08be4781c0538709407f2ab694ad2c8b8151b7df41657c5e7e3",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-03.png",
+      "sha256": "660eda9635cb830c2daa65df2fd618b3f543f98dfeef46c6cb826ae3d366daff",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-04.png",
+      "sha256": "cfcdfa2c004e0d97de855c824bec8776067b254f6e97dd4573bb748d0e4052b2",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-01.png",
+      "sha256": "c37f09533f55ef9ce25b6c259861ecf3d18f02492fd0d1018ec1ec3a62177d7f",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:52:30Z"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-02.png",
+      "sha256": "1b43e15ab8a8f1032e8e7bee0ad69459c5957b0f7815bd0c838c29f7e2ca9818",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:52:30Z"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-03.png",
+      "sha256": "50dd1ecf8e23d37794b920b711938e552c144ddda39b3bb2b65c5ba86be25633",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:52:30Z"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-04.png",
+      "sha256": "947a14de686e68eb7d87ba03a1d87020315bb561203cdc4216dd4cdbfd86e6e7",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:52:30Z"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-01.png",
+      "sha256": "ce7f762dc6be0d46f80cdcdcddb9c20f980da0160274c068b3c1389a4d8402df",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-02.png",
+      "sha256": "dc63de3a6f7a4ede36b85cf8c9da69a906a97e1b357a937d9c093967810d0fba",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-03.png",
+      "sha256": "737481850f3a0c4b55d2d6691f69dec8c218b61742274c8c6cf0b26f1fc2c50f",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-04.png",
+      "sha256": "7f43414e90b6b66b3f07c28739666da63bad4b830d5ceff40dcb0fde606fa302",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-01.png",
+      "sha256": "7f1c7a96097bc92090436f253ea06d5fefd10c475a55dc16f2f8907e661d307d",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-02.png",
+      "sha256": "003f80b20dec7ec158124867a2c8babf48b46ca5694ed85306aca098c59d9729",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-03.png",
+      "sha256": "304ec33c3fa540ef9629b4c0ffc30e8138ab925f5ce109dbc4506bb5835a18e5",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-04.png",
+      "sha256": "7ca70c8ef2606b41b33d15213df6c4c0fa5a38baaffa6a303db7b0cd2acb2b47",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/it/sevenInchScreenshots/panel-01.png",
+      "sha256": "f94438d29ea84a264d6420bf010b0f46c4a9b06fa9928aadd9756e6e5b88bbe7",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:56:05Z"
+    },
+    {
+      "path": "exports/it/sevenInchScreenshots/panel-02.png",
+      "sha256": "56ea36d6262368cf033a091a5106dcc5be4ed3b12db053139a0220fe62449cbe",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:56:05Z"
+    },
+    {
+      "path": "exports/it/sevenInchScreenshots/panel-03.png",
+      "sha256": "f94438d29ea84a264d6420bf010b0f46c4a9b06fa9928aadd9756e6e5b88bbe7",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:56:05Z"
+    },
+    {
+      "path": "exports/it/sevenInchScreenshots/panel-04.png",
+      "sha256": "2c4af1c5692227ef721c7c01549fa8819c1164a838c4d762855c3ceeb6d4409d",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:56:05Z"
+    },
+    {
+      "path": "exports/nl/sevenInchScreenshots/panel-01.png",
+      "sha256": "6f2bd5c66fb57a0c8eb158dfe1856d9853c0ee463102ef6ea5773ed5928d9253",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:58:38Z"
+    },
+    {
+      "path": "exports/nl/sevenInchScreenshots/panel-02.png",
+      "sha256": "4711a5e10f03522aec8b84a2f84bfb2b929c3b4d615022724eae088afea09d29",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:58:38Z"
+    },
+    {
+      "path": "exports/nl/sevenInchScreenshots/panel-03.png",
+      "sha256": "5207083018afc7f1053b893218106062f59ba58bdd1ee3adef1e5c4488929e96",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:58:38Z"
+    },
+    {
+      "path": "exports/nl/sevenInchScreenshots/panel-04.png",
+      "sha256": "69f1808a967845899e6db0895493908e55bbff14a7359b0a5e232d81548e86bd",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:58:38Z"
+    },
+    {
+      "path": "exports/pl/sevenInchScreenshots/panel-01.png",
+      "sha256": "fe85ced5fc68a545aebd7d2dc93011bebdf5551cc8fe66f0fd80a914398773de",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:58:38Z"
+    },
+    {
+      "path": "exports/pl/sevenInchScreenshots/panel-02.png",
+      "sha256": "2f9300ce8bf16af139e7c24e01fc2c84f0ef66dc31c234a67f9e67df98e31c4a",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:58:38Z"
+    },
+    {
+      "path": "exports/pl/sevenInchScreenshots/panel-03.png",
+      "sha256": "992c71ca2ec25e268cb865f8771a18400dc26a055be8976bb72dc463256adabc",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:58:38Z"
+    },
+    {
+      "path": "exports/pl/sevenInchScreenshots/panel-04.png",
+      "sha256": "9fe5c956523bc498fc01e43c7690ea26a1bf7b4504e36568e0230a609354f116",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:58:38Z"
+    },
+    {
+      "path": "exports/tr/sevenInchScreenshots/panel-01.png",
+      "sha256": "43f6cd25e46cb42bc14914522a9ce9814cf4c53db0a30cfe45e4e40604c4813c",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:01:44Z"
+    },
+    {
+      "path": "exports/tr/sevenInchScreenshots/panel-02.png",
+      "sha256": "60b01161cee4c44a225f58b600a3c49ac8649f5337c59b43aad1dd623e4c998f",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:01:44Z"
+    },
+    {
+      "path": "exports/tr/sevenInchScreenshots/panel-03.png",
+      "sha256": "90bba43d8ce0b0ec768095185e384129ce075f5a6922afb71a70be6926ad0229",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:01:44Z"
+    },
+    {
+      "path": "exports/tr/sevenInchScreenshots/panel-04.png",
+      "sha256": "ad76fc0704d3052ec966fbd1ba8ddda9a712a64afcf4e6cdcf53ad4b5840a4e7",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:01:44Z"
+    },
+    {
+      "path": "exports/ru/sevenInchScreenshots/panel-01.png",
+      "sha256": "3b3d8a6c80f725599ea1cbb857f39b354ffbf0ed41151cbf2db8dbc3dd7fd13d",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:02:32Z"
+    },
+    {
+      "path": "exports/ru/sevenInchScreenshots/panel-02.png",
+      "sha256": "aba38b65829f5eee596ef03c13abf9a9d0e07393f8e3a19c822cefb22de7284c",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:02:32Z"
+    },
+    {
+      "path": "exports/ru/sevenInchScreenshots/panel-03.png",
+      "sha256": "4df4c60823d36bb869928625f434039fd1ca6f810021af3c79347b5aed0d679c",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:02:32Z"
+    },
+    {
+      "path": "exports/ru/sevenInchScreenshots/panel-04.png",
+      "sha256": "d88c2c87468ba2beac44d737ee58e44f96486e3a39b1cbc5d3e32cbbb6e42c25",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:02:32Z"
+    },
+    {
+      "path": "exports/uk/sevenInchScreenshots/panel-01.png",
+      "sha256": "625c5604e9897b45e36c8166199674811d8726a7a442e2568f60cfe22f8f74e0",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:02:32Z"
+    },
+    {
+      "path": "exports/uk/sevenInchScreenshots/panel-02.png",
+      "sha256": "80187bc810c68de8b52f589d57433ae000d02f2bb7242a5a6c807032208715eb",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:02:32Z"
+    },
+    {
+      "path": "exports/uk/sevenInchScreenshots/panel-03.png",
+      "sha256": "0f646c669431bc11eda71c30ec8225784d21aaac7e4aa3741249ba3e7db96bb6",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:02:32Z"
+    },
+    {
+      "path": "exports/uk/sevenInchScreenshots/panel-04.png",
+      "sha256": "d0a31f376cb0054ba173661ce63199fcb4b5bf3c740869a2ea3da29eb292a9f2",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:02:32Z"
+    },
+    {
+      "path": "exports/hi/sevenInchScreenshots/panel-01.png",
+      "sha256": "9583e28c55e98dc771aa2ba3b658ad9f8f01b15f4e82dbba4560c44c3b574c6a",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:03:50Z"
+    },
+    {
+      "path": "exports/hi/sevenInchScreenshots/panel-02.png",
+      "sha256": "293c8b667beed436ec4467faa9b9a6c45278a4086f42ad05b0093a39469c4514",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:03:50Z"
+    },
+    {
+      "path": "exports/hi/sevenInchScreenshots/panel-03.png",
+      "sha256": "2000ef39df5058551a13d03c6d4068d6f1e20a98a6847d2c65e8fa96d760f94a",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:03:50Z"
+    },
+    {
+      "path": "exports/hi/sevenInchScreenshots/panel-04.png",
+      "sha256": "dad6f39e528bd162f56015fce13a9a85bfd416bf97a74cea02f33873755a0827",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:03:50Z"
+    },
+    {
+      "path": "exports/id/sevenInchScreenshots/panel-01.png",
+      "sha256": "247f736bfe2cee2b4ec9763fedf98588aec01ee08997d0643ea9147b33a5b510",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:04:45Z"
+    },
+    {
+      "path": "exports/id/sevenInchScreenshots/panel-02.png",
+      "sha256": "c938974df2bc8020d400cfef35936fec9f839ff8ed642079d2f1b1909f7efaba",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:04:45Z"
+    },
+    {
+      "path": "exports/id/sevenInchScreenshots/panel-03.png",
+      "sha256": "f18086ab6b9e643b9c251ba2dcf81ad3ae22338e85b495d3fc99a24386964be5",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:04:45Z"
+    },
+    {
+      "path": "exports/id/sevenInchScreenshots/panel-04.png",
+      "sha256": "d8fc8b2b468f11edbf9528d393dc8efe1fa015ab1867edf696eea81cf98d6d77",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:04:45Z"
+    },
+    {
+      "path": "exports/vi/sevenInchScreenshots/panel-01.png",
+      "sha256": "5efe4e3edc1161216e486345fdfdf7a9cc3bc26cab8a6089cca4814a3e3438e4",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:06:47Z"
+    },
+    {
+      "path": "exports/vi/sevenInchScreenshots/panel-02.png",
+      "sha256": "a991e51da65415ce5a02f4b2d3c6f6f92ba12434a087e190dddb4acfb22e45e1",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:06:47Z"
+    },
+    {
+      "path": "exports/vi/sevenInchScreenshots/panel-03.png",
+      "sha256": "56170db0ca4e12e688e82390a1173cda45c94e01354637ce95333d34c1fc2f1a",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:06:47Z"
+    },
+    {
+      "path": "exports/vi/sevenInchScreenshots/panel-04.png",
+      "sha256": "270f572b939d158fd2f1664d89e261fc112caa34793510ce5d8888d6acd56ff0",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:06:47Z"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-01.png",
+      "sha256": "7c44221179fd147b7fe01c54d4c4ebebcb62d5d0e0b4081234efc3e6176d8473",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:08:16Z"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-02.png",
+      "sha256": "ad4fcf64fb67d2e9edbdeecaef6d0f98b104210af235afd605932cea3a55d674",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:08:16Z"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-03.png",
+      "sha256": "f33fcf503a7992a5a729c0a70a62b2990170c696efc961d71c1ce634758ac1d5",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:08:16Z"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-04.png",
+      "sha256": "eff73ebb8b5a394b235b607e0081cb039ea1b93fa339b5cb8e7090d8f5a0a9b2",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:08:16Z"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-01.png",
+      "sha256": "3ef06c341c2e77b654055c0d977bf9909708c1702b0f7af4af8b1c897d2be2ed",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:09:19Z"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-02.png",
+      "sha256": "b02b80c127ce4885548434d38f5dbf160840988a789303dd384f9df2cd322884",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:09:19Z"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-03.png",
+      "sha256": "13254117ceda92d5eb3de2113a2335937c341babefc44de25f8ed51f6d769a01",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:09:19Z"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-04.png",
+      "sha256": "21eb5929d745515477ec8429fa0ac761a8c490ceab0cb9f30f07930d1e164c6a",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:09:19Z"
+    },
+    {
+      "path": "exports/ko/sevenInchScreenshots/panel-01.png",
+      "sha256": "1ee36c1c6cdb26f8225671f24404afc70686828211c473d40fa4178ca2d2c6c8",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/ko/sevenInchScreenshots/panel-02.png",
+      "sha256": "463c9e0cf8d40f7231ad0a26e15c8ede1d17731a822deb5eb91cf3b7f20eb461",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/ko/sevenInchScreenshots/panel-03.png",
+      "sha256": "89f5fcbcffd2784d991ae54ad3b59d0da6811b1b57a2a03249137815186a13c6",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/ko/sevenInchScreenshots/panel-04.png",
+      "sha256": "bb5b91a70d640de32a5ed63c97b39375a9e9967543cf64ee689a1851199a3dc6",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/zh-Hans/sevenInchScreenshots/panel-01.png",
+      "sha256": "962e47379b73ae647b0c6afa61dc0ea1bf93fb4c98b36434072d6d9481063b96",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/zh-Hans/sevenInchScreenshots/panel-02.png",
+      "sha256": "b17c146ea826d5f63921f708b5422c3f6ffa7fc5ccf632ecda5572c032cdc0de",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/zh-Hans/sevenInchScreenshots/panel-03.png",
+      "sha256": "9ae1b17be88aa6e018ad28f47338471055069b3c007d36ce5b9b3c70da57c66c",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/zh-Hans/sevenInchScreenshots/panel-04.png",
+      "sha256": "f12aa621f66ba67954345d4fdf7d794e7a87a17a53ceceb42cb7ca5e55b66219",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/zh-Hant/sevenInchScreenshots/panel-01.png",
+      "sha256": "a3ba4c8952339db820ea6e4a466e5f6deac0914db0ac0d279d3848502d0ea27e",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/zh-Hant/sevenInchScreenshots/panel-02.png",
+      "sha256": "d24b2d7daca18ef605e5086a14e3f128dc0e6265050d880f425e687b2a8d7794",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/zh-Hant/sevenInchScreenshots/panel-03.png",
+      "sha256": "e322d0f35b10cade310809fa5cd023ad6a714ead6a1365767caccf16b379d4ef",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    },
+    {
+      "path": "exports/zh-Hant/sevenInchScreenshots/panel-04.png",
+      "sha256": "c7197431525f3ed0c2bab5e0205906d41d35e367ce49c1592d6d55ed1390182f",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:14:02Z"
+    }
+  ],
+  "findings": [
+    "Populated native portrait tablet scenes show localized controls, cooking feeds and articles, without notification banners or missing glyphs.",
+    "Narrow story-pane headings and content use native ellipses; original geometry is preserved without artwork cropping.",
+    "English feed names and article content remain original content.",
+    "Arabic and Hebrew preserve native RTL controls and right-edge feed drawers; English original article paragraphs retain their natural direction."
+  ],
+  "scope": "Only individually listed and exact-hash matched seven-inch stills; full inventory audit and store upload are separate."
+}

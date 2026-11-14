@@ -16,6 +16,8 @@ import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.CustomIcon;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Folder;
+import com.newsblur.domain.FolderHierarchy;
 import com.newsblur.util.CustomIconRenderer;
 import com.newsblur.util.UIUtils;
 import com.newsblur.preference.PrefsRepo;
@@ -42,6 +44,28 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
 
     protected final static int defaultTextSizeChild = 14;
     protected final static int defaultTextSizeGroup = 13;
+
+    private java.util.Map<String, Folder> foldersByPath = new java.util.HashMap<>();
+    private FolderHierarchy hierarchy = new FolderHierarchy(Collections.emptyList());
+
+    protected void setFolders(java.util.List<Folder> folders) {
+        foldersByPath.clear();
+        for (Folder folder : folders) foldersByPath.put(folder.flatName(), folder);
+        hierarchy = new FolderHierarchy(folders);
+    }
+
+    protected ArrayList<Feed> getSubtreeFeeds(int groupPosition) {
+        Set<String> ids = hierarchy.feedIds(folderNames.get(groupPosition));
+        java.util.Map<String, Feed> feeds = new java.util.LinkedHashMap<>();
+        for (ArrayList<Feed> children : folderChildren) {
+            for (Feed feed : children) {
+                if (folderViewFilter != FolderViewFilter.NESTED || ids.contains(feed.feedId)) {
+                    feeds.put(feed.feedId, feed);
+                }
+            }
+        }
+        return new ArrayList<>(feeds.values());
+    }
 
     protected Set<String> feedIds = new HashSet<>();
     protected ArrayList<String> folderNames = new ArrayList<>();
@@ -110,7 +134,11 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_widget_config_folder, parent, false);
             TextView textName = convertView.findViewById(R.id.text_folder_name);
             textName.setTextSize(textSize * defaultTextSizeGroup);
-            textName.setText(folderName);
+            Folder folder = foldersByPath.get(folderName);
+            textName.setText(folder == null ? folderName : folder.name);
+            int depth = folder == null ? 0 : folder.depth();
+            convertView.setPaddingRelative(UIUtils.dp2px(parent.getContext(), 12 + 28 * depth), 0, UIUtils.dp2px(parent.getContext(), 12), 0);
+            convertView.setContentDescription(folderName);
 
             // Check for custom folder icon
             ImageView folderIcon = convertView.findViewById(R.id.img_folder);
@@ -136,6 +164,9 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_widget_config_feed, parent, false);
         }
 
+        Folder folder = foldersByPath.get(folderNames.get(groupPosition));
+        int depth = folderViewFilter == FolderViewFilter.NESTED && folder != null && !folder.name.equals(AppConstants.ROOT_FOLDER) ? folder.depth() + 1 : 0;
+        convertView.setPaddingRelative(UIUtils.dp2px(parent.getContext(), 8 + 28 * depth), UIUtils.dp2px(parent.getContext(), 4), UIUtils.dp2px(parent.getContext(), 8), UIUtils.dp2px(parent.getContext(), 4));
         final Feed feed = folderChildren.get(groupPosition).get(childPosition);
         TextView textTitle = convertView.findViewById(R.id.text_title);
         TextView textDetails = convertView.findViewById(R.id.text_details);

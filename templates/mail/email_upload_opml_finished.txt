@@ -1,7 +1,7 @@
 {% extends "mail/email_base.txt" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
-{% block body %}Good news! NewsBlur has finished importing your OPML file. You are now subscribed to <b>{{ feed_count }}</b> site{{ feed_count|pluralize }}.
+{% block body %}{% trans "Good news! NewsBlur has finished importing your OPML file." %} {% blocktrans count counter=feed_count %}You are now subscribed to <b>{{ counter }}</b> site.{% plural %}You are now subscribed to <b>{{ counter }}</b> sites.{% endblocktrans %}
 
-Head over to NewsBlur and get reading: https://{% current_domain %}{% endblock body %}
+{% trans "Head over to NewsBlur and get reading:" %} https://{% current_domain %}{% endblock body %}

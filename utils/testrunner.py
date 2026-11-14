@@ -7,7 +7,7 @@ from mongoengine.connection import connect, disconnect
 
 class TestRunner(DiscoverRunner):
     def setup_databases(self, **kwargs):
-        db_name = "newsblur_test"
+        db_name = "nb_test"
         disconnect()
 
         # Use Docker MongoDB settings when in Docker environment
@@ -39,7 +39,7 @@ class TestRunner(DiscoverRunner):
         else:
             conn = pymongo.MongoClient("127.0.0.1", 27017)
 
-        db_name = "newsblur_test"
+        db_name = "nb_test"
         conn.drop_database(db_name)
         print("Dropping test-database: %s" % db_name)
         return super(TestRunner, self).teardown_databases(old_config, **kwargs)

@@ -2,12 +2,12 @@ import ipaddress
 import socket
 from urllib.parse import urljoin, urlparse
 
+import httpx
 import requests
+from requests.structures import CaseInsensitiveDict
+from requests.utils import get_encoding_from_headers
 
-
-BLOCKED_PRIVATE_URL_MESSAGE = (
-    "This address points to a private or reserved network."
-)
+BLOCKED_PRIVATE_URL_MESSAGE = "This address points to a private or reserved network."
 HTTP_SCHEMES = ("http", "https")
 MAX_REDIRECTS = 5
 
@@ -29,8 +29,17 @@ def normalize_url_for_safety(url):
 
 
 def validate_public_url(url):
-    url = normalize_url_for_safety(url)
-    parsed = urlparse(url)
+    # urllib3 ends the authority at a backslash, while urlparse does not. Reject it
+    # before parsing so utils/url_safety.py cannot validate a different host from
+    # the one the HTTP client requests.
+    if "\\" in (url or ""):
+        raise UnsafeUrlError("Invalid URL.")
+
+    try:
+        url = normalize_url_for_safety(url)
+        parsed = urlparse(url)
+    except ValueError as e:
+        raise UnsafeUrlError("Invalid URL.") from e
 
     if parsed.scheme not in HTTP_SCHEMES:
         raise UnsafeUrlError("Only http and https URLs are allowed.")
@@ -64,12 +73,7 @@ def safe_requests_request(method, url, **kwargs):
     request_kwargs = dict(kwargs)
 
     for _ in range(max_redirects + 1):
-        response = requests.request(
-            current_method,
-            current_url,
-            allow_redirects=False,
-            **request_kwargs
-        )
+        response = requests.request(current_method, current_url, allow_redirects=False, **request_kwargs)
         if not response.is_redirect:
             response.history = history
             return response
@@ -81,13 +85,9 @@ def safe_requests_request(method, url, **kwargs):
 
         if len(history) >= max_redirects:
             response.close()
-            raise requests.TooManyRedirects(
-                "Exceeded %s redirects for %s" % (max_redirects, url)
-            )
+            raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
 
-        next_url = validate_public_url(
-            urljoin(response.url or current_url, location)
-        )
+        next_url = validate_public_url(urljoin(response.url or current_url, location))
         history.append(response)
         current_url = next_url
 
@@ -96,9 +96,70 @@ def safe_requests_request(method, url, **kwargs):
             request_kwargs.pop("data", None)
             request_kwargs.pop("json", None)
 
-    raise requests.TooManyRedirects(
-        "Exceeded %s redirects for %s" % (max_redirects, url)
-    )
+    raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
+
+
+def safe_http2_get(url, headers=None, timeout=15, max_redirects=MAX_REDIRECTS):
+    """GET over HTTP/2, for sites that refuse HTTP/1.1, the only version requests speaks.
+    dumbingofage.com answers HTTP/1.1 with 426 Upgrade Required and serves its feed only
+    over HTTP/2 (forum #13858). Every hop is checked with validate_public_url exactly like
+    safe_requests_request, and the answer comes back as a requests.Response so callers
+    read it the same way. httpx errors are raised as their requests equivalents because
+    callers catch requests.RequestException. FetchFeed.fetch swaps this in for
+    safe_requests_get with the same call (url, headers=, timeout=), so any new keyword
+    passed there has to be accepted here too. The returned response carries status, headers,
+    body, url, encoding, history, and http_version; request and raw are left unset.
+    utils/url_safety.py
+    """
+    url = validate_public_url(url)
+    history = []
+    current_url = url
+
+    try:
+        client = httpx.Client(http2=True, timeout=timeout, follow_redirects=False)
+    except ImportError as e:
+        # httpx refuses http2=True when the h2 package is missing.
+        raise requests.ConnectionError(str(e)) from e
+
+    try:
+        with client:
+            for _ in range(max_redirects + 1):
+                response = _requests_response_from_httpx(client.get(current_url, headers=headers))
+                if not response.is_redirect:
+                    response.history = history
+                    return response
+
+                if len(history) >= max_redirects:
+                    raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
+
+                current_url = validate_public_url(urljoin(response.url, response.headers["Location"]))
+                history.append(response)
+    except httpx.TimeoutException as e:
+        raise requests.Timeout(str(e)) from e
+    except (httpx.HTTPError, httpx.InvalidURL, UnicodeEncodeError) as e:
+        # UnicodeEncodeError is httpx rejecting a non-ASCII header value, such as an odd
+        # ETag a feed once sent that requests would have passed through as latin-1.
+        raise requests.ConnectionError(str(e)) from e
+
+    raise requests.TooManyRedirects("Exceeded %s redirects for %s" % (max_redirects, url))
+
+
+def _requests_response_from_httpx(httpx_response):
+    # The body is already read and decompressed by httpx, the same as requests does, so the
+    # response is marked consumed: iter_content() then serves _content instead of streaming
+    # from raw, which is None here. utils/url_safety.py
+    response = requests.Response()
+    response.status_code = httpx_response.status_code
+    response.reason = httpx_response.reason_phrase
+    response.headers = CaseInsensitiveDict(httpx_response.headers.items())
+    response._content = httpx_response.content
+    response._content_consumed = True
+    response.url = str(httpx_response.url)
+    response.encoding = get_encoding_from_headers(response.headers)
+    # httpx quietly speaks HTTP/1.1 over TLS when the server's ALPN picks it, so keep the
+    # protocol it really used for the fetch log in utils/feed_fetcher.py.
+    response.http_version = httpx_response.http_version
+    return response
 
 
 def _port_or_default(parsed):
@@ -116,7 +177,7 @@ def _resolve_hostname(hostname, port):
 
     try:
         infos = socket.getaddrinfo(hostname, port, type=socket.SOCK_STREAM)
-    except socket.gaierror as e:
+    except (socket.gaierror, UnicodeError) as e:
         raise UnsafeUrlError("Could not resolve URL hostname.") from e
 
     addresses = set()
@@ -124,9 +185,7 @@ def _resolve_hostname(hostname, port):
         try:
             addresses.add(ipaddress.ip_address(info[4][0]))
         except ValueError as e:
-            raise UnsafeUrlError(
-                "URL resolved to an invalid IP address."
-            ) from e
+            raise UnsafeUrlError("URL resolved to an invalid IP address.") from e
     if not addresses:
         raise UnsafeUrlError("Could not resolve URL hostname.")
     return addresses

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Mendengarkan kini lebih mudah dikontrol. Mulai dari bilah alat baca dan lanjutkan dengan tombol Artikel berikutnya di pemutar mini.\n\nLanjut otomatis kini mengikuti urutan pilihan Anda di Artikel Tersimpan dan Artikel yang Sudah Dibaca, termasuk dari yang terlama. Pemutaran terus bergerak ke bawah daftar tanpa kembali ke artikel sebelumnya.\n\nJudul yang diulang di awal artikel kini hanya dibacakan sekali.\n\nKuota mendengarkan kini mingguan: 1 jam dengan Premium Archive dan 10 jam dengan Premium Pro, diperbarui setiap hari Minggu. Pengaturan dan Sedang Diputar menampilkan sisa waktu dalam jam dan menit."
+  },
+  "macos": {
+    "whats_new": "Mendengarkan kini lebih mudah dikontrol. Lanjutkan dengan tombol Artikel berikutnya di pemutar mini.\n\nLanjut otomatis kini mengikuti urutan pilihan Anda di Artikel Tersimpan dan Artikel yang Sudah Dibaca, termasuk dari yang terlama. Pemutaran terus bergerak ke bawah daftar tanpa kembali ke artikel sebelumnya.\n\nJudul yang diulang di awal artikel kini hanya dibacakan sekali.\n\nKuota mendengarkan kini mingguan: 1 jam dengan Premium Archive dan 10 jam dengan Premium Pro, diperbarui setiap hari Minggu. Pengaturan dan Sedang Diputar menampilkan sisa waktu dalam jam dan menit."
+  },
+  "android": {
+    "release_notes": "Peningkatan mendengarkan: mulai dari bilah baca dan lanjutkan dengan Artikel berikutnya di pemutar mini. Lanjut otomatis mengikuti urutan Artikel Tersimpan dan Artikel yang Sudah Dibaca, bergerak ke bawah daftar. Judul berulang dibaca sekali. Kuota mingguan: 1 jam dengan Premium Archive, 10 jam dengan Premium Pro, diperbarui hari Minggu. Pengaturan menampilkan sisa jam dan menit."
+  }
+}

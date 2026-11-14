@@ -1,0 +1,12 @@
+{
+  "language": "vi",
+  "device": "tablet7",
+  "serial": "R8YW810E3FF",
+  "scene": "stories",
+  "package": "com.newsblur.storecapture",
+  "captured_at": "2026-10-17 17:02:41 UTC",
+  "sha256": "1ffb0b6e8c484289724f17b2ad230148490ccacaa2284db1f0a7a5a0e9e1b668",
+  "native_readiness": "expected fixture content visible",
+  "tablet_composition": "populated_native_split",
+  "visual_review": "passed_native_ui"
+}

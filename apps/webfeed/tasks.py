@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from lxml import html as lxml_html
 
+from apps.statistics.rscrapingbee import RScrapingBee
 from newsblur_web.celeryapp import app
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
@@ -159,11 +160,12 @@ def fetch_page_html(url):
                 },
                 timeout=15,
             )
+            RScrapingBee.record_response("webfeed_preview", response, url=url)
             text = decode_response_text(response)
             if response.status_code == 200 and text:
                 return text
         except requests.RequestException:
-            pass
+            RScrapingBee.record("webfeed_preview", None, url=url)
 
     # Fallback to ScrapeNinja
     if getattr(settings, "SCRAPENINJA_API_KEY", None):
@@ -276,6 +278,18 @@ def parse_variants_json(response_text):
     return variants
 
 
+def filter_degenerate_variants(variants):
+    """Drop variants whose container XPath is pinned to specific items.
+
+    A container that enumerates item ids extracts the analysis-time items forever and
+    never finds a new story, which defeats the entire point of a web feed. See
+    is_degenerate_container_xpath in apps/webfeed/models.py.
+    """
+    from apps.webfeed.models import is_degenerate_container_xpath
+
+    return [v for v in variants if not is_degenerate_container_xpath(v.get("story_container"))]
+
+
 def rank_variants_by_previews(variants):
     """Order variants best-first by how many preview stories they extracted.
 
@@ -341,7 +355,11 @@ def FetchWebFeed(feed_id, user_id):
         feed.count_subscribers()
 
         publish("processing")
-        feed.update()
+        # Force the first fetch: the user just subscribed and is looking at the
+        # feed. A non-forced update can be silently deferred for an hour or more
+        # by the per-domain fetch budget (utils/domain_fetch_limiter.py) when the
+        # domain is saturated, leaving a brand-new feed empty.
+        feed.update(force=True)
 
         feed = Feed.get_by_id(feed_id)
         publish("complete", {"feed": feed.canonical() if feed else None})
@@ -383,6 +401,15 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
                 logging.user(
                     user, f"~BB~FWWeb Feed: ~FR~SBPublish failure~SN~FW for event ~SB{event_type}~SN"
                 )
+            # Match the account-scoped polling keys in apps/webfeed/views.py.
+            try:
+                status_key = f"webfeed:status:{user.pk}:{request_token}"
+                r.set(status_key, json.dumps(payload, ensure_ascii=False), ex=300)
+                if event_type == "variants" and extra and "variants" in extra:
+                    results_key = f"webfeed:results:{user.pk}:{request_token}"
+                    r.set(results_key, json.dumps(extra, ensure_ascii=False), ex=600)
+            except redis.RedisError:
+                pass
 
         publish_event = publish
         publish_event("start")
@@ -403,11 +430,6 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         html_hash = hashlib.sha256(page_html[:10000].encode("utf-8", errors="replace")).hexdigest()[:16]
 
-        logging.user(
-            user,
-            f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with Claude",
-        )
-
         publish_event("progress", {"message": "Preparing page..."})
 
         # Pre-process HTML to strip navigation elements for LLM analysis
@@ -421,17 +443,32 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         publish_event("progress", {"message": "Finding story patterns..."})
 
-        # Step 2: Call Claude for XPath analysis. The model is non-deterministic
+        # Step 2: Call the configured LLM for XPath analysis. The model is non-deterministic
         # and sometimes returns selectors that match nothing (especially on
         # utility-class-heavy sites like Tailwind), so wrap the call in a helper
         # we can retry, and judge each pass by what its selectors actually
         # extract rather than by the model's self-reported confidence order.
-        from apps.ask_ai.providers import LLM_EXCEPTIONS, get_briefing_provider
+        from apps.ask_ai.providers import (
+            DEFAULT_WEBFEED_MODEL,
+            LLM_EXCEPTIONS,
+            get_briefing_model_config,
+            get_briefing_provider,
+        )
 
-        provider, model_id = get_briefing_provider("haiku")
+        webfeed_model_name, webfeed_model_config = get_briefing_model_config(DEFAULT_WEBFEED_MODEL)
+        provider, model_id = get_briefing_provider(webfeed_model_name)
+        thinking_config = webfeed_model_config.get("thinking_config")
+        vendor = webfeed_model_config.get("vendor", "unknown")
+        vendor_display = webfeed_model_config.get("vendor_display", vendor.title())
+        model_display = webfeed_model_config.get("display_name", model_id)
+
+        logging.user(
+            user,
+            f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with ~SB{model_display}~SN",
+        )
 
         if not provider.is_configured():
-            error_msg = "Anthropic API key not configured"
+            error_msg = "%s API key not configured" % vendor_display
             publish_event("error", {"error": error_msg})
             return {"code": -1, "message": error_msg}
 
@@ -442,13 +479,13 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             number of variants that extracted at least one story."""
             messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint, retry=retry)
             response_chunks = []
-            for chunk in provider.stream_response(messages, model_id):
+            for chunk in provider.stream_response(messages, model_id, thinking_config=thinking_config):
                 response_chunks.append(chunk)
             text = "".join(response_chunks)
 
             input_tokens, output_tokens = provider.get_last_usage()
             LLMCostTracker.record_usage(
-                provider="anthropic",
+                provider=vendor,
                 model=model_id,
                 feature="webfeed",
                 input_tokens=input_tokens,
@@ -461,9 +498,16 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             parsed = parse_variants_json(text)
             if not parsed:
                 return parsed, 0, text
-            for variant in parsed:
+            usable_variants = filter_degenerate_variants(parsed)
+            if len(usable_variants) < len(parsed):
+                logging.user(
+                    user,
+                    "~BB~FWWeb Feed: ~FR~SBDropped %s degenerate variant(s)~SN~FW pinned to "
+                    "analysis-time items for ~SB%s~SN" % (len(parsed) - len(usable_variants), url),
+                )
+            for variant in usable_variants:
                 variant["preview_stories"] = extract_preview_stories(page_html, variant, url)
-            ranked, usable = rank_variants_by_previews(parsed)
+            ranked, usable = rank_variants_by_previews(usable_variants)
             return ranked, usable, text
 
         # Step 3: First analysis pass, plus a single retry when nothing matched.
@@ -489,6 +533,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             return {"code": -1, "message": error_msg}
 
         # Extract page title
+        doc = None
         page_title = ""
         try:
             doc = lxml_html.fromstring(page_html)
@@ -503,7 +548,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
         # Extract favicon URL
         favicon_url = ""
         try:
-            if not doc:
+            if doc is None:
                 doc = lxml_html.fromstring(page_html)
             for xpath in [
                 '//link[@rel="icon"]/@href',

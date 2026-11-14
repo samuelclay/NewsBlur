@@ -1,0 +1,98 @@
+{
+  "track": "production",
+  "releases": [
+    {
+      "name": "16.0.5",
+      "versionCodes": [
+        "297"
+      ],
+      "releaseNotes": [
+        {
+          "language": "en-US",
+          "text": "Fixes crashes on older Samsung tablets and other devices when opening NewsBlur or returning to feeds. Also fixes crashes with large articles, feed previews, one-feed folders, widgets, and translated comment counts. Reduces freezes during startup, sync, and subscription checks."
+        },
+        {
+          "language": "es-ES",
+          "text": "Corrige cierres inesperados en tabletas Samsung antiguas y otros dispositivos al abrir NewsBlur o volver a los feeds. También corrige fallos con artículos grandes, vistas previas de feeds, carpetas con un solo feed, widgets y recuentos de comentarios traducidos. Reduce bloqueos al iniciar, sincronizar y comprobar suscripciones."
+        },
+        {
+          "language": "fr-FR",
+          "text": "Corrige des plantages sur les anciennes tablettes Samsung et d’autres appareils à l’ouverture de NewsBlur ou au retour aux flux. Corrige aussi des plantages liés aux articles volumineux, aperçus de flux, dossiers à un seul flux, widgets et compteurs de commentaires traduits. Réduit les blocages au démarrage, lors de la synchronisation et de la vérification des abonnements."
+        },
+        {
+          "language": "de-DE",
+          "text": "Behebt Abstürze auf älteren Samsung-Tablets und anderen Geräten beim Öffnen von NewsBlur oder der Rückkehr zu Feeds. Behebt außerdem Abstürze bei großen Artikeln, Feed-Vorschauen, Ordnern mit nur einem Feed, Widgets und übersetzten Kommentarzählern. Reduziert Hänger beim Start, beim Synchronisieren und bei Abo-Prüfungen."
+        },
+        {
+          "language": "pt-BR",
+          "text": "Corrige falhas em tablets Samsung antigos e outros dispositivos ao abrir o NewsBlur ou voltar aos feeds. Também corrige falhas com artigos grandes, prévias de feeds, pastas com um só feed, widgets e contagens de comentários traduzidas. Reduz travamentos ao iniciar, sincronizar e verificar assinaturas."
+        },
+        {
+          "language": "it-IT",
+          "text": "Risolve arresti anomali sui tablet Samsung meno recenti e su altri dispositivi all’apertura di NewsBlur o tornando ai feed. Risolve anche arresti anomali con articoli di grandi dimensioni, anteprime dei feed, cartelle con un solo feed, widget e conteggi dei commenti tradotti. Riduce i blocchi durante l’avvio, la sincronizzazione e la verifica degli abbonamenti."
+        },
+        {
+          "language": "nl-NL",
+          "text": "Verhelpt crashes op oudere Samsung-tablets en andere apparaten bij het openen van NewsBlur of terugkeren naar feeds. Verhelpt ook crashes met grote artikelen, voorvertoningen van feeds, mappen met één feed, widgets en vertaalde reactieaantallen. Vermindert vastlopers bij opstarten, synchroniseren en abonnementscontroles."
+        },
+        {
+          "language": "pl-PL",
+          "text": "Naprawia awarie na starszych tabletach Samsung i innych urządzeniach przy otwieraniu NewsBlur lub powrocie do kanałów. Naprawia też awarie przy dużych artykułach, podglądach kanałów, folderach z jednym kanałem, widżetach i przetłumaczonych licznikach komentarzy. Ogranicza zawieszanie podczas uruchamiania, synchronizacji i sprawdzania subskrypcji."
+        },
+        {
+          "language": "tr-TR",
+          "text": "Eski Samsung tabletlerde ve diğer cihazlarda NewsBlur açılırken veya akışlara dönülürken yaşanan çökmeler düzeltildi. Büyük makaleler, akış önizlemeleri, tek akışlı klasörler, widget’lar ve çevrilmiş yorum sayılarıyla ilgili çökmeler de giderildi. Başlatma, eşitleme ve abonelik kontrolleri sırasındaki donmalar azaltıldı."
+        },
+        {
+          "language": "ru-RU",
+          "text": "Исправлены сбои на старых планшетах Samsung и других устройствах при запуске NewsBlur и возврате к лентам. Также исправлены сбои при загрузке больших статей, предпросмотре лент, работе с папками из одной ленты, виджетами и переведёнными счётчиками комментариев. Уменьшены зависания при запуске, синхронизации и проверке подписки."
+        },
+        {
+          "language": "uk",
+          "text": "Виправлено збої на старих планшетах Samsung та інших пристроях під час відкриття NewsBlur і повернення до стрічок. Також виправлено збої з великими статтями, попереднім переглядом стрічок, папками з однією стрічкою, віджетами та перекладеними лічильниками коментарів. Зменшено зависання під час запуску, синхронізації та перевірки підписки."
+        },
+        {
+          "language": "ar",
+          "text": "إصلاح أعطال على أجهزة Samsung اللوحية القديمة وأجهزة أخرى عند فتح NewsBlur أو العودة إلى الخلاصات. وإصلاح أعطال مرتبطة بالمقالات الكبيرة، ومعاينات الخلاصات، والمجلدات ذات الخلاصة الواحدة، والأدوات، وأعداد التعليقات المترجمة. تقليل حالات التجمد أثناء بدء التشغيل والمزامنة والتحقق من الاشتراكات."
+        },
+        {
+          "language": "iw-IL",
+          "text": "תוקנו קריסות בטאבלטים ישנים של Samsung ובמכשירים אחרים בעת פתיחת NewsBlur או חזרה לפידים. תוקנו גם קריסות הקשורות לכתבות גדולות, תצוגות מקדימות של פידים, תיקיות עם פיד אחד, וידג׳טים ומוני תגובות מתורגמים. צומצמו תקיעות בעת הפעלה, סנכרון ובדיקת מינויים."
+        },
+        {
+          "language": "hi-IN",
+          "text": "पुराने Samsung टैबलेट और अन्य डिवाइस पर NewsBlur खोलते समय या फ़ीड पर लौटते समय होने वाले क्रैश ठीक किए गए हैं। बड़े लेखों, फ़ीड की झलक, एक फ़ीड वाले फ़ोल्डरों, विजेट और अनुवादित टिप्पणी गिनती से जुड़े क्रैश भी ठीक किए गए हैं। ऐप शुरू करते समय, सिंक और सदस्यता जाँच के दौरान ऐप अटकने की समस्याएँ कम की गई हैं।"
+        },
+        {
+          "language": "id",
+          "text": "Memperbaiki crash di tablet Samsung lama dan perangkat lain saat membuka NewsBlur atau kembali ke feed. Juga memperbaiki crash pada artikel besar, pratinjau feed, folder berisi satu feed, widget, dan jumlah komentar yang diterjemahkan. Mengurangi macet saat aplikasi dimulai, sinkronisasi, dan pemeriksaan langganan."
+        },
+        {
+          "language": "vi",
+          "text": "Sửa lỗi ứng dụng bị đóng trên máy tính bảng Samsung cũ và các thiết bị khác khi mở NewsBlur hoặc quay lại nguồn cấp. Cũng sửa lỗi với bài viết lớn, bản xem trước nguồn cấp, thư mục chỉ có một nguồn cấp, tiện ích và số bình luận trong bản dịch. Giảm tình trạng treo khi khởi động, đồng bộ và kiểm tra gói đăng ký."
+        },
+        {
+          "language": "th",
+          "text": "แก้ไขแอปปิดตัวบนแท็บเล็ต Samsung รุ่นเก่าและอุปกรณ์อื่นเมื่อเปิด NewsBlur หรือกลับไปที่ฟีด รวมถึงปัญหากับบทความขนาดใหญ่ ตัวอย่างฟีด โฟลเดอร์ที่มีฟีดเดียว วิดเจ็ต และจำนวนความคิดเห็นในภาษาที่แปล ลดอาการค้างระหว่างเริ่มแอป ซิงค์ และตรวจสอบการสมัครสมาชิก"
+        },
+        {
+          "language": "ja-JP",
+          "text": "古いSamsung製タブレットなどのデバイスで、NewsBlurを開くときやフィードに戻るときにクラッシュする問題を修正しました。サイズの大きい記事、フィードのプレビュー、フィードが1つだけのフォルダー、ウィジェット、翻訳されたコメント件数の表示に関するクラッシュも修正しました。起動、同期、サブスクリプション確認時にフリーズする問題を軽減しました。"
+        },
+        {
+          "language": "ko-KR",
+          "text": "구형 Samsung 태블릿과 다른 기기에서 NewsBlur를 열거나 피드로 돌아갈 때 앱이 종료되는 문제를 수정했습니다. 대용량 기사, 피드 미리 보기, 피드가 하나뿐인 폴더, 위젯, 번역된 댓글 수 표시와 관련된 앱 종료 문제도 수정했습니다. 시작, 동기화, 구독 확인 중 멈추는 현상을 줄였습니다."
+        },
+        {
+          "language": "zh-CN",
+          "text": "修复了在较旧的 Samsung 平板电脑和其他设备上打开 NewsBlur 或返回订阅源时的崩溃。还修复了与大型文章、订阅源预览、仅含一个订阅源的文件夹、小组件以及翻译后的评论数量显示有关的崩溃。减少了启动、同步和订阅检查期间的卡死。"
+        },
+        {
+          "language": "zh-TW",
+          "text": "修正了在較舊的 Samsung 平板電腦和其他裝置上開啟 NewsBlur 或返回訂閱來源時的當機問題。也修正了與大型文章、訂閱來源預覽、僅含一個訂閱來源的資料夾、小工具及翻譯後的留言數量顯示有關的當機問題。減少了啟動、同步和訂閱檢查期間的停滯情況。"
+        }
+      ],
+      "status": "completed"
+    }
+  ]
+}

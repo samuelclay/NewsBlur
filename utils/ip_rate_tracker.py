@@ -57,7 +57,7 @@ class IPRateTracker:
         "ios": ["newsblur iphone", "newsblur ipad", "newsblur ios"],
         "android": ["newsblur android", "newsblur-android"],
         "web": ["mozilla", "chrome", "safari", "firefox", "edge", "opera"],
-        "api": ["python-requests", "python-urllib", "curl", "httpie", "wget", "okhttp", "java"],
+        "api": ["python-requests", "python-urllib", "curl", "httpie", "wget", "okhttp", "java", "ruby"],
     }
 
     def __init__(self):

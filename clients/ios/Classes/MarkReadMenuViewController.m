@@ -37,13 +37,13 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 
 @implementation MarkReadMenuViewController
 
-#define kMenuOptionHeight 38
+#define kMenuOptionHeight 44
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
-    self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
+    self.menuTableView.backgroundColor = MenuTableViewCell.menuBackgroundColor;
+    self.menuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -68,15 +68,15 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 }
 
 - (CGSize)preferredContentSize {
-    CGSize size = CGSizeMake(300.0, 190.0);
+    CGSize size = CGSizeMake(300.0, 5 * kMenuOptionHeight);
     
     if (self.olderNewerStoriesCollection) {
-        size = CGSizeMake(300.0, 114.0);
+        size = CGSizeMake(300.0, 3 * kMenuOptionHeight);
     } else if (self.visibleUnreadCount) {
-        size = CGSizeMake(300.0, 228.0);
+        size = CGSizeMake(300.0, 6 * kMenuOptionHeight);
     }
     
-    size.height = size.height + (self.extraItems.count * 38.0);
+    size.height = size.height + (self.extraItems.count * kMenuOptionHeight);
     
     return size;
 }
@@ -89,32 +89,32 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
         [self.olderNewerStoriesCollection calculateStoryLocations];
         
         if ([self.olderNewerStoriesCollection isStoryUnread:self.olderNewerStory]) {
-            [self addTitle:@"Mark as read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeToggle];
+            [self addTitle:[NBLocalization text:@"Mark as read"] iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeToggle];
         } else {
-            [self addTitle:@"Mark as unread" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeToggle];
+            [self addTitle:[NBLocalization text:@"Mark as unread"] iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeToggle];
         }
         
         if ([self.olderNewerStoriesCollection.activeOrder isEqualToString:@"newest"]) {
-            [self addTitle:@"Mark newer stories read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeNewer];
-            [self addTitle:@"Mark older stories read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeOlder];
+            [self addTitle:[NBLocalization text:@"Mark newer stories read"] iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeNewer];
+            [self addTitle:[NBLocalization text:@"Mark older stories read"] iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeOlder];
         } else {
-            [self addTitle:@"Mark older stories read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeOlder];
-            [self addTitle:@"Mark newer stories read" iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeNewer];
+            [self addTitle:[NBLocalization text:@"Mark older stories read"] iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeOlder];
+            [self addTitle:[NBLocalization text:@"Mark newer stories read"] iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeNewer];
         }
     } else {
-        [self addTitle:[NSString stringWithFormat:@"Mark %@ as read", self.collectionTitle] iconName:@"menu_icn_markread.png" days:0];
+        [self addTitle:[NBLocalization markReadTitle:self.collectionTitle] iconName:@"menu_icn_markread.png" days:0];
         
         if (self.visibleUnreadCount) {
-            NSString *stories = self.visibleUnreadCount == 1 ? @"Mark this story as read" : [NSString stringWithFormat:@"Mark these %@ stories read", @(self.visibleUnreadCount)];
+            NSString *stories = self.visibleUnreadCount == 1 ? [NBLocalization text:@"Mark this story as read"] : [NBLocalization plural:@"Mark these %@ stories read" count:@(self.visibleUnreadCount)];
             
             [self addTitle:stories iconName:@"menu_icn_markread.png" days:-1];
         }
         
         // Might want different icons for each
-        [self addTitle:@"Mark read older than 1 day" iconName:@"menu_icn_markread.png" days:1];
-        [self addTitle:@"Mark read older than 3 days" iconName:@"menu_icn_markread.png" days:3];
-        [self addTitle:@"Mark read older than 7 days" iconName:@"menu_icn_markread.png" days:7];
-        [self addTitle:@"Mark read older than 14 days" iconName:@"menu_icn_markread.png" days:14];
+        [self addTitle:[NBLocalization text:@"Mark read older than 1 day"] iconName:@"menu_icn_markread.png" days:1];
+        [self addTitle:[NBLocalization text:@"Mark read older than 3 days"] iconName:@"menu_icn_markread.png" days:3];
+        [self addTitle:[NBLocalization text:@"Mark read older than 7 days"] iconName:@"menu_icn_markread.png" days:7];
+        [self addTitle:[NBLocalization text:@"Mark read older than 14 days"] iconName:@"menu_icn_markread.png" days:14];
     }
     
     for (NSDictionary *item in self.extraItems) {

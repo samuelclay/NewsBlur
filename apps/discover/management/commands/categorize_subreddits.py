@@ -22,13 +22,14 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from utils.llm_costs import LLMCostTracker
+from utils.llm_models import ANTHROPIC_MODEL
 
 from .discover_subreddits import TAXONOMY
 
 FIXTURE_DIR = os.path.join(os.path.dirname(__file__), "../../fixtures")
 FIXTURE_PATH = os.path.join(FIXTURE_DIR, "popular_feeds.json")
 
-CLAUDE_MODEL = "claude-haiku-4-5"
+CLAUDE_MODEL = ANTHROPIC_MODEL
 DEFAULT_BATCH_SIZE = 100
 
 

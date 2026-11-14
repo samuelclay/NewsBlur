@@ -35,10 +35,13 @@ import django.http
 import paypalrestsdk
 import redis
 import sentry_sdk
+from django.core.exceptions import RequestDataTooBig
+from django.http import UnreadablePostError
 from mongoengine import connect
 from pymongo import monitoring
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import ignore_logger
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from utils.mongo_command_monitor import MongoCommandLogger
@@ -56,6 +59,26 @@ NEWSBLUR_URL = "https://www.newsblur.com"
 IMAGES_URL = "https://imageproxy.newsblur.com"
 PUSH_DOMAIN = "push.newsblur.com"
 SECRET_KEY = "YOUR_SECRET_KEY"
+# apps/api/social_auth.py uses a native Apple ID and a Google web OAuth client.
+SOCIAL_APPLE_CLIENT_IDS = ["com.newsblur.NewsBlur", "com.newsblur.NB-Alpha"]
+# apps/api/social_auth.py uses a Sign in with Apple key mounted outside the repository for token revocation.
+SOCIAL_APPLE_TEAM_ID = os.environ.get("SOCIAL_APPLE_TEAM_ID", "")
+SOCIAL_APPLE_KEY_ID = os.environ.get("SOCIAL_APPLE_KEY_ID", "")
+SOCIAL_APPLE_PRIVATE_KEY_PATH = os.environ.get("SOCIAL_APPLE_PRIVATE_KEY_PATH", "")
+# apps/api/social_auth.py keeps the Apple Services ID audience separate from native iOS audiences.
+SOCIAL_APPLE_WEB_CLIENT_ID = os.environ.get("SOCIAL_APPLE_WEB_CLIENT_ID", "")
+SOCIAL_APPLE_REDIRECT_URI = "https://www.newsblur.com/api/social/apple/callback"
+SOCIAL_GOOGLE_CLIENT_ID = os.environ.get("SOCIAL_GOOGLE_CLIENT_ID", "")
+SOCIAL_GOOGLE_CLIENT_SECRET = os.environ.get("SOCIAL_GOOGLE_CLIENT_SECRET", "")
+SOCIAL_GOOGLE_REDIRECT_URI = "https://www.newsblur.com/api/social/google/callback"
+# web_social_auth.py uses browser callbacks separate from the mobile app callbacks.
+SOCIAL_WEB_ENABLED = True
+SOCIAL_APPLE_WEB_REDIRECT_URI = os.environ.get(
+    "SOCIAL_APPLE_WEB_REDIRECT_URI", "https://www.newsblur.com/account/social/apple/callback"
+)
+SOCIAL_GOOGLE_WEB_REDIRECT_URI = os.environ.get(
+    "SOCIAL_GOOGLE_WEB_REDIRECT_URI", "https://www.newsblur.com/account/social/google/callback"
+)
 IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 DNSIMPLE_TOKEN = "YOUR_DNSIMPLE_TOKEN"
 RECAPTCHA_SECRET_KEY = "YOUR_RECAPTCHA_KEY"
@@ -82,8 +105,14 @@ MANAGERS = ADMINS
 PAYPAL_RECEIVER_EMAIL = "samuel@ofbrooklyn.com"
 TIME_ZONE = "GMT"
 LANGUAGE_CODE = "en-us"
+# settings.py: new-signup language revenue starts at the requested October 16, 2026 cutoff (UTC).
+LANGUAGE_ANALYTICS_COHORT_START = "2026-10-16T23:25:40"
 SITE_ID = 1
-USE_I18N = False
+USE_I18N = True
+from utils.languages import LANGUAGES as UI_LANGUAGES
+
+LANGUAGES = [(code.lower(), name) for code, name in UI_LANGUAGES.items()]
+LOCALE_PATHS = (os.path.join(NEWSBLUR_DIR, "locale"),)
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/account/login"
 MEDIA_URL = "/media/"
@@ -131,6 +160,7 @@ MIDDLEWARE = (
     "utils.prometheus_middleware.PrometheusBeforeMiddlewareWrapper",
     "apps.profile.middleware.UserAgentBanMiddleware",
     "django.middleware.gzip.GZipMiddleware",
+    "apps.profile.language.LanguageCatalogMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "subdomains.middleware.SubdomainMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -145,6 +175,7 @@ MIDDLEWARE = (
     "apps.profile.middleware.SimpsonsMiddleware",
     "apps.profile.middleware.ServerHostnameMiddleware",
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
+    "apps.profile.language.NewsBlurLocaleMiddleware",
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     "utils.request_introspection_middleware.DumpRequestMiddleware",
     "apps.profile.middleware.DBProfilerMiddleware",
@@ -305,6 +336,79 @@ SUBSCRIBER_EXPIRE = 7
 # servers. On your local, you should probably set this to 10-15 minutes
 PRO_MINUTES_BETWEEN_FETCHES = 5
 
+# DOMAIN_FETCHES_PER_MINUTE caps how many feeds on a single domain can be fetched
+# per minute across ALL task servers combined; feeds over budget are silently
+# deferred, not errored. See utils/domain_fetch_limiter.py. Production data
+# (July 2026) shows 99.75% of hosts stay under 1 fetch/minute, so this only
+# touches the handful of hottest domains. 30/minute is one fetch every 2
+# seconds, gentle for any single site.
+DOMAIN_FETCHES_PER_MINUTE = 30
+
+# Hosts that can take more than the default get raised budgets: multi-tenant hosts
+# whose volume is breadth, not hammering, plus large single sites with power users
+# whose many feeds deserve better than the default. Values chosen from measured
+# production rates (utils/domain_fetch_limiter.py has the methodology).
+# SCRAPINGBEE_HOST_DAILY_CREDIT_CAP is the most ScrapingBee credits any single target
+# host may spend per day across every proxy call site; past it the paid proxies are
+# skipped and the skip shows up as status="capped" on the ScrapingBee Usage dashboard
+# row. Only the hottest few hosts spend even half this normally, while one user's
+# 1,700 AbeBooks search feeds hit ~43K/day. See apps/statistics/rscrapingbee.py.
+SCRAPINGBEE_HOST_DAILY_CREDIT_CAP = 1000
+# SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS: a forbidden feed whose only subscriber hasn't been
+# seen in this many days isn't fetched through the paid proxy until they come back (the
+# skip shows as status="dormant" on the dashboard). Half of the 237K single-subscriber
+# forbidden feeds belong to accounts idle for over a year (September 2026 audit). See
+# Feed.has_dormant_sole_subscriber in apps/rss_feeds/models.py.
+SCRAPINGBEE_DORMANT_SUBSCRIBER_DAYS = 365
+# Per-user share of the ScrapingBee plan. Every proxied feed fetch is charged to the feed's
+# subscribers (up to 20 of them), and a feed is only proxied while at least one of its
+# subscribers is under budget, so no reader can drain the pool for everyone else. Leave
+# SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET at None to split the credits left in the billing
+# period evenly across the users charged in the last week (never assuming fewer than
+# SCRAPINGBEE_USER_BUDGET_MIN_USERS of them), or set a fixed number of credits per user
+# per period. Only feeds with a single active reader are rationed this way; a feed shared
+# by two or more active readers (Feed.has_multiple_active_subscribers) is always proxied,
+# since one credit serves all of them. Skips show as status="user_budget" on the dashboard.
+# See RScrapingBee.user_period_budget in apps/statistics/rscrapingbee.py.
+SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET = None
+SCRAPINGBEE_USER_BUDGET_MIN_USERS = 5000
+
+DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
+    # 10,600+ distinct channels/hour; actual traffic goes to the YouTube Data API
+    # at googleapis.com (utils/youtube_fetcher.py), which has its own quota. All
+    # youtube subdomains (gdata.youtube.com legacy addresses) collapse into this
+    # budget in feed_host(); combined demand measured ~425/min in August 2026.
+    "youtube.com": 600,
+    # Google's feed CDN, 6,900+ distinct feeds/hour, built to be crawled.
+    "feeds.feedburner.com": 200,
+    "feeds2.feedburner.com": 60,
+    # Mostly Pro users' 5-minute search feeds (measured ~250/min demand in August
+    # 2026); 120/min cycles every search roughly every 15-20 minutes.
+    "news.google.com": 120,
+    # Amazon-owned book marketplace with a Pro bookseller watching 1,700 search
+    # feeds. At 120/min AbeBooks started answering bot-challenge pages to some task
+    # server IPs (September 2026), and every challenged fetch was proxied through
+    # ScrapingBee at a credit apiece. 60/min still cycles their feeds every ~15
+    # minutes (the limiter's deferral cap is an hour) while halving the hammering.
+    "abebooks.com": 60,
+}
+
+# Reddit feeds come from RedListen (utils/redlisten.py), not reddit.com, so reddit hosts
+# skip the per-domain budget above (utils/domain_fetch_limiter.py). These are the Pro
+# plan's monthly quotas; RedListen's own x-quota-limit and x-items-limit headers take
+# over once a response carries them. Automatic fetching (the hourly poller in
+# utils/redlisten_poller.py and the comment-thread and search feeds) stops at
+# REDLISTEN_BACKGROUND_SHARE of each quota, leaving the rest for fetches a reader asks
+# for (insta-fetch, refresh, retry). Pro allows 120 requests a minute per key.
+REDLISTEN_API_KEY = None
+REDLISTEN_MONTHLY_REQUESTS = 50000
+REDLISTEN_MONTHLY_RESULTS = 1000000
+REDLISTEN_BACKGROUND_SHARE = 0.99
+REDLISTEN_REQUESTS_PER_MINUTE = 100
+# Every key on the account draws on the production quota, so development servers only
+# make one-off fetches unless this is turned on.
+REDLISTEN_BACKGROUND_IN_DEBUG = False
+
 ROOT_URLCONF = "newsblur_web.urls"
 INTERNAL_IPS = ("127.0.0.1",)
 LOGGING_LOG_SQL = True
@@ -374,6 +478,7 @@ INSTALLED_APPS = (
     "apps.categories",
     "apps.discover",
     "apps.ask_ai",
+    "apps.listen",
     "apps.webfeed",
     "apps.archive_extension",
     "apps.mcp",
@@ -413,6 +518,8 @@ GOOGLE_PLAY_SERVICE_ACCOUNT_INFO = None
 
 CELERY_TASK_ROUTES = {
     "work-queue": {"queue": "work_queue", "binding_key": "work_queue"},
+    # Long merges run on the work servers, off the fetch queues (apps/rss_feeds/tasks.py MergeFeeds).
+    "merge-feeds": {"queue": "work_queue", "binding_key": "work_queue"},
     "new-feeds": {"queue": "new_feeds", "binding_key": "new_feeds"},
     "push-feeds": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "update-feeds": {"queue": "update_feeds", "binding_key": "update_feeds"},
@@ -516,7 +623,16 @@ CELERY_IMPORTS = (
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
+# newsblur_web/settings.py: Each pool process is replaced after this many tasks. At 10, a busy fetch
+# server forked a new process every couple of seconds, and on the 4 CPU servers some of those new
+# processes couldn't get the CPU to report in before CELERY_WORKER_PROC_ALIVE_TIMEOUT and were
+# SIGKILLed (most of the worker SIGKILLs in Sentry). CELERY_WORKER_MAX_MEMORY_PER_CHILD still
+# recycles any process that grows too large.
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 50
+CELERY_WORKER_MAX_MEMORY_PER_CHILD = 750 * 1024
+# newsblur_web/settings.py: How long a freshly forked pool process has to report it's ready before
+# celery kills it. The 4 second default is too short on a CPU-saturated server.
+CELERY_WORKER_PROC_ALIVE_TIMEOUT = 30
 CELERY_TASK_TIME_LIMIT = 12 * 30
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
@@ -532,6 +648,8 @@ PREMIUM_PRICING_MIGRATION_ENABLED = True
 # renewal and the subscriber receives the PayPal pricing migration email.
 PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED = True
 
+PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS = 30
+
 CELERY_BEAT_SCHEDULE = {
     "task-feeds": {
         "task": "task-feeds",
@@ -542,6 +660,13 @@ CELERY_BEAT_SCHEDULE = {
         "task": "task-broken-feeds",
         "schedule": datetime.timedelta(hours=6),
         "options": {"queue": "beat_feeds_task"},
+    },
+    # Fetches every subreddit and Reddit user that active feeds read, in batches,
+    # on the RedListen budget (utils/redlisten_poller.py).
+    "poll-redlisten": {
+        "task": "poll-redlisten",
+        "schedule": datetime.timedelta(hours=1),
+        "options": {"queue": "cron_queue"},
     },
     "freshen-homepage": {
         "task": "freshen-homepage",
@@ -561,6 +686,16 @@ CELERY_BEAT_SCHEDULE = {
     "share-popular-stories": {
         "task": "share-popular-stories",
         "schedule": datetime.timedelta(minutes=10),
+        "options": {"queue": "cron_queue"},
+    },
+    "refresh-trending-stories": {
+        "task": "refresh-trending-stories",
+        "schedule": datetime.timedelta(hours=1),
+        "options": {"queue": "cron_queue"},
+    },
+    "curate-global-shared-stories": {
+        "task": "curate-global-shared-stories",
+        "schedule": datetime.timedelta(hours=1),
         "options": {"queue": "cron_queue"},
     },
     "clean-analytics": {
@@ -585,6 +720,12 @@ CELERY_BEAT_SCHEDULE = {
     },
     "premium-expire": {
         "task": "premium-expire",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    # Feeds nobody fetches are never trimmed by a fetch (apps/rss_feeds/tasks.py TrimAbandonedFeeds).
+    "trim-abandoned-feeds": {
+        "task": "trim-abandoned-feeds",
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
@@ -705,6 +846,11 @@ YOUTUBE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPENINJA_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPINGBEE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
+# Listen (apps/listen) reads stories aloud with ElevenLabs. Without a real key the feature reports itself
+# unavailable. The node stream server (node/listen.coffee) reads the same key from node/.env.
+ELEVENLABS_API_KEY = "sk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+LISTEN_MODEL = "eleven_v4_turbo"
+
 # ===============
 # = AWS Backing =
 # ===============
@@ -720,6 +866,7 @@ S3_BACKUP_BUCKET = "newsblur-backups"
 S3_PAGES_BUCKET_NAME = "pages.newsblur.com"
 S3_ICONS_BUCKET_NAME = "icons.newsblur.com"
 S3_AVATARS_BUCKET_NAME = "avatars.newsblur.com"
+S3_LISTEN_BUCKET_NAME = "listen.newsblur.com"
 
 # ==================
 # = Configurations =
@@ -755,6 +902,16 @@ if DOCKERBUILD:
     CELERY_WORKER_CONCURRENCY = 2
 elif "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
     CELERY_WORKER_CONCURRENCY = 4
+elif (os.cpu_count() or 0) <= 4:
+    # newsblur_web/settings.py: The 4 CPU, 7 GB fetch servers (htask-celery-01 through 10) ran CPU
+    # saturated at 24 processes and are the only ones the kernel OOM killer and the slow-start
+    # SIGKILLs hit. The memory cap is measured on RSS, which counts the ~190 MB a pool process
+    # shares with its parent: processes measured ~355 MB RSS, ~160 MB of it their own. 16 at the
+    # usual size use ~3 GB; 16 all at the 600 MB cap would use ~7 GB of the 7.7 GB, which is why
+    # the cap is lower here than on the 15 GB servers. Chosen by the CPU count the worker sees, so
+    # a server that's resized picks up the right setting.
+    CELERY_WORKER_CONCURRENCY = 16
+    CELERY_WORKER_MAX_MEMORY_PER_CHILD = 600 * 1024
 else:
     CELERY_WORKER_CONCURRENCY = 24
 
@@ -772,8 +929,14 @@ if not DEBUG:
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
-        ignore_errors=[SystemExit],
+        # UnreadablePostError is a client hanging up in the middle of a POST and
+        # RequestDataTooBig is a bot posting an oversized body, mostly at the /push/
+        # callbacks. Both come from the outside world, so there is nothing to fix.
+        ignore_errors=[SystemExit, UnreadablePostError, RequestDataTooBig],
     )
+    # Bots probing the servers by IP address send a bad Host header, which Django
+    # reports as an error through this logger. It is noise, not a broken request.
+    ignore_logger("django.security.DisallowedHost")
     sentry_sdk.utils.MAX_STRING_LENGTH = 8192
 
 COMPRESS = not DEBUG
@@ -787,24 +950,13 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 os.environ["HF_HOME"] = "/srv/newsblur/docker/volumes/discover"
 
 
-def clear_prometheus_aggregation_stats():
-    prom_folder = "/srv/newsblur/.prom_cache"
-    os.makedirs(prom_folder, mode=0o777, exist_ok=True)
-    os.environ["PROMETHEUS_MULTIPROC_DIR"] = prom_folder
-    for filename in os.listdir(prom_folder):
-        file_path = os.path.join(prom_folder, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            if "No such file" in str(e):
-                return
-            print("Failed to delete %s. Reason: %s" % (file_path, e))
-
-
-clear_prometheus_aggregation_stats()
+# Prometheus multiprocess mode is enabled only under Gunicorn, which sets
+# PROMETHEUS_MULTIPROC_DIR in config/gunicorn_conf.py before Django loads.
+# Setting it here would enable it for every Django process: Celery children
+# (recycled by CELERY_WORKER_MAX_MEMORY_PER_CHILD) each wrote a counter and
+# histogram file into .prom_cache that nothing ever scraped or deleted, which
+# grew to 162,000 files on a task server. Without the env var,
+# prometheus_client keeps metrics in memory and writes no files.
 
 if DEBUG:
     template_loaders = [
@@ -839,6 +991,7 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.media",
                 "django.template.context_processors.request",
+                "apps.profile.language.language_context",
                 "django.contrib.messages.context_processors.messages",
             ],
             "loaders": template_loaders,
@@ -892,17 +1045,29 @@ MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 # MONGO_ANALYTICS_DB_NAME = MONGO_ANALYTICS_DB.pop('name')
 # MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
 
+# Analytics is optional data, so it fails fast rather than holding a request
+# open for pymongo's 30 second default while the server is unreachable. Callers
+# guard these operations with utils/analytics_degradation.py, which trips a
+# circuit breaker after the first timeout.
+MONGO_ANALYTICS_TIMEOUTS = {
+    "serverSelectionTimeoutMS": 2000,
+    "connectTimeoutMS": 2000,
+    "socketTimeoutMS": 5000,
+}
+
 if "username" in MONGO_ANALYTICS_DB:
     MONGOANALYTICSDB = connect(
         db=MONGO_ANALYTICS_DB["name"],
         host=f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin",
         alias="nbanalytics",
+        **MONGO_ANALYTICS_TIMEOUTS,
     )
 else:
     MONGOANALYTICSDB = connect(
         db=MONGO_ANALYTICS_DB["name"],
         host=f"mongodb://{MONGO_ANALYTICS_DB['host']}/",
         alias="nbanalytics",
+        **MONGO_ANALYTICS_TIMEOUTS,
     )
 
 
@@ -933,9 +1098,24 @@ CELERY_BROKER_URL = "redis://%s:%s/%s" % (
     CELERY_REDIS_DB_NUM,
 )
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+# newsblur_web/settings.py: Each htask-work server runs its own celery beat for redundancy.
+# This scheduler takes a redis lock per task interval so a scheduled task only runs once,
+# instead of once per beat process. See newsblur_web/celery_beat.py.
+CELERY_BEAT_SCHEDULER = "newsblur_web.celery_beat:DedupPersistentScheduler"
 CELERY_WORKER_LOG_FORMAT = "%(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
-BROKER_TRANSPORT_OPTIONS = {
+# newsblur_web/settings.py: The celery app reads settings with the CELERY_ prefix
+# (newsblur_web/celeryapp.py), so these were ignored while they were named BROKER_TRANSPORT_OPTIONS.
+# max_retries and interval_* apply for the first time, on purpose: publishing a task gives up after
+# about a second of broker connection errors instead of retrying forever, so a request fails rather
+# than hangs (payment providers retry a webhook that fails).
+# visibility_timeout stays at kombu's 1 hour default. A task waits unacknowledged in a worker until
+# it finishes, countdown tasks included, and the broker hands it to another worker once that passes.
+# A worker that is killed instead of restarted (a forced container stop, autoheal, an OOM kill)
+# hands nothing back, so its tasks come back only after the timeout; raising it would hold every
+# queue's tasks that long. Keep countdowns well under an hour instead: the archive backfill queues
+# one batch of walks at a time for that reason (apps/reader/models.py dispatch_archive_backfill).
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
     "interval_step": 0.2,
@@ -1077,6 +1257,10 @@ PIPELINE = {
         "common": {
             "source_filenames": assets["stylesheets"]["common"],
             "output_filename": "css/common.css",
+        },
+        "rtl": {
+            "source_filenames": assets["stylesheets"]["rtl"],
+            "output_filename": "css/rtl.css",
         },
         "bookmarklet": {
             "source_filenames": assets["stylesheets"]["bookmarklet"],

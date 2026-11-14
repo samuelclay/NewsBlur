@@ -124,10 +124,28 @@ public class Log {
     }
 
     public static void offerContext(final Context c) {
-        File cacheDir = c.getExternalCacheDir();
-        if (cacheDir == null) cacheDir = c.getCacheDir();
+        // NbApplication.kt calls this on the main thread; Android's cache lookup can block on disk.
+        executor.execute(() -> {
+            initializeLogDirectory(c);
+            proc();
+        });
+    }
+
+    private static void initializeLogDirectory(final Context c) {
+        File cacheDir = null;
+        try {
+            cacheDir = c.getExternalCacheDir();
+        } catch (NullPointerException | SecurityException unavailableStorage) {
+            // Log.java may initialize in a WebView process without external storage access.
+        }
+        if (cacheDir == null) {
+            try {
+                cacheDir = c.getCacheDir();
+            } catch (NullPointerException | SecurityException unavailableStorage) {
+                // Log.java must not crash application startup when neither cache is accessible.
+            }
+        }
         logloc = cacheDir;
-        executor.execute(Log::proc);
     }
 
     private static void proc() {

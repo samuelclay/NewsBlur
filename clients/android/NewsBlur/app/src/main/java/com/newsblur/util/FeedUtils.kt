@@ -188,6 +188,7 @@ class FeedUtils(
         readTimesJson: String? = null,
         remoteMode: StoryReadRemoteMode = StoryReadRemoteMode.QUEUED,
     ) {
+        val actionTime = System.currentTimeMillis()
         try {
             // this shouldn't throw errors, but crash logs suggest something is racing it for DB resources.
             // capture logs in hopes of finding the correlated action
@@ -203,12 +204,13 @@ class FeedUtils(
         }
 
         // update unread state and unread counts in the local DB
-        val impactedFeeds = dbHelper.setStoryReadState(story, read)
-        syncUpdateStatus(UPDATE_STORY)
+        val readHashes = if (read) ClusterReadSelection.hashes(story, prefsRepo) else listOf(story.storyHash)
+        val impactedFeeds = dbHelper.applyStoryReadHashes(readHashes, read, true)
+        syncUpdateStatus(UPDATE_STORY or UPDATE_METADATA)
         syncServiceState.addRecountCandidates(impactedFeeds)
 
         if (read) {
-            syncStoryReadRemote(story.storyHash, readTimesJson, context, remoteMode)
+            syncStoryReadRemote(story.storyHash, readTimesJson, context, remoteMode, readHashes, actionTime)
         } else {
             dbHelper.enqueueAction(ReadingAction.MarkStoryUnread(story.storyHash))
             triggerSync(context)
@@ -248,13 +250,21 @@ class FeedUtils(
         readTimesJson: String?,
         context: Context,
         remoteMode: StoryReadRemoteMode,
+        readHashes: List<String>,
+        actionTime: Long,
     ) {
         when (remoteMode) {
-            StoryReadRemoteMode.QUEUED -> queueStoryReadForRetry(storyHash, readTimesJson, context)
+            StoryReadRemoteMode.QUEUED -> queueStoryReadForRetry(storyHash, readTimesJson, context, readHashes, actionTime)
             StoryReadRemoteMode.IMMEDIATE -> {
                 val response = storyApi.markStoryAsRead(storyHash, readTimesJson)
                 if (shouldQueueForRetry(response)) {
-                    queueStoryReadForRetry(storyHash, readTimesJson, context)
+                    queueStoryReadForRetry(storyHash, readTimesJson, context, readHashes, actionTime)
+                } else if (response != null && !response.isError) {
+                    val hashes = response.storyHashes?.toList().orEmpty()
+                    if (hashes.isNotEmpty()) {
+                        syncServiceState.addRecountCandidates(dbHelper.applyStoryReadHashes(hashes, true, true, actionTime))
+                        syncUpdateStatus(UPDATE_STORY or UPDATE_METADATA)
+                    }
                 }
             }
         }
@@ -267,8 +277,10 @@ class FeedUtils(
         storyHash: String,
         readTimesJson: String?,
         context: Context,
+        readHashes: List<String>,
+        actionTime: Long,
     ) {
-        dbHelper.enqueueAction(ReadingAction.MarkStoryRead(storyHash, readTimesJson))
+        dbHelper.enqueueAction(ReadingAction.MarkStoryRead(storyHash, readTimesJson, time = actionTime, relatedStoryHashes = readHashes))
         triggerSync(context)
     }
 

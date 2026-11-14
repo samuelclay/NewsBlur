@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 
 from utils import json_functions as json
 from utils import log as logging
+from utils.llm_models import ANTHROPIC_MODEL
 
 
 def _publish_category_update(user_id, archive_id, categories):
@@ -211,13 +212,17 @@ def _categorize_single_archive(archive, user_categories=None):
             title=archive.title, domain=archive.domain, content=content, existing_categories=user_categories
         )
 
+        # Haiku 5.5 thinks by default and its thinking counts toward max_tokens, so
+        # keep effort low and leave room for a few thinking tokens before the answer.
+        # The response can start with a thinking block, so read text blocks by type.
         response = client.messages.create(
-            model="claude-haiku-4-5",
-            max_tokens=100,
+            model=ANTHROPIC_MODEL,
+            max_tokens=1024,
             messages=[{"role": "user", "content": prompt}],
+            extra_body={"output_config": {"effort": "low"}},
         )
 
-        result = response.content[0].text.strip()
+        result = "".join(block.text for block in response.content if block.type == "text").strip()
         return _parse_category_response(result)
 
     except Exception as e:

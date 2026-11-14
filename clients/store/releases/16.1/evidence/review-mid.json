@@ -1,0 +1,197 @@
+{
+  "version": "16.1",
+  "reviewed_at": "2026-10-29T14:05:32Z",
+  "reviewer": "translate_west (independent of translate_mid)",
+  "languages": [
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id"
+  ],
+  "fields_reviewed": [
+    "ios.name",
+    "ios.subtitle",
+    "ios.description",
+    "ios.keywords",
+    "ios.promotional_text",
+    "ios.whats_new",
+    "android.title",
+    "android.short_description",
+    "android.full_description",
+    "android.release_notes",
+    "ios.subscriptions names and descriptions",
+    "ios.subscription_groups names and app names",
+    "android.subscriptions titles descriptions and benefits"
+  ],
+  "checks": [
+    "Meaning and omissions against finalized English source",
+    "Language register and glossary terminology",
+    "Listen, Up Next, Auto-continue labels against native iOS catalogs",
+    "Premium Archive and Premium Pro entitlement qualification; Free and Premium preview qualification",
+    "21 languages, 30-second previews, 0.5x to 3x speed, queue synchronization and background playback",
+    "Arabic and Hebrew native script and logical text order; actual store rendering remains coordinator verification",
+    "Field limits, Apple keyword UTF-8 bytes, preserved URLs and macOS copy"
+  ],
+  "corrections": [
+    {
+      "language": "he",
+      "field": "ios.whats_new",
+      "before": "מסומנות כנקראו",
+      "after": "מסומנות ככתבות שנקראו",
+      "reason": "Replace ungrammatical read-status clause with natural Hebrew preserving marked-as-read meaning."
+    }
+  ],
+  "product_corrections_required": [],
+  "locale_results": [
+    {
+      "language": "tr",
+      "status": "passed",
+      "lengths": {
+        "ios.name": 27,
+        "ios.subtitle": 28,
+        "ios.description": 2687,
+        "ios.promotional_text": 145,
+        "ios.whats_new": 781,
+        "android.title": 27,
+        "android.short_description": 69,
+        "android.full_description": 2175,
+        "android.release_notes": 389
+      },
+      "keywords_utf8_bytes": 78,
+      "sha256": {
+        "clients/store/metadata/tr.json": "675705e76dc6d1ac00c657c8af6813ad306bc56200bae31ebd5e7f147f5806c9",
+        "clients/store/releases/16.1/tr.json": "c8f9d92b794ca54016b64fc5b9ffddac01d1fbb3df4c8a2fe40e1c3e5b252090",
+        "clients/store/products/tr.json": "574ccd1b446a256f839dcfa1f93cae0d273f7c7633b33e6039327f42f6c28c93"
+      }
+    },
+    {
+      "language": "ru",
+      "status": "passed",
+      "lengths": {
+        "ios.name": 23,
+        "ios.subtitle": 26,
+        "ios.description": 2653,
+        "ios.promotional_text": 155,
+        "ios.whats_new": 800,
+        "android.title": 23,
+        "android.short_description": 65,
+        "android.full_description": 2094,
+        "android.release_notes": 418
+      },
+      "keywords_utf8_bytes": 90,
+      "sha256": {
+        "clients/store/metadata/ru.json": "e2c57877f071f40ed63e5c649a58b343b1e76778e9cc8010640ec1ae635c5ecd",
+        "clients/store/releases/16.1/ru.json": "e374abc2929d1624e3fb75d902d6b5e38904d6276a6a074abd02814c315a10cb",
+        "clients/store/products/ru.json": "c251c9e429f5d95e0a721e6709fdea820352482580284460a1e92b78309addba"
+      }
+    },
+    {
+      "language": "uk",
+      "status": "passed",
+      "lengths": {
+        "ios.name": 22,
+        "ios.subtitle": 26,
+        "ios.description": 2670,
+        "ios.promotional_text": 149,
+        "ios.whats_new": 810,
+        "android.title": 22,
+        "android.short_description": 63,
+        "android.full_description": 2109,
+        "android.release_notes": 406
+      },
+      "keywords_utf8_bytes": 94,
+      "sha256": {
+        "clients/store/metadata/uk.json": "9ac7627ae46a1ad9b9ac046ab0c4fe28c71479f6e8a1b96ae72bc163ff631db6",
+        "clients/store/releases/16.1/uk.json": "da7630783ef9bd3b92c800a7ea7aa240e52b9dc0487378311d661853a53ead08",
+        "clients/store/products/uk.json": "a3d5742298994afa7b2f9b915d0d4bc0515cdf28adbff44ad8f4228547be9d68"
+      }
+    },
+    {
+      "language": "ar",
+      "status": "passed",
+      "lengths": {
+        "ios.name": 24,
+        "ios.subtitle": 30,
+        "ios.description": 2082,
+        "ios.promotional_text": 133,
+        "ios.whats_new": 668,
+        "android.title": 24,
+        "android.short_description": 59,
+        "android.full_description": 1680,
+        "android.release_notes": 358
+      },
+      "keywords_utf8_bytes": 82,
+      "sha256": {
+        "clients/store/metadata/ar.json": "66b774cc356cd31d5aecf6698532893bed1da52eb1ba78d7cc95106c60ecde6f",
+        "clients/store/releases/16.1/ar.json": "015e71f4057cf0bed0f2295d8bc28a91f08719d5eb8b01685b0e37a0659a3574",
+        "clients/store/products/ar.json": "55c13d691b36064feacb434c533f0adbe30df6a8be426e2c21a6662a11a4b3ba"
+      }
+    },
+    {
+      "language": "he",
+      "status": "passed",
+      "lengths": {
+        "ios.name": 24,
+        "ios.subtitle": 28,
+        "ios.description": 2026,
+        "ios.promotional_text": 121,
+        "ios.whats_new": 634,
+        "android.title": 24,
+        "android.short_description": 59,
+        "android.full_description": 1616,
+        "android.release_notes": 331
+      },
+      "keywords_utf8_bytes": 86,
+      "sha256": {
+        "clients/store/metadata/he.json": "4862620ba34765be5517920793c0e8da9f01e615f12bd2e1b55fb20ab83e9b94",
+        "clients/store/releases/16.1/he.json": "07fff9dd7bd7783cc2e1abcf379741b4f008499df4b0baf9da2a96d7b12ab7c4",
+        "clients/store/products/he.json": "38d3f3d5a6b5e53b985523461aaee749914d2f7c81fee8aef62999a32ed9f3f4"
+      }
+    },
+    {
+      "language": "hi",
+      "status": "passed",
+      "lengths": {
+        "ios.name": 25,
+        "ios.subtitle": 23,
+        "ios.description": 2529,
+        "ios.promotional_text": 135,
+        "ios.whats_new": 781,
+        "android.title": 25,
+        "android.short_description": 59,
+        "android.full_description": 1998,
+        "android.release_notes": 343
+      },
+      "keywords_utf8_bytes": 87,
+      "sha256": {
+        "clients/store/metadata/hi.json": "3f810ce4078c561df1ca0c1ee86a8af55c1541c5ff876e5d0a6423797223e53a",
+        "clients/store/releases/16.1/hi.json": "025a5e234a29f0c66409233cb987193f2cbd65b688ed4a985f172c8f6170a046",
+        "clients/store/products/hi.json": "233fc6a623e6c09a39c1217d9bda1a6a77c1306074605633955d4e658094ca69"
+      }
+    },
+    {
+      "language": "id",
+      "status": "passed",
+      "lengths": {
+        "ios.name": 28,
+        "ios.subtitle": 27,
+        "ios.description": 2611,
+        "ios.promotional_text": 152,
+        "ios.whats_new": 858,
+        "android.title": 28,
+        "android.short_description": 71,
+        "android.full_description": 2086,
+        "android.release_notes": 409
+      },
+      "keywords_utf8_bytes": 86,
+      "sha256": {
+        "clients/store/metadata/id.json": "31239e83ad8b39e174a8fe1fe145ddbe09a624fce11ed45c0150fbdc089a72a1",
+        "clients/store/releases/16.1/id.json": "446968f3b866805d830bc68abb1caecc7023da7681c02db714431787b793d4f3",
+        "clients/store/products/id.json": "fca59e73831a3dbbd464701396e7476e359f91d51017de1fb417d4b00684f76d"
+      }
+    }
+  ]
+}

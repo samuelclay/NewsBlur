@@ -17,6 +17,7 @@ import com.newsblur.domain.Story
 import com.newsblur.network.StoryApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.Log
 import com.newsblur.util.ReadFilter
@@ -93,7 +94,7 @@ class WidgetRemoteViewsFactory(
             rv.setTextViewText(R.id.story_item_content, story.shortContent)
             rv.setTextViewText(R.id.story_item_author, story.authors)
             rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle)
-            val time: CharSequence = StoryUtils.formatShortDate(context, story.timestamp)
+            val time: CharSequence = StoryUtils.formatShortDate(LanguageSettings.localizedContext(context), story.timestamp)
             rv.setTextViewText(R.id.story_item_date, time)
 
             // image dimensions same as R.layout.view_widget_story_item
@@ -176,8 +177,8 @@ class WidgetRemoteViewsFactory(
                 return@withLock
             }
 
-            runBlocking {
-                try {
+            try {
+                runBlocking {
                     // Taking more than 20 seconds in this method will result in an ANR.
                     withTimeout(18000) {
                         Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
@@ -189,9 +190,13 @@ class WidgetRemoteViewsFactory(
                             dbHelper.insertStories(response, stateFilter, true)
                         } ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
                     }
-                } catch (_: TimeoutCancellationException) {
-                    Log.d(this.javaClass.name, "onDataSetChanged - timeout")
                 }
+            } catch (_: TimeoutCancellationException) {
+                Log.d(this.javaClass.name, "onDataSetChanged - timeout")
+            } catch (_: InterruptedException) {
+                // WidgetRemoteViewsFactory.kt runs on a launcher worker that can be cancelled.
+                Thread.currentThread().interrupt()
+                Log.d(this.javaClass.name, "onDataSetChanged - interrupted")
             }
         }
 

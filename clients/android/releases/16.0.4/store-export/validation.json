@@ -1,0 +1,1708 @@
+{
+  "version": "16.0.4",
+  "languages": [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "fields": {
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/en.json: android.title": {
+      "length": 25,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/en.json: android.short_description": {
+      "length": 70,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/en.json: android.full_description": {
+      "length": 1526,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/es.json: android.title": {
+      "length": 20,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/es.json: android.short_description": {
+      "length": 72,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/es.json: android.full_description": {
+      "length": 1786,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/fr.json: android.title": {
+      "length": 22,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/fr.json: android.short_description": {
+      "length": 75,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/fr.json: android.full_description": {
+      "length": 2051,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/de.json: android.title": {
+      "length": 20,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/de.json: android.short_description": {
+      "length": 74,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/de.json: android.full_description": {
+      "length": 1867,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/pt-BR.json: android.title": {
+      "length": 20,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/pt-BR.json: android.short_description": {
+      "length": 73,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/pt-BR.json: android.full_description": {
+      "length": 1719,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/it.json: android.title": {
+      "length": 21,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/it.json: android.short_description": {
+      "length": 75,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/it.json: android.full_description": {
+      "length": 1832,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/nl.json: android.title": {
+      "length": 19,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/nl.json: android.short_description": {
+      "length": 70,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/nl.json: android.full_description": {
+      "length": 1739,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/pl.json: android.title": {
+      "length": 21,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/pl.json: android.short_description": {
+      "length": 76,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/pl.json: android.full_description": {
+      "length": 1752,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/tr.json: android.title": {
+      "length": 27,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/tr.json: android.short_description": {
+      "length": 79,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/tr.json: android.full_description": {
+      "length": 1806,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ru.json: android.title": {
+      "length": 23,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ru.json: android.short_description": {
+      "length": 68,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ru.json: android.full_description": {
+      "length": 1700,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/uk.json: android.title": {
+      "length": 22,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/uk.json: android.short_description": {
+      "length": 71,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/uk.json: android.full_description": {
+      "length": 1719,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ar.json: android.title": {
+      "length": 24,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ar.json: android.short_description": {
+      "length": 62,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ar.json: android.full_description": {
+      "length": 1377,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/he.json: android.title": {
+      "length": 24,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/he.json: android.short_description": {
+      "length": 56,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/he.json: android.full_description": {
+      "length": 1304,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/hi.json: android.title": {
+      "length": 25,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/hi.json: android.short_description": {
+      "length": 70,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/hi.json: android.full_description": {
+      "length": 1670,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/id.json: android.title": {
+      "length": 28,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/id.json: android.short_description": {
+      "length": 71,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/id.json: android.full_description": {
+      "length": 1722,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/vi.json: android.title": {
+      "length": 27,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/vi.json: android.short_description": {
+      "length": 79,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/vi.json: android.full_description": {
+      "length": 1759,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/th.json: android.title": {
+      "length": 22,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/th.json: android.short_description": {
+      "length": 62,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/th.json: android.full_description": {
+      "length": 1410,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ja.json: android.title": {
+      "length": 20,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ja.json: android.short_description": {
+      "length": 44,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ja.json: android.full_description": {
+      "length": 883,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ko.json: android.title": {
+      "length": 19,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ko.json: android.short_description": {
+      "length": 48,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/ko.json: android.full_description": {
+      "length": 975,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/zh-Hans.json: android.title": {
+      "length": 18,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/zh-Hans.json: android.short_description": {
+      "length": 28,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/zh-Hans.json: android.full_description": {
+      "length": 627,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/zh-Hant.json: android.title": {
+      "length": 18,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/zh-Hant.json: android.short_description": {
+      "length": 31,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/metadata/zh-Hant.json: android.full_description": {
+      "length": 640,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/en.json: android.release_notes": {
+      "length": 315,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/es.json: android.release_notes": {
+      "length": 399,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/fr.json: android.release_notes": {
+      "length": 406,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/de.json: android.release_notes": {
+      "length": 376,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/pt-BR.json: android.release_notes": {
+      "length": 369,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/it.json: android.release_notes": {
+      "length": 400,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/nl.json: android.release_notes": {
+      "length": 362,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/pl.json: android.release_notes": {
+      "length": 402,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/tr.json: android.release_notes": {
+      "length": 367,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/ru.json: android.release_notes": {
+      "length": 391,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/uk.json: android.release_notes": {
+      "length": 379,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/ar.json: android.release_notes": {
+      "length": 334,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/he.json: android.release_notes": {
+      "length": 274,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/hi.json: android.release_notes": {
+      "length": 360,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/id.json: android.release_notes": {
+      "length": 378,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/vi.json: android.release_notes": {
+      "length": 368,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/th.json: android.release_notes": {
+      "length": 301,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/ja.json: android.release_notes": {
+      "length": 162,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/ko.json: android.release_notes": {
+      "length": 185,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/zh-Hans.json: android.release_notes": {
+      "length": 112,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/releases/16.0.4/zh-Hant.json: android.release_notes": {
+      "length": 113,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.36.title": {
+      "length": 29,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.36.description": {
+      "length": 106,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 22,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 37,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 124,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.36.title": {
+      "length": 30,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.36.description": {
+      "length": 141,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 38,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 24,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 32,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 39,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 38,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 133,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.36.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.36.description": {
+      "length": 163,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 33,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 35,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 142,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 40,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.36.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.36.description": {
+      "length": 127,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 35,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 127,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 17,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.title": {
+      "length": 30,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.description": {
+      "length": 126,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 26,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 32,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 38,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 123,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 15,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 38,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.36.title": {
+      "length": 28,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.36.description": {
+      "length": 137,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 36,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 146,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 40,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 33,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.36.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.36.description": {
+      "length": 110,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 20,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 17,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 35,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 121,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 17,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.36.title": {
+      "length": 28,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.36.description": {
+      "length": 137,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 36,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 134,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 40,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.36.title": {
+      "length": 26,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.36.description": {
+      "length": 134,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 38,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 34,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 127,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 20,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 33,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 33,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.36.title": {
+      "length": 25,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.36.description": {
+      "length": 131,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 20,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 33,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 116,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 23,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 39,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.36.title": {
+      "length": 25,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.36.description": {
+      "length": 127,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 26,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 33,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 114,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 22,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 39,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.36.title": {
+      "length": 23,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.36.description": {
+      "length": 111,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 32,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 31,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 118,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 16,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.36.title": {
+      "length": 22,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.36.description": {
+      "length": 99,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 16,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 24,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 30,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 112,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.36.title": {
+      "length": 24,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.36.description": {
+      "length": 108,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 32,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 23,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 32,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 111,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 23,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.36.title": {
+      "length": 26,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.36.description": {
+      "length": 124,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 20,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 26,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 34,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 155,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 38,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 39,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.36.title": {
+      "length": 24,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.36.description": {
+      "length": 123,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 40,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 23,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 32,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 133,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.36.title": {
+      "length": 31,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.36.description": {
+      "length": 103,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 22,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 17,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 39,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 106,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 26,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 24,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.36.title": {
+      "length": 26,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.36.description": {
+      "length": 61,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 34,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 60,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 14,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 16,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 15,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.36.title": {
+      "length": 19,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.36.description": {
+      "length": 65,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 10,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 14,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 75,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 14,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.title": {
+      "length": 19,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.description": {
+      "length": 46,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 15,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 6,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 8,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 46,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 8,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 9,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.title": {
+      "length": 19,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.description": {
+      "length": 48,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 15,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 7,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 9,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 46,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 8,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/.worktree/android-play-crash-fixes/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 10,
+      "limit": 40,
+      "unit": "characters"
+    }
+  }
+}

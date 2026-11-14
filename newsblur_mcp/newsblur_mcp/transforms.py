@@ -57,7 +57,8 @@ def transform_story(story: dict) -> dict:
         "read_status": story.get("read_status", 0),
         "starred": story.get("starred", False),
         "shared": story.get("shared", False),
-        "image_urls": story.get("image_urls", []),
+        # Cap image URLs: stories can carry a dozen+ srcset variants that bloat responses.
+        "image_urls": story.get("image_urls", [])[:3],
     }
 
 

@@ -1,0 +1,16 @@
+{
+  "editId": "03809724643036911628",
+  "startedAt": "2026-10-17T18:32:16.289185+00:00",
+  "status": "committed",
+  "permissionApproved": true,
+  "behavior": "ERROR_IF_IN_REVIEW",
+  "validation": {
+    "id": "03809724643036911628",
+    "expiryTimeSeconds": "1792264603"
+  },
+  "commit": {
+    "id": "03809724643036911628",
+    "expiryTimeSeconds": "1792264603"
+  },
+  "committedAt": "2026-10-17T18:32:20.329786+00:00"
+}

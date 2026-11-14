@@ -1,0 +1,1048 @@
+{
+  "version": "16.0.4",
+  "platform": "android",
+  "reviewer": "database_crash",
+  "translation_author": "reader_crash",
+  "independent_review": true,
+  "locales": [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk"
+  ],
+  "findings": [
+    {
+      "locale": "de",
+      "field": "metadata.android.short_description/full_description",
+      "severity": "low",
+      "issue": "Glossary uses Website for subscribed sites; Lieblingsseiten used Seite.",
+      "correction": "Lieblingswebsites",
+      "status": "fixed"
+    },
+    {
+      "locale": "nl",
+      "field": "products.android.subscriptions.nb.premium.archive.99.benefits[1]",
+      "severity": "low",
+      "issue": "altijd ongelezen can imply articles must always remain unread rather than unlimited unread retention.",
+      "correction": "Bewaar artikelen onbeperkt ongelezen",
+      "status": "fixed"
+    },
+    {
+      "locale": "uk",
+      "field": "releases.android.release_notes",
+      "severity": "medium",
+      "issue": "очікувані means expected or anticipated, losing queued offline action meaning.",
+      "correction": "дії офлайн у черзі",
+      "status": "fixed"
+    }
+  ],
+  "results": [
+    {
+      "locale": "en",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 25,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 70,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1526,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 315,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 29,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 106,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 30,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 19,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 22,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 19,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 37,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 124,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 21,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 27,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 31,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 34,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/en.json": "26185d735ac5023182e555e5c66d49365f3b72b83587f1ed58f98e6bfcec9ed4",
+        "clients/store/products/en.json": "d77538c0737652f6a7411c057a6fbe5c499c0334cdc5d38aab0ea73af21267d3",
+        "clients/store/releases/16.0.4/en.json": "de31e6408e00b9971ef5e7c837bcf5dbe43605230278168ceefba1acd826227b"
+      }
+    },
+    {
+      "locale": "es",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 20,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 72,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1786,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 399,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 30,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 141,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 38,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 24,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 32,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 39,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 38,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 133,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 18,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 36,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 34,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 37,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/es.json": "efe8c04684479426ce2a802f8166d1dbb68e895da14c0b5cff74cd9969f41015",
+        "clients/store/products/es.json": "a9607837faa11f892d3d87a15f1072ac58f289d50ee6405b1f92b12ff4c753b7",
+        "clients/store/releases/16.0.4/es.json": "c73f38f5a240d4715ca5a299c0dbd8d95065842462a009bd42a5cafd852cd5df"
+      }
+    },
+    {
+      "locale": "fr",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 22,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 75,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 2051,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 406,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 27,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 163,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 37,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 29,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 33,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 37,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 35,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 142,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 12,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 40,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 37,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 35,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/fr.json": "fadf20e2d24c1cf7c48fb8bd82caa905edcd9f61094f920df4ffe077b45227e2",
+        "clients/store/products/fr.json": "c7e06ab1ca215f0b01f4a80c3b09c86bdbb29f4c8873a71772b9bc241d567eeb",
+        "clients/store/releases/16.0.4/fr.json": "0f7ed73d2600733a644d0cd55185e0fcf84c75e0618637ef4d69f5e133bce4dd"
+      }
+    },
+    {
+      "locale": "de",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 20,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 74,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1867,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 376,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 27,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 127,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 34,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 30,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 36,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 31,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 35,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 127,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 17,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 34,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 35,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 37,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/de.json": "b3310b45341e1087d12058a90904ac882a867bc7fb4ea129dd4007a3f8a2baca",
+        "clients/store/products/de.json": "d1f447606e705d932e75b5893f149106e5b4519d942931e6954fac2c36648361",
+        "clients/store/releases/16.0.4/de.json": "08cf038e2df87a7dee4cf5e56e6a98679978aa96e5977ab06d0784abdc4a4226"
+      }
+    },
+    {
+      "locale": "pt-BR",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 20,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 73,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1719,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 369,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 30,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 126,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 35,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 26,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 32,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 37,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 38,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 123,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 15,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 38,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 31,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 37,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/pt-BR.json": "57719a4740fb2bfde356ec71aeeab27ba3d0c591eee4be179c0132da4ca595b4",
+        "clients/store/products/pt-BR.json": "338f39ca02c55b106ea28fdb22ba9da049880e3dc5ba4a9510ecc24a0e9e70d6",
+        "clients/store/releases/16.0.4/pt-BR.json": "a7738e4cd8ff49a0f06fb51edfc865bd5be0bbeba3795cf3b5453a0e3bedaab2"
+      }
+    },
+    {
+      "locale": "it",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 21,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 75,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1832,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 400,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 28,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 137,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 35,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 21,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 34,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 36,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 36,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 146,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 27,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 40,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 33,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 30,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/it.json": "f4a9db0d2fb4880cac6ee0ef313a9b9c3fd67d6367733fa6d1135178207cbd4c",
+        "clients/store/products/it.json": "e775ff11c64f46de32a133f2bc64759c46fb36d95894c2eca1f32d0058a192a9",
+        "clients/store/releases/16.0.4/it.json": "c68e4996378039d44fd76e9e9863da839970681bb2555aa7590baab0957b5312"
+      }
+    },
+    {
+      "locale": "nl",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 19,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 70,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1739,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 362,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 27,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 110,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 31,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 20,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 27,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 17,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 35,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 121,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 17,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 36,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 30,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 36,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/nl.json": "116ad91821132839a2dfb3ebcc2426df7fd781283b36b6c5ccd2d38d20ec0f88",
+        "clients/store/products/nl.json": "1698cf096b664f336c91fe02b64574259daba6e4f48c8990d09d849b54d5ec73",
+        "clients/store/releases/16.0.4/nl.json": "a3433a4e0f3bfd5a574d8152f04e85fd05b1bc79228a6a9b341d36873730caec"
+      }
+    },
+    {
+      "locale": "pl",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 21,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 76,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1752,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 402,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 28,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 137,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 31,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 27,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 36,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 29,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 36,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 134,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 18,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 40,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 34,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 34,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/pl.json": "cae1c7eb0d435a3cc539cc5be8832f3fb1dbb4f80105a22704c896b060d811a5",
+        "clients/store/products/pl.json": "459274cd8104153b2297f3bdcc322a0152c1025d415854676085dc5a4f2077b7",
+        "clients/store/releases/16.0.4/pl.json": "2642b185a4ad648b3a8eafc0ab5e638b1642d3f3039cb447a293daa67759b063"
+      }
+    },
+    {
+      "locale": "tr",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 27,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 79,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1806,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 367,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 26,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 134,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 38,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 28,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 35,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 30,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 34,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 127,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 20,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 33,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 35,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 33,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/tr.json": "615869954d570ba9c99c52133b840f29086d51669d590d37d3fd8b6ce323710a",
+        "clients/store/products/tr.json": "9f5351c0dd6a8e170c227090d979465a6a9dc203e3509212fb1bf8605484556b",
+        "clients/store/releases/16.0.4/tr.json": "65f6fe51fbd2bc8e8cd7afa90c9e778d85bb7f3f3907e96b3146ba508e64ceec"
+      }
+    },
+    {
+      "locale": "ru",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 23,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 68,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1700,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 391,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 25,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 131,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 35,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 20,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 27,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 28,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 33,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 116,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 23,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 39,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 31,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 28,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/ru.json": "1fb55474657505515c265642065d14d813ad5bea5ba72767bcc0af784a3e788b",
+        "clients/store/products/ru.json": "b173f75739ba72ebf0b83ca95588cab882afef51b4e73bab2a990a5d7c61687a",
+        "clients/store/releases/16.0.4/ru.json": "59918fbef231bb92b4aaae4d41060a5729440387dbc8d7b5a52c76b66f95d149"
+      }
+    },
+    {
+      "locale": "uk",
+      "status": "passed",
+      "reviewed": [
+        "meaning",
+        "omissions",
+        "claims",
+        "natural_phrasing",
+        "glossary",
+        "register",
+        "branding",
+        "URLs",
+        "product_ids",
+        "limits"
+      ],
+      "errors": [
+
+      ],
+      "fields": {
+        "title": {
+          "length_utf16": 22,
+          "limit": 30
+        },
+        "short_description": {
+          "length_utf16": 71,
+          "limit": 80
+        },
+        "full_description": {
+          "length_utf16": 1719,
+          "limit": 4000
+        },
+        "release_notes": {
+          "length_utf16": 379,
+          "limit": 500
+        },
+        "nb.premium.36.title": {
+          "length_utf16": 25,
+          "limit": 55
+        },
+        "nb.premium.36.description": {
+          "length_utf16": 127,
+          "limit": 200
+        },
+        "nb.premium.36.benefits[0]": {
+          "length_utf16": 36,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[1]": {
+          "length_utf16": 21,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[2]": {
+          "length_utf16": 26,
+          "limit": 40
+        },
+        "nb.premium.36.benefits[3]": {
+          "length_utf16": 25,
+          "limit": 40
+        },
+        "nb.premium.archive.99.title": {
+          "length_utf16": 33,
+          "limit": 55
+        },
+        "nb.premium.archive.99.description": {
+          "length_utf16": 114,
+          "limit": 200
+        },
+        "nb.premium.archive.99.benefits[0]": {
+          "length_utf16": 22,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[1]": {
+          "length_utf16": 39,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[2]": {
+          "length_utf16": 31,
+          "limit": 40
+        },
+        "nb.premium.archive.99.benefits[3]": {
+          "length_utf16": 28,
+          "limit": 40
+        }
+      },
+      "sha256": {
+        "clients/store/metadata/uk.json": "9523369ad18b48c69f2b8b8a5466302a6e673f4fbcdad25c02d3eaf4973dcad6",
+        "clients/store/products/uk.json": "ba1ed207e28c1af02eac185b5d6ea12c7d85435f25d77f56dd10cf9befecfb48",
+        "clients/store/releases/16.0.4/uk.json": "63c1b95557cdb2fa31fc1161becc3e3b3eba0173760136204f972aacbff70608"
+      }
+    }
+  ],
+  "unchanged": [
+    "English copy",
+    "iOS fields",
+    "product identifiers",
+    "URLs",
+    "pricing/offers/billing configuration"
+  ],
+  "remaining_findings": [
+
+  ]
+}

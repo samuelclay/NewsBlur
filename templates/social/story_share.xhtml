@@ -1,4 +1,4 @@
-{% load social_tags %}
+{% load i18n social_tags %}
 
 
 {% if story.share_count %}
@@ -23,15 +23,13 @@
             
             <div class="NB-story-share-label">
                 {% if story.comment_count %}
-                    {{ story.comment_count }}
-                    {{ story.comment_count|pluralize:"Comment,Comments" }}
+                    {% blocktrans count comments=story.comment_count trimmed %}{{ comments }} Comment{% plural %}{{ comments }} Comments{% endblocktrans %}
                     {% if story.share_count != story.comment_count %}
-                        and
+                        {% trans "and" context "joins the comment count and the share count" %}
                     {% endif %}
                 {% endif %}
                 {% if story.share_count != story.comment_count %}
-                    {{ story.share_count }}
-                    {{ story.share_count|pluralize:"Share,Shares" }}
+                    {% blocktrans count shares=story.share_count trimmed %}{{ shares }} Share{% plural %}{{ shares }} Shares{% endblocktrans %}
                 {% endif %}
             </div>
             

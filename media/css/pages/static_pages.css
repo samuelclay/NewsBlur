@@ -7,6 +7,7 @@
 .NB-static-features .NB-body-inner,
 .NB-static-compare .NB-body-inner,
 .NB-static-about .NB-body-inner,
+.NB-static-contact .NB-body-inner,
 .NB-static-faq .NB-body-inner,
 .NB-static-api .NB-body-inner,
 .NB-static-forgot-password .NB-body-inner {
@@ -243,6 +244,55 @@ body.NB-dark.NB-static .NB-splash-blurred-logo {
     display: none;
 }
 
+
+/* welcome.xhtml: language and theme controls bookend the navigation. */
+.NB-welcome-language {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.NB-welcome-language .NB-language-selector {
+    margin: 0;
+}
+
+/* static_pages.css: appearance, width and margin come from the shared reader.css select rule. */
+.NB-welcome-language .NB-language-selector select {
+    min-height: 32px;
+    padding: 5px 10px;
+    border: 1px solid rgba(45, 38, 26, 0.15);
+    border-radius: 16px;
+    background: rgba(45, 38, 26, 0.04);
+    color: rgba(45, 38, 26, 0.7);
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.NB-welcome-language .NB-language-selector select:hover {
+    background: rgba(45, 38, 26, 0.08);
+    border-color: rgba(45, 38, 26, 0.25);
+}
+
+body.NB-dark .NB-welcome-language select {
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+body.NB-dark .NB-welcome-language select:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.NB-welcome-language .NB-language-selector select:focus-visible {
+    outline: 2px solid #b8960a;
+    outline-offset: 2px;
+}
 
 /* ---- Navigation Dropdown Menus ---- */
 
@@ -553,6 +603,7 @@ a.NB-splash-dropdown-grid-item:hover,
 /* Feature hero items - active page highlight */
 .NB-static-feature-training .NB-splash-dropdown-item-training,
 .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
+.NB-static-feature-listen .NB-splash-dropdown-item-listen,
 .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
 .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
 .NB-static-feature-search .NB-splash-dropdown-item-search,
@@ -564,6 +615,7 @@ a.NB-splash-dropdown-grid-item:hover,
 
 .NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
 .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
+.NB-static-feature-listen .NB-splash-dropdown-item-listen .NB-splash-dropdown-item-name,
 .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
 .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
 .NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
@@ -865,6 +917,7 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 /* Current page in crosslinks - highlighted */
 .NB-static-feature-training .NB-feature-detail-crosslink-training,
 .NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai,
+.NB-static-feature-listen .NB-feature-detail-crosslink-listen,
 .NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds,
 .NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters,
 .NB-static-feature-search .NB-feature-detail-crosslink-search,
@@ -878,6 +931,7 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 
 .NB-static-feature-training .NB-feature-detail-crosslink-training .NB-feature-detail-crosslink-name,
 .NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai .NB-feature-detail-crosslink-name,
+.NB-static-feature-listen .NB-feature-detail-crosslink-listen .NB-feature-detail-crosslink-name,
 .NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds .NB-feature-detail-crosslink-name,
 .NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters .NB-feature-detail-crosslink-name,
 .NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
@@ -3291,6 +3345,7 @@ a.NB-faq-button-secondary:hover {
     .NB-static-features .NB-body-inner,
     .NB-static-compare .NB-body-inner,
     .NB-static-about .NB-body-inner,
+    .NB-static-contact .NB-body-inner,
     .NB-static-faq .NB-body-inner,
     .NB-static-api .NB-body-inner,
     .NB-static-forgot-password .NB-body-inner {
@@ -3373,6 +3428,29 @@ a.NB-faq-button-secondary:hover {
     }
 
     /* Hide the NewsBlur text logo on mobile */
+    .NB-welcome .NB-splash-top-nav {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: "language theme" "links links";
+        row-gap: 6px;
+    }
+
+    .NB-welcome-language {
+        grid-area: language;
+        position: static;
+        height: auto;
+    }
+
+    .NB-welcome .NB-splash-top-logo {
+        grid-area: theme;
+    }
+
+    .NB-welcome .NB-splash-top-links {
+        grid-area: links;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
     .NB-static .NB-splash-top-logo .NB-splash-blurred-logo {
         display: none;
     }
@@ -3760,6 +3838,7 @@ body.NB-dark.NB-static a:hover {
 
 body.NB-dark.NB-static-feature-training .NB-splash-dropdown-item-training,
 body.NB-dark.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
+body.NB-dark.NB-static-feature-listen .NB-splash-dropdown-item-listen,
 body.NB-dark.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
 body.NB-dark.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
 body.NB-dark.NB-static-feature-search .NB-splash-dropdown-item-search,
@@ -3771,6 +3850,7 @@ body.NB-dark.NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps 
 
 body.NB-dark.NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
 body.NB-dark.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-listen .NB-splash-dropdown-item-listen .NB-splash-dropdown-item-name,
 body.NB-dark.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
 body.NB-dark.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
 body.NB-dark.NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
@@ -3949,6 +4029,7 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 /* Active crosslink in dark mode - classes are on body so use compound selector */
 .NB-dark.NB-static-feature-training .NB-feature-detail-crosslink-training,
 .NB-dark.NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai,
+.NB-dark.NB-static-feature-listen .NB-feature-detail-crosslink-listen,
 .NB-dark.NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds,
 .NB-dark.NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters,
 .NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search,
@@ -3962,6 +4043,7 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 
 .NB-dark.NB-static-feature-training .NB-feature-detail-crosslink-training .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-listen .NB-feature-detail-crosslink-listen .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
@@ -4899,4 +4981,75 @@ body.NB-dark.NB-static .NB-module-title-prefix {
 
 .NB-dark .NB-static-form-alttext a {
     color: #FBDB9B;
+}
+
+/* OAuth authorize buttons (templates/oauth2_provider/authorize.html).
+   payments.css paints every `.NB-static-form input` translucent white with white text,
+   which left the Authorize/Deny buttons nearly invisible on the cream background.
+   These higher-specificity rules restore explicit high-contrast colors in both themes.
+   Preview locally at /oauth/dev/authorize/ (DEBUG only). */
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-button {
+    width: auto;
+    min-width: 140px;
+    padding: 10px 24px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-green {
+    background: #217412 linear-gradient(to top, #216200, #217412);
+    color: #FFFFFF;
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-green:hover {
+    background: #1E5000 linear-gradient(to top, #1E5000, #216200);
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-green:active {
+    background: #1B3F00 linear-gradient(to top, #1B3F00, #1E5000);
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey {
+    background: #d5d4dB linear-gradient(to top, #CBCAD3, #d5d4dB);
+    color: #404040;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    text-shadow: none;
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey:hover {
+    background: #CBCAD3 linear-gradient(to top, #BDBCC7, #CBCAD3);
+}
+
+.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey:active {
+    background: #BDBCC7 linear-gradient(to top, #ADACBB, #BDBCC7);
+}
+
+/* Dark mode: same buttons, inverted — dark surfaces with light text */
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-green {
+    background: #2B8E1A;
+    color: #FFFFFF;
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-green:hover {
+    background: #35A322;
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-green:active {
+    background: #217412;
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey {
+    background: #404040;
+    color: #d5d4db;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey:hover {
+    background: #4C4C4C;
+}
+
+.NB-dark.NB-static-oauth .controls input[type=submit].NB-modal-submit-grey:active {
+    background: #383838;
 }

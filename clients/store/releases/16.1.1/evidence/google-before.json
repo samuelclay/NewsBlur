@@ -1,0 +1,3752 @@
+{
+  "edit": {
+    "id": "01082323437574625196",
+    "expiryTimeSeconds": "1793556037"
+  },
+  "tracks": {
+    "kind": "androidpublisher#tracksListResponse",
+    "tracks": [
+      {
+        "track": "production",
+        "releases": [
+          {
+            "name": "16.1",
+            "versionCodes": [
+              "299"
+            ],
+            "releaseNotes": [
+              {
+                "language": "en-US",
+                "text": "Meet Listen: hear stories read aloud in 21 languages. Choose voices, follow highlighted paragraphs, tap to jump, and adjust speed. Queue stories in Up Next, synced across devices, and keep listening with your screen locked. Auto-continue plays the next unread story. Full listening is included with Premium Archive and Premium Pro; Free and Premium accounts can try 30-second previews."
+              },
+              {
+                "language": "es-ES",
+                "text": "Descubre Escuchar: artículos en audio en 21 idiomas. Elige voces, sigue los párrafos resaltados, toca para saltar y ajusta la velocidad. Crea tu cola en A continuación, sincronizada entre dispositivos, y escucha con la pantalla bloqueada. La continuación automática reproduce el siguiente artículo sin leer. Escucha completa incluida en Premium Archive y Premium Pro; avances de 30 segundos para cuentas gratuitas y Premium."
+              },
+              {
+                "language": "fr-FR",
+                "text": "Découvrez Écouter : vos articles lus en 21 langues. Choisissez les voix, suivez les paragraphes surlignés, touchez pour avancer et réglez la vitesse. Ajoutez des articles à la file À suivre, synchronisée entre appareils. Écoutez même avec l’écran verrouillé. La lecture automatique passe au prochain article non lu. Écoute intégrale incluse dans Premium Archive et Premium Pro ; extraits de 30 secondes pour les comptes gratuits et Premium."
+              },
+              {
+                "language": "de-DE",
+                "text": "Neu: Anhören liest Artikel in 21 Sprachen vor. Wähle Stimmen, folge markierten Absätzen, tippe zum Springen und ändere das Tempo. Füge Artikel zu Als Nächstes hinzu; die Warteschlange synchronisiert sich zwischen Geräten. Höre bei gesperrtem Bildschirm weiter. Automatisch fortfahren spielt den nächsten ungelesenen Artikel. Vollständiges Anhören mit Premium Archive und Premium Pro; 30-Sekunden-Hörproben für kostenlose Konten und Premium."
+              },
+              {
+                "language": "pt-BR",
+                "text": "Conheça Ouvir: artigos em áudio em 21 idiomas. Escolha vozes, acompanhe os parágrafos destacados, toque para avançar e ajuste a velocidade. Monte sua fila em A seguir, sincronizada entre dispositivos, e ouça com a tela bloqueada. A continuação automática reproduz o próximo artigo não lido. Escuta completa incluída no Premium Archive e no Premium Pro; prévias de 30 segundos para contas gratuitas e Premium."
+              },
+              {
+                "language": "it-IT",
+                "text": "Scopri Ascolta: articoli letti ad alta voce in 21 lingue. Scegli le voci, segui i paragrafi evidenziati, tocca per saltare e regola la velocità. Aggiungi articoli alla lista In coda, sincronizzata tra i dispositivi. Ascolta anche con lo schermo bloccato. La riproduzione automatica passa all’articolo non letto successivo. Ascolto completo incluso in Premium Archive e Premium Pro; anteprime di 30 secondi per account gratuiti e Premium."
+              },
+              {
+                "language": "nl-NL",
+                "text": "Nieuw: Luisteren leest artikelen voor in 21 talen. Kies stemmen, volg gemarkeerde alinea’s, tik om te springen en pas het tempo aan. Voeg artikelen toe aan Hierna; je wachtrij synchroniseert tussen apparaten. Luister verder met een vergrendeld scherm. Automatisch doorgaan speelt het volgende ongelezen artikel. Volledig luisteren met Premium Archive en Premium Pro; fragmenten van 30 seconden voor gratis accounts en Premium."
+              },
+              {
+                "language": "pl-PL",
+                "text": "Poznaj Słuchaj: artykuły czytane na głos w 21 językach. Wybieraj głosy, śledź wyróżnione akapity, dotykaj, by przeskakiwać, i zmieniaj tempo. Dodawaj artykuły do listy Następny w kolejce, synchronizowanej między urządzeniami. Słuchaj przy zablokowanym ekranie. Automatyczna kontynuacja odtwarza następny nieprzeczytany artykuł. Pełny odsłuch w Premium Archive i Premium Pro; 30-sekundowe fragmenty dla kont bezpłatnych i Premium."
+              },
+              {
+                "language": "tr-TR",
+                "text": "Dinle ile haberleri 21 dilde dinleyin. Ses seçin, vurgulanan paragrafları takip edin, dokunarak atlayın ve hızı ayarlayın. Haberleri cihazlar arasında eşitlenen Sıradaki listesine ekleyin, ekran kilitliyken dinleyin. Otomatik devam sonraki okunmamış haberi oynatır. Tam dinleme Premium Archive ve Premium Pro’ya dahildir; ücretsiz ve Premium hesaplar 30 saniyelik önizlemeleri deneyebilir."
+              },
+              {
+                "language": "ru-RU",
+                "text": "Функция «Слушать» читает статьи на 21 языке. Выбирайте голоса, следите за подсветкой абзацев, переходите к ним касанием и меняйте скорость. Очередь «Далее» синхронизируется между устройствами. Слушайте с заблокированным экраном. Автопродолжение включает следующую непрочитанную статью. Полное прослушивание входит в Premium Archive и Premium Pro; бесплатные аккаунты и Premium могут попробовать 30-секундные фрагменты."
+              },
+              {
+                "language": "uk",
+                "text": "Функція «Слухати» читає статті 21 мовою. Вибирайте голоси, стежте за підсвіткою абзаців, переходьте до них дотиком і змінюйте швидкість. Черга «Далі» синхронізується між пристроями. Слухайте із заблокованим екраном. Автопродовження вмикає наступну непрочитану статтю. Повне прослуховування входить до Premium Archive і Premium Pro; безплатні облікові записи та Premium можуть спробувати 30-секундні уривки."
+              },
+              {
+                "language": "ar",
+                "text": "ميزة «استمع» تقرأ القصص بـ21 لغة. اختر الأصوات، وتابع الفقرات المميزة، واضغط للانتقال واضبط السرعة. أضف القصص إلى قائمة «التالي» المتزامنة بين أجهزتك، وواصل الاستماع والشاشة مقفلة. تشغّل المتابعة التلقائية القصة التالية غير المقروءة. الاستماع الكامل مشمول في Premium Archive وPremium Pro؛ ويمكن للحسابات المجانية وحسابات Premium تجربة مقتطفات مدتها 30 ثانية."
+              },
+              {
+                "language": "iw-IL",
+                "text": "״האזנה״ מקריאה כתבות ב־21 שפות. בחרו קולות, עקבו אחר פסקאות מודגשות, הקישו כדי לדלג והתאימו את המהירות. הוסיפו כתבות ל״בתור הבא״, שמסתנכרן בין מכשירים, והאזינו כשהמסך נעול. המשך אוטומטי מנגן את הכתבה הבאה שלא נקראה. האזנה מלאה כלולה ב־Premium Archive וב־Premium Pro; חשבונות חינמיים וחשבונות Premium יכולים לנסות קטעים של 30 שניות."
+              },
+              {
+                "language": "hi-IN",
+                "text": "‘सुनें’ से 21 भाषाओं में लेख सुनें। आवाज़ चुनें, हाइलाइट किए अनुच्छेद देखें, टैप करके आगे जाएँ और गति बदलें। ‘इसके बाद’ की कतार डिवाइसों पर सिंक होती है। स्क्रीन लॉक होने पर भी सुनें। अपने-आप जारी रखने पर अगला अपठित लेख चलता है। पूरे लेख सुनना Premium Archive और Premium Pro में शामिल है; मुफ़्त और Premium खाते 30 सेकंड के अंश आज़मा सकते हैं।"
+              },
+              {
+                "language": "id",
+                "text": "Dengarkan membacakan artikel dalam 21 bahasa. Pilih suara, ikuti paragraf yang disorot, ketuk untuk melompat, dan atur kecepatan. Antrekan artikel di Berikutnya yang tersinkron antarperangkat, lalu dengarkan saat layar terkunci. Lanjut otomatis memutar artikel berikutnya yang belum dibaca. Audio lengkap termasuk dalam Premium Archive dan Premium Pro; akun gratis dan Premium dapat mencoba cuplikan 30 detik."
+              },
+              {
+                "language": "vi",
+                "text": "Nghe bài viết bằng 21 ngôn ngữ. Chọn giọng, theo dõi đoạn được tô sáng, chạm để chuyển đoạn và chỉnh tốc độ. Thêm bài vào Tiếp theo, đồng bộ hàng đợi giữa các thiết bị và nghe cả khi khóa màn hình. Tự động phát tiếp chuyển sang bài chưa đọc tiếp theo. Premium Archive và Premium Pro cho phép nghe toàn bài; tài khoản miễn phí và Premium có thể nghe thử 30 giây."
+              },
+              {
+                "language": "th",
+                "text": "พบกับ “ฟัง”: ฟังบทความใน 21 ภาษา เลือกเสียง อ่านตามย่อหน้าที่ไฮไลต์ แตะเพื่อข้าม และปรับความเร็ว เพิ่มบทความในรายการถัดไปที่ซิงค์ข้ามอุปกรณ์ ฟังต่อได้แม้ล็อกหน้าจอ เล่นต่ออัตโนมัติจะเล่นบทความที่ยังไม่อ่านถัดไป ฟังเต็มบทความด้วย Premium Archive และ Premium Pro บัญชีฟรีและ Premium ทดลองฟังได้ 30 วินาที"
+              },
+              {
+                "language": "ja-JP",
+                "text": "「聴く」が登場。21言語の音声で記事を読み上げます。声を選び、ハイライトされた段落を目で追い、タップで移動し、速度を調整できます。デバイス間で同期される「次に再生」に記事を追加でき、画面をロックしても再生が続きます。「自動で続ける」で次の未読記事を再生します。記事全体の読み上げはPremium ArchiveとPremium Proに含まれ、無料アカウントとPremiumでは30秒間の試聴ができます。"
+              },
+              {
+                "language": "ko-KR",
+                "text": "‘듣기’로 21개 언어의 스토리를 들으세요. 목소리를 고르고, 강조된 문단을 따라 읽고, 탭하여 이동하고, 속도를 조절하세요. ‘다음 재생’에 추가한 스토리는 기기 간에 동기화되며 화면을 잠가도 계속 재생됩니다. ‘자동으로 계속 재생’은 다음 읽지 않은 스토리를 재생합니다. 프리미엄 아카이브와 프리미엄 프로는 전체 듣기를, 무료 및 프리미엄 계정은 30초 미리듣기를 제공합니다."
+              },
+              {
+                "language": "zh-CN",
+                "text": "“聆听”来了：用 21 种语言听文章。选择声音，跟随高亮段落阅读，轻点跳转并调整速度。将文章加入“接下来”，队列跨设备同步，锁定屏幕后也能继续收听。“自动继续”会播放下一篇未读文章。高级归档版和高级专业版包含完整收听功能；免费账户和高级版账户可试听 30 秒。"
+              },
+              {
+                "language": "zh-TW",
+                "text": "「聆聽」來了：用 21 種語言聽文章。選擇聲音，跟著反白段落閱讀，點一下跳到想聽的位置並調整速度。將文章加入「接下來」，佇列跨裝置同步，鎖定螢幕後也能繼續聆聽。「自動繼續」會播放下一篇未讀文章。Premium Archive 和 Premium Pro 包含完整聆聽功能；免費帳戶和 Premium 帳戶可試聽 30 秒。"
+              }
+            ],
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "track": "beta",
+        "releases": [
+          {
+            "name": "15.0.4",
+            "versionCodes": [
+              "289"
+            ],
+            "releaseNotes": [
+              {
+                "language": "en-US",
+                "text": "Add sites from a compact panel, with Popular, Trending, and more.\nDiscover and Related Sites share rich previews, folder selection, and remembered list/grid layouts.\nStory previews open the selected article and return to loaded titles; empty feeds fetch automatically.\nMenus fade and expand smoothly.\nTap article images to zoom and swipe to dismiss, with stable status and navigation bars.\nImproved reading controls, folder upgrades, and unread-state reliability."
+              }
+            ],
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "track": "alpha"
+      },
+      {
+        "track": "internal",
+        "releases": [
+          {
+            "name": "175 (10.1b7)",
+            "versionCodes": [
+              "175"
+            ],
+            "releaseNotes": [
+              {
+                "language": "en-US",
+                "text": "Version 10.1 brings the following:\n* Premium subscriptions are now available on Android! Read by folder, saved story tags, searching, and more is exclusive to premium subscribers.\n* Saved searches\n* In-app browser, so you don't need to leave NewsBlur\n* Auto-theme option for dark mode so it can turn on automatically at night\n* You can now delete and rename folders and add a folder while adding a feed\n* Fixed issues around the intelligence trainer, HTML in comments, some images not loading"
+              }
+            ],
+            "status": "completed"
+          }
+        ]
+      }
+    ]
+  },
+  "listings": {
+    "kind": "androidpublisher#listingsListResponse",
+    "listings": [
+      {
+        "language": "en-US",
+        "title": "NewsBlur: RSS News Reader",
+        "fullDescription": "Bring your favorite sites together in NewsBlur, a personal RSS reader for news, blogs, newsletters, and more. Your subscriptions and reading progress stay in sync across your phone, tablet, and the web.\n\nREAD YOUR WAY\nRead one site at a time or combine a folder into one story list. Choose a theme, adjust the text, and move between stories with gestures. Download stories for offline reading. On tablets and foldables, keep the story list beside your article, resize the panes, or expand each pane to full screen.\n\nFIND YOUR FOCUS\nTrain NewsBlur on authors, tags, and words in headlines to highlight stories you want and hide ones you don't. Make your reading list reflect what matters to you.\n\nDISCOVER AND KEEP\nPreview new sites before subscribing. Save stories for later, organize saved stories with tags, and search your reading. Share stories with comments on your NewsBlur blurblog and follow what friends are reading.\n\nLISTEN TO YOUR STORIES\nTurn articles into audio with voices in 21 languages. Follow highlighted paragraphs, tap to jump ahead, adjust playback speed, and queue stories in Up Next. Keep listening with the screen locked. Full listening is included with Premium Archive and Premium Pro. Free and Premium accounts can try 30-second previews.\n\nGO DEEPER\nSwitch to Text view for an extracted article. Ask AI for a summary, background, or answers about a story. Availability and usage limits depend on your account plan.\n\nIN YOUR LANGUAGE\nChoose from 21 interface languages, including right-to-left layouts for Arabic and Hebrew. Set your language in the app or follow your device settings. Stories stay in the language they were published in.\n\nA NewsBlur account is required. Free accounts and optional paid subscriptions are available. Some features require a paid plan.\n\nTerms of use: https://www.newsblur.com/tos\nPrivacy policy: https://www.newsblur.com/privacy",
+        "shortDescription": "Read your favorite sites or listen to stories with voices in 21 languages.",
+        "video": "https://www.youtube.com/watch?v=iUO8KcJc9DQ"
+      },
+      {
+        "language": "ar",
+        "title": "NewsBlur: قارئ أخبار RSS",
+        "fullDescription": "اجمع مواقعك المفضلة في NewsBlur، قارئ RSS شخصي للأخبار والمدونات والنشرات البريدية وغيرها. تبقى اشتراكاتك وتقدم القراءة متزامنة بين هاتفك وجهازك اللوحي والويب.\n\nاقرأ بطريقتك\nاقرأ موقعًا واحدًا في كل مرة أو اجمع محتويات مجلد في قائمة قصص واحدة. اختر مظهرًا، واضبط النص، وتنقّل بين القصص بالإيماءات. نزّل القصص لقراءتها دون اتصال. على الأجهزة اللوحية والقابلة للطي، اعرض قائمة القصص بجانب المقال، وغيّر حجم اللوحات، أو وسّع كل لوحة لتملأ الشاشة.\n\nركّز على ما يهمك\nدرّب NewsBlur على الكتّاب والوسوم والكلمات في العناوين لإبراز القصص التي تريدها وإخفاء ما لا تريده. اجعل قائمة قراءتك تعكس ما يهمك.\n\nاكتشف واحتفظ\nعاين المواقع الجديدة قبل الاشتراك. احفظ القصص لوقت لاحق، ونظّم القصص المحفوظة بالوسوم، وابحث في قراءاتك. شارك القصص مع تعليقاتك في مدونتك على Blurblog في NewsBlur، وتابع ما يقرؤه أصدقاؤك.\n\nاستمع إلى قصصك\nحوّل المقالات إلى صوت بأصوات تتحدث 21 لغة. تابع الفقرات المميزة، واضغط للانتقال إلى فقرة، واضبط سرعة التشغيل، وأضف القصص إلى قائمة «التالي». واصل الاستماع والشاشة مقفلة. الاستماع الكامل مشمول في Premium Archive وPremium Pro. يمكن للحسابات المجانية وحسابات Premium تجربة مقتطفات مدتها 30 ثانية.\n\nتعمّق أكثر\nاستخدم عرض النص لقراءة النص المستخرج من المقال. اطلب ملخصًا أو معلومات عن السياق أو إجابات عن أسئلتك حول القصة من خلال «اسأل الذكاء الاصطناعي». يعتمد توفر الميزة وحدود استخدامها على خطة حسابك.\n\nبلغتك\nاستخدم واجهة NewsBlur بإحدى اللغات الـ21، مع تخطيط من اليمين إلى اليسار للعربية والعبرية. اختر لغتك داخل التطبيق أو اتبع إعدادات جهازك. تبقى القصص باللغة التي نُشرت بها.\n\nيلزم حساب NewsBlur. تتوفر حسابات مجانية واشتراكات مدفوعة اختيارية. تتطلب بعض الميزات خطة مدفوعة.\n\nشروط الاستخدام: https://www.newsblur.com/tos\nسياسة الخصوصية: https://www.newsblur.com/privacy",
+        "shortDescription": "اقرأ مواقعك المفضلة أو استمع إلى القصص بأصوات تتحدث 21 لغة.",
+        "video": "https://www.youtube.com/watch?v=-nSi5n5XJ4E"
+      },
+      {
+        "language": "zh-CN",
+        "title": "NewsBlur：RSS 新闻阅读器",
+        "fullDescription": "用 NewsBlur 汇集你喜欢的网站。这款个人 RSS 阅读器适合阅读新闻、博客、邮件简报等内容。你的订阅列表和阅读进度在手机、平板电脑和网页端保持同步。\n\n按你的方式阅读\n一次阅读一个网站，或将文件夹内的文章合并为一个列表。选择主题、调整文字，并用手势切换文章。下载文章以供离线阅读。在平板电脑和折叠屏设备上，可将文章列表放在正文旁边、调整窗格大小，或将各个窗格展开为全屏。\n\n聚焦你在意的内容\n根据作者、标签和标题中的词语训练 NewsBlur，突出你想读的文章，隐藏你不感兴趣的文章。让阅读列表呈现你在意的内容。\n\n发现并保存\n订阅前先预览新网站。保存文章以便稍后阅读，用标签整理已保存的文章，并搜索阅读内容。在你的 NewsBlur Blurblog 上分享文章和评论，也可以关注好友正在读什么。\n\n聆听你的文章\n用 21 种语言的声音将文章读给你听。跟随高亮段落阅读，轻点跳转到想听的位置，调整播放速度，并将文章加入“接下来”。锁定屏幕后也能继续收听。高级归档版和高级专业版包含完整收听功能；免费账户和高级版账户可以试听 30 秒。\n\n了解更多\n使用文本视图阅读提取出的文章正文。通过“询问 AI”获取摘要、背景信息，或询问有关文章的问题。功能是否可用以及使用限额取决于你的账户套餐。\n\n使用你的语言\nNewsBlur 界面支持 21 种语言，阿拉伯语和希伯来语还提供从右到左的布局。你可以在应用中选择语言，也可以跟随设备设置。文章仍保留发布时的语言。\n\n需要 NewsBlur 账户。提供免费账户和可选的付费订阅，部分功能需要付费套餐。\n\n使用条款：https://www.newsblur.com/tos\n\n隐私政策：https://www.newsblur.com/privacy",
+        "shortDescription": "阅读你喜爱的网站，或用 21 种语言的声音收听文章。"
+      },
+      {
+        "language": "zh-TW",
+        "title": "NewsBlur：RSS 新聞閱讀器",
+        "fullDescription": "用 NewsBlur 匯集你喜愛的網站。這款個人 RSS 閱讀器適合閱讀新聞、部落格、電子報等內容。你的訂閱清單和閱讀進度會在手機、平板電腦和網頁版之間保持同步。\n\n照你的方式閱讀\n一次閱讀一個網站，或將資料夾內的文章整合為一份清單。選擇佈景主題、調整文字，並用手勢切換文章。下載文章以供離線閱讀。在平板電腦和摺疊裝置上，可將文章清單放在內文旁邊、調整窗格大小，或將各個窗格展開為全螢幕。\n\n把焦點放在你在意的內容\n根據作者、標籤和標題中的字詞訓練 NewsBlur，凸顯你想讀的文章，隱藏你不感興趣的文章。讓閱讀清單呈現你在意的內容。\n\n探索並儲存\n訂閱前先預覽新網站。儲存文章以便稍後閱讀，用標籤整理已儲存的文章，並搜尋閱讀內容。在你的 NewsBlur Blurblog 上分享文章並附上留言，也可以追蹤朋友正在讀什麼。\n\n聆聽你的文章\n用 21 種語言的聲音將文章讀給你聽。跟著反白段落閱讀，點一下跳到想聽的位置，調整播放速度，並將文章加入「接下來」。鎖定螢幕後也能繼續聆聽。Premium Archive 和 Premium Pro 包含完整聆聽功能；免費帳戶和 Premium 帳戶可以試聽 30 秒。\n\n深入了解\n使用文字檢視閱讀擷取出的文章內文。透過「詢問 AI」取得摘要、背景資訊，或詢問與文章有關的問題。功能是否可用及使用限制取決於你的帳戶方案。\n\n使用你的語言\nNewsBlur 介面支援 21 種語言，阿拉伯文和希伯來文也提供從右至左的版面配置。你可以在應用程式中選擇語言，或依照裝置設定。文章仍保留發佈時的語言。\n\n需要 NewsBlur 帳戶。提供免費帳戶和可自行選用的付費訂閱，部分功能需要付費方案。\n\n使用條款：https://www.newsblur.com/tos\n\n隱私權政策：https://www.newsblur.com/privacy",
+        "shortDescription": "閱讀你喜愛的網站，或用 21 種語言的聲音聆聽文章。"
+      },
+      {
+        "language": "nl-NL",
+        "title": "NewsBlur: RSS-lezer",
+        "fullDescription": "Breng je favoriete sites samen in NewsBlur, een persoonlijke RSS-lezer voor nieuws, blogs, nieuwsbrieven en meer. Je abonnementen en leesvoortgang blijven gesynchroniseerd op je telefoon, tablet en het web.\n\nLEES OP JOUW MANIER\nLees één site tegelijk of combineer een map in één artikellijst. Kies een thema, pas de tekst aan en wissel met gebaren tussen artikelen. Download artikelen om offline te lezen. Houd op tablets en vouwbare apparaten de lijst naast je artikel, pas de grootte van de panelen aan of open elk paneel op volledig scherm.\n\nVIND JE FOCUS\nTrain NewsBlur op auteurs, tags en woorden in koppen om interessante artikelen uit te lichten en andere te verbergen. Stem je leeslijst af op wat jij belangrijk vindt.\n\nONTDEK EN SLA OP\nVind nieuwe sites, bekijk hun nieuwste artikelen en probeer ze uit voordat je je abonneert. Sla artikelen op voor later, orden ze met tags en doorzoek je leesvoer. Deel artikelen met reacties op je NewsBlur-blurblog en volg wat je vrienden lezen.\n\nLUISTER NAAR JE ARTIKELEN\nLaat artikelen voorlezen met stemmen in 21 talen. Volg de gemarkeerde alinea’s, tik om vooruit te springen, pas het tempo aan en voeg artikelen toe aan Hierna. Luister verder met een vergrendeld scherm. Volledig luisteren is inbegrepen bij Premium Archive en Premium Pro. Gratis accounts en Premium-accounts kunnen fragmenten van 30 seconden uitproberen.\n\nGA DIEPER\nGebruik de Tekstweergave om de tekst die uit een artikel is gehaald te lezen. Met Vraag AI krijg je een samenvatting, achtergrondinformatie of antwoorden op vragen over een artikel. De beschikbaarheid en gebruikslimieten hangen af van je accountabonnement.\n\nIN JOUW TAAL\nGebruik de interface van NewsBlur in 21 talen, met een indeling van rechts naar links voor Arabisch en Hebreeuws. Kies je taal in de app of volg de instellingen van je apparaat. Artikelen blijven in de taal waarin ze zijn gepubliceerd.\n\nEen NewsBlur-account is vereist. Er zijn gratis accounts en optionele betaalde abonnementen. Voor sommige functies is een betaald abonnement nodig.\n\nGebruiksvoorwaarden: https://www.newsblur.com/tos\nPrivacybeleid: https://www.newsblur.com/privacy",
+        "shortDescription": "Lees je favoriete sites of luister naar artikelen met stemmen in 21 talen.",
+        "video": "https://www.youtube.com/watch?v=YgoxH2alBWc"
+      },
+      {
+        "language": "fr-FR",
+        "title": "NewsBlur : lecteur RSS",
+        "fullDescription": "Réunissez vos sites favoris dans NewsBlur, un lecteur RSS personnel pour les actualités, les blogs, les newsletters et bien plus. Vos abonnements et votre progression de lecture restent synchronisés entre votre téléphone, votre tablette et le web.\n\nLISEZ À VOTRE FAÇON\nLisez un site à la fois ou regroupez un dossier dans une seule liste d’articles. Choisissez un thème, ajustez le texte et passez d’un article à l’autre avec des gestes. Téléchargez des articles pour les lire hors ligne. Sur les tablettes et les appareils pliables, gardez la liste à côté de l’article, redimensionnez les volets ou affichez chaque volet en plein écran.\n\nCONCENTREZ-VOUS SUR L’ESSENTIEL\nEntraînez NewsBlur à partir des auteurs, des tags et des mots des titres pour mettre en avant les articles qui vous intéressent et masquer les autres. Adaptez votre liste de lecture à ce qui compte pour vous.\n\nDÉCOUVREZ ET CONSERVEZ\nTrouvez de nouveaux sites, consultez leurs derniers articles et découvrez-les avant de vous abonner. Enregistrez des articles pour plus tard, organisez-les avec des tags et effectuez des recherches dans vos lectures. Partagez des articles avec vos commentaires sur votre blurblog NewsBlur et suivez les lectures de vos amis.\n\nÉCOUTEZ VOS ARTICLES\nTransformez vos articles en audio avec des voix dans 21 langues. Suivez les paragraphes surlignés, touchez-les pour avancer, réglez la vitesse et ajoutez des articles à la file À suivre. Continuez à écouter avec l’écran verrouillé. L’écoute intégrale est incluse dans Premium Archive et Premium Pro. Les comptes gratuits et Premium peuvent essayer des extraits de 30 secondes.\n\nALLEZ PLUS LOIN\nUtilisez la vue Texte pour lire le contenu extrait d’un article. Avec Demander à l’IA, obtenez un résumé, du contexte ou des réponses à vos questions sur un article. La disponibilité et les limites d’utilisation dépendent de l’offre associée à votre compte.\n\nDANS VOTRE LANGUE\nUtilisez l’interface de NewsBlur dans 21 langues, avec une disposition de droite à gauche pour l’arabe et l’hébreu. Choisissez votre langue dans l’application ou suivez les réglages de votre appareil. Les articles restent dans leur langue de publication.\n\nUn compte NewsBlur est nécessaire. Des comptes gratuits et des abonnements payants facultatifs sont disponibles. Certaines fonctionnalités nécessitent une offre payante.\n\nConditions d’utilisation : https://www.newsblur.com/tos\nPolitique de confidentialité : https://www.newsblur.com/privacy",
+        "shortDescription": "Lisez vos sites favoris ou écoutez des articles avec des voix dans 21 langues.",
+        "video": "https://www.youtube.com/watch?v=1ur-fYshgfo"
+      },
+      {
+        "language": "de-DE",
+        "title": "NewsBlur: RSS-Reader",
+        "fullDescription": "Vereine deine Lieblingswebsites in NewsBlur, einem persönlichen RSS-Reader für Nachrichten, Blogs, Newsletter und mehr. Deine Abonnements und dein Lesefortschritt bleiben auf Smartphone, Tablet und im Web synchron.\n\nLIES AUF DEINE ART\nLies einzelne Websites oder fasse einen Ordner in einer Artikelliste zusammen. Wähle ein Design, passe den Text an und wechsle mit Gesten zwischen Artikeln. Lade Artikel zum Offline-Lesen herunter. Auf Tablets und faltbaren Geräten bleibt die Artikelliste neben dem Artikel. Passe die Breite der Bereiche an oder öffne jeden Bereich im Vollbild.\n\nFINDE DEINEN FOKUS\nTrainiere NewsBlur mit Autoren, Tags und Wörtern in Überschriften, um interessante Artikel hervorzuheben und andere auszublenden. Gestalte deine Leseliste nach dem, was dir wichtig ist.\n\nENTDECKEN UND AUFBEWAHREN\nFinde neue Websites, sieh dir ihre neuesten Artikel an und lies sie zur Probe, bevor du sie abonnierst. Speichere Artikel für später, ordne sie mit Tags und durchsuche deine Lektüre. Teile Artikel mit Kommentaren auf deinem NewsBlur-Blurblog und verfolge, was deine Freunde lesen.\n\nHÖR DIR DEINE ARTIKEL AN\nLass dir Artikel mit Stimmen in 21 Sprachen vorlesen. Folge den hervorgehobenen Absätzen, tippe zum Vorspringen, ändere das Tempo und stelle Artikel unter Als Nächstes in die Warteschlange. Höre bei gesperrtem Bildschirm weiter. Vollständiges Anhören ist in Premium Archive und Premium Pro enthalten. Kostenlose Konten und Premium-Konten können 30-Sekunden-Hörproben ausprobieren.\n\nMEHR ERFAHREN\nLies den extrahierten Artikel in der Textansicht. Mit KI fragen erhältst du eine Zusammenfassung, Hintergrundinformationen oder Antworten auf Fragen zu einem Artikel. Verfügbarkeit und Nutzungslimits hängen von deinem Kontotarif ab.\n\nIN DEINER SPRACHE\nNutze die NewsBlur-Oberfläche in 21 Sprachen, mit rechts-nach-links angeordneten Ansichten für Arabisch und Hebräisch. Wähle deine Sprache in der App oder folge der Sprache deines Geräts. Artikel bleiben in ihrer ursprünglichen Veröffentlichungssprache.\n\nEin NewsBlur-Konto ist erforderlich. Kostenlose Konten und optionale kostenpflichtige Abonnements sind verfügbar. Einige Funktionen erfordern einen kostenpflichtigen Tarif.\n\nNutzungsbedingungen: https://www.newsblur.com/tos\nDatenschutzrichtlinie: https://www.newsblur.com/privacy",
+        "shortDescription": "Lies deine Lieblingssites oder höre Artikel mit Stimmen in 21 Sprachen.",
+        "video": "https://www.youtube.com/watch?v=IH4B82sJ7xo"
+      },
+      {
+        "language": "iw-IL",
+        "title": "NewsBlur: קורא חדשות RSS",
+        "fullDescription": "רכזו את האתרים האהובים ב־NewsBlur, קורא RSS אישי לחדשות, בלוגים, ניוזלטרים ועוד. ההרשמות לאתרים וההתקדמות בקריאה נשארות מסונכרנות בין הטלפון, הטאבלט והאינטרנט.\n\nקוראים בדרך שלך\nקראו אתר אחד בכל פעם או רכזו תיקייה ברשימת כתבות אחת. בחרו ערכת נושא, התאימו את הטקסט ועברו בין כתבות במחוות. הורידו כתבות לקריאה ללא חיבור. בטאבלטים ובמכשירים מתקפלים אפשר להציג את רשימת הכתבות לצד הכתבה, לשנות את גודל החלוניות או להרחיב כל חלונית למסך מלא.\n\nמתמקדים במה שחשוב\nאמנו את NewsBlur לפי כותבים, תגיות ומילים בכותרות כדי להבליט כתבות רצויות ולהסתיר כתבות שאינן רצויות. התאימו את רשימת הקריאה למה שחשוב לכם.\n\nמגלים ושומרים\nצפו בתצוגה מקדימה של אתרים חדשים לפני ההרשמה. שמרו כתבות להמשך, ארגנו כתבות שמורות בעזרת תגיות וחפשו בחומרי הקריאה. שתפו כתבות עם תגובות ב־Blurblog שלכם ב־NewsBlur ועקבו אחר מה שחברים קוראים.\n\nמאזינים לכתבות\nהפכו כתבות לאודיו עם קולות ב־21 שפות. עקבו אחר הפסקאות המודגשות, הקישו כדי לדלג, התאימו את מהירות הניגון והוסיפו כתבות לרשימת ״בתור הבא״. המשיכו להאזין כשהמסך נעול. האזנה מלאה כלולה ב־Premium Archive וב־Premium Pro. חשבונות חינמיים וחשבונות Premium יכולים לנסות קטעים של 30 שניות.\n\nמעמיקים בקריאה\nהשתמשו בתצוגת טקסט לקריאת הטקסט שחולץ מהכתבה. עם ״שאלו את ה-AI״ אפשר לקבל סיכום, רקע או תשובות לשאלות על כתבה. הזמינות ומגבלות השימוש תלויות במסלול החשבון שלכם.\n\nבשפה שלך\nממשק NewsBlur זמין ב־21 שפות, כולל פריסה מימין לשמאל לערבית ולעברית. בחרו שפה באפליקציה או השתמשו בשפת המכשיר. הכתבות נשארות בשפה שבה פורסמו.\n\nנדרש חשבון NewsBlur. יש חשבונות בחינם ומינויים בתשלום לבחירתך. חלק מהתכונות דורשות מסלול בתשלום.\n\nתנאי שימוש: https://www.newsblur.com/tos\nמדיניות פרטיות: https://www.newsblur.com/privacy",
+        "shortDescription": "קראו את האתרים האהובים או האזינו לכתבות עם קולות ב־21 שפות.",
+        "video": "https://www.youtube.com/watch?v=6I7E1GrRemA"
+      },
+      {
+        "language": "hi-IN",
+        "title": "NewsBlur: RSS समाचार रीडर",
+        "fullDescription": "अपनी पसंदीदा साइटों को NewsBlur में एक साथ लाएँ। यह समाचार, ब्लॉग, न्यूज़लेटर और अन्य सामग्री के लिए निजी RSS रीडर है। आपकी सदस्यताएँ और पढ़ने की प्रगति फ़ोन, टैबलेट और वेब पर सिंक रहती हैं।\n\nअपने तरीके से पढ़ें\nएक बार में एक साइट पढ़ें या किसी फ़ोल्डर को एक ही लेख सूची में लाएँ। थीम चुनें, टेक्स्ट समायोजित करें और जेस्चर से लेखों के बीच जाएँ। ऑफ़लाइन पढ़ने के लिए लेख डाउनलोड करें। टैबलेट और फ़ोल्ड होने वाले डिवाइस पर लेख सूची को लेख के बगल में रखें, पैन का आकार बदलें या हर पैन को पूरी स्क्रीन में खोलें।\n\nज़रूरी चीज़ों पर ध्यान दें\nलेखकों, टैग और शीर्षकों के शब्दों के आधार पर NewsBlur को प्रशिक्षित करें, ताकि आपकी पसंद के लेख उभरकर दिखें और अनचाहे लेख छिप जाएँ। अपनी पढ़ने की सूची को अपनी प्राथमिकताओं के अनुसार बनाएँ।\n\nखोजें और सहेजें\nसदस्यता लेने से पहले नई साइटों की झलक देखें। लेख बाद में पढ़ने के लिए सहेजें, सहेजे गए लेखों को टैग से व्यवस्थित करें और अपनी पढ़ने की सामग्री में खोजें। अपने NewsBlur के Blurblog पर टिप्पणियों के साथ लेख साझा करें और देखें कि आपके मित्र क्या पढ़ रहे हैं।\n\nअपने लेख सुनें\n21 भाषाओं की आवाज़ों में लेख सुनें। हाइलाइट किए गए अनुच्छेदों के साथ पढ़ें, आगे जाने के लिए टैप करें, सुनने की गति बदलें और ‘इसके बाद’ में लेख जोड़ें। स्क्रीन लॉक होने पर भी सुनते रहें। पूरे लेख सुनना Premium Archive और Premium Pro में शामिल है। मुफ़्त और Premium खाते 30 सेकंड के अंश आज़मा सकते हैं।\n\nऔर गहराई से जानें\nलेख से निकाला गया टेक्स्ट पढ़ने के लिए टेक्स्ट दृश्य इस्तेमाल करें। ‘AI से पूछें’ सुविधा से लेख का सारांश, पृष्ठभूमि या उसके बारे में अपने सवालों के जवाब पाएँ। उपलब्धता और उपयोग की सीमाएँ आपके खाते की योजना पर निर्भर करती हैं।\n\nआपकी भाषा में\nNewsBlur का इंटरफ़ेस 21 भाषाओं में इस्तेमाल करें। अरबी और हिब्रू के लिए दाएँ से बाएँ लेआउट भी उपलब्ध है। ऐप में अपनी भाषा चुनें या डिवाइस की भाषा अपनाएँ। लेख उसी भाषा में रहते हैं जिसमें वे प्रकाशित हुए थे।\n\nNewsBlur खाता ज़रूरी है। मुफ़्त खाते और वैकल्पिक सशुल्क सदस्यताएँ उपलब्ध हैं। कुछ सुविधाओं के लिए सशुल्क योजना चाहिए।\n\nउपयोग की शर्तें: https://www.newsblur.com/tos\nगोपनीयता नीति: https://www.newsblur.com/privacy",
+        "shortDescription": "पसंदीदा साइटें पढ़ें या 21 भाषाओं की आवाज़ों में लेख सुनें।"
+      },
+      {
+        "language": "id",
+        "title": "NewsBlur: Pembaca Berita RSS",
+        "fullDescription": "Kumpulkan situs favorit Anda di NewsBlur, pembaca RSS pribadi untuk berita, blog, buletin email, dan lainnya. Langganan dan progres membaca Anda tetap tersinkron di ponsel, tablet, dan web.\n\nBACA SESUAI SELERA\nBaca satu situs atau gabungkan isi folder dalam satu daftar artikel. Pilih tema, sesuaikan teks, dan berpindah antarartikel dengan gestur. Unduh artikel untuk dibaca tanpa internet. Di tablet dan perangkat lipat, tampilkan daftar artikel di samping isi artikel, ubah ukuran panel, atau perluas setiap panel ke layar penuh.\n\nTEMUKAN FOKUS ANDA\nLatih NewsBlur berdasarkan penulis, tag, dan kata dalam judul untuk menyorot artikel yang Anda inginkan dan menyembunyikan yang tidak Anda inginkan. Sesuaikan daftar bacaan dengan hal yang penting bagi Anda.\n\nTEMUKAN DAN SIMPAN\nLihat pratinjau situs baru sebelum berlangganan. Simpan artikel untuk nanti, atur artikel tersimpan dengan tag, dan cari di bacaan Anda. Bagikan artikel beserta komentar di Blurblog Anda di NewsBlur dan ikuti apa yang dibaca teman.\n\nDENGARKAN ARTIKEL ANDA\nUbah artikel menjadi audio dengan suara dalam 21 bahasa. Ikuti paragraf yang disorot, ketuk untuk melompat, atur kecepatan, dan antrekan artikel di Berikutnya. Tetap dengarkan saat layar terkunci. Mendengarkan artikel lengkap termasuk dalam Premium Archive dan Premium Pro. Akun gratis dan Premium dapat mencoba cuplikan 30 detik.\n\nGALI LEBIH DALAM\nGunakan Tampilan Teks untuk membaca teks artikel yang diekstrak. Dengan Tanya AI, dapatkan ringkasan, latar belakang, atau jawaban atas pertanyaan tentang artikel. Ketersediaan dan batas penggunaan bergantung pada paket akun Anda.\n\nDALAM BAHASA ANDA\nGunakan antarmuka NewsBlur dalam 21 bahasa, termasuk tata letak kanan ke kiri untuk bahasa Arab dan Ibrani. Pilih bahasa di aplikasi atau ikuti pengaturan perangkat Anda. Artikel tetap dalam bahasa aslinya saat diterbitkan.\n\nDiperlukan akun NewsBlur. Tersedia akun gratis dan langganan berbayar opsional. Beberapa fitur memerlukan paket berbayar.\n\nKetentuan penggunaan: https://www.newsblur.com/tos\nKebijakan privasi: https://www.newsblur.com/privacy",
+        "shortDescription": "Baca situs favorit atau dengarkan artikel dengan suara dalam 21 bahasa."
+      },
+      {
+        "language": "it-IT",
+        "title": "NewsBlur: lettore RSS",
+        "fullDescription": "Riunisci i tuoi siti preferiti in NewsBlur, un lettore RSS personale per notizie, blog, newsletter e molto altro. Le tue iscrizioni e i progressi di lettura restano sincronizzati tra telefono, tablet e web.\n\nLEGGI A MODO TUO\nLeggi un sito alla volta o riunisci una cartella in un solo elenco di articoli. Scegli un tema, regola il testo e passa tra gli articoli con i gesti. Scarica gli articoli per leggerli offline. Su tablet e dispositivi pieghevoli, tieni l’elenco accanto all’articolo, ridimensiona i pannelli o espandi ciascun pannello a schermo intero.\n\nCONCENTRATI SU CIÒ CHE CONTA\nAddestra NewsBlur in base ad autori, tag e parole nei titoli per mettere in evidenza gli articoli che ti interessano e nascondere gli altri. Adatta il tuo elenco di lettura a ciò che conta per te.\n\nSCOPRI E CONSERVA\nTrova nuovi siti, guarda i loro ultimi articoli e prova a leggerli prima di iscriverti. Salva gli articoli per dopo, organizzali con i tag e cerca tra le tue letture. Condividi articoli con commenti sul tuo blurblog di NewsBlur e segui ciò che leggono i tuoi amici.\n\nASCOLTA I TUOI ARTICOLI\nTrasforma gli articoli in audio con voci in 21 lingue. Segui i paragrafi evidenziati, tocca per andare avanti, regola la velocità e aggiungi articoli alla lista In coda. Continua ad ascoltare con lo schermo bloccato. L’ascolto completo è incluso in Premium Archive e Premium Pro. Gli account gratuiti e Premium possono provare anteprime di 30 secondi.\n\nAPPROFONDISCI\nUsa la Vista testo per leggere il contenuto estratto di un articolo. Con Chiedi all’IA puoi ottenere un riepilogo, informazioni di contesto o risposte alle tue domande su un articolo. La disponibilità e i limiti di utilizzo dipendono dal piano del tuo account.\n\nNELLA TUA LINGUA\nUsa l’interfaccia di NewsBlur in 21 lingue, con layout da destra a sinistra per arabo ed ebraico. Scegli la lingua nell’app o segui le impostazioni del dispositivo. Gli articoli restano nella lingua in cui sono stati pubblicati.\n\nÈ necessario un account NewsBlur. Sono disponibili account gratuiti e abbonamenti a pagamento facoltativi. Alcune funzioni richiedono un piano a pagamento.\n\nTermini di utilizzo: https://www.newsblur.com/tos\nInformativa sulla privacy: https://www.newsblur.com/privacy",
+        "shortDescription": "Leggi i tuoi siti preferiti o ascolta articoli con voci in 21 lingue.",
+        "video": "https://www.youtube.com/watch?v=-FaJicL236E"
+      },
+      {
+        "language": "ja-JP",
+        "title": "NewsBlur：RSSニュースリーダー",
+        "fullDescription": "NewsBlurにお気に入りのサイトをまとめましょう。ニュース、ブログ、ニュースレターなどを読めるパーソナルRSSリーダーです。購読リストや読書の進み具合は、スマートフォン、タブレット、ウェブの間で同期されます。\n\n自分に合った読み方で\nサイトごとに読むことも、フォルダー内の記事を1つの一覧にまとめることもできます。テーマを選び、文字を調整し、ジェスチャーで記事を切り替えられます。記事をダウンロードしてオフラインで読めます。タブレットや折りたたみデバイスでは、記事一覧と本文を並べて表示し、ペインのサイズを変更したり、各ペインを全画面に広げたりできます。\n\n読みたい記事にフォーカス\n著者、タグ、見出しの単語をもとにNewsBlurをトレーニングすると、読みたい記事を目立たせ、不要な記事を非表示にできます。大切にしたい情報に合った記事一覧を作れます。\n\n見つけて、残す\n購読前に新しいサイトをプレビューできます。記事を後で読むために保存し、保存した記事をタグで整理したり、読みたい内容を検索したりできます。NewsBlurの自分のBlurblogにコメント付きで記事を共有し、友達が読んでいる記事もチェックできます。\n\n記事を音声で楽しむ\n21言語の音声で記事を読み上げます。ハイライトされた段落を目で追い、タップして先に進み、再生速度を調整し、「次に再生」に記事を追加できます。画面をロックしても聴き続けられます。記事全体の読み上げはPremium ArchiveとPremium Proに含まれます。無料アカウントとPremiumでは30秒間の試聴ができます。\n\nもっと深く知る\nテキスト表示では、抽出した記事本文を読めます。「AIに質問」で記事の要約や背景情報を求めたり、記事について質問したりできます。利用できる機能や利用上限は、アカウントのプランによって異なります。\n\nあなたの言語で\nNewsBlurのインターフェースは21言語に対応し、アラビア語とヘブライ語では右から左へのレイアウトを使えます。アプリ内で言語を選ぶか、デバイスの設定に合わせられます。記事は公開時の言語のまま表示されます。\n\nNewsBlurアカウントが必要です。無料アカウントと、任意で利用できる有料サブスクリプションがあります。一部の機能には有料プランが必要です。\n\n利用規約：https://www.newsblur.com/tos\n\nプライバシーポリシー：https://www.newsblur.com/privacy",
+        "shortDescription": "お気に入りのサイトを読むだけでなく、21言語の音声で記事を聴くこともできます。"
+      },
+      {
+        "language": "ko-KR",
+        "title": "NewsBlur: RSS 뉴스 리더",
+        "fullDescription": "NewsBlur에 좋아하는 사이트를 모아 보세요. 뉴스, 블로그, 뉴스레터 등을 위한 개인용 RSS 리더입니다. 구독 목록과 읽기 진행 상황이 휴대폰, 태블릿, 웹에서 동기화됩니다.\n\n나에게 맞는 방식으로 읽기\n한 번에 하나의 사이트를 읽거나 폴더를 하나의 스토리 목록으로 모아 보세요. 테마를 선택하고 글자를 조절하며 제스처로 스토리를 전환하세요. 스토리를 다운로드해 오프라인으로 읽을 수 있습니다. 태블릿과 폴더블 기기에서는 스토리 목록을 본문 옆에 두고, 패널 크기를 조절하거나 각 패널을 전체 화면으로 펼칠 수 있습니다.\n\n관심 있는 스토리에 집중하기\n작성자, 태그, 제목의 단어를 기준으로 NewsBlur를 학습시키면 원하는 스토리를 강조하고 원하지 않는 스토리를 숨길 수 있습니다. 나에게 중요한 내용이 담긴 읽기 목록을 만들어 보세요.\n\n발견하고 보관하기\n구독하기 전에 새 사이트를 미리 보세요. 스토리를 나중에 읽도록 저장하고, 저장한 스토리를 태그로 정리하고, 읽을 내용을 검색하세요. NewsBlur의 내 Blurblog에 댓글과 함께 스토리를 공유하고 친구들이 무엇을 읽는지도 살펴보세요.\n\n스토리를 소리로 듣기\n21개 언어의 목소리로 기사를 들으세요. 강조된 문단을 따라 읽고, 탭하여 원하는 부분으로 이동하고, 재생 속도를 조절하고, ‘다음 재생’에 스토리를 추가할 수 있습니다. 화면을 잠가도 계속 들을 수 있습니다. 프리미엄 아카이브와 프리미엄 프로에는 전체 듣기가 포함됩니다. 무료 계정과 프리미엄 계정은 30초 미리듣기를 이용할 수 있습니다.\n\n더 깊이 알아보기\n텍스트 보기에서 추출된 본문을 읽으세요. ‘AI에게 질문’으로 스토리 요약이나 배경 정보를 요청하고 스토리에 관해 질문할 수 있습니다. 기능 이용 가능 여부와 사용 한도는 계정 요금제에 따라 다릅니다.\n\n내 언어로 사용하기\nNewsBlur 인터페이스는 21개 언어를 지원하며, 아랍어와 히브리어에서는 오른쪽에서 왼쪽으로 표시되는 레이아웃을 사용할 수 있습니다. 앱에서 언어를 선택하거나 기기 설정을 따르세요. 스토리는 발행된 원래 언어로 유지됩니다.\n\nNewsBlur 계정이 필요합니다. 무료 계정과 선택 가능한 유료 구독이 제공됩니다. 일부 기능에는 유료 요금제가 필요합니다.\n\n이용 약관: https://www.newsblur.com/tos\n\n개인정보 처리방침: https://www.newsblur.com/privacy",
+        "shortDescription": "좋아하는 사이트를 읽거나 21개 언어의 목소리로 스토리를 들으세요."
+      },
+      {
+        "language": "pl-PL",
+        "title": "NewsBlur: czytnik RSS",
+        "fullDescription": "Zbierz ulubione witryny w NewsBlur, osobistym czytniku RSS do wiadomości, blogów, newsletterów i nie tylko. Twoje subskrypcje i postęp czytania pozostają zsynchronizowane między telefonem, tabletem i przeglądarką.\n\nCZYTAJ PO SWOJEMU\nCzytaj jedną witrynę naraz lub połącz folder w jedną listę artykułów. Wybierz motyw, dostosuj tekst i przechodź między artykułami za pomocą gestów. Pobieraj artykuły do czytania offline. Na tabletach i urządzeniach składanych wyświetlaj listę obok artykułu, zmieniaj rozmiary paneli lub otwieraj każdy panel na pełnym ekranie.\n\nWYBIERZ TO, CO WAŻNE\nTrenuj NewsBlur na podstawie autorów, tagów i słów w tytułach, aby wyróżniać interesujące Cię artykuły i ukrywać pozostałe. Dostosuj listę lektur do tego, co jest dla Ciebie ważne.\n\nODKRYWAJ I ZAPISUJ\nZnajduj nowe witryny, przeglądaj ich najnowsze artykuły i wypróbuj czytanie przed subskrypcją. Zapisuj artykuły na później, porządkuj je za pomocą tagów i przeszukuj swoje lektury. Udostępniaj artykuły z komentarzami na swoim blurblogu NewsBlur i obserwuj, co czytają znajomi.\n\nSŁUCHAJ SWOICH ARTYKUŁÓW\nZamień artykuły w nagrania z głosami w 21 językach. Śledź wyróżnione akapity, dotknij, aby przejść dalej, dostosuj tempo i dodawaj artykuły do listy Następny w kolejce. Słuchaj także przy zablokowanym ekranie. Pełny odsłuch jest dostępny w Premium Archive i Premium Pro. Konta bezpłatne i Premium mogą wypróbować 30-sekundowe fragmenty.\n\nDOWIEDZ SIĘ WIĘCEJ\nUżyj Widoku tekstowego, aby przeczytać wyodrębnioną treść artykułu. Funkcja Zapytaj AI pozwala uzyskać podsumowanie, kontekst lub odpowiedzi na pytania o artykuł. Dostępność i limity użycia zależą od planu Twojego konta.\n\nW TWOIM JĘZYKU\nKorzystaj z interfejsu NewsBlur w 21 językach, z układem od prawej do lewej dla arabskiego i hebrajskiego. Wybierz język w aplikacji lub użyj ustawień urządzenia. Artykuły pozostają w języku, w którym je opublikowano.\n\nWymagane jest konto NewsBlur. Dostępne są konta bezpłatne i opcjonalne płatne subskrypcje. Niektóre funkcje wymagają płatnego planu.\n\nWarunki korzystania: https://www.newsblur.com/tos\nPolityka prywatności: https://www.newsblur.com/privacy",
+        "shortDescription": "Czytaj ulubione witryny lub słuchaj artykułów z głosami w 21 językach.",
+        "video": "https://www.youtube.com/watch?v=99s8PpYy_dY"
+      },
+      {
+        "language": "pt-BR",
+        "title": "NewsBlur: leitor RSS",
+        "fullDescription": "Reúna seus sites favoritos no NewsBlur, um leitor RSS pessoal para notícias, blogs, newsletters e muito mais. Suas assinaturas e seu progresso de leitura ficam sincronizados entre o celular, o tablet e a web.\n\nLEIA DO SEU JEITO\nLeia um site por vez ou reúna uma pasta em uma só lista de artigos. Escolha um tema, ajuste o texto e use gestos para mudar de artigo. Baixe artigos para ler offline. Em tablets e dispositivos dobráveis, mantenha a lista ao lado do artigo, redimensione os painéis ou expanda cada painel para tela cheia.\n\nENCONTRE SEU FOCO\nTreine o NewsBlur com autores, tags e palavras dos títulos para destacar os artigos que você quer e ocultar os demais. Faça sua lista de leitura refletir o que importa para você.\n\nDESCUBRA E SALVE\nEncontre novos sites, veja seus artigos mais recentes e experimente ler antes de assinar. Salve artigos para depois, organize-os com tags e pesquise nas suas leituras. Compartilhe artigos com comentários no seu blurblog do NewsBlur e acompanhe o que seus amigos estão lendo.\n\nOUÇA SEUS ARTIGOS\nTransforme artigos em áudio com vozes em 21 idiomas. Acompanhe os parágrafos destacados, toque para avançar, ajuste a velocidade e coloque artigos na fila A seguir. Continue ouvindo com a tela bloqueada. A escuta completa está incluída no Premium Archive e no Premium Pro. Contas gratuitas e Premium podem experimentar prévias de 30 segundos.\n\nVÁ ALÉM\nUse a Visualização de texto para ler o conteúdo extraído de um artigo. Com Perguntar à IA, obtenha um resumo, contexto ou respostas a perguntas sobre um artigo. A disponibilidade e os limites de uso dependem do plano da sua conta.\n\nNO SEU IDIOMA\nUse a interface do NewsBlur em 21 idiomas, com layouts da direita para a esquerda em árabe e hebraico. Escolha seu idioma no app ou siga as configurações do dispositivo. Os artigos permanecem no idioma em que foram publicados.\n\nÉ necessário ter uma conta do NewsBlur. Há contas gratuitas e assinaturas pagas opcionais. Alguns recursos exigem um plano pago.\n\nTermos de uso: https://www.newsblur.com/tos\nPolítica de privacidade: https://www.newsblur.com/privacy",
+        "shortDescription": "Leia seus sites favoritos ou ouça artigos com vozes em 21 idiomas.",
+        "video": "https://www.youtube.com/watch?v=RtomW35_WGI"
+      },
+      {
+        "language": "ru-RU",
+        "title": "NewsBlur: RSS и новости",
+        "fullDescription": "Соберите любимые сайты в NewsBlur, персональном RSS-ридере для новостей, блогов, рассылок и многого другого. Ваши подписки и прогресс чтения синхронизируются между телефоном, планшетом и веб-версией.\n\nЧИТАЙТЕ ПО-СВОЕМУ\nЧитайте один сайт или объедините папку в один список статей. Выберите тему, настройте текст и переходите между статьями жестами. Загружайте статьи для чтения без интернета. На планшетах и складных устройствах держите список рядом со статьёй, меняйте размеры панелей или раскрывайте каждую панель на весь экран.\n\nСОСРЕДОТОЧЬТЕСЬ НА ВАЖНОМ\nОбучайте NewsBlur по авторам, тегам и словам в заголовках, чтобы выделять интересные статьи и скрывать ненужные. Пусть список чтения отражает то, что важно для вас.\n\nНАХОДИТЕ И СОХРАНЯЙТЕ\nОткрывайте новые сайты, просматривайте их свежие статьи и пробуйте читать до подписки. Сохраняйте статьи на потом, упорядочивайте их с помощью тегов и находите нужное поиском. Делитесь статьями с комментариями в своём Blurblog на NewsBlur и следите за тем, что читают друзья.\n\nСЛУШАЙТЕ СВОИ СТАТЬИ\nПревращайте статьи в аудио с голосами на 21 языке. Следите за подсвеченными абзацами, переходите к ним касанием, меняйте скорость и добавляйте статьи в очередь «Далее». Слушайте даже с заблокированным экраном. Полное прослушивание входит в Premium Archive и Premium Pro. Бесплатные аккаунты и Premium могут попробовать 30-секундные фрагменты.\n\nУЗНАВАЙТЕ БОЛЬШЕ\nЧитайте извлечённый текст статьи в текстовом режиме. Функция «Спросить ИИ» поможет получить краткое содержание, контекст или ответы на вопросы о статье. Доступность и ограничения использования зависят от тарифа вашего аккаунта.\n\nНА ВАШЕМ ЯЗЫКЕ\nИнтерфейс NewsBlur доступен на 21 языке, включая отображение справа налево для арабского и иврита. Выберите язык в приложении или используйте язык устройства. Статьи остаются на языке публикации.\n\nТребуется аккаунт NewsBlur. Доступны бесплатные аккаунты и необязательные платные подписки. Для некоторых функций нужен платный тариф.\n\nУсловия использования: https://www.newsblur.com/tos\nПолитика конфиденциальности: https://www.newsblur.com/privacy",
+        "shortDescription": "Читайте любимые сайты или слушайте статьи с голосами на 21 языке."
+      },
+      {
+        "language": "es-ES",
+        "title": "NewsBlur: lector RSS",
+        "fullDescription": "Reúne tus sitios favoritos en NewsBlur, un lector RSS personal para noticias, blogs, boletines y más. Tus suscripciones y tu progreso de lectura se mantienen sincronizados entre tu teléfono, tableta y la web.\n\nLEE A TU MANERA\nLee un sitio a la vez o reúne una carpeta en una sola lista de artículos. Elige un tema, ajusta el texto y pasa de un artículo a otro con gestos. Descarga artículos para leer sin conexión. En tabletas y dispositivos plegables, mantén la lista junto al artículo, cambia el tamaño de los paneles o amplía cada panel a pantalla completa.\n\nCÉNTRATE EN LO QUE TE IMPORTA\nEntrena NewsBlur con autores, etiquetas y palabras de los títulos para destacar los artículos que te interesan y ocultar los demás. Haz que tu lista de lectura refleje lo que te importa.\n\nDESCUBRE Y GUARDA\nEncuentra nuevos sitios, consulta sus últimos artículos y prueba a leerlos antes de suscribirte. Guarda artículos para más tarde, organízalos con etiquetas y busca entre tus lecturas. Comparte artículos con comentarios en tu blurblog de NewsBlur y sigue lo que leen tus amigos.\n\nESCUCHA TUS ARTÍCULOS\nConvierte artículos en audio con voces en 21 idiomas. Sigue los párrafos resaltados, toca para avanzar, ajusta la velocidad y añade artículos a la cola A continuación. Sigue escuchando con la pantalla bloqueada. La escucha completa está incluida en Premium Archive y Premium Pro. Las cuentas gratuitas y Premium pueden probar avances de 30 segundos.\n\nPROFUNDIZA\nUsa la Vista de texto para leer el contenido extraído de un artículo. Con Preguntar a la IA, obtén un resumen, contexto o respuestas a tus preguntas sobre un artículo. La disponibilidad y los límites de uso dependen del plan de tu cuenta.\n\nEN TU IDIOMA\nUsa la interfaz de NewsBlur en 21 idiomas, con diseños de derecha a izquierda para árabe y hebreo. Elige tu idioma en la app o usa el del dispositivo. Los artículos permanecen en el idioma en el que se publicaron.\n\nSe necesita una cuenta de NewsBlur. Hay cuentas gratuitas y suscripciones de pago opcionales. Algunas funciones requieren un plan de pago.\n\nCondiciones de uso: https://www.newsblur.com/tos\nPolítica de privacidad: https://www.newsblur.com/privacy",
+        "shortDescription": "Lee tus sitios favoritos o escucha artículos con voces en 21 idiomas.",
+        "video": "https://www.youtube.com/watch?v=zWjgI-GSJvU"
+      },
+      {
+        "language": "th",
+        "title": "NewsBlur: อ่านข่าว RSS",
+        "fullDescription": "รวมเว็บไซต์โปรดไว้ใน NewsBlur แอปอ่าน RSS ส่วนตัวสำหรับข่าว บล็อก จดหมายข่าว และอีกมากมาย รายการที่สมัครรับและความคืบหน้าในการอ่านจะซิงค์ระหว่างโทรศัพท์ แท็บเล็ต และเว็บเสมอ\n\nอ่านในแบบของคุณ\nอ่านทีละเว็บไซต์หรือรวมทั้งโฟลเดอร์เป็นรายการบทความเดียว เลือกธีม ปรับข้อความ และใช้ท่าทางเพื่อเปลี่ยนบทความ ดาวน์โหลดบทความไว้อ่านออฟไลน์ บนแท็บเล็ตและอุปกรณ์จอพับ สามารถวางรายการบทความข้างเนื้อหา ปรับขนาดแต่ละแผง หรือขยายแต่ละแผงให้เต็มหน้าจอได้\n\nโฟกัสสิ่งที่สนใจ\nฝึก NewsBlur ตามผู้เขียน แท็ก และคำในพาดหัว เพื่อเน้นบทความที่คุณต้องการและซ่อนบทความที่ไม่ต้องการ จัดรายการอ่านให้ตรงกับสิ่งที่สำคัญสำหรับคุณ\n\nค้นพบและเก็บไว้อ่าน\nดูตัวอย่างเว็บไซต์ใหม่ก่อนสมัครรับ บันทึกบทความไว้อ่านทีหลัง จัดระเบียบบทความที่บันทึกไว้ด้วยแท็ก และค้นหาเนื้อหาที่อ่าน แชร์บทความพร้อมความคิดเห็นบน Blurblog ของคุณใน NewsBlur และติดตามว่าเพื่อนกำลังอ่านอะไร\n\nฟังบทความของคุณ\nเปลี่ยนบทความเป็นเสียงอ่านใน 21 ภาษา อ่านตามย่อหน้าที่ไฮไลต์ แตะเพื่อข้ามไปยังส่วนที่ต้องการ ปรับความเร็ว และเพิ่มบทความในรายการถัดไป ฟังต่อได้แม้ล็อกหน้าจอ ฟังบทความเต็มได้ด้วย Premium Archive และ Premium Pro บัญชีฟรีและ Premium ทดลองฟังได้ 30 วินาที\n\nทำความเข้าใจให้มากขึ้น\nใช้มุมมองข้อความเพื่ออ่านเนื้อหาบทความที่ดึงออกมา ใช้ ถาม AI เพื่อขอสรุป ข้อมูลเบื้องหลัง หรือคำตอบเกี่ยวกับบทความ ความพร้อมใช้งานและขีดจำกัดการใช้ขึ้นอยู่กับแพ็กเกจบัญชีของคุณ\n\nในภาษาของคุณ\nใช้อินเทอร์เฟซ NewsBlur ได้ใน 21 ภาษา รวมถึงการจัดวางจากขวาไปซ้ายสำหรับภาษาอาหรับและฮีบรู เลือกภาษาในแอป หรือใช้ตามการตั้งค่าภาษาของอุปกรณ์ บทความยังคงเป็นภาษาที่เผยแพร่\n\nต้องมีบัญชี NewsBlur มีทั้งบัญชีฟรีและแพ็กเกจแบบชำระเงินให้เลือก ฟีเจอร์บางอย่างต้องใช้แพ็กเกจแบบชำระเงิน\n\nข้อกำหนดการใช้งาน: https://www.newsblur.com/tos\n\nนโยบายความเป็นส่วนตัว: https://www.newsblur.com/privacy",
+        "shortDescription": "อ่านเว็บไซต์โปรด หรือฟังบทความด้วยเสียงอ่านใน 21 ภาษา"
+      },
+      {
+        "language": "tr-TR",
+        "title": "NewsBlur: RSS Haber Okuyucu",
+        "fullDescription": "Haberler, bloglar, bültenler ve daha fazlası için kişisel RSS okuyucusu NewsBlur’da favori sitelerinizi bir araya getirin. Abonelikleriniz ve okuma ilerlemeniz telefonunuz, tabletiniz ve web arasında eşitlenir.\n\nKENDİ TARZINIZDA OKUYUN\nSiteleri tek tek okuyun veya bir klasörü tek haber listesinde birleştirin. Tema seçin, metni ayarlayın ve hareketlerle haberler arasında geçiş yapın. Çevrimdışı okumak için haberleri indirin. Tabletlerde ve katlanabilir cihazlarda listeyi haberin yanında tutun, panelleri yeniden boyutlandırın veya her paneli tam ekrana genişletin.\n\nODAĞINIZI BULUN\nİstediğiniz haberleri öne çıkarmak, istemediklerinizi gizlemek için NewsBlur’u yazarlara, etiketlere ve başlıklardaki kelimelere göre eğitin. Okuma listenizi sizin için önemli olanlara göre şekillendirin.\n\nKEŞFEDİN VE SAKLAYIN\nYeni siteler bulun, son haberlerini önizleyin ve abone olmadan önce okumayı deneyin. Haberleri daha sonra okumak için kaydedin, etiketlerle düzenleyin ve okuduklarınız arasında arama yapın. Haberleri yorumlarınızla NewsBlur’daki Blurblog’unuzda paylaşın ve arkadaşlarınızın neler okuduğunu takip edin.\n\nHABERLERİNİZİ DİNLEYİN\nMakaleleri 21 dilde seslerle dinleyin. Vurgulanan paragrafları takip edin, dokunarak ileri atlayın, oynatma hızını ayarlayın ve haberleri Sıradaki listesine ekleyin. Ekran kilitliyken dinlemeye devam edin. Tam dinleme Premium Archive ve Premium Pro’ya dahildir. Ücretsiz ve Premium hesaplar 30 saniyelik önizlemeleri deneyebilir.\n\nDAHA FAZLASINI ÖĞRENİN\nBir makalenin çıkarılmış metnini Metin görünümünde okuyun. Yapay Zekâya Sor ile bir haberin özetini, arka planını veya haberle ilgili sorularınızın yanıtlarını alın. Kullanılabilirlik ve kullanım sınırları hesap planınıza bağlıdır.\n\nKENDİ DİLİNİZDE\nNewsBlur arayüzünü, Arapça ve İbranice için sağdan sola düzenler dahil 21 dilde kullanın. Dilinizi uygulama içinden seçin veya cihazınızın ayarlarını izleyin. Haberler yayımlandıkları dilde kalır.\n\nNewsBlur hesabı gereklidir. Ücretsiz hesaplar ve isteğe bağlı ücretli abonelikler sunulur. Bazı özellikler ücretli plan gerektirir.\n\nKullanım koşulları: https://www.newsblur.com/tos\nGizlilik politikası: https://www.newsblur.com/privacy",
+        "shortDescription": "Favori sitelerinizi okuyun veya haberleri 21 dilde seslerle dinleyin."
+      },
+      {
+        "language": "uk",
+        "title": "NewsBlur: RSS і новини",
+        "fullDescription": "Зберіть улюблені сайти в NewsBlur, персональному RSS-читачі для новин, блогів, розсилок та іншого. Ваші підписки й поступ читання синхронізуються між телефоном, планшетом і вебверсією.\n\nЧИТАЙТЕ ПО-СВОЄМУ\nЧитайте один сайт або об’єднайте папку в один список статей. Виберіть тему, налаштуйте текст і переходьте між статтями жестами. Завантажуйте статті для читання без інтернету. На планшетах і складаних пристроях тримайте список поруч зі статтею, змінюйте розміри панелей або розгортайте кожну панель на весь екран.\n\nЗОСЕРЕДЬТЕСЯ НА ВАЖЛИВОМУ\nНавчайте NewsBlur за авторами, тегами й словами в заголовках, щоб виділяти цікаві статті та приховувати непотрібні. Нехай список читання відображає те, що важливо для вас.\n\nЗНАХОДЬТЕ Й ЗБЕРІГАЙТЕ\nВідкривайте нові сайти, переглядайте їхні свіжі статті й спробуйте читати перед підпискою. Зберігайте статті на потім, упорядковуйте їх за тегами й знаходьте потрібне пошуком. Діліться статтями з коментарями у своєму Blurblog на NewsBlur і стежте за тим, що читають друзі.\n\nСЛУХАЙТЕ СВОЇ СТАТТІ\nПеретворюйте статті на аудіо з голосами 21 мовою. Стежте за підсвіченими абзацами, переходьте до них дотиком, змінюйте швидкість і додавайте статті до черги «Далі». Слухайте навіть із заблокованим екраном. Повне прослуховування входить до Premium Archive і Premium Pro. Безплатні облікові записи та Premium можуть спробувати 30-секундні уривки.\n\nДІЗНАВАЙТЕСЯ БІЛЬШЕ\nЧитайте видобутий текст статті в текстовому режимі. Функція «Запитати ШІ» допоможе отримати стислий виклад, контекст або відповіді на запитання про статтю. Доступність і обмеження використання залежать від тарифу вашого облікового запису.\n\nВАШОЮ МОВОЮ\nІнтерфейс NewsBlur доступний 21 мовою, зокрема з відображенням справа наліво для арабської та івриту. Виберіть мову в застосунку або використовуйте мову пристрою. Статті залишаються мовою публікації.\n\nПотрібен обліковий запис NewsBlur. Доступні безплатні облікові записи й необов’язкові платні підписки. Для деяких функцій потрібен платний тариф.\n\nУмови використання: https://www.newsblur.com/tos\nПолітика конфіденційності: https://www.newsblur.com/privacy",
+        "shortDescription": "Читайте улюблені сайти або слухайте статті з голосами 21 мовою."
+      },
+      {
+        "language": "vi",
+        "title": "NewsBlur: Trình đọc tin RSS",
+        "fullDescription": "Tập hợp các trang web yêu thích trong NewsBlur, trình đọc RSS cá nhân dành cho tin tức, blog, bản tin email và nhiều nội dung khác. Danh sách đăng ký và tiến độ đọc của bạn luôn được đồng bộ giữa điện thoại, máy tính bảng và web.\n\nĐọc theo cách của bạn\nĐọc từng trang web hoặc gom nội dung một thư mục thành một danh sách bài viết. Chọn giao diện, điều chỉnh văn bản và dùng cử chỉ để chuyển giữa các bài viết. Tải bài viết để đọc ngoại tuyến. Trên máy tính bảng và thiết bị gập, đặt danh sách bài viết cạnh nội dung, thay đổi kích thước các ngăn hoặc mở từng ngăn ra toàn màn hình.\n\nTập trung vào điều bạn cần\nHuấn luyện NewsBlur theo tác giả, thẻ và từ trong tiêu đề để làm nổi bật những bài viết bạn muốn đọc và ẩn những bài bạn không muốn. Tạo danh sách đọc phù hợp với những điều bạn quan tâm.\n\nKhám phá và lưu giữ\nXem trước trang web mới trước khi đăng ký theo dõi. Lưu bài viết để đọc sau, sắp xếp bài viết đã lưu bằng thẻ và tìm kiếm nội dung đọc. Chia sẻ bài viết kèm bình luận trên Blurblog của bạn ở NewsBlur và theo dõi những gì bạn bè đang đọc.\n\nNghe bài viết\nBiến bài viết thành âm thanh với giọng đọc bằng 21 ngôn ngữ. Theo dõi các đoạn được tô sáng, chạm để chuyển đến đoạn bạn muốn, điều chỉnh tốc độ phát và thêm bài vào Tiếp theo. Tiếp tục nghe khi khóa màn hình. Premium Archive và Premium Pro bao gồm tính năng nghe toàn bộ bài viết. Tài khoản miễn phí và Premium có thể nghe thử 30 giây.\n\nTìm hiểu sâu hơn\nDùng chế độ xem văn bản để đọc nội dung bài viết được trích xuất. Dùng Hỏi AI để nhận bản tóm tắt, thông tin nền hoặc câu trả lời cho các câu hỏi về bài viết. Tính khả dụng và giới hạn sử dụng tùy thuộc vào gói tài khoản của bạn.\n\nBằng ngôn ngữ của bạn\nSử dụng giao diện NewsBlur bằng 21 ngôn ngữ, bao gồm bố cục từ phải sang trái cho tiếng Ả Rập và tiếng Do Thái. Chọn ngôn ngữ trong ứng dụng hoặc dùng theo cài đặt thiết bị. Bài viết giữ nguyên ngôn ngữ khi xuất bản.\n\nBạn cần có tài khoản NewsBlur. Có tài khoản miễn phí và các gói đăng ký trả phí tùy chọn. Một số tính năng yêu cầu gói trả phí.\n\nĐiều khoản sử dụng: https://www.newsblur.com/tos\n\nChính sách quyền riêng tư: https://www.newsblur.com/privacy",
+        "shortDescription": "Đọc trang web yêu thích hoặc nghe bài viết bằng 21 ngôn ngữ."
+      }
+    ]
+  },
+  "subscriptions": {
+    "subscriptions": [
+      {
+        "packageName": "com.newsblur",
+        "productId": "nb.premium.36",
+        "basePlans": [
+          {
+            "basePlanId": "p1y",
+            "regionalConfigs": [
+              {
+                "regionCode": "AE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "AED",
+                  "units": "139",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "AR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "ARS",
+                  "units": "53820"
+                }
+              },
+              {
+                "regionCode": "AT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "AU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "AUD",
+                  "units": "53",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "AZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "AZN",
+                  "units": "61",
+                  "nanos": 200000000
+                }
+              },
+              {
+                "regionCode": "BD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "BDT",
+                  "units": "3100"
+                }
+              },
+              {
+                "regionCode": "BE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "BG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "39",
+                  "nanos": 360000000
+                }
+              },
+              {
+                "regionCode": "BH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "39",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "BM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "BO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "BOB",
+                  "units": "249",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "BR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "BRL",
+                  "units": "179",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "CA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CAD",
+                  "units": "44",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "CH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CHF",
+                  "units": "34"
+                }
+              },
+              {
+                "regionCode": "CI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "XOF",
+                  "units": "22107"
+                }
+              },
+              {
+                "regionCode": "CL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CLP",
+                  "units": "34000"
+                }
+              },
+              {
+                "regionCode": "CM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "XAF",
+                  "units": "22528"
+                }
+              },
+              {
+                "regionCode": "CO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "COP",
+                  "units": "137000"
+                }
+              },
+              {
+                "regionCode": "CR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CRC",
+                  "units": "23500"
+                }
+              },
+              {
+                "regionCode": "CY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "CZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CZK",
+                  "units": "999",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "DE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "DK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "DKK",
+                  "units": "305"
+                }
+              },
+              {
+                "regionCode": "DZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "DZD",
+                  "units": "5125"
+                }
+              },
+              {
+                "regionCode": "EC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "EE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "EG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EGP",
+                  "units": "659",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "ES",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "ET",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "ETB",
+                  "units": "5705",
+                  "nanos": 280000000
+                }
+              },
+              {
+                "regionCode": "FI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "39",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "FM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "FR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "GB",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "GBP",
+                  "units": "32",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "GE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "GEL",
+                  "units": "124"
+                }
+              },
+              {
+                "regionCode": "GH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "GHS",
+                  "units": "270"
+                }
+              },
+              {
+                "regionCode": "GI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "GBP",
+                  "units": "27",
+                  "nanos": 490000000
+                }
+              },
+              {
+                "regionCode": "GR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "39",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "HK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "HKD",
+                  "units": "279"
+                }
+              },
+              {
+                "regionCode": "HR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "41",
+                  "nanos": 10000000
+                }
+              },
+              {
+                "regionCode": "HU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "HUF",
+                  "units": "15499"
+                }
+              },
+              {
+                "regionCode": "ID",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "IDR",
+                  "units": "499000"
+                }
+              },
+              {
+                "regionCode": "IE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "39",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "IL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "ILS",
+                  "units": "125"
+                }
+              },
+              {
+                "regionCode": "IN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "INR",
+                  "units": "3250"
+                }
+              },
+              {
+                "regionCode": "IQ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "IQD",
+                  "units": "52600"
+                }
+              },
+              {
+                "regionCode": "IT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "39",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "JO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "JOD",
+                  "units": "25",
+                  "nanos": 500000000
+                }
+              },
+              {
+                "regionCode": "JP",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "JPY",
+                  "units": "4300"
+                }
+              },
+              {
+                "regionCode": "KE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "KES",
+                  "units": "4800"
+                }
+              },
+              {
+                "regionCode": "KH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "KR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "KRW",
+                  "units": "48000"
+                }
+              },
+              {
+                "regionCode": "KW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "KY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "KZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "KZT",
+                  "units": "17990"
+                }
+              },
+              {
+                "regionCode": "LI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CHF",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "LK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "LKR",
+                  "units": "9900"
+                }
+              },
+              {
+                "regionCode": "LT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "LU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "37",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "LV",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "MA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MAD",
+                  "units": "419",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "MC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "MM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MMK",
+                  "units": "64000"
+                }
+              },
+              {
+                "regionCode": "MN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MNT",
+                  "units": "121362"
+                }
+              },
+              {
+                "regionCode": "MO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MOP",
+                  "units": "289"
+                }
+              },
+              {
+                "regionCode": "MX",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MXN",
+                  "units": "849"
+                }
+              },
+              {
+                "regionCode": "MY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MYR",
+                  "units": "159",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "NG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "NGN",
+                  "units": "15000"
+                }
+              },
+              {
+                "regionCode": "NL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "NO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "NOK",
+                  "units": "395"
+                }
+              },
+              {
+                "regionCode": "NZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "NZD",
+                  "units": "59",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "OM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "37",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PEN",
+                  "units": "134",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PHP",
+                  "units": "1900"
+                }
+              },
+              {
+                "regionCode": "PK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PKR",
+                  "units": "6500"
+                }
+              },
+              {
+                "regionCode": "PL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PLN",
+                  "units": "189",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "39",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PYG",
+                  "units": "250000"
+                }
+              },
+              {
+                "regionCode": "QA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "QAR",
+                  "units": "130"
+                }
+              },
+              {
+                "regionCode": "RO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "RON",
+                  "units": "189",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "RS",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "RSD",
+                  "units": "4599"
+                }
+              },
+              {
+                "regionCode": "RU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "RUB",
+                  "units": "3890"
+                }
+              },
+              {
+                "regionCode": "SA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "SAR",
+                  "units": "154",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "SEK",
+                  "units": "425"
+                }
+              },
+              {
+                "regionCode": "SG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "SGD",
+                  "units": "51",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "39",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "38",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "32",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "XOF",
+                  "units": "22107"
+                }
+              },
+              {
+                "regionCode": "SV",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "TC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "TH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "THB",
+                  "units": "1300"
+                }
+              },
+              {
+                "regionCode": "TR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "TRY",
+                  "units": "629",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "TW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "TWD",
+                  "units": "1080"
+                }
+              },
+              {
+                "regionCode": "TZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "TZS",
+                  "units": "83000"
+                }
+              },
+              {
+                "regionCode": "UA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "UAH",
+                  "units": "1249",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "US",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "UZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "UZS",
+                  "units": "432000"
+                }
+              },
+              {
+                "regionCode": "VA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "32",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "VG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "35",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "VN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "VND",
+                  "units": "823000"
+                }
+              },
+              {
+                "regionCode": "ZA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "ZAR",
+                  "units": "619",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "AG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "AL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "AM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "AO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "AW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "BA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "BF",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "BJ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "BS",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "BW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "BY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "BZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "CD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "CF",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "CG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "CV",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "DJ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "DM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "DO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "ER",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "FJ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "GA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "GD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "GM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "GN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "GT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "GW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "HN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "HT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "IS",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "JM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "KG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "KM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "KN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "LA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "LB",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "LC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "LR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "LY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "MD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "MK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "ML",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "MT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "MU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "MV",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "MZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "NA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "NE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "NI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "NP",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "PG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "RW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "SB",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "SC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "SL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "SO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "SR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "TD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "TG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "34",
+                  "nanos": 100000000
+                }
+              },
+              {
+                "regionCode": "TJ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "TM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "TN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "TO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "TT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "UG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "UY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "VE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "VU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "WS",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "YE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "ZM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              },
+              {
+                "regionCode": "ZW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "36"
+                }
+              }
+            ],
+            "state": "ACTIVE",
+            "autoRenewingBasePlanType": {
+              "billingPeriodDuration": "P1Y",
+              "gracePeriodDuration": "P30D",
+              "resubscribeState": "RESUBSCRIBE_STATE_ACTIVE",
+              "prorationMode": "SUBSCRIPTION_PRORATION_MODE_CHARGE_ON_NEXT_BILLING_DATE",
+              "legacyCompatible": true,
+              "legacyCompatibleSubscriptionOfferId": ""
+            },
+            "otherRegionsConfig": {
+              "usdPrice": {
+                "currencyCode": "USD",
+                "units": "36"
+              },
+              "eurPrice": {
+                "currencyCode": "EUR",
+                "units": "34",
+                "nanos": 100000000
+              },
+              "newSubscriberAvailability": true
+            }
+          }
+        ],
+        "listings": [
+          {
+            "title": "NewsBlur Premium Subscription",
+            "benefits": [
+              "Read folders in one story list",
+              "Search across feeds",
+              "Tag your saved stories",
+              "Faster feed updates"
+            ],
+            "languageCode": "en-US",
+            "description": "Read folders in one list, search your feeds, organize saved stories with tags, and enjoy faster feed updates."
+          },
+          {
+            "title": "اشتراك NewsBlur Premium",
+            "benefits": [
+              "اقرأ المجلدات في قائمة قصص واحدة",
+              "ابحث في جميع الخلاصات",
+              "أضف وسومًا إلى القصص المحفوظة",
+              "تحديثات أسرع للخلاصات"
+            ],
+            "languageCode": "ar",
+            "description": "اقرأ المجلدات في قائمة واحدة، وابحث في خلاصاتك، ونظّم القصص المحفوظة بالوسوم، واستمتع بتحديثات أسرع للخلاصات."
+          },
+          {
+            "title": "NewsBlur Premium 订阅",
+            "benefits": [
+              "在同一列表中阅读文件夹内的文章",
+              "跨订阅源搜索",
+              "为已保存的文章添加标签",
+              "更快的订阅源更新"
+            ],
+            "languageCode": "zh-CN",
+            "description": "在一个列表中阅读文件夹内的文章、搜索订阅源、用标签整理已保存的文章，并享受更快的订阅源更新。"
+          },
+          {
+            "title": "NewsBlur Premium 訂閱",
+            "benefits": [
+              "在同一清單中閱讀資料夾內的文章",
+              "跨訂閱來源搜尋",
+              "為已儲存的文章加上標籤",
+              "更快的訂閱來源更新"
+            ],
+            "languageCode": "zh-TW",
+            "description": "在同一清單中閱讀資料夾內的文章、搜尋訂閱來源、用標籤整理已儲存的文章，並享有更快的訂閱來源更新。"
+          },
+          {
+            "title": "NewsBlur Premium-abonnement",
+            "benefits": [
+              "Lees mappen in één artikellijst",
+              "Doorzoek al je feeds",
+              "Tag je opgeslagen artikelen",
+              "Vaker feedupdates"
+            ],
+            "languageCode": "nl-NL",
+            "description": "Lees mappen in één lijst, doorzoek je feeds, orden opgeslagen artikelen met tags en profiteer van snellere feedupdates."
+          },
+          {
+            "title": "Abonnement NewsBlur Premium",
+            "benefits": [
+              "Lisez un dossier dans une seule liste",
+              "Recherchez dans tous vos flux",
+              "Tags sur vos articles enregistrés",
+              "Mises à jour des flux plus fréquentes"
+            ],
+            "languageCode": "fr-FR",
+            "description": "Lisez vos dossiers dans une seule liste, recherchez dans vos flux, organisez les articles enregistrés avec des tags et profitez de mises à jour des flux plus rapides."
+          },
+          {
+            "title": "NewsBlur Premium-Abonnement",
+            "benefits": [
+              "Ordner in einer Artikelliste lesen",
+              "Feeds übergreifend durchsuchen",
+              "Gespeicherte Artikel mit Tags ordnen",
+              "Häufigere Feed-Aktualisierungen"
+            ],
+            "languageCode": "de-DE",
+            "description": "Lies Ordner in einer Liste, durchsuche deine Feeds, ordne gespeicherte Artikel mit Tags und profitiere von schnelleren Feed-Aktualisierungen."
+          },
+          {
+            "title": "מינוי NewsBlur Premium",
+            "benefits": [
+              "קריאת תיקיות ברשימת כתבות אחת",
+              "חיפוש בכל הפידים",
+              "תגיות לכתבות שמורות",
+              "עדכוני פידים מהירים יותר"
+            ],
+            "languageCode": "iw-IL",
+            "description": "קראו תיקיות ברשימה אחת, חפשו בפידים, ארגנו כתבות שמורות בעזרת תגיות ותיהנו מעדכוני פידים מהירים יותר."
+          },
+          {
+            "title": "NewsBlur Premium सदस्यता",
+            "benefits": [
+              "फ़ोल्डर एक ही लेख सूची में पढ़ें",
+              "सभी फ़ीड में खोजें",
+              "सहेजे गए लेखों पर टैग लगाएँ",
+              "ज़्यादा तेज़ फ़ीड अपडेट"
+            ],
+            "languageCode": "hi-IN",
+            "description": "फ़ोल्डरों को एक सूची में पढ़ें, अपनी फ़ीड में खोजें, सहेजे गए लेखों को टैग से व्यवस्थित करें और फ़ीड अपडेट जल्दी पाएँ।"
+          },
+          {
+            "title": "Langganan NewsBlur Premium",
+            "benefits": [
+              "Baca folder dalam satu daftar artikel",
+              "Cari di seluruh feed",
+              "Beri tag pada artikel tersimpan",
+              "Pembaruan feed lebih cepat"
+            ],
+            "languageCode": "id",
+            "description": "Baca folder dalam satu daftar, cari di feed Anda, atur artikel tersimpan dengan tag, dan nikmati pembaruan feed yang lebih cepat."
+          },
+          {
+            "title": "Abbonamento NewsBlur Premium",
+            "benefits": [
+              "Leggi le cartelle in un solo elenco",
+              "Cerca in tutti i feed",
+              "Aggiungi tag agli articoli salvati",
+              "Aggiornamenti dei feed più frequenti"
+            ],
+            "languageCode": "it-IT",
+            "description": "Leggi le cartelle in un solo elenco, cerca nei tuoi feed, organizza gli articoli salvati con i tag e approfitta di aggiornamenti dei feed più rapidi."
+          },
+          {
+            "title": "NewsBlur Premiumのサブスクリプション",
+            "benefits": [
+              "フォルダー内の記事を1つの一覧で読む",
+              "複数のフィードを横断検索",
+              "保存した記事にタグを付ける",
+              "フィードをより速く更新"
+            ],
+            "languageCode": "ja-JP",
+            "description": "フォルダー内の記事を1つの一覧で読み、フィードを検索し、保存した記事をタグで整理できます。フィードの更新も速くなります。"
+          },
+          {
+            "title": "NewsBlur Premium 구독",
+            "benefits": [
+              "폴더를 하나의 스토리 목록으로 읽기",
+              "여러 피드에서 검색",
+              "저장한 스토리에 태그 지정",
+              "더 빠른 피드 업데이트"
+            ],
+            "languageCode": "ko-KR",
+            "description": "폴더를 하나의 목록에서 읽고, 피드를 검색하고, 저장한 스토리를 태그로 정리하세요. 더 빠른 피드 업데이트도 이용할 수 있습니다."
+          },
+          {
+            "title": "Subskrypcja NewsBlur Premium",
+            "benefits": [
+              "Czytaj foldery na jednej liście",
+              "Przeszukuj wszystkie kanały",
+              "Dodawaj tagi do zapisanych artykułów",
+              "Częstsze aktualizacje kanałów"
+            ],
+            "languageCode": "pl-PL",
+            "description": "Czytaj foldery na jednej liście, przeszukuj kanały, porządkuj zapisane artykuły za pomocą tagów i korzystaj z szybszych aktualizacji kanałów."
+          },
+          {
+            "title": "Assinatura do NewsBlur Premium",
+            "benefits": [
+              "Leia pastas em uma lista de artigos",
+              "Pesquise em todos os feeds",
+              "Adicione tags aos artigos salvos",
+              "Atualizações de feeds mais frequentes"
+            ],
+            "languageCode": "pt-BR",
+            "description": "Leia pastas em uma só lista, pesquise nos seus feeds, organize artigos salvos com tags e aproveite atualizações de feeds mais rápidas."
+          },
+          {
+            "title": "Подписка NewsBlur Premium",
+            "benefits": [
+              "Читайте папки в одном списке статей",
+              "Поиск по всем лентам",
+              "Теги для сохранённых статей",
+              "Более частое обновление лент"
+            ],
+            "languageCode": "ru-RU",
+            "description": "Читайте папки в одном списке, ищите в лентах, упорядочивайте сохранённые статьи с помощью тегов и получайте более быстрые обновления лент."
+          },
+          {
+            "title": "Suscripción a NewsBlur Premium",
+            "benefits": [
+              "Lee carpetas en una lista de artículos",
+              "Busca en todos tus feeds",
+              "Etiqueta tus artículos guardados",
+              "Actualizaciones de feeds más frecuentes"
+            ],
+            "languageCode": "es-ES",
+            "description": "Lee carpetas en una sola lista, busca en tus feeds, organiza artículos guardados con etiquetas y disfruta de actualizaciones de feeds más rápidas."
+          },
+          {
+            "title": "การสมัครสมาชิก NewsBlur Premium",
+            "benefits": [
+              "อ่านโฟลเดอร์ในรายการบทความเดียว",
+              "ค้นหาในทุกฟีด",
+              "แท็กบทความที่บันทึกไว้",
+              "อัปเดตฟีดเร็วขึ้น"
+            ],
+            "languageCode": "th",
+            "description": "อ่านโฟลเดอร์ในรายการเดียว ค้นหาในฟีด จัดระเบียบบทความที่บันทึกไว้ด้วยแท็ก และรับการอัปเดตฟีดที่เร็วขึ้น"
+          },
+          {
+            "title": "NewsBlur Premium Aboneliği",
+            "benefits": [
+              "Klasörleri tek haber listesinde okuyun",
+              "Akışlar arasında arama yapın",
+              "Kaydettiğiniz haberleri etiketleyin",
+              "Daha hızlı akış güncellemeleri"
+            ],
+            "languageCode": "tr-TR",
+            "description": "Klasörleri tek listede okuyun, akışlarınızda arayın, kaydedilen haberleri etiketlerle düzenleyin ve daha hızlı akış güncellemelerinden yararlanın."
+          },
+          {
+            "title": "Підписка NewsBlur Premium",
+            "benefits": [
+              "Читайте папки в одному списку статей",
+              "Пошук у всіх стрічках",
+              "Теги для збережених статей",
+              "Частіше оновлення стрічок"
+            ],
+            "languageCode": "uk",
+            "description": "Читайте папки в одному списку, шукайте у стрічках, упорядковуйте збережені статті за тегами й отримуйте швидші оновлення стрічок."
+          },
+          {
+            "title": "Đăng ký NewsBlur Premium",
+            "benefits": [
+              "Đọc thư mục trong một danh sách bài viết",
+              "Tìm kiếm trên các nguồn cấp",
+              "Gắn thẻ bài viết đã lưu",
+              "Cập nhật nguồn cấp nhanh hơn"
+            ],
+            "languageCode": "vi",
+            "description": "Đọc thư mục trong một danh sách, tìm kiếm nguồn cấp, sắp xếp bài viết đã lưu bằng thẻ và nhận cập nhật nguồn cấp nhanh hơn."
+          }
+        ],
+        "taxAndComplianceSettings": {
+          "eeaWithdrawalRightType": "WITHDRAWAL_RIGHT_SERVICE"
+        }
+      },
+      {
+        "packageName": "com.newsblur",
+        "productId": "nb.premium.archive.99",
+        "basePlans": [
+          {
+            "basePlanId": "pa1y",
+            "regionalConfigs": [
+              {
+                "regionCode": "AE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "AED",
+                  "units": "379",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "AR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "ARS",
+                  "units": "148005"
+                }
+              },
+              {
+                "regionCode": "AT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "AU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "AUD",
+                  "units": "159",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "AZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "AZN",
+                  "units": "168",
+                  "nanos": 300000000
+                }
+              },
+              {
+                "regionCode": "BD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "BDT",
+                  "units": "9300"
+                }
+              },
+              {
+                "regionCode": "BE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "BG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "117",
+                  "nanos": 590000000
+                }
+              },
+              {
+                "regionCode": "BH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "109",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "BM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "BO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "BOB",
+                  "units": "679",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "BR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "BRL",
+                  "units": "529",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "CA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CAD",
+                  "units": "129",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "CH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CHF",
+                  "units": "95"
+                }
+              },
+              {
+                "regionCode": "CI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "XOF",
+                  "units": "60793"
+                }
+              },
+              {
+                "regionCode": "CL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CLP",
+                  "units": "113000"
+                }
+              },
+              {
+                "regionCode": "CM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "XAF",
+                  "units": "61952"
+                }
+              },
+              {
+                "regionCode": "CO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "COP",
+                  "units": "432000"
+                }
+              },
+              {
+                "regionCode": "CR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CRC",
+                  "units": "68000"
+                }
+              },
+              {
+                "regionCode": "CY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "CZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CZK",
+                  "units": "2899",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "DE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "114",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "DK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "DKK",
+                  "units": "909"
+                }
+              },
+              {
+                "regionCode": "DZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "DZD",
+                  "units": "14500"
+                }
+              },
+              {
+                "regionCode": "EC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "EE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "EG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EGP",
+                  "units": "1849",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "ES",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "ET",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "ETB",
+                  "units": "15689",
+                  "nanos": 520000000
+                }
+              },
+              {
+                "regionCode": "FI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "FM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "FR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "GB",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "GBP",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "GE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "GEL",
+                  "units": "324"
+                }
+              },
+              {
+                "regionCode": "GH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "GHS",
+                  "units": "950"
+                }
+              },
+              {
+                "regionCode": "GI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "GBP",
+                  "units": "82",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "GR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "HK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "HKD",
+                  "units": "778"
+                }
+              },
+              {
+                "regionCode": "HR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "121",
+                  "nanos": 970000000
+                }
+              },
+              {
+                "regionCode": "HU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "HUF",
+                  "units": "49999"
+                }
+              },
+              {
+                "regionCode": "ID",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "IDR",
+                  "units": "1490000"
+                }
+              },
+              {
+                "regionCode": "IE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "IL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "ILS",
+                  "units": "349",
+                  "nanos": 900000000
+                }
+              },
+              {
+                "regionCode": "IN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "INR",
+                  "units": "9300"
+                }
+              },
+              {
+                "regionCode": "IQ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "IQD",
+                  "units": "145000"
+                }
+              },
+              {
+                "regionCode": "IT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "JO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "JOD",
+                  "units": "70",
+                  "nanos": 500000000
+                }
+              },
+              {
+                "regionCode": "JP",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "JPY",
+                  "units": "13700"
+                }
+              },
+              {
+                "regionCode": "KE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "KES",
+                  "units": "14000"
+                }
+              },
+              {
+                "regionCode": "KH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "KR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "KRW",
+                  "units": "140000"
+                }
+              },
+              {
+                "regionCode": "KW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "KY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "KZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "KZT",
+                  "units": "52990"
+                }
+              },
+              {
+                "regionCode": "LI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "CHF",
+                  "units": "100"
+                }
+              },
+              {
+                "regionCode": "LK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "LKR",
+                  "units": "35750"
+                }
+              },
+              {
+                "regionCode": "LT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "LU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "114",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "LV",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "MA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MAD",
+                  "units": "1239",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "MC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "MM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MMK",
+                  "units": "185000"
+                }
+              },
+              {
+                "regionCode": "MN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MNT",
+                  "units": "349423"
+                }
+              },
+              {
+                "regionCode": "MO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MOP",
+                  "units": "799"
+                }
+              },
+              {
+                "regionCode": "MX",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MXN",
+                  "units": "2349"
+                }
+              },
+              {
+                "regionCode": "MY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "MYR",
+                  "units": "464",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "NG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "NGN",
+                  "units": "45000"
+                }
+              },
+              {
+                "regionCode": "NL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "NO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "NOK",
+                  "units": "1249"
+                }
+              },
+              {
+                "regionCode": "NZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "NZD",
+                  "units": "184",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "OM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PEN",
+                  "units": "384",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PHP",
+                  "units": "5600"
+                }
+              },
+              {
+                "regionCode": "PK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PKR",
+                  "units": "20900"
+                }
+              },
+              {
+                "regionCode": "PL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PLN",
+                  "units": "579",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "PY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "PYG",
+                  "units": "700000"
+                }
+              },
+              {
+                "regionCode": "QA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "QAR",
+                  "units": "365"
+                }
+              },
+              {
+                "regionCode": "RO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "RON",
+                  "units": "599",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "RS",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "RSD",
+                  "units": "13999"
+                }
+              },
+              {
+                "regionCode": "RU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "RUB",
+                  "units": "5699"
+                }
+              },
+              {
+                "regionCode": "SA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "SAR",
+                  "units": "429",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "SEK",
+                  "units": "1299"
+                }
+              },
+              {
+                "regionCode": "SG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "SGD",
+                  "units": "149",
+                  "nanos": 980000000
+                }
+              },
+              {
+                "regionCode": "SI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "119",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "SN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "XOF",
+                  "units": "60793"
+                }
+              },
+              {
+                "regionCode": "SV",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "TC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "TH",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "THB",
+                  "units": "3875"
+                }
+              },
+              {
+                "regionCode": "TR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "TRY",
+                  "units": "2019",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "TW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "TWD",
+                  "units": "3110"
+                }
+              },
+              {
+                "regionCode": "TZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "TZS",
+                  "units": "231000"
+                }
+              },
+              {
+                "regionCode": "UA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "UAH",
+                  "units": "3499",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "US",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "UZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "UZS",
+                  "units": "1188000"
+                }
+              },
+              {
+                "regionCode": "VA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "VG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "VN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "VND",
+                  "units": "2300000"
+                }
+              },
+              {
+                "regionCode": "ZA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "ZAR",
+                  "units": "1949",
+                  "nanos": 990000000
+                }
+              },
+              {
+                "regionCode": "AG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "AL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "AM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "AO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "AW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "BA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "BF",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "BJ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "BS",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "BW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "BY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "BZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "CD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "CF",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "CG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "CV",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "DJ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "DM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "DO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "ER",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "FJ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "GA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "GD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "GM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "GN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "GT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "GW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "HN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "HT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "IS",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "JM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "KG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "KM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "KN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "LA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "LB",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "LC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "LR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "LY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "MD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "MK",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "ML",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "MT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "MU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "MV",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "MZ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "NA",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "NE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "NI",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "NP",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "PG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "RW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "SB",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "SC",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "SL",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "SO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "SR",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "TD",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "TG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "EUR",
+                  "units": "98",
+                  "nanos": 180000000
+                }
+              },
+              {
+                "regionCode": "TJ",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "TM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "TN",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "TO",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "TT",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "UG",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "UY",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "VE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "VU",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "WS",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "YE",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "ZM",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              },
+              {
+                "regionCode": "ZW",
+                "newSubscriberAvailability": true,
+                "price": {
+                  "currencyCode": "USD",
+                  "units": "99"
+                }
+              }
+            ],
+            "state": "ACTIVE",
+            "autoRenewingBasePlanType": {
+              "billingPeriodDuration": "P1Y",
+              "gracePeriodDuration": "P30D",
+              "resubscribeState": "RESUBSCRIBE_STATE_ACTIVE",
+              "prorationMode": "SUBSCRIPTION_PRORATION_MODE_CHARGE_ON_NEXT_BILLING_DATE",
+              "legacyCompatible": true,
+              "legacyCompatibleSubscriptionOfferId": ""
+            },
+            "otherRegionsConfig": {
+              "usdPrice": {
+                "currencyCode": "USD",
+                "units": "99"
+              },
+              "eurPrice": {
+                "currencyCode": "EUR",
+                "units": "98",
+                "nanos": 180000000
+              },
+              "newSubscriberAvailability": true
+            }
+          }
+        ],
+        "listings": [
+          {
+            "title": "NewsBlur Premium Archive Subscription",
+            "benefits": [
+              "Everything in Premium",
+              "Keep stories unread forever",
+              "Archive every story permanently",
+              "Search your complete story archive"
+            ],
+            "languageCode": "en-US",
+            "description": "Get every Premium feature plus a permanent, searchable archive of every story. Keep stories unread for as long as you want."
+          },
+          {
+            "title": "اشتراك NewsBlur Premium Archive",
+            "benefits": [
+              "كل ميزات Premium",
+              "احتفظ بالقصص غير مقروءة بلا حد زمني",
+              "أرشف كل قصة بشكل دائم",
+              "ابحث في أرشيف قصصك الكامل"
+            ],
+            "languageCode": "ar",
+            "description": "احصل على كل ميزات Premium بالإضافة إلى أرشيف دائم لكل قصة يمكنك البحث فيه. احتفظ بالقصص غير مقروءة للمدة التي تريدها."
+          },
+          {
+            "title": "NewsBlur Premium Archive 订阅",
+            "benefits": [
+              "Premium 的全部功能",
+              "文章可永远保持未读状态",
+              "永久归档每篇文章",
+              "搜索完整的文章归档"
+            ],
+            "languageCode": "zh-CN",
+            "description": "获得 Premium 的全部功能，以及可永久保存每篇文章并支持搜索的归档。文章想保持未读状态多久都可以。"
+          },
+          {
+            "title": "NewsBlur Premium Archive 訂閱",
+            "benefits": [
+              "Premium 的所有功能",
+              "文章可永遠保持未讀狀態",
+              "永久封存每篇文章",
+              "搜尋完整的文章封存庫"
+            ],
+            "languageCode": "zh-TW",
+            "description": "取得 Premium 的所有功能，以及可永久封存每篇文章並支援搜尋的封存庫。文章想保持未讀狀態多久都可以。"
+          },
+          {
+            "title": "NewsBlur Premium Archive-abonnement",
+            "benefits": [
+              "Alles van Premium",
+              "Bewaar artikelen onbeperkt ongelezen",
+              "Archiveer elk artikel blijvend",
+              "Doorzoek je volledige artikelarchief"
+            ],
+            "languageCode": "nl-NL",
+            "description": "Krijg alle Premium-functies plus een blijvend, doorzoekbaar archief van elk artikel. Laat artikelen zo lang ongelezen als je wilt."
+          },
+          {
+            "title": "Abonnement NewsBlur Premium Archive",
+            "benefits": [
+              "Tout Premium",
+              "Gardez vos articles non lus indéfiniment",
+              "Archivez chaque article pour toujours",
+              "Recherchez dans toutes vos archives"
+            ],
+            "languageCode": "fr-FR",
+            "description": "Profitez de toutes les fonctions Premium et d’une archive permanente de chaque article avec recherche. Gardez les articles non lus aussi longtemps que vous le souhaitez."
+          },
+          {
+            "title": "NewsBlur Premium Archive-Abonnement",
+            "benefits": [
+              "Alles aus Premium",
+              "Artikel für immer ungelesen lassen",
+              "Jeden Artikel dauerhaft archivieren",
+              "Das gesamte Artikelarchiv durchsuchen"
+            ],
+            "languageCode": "de-DE",
+            "description": "Erhalte alle Premium-Funktionen und ein dauerhaftes, durchsuchbares Archiv jedes Artikels. Lass Artikel so lange ungelesen, wie du möchtest."
+          },
+          {
+            "title": "מינוי NewsBlur Premium Archive",
+            "benefits": [
+              "כל מה שכלול ב־Premium",
+              "כתבות שלא נקראו ללא הגבלת זמן",
+              "שמירת כל כתבה בארכיון לצמיתות",
+              "חיפוש בארכיון הכתבות המלא"
+            ],
+            "languageCode": "iw-IL",
+            "description": "קבלו את כל תכונות Premium וגם ארכיון קבוע וניתן לחיפוש של כל כתבה. השאירו כתבות שלא נקראו לכל פרק זמן רצוי."
+          },
+          {
+            "title": "NewsBlur Premium Archive सदस्यता",
+            "benefits": [
+              "Premium की सभी सुविधाएँ",
+              "लेख हमेशा अपठित रख सकते हैं",
+              "हर लेख स्थायी रूप से संग्रहित करें",
+              "लेखों के पूरे संग्रह में खोजें"
+            ],
+            "languageCode": "hi-IN",
+            "description": "Premium की हर सुविधा के साथ हर लेख का स्थायी संग्रह पाएँ जिसमें आप खोज सकते हैं। लेखों को जितने समय चाहें, अपठित रखें।"
+          },
+          {
+            "title": "Langganan NewsBlur Premium Archive",
+            "benefits": [
+              "Semua fitur Premium",
+              "Artikel belum dibaca tanpa batas waktu",
+              "Arsipkan setiap artikel secara permanen",
+              "Cari di seluruh arsip artikel Anda"
+            ],
+            "languageCode": "id",
+            "description": "Dapatkan semua fitur Premium serta arsip permanen setiap artikel yang dapat ditelusuri. Biarkan artikel belum dibaca selama yang Anda inginkan."
+          },
+          {
+            "title": "Abbonamento NewsBlur Premium Archive",
+            "benefits": [
+              "Tutto ciò che offre Premium",
+              "Lascia gli articoli non letti per sempre",
+              "Archivia ogni articolo per sempre",
+              "Cerca in tutto il tuo archivio"
+            ],
+            "languageCode": "it-IT",
+            "description": "Ottieni tutte le funzioni Premium e un archivio permanente di ogni articolo in cui puoi cercare. Lascia gli articoli non letti per tutto il tempo che vuoi."
+          },
+          {
+            "title": "NewsBlur Premium Archiveのサブスクリプション",
+            "benefits": [
+              "Premiumのすべての機能",
+              "記事をいつまでも未読のまま残せる",
+              "すべての記事を永久にアーカイブ",
+              "記事アーカイブ全体を検索"
+            ],
+            "languageCode": "ja-JP",
+            "description": "Premiumの全機能に加え、すべての記事を永久保存して検索できるアーカイブを利用できます。記事を好きなだけ未読のまま残せます。"
+          },
+          {
+            "title": "NewsBlur Premium Archive 구독",
+            "benefits": [
+              "Premium의 모든 기능",
+              "스토리를 영원히 읽지 않은 상태로 유지",
+              "모든 스토리 영구 보관",
+              "전체 스토리 보관함 검색"
+            ],
+            "languageCode": "ko-KR",
+            "description": "Premium의 모든 기능과 함께 모든 스토리를 영구 보관하고 검색할 수 있는 보관함을 이용하세요. 스토리를 원하는 만큼 읽지 않은 상태로 유지할 수 있습니다."
+          },
+          {
+            "title": "Subskrypcja NewsBlur Premium Archive",
+            "benefits": [
+              "Wszystko z Premium",
+              "Nieprzeczytane artykuły bez limitu czasu",
+              "Archiwizuj każdy artykuł na zawsze",
+              "Przeszukuj całe archiwum artykułów"
+            ],
+            "languageCode": "pl-PL",
+            "description": "Zyskaj wszystkie funkcje Premium oraz trwałe archiwum każdego artykułu z możliwością wyszukiwania. Zachowuj artykuły jako nieprzeczytane tak długo, jak chcesz."
+          },
+          {
+            "title": "Assinatura do NewsBlur Premium Archive",
+            "benefits": [
+              "Tudo do Premium",
+              "Mantenha artigos não lidos para sempre",
+              "Arquive cada artigo para sempre",
+              "Pesquise em todo o arquivo de artigos"
+            ],
+            "languageCode": "pt-BR",
+            "description": "Tenha todos os recursos do Premium e um arquivo permanente de cada artigo com pesquisa. Mantenha artigos não lidos pelo tempo que quiser."
+          },
+          {
+            "title": "Подписка NewsBlur Premium Archive",
+            "benefits": [
+              "Все возможности Premium",
+              "Храните статьи непрочитанными бессрочно",
+              "Постоянное хранение всех статей",
+              "Поиск по всему архиву статей"
+            ],
+            "languageCode": "ru-RU",
+            "description": "Получите все функции Premium и постоянный архив каждой статьи с возможностью поиска. Оставляйте статьи непрочитанными столько, сколько хотите."
+          },
+          {
+            "title": "Suscripción a NewsBlur Premium Archive",
+            "benefits": [
+              "Todo lo de Premium",
+              "Deja artículos sin leer para siempre",
+              "Archiva cada artículo para siempre",
+              "Busca en todo tu archivo de artículos"
+            ],
+            "languageCode": "es-ES",
+            "description": "Obtén todas las funciones de Premium y un archivo permanente de cada artículo en el que puedes buscar. Mantén los artículos sin leer tanto tiempo como quieras."
+          },
+          {
+            "title": "การสมัครสมาชิก NewsBlur Premium Archive",
+            "benefits": [
+              "ทุกอย่างใน Premium",
+              "คงสถานะยังไม่อ่านได้ตลอดไป",
+              "จัดเก็บทุกบทความอย่างถาวร",
+              "ค้นหาในคลังบทความทั้งหมด"
+            ],
+            "languageCode": "th",
+            "description": "รับทุกฟีเจอร์ของ Premium พร้อมคลังถาวรของทุกบทความที่ค้นหาได้ เก็บบทความเป็นยังไม่อ่านได้นานเท่าที่ต้องการ"
+          },
+          {
+            "title": "NewsBlur Premium Archive Aboneliği",
+            "benefits": [
+              "Premium’daki her şey",
+              "Haberleri süresiz okunmamış tutun",
+              "Her haberi kalıcı olarak arşivleyin",
+              "Tüm haber arşivinizde arama yapın"
+            ],
+            "languageCode": "tr-TR",
+            "description": "Tüm Premium özelliklerine ve her haberin kalıcı, aranabilir arşivine sahip olun. Haberleri istediğiniz süre boyunca okunmamış tutun."
+          },
+          {
+            "title": "Підписка NewsBlur Premium Archive",
+            "benefits": [
+              "Усі можливості Premium",
+              "Залишайте статті непрочитаними назавжди",
+              "Постійне зберігання всіх статей",
+              "Пошук у всьому архіві статей"
+            ],
+            "languageCode": "uk",
+            "description": "Отримайте всі функції Premium і постійний архів кожної статті з можливістю пошуку. Залишайте статті непрочитаними стільки, скільки бажаєте."
+          },
+          {
+            "title": "Đăng ký NewsBlur Premium Archive",
+            "benefits": [
+              "Mọi tính năng của Premium",
+              "Giữ bài viết chưa đọc mãi mãi",
+              "Lưu trữ vĩnh viễn mọi bài viết",
+              "Tìm kiếm toàn bộ kho bài viết"
+            ],
+            "languageCode": "vi",
+            "description": "Nhận mọi tính năng của Premium cùng kho lưu trữ vĩnh viễn, có thể tìm kiếm cho mọi bài viết. Giữ bài viết chưa đọc bao lâu tùy thích."
+          }
+        ],
+        "taxAndComplianceSettings": {
+          "eeaWithdrawalRightType": "WITHDRAWAL_RIGHT_SERVICE"
+        }
+      }
+    ]
+  }
+}

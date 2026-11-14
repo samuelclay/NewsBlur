@@ -12,6 +12,18 @@ class ReadingItemFragmentResumeTest {
             shouldReloadStoryContentOnResume(
                 isWebViewReleasedForBackground = false,
                 hasCompletedInitialStoryRender = true,
+                hasWebViewContent = true,
+            ),
+        )
+    }
+
+    @Test
+    fun recreatedEmptyWebViewReloadsCompletedStoryOnResume() {
+        assertTrue(
+            shouldReloadStoryContentOnResume(
+                isWebViewReleasedForBackground = false,
+                hasCompletedInitialStoryRender = true,
+                hasWebViewContent = false,
             ),
         )
     }
@@ -22,6 +34,7 @@ class ReadingItemFragmentResumeTest {
             shouldReloadStoryContentOnResume(
                 isWebViewReleasedForBackground = true,
                 hasCompletedInitialStoryRender = true,
+                hasWebViewContent = true,
             ),
         )
     }
@@ -32,6 +45,7 @@ class ReadingItemFragmentResumeTest {
             shouldReloadStoryContentOnResume(
                 isWebViewReleasedForBackground = false,
                 hasCompletedInitialStoryRender = false,
+                hasWebViewContent = true,
             ),
         )
     }
@@ -80,6 +94,26 @@ class ReadingItemFragmentResumeTest {
     }
 
     @Test
+    fun releasedBackgroundWebViewReloadsThenRestoresExactVisibleOffset() {
+        assertTrue(
+            shouldReloadStoryContentOnResume(
+                isWebViewReleasedForBackground = true,
+                hasCompletedInitialStoryRender = true,
+                hasWebViewContent = false,
+            ),
+        )
+        assertEquals(
+            1_450,
+            resolveRestoredScrollY(
+                contentHeight = 6_800,
+                savedScrollPosRel = 0.25f,
+                savedScrollPosPx = 1_450,
+                preferAbsoluteScrollRestore = true,
+            ),
+        )
+    }
+
+    @Test
     fun configurationRestoreUsesRelativeScrollOffset() {
         assertEquals(
             1_000,
@@ -88,6 +122,96 @@ class ReadingItemFragmentResumeTest {
                 savedScrollPosRel = 0.25f,
                 savedScrollPosPx = 1_450,
                 preferAbsoluteScrollRestore = false,
+            ),
+        )
+    }
+
+    @Test
+    fun configurationChangeFallbackReappliesPositionUsingReflowedContentHeight() {
+        assertEquals(
+            600,
+            resolveConfigurationChangeScrollY(
+                oldScrollY = 2_000,
+                oldContentHeight = 4_000,
+                reflowedContentHeight = 1_200,
+            ),
+        )
+    }
+
+    @Test
+    fun readerAnchorMapsResolvedDocumentPointIntoOuterScrollView() {
+        assertEquals(
+            660,
+            resolveReaderAnchorScrollY(
+                webViewTop = 180,
+                webViewHeight = 1_200,
+                documentYFraction = 0.4,
+            ),
+        )
+    }
+
+    @Test
+    fun configurationChangeRestoreRejectsStaleGeneration() {
+        assertFalse(
+            shouldApplyConfigurationChangeRestore(
+                sourceGeneration = 4,
+                currentGeneration = 5,
+                hasCurrentView = true,
+            ),
+        )
+    }
+
+    @Test
+    fun configurationChangeRestoreRequiresOriginalView() {
+        assertFalse(
+            shouldApplyConfigurationChangeRestore(
+                sourceGeneration = 5,
+                currentGeneration = 5,
+                hasCurrentView = false,
+            ),
+        )
+    }
+
+    @Test
+    fun currentConfigurationChangeRestoreCanApply() {
+        assertTrue(
+            shouldApplyConfigurationChangeRestore(
+                sourceGeneration = 5,
+                currentGeneration = 5,
+                hasCurrentView = true,
+            ),
+        )
+    }
+
+    @Test
+    fun rapidSecondRotationCarriesPendingReaderAnchorAcrossIntermediateClamp() {
+        assertTrue(
+            shouldUseReaderAnchorForConfigurationChange(
+                previousRestoreHasAnchor = true,
+                anchorCapturedScrollY = 2_000,
+                currentScrollY = 900,
+            ),
+        )
+    }
+
+    @Test
+    fun currentReaderAnchorIsAcceptedWithinCaptureTolerance() {
+        assertTrue(
+            shouldUseReaderAnchorForConfigurationChange(
+                previousRestoreHasAnchor = false,
+                anchorCapturedScrollY = 2_000,
+                currentScrollY = 2_040,
+            ),
+        )
+    }
+
+    @Test
+    fun staleReaderAnchorIsRejectedWithoutPendingRotation() {
+        assertFalse(
+            shouldUseReaderAnchorForConfigurationChange(
+                previousRestoreHasAnchor = false,
+                anchorCapturedScrollY = 2_000,
+                currentScrollY = 900,
             ),
         )
     }
