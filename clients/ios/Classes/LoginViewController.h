@@ -16,7 +16,6 @@
 @property (nonatomic, strong) UITextField *usernameInput;
 @property (nonatomic, strong) UITextField *passwordInput;
 @property (nonatomic, strong) UITextField *emailInput;
-@property (nonatomic, strong) UITextField *serverURLInput;
 @property (nonatomic, strong) UIButton *onePasswordButton;
 @property (nonatomic, strong) UIButton *forgotPasswordButton;
 @property (nonatomic, strong) UILabel *errorLabel;
