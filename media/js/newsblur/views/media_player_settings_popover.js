@@ -29,7 +29,7 @@ NEWSBLUR.MediaPlayerSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
 
         this.$el.html($.make('div', [
-            this.make_section('Skip Back', 'Seconds to skip backward', [
+            this.make_section(gettext('Skip Back'), gettext('Seconds to skip backward'), [
                 this.make_control('skip_back', [
                     ['5', '5s'],
                     ['10', '10s'],
@@ -38,7 +38,7 @@ NEWSBLUR.MediaPlayerSettingsPopover = NEWSBLUR.ReaderPopover.extend({
                     ['60', '60s']
                 ])
             ]),
-            this.make_section('Skip Forward', 'Seconds to skip forward', [
+            this.make_section(gettext('Skip Forward'), gettext('Seconds to skip forward'), [
                 this.make_control('skip_forward', [
                     ['5', '5s'],
                     ['10', '10s'],
@@ -47,22 +47,22 @@ NEWSBLUR.MediaPlayerSettingsPopover = NEWSBLUR.ReaderPopover.extend({
                     ['60', '60s']
                 ])
             ]),
-            this.make_section('Auto-play', 'Automatically play next item in queue', [
+            this.make_section(gettext('Auto-play'), gettext('Automatically play next item in queue'), [
                 this.make_control('auto_play_next', [
-                    ['true', 'On'],
-                    ['false', 'Off']
+                    ['true', gettext('On')],
+                    ['false', gettext('Off')]
                 ])
             ]),
-            this.make_section('Resume', 'Remember playback position for each episode', [
+            this.make_section(gettext('Resume'), gettext('Remember playback position for each episode'), [
                 this.make_control('remember_position', [
-                    ['true', 'On'],
-                    ['false', 'Off']
+                    ['true', gettext('On')],
+                    ['false', gettext('Off')]
                 ])
             ]),
-            this.make_section('Show on Load', 'Restore the player when you reload NewsBlur', [
+            this.make_section(gettext('Show on Load'), gettext('Restore the player when you reload NewsBlur'), [
                 this.make_control('resume_on_load', [
-                    ['true', 'On'],
-                    ['false', 'Off']
+                    ['true', gettext('On')],
+                    ['false', gettext('Off')]
                 ])
             ])
         ]));

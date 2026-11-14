@@ -17,6 +17,10 @@ def about(request):
     return render(request, "static/about.xhtml")
 
 
+def contact(request):
+    return render(request, "static/contact.xhtml")
+
+
 def pricing(request):
     return render(request, "static/pricing.xhtml")
 
@@ -71,6 +75,10 @@ def feature_intelligence_training(request):
 
 def feature_ask_ai(request):
     return render(request, "static/feature_ask_ai.xhtml")
+
+
+def feature_listen(request):
+    return render(request, "static/feature_listen.xhtml")
 
 
 def feature_web_feeds(request):

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Meet Listen, a new way to enjoy your stories.\n\nTap Listen to hear an article read aloud in one of 21 languages. Follow along with highlighted paragraphs, tap a paragraph to jump to it, and choose a voice for each language. Adjust delivery and playback speed from 0.5× to 3×.\n\nAdd stories to Up Next, reorder your queue, and keep listening with your screen locked or while using another app. Your queue syncs across devices. Auto-continue moves to the next unread story, and finished stories are marked read.\n\nListen is included with Premium Archive and Premium Pro. Free and Premium accounts can try 30-second story previews.\n\nThis update also includes smoother navigation and fixes for scrolling through the story grid."
+  },
+  "android": {
+    "release_notes": "Meet Listen: hear stories read aloud in 21 languages. Choose voices, follow highlighted paragraphs, tap to jump, and adjust speed. Queue stories in Up Next, synced across devices, and keep listening with your screen locked. Auto-continue plays the next unread story. Full listening is included with Premium Archive and Premium Pro; Free and Premium accounts can try 30-second previews."
+  },
+  "macos": {
+    "whats_new": "This update fixes story lists that could stay loading when you opened a notification after closing the NewsBlur window.\n\nListen is now available on Mac. Hear stories read aloud in 21 languages, follow highlighted paragraphs, choose voices, adjust playback speed, and queue stories in Up Next. Your queue syncs across devices. Full listening is included with Premium Archive and Premium Pro; Free and Premium accounts can try 30-second previews.\n\nAlso includes a fix for scrolling through the story grid."
+  }
+}

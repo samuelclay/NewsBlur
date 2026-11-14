@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Foldery, szukanie, tagi zapisanych artykułów"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Trwałe archiwum i 1 godzina słuchania tygodniowo"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Częste aktualizacje kanałów i 10 h słuchania tygodniowo"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "Subskrypcje NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "Subskrypcja NewsBlur Premium",
+        "description": "Czytaj foldery na jednej liście, przeszukuj kanały, porządkuj zapisane artykuły za pomocą tagów i korzystaj z szybszych aktualizacji kanałów.",
+        "benefits": [
+          "Czytaj foldery na jednej liście",
+          "Przeszukuj wszystkie kanały",
+          "Dodawaj tagi do zapisanych artykułów",
+          "Częstsze aktualizacje kanałów"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "Subskrypcja NewsBlur Premium Archive",
+        "description": "Funkcje Premium, trwałe archiwum z wyszukiwaniem i 1 godzina słuchania tygodniowo. Zachowuj nieprzeczytane artykuły bez limitu czasu. Limit słuchania odnawia się w niedzielę.",
+        "benefits": [
+          "Wszystko z Premium",
+          "Nieprzeczytane artykuły bez limitu czasu",
+          "Trwałe archiwum z wyszukiwaniem",
+          "1 godzina słuchania tygodniowo"
+        ]
+      }
+    }
+  }
+}

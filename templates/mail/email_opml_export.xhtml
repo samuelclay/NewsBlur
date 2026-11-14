@@ -1,20 +1,23 @@
 {% extends "mail/email_base.xhtml" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
 {% block body %}
-    
+    {% current_domain as domain %}
     <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
-        {% if reason %}{{ reason }}{% else %}Here's a backup of all of your subscriptions on NewsBlur.{% endif %} It contains <b style="#484F53">{{ feed_count }}</b> 
-        site{{ feed_count|pluralize }}.
+        {% if reason %}{{ reason }}{% else %}{% trans "Here's a backup of all of your subscriptions on NewsBlur." %}{% endif %} {% blocktrans trimmed count counter=feed_count %}
+            It contains <b style="#484F53">{{ counter }}</b> site.
+        {% plural %}
+            It contains <b style="#484F53">{{ counter }}</b> sites.
+        {% endblocktrans %}
     </h2>
     
     <p style="line-height: 20px;">
-        You can re-upload the attached file to NewsBlur and immediately get any deleted sites back.
+        {% trans "You can re-upload the attached file to NewsBlur and immediately get any deleted sites back." %}
     </p>
 
     <p style="line-height: 20px;">
-        Just go to <a href="https://{% current_domain %}/?next=opml">Manage > Import > Upload OPML</a>.
+        {% blocktrans trimmed %}Just go to <a href="https://{{ domain }}/?next=opml">Manage NewsBlur > Import or upload sites</a>.{% endblocktrans %}
     </p>
     
 {% endblock %}

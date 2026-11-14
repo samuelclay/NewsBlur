@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Listen is easier to control. Start listening from the reading toolbar and move on with the mini player's Next story button.\n\nAuto-continue now follows your chosen sort order in Saved Stories and Read Stories, including oldest first. Playback continues down the list without jumping back to earlier stories.\n\nListen reads a headline only once when it is repeated at the start of an article.\n\nListening allowances are now weekly: 1 hour with Premium Archive and 10 hours with Premium Pro, resetting every Sunday. Settings and Now Playing show your remaining time in hours and minutes."
+  },
+  "macos": {
+    "whats_new": "Listen is easier to control. Move on with the mini player's Next story button.\n\nAuto-continue now follows your chosen sort order in Saved Stories and Read Stories, including oldest first. Playback continues down the list without jumping back to earlier stories.\n\nListen reads a headline only once when it is repeated at the start of an article.\n\nListening allowances are now weekly: 1 hour with Premium Archive and 10 hours with Premium Pro, resetting every Sunday. Settings and Now Playing show your remaining time in hours and minutes."
+  },
+  "android": {
+    "release_notes": "Listen improvements: start from the reading toolbar and skip with the mini player’s Next story button. Auto-continue follows your sort order in Saved Stories and Read Stories, moving down the list. Repeated headlines are read once. Weekly listening: 1 hour with Premium Archive, 10 hours with Premium Pro, resetting Sunday. Settings show remaining hours and minutes."
+  }
+}

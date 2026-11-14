@@ -11,6 +11,57 @@ import UIKit
 @objcMembers
 class CustomIconRenderer: NSObject {
 
+    private static let renderedIconCache: NSCache<RenderedIconKey, UIImage> = {
+        let cache = NSCache<RenderedIconKey, UIImage>()
+        cache.name = "CustomIconRenderer.renderedIcons"
+        cache.countLimit = 512
+        cache.totalCostLimit = 8 * 1024 * 1024
+        return cache
+    }()
+
+    private final class RenderedIconKey: NSObject {
+        let iconType: String
+        let iconData: String
+        let iconColor: String?
+        let iconSet: String
+        let size: CGSize
+        let scale: CGFloat
+        let traits: UITraitCollection
+
+        init(iconType: String, iconData: String, iconColor: String?, iconSet: String, size: CGSize) {
+            self.iconType = iconType
+            self.iconData = iconData
+            self.iconColor = iconColor
+            self.iconSet = iconSet
+            self.size = size
+            self.scale = UIGraphicsImageRendererFormat.default().scale
+            self.traits = UITraitCollection.current
+        }
+
+        override var hash: Int {
+            var hasher = Hasher()
+            hasher.combine(iconType)
+            hasher.combine(iconData)
+            hasher.combine(iconColor)
+            hasher.combine(iconSet)
+            hasher.combine(size.width)
+            hasher.combine(size.height)
+            hasher.combine(scale)
+            hasher.combine(traits.hash)
+            return hasher.finalize()
+        }
+
+        override func isEqual(_ object: Any?) -> Bool {
+            guard let other = object as? RenderedIconKey else {
+                return false
+            }
+
+            return iconType == other.iconType && iconData == other.iconData &&
+                iconColor == other.iconColor && iconSet == other.iconSet &&
+                size == other.size && scale == other.scale && traits.isEqual(other.traits)
+        }
+    }
+
     /// Renders a custom icon from icon data dictionary.
     /// - Parameters:
     ///   - iconData: Dictionary containing icon_type, icon_data, icon_color, icon_set
@@ -30,14 +81,23 @@ class CustomIconRenderer: NSObject {
         let iconColor = iconData["icon_color"] as? String
         let iconSet = (iconData["icon_set"] as? String) ?? "lucide"
 
+        // CustomIconRenderer.swift keys by configuration so icon edits and appearance changes take effect immediately.
+        let cacheKey = RenderedIconKey(
+            iconType: iconType, iconData: iconDataStr, iconColor: iconColor, iconSet: iconSet, size: size
+        )
+        if let image = renderedIconCache.object(forKey: cacheKey) {
+            return image
+        }
+
         var color: UIColor?
         if let iconColor = iconColor, !iconColor.isEmpty {
             color = colorFromHex(iconColor)
         }
 
+        let renderedImage: UIImage?
         switch iconType {
         case "emoji":
-            return emojiToImage(iconDataStr, size: size)
+            renderedImage = emojiToImage(iconDataStr, size: size)
         case "upload":
             guard var image = base64ToImage(iconDataStr) else {
                 return nil
@@ -48,12 +108,22 @@ class CustomIconRenderer: NSObject {
                     image.draw(in: CGRect(origin: .zero, size: size))
                 }
             }
-            return image
+            renderedImage = image
         case "preset":
-            return presetIcon(iconDataStr, iconSet: iconSet, size: size, color: color)
+            renderedImage = presetIcon(iconDataStr, iconSet: iconSet, size: size, color: color)
         default:
             return nil
         }
+
+        if let image = renderedImage, let bitmap = image.cgImage {
+            // CustomIconRenderer.swift includes retained upload strings in the cache's memory budget.
+            let cost = bitmap.bytesPerRow * bitmap.height + iconDataStr.utf8.count +
+                iconType.utf8.count + iconSet.utf8.count + (iconColor?.utf8.count ?? 0)
+            if cost <= renderedIconCache.totalCostLimit {
+                renderedIconCache.setObject(image, forKey: cacheKey, cost: cost)
+            }
+        }
+        return renderedImage
     }
 
     /// Renders an emoji string to a UIImage.

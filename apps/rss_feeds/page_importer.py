@@ -5,7 +5,6 @@ import time
 import traceback
 import urllib.error
 import urllib.parse
-import urllib.request
 import zlib
 from socket import error as SocketError
 
@@ -21,8 +20,11 @@ from pyasn1.error import PyAsn1Error
 from sentry_sdk import capture_exception, flush
 
 from apps.rss_feeds.models import MFeedPage
+from apps.rss_feeds.text_importer import is_blocked_response, redact_proxy_error
+from apps.statistics.rscrapingbee import RScrapingBee
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 # from utils.feed_functions import mail_feed_error_to_admin
 
@@ -69,7 +71,9 @@ class PageImporter(object):
 
     def fetch_page(self, urllib_fallback=False, requests_exception=None):
         try:
-            self.fetch_page_timeout(urllib_fallback=urllib_fallback, requests_exception=requests_exception)
+            return self.fetch_page_timeout(
+                urllib_fallback=urllib_fallback, requests_exception=requests_exception
+            )
         except TimeoutError:
             logging.user(
                 self.request,
@@ -95,17 +99,18 @@ class PageImporter(object):
                 return
             elif feed_link.startswith("http"):
                 if urllib_fallback:
-                    request = urllib.request.Request(feed_link, headers=self.headers)
-                    response = urllib.request.urlopen(request)
+                    response = safe_requests_get(feed_link, headers=self.headers, timeout=10)
                     time.sleep(0.01)  # Grrr, GIL.
-                    data = response.read().decode(response.headers.get_content_charset() or "utf-8")
+                    data = self._decode_response(response)
                 else:
                     try:
-                        response = requests.get(feed_link, headers=self.headers, timeout=10)
-                        response.connection.close()
+                        response = safe_requests_get(feed_link, headers=self.headers, timeout=10)
+                        if getattr(response, "connection", None):
+                            response.connection.close()
                     except requests.exceptions.TooManyRedirects:
-                        response = requests.get(feed_link, timeout=10)
+                        response = safe_requests_get(feed_link, timeout=10)
                     except (
+                        UnsafeUrlError,
                         AttributeError,
                         SocketError,
                         OpenSSLError,
@@ -144,8 +149,7 @@ class PageImporter(object):
                     data = open(feed_link, "r").read()
                 except IOError:
                     self.feed.feed_link = "http://" + feed_link
-                    self.fetch_page(urllib_fallback=True)
-                    return
+                    return self.fetch_page(urllib_fallback=True)
             if data:
                 html = self.rewrite_page(data)
                 if html:
@@ -162,12 +166,14 @@ class PageImporter(object):
             http.client.BadStatusLine,
             http.client.InvalidURL,
             requests.exceptions.ConnectionError,
+            UnsafeUrlError,
         ) as e:
             logging.debug("   ***> [%-30s] Page fetch failed: %s" % (self.feed.log_title[:30], e))
             self.feed.save_page_history(401, "Bad URL", e)
             try:
+                validate_public_url(self.feed.feed_address)
                 fp = feedparser.parse(self.feed.feed_address)
-            except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            except (UnsafeUrlError, urllib.error.HTTPError, urllib.error.URLError) as e:
                 return html
             feed_link = fp.feed.get("link", "")
             self.feed.save()
@@ -191,7 +197,7 @@ class PageImporter(object):
                 capture_exception(e)
                 flush()
             if not urllib_fallback:
-                self.fetch_page(urllib_fallback=True)
+                return self.fetch_page(urllib_fallback=True)
         else:
             self.feed.save_page_history(200, "OK")
 
@@ -223,9 +229,11 @@ class PageImporter(object):
             return
 
         try:
-            response = requests.get(story_permalink, headers=self.headers, timeout=10)
-            response.connection.close()
+            response = safe_requests_get(story_permalink, headers=self.headers, timeout=10)
+            if getattr(response, "connection", None):
+                response.connection.close()
         except (
+            UnsafeUrlError,
             AttributeError,
             SocketError,
             OpenSSLError,
@@ -235,8 +243,9 @@ class PageImporter(object):
             requests.adapters.ReadTimeout,
         ) as e:
             try:
-                response = requests.get(story_permalink, timeout=10)
+                response = safe_requests_get(story_permalink, timeout=10)
             except (
+                UnsafeUrlError,
                 AttributeError,
                 SocketError,
                 OpenSSLError,
@@ -294,32 +303,21 @@ class PageImporter(object):
             return content.decode("utf-8", errors="replace")
 
     def _is_blocked_response(self, response):
-        """Check if a response indicates the request was blocked by anti-bot protection."""
-        if response.status_code in (403, 429, 503):
-            return True
-
-        if response.status_code == 200:
-            content_lower = response.content[:4096].lower()
-            blocked_markers = [
-                b"cf-browser-verification",
-                b"_cf_chl",
-                b"cf-challenge",
-                b"challenge-platform",
-                b"just a moment",
-                b"checking your browser",
-                b"attention required",
-                b"anubis-challenge",
-            ]
-            if any(marker in content_lower for marker in blocked_markers):
-                return True
-
-        return False
+        """Check if a response indicates the request was blocked by anti-bot protection.
+        The statuses and challenge markers live in apps/rss_feeds/text_importer.py so
+        Story view and Text view agree on what a block looks like."""
+        return is_blocked_response(response)
 
     def _fetch_story_with_scrapingbee(self, url):
         """Fetch a story page using ScrapingBee residential proxy."""
         api_key = getattr(settings, "SCRAPINGBEE_API_KEY", None)
         if not api_key:
             logging.user(self.request, "~SN~FRScrapingBee API key not configured")
+            return None
+        try:
+            validate_public_url(url)
+        except UnsafeUrlError as e:
+            logging.user(self.request, "~SN~FRScrapingBee original story URL rejected: %s" % e)
             return None
 
         params = {
@@ -331,6 +329,7 @@ class PageImporter(object):
 
         try:
             response = requests.get("https://app.scrapingbee.com/api/v1", params=params, timeout=15)
+            RScrapingBee.record_response("original_story", response, url=url)
             if response.status_code == 200 and response.content:
                 logging.user(
                     self.request,
@@ -342,9 +341,12 @@ class PageImporter(object):
                 "~SN~FRScrapingBee original story fetch failed: status %s" % response.status_code,
             )
         except Exception as e:
+            RScrapingBee.record("original_story", None, url=url)
+            # The raw exception can carry the request URL with the API key in it, see
+            # redact_proxy_error in apps/rss_feeds/text_importer.py.
             logging.user(
                 self.request,
-                "~SN~FRScrapingBee original story fetch error: %s" % e,
+                "~SN~FRScrapingBee original story fetch error: %s" % redact_proxy_error(e, api_key),
             )
         return None
 
@@ -432,14 +434,38 @@ class PageImporter(object):
                 )
             return feed_page
 
-    def save_page_node(self, html):
+    @property
+    def node_page_url(self):
         domain = "node-page.service.consul:8008"
         if settings.DOCKERBUILD:
             domain = "node:8008"
-        url = "http://%s/original_page/%s" % (
-            domain,
-            self.feed.pk,
-        )
+        return "http://%s/original_page/%s" % (domain, self.feed.pk)
+
+    def delete_page(self):
+        """Delete the stored page from wherever save_page put it. Returns whether the page
+        is gone, so Feed.expire_original_page can try again after a failure."""
+        if settings.BACKED_BY_AWS.get("pages_on_node"):
+            # node/original_page.coffee answers 200 whether or not there was a file.
+            try:
+                response = requests.delete(self.node_page_url, timeout=10)
+            except requests.exceptions.RequestException as e:
+                logging.debug(
+                    "   ---> [%-30s] ~FRFailed to delete page on node: %s" % (self.feed.log_title[:30], e)
+                )
+                return False
+            if response.status_code != 200:
+                logging.debug(
+                    "   ---> [%-30s] ~FRFailed to delete page on node: %s"
+                    % (self.feed.log_title[:30], response.status_code)
+                )
+                return False
+        if settings.BACKED_BY_AWS.get("pages_on_s3") and self.feed.s3_page:
+            self.delete_page_s3()
+        MFeedPage.objects(feed_id=self.feed.pk).delete()
+        return True
+
+    def save_page_node(self, html):
+        url = self.node_page_url
         compressed_html = zlib.compress(smart_bytes(html))
         response = requests.post(
             url,

@@ -694,7 +694,7 @@
         - "Interactions between a user and other users."
       params:
         - key: user_id
-          desc: "ID of user. Defaults to current logged in user."
+          desc: "Current authenticated user's ID. Cross-user requests are denied."
           optional: true
           example: "42"
         - key: page

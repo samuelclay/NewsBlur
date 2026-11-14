@@ -40,9 +40,9 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
                 if (error_callback) {
                     error_callback();
                 } else if ($.isFunction(callback)) {
-                    var message = "Please create an account. Not much to do without an account.";
+                    var message = gettext("Please create an account. Not much to do without an account.");
                     if (NEWSBLUR.Globals.is_authenticated) {
-                        message = "Sorry, there was an unhandled error.";
+                        message = gettext("Sorry, there was an unhandled error.");
                     }
                     callback({ 'message': message });
                 }

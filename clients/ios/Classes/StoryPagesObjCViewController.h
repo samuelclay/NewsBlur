@@ -93,9 +93,13 @@
 @property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic, readonly) BOOL useCustomToolbar;
+@property (nonatomic, readonly) BOOL usesVerticalReaderToolbar;
+@property (nonatomic, readonly) UIBarButtonItem *settingsPresentationBarButton;
+@property (nonatomic, readonly) BOOL retainsDuoSourceArticle;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
+@property (nonatomic, strong) UIPanGestureRecognizer *fullScreenPopGesture;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
 @property (nonatomic) CGFloat navBarFadeAccumulator;
 @property (nonatomic) CGFloat traverseFadeAccumulator;
@@ -103,7 +107,9 @@
 @property (nonatomic, strong) StoryToolbarScrollHandler *toolbarScrollHandler;
 
 - (void)resizeScrollView;
+- (BOOL)hasHiddenReaderAncestor;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
+- (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController supressRedraw:(BOOL)suppressRedraw;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
@@ -112,18 +118,29 @@
 - (void)setToolbarOffset:(CGFloat)offset;
 - (BOOL)isCustomToolbarActive;
 - (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha;
+- (void)updateUITestTraverseFadeProbe;
 
 //- (void)transitionFromFeedDetail;
 - (void)resetPages;
 - (void)hidePages;
 - (void)refreshPages;
 - (void)reorientPages;
+- (void)preserveCurrentPageAtLocation:(NSInteger)location;
+- (void)relayoutPagesKeepingCurrentPageAtLocation:(NSInteger)location;
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;
 - (void)advanceToNextUnread;
 - (void)updatePageWithActiveStory:(NSInteger)location updateFeedDetail:(BOOL)updateFeedDetail;
 - (void)animateIntoPlace:(BOOL)animated;
+- (BOOL)shouldOpenReaderImmediately;
+- (void)preparePageForPresentation:(NSInteger)pageIndex completion:(void (^)(NSInteger location))completion;
+- (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated completion:(void (^)(NSInteger location))completion;
+- (void)preparePageForPresentation:(NSInteger)pageIndex animated:(BOOL)animated openReaderImmediately:(BOOL)openImmediately completion:(void (^)(NSInteger location))completion;
+- (void)cancelPendingStoryPresentation;
+- (void)storyDetailReadyForPresentation:(StoryDetailViewController *)page;
+- (void)storyDetailCouldNotPrepareForPresentation:(StoryDetailViewController *)page;
+- (BOOL)deferStoryRedrawDuringSelection:(StoryDetailViewController *)page;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 
@@ -141,6 +158,8 @@
 - (void)changedAutoscroll;
 - (void)changedScrollOrientation;
 - (void)updateStoriesTheme;
+- (void)updateStoriesDirection;
+- (void)updateReaderDirection;
 - (void)showShareHUD:(NSString *)msg;
 - (void)showFetchingTextNotifier;
 - (void)hideNotifier;
@@ -160,6 +179,7 @@
 - (IBAction)autoscrollFaster:(UIButton *)sender;
 
 - (IBAction)openSendToDialog:(id)sender;
+- (void)openStoryTrainerFromKeyboard:(id)sender;
 - (IBAction)doNextUnreadStory:(id)sender;
 - (IBAction)doPreviousStory:(id)sender;
 - (void)changeToNextPage:(id)sender;

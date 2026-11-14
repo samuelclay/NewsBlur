@@ -17,11 +17,22 @@ class ReadingMemoryTrimTest {
     }
 
     @Test
-    fun releasesAllReaderWebViewsUnderBackgroundMemoryPressure() {
+    fun releasesOnlyBackgroundReaderWebViewsUnderBackgroundMemoryPressure() {
+        assertEquals(
+            ReaderWebViewReleaseScope.BACKGROUND_ONLY,
+            readerWebViewReleaseScopeForTrim(
+                level = ComponentCallbacks2.TRIM_MEMORY_BACKGROUND,
+                isChangingConfigurations = false,
+            ),
+        )
+    }
+
+    @Test
+    fun releasesAllReaderWebViewsUnderModerateMemoryPressure() {
         assertEquals(
             ReaderWebViewReleaseScope.ALL,
             readerWebViewReleaseScopeForTrim(
-                level = ComponentCallbacks2.TRIM_MEMORY_BACKGROUND,
+                level = ComponentCallbacks2.TRIM_MEMORY_MODERATE,
                 isChangingConfigurations = false,
             ),
         )

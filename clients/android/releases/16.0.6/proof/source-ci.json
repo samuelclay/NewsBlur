@@ -1,0 +1,36 @@
+{
+  "source": "1484f00b7399cf1696d0a74254046b9d0bfb6d0c",
+  "expectedTag": "Android_16.0.6",
+  "tagVerification": "verified remote tag at exact version-bump source",
+  "workflows": [
+    {
+      "conclusion": "success",
+      "databaseId": 40530425311,
+      "name": "Android Tests",
+      "status": "completed",
+      "url": "https://github.com/samuelclay/NewsBlur/actions/runs/40530425311"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 40530425283,
+      "name": "Django Tests",
+      "status": "completed",
+      "url": "https://github.com/samuelclay/NewsBlur/actions/runs/40530425283"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 40530425386,
+      "name": "Localization",
+      "status": "completed",
+      "url": "https://github.com/samuelclay/NewsBlur/actions/runs/40530425386"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 40530425186,
+      "name": "Android Release and F-Droid",
+      "status": "completed",
+      "url": "https://github.com/samuelclay/NewsBlur/actions/runs/40530425186"
+    }
+  ],
+  "remoteTagSha": "1484f00b7399cf1696d0a74254046b9d0bfb6d0c"
+}

@@ -1,0 +1,6 @@
+light: hide, reverse threshold, gradual reveal, canceled and completed edge-back passed
+dark: hide, reverse threshold, gradual reveal, canceled and completed edge-back passed
+black: hide, reverse threshold, gradual reveal, canceled and completed edge-back passed
+sepia: hide, reverse threshold, gradual reveal, canceled and completed edge-back passed
+Landscape capture and hidden-header edge back completed
+System gesture back cancellation and completion passed with hidden controls

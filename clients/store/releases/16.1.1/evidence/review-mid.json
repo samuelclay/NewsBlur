@@ -1,0 +1,101 @@
+{
+  "version": "16.1.1",
+  "reviewer": "translate_west",
+  "author_batch": "translate_mid",
+  "independent": true,
+  "status": "passed_after_corrections",
+  "reviewed_at": "2026-11-01T16:02:52Z",
+  "languages": [
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id"
+  ],
+  "scope": [
+    "All iOS, macOS and Android metadata fields",
+    "All product and subscription group text",
+    "All platform release notes"
+  ],
+  "semantic_checks": [
+    "Weekly allowances: Archive 1 hour, Pro 10 hours; Sunday reset",
+    "Saved and Read Stories order, oldest first, forward-only continuation",
+    "Reading toolbar and Next story controls; Mac notes omit toolbar claim",
+    "Repeated headlines read once",
+    "Remaining hours and minutes",
+    "Preserved account requirements, 30-second previews, subscription renewal disclosures and URLs",
+    "Arabic and Hebrew logical text order, native scripts and Latin brand names; no bidi control characters introduced"
+  ],
+  "corrections": [
+    {
+      "language": "he",
+      "change": "Aligned quoted Now Playing label with shipped app and made Sunday renewal phrase natural"
+    },
+    {
+      "language": "id",
+      "change": "Replaced ambiguous simpanan with explicit stored articles and awkward skip phrasing with direct controls; made Sunday explicit as hari Minggu; Pro description says frequent feed updates"
+    }
+  ],
+  "validation": [
+    {
+      "language": "tr",
+      "passed": true,
+      "google_notes_characters": 366
+    },
+    {
+      "language": "ru",
+      "passed": true,
+      "google_notes_characters": 362
+    },
+    {
+      "language": "uk",
+      "passed": true,
+      "google_notes_characters": 351
+    },
+    {
+      "language": "ar",
+      "passed": true,
+      "google_notes_characters": 326
+    },
+    {
+      "language": "he",
+      "passed": true,
+      "google_notes_characters": 304
+    },
+    {
+      "language": "hi",
+      "passed": true,
+      "google_notes_characters": 347
+    },
+    {
+      "language": "id",
+      "passed": true,
+      "google_notes_characters": 382
+    }
+  ],
+  "files": {
+    "clients/store/metadata/tr.json": "31ea3c68f3acfd31479c65fd0cabb020b603f0d947b7d4a6e5c84988f6693b4f",
+    "clients/store/products/tr.json": "e88d1192467ffae7a582330c758e9146327bca6cd0450987fce5e9c4b855954a",
+    "clients/store/releases/16.1.1/tr.json": "82a84fdc5080b1734da34939164cbfdb3d2e7809fee97788f32de5328c263072",
+    "clients/store/metadata/ru.json": "767bcd656051dd1c7df73207f79b05161080aaf3335d8176cebd2a403814ce4a",
+    "clients/store/products/ru.json": "d0938535ebbf8a6d4ab88577c3bdf9a09d07637978e447346dae5597101ec8bc",
+    "clients/store/releases/16.1.1/ru.json": "bceee20ca42f051f2693ae349b994fe27ab5187b67e968f9c7322ee4b45ec344",
+    "clients/store/metadata/uk.json": "61e5f839f3e5bd9bfeea10c5b2fe206363112d2e42c37d62f2d1783c0ad100a0",
+    "clients/store/products/uk.json": "e1901ccc789d25f1a1f35d84595a6d9628f956fd05da73fb042a129ead8717d4",
+    "clients/store/releases/16.1.1/uk.json": "e3dbbaa9921fac3ad071c2b12206bcdc13dcb9d5e71de4ece0e045ce2afa7b30",
+    "clients/store/metadata/ar.json": "33a821e5d28cd1806db0abcb25e8cc8140f77f1442ea7e89bb201afd4e34392b",
+    "clients/store/products/ar.json": "5fab8d0c90805d79fb812b1362d9e14ad74e22b8af616933276b1414925db678",
+    "clients/store/releases/16.1.1/ar.json": "669de5e836f5f72eaea065936f11e2bdc6dd282513065f52481baaca75ae8d6c",
+    "clients/store/metadata/he.json": "a93d1ebe89cbcde51a191f0d46a707530606facfb0a528d02dd8c2c76b716ea2",
+    "clients/store/products/he.json": "7530a81dcbfdf465a3c42abebd6e9696f01065179f397bdd8aa3bae50362616b",
+    "clients/store/releases/16.1.1/he.json": "88547e6fca218883bfd911c723f36f0d44cda8fb58af19980fe9e5ff1a3a6822",
+    "clients/store/metadata/hi.json": "7f8b60f7f2f98848876088cf57d57f3067b21c78117d6e1518c96701d1e6f76d",
+    "clients/store/products/hi.json": "2141213c0b9b456eab93b7701221b6fa3e4d1db9662729ea525746036bd11701",
+    "clients/store/releases/16.1.1/hi.json": "0d1fd72505e4b047f625164bf790763d10ca90cedf16a4760f207acc85867026",
+    "clients/store/metadata/id.json": "7c064f82a770f66edcba6164be64f5ad7920dde860b2750c54c29fe5f0a92a42",
+    "clients/store/products/id.json": "91cd86e2363130c5463c1d3235aaa3271ec04907eac7a3836913df4614965ef5",
+    "clients/store/releases/16.1.1/id.json": "9c5fbefaba71ec57e16b46110b3dd0209d9f781b1bb1fd1faf794e51b787b2c6"
+  }
+}

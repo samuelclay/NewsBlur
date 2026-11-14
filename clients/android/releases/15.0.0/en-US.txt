@@ -1,0 +1,9 @@
+• Faster startup and smoother scrolling throughout.
+• Animated story navigation, folders, and return highlights.
+• Nested folders with indented pickers.
+• Redesigned Add site sheet with search.
+• Customizable swipe, tap, and long-press gestures.
+• Full-bleed images and scroll-away reading toolbars.
+• Related stories in articles, synced read states, and direct links to older stories.
+• Clearer menus, compact controls, and grouped unread counts.
+• Reliable dwell timers, offline reads, and themes.

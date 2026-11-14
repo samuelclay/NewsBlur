@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-faq{% endblock %}
-{% block title %}FAQ - Frequently Asked Questions About NewsBlur{% endblock %}
-{% block nav_title %}FAQ{% endblock %}
+{% block title %}{% trans "FAQ - Frequently Asked Questions About NewsBlur" %}{% endblock %}
+{% block nav_title %}{% trans "FAQ" %}{% endblock %}
 {% block head %}
     <meta name="description" content="Frequently asked questions about NewsBlur: intelligence training, Ask AI, full-text search, views, layouts, notifications, keyboard shortcuts, pricing, and more.">
     <meta property="og:title" content="NewsBlur FAQ - Frequently Asked Questions">
@@ -22,20 +23,20 @@
 <div class="NB-faq-container">
 
     <div class="NB-faq-hero">
-        <h1 class="NB-faq-hero-title" data-faq-hero-title>Everything you need to know about NewsBlur</h1>
-        <p class="NB-faq-hero-subtitle" data-faq-hero-subtitle>Find answers to common questions about features, pricing, training, AI, and more.</p>
+        <h1 class="NB-faq-hero-title" data-faq-hero-title>{% trans "Everything you need to know about NewsBlur" %}</h1>
+        <p class="NB-faq-hero-subtitle" data-faq-hero-subtitle>{% trans "Find answers to common questions about features, pricing, training, AI, and more." %}</p>
     </div>
 
     <div class="NB-faq-body" data-faq-body>
-        <div class="NB-faq-loading">Loading&hellip;</div>
+        <div class="NB-faq-loading">{% trans "Loading" %}&hellip;</div>
     </div>
 
     <!-- Bottom CTA -->
     <div class="NB-faq-bottom-cta">
-        <div class="NB-faq-bottom-cta-text">Still have questions?</div>
-        <p class="NB-faq-bottom-cta-subtext">Ask the community or try NewsBlur for yourself.</p>
-        <a href="https://forum.newsblur.com" class="NB-pricing-cta NB-pricing-cta-free">Visit the forum</a>
-        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-archive">Try it free</a>
+        <div class="NB-faq-bottom-cta-text">{% trans "Still have questions?" %}</div>
+        <p class="NB-faq-bottom-cta-subtext">{% trans "Ask the community or try NewsBlur for yourself." %}</p>
+        <a href="https://forum.newsblur.com" class="NB-pricing-cta NB-pricing-cta-free">{% trans "Visit the forum" %}</a>
+        <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-archive">{% trans "Try it free" %}</a>
     </div>
 
     {% include "static/_compare_links.xhtml" %}
@@ -46,6 +47,9 @@
 (function () {
     // Public FAQ page: fetch /api/faq/ and render fully expanded (better for SEO
     // skim-reading and deep linking to section anchors).
+    // faq.xhtml: link labels reuse reader_faq.js msgids from the JavaScript catalog;
+    // the error message comes from the Django catalog because inline scripts aren't extracted.
+    var load_error_message = "{% filter escapejs %}{% trans "Could not load FAQ." %}{% endfilter %}";
 
     function escape_html(s) {
         return String(s == null ? "" : s)
@@ -75,11 +79,11 @@
     function item_links(item) {
         var links = [];
         if (item.feature_url) {
-            var label = item.feature_label ? ('See ' + item.feature_label) : 'See feature';
+            var label = item.feature_label ? interpolate(gettext('See %(feature)s'), {feature: item.feature_label}, true) : gettext('See feature');
             links.push('<a class="NB-faq-button NB-faq-button-primary" href="' + escape_html(item.feature_url) + '">' + escape_html(label) + ' &rarr;</a>');
         }
         if (item.blog_url) {
-            links.push('<a class="NB-faq-button NB-faq-button-secondary" href="' + escape_html(item.blog_url) + '" target="_blank" rel="noopener"><span class="NB-faq-blog-icon"></span>Read more on the NewsBlur Blog</a>');
+            links.push('<a class="NB-faq-button NB-faq-button-secondary" href="' + escape_html(item.blog_url) + '" target="_blank" rel="noopener"><span class="NB-faq-blog-icon"></span>' + escape_html(gettext('Read more on the NewsBlur Blog')) + '</a>');
         }
         if (!links.length) return '';
         return '<div class="NB-faq-item-links">' + links.join('') + '</div>';
@@ -121,7 +125,8 @@
     function render(data) {
         window.__NB_FAQ_DATA = data;
         var body = document.querySelector('[data-faq-body]');
-        if (data.hero) {
+        // faq.yml is English only, so keep the translated hero copy in other languages.
+        if (data.hero && document.documentElement.lang === 'en') {
             var t = document.querySelector('[data-faq-hero-title]');
             var s = document.querySelector('[data-faq-hero-subtitle]');
             if (t && data.hero.title) t.textContent = data.hero.title;
@@ -142,9 +147,9 @@
             if (xhr.readyState !== 4) return;
             if (xhr.status >= 200 && xhr.status < 300) {
                 try { render(JSON.parse(xhr.responseText)); }
-                catch (e) { document.querySelector('[data-faq-body]').innerHTML = '<p class="NB-faq-error">Could not load FAQ.</p>'; }
+                catch (e) { document.querySelector('[data-faq-body]').innerHTML = '<p class="NB-faq-error">' + escape_html(load_error_message) + '</p>'; }
             } else {
-                document.querySelector('[data-faq-body]').innerHTML = '<p class="NB-faq-error">Could not load FAQ.</p>';
+                document.querySelector('[data-faq-body]').innerHTML = '<p class="NB-faq-error">' + escape_html(load_error_message) + '</p>';
             }
         };
         xhr.send();

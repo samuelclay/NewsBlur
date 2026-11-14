@@ -1,4 +1,4 @@
-{% load social_tags utils_tags %}
+{% load i18n social_tags utils_tags %}
 {% autoescape off %}
 {{ story.story_content|striptags }}
 
@@ -10,7 +10,7 @@
 {% endautoescape %}
 ---------------------------------------------------------------------------
 
-Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world.
+{% trans "Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world." %}
 
-{% if classifier_match_desc %}You received this because of a classifier match ({{ classifier_match_desc }}) on {{ feed_title }}.{% else %}You received this because you have email notifications for {{ feed_title }}.{% endif %}
+{% if classifier_match_desc %}{% blocktrans %}You received this because of a classifier match ({{ classifier_match_desc }}) on {{ feed_title }}.{% endblocktrans %}{% else %}{% blocktrans %}You received this because you have email notifications for {{ feed_title }}.{% endblocktrans %}{% endif %}
 {% if feed.is_daily_briefing %}https://{% current_domain %}/briefing?next=briefing-notifications{% else %}https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?next=notifications{% endif %}

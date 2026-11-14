@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Fixes crashes when opening NewsBlur, checking unread counts, confirming reading actions, and restoring reader state. Database upgrades preserve cached stories and queued offline actions.\n\nIncludes tablet fullscreen controls and remembered pane widths, 21 interface languages, and fixed-position Next story controls."
+  }
+}

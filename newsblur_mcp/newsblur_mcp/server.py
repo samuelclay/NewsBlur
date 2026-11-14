@@ -12,6 +12,8 @@ import httpx
 import sentry_sdk
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import get_http_request
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
 from newsblur_mcp.auth import NewsBlurOAuthProvider
 from newsblur_mcp.client import ArchiveRequiredError, NewsBlurClient
@@ -51,6 +53,51 @@ mcp = FastMCP(
         "training classifiers, and organizing subscriptions."
     ),
 )
+
+
+# FastMCP registers its OAuth routes without a trailing slash, and Starlette
+# answers the slashed form with a 307 built from the path HAProxy already
+# rewrote: /mcp/register/ redirected to http://newsblur.com/register, which is
+# Django's 404. Browser clients can't follow a redirect on a CORS request
+# anyway, so OAuthTrailingSlashMiddleware serves both forms in place
+# (forum #13806, tests/test_server.py).
+OAUTH_ROUTE_PATHS = {
+    "/.well-known/oauth-authorization-server",
+    "/authorize",
+    "/token",
+    "/register",
+    "/auth/callback",
+    "/consent",
+}
+
+
+class OAuthTrailingSlashMiddleware:
+    """Route /register/ and friends to /register instead of redirecting."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            path = scope["path"]
+            trimmed_path = path.rstrip("/")
+            if path != trimmed_path and trimmed_path in OAUTH_ROUTE_PATHS:
+                scope = dict(scope, path=trimmed_path, raw_path=trimmed_path.encode())
+        await self.app(scope, receive, send)
+
+
+def mcp_http_middleware():
+    """Return HTTP middleware for browser-hosted MCP clients."""
+    return [
+        Middleware(OAuthTrailingSlashMiddleware),
+        Middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+            allow_headers=["*"],
+            expose_headers=["WWW-Authenticate", "Mcp-Session-Id"],
+        ),
+    ]
 
 
 def _get_user_info():
@@ -191,11 +238,13 @@ import newsblur_mcp.prompts.prompts  # noqa: F401, E402
 import newsblur_mcp.resources.resources  # noqa: F401, E402
 import newsblur_mcp.tools.account  # noqa: F401, E402
 import newsblur_mcp.tools.actions  # noqa: F401, E402
+import newsblur_mcp.tools.archive  # noqa: F401, E402
 import newsblur_mcp.tools.briefing  # noqa: F401, E402
 import newsblur_mcp.tools.classifiers  # noqa: F401, E402
 import newsblur_mcp.tools.discovery  # noqa: F401, E402
 import newsblur_mcp.tools.feeds  # noqa: F401, E402
 import newsblur_mcp.tools.notifications  # noqa: F401, E402
+import newsblur_mcp.tools.social  # noqa: F401, E402
 
 # Import tools to register them with the mcp instance
 import newsblur_mcp.tools.stories  # noqa: F401, E402
@@ -208,4 +257,5 @@ def main():
         host=MCP_HOST,
         port=MCP_PORT,
         path="/",
+        middleware=mcp_http_middleware(),
     )

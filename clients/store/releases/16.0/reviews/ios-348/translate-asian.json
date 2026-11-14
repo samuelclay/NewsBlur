@@ -1,0 +1,57 @@
+{
+  "scope": "iOS 16.0 build 348 translation preparation",
+  "languages": [
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "files": [
+    "clients/store/metadata/id.json",
+    "clients/store/releases/16.0/id.json",
+    "clients/store/metadata/vi.json",
+    "clients/store/releases/16.0/vi.json",
+    "clients/store/metadata/th.json",
+    "clients/store/releases/16.0/th.json",
+    "clients/store/metadata/ja.json",
+    "clients/store/releases/16.0/ja.json",
+    "clients/store/metadata/ko.json",
+    "clients/store/releases/16.0/ko.json",
+    "clients/store/metadata/zh-Hans.json",
+    "clients/store/releases/16.0/zh-Hans.json",
+    "clients/store/metadata/zh-Hant.json",
+    "clients/store/releases/16.0/zh-Hant.json"
+  ],
+  "source": [
+    "clients/store/metadata/en.json",
+    "clients/store/releases/16.0/en.json",
+    "clients/store/products/en.json"
+  ],
+  "reviewed_products": [
+    "clients/store/products/id.json",
+    "clients/store/products/vi.json",
+    "clients/store/products/th.json",
+    "clients/store/products/ja.json",
+    "clients/store/products/ko.json",
+    "clients/store/products/zh-Hans.json",
+    "clients/store/products/zh-Hant.json"
+  ],
+  "changes": [
+    "Added Home Screen widget description in all assigned locales.",
+    "Updated language chooser preview wording and added per-widget source, account defaults, refresh reliability, remove/re-add migration and touch-and-hold Edit Widget instructions."
+  ],
+  "quality": [
+    "Followed locale glossary register and story, folder, account and All Site Stories terminology.",
+    "Preserved app name, subtitle, existing accurate listing copy, URLs, billing terms, product identities and product descriptions.",
+    "Existing iOS product copy matches English Premium, permanent archive and 5 to 15 minute fetch claims.",
+    "macOS and Android objects unchanged."
+  ],
+  "limits": [
+    "Translation self-review only; independent review pending.",
+    "No native-speaker or rendered App Store verification performed.",
+    "No App Store upload performed by this agent."
+  ]
+}

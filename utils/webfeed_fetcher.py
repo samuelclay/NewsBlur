@@ -8,14 +8,39 @@ from django.conf import settings
 from lxml import html as lxml_html
 
 from apps.rss_feeds.models import Feed
+from apps.statistics.rscrapingbee import RScrapingBee
 from apps.webfeed.models import MWebFeedConfig
 from apps.webfeed.tasks import decode_response_text, extract_image_url
 from utils import log as logging
+from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 USER_AGENT = "NewsBlur Web Feed Fetcher (https://newsblur.com)"
 
 # Custom exception code for web feed XPath extraction failure
 WEBFEED_EXCEPTION_CODE = 590
+
+# Responses that mean a bot check challenged this request, not that the page is gone.
+# AbeBooks answers 202 challenge pages to some task server IPs and real pages to others,
+# and in September 2026 proxying every challenged fetch cost ~43K ScrapingBee credits a
+# day for one user's search feeds.
+CHALLENGE_STATUSES = (202, 403, 429, 503)
+# A site that served the feed directly this recently is only challenging some of our
+# IPs, so the next scheduled fetch on another server gets through for free. A site
+# that hasn't answered directly in this long blocks every server and needs the proxy.
+DIRECT_FETCH_MAX_AGE = datetime.timedelta(hours=24)
+
+# Phrases a results page shows when a search legitimately has no items right now. A
+# page carrying one of these is a healthy feed with zero stories, not a broken one:
+# it must not count toward reanalysis or flag exception 590 (very specific rare-book
+# searches sit empty for weeks until a matching listing appears).
+NO_RESULTS_MARKERS = [
+    "no results",
+    "no matches",
+    "no exact matches",
+    "0 results",
+    "nothing found",
+    "did not match any",
+]
 
 
 class WebFeedFetcher:
@@ -25,6 +50,9 @@ class WebFeedFetcher:
         self.feed = feed
         self.url = feed.feed_address[len("webfeed:") :]
         self.config = MWebFeedConfig.get_config(feed.pk)
+        # Set by _fetch_html when a fetch is skipped without failing: a bot challenge on a
+        # site other servers still reach, or a host over its daily proxy credit cap.
+        self.skip_reason = None
 
     def fetch(self):
         """Main entry point. Returns a feedparser-compatible dict or None on failure."""
@@ -39,6 +67,14 @@ class WebFeedFetcher:
         logging.debug("   ---> [%-30s] ~FYWeb Feed: Fetching ~SB%s~SN" % (self.feed.log_title[:30], self.url))
 
         page_html = self._fetch_html()
+        if not page_html and self.skip_reason:
+            # Not a failure: nothing is recorded, so this can't trip reanalysis, and the
+            # feed simply waits for its next scheduled fetch.
+            logging.debug(
+                "   ---> [%-30s] ~FYWeb Feed: skipping this fetch (%s): ~SB%s~SN"
+                % (self.feed.log_title[:30], self.skip_reason, self.url)
+            )
+            return None
         if not page_html:
             self.config.record_failure()
             if self.config.needs_reanalysis:
@@ -50,6 +86,15 @@ class WebFeedFetcher:
         stories = self._extract_stories(page_html)
 
         if not stories:
+            if self._page_shows_no_results(page_html):
+                logging.debug(
+                    "   ---> [%-30s] ~FYWeb Feed: search has no current results, healthy but empty"
+                    % (self.feed.log_title[:30],)
+                )
+                self.config.record_success()
+                self._clear_webfeed_exception()
+                return None
+
             self.config.record_failure()
             logging.debug(
                 "   ***> [%-30s] ~FRWeb Feed: 0 stories extracted (failure %d)"
@@ -62,12 +107,7 @@ class WebFeedFetcher:
             return None
 
         self.config.record_success()
-
-        # Clear any previous exception
-        if self.feed.has_feed_exception and self.feed.exception_code == WEBFEED_EXCEPTION_CODE:
-            self.feed.has_feed_exception = False
-            self.feed.exception_code = 0
-            self.feed.save()
+        self._clear_webfeed_exception()
 
         fpf = self._to_feedparser_format(stories)
 
@@ -78,18 +118,47 @@ class WebFeedFetcher:
 
         return fpf
 
+    def _page_shows_no_results(self, html_text):
+        """True when the page says the search matched nothing right now."""
+        lowered = html_text.lower()
+        return any(marker in lowered for marker in NO_RESULTS_MARKERS)
+
+    def _clear_webfeed_exception(self):
+        """Clear a previous extraction-failure exception after a healthy fetch."""
+        if self.feed.has_feed_exception and self.feed.exception_code == WEBFEED_EXCEPTION_CODE:
+            self.feed.has_feed_exception = False
+            self.feed.exception_code = 0
+            self.feed.save()
+
     def _fetch_html(self):
         """Fetch page HTML with proxy fallbacks for forbidden feeds."""
         headers = {"User-Agent": USER_AGENT}
+        try:
+            validate_public_url(self.url)
+        except UnsafeUrlError:
+            return None
 
         # Try direct fetch first
         try:
-            response = requests.get(self.url, headers=headers, timeout=15, allow_redirects=True)
+            response = safe_requests_get(self.url, headers=headers, timeout=15, allow_redirects=True)
             text = decode_response_text(response)
             if response.status_code == 200 and text:
+                # Persisted by record_success / record_failure in fetch()
+                self.config.last_direct_fetch = datetime.datetime.utcnow()
                 return text
+            if response.status_code in CHALLENGE_STATUSES and self._recently_fetched_directly():
+                self.skip_reason = (
+                    "bot challenge (%s) on a site other servers still reach" % response.status_code
+                )
+                return None
         except requests.RequestException:
             pass
+
+        # One host can't spend more than its share of the ScrapingBee plan in a day
+        if RScrapingBee.host_over_budget(self.url):
+            RScrapingBee.record_capped("webfeed", url=self.url)
+            self.skip_reason = "host is over its daily proxy credit cap"
+            return None
 
         # Fallback to ScrapingBee
         if getattr(settings, "SCRAPINGBEE_API_KEY", None):
@@ -104,11 +173,12 @@ class WebFeedFetcher:
                     },
                     timeout=15,
                 )
+                RScrapingBee.record_response("webfeed", response, url=self.url)
                 text = decode_response_text(response)
                 if response.status_code == 200 and text:
                     return text
             except requests.RequestException:
-                pass
+                RScrapingBee.record("webfeed", None, url=self.url)
 
         # Fallback to ScrapeNinja
         if getattr(settings, "SCRAPENINJA_API_KEY", None):
@@ -135,6 +205,13 @@ class WebFeedFetcher:
             % (self.feed.log_title[:30], self.url)
         )
         return None
+
+    def _recently_fetched_directly(self):
+        """True when the site served this feed to a task server without a proxy recently."""
+        last_direct_fetch = self.config.last_direct_fetch if self.config else None
+        if not last_direct_fetch:
+            return False
+        return datetime.datetime.utcnow() - last_direct_fetch < DIRECT_FETCH_MAX_AGE
 
     def _extract_stories(self, html_text):
         """Apply stored XPaths to HTML and extract story dicts."""
@@ -247,7 +324,7 @@ class WebFeedFetcher:
                 summary = img_tag + summary if summary else img_tag
             entry = {
                 "title": story.get("title", ""),
-                "link": story.get("link", ""),
+                "link": story.get("link") or self.url,
                 "guid": story.get("guid", ""),
                 "summary": summary,
                 "author": story.get("author", ""),

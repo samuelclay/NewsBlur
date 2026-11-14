@@ -1,0 +1,162 @@
+[
+  {
+    "language": "en",
+    "size": "2064x2752",
+    "panel": 1,
+    "captured_at": "2026-10-16T22:48:03.896Z",
+    "capture": "captures/ipad-stories.png",
+    "capture_sha256": "e23d1b979a611986b26ce7796067fc488703e80b919d7508e528864e3683875b",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "fc24802e1eacb3bce150a382eda192ab3e1c502a7369fecb402aeda8bb83db92",
+    "screenshot_sha256": "36feb50d9d56911e4a49f450801fe1285ffb51b9349897b176b3e5f82a108204",
+    "capture_bounds": {
+      "height": 1728.734375,
+      "width": 1296.5625,
+      "x": 383.7109375,
+      "y": 766.5
+    },
+    "headline": "Your daily reading, in one place.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2752,
+        "src": "captures/ipad-stories.png",
+        "width": 2064
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/ipad-pro-m5.png",
+        "width": 2300
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      2064,
+      2752
+    ]
+  },
+  {
+    "language": "en",
+    "size": "2064x2752",
+    "panel": 2,
+    "captured_at": "2026-10-16T22:48:25.383Z",
+    "capture": "captures/ipad-feeds.png",
+    "capture_sha256": "06a4faca95e421e6257c3637c61e4efce5402815b6befa0b3bf796a236c41600",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "fc24802e1eacb3bce150a382eda192ab3e1c502a7369fecb402aeda8bb83db92",
+    "screenshot_sha256": "7c2948c1f51e151867b22a8073f7660fb22e50bd3c17d3c8bdfb6464caf553aa",
+    "capture_bounds": {
+      "height": 1728.734375,
+      "width": 1296.5625,
+      "x": 383.7109375,
+      "y": 766.5
+    },
+    "headline": "A home for your favorite sources.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2752,
+        "src": "captures/ipad-feeds.png",
+        "width": 2064
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/ipad-pro-m5.png",
+        "width": 2300
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      2064,
+      2752
+    ]
+  },
+  {
+    "language": "en",
+    "size": "2064x2752",
+    "panel": 3,
+    "captured_at": "2026-10-16T22:48:29.575Z",
+    "capture": "captures/ipad-reader.png",
+    "capture_sha256": "ec5fae92213702f9e3fd4f671b58d27552522efe70cd0a7e6e510805c7483d72",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "fc24802e1eacb3bce150a382eda192ab3e1c502a7369fecb402aeda8bb83db92",
+    "screenshot_sha256": "9bbc87b9526e86c56fe312a03a7625a617e1161f4ef93f3e338d6e49017dec17",
+    "capture_bounds": {
+      "height": 1728.734375,
+      "width": 1296.5625,
+      "x": 383.7109375,
+      "y": 766.5
+    },
+    "headline": "Settle into a good read.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2752,
+        "src": "captures/ipad-reader.png",
+        "width": 2064
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/ipad-pro-m5.png",
+        "width": 2300
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      2064,
+      2752
+    ]
+  },
+  {
+    "language": "en",
+    "size": "2064x2752",
+    "panel": 4,
+    "captured_at": "2026-10-16T22:48:41.162Z",
+    "capture": "captures/ipad-saved.png",
+    "capture_sha256": "1b87dbda9f30d65f9f53b24b6298596a1167d85455d61e07f583d8b8dba607a5",
+    "renderer_sha256": "a5e16cd4b53f08cd77ae4d2ccefdeca0a7af87a8bf0dc3ac5138c57c19c69b81",
+    "copy_sha256": "fc24802e1eacb3bce150a382eda192ab3e1c502a7369fecb402aeda8bb83db92",
+    "screenshot_sha256": "3bde713c621725ae9bd4b66ca91e7a50a2dc24022be59d8a570fd36d06fa8ed5",
+    "capture_bounds": {
+      "height": 1728.734375,
+      "width": 1296.5625,
+      "x": 383.7109375,
+      "y": 766.5
+    },
+    "headline": "Save a good read for later.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2752,
+        "src": "captures/ipad-saved.png",
+        "width": 2064
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/ipad-pro-m5.png",
+        "width": 2300
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      2064,
+      2752
+    ]
+  }
+]

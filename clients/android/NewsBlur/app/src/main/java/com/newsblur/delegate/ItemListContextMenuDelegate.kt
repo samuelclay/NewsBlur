@@ -25,7 +25,6 @@ import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.ThumbnailStyle
-import com.newsblur.util.UIUtils
 
 interface ItemListContextMenuDelegate {
     fun onCreateMenuOptions(
@@ -69,6 +68,7 @@ open class ItemListContextMenuDelegateImpl(
             fs.isAllSaved ||
             fs.isSingleSavedTag ||
             fs.isInfrequent ||
+            fs.isTrending ||
             fs.isAllRead
         ) {
             menu.findItem(R.id.menu_mark_all_as_read).isVisible = false
@@ -89,7 +89,6 @@ open class ItemListContextMenuDelegateImpl(
             fs.isAllRead
         ) {
             menu.findItem(R.id.menu_read_filter).isVisible = false
-            menu.findItem(R.id.menu_mark_read_on_scroll).isVisible = false
             menu.findItem(R.id.menu_story_content_preview_style).isVisible = false
             menu.findItem(R.id.menu_story_thumbnail_style).isVisible = false
         }
@@ -105,6 +104,9 @@ open class ItemListContextMenuDelegateImpl(
         menu.findItem(R.id.menu_discover_related_sites).isVisible = activity.shouldShowDiscoverAction();
 
         if (!fs.isSingleNormal || fs.isFilterSaved) {
+            menu.findItem(R.id.menu_choose_folders).isVisible = false
+            menu.findItem(R.id.menu_mute_feed).isVisible = false
+            menu.findItem(R.id.menu_unmute_feed).isVisible = false
             menu.findItem(R.id.menu_notifications).isVisible = false
             menu.findItem(R.id.menu_delete_feed).isVisible = false
             menu.findItem(R.id.menu_instafetch_feed).isVisible = false
@@ -194,12 +196,7 @@ open class ItemListContextMenuDelegateImpl(
             ListTextSize.XXL -> menu.findItem(R.id.menu_text_size_xxl).isChecked = true
         }
 
-        val isMarkReadOnScroll = prefsRepo.isMarkReadOnFeedScroll()
-        if (isMarkReadOnScroll) {
-            menu.findItem(R.id.menu_mark_read_on_scroll_enabled).isChecked = true
-        } else {
-            menu.findItem(R.id.menu_mark_read_on_scroll_disabled).isChecked = true
-        }
+        StoryTitleSettingsMenu.prepareReadModes(menu, prefsRepo.getMarkStoryReadBehavior())
 
         return true
     }
@@ -211,6 +208,10 @@ open class ItemListContextMenuDelegateImpl(
         searchInputView: EditText,
         saveSearchFeedId: String?,
     ): Boolean {
+        StoryTitleSettingsMenu.behaviorForItem(item.itemId)?.let { behavior ->
+            prefsRepo.setMarkStoryReadBehavior(behavior)
+            return true
+        }
         if (item.itemId == android.R.id.home) {
             activity.finish()
             return true
@@ -259,19 +260,14 @@ open class ItemListContextMenuDelegateImpl(
             return true;
         } else if (item.itemId == R.id.menu_theme_auto) {
             prefsRepo.setSelectedTheme(ThemeValue.AUTO)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_light) {
             prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_sepia) {
             prefsRepo.setSelectedTheme(ThemeValue.SEPIA)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_dark) {
             prefsRepo.setSelectedTheme(ThemeValue.DARK)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_black) {
             prefsRepo.setSelectedTheme(ThemeValue.BLACK)
-            UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_spacing_comfortable) {
             updateSpacingStyle(fragment, SpacingStyle.COMFORTABLE)
         } else if (item.itemId == R.id.menu_spacing_compact) {
@@ -306,10 +302,6 @@ open class ItemListContextMenuDelegateImpl(
         } else if (item.itemId == R.id.menu_story_content_preview_large) {
             prefsRepo.setStoryContentPreviewStyle(StoryContentPreviewStyle.LARGE)
             fragment.notifyContentPrefsChanged()
-        } else if (item.itemId == R.id.menu_mark_read_on_scroll_disabled) {
-            prefsRepo.setMarkReadOnScroll(false)
-        } else if (item.itemId == R.id.menu_mark_read_on_scroll_enabled) {
-            prefsRepo.setMarkReadOnScroll(true)
         } else if (item.itemId == R.id.menu_story_thumbnail_left_small) {
             prefsRepo.setThumbnailStyle(ThumbnailStyle.LEFT_SMALL)
             fragment.updateThumbnailStyle()

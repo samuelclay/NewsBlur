@@ -1,0 +1,3 @@
+Behebt Abstürze beim Öffnen von NewsBlur, Prüfen der Ungelesen-Zahl, Bestätigen von Leseaktionen und Wiederherstellen des Lesers. Datenbank-Upgrades erhalten zwischengespeicherte Artikel und ausstehende Offline-Aktionen.
+
+Mit Vollbildsteuerung auf Tablets, gespeicherten Bereichsbreiten, 21 Oberflächensprachen und fest positionierten Steuerelementen für den nächsten Artikel.

@@ -1,0 +1,18 @@
+[
+  {
+    "handle": "e2800001-ba7c-8a3f-8f12-ec62257f919d",
+    "name": "newsblur-16.0.1-es-duo-inner-2853x2007-01.png"
+  },
+  {
+    "handle": "e1c00001-ba7c-8a3f-8f2d-2b1a14a90df4",
+    "name": "newsblur-16.0.1-es-duo-inner-2853x2007-02.png"
+  },
+  {
+    "handle": "8d800001-ba7c-8a3f-8f1b-ce7fdac95554",
+    "name": "newsblur-16.0.1-es-duo-inner-2853x2007-03.png"
+  },
+  {
+    "handle": "51c00001-ba7c-8a3f-8f34-0498d9a82231",
+    "name": "newsblur-16.0.1-es-duo-inner-2853x2007-04.png"
+  }
+]

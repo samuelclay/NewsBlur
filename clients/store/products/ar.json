@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "قراءة المجلدات والبحث ووسم القصص المحفوظة"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "أرشيف قصص دائم وساعة استماع أسبوعيًا"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "تحديثات متكررة للخلاصات و10 ساعات استماع أسبوعيًا"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "اشتراكات NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "اشتراك NewsBlur Premium",
+        "description": "اقرأ المجلدات في قائمة واحدة، وابحث في خلاصاتك، ونظّم القصص المحفوظة بالوسوم، واستمتع بتحديثات أسرع للخلاصات.",
+        "benefits": [
+          "اقرأ المجلدات في قائمة قصص واحدة",
+          "ابحث في جميع الخلاصات",
+          "أضف وسومًا إلى القصص المحفوظة",
+          "تحديثات أسرع للخلاصات"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "اشتراك NewsBlur Premium Archive",
+        "description": "كل ميزات Premium وأرشيف قصص دائم قابل للبحث وساعة استماع أسبوعيًا. احتفظ بالقصص غير مقروءة ما شئت. تتجدد مدة الاستماع يوم الأحد.",
+        "benefits": [
+          "كل ميزات Premium",
+          "احتفظ بالقصص غير مقروءة بلا حد زمني",
+          "أرشيف قصص دائم قابل للبحث",
+          "ساعة استماع واحدة أسبوعيًا"
+        ]
+      }
+    }
+  }
+}

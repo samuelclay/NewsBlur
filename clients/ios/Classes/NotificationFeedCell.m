@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  NotificationFeedCell.m
 //  NewsBlur
@@ -8,6 +9,14 @@
 
 #import "NotificationFeedCell.h"
 #import "NewsBlurAppDelegate.h"
+
+@interface NotificationFeedCell ()
+
+// NotificationFeedCell.m keeps each control's left-to-right frame so a right-to-left layout pass can mirror it
+// without compounding earlier passes.
+@property (nonatomic, strong) NSMapTable<UIView *, NSValue *> *leftToRightControlFrames;
+
+@end
 
 @implementation NotificationFeedCell
 
@@ -30,18 +39,20 @@
         [self setSelectedBackgroundView:selectedBackground];
         
         NSDictionary *controlAttrs = @{NSForegroundColorAttributeName: [UIColor lightGrayColor]};
-        self.filterControl = [[UISegmentedControl alloc] initWithItems:@[@"Unread Stories",
-                                                                         @"Focus Stories"]];
+        self.filterControl = [[UISegmentedControl alloc] initWithItems:@[[NBLocalization text:@"Unread Stories"],
+                                                                         [NBLocalization text:@"Focus Stories"]]];
         self.filterControl.tintColor = UIColorFromRGB(0x8F918B);
-        [self.filterControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus Stories";
-        [self.filterControl.subviews objectAtIndex:0].accessibilityLabel = @"Unread Stories";
-        [self.filterControl setTitle:@"Unread Stories" forSegmentAtIndex:0];
-        [self.filterControl setTitle:@"Focus Stories" forSegmentAtIndex:1];
+        [self.filterControl.subviews objectAtIndex:1].accessibilityLabel = [NBLocalization text:@"Focus Stories"];
+        [self.filterControl.subviews objectAtIndex:0].accessibilityLabel = [NBLocalization text:@"Unread Stories"];
+        [self.filterControl setTitle:[NBLocalization text:@"Unread Stories"] forSegmentAtIndex:0];
+        [self.filterControl setTitle:[NBLocalization text:@"Focus Stories"] forSegmentAtIndex:1];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:0];
         [self.filterControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:1];
         [self.filterControl setTitleTextAttributes:controlAttrs forState:UIControlStateNormal];
         self.filterControl.frame = CGRectMake(36, 38, CGRectGetWidth(self.frame), 28);
         [self.contentView addSubview:self.filterControl];
+        self.leftToRightControlFrames = [NSMapTable weakToStrongObjectsMapTable];
+        [self.leftToRightControlFrames setObject:[NSValue valueWithCGRect:self.filterControl.frame] forKey:self.filterControl];
         
         CGFloat offset = 0;
         
@@ -76,6 +87,7 @@
     *offset += CGRectGetWidth(button.bounds);
     
     [self.contentView addSubview:button];
+    [self.leftToRightControlFrames setObject:[NSValue valueWithCGRect:frame] forKey:button];
     
     return button;
 }
@@ -93,6 +105,15 @@
     self.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
+    
+    // NotificationFeedCell.m measures with left-to-right frames. UITableViewCell has already mirrored its labels
+    // for a right-to-left interface, so they are read back in left-to-right space first.
+    BOOL rightToLeft = self.contentView.nb_isRightToLeft;
+    CGRect contentBounds = self.contentView.bounds;
+    if (rightToLeft) {
+        self.textLabel.frame = [NBLocalization directionalRect:self.textLabel.frame within:contentBounds rightToLeft:YES];
+        self.detailTextLabel.frame = [NBLocalization directionalRect:self.detailTextLabel.frame within:contentBounds rightToLeft:YES];
+    }
     
     self.imageView.frame = CGRectMake(10.0, 10.0, 16.0, 16.0);
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -121,6 +142,22 @@
         CGRect textLabelFrame = self.textLabel.frame;
         textLabelFrame.size.width = self.detailTextLabel.frame.origin.x - self.textLabel.frame.origin.x;
         self.textLabel.frame = textLabelFrame;
+    }
+    
+    // NotificationFeedCell.m puts the favicon and controls on the right and the statistics on the left.
+    if (rightToLeft) {
+        for (UIView *view in @[self.imageView, self.textLabel, self.detailTextLabel]) {
+            view.frame = [NBLocalization directionalRect:view.frame within:contentBounds rightToLeft:YES];
+        }
+        for (UIView *control in self.leftToRightControlFrames) {
+            CGRect frame = [[self.leftToRightControlFrames objectForKey:control] CGRectValue];
+            control.frame = [NBLocalization directionalRect:frame within:contentBounds rightToLeft:YES];
+        }
+    } else {
+        // NotificationFeedCell.m restores the original frames if the language switched back to left to right.
+        for (UIView *control in self.leftToRightControlFrames) {
+            control.frame = [[self.leftToRightControlFrames objectForKey:control] CGRectValue];
+        }
     }
     
     NSDictionary *feed = [self.appDelegate.dictFeeds objectForKey:self.feedId];

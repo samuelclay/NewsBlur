@@ -1,0 +1,15 @@
+{
+  "version": "16.0.6",
+  "versionCode": 298,
+  "releaseNotesVerified": 21,
+  "productionTrack": "completed",
+  "requestedRolloutPercent": 100,
+  "detailsPreserved": true,
+  "otherTracksPreserved": true,
+  "oneTimeProductsPreserved": true,
+  "reviewStateSource": "play-console-submitted.txt",
+  "note": "Publisher track completed expresses the requested full rollout; Play Console review status remains authoritative for availability.",
+  "postSubmissionSnapshotMatches": true,
+  "uploadedVersionCode": 298,
+  "uploadedSha256": "8ce2684d0e7bade498ee65a719c8d0d7b39b4a52aebcef7244ca5a2e424ba3c1"
+}

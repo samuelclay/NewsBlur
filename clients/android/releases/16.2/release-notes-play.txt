@@ -1,0 +1,63 @@
+<en-US>
+See AI filter matches and manage filters in the redesigned trainer. Hide overrides AI filter matches. Play podcasts in Listen with skip controls, a mixed podcast and story queue, and playback position synced across devices. Listen can read over other apps' music, with optional music lowering and a Music / Voice balance.
+</en-US>
+<es-ES>
+Consulta las coincidencias de los filtros de IA y gestiona tus filtros en el entrenador rediseñado. «Ocultar» prevalece sobre las coincidencias de los filtros de IA. Reproduce podcasts en Escuchar con controles para saltar, una cola que combina podcasts y artículos y la posición de reproducción sincronizada entre dispositivos. Escuchar puede reproducir la voz por encima de la música de otras apps, con la opción de bajar la música y ajustar el equilibrio entre Música y Voz.
+</es-ES>
+<fr-FR>
+Consultez les correspondances des filtres d’IA et gérez vos filtres dans l’entraîneur repensé. Masquer l’emporte sur les correspondances des filtres d’IA. Écoutez des podcasts dans Listen avec des commandes de saut, une file d’attente mêlant podcasts et articles et une position de lecture synchronisée sur tous vos appareils. Listen peut lire par-dessus la musique d’autres apps, avec baisse facultative de la musique et réglage de l’équilibre Musique / Voix.
+</fr-FR>
+<de-DE>
+Sieh dir KI-Filtertreffer an und verwalte Filter im neu gestalteten Trainer. „Ausblenden“ hat Vorrang vor KI-Filtertreffern. Spiele Podcasts in Listen mit Überspringen-Steuerung, einer gemischten Warteschlange für Podcasts und vorgelesene Artikel sowie geräteübergreifend synchronisierter Wiedergabeposition ab. Listen kann über der Musik anderer Apps vorlesen. Die Musik kann optional leiser werden; außerdem lässt sich die Balance zwischen Musik und Stimme anpassen.
+</de-DE>
+<pt-BR>
+Veja as correspondências dos filtros de IA e gerencie os filtros no treinador redesenhado. Ocultar se sobrepõe às correspondências dos filtros de IA. Ouça podcasts no Listen com controles para avançar e retroceder, uma fila que combina podcasts e artigos e a posição de reprodução sincronizada entre dispositivos. O Listen pode ler sobre a música de outros apps, com opção para diminuir o volume da música e ajustar o equilíbrio entre Música e Voz.
+</pt-BR>
+<it-IT>
+Scopri le corrispondenze dei filtri AI e gestiscili nell'addestramento rinnovato. Nascondi ha la precedenza sulle corrispondenze dei filtri AI. Riproduci i podcast in Listen con controlli per saltare, una coda mista di podcast e articoli e la posizione di riproduzione sincronizzata tra dispositivi. Listen può leggere sopra la musica di altre app, con la possibilità di abbassarla e regolare il bilanciamento Musica/Voce.
+</it-IT>
+<nl-NL>
+Bekijk welke AI-filters overeenkomen met artikelen en beheer ze in de vernieuwde trainer. Verbergen gaat vóór AI-filtermatches. Speel podcasts af via Luisteren, met bediening om over te slaan, een gemengde wachtrij met podcasts en artikelen en gesynchroniseerde afspeelpositie op al je apparaten. Luisteren kan muziek uit andere apps overstemmen, met de optie om de muziek zachter te zetten en de balans tussen muziek en stem aan te passen.
+</nl-NL>
+<pl-PL>
+Sprawdź dopasowania filtrów AI i zarządzaj filtrami w przeprojektowanym trenerze. Ukryj ma pierwszeństwo przed filtrami AI. Odtwarzaj podcasty w Listen za pomocą przycisków pomijania, kolejki łączącej podcasty i artykuły oraz synchronizacji miejsca odtwarzania między urządzeniami. Listen może odtwarzać głos na tle muzyki z innych aplikacji, opcjonalnie ściszając muzykę. Dostosuj balans Muzyka / Głos.
+</pl-PL>
+<tr-TR>
+Yeniden tasarlanan Eğitmen’de yapay zekâ filtre eşleşmelerini görün ve filtrelerinizi yönetin. Gizle, yapay zekâ filtre eşleşmelerini geçersiz kılar. Podcast’leri Dinle’de atlama kontrolleri, podcast’lerle haberleri bir araya getiren bir sıra ve cihazlar arasında eşitlenen oynatma konumuyla çalın. Dinle, isteğe bağlı müzik kısma ve Müzik / Ses dengesiyle diğer uygulamalardaki müziğin üzerine sesli okuma yapabilir.
+</tr-TR>
+<ru-RU>
+Просматривайте совпадения с фильтрами ИИ и управляйте фильтрами в обновлённом тренере. «Скрыть» имеет приоритет над совпадениями с фильтрами ИИ. Слушайте подкасты в Listen с кнопками перемотки и общей очередью подкастов и статей. Позиция воспроизведения синхронизируется между устройствами. Listen может читать текст поверх музыки из других приложений: можно приглушать музыку и настраивать баланс «Музыка / Голос».
+</ru-RU>
+<uk>
+Переглядайте збіги з фільтрами ШІ та керуйте фільтрами в оновленому тренері. «Приховати» має перевагу над збігами з фільтрами ШІ. Відтворюйте подкасти в Listen за допомогою кнопок перемотування, черги з подкастів і озвучених статей та синхронізації позиції відтворення між пристроями. Listen може відтворювати голос поверх музики з інших програм, приглушувати музику та налаштовувати баланс «Музика / голос».
+</uk>
+<ar>
+اطّلع على نتائج فلاتر الذكاء الاصطناعي وأدِر فلاترك في مدرّب الذكاء المُعاد تصميمه. يتجاوز «إخفاء» نتائج فلاتر الذكاء الاصطناعي. شغّل البودكاست في «استمع» مع عناصر تخطٍ وقائمة تشغيل تمزج البودكاست بالقصص، ومزامنة موضع التشغيل بين الأجهزة. يمكن لـ«استمع» تشغيل القراءة فوق موسيقى التطبيقات الأخرى، مع خيار خفض الموسيقى وضبط توازن الموسيقى والصوت.
+</ar>
+<iw-IL>
+אפשר לראות אילו מסנני AI התאימו לכתבות ולנהל אותם במאמן הבינה שעוצב מחדש. הסתרה גוברת על התאמות של מסנני AI. אפשר להאזין לפודקאסטים עם בקרי דילוג, תור שמשלב פודקאסטים וכתבות, וסנכרון מיקום ההשמעה בין מכשירים. ההאזנה יכולה לקרוא מעל מוזיקה מאפליקציות אחרות, עם אפשרות להנמיך את המוזיקה ולכוונן את האיזון בין מוזיקה לקול.
+</iw-IL>
+<hi-IN>
+नए डिज़ाइन वाले ट्रेनर में AI फ़िल्टर के मेल देखें और फ़िल्टर प्रबंधित करें। छिपाएँ AI फ़िल्टर के मेल पर भी लागू होता है। Listen में स्किप कंट्रोल, पॉडकास्ट और लेखों की मिली-जुली कतार और डिवाइसों के बीच सिंक हुआ प्लेबैक चलाएँ। Listen दूसरे ऐप्स के संगीत के ऊपर पढ़ सकता है; संगीत की आवाज़ कम करने और Music / Voice का संतुलन समायोजित करने के विकल्प उपलब्ध हैं।
+</hi-IN>
+<id>
+Lihat kecocokan filter AI dan kelola filter di Pelatih yang didesain ulang. Sembunyikan mengesampingkan kecocokan filter AI. Putar podcast di Listen dengan kontrol lewati, antrean podcast dan artikel, serta posisi pemutaran yang disinkronkan di berbagai perangkat. Listen dapat membacakan artikel di atas musik dari aplikasi lain, dengan opsi untuk mengecilkan musik dan mengatur keseimbangan Musik / Suara.
+</id>
+<vi>
+Xem các kết quả khớp của bộ lọc AI và quản lý bộ lọc trong trình huấn luyện được thiết kế lại. Ẩn được ưu tiên hơn các kết quả khớp của bộ lọc AI. Phát podcast trong Nghe với các nút tua, hàng đợi kết hợp podcast và bài viết, cùng vị trí phát được đồng bộ trên các thiết bị. Nghe có thể đọc đè lên nhạc từ ứng dụng khác, tùy chọn giảm âm lượng nhạc và cân bằng Nhạc / Giọng đọc.
+</vi>
+<th>
+ดูผลการจับคู่ของตัวกรอง AI และจัดการตัวกรองได้ในเครื่องมือฝึกที่ออกแบบใหม่ «ซ่อน» มีผลเหนือการจับคู่ของตัวกรอง AI เล่นพอดแคสต์ใน Listen พร้อมปุ่มข้าม คิวที่สลับพอดแคสต์กับบทความ และซิงค์ตำแหน่งเล่นข้ามอุปกรณ์ Listen อ่านออกเสียงทับเพลงจากแอปอื่นได้ โดยเลือกให้ลดเสียงเพลงและปรับสมดุลเพลง / เสียงพูดได้
+</th>
+<ja-JP>
+AIフィルターの一致を確認し、再設計されたインテリジェンストレーナーでフィルターを管理できます。「非表示」はAIフィルターの一致より優先されます。Listenでは、スキップ操作付きでポッドキャストを再生でき、ポッドキャストと記事を混ぜたキューや、デバイス間で同期される再生位置を利用できます。ほかのアプリの音楽に重ねた読み上げにも対応し、音楽の音量を下げる設定や音楽と音声のバランスを調整できます。
+</ja-JP>
+<ko-KR>
+새롭게 디자인된 트레이너에서 AI 필터 일치 항목을 확인하고 필터를 관리하세요. 숨기기는 AI 필터 일치보다 우선합니다. Listen에서 건너뛰기 컨트롤, 팟캐스트와 스토리를 함께 담은 대기열을 사용해 팟캐스트를 재생하고, 기기 간 재생 위치를 동기화하세요. Listen은 다른 앱의 음악 위로 콘텐츠를 읽어 줄 수 있으며, 음악 음량을 낮추거나 음악 / 음성 밸런스를 조절할 수도 있습니다.
+</ko-KR>
+<zh-CN>
+查看 AI 筛选条件的匹配结果，并在重新设计的训练器中管理筛选条件。“隐藏”会覆盖 AI 筛选条件的匹配结果。在 Listen 中收听播客，使用跳过控制、混合播客和朗读文章的队列，并在不同设备间同步播放进度。Listen 可在其他应用播放音乐时朗读，也可选择降低音乐音量并调节音乐与语音的音量平衡。
+</zh-CN>
+<zh-TW>
+查看 AI 篩選器的比對結果，並在重新設計的訓練器中管理篩選器。「隱藏」會優先於 AI 篩選器比對結果。在 Listen 中播放 Podcast，使用跳轉控制、混合 Podcast 與文章的播放佇列，並在不同裝置間同步播放進度。Listen 可在其他 App 播放音樂時朗讀文章，也可選擇降低音樂音量並調整音樂／語音平衡。
+</zh-TW>

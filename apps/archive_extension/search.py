@@ -258,12 +258,6 @@ class SearchArchive:
         Returns:
             List of archive IDs matching the query
         """
-        try:
-            cls.ES().indices.flush(cls.index_name())
-        except (elasticsearch.exceptions.NotFoundError, elasticsearch.exceptions.ConnectionError) as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         if strip:
             query = re.sub(
                 r'([^\s\w_\-"])+', " ", query
@@ -356,12 +350,6 @@ class SearchArchive:
         Returns:
             List of dicts with: archive_id, highlights (dict of field->snippets), score
         """
-        try:
-            cls.ES().indices.flush(cls.index_name())
-        except (elasticsearch.exceptions.NotFoundError, elasticsearch.exceptions.ConnectionError) as e:
-            logging.debug(f" ***> ~FRNo search server available: {e}")
-            return []
-
         if strip:
             query = re.sub(r'([^\s\w_\-"])+', " ", query)
         query = html.unescape(query)

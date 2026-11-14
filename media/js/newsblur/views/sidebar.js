@@ -15,6 +15,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-river-global": "open_river_global_stories",
         "click .NB-feeds-header-river-well-read": "open_well_read_stories",
         "click .NB-feeds-header-river-long-reads": "open_long_reads_stories",
+        "click .NB-feeds-header-river-good-reads": "open_good_reads_stories",
         "click .NB-feeds-header-river-dashboard": "show_splash_page",
         "click .NB-feeds-header-archive": "open_archive",
         "click .NB-feeds-header-add-site": "open_add_site",
@@ -295,6 +296,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         return NEWSBLUR.reader.open_trending_stories({ 'trending_type': 'long_reads' });
     },
 
+    open_good_reads_stories: function () {
+        return NEWSBLUR.reader.open_trending_stories({ 'trending_type': 'good_reads' });
+    },
+
     open_archive: function () {
         return NEWSBLUR.reader.open_archive();
     },
@@ -358,7 +363,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
             });
 
             $header.removeClass('NB-all-folders-collapsed');
-            $toggle_icon.attr('title', 'Collapse All Folders');
+            $toggle_icon.attr('title', gettext('Collapse All Folders'));
         } else {
             // Collapse all folders (when any folder is expanded)
             _.each(folder_names, function (folder_name) {
@@ -391,7 +396,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
             });
 
             $header.addClass('NB-all-folders-collapsed');
-            $toggle_icon.attr('title', 'Expand All Folders');
+            $toggle_icon.attr('title', gettext('Expand All Folders'));
         }
 
         return false;
@@ -408,10 +413,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
 
         if (all_collapsed) {
             $header.addClass('NB-all-folders-collapsed');
-            $toggle_icon.attr('title', 'Expand All Folders');
+            $toggle_icon.attr('title', gettext('Expand All Folders'));
         } else {
             $header.removeClass('NB-all-folders-collapsed');
-            $toggle_icon.attr('title', 'Collapse All Folders');
+            $toggle_icon.attr('title', gettext('Collapse All Folders'));
         }
     }
 

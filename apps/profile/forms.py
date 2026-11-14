@@ -5,14 +5,11 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy
 
-from apps.profile.models import (
-    MCustomStyling,
-    MGiftCode,
-    blank_authenticate,
-    change_password,
-)
+from apps.profile.models import MCustomStyling, MGiftCode, blank_authenticate, change_password
 from apps.social.models import MSocialProfile
+from utils import json_functions as json
 from vendor.zebra.forms import StripePaymentForm
 
 PLANS = [
@@ -43,14 +40,20 @@ class StripePlusPaymentForm(StripePaymentForm):
             self.fields["plan"].initial = plan
 
     email = forms.EmailField(
-        widget=forms.TextInput(attrs=dict(maxlength=75)), label="Email address", required=False
+        widget=forms.TextInput(attrs=dict(maxlength=75)), label=gettext_lazy("Email address"), required=False
     )
-    plan = forms.ChoiceField(required=False, widget=forms.RadioSelect, choices=PLANS, label="Plan")
+    plan = forms.ChoiceField(
+        required=False, widget=forms.RadioSelect, choices=PLANS, label=gettext_lazy("Plan")
+    )
 
 
 class DeleteAccountForm(forms.Form):
-    password = forms.CharField(widget=forms.PasswordInput(), label="Confirm your password", required=False)
-    confirm = forms.CharField(label='Type "Delete" to confirm', widget=forms.TextInput(), required=False)
+    password = forms.CharField(
+        widget=forms.PasswordInput(), label=gettext_lazy("Confirm your password"), required=False
+    )
+    confirm = forms.CharField(
+        label=gettext_lazy('Type "Delete" to confirm'), widget=forms.TextInput(), required=False
+    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
@@ -62,38 +65,42 @@ class DeleteAccountForm(forms.Form):
             user_auth = blank_authenticate(username=self.user.username)
 
         if not user_auth:
-            raise forms.ValidationError("Your password doesn't match.")
+            raise forms.ValidationError(gettext_lazy("Your password doesn't match."))
 
         return self.cleaned_data["password"]
 
     def clean_confirm(self):
         if self.cleaned_data.get("confirm", "").lower() != "delete":
-            raise forms.ValidationError('Please type "DELETE" to confirm deletion.')
+            raise forms.ValidationError(gettext_lazy('Please type "DELETE" to confirm deletion.'))
 
         return self.cleaned_data["confirm"]
 
 
 class ForgotPasswordForm(forms.Form):
-    email = forms.CharField(widget=forms.TextInput(), label="Your email address", required=False)
+    email = forms.CharField(
+        widget=forms.TextInput(), label=gettext_lazy("Your email address"), required=False
+    )
 
     def __init__(self, *args, **kwargs):
         super(ForgotPasswordForm, self).__init__(*args, **kwargs)
 
     def clean_email(self):
         if not self.cleaned_data["email"]:
-            raise forms.ValidationError("Please enter in an email address.")
+            raise forms.ValidationError(gettext_lazy("Please enter in an email address."))
         try:
             User.objects.get(email__iexact=self.cleaned_data["email"])
         except User.MultipleObjectsReturned:
             pass
         except User.DoesNotExist:
-            raise forms.ValidationError("No user has that email address.")
+            raise forms.ValidationError(gettext_lazy("No user has that email address."))
 
         return self.cleaned_data["email"]
 
 
 class ForgotPasswordReturnForm(forms.Form):
-    password = forms.CharField(widget=forms.PasswordInput(), label="Your new password", required=False)
+    password = forms.CharField(
+        widget=forms.PasswordInput(), label=gettext_lazy("Your new password"), required=False
+    )
 
 
 class AccountSettingsForm(forms.Form):
@@ -102,22 +109,26 @@ class AccountSettingsForm(forms.Form):
         regex=r"^\w+$",
         max_length=30,
         widget=forms.TextInput(attrs={"class": "NB-input"}),
-        label="username",
+        label=gettext_lazy("username"),
         required=False,
         error_messages={"invalid": "Your username may only contain letters and numbers."},
     )
     email = forms.EmailField(
         widget=forms.TextInput(attrs={"maxlength": 75, "class": "NB-input"}),
-        label="email address",
+        label=gettext_lazy("email address"),
         required=True,
         error_messages={"required": "Please enter an email."},
     )
     new_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "NB-input"}), label="password", required=False
+        widget=forms.PasswordInput(attrs={"class": "NB-input"}),
+        label=gettext_lazy("password"),
+        required=False,
     )
     # error_messages={'required': 'Please enter a password.'})
     old_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "NB-input"}), label="password", required=False
+        widget=forms.PasswordInput(attrs={"class": "NB-input"}),
+        label=gettext_lazy("password"),
+        required=False,
     )
     custom_js = forms.CharField(
         widget=forms.TextInput(attrs={"class": "NB-input"}), label="custom_js", required=False
@@ -125,6 +136,9 @@ class AccountSettingsForm(forms.Form):
     custom_css = forms.CharField(
         widget=forms.TextInput(attrs={"class": "NB-input"}), label="custom_css", required=False
     )
+    invoice_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
+    send_emails = forms.BooleanField(required=False)
+    notify_before_renewal = forms.BooleanField(required=False)
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -154,18 +168,22 @@ class AccountSettingsForm(forms.Form):
             except User.DoesNotExist:
                 pass
             else:
-                raise forms.ValidationError("This username is already taken. Try something different.")
+                raise forms.ValidationError(
+                    gettext_lazy("This username is already taken. Try something different.")
+                )
 
         if self.user.email != email:
             if email and User.objects.filter(email__iexact=email).count():
                 raise forms.ValidationError(
-                    "This email is already being used by another account. Try something different."
+                    gettext_lazy(
+                        "This email is already being used by another account. Try something different."
+                    )
                 )
 
         if old_password or new_password:
             code = change_password(self.user, old_password, new_password, only_check=True)
             if code <= 0:
-                raise forms.ValidationError("Your old password is incorrect.")
+                raise forms.ValidationError(gettext_lazy("Your old password is incorrect."))
 
         return self.cleaned_data
 
@@ -192,10 +210,31 @@ class AccountSettingsForm(forms.Form):
 
         MCustomStyling.save_user(self.user.pk, custom_css, custom_js)
 
+        profile = self.user.profile
+        preferences = json.decode(profile.preferences)
+        original_preferences = preferences.copy()
+        update_fields = []
+        if "send_emails" in self.data and profile.send_emails != self.cleaned_data["send_emails"]:
+            profile.send_emails = self.cleaned_data["send_emails"]
+            update_fields.append("send_emails")
+        if "notify_before_renewal" in self.data:
+            preferences["notify_before_renewal"] = self.cleaned_data["notify_before_renewal"]
+        if "invoice_text" in self.data:
+            invoice_text = self.cleaned_data["invoice_text"]
+            if invoice_text:
+                preferences["invoice_text"] = invoice_text
+            else:
+                preferences.pop("invoice_text", None)
+        if preferences != original_preferences:
+            profile.preferences = json.encode(preferences)
+            update_fields.append("preferences")
+        if update_fields:
+            profile.save(update_fields=update_fields)
+
 
 class RedeemCodeForm(forms.Form):
     use_required_attribute = False
-    gift_code = forms.CharField(widget=forms.TextInput(), label="Gift code", required=True)
+    gift_code = forms.CharField(widget=forms.TextInput(), label=gettext_lazy("Gift code"), required=True)
 
     def clean_gift_code(self):
         gift_code = self.cleaned_data["gift_code"]
@@ -203,7 +242,7 @@ class RedeemCodeForm(forms.Form):
         gift_code = re.sub(r"[^a-zA-Z0-9]", "", gift_code).lower()
 
         if len(gift_code) != 12:
-            raise forms.ValidationError("Your gift code should be 12 characters long.")
+            raise forms.ValidationError(gettext_lazy("Your gift code should be 12 characters long."))
 
         newsblur_gift_code = MGiftCode.objects.filter(gift_code__iexact=gift_code)
 
@@ -220,7 +259,7 @@ class RedeemCodeForm(forms.Form):
             if is_valid:
                 return gift_code
             elif is_valid == False:
-                raise forms.ValidationError("Your gift code is invalid. Check it for errors.")
+                raise forms.ValidationError(gettext_lazy("Your gift code is invalid. Check it for errors."))
             elif response.get("error", None):
                 raise forms.ValidationError(
                     "Your gift code is invalid, says the server: %s" % response["error"]

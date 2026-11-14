@@ -82,12 +82,21 @@
     @include relative-font-size(1.625);
   }
 
+  @include media-query(420px) {
+    font-size: clamp(15px, calc(12vw - 24px), 26px);
+  }
+
   .site-title-image {
     float: left;
+    flex-shrink: 0;
     margin: 8px 18px 8px 0;
 
     @include media-query($on-palm) {
       margin-top: 4px;
+    }
+
+    @include media-query(420px) {
+      margin-right: 4px;
     }
 
     img {

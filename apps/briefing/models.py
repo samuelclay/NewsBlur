@@ -143,7 +143,40 @@ BRIEFING_SECTION_DEFINITIONS = [
         "subtitle": "Stories covered by 3+ feeds",
         "default": True,
     },
+    # models.py: Global sections pull from site-wide curated rivers (apps/statistics/rtrending.py
+    # and apps/social/rglobal.py) instead of the user's subscriptions, so their stories are
+    # selected in apps/briefing/scoring.py:select_global_section_stories, not the personal scorer.
+    {
+        "key": "widely_read",
+        "name": "Widely Read on NewsBlur",
+        "subtitle": "What the NewsBlur community is reading",
+        "default": True,
+        "global": True,
+    },
+    {
+        "key": "long_reads",
+        "name": "Long Reads on NewsBlur",
+        "subtitle": "Deep reads the community gave real time to",
+        "default": True,
+        "global": True,
+    },
+    {
+        "key": "good_reads",
+        "name": "Good Reads on NewsBlur",
+        "subtitle": "Stories readers finished, saved, and shared",
+        "default": True,
+        "global": True,
+    },
+    {
+        "key": "global_shared",
+        "name": "Global Shared Stories",
+        "subtitle": "Hand-picked shares from across NewsBlur",
+        "default": True,
+        "global": True,
+    },
 ]
+
+GLOBAL_SECTION_KEYS = [s["key"] for s in BRIEFING_SECTION_DEFINITIONS if s.get("global")]
 
 VALID_SECTION_KEYS = {s["key"] for s in BRIEFING_SECTION_DEFINITIONS}
 # models.py: Custom sections use keys custom_1 through custom_5

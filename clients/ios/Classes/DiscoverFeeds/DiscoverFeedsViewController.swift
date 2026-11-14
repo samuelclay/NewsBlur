@@ -7,13 +7,18 @@
 //
 
 import SwiftUI
+import Combine
 
 @available(iOS 15.0, *)
 @objc class DiscoverFeedsViewController: BaseViewController {
+    static var viewModelFactory: ((String?, [String]?) -> DiscoverFeedsViewModel)?
+    static var cardActionsFactory: (() -> DiscoverSitesViewModel)?
     private let feedId: String?
     private let feedIds: [String]?
     private var hostingController: UIHostingController<DiscoverFeedsView>?
     private var viewModel: DiscoverFeedsViewModel?
+    private var cardActions: DiscoverSitesViewModel?
+    private var subscriptions = Set<AnyCancellable>()
 
     @objc var onDismiss: (() -> Void)?
     @objc var onTryFeed: (([String: Any]) -> Void)?
@@ -40,10 +45,13 @@ import SwiftUI
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.accessibilityIdentifier = "related-sites-dialog"
         updateBackgroundColor()
 
         let viewModel: DiscoverFeedsViewModel
-        if let feedIds = feedIds {
+        if let factory = Self.viewModelFactory {
+            viewModel = factory(feedId, feedIds)
+        } else if let feedIds = feedIds {
             viewModel = DiscoverFeedsViewModel(feedIds: feedIds)
         } else if let feedId = feedId {
             viewModel = DiscoverFeedsViewModel(feedId: feedId)
@@ -51,14 +59,24 @@ import SwiftUI
             return
         }
         self.viewModel = viewModel
+        let cardActions = Self.cardActionsFactory?() ?? DiscoverSitesViewModel()
+        self.cardActions = cardActions
+        cardActions.$addedSuccess.filter { $0 }.sink { [weak self] _ in
+            self?.appDelegate?.reloadFeedsView(false)
+        }.store(in: &subscriptions)
 
         let discoverView = DiscoverFeedsView(
             viewModel: viewModel,
+            cardActions: cardActions,
             onDismiss: { [weak self] in
-                self?.dismiss(animated: true)
+                guard let self = self else { return }
+                self.dismiss(animated: true, completion: self.onDismiss)
             },
             onTryFeed: { [weak self] feed in
                 self?.handleTryFeed(feed)
+            },
+            onOpenStory: { [weak self] feed, story in
+                self?.handleTryFeed(feed, story: story)
             },
             onAddFeed: { [weak self] feed in
                 self?.handleAddFeed(feed)
@@ -101,26 +119,31 @@ import SwiftUI
         view.backgroundColor = backgroundColor
     }
 
-    private func handleTryFeed(_ feed: DiscoverFeed) {
-        let rawDict = feed.rawFeedDict
-        dismiss(animated: true) { [weak self] in
-            guard let appDelegate = self?.appDelegate else { return }
-            appDelegate.loadTryFeedDetailView(
-                feed.id,
-                withStory: nil,
-                isSocial: false,
-                withUser: rawDict,
-                showFindingStory: false
-            )
+    private func handleTryFeed(_ feed: DiscoverPopularFeed, story: DiscoverStory? = nil) {
+        Task { [weak self] in await self?.openPreview(feed, story: story) }
+    }
+
+    func openPreview(_ feed: DiscoverPopularFeed, story: DiscoverStory?) async {
+        guard let model = cardActions, !model.isPreparingPreview,
+              let resolved = await model.resolvePreviewFeed(feed),
+              viewIfLoaded?.window != nil, let app = appDelegate else { return }
+        dismiss(animated: true) {
+            // DiscoverFeedsViewController.swift establishes exact lookup before the reader chooses its first-page cache path.
+            app.cleanUpTryFeed()
+            app.inFindingStoryMode = story != nil
+            app.findingStoryStartDate = story == nil ? nil : Date()
+            app.findingStoryDictionary = nil
+            app.tryFeedStoryTitle = nil
+            app.storiesCollection.readFilterOverride = story == nil ? nil : "all"
+            app.storiesCollection.notificationStoryHash = story?.id
+            app.storiesCollection.notificationStory = nil
+            app.loadTryFeedDetailView(resolved.id, withStory: story?.id, isSocial: false,
+                                     withUser: resolved.rawFeedDict, showFindingStory: story != nil)
         }
     }
 
-    private func handleAddFeed(_ feed: DiscoverFeed) {
-        let feedAddress = feed.feedAddress
-        dismiss(animated: true) { [weak self] in
-            guard let appDelegate = self?.appDelegate else { return }
-            appDelegate.openAddSite(withFeedAddress: feedAddress)
-        }
+    private func handleAddFeed(_ feed: DiscoverPopularFeed) {
+        cardActions?.addFeed(url: feed.feedAddress)
     }
 
     private func handleUpgrade() {

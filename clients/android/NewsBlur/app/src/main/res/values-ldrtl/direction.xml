@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- include_intel_explainer.xml points this arrow from each example's row to its result, which sits
+         to the left in right-to-left layouts. values/strings.xml keeps the left-to-right arrow. -->
+    <string name="ui_5fc52b1a5a92" translatable="false">←</string>
+</resources>

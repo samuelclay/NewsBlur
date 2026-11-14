@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Sprawdź, które filtry AI dotyczące treści i obrazów pasują do artykułu, i zarządzaj filtrami w trenerze. Ukryj ma teraz pierwszeństwo przed filtrami AI.\n\nOdtwarzaj podcasty w odtwarzaczu Listen aplikacji NewsBlur za pomocą przycisków pomijania, AirPlay i kolejki łączącej podcasty z artykułami czytanymi na głos. Wznawiaj odtwarzanie na różnych urządzeniach w miejscu, w którym zostało przerwane.\n\nListen może teraz odtwarzać głos na tle muzyki z innych aplikacji. Włącz opcję Odtwarzaj na tle innych dźwięków w sekcji Teraz odtwarzane, wybierz, czy muzyka ma być ściszana podczas mówienia, i dostosuj balans Muzyka / Głos."
+  },
+  "android": {
+    "release_notes": "Sprawdź dopasowania filtrów AI i zarządzaj filtrami w przeprojektowanym trenerze. Ukryj ma pierwszeństwo przed filtrami AI. Odtwarzaj podcasty w Listen za pomocą przycisków pomijania, kolejki łączącej podcasty i artykuły oraz synchronizacji miejsca odtwarzania między urządzeniami. Listen może odtwarzać głos na tle muzyki z innych aplikacji, opcjonalnie ściszając muzykę. Dostosuj balans Muzyka / Głos."
+  },
+  "macos": {
+    "whats_new": "Sprawdź, które filtry AI dotyczące treści i obrazów pasują do artykułu, i zarządzaj filtrami w trenerze. Ukryj ma teraz pierwszeństwo przed filtrami AI.\n\nOdtwarzaj podcasty w odtwarzaczu Listen aplikacji NewsBlur za pomocą przycisków pomijania, AirPlay i kolejki łączącej podcasty z artykułami czytanymi na głos. Wznawiaj odtwarzanie na różnych urządzeniach w miejscu, w którym zostało przerwane."
+  }
+}

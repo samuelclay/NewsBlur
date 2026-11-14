@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import com.newsblur.BuildConfig
 import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
 import com.newsblur.util.AppIconManager
@@ -13,14 +14,19 @@ import javax.xml.parsers.DocumentBuilderFactory
 class AppIconManifestTest {
     @Test
     fun appIconLauncherAliases_matchCatalog() {
-        val manifest = parseManifest()
-        val aliases = manifest.getElementsByTagName("activity-alias")
         val launcherAliases = mutableMapOf<String, Element>()
 
-        for (index in 0 until aliases.length) {
-            val alias = aliases.item(index) as? Element ?: continue
-            if (alias.hasMainLauncherIntent()) {
-                launcherAliases[alias.getAttribute("android:name")] = alias
+        val manifests = mutableListOf(parseManifest())
+        if (BuildConfig.BUILD_TYPE == "alpha") {
+            manifests += parseXml("app/src/alpha/AndroidManifest.xml")
+        }
+        for (manifest in manifests) {
+            val aliases = manifest.getElementsByTagName("activity-alias")
+            for (index in 0 until aliases.length) {
+                val alias = aliases.item(index) as? Element ?: continue
+                if (alias.hasMainLauncherIntent()) {
+                    launcherAliases[alias.getAttribute("android:name")] = alias
+                }
             }
         }
 
@@ -34,7 +40,12 @@ class AppIconManifestTest {
                 alias!!
                 assertEquals(".activity.InitActivity", alias.getAttribute("android:targetActivity"))
                 assertEquals("@mipmap/app_icon_${resourceName(flavor, mode)}", alias.getAttribute("android:icon"))
-                assertEquals(expectedEnabled(flavor, mode), alias.getAttribute("android:enabled"))
+                val enabled = alias.getAttribute("android:enabled").replace(
+                    "\${defaultLauncherEnabled}",
+                    (BuildConfig.BUILD_TYPE != "alpha").toString(),
+                )
+                assertEquals(expectedEnabled(flavor, mode), enabled)
+                assertEquals("@string/app_name", alias.getAttribute("android:label"))
             }
         }
     }
@@ -48,13 +59,16 @@ class AppIconManifestTest {
                 val foreground = adaptiveIcon.getElementsByTagName("foreground").item(0) as Element
                 val background = adaptiveIcon.getElementsByTagName("background").item(0) as Element
 
-                assertEquals("@android:color/transparent", background.getAttribute("android:drawable"))
-                assertEquals("@drawable/app_icon_${resourceName}_foreground", foreground.getAttribute("android:drawable"))
+                val isAlpha = flavor.id == "alpha"
+                val foregroundName = if (isAlpha) "alpha" else resourceName
+                val backgroundRes = if (isAlpha) "@color/app_icon_alpha_background" else "@android:color/transparent"
+                assertEquals(backgroundRes, background.getAttribute("android:drawable"))
+                assertEquals("@drawable/app_icon_${foregroundName}_foreground", foreground.getAttribute("android:drawable"))
 
-                val foregroundDrawable = parseXml("app/src/main/res/drawable/app_icon_${resourceName}_foreground.xml")
+                val foregroundDrawable = parseXml("app/src/main/res/drawable/app_icon_${foregroundName}_foreground.xml")
                 assertEquals("inset", foregroundDrawable.tagName)
-                assertEquals("8dp", foregroundDrawable.getAttribute("android:inset"))
-                assertEquals("@drawable/app_icon_$resourceName", foregroundDrawable.getAttribute("android:drawable"))
+                assertEquals(if (isAlpha) "18dp" else "8dp", foregroundDrawable.getAttribute("android:inset"))
+                assertEquals("@drawable/app_icon_$foregroundName", foregroundDrawable.getAttribute("android:drawable"))
             }
         }
     }

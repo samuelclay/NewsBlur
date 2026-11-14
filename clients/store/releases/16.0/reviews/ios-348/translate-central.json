@@ -1,0 +1,46 @@
+{
+  "platform": "ios",
+  "version": "16.0",
+  "build": "348",
+  "role": "translator_self_review",
+  "languages": [
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi"
+  ],
+  "files": [
+    "clients/store/metadata/tr.json",
+    "clients/store/releases/16.0/tr.json",
+    "clients/store/metadata/ru.json",
+    "clients/store/releases/16.0/ru.json",
+    "clients/store/metadata/uk.json",
+    "clients/store/releases/16.0/uk.json",
+    "clients/store/metadata/ar.json",
+    "clients/store/releases/16.0/ar.json",
+    "clients/store/metadata/he.json",
+    "clients/store/releases/16.0/he.json",
+    "clients/store/metadata/hi.json",
+    "clients/store/releases/16.0/hi.json"
+  ],
+  "sources": [
+    "clients/store/metadata/en.json",
+    "clients/store/releases/16.0/en.json",
+    "clients/store/products/en.json",
+    "localization/README.md",
+    "localization/glossaries/{tr,ru,uk,ar,he,hi}.json"
+  ],
+  "checks": [
+    "Translated Home Screen widget description and rewritten release notes",
+    "Retained all source widget claims: per-widget folder/site selection, signed-in account default, hidden-first refresh, remove and re-add migration, touch-and-hold Edit Widget",
+    "Preserved app names, subtitles, URLs, product identities and all Android/macOS fields",
+    "Reviewed existing iOS listing and subscription copy against English; no billing or entitlement changes required",
+    "Arabic and Hebrew use their respective scripts, RTL sentence order and consistent glossary terms"
+  ],
+  "limitations": [
+    "Independent review pending",
+    "No rendered App Store RTL verification in this translation task"
+  ]
+}

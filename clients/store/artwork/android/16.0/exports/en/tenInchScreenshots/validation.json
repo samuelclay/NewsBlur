@@ -1,0 +1,237 @@
+{
+  "checked_at": "2026-10-17T15:41:22Z",
+  "assets": [
+    {
+      "language": "en",
+      "locale": "en-US",
+      "imageType": "tenInchScreenshots",
+      "position": 1,
+      "path": "en/tenInchScreenshots/panel-01.png",
+      "sha256": "ceb496d10c18a94187e17e6e691635963e72d1dbfc1cd37751af509926693b31",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1606196,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/en.json": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/en/tablet10-stories.png": "c5c1fb7554533817e8cdb59c1d3007991bc5a5d928ff2baaf6a0d5f68f728dc9",
+        "captures/en/tablet10-feeds.png": "f8a0a2111f4cbe76425bf127e87aff758feac4972484ae173d82e6cfd4e73457",
+        "captures/en/tablet10-reader.png": "99b49e03728cf73b321eefc20c630146a41591cb9c2b63454af0898e4a2293f0",
+        "captures/en/tablet10-saved.png": "db2fd8081c81389af053ebc0ae0b9ecf5b0fb775c2d3217fce70a646a37f6198"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.0,
+          "largest_tile_error": 0.0,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/en/tablet10-stories.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1200,
+              "width": 1920,
+              "x": 0,
+              "y": 0
+            },
+            "path": "captures/en/tablet10-stories.png",
+            "source_height": 1200,
+            "source_width": 1920
+          }
+        ],
+        "height": 1200,
+        "language": "en",
+        "panel": 1,
+        "placement": "tenInchScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 1920
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:44:13Z",
+      "visual_review_note": "Each final full-size tablet PNG inspected: populated native split reader and feed drawer, correct English controls, no added external text or frames."
+    },
+    {
+      "language": "en",
+      "locale": "en-US",
+      "imageType": "tenInchScreenshots",
+      "position": 2,
+      "path": "en/tenInchScreenshots/panel-02.png",
+      "sha256": "58dadf8c4d1133fe88be6ea73d06c53359641a213fc5499c7fb61be8c4bdf384",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1013367,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/en.json": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/en/tablet10-stories.png": "c5c1fb7554533817e8cdb59c1d3007991bc5a5d928ff2baaf6a0d5f68f728dc9",
+        "captures/en/tablet10-feeds.png": "f8a0a2111f4cbe76425bf127e87aff758feac4972484ae173d82e6cfd4e73457",
+        "captures/en/tablet10-reader.png": "99b49e03728cf73b321eefc20c630146a41591cb9c2b63454af0898e4a2293f0",
+        "captures/en/tablet10-saved.png": "db2fd8081c81389af053ebc0ae0b9ecf5b0fb775c2d3217fce70a646a37f6198"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.0,
+          "largest_tile_error": 0.0,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/en/tablet10-feeds.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1200,
+              "width": 1920,
+              "x": 0,
+              "y": 0
+            },
+            "path": "captures/en/tablet10-feeds.png",
+            "source_height": 1200,
+            "source_width": 1920
+          }
+        ],
+        "height": 1200,
+        "language": "en",
+        "panel": 2,
+        "placement": "tenInchScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 1920
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:44:13Z",
+      "visual_review_note": "Each final full-size tablet PNG inspected: populated native split reader and feed drawer, correct English controls, no added external text or frames."
+    },
+    {
+      "language": "en",
+      "locale": "en-US",
+      "imageType": "tenInchScreenshots",
+      "position": 3,
+      "path": "en/tenInchScreenshots/panel-03.png",
+      "sha256": "2cd6ead84a6bc443094bd65a09deb292d1ee0645a865bbb0e949b0da12ffa7fd",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1605903,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/en.json": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/en/tablet10-stories.png": "c5c1fb7554533817e8cdb59c1d3007991bc5a5d928ff2baaf6a0d5f68f728dc9",
+        "captures/en/tablet10-feeds.png": "f8a0a2111f4cbe76425bf127e87aff758feac4972484ae173d82e6cfd4e73457",
+        "captures/en/tablet10-reader.png": "99b49e03728cf73b321eefc20c630146a41591cb9c2b63454af0898e4a2293f0",
+        "captures/en/tablet10-saved.png": "db2fd8081c81389af053ebc0ae0b9ecf5b0fb775c2d3217fce70a646a37f6198"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.0,
+          "largest_tile_error": 0.0,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/en/tablet10-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1200,
+              "width": 1920,
+              "x": 0,
+              "y": 0
+            },
+            "path": "captures/en/tablet10-reader.png",
+            "source_height": 1200,
+            "source_width": 1920
+          }
+        ],
+        "height": 1200,
+        "language": "en",
+        "panel": 3,
+        "placement": "tenInchScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 1920
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:44:13Z",
+      "visual_review_note": "Each final full-size tablet PNG inspected: populated native split reader and feed drawer, correct English controls, no added external text or frames."
+    },
+    {
+      "language": "en",
+      "locale": "en-US",
+      "imageType": "tenInchScreenshots",
+      "position": 4,
+      "path": "en/tenInchScreenshots/panel-04.png",
+      "sha256": "2b1b5395a522768c4529f726a701382b0946cdd6bca616d5761cb20df6867729",
+      "width": 1920,
+      "height": 1200,
+      "bytes": 1639377,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/en.json": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/en/tablet10-stories.png": "c5c1fb7554533817e8cdb59c1d3007991bc5a5d928ff2baaf6a0d5f68f728dc9",
+        "captures/en/tablet10-feeds.png": "f8a0a2111f4cbe76425bf127e87aff758feac4972484ae173d82e6cfd4e73457",
+        "captures/en/tablet10-reader.png": "99b49e03728cf73b321eefc20c630146a41591cb9c2b63454af0898e4a2293f0",
+        "captures/en/tablet10-saved.png": "db2fd8081c81389af053ebc0ae0b9ecf5b0fb775c2d3217fce70a646a37f6198"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.0,
+          "largest_tile_error": 0.0,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/en/tablet10-saved.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1200,
+              "width": 1920,
+              "x": 0,
+              "y": 0
+            },
+            "path": "captures/en/tablet10-saved.png",
+            "source_height": 1200,
+            "source_width": 1920
+          }
+        ],
+        "height": 1200,
+        "language": "en",
+        "panel": 4,
+        "placement": "tenInchScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 1920
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:44:13Z",
+      "visual_review_note": "Each final full-size tablet PNG inspected: populated native split reader and feed drawer, correct English controls, no added external text or frames."
+    }
+  ]
+}

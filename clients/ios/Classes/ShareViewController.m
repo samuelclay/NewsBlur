@@ -15,6 +15,33 @@
 #import "NSString+HTML.h"
 #import "NewsBlur-Swift.h"
 
+static NSString *NBShareIdentifier(id value) {
+    if ([value isKindOfClass:NSString.class]) return [value length] ? value : nil;
+    if ([value isKindOfClass:NSNumber.class]) return [value stringValue];
+    return nil;
+}
+
+static BOOL NBShareStoriesMatch(NSDictionary *first, NSDictionary *second) {
+    if (![first isKindOfClass:NSDictionary.class] || ![second isKindOfClass:NSDictionary.class]) return NO;
+    NSString *firstHash = NBShareIdentifier(first[@"story_hash"]);
+    NSString *secondHash = NBShareIdentifier(second[@"story_hash"]);
+    if (firstHash && secondHash) return [firstHash isEqualToString:secondHash];
+    NSString *firstFeed = NBShareIdentifier(first[@"story_feed_id"]);
+    NSString *secondFeed = NBShareIdentifier(second[@"story_feed_id"]);
+    NSString *firstID = NBShareIdentifier(first[@"id"]);
+    NSString *secondID = NBShareIdentifier(second[@"id"]);
+    return firstFeed && secondFeed && firstID && secondID &&
+        [firstFeed isEqualToString:secondFeed] && [firstID isEqualToString:secondID];
+}
+
+static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDictionary *responseStory) {
+    // ShareViewController.m merges partial social responses without losing local intelligence or clustering metadata.
+    NSMutableDictionary *merged = [existingStory mutableCopy];
+    [merged addEntriesFromDictionary:responseStory];
+    merged[@"read_status"] = @1;
+    return merged;
+}
+
 @implementation ShareViewController
 
 @synthesize commentField;
@@ -51,7 +78,7 @@
 
     // Create header label
     UILabel *header = [[UILabel alloc] init];
-    header.text = @"Share this story";
+    header.text = [NBLocalization text:@"Share this story"];
     header.font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
     header.textAlignment = NSTextAlignmentLeft;
     self.headerLabel = header;
@@ -59,7 +86,7 @@
 
     // Create inline submit button (UIButtonTypeCustom to avoid system tint/double border)
     UIButton *inlineBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [inlineBtn setTitle:@"Share" forState:UIControlStateNormal];
+    [inlineBtn setTitle:[NBLocalization text:@"Share"] forState:UIControlStateNormal];
     inlineBtn.titleLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
     [inlineBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [inlineBtn setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.4] forState:UIControlStateDisabled];
@@ -222,8 +249,8 @@
         setUsername:(NSString *)username
          setReplyId:(NSString *)replyId {
     if ([type isEqualToString: @"edit-reply"]) {
-        self.headerLabel.text = @"Edit your reply";
-        [self.inlineSubmitButton setTitle:@"Save reply" forState:UIControlStateNormal];
+        self.headerLabel.text = [NBLocalization text:@"Edit your reply"];
+        [self.inlineSubmitButton setTitle:[NBLocalization text:@"Save reply"] forState:UIControlStateNormal];
         [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
         [self.inlineSubmitButton addTarget:self action:@selector(doReplyToComment:) forControlEvents:UIControlEventTouchUpInside];
         self.activeReplyId = replyId;
@@ -243,8 +270,8 @@
         }
     } else if ([type isEqualToString: @"reply"]) {
         self.activeReplyId = nil;
-        self.headerLabel.text = [NSString stringWithFormat:@"Reply to %@", username];
-        [self.inlineSubmitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username] forState:UIControlStateNormal];
+        self.headerLabel.text = [NSString stringWithFormat:[NBLocalization text:@"Reply to %@"], username];
+        [self.inlineSubmitButton setTitle:[NSString stringWithFormat:[NBLocalization text:@"Reply to %@"], username] forState:UIControlStateNormal];
         [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
         [self.inlineSubmitButton addTarget:self action:@selector(doReplyToComment:) forControlEvents:UIControlEventTouchUpInside];
 
@@ -255,14 +282,14 @@
             self.commentField.text = @"";
         }
     } else if ([type isEqualToString: @"edit-share"]) {
-        self.headerLabel.text = @"Edit your comment";
+        self.headerLabel.text = [NBLocalization text:@"Edit your comment"];
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
 
         [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
         [self.inlineSubmitButton addTarget:self action:@selector(doShareThisStory:) forControlEvents:UIControlEventTouchUpInside];
     } else if ([type isEqualToString: @"share"]) {
-        self.headerLabel.text = @"Share this story";
+        self.headerLabel.text = [NBLocalization text:@"Share this story"];
         [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
         [self.inlineSubmitButton addTarget:self action:@selector(doShareThisStory:) forControlEvents:UIControlEventTouchUpInside];
         if (![self.currentType isEqualToString:@"share"] &&
@@ -283,7 +310,7 @@
 # pragma mark Share Story
 
 - (IBAction)doShareThisStory:(id)sender {
-    [appDelegate.storyPagesViewController showShareHUD:@"Sharing"];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Sharing"]];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/share_story",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -323,12 +350,15 @@
 }
 
 - (void)finishShareThisStory:(NSDictionary *)results {
+    if (![self validateSocialResponse:results payloadKey:@"story"]) return;
     NSArray *userProfiles = [results objectForKey:@"user_profiles"];
-    appDelegate.storiesCollection.activeFeedUserProfiles = [DataUtilities
+    if ([userProfiles isKindOfClass:NSArray.class]) appDelegate.storiesCollection.activeFeedUserProfiles = [DataUtilities
                                                             updateUserProfiles:appDelegate.storiesCollection.activeFeedUserProfiles
                                                             withNewUserProfiles:userProfiles];
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
-    [appDelegate.feedDetailViewController redrawUnreadStory];
+    if (NBShareStoriesMatch(appDelegate.activeStory, results[@"story"])) {
+        [appDelegate.feedDetailViewController redrawUnreadStory];
+    }
 
     [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
     [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
@@ -338,7 +368,7 @@
 # pragma mark Reply to Story
 
 - (IBAction)doReplyToComment:(id)sender {
-    [appDelegate.storyPagesViewController showShareHUD:@"Replying"];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Replying"]];
     NSString *comments = commentField.text;
     if ([comments length] == 0) {
         return;
@@ -352,7 +382,7 @@
     id commentUserId = [appDelegate.activeComment objectForKey:@"user_id"];
 
     if (!feedId || !storyId || !commentUserId) {
-        [appDelegate.storyPagesViewController showShareHUD:@"Cannot reply to this story"];
+        [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Cannot reply to this story"]];
         return;
     }
 
@@ -369,8 +399,9 @@
         [params setObject:activeReplyId forKey:@"reply_id"];
     }
 
+    NSDictionary *requestedStory = [appDelegate.activeStory copy];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [self finishAddReply:responseObject];
+        [self finishAddReply:responseObject forStory:requestedStory];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
         [self requestFailed:error statusCode:httpResponse.statusCode];
@@ -380,11 +411,63 @@
 }
 
 - (void)finishAddReply:(NSDictionary *)results {
-    NSLog(@"Successfully added.");
+    [self finishAddReply:results forStory:appDelegate.activeStory];
+}
 
-    // add the comment into the activeStory dictionary
-    NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
-    [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
+- (void)finishAddReply:(NSDictionary *)results forStory:(NSDictionary *)requestedStory {
+    if (![self validateSocialResponse:results payloadKey:@"comment"]) return;
+    NSDictionary *comment = results[@"comment"];
+    NSString *commentUserID = NBShareIdentifier(comment[@"user_id"]);
+    if (!commentUserID || !NBShareStoriesMatch(requestedStory, requestedStory)) return;
+
+    NSDictionary *existingStory = requestedStory;
+    for (NSDictionary *story in appDelegate.storiesCollection.activeFeedStories) {
+        if (NBShareStoriesMatch(story, requestedStory)) { existingStory = story; break; }
+    }
+    if (NBShareStoriesMatch(appDelegate.activeStory, requestedStory)) existingStory = appDelegate.activeStory;
+
+    NSMutableDictionary *patch = [NSMutableDictionary dictionary];
+    for (NSString *key in @[@"story_hash", @"story_feed_id", @"id"]) {
+        if (existingStory[key]) patch[key] = existingStory[key];
+    }
+    // ShareViewController.m applies a reply to its captured story even if the reader changed during the request.
+    for (NSString *key in @[@"friend_comments", @"friend_shares", @"public_comments"]) {
+        NSArray *comments = existingStory[key];
+        if (![comments isKindOfClass:NSArray.class]) continue;
+        NSMutableArray *updated = [comments mutableCopy];
+        BOOL found = NO;
+        for (NSUInteger index = 0; index < comments.count; index++) {
+            NSDictionary *existing = comments[index];
+            if ([existing isKindOfClass:NSDictionary.class] &&
+                [NBShareIdentifier(existing[@"user_id"]) isEqualToString:commentUserID]) {
+                updated[index] = comment;
+                found = YES;
+            }
+        }
+        if (found) { patch[key] = updated; break; }
+    }
+    NSArray *profiles = results[@"user_profiles"];
+    if ([profiles isKindOfClass:NSArray.class]) {
+        appDelegate.storiesCollection.activeFeedUserProfiles = [DataUtilities updateUserProfiles:appDelegate.storiesCollection.activeFeedUserProfiles withNewUserProfiles:profiles];
+    }
+    [self replaceStory:patch withReplyId:NBShareIdentifier(results[@"reply_id"])];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
+}
+
+- (BOOL)validateSocialResponse:(NSDictionary *)results payloadKey:(NSString *)payloadKey {
+    BOOL valid = [results isKindOfClass:NSDictionary.class];
+    id code = valid ? results[@"code"] : nil;
+    valid = valid && (!code || ([code respondsToSelector:@selector(integerValue)] && [code integerValue] >= 0));
+    valid = valid && [results[payloadKey] isKindOfClass:NSDictionary.class];
+    if (valid && [payloadKey isEqualToString:@"story"]) valid = NBShareStoriesMatch(results[payloadKey], results[payloadKey]);
+    if (valid && [payloadKey isEqualToString:@"comment"]) valid = NBShareIdentifier(results[payloadKey][@"user_id"]) != nil;
+    if (!valid) {
+        NSString *message = [results isKindOfClass:NSDictionary.class] && [results[@"message"] isKindOfClass:NSString.class] ? results[@"message"] : @"The server could not update this story. Please try again.";
+        NSError *error = [NSError errorWithDomain:@"NewsBlurSocialResponse" code:-1 userInfo:@{NSLocalizedDescriptionKey:message}];
+        [self requestFailed:error statusCode:0];
+    }
+    return valid;
 }
 
 - (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
@@ -396,31 +479,28 @@
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
-    NSMutableDictionary *newStoryParsed = [newStory mutableCopy];
-    [newStoryParsed setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
-
-    // update the current story and the activeFeedStories
-    appDelegate.activeStory = newStoryParsed;
-    [appDelegate.storyPagesViewController.currentPage setActiveStoryAtIndex:-1];
-
-    NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
-
-    for (int i = 0; i < appDelegate.storiesCollection.activeFeedStories.count; i++)  {
-        NSDictionary *feedStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:i];
-        NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
-        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
-        if ([storyId isEqualToString: currentStoryId]){
-            [newActiveFeedStories addObject:newStoryParsed];
-        } else {
-            [newActiveFeedStories addObject:[appDelegate.storiesCollection.activeFeedStories objectAtIndex:i]];
+    if (!NBShareStoriesMatch(newStory, newStory)) return;
+    BOOL updatesActiveStory = NBShareStoriesMatch(appDelegate.activeStory, newStory);
+    NSMutableArray *stories = [appDelegate.storiesCollection.activeFeedStories mutableCopy];
+    BOOL updatedList = NO;
+    for (NSUInteger index = 0; index < stories.count; index++) {
+        NSDictionary *story = stories[index];
+        if (NBShareStoriesMatch(story, newStory)) {
+            stories[index] = NBShareMergedStory(story, newStory);
+            updatedList = YES;
         }
     }
-
-    appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
-
-    self.commentField.text = nil;
-    [appDelegate.storyPagesViewController.currentPage refreshComments:replyId];
-    [appDelegate changeActiveFeedDetailRow];
+    if (updatedList) appDelegate.storiesCollection.activeFeedStories = stories;
+    if (updatesActiveStory) {
+        appDelegate.activeStory = NBShareMergedStory(appDelegate.activeStory, newStory);
+        [appDelegate.storyPagesViewController.currentPage setActiveStoryAtIndex:-1];
+    }
+    if (updatedList || updatesActiveStory) [appDelegate.feedDetailViewController reloadWithSizing];
+    if (updatesActiveStory) {
+        self.commentField.text = nil;
+        [appDelegate.storyPagesViewController.currentPage refreshComments:replyId];
+        [appDelegate changeActiveFeedDetailRow];
+    }
 }
 
 
@@ -436,9 +516,9 @@
     if ([self.currentType isEqualToString: @"share"] ||
         [self.currentType isEqualToString:@"edit-share"]) {
         if (text.length) {
-            [self.inlineSubmitButton setTitle:@"Share with comment" forState:UIControlStateNormal];
+            [self.inlineSubmitButton setTitle:[NBLocalization text:@"Share with comment"] forState:UIControlStateNormal];
         } else {
-            [self.inlineSubmitButton setTitle:@"Share" forState:UIControlStateNormal];
+            [self.inlineSubmitButton setTitle:[NBLocalization text:@"Share"] forState:UIControlStateNormal];
         }
         self.inlineSubmitButton.enabled = YES;
     } else if ([self.currentType isEqualToString: @"reply"] ||

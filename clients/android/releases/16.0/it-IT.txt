@@ -1,0 +1,3 @@
+L’interfaccia di NewsBlur ora supporta 21 lingue. Scegli la tua nell’app, con un’anteprima nella tua lingua e in inglese. Arabo ed ebraico si leggono da destra a sinistra. Gli articoli restano come pubblicati.
+
+I controlli dell’articolo successivo restano fissi, anche quando Avanti diventa Fatto. I pulsanti di accesso sono più leggibili nei temi scuri.

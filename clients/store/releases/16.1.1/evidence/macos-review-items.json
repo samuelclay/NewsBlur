@@ -1,0 +1,12 @@
+[
+  {
+    "type": "reviewSubmissionItems",
+    "id": "MDY5NGNlM2MtN2NhOC00ZDRlLWFkNmMtOTQ4MTU4YzE2NzlmfDZ8ODk0MzQxNDUx",
+    "attributes": {
+      "state": "READY_FOR_REVIEW"
+    },
+    "links": {
+      "self": "https://api.appstoreconnect.apple.com/v1/reviewSubmissionItems/MDY5NGNlM2MtN2NhOC00ZDRlLWFkNmMtOTQ4MTU4YzE2NzlmfDZ8ODk0MzQxNDUx"
+    }
+  }
+]

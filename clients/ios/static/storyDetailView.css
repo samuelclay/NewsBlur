@@ -345,6 +345,16 @@ body.NB-iphone {
     padding-bottom: calc(64px + constant(safe-area-inset-bottom));
 }
 
+/* storyDetailView.css removes bottom-toolbar reserves when the reader controls occupy the side rail. */
+#story_pane.NB-vertical-reader-toolbar {
+    padding-bottom: 16px;
+}
+
+#story_pane.NB-vertical-reader-toolbar .NB-share-wrapper,
+#story_pane.NB-vertical-reader-toolbar #NB-comments-wrapper {
+    margin-bottom: 0;
+}
+
 /** {*/
 /*    box-sizing: border-box;*/
 /*}*/
@@ -477,6 +487,76 @@ body.NB-iphone {
     color: #A90103;
     font-weight: bold;
     font-style: normal;
+}
+
+/* AI Classifier Pills: storyDetailView.css mirrors the web's .NB-feed-story-ai-classifier in media/css/reader/reader.css */
+.NB-story-ai-classifiers {
+    margin: 6px 0 2px;
+    line-height: 0;
+}
+
+.NB-story-ai-classifier {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 4px 4px 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: .75em;
+    font-weight: normal;
+    line-height: 1.3em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    background-color: rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.NB-story-ai-classifier .NB-story-ai-classifier-label {
+    font-weight: bold;
+}
+
+.NB-story-ai-classifier.NB-score-1 {
+    background-color: #A3CA87;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+
+.NB-story-ai-classifier.NB-score--1 {
+    background-color: #D58586;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+
+.NB-story-ai-classifier.NB-score--2 {
+    background-color: #8B2020;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+}
+
+.NB-story-ai-classifier.NB-score-1.pressed {
+    background-color: #34912E;
+}
+
+.NB-story-ai-classifier.NB-score--1.pressed,
+.NB-story-ai-classifier.NB-score--2.pressed {
+    background-color: #A90103;
+}
+
+@media (hover: hover) {
+    .NB-story-ai-classifier.NB-score-1:hover {
+        background-color: #34912E;
+    }
+
+    .NB-story-ai-classifier.NB-score--1:hover,
+    .NB-story-ai-classifier.NB-score--2:hover {
+        background-color: #A90103;
+    }
 }
 
 .NB-middot {
@@ -1126,6 +1206,38 @@ a.NB-show-profile {
     float: none;
     margin: 0;
 }
+.NB-button.NB-listen-button {
+    float: none;
+    margin: 0;
+}
+/* storyDetailView.css gives a Listen button carrying its "30s preview" pill more of a shared row. */
+.NB-button.NB-listen-button.NB-listen-has-pill {
+    flex-grow: 1.8;
+}
+.NB-button.NB-share-button div {
+    overflow: hidden;
+}
+.NB-button.NB-share-button .NB-sideoption-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* storyDetailView.css lays five story buttons out as three over two on a portrait iPhone. */
+.NB-iphone .NB-sideoptions-five .NB-share-inner-wrapper {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding-bottom: 20px;
+}
+.NB-iphone .NB-sideoptions-five .NB-button.NB-share-button {
+    flex: 1 1 28%;
+    height: auto;
+    padding-bottom: 0;
+}
+.NB-iphone .NB-sideoptions-five .NB-button.NB-share-button:nth-child(n+4) {
+    flex-basis: 40%;
+}
 
 .NB-button.NB-read-button {
     margin: 0;
@@ -1249,6 +1361,117 @@ a.NB-show-profile {
     background-size: 14px 14px;
     position: relative;
     top: -1px;
+}
+
+.NB-button.NB-listen-button .NB-icon {
+    background: url("listen.svg") no-repeat center center;
+    background-size: 12px 12px;
+}
+
+.NB-button.NB-listen-button.NB-listen-playing .NB-icon {
+    background-image: url("listen-pause.svg");
+    background-size: 11px 11px;
+}
+
+/* storyDetailView.css sets the + for Up Next (Classes/Listen/ListenStoryBridge.swift) right beside Listen. */
+.NB-button.NB-listen-button.NB-listen-has-queue {
+    display: flex;
+    gap: 5px;
+    /* storyDetailView.css: story buttons are 40px tall with 20px of bottom padding, so their links overflow the
+       20px content box. Top alignment keeps Listen and + at their natural height instead of stretching to it. */
+    align-items: flex-start;
+    flex-grow: 1.7;
+}
+.NB-button.NB-listen-button.NB-listen-has-pill.NB-listen-has-queue {
+    flex-grow: 2.2;
+}
+.NB-button.NB-listen-button.NB-listen-has-queue > a {
+    display: flex;
+}
+.NB-button.NB-listen-button.NB-listen-has-queue > a > div {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.NB-button.NB-listen-button.NB-listen-has-queue > a.NB-listen-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.NB-button.NB-listen-button.NB-listen-has-queue > a.NB-listen-queue {
+    flex: 0 0 auto;
+}
+.NB-button.NB-share-button a.NB-listen-queue.NB-listen-queued div {
+    background: rgba(0, 0, 0, 0.08);
+}
+.NB-button.NB-share-button a.NB-listen-queue div {
+    justify-content: center;
+    padding-left: 9px;
+    padding-right: 9px;
+    /* storyDetailView.css: the + holds only an icon, so it takes a text line's height to match Listen. */
+    min-height: 18px;
+}
+.NB-button.NB-listen-button a.NB-listen-queue .NB-icon {
+    position: static;
+    margin: 0;
+    background: url("listen-queue-add.svg") no-repeat center center;
+    background-size: 11px 11px;
+}
+.NB-button.NB-listen-button a.NB-listen-queue.NB-listen-queued .NB-icon {
+    background-image: url("listen-queue-added.svg");
+    background-size: 12px 12px;
+    opacity: .8;
+}
+
+/* storyDetailView.js newsblurListenFitPill hides the pill when it would cut the Listen label short, and the
+   button gives back the extra room it took for the pill. */
+.NB-listen-pill-hidden .NB-listen-pill {
+    display: none;
+}
+.NB-button.NB-listen-button.NB-listen-has-pill.NB-listen-pill-hidden {
+    flex-grow: 1;
+}
+.NB-button.NB-listen-button.NB-listen-has-pill.NB-listen-has-queue.NB-listen-pill-hidden {
+    flex-grow: 1.7;
+}
+
+.NB-listen-pill {
+    flex-shrink: 0;
+    margin: 0 6px 0 -2px;
+    padding: 2px 5px;
+    border-radius: 6px;
+    background: rgba(140, 89, 217, 0.13);
+    color: rgba(115, 70, 190, 0.95);
+    font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 8.5px;
+    font-weight: 600;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+/* Listen follow-along (Classes/Listen/ListenStoryBridge.swift): a soft wash behind the paragraph being read. */
+#story_pane.NB-listen-active [data-nb-listen-index],
+#story_pane.NB-listen-active .NB-story-title {
+    transition: background-color .35s ease, box-shadow .35s ease;
+}
+
+#story_pane.NB-listen-active [data-nb-listen-index] {
+    cursor: pointer;
+}
+
+.NB-listen-highlight {
+    background-color: rgba(255, 196, 0, 0.16);
+    box-shadow: 0 0 0 5px rgba(255, 196, 0, 0.16);
+    border-radius: 3px;
+}
+
+span.NB-listen-run.NB-listen-highlight {
+    box-shadow: none;
+    padding: 2px 0;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+#story_pane.NB-listen-mini-player {
+    padding-bottom: calc(132px + env(safe-area-inset-bottom));
 }
 
 .NB-button.NB-share-button .NB-sideoption-text {
@@ -1825,4 +2048,406 @@ a.NB-show-profile {
     color: #4F5F74;
     font-size: 12px;
     font-weight: 600;
+}
+
+/* ===================================== */
+/* = Right-to-left interface (ar, he)  = */
+/* ===================================== */
+/* storyDetailView.css mirrors the reader's own controls when StoryDetailObjCViewController.m sets dir="rtl"
+   on html for an Arabic or Hebrew interface. Story text, titles and comments carry dir="auto", so English
+   stories keep reading left to right; :dir(rtl) rules only touch content that is itself right to left.
+   None of these selectors match a left-to-right interface. */
+
+/* Header */
+html[dir="rtl"] .NB-story-title {
+    clear: right;
+}
+html[dir="rtl"] .NB-story-unread {
+    float: inline-start;
+    margin: 6px 0 0 0;
+    margin-inline-end: 6px;
+}
+html[dir="rtl"] .NB-story-toggle-changes {
+    float: right;
+    padding-left: 0;
+    padding-right: 24px;
+    background-position: right center;
+}
+html[dir="rtl"] .NB-story-url-match {
+    padding-left: 0;
+    padding-right: 12px;
+}
+html[dir="rtl"] .NB-story-ai-classifier {
+    margin: 0 0 4px 4px;
+}
+html[dir="rtl"] .NB-score-icon,
+html[dir="rtl"] .NB-score-icon-double {
+    margin-left: 0;
+    margin-right: 4px;
+}
+html[dir="rtl"] .NB-story-tags,
+html[dir="rtl"] .NB-user-tags {
+    padding-left: 2px;
+    padding-right: 0;
+}
+html[dir="rtl"] .NB-story-tag {
+    float: right;
+    margin: 0 0 12px 4px;
+}
+html[dir="rtl"] .NB-user-tag {
+    float: right;
+    padding: 1px 18px 1px 5px;
+    margin: 4px 0 4px 4px;
+    background-position: right 2px top 0;
+}
+html[dir="rtl"] .NB-user-tag.NB-add-user-tag {
+    background-position: right 6px top 3px;
+}
+html[dir="rtl"] .NB-story-starred-date {
+    padding: 0 20px 0 0;
+    background-position: right 0 top 0;
+}
+
+/* Story text that is itself right to left */
+html[dir="rtl"] .NB-story blockquote:dir(rtl) {
+    border-left: none;
+    border-right: 2px solid #ECEFE9;
+}
+html[dir="rtl"] .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -12px !important;
+}
+html[dir="rtl"] .NB-story .NB-medium-image:dir(rtl) {
+    margin-right: -12px !important;
+}
+html[dir="rtl"] .NB-width-375 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -12px !important;
+}
+html[dir="rtl"] .NB-width-414 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -12px !important;
+}
+html[dir="rtl"] .NB-mac .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-narrow .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-pro-12-narrow .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-pro-10-narrow .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-wide .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-pro-12-wide .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-pro-10-wide .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-iphone-wide .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-480 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-667 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-724 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-736 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-768 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+
+/* Train, Share, Save and Ask AI buttons (a flex row, which mirrors by itself) and comment buttons */
+html[dir="rtl"] .NB-button-wrapper .NB-button {
+    float: left;
+    padding: 0px 4px 4px 0px;
+}
+html[dir="rtl"] .NB-button.NB-share-button .NB-icon {
+    margin-right: 0;
+    margin-left: 8px;
+}
+/* A long Arabic or Hebrew label ("Ask AI") ends with an ellipsis inside its button instead of spilling out. */
+html[dir="rtl"] .NB-button.NB-share-button .NB-sideoption-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+html[dir="rtl"] .NB-iphone .NB-button.NB-share-button .NB-icon {
+    right: auto;
+    left: 6px;
+}
+
+/* Comments and shares */
+html[dir="rtl"] a.NB-show-profile {
+    margin: 0 2px 0 0;
+}
+html[dir="rtl"] .NB-story-comments-label {
+    float: right;
+    margin-right: 0;
+    margin-left: 2px;
+}
+html[dir="rtl"] .NB-story-share-label {
+    float: left;
+    margin-left: 0;
+    margin-right: 2px;
+}
+html[dir="rtl"] .NB-story-share-profiles-comments-friends,
+html[dir="rtl"] .NB-story-share-profiles-comments-public,
+html[dir="rtl"] #story_pane .NB-story-share-profiles {
+    float: right;
+}
+html[dir="rtl"] .NB-story-share-profiles-shares-friends,
+html[dir="rtl"] .NB-story-share-profiles-shares-public,
+html[dir="rtl"] #story_pane .NB-story-share-profiles.NB-story-share-profiles-public,
+html[dir="rtl"] #story_pane .NB-story-share-profiles.NB-story-share-profiles-public .NB-story-share-profile {
+    float: left;
+}
+html[dir="rtl"] #story_pane .NB-story-share-profile .NB-user-avatar,
+html[dir="rtl"] #story_pane .NB-story-share-profile .NB-user-username {
+    float: right;
+}
+html[dir="rtl"] #story_pane .NB-story-share-profile .NB-user-avatar {
+    margin: 0 0 0 4px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment {
+    padding: 0 64px 2px 12px;
+}
+html[dir="rtl"] .NB-mac#story_pane .NB-story-comment,
+html[dir="rtl"] .NB-ipad-wide#story_pane .NB-story-comment {
+    padding: 0 110px 2px 30px;
+}
+html[dir="rtl"] .NB-iphone-wide#story_pane .NB-story-comment,
+html[dir="rtl"] .NB-ipad-narrow#story_pane .NB-story-comment {
+    padding: 0 90px 2px 30px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    left: auto;
+    right: 6px;
+}
+html[dir="rtl"] .NB-mac#story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] .NB-mac#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare,
+html[dir="rtl"] .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare,
+html[dir="rtl"] .NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] .NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare,
+html[dir="rtl"] .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    left: auto;
+    right: 26px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar {
+    left: auto;
+    right: 12px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare {
+    left: auto;
+    right: 18px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar img,
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare img {
+    margin-left: 0;
+    margin-right: 6px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-story-share-profile .NB-user-avatar img,
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare img {
+    margin-right: 0;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-reshares {
+    left: auto;
+    right: 8px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
+    left: auto;
+    right: 26px;
+}
+html[dir="rtl"] .NB-mac#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar,
+html[dir="rtl"] .NB-ipad-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar,
+html[dir="rtl"] .NB-iphone-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar,
+html[dir="rtl"] .NB-ipad-narrow#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
+    left: auto;
+    right: 45px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-username {
+    float: right;
+    margin: 0 0 0 10px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-date,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-location,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-content {
+    float: right;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes-icon,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes-user,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-button-wrapper {
+    float: left;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes-icon {
+    margin: 0 0 0 10px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes-user {
+    margin: 2px 0 0 2px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply {
+    padding: 8px 34px 4px 0;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply .NB-show-profile {
+    float: right;
+    left: auto;
+    right: -34px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply .NB-story-comment-reply-photo {
+    left: auto;
+    right: 0px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply-form .NB-story-comment-reply-username {
+    margin: 1px 0 6px 8px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply-form .NB-story-comment-reply-comments {
+    margin: 0 0 4px 8px;
+    float: right;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply-form .NB-modal-submit-button {
+    float: right;
+}
+html[dir="rtl"] .NB-button .NB-story-comment-like-button-wrapper span {
+    float: right;
+}
+
+/* Related stories: each title carries dir="auto" so an English title truncates at its end, and stays beside
+   its favicon on the right. */
+html[dir="rtl"] .NB-cluster-detail-title-text {
+    text-align: right;
+}
+html[dir="rtl"] .NB-story-cluster-detail-item,
+html[dir="rtl"] .NB-cluster-locked-upsell {
+    padding: 0 32px 0 12px;
+}
+html[dir="rtl"] .NB-cluster-feed-border-outer {
+    left: auto;
+    right: 0;
+}
+html[dir="rtl"] .NB-cluster-feed-border-inner {
+    left: auto;
+    right: 4px;
+}
+
+/* storyDetailView.css: a story's audio as a row of pills (storyDetailView.js newsblurPrepareMedia), played by
+   Listen/ListenMediaPlayer.swift. The pills follow the story header's tag and AI classifier pills: the story
+   font, 4px corners, the same bevel, the neutral tag shade, and the positive green for Play. Only the pills take
+   taps, so a tap beside them is neither a press nor the reader's tap-to-hide-chrome
+   (StoryDetailObjCViewController.m continueTapAtPoint:). Every rule starts at #NB-story to win over the story
+   content rules (.NB-story span, .NB-story div). */
+#NB-story .NB-media-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 20px;
+    line-height: 1.2;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+#NB-story .NB-media-card * {
+    pointer-events: none;
+}
+#NB-story .NB-media-card a {
+    pointer-events: auto;
+    cursor: pointer;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+#NB-story .NB-media-card a * {
+    pointer-events: none;
+}
+#NB-story .NB-media-card-play,
+#NB-story .NB-media-card-actions a {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 34px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+#NB-story .NB-media-card-play {
+    gap: 8px;
+    padding: 7px 14px 7px 11px;
+    max-width: 100%;
+    background-color: #88B383;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    color: #FFFFFF;
+    text-shadow: 0 1px 0 #588353;
+    font-size: .8em;
+    font-weight: bold;
+}
+#NB-story .NB-media-playing .NB-media-card-play {
+    background-color: #6F9D69;
+}
+#NB-story .NB-media-card-play:active {
+    background-color: #34912E;
+}
+#NB-story .NB-media-card-label {
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#NB-story .NB-media-card-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    overflow: visible;
+    width: 14px !important;
+    min-width: 14px !important;
+    height: 14px;
+}
+#NB-story .NB-media-card-icon svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .2));
+}
+#NB-story .NB-media-loading .NB-media-card-icon {
+    animation: NB-media-card-pulse 1.2s ease-in-out infinite;
+}
+@keyframes NB-media-card-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+#NB-story .NB-media-card-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 8px;
+    margin: 0;
+}
+#NB-story .NB-media-card-actions a {
+    display: none;
+    padding: 7px 11px;
+    background-color: rgba(0, 0, 0, .1);
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+    color: #959B8B;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    font-size: .75em;
+    font-weight: normal;
+}
+#NB-story .NB-media-can-queue .NB-media-card-next,
+#NB-story .NB-media-can-queue .NB-media-card-last,
+#NB-story .NB-media-queued .NB-media-card-queued {
+    display: inline-flex;
+}
+#NB-story .NB-media-card-actions a:active {
+    background-color: rgba(0, 0, 0, .18);
+}
+#NB-story .NB-media-card-queued::before {
+    content: "\2713\00a0";
 }

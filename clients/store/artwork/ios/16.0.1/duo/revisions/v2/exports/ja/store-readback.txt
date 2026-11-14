@@ -1,0 +1,16 @@
+verified_after_reload
+  - button "Japanese":
+    - text: Japanese
+  - paragraph: Elevate your app's product page with a custom header and refine how your app appears in App Store search results. You can now also upload app previews and screenshots for iPhone Duo, adding support for the latest device.
+      - tab "iPhone Duo" [selected]:
+        - generic: iPhone Duo
+      - tabpanel "iPhone Duo":
+          - button "Screenshot newsblur-16.0.1-ja-duo-closed-2853x2007-01-v2.png":
+            - img "Screenshot newsblur-16.0.1-ja-duo-closed-2853x2007-01-v2.png":
+          - button "Screenshot newsblur-16.0.1-ja-duo-inner-2853x2007-02.png":
+            - button "Screenshot newsblur-16.0.1-ja-duo-inner-2853x2007-02.png":
+          - button "Screenshot newsblur-16.0.1-ja-duo-inner-2853x2007-03.png":
+            - button "Screenshot newsblur-16.0.1-ja-duo-inner-2853x2007-03.png":
+          - button "Screenshot newsblur-16.0.1-ja-duo-inner-2853x2007-04-v2.png":
+            - img "Screenshot newsblur-16.0.1-ja-duo-inner-2853x2007-04-v2.png":
+      - paragraph: 4 of 10 App Screenshots

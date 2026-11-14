@@ -1,0 +1,16 @@
+{
+  "time": "2026-10-17T17:16:02Z",
+  "removed_regenerable_paths": [
+    "clients/android/NewsBlur/app/build/intermediates",
+    "clients/android/NewsBlur/app/build/tmp",
+    "clients/android/NewsBlur/app/build/kspCaches",
+    "clients/android/NewsBlur/app/build/kotlin"
+  ],
+  "preserved": [
+    "outputs",
+    "reports",
+    "test-results",
+    "generated"
+  ],
+  "reason": "Disk exhausted while saving final artwork proof; no active Gradle wrapper process was present"
+}

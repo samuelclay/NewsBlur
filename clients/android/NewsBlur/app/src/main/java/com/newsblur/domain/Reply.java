@@ -1,5 +1,6 @@
 package com.newsblur.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import android.content.ContentValues;
@@ -8,7 +9,9 @@ import android.database.Cursor;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 
-public class Reply {
+public class Reply implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     // new replies cannot possibly have the server-generated ID, so are inserted with partial info until reconciled
     public static final String PLACEHOLDER_COMMENT_ID = "__PLACEHOLDER_ID__";

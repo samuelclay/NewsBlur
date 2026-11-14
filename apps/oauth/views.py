@@ -14,6 +14,7 @@ from django.contrib.sites.models import Site
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext
 from mongoengine.queryset import NotUniqueError, OperationError
 from oauth2_provider.views import AuthorizationView as BaseAuthorizationView
 
@@ -190,9 +191,12 @@ def facebook_disconnect(request):
 @ajax_login_required
 @json.json_view
 def follow_twitter_account(request):
-    username = request.POST["username"]
+    username = request.POST.get("username")
     code = 1
     message = "OK"
+
+    if not username:
+        return {"code": -1, "message": gettext("Missing username.")}
 
     logging.user(request, "~BB~FR~SKFollowing Twitter: %s" % username)
 
@@ -213,9 +217,12 @@ def follow_twitter_account(request):
 @ajax_login_required
 @json.json_view
 def unfollow_twitter_account(request):
-    username = request.POST["username"]
+    username = request.POST.get("username")
     code = 1
     message = "OK"
+
+    if not username:
+        return {"code": -1, "message": gettext("Missing username.")}
 
     logging.user(request, "~BB~FRUnfollowing Twitter: %s" % username)
 
@@ -264,9 +271,9 @@ def api_feed_list(request, trigger_slug=None):
     try:
         usf = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
-        return {"errors": [{"message": "Could not find feeds for user."}]}
+        return {"errors": [{"message": gettext("Could not find feeds for user.")}]}
     flat_folders = usf.flatten_folders()
-    titles = [dict(label=" - Folder: All Site Stories", value="all")]
+    titles = [dict(label=gettext(" - Folder: All Site Stories"), value="all")]
     feeds = {}
 
     user_subs = UserSubscription.objects.select_related("feed").filter(user=user, active=True)
@@ -278,7 +285,7 @@ def api_feed_list(request, trigger_slug=None):
         if folder_title and folder_title != " ":
             titles.append(dict(label=" - Folder: %s" % folder_title, value=folder_title, optgroup=True))
         else:
-            titles.append(dict(label=" - Folder: Top Level", value="Top Level", optgroup=True))
+            titles.append(dict(label=gettext(" - Folder: Top Level"), value="Top Level", optgroup=True))
         folder_contents = []
         for feed_id in flat_folders[folder_title]:
             if feed_id not in feeds:
@@ -300,13 +307,13 @@ def api_folder_list(request, trigger_slug=None):
     if "add-new-subscription" in request.path:
         titles = []
     else:
-        titles = [dict(label="All Site Stories", value="all")]
+        titles = [dict(label=gettext("All Site Stories"), value="all")]
 
     for folder_title in sorted(flat_folders.keys()):
         if folder_title and folder_title != " ":
             titles.append(dict(label=folder_title, value=folder_title))
         else:
-            titles.append(dict(label="Top Level", value="Top Level"))
+            titles.append(dict(label=gettext("Top Level"), value="Top Level"))
 
     return {"data": titles}
 
@@ -359,7 +366,7 @@ def api_shared_usernames(request):
             )
         )
     blurblogs = sorted(blurblogs, key=lambda b: b["label"].lower())
-    catchall = dict(label="All Shared Stories", value="all")
+    catchall = dict(label=gettext("All Shared Stories"), value="all")
     blurblogs.insert(0, catchall)
 
     return {"data": blurblogs}
@@ -706,7 +713,7 @@ def api_share_new_story(request):
     comments = fields.get("comments", None)
 
     if not story_url:
-        return {"errors": [{"message": "Invalid story URL"}]}
+        return {"errors": [{"message": gettext("Invalid story URL")}]}
 
     logging.user(request.user, "~FBFinding feed (api_share_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
@@ -715,7 +722,11 @@ def api_share_new_story(request):
     if not user.profile.is_premium and MSharedStory.feed_quota(user.pk, story_hash, feed_id=feed_id):
         return {
             "errors": [
-                {"message": "Only premium users can share multiple stories per day from the same site."}
+                {
+                    "message": gettext(
+                        "Only premium users can share multiple stories per day from the same site."
+                    )
+                }
             ]
         }
 
@@ -821,7 +832,7 @@ def api_save_new_story(request):
     story = None
 
     if not story_url:
-        return {"errors": [{"message": "Invalid story URL"}]}
+        return {"errors": [{"message": gettext("Invalid story URL")}]}
 
     logging.user(request.user, "~FBFinding feed (api_save_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url)
@@ -871,7 +882,7 @@ def api_save_new_subscription(request):
     folder = fields["folder"]
 
     if not url:
-        return {"errors": [{"message": "Invalid URL"}]}
+        return {"errors": [{"message": gettext("Invalid URL")}]}
 
     if folder == "Top Level":
         folder = " "
@@ -1209,3 +1220,39 @@ def extension_oauth_callback(request):
 </html>"""
 
     return HttpResponse(html, content_type="text/html")
+
+
+def dev_authorize_preview(request):
+    """
+    Development-only preview of the OAuth authorize page (templates/oauth2_provider/authorize.html).
+    Renders the page with a fake application so the styling can be checked without a real OAuth flow.
+    Mirrors the guard in apps/reader/views.py:dev_autologin - requires DEBUG and localhost.
+
+    Usage:
+        /oauth/dev/authorize/           - Preview as "The NewsBlur Forum" requesting read/email scopes
+        /oauth/dev/authorize/?error=1   - Preview the error state
+        /oauth/dev/authorize/?name=Foo  - Preview with a different application name
+    """
+    from django.shortcuts import render
+    from oauth2_provider.forms import AllowForm
+
+    is_local_dev = settings.DEBUG and "localhost" in getattr(settings, "NEWSBLUR_URL", "")
+    if not is_local_dev:
+        return HttpResponseForbidden("Dev authorize preview only available in local development")
+
+    class FakeApplication:
+        name = request.GET.get("name", "The NewsBlur Forum")
+
+    scopes = settings.OAUTH2_PROVIDER["SCOPES"]
+    context = {
+        "application": FakeApplication,
+        "scopes_descriptions": [scopes["read"], scopes["email"]],
+        "form": AllowForm(),
+    }
+    if request.GET.get("error"):
+        context["error"] = {
+            "error": "access_denied",
+            "description": "Preview of the OAuth authorize error state.",
+        }
+
+    return render(request, "oauth2_provider/authorize.html", context)

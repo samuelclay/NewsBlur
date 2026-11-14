@@ -1,10 +1,13 @@
+from unittest.mock import MagicMock, patch
+
+import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase, TransactionTestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.reader.models import UserSubscriptionFolders
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 
 
@@ -311,6 +314,85 @@ class Test_Reader(TransactionTestCase):
         deep_tech = [f for f in tech_folder["Tech"] if isinstance(f, dict) and "Deep Tech" in f][0]
         self.assertIn(1, deep_tech["Deep Tech"])
 
+    def test_delete_feed__stale_in_folder(self):
+        """A stale/mismatched in_folder must still delete the feed, not silently no-op."""
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        usf.folders = json.encode([{"Tech": [4, 5]}, 2, 3])
+        usf.save()
+
+        # Feed 5 lives in "Tech", but the client sends a folder it is not in.
+        self.assertTrue(UserSubscription.objects.filter(user=user, feed=5).exists())
+        response = self.client.post(reverse("delete-feed"), {"feed_id": 5, "in_folder": "Nonexistent Folder"})
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        # The feed is removed from the tree entirely...
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        self.assertEqual(json.decode(usf.folders), [2, 3, {"Tech": [4]}])
+        # ...and the subscription is gone, so the delete actually "stuck".
+        self.assertFalse(UserSubscription.objects.filter(user=user, feed=5).exists())
+
+    def test_delete_feed__stale_in_folder_keeps_multiples(self):
+        """A stale in_folder removes one placement but keeps the sub if others remain."""
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        usf.folders = json.encode([{"Tech": [5]}, {"Blogs": [5]}, 2, 3])
+        usf.save()
+
+        response = self.client.post(reverse("delete-feed"), {"feed_id": 5, "in_folder": "Nonexistent Folder"})
+        self.assertEqual(json.decode(response.content)["code"], 1)
+
+        # One placement removed, one remains, subscription preserved.
+        usf = UserSubscriptionFolders.objects.get(user=user)
+
+        def _count(items, target):
+            n = 0
+            for item in items:
+                if isinstance(item, int):
+                    n += 1 if item == target else 0
+                elif isinstance(item, dict):
+                    for _, kids in item.items():
+                        n += _count(kids, target)
+            return n
+
+        self.assertEqual(_count(json.decode(usf.folders), 5), 1)
+        self.assertTrue(UserSubscription.objects.filter(user=user, feed=5).exists())
+
+    def test_save_feed_order__rejects_stale_shrink(self):
+        """A reorder tree missing most subscribed feeds is rejected, not saved."""
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        original = usf.folders
+
+        response = self.client.post(reverse("save-feed-order"), {"folders": json.encode([1, 2, 3])})
+        result = json.decode(response.content)
+        self.assertEqual(result["code"], -1)
+
+        # The stored organization is left untouched.
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        self.assertEqual(usf.folders, original)
+
+    def test_save_feed_order__accepts_full_reorder(self):
+        """A reorder that preserves all subscribed feeds is saved normally."""
+        self.client.login(username="conesus", password="test")
+        user = User.objects.get(username="conesus")
+
+        subscribed = sorted(UserSubscription.objects.filter(user=user).values_list("feed_id", flat=True))
+        new_tree = [{"All": subscribed}]
+
+        response = self.client.post(reverse("save-feed-order"), {"folders": json.encode(new_tree)})
+        result = json.decode(response.content)
+        self.assertNotEqual(result.get("code"), -1)
+
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        self.assertEqual(json.decode(usf.folders), new_tree)
+
     def test_add_url__missing_url_param(self):
         """POST to add_url without 'url' should return error, not crash."""
         self.client.login(username="conesus", password="test")
@@ -318,6 +400,20 @@ class Test_Reader(TransactionTestCase):
         response = self.client.post("/reader/add_url", {})
         content = json.decode(response.content)
         self.assertEqual(content["code"], -1)
+
+    @patch("apps.reader.views.UserSubscription.add_subscription")
+    def test_add_url__rejects_metadata_ip(self, mock_add_subscription):
+        """POST to add_url should reject private/link-local addresses before fetching."""
+        self.client.login(username="conesus", password="test")
+
+        response = self.client.post(
+            "/reader/add_url",
+            {"url": "http://169.254.169.254/latest/meta-data/", "folder": ""},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(content["code"], -1)
+        mock_add_subscription.assert_not_called()
 
     def test_rename_folder_no_substring_match(self):
         """Renaming 'Tech' should not affect 'Deep Tech'."""
@@ -469,3 +565,47 @@ class Test_Reader(TransactionTestCase):
 
         # Clean up
         MClassifierTag.objects(user_id=user.pk, scope="folder").delete()
+
+
+class Test_TrimUserReadStories(TestCase):
+    @patch("apps.reader.models.User.objects.get")
+    @patch("apps.reader.models.UserSubscription.objects.filter")
+    @patch("apps.reader.models.redis.Redis")
+    def test_concurrent_cleanups_use_distinct_temp_keys(self, mock_redis_class, mock_filter, mock_get_user):
+        user_id = 123
+        mock_get_user.return_value = MagicMock(username="reader")
+        mock_filter.return_value.only.return_value = [MagicMock(feed_id=i) for i in range(101)]
+
+        mock_redis = mock_redis_class.return_value
+        mock_redis.smembers.return_value = {"999:abcdef"}
+        mock_redis.exists.return_value = True
+        mock_redis.scard.return_value = 0
+
+        UserSubscription.trim_user_read_stories(user_id)
+        UserSubscription.trim_user_read_stories(user_id)
+
+        first_temp_key = mock_redis.sunionstore.call_args_list[0].args[0]
+        second_temp_key = mock_redis.sunionstore.call_args_list[2].args[0]
+        self.assertNotEqual(first_temp_key, second_temp_key)
+
+    @patch("apps.reader.models.User.objects.get")
+    @patch("apps.reader.models.UserSubscription.objects.filter")
+    @patch("apps.reader.models.redis.Redis")
+    def test_missing_union_temp_key_clears_stale_aggregate(
+        self, mock_redis_class, mock_filter, mock_get_user
+    ):
+        user_id = 123
+        aggregate_key = "RS:%s" % user_id
+        mock_get_user.return_value = MagicMock(username="reader")
+        mock_filter.return_value.only.return_value = [MagicMock(feed_id=i) for i in range(101)]
+
+        mock_redis = mock_redis_class.return_value
+        mock_redis.smembers.return_value = {"999:abcdef"}
+        mock_redis.exists.return_value = False
+        mock_redis.rename.side_effect = redis.ResponseError("no such key")
+        mock_redis.scard.return_value = 0
+
+        UserSubscription.trim_user_read_stories(user_id)
+
+        mock_redis.delete.assert_called_once_with(aggregate_key)
+        mock_redis.rename.assert_not_called()

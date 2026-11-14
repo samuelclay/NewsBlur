@@ -258,6 +258,8 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/blaze.svg';
                 if (feed_id == 'trending:long_reads')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/moon.svg';
+                if (feed_id == 'trending:good_reads')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/star.svg';
                 if (_.string.startsWith(feed_id, 'river:')) {
                     var folder_title = feed_id.substring('river:'.length);
                     var folder_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_folder_icon(folder_title);
@@ -281,6 +283,10 @@ NEWSBLUR.log = function(msg) {
                         'classifier_match': 'train.svg',
                         'follow_up': 'boomerang.svg',
                         'widely_covered': 'growth-rocket-gray.svg',
+                        'widely_read': 'blaze.svg',
+                        'long_reads': 'moon.svg',
+                        'good_reads': 'star.svg',
+                        'global_shared': 'global-shares.svg',
                         'custom_1': 'prompt.svg',
                         'custom_2': 'prompt.svg',
                         'custom_3': 'prompt.svg',

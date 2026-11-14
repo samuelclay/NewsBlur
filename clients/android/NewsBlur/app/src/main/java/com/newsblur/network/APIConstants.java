@@ -38,8 +38,10 @@ public class APIConstants {
 	public static final String PATH_USER_ACTIVITIES = "/social/activities";
 	public static final String PATH_USER_INTERACTIONS = "/social/interactions";
 	public static final String PATH_RIVER_STORIES = "/reader/river_stories";
+    public static final String PATH_TRENDING_STORIES = "/reader/trending_stories";
 	public static final String PATH_SHARED_RIVER_STORIES = "/social/river_stories";
 	public static final String PATH_FEED_STORIES = "/reader/feed";
+    public static final String PATH_REFRESH_FEED = "/reader/refresh_feed";
 	public static final String PATH_FEED_UNREAD_COUNT = "/reader/feed_unread_count";
 	public static final String PATH_SOCIALFEED_STORIES = "/social/stories";
 	public static final String PATH_SIGNUP = "/api/signup";
@@ -65,6 +67,12 @@ public class APIConstants {
 	public static final String PATH_ADD_FEED = "/reader/add_url";
 	public static final String PATH_DELETE_FEED = "/reader/delete_feed";
 	public static final String PATH_CLASSIFIER_SAVE = "/classifier/save";
+    public static final String PATH_CLASSIFIER_TEST_PROMPT = "/classifier/test_prompt";
+    public static final String PATH_CLASSIFIER_AI_USAGE = "/classifier/ai_classifier_usage";
+    public static final String PATH_SETUP_USAGE_BILLING = "/profile/setup_usage_billing/";
+    public static final String PATH_MANAGE_USAGE_BILLING = "/profile/manage_usage_billing/";
+    public static final String PATH_USAGE_BILLING_HISTORY = "/profile/usage_billing_history";
+    public static final String PATH_SAVE_USAGE_BILLING_LIMIT = "/profile/save_usage_billing_limit";
 	public static final String PATH_STORY_TEXT = "/rss_feeds/original_text";
 	public static final String PATH_STORY_CHANGES = "/rss_feeds/story_changes";
 	public static final String PATH_UNREAD_HASHES = "/reader/unread_story_hashes";
@@ -93,6 +101,21 @@ public class APIConstants {
     public static final String PATH_BRIEFING_STORIES = "/briefing/stories";
     public static final String PATH_BRIEFING_PREFERENCES = "/briefing/preferences";
     public static final String PATH_BRIEFING_GENERATE = "/briefing/generate";
+    // APIConstants.java: ListenApiImpl.kt reads stories aloud through these endpoints.
+    public static final String PATH_LISTEN_VOICES = "/listen/voices";
+    public static final String PATH_LISTEN_LIBRARY = "/listen/library";
+    public static final String PATH_LISTEN_MANIFEST = "/listen/manifest";
+    public static final String PATH_LISTEN_SEGMENT = "/listen/segment";
+    public static final String PATH_LISTEN_PREVIEW = "/listen/preview";
+    public static final String PATH_LISTEN_USAGE = "/listen/usage";
+    public static final String PATH_LISTEN_PROGRESS = "/listen/progress";
+    public static final String PATH_MEDIA_PLAYBACK_STATE = "/media_player/playback_state";
+    public static final String PATH_MEDIA_ADD_TO_QUEUE = "/media_player/add_to_media_queue";
+    public static final String PATH_MEDIA_REMOVE_FROM_QUEUE = "/media_player/remove_from_media_queue";
+    public static final String PATH_MEDIA_REORDER_QUEUE = "/media_player/reorder_media_queue";
+    public static final String PATH_MEDIA_ADD_TO_HISTORY = "/media_player/add_to_media_history";
+    public static final String PATH_MEDIA_SAVE_PLAYBACK_STATE = "/media_player/save_playback_state";
+    public static final String PATH_MEDIA_SYNC_PLAYBACK_POSITION = "/media_player/sync_playback_position";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -117,6 +140,12 @@ public class APIConstants {
     public static final String PARAMETER_REPLY_ID = "reply_id";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
+    public static final String PARAMETER_SCOPE = "scope";
+    public static final String PARAMETER_FOLDER_NAME = "folder_name";
+    public static final String PARAMETER_PROMPT = "prompt";
+    public static final String PARAMETER_INCLUDE_IMAGES = "include_images";
+    public static final String PARAMETER_CLASSIFIER_TYPE = "classifier_type";
+    public static final String PARAMETER_PLATFORM = "platform";
 	public static final String PARAMETER_MUTE = "mute";
 	public static final String PARAMETER_REPLY_TEXT = "reply_comments";
 	public static final String PARAMETER_STORY_FEEDID = "story_feed_id";
@@ -147,6 +176,7 @@ public class APIConstants {
 	public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
     public static final String PARAMETER_INFREQUENT = "infrequent";
+    public static final String PARAMETER_TRENDING_TYPE = "trending_type";
     public static final String PARAMETER_FEEDTITLE = "feed_title";
     public static final String PARAMETER_FOLDER_TO_DELETE = "folder_to_delete";
     public static final String PARAMETER_FOLDER_TO_RENAME = "folder_to_rename";

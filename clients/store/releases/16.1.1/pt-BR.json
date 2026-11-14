@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Ficou mais fácil controlar Ouvir. Comece pela barra de leitura e avance com o botão Próximo artigo do miniplayer.\n\nA reprodução automática agora segue a ordem escolhida em Artigos salvos e Artigos lidos, inclusive dos mais antigos aos mais recentes. A reprodução avança pela lista sem voltar aos artigos anteriores.\n\nOuvir lê o título apenas uma vez quando ele se repete no início do artigo.\n\nOs limites de áudio agora são semanais: 1 hora com Premium Archive e 10 horas com Premium Pro, renovadas todo domingo. Configurações e Tocando agora mostram o tempo restante em horas e minutos."
+  },
+  "macos": {
+    "whats_new": "Ficou mais fácil controlar Ouvir. Avance com o botão Próximo artigo do miniplayer.\n\nA reprodução automática agora segue a ordem escolhida em Artigos salvos e Artigos lidos, inclusive dos mais antigos aos mais recentes. A reprodução avança pela lista sem voltar aos artigos anteriores.\n\nOuvir lê o título apenas uma vez quando ele se repete no início do artigo.\n\nOs limites de áudio agora são semanais: 1 hora com Premium Archive e 10 horas com Premium Pro, renovadas todo domingo. Configurações e Tocando agora mostram o tempo restante em horas e minutos."
+  },
+  "android": {
+    "release_notes": "Melhorias em Ouvir: comece pela barra de leitura e avance com Próximo artigo no miniplayer. A reprodução automática segue a ordem de Artigos salvos e Artigos lidos, avançando pela lista. Títulos repetidos são lidos uma vez. Áudio semanal: 1 hora com Premium Archive, 10 com Premium Pro, renovadas no domingo. Configurações mostra as horas e minutos restantes."
+  }
+}

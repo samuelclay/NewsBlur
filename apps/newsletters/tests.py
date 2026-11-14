@@ -1,19 +1,24 @@
 """Tests for email newsletter ingestion."""
 
+import json
 import uuid
-from unittest.mock import patch
+from datetime import datetime
+from unittest.mock import MagicMock, patch
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase, override_settings
+from django.urls import reverse
 
 from apps.newsletters.models import EmailNewsletter
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed, MStory
 
 
-class Test_EmailNewsletter(TestCase):
+class NewsletterFixture:
+    """The delivery fixture shared by the transactional and non-transactional tests."""
+
     def setUp(self):
         self.patchers = [
             patch("apps.newsletters.models.redis.Redis"),
@@ -58,6 +63,90 @@ class Test_EmailNewsletter(TestCase):
         }
         params.update(overrides)
         return EmailNewsletter().receive_newsletter(params)
+
+    @patch("apps.rss_feeds.models.MFetchHistory.delete_for_feed", return_value=0)
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    def test_a_newsletter_delivered_to_a_parked_feed_is_stored_on_the_restored_feed(
+        self, mock_reader_redis, mock_feed_redis, mock_history
+    ):
+        """restore_merged_feed has parked the newsletter feed this reader re-added while the
+        lost original comes back. Delivery's save of the parked feed folds it into the
+        restored one, so the newsletter has to be stored under the restored feed, under its
+        lock, and never under the id that save just deleted."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import parking_hash
+
+        first = self.receive("first")
+        readded = Feed.objects.get(pk=first.story_feed_id)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=readded).exists())
+        restored = Feed.objects.create(
+            feed_address=readded.feed_address + "-restored",
+            feed_link=readded.feed_link,
+            feed_title=readded.feed_title,
+            fetched_once=True,
+            known_good=True,
+        )
+        Feed.objects.filter(pk=readded.pk).update(hash_address_and_link=parking_hash(readded.pk, restored.pk))
+
+        second = self.receive("second")
+
+        self.assertEqual(second.story_feed_id, restored.pk)
+        self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=restored).exists())
+        self.assertIn(
+            reverse("newsletter-story", kwargs={"story_hash": second.story_hash}), second.story_permalink
+        )
+        self.assertEqual(MStory.objects(story_feed_id=readded.pk).count(), 0)
+        self.assertEqual(MStory.objects(story_feed_id=restored.pk).count(), 2)
+
+    @patch("apps.rss_feeds.models.MFetchHistory.delete_for_feed", return_value=0)
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    def test_an_identity_change_while_the_feed_is_parked_follows_the_fold_in(
+        self, mock_reader_redis, mock_feed_redis, mock_history
+    ):
+        """A newsletter arrives with a List-ID for the first time while its feed is parked
+        by restore_merged_feed. The re-addressing save folds the parked feed into the
+        restored one; delivery must go on with the restored feed rather than the deleted
+        row, which its next save would otherwise recreate at the new address."""
+        from apps.rss_feeds.management.commands.restore_merged_feed import parking_hash
+
+        first = self.receive("first")
+        readded = Feed.objects.get(pk=first.story_feed_id)
+        restored = Feed.objects.create(
+            feed_address=readded.feed_address + "-restored",
+            feed_link=readded.feed_link,
+            feed_title=readded.feed_title,
+            fetched_once=True,
+            known_good=True,
+        )
+        Feed.objects.filter(pk=readded.pk).update(hash_address_and_link=parking_hash(readded.pk, restored.pk))
+
+        second = self.receive(
+            "second", **{"message-headers": '[["List-ID", "Hipersonica <hipersonica.substack.com>"]]'}
+        )
+
+        self.assertEqual(second.story_feed_id, restored.pk)
+        self.assertFalse(Feed.objects.filter(pk=readded.pk).exists())
+        self.assertFalse(
+            Feed.objects.filter(feed_address__startswith="newsletter:%s:list-id:" % self.user.pk).exists()
+        )
+        self.assertEqual(MStory.objects(story_feed_id=restored.pk).count(), 2)
+        self.assertTrue(UserSubscription.objects.filter(user=self.user, feed=restored).exists())
+
+
+class Test_EmailNewsletter(NewsletterFixture, TestCase):
+    @override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=100)
+    @patch.object(EmailNewsletter, "receive_newsletter")
+    def test_oversized_webhook_returns_payload_too_large(self, mock_receive_newsletter):
+        response = self.client.post(
+            reverse("newsletter-receive"),
+            data=json.dumps({"html": "x" * 200}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 413)
+        mock_receive_newsletter.assert_not_called()
 
     def test_list_id_is_saved_and_used_as_feed_identity(self):
         first_story = self.receive(
@@ -159,3 +248,139 @@ class Test_EmailNewsletter(TestCase):
         self.assertEqual(first_story.story_feed_id, feed.pk)
         self.assertEqual(second_story.story_feed_id, feed.pk)
         self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 2)
+
+    def test_thunderbird_forwarded_html_uses_original_newsletter_headers(self):
+        story = self.receive(
+            "thunderbird-html",
+            **{
+                "from": "Cassandra Granade <cgranade@cgranade.com>",
+                "subject": "Fwd: May the 4th Be With You!",
+                "body-html": """
+                    <br/><br/>-------- Forwarded Message --------
+                    <table border="0" class="moz-email-headers-table">
+                        <tbody>
+                            <tr><th align="RIGHT">Subject: </th><td>May the 4th Be With You!</td></tr>
+                            <tr><th align="RIGHT">Date: </th><td>Mon, 04 May 2026 17:31:42 +0000</td></tr>
+                            <tr>
+                                <th align="RIGHT">From: </th>
+                                <td>Clarion West &lt;helpdesk@clarionwest.org&gt;</td>
+                            </tr>
+                            <tr>
+                                <th align="RIGHT">Reply-To: </th>
+                                <td>Clarion West &lt;helpdesk@clarionwest.org&gt;</td>
+                            </tr>
+                            <tr>
+                                <th align="RIGHT">To: </th>
+                                <td>Cassandra Granade &lt;cgranade@cgranade.com&gt;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/><br/><div class="newsletter"><p>Original newsletter body</p></div>
+                """,
+                "body-plain": """
+                    -------- Forwarded Message --------
+                    Subject: May the 4th Be With You!
+                    Date: Mon, 04 May 2026 17:31:42 +0000
+                    From: Clarion West <helpdesk@clarionwest.org>
+                    Reply-To: Clarion West <helpdesk@clarionwest.org>
+                    To: Cassandra Granade <cgranade@cgranade.com>
+
+                    Original newsletter body
+                """,
+            },
+        )
+
+        feed = Feed.objects.get(feed_address="newsletter:%s:helpdesk@clarionwest.org" % self.user.pk)
+        self.assertEqual(story.story_feed_id, feed.pk)
+        self.assertEqual(feed.feed_title, "Clarion West")
+        self.assertEqual(story.story_title, "May the 4th Be With You!")
+        self.assertEqual(story.story_author_name, "Clarion West <helpdesk@clarionwest.org>")
+        self.assertEqual(story.story_date, datetime(2026, 5, 4, 17, 31, 42))
+        self.assertIn("Original newsletter body", story.story_content_str)
+        self.assertNotIn("Forwarded Message", story.story_content_str)
+        self.assertNotIn("Reply-To:", story.story_content_str)
+
+        stored_story = MStory.objects.get(story_guid="%s-thunderbird-html" % self.guid_prefix)
+        self.assertEqual(stored_story.newsletter_identity, "helpdesk@clarionwest.org")
+        self.assertEqual(stored_story.newsletter_identity_source, "sender")
+        self.assertEqual(
+            stored_story.newsletter_headers["From"][0], "Clarion West <helpdesk@clarionwest.org>"
+        )
+
+    def test_thunderbird_forwarded_plain_text_uses_original_newsletter_headers(self):
+        story = self.receive(
+            "thunderbird-plain",
+            **{
+                "from": "Cassandra Granade <cgranade@cgranade.com>",
+                "subject": "Fwd: May the 4th Be With You!",
+                "body-html": "",
+                "body-plain": """-------- Forwarded Message --------
+Subject: May the 4th Be With You!
+Date: Mon, 04 May 2026 17:31:42 +0000
+From: Clarion West <helpdesk@clarionwest.org>
+To: Cassandra Granade <cgranade@cgranade.com>
+
+Original plain newsletter body""",
+            },
+        )
+
+        feed = Feed.objects.get(feed_address="newsletter:%s:helpdesk@clarionwest.org" % self.user.pk)
+        self.assertEqual(story.story_feed_id, feed.pk)
+        self.assertEqual(feed.feed_title, "Clarion West")
+        self.assertEqual(story.story_title, "May the 4th Be With You!")
+        self.assertIn("Original plain newsletter body", story.story_content_str)
+        self.assertNotIn("Forwarded Message", story.story_content_str)
+
+
+class Test_EmailNewsletterMergeRace(NewsletterFixture, TransactionTestCase):
+    """Real commits, so a foreign-key failure on a deleted feed surfaces the way it does in
+    production."""
+
+    @patch("apps.rss_feeds.models.MFetchHistory.delete_for_feed", return_value=0)
+    @patch("apps.rss_feeds.models.redis")
+    @patch("apps.reader.models.redis")
+    def test_a_merge_landing_right_after_the_story_lock_keeps_the_readers_subscription(
+        self, mock_reader_redis, mock_feed_redis, mock_history
+    ):
+        """The moment delivery lets go of the feed's lock, a merge moves this reader's
+        subscription to the survivor and deletes the feed. The unread flag is written by
+        primary key onto the moved row; a full save would have written the deleted feed id
+        back, failed, and had the save's own recovery delete the moved subscription."""
+        from apps.rss_feeds.models import DuplicateFeed, merge_feeds
+
+        first = self.receive("first")
+        feed = Feed.objects.get(pk=first.story_feed_id)
+        survivor = Feed.objects.create(
+            feed_address=feed.feed_address + "-survivor",
+            feed_link=feed.feed_link,
+            feed_title=feed.feed_title,
+            fetched_once=True,
+            known_good=True,
+        )
+        feed_id = feed.pk
+        merged = []
+
+        def lock_factory(name, **kwargs):
+            lock = MagicMock()
+            lock.name = name
+            lock.acquire.return_value = True
+
+            def release():
+                if name == "merge_feeds:%s" % feed_id and not merged:
+                    merged.append(True)
+                    merge_feeds(survivor.pk, feed_id, force=True)
+
+            lock.release.side_effect = release
+            return lock
+
+        mock_feed_redis.Redis.return_value.lock.side_effect = lock_factory
+
+        second = self.receive("second")
+
+        self.assertEqual(second.story_feed_id, feed_id)
+        self.assertTrue(merged)
+        self.assertFalse(Feed.objects.filter(pk=feed_id).exists())
+        self.assertTrue(DuplicateFeed.objects.filter(duplicate_feed_id=feed_id, feed=survivor).exists())
+        moved = UserSubscription.objects.get(user=self.user, feed=survivor)
+        self.assertTrue(moved.needs_unread_recalc)
+        self.assertEqual(UserSubscription.objects.filter(user=self.user).count(), 1)

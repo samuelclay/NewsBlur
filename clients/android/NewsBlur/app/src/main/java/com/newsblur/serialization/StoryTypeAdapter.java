@@ -9,6 +9,7 @@ import com.google.gson.JsonParseException;
 
 import com.newsblur.NbApplication;
 import com.newsblur.domain.Comment;
+import com.newsblur.domain.PromptClassifierMatch;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.StoryUtil;
@@ -52,6 +53,7 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
         if (story.friendsShares == null) story.friendsShares = new Comment[]{};
         if (story.imageUrls == null) story.imageUrls = new String[]{};
         if (story.clusterStories == null) story.clusterStories = new Story.ClusterStory[]{};
+        story.promptClassifiers = PromptClassifierMatch.sanitize(story.promptClassifiers);
 
         // Convert story_timestamp to milliseconds
         story.timestamp = story.timestamp * 1000;

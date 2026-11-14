@@ -1,0 +1,11 @@
+{
+  "language": "uk",
+  "device": "phone",
+  "serial": "R5CT601C8DA",
+  "scene": "reader",
+  "package": "com.newsblur.storecapture",
+  "captured_at": "2026-10-17 15:44:42 UTC",
+  "sha256": "51fe5ee43da72aef288224aa8d963261a45a8faec8a6d8d8b405c02d75cdc997",
+  "native_readiness": "expected fixture content visible",
+  "visual_review": "required"
+}

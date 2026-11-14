@@ -94,7 +94,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         if (tipsy) return;
 
         $icon.tipsy({
-            title: function () { return "Hang tight, indexing..."; },
+            title: function () { return gettext("Hang tight, indexing..."); },
             gravity: 'nw',
             fade: true,
             trigger: 'manual',
@@ -219,8 +219,8 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         var $banner = $.make('div', { className: 'NB-search-indexing-banner' }, [
             $.make('div', { className: 'NB-search-indexing-banner-icon' }),
             $.make('div', { className: 'NB-search-indexing-banner-content' }, [
-                $.make('div', { className: 'NB-search-indexing-banner-text' }, 'Indexing your feeds for search'),
-                $.make('div', { className: 'NB-search-indexing-banner-subtext' }, 'Results will appear as indexing completes'),
+                $.make('div', { className: 'NB-search-indexing-banner-text' }, gettext('Indexing your feeds for search')),
+                $.make('div', { className: 'NB-search-indexing-banner-subtext' }, gettext('Results will appear as indexing completes')),
                 $.make('div', { className: 'NB-search-indexing-progress' }, [
                     $.make('div', { className: 'NB-search-indexing-progress-fill' })
                 ])

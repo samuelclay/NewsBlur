@@ -1,0 +1,3 @@
+Giao diện NewsBlur nay hỗ trợ 21 ngôn ngữ. Chọn trong ứng dụng, với bản xem trước bằng ngôn ngữ của bạn và tiếng Anh. Tiếng Ả Rập và tiếng Do Thái hiển thị từ phải sang trái. Bài viết giữ nguyên như khi xuất bản.
+
+Nút chuyển bài viết tiếp theo giữ vị trí cố định, kể cả khi Tiếp đổi thành Xong. Các nút đăng nhập dễ đọc hơn trong giao diện tối.

@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Behebt ein Problem auf Tablets, bei dem das Markieren eines Feeds als gelesen NewsBlur in den Hintergrund verschieben konnte. Sowohl die untere Schaltfläche als auch das Feed-Menü lassen die App jetzt geöffnet, damit du weiterlesen kannst."
+  }
+}

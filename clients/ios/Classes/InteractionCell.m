@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  InteractionCell.m
 //  NewsBlur
@@ -10,6 +11,14 @@
 #import "UIImageView+AFNetworking.h"
 #import "NewsBlurAppDelegate.h"
 #import <CoreText/CoreText.h>
+
+@interface InteractionCell ()
+@property (nonatomic, strong) NSLayoutConstraint *labelLeadingConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelTrailingConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelTopConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *labelBottomConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *minimumContentHeightConstraint;
+@end
 
 @implementation InteractionCell
 
@@ -49,44 +58,58 @@
         leftMargin = 20;
         rightMargin = 20;
         avatarSize = 48;
+
+        interaction.translatesAutoresizingMaskIntoConstraints = NO;
+        interaction.numberOfLines = 0;
+        self.labelLeadingConstraint = [interaction.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:leftMargin * 2 + avatarSize];
+        self.labelTrailingConstraint = [interaction.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-rightMargin];
+        self.labelTopConstraint = [interaction.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:topMargin];
+        self.labelBottomConstraint = [interaction.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-bottomMargin];
+        self.minimumContentHeightConstraint = [self.contentView.heightAnchor constraintGreaterThanOrEqualToConstant:avatarSize + topMargin + bottomMargin];
+        self.minimumContentHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+        [NSLayoutConstraint activateConstraints:@[self.labelLeadingConstraint, self.labelTrailingConstraint,
+                                                 self.labelTopConstraint, self.labelBottomConstraint,
+                                                 self.minimumContentHeightConstraint]];
     }
     
     return self;
 }
 
-- (void)layoutSubviews {    
+- (void)updateConstraints {
+    // InteractionCell.m measures text in UIKit's actual content area, including small-cell margins.
+    self.labelLeadingConstraint.constant = leftMargin * 2 + avatarSize;
+    self.labelTrailingConstraint.constant = -rightMargin;
+    self.labelTopConstraint.constant = topMargin;
+    self.labelBottomConstraint.constant = -bottomMargin;
+    self.minimumContentHeightConstraint.constant = avatarSize + topMargin + bottomMargin;
+    [super updateConstraints];
+}
+
+// InteractionCell.m measures the avatar from the left edge and mirrors it for Arabic and Hebrew, where the label's
+// leading constraint already starts from the right (NBLocalization.swift).
+- (CGRect)avatarFrame {
+    return [self.contentView nb_directionalRect:CGRectMake(leftMargin, topMargin, avatarSize, avatarSize)
+                                         within:self.contentView.bounds];
+}
+
+- (void)layoutSubviews {
     [super layoutSubviews];
-    
-    // determine outer bounds
-    [self.interactionLabel sizeToFit];
-    CGRect contentRect = self.frame;
-    CGRect labelFrame = self.interactionLabel.frame;
-    
-    // position avatar to bounds
-    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
-    
-    // position label to bounds
-    labelFrame.origin.x = leftMargin*2 + avatarSize;
-    labelFrame.origin.y = 0;
-    labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
-    labelFrame.size.height = contentRect.size.height;
-    self.interactionLabel.frame = labelFrame;
+    self.avatarView.frame = [self avatarFrame];
 }
 
 
-- (int)setInteraction:(NSDictionary *)interaction withWidth:(int)width {
-    // must set the height again for dynamic height in heightForRowAtIndexPath in 
-    CGRect interactionLabelRect = self.interactionLabel.bounds;
-    interactionLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
-    interactionLabelRect.size.height = 300;
++ (BOOL)shouldCollapseInteraction:(NSDictionary *)interaction {
+    return interaction[@"with_user"] == NSNull.null;
+}
 
-    self.interactionLabel.frame = interactionLabelRect;
-    self.interactionLabel.numberOfLines = 0;
-    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+- (void)setInteraction:(NSDictionary *)interaction {
+    [self setNeedsUpdateConstraints];
+    self.avatarView.frame = [self avatarFrame];
     
     // this is for the rare instance when the with_user doesn't return anything
-    if ([[interaction objectForKey:@"with_user"] class] == [NSNull class]) {
-        return 1;
+    if ([InteractionCell shouldCollapseInteraction:interaction]) {
+        self.interactionLabel.attributedText = nil;
+        return;
     }
     
     UIImage *placeholder = [[NewsBlurAppDelegate sharedAppDelegate] defaultUserAvatar];
@@ -97,24 +120,24 @@
     NSString *content = [interaction objectForKey:@"content"];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [interaction objectForKey:@"title"]]];
     NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
-    NSString *time = [NSString stringWithFormat:@"%@ ago", [interaction objectForKey:@"time_since"]];
+    NSString *time = [NSString stringWithFormat:[NBLocalization text:@"%@ ago"], [interaction objectForKey:@"time_since"]];
     NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
     NSString *txt;
     
     if ([category isEqualToString:@"follow"]) {        
-        txt = [NSString stringWithFormat:@"%@ is now following you.", username];                
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ is now following you."], username];
     } else if ([category isEqualToString:@"comment_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your comment on %@:\n \n%@", username, title, comment];          
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ replied to your comment on %2$@:\n \n%3$@"], username, title, comment];
     } else if ([category isEqualToString:@"reply_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your reply on %@:\n \n%@", username, title, comment];  
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ replied to your reply on %2$@:\n \n%3$@"], username, title, comment];
     } else if ([category isEqualToString:@"story_reshare"]) {
         if ([content isEqualToString:@""] || content == nil) {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@.", username, title];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ re-shared %2$@."], username, title];
         } else {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@:\n \n%@", username, title, comment];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ re-shared %2$@:\n \n%3$@"], username, title, comment];
         }
     } else if ([category isEqualToString:@"comment_like"]) {
-        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@.", username, title];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ favorited your comments on %2$@."], username, title];
     }
     
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
@@ -123,6 +146,11 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = NSTextAlignmentLeft;
+    if (NBLocalization.isRightToLeft) {
+        // InteractionCell.m starts each translated sentence at the right, even when it begins with a Latin username.
+        paragraphStyle.alignment = NSTextAlignmentRight;
+        paragraphStyle.baseWritingDirection = NSWritingDirectionRightToLeft;
+    }
     paragraphStyle.lineSpacing = 1.0f;
     [attrStr setAttributes:@{NSParagraphStyleAttributeName: paragraphStyle}
                      range:NSMakeRange(0, [txtWithTime length])];
@@ -167,11 +195,6 @@
     
     self.interactionLabel.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.interactionLabel.attributedText = attrStr;
-    [self.interactionLabel sizeToFit];
-    
-    int height = self.interactionLabel.frame.size.height;
-    
-    return MAX(height + topMargin + bottomMargin, self.avatarView.frame.size.height + topMargin + bottomMargin);
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

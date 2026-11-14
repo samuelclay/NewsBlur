@@ -1,0 +1,36 @@
+diff --git a/clients/ios/Classes/NewsBlurUITestHarness.swift b/clients/ios/Classes/NewsBlurUITestHarness.swift
+index 6075a8c4f3..fa3ca06ebe 100644
+--- a/clients/ios/Classes/NewsBlurUITestHarness.swift
++++ b/clients/ios/Classes/NewsBlurUITestHarness.swift
+@@ -39,0 +40 @@ final class NewsBlurUITestHarness {
++    private static var didDismissMarketingFullscreenOverlay = false
+@@ -494,0 +496,5 @@ final class NewsBlurUITestHarness {
++#if DEBUG && targetEnvironment(simulator)
++            if CookingMarketingFixtures.enabled && ProcessInfo.processInfo.arguments.contains("-newsblur-marketing-fullscreen") {
++                prepareMarketingFullscreenReader(on: appDelegate, deadline: ProcessInfo.processInfo.systemUptime + 60)
++            }
++#endif
+@@ -507,0 +514,23 @@ final class NewsBlurUITestHarness {
++#if DEBUG && targetEnvironment(simulator)
++    private static func prepareMarketingFullscreenReader(on appDelegate: NewsBlurAppDelegate, deadline: TimeInterval) {
++        guard CookingMarketingFixtures.enabled, !didDismissMarketingFullscreenOverlay else { return }
++        let page = appDelegate.storyPagesViewController?.currentPage
++        let detail = appDelegate.detailViewController
++        // NewsBlurUITestHarness.swift waits for the requested native article's paint gate before using the real sidebar action.
++        if appDelegate.activeStory?["story_hash"] as? String == "cooking-pasta-1",
++           page?.activeStoryId == "cooking-pasta-1", page?.readyForPresentation == true,
++           page?.viewIfLoaded?.window != nil, detail?.isDuoFullscreenReader == true {
++            didDismissMarketingFullscreenOverlay = true
++            detail?.dismissFullscreenSidebarOverlayAfterStorySelection()
++            detail?.view.layoutIfNeeded()
++            NSLog("[NewsBlurMarketing] Fullscreen article ready; fixture sidebar dismissed once")
++            return
++        }
++        precondition(ProcessInfo.processInfo.systemUptime < deadline,
++                     "NewsBlurUITestHarness.swift timed out waiting for the requested fullscreen marketing article")
++        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
++            prepareMarketingFullscreenReader(on: appDelegate, deadline: deadline)
++        }
++    }
++#endif
++

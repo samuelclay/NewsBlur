@@ -1,19 +1,14 @@
 package com.newsblur.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 
-import com.newsblur.R;
 import com.newsblur.util.UIUtils;
 
+/**
+ * All Site Stories. The toolbar and saved search id come from StoryListKind.kt; this list also
+ * opens a story tapped in the home screen widget.
+ */
 public class AllStoriesItemsList extends ItemsList {
-
-	@Override
-	protected void onCreate(Bundle bundle) {
-		super.onCreate(bundle);
-
-        UIUtils.setupToolbar(this, R.drawable.ic_all_stories, getResources().getString(R.string.all_stories_title), false);
-	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -23,10 +18,5 @@ public class AllStoriesItemsList extends ItemsList {
 			String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
 			UIUtils.startReadingActivity(this, fs, hash, readingActivityLaunch);
 		}
-	}
-
-	@Override
-	String getSaveSearchFeedId() {
-		return "river:";
 	}
 }

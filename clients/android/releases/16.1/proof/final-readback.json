@@ -1,0 +1,37 @@
+{
+  "result": {
+    "verifiedLocales": [
+      "ar",
+      "de-DE",
+      "en-US",
+      "es-ES",
+      "fr-FR",
+      "hi-IN",
+      "id",
+      "it-IT",
+      "iw-IL",
+      "ja-JP",
+      "ko-KR",
+      "nl-NL",
+      "pl-PL",
+      "pt-BR",
+      "ru-RU",
+      "th",
+      "tr-TR",
+      "uk",
+      "vi",
+      "zh-CN",
+      "zh-TW"
+    ],
+    "requestedLocales": 21
+  },
+  "notes": 21,
+  "versionCode": 299,
+  "releaseStatus": "completed",
+  "unchanged": [
+    "details",
+    "subscriptions",
+    "oneTimeProducts",
+    "nonproductionTracks"
+  ]
+}

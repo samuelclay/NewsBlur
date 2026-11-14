@@ -1,0 +1,179 @@
+{
+  "version": "16.1",
+  "reviewer": "translate_mid",
+  "independent_of_author": true,
+  "reviewed_at": "2026-10-29T14:05:27Z",
+  "source": "clients/store/releases/16.1/en.json",
+  "scope": [
+    "ios and Android listing fields",
+    "ios.whats_new",
+    "android.release_notes",
+    "retained subscription and group copy"
+  ],
+  "languages": [
+    {
+      "language": "vi",
+      "status": "passed",
+      "fields": {
+        "ios.description": 2608,
+        "ios.promotional_text": 143,
+        "ios.keywords": 82,
+        "android.short_description": 60,
+        "android.full_description": 2137,
+        "ios.whats_new": 725,
+        "android.release_notes": 361
+      },
+      "checks": [
+        "meaning and completeness against English",
+        "full listening versus preview plan qualifications",
+        "Listen, Up Next and Auto-continue labels against native catalogs",
+        "glossary, register and regional script",
+        "retained product features and billing disclosures",
+        "URLs and shared app information unchanged"
+      ],
+      "metadata_sha256": "db4f5c0c7b96330e6ee64182fe79395fab1fd80b36ecd1db67025d88cda6ff92",
+      "release_sha256": "21456022672bc03a89abd78c73e934a0f7745ababab2455bd7578af9b378885a"
+    },
+    {
+      "language": "th",
+      "status": "passed",
+      "fields": {
+        "ios.description": 2187,
+        "ios.promotional_text": 114,
+        "ios.keywords": 95,
+        "android.short_description": 53,
+        "android.full_description": 1696,
+        "ios.whats_new": 620,
+        "android.release_notes": 302
+      },
+      "checks": [
+        "meaning and completeness against English",
+        "full listening versus preview plan qualifications",
+        "Listen, Up Next and Auto-continue labels against native catalogs",
+        "glossary, register and regional script",
+        "retained product features and billing disclosures",
+        "URLs and shared app information unchanged"
+      ],
+      "metadata_sha256": "3bd51873bd1607f527210ff8db6551ee8ee20074f03ceb2e34e412b5bef8ba8a",
+      "release_sha256": "b5f566f4914bcdab313977c33d476493d2e37f9ac5c4733bddb61ccaa04a8c16"
+    },
+    {
+      "language": "ja",
+      "status": "passed",
+      "fields": {
+        "ios.description": 1300,
+        "ios.promotional_text": 100,
+        "ios.keywords": 95,
+        "android.short_description": 39,
+        "android.full_description": 1058,
+        "ios.whats_new": 382,
+        "android.release_notes": 202
+      },
+      "checks": [
+        "meaning and completeness against English",
+        "full listening versus preview plan qualifications",
+        "Listen, Up Next and Auto-continue labels against native catalogs",
+        "glossary, register and regional script",
+        "retained product features and billing disclosures",
+        "URLs and shared app information unchanged"
+      ],
+      "metadata_sha256": "d90706002f4765dee2f6a02d56820204d7983828ac612fa925cde3a86726b76f",
+      "release_sha256": "46a650c5b233c2cd4760a89f79a2b339099bcab40d3649455c23efe97a31afa4"
+    },
+    {
+      "language": "ko",
+      "status": "passed",
+      "fields": {
+        "ios.description": 1437,
+        "ios.promotional_text": 95,
+        "ios.keywords": 84,
+        "android.short_description": 37,
+        "android.full_description": 1185,
+        "ios.whats_new": 433,
+        "android.release_notes": 212
+      },
+      "checks": [
+        "meaning and completeness against English",
+        "full listening versus preview plan qualifications",
+        "Listen, Up Next and Auto-continue labels against native catalogs",
+        "glossary, register and regional script",
+        "retained product features and billing disclosures",
+        "URLs and shared app information unchanged"
+      ],
+      "metadata_sha256": "a796acf0553a73cf52142e54ce5b813fab14801271f994de3f87add77c00782c",
+      "release_sha256": "5d4891ae955bd94c28d47a35bef7a6d0fc362c649c43a06e009382c168a557b1"
+    },
+    {
+      "language": "zh-Hans",
+      "status": "passed",
+      "fields": {
+        "ios.description": 952,
+        "ios.promotional_text": 66,
+        "ios.keywords": 91,
+        "android.short_description": 26,
+        "android.full_description": 749,
+        "ios.whats_new": 262,
+        "android.release_notes": 130
+      },
+      "checks": [
+        "meaning and completeness against English",
+        "full listening versus preview plan qualifications",
+        "Listen, Up Next and Auto-continue labels against native catalogs",
+        "glossary, register and regional script",
+        "retained product features and billing disclosures",
+        "URLs and shared app information unchanged"
+      ],
+      "metadata_sha256": "4681a27133ab9812c08f1a38ad8bbf0c37c7f609e374969d775e096e3a2d5bf8",
+      "release_sha256": "c508f458c620eea07388547d13d79f7562f1ddc46752cd0bcc3a14414fe32f14"
+    },
+    {
+      "language": "zh-Hant",
+      "status": "passed",
+      "fields": {
+        "ios.description": 986,
+        "ios.promotional_text": 83,
+        "ios.keywords": 87,
+        "android.short_description": 26,
+        "android.full_description": 790,
+        "ios.whats_new": 295,
+        "android.release_notes": 161
+      },
+      "checks": [
+        "meaning and completeness against English",
+        "full listening versus preview plan qualifications",
+        "Listen, Up Next and Auto-continue labels against native catalogs",
+        "glossary, register and regional script",
+        "retained product features and billing disclosures",
+        "URLs and shared app information unchanged"
+      ],
+      "metadata_sha256": "e8a5c296d07a3a96fa4d51af2a6f3729afa381266b2608dec7d67f5856a830a7",
+      "release_sha256": "8da424de0aced7d8adca6a9fe57339fe3cefc13062b8a6981276598ca6b8a7d8"
+    }
+  ],
+  "corrections": [
+    {
+      "language": "th",
+      "fields": [
+        "ios.whats_new",
+        "android.release_notes"
+      ],
+      "reason": "Distinguish the named Listen control from the ordinary verb in Thai introductory and instructional sentences."
+    },
+    {
+      "language": "zh-Hans",
+      "fields": [
+        "ios.whats_new"
+      ],
+      "reason": "Use the natural audio-listening verb instead of the verb commonly used for hearing reports or opinions."
+    },
+    {
+      "language": "zh-Hant",
+      "fields": [
+        "ios.whats_new"
+      ],
+      "reason": "Use the natural audio-listening verb instead of the verb commonly used for hearing reports or opinions."
+    }
+  ],
+  "product_findings": [],
+  "status": "passed"
+}

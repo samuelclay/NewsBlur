@@ -3,6 +3,7 @@ package com.newsblur.preference
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
@@ -17,6 +18,7 @@ import com.newsblur.NbApplication
 import com.newsblur.activity.LoginActivity
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
+import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.service.SyncService
@@ -30,20 +32,22 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FolderViewFilter
 import com.newsblur.util.Font
 import com.newsblur.util.GestureAction
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.ListOrderFilter
 import com.newsblur.util.MarkAllReadConfirmation
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
-import android.content.res.Configuration
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StateFilter
+import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.ThumbnailStyle
+import com.newsblur.util.UsageBillingState
 import com.newsblur.util.VolumeKeyNavigation
 import com.newsblur.util.WidgetBackground
 import com.newsblur.widget.WidgetUtils.disableWidgetUpdate
@@ -68,6 +72,19 @@ class PrefsRepo(
 
     fun clearCustomServer() {
         prefs.edit { remove(PrefConstants.PREF_CUSTOM_SERVER) }
+    }
+
+// PrefsRepo.kt scopes setup completion to the account and server, while keeping last-used authentication after logout.
+    fun completeOnboarding() {
+        prefs.edit { putBoolean("onboarding_complete_${getCustomServer()}_${getUserName()}", true) }
+    }
+
+    fun hasCompletedOnboarding() = prefs.getBoolean("onboarding_complete_${getCustomServer()}_${getUserName()}", false)
+
+    fun lastAuthProvider(): String? = prefs.getString("last_auth_provider", null)
+
+    fun saveLastAuthProvider(provider: String) {
+        prefs.edit { putString("last_auth_provider", provider) }
     }
 
     fun saveLogin(
@@ -131,7 +148,7 @@ class PrefsRepo(
         val f =
             com.newsblur.util.Log
                 .getLogfile() ?: return
-        val localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f)
+        val localPath = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", f)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "*/*"
         i.putExtra(Intent.EXTRA_EMAIL, arrayOf("android@newsblur.com"))
@@ -191,6 +208,8 @@ class PrefsRepo(
         context: Context,
         dbHelper: BlurDatabaseHelper,
     ) {
+        // PrefsRepo.kt stops Listen first so the signed-out account's story stops playing and its notification goes.
+        ListenManager.from(context).stopForAccountChange()
         SyncService.stop(context)
         syncServiceState.clearState()
 
@@ -199,8 +218,16 @@ class PrefsRepo(
 
         NotificationUtils.clear(context)
 
-        // wipe the prefs store
-        prefs.edit { clear() }
+        // PrefsRepo.kt retains only onboarding history across logout, never account data or credentials.
+        val onboardingHistory = prefs.all.filterKeys { it == "last_auth_provider" || it.startsWith("onboarding_complete_") }
+        prefs.edit {
+            clear()
+            onboardingHistory.forEach { (key, value) ->
+                if (value is String) putString(key, value)
+                if (value is Boolean) putBoolean(key, value)
+            }
+        }
+        LanguageSettings.select(context, "auto")
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
@@ -217,7 +244,12 @@ class PrefsRepo(
         context.startActivity(i)
     }
 
-    fun clearPrefsAndDbForLoginAs(dbHelper: BlurDatabaseHelper) {
+    fun clearPrefsAndDbForLoginAs(
+        context: Context,
+        dbHelper: BlurDatabaseHelper,
+    ) {
+        // The previous account's story mustn't keep playing, or report its listening, as the new one.
+        ListenManager.from(context).stopForAccountChange()
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
         val keys: MutableSet<String> = HashSet(prefs.all.keys)
@@ -401,6 +433,8 @@ class PrefsRepo(
         prefs.edit { putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString()) }
     }
 
+    fun isStoryToolbarAtBottom(): Boolean = prefs.getString(PrefConstants.STORY_TOOLBAR_POSITION, "bottom") != "top"
+
     fun getStoryListStyleForFeed(feedId: String): StoryListStyle =
         StoryListStyle.safeValueOf(
             prefs.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()),
@@ -443,7 +477,15 @@ class PrefsRepo(
 
     fun isEnableRowDailyBriefing() = prefs.getBoolean(PrefConstants.ENABLE_ROW_DAILY_BRIEFING, true)
 
+    fun isEnableRowWidelyReadStories() = prefs.getBoolean(PrefConstants.ENABLE_ROW_WIDELY_READ_STORIES, true)
+
+    fun isEnableRowLongReads() = prefs.getBoolean(PrefConstants.ENABLE_ROW_LONG_READS, true)
+
+    fun isEnableRowGoodReads() = prefs.getBoolean(PrefConstants.ENABLE_ROW_GOOD_READS, true)
+
     fun showPublicComments() = prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
+
+    fun isReaderControlsAlwaysVisible() = prefs.getBoolean(PrefConstants.READER_CONTROLS_ALWAYS_VISIBLE, false)
 
     fun getReadingTextSize() = prefs.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)
 
@@ -502,6 +544,8 @@ class PrefsRepo(
             return StoryOrder.NEWEST
         } else if (fs.isInfrequent) {
             return getStoryOrderForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isTrending) {
+            return getStoryOrderForFolder(fs.trendingPreferenceName)
         } else if (fs.isDailyBriefing) {
             return getStoryOrderForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         } else {
@@ -531,6 +575,8 @@ class PrefsRepo(
             setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleSavedTag != null) {
             setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
+        } else if (fs.isTrending) {
+            setStoryOrderForFolder(fs.trendingPreferenceName, newOrder)
         } else if (!fs.isGlobalShared) {
             throw IllegalArgumentException("GlobalShared FeedSet type has fixed ordering")
         } else if (fs.isInfrequent) {
@@ -568,6 +614,8 @@ class PrefsRepo(
             return getReadFilterForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.isInfrequent) {
             return getReadFilterForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isTrending) {
+            return getReadFilterForFolder(fs.trendingPreferenceName)
         } else if (fs.isDailyBriefing) {
             return getReadFilterForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         }
@@ -600,6 +648,8 @@ class PrefsRepo(
             setReadFilterForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newFilter)
         } else if (fs.isInfrequent) {
             setReadFilterForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newFilter)
+        } else if (fs.isTrending) {
+            setReadFilterForFolder(fs.trendingPreferenceName, newFilter)
         } else if (fs.isDailyBriefing) {
             setReadFilterForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newFilter)
         } else {
@@ -630,6 +680,8 @@ class PrefsRepo(
             return getStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.isInfrequent) {
             return getStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+        } else if (fs.isTrending) {
+            return getStoryListStyleForFolder(fs.trendingPreferenceName)
         } else if (fs.isDailyBriefing) {
             return getStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         } else {
@@ -663,6 +715,8 @@ class PrefsRepo(
             setStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.isInfrequent) {
             setStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newListStyle)
+        } else if (fs.isTrending) {
+            setStoryListStyleForFolder(fs.trendingPreferenceName, newListStyle)
         } else if (fs.isDailyBriefing) {
             setStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newListStyle)
         } else {
@@ -692,10 +746,40 @@ class PrefsRepo(
 
     fun isAutoOpenFirstUnread() = prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
 
-    fun isMarkReadOnFeedScroll() = prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false)
+    fun isReaderFullscreenEnabled() = prefs.getBoolean(PrefConstants.READER_FULLSCREEN, false)
+
+    fun isStoryListFullscreenEnabled() = prefs.getBoolean(PrefConstants.STORY_LIST_FULLSCREEN, false)
+
+    fun getStoryListSplitRatio() = prefs.getFloat(PrefConstants.STORY_LIST_SPLIT_RATIO, 0.4f)
+
+    fun setStoryListSplitRatio(ratio: Float) {
+        prefs.edit { putFloat(PrefConstants.STORY_LIST_SPLIT_RATIO, ratio) }
+    }
+
+    fun getFeedListWidthRatio() = prefs.getFloat(PrefConstants.FEED_LIST_WIDTH_RATIO, 0.4f)
+
+    fun setFeedListWidthRatio(ratio: Float) {
+        prefs.edit { putFloat(PrefConstants.FEED_LIST_WIDTH_RATIO, ratio) }
+    }
+
+    fun setStoryListFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.STORY_LIST_FULLSCREEN, enabled) }
+    }
+
+    fun isFeedListFullscreenEnabled() = prefs.getBoolean(PrefConstants.FEED_LIST_FULLSCREEN, false)
+
+    fun setFeedListFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.FEED_LIST_FULLSCREEN, enabled) }
+    }
+
+    fun setReaderFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.READER_FULLSCREEN, enabled) }
+    }
+
+    fun isMarkReadOnFeedScroll() = getMarkStoryReadBehavior() == MarkStoryReadBehavior.ON_SCROLL
 
     fun setMarkReadOnScroll(value: Boolean) {
-        prefs.edit { putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, value) }
+        setMarkStoryReadBehavior(if (value) MarkStoryReadBehavior.ON_SCROLL else MarkStoryReadBehavior.IMMEDIATELY)
     }
 
     fun isOfflineEnabled() = prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false)
@@ -814,23 +898,45 @@ class PrefsRepo(
 
     fun isConfirmMarkRangeRead() = prefs.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
 
-    fun getLeftToRightGestureAction(): GestureAction =
-        GestureAction.valueOf(
-            prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_BACK.toString())!!,
+    fun gestureAction(
+        key: String,
+        fallback: GestureAction,
+    ): GestureAction {
+        val saved = prefs.getString(key, fallback.name)
+        return GestureAction.entries.firstOrNull { it.name == saved } ?: fallback
+    }
+
+    fun getLeftToRightGestureAction() = gestureAction(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_BACK)
+
+    fun getRightToLeftGestureAction() = gestureAction(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_TOGGLE_READ)
+
+    fun isFeedSwipesEnabled() = prefs.getBoolean("enable_feed_swipes", true)
+
+    fun isStorySwipesEnabled() = prefs.getBoolean("enable_story_swipes", true)
+
+    fun getFeedSwipeAction(right: Boolean) =
+        gestureAction(
+            if (right) "feed_swipe_right" else "feed_swipe_left",
+            if (right) GestureAction.GEST_ACTION_NOTIFICATIONS else GestureAction.GEST_ACTION_MARKREAD,
         )
 
-    fun getRightToLeftGestureAction(): GestureAction =
-        GestureAction.valueOf(
-            prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_TOGGLE_READ.toString())!!,
-        )
+    fun getFeedLongPressAction() = gestureAction("feed_long_press", GestureAction.GEST_ACTION_MENU)
+
+    fun getStoryLongPressAction() = gestureAction("story_long_press", GestureAction.GEST_ACTION_MENU)
+
+    fun getReaderGesture(
+        key: String,
+        fallback: String,
+    ): String = prefs.getString(key, fallback) ?: fallback
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
-    fun isShowAskAi() = prefs.getBoolean(PrefConstants.SHOW_ASK_AI, true)
+    // PrefsRepo.kt reads the synced show_sideoption_ask_ai toggle, falling back to the old device-only one.
+    fun isShowAskAi() =
+        prefs.getBoolean(StoryButton.ASK_AI.prefKey, prefs.getBoolean(PrefConstants.SHOW_ASK_AI, true))
 
-    fun setShowAskAi(value: Boolean) {
-        prefs.edit { putBoolean(PrefConstants.SHOW_ASK_AI, value) }
-    }
+    fun isShowStoryButton(button: StoryButton): Boolean =
+        if (button == StoryButton.ASK_AI) isShowAskAi() else prefs.getBoolean(button.prefKey, true)
 
     fun getAskAiModel(): String? = prefs.getString(PrefConstants.ASK_AI_MODEL, null)
 
@@ -919,6 +1025,8 @@ class PrefsRepo(
 
     fun getIsArchive() = prefs.getBoolean(PrefConstants.IS_ARCHIVE, false)
 
+    fun isClusterMarkReadEnabled(): Boolean = getIsArchive() && prefs.getBoolean(PrefConstants.CLUSTER_MARK_READ, false)
+
     fun setPro(
         isPro: Boolean,
         proExpire: Long?,
@@ -932,6 +1040,24 @@ class PrefsRepo(
     }
 
     fun getIsPro() = prefs.getBoolean(PrefConstants.IS_PRO, false)
+
+    fun setUsageBillingState(state: UsageBillingState) {
+        prefs.edit {
+            putBoolean(PrefConstants.IS_USAGE_BILLING, state.isUsageBilling)
+            putBoolean(PrefConstants.IS_SELF_HOSTED_AI, state.isSelfHostedAi)
+            putBoolean(PrefConstants.CAN_USE_AI_CLASSIFIERS, state.canUseAiClassifiers)
+            // PrefsRepo.kt stores the limit as a string so a cleared limit stays distinct from $0.
+            putString(PrefConstants.USAGE_BILLING_LIMIT, state.usageBillingLimit?.toString())
+        }
+    }
+
+    fun getUsageBillingState(): UsageBillingState =
+        UsageBillingState(
+            isUsageBilling = prefs.getBoolean(PrefConstants.IS_USAGE_BILLING, false),
+            isSelfHostedAi = prefs.getBoolean(PrefConstants.IS_SELF_HOSTED_AI, false),
+            canUseAiClassifiers = prefs.getBoolean(PrefConstants.CAN_USE_AI_CLASSIFIERS, false),
+            usageBillingLimit = prefs.getString(PrefConstants.USAGE_BILLING_LIMIT, null)?.toDoubleOrNull(),
+        )
 
     fun setIsStaff(isStaff: Boolean) {
         prefs.edit {
@@ -983,10 +1109,23 @@ class PrefsRepo(
 
     fun getCookie(): String? = prefs.getString(PrefConstants.PREF_COOKIE, null)
 
-    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior =
-        MarkStoryReadBehavior.valueOf(
-            prefs.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!,
-        )
+    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior {
+        val stored = prefs.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)
+        val behavior = MarkStoryReadBehavior.entries.firstOrNull { it.name == stored } ?: MarkStoryReadBehavior.IMMEDIATELY
+        // PrefsRepo.kt previously stored scrolling separately. Preserve explicit delays and manual mode.
+        return if (behavior == MarkStoryReadBehavior.IMMEDIATELY && prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false)) {
+            MarkStoryReadBehavior.ON_SCROLL
+        } else {
+            behavior
+        }
+    }
+
+    fun setMarkStoryReadBehavior(behavior: MarkStoryReadBehavior) {
+        prefs.edit {
+            putString(PrefConstants.STORY_MARK_READ_BEHAVIOR, behavior.name)
+            putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, behavior == MarkStoryReadBehavior.ON_SCROLL)
+        }
+    }
 
     fun loadNextOnMarkRead(): Boolean = prefs.getBoolean(PrefConstants.LOAD_NEXT_ON_MARK_READ, false)
 

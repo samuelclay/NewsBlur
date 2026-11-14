@@ -1,0 +1,11 @@
+{
+  "language": "zh-Hant",
+  "device": "phone",
+  "serial": "R5CT601C8DA",
+  "scene": "feeds",
+  "package": "com.newsblur.storecapture",
+  "captured_at": "2026-10-17 15:53:27 UTC",
+  "sha256": "6a6ba57b29dedead05c479ae674e7bdfd137f76442ed06f6dac2df613ad436ba",
+  "native_readiness": "expected fixture content visible",
+  "visual_review": "required"
+}

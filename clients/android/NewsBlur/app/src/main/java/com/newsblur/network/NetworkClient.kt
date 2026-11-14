@@ -18,6 +18,8 @@ interface NetworkClient {
         valueMap: ValueMultimap,
     ): APIResponse
 
+    suspend fun getCancellable(urlString: String, valueMap: ValueMultimap): APIResponse
+
     suspend fun post(
         urlString: String,
         formBody: RequestBody,
@@ -31,6 +33,12 @@ interface NetworkClient {
     suspend fun post(
         urlString: String,
         valueMap: ValueMultimap,
+    ): APIResponse
+
+    suspend fun postWithoutRetry(
+        urlString: String,
+        valueMap: ValueMultimap,
+        readTimeoutSeconds: Long,
     ): APIResponse
 
     fun updateCustomUserAgent(customUserAgent: String)

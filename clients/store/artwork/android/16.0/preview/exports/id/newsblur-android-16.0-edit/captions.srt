@@ -1,0 +1,33 @@
+1
+00:00:00,000 --> 00:00:03,500
+Tempat untuk sumber favorit Anda.
+
+2
+00:00:03,500 --> 00:00:07,000
+Bacaan harian Anda, di satu tempat.
+
+3
+00:00:07,000 --> 00:00:10,500
+Nikmati bacaan yang menarik.
+
+4
+00:00:10,500 --> 00:00:14,000
+Simpan bacaan menarik untuk nanti.
+
+5
+00:00:14,000 --> 00:00:17,500
+Tempat untuk sumber favorit Anda.
+
+6
+00:00:17,500 --> 00:00:21,000
+Bacaan harian Anda, di satu tempat.
+
+7
+00:00:21,000 --> 00:00:24,500
+Nikmati bacaan yang menarik.
+Akun NewsBlur diperlukan. Beberapa fitur memerlukan langganan berbayar.
+
+8
+00:00:24,500 --> 00:00:28,000
+Simpan bacaan menarik untuk nanti.
+Akun NewsBlur diperlukan. Beberapa fitur memerlukan langganan berbayar.
