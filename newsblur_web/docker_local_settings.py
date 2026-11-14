@@ -156,13 +156,21 @@ ASK_AI_MODEL = "anthropic"  # Options: anthropic, openai, google, xai
 BRIEFING_MODEL = "openai"  # Options: anthropic, openai, google, xai
 WEBFEED_MODEL = "openai"  # Options: anthropic, openai, google, xai
 
-# Furthermore, you can connect to any OpenAI-compatible provider (OpenRouter,
-# local inference etc.) with `"provider": "openai_compatible"` entries in
-# BRIEFING_MODELS and/or ASK_AI_MODELS.
-#
-# See the documentation of `OpenAICompatibleProvider` in
-# apps/ask_ai/providers.py for the parameter reference, and look for
-# "local-model" in apps/*/*test*.py for examples.
+# Ask AI, Daily Briefing and Web Feed can also run on your own model, served by anything
+# that speaks the OpenAI Chat Completions API (Ollama, vLLM, llama.cpp, LM Studio,
+# OpenRouter). AI filters, the Archive Assistant, voice questions and search embeddings
+# still use the keys above.
+# LOCAL_MODEL = {
+#     "provider": "openai_compatible",
+#     "model_id": "qwen2.5:7b",
+#     "display_name": "Qwen 2.5 7B",
+#     "vendor_display": "Ollama",
+#     "base_url": "http://ollama:11434/v1",
+#     "api_key": "",  # only if the server checks one
+# }
+# ASK_AI_MODELS = {"local": LOCAL_MODEL}
+# BRIEFING_MODELS = {"local": LOCAL_MODEL}
+# ASK_AI_MODEL = BRIEFING_MODEL = WEBFEED_MODEL = "local"
 
 # ===========
 # = Logging =
