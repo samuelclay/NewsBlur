@@ -51,6 +51,16 @@ static NSString *NBAccessibilitySlug(NSString *value) {
 @synthesize unreadCount;
 @synthesize invisibleHeaderButton;
 
+#if TARGET_OS_MACCATALYST
+- (instancetype)initWithFrame:(CGRect)frame {
+    if (self = [super initWithFrame:frame]) {
+        // FolderTitleView.m redraws its text and click targets as the sidebar resizes, before window activation.
+        self.contentMode = UIViewContentModeRedraw;
+    }
+    return self;
+}
+#endif
+
 - (void)setNeedsDisplay {
     [unreadCount setNeedsDisplay];
     
@@ -60,6 +70,10 @@ static NSString *NBAccessibilitySlug(NSString *value) {
 }
 
 - (void) drawRect:(CGRect)rect {
+#if TARGET_OS_MACCATALYST
+    // FolderTitleView.m keeps the complete folder layout and click targets when activation redraws only a dirty region.
+    rect = self.bounds;
+#endif
     
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -69,8 +83,15 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         [subview removeFromSuperview];
     }
     
+#if TARGET_OS_MACCATALYST
+    // FolderTitleView.m preserves the shared sidebar material behind folder headings.
+    self.opaque = NO;
+    self.backgroundColor = UIColor.clearColor;
+    CGContextClearRect(context, rect);
+#else
     [UIColorFromLightSepiaMediumDarkRGB(0xF7F8F5, 0xF3E2CB, 0x48484A, 0x38383A) set];
     CGContextFillRect(context, rect);
+#endif
     
     NSString *folderName = appDelegate.dictFoldersArray[section];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
@@ -87,6 +108,10 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     // the feed list is right to left, so icons lead, counts and disclosure buttons trail, and nesting indents
     // from the right edge.
     CGRect headerBounds = rect;
+#if TARGET_OS_MACCATALYST
+    // FolderTitleView.m completes the outer margin already supplied by UIKit's sidebar layout.
+    rect = [MacSidebarLayout contentRectForView:self bounds:headerBounds];
+#endif
     CGFloat indentationOffset = (folderComponents.count - 1) * 28;
     rect.origin.x += indentationOffset;
     rect.size.width -= indentationOffset;
@@ -140,7 +165,9 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     UIView* customView = [[UIView alloc] initWithFrame:[self nb_directionalRect:rect within:headerBounds]];
     
     // Folder title
+#if !TARGET_OS_MACCATALYST
     UIColor *backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xEAECE6, 0xEBDDCC, 0x3A3A3C, 0x2C2C2E);
+#endif
     UIColor *textColor = UIColorFromLightSepiaMediumDarkRGB(0x4C4D4A, 0x5C4A3D, 0xE0E0E0, 0xE8E8E8);
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
@@ -180,11 +207,15 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     } else {
         folderTitle = folderDisplayName;
         isUserFolderName = YES;
+#if !TARGET_OS_MACCATALYST
         backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xF0F2ED, 0xF3E2CB, 0x414143, 0x323234);
+#endif
     }
 
+#if !TARGET_OS_MACCATALYST
     [backgroundColor set];
     CGContextFillRect(context, [self nb_directionalRect:rect within:headerBounds]);
+#endif
 
     UIColor *shadowColor = UIColorFromLightSepiaMediumDarkRGB(0xF0F2E9, 0xEBDDCC, 0x2C2C2E, 0x1C1C1E);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
@@ -203,7 +234,12 @@ static NSString *NBAccessibilitySlug(NSString *value) {
                       NSParagraphStyleAttributeName: paragraphStyle}];
         
     invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
+#if TARGET_OS_MACCATALYST
+    // FolderTitleView.m has already positioned customView in header coordinates; its button fills that local content area.
+    invisibleHeaderButton.frame = customView.bounds;
+#else
     invisibleHeaderButton.frame = [self nb_directionalRect:CGRectMake(rect.origin.x, 0, customView.frame.size.width, customView.frame.size.height) within:customView.bounds];
+#endif
     invisibleHeaderButton.layer.cornerRadius = 10;
     invisibleHeaderButton.clipsToBounds = YES;
     invisibleHeaderButton.alpha = .2;

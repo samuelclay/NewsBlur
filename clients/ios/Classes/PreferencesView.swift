@@ -1225,7 +1225,7 @@ class PreferencesViewModel: ObservableObject {
                 PreferenceItem(title: NBLocalization.text("Column layout"), icon: "rectangle.split.3x1", iconColor: .blue,
                                type: .multiValue(key: "split_behavior",
                                                  titles: [NBLocalization.text("Automatic"), NBLocalization.text("Three columns"), NBLocalization.text("Two columns"), NBLocalization.text("One column")],
-                                                 values: ["auto", "tile", "displace", "overlay"], defaultValue: "auto")),
+                                                 values: ["auto", "tile", "displace", "overlay"], defaultValue: "tile")),
                 PreferenceItem(title: NBLocalization.text("Dashboard"), icon: "rectangle.grid.2x2", iconColor: .purple,
                                type: .multiValue(key: "dashboard_layout",
                                                  titles: [NBLocalization.text("Hidden"), NBLocalization.text("Single column"), NBLocalization.text("Two columns"), NBLocalization.text("Two rows")],

@@ -4,6 +4,24 @@ import XCTest
 @testable import StoryAutoCollapseDecision
 
 final class StoryAutoCollapseDecisionTests: XCTestCase {
+    // StoryAutoCollapseDecisionTests.swift protects the Mac's three-pane default when the shared narrow-window breakpoint changes.
+    func test_mac_default_keeps_three_panes_in_narrow_and_portrait_windows() {
+        for size in [CGSize(width: 1000, height: 800), CGSize(width: 1200, height: 1400)] {
+            for preference: String? in [nil, "auto"] {
+                XCTAssertEqual(StorySplitBehaviorDecision.preferredBehavior(for: preference, width: size.width, height: size.height, isMac: true), .tile)
+                XCTAssertEqual(StorySplitBehaviorDecision.preferredDisplayMode(for: preference, width: size.width, height: size.height, isMac: true), .twoBesideSecondary)
+            }
+        }
+    }
+
+    // StoryAutoCollapseDecisionTests.swift prevents the Mac default from overriding a reader's explicit two- or one-pane choice.
+    func test_mac_keeps_explicit_two_and_one_pane_choices() {
+        for (preference, expected) in [("displace", StorySplitPreferredBehavior.displace), ("overlay", .overlay)] {
+            XCTAssertEqual(StorySplitBehaviorDecision.preferredBehavior(for: preference, width: 1400, height: 900, isMac: true), expected)
+            XCTAssertEqual(StorySplitBehaviorDecision.preferredDisplayMode(for: preference, width: 1400, height: 900, isMac: true), .secondaryOnly)
+        }
+    }
+
     func test_narrow_auto_reader_reveals_feeds_as_overlay_without_shrinking_story() {
         for size in [CGSize(width: 820, height: 1180), CGSize(width: 1032, height: 1376), CGSize(width: 900, height: 700)] {
             XCTAssertEqual(StorySplitBehaviorDecision.preferredBehavior(for: "auto", width: size.width, height: size.height, isMac: false), .overlay)

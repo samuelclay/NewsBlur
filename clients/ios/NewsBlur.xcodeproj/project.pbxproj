@@ -1704,6 +1704,11 @@
 		B75287EFFEE6CB59594EB693 /* WidgetConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAB34AB62A4F139470BA6E5 /* WidgetConfiguration.swift */; };
 		F04D4420E59FD0EDDF247B39 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9E67E6FC41E4FD3453A359BC /* Localizable.strings */; };
 		F69E0E3ECAB22178CDF6F9A8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9E67E6FC41E4FD3453A359BC /* Localizable.strings */; };
+		C11320261113000000000004 /* MacReaderChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11320261113000000000001 /* MacReaderChrome.swift */; };
+		C11320261113000000000005 /* MacReaderChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11320261113000000000001 /* MacReaderChrome.swift */; };
+		C11320261113000000000006 /* WindowChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11320261113000000000002 /* WindowChrome.swift */; };
+		C11320261113000000000007 /* MacWindowChrome.bundle in PlugIns */ = {isa = PBXBuildFile; fileRef = C11320261113000000000003 /* MacWindowChrome.bundle */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C11320261113000000000008 /* MacWindowChrome.bundle in PlugIns */ = {isa = PBXBuildFile; fileRef = C11320261113000000000003 /* MacWindowChrome.bundle */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1777,6 +1782,13 @@
 			remoteGlobalIDString = 175790592930605500490924;
 			remoteInfo = "NewsBlur Alpha";
 		};
+		C11320261113000000000014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C11320261113000000000010;
+			remoteInfo = MacWindowChrome;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1786,6 +1798,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				C11320261113000000000007 /* MacWindowChrome.bundle in PlugIns */,
 				17654E472B02C0A700F61B2B /* NewsBlur Alpha Widget.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -1808,6 +1821,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				C11320261113000000000008 /* MacWindowChrome.bundle in PlugIns */,
 				177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed Foundation Extensions */,
 				1749391B1C251BFE003D98AA /* Share Extension.appex in Embed Foundation Extensions */,
 				A92200000000000000000003 /* Subscribe Extension.appex in Embed Foundation Extensions */,
@@ -2893,6 +2907,9 @@
 		1D26B489A5314AFDA62E3C00 /* WidgetTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTimeline.swift; sourceTree = "<group>"; };
 		F7AB1CB9D4F31DFF050A26D3 /* WidgetSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSource.swift; sourceTree = "<group>"; };
 		BBAB34AB62A4F139470BA6E5 /* WidgetConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetConfiguration.swift; sourceTree = "<group>"; };
+		C11320261113000000000001 /* MacReaderChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacReaderChrome.swift; sourceTree = "<group>"; };
+		C11320261113000000000002 /* WindowChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacWindowChrome/WindowChrome.swift; sourceTree = SOURCE_ROOT; };
+		C11320261113000000000003 /* MacWindowChrome.bundle */ = {isa = PBXFileReference; explicitFileType = "wrapper.cfbundle"; path = MacWindowChrome.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -3091,6 +3108,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C11320261113000000000001 /* MacReaderChrome.swift */,
 				FF22FE5216E52BAD0046165A /* Foundation */,
 				FF855B581794B03A0098D48A /* Offline */,
 				43D8189F15B9404D00733444 /* Models */,
@@ -3271,6 +3289,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				C11320261113000000000003 /* MacWindowChrome.bundle */,
 				F519D0A10516273849A00001 /* NewsBlurAlphaUITests.xctest */,
 				1D6058910D05DD3D006BFB54 /* NewsBlur.app */,
 				174939101C251BFE003D98AA /* Share Extension.appex */,
@@ -3290,6 +3309,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				C11320261113000000000002 /* WindowChrome.swift */,
 				F519D0A10516273849A00004 /* NewsBlurAlphaUITests */,
 				17D669B82CE444390093C995 /* Releases */,
 				17D669B62CE444260093C995 /* TestFlight */,
@@ -4622,6 +4642,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				C11320261113000000000015 /* PBXTargetDependency */,
 				17654E492B02C0A800F61B2B /* PBXTargetDependency */,
 			);
 			name = "NewsBlur Alpha";
@@ -4676,6 +4697,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				C11320261113000000000016 /* PBXTargetDependency */,
 				1749391A1C251BFE003D98AA /* PBXTargetDependency */,
 				A92200000000000000000015 /* PBXTargetDependency */,
 				FF8A949E1DE3BB77000A4C31 /* PBXTargetDependency */,
@@ -4793,6 +4815,17 @@
 			productReference = F519D0A10516273849A00001 /* NewsBlurAlphaUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		C11320261113000000000010 /* MacWindowChrome */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C11320261113000000000011 /* Build configuration list for MacWindowChrome */;
+			buildPhases = (C11320261113000000000009 /* Sources */, );
+			buildRules = ();
+			dependencies = ();
+			name = MacWindowChrome;
+			productName = MacWindowChrome;
+			productReference = C11320261113000000000003 /* MacWindowChrome.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -4909,6 +4942,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				C11320261113000000000010 /* MacWindowChrome */,
 				F519D0A10516273849A00007 /* NewsBlurAlphaUITests */,
 				1D6058900D05DD3D006BFB54 /* NewsBlur */,
 				175790592930605500490924 /* NewsBlur Alpha */,
@@ -6010,6 +6044,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C11320261113000000000004 /* MacReaderChrome.swift in Sources */,
 				89ABD49C175CE1B9325082E3 /* UsageBillingView.swift in Sources */,
 				B7C1A55C0E20261105000002 /* UsageBillingFeature.swift in Sources */,
 				98F063A65560107DFAFC7214 /* TrainerAIPromptSection.swift in Sources */,
@@ -6314,6 +6349,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C11320261113000000000005 /* MacReaderChrome.swift in Sources */,
 				2181911304C58A4AC4B80219 /* UsageBillingView.swift in Sources */,
 				B7C1A55C0E20261105000001 /* UsageBillingFeature.swift in Sources */,
 				D71C75FECA45FFA5CCE8BC7C /* TrainerAIPromptSection.swift in Sources */,
@@ -6728,6 +6764,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C11320261113000000000009 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (C11320261113000000000006 /* WindowChrome.swift in Sources */, );
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -6784,6 +6826,19 @@
 			isa = PBXTargetDependency;
 			target = 175790592930605500490924 /* NewsBlur Alpha */;
 			targetProxy = F519D0A10516273849A00005 /* PBXContainerItemProxy */;
+		};
+		C11320261113000000000015 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = maccatalyst;
+			target = C11320261113000000000010 /* MacWindowChrome */;
+			targetProxy = C11320261113000000000014 /* PBXContainerItemProxy */;
+		};
+
+		C11320261113000000000016 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = maccatalyst;
+			target = C11320261113000000000010 /* MacWindowChrome */;
+			targetProxy = C11320261113000000000014 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -8019,6 +8074,41 @@
 			};
 			name = Debug;
 		};
+		C11320261113000000000012 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacWindowChrome/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.MacWindowChrome;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+
+		C11320261113000000000013 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacWindowChrome/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.MacWindowChrome;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -8136,6 +8226,12 @@
 				F519D0A10516273849A00009 /* Debug */,
 				F519D0A10516273849A0000A /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C11320261113000000000011 /* Build configuration list for MacWindowChrome */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (C11320261113000000000012 /* Debug */, C11320261113000000000013 /* Release */, );
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
