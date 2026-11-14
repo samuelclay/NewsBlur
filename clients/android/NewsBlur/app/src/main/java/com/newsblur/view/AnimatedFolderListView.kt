@@ -17,6 +17,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ExpandableListView
 import com.newsblur.R
 import com.newsblur.util.UIUtils
+import com.newsblur.util.ViewUtils
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -55,6 +56,63 @@ class AnimatedFolderListView
         private var touchDownY = 0f
         private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
         private val seenRows = mutableSetOf<Long>()
+
+        fun animateFilterChange(change: Runnable) {
+            val animate =
+                isLaidOut && isAttachedToWindow && ValueAnimator.areAnimatorsEnabled() &&
+                    !ViewUtils.isPowerSaveMode(context)
+            val before = if (animate) captureVisibleRows() else emptyList()
+            finishTransition()
+            for (index in 0 until childCount) getChildAt(index).clearAnimation()
+            seenRows.clear()
+            preparingChange = true
+            try {
+                // AnimatedFolderListView.kt changes the real filter immediately, including during a previous transition.
+                change.run()
+            } finally {
+                preparingChange = false
+            }
+            if (!animate) return
+
+            val listener =
+                object : ViewTreeObserver.OnPreDrawListener {
+                    override fun onPreDraw(): Boolean {
+                        viewTreeObserver.removeOnPreDrawListener(this)
+                        pendingLayout = null
+                        val lift = resources.displayMetrics.density * 8f
+                        leavingRows = before.map { snapshot ->
+                            LeavingRow(
+                                snapshot,
+                                FolderListTransition.Motion(
+                                    snapshot.row,
+                                    snapshot.row.copy(top = snapshot.row.top - lift, alpha = 0f),
+                                ),
+                            )
+                        }
+                        progress = 0f
+                        animator =
+                            ValueAnimator.ofFloat(0f, 1f).apply {
+                                duration = 180L
+                                interpolator = DecelerateInterpolator(1.5f)
+                                addUpdateListener {
+                                    progress = it.animatedValue as Float
+                                    invalidate()
+                                }
+                                addListener(
+                                    object : AnimatorListenerAdapter() {
+                                        override fun onAnimationEnd(animation: Animator) {
+                                            if (animator === animation) finishTransition()
+                                        }
+                                    },
+                                )
+                                start()
+                            }
+                        return true
+                    }
+                }
+            pendingLayout = listener
+            viewTreeObserver.addOnPreDrawListener(listener)
+        }
 
         fun animateGroupChange(
             groupPosition: Int,
@@ -141,6 +199,8 @@ class AnimatedFolderListView
             expanding: Boolean,
         ) {
             val currentViews = (0 until childCount).map { index -> geometry(getChildAt(index), index) to getChildAt(index) }
+            // AnimatedFolderListView.kt's group transition already presents these rows; a redraw must not also cascade them.
+            seenRows.addAll(currentViews.map { it.first.id })
             val motions =
                 FolderListTransition.plan(
                     before = snapshots.map { it.row },
@@ -207,6 +267,7 @@ class AnimatedFolderListView
         }
 
         override fun dispatchDraw(canvas: Canvas) {
+            presentVisibleRows()
             val checkpoint = canvas.save()
             // AnimatedFolderListView.kt honors Main.java's floating-toolbar padding without cutting off rows behind it.
             val left = if (clipToPadding) paddingLeft else 0
@@ -242,13 +303,30 @@ class AnimatedFolderListView
             // Scrolling, sync updates and rotation in FolderListFragment.java must never recycle a translated row.
             if (!preparingChange && pendingLayout == null) finishTransition()
             super.layoutChildren()
-            // AnimatedFolderListView.kt reveals only newly visible identities, including rows arriving after sync.
-            var entranceIndex = 0
+        }
+
+        private fun presentVisibleRows() {
+            if (preparingChange || pendingLayout != null || !isAttachedToWindow || !isShown || windowVisibility != View.VISIBLE) return
+            val entering = mutableListOf<Pair<Long, View>>()
+            val visibleTop = if (clipToPadding) paddingTop else 0
+            val visibleBottom = height - if (clipToPadding) paddingBottom else 0
             for (index in 0 until childCount) {
                 val child = getChildAt(index)
-                if (child.bottom <= paddingTop || child.top >= height - paddingBottom || child.height == 0) continue
-                if (seenRows.add(getItemIdAtPosition(firstVisiblePosition + index)) && !preparingChange && pendingLayout == null) {
-                    ReaderMotion.enter(child, entranceIndex++ * 35L, 12f)
+                if (firstVisiblePosition + index < headerViewsCount) continue
+                if (child.bottom <= visibleTop || child.top >= visibleBottom || child.height == 0) continue
+                val identity = getItemIdAtPosition(firstVisiblePosition + index)
+                if (identity !in seenRows) entering.add(identity to child)
+            }
+            // AnimatedFolderListView.kt waits until drawing, so detached measurement cannot spend a folder's entrance.
+            // AnimatedFolderListView.kt compresses the cascade to keep every visible title in order without a shared hard cap.
+            val ordered = entering.sortedBy { it.second.top }
+            val step = if (ordered.size > 1) minOf(35.0, 175.0 / (ordered.size - 1)) else 0.0
+            ordered.forEachIndexed { index, (identity, child) ->
+                if (!ValueAnimator.areAnimatorsEnabled() ||
+                    ViewUtils.isPowerSaveMode(context) ||
+                    ReaderMotion.enter(child, (index * step).toLong(), 12f)
+                ) {
+                    seenRows.add(identity)
                 }
             }
         }

@@ -85,6 +85,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -95,6 +96,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -297,8 +299,7 @@ fun SettingsScreen(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val palette = settingsPalette(state.theme)
-    var dialogState by remember { mutableStateOf<ChoiceDialogState?>(null) }
-    var showAppIconChooser by remember { mutableStateOf(false) }
+    var showAppIconChooser by rememberSaveable { mutableStateOf(false) }
     val selectedAppIconFlavor = AppIconManager.flavorById(state.appIconFlavorId)
     // The launcher icon's "Use both" mode follows the device's system dark setting.
     val appIconSystemDark = isSystemInDarkTheme()
@@ -580,9 +581,7 @@ fun SettingsScreen(
                 iconColor = NewsblurBlue,
                 currentValue = options.labelFor(selected),
                 palette = palette,
-                onClick = {
-                    dialogState = ChoiceDialogState(languageTitle, selected, options, onSelect = onLanguageSelected)
-                },
+                choiceDialog = ChoiceDialogState(languageTitle, selected, options, onSelect = onLanguageSelected),
             )
         }
         SettingsSection(
@@ -657,15 +656,13 @@ fun SettingsScreen(
                 iconColor = NewsblurCyan,
                 currentValue = markStoryReadOptions.labelFor(state.markStoryReadBehavior),
                 palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = markStoryReadTitle,
-                            selectedValue = state.markStoryReadBehavior,
-                            options = markStoryReadOptions,
-                            onSelect = { onStringChanged(PrefConstants.STORY_MARK_READ_BEHAVIOR, it) },
-                        )
-                },
+                choiceDialog =
+                    ChoiceDialogState(
+                        title = markStoryReadTitle,
+                        selectedValue = state.markStoryReadBehavior,
+                        options = markStoryReadOptions,
+                        onSelect = { onStringChanged(PrefConstants.STORY_MARK_READ_BEHAVIOR, it) },
+                    ),
             )
             RowDivider(palette)
             ToggleSettingsRow(
@@ -693,16 +690,14 @@ fun SettingsScreen(
                     clusterMode = state.clusterMode,
                     subtitle = clusterMatchesSummary,
                     palette = palette,
-                    onClick = {
-                        dialogState =
-                            ChoiceDialogState(
-                                title = clusterMatchesTitle,
-                                selectedValue = state.clusterMode,
-                                options = clusterModeOptions,
-                                showClusterModePreview = true,
-                                onSelect = onClusterModeChanged,
-                            )
-                    },
+                    choiceDialog =
+                        ChoiceDialogState(
+                            title = clusterMatchesTitle,
+                            selectedValue = state.clusterMode,
+                            options = clusterModeOptions,
+                            showClusterModePreview = true,
+                            onSelect = onClusterModeChanged,
+                        ),
                 )
                 if (state.isArchive) {
                     RowDivider(palette)
@@ -869,15 +864,13 @@ fun SettingsScreen(
                 iconColor = NewsblurBlue,
                 currentValue = browserOptions.labelFor(state.defaultBrowser),
                 palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = defaultBrowserTitle,
-                            selectedValue = state.defaultBrowser,
-                            options = browserOptions,
-                            onSelect = { onStringChanged(PrefConstants.DEFAULT_BROWSER, it) },
-                        )
-                },
+                choiceDialog =
+                    ChoiceDialogState(
+                        title = defaultBrowserTitle,
+                        selectedValue = state.defaultBrowser,
+                        options = browserOptions,
+                        onSelect = { onStringChanged(PrefConstants.DEFAULT_BROWSER, it) },
+                    ),
             )
             RowDivider(palette)
             ValueSettingsRow(
@@ -886,15 +879,13 @@ fun SettingsScreen(
                 iconColor = NewsblurPurple,
                 currentValue = fontOptions.labelFor(state.readingFont),
                 palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = fontTitle,
-                            selectedValue = state.readingFont,
-                            options = fontOptions,
-                            onSelect = { onStringChanged(PrefConstants.READING_FONT, it) },
-                        )
-                },
+                choiceDialog =
+                    ChoiceDialogState(
+                        title = fontTitle,
+                        selectedValue = state.readingFont,
+                        options = fontOptions,
+                        onSelect = { onStringChanged(PrefConstants.READING_FONT, it) },
+                    ),
             )
             RowDivider(palette)
             SegmentedSettingsRow(
@@ -1008,15 +999,13 @@ fun SettingsScreen(
                 iconColor = NewsblurBlue,
                 currentValue = formatListenSpeed(state.listenSpeed),
                 palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = listenSpeedTitle,
-                            selectedValue = ListenSpeed.prefString(state.listenSpeed),
-                            options = listenSpeedOptions,
-                            onSelect = { onStringChanged(ListenPrefKeys.SPEED, it) },
-                        )
-                },
+                choiceDialog =
+                    ChoiceDialogState(
+                        title = listenSpeedTitle,
+                        selectedValue = ListenSpeed.prefString(state.listenSpeed),
+                        options = listenSpeedOptions,
+                        onSelect = { onStringChanged(ListenPrefKeys.SPEED, it) },
+                    ),
             )
             RowDivider(palette)
             ToggleSettingsRow(
@@ -1091,7 +1080,7 @@ fun SettingsScreen(
                     fillValueWidth = true,
                     currentValue = options.labelFor(selected),
                     palette = palette,
-                    onClick = { dialogState = ChoiceDialogState(title, selected, options, onSelect = { onStringChanged(key, it) }) },
+                    choiceDialog = ChoiceDialogState(title, selected, options, onSelect = { onStringChanged(key, it) }),
                 )
             }
 
@@ -1222,15 +1211,13 @@ fun SettingsScreen(
                 currentValue = networkOptions.labelFor(state.networkSelect),
                 subtitle = stringResource(R.string.menu_network_select_sum),
                 palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = networkTitle,
-                            selectedValue = state.networkSelect,
-                            options = networkOptions,
-                            onSelect = { onStringChanged(PrefConstants.NETWORK_SELECT, it) },
-                        )
-                },
+                choiceDialog =
+                    ChoiceDialogState(
+                        title = networkTitle,
+                        selectedValue = state.networkSelect,
+                        options = networkOptions,
+                        onSelect = { onStringChanged(PrefConstants.NETWORK_SELECT, it) },
+                    ),
             )
             RowDivider(palette)
             ToggleSettingsRow(
@@ -1250,15 +1237,13 @@ fun SettingsScreen(
                 currentValue = cacheAgeOptions.labelFor(state.cacheAgeSelect),
                 subtitle = stringResource(R.string.menu_cache_age_select_sum),
                 palette = palette,
-                onClick = {
-                    dialogState =
-                        ChoiceDialogState(
-                            title = cacheAgeTitle,
-                            selectedValue = state.cacheAgeSelect,
-                            options = cacheAgeOptions,
-                            onSelect = { onStringChanged(PrefConstants.CACHE_AGE_SELECT, it) },
-                        )
-                },
+                choiceDialog =
+                    ChoiceDialogState(
+                        title = cacheAgeTitle,
+                        selectedValue = state.cacheAgeSelect,
+                        options = cacheAgeOptions,
+                        onSelect = { onStringChanged(PrefConstants.CACHE_AGE_SELECT, it) },
+                    ),
             )
             RowDivider(palette)
             ActionSettingsRow(
@@ -1299,14 +1284,6 @@ fun SettingsScreen(
                 showAppIconChooser = false
             },
             onDismiss = { showAppIconChooser = false },
-        )
-    }
-
-    dialogState?.let { dialog ->
-        ChoiceDialog(
-            state = dialog,
-            palette = palette,
-            onDismiss = { dialogState = null },
         )
     }
 }
@@ -1373,8 +1350,11 @@ private fun ValueSettingsRow(
     footer: String? = null,
     valueWeight: Float = 0.6f,
     fillValueWidth: Boolean = false,
-    onClick: () -> Unit,
+    choiceDialog: ChoiceDialogState? = null,
+    onClick: () -> Unit = {},
 ) {
+    // SettingsScreen.kt saves only visibility; recreation rebuilds translated options and current callbacks.
+    var showChoiceDialog by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier =
             Modifier
@@ -1382,7 +1362,7 @@ private fun ValueSettingsRow(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = onClick,
+                    onClick = { if (choiceDialog == null) onClick() else showChoiceDialog = true },
                 ).padding(horizontal = 14.dp, vertical = 12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1429,6 +1409,9 @@ private fun ValueSettingsRow(
                 modifier = Modifier.padding(start = 40.dp, end = 6.dp),
             )
         }
+    }
+    if (showChoiceDialog && choiceDialog != null) {
+        ChoiceDialog(choiceDialog, palette, onDismiss = { showChoiceDialog = false })
     }
 }
 
@@ -1520,8 +1503,10 @@ private fun AppIconChooserDialog(
     onSelect: (AppIconFlavor, AppIconAppearanceMode) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var pendingFlavor by remember(selectedFlavor.id) { mutableStateOf(selectedFlavor) }
-    var pendingMode by remember(selectedMode) { mutableStateOf(selectedMode) }
+    // SettingsScreen.kt retains unconfirmed icon choices across rotation without applying them early.
+    var pendingFlavorId by rememberSaveable(selectedFlavor.id) { mutableStateOf(selectedFlavor.id) }
+    val pendingFlavor = AppIconManager.flavorById(pendingFlavorId)
+    var pendingMode by rememberSaveable(selectedMode) { mutableStateOf(selectedMode) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -1556,7 +1541,7 @@ private fun AppIconChooserDialog(
                             flavor = flavor,
                             selected = flavor.id == pendingFlavor.id,
                             palette = palette,
-                            onSelect = { pendingFlavor = flavor },
+                            onSelect = { pendingFlavorId = flavor.id },
                         )
                     }
                 } else {
@@ -1564,7 +1549,7 @@ private fun AppIconChooserDialog(
                         mode = pendingMode,
                         pendingFlavorId = pendingFlavor.id,
                         palette = palette,
-                        onSelect = { pendingFlavor = it },
+                        onSelect = { pendingFlavorId = it.id },
                     )
                 }
             }
@@ -1969,8 +1954,9 @@ private fun ClusterModeSettingsRow(
     clusterMode: String,
     palette: SettingsPalette,
     subtitle: String? = null,
-    onClick: () -> Unit,
+    choiceDialog: ChoiceDialogState,
 ) {
+    var showChoiceDialog by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier =
             Modifier
@@ -1978,7 +1964,7 @@ private fun ClusterModeSettingsRow(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = onClick,
+                    onClick = { showChoiceDialog = true },
                 ).padding(horizontal = 14.dp, vertical = 12.dp),
     ) {
         Row(
@@ -2022,6 +2008,9 @@ private fun ClusterModeSettingsRow(
                 modifier = Modifier.size(20.dp),
             )
         }
+    }
+    if (showChoiceDialog) {
+        ChoiceDialog(choiceDialog, palette, onDismiss = { showChoiceDialog = false })
     }
 }
 
@@ -2298,6 +2287,12 @@ private fun ChoiceDialog(
                     ) {
                         RadioButton(
                             selected = option.value == state.selectedValue,
+                            // SettingsScreen.kt uses foreground colors, since the theme primary is a toolbar surface.
+                            colors =
+                                RadioButtonDefaults.colors(
+                                    selectedColor = palette.newsblurGreen,
+                                    unselectedColor = palette.textSecondary,
+                                ),
                             onClick = {
                                 state.onSelect(option.value)
                                 onDismiss()
@@ -2410,7 +2405,7 @@ private fun settingsPalette(theme: ThemeValue): SettingsPalette {
                 segmentedBackground = Color(0xFF707070),
                 segmentedSelected = Color(0xFFBBBBBB),
                 segmentedText = Color(0xFFCCCCCC),
-                segmentedSelectedText = Color(0xFFFFFFFF),
+                segmentedSelectedText = Color(0xFF1C1C1E),
                 segmentedBorder = Color(0xFF555555),
                 clusterMatchColor = Color(0xFF7DC99A),
                 clusterRelatedColor = Color(0xFFD2A76B),
@@ -2430,7 +2425,7 @@ private fun settingsPalette(theme: ThemeValue): SettingsPalette {
                 segmentedBackground = Color(0xFF303030),
                 segmentedSelected = Color(0xFF888890),
                 segmentedText = Color(0xFFAAAAAA),
-                segmentedSelectedText = Color(0xFFFFFFFF),
+                segmentedSelectedText = Color(0xFF1C1C1E),
                 segmentedBorder = Color(0xFF444444),
                 clusterMatchColor = Color(0xFF7DC99A),
                 clusterRelatedColor = Color(0xFFD2A76B),

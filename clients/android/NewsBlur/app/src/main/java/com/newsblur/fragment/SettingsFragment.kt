@@ -119,6 +119,8 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View =
         ComposeView(requireContext()).apply {
+            // SettingsFragment.kt gives Compose's saved-state registry the same owner key after recreation.
+            id = R.id.settings_compose_view
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 NewsBlurTheme(
