@@ -4,6 +4,241 @@ import UIKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedUnreadCountRefresh: XCTestCase {
+    #if targetEnvironment(macCatalyst)
+    func test_sidebarOuterMarginsRemainStableWhenNativeSidebarInsetsArrive() async throws {
+        // FeedUnreadCountRefreshTests.swift measures in table coordinates because Catalyst can inset the whole row or header later.
+        // Adding a fixed inset inside an already inset sidebar row doubles the visible margin after activation.
+        let fixture = try makeFixture()
+        fixture.controller.suppliesFolderHeaders = true
+        fixture.table.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        fixture.table.reloadData()
+        fixture.table.layoutIfNeeded()
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        var geometry = [String]()
+        defer {
+            fixture.controller.reloadWorkItem?.cancel()
+            window.isHidden = true
+            window.rootViewController = nil
+            previousKeyWindow?.makeKey()
+            let attachment = XCTAttachment(string: geometry.joined(separator: "\n"))
+            attachment.name = "sidebar-native-inset-lifecycle"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        func margins(_ stage: String, layoutTable: Bool = true) throws -> [CGFloat] {
+            if layoutTable { fixture.table.layoutIfNeeded() }
+            let cell = try fixture.cell(row: 0)
+            let content = try XCTUnwrap(cell.value(forKey: "cellContent") as? UIView)
+            let header = try XCTUnwrap(fixture.controller.measuredFolderHeader)
+            _ = renderedImage(of: cell)
+            _ = renderedImage(of: header)
+            let target = try XCTUnwrap(header.invisibleHeaderButton)
+            let rowRect = content.convert(content.bounds, to: fixture.table)
+            let headerRect = target.convert(target.bounds, to: fixture.table)
+            geometry.append("\(stage): table=\(fixture.table.bounds) safe=\(fixture.table.safeAreaInsets) margins=\(fixture.table.layoutMargins) row=\(cell.frame) nativeContent=\(cell.contentView.frame) drawingInTable=\(rowRect) header=\(header.frame) targetInTable=\(headerRect)")
+            return [rowRect.minX - fixture.table.bounds.minX - CGFloat(cell.indentationLevel) * cell.indentationWidth,
+                    fixture.table.bounds.maxX - rowRect.maxX,
+                    headerRect.minX - fixture.table.bounds.minX,
+                    fixture.table.bounds.maxX - headerRect.maxX]
+        }
+        let initial = try margins("before attachment")
+        for margin in initial { XCTAssertGreaterThan(margin, 0) }
+        let split = UISplitViewController(style: .doubleColumn)
+        split.primaryBackgroundStyle = .none
+        split.preferredDisplayMode = .oneBesideSecondary
+        split.minimumPrimaryColumnWidth = 390
+        split.maximumPrimaryColumnWidth = 390
+        split.setViewController(UINavigationController(rootViewController: fixture.controller), for: .primary)
+        split.setViewController(UIViewController(), for: .secondary)
+        window.rootViewController = split
+        window.makeKeyAndVisible()
+        for stage in ["attached", "reactivated"] {
+            if stage == "reactivated" {
+                previousKeyWindow?.makeKey()
+                await Task.yield()
+                window.makeKey()
+            }
+            await Task.yield()
+            window.layoutIfNeeded()
+            fixture.table.frame = fixture.controller.view.bounds
+            let current = try margins(stage)
+            for (before, after) in zip(initial, current) {
+                XCTAssertEqual(after, before, accuracy: 0.5, "\(stage): native sidebar insets must not add a second outer margin; \(geometry.last ?? "")")
+            }
+        }
+        // FeedUnreadCountRefreshTests.swift replays the live Catalyst ancestor inset, which the isolated test window does not always deliver.
+        // The runtime row remains at x0 in an inset ancestor, while its header is inset directly in table coordinates.
+        let cell = try fixture.cell(row: 0)
+        let nativeParent = UIView(frame: fixture.table.bounds)
+        fixture.table.addSubview(nativeParent)
+        let header = try XCTUnwrap(fixture.controller.measuredFolderHeader)
+        let content = try XCTUnwrap(cell.value(forKey: "cellContent") as? UIView)
+        for width: CGFloat in [390, 450, 300] {
+            fixture.table.frame.size.width = width
+            fixture.table.layoutIfNeeded()
+            let nativeInset = initial[2]
+            nativeParent.addSubview(cell)
+            nativeParent.frame.origin.x = nativeInset
+            nativeParent.frame.size.width = width - 2 * nativeInset
+            cell.frame.origin.x = 0
+            cell.frame.size.width = width - 2 * nativeInset
+            cell.setNeedsLayout()
+            cell.layoutIfNeeded()
+            var headerInTable = header.convert(header.bounds, to: fixture.table)
+            headerInTable.origin.x = fixture.table.bounds.minX + nativeInset
+            headerInTable.size.width = width - 2 * nativeInset
+            header.frame = try XCTUnwrap(header.superview).convert(headerInTable, from: fixture.table)
+            let current = try margins("native ancestor inset at width \(width)", layoutTable: false)
+            for (before, after) in zip(initial, current) {
+                XCTAssertEqual(after, before, accuracy: 0.5, "Native row and header insets must count toward the existing margin; \(geometry.last ?? "")")
+            }
+            let drawingFrame = content.frame
+            cell.contentView.transform = CGAffineTransform(translationX: 35, y: 0)
+            cell.setNeedsLayout()
+            cell.layoutIfNeeded()
+            XCTAssertEqual(content.frame, drawingFrame, "Swiping the content must not recalculate the row's outer margins")
+            cell.contentView.transform = .identity
+        }
+    }
+
+    func test_feedRowLayoutIsReadyBeforePaintingAndSurvivesPartialRedraws() throws {
+        // FeedUnreadCountRefreshTests.swift protects visible row alignment through first paint, reuse and native inset changes.
+        // Sizing the drawing view from drawRect's dirty region delays indentation and shifts it again on a partial redraw.
+        let fixture = try makeFixture()
+        defer { fixture.controller.reloadWorkItem?.cancel() }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIViewController()
+        window.rootViewController?.view.addSubview(fixture.controller.view)
+        window.makeKeyAndVisible()
+        defer {
+            window.isHidden = true
+            window.rootViewController = nil
+            previousKeyWindow?.makeKey()
+        }
+        fixture.table.layoutIfNeeded()
+        let cell = try fixture.cell(row: 0)
+        let drawingView = try XCTUnwrap(cell.value(forKey: "cellContent") as? UIView)
+        var geometry = [String]()
+        for (width, indentation, accessoryWidth) in [(CGFloat(390), 1, CGFloat(0)), (310, 0, 34), (450, 2, 0)] {
+            fixture.table.frame.size.width = width
+            fixture.table.layoutIfNeeded()
+            cell.prepareForReuse()
+            cell.indentationLevel = indentation
+            cell.accessoryView = accessoryWidth > 0 ? UIView(frame: CGRect(x: 0, y: 0, width: accessoryWidth, height: 24)) : nil
+            cell.setNeedsLayout()
+            cell.layoutIfNeeded()
+            let laidOut = drawingView.frame
+            let laidOutInTable = drawingView.convert(drawingView.bounds, to: fixture.table)
+            let leadingMargin = laidOutInTable.minX - fixture.table.bounds.minX - CGFloat(indentation) * cell.indentationWidth
+            let trailingMargin = fixture.table.bounds.maxX - laidOutInTable.maxX
+            XCTAssertGreaterThan(leadingMargin, 0, "The first layout must leave space outside the feed's content")
+            XCTAssertGreaterThan(trailingMargin, 0, "The row must retain an outer trailing margin")
+            if accessoryWidth == 0 {
+                XCTAssertEqual(leadingMargin, trailingMargin, accuracy: 0.5,
+                               "Folder indentation must be added inside equal outer margins")
+            }
+            geometry.append("before: cell=\(cell.bounds) nativeContent=\(cell.contentView.frame) drawing=\(laidOut)")
+            _ = renderedImage(of: cell)
+            let painted = drawingView.frame
+            geometry.append("painted: nativeContent=\(cell.contentView.frame) drawing=\(painted)")
+            XCTAssertEqual(laidOut, painted, "Painting must not introduce the row's margins or change its content geometry")
+            XCTAssertTrue(cell.contentView.bounds.insetBy(dx: -0.5, dy: -0.5).contains(painted),
+                          "Feed content must fit the region UIKit actually assigns, including native accessories")
+            _ = UIGraphicsImageRenderer(bounds: cell.bounds).image { _ in
+                cell.draw(CGRect(x: 7, y: 3, width: width / 2, height: cell.bounds.height - 6))
+            }
+            XCTAssertEqual(drawingView.frame, painted, "An activation or exposure redraw must not move the row content")
+        }
+        let attachment = XCTAttachment(string: geometry.joined(separator: "\n"))
+        attachment.name = "feed-row-layout-and-paint-geometry"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    func test_folderHitAreaTracksResizingWithoutWaitingForActivationAndSurvivesPartialRedraw() throws {
+        // FeedUnreadCountRefreshTests.swift protects the folder's click target during resizing and partial activation redraws.
+        // Waiting for an explicit redraw leaves the resized row stale; using its dirty region then shifts and shrinks the target.
+        let fixture = try makeFixture()
+        defer { fixture.controller.reloadWorkItem?.cancel() }
+        let header = CountFolderTitle(frame: CGRect(x: 0, y: 0, width: 390, height: 44))
+        header.fixtureApp = fixture.app
+        header.section = 2
+        var outerMargin: CGFloat?
+        for width: CGFloat in [390, 300, 450] {
+            header.frame.size.width = width
+            _ = renderedImage(of: header)
+            let button = try XCTUnwrap(header.invisibleHeaderButton)
+            let target = button.convert(button.bounds, to: header)
+            let leadingMargin = target.minX - header.bounds.minX
+            let trailingMargin = header.bounds.maxX - target.maxX
+            XCTAssertGreaterThan(leadingMargin, 0, "Folder selection must leave space beside the window edge")
+            XCTAssertGreaterThan(trailingMargin, 0, "Folder selection must leave space beside the column edge")
+            XCTAssertEqual(leadingMargin, trailingMargin, accuracy: 0.5,
+                           "The click target must fill the inset content without counting its origin twice")
+            if let outerMargin {
+                XCTAssertEqual(leadingMargin, outerMargin, accuracy: 0.5, "Resizing must preserve the same outer margin")
+            } else {
+                outerMargin = leadingMargin
+            }
+            XCTAssertEqual(target.height, header.bounds.height, "The inset row remains clickable through its full height")
+            _ = UIGraphicsImageRenderer(bounds: header.bounds).image { _ in
+                header.draw(CGRect(x: 7, y: 3, width: width / 2, height: header.bounds.height - 6))
+            }
+            let redrawnButton = try XCTUnwrap(header.invisibleHeaderButton)
+            XCTAssertEqual(redrawnButton.convert(redrawnButton.bounds, to: header), target,
+                           "Redrawing the same folder must retain its click target across the whole row")
+        }
+    }
+    #endif
+
+    func test_articleUnreadMarkerDistinguishesOpeningFromExplicitMarkUnread() throws {
+        // FeedUnreadCountRefreshTests.swift protects the Mac title from shifting when a prefetched unread article becomes read on focus.
+        // Rendering the header from unread status alone would show a transient marker before that automatic read completes.
+        let fixture = try makeFixture()
+        defer { fixture.controller.reloadWorkItem?.cancel() }
+        let article: [AnyHashable: Any] = ["story_hash": "article-marker", "story_feed_id": 1,
+                                         "story_title": "An unread article", "read_status": 0,
+                                         "intelligence": ["feed": 0]]
+        let stories = makeCollection(fixture: fixture, story: article)
+        fixture.app.activeStory = article
+        let page = StoryDetailViewController()
+        page.appDelegate = fixture.app
+        page.activeStory = NSMutableDictionary(dictionary: article)
+        fixture.pages.currentPage = page
+
+        let initialHeader = try XCTUnwrap(page.getHeader())
+        #if targetEnvironment(macCatalyst)
+        XCTAssertFalse(initialHeader.contains("NB-story-unread"), "Opening an unread Mac article must not insert a marker that disappears on focus")
+        #else
+        XCTAssertTrue(initialHeader.contains("NB-story-unread"), "Keep the existing iPhone and iPad article behavior")
+        #endif
+
+        stories.markStoryRead(fixture.app.activeStory)
+        page.setActiveStoryAt(-1)
+        XCTAssertFalse(try XCTUnwrap(page.getHeader()).contains("NB-story-unread"))
+
+        stories.markStoryUnread(fixture.app.activeStory)
+        page.setActiveStoryAt(-1)
+        XCTAssertTrue(try XCTUnwrap(page.getHeader()).contains("NB-story-unread"), "Explicitly marking the displayed story unread must show its marker")
+
+        stories.markStoryRead(fixture.app.activeStory)
+        page.setActiveStoryAt(-1)
+        XCTAssertFalse(try XCTUnwrap(page.getHeader()).contains("NB-story-unread"), "Marking it read again must remove the explicit unread marker")
+
+        stories.markStoryUnread(fixture.app.activeStory)
+        page.setActiveStoryAt(-1)
+        var nextArticle = article
+        nextArticle["story_hash"] = "another-unread-article"
+        page.activeStory = NSMutableDictionary(dictionary: nextArticle)
+        #if targetEnvironment(macCatalyst)
+        XCTAssertFalse(try XCTUnwrap(page.getHeader()).contains("NB-story-unread"), "Reusing the page for another unread article must not carry its previous story's explicit marker")
+        #endif
+    }
+
     func test_retainedArticleReadActionUpdatesItsFeedWithoutChangingBrowsedSource() throws {
         let fixture = try makeFixture()
         defer { fixture.controller.reloadWorkItem?.cancel() }
@@ -427,7 +662,11 @@ private final class CountAppDelegate: NewsBlurAppDelegate {
     var reloads = 0
     var headerRefreshes = 0
     var onRefresh: (() -> Void)?
+    var suppliesFolderHeaders = false
+    var measuredFolderHeader: CountFolderTitle?
     override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
     override func refreshFeedCounts() {
         super.refreshFeedCounts()
         refreshes += 1
@@ -436,8 +675,17 @@ private final class CountAppDelegate: NewsBlurAppDelegate {
     override func refreshHeaderCounts() { headerRefreshes += 1 }
     override func reloadFeedTitlesTable() { reloads += 1 }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 60 }
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat { 0 }
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? { nil }
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        suppliesFolderHeaders && section == 2 ? 44 : 0
+    }
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard suppliesFolderHeaders, section == 2 else { return nil }
+        let header = CountFolderTitle(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 44))
+        header.fixtureApp = appDelegate
+        header.section = Int32(section)
+        measuredFolderHeader = header
+        return header
+    }
 }
 
 @MainActor private final class CountPagesController: StoryPagesViewController {
@@ -446,6 +694,14 @@ private final class CountAppDelegate: NewsBlurAppDelegate {
     override func reloadWidget() {}
     override func refreshHeaders() { headerRefreshes += 1 }
     override func setNextPreviousButtons() { navigationRefreshes += 1 }
+}
+
+@MainActor private final class CountFolderTitle: FolderTitleView {
+    var fixtureApp: NewsBlurAppDelegate?
+    override var appDelegate: NewsBlurAppDelegate! {
+        get { super.appDelegate }
+        set { super.appDelegate = fixtureApp ?? newValue }
+    }
 }
 
 @MainActor private final class CountTable: UITableView {

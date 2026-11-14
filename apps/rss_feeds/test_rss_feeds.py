@@ -9229,3 +9229,133 @@ class Test_FeedAutocomplete(TestCase):
 
         query.assert_called_once_with("kottke.org", max_results=1)
         hybrid_query.assert_not_called()
+
+
+class Test_OriginalPageUsage(TestCase):
+    """A feed's original page is only fetched and stored while somebody is opening it:
+    Feed.page_last_read_date is stamped by the Original view (apps/reader/views.py
+    load_feed_page) and read by the fetcher (utils/feed_fetcher.py fetch_original_page)."""
+
+    PAGE_HTML = "<html><head><title>Example</title></head><body>%s</body></html>" % ("original page " * 20)
+
+    def setUp(self):
+        from apps.rss_feeds.models import MFeedPage
+
+        self.feed = Feed.objects.create(
+            feed_address="http://example.com/original-page-usage.xml",
+            feed_link="http://example.com/original-page-usage",
+            feed_title="Original Page Usage",
+        )
+        MFeedPage.objects(feed_id=self.feed.pk).delete()
+
+    def _site_response(self):
+        response = MagicMock()
+        response.content = self.PAGE_HTML.encode("utf-8")
+        response.encoding = "utf-8"
+        response.status_code = 200
+        return response
+
+    def _store_page(self):
+        from apps.rss_feeds.models import MFeedPage
+
+        MFeedPage.objects.create(
+            feed_id=self.feed.pk, page_data=zlib.compress(self.PAGE_HTML.encode("utf-8"))
+        )
+
+    def _opened_days_ago(self, days):
+        self.feed.page_last_read_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
+        self.feed.save()
+
+    def _fetch_original_page(self):
+        from utils.feed_fetcher import FeedFetcherWorker
+
+        worker = FeedFetcherWorker({"force": False, "verbose": False})
+        return worker.fetch_original_page(Feed.objects.get(pk=self.feed.pk))
+
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
+    def test_fetcher_skips_a_page_nobody_has_opened(self, mock_get):
+        from apps.rss_feeds.models import MFeedPage
+
+        self._fetch_original_page()
+
+        mock_get.assert_not_called()
+        self.assertIsNone(MFeedPage.get_data(feed_id=self.feed.pk))
+
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
+    def test_fetcher_refreshes_a_recently_opened_page(self, mock_get):
+        from apps.rss_feeds.models import MFeedPage
+
+        mock_get.return_value = self._site_response()
+        self._opened_days_ago(5)
+
+        page_data = self._fetch_original_page()
+
+        self.assertIn("original page", smart_str(MFeedPage.get_data(feed_id=self.feed.pk)))
+        # The favicon importer parses this instead of reading the page back from storage.
+        self.assertIn("original page", page_data)
+
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
+    def test_fetcher_deletes_a_page_unopened_for_a_month(self, mock_get):
+        from apps.rss_feeds.models import MFeedPage
+
+        self._store_page()
+        self._opened_days_ago(40)
+
+        self._fetch_original_page()
+
+        mock_get.assert_not_called()
+        self.assertIsNone(MFeedPage.get_data(feed_id=self.feed.pk))
+        self.assertIsNone(Feed.objects.get(pk=self.feed.pk).page_last_read_date)
+
+    @patch("apps.rss_feeds.page_importer.requests.delete")
+    def test_failed_delete_is_retried_on_the_next_fetch(self, mock_delete):
+        """The date is the only record that a stored page exists, so it has to outlive a
+        delete the page server didn't confirm."""
+        mock_delete.return_value = MagicMock(status_code=500)
+        self._opened_days_ago(40)
+
+        with override_settings(BACKED_BY_AWS=dict(settings.BACKED_BY_AWS, pages_on_node=True)):
+            self._fetch_original_page()
+
+        self.assertIsNotNone(Feed.objects.get(pk=self.feed.pk).page_last_read_date)
+
+    def test_opening_the_original_page_marks_it_used(self):
+        self._store_page()
+
+        response = self.client.get(reverse("load-feed-page", kwargs={"feed_id": self.feed.pk}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(Feed.objects.get(pk=self.feed.pk).page_last_read_date)
+
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
+    def test_first_open_fetches_the_page_live(self, mock_get):
+        from apps.rss_feeds.models import MFeedPage
+
+        mock_get.return_value = self._site_response()
+
+        response = self.client.get(reverse("load-feed-page", kwargs={"feed_id": self.feed.pk}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("original page", smart_str(response.content))
+        self.assertIn("original page", smart_str(MFeedPage.get_data(feed_id=self.feed.pk)))
+
+    @patch("apps.rss_feeds.page_importer.requests.post")
+    @patch("apps.reader.views.requests.get")
+    @patch("apps.rss_feeds.page_importer.safe_requests_get")
+    def test_missing_node_page_is_fetched_live_not_served_from_the_old_mongo_copy(
+        self, mock_site_get, mock_node_get, mock_node_post
+    ):
+        """Production keeps pages on the page server, and Mongo's feed_pages still holds
+        copies from before that move. One of those must not stand in for a deleted page."""
+        from apps.rss_feeds.models import MFeedPage
+
+        MFeedPage.objects.create(feed_id=self.feed.pk, page_data=zlib.compress(b"<html>years old</html>"))
+        mock_node_get.return_value = MagicMock(status_code=404)
+        mock_node_post.return_value = MagicMock(status_code=200)
+        mock_site_get.return_value = self._site_response()
+
+        with override_settings(BACKED_BY_AWS=dict(settings.BACKED_BY_AWS, pages_on_node=True)):
+            response = self.client.get(reverse("load-feed-page", kwargs={"feed_id": self.feed.pk}))
+
+        self.assertIn("original page", smart_str(response.content))
+        self.assertNotIn("years old", smart_str(response.content))

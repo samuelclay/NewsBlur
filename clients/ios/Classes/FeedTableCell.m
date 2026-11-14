@@ -44,6 +44,11 @@ static UIFont *textFont = nil;
         
         cellContent = [[FeedTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
+#if TARGET_OS_MACCATALYST
+        cellContent.opaque = NO;
+        cellContent.contentMode = UIViewContentModeRedraw;
+        ((FeedTableCellView *)cellContent).cell = self;
+#endif
         
         // Clear out half pixel border on top and bottom that the draw code can't touch
         UIView *selectedBackground = [[UIView alloc] init];
@@ -52,12 +57,30 @@ static UIFont *textFont = nil;
 
         [self.contentView addSubview:cellContent];
         // FeedTableCell.m redraws its mirrored layout when the account language changes direction.
+#if TARGET_OS_MACCATALYST
+        [self registerForTraitChanges:@[UITraitLayoutDirection.class] withAction:@selector(setNeedsLayout)];
+#else
         [self registerForTraitChanges:@[UITraitLayoutDirection.class] withAction:@selector(setNeedsDisplay)];
+#endif
     }
 
     return self;
 }
 
+#if TARGET_OS_MACCATALYST
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    // FeedTableCell.m establishes outer margins and indentation before first paint, within UIKit's actual content area.
+    CGRect contentBounds = self.contentView.bounds;
+    // FeedTableCell.m measures the stable row, so swiping contentView cannot change its outer margins.
+    CGRect rect = [MacSidebarLayout contentRectForView:self bounds:contentBounds];
+    CGFloat indentationOffset = MIN(CGRectGetWidth(rect), self.indentationLevel * self.indentationWidth);
+    rect.origin.x += indentationOffset;
+    rect.size.width -= indentationOffset;
+    cellContent.frame = [self nb_directionalRect:rect within:contentBounds];
+    [cellContent setNeedsDisplay];
+}
+#else
 - (void)drawRect:(CGRect)rect {
     ((FeedTableCellView *)cellContent).cell = self;
     
@@ -70,6 +93,7 @@ static UIFont *textFont = nil;
     cellContent.frame = [self nb_directionalRect:rect within:cellRect];
     [cellContent setNeedsDisplay];
 }
+#endif
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
     [super setHighlighted:highlighted animated:animated];
@@ -174,18 +198,24 @@ static UIFont *textFont = nil;
     if (!cell) {
         return;
     }
+#if TARGET_OS_MACCATALYST
+    // FeedTableCell.m keeps title, icon and count positions independent of the region UIKit invalidates on activation.
+    r = self.bounds;
+#endif
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     BOOL isHighlighted = cell.highlighted || cell.selected;
     UIColor *backgroundColor;
-
+#if TARGET_OS_MACCATALYST
+    // FeedTableCell.m lets the shared window material continue through every sidebar row.
+    backgroundColor = UIColor.clearColor;
+#else
     backgroundColor = cell.isSocial ? UIColorFromLightSepiaMediumDarkRGB(0xD8E3DB, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
                       cell.isSearch ? UIColorFromLightSepiaMediumDarkRGB(0xDBDFE6, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
                       cell.isSaved ? UIColorFromLightSepiaMediumDarkRGB(0xDFDCD6, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
                       UIColorFromLightSepiaMediumDarkRGB(0xF7F8F5, 0xF8ECD8, 0x48484A, 0x000000);
-    
-//    [backgroundColor set];
+#endif
     self.backgroundColor = backgroundColor;
     cell.backgroundColor = backgroundColor;
     

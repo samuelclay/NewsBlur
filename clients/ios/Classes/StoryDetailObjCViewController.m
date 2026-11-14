@@ -505,6 +505,16 @@
 #pragma mark -
 #pragma mark Story setup
 
+#if TARGET_OS_MACCATALYST
+- (void)setActiveStory:(NSMutableDictionary *)story {
+    // StoryDetailObjCViewController.m keeps an explicit unread marker with its story when article pages are reused.
+    if (![activeStory[@"story_hash"] isEqual:story[@"story_hash"]]) {
+        self.isRecentlyUnread = NO;
+    }
+    activeStory = story;
+}
+#endif
+
 - (void)initStory {
     appDelegate.inStoryDetail = YES;
     self.noStoryMessage.hidden = YES;
@@ -1637,7 +1647,12 @@
     }
     
     NSString *storyUnread = @"";
-    if ([appDelegate.storiesCollection isStoryUnread:self.activeStory]) {
+    BOOL showUnreadMarker = [appDelegate.storiesCollection isStoryUnread:self.activeStory];
+#if TARGET_OS_MACCATALYST
+    // StoryDetailObjCViewController.m avoids moving a prefetched Mac title when focus automatically marks it read.
+    showUnreadMarker = showUnreadMarker && self.isRecentlyUnread;
+#endif
+    if (showUnreadMarker) {
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[self.activeStory objectForKey:@"intelligence"]];
         storyUnread = [NSString stringWithFormat:@"<div class=\"NB-story-unread NB-%@\"></div>",
                        score > 0 ? @"positive" : score < 0 ? @"negative" : @"neutral"];

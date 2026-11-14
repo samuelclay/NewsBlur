@@ -370,6 +370,25 @@ class FakeClient:
         return RedListenResult(status=200, payload=payload, results=count_results(payload))
 
 
+class EndlessListingClient:
+    """Answers every request with a full page of fresh posts from the requested subreddits,
+    the way a busy batch would page forever, recording each call."""
+
+    def __init__(self):
+        self.calls = []
+        self.served = 0
+
+    def get(self, path, params=None, kind=SCHEDULED, max_results=25, timeout=30):
+        self.calls.append((path, dict(params or {}), kind, max_results))
+        subreddit = path.split("/")[2].split("+")[0]
+        posts = []
+        for _ in range(params["limit"]):
+            self.served += 1
+            posts.append(post("e%d" % self.served, subreddit=subreddit, created=NOW_TS - 10 * self.served))
+        payload = listing(posts, after="t3_e%d" % self.served)
+        return RedListenResult(status=200, payload=payload, results=len(posts))
+
+
 @override_settings(**SMALL_PLAN)
 @patch("utils.redlisten_poller.time.sleep")
 class Test_RedListenPoller(SimpleTestCase):
@@ -457,8 +476,9 @@ class Test_RedListenPoller(SimpleTestCase):
         }
         payload = listing([post("p1"), post("g1", subreddit="golang")])
         poller, client = self.poller([payload])
-        # The small plan's 99 requests a month is under one per hour; use Pro's.
-        with self.settings(REDLISTEN_MONTHLY_REQUESTS=50000), patch.object(
+        # The small plan's 99 requests and 990 results a month are under one request and
+        # its smallest first page per hour; use Pro's.
+        with self.settings(REDLISTEN_MONTHLY_REQUESTS=50000, REDLISTEN_MONTHLY_RESULTS=1000000), patch.object(
             RedListenPoller, "load_targets", return_value=targets
         ):
             summary = poller.poll()
@@ -498,6 +518,42 @@ class Test_RedListenPoller(SimpleTestCase):
         niche = PollBatch(drain=False, is_user=False)
         niche.add(target("r:niche", readers=2, last_polled=NOW_TS - 3600), 50, 1)
         self.assertEqual(sorted([niche, popular, quiet], key=PollBatch.priority), [quiet, popular, niche])
+
+    def test_a_drained_batch_stops_paging_at_the_hours_budget(self, _sleep):
+        quiet_until_now = target("r:quiet", feed_ids=[51], last_polled=NOW_TS - 3600)
+        batch = PollBatch(drain=True, is_user=False)
+        batch.add(quiet_until_now, 1, 1)
+        client = EndlessListingClient()
+        poller = RedListenPoller(budget=self.budget, client=client, r=self.r, now=NOW)
+        poller.result_budget = 50
+
+        poller.poll_batch(batch)
+
+        limits = [call[1]["limit"] for call in client.calls]
+        self.assertEqual(sum(limits), 50)
+        self.assertEqual(poller.spent_results, 50)
+        # Cut short, so the next poll reaches back for the rest.
+        self.assertEqual(quiet_until_now.last_polled, NOW_TS - 3600)
+
+    def test_a_poll_never_starts_a_batch_past_the_hours_budget(self, _sleep):
+        """A quiet-looking subreddit that turns out busy spends the hour; the capped user
+        batch after it waits for the next hour instead of running over."""
+        targets = {
+            "r:quiet": target("r:quiet", readers=10, feed_ids=[1], last_polled=NOW_TS - 3600),
+            "u:busy": target(
+                "u:busy", readers=1, feed_ids=[2], last_polled=NOW_TS - 3600, posts=1000, window=86400
+            ),
+        }
+        client = EndlessListingClient()
+        poller = RedListenPoller(budget=self.budget, client=client, r=self.r, now=NOW)
+        with patch.object(RedListenPoller, "cycle_budget", return_value=(50.0, 100.0)), patch.object(
+            RedListenPoller, "load_targets", return_value=targets
+        ):
+            summary = poller.poll()
+
+        self.assertEqual(summary["spent_results"], 50)
+        self.assertEqual((summary["batches"], summary["polled_batches"]), (2, 1))
+        self.assertTrue(all(call[0].startswith("/r/quiet/") for call in client.calls))
 
     def test_a_poll_that_outlived_its_lock_leaves_the_next_polls_lock(self, _sleep):
         poller, _ = self.poller([])

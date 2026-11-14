@@ -127,6 +127,10 @@ def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
 
 
 class Feed(models.Model):
+    # The original page stops being fetched, and the stored copy is deleted, this long after
+    # the Original view was last opened.
+    ORIGINAL_PAGE_UNUSED_DAYS = 30
+
     feed_address = models.URLField(max_length=764, db_index=True)
     feed_address_locked = models.BooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
@@ -158,6 +162,9 @@ class Feed(models.Model):
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)
+    # When the Original view was last opened. The fetcher only fetches and stores the
+    # original page while this is recent, see is_original_page_in_use.
+    page_last_read_date = models.DateTimeField(null=True, blank=True)
     exception_code = models.IntegerField(default=0)
     errors_since_good = models.IntegerField(default=0)
     min_to_decay = models.IntegerField(default=0)
@@ -1266,6 +1273,41 @@ class Feed(models.Model):
             self.has_page = True
             self.active = True
             self.save()
+
+    @property
+    def is_original_page_in_use(self):
+        """Whether somebody opened the Original view recently enough to keep fetching the page."""
+        if not self.page_last_read_date:
+            return False
+        cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=self.ORIGINAL_PAGE_UNUSED_DAYS)
+        return self.page_last_read_date > cutoff
+
+    def mark_original_page_read(self):
+        """Called when the Original view is opened (apps/reader/views.py load_feed_page).
+        Stamped at most once a day so a busy feed's readers aren't each a write."""
+        now = datetime.datetime.utcnow()
+        if self.page_last_read_date and self.page_last_read_date > now - datetime.timedelta(days=1):
+            return
+        self.page_last_read_date = now
+        self.save(update_fields=["page_last_read_date"])
+
+    def expire_original_page(self):
+        """Delete the stored page of a feed whose Original view hasn't been opened in
+        ORIGINAL_PAGE_UNUSED_DAYS, and forget the date. Called on every fetch by
+        utils/feed_fetcher.py fetch_original_page. The date stays if the delete fails, so
+        the next fetch tries again."""
+        from apps.rss_feeds.page_importer import PageImporter
+
+        if not self.page_last_read_date or self.is_original_page_in_use:
+            return
+        if not PageImporter(self).delete_page():
+            return
+        logging.debug(
+            "   ---> [%-30s] ~FYDeleted original page, last opened %s"
+            % (self.log_title[:30], self.page_last_read_date)
+        )
+        self.page_last_read_date = None
+        self.save(update_fields=["page_last_read_date"])
 
     def save_raw_feed(self, raw_feed, fetch_date):
         MFetchHistory.add(feed_id=self.pk, fetch_type="raw_feed", code=200, message=raw_feed, date=fetch_date)

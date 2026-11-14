@@ -281,6 +281,8 @@ class RedListenPoller:
         self.lock_token = uuid.uuid4().hex
         self.spent_requests = 0
         self.spent_results = 0
+        # This hour's results ceiling, set by run() from cycle_budget().
+        self.result_budget = float("inf")
         # (requests, results) cycle_budget sets aside for other spending through month end.
         self.set_aside = (0.0, 0.0)
         self.feeds_to_schedule = set()
@@ -357,6 +359,7 @@ class RedListenPoller:
         include_users = self.now.hour % USER_POLL_EVERY_HOURS == 0
         polled = [t for t in targets.values() if include_users or not t.is_user]
         result_budget, request_budget = self.cycle_budget()
+        self.result_budget = result_budget
 
         demands = {t.key: max(0.01, t.expected_posts(self.now_ts)) for t in polled}
         weights = {t.key: max(1, t.readers) for t in polled}
@@ -369,11 +372,15 @@ class RedListenPoller:
             batches.extend(build_batches(group, demands, shares, is_user))
         batches.sort(key=PollBatch.priority)
 
+        # The hour's results budget is a hard ceiling: a batch starts only if its first page
+        # fits in what is left, and poll_batch caps every later page the same way. Any
+        # overspend would come out of every later hour, since cycle_budget spreads what is
+        # left (polls that ran ~14% over would have left late-month hours ~40% short).
         polled_batches = 0
         for batch in batches:
             if self.spent_requests + 1 > request_budget:
                 break
-            if self.spent_results + batch.first_limit() > result_budget * 1.1 + PAGE_SIZE:
+            if self.spent_results + batch.first_limit() > result_budget:
                 continue
             if self.poll_batch(batch):
                 polled_batches += 1
@@ -431,6 +438,13 @@ class RedListenPoller:
         complete = False
         for page in range(MAX_PAGES_PER_BATCH):
             if page:
+                # Later pages fit in what is left of the hour's results budget. A batch cut
+                # short stays incomplete, so the next poll reaches back for the rest.
+                budget_left = self.result_budget - self.spent_results
+                if budget_left < limit:
+                    limit = int(budget_left)
+                if limit < 1:
+                    break
                 time.sleep(REQUEST_SPACING_SECONDS)
             path, params = batch.request(limit, after)
             result = self.client.get(path, params=params, kind=POLLER, max_results=limit)

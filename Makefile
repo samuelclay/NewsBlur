@@ -63,15 +63,22 @@ default:
 		HTTPS_PORT=$$((8443 + $$PORT_OFFSET)); \
 		URL="https://localhost:$$HTTPS_PORT"; \
 	fi; \
+	if ! command -v docker >/dev/null 2>&1; then \
+		$(call log,~SB~FRdocker is not on your PATH.~SN Install Docker Desktop or open a new terminal so its PATH entry loads.~ST); \
+		exit 1; \
+	elif ! docker info >/dev/null 2>&1; then \
+		$(call log,~SB~FRThe Docker daemon is not running.~SN Start Docker Desktop and run make again.~ST); \
+		exit 1; \
+	fi; \
 	if [ -d ".git" ] && ([ ! -d "docker/volumes/postgres" ] || [ ! -d "docker/volumes/db_mongo" ]); then \
 		$(call log,~FYFirst-time setup detected. Running full installation...~ST); \
-		$(MAKE) rebuild; \
+		$(MAKE) rebuild || exit 1; \
 	elif [ -z "$$(docker ps -q -f name=$$CONTAINER_NAME)" ]; then \
 		$(call log,~FYContainers not running. Starting NewsBlur...~ST); \
-		$(MAKE) nb-fast; \
+		$(MAKE) nb-fast || exit 1; \
 	else \
 		$(call log,~FGNewsBlur is already running. Applying any new migrations...~ST); \
-		docker exec -t $$CONTAINER_NAME ./manage.py migrate; \
+		docker exec -t $$CONTAINER_NAME ./manage.py migrate || exit 1; \
 	fi; \
 	echo ""; \
 	$(call log,~SB~FG✓ NewsBlur is ready! Visit ~FC~SB$$URL~ST); \
@@ -216,7 +223,7 @@ collectstatic:
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 bounce:
 	docker compose down
-	@[[ -d config/certificates ]] && $(call log,~SB~FG✓ keys exist~ST) || make keys
+	@$(MAKE) --no-print-directory keys
 	docker compose up -d --build --remove-orphans
 
 bounce-fast:

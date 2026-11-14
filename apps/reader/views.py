@@ -111,6 +111,7 @@ import tweepy
 
 from apps.categories.models import MCategory
 from apps.reader.tasks import MarkStoriesAsUnread
+from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.tasks import ScheduleImmediateFetches
 from apps.social.models import (
     MActivity,
@@ -1707,6 +1708,10 @@ def load_feed_page(request, feed_id):
         raise Http404
 
     feed = Feed.get_by_id(feed_id)
+    if feed:
+        # The fetcher only keeps a page fresh while it is being opened, see
+        # Feed.is_original_page_in_use in apps/rss_feeds/models.py.
+        feed.mark_original_page_read()
     if feed and feed.has_page and not feed.has_page_exception:
         if settings.BACKED_BY_AWS.get("pages_on_node"):
             domain = Site.objects.get_current().domain
@@ -1748,7 +1753,23 @@ def load_feed_page(request, feed_id):
                 logging.user(request, "~FYLoading original page, non-proxied")
                 return HttpResponseRedirect("//%s/%s" % (settings.S3_PAGES_BUCKET_NAME, feed.s3_pages_key))
 
-    data = MFeedPage.get_data(feed_id=feed_id)
+    # Mongo is only where pages are stored when they aren't on the page server. When they
+    # are, its feed_pages collection holds copies from before that move, which are a last
+    # resort behind a live fetch.
+    pages_in_mongo = not settings.BACKED_BY_AWS.get("pages_on_node")
+    data = MFeedPage.get_data(feed_id=feed_id) if pages_in_mongo else None
+
+    if not data and feed and feed.has_page and not feed.has_page_exception:
+        # Nothing stored: the page was never opened before, or it went unopened long enough
+        # to be deleted. Fetch it now, which also stores it for the next open.
+        data = PageImporter(feed, request=request).fetch_page()
+        if data:
+            logging.user(request, "~FYLoading original page (%s), ~SBfetched live" % feed_id)
+            return HttpResponse(data, content_type="text/html; charset=utf-8")
+        feed = Feed.get_by_id(feed_id)
+
+    if not data and not pages_in_mongo:
+        data = MFeedPage.get_data(feed_id=feed_id)
 
     if not data or not feed or not feed.has_page or feed.has_page_exception:
         logging.user(request, "~FYLoading original page, ~FRmissing")
