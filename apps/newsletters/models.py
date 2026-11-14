@@ -732,9 +732,10 @@ class EmailNewsletter:
         if "body-plain" in params and params["body-plain"]:
             # apps/newsletters/models.py: Some senders' text part is their HTML source, entity
             # escaped (POLITICO Europe's Playbooks forwarded from Gmail arrive escaped twice).
-            # That is HTML, not text, so wrapping it in paragraphs would show the markup.
+            # That is HTML, not text, so wrapping it in paragraphs would show the markup. Real
+            # plain text that merely quotes a tag doesn't open with one, so it stays text.
             unescaped_plain = self._maybe_unescape_html(params["body-plain"])
-            if unescaped_plain != params["body-plain"]:
+            if unescaped_plain != params["body-plain"] and unescaped_plain.lstrip().startswith("<"):
                 return unescaped_plain
             return linkify(linebreaks(params["body-plain"]))
 
@@ -758,12 +759,17 @@ class EmailNewsletter:
         e.g., &lt;table&gt; instead of <table>. BeautifulSoup treats these
         as text rather than tags, causing raw HTML to display to the user.
         Some arrive encoded more than once (&amp;lt;table&amp;gt;), so this
-        unescapes until the tags are real.
+        unescapes until the tags are real, and stops there so an escaped code
+        sample inside the newsletter (<code>&lt;div&gt;</code>) stays text.
         """
-        # apps/newsletters/models.py: Check for entity-encoded HTML tags, up to three encodings deep
-        entity_tag_pattern = r"&(?:amp;)*lt;/?(?:table|tr|td|th|div|span|p|a|img|br|hr|h[1-6]|ul|ol|li|strong|em|b|i|font|center|blockquote|html|head|body|style|meta)\b"
-        for _ in range(3):
+        # apps/newsletters/models.py: Entity-encoded HTML tags, up to three encodings deep
+        tags = r"(?:table|tr|td|th|div|span|p|a|img|br|hr|h[1-6]|ul|ol|li|strong|em|b|i|font|center|blockquote|html|head|body|style|meta)\b"
+        entity_tag_pattern = r"&(?:amp;)*lt;/?" + tags
+        real_tag_pattern = r"</?" + tags
+        for decode_pass in range(3):
             if not content or not re.search(entity_tag_pattern, content, re.IGNORECASE):
+                break
+            if decode_pass > 0 and re.search(real_tag_pattern, content, re.IGNORECASE):
                 break
             logging.debug(" ---> Unescaping entity-encoded HTML in newsletter content")
             content = html_module.unescape(content)

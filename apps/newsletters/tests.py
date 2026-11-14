@@ -343,6 +343,7 @@ Original plain newsletter body""",
             'alt="Berlin Playbook" width="600" /></td></tr></tbody></table></div>'
             '<p>Guten Morgen. <a href="https://dmp.politico.eu/?destination=online&amp;s=1">'
             "Online lesen</a></p>"
+            "<p>Das Formular nutzt <code>&lt;div&gt;</code> statt Tabellen.</p>"
         )
         newsletter_text = (
             html.escape(html.escape(newsletter_html))
@@ -379,8 +380,22 @@ Original plain newsletter body""",
                     'src="https://www.politico.eu/wp-content/uploads/2024/09/30/nl-header.png"', content
                 )
                 self.assertIn('href="https://dmp.politico.eu/?destination=online&amp;s=1"', content)
-                self.assertNotIn("&lt;", content)
+                self.assertIn("<code>&lt;div&gt;</code>", content)
+                self.assertNotIn("&lt;table", content)
                 self.assertNotIn("&amp;lt;", content)
+
+    def test_plain_text_newsletter_quoting_markup_keeps_its_paragraphs(self):
+        story = self.receive(
+            "plain-quoting-markup",
+            **{
+                "body-html": "",
+                "body-plain": "Wrap each answer in a &lt;p&gt; element.\n\nFull guide: https://example.com/guide",
+            },
+        )
+
+        content = story.story_content_str
+        self.assertIn("&lt;p&gt; element.</p>", content)
+        self.assertIn('href="https://example.com/guide"', content)
 
 
 class Test_EmailNewsletterMergeRace(NewsletterFixture, TransactionTestCase):
