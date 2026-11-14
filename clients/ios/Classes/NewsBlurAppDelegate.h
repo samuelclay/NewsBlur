@@ -395,6 +395,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showRescoredStories:(NSArray *)stories;
 
 - (void)cancelRequests;
+// Returns the server origin login and the API use for urlString, or nil when it names no host.
++ (NSString *)normalizedServerURLString:(NSString *)urlString;
 - (void)setCustomDomainPreference:(NSString *)urlString;
 - (void)resetNetworkManagerForTesting;
 - (void)setCustomDomainForTesting:(NSString *)urlString;
