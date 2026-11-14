@@ -759,17 +759,18 @@ class EmailNewsletter:
         e.g., &lt;table&gt; instead of <table>. BeautifulSoup treats these
         as text rather than tags, causing raw HTML to display to the user.
         Some arrive encoded more than once (&amp;lt;table&amp;gt;), so this
-        unescapes until the tags are real, and stops there so an escaped code
-        sample inside the newsletter (<code>&lt;div&gt;</code>) stays text.
+        unescapes while escaped tags outnumber real ones. Real markup with an
+        escaped code sample in it (<code>&lt;div&gt;</code>) is left alone, so
+        the sample stays text.
         """
         # apps/newsletters/models.py: Entity-encoded HTML tags, up to three encodings deep
         tags = r"(?:table|tr|td|th|div|span|p|a|img|br|hr|h[1-6]|ul|ol|li|strong|em|b|i|font|center|blockquote|html|head|body|style|meta)\b"
         entity_tag_pattern = r"&(?:amp;)*lt;/?" + tags
         real_tag_pattern = r"</?" + tags
-        for decode_pass in range(3):
-            if not content or not re.search(entity_tag_pattern, content, re.IGNORECASE):
-                break
-            if decode_pass > 0 and re.search(real_tag_pattern, content, re.IGNORECASE):
+        for _ in range(3):
+            escaped_tags = len(re.findall(entity_tag_pattern, content or "", re.IGNORECASE))
+            real_tags = len(re.findall(real_tag_pattern, content or "", re.IGNORECASE))
+            if escaped_tags <= real_tags:
                 break
             logging.debug(" ---> Unescaping entity-encoded HTML in newsletter content")
             content = html_module.unescape(content)

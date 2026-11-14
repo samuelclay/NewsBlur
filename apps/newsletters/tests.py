@@ -397,6 +397,20 @@ Original plain newsletter body""",
         self.assertIn("&lt;p&gt; element.</p>", content)
         self.assertIn('href="https://example.com/guide"', content)
 
+    def test_html_newsletter_with_escaped_code_sample_keeps_it_as_text(self):
+        story = self.receive(
+            "html-code-sample",
+            **{
+                "body-html": (
+                    "<div><h1>Frontend Weekly</h1><p>Lay out the card with a "
+                    "<code>&lt;div&gt;</code> and a heading.</p><p>See you next week.</p></div>"
+                ),
+                "body-plain": "Lay out the card with a <div> and a heading.",
+            },
+        )
+
+        self.assertIn("<code>&lt;div&gt;</code>", story.story_content_str)
+
 
 class Test_EmailNewsletterMergeRace(NewsletterFixture, TransactionTestCase):
     """Real commits, so a foreign-key failure on a deleted feed surfaces the way it does in
