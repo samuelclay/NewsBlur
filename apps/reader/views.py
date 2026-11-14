@@ -1261,9 +1261,8 @@ def load_single_feed(request, feed_id):
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
             user_search.touch_search_date()
-            stories = feed.find_stories(query, order=order, offset=offset, limit=limit + 1)
-            has_more = len(stories) > limit
-            stories = stories[:limit]
+            stories = feed.find_stories(query, order=order, offset=offset, limit=limit)
+            has_more = len(stories) >= limit
         else:
             stories = []
             message = "You must be a premium subscriber to search."
@@ -1293,12 +1292,10 @@ def load_single_feed(request, feed_id):
         if read_filter == "starred":
             mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
                 "%sstarred_date" % ("-" if order == "newest" else "")
-            )[offset : offset + effective_limit + 1]
+            )[offset : offset + effective_limit]
             stories = Feed.format_stories(mstories)
-            has_more = len(stories) > effective_limit
+            has_more = len(stories) >= effective_limit
         elif usersub and read_filter == "unread":
-            # No extra row: get_stories ranks in Redis, then sorts by story_date, so trimming
-            # a spare row could drop one story and repeat another across pages.
             stories = usersub.get_stories(
                 order=order,
                 read_filter=read_filter,
@@ -1313,17 +1310,16 @@ def load_single_feed(request, feed_id):
         else:
             stories = feed.get_stories(
                 offset,
-                effective_limit + 1,
+                effective_limit,
                 order=order,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
             )
-            has_more = len(stories) > effective_limit
-        stories = stories[:effective_limit]
+            has_more = len(stories) >= effective_limit
 
     has_more = has_more and page < MAX_STORY_PAGE
     if classifier_filter_type and classifier_filter_value:
-        # has_more still counts the unfiltered stories, so it may be true with no match left.
+        # has_more counts the stories before this filter, so a short or empty page can still say true.
         stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
     checkpoint1 = time.time()
@@ -2352,7 +2348,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
 def load_read_stories(request):
     user = get_user(request)
     offset = int(request.GET.get("offset", 0))
-    limit = int(request.GET.get("limit", 10))
+    limit = max(int(request.GET.get("limit", 10)), 1)
     page = int(request.GET.get("page", 0))
     order = request.GET.get("order", "newest")
     date_filter_start = request.GET.get("date_filter_start")
@@ -2403,8 +2399,8 @@ def load_read_stories(request):
                 RUserStory.get_read_stories(user.pk, offset=0, limit=1000, order=order)
             )
             stories = [s for s in search_stories if s["story_hash"] in read_story_hashes_set]
-            has_more = len(stories) > offset + limit
             stories = stories[offset : offset + limit]
+            has_more = len(stories) >= limit
         else:
             stories = []
             has_more = False
@@ -2574,7 +2570,7 @@ def load_river_stories__redis(request):
     # GET or POST requests, since the parameters for this endpoint can be
     # very long, at which point the max size of a GET url request is exceeded.
     get_post = getattr(request, request.method)
-    limit = int_or_default(get_post.get("limit", 12), 12)
+    limit = max(int_or_default(get_post.get("limit", 12), 12), 1)
     start = time.time()
     user = get_user(request)
     message = None
@@ -2757,9 +2753,8 @@ def load_river_stories__redis(request):
             feed_ids = Feed.exclude_briefing_feeds(feed_ids)
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
-            stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit + 1)
-            has_more = len(stories) > limit
-            stories = stories[:limit]
+            stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit)
+            has_more = len(stories) >= limit
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(
                 user.pk,
@@ -2816,17 +2811,12 @@ def load_river_stories__redis(request):
                 if date_filter_end_utc:
                     mstories = mstories.filter(story_date__lt=date_filter_end_utc)
                 mstories = mstories.order_by(story_date_order)
-                # A full page may have more.
                 has_more = len(indexed_tag_story_hashes) >= limit
             else:
-                # Ask for one story past the page: if it comes back, there is more.
-                mstories = list(
-                    MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
-                        "%sstarred_date" % ("-" if order == "newest" else "")
-                    )[offset : offset + effective_limit + 1]
-                )
-                has_more = len(mstories) > effective_limit
-                mstories = mstories[:effective_limit]
+                mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
+                    "%sstarred_date" % ("-" if order == "newest" else "")
+                )[offset : offset + effective_limit]
+                has_more = len(mstories) >= effective_limit
             stories = Feed.format_stories(mstories)
             unread_feed_story_hashes = None
         else:
@@ -2859,6 +2849,8 @@ def load_river_stories__redis(request):
                 )
 
             if indexed_tag_story_hashes is not None:
+                # Counted before the unread filter below, which can empty a full page.
+                has_more = len(indexed_tag_story_hashes) >= limit
                 story_hashes = include_indexed_tag_source_story(indexed_tag_story_hashes, feed_ids)
                 unread_feed_story_hashes = UserSubscription.unread_story_hashes_for_story_hashes(
                     user.pk,
@@ -2879,8 +2871,6 @@ def load_river_stories__redis(request):
                 if date_filter_end_utc:
                     mstories = mstories.filter(story_date__lt=date_filter_end_utc)
                 mstories = mstories.order_by(story_date_order)
-                # A full page may have more.
-                has_more = len(indexed_tag_story_hashes) >= limit
             elif feed_ids:
                 params = {
                     "user_id": user.pk,
@@ -2899,6 +2889,7 @@ def load_river_stories__redis(request):
                     "metrics_source": "river_request",
                 }
                 story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+                has_more = len(story_hashes) >= effective_limit
 
                 def fetch_more_story_hashes(fetch_limit):
                     refill_params = dict(params)
@@ -2913,9 +2904,6 @@ def load_river_stories__redis(request):
                     effective_limit,
                     fetch_more=fetch_more_story_hashes,
                 )
-                # The river is merged from many feeds and cached, so one story past
-                # the page cannot ride along: a full page may have more.
-                has_more = len(story_hashes) >= effective_limit
             else:
                 story_hashes = []
                 unread_feed_story_hashes = []
@@ -2927,7 +2915,7 @@ def load_river_stories__redis(request):
     if is_free_river_user or page >= MAX_STORY_PAGE:
         has_more = False
     if classifier_filter_type and classifier_filter_value:
-        # has_more still counts the unfiltered stories, so it may be true with no match left.
+        # has_more counts the stories before this filter, so a short or empty page can still say true.
         stories = filter_stories_by_classifier(stories, classifier_filter_type, classifier_filter_value)
 
     checkpoint1 = time.time()
