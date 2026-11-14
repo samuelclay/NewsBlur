@@ -652,6 +652,212 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor final class Test_ReaderMotion: XCTestCase {
+    func test_feedEntranceWorkDoesNotGrowWithOffscreenFolders() throws {
+        // StoryReadStateAnimationTests.swift protects filter responsiveness: scanning preceding folders per visible row made large subscriptions stall.
+        func displayWork(sectionCount: Int) throws -> Int {
+            let controller = ReaderMotionFeedsController()
+            let table = ReaderMotionLargeFeedTable(frame: CGRect(x: 0, y: 0, width: 320, height: 500))
+            table.sectionCount = sectionCount
+            table.contentOffset = CGPoint(x: 0, y: 120)
+            let header = UIView(frame: CGRect(x: 0, y: 120, width: 320, height: 45))
+            let cells = (0..<5).map { row -> UITableViewCell in
+                let cell = feedMotionCell(frame: CGRect(x: 0, y: 165 + row * 45, width: 320, height: 45))
+                cell.accessibilityIdentifier = "large-list-feed-\(row)"
+                return cell
+            }
+            table.displayedCells = cells
+            table.addSubview(header)
+            cells.forEach(table.addSubview)
+            controller.feedTitlesTable = table
+            controller.setValue(NSMutableDictionary(dictionary: [NSNumber(value: sectionCount - 1): header]), forKey: "folderTitleViews")
+            let window = motionWindow(containing: [table])
+            defer { window.isHidden = true }
+            table.offscreenGeometryReads = 0
+            let delegate: UITableViewDelegate = controller
+            for (row, cell) in cells.enumerated() {
+                delegate.tableView?(table, willDisplay: cell, forRowAt: IndexPath(row: row, section: sectionCount - 1))
+            }
+            delegate.tableView?(table, willDisplayHeaderView: header, forSection: sectionCount - 1)
+            ReaderMotion.presentFeedRows(table, owner: controller)
+            XCTAssertNotNil(header.layer.animation(forKey: "readerEntrance"))
+            XCTAssertTrue(cells.allSatisfy { $0.layer.animation(forKey: "readerEntrance") != nil })
+            return table.offscreenGeometryReads
+        }
+        let smallListWork = try displayWork(sectionCount: 20)
+        let largeListWork = try displayWork(sectionCount: 1000)
+        print("Feed motion offscreen geometry reads: 20 folders=\(smallListWork), 1000 folders=\(largeListWork)")
+        XCTAssertLessThanOrEqual(largeListWork, smallListWork + 100,
+                                 "The same six visible items must not scan thousands of offscreen folders to animate")
+    }
+
+    func test_pinnedFolderEntersBeforeItsFirstVisibleFeedAfterFilterReset() throws {
+        // StoryReadStateAnimationTests.swift keeps a pinned header in the sequence after its original content frame scrolls away.
+        let controller = ReaderMotionFeedsController()
+        let table = ReaderMotionFeedOrderTable(frame: CGRect(x: 0, y: 0, width: 320, height: 500))
+        table.contentOffset = CGPoint(x: 0, y: 120)
+        let header = UIView(frame: CGRect(x: 0, y: 120, width: 320, height: 45))
+        let cell = feedMotionCell(frame: CGRect(x: 0, y: 165, width: 320, height: 45))
+        cell.accessibilityIdentifier = "feed-below-pinned-folder"
+        table.displayedCells = [cell]
+        table.addSubview(header)
+        table.addSubview(cell)
+        controller.feedTitlesTable = table
+        controller.setValue(NSMutableDictionary(dictionary: [NSNumber(value: 1): header]), forKey: "folderTitleViews")
+        let window = motionWindow(containing: [table])
+        defer { window.isHidden = true }
+        let delegate: UITableViewDelegate = controller
+        delegate.tableView?(table, willDisplay: cell, forRowAt: IndexPath(row: 0, section: 1))
+        delegate.tableView?(table, willDisplayHeaderView: header, forSection: 1)
+        ReaderMotion.presentFeedRows(table, owner: controller)
+
+        XCTAssertLessThan(try XCTUnwrap(header.layer.animation(forKey: "readerEntrance")).beginTime,
+                          try XCTUnwrap(cell.layer.animation(forKey: "readerEntrance")).beginTime)
+    }
+
+    func test_rapidFeedFilterChangesApplyImmediatelyWithoutAnOutgoingOverlay() throws {
+        // StoryReadStateAnimationTests.swift protects immediate cached filtering without snapshot fades or blocking HUDs.
+        let defaults = UserDefaults.standard
+        let oldIntelligence = defaults.object(forKey: "selectedIntelligence")
+        defer {
+            if let oldIntelligence { defaults.set(oldIntelligence, forKey: "selectedIntelligence") }
+            else { defaults.removeObject(forKey: "selectedIntelligence") }
+        }
+        let controller = ReaderMotionFeedsController()
+        controller.appDelegate = NewsBlurAppDelegate()
+        controller.appDelegate.selectedIntelligence = 0
+        let table = ReaderMotionFeedOrderTable(frame: CGRect(x: 0, y: 0, width: 320, height: 500))
+        let header = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 45))
+        table.addSubview(header)
+        controller.view = UIView(frame: table.frame)
+        controller.view.addSubview(table)
+        controller.feedTitlesTable = table
+        controller.intelligenceControl = UISegmentedControl(items: ["All", "Unread", "Focus", "Saved"])
+        controller.intelligenceControl.selectedSegmentIndex = 1
+        let window = motionWindow(containing: [controller.view])
+        defer { window.isHidden = true }
+        let delegate: UITableViewDelegate = controller
+        delegate.tableView?(table, willDisplayHeaderView: header, forSection: 1)
+        ReaderMotion.presentFeedRows(table, owner: controller)
+
+        for (segment, intelligence, showsAll) in [(0, 0, true), (2, 1, false), (3, 2, false), (1, 0, false)] {
+            controller.intelligenceControl.selectedSegmentIndex = segment
+            controller.selectIntelligence()
+            XCTAssertEqual(controller.appDelegate.selectedIntelligence, intelligence)
+            XCTAssertEqual(controller.viewShowingAllFeeds, showsAll)
+            XCTAssertNotNil(header.layer.animation(forKey: "readerEntrance"))
+            XCTAssertTrue(controller.view.subviews.allSatisfy { $0 === table }, "Only the current list should remain above the filter controls")
+            XCTAssertTrue(table.isUserInteractionEnabled)
+        }
+    }
+
+    func test_changingFeedFilterReentersFoldersAndSitesButSelectingItAgainDoesNot() throws {
+        // StoryReadStateAnimationTests.swift protects filter transitions even when a folder and feed survive both filters.
+        let defaults = UserDefaults.standard
+        let oldIntelligence = defaults.object(forKey: "selectedIntelligence")
+        defer {
+            if let oldIntelligence { defaults.set(oldIntelligence, forKey: "selectedIntelligence") }
+            else { defaults.removeObject(forKey: "selectedIntelligence") }
+        }
+        let controller = ReaderMotionFeedsController()
+        controller.appDelegate = NewsBlurAppDelegate()
+        controller.appDelegate.selectedIntelligence = 0
+        let table = ReaderMotionFeedOrderTable(frame: CGRect(x: 0, y: 0, width: 320, height: 500))
+        let header = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 45))
+        let cell = feedMotionCell(frame: CGRect(x: 0, y: 45, width: 320, height: 45))
+        cell.accessibilityIdentifier = "surviving-filter-feed"
+        table.displayedCells = [cell]
+        controller.view = UIView(frame: table.frame)
+        controller.view.addSubview(table)
+        table.addSubview(header)
+        table.addSubview(cell)
+        controller.feedTitlesTable = table
+        controller.intelligenceControl = UISegmentedControl(items: ["All", "Unread", "Focus", "Saved"])
+        controller.intelligenceControl.selectedSegmentIndex = 1
+        controller.setValue(NSMutableDictionary(dictionary: [NSNumber(value: 1): header]), forKey: "folderTitleViews")
+        table.delegate = controller
+        let window = motionWindow(containing: [controller.view])
+        defer { window.isHidden = true }
+        controller.viewIsAppearing(false)
+        let delegate: UITableViewDelegate = controller
+        delegate.tableView?(table, willDisplayHeaderView: header, forSection: 1)
+        delegate.tableView?(table, willDisplay: cell, forRowAt: IndexPath(row: 0, section: 1))
+        ReaderMotion.presentFeedRows(table, owner: controller)
+        let oldHeaderStart = try XCTUnwrap(header.layer.animation(forKey: "readerEntrance")).beginTime
+
+        controller.intelligenceControl.selectedSegmentIndex = 2
+        controller.selectIntelligence()
+
+        let changedHeader = try XCTUnwrap(header.layer.animation(forKey: "readerEntrance"))
+        let changedFeed = try XCTUnwrap(cell.layer.animation(forKey: "readerEntrance"))
+        XCTAssertNotEqual(changedHeader.beginTime, oldHeaderStart)
+        XCTAssertLessThan(changedHeader.beginTime, changedFeed.beginTime)
+        controller.selectIntelligence()
+        XCTAssertEqual(try XCTUnwrap(header.layer.animation(forKey: "readerEntrance")).beginTime, changedHeader.beginTime)
+    }
+
+    func test_feedAppearanceIncludesHeadersPreparedBeforeTheWindowAttaches() throws {
+        // StoryReadStateAnimationTests.swift protects startup headers whose willDisplay callback precedes attachment.
+        let controller = ReaderMotionFeedsController()
+        let table = ReaderMotionFeedOrderTable(frame: CGRect(x: 0, y: 0, width: 320, height: 500))
+        let header = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 45))
+        let cell = feedMotionCell(frame: CGRect(x: 0, y: 45, width: 320, height: 45))
+        cell.accessibilityIdentifier = "prepared-feed"
+        table.displayedCells = [cell]
+        controller.view = UIView(frame: table.frame)
+        controller.view.addSubview(table)
+        table.addSubview(header)
+        table.addSubview(cell)
+        controller.feedTitlesTable = table
+        controller.setValue(NSMutableDictionary(dictionary: [NSNumber(value: 1): header]), forKey: "folderTitleViews")
+        table.delegate = controller
+        controller.tableView(table, willDisplayHeaderView: header, forSection: 1)
+        controller.tableView(table, willDisplay: cell, forRowAt: IndexPath(row: 0, section: 1))
+        XCTAssertNil(header.layer.animation(forKey: "readerEntrance"))
+        XCTAssertNil(cell.layer.animation(forKey: "readerEntrance"))
+
+        let window = motionWindow(containing: [controller.view])
+        defer { window.isHidden = true }
+        controller.viewIsAppearing(false)
+
+        let headerStart = try XCTUnwrap(header.layer.animation(forKey: "readerEntrance")).beginTime
+        let feedStart = try XCTUnwrap(cell.layer.animation(forKey: "readerEntrance")).beginTime
+        XCTAssertLessThan(headerStart, feedStart)
+        controller.viewIsAppearing(false)
+        XCTAssertEqual(try XCTUnwrap(header.layer.animation(forKey: "readerEntrance")).beginTime, headerStart,
+                       "Returning to the feed list must not restart its already visible folders")
+    }
+
+    func test_feedFoldersAndSitesShareOneStrictScreenOrder() throws {
+        // StoryReadStateAnimationTests.swift protects the visible sequence from treating a header and its first feed as the same row.
+        let controller = FeedsObjCViewController()
+        let table = ReaderMotionFeedOrderTable(frame: CGRect(x: 0, y: 0, width: 320, height: 500))
+        let topLevel = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 45))
+        let folder = UIView(frame: CGRect(x: 0, y: 45, width: 320, height: 45))
+        let firstFeed = feedMotionCell(frame: CGRect(x: 0, y: 90, width: 320, height: 45))
+        firstFeed.accessibilityIdentifier = "feed-order-first"
+        let secondFeed = feedMotionCell(frame: CGRect(x: 0, y: 135, width: 320, height: 45))
+        secondFeed.accessibilityIdentifier = "feed-order-second"
+        let nextFolder = UIView(frame: CGRect(x: 0, y: 180, width: 320, height: 45))
+        let orderedViews: [UIView] = [topLevel, folder, firstFeed, secondFeed, nextFolder]
+        orderedViews.forEach(table.addSubview)
+        let window = motionWindow(containing: [table])
+        defer { window.isHidden = true }
+        let delegate: UITableViewDelegate = controller
+
+        // StoryReadStateAnimationTests.swift reproduces UIKit delivering headers and cells in separate passes.
+        delegate.tableView?(table, willDisplay: secondFeed, forRowAt: IndexPath(row: 1, section: 1))
+        delegate.tableView?(table, willDisplay: firstFeed, forRowAt: IndexPath(row: 0, section: 1))
+        delegate.tableView?(table, willDisplayHeaderView: nextFolder, forSection: 2)
+        delegate.tableView?(table, willDisplayHeaderView: folder, forSection: 1)
+        delegate.tableView?(table, willDisplayHeaderView: topLevel, forSection: 0)
+        ReaderMotion.presentFeedRows(table, owner: controller)
+
+        let starts = try orderedViews.map { try XCTUnwrap($0.layer.animation(forKey: "readerEntrance")).beginTime }
+        for index in 1..<starts.count {
+            XCTAssertLessThan(starts[index - 1], starts[index], "Each folder and site must enter after the item above it")
+        }
+    }
+
     func test_returningToPreviouslyPresentedListDoesNotHideNewlyPreparedRows() {
         let owner = FeedDetailObjCViewController()
         let session = ReaderMotion.session(owner)
@@ -720,6 +926,34 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         XCTAssertNotNil(toolbar.listenButton.layer.animation(forKey: "readerControlChange"))
         XCTAssertNil(toolbar.backButton.layer.animation(forKey: "readerEntrance"))
         XCTAssertNil(toolbar.settingsButton.layer.animation(forKey: "readerControlChange"))
+    }
+
+    func test_controlMotionIgnoresDecorativeSubviewsButTracksItsVisibleTitle() throws {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 60))
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 160, height: 44))
+        button.accessibilityLabel = "Back to story titles"
+        let title = UILabel(frame: button.bounds)
+        title.text = "Swift Weekly"
+        button.addSubview(title)
+        container.addSubview(button)
+        let window = motionWindow(containing: [container])
+        defer { window.isHidden = true }
+        ReaderMotion.controls([button], in: container)
+        button.layer.removeAllAnimations()
+
+        // StoryReadStateAnimationTests.swift models UIKit adding and naming a decorative symbol during layout.
+        let icon = UIImageView()
+        button.addSubview(icon)
+        ReaderMotion.controls([button], in: container)
+        XCTAssertTrue(button.layer.animationKeys()?.isEmpty ?? true)
+        icon.accessibilityLabel = "audiobook"
+        ReaderMotion.controls([button], in: container)
+        XCTAssertTrue(button.layer.animationKeys()?.isEmpty ?? true)
+
+        title.text = "Design Notes"
+        ReaderMotion.controls([button], in: container)
+        XCTAssertNotNil(button.layer.animation(forKey: "readerControlChange"))
+        XCTAssertNil(button.layer.animation(forKey: "readerEntrance"))
     }
 
     func test_traversalEntranceCascadesIndividualControls() throws {
@@ -926,6 +1160,13 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         XCTAssertNotNil(session.start(for: "next-feed-card", frame: viewport, viewport: viewport))
     }
 
+    private func feedMotionCell(frame: CGRect) -> UITableViewCell {
+        // StoryReadStateAnimationTests.swift supplies the settled table layout after UIKit initializes its default cell frame.
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.frame = frame
+        return cell
+    }
+
     private func motionWindow(containing views: [UIView]) -> UIWindow {
         let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
         let host = UIViewController()
@@ -998,7 +1239,7 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         let dark = try XCTUnwrap(cell.layer.animation(forKey: "readerLoadingPulse") as? CABasicAnimation)
         XCTAssertEqual(first.beginTime, dark.beginTime)
         let color = try XCTUnwrap(cell.backgroundColor)
-        XCTAssertEqual(color, ThemeManager.shared.color(fromLightRGB: 0x5C89C9, darkRGB: 0x666666))
+        XCTAssertEqual(color, ThemeManager.shared.storyListBackgroundColor)
         XCTAssertFalse((first.fromValue as! CGColor) == (dark.fromValue as! CGColor))
         cell.endAnimation()
     }
@@ -1108,6 +1349,55 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         displayedRows += 1
     }
+}
+
+@MainActor private final class ReaderMotionFeedOrderTable: UITableView {
+    var displayedCells = [UITableViewCell]()
+    // StoryReadStateAnimationTests.swift supplies fixed visible geometry rather than asking UIKit to create another data source's views.
+    override func layoutSubviews() {}
+    override var numberOfSections: Int { 3 }
+    override func numberOfRows(inSection section: Int) -> Int { section == 1 ? 2 : 0 }
+    override var visibleCells: [UITableViewCell] { displayedCells }
+    override var indexPathsForVisibleRows: [IndexPath]? { displayedCells.indices.map { IndexPath(row: $0, section: 1) } }
+    override func rectForHeader(inSection section: Int) -> CGRect {
+        section == 1 ? CGRect(x: 0, y: 45, width: 320, height: 45) : .zero
+    }
+    override func indexPath(for cell: UITableViewCell) -> IndexPath? {
+        displayedCells.firstIndex(of: cell).map { IndexPath(row: $0, section: 1) }
+    }
+    override func reloadRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {}
+    override func scrollToRow(at indexPath: IndexPath, at scrollPosition: UITableView.ScrollPosition, animated: Bool) {}
+}
+
+@MainActor private final class ReaderMotionLargeFeedTable: UITableView {
+    var sectionCount = 20
+    var displayedCells = [UITableViewCell]()
+    var offscreenGeometryReads = 0
+    override func layoutSubviews() {}
+    override var numberOfSections: Int { sectionCount }
+    override func numberOfRows(inSection section: Int) -> Int {
+        if section < sectionCount - 1 { offscreenGeometryReads += 1 }
+        return 5
+    }
+    override func rectForHeader(inSection section: Int) -> CGRect {
+        if section < sectionCount - 1 { offscreenGeometryReads += 1 }
+        return .zero
+    }
+    override var visibleCells: [UITableViewCell] { displayedCells }
+    override var indexPathsForVisibleRows: [IndexPath]? {
+        displayedCells.indices.map { IndexPath(row: $0, section: sectionCount - 1) }
+    }
+    override func indexPath(for cell: UITableViewCell) -> IndexPath? {
+        displayedCells.firstIndex(of: cell).map { IndexPath(row: $0, section: sectionCount - 1) }
+    }
+}
+
+@MainActor private final class ReaderMotionFeedsController: FeedsObjCViewController {
+    override func viewDidLoad() {}
+    override func viewDidLayoutSubviews() {}
+    override func calculateFeedLocations() {}
+    override func reloadFeedTitlesTable() {}
+    override func showExplainerOnEmptyFeedlist() {}
 }
 
 @MainActor private final class ReaderMotionThemeAppDelegate: NewsBlurAppDelegate {

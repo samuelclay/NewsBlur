@@ -35,6 +35,11 @@ import SwiftUI
     func didAppear() { hasPresented = true; presentationReady = true }
     func hasSeen(_ key: String) -> Bool { seen.contains(key) }
     func recordStart(_ start: CFTimeInterval, key: String) { starts[key] = start }
+    func start(for key: String, at time: CFTimeInterval) -> CFTimeInterval? {
+        guard !entrancesStopped, presentationReady, seen.insert(key).inserted else { return nil }
+        starts[key] = time
+        return time
+    }
     func ongoingStart(for key: String) -> CFTimeInterval? {
         guard !entrancesStopped, let start = starts[key], CACurrentMediaTime() < start + 0.36 else { return nil }
         return start
@@ -107,7 +112,12 @@ import SwiftUI
     }
 
     private static var sessionKey: UInt8 = 0
+    private static var feedPresentationKey: UInt8 = 0
     private static let waitingViews = NSHashTable<UIView>.weakObjects()
+    private final class FeedPresentation: NSObject {
+        let views = NSMapTable<UIView, NSString>.weakToStrongObjects()
+        var isPresenting = false
+    }
     private static let reduceMotionObserver = NotificationCenter.default.addObserver(
         forName: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil, queue: .main
     ) { _ in
@@ -140,7 +150,9 @@ import SwiftUI
         if session.hasSeen(key), view.layer.animation(forKey: "readerEntrance") != nil { return }
         guard let start = session.start(for: key, position: position, maximumDelay: scrolling ? 0.09 : 0.175)
             ?? session.ongoingStart(for: key) else { return }
-        animateEntrance(view, start: start, distance: scrolling ? 8 : 16)
+        let isFeedList = owner is FeedsObjCViewController
+        animateEntrance(view, start: start, distance: scrolling ? 8 : (isFeedList ? 12 : 16),
+                        fadeDuration: isFeedList ? 0.24 : 0.18)
     }
 
     private static func prepareRow(_ view: UIView, key: String, owner: NSObject, session: ReaderMotionSession) -> Bool {
@@ -183,6 +195,64 @@ import SwiftUI
         for cell in table.visibleCells {
             guard let path = table.indexPath(for: cell) else { continue }
             table.delegate?.tableView?(table, willDisplay: cell, forRowAt: path)
+        }
+    }
+
+    private static func feedPresentation(_ owner: NSObject) -> FeedPresentation {
+        if let presentation = objc_getAssociatedObject(owner, &feedPresentationKey) as? FeedPresentation { return presentation }
+        let presentation = FeedPresentation()
+        objc_setAssociatedObject(owner, &feedPresentationKey, presentation, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        return presentation
+    }
+
+    static func registerFeedView(_ view: UIView, key: String, owner: NSObject) {
+        let views = feedPresentation(owner).views
+        if let previous = views.object(forKey: view), previous as String != key {
+            view.layer.removeAnimation(forKey: "readerEntrance")
+        }
+        views.setObject(key as NSString, forKey: view)
+    }
+
+    static func removeFeedView(_ view: UIView, owner: NSObject) {
+        feedPresentation(owner).views.removeObject(forKey: view)
+        view.layer.removeAnimation(forKey: "readerEntrance")
+    }
+
+    static func presentFeedRows(_ table: UITableView?, owner: NSObject) {
+        guard let table, visible(table) else { return }
+        let presentation = feedPresentation(owner)
+        guard !presentation.isPresenting else { return }
+        presentation.isPresenting = true
+        defer { presentation.isPresenting = false }
+        let session = session(owner)
+        session.didAppear()
+        let viewport = table.bounds.inset(by: table.adjustedContentInset)
+        // ReaderMotion.swift collects only registered display views; querying table rows here can re-enter UIKit layout.
+        let rows = presentation.views.keyEnumerator().allObjects.compactMap { object -> (UIView, String, CGRect)? in
+            guard let view = object as? UIView, visible(view), view.isDescendant(of: table),
+                  let key = presentation.views.object(forKey: view) as String? else { return nil }
+            let frame = view.convert(view.bounds, to: table)
+            guard frame.width > 0, frame.height > 0, frame.intersects(viewport) else { return nil }
+            return (view, key, frame)
+        }.sorted { left, right in
+            left.2.minY == right.2.minY ? left.2.minX < right.2.minX : left.2.minY < right.2.minY
+        }
+        let enteringCount = rows.filter { !session.hasSeen($0.1) }.count
+        let maximumDelay = table.isDragging || table.isDecelerating ? 0.09 : 0.175
+        let step = enteringCount > 1 ? min(0.035, maximumDelay / Double(enteringCount - 1)) : 0
+        let batchStart = CACurrentMediaTime()
+        var nextPosition = 0
+        for (view, key, _) in rows {
+            guard prepareRow(view, key: key, owner: owner, session: session) else { continue }
+            if session.hasSeen(key), view.layer.animation(forKey: "readerEntrance") != nil { continue }
+            let start: CFTimeInterval?
+            if session.hasSeen(key) {
+                start = session.ongoingStart(for: key)
+            } else {
+                start = session.start(for: key, at: batchStart + Double(nextPosition) * step)
+                nextPosition += 1
+            }
+            if let start { animateEntrance(view, start: start, distance: 12, fadeDuration: 0.24) }
         }
     }
 
@@ -241,7 +311,7 @@ import SwiftUI
         animateEntrance(view, start: CACurrentMediaTime() + delay, distance: distance)
     }
 
-    private static func animateEntrance(_ view: UIView, start: CFTimeInterval, distance: CGFloat) {
+    private static func animateEntrance(_ view: UIView, start: CFTimeInterval, distance: CGFloat, fadeDuration: Double = 0.18) {
         view.layer.removeAnimation(forKey: "readerEntrance")
         guard !UIAccessibility.isReduceMotionEnabled else { return }
         // ReaderMotion.swift uses additive presentation motion so toolbar and swipe transforms remain owned by navigation.
@@ -256,7 +326,7 @@ import SwiftUI
         lift.mass = 1; lift.stiffness = 300; lift.damping = 23
         lift.duration = 0.36
         let fade = CABasicAnimation(keyPath: "opacity")
-        fade.fromValue = 0; fade.toValue = view.layer.opacity; fade.duration = 0.18
+        fade.fromValue = 0; fade.toValue = view.layer.opacity; fade.duration = fadeDuration
         let group = CAAnimationGroup()
         group.animations = [lift, fade]; group.duration = 0.36
         group.beginTime = view.layer.convertTime(start, from: nil)
@@ -309,8 +379,15 @@ import SwiftUI
             return
         }
         func label(_ view: UIView) -> String {
-            ([view.accessibilityLabel ?? "", (view as? UILabel)?.text ?? "",
-              (view as? UIButton)?.currentTitle ?? ""] + view.subviews.map(label)).joined(separator: "|")
+            // ReaderMotion.swift ignores UIKit's lazy decorative image labels while retaining custom button titles.
+            func titles(_ child: UIView) -> [String] {
+                [(child as? UILabel)?.text, (child as? UIButton)?.currentTitle].compactMap { $0 }
+                    + child.subviews.flatMap(titles)
+            }
+            var seen = Set<String>()
+            return ([view.accessibilityLabel].compactMap { $0 } + titles(view))
+                .filter { !$0.isEmpty && seen.insert($0).inserted }
+                .joined(separator: "|")
         }
         var states = [ObjectIdentifier: ControlState]()
         var entering = [UIView]()

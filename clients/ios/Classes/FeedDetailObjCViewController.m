@@ -244,7 +244,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     self.storyHeightCache = [[NSCache alloc] init];
     self.storyHeightCache.countLimit = 1024;
     
-    self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.storyTitlesTable.backgroundColor = ThemeManager.shared.storyListBackgroundColor;
     self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xD4C8B8, 0x383838, 0x222222);
     self.storyTitlesTable.accessibilityIdentifier = @"story-titles-list";
     self.storyTitlesTable.prefetchDataSource = self;
@@ -256,7 +256,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.storyTitlesTable.dragDelegate = self;
         self.storyTitlesTable.dragInteractionEnabled = YES;
     }
-    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.view.backgroundColor = ThemeManager.shared.storyListBackgroundColor;
 
 #if !TARGET_OS_MACCATALYST
     self.refreshControl = [UIRefreshControl new];
@@ -7563,8 +7563,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         self.searchField.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
-    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    self.view.backgroundColor = ThemeManager.shared.storyListBackgroundColor;
+    self.storyTitlesTable.backgroundColor = ThemeManager.shared.storyListBackgroundColor;
     self.storyTitlesTable.separatorColor = UIColorFromLightSepiaMediumDarkRGB(0xE9E8E4, 0xD4C8B8, 0x383838, 0x222222);
     if (@available(iOS 13.0, *)) {
         self.storyTitlesTable.overrideUserInterfaceStyle = ThemeManager.shared.isDarkTheme ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;

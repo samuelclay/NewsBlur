@@ -254,6 +254,11 @@ NSString * const ThemeStyleDark = @"dark";
     return [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
 }
 
+- (UIColor *)storyListBackgroundColor {
+    // ThemeManager.m keeps loading, uncovered row backs and settled story artwork on one surface.
+    return [self colorFromLightRGB:0xF4F4F4 sepiaRGB:0xF3E2CB mediumRGB:0x4F4F4F darkRGB:0x000000];
+}
+
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue darkRGB:(NSUInteger)darkRGBValue {
     NSInteger rgbValue = lightRGBValue;
     

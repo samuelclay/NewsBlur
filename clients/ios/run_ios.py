@@ -23,6 +23,7 @@ Actions:
     sleep:<seconds>       - Wait for specified seconds
     swipe:<x1>,<y1>,<x2>,<y2> - Swipe from point to point
     swipe:<x1>,<y1>,<x2>,<y2>,<seconds> - Swipe with an explicit duration
+    rotate:<orientation>  - Set PORTRAIT, LANDSCAPE_LEFT, or LANDSCAPE_RIGHT
     capture:<directory>   - Record video, CPU samples, and optional app measurements
     coldcapture:<directory> - Record an app restart, preserving its data and login
     checkpoint:<name>     - Timestamp a navigation/load event in the current capture
@@ -39,6 +40,7 @@ Actions:
     terminate             - Terminate the NewsBlur app
     install               - Install the app from DerivedData
     restoreprefs:<path>   - Restore app preferences from a plist after fixture testing
+    backupprefs:<path>    - Save app preferences before fixture testing
 
 Examples:
     python3 run_ios.py list
@@ -427,6 +429,17 @@ def do_restore_preferences(path):
     print("  Restored app preferences")
 
 
+def do_backup_preferences(path):
+    """run_ios.py pairs fixture preference backups with restoreprefs without copying account data."""
+    container = subprocess.check_output(
+        ["xcrun", "simctl", "get_app_container", UDID, BUNDLE_ID, "data"], text=True
+    ).strip()
+    domain = os.path.join(container, "Library", "Preferences", BUNDLE_ID)
+    subprocess.run(["xcrun", "simctl", "spawn", UDID, "defaults", "export", domain,
+                    os.path.abspath(path)], check=True)
+    print("  Saved app preferences")
+
+
 def do_install():
     """Install the app from DerivedData."""
     print("  Installing NewsBlur...")
@@ -465,6 +478,11 @@ def parse_and_execute(action):
         do_sleep(arg)
     elif cmd == "swipe":
         do_swipe(arg)
+    elif cmd == "rotate":
+        orientation = arg.upper()
+        if orientation not in {"PORTRAIT", "PORTRAIT_UPSIDE_DOWN", "LANDSCAPE_LEFT", "LANDSCAPE_RIGHT"}:
+            raise ValueError("Unsupported simulator orientation")
+        subprocess.run(["idb", "ui", "rotate", "--udid", UDID, orientation], check=True)
     elif cmd == "capture":
         do_capture(arg)
     elif cmd == "coldcapture":
@@ -500,6 +518,8 @@ def parse_and_execute(action):
         do_install()
     elif cmd == "restoreprefs":
         do_restore_preferences(arg)
+    elif cmd == "backupprefs":
+        do_backup_preferences(arg)
     elif cmd == "list":
         do_list()
     else:

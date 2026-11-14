@@ -20,7 +20,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = UIColorFromLightDarkRGB(0x5C89C9, 0x666666);
+        self.backgroundColor = ThemeManager.shared.storyListBackgroundColor;
         animating = YES;
     }
     return self;
@@ -41,8 +41,14 @@
 - (void)animate {
     if (!self.window || !self.superview.window) return;
     animating = YES;
-    UIColor *base = UIColorFromLightDarkRGB(0x5C89C9, 0x666666);
-    UIColor *highlight = UIColorFromLightDarkRGB(0xE1EBFF, 0x222222);
+    UIColor *base = ThemeManager.shared.storyListBackgroundColor;
+    CGFloat red, green, blue, alpha;
+    [base getRed:&red green:&green blue:&blue alpha:&alpha];
+    // NBLoadingCell.m signals activity without flashing a dark block before the story entrance.
+    UIColor *highlight = [UIColor colorWithRed:MIN(red + 0.04, 1)
+                                        green:MIN(green + 0.04, 1)
+                                         blue:MIN(blue + 0.04, 1)
+                                        alpha:alpha];
     CABasicAnimation *existing = (CABasicAnimation *)[self.layer animationForKey:@"readerLoadingPulse"];
     if (UIAccessibilityIsReduceMotionEnabled()) {
         [self.layer removeAnimationForKey:@"readerLoadingPulse"];
