@@ -61,9 +61,9 @@ class RLLMCosts:
         Record an LLM API call in Redis.
 
         Args:
-            provider: Provider name (anthropic, openai, google, xai)
+            provider: Provider name (anthropic, openai, google, xai, elevenlabs)
             model: Model identifier
-            feature: Feature name (archive_assistant, ask_ai, etc.)
+            feature: Feature name (archive_assistant, ask_ai, listen, etc.)
             input_tokens: Number of input tokens
             output_tokens: Number of output tokens
             cost_usd: Cost in USD (float)
@@ -160,7 +160,7 @@ class RLLMCosts:
         pipe.execute()
 
     # Known dimensions for direct key lookups (avoid scan_iter)
-    PROVIDERS = ["anthropic", "openai", "google", "xai"]
+    PROVIDERS = ["anthropic", "openai", "google", "xai", "elevenlabs"]
     FEATURES = [
         "archive_assistant",
         "ask_ai",
@@ -182,6 +182,7 @@ class RLLMCosts:
         "backfill_underpopulated_feeds",
         "generate_popular_feeds_taxonomy",
         "global_shared",
+        "listen",
     ]
     CLASSIFIER_FEATURES = ["story_classification", "vision_classification"]
     METRICS = ["tokens", "cost", "requests"]

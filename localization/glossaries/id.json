@@ -135,10 +135,21 @@
     },
     {
       "concept": "Like / Dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Suka / Tidak suka; Super Dislike → Sangat Tidak Suka",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Suka / Tidak suka; Hide (the level above Like, formerly Super Dislike) → Sembunyikan",
       "avoid": [],
       "note": "beats → ‘>’ or ‘mengalahkan’ (Like outranks Dislike)."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Sembunyikan",
+      "avoid": [
+        "Sangat Tidak Suka",
+        "Sangat tidak suka",
+        "sangat tidak suka"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (Sembunyikan mengalahkan semuanya). The old Super dislike names are retired."
     },
     {
       "concept": "Hidden",

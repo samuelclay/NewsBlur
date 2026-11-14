@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Wracają przyciski na tabletach: rozwiń listę kanałów, tytuły artykułów lub artykuł na pełny ekran, niezależnie od pozostałych paneli. Przeciągnij separatory, aby zmienić rozmiar paneli; NewsBlur zapamięta ich szerokość.\n\nZawiera interfejs w 21 językach i przyciski następnego artykułu w stałym miejscu z wersji 16.0."
+  },
+  "macos": {
+    "whats_new": "Ta aktualizacja ułatwia czytanie na Macu.\n\nSpacja przewija artykuł w dół, a po dotarciu do końca otwiera następny nieprzeczytany artykuł. Shift-Spacja przewija w górę, a na początku wraca do poprzedniego artykułu. Wybierz, o ile ma przewijać każde naciśnięcie, w Preferencjach lub Skrótach klawiszowych.\n\nOtwórz Skróty klawiszowe bezpośrednio z menu ustawień artykułu.\n\nNewsBlur zapamiętuje teraz rozmiar i położenie okna po zamknięciu i ponownym otwarciu aplikacji.\n\nZaktualizowano też nazwy modeli w funkcji Zapytaj AI."
   }
 }

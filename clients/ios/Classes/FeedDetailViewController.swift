@@ -241,11 +241,13 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 
     override func resetFeedDetail() {
         cancelTryFeedRefresh()
+        lastShownStoryLocation = nil
         super.resetFeedDetail()
     }
 
     override func reloadStories() {
         cancelTryFeedRefresh()
+        lastShownStoryLocation = nil
         super.reloadStories()
     }
 
@@ -371,6 +373,9 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     private var dailyBriefingViewController: UIHostingController<DailyBriefingRootView>?
     
     lazy var storyCache = StoryCache()
+
+    /// The location of the story list row that last came on screen, which StoryScoreRefresher.swift refreshes around.
+    private(set) var lastShownStoryLocation: Int?
 
     private lazy var dailyBriefingStore = DailyBriefingStore(controller: self)
 
@@ -965,6 +970,8 @@ extension FeedDetailViewController: FeedDetailInteraction {
         guard storiesCollection.activeFeedStories != nil, !isDashboard else {
             return
         }
+
+        lastShownStoryLocation = story.index
 
         let cacheCount = storyCache.before.count + storyCache.after.count
 

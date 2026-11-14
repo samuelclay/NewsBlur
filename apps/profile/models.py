@@ -43,6 +43,7 @@ from zebra.signals import (
 
 from apps.ask_ai.usage import AskAIUsageTracker
 from apps.feed_import.models import OPMLExporter
+from apps.listen.models import MListenDaily
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
@@ -232,6 +233,27 @@ class Profile(models.Model):
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
         return price
 
+    @staticmethod
+    def is_usage_billing_subscription(subscription):
+        """True for the AI classifier metered sub that setup_usage_billing creates (apps/profile/views.py).
+
+        It shares the Stripe customer with the yearly tier sub, so switching, canceling, and
+        reactivating the tier sub must all skip it (apps/profile/models.py).
+        """
+        usage_price_ids = set(
+            filter(
+                None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION]
+            )
+        )
+        if not usage_price_ids:
+            return False
+        items = subscription.get("items")
+        for item in items["data"] if items else []:
+            price = item.get("price")
+            if price and price.get("id") in usage_price_ids:
+                return True
+        return False
+
     @classmethod
     def plan_to_paypal_plan_id(cls, plan):
         price = None
@@ -394,6 +416,13 @@ class Profile(models.Model):
             "has_found_friends": self.has_found_friends,
             "has_trained_intelligence": self.has_trained_intelligence,
             "dashboard_date": self.dashboard_date,
+            # models.py: AI classifier billing state for the iOS and Android apps, which read
+            # user_profile from /reader/feeds. The web gets the same values from
+            # templates/base.html NEWSBLUR.Globals.
+            "is_usage_billing": bool(self.is_usage_billing),
+            "is_self_hosted_ai": self.is_self_hosted_ai,
+            "can_use_ai_classifiers": self.can_use_ai_classifiers,
+            "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
         }
 
     def save(self, *args, **kwargs):
@@ -527,7 +556,8 @@ class Profile(models.Model):
         cancellation_succeeded = False
         try:
             if not fast:
-                self.cancel_premium(force=True)
+                # A deleted account has nothing left to classify, so usage billing stops too.
+                self.cancel_premium(force=True, include_usage_billing=True)
                 cancellation_succeeded = True
         except Exception as e:
             logging.user(
@@ -1116,6 +1146,11 @@ class Profile(models.Model):
         existing_subscription = None
         existing_plan = None
         for subscription in stripe_subscriptions:
+            # Skip the AI classifier usage billing sub. Its monthly metered items can't take a
+            # yearly tier price, and with no tier sub left the view falls back to a new checkout
+            # (apps/profile/views.py).
+            if Profile.is_usage_billing_subscription(subscription):
+                continue
             plan_obj = subscription.plan
             if not plan_obj:
                 # Newer subscriptions may not have a top-level plan; fall back to the
@@ -2381,9 +2416,9 @@ class Profile(models.Model):
         )
         return refund_dollars
 
-    def cancel_premium(self, force=False):
+    def cancel_premium(self, force=False, include_usage_billing=False):
         paypal_cancel = self.cancel_premium_paypal(force=force)
-        stripe_cancel = self.cancel_premium_stripe(force=force)
+        stripe_cancel = self.cancel_premium_stripe(force=force, include_usage_billing=include_usage_billing)
         self.setup_premium_history()  # Sure, webhooks will force new history, but they take forever
         return stripe_cancel or paypal_cancel
 
@@ -2471,7 +2506,7 @@ class Profile(models.Model):
         logging.user(self.user, "~FRCanceling classic Paypal subscription: %s" % paypal_id)
         return True
 
-    def cancel_premium_stripe(self, force=False):
+    def cancel_premium_stripe(self, force=False, include_usage_billing=False):
         if not self.stripe_id:
             if force:
                 self.retrieve_stripe_ids()
@@ -2485,6 +2520,15 @@ class Profile(models.Model):
             try:
                 subscriptions = stripe.Subscription.list(customer=stripe_customer)
                 for subscription in subscriptions.data:
+                    # Switching to PayPal, refunding, or canceling renewal only stops the tier sub.
+                    # The AI classifier usage billing sub keeps running unless the account is
+                    # being deleted (apps/profile/models.py delete_user).
+                    if not include_usage_billing and Profile.is_usage_billing_subscription(subscription):
+                        logging.user(
+                            self.user,
+                            "~FBNot canceling Stripe usage billing subscription: %s" % subscription["id"],
+                        )
+                        continue
                     stripe.Subscription.modify(subscription["id"], cancel_at_period_end=True)
                     logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription["id"])
             except stripe.error.InvalidRequestError:
@@ -2547,14 +2591,16 @@ class Profile(models.Model):
         if not stripe_customer:
             return None
 
-        # Check if there's already an active subscription
+        # Check if there's already an active subscription. The AI classifier usage billing sub
+        # can be active alongside it but isn't a tier sub, so it doesn't count (apps/profile/models.py).
         existing_subs = stripe.Subscription.list(customer=stripe_customer.id, status="active")
-        if existing_subs.data:
+        tier_subs = [sub for sub in existing_subs.data if not Profile.is_usage_billing_subscription(sub)]
+        if tier_subs:
             logging.user(
                 self.user,
-                "~FBStripe subscription already active: ~SB%s" % existing_subs.data[0].id,
+                "~FBStripe subscription already active: ~SB%s" % tier_subs[0].id,
             )
-            return existing_subs.data[0].id
+            return tier_subs[0].id
 
         # Ensure default payment method is set
         payment_methods = stripe.PaymentMethod.list(customer=stripe_customer.id, type="card")
@@ -3323,6 +3369,10 @@ class Profile(models.Model):
         starred_count = MStarredStory.objects.filter(user_id=user.pk).count()
         shared_count = MSharedStory.objects.filter(user_id=user.pk).count()
 
+        # Listen stats (apps/listen/models.py): wall-clock minutes spent hearing stories read aloud
+        listen_minutes_week = MListenDaily.minutes_listened(user.pk, days=7)
+        listen_minutes_total = MListenDaily.minutes_listened(user.pk)
+
         # Social stats
         following_count = 0
         follower_count = 0
@@ -3388,6 +3438,8 @@ class Profile(models.Model):
             "active_feed_count": active_feed_count,
             "feed_opens": feed_opens,
             "stories_read": stories_read,
+            "listen_minutes_week": listen_minutes_week,
+            "listen_minutes_total": listen_minutes_total,
             "starred_count": starred_count,
             "shared_count": shared_count,
             "following_count": following_count,
@@ -3775,7 +3827,11 @@ class Profile(models.Model):
         delta = datetime.datetime.now() - self.last_seen_on
         months_ago = round(delta.days / 30)
         user = self.user
-        data = dict(user=user, months_ago=months_ago)
+        data = dict(
+            user=user,
+            months_ago=months_ago,
+            pricing_cancellation=self.pricing_migration_paypal_cancellation(),
+        )
         text = render_to_string("mail/email_premium_expire_grace.txt", data)
         html = render_to_string("mail/email_premium_expire_grace.xhtml", data)
         subject = gettext("Your premium account on NewsBlur has one more month!")
@@ -3812,7 +3868,11 @@ class Profile(models.Model):
         delta = datetime.datetime.now() - self.last_seen_on
         months_ago = round(delta.days / 30)
         user = self.user
-        data = dict(user=user, months_ago=months_ago)
+        data = dict(
+            user=user,
+            months_ago=months_ago,
+            pricing_cancellation=self.pricing_migration_paypal_cancellation(),
+        )
         text = render_to_string("mail/email_premium_expire.txt", data)
         html = render_to_string("mail/email_premium_expire.xhtml", data)
         subject = gettext("Your premium account on NewsBlur has expired")
@@ -4053,6 +4113,21 @@ class Profile(models.Model):
 
         if not preview:
             MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_pricing_upgrade")
+
+    def pricing_migration_paypal_cancellation(self):
+        """The PremiumPricingMigration row when the pricing migration cancelled this subscriber's
+        grandfathered PayPal subscription and nothing has been paid since, so the grace and expired
+        emails can say why Premium is ending. A subscriber who misses the one pricing email
+        otherwise sees a 13 year subscription lapse with no explanation. Rows the subscriber
+        cancelled themselves have no paypal_canceled_date (apps/profile/models.py)."""
+        row = PremiumPricingMigration.objects.filter(
+            user=self.user, status="cancelled", paypal_canceled_date__isnull=False
+        ).first()
+        if not row:
+            return None
+        if PaymentHistory.objects.filter(user=self.user, payment_date__gt=row.paypal_canceled_date).exists():
+            return None
+        return row
 
     def is_dormant_for_paypal_cancel(self, now=None):
         """True when this subscriber has been inactive long enough that force-cancelling their

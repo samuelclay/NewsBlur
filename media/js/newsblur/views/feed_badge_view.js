@@ -37,10 +37,8 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
         if (this.options.show_folders) {
             if (in_add_site) {
                 // Use grid-style folder selector in add site view
-                var $select = $(NEWSBLUR.utils.make_folders(this.options.selected_folder_title))
+                $folder_selector = $(NEWSBLUR.utils.make_folders(this.options.selected_folder_title))
                     .addClass('NB-add-site-folder-select');
-                $select.append($.make('option', { value: '__new__' }, gettext('+ New Folder...')));
-                $folder_selector = $select;
             } else {
                 $folder_selector = $.make('div', { className: 'NB-badge-folders' }, [
                     NEWSBLUR.utils.make_folders(this.options.selected_folder_title)

@@ -112,7 +112,9 @@ object RelatedSitesPopover {
         root.addView(content, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
         val popup = PopupWindow(root, dp(360), dp(520), true)
         toggle.setOnClickListener { actions.toggleGrid() }
-        if (feedSet.isSingleNormal) {
+        if (feedSet.isFolder) {
+            model.load(feedSet.allFeeds)
+        } else if (feedSet.isSingleNormal) {
             val feed = (activity as NbActivity).dbHelper.getFeed(feedSet.singleFeed)
             if (feed != null) model.load(feed) else model.load(feedSet.singleFeed)
         } else {

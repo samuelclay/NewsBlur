@@ -122,9 +122,9 @@
       "note": "Verb uses in prose ('focus on what matters') may use ध्यान दें."
     },
     {
-      "concept": "Like / Dislike / Super Dislike (trainer)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "पसंद / नापसंद; buttons पसंद करें / नापसंद करें; Super Dislike: सुपर नापसंद or बहुत नापसंद (both accepted)",
+      "concept": "Like / Dislike / Hide (trainer)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "पसंद / नापसंद; buttons पसंद करें / नापसंद करें; Hide (the level above Like, formerly Super Dislike): छिपाएँ",
       "avoid": [
         "नापसंदियाँ (non-word)",
         "लाइक/नापसंदगी mixed inside one trainer sentence"
@@ -132,8 +132,19 @@
       "note": "Counts of marks: %(count)s पसंद / %(count)s नापसंद."
     },
     {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "छिपाएँ",
+      "avoid": [
+        "सुपर नापसंद",
+        "बहुत नापसंद",
+        "बहुत ज़्यादा नापसंद"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (“छिपाएँ” बाकी सब पर भारी पड़ता है). The old Super dislike names are retired."
+    },
+    {
       "concept": "beats / (like wins)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
       "use": "beats: से ऊपर (or >); (like wins): (पसंद को प्राथमिकता)",
       "avoid": [
         "बीट्स (music beats; high)",

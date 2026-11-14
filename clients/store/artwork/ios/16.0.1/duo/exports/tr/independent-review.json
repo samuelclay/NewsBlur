@@ -1,0 +1,30 @@
+{
+  "language": "tr",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:09:23Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Turkish whole-word captions and dotted/dotless letters render cleanly; no clipping.",
+    "Turkish search/source/navigation/filter/date controls visible; cooking photos and article loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-tr-duo-inner-2853x2007-01.png",
+      "sha256": "435513417961631fb379a22085b2d2ce01c2180eab7e12a52f28fc4176ef346a"
+    },
+    {
+      "filename": "newsblur-16.0.1-tr-duo-inner-2853x2007-02.png",
+      "sha256": "97854632413993f77cd120b50d3d54d2159b99ce19d51603a6f9435cbb45ef46"
+    },
+    {
+      "filename": "newsblur-16.0.1-tr-duo-inner-2853x2007-03.png",
+      "sha256": "af9e7edbc36932f222c71e743755c288185a429bb25b674f1d60fb5b9097bd7b"
+    },
+    {
+      "filename": "newsblur-16.0.1-tr-duo-inner-2853x2007-04.png",
+      "sha256": "fe1c6a31125a4059c9ec6d0858a4ea47563ed51b782e1b82b8ed6c68f73af645"
+    }
+  ],
+  "contact_sha256": "4c0fdc5bff6635f4150504dcf197620f261a2b67ef54b489559f02fc8864ef4a"
+}

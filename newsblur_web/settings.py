@@ -390,12 +390,23 @@ DOMAIN_FETCHES_PER_MINUTE_OVERRIDES = {
     # ScrapingBee at a credit apiece. 60/min still cycles their feeds every ~15
     # minutes (the limiter's deferral cap is an hour) while halving the hammering.
     "abebooks.com": 60,
-    # Matches REDDIT_API_REQUESTS_PER_MINUTE in utils/reddit_fetcher.py. The OAuth
-    # budget there remains the true gate on API calls; this just converts overflow
-    # into silent deferral instead of 429s in fetch history.
-    "reddit.com": 95,
-    "old.reddit.com": 95,
 }
+
+# Reddit feeds come from RedListen (utils/redlisten.py), not reddit.com, so reddit hosts
+# skip the per-domain budget above (utils/domain_fetch_limiter.py). These are the Pro
+# plan's monthly quotas; RedListen's own x-quota-limit and x-items-limit headers take
+# over once a response carries them. Automatic fetching (the hourly poller in
+# utils/redlisten_poller.py and the comment-thread and search feeds) stops at
+# REDLISTEN_BACKGROUND_SHARE of each quota, leaving the rest for fetches a reader asks
+# for (insta-fetch, refresh, retry). Pro allows 120 requests a minute per key.
+REDLISTEN_API_KEY = None
+REDLISTEN_MONTHLY_REQUESTS = 50000
+REDLISTEN_MONTHLY_RESULTS = 1000000
+REDLISTEN_BACKGROUND_SHARE = 0.99
+REDLISTEN_REQUESTS_PER_MINUTE = 100
+# Every key on the account draws on the production quota, so development servers only
+# make one-off fetches unless this is turned on.
+REDLISTEN_BACKGROUND_IN_DEBUG = False
 
 ROOT_URLCONF = "newsblur_web.urls"
 INTERNAL_IPS = ("127.0.0.1",)
@@ -466,6 +477,7 @@ INSTALLED_APPS = (
     "apps.categories",
     "apps.discover",
     "apps.ask_ai",
+    "apps.listen",
     "apps.webfeed",
     "apps.archive_extension",
     "apps.mcp",
@@ -648,6 +660,13 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(hours=6),
         "options": {"queue": "beat_feeds_task"},
     },
+    # Fetches every subreddit and Reddit user that active feeds read, in batches,
+    # on the RedListen budget (utils/redlisten_poller.py).
+    "poll-redlisten": {
+        "task": "poll-redlisten",
+        "schedule": datetime.timedelta(hours=1),
+        "options": {"queue": "cron_queue"},
+    },
     "freshen-homepage": {
         "task": "freshen-homepage",
         "schedule": datetime.timedelta(hours=1),
@@ -700,6 +719,12 @@ CELERY_BEAT_SCHEDULE = {
     },
     "premium-expire": {
         "task": "premium-expire",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    # Feeds nobody fetches are never trimmed by a fetch (apps/rss_feeds/tasks.py TrimAbandonedFeeds).
+    "trim-abandoned-feeds": {
+        "task": "trim-abandoned-feeds",
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
@@ -820,6 +845,11 @@ YOUTUBE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPENINJA_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPINGBEE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
+# Listen (apps/listen) reads stories aloud with ElevenLabs. Without a real key the feature reports itself
+# unavailable. The node stream server (node/listen.coffee) reads the same key from node/.env.
+ELEVENLABS_API_KEY = "sk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+LISTEN_MODEL = "eleven_v4_turbo"
+
 # ===============
 # = AWS Backing =
 # ===============
@@ -835,6 +865,7 @@ S3_BACKUP_BUCKET = "newsblur-backups"
 S3_PAGES_BUCKET_NAME = "pages.newsblur.com"
 S3_ICONS_BUCKET_NAME = "icons.newsblur.com"
 S3_AVATARS_BUCKET_NAME = "avatars.newsblur.com"
+S3_LISTEN_BUCKET_NAME = "listen.newsblur.com"
 
 # ==================
 # = Configurations =

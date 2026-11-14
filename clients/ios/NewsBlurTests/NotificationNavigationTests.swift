@@ -5,6 +5,78 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_NotificationNavigation: XCTestCase {
+#if targetEnvironment(macCatalyst)
+    func test_notificationAfterClosingMacWindowWaitsForReplacementReader() throws {
+        for action in [UNNotificationDefaultActionIdentifier, "VIEW_STORY_IDENTIFIER"] {
+            let app = makeApp(phone: false)
+            let oldReader = DetailViewController()
+            app.detailViewController = oldReader
+            // NotificationNavigationTests.swift reproduces Command-W retaining the reader after SceneDelegate releases its window.
+            app.window = nil
+            app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: action)
+
+            XCTAssertNil(app.openedFeed, "The notification must not start a fetch on the disconnected reader")
+            XCTAssertEqual(app.pendingNotificationStory?["storyHash"] as? String, "42:older-story")
+            XCTAssertEqual(app.completions, 1, "The OS completion must not wait for a window or network response")
+
+            // NotificationNavigationTests.swift delivers the delegate response before a new scene without a connection response.
+            _ = try connectColdScene(content: nil, action: action, app: app)
+            XCTAssertEqual(app.openedFeed, "42")
+            XCTAssertEqual(app.openedHash, "42:older-story")
+            XCTAssertEqual(app.navigationPreparationCounts, [1], "Navigation must run once, after replacement views are prepared")
+        }
+    }
+
+    func test_feedRefreshCannotDrainNotificationWhileMacWindowIsClosed() {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.setValue(["feedId": "42", "storyHash": "42:older-story"], forKey: "pendingNotificationStory")
+
+        app.backgroundLoadNotificationStory()
+
+        XCTAssertNil(app.openedFeed, "A late feed refresh must not route into the disconnected reader")
+        XCTAssertEqual(app.pendingNotificationStory?["storyHash"] as? String, "42:older-story")
+    }
+
+    func test_reconnectingNotificationResponseRoutesOnceAndReplacesTheQueuedDestination() throws {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: UNNotificationDefaultActionIdentifier)
+
+        _ = try connectColdScene(content: ["story_feed_id": 42, "story_hash": "42:newer-story"],
+                                 action: UNNotificationDefaultActionIdentifier, app: app)
+
+        XCTAssertEqual(app.openedHash, "42:newer-story")
+        XCTAssertEqual(app.navigationPreparationCounts, [1])
+    }
+
+    func test_closedMacWindowQueuesBriefingAndKeepsBackgroundActionsImmediate() throws {
+        let app = makeApp(phone: false)
+        app.window = nil
+        app.receive(["story_feed_id": 42, "story_hash": "42:older-story"], action: UNNotificationDefaultActionIdentifier)
+        app.receive(["story_hash": "briefing:today", "is_daily_briefing": true], action: UNNotificationDefaultActionIdentifier)
+        app.backgroundLoadNotificationStory()
+
+        XCTAssertNil(app.openedBriefing)
+        XCTAssertNil(app.pendingNotificationStory)
+        XCTAssertEqual(app.pendingDailyBriefingStoryHash, "briefing:today")
+        XCTAssertEqual(app.completions, 2)
+        for action in ["MARK_READ_IDENTIFIER", "STAR_IDENTIFIER", "DISMISS_IDENTIFIER"] {
+            app.receive(["story_feed_id": 42, "story_hash": "42:background-story"], action: action)
+        }
+        XCTAssertEqual(app.markedRead, "42:background-story")
+        XCTAssertEqual(app.savedHash, "42:background-story")
+        XCTAssertEqual(app.completions, 5)
+        XCTAssertNil(app.openedFeed)
+
+        _ = try connectColdScene(content: nil, action: UNNotificationDefaultActionIdentifier, app: app)
+
+        XCTAssertEqual(app.openedBriefing, "briefing:today")
+        XCTAssertNil(app.pendingDailyBriefingStoryHash)
+        XCTAssertNil(app.openedFeed)
+    }
+#endif
+
     func test_coldSceneConnectionRoutesTheNotificationAfterPreparingItsViews() throws {
         for action in [UNNotificationDefaultActionIdentifier, "VIEW_STORY_IDENTIFIER"] {
             let app = try connectColdScene(content: ["story_feed_id": 42, "story_hash": "42:older-story"], action: action)
@@ -230,8 +302,9 @@ import XCTest
         XCTAssertEqual(reader.reloadCount, 1)
     }
 
-    private func connectColdScene(content: [String: Any]?, action: String) throws -> NotificationNavigationApp {
-        let app = makeApp()
+    private func connectColdScene(content: [String: Any]?, action: String, app existingApp: NotificationNavigationApp? = nil) throws -> NotificationNavigationApp {
+        let app = existingApp ?? makeApp()
+        app.window = nil
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let delegate = SceneDelegate()
         delegate.appDelegate = app
@@ -330,6 +403,7 @@ import XCTest
 
     private func makeApp(phone: Bool = true) -> NotificationNavigationApp {
         let app = NotificationNavigationApp()
+        app.window = UIWindow()
         app.phone = phone
         app.activeUsername = "notification-navigation-fixture"
         app.storiesCollection = StoriesCollection()
@@ -514,6 +588,170 @@ import XCTest
         }
     }
 
+    func test_firstThreePaneLaunchWidensTheRestoredFrameOnceAndKeepsLaterResizes() throws {
+        // NotificationNavigationTests.swift protects the one-time width increase from being overwritten by scene restoration.
+        // Widening NSWindow separately before UIKit restores its saved frame would request the original narrow frame here.
+        let saved = CGRect(x: 30, y: 90, width: 900, height: 780)
+        let wider = CGRect(x: 30, y: 90, width: 1150, height: 780)
+        try withSavedWindowFrame(NSCoder.string(for: saved), wideningApplied: false) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+
+            connectWindowScene(delegate, scene: scene)
+
+            XCTAssertEqual(delegate.requestedFrames, [wider])
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            XCTAssertEqual(savedWindowFrame(), saved, "The startup frame must not replace the requested wider frame")
+            XCTAssertFalse(UserDefaults.standard.bool(forKey: "mac_wide_reader_window_v1"), "Requesting geometry alone does not prove the migration was applied")
+
+            delegate.currentFrame = wider
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            XCTAssertEqual(savedWindowFrame(), wider)
+            XCTAssertTrue(UserDefaults.standard.bool(forKey: "mac_wide_reader_window_v1"))
+
+            let userResize = CGRect(x: 100, y: 80, width: 1020, height: 700)
+            delegate.currentFrame = userResize
+            delegate.sceneDidDisconnect(scene)
+            let (reopened, _, reopenedApp) = try makeWindowSceneProbe()
+            reopenedApp.window = nil
+            connectWindowScene(reopened, scene: scene)
+            XCTAssertEqual(reopened.requestedFrames, [userResize], "The one-time migration must not undo a later explicit resize")
+        }
+    }
+
+    func test_firstThreePaneLaunchWidensTheDefaultWindowWithoutASavedFrame() throws {
+        try withSavedWindowFrame(nil, wideningApplied: false) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+
+            connectWindowScene(delegate, scene: scene)
+
+            XCTAssertEqual(delegate.requestedFrames, [CGRect(x: 0, y: 0, width: 1050, height: 600)])
+        }
+    }
+
+    func test_initialZeroGeometryWaitsForAnActiveWindowBeforeWidening() throws {
+        // NotificationNavigationTests.swift reproduces Catalyst connecting a scene before its native window has a size.
+        // Treating that first restore attempt as complete would permanently skip widening for a fresh installation.
+        try withSavedWindowFrame(nil, wideningApplied: false) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            delegate.currentFrame = .zero
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+
+            connectWindowScene(delegate, scene: scene)
+            XCTAssertTrue(delegate.requestedFrames.isEmpty)
+            XCTAssertFalse(UserDefaults.standard.bool(forKey: "mac_wide_reader_window_v1"))
+
+            delegate.currentFrame = CGRect(x: 55, y: 80, width: 960, height: 750)
+            delegate.sceneDidBecomeActive(scene)
+
+            XCTAssertEqual(delegate.requestedFrames, [CGRect(x: 55, y: 80, width: 1210, height: 750)])
+        }
+    }
+
+    func test_lateNativeRestorationReappliesTheRequestedWidthWithoutWideningTwice() async throws {
+        // NotificationNavigationTests.swift covers AppKit finishing before or after UIKit receives the restored native frame.
+        let saved = CGRect(x: 30, y: 90, width: 900, height: 780)
+        let wider = CGRect(x: 30, y: 90, width: 1150, height: 780)
+        for nativeCompletionPrecedesGeometry in [false, true] {
+            try await withSavedWindowFrame(NSCoder.string(for: saved), wideningApplied: false) {
+                let (delegate, scene, app) = try makeWindowSceneProbe()
+                app.window = nil
+                let oldToolbar = scene.titlebar?.toolbar
+                defer { scene.titlebar?.toolbar = oldToolbar }
+                connectWindowScene(delegate, scene: scene)
+                delegate.currentFrame = wider
+                delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+
+                let completion = Notification.Name("NewsBlurMacDidFinishRestoringWindows")
+                let nativeFrame = ["systemFrame": NSValue(cgRect: saved)]
+                if nativeCompletionPrecedesGeometry {
+                    NotificationCenter.default.post(name: completion, object: nil, userInfo: nativeFrame)
+                    // NotificationNavigationTests.swift keeps UIKit stale across queued work, as real native restoration does.
+                    await withCheckedContinuation { continuation in DispatchQueue.main.async { continuation.resume() } }
+                    XCTAssertEqual(delegate.requestedFrames, [wider])
+                }
+                delegate.currentFrame = saved
+                delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+                if !nativeCompletionPrecedesGeometry { NotificationCenter.default.post(name: completion, object: nil, userInfo: nativeFrame) }
+                await withCheckedContinuation { continuation in DispatchQueue.main.async { continuation.resume() } }
+
+                XCTAssertEqual(delegate.requestedFrames, [wider, wider], "Reconcile the desired frame after native restoration, without applying another width increase")
+                delegate.currentFrame = wider
+                delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+                XCTAssertEqual(savedWindowFrame(), wider)
+
+                let userResize = CGRect(x: 80, y: 100, width: 1000, height: 700)
+                delegate.currentFrame = userResize
+                delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+                NotificationCenter.default.post(name: completion, object: nil, userInfo: ["systemFrame": NSValue(cgRect: userResize)])
+                await withCheckedContinuation { continuation in DispatchQueue.main.async { continuation.resume() } }
+                XCTAssertEqual(delegate.requestedFrames, [wider, wider], "Once native restoration finishes, later user resizes must remain authoritative")
+                XCTAssertEqual(savedWindowFrame(), userResize)
+                delegate.sceneDidDisconnect(scene)
+            }
+        }
+    }
+
+    func test_failedWiderWindowRequestCanBeRetriedOnTheNextLaunch() throws {
+        let saved = CGRect(x: 30, y: 90, width: 900, height: 780)
+        try withSavedWindowFrame(NSCoder.string(for: saved), wideningApplied: false) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            delegate.geometryRequestFails = true
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+
+            connectWindowScene(delegate, scene: scene)
+
+            XCTAssertFalse(UserDefaults.standard.bool(forKey: "mac_wide_reader_window_v1"))
+            let (reopened, _, reopenedApp) = try makeWindowSceneProbe()
+            reopenedApp.window = nil
+            connectWindowScene(reopened, scene: scene)
+            XCTAssertEqual(reopened.requestedFrames, [CGRect(x: 30, y: 90, width: 1150, height: 780)])
+        }
+    }
+
+    func test_widerWindowFitsTheUsableAreaOfItsDisplay() throws {
+        let saved = CGRect(x: -1100, y: 90, width: 1200, height: 780)
+        try withSavedWindowFrame(NSCoder.string(for: saved), wideningApplied: false) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            delegate.usableDisplayFrame = CGRect(x: -1400, y: 38, width: 1360, height: 982)
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+
+            connectWindowScene(delegate, scene: scene)
+
+            let requested = try XCTUnwrap(delegate.requestedFrames.first)
+            XCTAssertEqual(requested, CGRect(x: -1400, y: 90, width: 1360, height: 780), "A display beside the main screen must cap and reposition the wider frame without changing height")
+        }
+    }
+
+    func test_fullScreenStartupDefersTheOneTimeWidening() throws {
+        let saved = CGRect(x: 30, y: 90, width: 900, height: 780)
+        try withSavedWindowFrame(NSCoder.string(for: saved), wideningApplied: false) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            delegate.fullScreen = true
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+
+            connectWindowScene(delegate, scene: scene)
+
+            XCTAssertEqual(delegate.requestedFrames, [saved])
+            delegate.currentFrame = saved
+            delegate.sceneDidDisconnect(scene)
+            XCTAssertFalse(UserDefaults.standard.bool(forKey: "mac_wide_reader_window_v1"))
+        }
+    }
+
     func test_windowMovesAndResizesPersistWithoutClosing() throws {
         try withSavedWindowFrame(nil) {
             let (delegate, scene, _) = try makeWindowSceneProbe()
@@ -601,13 +839,32 @@ import XCTest
         }
     }
 
-    private func withSavedWindowFrame(_ value: String?, body: () throws -> Void) rethrows {
+    private func withSavedWindowFrame(_ value: String?, wideningApplied: Bool = true, body: () throws -> Void) rethrows {
         let defaults = UserDefaults.standard
         let key = "mac_main_window_frame"
         let previous = defaults.object(forKey: key)
+        let wideningKey = "mac_wide_reader_window_v1"
+        let previousWidening = defaults.object(forKey: wideningKey)
         defaults.set(value, forKey: key)
-        defer { defaults.set(previous, forKey: key) }
+        defaults.set(wideningApplied, forKey: wideningKey)
+        defer {
+            defaults.set(previous, forKey: key)
+            defaults.set(previousWidening, forKey: wideningKey)
+        }
         try body()
+    }
+
+    private func withSavedWindowFrame(_ value: String?, wideningApplied: Bool = true, body: () async throws -> Void) async rethrows {
+        let defaults = UserDefaults.standard
+        let previousFrame = defaults.object(forKey: "mac_main_window_frame")
+        let previousWidening = defaults.object(forKey: "mac_wide_reader_window_v1")
+        defaults.set(value, forKey: "mac_main_window_frame")
+        defaults.set(wideningApplied, forKey: "mac_wide_reader_window_v1")
+        defer {
+            defaults.set(previousFrame, forKey: "mac_main_window_frame")
+            defaults.set(previousWidening, forKey: "mac_wide_reader_window_v1")
+        }
+        try await body()
     }
 
     private func savedWindowFrame() -> CGRect? {
@@ -620,6 +877,7 @@ import XCTest
         let app = NotificationNavigationApp()
         delegate.appDelegate = app
         delegate.window = UIWindow(windowScene: scene)
+        app.splitViewController = SplitViewController(style: .tripleColumn)
         app.window = delegate.window
         return (delegate, scene, app)
     }
@@ -654,11 +912,15 @@ import XCTest
     var currentFrame = CGRect(x: 0, y: 0, width: 800, height: 600)
     var fullScreen = false
     var requestedFrames: [CGRect] = []
+    var geometryRequestFails = false
+    var usableDisplayFrame = CGRect(x: 0, y: 0, width: 1800, height: 1200)
 
     override func macWindowFrame(in scene: UIWindowScene) -> CGRect { currentFrame }
     override func macWindowIsFullScreen(in scene: UIWindowScene) -> Bool { fullScreen }
+    override func macUsableDisplayFrame(for frame: CGRect) -> CGRect? { usableDisplayFrame }
     override func requestMacWindowFrame(_ frame: CGRect, in scene: UIWindowScene, errorHandler: @escaping (Error) -> Void) {
         requestedFrames.append(frame)
+        if geometryRequestFails { errorHandler(NSError(domain: "MacWindowSceneProbe", code: 1)) }
     }
 }
 #endif

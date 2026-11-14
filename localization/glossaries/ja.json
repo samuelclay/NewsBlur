@@ -96,7 +96,7 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
       "use": "いいね / 低評価",
       "avoid": [
         "よくない",
@@ -104,7 +104,16 @@
         "大嫌い",
         "超嫌い"
       ],
-      "note": "Thumbs up/down → 高評価/低評価 in prose; Super dislike → 強い低評価."
+      "note": "Thumbs up/down → 高評価/低評価 in prose; Hide (the level above Like, formerly Super dislike, then 強い低評価) → 非表示."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "非表示",
+      "avoid": [
+        "強い低評価"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (「非表示」はすべてに優先します). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

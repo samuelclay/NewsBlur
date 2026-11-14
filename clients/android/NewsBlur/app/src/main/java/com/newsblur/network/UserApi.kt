@@ -40,5 +40,8 @@ interface UserApi {
         value: String,
     ): Boolean
 
+    /** UserApi.kt saves several server preferences in one /profile/set_preference request. */
+    suspend fun setPreferences(values: Map<String, String>): Boolean
+
     suspend fun importOpml(requestBody: RequestBody): NewsBlurResponse?
 }

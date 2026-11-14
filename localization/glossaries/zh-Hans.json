@@ -111,7 +111,7 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
       "use": "喜欢 / 不喜欢",
       "avoid": [
         "赞 / 踩 for the classifier states",
@@ -119,7 +119,16 @@
         "非常不喜欢",
         "超级点踩"
       ],
-      "note": "Super dislike → 强烈不喜欢. Thumbs up/down in marketing prose may stay 点赞/点踩. The trainer's 'beats' means Like outranks Dislike: 喜欢 > 不喜欢."
+      "note": "Hide (the level above Like, formerly Super dislike, then 强烈不喜欢) → 隐藏. Thumbs up/down in marketing prose may stay 点赞/点踩. The trainer's 'beats' means Like outranks Dislike: 喜欢 > 不喜欢."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "隐藏",
+      "avoid": [
+        "强烈不喜欢"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (“隐藏”优先于其他所有训练). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

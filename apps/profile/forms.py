@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy
 
 from apps.profile.models import MCustomStyling, MGiftCode, blank_authenticate, change_password
 from apps.social.models import MSocialProfile
+from utils import json_functions as json
 from vendor.zebra.forms import StripePaymentForm
 
 PLANS = [
@@ -135,6 +136,9 @@ class AccountSettingsForm(forms.Form):
     custom_css = forms.CharField(
         widget=forms.TextInput(attrs={"class": "NB-input"}), label="custom_css", required=False
     )
+    invoice_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
+    send_emails = forms.BooleanField(required=False)
+    notify_before_renewal = forms.BooleanField(required=False)
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -205,6 +209,27 @@ class AccountSettingsForm(forms.Form):
             change_password(self.user, old_password, new_password)
 
         MCustomStyling.save_user(self.user.pk, custom_css, custom_js)
+
+        profile = self.user.profile
+        preferences = json.decode(profile.preferences)
+        original_preferences = preferences.copy()
+        update_fields = []
+        if "send_emails" in self.data and profile.send_emails != self.cleaned_data["send_emails"]:
+            profile.send_emails = self.cleaned_data["send_emails"]
+            update_fields.append("send_emails")
+        if "notify_before_renewal" in self.data:
+            preferences["notify_before_renewal"] = self.cleaned_data["notify_before_renewal"]
+        if "invoice_text" in self.data:
+            invoice_text = self.cleaned_data["invoice_text"]
+            if invoice_text:
+                preferences["invoice_text"] = invoice_text
+            else:
+                preferences.pop("invoice_text", None)
+        if preferences != original_preferences:
+            profile.preferences = json.encode(preferences)
+            update_fields.append("preferences")
+        if update_fields:
+            profile.save(update_fields=update_fields)
 
 
 class RedeemCodeForm(forms.Form):

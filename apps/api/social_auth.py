@@ -29,18 +29,22 @@ TTL = 600
 logger = logging.getLogger(__name__)
 
 
+# social_auth.py: The only app destinations NewsBlur redirects to, keyed by the platform the
+# app sends. Also used by apps/profile/views.py usage_billing_app_return after Stripe.
+APP_SCHEMES = {
+    "ios": "newsblur-auth",
+    "android": "newsblur-auth-android",
+    "android-alpha": "newsblur-auth-android-alpha",
+}
+
+
 class AppRedirect(HttpResponseRedirect):
-    allowed_schemes = ["newsblur-auth", "newsblur-auth-android", "newsblur-auth-android-alpha"]
+    allowed_schemes = list(APP_SCHEMES.values())
 
 
 def callback_target(state):
     # social_auth.py only accepts fixed app destinations, never a caller-supplied redirect URI.
-    schemes = {
-        "ios": "newsblur-auth",
-        "android": "newsblur-auth-android",
-        "android-alpha": "newsblur-auth-android-alpha",
-    }
-    return schemes[state.get("platform", "ios")] + "://complete?"
+    return APP_SCHEMES[state.get("platform", "ios")] + "://complete?"
 
 
 def failure(message, status=400, **extra):

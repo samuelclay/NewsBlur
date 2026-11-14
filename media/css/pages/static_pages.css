@@ -603,6 +603,7 @@ a.NB-splash-dropdown-grid-item:hover,
 /* Feature hero items - active page highlight */
 .NB-static-feature-training .NB-splash-dropdown-item-training,
 .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
+.NB-static-feature-listen .NB-splash-dropdown-item-listen,
 .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
 .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
 .NB-static-feature-search .NB-splash-dropdown-item-search,
@@ -614,6 +615,7 @@ a.NB-splash-dropdown-grid-item:hover,
 
 .NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
 .NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
+.NB-static-feature-listen .NB-splash-dropdown-item-listen .NB-splash-dropdown-item-name,
 .NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
 .NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
 .NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
@@ -915,6 +917,7 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 /* Current page in crosslinks - highlighted */
 .NB-static-feature-training .NB-feature-detail-crosslink-training,
 .NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai,
+.NB-static-feature-listen .NB-feature-detail-crosslink-listen,
 .NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds,
 .NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters,
 .NB-static-feature-search .NB-feature-detail-crosslink-search,
@@ -928,6 +931,7 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
 
 .NB-static-feature-training .NB-feature-detail-crosslink-training .NB-feature-detail-crosslink-name,
 .NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai .NB-feature-detail-crosslink-name,
+.NB-static-feature-listen .NB-feature-detail-crosslink-listen .NB-feature-detail-crosslink-name,
 .NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds .NB-feature-detail-crosslink-name,
 .NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters .NB-feature-detail-crosslink-name,
 .NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,
@@ -3834,6 +3838,7 @@ body.NB-dark.NB-static a:hover {
 
 body.NB-dark.NB-static-feature-training .NB-splash-dropdown-item-training,
 body.NB-dark.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai,
+body.NB-dark.NB-static-feature-listen .NB-splash-dropdown-item-listen,
 body.NB-dark.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds,
 body.NB-dark.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters,
 body.NB-dark.NB-static-feature-search .NB-splash-dropdown-item-search,
@@ -3845,6 +3850,7 @@ body.NB-dark.NB-static-feature-native-apps .NB-splash-dropdown-item-native-apps 
 
 body.NB-dark.NB-static-feature-training .NB-splash-dropdown-item-training .NB-splash-dropdown-item-name,
 body.NB-dark.NB-static-feature-ask-ai .NB-splash-dropdown-item-ask-ai .NB-splash-dropdown-item-name,
+body.NB-dark.NB-static-feature-listen .NB-splash-dropdown-item-listen .NB-splash-dropdown-item-name,
 body.NB-dark.NB-static-feature-web-feeds .NB-splash-dropdown-item-web-feeds .NB-splash-dropdown-item-name,
 body.NB-dark.NB-static-feature-newsletters .NB-splash-dropdown-item-newsletters .NB-splash-dropdown-item-name,
 body.NB-dark.NB-static-feature-search .NB-splash-dropdown-item-search .NB-splash-dropdown-item-name,
@@ -4023,6 +4029,7 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 /* Active crosslink in dark mode - classes are on body so use compound selector */
 .NB-dark.NB-static-feature-training .NB-feature-detail-crosslink-training,
 .NB-dark.NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai,
+.NB-dark.NB-static-feature-listen .NB-feature-detail-crosslink-listen,
 .NB-dark.NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds,
 .NB-dark.NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters,
 .NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search,
@@ -4036,6 +4043,7 @@ body.NB-dark.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-ho
 
 .NB-dark.NB-static-feature-training .NB-feature-detail-crosslink-training .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-ask-ai .NB-feature-detail-crosslink-ask-ai .NB-feature-detail-crosslink-name,
+.NB-dark.NB-static-feature-listen .NB-feature-detail-crosslink-listen .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-web-feeds .NB-feature-detail-crosslink-web-feeds .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-newsletters .NB-feature-detail-crosslink-newsletters .NB-feature-detail-crosslink-name,
 .NB-dark.NB-static-feature-search .NB-feature-detail-crosslink-search .NB-feature-detail-crosslink-name,

@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- AndroidManifest.xml: ListenPlaybackService.kt keeps Listen audio playing in the background. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -839,6 +842,23 @@
 
         <activity android:name=".activity.SubscriptionActivity" />
 
+        <!-- UsageBillingActivity.kt: Stripe returns the Custom Tab to <socialCallbackScheme>://usage-billing,
+             and singleTask closes the tab and hands the result to the open billing screen. While
+             util/UsageBillingFeature.kt holds billing, the activity stays registered but closes at once. -->
+        <activity
+            android:name=".activity.UsageBillingActivity"
+            android:exported="true"
+            android:label="@string/usage_billing_title"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="${socialCallbackScheme}" android:host="usage-billing" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".activity.MuteConfig"
             android:label="@string/mute_sites"
@@ -879,6 +899,14 @@
         <service
             android:name=".service.SyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".listen.ListenPlaybackService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
         <service
             android:name=".widget.WidgetRemoteViewsService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />

@@ -1,0 +1,60 @@
+{
+  "version": "16.0.5",
+  "platform": "android",
+  "reviewer": "translate_west",
+  "independent_of_author": true,
+  "languages": [
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id"
+  ],
+  "status": "passed",
+  "reviewed_at": "2026-10-25T19:22:58Z",
+  "scope": [
+    "All Android listing fields, including retained fields",
+    "Both subscriptions: titles, descriptions and all benefits",
+    "Release notes",
+    "Meaning, omissions, natural phrasing, glossary, branding and feature facts",
+    "Arabic and Hebrew script, direction wording and mixed-script brand/URLs; text review only, no new UI rendering claim",
+    "Field limits, exact URLs and immutable product identifiers; other-platform fields unchanged"
+  ],
+  "corrections": [
+    {
+      "file": "clients/store/products/id.json",
+      "field": "android.subscriptions.nb.premium.archive.99.description",
+      "reason": "Clarified that the archive supports search rather than merely browsing."
+    }
+  ],
+  "english_sources": {
+    "clients/store/metadata/en.json": "2e0a3d9ff15dcfb7f79afdc51c1ff09200687bb3c708fc29b31bbc1ff1b37362",
+    "clients/store/products/en.json": "f5de547dd5a9f1b0b693ce8631055d2adc3111fa6ea39667cee474d6870ef598",
+    "clients/store/releases/16.0.5/en.json": "a3536e9f69b283963c2300ea9aad8dcadb6d54658d3145f0cb5063b5ff15cbf6"
+  },
+  "files": {
+    "clients/store/metadata/tr.json": "49f9b8e357932ec91f979e47edf3d0af2adfa3ddd58389f26427ac1fa8d18db1",
+    "clients/store/products/tr.json": "1a0baa9a15f99a5144f157cbddecc8f76e5a58a4f26390b926632ec95abdf9f8",
+    "clients/store/releases/16.0.5/tr.json": "bc1b74c764d3cf6a791609e6a3fa70d0b1d76af86be70ab6c0f64bb9a77bbe9d",
+    "clients/store/metadata/ru.json": "395b917ae8ebb8d18c1d41d632e636393129c347de52098c20b9dd2a44e9dc27",
+    "clients/store/products/ru.json": "326ccb315f3d936a0377b3bd9f48f20b8e90242a0329ef6888fe4efcebfd07eb",
+    "clients/store/releases/16.0.5/ru.json": "36aece3b321fb6c9ea4b1d67f0fcba29432b48f50fa347ef251626eba4dccde4",
+    "clients/store/metadata/uk.json": "5265327a1104ed81dacf409938aaaf80a65787977faedae356eb32c3c04b7472",
+    "clients/store/products/uk.json": "6960177063c42a66c6caea99e137640528c199fca231a7b1a5d6357582d6a514",
+    "clients/store/releases/16.0.5/uk.json": "fa43288138d8ed3bc6e0fb76d018cf74d35f8e2c7df36c6acbdac39ba82a5fd5",
+    "clients/store/metadata/ar.json": "71d28337de5f8a5f192362fc6fd7ca3e46544652d8511f395cef677239b8235f",
+    "clients/store/products/ar.json": "07cad78f3e6549e3f56ff5d0027c715457a7682e6d43c82b542f23d4d4281a18",
+    "clients/store/releases/16.0.5/ar.json": "483390b31befb80a47d51da3be4c040e86a58260770a66e81d3e43e25398e7f2",
+    "clients/store/metadata/he.json": "88ab3a0038e05b04a91abecb86551163fc9c34bb32119685e01c725e8c0e6233",
+    "clients/store/products/he.json": "74a2901e45187231db2d6b221e75aeac42b773f0f17ed9dd1327110ad95340e4",
+    "clients/store/releases/16.0.5/he.json": "225a8443d321ddf63099519ccf201e84bdcde546a1fce0d774f8048bb676071a",
+    "clients/store/metadata/hi.json": "37fd5a592dfbbbb24fbb0a1086d7f4b5594a2076762feacf6a20597c7419b225",
+    "clients/store/products/hi.json": "1c51362d56def203bbd78457500f006792635ac2cc478f5901c84175d22ada10",
+    "clients/store/releases/16.0.5/hi.json": "34c682c14de56af5277b179c0954017926b3d777253bc52ff4cca9c92275b425",
+    "clients/store/metadata/id.json": "06ad79a7c85aa44999db0151e38a154af518ef44755737740b9fb01fa2074ba8",
+    "clients/store/products/id.json": "f6fa51f95efcc50befbfea3d659a5bc541245aeab163d2fc8ab4b4663ec460d2",
+    "clients/store/releases/16.0.5/id.json": "710aaec68bd0ca1e21c827200040dc28ac7c9f8d5482b40de236dd560cc71b0f"
+  }
+}

@@ -96,6 +96,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="16dp"
                         android:layout_toStartOf="@id/story_context_menu_button"
+                        android:breakStrategy="balanced"
                         android:textSize="17sp" />
 
                     <TextView
@@ -118,6 +119,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignTop="@id/reading_item_date"
                         android:layout_toEndOf="@id/reading_item_date"
+                        android:layout_marginEnd="16dp"
+                        android:ellipsize="end"
                         android:maxLines="1"
                         android:minWidth="80dp"
                         android:textSize="12sp"

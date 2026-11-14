@@ -73,6 +73,9 @@
 @property (nonatomic, strong) UIBarButtonItem *verticalOriginalButton;
 @property (nonatomic, strong) UIBarButtonItem *verticalMarkReadButton;
 @property (nonatomic, strong) UIBarButtonItem *verticalAutoscrollButton;
+@property (nonatomic, strong) UIBarButtonItem *verticalListenButton;
+@property (nonatomic, strong) UIBarButtonItem *listenBarButton;
+@property (nonatomic, strong) ListenToolbarButton *listenToolbarButton;
 @property (nonatomic, weak) UIViewController *verticalToolbarOwner;
 @property (nonatomic, strong) UINavigationBarAppearance *horizontalReaderNavigationAppearance;
 @property (nonatomic) BOOL hasPreparedToolbarPresentation;
@@ -152,6 +155,7 @@
 - (void)updateStoryTitleNavigationButtons {
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     [self ensureTemporaryFullScreenButton];
+    [self.listenToolbarButton update];
 
     if (self.usesVerticalReaderToolbar) {
         // StoryPagesObjCViewController.m places reader actions in the system bar instead of custom navigation views.
@@ -164,6 +168,9 @@
     self.temporaryFullScreenButton.hidden = NO;
     [items addObject:originalStoryButton];
     [items addObject:fontSettingsButton];
+    if (!self.isMac && self.listenBarButton) {
+        [items addObject:self.listenBarButton];
+    }
 
     // Temporary full-screen toggle button (iPad only, not Mac).
     if (!self.isPhoneOrCompact && !self.isMac) {
@@ -414,6 +421,16 @@
                                                                     action:@selector(markAllRead:)];
     markReadBarButton.accessibilityLabel = [NBLocalization text:@"Mark all as read"];
 
+    // StoryPagesObjCViewController.m: Listen in the reader's chrome (Listen/ListenToolbarButton.swift) for the story on
+    // screen. The Mac keeps its own toolbar item (ToolbarDelegate.swift), so the bar item is only added off the Mac.
+    __weak __typeof(self) weakSelf = self;
+    self.listenToolbarButton = [[ListenToolbarButton alloc] initWithStory:^NSDictionary * _Nullable {
+        return weakSelf.currentPage.activeStory;
+    }];
+    self.listenBarButton = [self.listenToolbarButton makeBarItemWithTarget:self
+                                                                     action:@selector(toggleListen:)
+                                                                 identifier:@"reader-listen"];
+
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
                                      initWithTitle:[NBLocalization text:@"Follow User"]
                                      style:UIBarButtonItemStylePlain
@@ -446,6 +463,8 @@
     toolbar.delegate = (id<StoryToolbarDelegate>)self;
     toolbar.hidden = YES;
     self.storyToolbar = toolbar;
+    [toolbar.listenButton addTarget:self action:@selector(toggleListen:) forControlEvents:UIControlEventTouchUpInside];
+    [self.listenToolbarButton attachButton:toolbar.listenButton];
 
     // Status bar background covers the area above the safe area so the toolbar
     // slides behind an opaque surface when translating upward, and so story
@@ -524,6 +543,10 @@
     [self addKeyCommandWithInput:@"s" modifierFlags:UIKeyModifierShift action:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     [self addKeyCommandWithInput:@"c" modifierFlags:0 action:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
     [self addKeyCommandWithInput:@"t" modifierFlags:0 action:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
+    if (self.isPhone) {
+        // StoryPagesObjCViewController.m: iPad and Mac get Y from the Story menu (AppMenuHelper.swift).
+        [self addKeyCommandWithInput:@"y" modifierFlags:0 action:@selector(toggleListen:) discoverabilityTitle:@"Listen"];
+    }
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(nextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(previousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
@@ -1012,6 +1035,8 @@
     self.verticalSettingsButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Story settings"] symbol:@"textformat.size" identifier:@"reader-settings" action:@selector(toggleFontSize:)];
     self.verticalMarkReadButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Mark all as read"] symbol:@"checkmark" identifier:@"reader-mark-read" action:@selector(markAllRead:)];
     self.verticalAutoscrollButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Autoscroll"] symbol:@"arrow.down.circle" identifier:@"reader-autoscroll" action:nil];
+    self.verticalListenButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Listen"] symbol:@"headphones" identifier:@"reader-listen" action:@selector(toggleListen:)];
+    [self.listenToolbarButton attachBarItem:self.verticalListenButton];
     [self ensureTemporaryFullScreenButton];
     self.temporaryFullScreenButton.accessibilityIdentifier = @"reader-fullscreen";
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
@@ -1023,7 +1048,7 @@
 #endif
     self.verticalReaderToolbarItems = @[self.temporaryFullScreenButton, self.verticalTextButton, self.verticalSendButton, self.verticalProgressButton,
         self.verticalPreviousButton, self.verticalNextButton, self.verticalOriginalButton, self.verticalSettingsButton,
-        self.verticalMarkReadButton, self.verticalAutoscrollButton];
+        self.verticalListenButton, self.verticalMarkReadButton, self.verticalAutoscrollButton];
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
     if (@available(iOS 27.1, *)) {
         self.verticalPreviousButton.sharesBackground = YES;
@@ -1780,8 +1805,14 @@
 }
 
 - (void)preserveCurrentPageAtLocation:(NSInteger)location {
-    if (location < 0 || location >= appDelegate.storiesCollection.storyLocationsCount || !self.currentPage) return;
     if (self.currentPage.pageIndex == location) return;
+    [self relayoutPagesKeepingCurrentPageAtLocation:location];
+}
+
+// StoryPagesObjCViewController.m lays the neighbors and scroll size out again for a story list that changed around
+// the open article, even when the article's own location didn't move, and keeps the article as it is.
+- (void)relayoutPagesKeepingCurrentPageAtLocation:(NSInteger)location {
+    if (location < 0 || location >= appDelegate.storiesCollection.storyLocationsCount || !self.currentPage) return;
     self.isRepositioningFirstPage = YES;
     // StoryPagesObjCViewController.m moves the existing rendered page without invoking its story-loading path.
     self.currentPage.pageIndex = location;
@@ -2010,6 +2041,8 @@
     }
     self.navigationController.navigationBar.tintColor = toolbarButtonTint;
     self.navigationController.toolbar.tintColor = toolbarButtonTint;
+    // StoryPagesObjCViewController.m: the loop above recolored the vertical Listen item too; Listen picks its own tint.
+    [self.listenToolbarButton update];
 }
 
 // allow keyboard commands
@@ -2577,13 +2610,32 @@
     UIView *host = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewport.width, viewport.height)];
     host.userInteractionEnabled = NO;
     host.accessibilityElementsHidden = YES;
+#if TARGET_OS_MACCATALYST
+    // StoryPagesObjCViewController.m keeps live preparation below an opaque reader surface, away from the translucent window chrome.
+    UIView *cover = self.view;
+    if (cover.window != window || !cover.superview) cover = appDelegate.feedDetailViewController.viewIfLoaded;
+    if (cover.window != window || !cover.superview) cover = appDelegate.detailViewController.viewIfLoaded;
+    if (cover.window == window && cover.superview) {
+        host.clipsToBounds = YES;
+        host.translatesAutoresizingMaskIntoConstraints = NO;
+        [cover.superview insertSubview:host belowSubview:cover];
+        [NSLayoutConstraint activateConstraints:@[
+            [host.leadingAnchor constraintEqualToAnchor:cover.leadingAnchor],
+            [host.trailingAnchor constraintEqualToAnchor:cover.trailingAnchor],
+            [host.topAnchor constraintEqualToAnchor:cover.topAnchor],
+            [host.bottomAnchor constraintEqualToAnchor:cover.bottomAnchor]
+        ]];
+        [cover.superview layoutIfNeeded];
+    }
+#else
     [window insertSubview:host atIndex:0];
+#endif
     CGRect pageFrame = page.view.frame;
     pageFrame.size = viewport;
     page.view.frame = pageFrame;
     // StoryPagesObjCViewController.m keeps controller containment while WebKit paints behind the visible app.
     [host addSubview:page.webView];
-    page.webView.frame = host.bounds;
+    page.webView.frame = CGRectMake(0, 0, viewport.width, viewport.height);
     [page.webView layoutIfNeeded];
     return host;
 }
@@ -2879,7 +2931,9 @@
     }
     CGSize viewport = self.scrollView.bounds.size;
     if (!CGSizeEqualToSize(page.webView.bounds.size, viewport)) {
+#if !TARGET_OS_MACCATALYST
         self.storyPreparationHost.frame = CGRectMake(0, 0, viewport.width, viewport.height);
+#endif
         CGRect frame = page.view.frame;
         frame.size = viewport;
         page.view.frame = frame;
@@ -3073,6 +3127,8 @@
 
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
     [self finishRetainingDuoSourceArticle];
+    // StoryPagesObjCViewController.m commits the explicit destination's title state before the native scroll animation begins.
+    [appDelegate.feedDetailViewController prepareStorySelectionAtLocation:pageIndex];
 //    NSLog(@"changePage to %@ (%@animated)", @(pageIndex), animated ? @"" : @"not ");
     
 	// update the scroll view to the appropriate page

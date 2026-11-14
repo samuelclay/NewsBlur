@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Bir haberle eşleşen yapay zekâ içerik ve görsel filtrelerini görün, filtrelerinizi Eğitmen’de yönetin. Gizle artık yapay zekâ filtre eşleşmelerini geçersiz kılıyor.\n\nPodcast’leri NewsBlur’ın Dinle oynatıcısında atlama kontrolleri, AirPlay ve podcast’lerle sesli okunan haberleri bir araya getiren bir sırayla çalın. Kaldığınız yerden farklı cihazlarda devam edin.\n\nDinle artık diğer uygulamalardan gelen müziğin üzerine sesli okuma yapabiliyor. Şimdi Çalınıyor’da Diğer seslerin üzerine çal’ı açın, ses konuşurken müziğin kısılıp kısılmayacağını seçin ve Müzik / Ses dengesini ayarlayın."
+  },
+  "android": {
+    "release_notes": "Yeniden tasarlanan Eğitmen’de yapay zekâ filtre eşleşmelerini görün ve filtrelerinizi yönetin. Gizle, yapay zekâ filtre eşleşmelerini geçersiz kılar. Podcast’leri Dinle’de atlama kontrolleri, podcast’lerle haberleri bir araya getiren bir sıra ve cihazlar arasında eşitlenen oynatma konumuyla çalın. Dinle, isteğe bağlı müzik kısma ve Müzik / Ses dengesiyle diğer uygulamalardaki müziğin üzerine sesli okuma yapabilir."
+  },
+  "macos": {
+    "whats_new": "Bir haberle eşleşen yapay zekâ içerik ve görsel filtrelerini görün, filtrelerinizi Eğitmen’de yönetin. Gizle artık yapay zekâ filtre eşleşmelerini geçersiz kılıyor.\n\nPodcast’leri NewsBlur’ın Dinle oynatıcısında atlama kontrolleri, AirPlay ve podcast’lerle sesli okunan haberleri bir araya getiren bir sırayla çalın. Kaldığınız yerden farklı cihazlarda devam edin."
+  }
+}

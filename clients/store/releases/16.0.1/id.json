@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Kontrol tablet kembali: tampilkan daftar feed, judul artikel, atau artikel dalam layar penuh secara terpisah. Seret pembatas untuk mengubah ukuran panel; NewsBlur mengingat lebarnya.\n\nTermasuk dukungan untuk 21 bahasa antarmuka dan kontrol artikel berikutnya dengan posisi tetap dari versi 16.0."
+  },
+  "macos": {
+    "whats_new": "Pembaruan ini membuat membaca di Mac lebih nyaman.\n\nSpasi menggulir artikel ke bawah, lalu beralih ke artikel berikutnya yang belum dibaca saat Anda mencapai bagian akhir. Shift-Spasi menggulir ke atas dan kembali ke artikel sebelumnya saat di bagian atas. Pilih jarak gulir setiap penekanan tombol di Preferensi atau Pintasan Keyboard.\n\nBuka Pintasan Keyboard langsung dari menu pengaturan artikel.\n\nNewsBlur kini mengingat ukuran dan posisi jendela saat Anda keluar dan membukanya kembali.\n\nNama model di Tanya AI juga telah diperbarui."
   }
 }

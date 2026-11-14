@@ -1,0 +1,37 @@
+{
+  "version": "16.1",
+  "languages": [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "source_blog": "blog/_posts/2026-10-30-listen-to-your-stories.md",
+  "english_review": "Rewritten listing and release notes based on Listen blog; existing product text reviewed and unchanged",
+  "validation": "21 languages, 630 fields",
+  "independent_review": [
+    "review-west.json",
+    "review-mid.json",
+    "review-east.json"
+  ],
+  "apple_limits_source": "https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information",
+  "google_limits_source": "https://support.google.com/googleplay/android-developer/answer/9859348?hl=en",
+  "checked_at": "2026-10-29T14:08:30Z"
+}

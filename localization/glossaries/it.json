@@ -111,15 +111,24 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Mi piace / Non mi piace / Non mi piace per niente",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Mi piace / Non mi piace; Hide → Nascondi",
       "avoid": [
         "Dislike / Super dislike (English)",
         "Dislike totale / Dislike assoluto",
         "come (for the verb like)",
         "simile (for like)"
       ],
-      "note": "Super dislike → Non mi piace per niente (already the Android wording; it always hides). The trainer's 'beats' means Like outranks Dislike: batte / prevale su (never ritmi). '(like wins)' → (prevale Mi piace). Words inserted into 'What do you %(like)s and %(dislike)s about this…' must read correctly inside the template (check reader_classifier.js and TrainerView.swift)."
+      "note": "Hide is the level above Mi piace (formerly Super dislike, then Non mi piace per niente): Nascondi; it always hides. The trainer's 'beats' means Like outranks Dislike: batte / prevale su (never ritmi). '(like wins)' → (prevale Mi piace). Words inserted into 'What do you %(like)s and %(dislike)s about this…' must read correctly inside the template (check reader_classifier.js and TrainerView.swift)."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Nascondi",
+      "avoid": [
+        "Non mi piace per niente"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (Nascondi prevale su tutto). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

@@ -1843,6 +1843,18 @@ a.NB-fgi img {
     /* red */
 }
 
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-18 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/mcp-agent.svg');
+    filter: invert(25%) sepia(90%) saturate(2500%) hue-rotate(235deg) brightness(90%) contrast(100%);
+    /* indigo */
+}
+
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-19 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/listen.svg');
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);
+    /* teal */
+}
+
 /* Pro tier bullets with vivid colors */
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-1 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/stack.svg');
@@ -1868,10 +1880,11 @@ a.NB-fgi img {
     /* gold */
 }
 
+/* welcome.css: Listen to 10 hours a week, the same icon as the Archive tier's Listen line */
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-5 .NB-pricing-bullet {
-    background-image: url('/media/embed/icons/nouns/train.svg');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
-    /* gold */
+    background-image: url('/media/embed/icons/nouns/listen.svg');
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);
+    /* teal */
 }
 
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-6 .NB-pricing-bullet {

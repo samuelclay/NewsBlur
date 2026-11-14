@@ -166,9 +166,7 @@ object StorySplitView {
             if (paneLayoutDirection != layoutDirection) {
                 paneLayoutDirection = layoutDirection
                 RuleController.getInstance(context).setRules(buildRules(context))
-                if (readerFullscreenSupported) {
-                    ActivityEmbeddingController.getInstance(context).invalidateVisibleActivityStacks()
-                }
+                refreshVisibleSplits(context)
             }
             return
         }
@@ -293,7 +291,7 @@ object StorySplitView {
         (activity.applicationContext as NbApplication).prefsRepo.get().setReaderFullscreenEnabled(
             enabled
         )
-        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+        refreshVisibleSplits(activity)
         return true
     }
 
@@ -323,7 +321,7 @@ object StorySplitView {
         } else {
             FeedListDrawer.open(activity, focusFeeds = false)
         }
-        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+        refreshVisibleSplits(activity)
         return true
     }
 
@@ -341,7 +339,7 @@ object StorySplitView {
     fun prepareFeedList(activity: Activity, focusFeeds: Boolean) {
         val prefs = (activity.applicationContext as NbApplication).prefsRepo.get()
         feedFullscreenRequested = focusFeeds && prefs.isFeedListFullscreenEnabled()
-        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+        refreshVisibleSplits(activity)
     }
 
     @JvmStatic
@@ -351,7 +349,7 @@ object StorySplitView {
         )
         feedFullscreenRequested = enabled
         if (!enabled) ItemsList.peekReadingLaunchParent(activity.taskId)?.startDeferredStories()
-        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+        refreshVisibleSplits(activity)
     }
 
     @JvmStatic
@@ -361,7 +359,15 @@ object StorySplitView {
             feeds.finish()
         } else {
             feedFullscreenRequested = false
-            ActivityEmbeddingController.getInstance(feeds).invalidateVisibleActivityStacks()
+            refreshVisibleSplits(feeds)
+        }
+    }
+
+    private fun refreshVisibleSplits(context: Context) {
+        // StorySplitView.kt also opens feed drawers on extension 1/2 tablets. They support
+        // split rules, but refreshing existing stacks requires the extension 3 calculator.
+        if (readerFullscreenSupported) {
+            ActivityEmbeddingController.getInstance(context).invalidateVisibleActivityStacks()
         }
     }
 
@@ -502,7 +508,7 @@ object StorySplitView {
         if (feeds) prefs.setFeedListWidthRatio(ratio) else prefs.setStoryListSplitRatio(ratio)
         resizingTaskId = activity.taskId
         resizingUntil = android.os.SystemClock.uptimeMillis() + if (finished) 400 else 2000
-        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+        refreshVisibleSplits(activity)
     }
 
     /**

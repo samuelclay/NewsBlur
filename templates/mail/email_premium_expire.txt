@@ -4,7 +4,9 @@
 
 {% block body %}{% current_domain as domain %}{% blocktrans with username=user.username %}Hey {{ username }}, your premium account has just expired.{% endblocktrans %}
 
-{% trans "You now have a free account with all the limitations of a free account. But that doesn't mean you can't renew your premium subscription and enjoy the many benefits of using NewsBlur." %}
+{% if pricing_cancellation %}{% blocktrans with old_amount=pricing_cancellation.old_amount date=pricing_cancellation.paypal_canceled_date|language_date:"F j, Y" %}NewsBlur Premium has moved to $36 per year, and PayPal would not let NewsBlur move your older ${{ old_amount }}/year subscription to the new rate. So I cancelled it on {{ date }} instead of letting it renew at the old price. Nothing is wrong with your PayPal account. To keep Premium, resubscribe at the new $36/year rate.{% endblocktrans %}
+
+{% endif %}{% trans "You now have a free account with all the limitations of a free account. But that doesn't mean you can't renew your premium subscription and enjoy the many benefits of using NewsBlur." %}
 
 {% trans "Renew now:" %} https://{{ domain }}{{ user.profile.autologin_url }}?next=premium
 

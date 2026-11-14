@@ -7,6 +7,48 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_StoryFirstPageLoading: XCTestCase {
+#if targetEnvironment(macCatalyst)
+    func test_notificationAfterClosingMacWindowPopulatesOnlyTheReplacementReader() async throws {
+        let closed = makeFixture()
+        closed.app.window = nil
+        closed.app.storyPresented = {}
+        closed.controller.reloadImmediately()
+        let oldReloads = try XCTUnwrap(closed.table as? FirstPageLoadingTable).rowReloads
+
+        closed.app.receiveNotification(["story_feed_id": 1, "story_hash": "first-page-1"])
+
+        XCTAssertTrue(closed.app.readFlushes.isEmpty, "A notification cannot start loading through the disconnected controller")
+        XCTAssertTrue(closed.app.requests.isEmpty)
+        XCTAssertEqual(closed.app.notificationCompletions, 1)
+
+        // StoryFirstPageLoadingTests.swift replaces the reader while keeping the process and its story collection alive.
+        let reopened = makeReader(app: closed.app, stories: closed.stories)
+        let presentation = try FirstPageNotificationPresentation(fixture: reopened)
+        defer { presentation.close() }
+        let selected = expectation(description: "Reconnected notification presents its article")
+        reopened.app.storyPresented = { selected.fulfill() }
+        reopened.app.backgroundLoadNotificationStory()
+        reopened.controller.finishedAnimatingIn = true
+        reopened.app.releaseReadFlush()
+        reopened.app.releaseSavedFlush()
+        await settle()
+        reopened.app.reply(to: try feedPageRequest(1, in: reopened), with: response(stories: makeStories(0..<4)))
+        await fulfillment(of: [selected], timeout: SimulatorTestTiming.realWorkTimeout)
+
+        XCTAssertEqual(reopened.app.activeStory?["story_hash"] as? String, "first-page-1")
+        XCTAssertEqual(reopened.table.numberOfSections, 1)
+        guard reopened.table.numberOfSections == 1 else { return }
+        XCTAssertGreaterThan(reopened.table.numberOfRows(inSection: 0), 1)
+        let path = try XCTUnwrap(reopened.table.indexPathForSelectedRow)
+        let cell = try XCTUnwrap(reopened.table.cellForRow(at: path) as? FeedDetailTableCell)
+        XCTAssertEqual(cell.storyTitle, "Story 1")
+        XCTAssertEqual(cell.storyHash, "first-page-1")
+        XCTAssertEqual(try XCTUnwrap(closed.table as? FirstPageLoadingTable).rowReloads, oldReloads,
+                       "The replacement response must reload the new table, not the disconnected table")
+        XCTAssertNil(reopened.app.pendingNotificationStory)
+    }
+#endif
+
     func test_discoveryExactStorySelectionLoadsRowsWhileReaderMessageWasVisible() async throws {
         let fixture = makeFixture()
         let presentation = try FirstPageNotificationPresentation(fixture: fixture)
@@ -2234,6 +2276,10 @@ import XCTest
         stories.feedPage = 1
         stories.activeFeed = app.dictFeeds["1"] as? [AnyHashable: Any]
         app.storiesCollection = stories
+        return makeReader(app: app, stories: stories)
+    }
+
+    private func makeReader(app: FirstPageLoadingAppDelegate, stories: FirstPageLoadingStories) -> FirstPageFixture {
         let controller = FirstPageLoadingController()
         controller.appDelegate = app
         controller.storiesCollection = stories
@@ -2283,6 +2329,7 @@ import XCTest
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         previousKeyWindow = scene.windows.first(where: \.isKeyWindow)
         window = UIWindow(windowScene: scene)
+        fixture.app.window = window
         UserDefaults.standard.set("unread", forKey: filterKey)
         window.frame = CGRect(x: 0, y: 0, width: 390, height: 660)
         let root = UIViewController()
@@ -2314,6 +2361,7 @@ import XCTest
             _ = ReadTimeTracker.shared.getAndResetReadTime(storyHash: selectedHash)
         }
         window.isHidden = true
+        fixture.app.window = nil
         previousKeyWindow?.makeKey()
         if let previousFilter { UserDefaults.standard.set(previousFilter, forKey: filterKey) }
         else { UserDefaults.standard.removeObject(forKey: filterKey) }

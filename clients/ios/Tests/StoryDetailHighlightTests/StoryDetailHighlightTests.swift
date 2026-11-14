@@ -186,6 +186,7 @@ final class StoryDetailHighlightTests: XCTestCase {
                 sampleText: true,
                 location: "",
                 pageYOffset: 0,
+                addEventListener: function() {},
                 console: { log: function() {} }
             };
             var console = window.console;

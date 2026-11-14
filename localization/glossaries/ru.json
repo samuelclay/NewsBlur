@@ -110,13 +110,24 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Like → Нравится; Dislike → Не нравится; Super dislike → Очень не нравится; inserted trainer words like → нравится, dislike → не нравится",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Like → Нравится; Dislike → Не нравится; Hide (the level above Like, formerly Super dislike) → Скрыть; inserted trainer words like → нравится, dislike → не нравится",
       "avoid": [
         "Супер-не нравится (broken)",
         "Отмечать (for Like)"
       ],
       "note": "beats (trainer separator) → сильнее / > ; (like wins) → («Нравится» важнее)."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Скрыть",
+      "avoid": [
+        "Очень не нравится",
+        "очень не нравится",
+        "супердизлайк"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names («Скрыть» перевешивает всё). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

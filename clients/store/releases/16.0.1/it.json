@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Tornano i controlli per tablet: espandi l’elenco dei feed, i titoli degli articoli o l’articolo a schermo intero, indipendentemente. Trascina i divisori per ridimensionare i pannelli; NewsBlur ne ricorda la larghezza.\n\nInclude l’interfaccia in 21 lingue e i controlli fissi dell’articolo successivo della versione 16.0."
+  },
+  "macos": {
+    "whats_new": "Questo aggiornamento rende più comoda la lettura sul Mac.\n\nSpazio scorre l’articolo verso il basso e, quando arrivi alla fine, apre il successivo articolo non letto. Maiuscole-Spazio scorre verso l’alto e, quando arrivi all’inizio, torna all’articolo precedente. Scegli quanto scorrere a ogni pressione in Preferenze o Scorciatoie da tastiera.\n\nApri Scorciatoie da tastiera direttamente dal menu delle impostazioni dell’articolo.\n\nNewsBlur ora ricorda le dimensioni e la posizione della finestra quando esci dall’app e la riapri.\n\nSono stati aggiornati anche i nomi dei modelli di Chiedi all’IA."
   }
 }

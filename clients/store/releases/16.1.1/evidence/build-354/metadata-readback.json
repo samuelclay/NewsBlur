@@ -1,0 +1,37 @@
+{
+  "locales": 21,
+  "mismatches": [],
+  "notes": "Build 354 addresses the Guideline 4 Sign in with Apple issue. New Apple accounts now complete signup immediately using the verified email supplied by Apple and an automatically generated NewsBlur username. There is no additional name, email, username, or password form for new Apple accounts. Hide My Email is supported. Returning Apple users sign in to their existing linked account. If Apple’s email matches an existing NewsBlur account that is not yet linked, the app still verifies ownership before connecting the accounts.\n\nTo test: choose Sign in with Apple using an Apple account not yet linked to NewsBlur, complete Apple authorization, and proceed directly into NewsBlur without filling in a signup form.\n\nVersion 16.1.1 also improves Listen: playback from the reading toolbar, Next story in the mini player, and auto-continue in Saved Stories or Read Stories. Existing review credentials remain valid.",
+  "reviewItems": [
+    {
+      "type": "reviewSubmissionItems",
+      "id": "MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDE4fGVmOTc2YTYxLWU5M2UtNGIzYi04N2FiLWM1YjFiZDJmYmQwZg",
+      "attributes": {
+        "state": "READY_FOR_REVIEW"
+      },
+      "links": {
+        "self": "https://api.appstoreconnect.apple.com/v1/reviewSubmissionItems/MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDE4fGVmOTc2YTYxLWU5M2UtNGIzYi04N2FiLWM1YjFiZDJmYmQwZg"
+      }
+    },
+    {
+      "type": "reviewSubmissionItems",
+      "id": "MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDE4fDVkMDhjYzZkLTg4MTEtNGNiYi1hMzhhLTY5N2E0Y2U3NDZiOQ",
+      "attributes": {
+        "state": "READY_FOR_REVIEW"
+      },
+      "links": {
+        "self": "https://api.appstoreconnect.apple.com/v1/reviewSubmissionItems/MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDE4fDVkMDhjYzZkLTg4MTEtNGNiYi1hMzhhLTY5N2E0Y2U3NDZiOQ"
+      }
+    },
+    {
+      "type": "reviewSubmissionItems",
+      "id": "MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDZ8ODk0MzQxNDM4",
+      "attributes": {
+        "state": "READY_FOR_REVIEW"
+      },
+      "links": {
+        "self": "https://api.appstoreconnect.apple.com/v1/reviewSubmissionItems/MjY2NWVkNTctYjJiZC00M2QxLTliM2MtZDUwM2YzOTcyNjE2fDZ8ODk0MzQxNDM4"
+      }
+    }
+  ]
+}

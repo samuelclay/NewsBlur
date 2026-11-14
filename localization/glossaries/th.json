@@ -116,16 +116,27 @@
     },
     {
       "concept": "like / dislike",
-      "en": "\\b(super )?(dis)?lik(e|ed|es)\\b",
-      "use": "Like → ชอบ, Dislike → ไม่ชอบ, Super Dislike → ไม่ชอบอย่างยิ่ง",
+      "en": "\\b(dis)?lik(e|ed|es)\\b",
+      "use": "Like → ชอบ, Dislike → ไม่ชอบ, Hide (the level above Like, formerly Super Dislike) → ซ่อน",
       "avoid": [
         "ถูกใจ next to ไม่ชอบ in trainer labels"
       ],
-      "note": "Catalog like: 19 ชอบ / 16 ถูกใจ; dislike: 27 ไม่ชอบ / 4 ไม่ถูกใจ. A ถูกใจ/ไม่ชอบ pair in trainer buttons → low. Prose «กดถูกใจ / กดไม่ถูกใจ» (press the thumbs) is idiomatic and accepted. Super dislike variants «ไม่ชอบมาก», «ไม่ชอบอย่างมาก» accepted."
+      "note": "Catalog like: 19 ชอบ / 16 ถูกใจ; dislike: 27 ไม่ชอบ / 4 ไม่ถูกใจ. A ถูกใจ/ไม่ชอบ pair in trainer buttons → low. Prose «กดถูกใจ / กดไม่ถูกใจ» (press the thumbs) is idiomatic and accepted."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "ซ่อน",
+      "avoid": [
+        "ไม่ชอบอย่างยิ่ง",
+        "ไม่ชอบอย่างมาก",
+        "ไม่ชอบขั้นสุด"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (“ซ่อน” มีผลเหนือทุกอย่าง). The old Super dislike names are retired."
     },
     {
       "concept": "beats / like wins",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
       "use": "beats → ชนะ (or a > sign); (like wins) → (ชอบชนะ) / (ชอบมีผลเหนือกว่า)",
       "avoid": [
         "จังหวะ (musical beat)",

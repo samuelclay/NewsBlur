@@ -721,8 +721,10 @@ final class AddSiteViewModelTests: XCTestCase {
             }
     }
 
+    // AddSiteViewModelTests.swift waits on URLSession and main actor work it doesn't schedule itself,
+    // so the default budget is SimulatorTestTiming.realWorkTimeout: GitHub's runners stalled a 5 second wait.
     private func waitUntil(
-        timeout: TimeInterval = 5.0,
+        timeout: TimeInterval = SimulatorTestTiming.realWorkTimeout,
         condition: @escaping () -> Bool
     ) async {
         let deadline = Date().addingTimeInterval(timeout)

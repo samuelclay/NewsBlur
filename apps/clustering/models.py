@@ -1245,6 +1245,9 @@ def apply_clustering_to_stories(
                     "story_authors": s.get("story_authors", ""),
                     "intelligence": s.get("intelligence", {"feed": 0, "author": 0, "tags": 0, "title": 0}),
                     "score": s.get("score", 0),
+                    # models.py: the matched AI prompts travel with the score they explain, so a client
+                    # refreshing a folded story's score also clears or updates its AI pills.
+                    "prompt_classifiers": s.get("prompt_classifiers", []),
                     "read_status": s.get("read_status", 0),
                     "cluster_tier": member_tier,
                 }

@@ -6,74 +6,77 @@
 
     <p style="line-height: 20px;">{% blocktrans %}Your <b>30-day trial premium subscription</b> has started. You now have full access to all premium features:{% endblocktrans %}</p>
 
+    {# Each row renders templates/mail/email_feature_row.xhtml. Icons are PNGs because Gmail doesn't render SVG images. #}
     <table cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0;">
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-sheets-100.png" label=_("Enable unlimited sites (up to 1,024 feeds)") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-lightning-bolt-100.png" label=_("Sites updated up to 5x more often") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-comics-magazine-100.png" label=_("River of News - read all stories from folders") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-search-100.png" label=_("Full-text search across all your sites") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-tags-100.png" label=_("Save stories with searchable tags") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-security-wi-fi-100.png" label=_("Privacy options for your blurblog") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-activity-history-100.png" label=_("Text view extracts full story content") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/direction.png" label=_("Discover related stories and sites") %}
+    </table>
+
+    <p style="line-height: 20px;">{% blocktrans %}<b>No credit card required.</b> After 30 days, you can continue enjoying these features for just $36/year.{% endblocktrans %}</p>
+
+    <hr style="border: none; border-top: 1px solid #e3e6e8; margin: 32px 0 24px;">
+
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">{% trans "Want even more? Meet Premium Archive." %}</h2>
+
+    <p style="line-height: 20px;">{% blocktrans %}<b>Premium Archive</b> keeps every story from every site you follow, forever. You get everything in Premium, plus:{% endblocktrans %}</p>
+
+    {# Same features and wording as the Archive tier in media/js/newsblur/reader/reader_premium_upgrade.js, ordered from most to least valuable with the follow limit first and MCP last #}
+    <table cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0;">
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-bursts-100.png" label=_("Follow up to 4,096 sites") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/web-feed.png" label=_("Web Feeds from any website, even without RSS") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/listen.png" label=_("Listen to 1 hour of stories read aloud a week") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/prompt.png" label=_("Ask AI questions about stories") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/folder-open.png" label=_("Apply training across a folder") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/world.png" label=_("Apply training globally") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/briefing.png" label=_("Daily briefing with your top stories and keywords") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-filing-cabinet-100.png" label=_("Every story archived and searchable forever") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/stack.png" label=_("Cluster duplicate stories across all your feeds") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/train.png" label=_("Train stories on full text content") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/bell-ringing.png" label=_("Notifications on trained intelligence classifiers") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-relax-with-book-100.png" label=_("Choose when stories are marked as read") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/mark-read.png" label=_("Customize auto-read by site or folder") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-quadcopter-100.png" label=_("Feeds back-filled for complete archive") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/direction.png" label=_("Discover related stories across your archive") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-rss-100.png" label=_("Export trained stories from folders") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/history.png" label=_("Stories can stay unread forever") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-calendar-100.png" label=_("Filter stories by date range") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/mcp-agent.png" label=_("Connect AI agents with MCP server and CLI") %}
+    </table>
+
+    <p style="line-height: 20px;">{% blocktrans %}All of this for just <b>$99/year</b>.{% endblocktrans %}</p>
+
+    <table cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0 8px;">
         <tr>
-            <td style="padding: {% bidi "2px 8px 2px 0" "2px 0 2px 8px" %}; vertical-align: middle; width: 18px;">
-                <img src="https://{% current_domain %}/media/embed/icons/icons8/icons8-sheets-100.png" style="width:18px;height:18px;display:block;margin:0;" alt="">
-            </td>
-            <td style="padding: 2px 0; vertical-align: middle; font-size: 15px; line-height: 22px;">
-                {% trans "Enable unlimited sites (up to 1,024 feeds)" %}
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: {% bidi "2px 8px 2px 0" "2px 0 2px 8px" %}; vertical-align: middle; width: 18px;">
-                <img src="https://{% current_domain %}/media/embed/icons/icons8/icons8-lightning-bolt-100.png" style="width:18px;height:18px;display:block;margin:0;" alt="">
-            </td>
-            <td style="padding: 2px 0; vertical-align: middle; font-size: 15px; line-height: 22px;">
-                {% trans "Sites updated up to 5x more often" %}
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: {% bidi "2px 8px 2px 0" "2px 0 2px 8px" %}; vertical-align: middle; width: 18px;">
-                <img src="https://{% current_domain %}/media/embed/icons/icons8/icons8-comics-magazine-100.png" style="width:18px;height:18px;display:block;margin:0;" alt="">
-            </td>
-            <td style="padding: 2px 0; vertical-align: middle; font-size: 15px; line-height: 22px;">
-                {% trans "River of News - read all stories from folders" %}
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: {% bidi "2px 8px 2px 0" "2px 0 2px 8px" %}; vertical-align: middle; width: 18px;">
-                <img src="https://{% current_domain %}/media/embed/icons/icons8/icons8-search-100.png" style="width:18px;height:18px;display:block;margin:0;" alt="">
-            </td>
-            <td style="padding: 2px 0; vertical-align: middle; font-size: 15px; line-height: 22px;">
-                {% trans "Full-text search across all your sites" %}
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: {% bidi "2px 8px 2px 0" "2px 0 2px 8px" %}; vertical-align: middle; width: 18px;">
-                <img src="https://{% current_domain %}/media/embed/icons/icons8/icons8-tags-100.png" style="width:18px;height:18px;display:block;margin:0;" alt="">
-            </td>
-            <td style="padding: 2px 0; vertical-align: middle; font-size: 15px; line-height: 22px;">
-                {% trans "Save stories with searchable tags" %}
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: {% bidi "2px 8px 2px 0" "2px 0 2px 8px" %}; vertical-align: middle; width: 18px;">
-                <img src="https://{% current_domain %}/media/embed/icons/icons8/icons8-security-wi-fi-100.png" style="width:18px;height:18px;display:block;margin:0;" alt="">
-            </td>
-            <td style="padding: 2px 0; vertical-align: middle; font-size: 15px; line-height: 22px;">
-                {% trans "Privacy options for your blurblog" %}
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: {% bidi "2px 8px 2px 0" "2px 0 2px 8px" %}; vertical-align: middle; width: 18px;">
-                <img src="https://{% current_domain %}/media/embed/icons/icons8/icons8-activity-history-100.png" style="width:18px;height:18px;display:block;margin:0;" alt="">
-            </td>
-            <td style="padding: 2px 0; vertical-align: middle; font-size: 15px; line-height: 22px;">
-                {% trans "Text view extracts full story content" %}
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: {% bidi "2px 8px 2px 0" "2px 0 2px 8px" %}; vertical-align: middle; width: 18px;">
-                <img src="https://{% current_domain %}/media/embed/icons/nouns/direction_black.svg" style="width:18px;height:18px;display:block;margin:0;" alt="">
-            </td>
-            <td style="padding: 2px 0; vertical-align: middle; font-size: 15px; line-height: 22px;">
-                {% trans "Discover related stories and sites" %}
+            <td align="center" bgcolor="#2563eb" style="border-radius: 6px;">
+                <a href="https://{% current_domain %}/?next=premium" style="display: inline-block; padding: 12px 24px; font-size: 15px; font-weight: bold; line-height: 20px; color: #ffffff; text-decoration: none; border-radius: 6px;">{% trans "Upgrade to Premium Archive" %}</a>
             </td>
         </tr>
     </table>
 
-    <p style="line-height: 20px;">{% blocktrans %}<b>No credit card required.</b> After 30 days, you can continue enjoying these features for just $36/year.{% endblocktrans %}</p>
+    <hr style="border: none; border-top: 1px solid #e3e6e8; margin: 32px 0 24px;">
+
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">{% trans "Need the most? Meet Premium Pro." %}</h2>
+
+    <p style="line-height: 20px;">{% blocktrans %}<b>Premium Pro</b> is built for power users. You get everything in Archive, plus:{% endblocktrans %}</p>
+
+    {# Same features, order and wording as the Pro tier in media/js/newsblur/reader/reader_premium_upgrade.js #}
+    <table cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0;">
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/stack.png" label=_("Follow up to 10,000 sites") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-lightning-bolt-100.png" label=_("All feeds fetched every 5-15 minutes") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/train.png" label=_("Train stories with regular expressions") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/img/email/icons/listen.png" label=_("Listen to 10 hours of stories read aloud a week") %}
+        {% include "mail/email_feature_row.xhtml" with icon="/media/embed/icons/icons8/icons8-pyramids-100.png" label=_("Priority support") %}
+    </table>
+
+    <p style="line-height: 20px;">{% blocktrans %}All of this for <b>$29/month</b>.{% endblocktrans %}</p>
+
+    <hr style="border: none; border-top: 1px solid #e3e6e8; margin: 32px 0 24px;">
 
     <p style="line-height: 20px;">{% trans "Welcome aboard!" %}</p>
     <p style="line-height: 20px;">- Sam Clay</p>

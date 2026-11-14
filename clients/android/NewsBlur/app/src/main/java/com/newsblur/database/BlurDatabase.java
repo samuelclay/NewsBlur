@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	static final int VERSION = 11;
+	static final int VERSION = 12;
 
 	public BlurDatabase(Context context) {
 		this(context, DB_NAME);
@@ -80,7 +80,15 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int previousVersion, int nextVersion) {
-        if (previousVersion >= 6 && previousVersion < 9) {
+        if (previousVersion < 6) {
+            // Versions before 6 predate the incremental steps below, so start over.
+            dropAndRecreateTables(db);
+            return;
+        }
+        // Each step runs only when the upgrade crosses its version, so an upgrade from any
+        // version 6 or later chains through every later step and keeps cached stories,
+        // queued offline actions, and cluster receipts.
+        if (previousVersion < 9) {
             // Folder.java reconstructs segment keys from the cached parent list. Display
             // paths can collide when a folder title contains the hierarchy separator.
             db.execSQL("ALTER TABLE " + DatabaseConstants.FOLDER_TABLE + " RENAME TO folders_legacy");
@@ -93,7 +101,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
             }
             db.execSQL("DROP TABLE folders_legacy");
         }
-        if (previousVersion >= 6 && previousVersion < 10) {
+        if (previousVersion < 10) {
             // ClusterReadStore.kt upgrades membership without replacing cached stories, actions, or receipts.
             if (previousVersion < 8) {
                 ClusterReadStore.createTables(db);
@@ -102,13 +110,19 @@ public class BlurDatabase extends SQLiteOpenHelper {
             }
             ClusterReadStore.backfill(db);
         }
-        if (previousVersion >= 6 && previousVersion < 11) {
+        if (previousVersion < 11) {
             // BlurDatabaseHelper.java reads custom_icons during startup. Repair missing tables
             // without discarding cached stories, existing icons, or queued offline actions.
             db.execSQL(DatabaseConstants.CUSTOM_ICON_SQL);
-            return;
         }
-        dropAndRecreateTables(db);
+        if (previousVersion < 12 && nextVersion >= 12) {
+            // Story.java keeps matched AI prompt classifiers for the reading header, and Feed.java
+            // keeps stories_last_month for the trainer's AI cost estimates.
+            db.execSQL("ALTER TABLE " + DatabaseConstants.STORY_TABLE + " ADD COLUMN " +
+                    DatabaseConstants.STORY_PROMPT_CLASSIFIERS + " TEXT");
+            db.execSQL("ALTER TABLE " + DatabaseConstants.FEED_TABLE + " ADD COLUMN " +
+                    DatabaseConstants.FEED_STORIES_LAST_MONTH + " INTEGER");
+        }
     }
 
     @Override

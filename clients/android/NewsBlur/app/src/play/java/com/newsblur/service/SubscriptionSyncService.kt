@@ -14,7 +14,9 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -65,30 +67,34 @@ class SubscriptionSyncService : JobService() {
             return false
         }
 
-        val subscriptionManager =
-            SubscriptionManagerImpl(
-                context = this@SubscriptionSyncService,
-                syncServiceState = syncServiceState,
-                userApi = userApi,
-                prefRepository = prefsRepo,
-            )
-        subscriptionManager.startBillingConnection(
-            object : SubscriptionsListener {
-                override fun onBillingConnectionReady() {
-                    NBScope.launch {
-                        subscriptionManager.syncActiveSubscription()
-                        Log.d(this, "sync active subscription completed.")
-                        // manually call jobFinished after work is done
+        NBScope.launch(Dispatchers.Main) {
+            // SubscriptionSyncService.kt must not initialize BillingClient's storage on the job callback.
+            val subscriptionManager = withContext(Dispatchers.IO) {
+                SubscriptionManagerImpl(
+                    context = this@SubscriptionSyncService,
+                    syncServiceState = syncServiceState,
+                    userApi = userApi,
+                    prefRepository = prefsRepo,
+                )
+            }
+            subscriptionManager.startBillingConnection(
+                object : SubscriptionsListener {
+                    override fun onBillingConnectionReady() {
+                        NBScope.launch {
+                            subscriptionManager.syncActiveSubscription()
+                            Log.d(this, "sync active subscription completed.")
+                            // manually call jobFinished after work is done
+                            jobFinished(params, false)
+                        }
+                    }
+
+                    override fun onBillingConnectionError(message: String?) {
+                        // manually call jobFinished on error
                         jobFinished(params, false)
                     }
-                }
-
-                override fun onBillingConnectionError(message: String?) {
-                    // manually call jobFinished on error
-                    jobFinished(params, false)
-                }
-            },
-        )
+                },
+            )
+        }
 
         return true // returning true due to background thread work
     }

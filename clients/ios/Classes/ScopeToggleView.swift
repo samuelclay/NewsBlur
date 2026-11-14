@@ -15,6 +15,8 @@ struct ScopeToggleView: View {
     let score: Feed.Score
     let isPremiumArchive: Bool
     var onScopeChanged: ((ClassifierScope) -> Void)?
+    /// False for a site outside any folder, which has no folder for a folder scope to apply to.
+    var isFolderAvailable = true
 
     @State private var tooltipText: String?
     @State private var shakeAmount: CGFloat = 0
@@ -25,7 +27,7 @@ struct ScopeToggleView: View {
                 Image(systemName: scope.iconName)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(iconColor(for: scope))
-                    .opacity(scope == activeScope ? 1.0 : 0.5)
+                    .opacity(opacity(for: scope))
                     .frame(width: 18, height: 18)
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -53,20 +55,22 @@ struct ScopeToggleView: View {
         return scope.activeColor
     }
 
+    private func opacity(for scope: ClassifierScope) -> Double {
+        if scope == activeScope { return 1.0 }
+        // ScopeToggleView.swift dims the folder icon further when there is no folder to scope to.
+        return scope == .folder && !isFolderAvailable ? 0.2 : 0.5
+    }
+
     private func handleTap(_ scope: ClassifierScope) {
         if scope == activeScope { return }
 
         if scope != .feed && !isPremiumArchive {
-            withAnimation(.default) {
-                shakeAmount = 1
-            }
-            tooltipText = NBLocalization.text("Premium Archive")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                shakeAmount = 0
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                tooltipText = nil
-            }
+            deny(NBLocalization.text("Premium Archive"))
+            return
+        }
+
+        if scope == .folder && !isFolderAvailable {
+            deny(NBLocalization.text("This site isn't in a folder"))
             return
         }
 
@@ -78,6 +82,20 @@ struct ScopeToggleView: View {
             if tooltipText == scope.label(for: classifierType) {
                 tooltipText = nil
             }
+        }
+    }
+
+    /// Shakes the toggles and explains why the scope can't change.
+    private func deny(_ text: String) {
+        withAnimation(.default) {
+            shakeAmount = 1
+        }
+        tooltipText = text
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            shakeAmount = 0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            tooltipText = nil
         }
     }
 

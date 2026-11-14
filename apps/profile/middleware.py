@@ -159,14 +159,23 @@ class SQLLogToConsoleMiddleware:
             hasattr(request, "activated_segments") and "db_profiler" in request.activated_segments
         )
 
+    def process_request(self, request):
+        # Turns on recording of this request's Mongo and Redis commands onto connection.queriesx
+        # (utils/mongo_command_monitor.py recording_queries); process_response reads them and turns
+        # recording off again, so unprofiled requests don't keep a list that only grows.
+        if self.activated(request):
+            connection.queriesx = []
+
     def process_response(self, request, response):
         if not self.activated(request):
             return response
+        # Take what was recorded and turn recording off whatever happens below, so a profiled request
+        # or task that ran no SQL doesn't leave it on for every later one on this thread.
+        recorded = getattr(connection, "queriesx", None) or []
+        connection.queriesx = None
         if connection.queries:
             queries = connection.queries
-            if getattr(connection, "queriesx", False):
-                queries.extend(connection.queriesx)
-                connection.queriesx = []
+            queries.extend(recorded)
             time_elapsed = sum([float(q["time"]) for q in connection.queries])
             for query in queries:
                 sql_time = float(query["time"])
@@ -646,6 +655,11 @@ class UserAgentBanMiddleware:
         if "account" in request.path:
             return
         if "push" in request.path:
+            return
+        # Public OAuth discovery documents (apps/mcp/views.py). The Python MCP SDK
+        # fetches them without a User-Agent, so banning "missing" here made
+        # server-side MCP clients like Littlebird skip OAuth (forum #13806).
+        if request.path.startswith("/.well-known/"):
             return
         if getattr(settings, "TEST_DEBUG"):
             return

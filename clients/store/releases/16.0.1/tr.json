@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Tablet kontrolleri geri döndü: akış listesini, haber başlıklarını veya haberi birbirinden bağımsız olarak tam ekrana genişletin. Panelleri yeniden boyutlandırmak için ayırıcıları sürükleyin; NewsBlur genişliklerinizi hatırlar.\n\n16.0 sürümündeki 21 arayüz dili ve sabit konumlu sonraki haber kontrollerini içerir."
+  },
+  "macos": {
+    "whats_new": "Bu güncelleme Mac’te okumayı daha rahat hale getiriyor.\n\nBoşluk tuşu makaleyi aşağı kaydırır, sonuna geldiğinizde ise sonraki okunmamış habere geçer. Shift-Boşluk yukarı kaydırır ve en üstte önceki habere döner. Her basışta ne kadar kaydırılacağını Tercihler veya Klavye Kısayolları bölümünden seçin.\n\nKlavye Kısayolları’nı doğrudan haber ayarları menüsünden açın.\n\nNewsBlur artık uygulamadan çıkıp yeniden açtığınızda pencerenizin boyutunu ve konumunu hatırlar.\n\nYapay Zekâya Sor model adları da güncellendi."
   }
 }

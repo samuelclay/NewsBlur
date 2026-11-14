@@ -50,7 +50,7 @@ final class Test_MacSignedOutPreferences: XCTestCase {
         let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             fixture.login.presentedViewController == nil
         }, object: nil)
-        await fulfillment(of: [dismissed], timeout: 3)
+        await fulfillment(of: [dismissed], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertEqual(fixture.app.url, "https://new-reader.example.test")
         XCTAssertTrue(fixture.navigation.presentedViewController === fixture.login)
@@ -89,7 +89,7 @@ final class Test_MacSignedOutPreferences: XCTestCase {
         let returnedToLogin = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             fixture.login.presentedViewController == nil && fixture.login.viewIfLoaded?.window != nil
         }, object: nil)
-        await fulfillment(of: [returnedToLogin], timeout: 3)
+        await fulfillment(of: [returnedToLogin], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertTrue(fixture.navigation.presentedViewController === fixture.login,
                       "Done must not dismiss the login along with Preferences")
         XCTAssertTrue(fixture.app.networkManager === previousManager,
@@ -112,11 +112,12 @@ final class Test_MacSignedOutPreferences: XCTestCase {
         XCTAssertNil(otherModal.presentedViewController)
     }
 
+    // LoginViewControllerTests.swift waits for UIKit presentation work, which can stall on shared CI simulators.
     private func waitUntilPresented(_ controller: UIViewController) async {
         let presented = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             controller.viewIfLoaded?.window != nil && !controller.isBeingPresented
         }, object: nil)
-        await fulfillment(of: [presented], timeout: 3)
+        await fulfillment(of: [presented], timeout: SimulatorTestTiming.realWorkTimeout)
     }
 }
 
@@ -161,7 +162,7 @@ final class Test_MacSignedOutPreferences: XCTestCase {
         let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
             navigation.presentedViewController == nil && !login.isBeingDismissed
         }, object: nil)
-        let result = await XCTWaiter.fulfillment(of: [dismissed], timeout: 3)
+        let result = await XCTWaiter.fulfillment(of: [dismissed], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertEqual(result, .completed, "The fixture must finish dismissing before hiding its window")
         window.isHidden = true
     }

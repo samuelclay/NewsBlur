@@ -4,6 +4,7 @@ package com.newsblur.util
 object GestureChoices {
     val storyLongPress = listOf(
         GestureAction.GEST_ACTION_ASK_AI,
+        GestureAction.GEST_ACTION_LISTEN,
         GestureAction.GEST_ACTION_SHARE,
         GestureAction.GEST_ACTION_MARKUNREAD,
         GestureAction.GEST_ACTION_TOGGLE_SAVE,

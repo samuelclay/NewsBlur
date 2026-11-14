@@ -2135,6 +2135,39 @@ final class ReaderUITests: XCTestCase {
         XCTAssertEqual(shareButtons.count, 1)
     }
 
+    func test_gridCardsAllowRepeatedVerticalScrollingThroughPages() {
+        app.launchArguments += ["-newsblur-ui-test-bulk-read", "-newsblur-ui-test-animations",
+                                "-story_titles_position", "titles_in_grid",
+                                "-910002:story_titles_position", "titles_in_grid", "-grid_columns", "1", "-grid_height", "medium",
+                                "-enable_story_swipes", "YES", "-story_title_swipe_right", "back",
+                                "-story_title_swipe_left", "read", "-long_press_story_title", "show_actions",
+                                "-default_feed_read_filter", "all", "-910002:read_filter", "all",
+                                "-default_mark_read_filter", "manually"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
+        let scroll = app.scrollViews["story-titles-scroll"].firstMatch
+        XCTAssertTrue(scroll.waitForExistence(timeout: 20))
+        XCTAssertTrue(storyRow("ui-bulk-0").waitForExistence(timeout: 20))
+        XCTAssertEqual(storyRow("ui-bulk-1").frame.minY - storyRow("ui-bulk-0").frame.minY,
+                       420, accuracy: 1, "Exercise 400-point grid cards with 20-point spacing")
+        attachScreenshot(named: "grid-before-vertical-scroll")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        for swipe in 0..<16 {
+            let visible = (0..<40).lazy.map { self.storyRow("ui-bulk-\($0)") }
+                .first { $0.exists && $0.frame.minY > 200 && $0.frame.minY < 650 }
+            guard let visible else { return XCTFail("No visible grid card before swipe \(swipe)") }
+            let before = visible.frame.minY
+            // ReaderUITests.swift starts inside a card, where its horizontal action gesture competes with scrolling.
+            origin.withOffset(CGVector(dx: 190, dy: 620)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: 192, dy: 240)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+            XCTAssertLessThan(visible.frame.minY, before - 100, "Grid swallowed vertical swipe \(swipe)")
+            XCTAssertTrue(scroll.isHittable, "Vertical scrolling must not open a story or navigate back")
+        }
+        attachScreenshot(named: "grid-after-paginated-scroll")
+        XCTAssertTrue((12..<40).contains { storyRow("ui-bulk-\($0)").isHittable },
+                      "Scrolling must reach stories beyond the first page")
+    }
+
     func test_experimentalTitlesTappingStoryOpensDetail() {
         launch(on: "reader-feed-swift", storyTitlesStyle: "experimental")
 

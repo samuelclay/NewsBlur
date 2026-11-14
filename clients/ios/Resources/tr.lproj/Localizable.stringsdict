@@ -66,6 +66,22 @@
 			<string>%@ yorum</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ içerik filtresi</string>
+			<key>other</key>
+			<string>%@ içerik filtresi</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -194,6 +210,70 @@
 			<string>%@ odaktaki haber</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Bugün %@ ücretsiz haber önizlemesi kaldı</string>
+			<key>other</key>
+			<string>Bugün %@ ücretsiz haber önizlemesi kaldı</string>
+		</dict>
+	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ görsel filtresi</string>
+			<key>other</key>
+			<string>%@ görsel filtresi</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ eşleşme</string>
+			<key>other</key>
+			<string>%@ eşleşme</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Bu ay %@ dakika kaldı</string>
+			<key>other</key>
+			<string>Bu ay %@ dakika kaldı</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -306,6 +386,22 @@
 			<string>%@ haber kaldı</string>
 		</dict>
 	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Ayda %@ haber</string>
+			<key>other</key>
+			<string>Ayda %@ haber</string>
+		</dict>
+	</dict>
 	<key>%@ stories/month</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -352,6 +448,22 @@
 			<string>%@ okunmamış haber</string>
 			<key>other</key>
 			<string>%@ okunmamış haber</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ sesli önizleme kaldı</string>
+			<key>other</key>
+			<string>%@ sesli önizleme kaldı</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -434,6 +546,22 @@
 			<string>%@ başka sitede de yayımlandı</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ saniye geri</string>
+			<key>other</key>
+			<string>%@ saniye geri</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -464,6 +592,22 @@
 			<string>Takipçi</string>
 			<key>other</key>
 			<string>Takipçi</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ saniye ileri</string>
+			<key>other</key>
+			<string>%@ saniye ileri</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
@@ -704,6 +848,22 @@
 			<string>%@ siteye abonesiniz</string>
 			<key>other</key>
 			<string>%@ siteye abonesiniz</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>✓ %1$@ görselden %2$@ tanesi bu filtreyle eşleşiyor</string>
+			<key>other</key>
+			<string>✓ %2$@ / %1$@ görsel bu filtreyle eşleşiyor</string>
 		</dict>
 	</dict>
 </dict>

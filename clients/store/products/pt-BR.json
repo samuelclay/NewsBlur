@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premium e arquivo permanente de artigos"
+        "description": "Arquivo permanente e 1 hora de áudio por semana"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "Feeds atualizados a cada 5 a 15 minutos"
+        "description": "Feeds atualizados com frequência e 10 h de áudio/semana"
       }
     },
     "subscription_groups": {
@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "Assinatura do NewsBlur Premium",
-        "description": "Leia pastas em uma só lista, pesquise nos feeds, organize artigos salvos com tags e receba atualizações de feeds mais rápidas.",
+        "description": "Leia pastas em uma só lista, pesquise nos seus feeds, organize artigos salvos com tags e aproveite atualizações de feeds mais rápidas.",
         "benefits": [
           "Leia pastas em uma lista de artigos",
           "Pesquise em todos os feeds",
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "Assinatura do NewsBlur Premium Archive",
-        "description": "Tudo do Premium, mais um arquivo permanente e pesquisável de cada artigo. Mantenha artigos não lidos pelo tempo que quiser.",
+        "description": "Todos os recursos Premium, arquivo permanente com busca e 1 hora de áudio por semana. Mantenha artigos não lidos pelo tempo que quiser. O limite de áudio é renovado no domingo.",
         "benefits": [
           "Tudo do Premium",
-          "Mantenha artigos não lidos para sempre",
-          "Arquive cada artigo para sempre",
-          "Pesquise em todo o arquivo de artigos"
+          "Artigos não lidos sem limite de tempo",
+          "Arquivo permanente com busca",
+          "1 hora de áudio por semana"
         ]
       }
     }

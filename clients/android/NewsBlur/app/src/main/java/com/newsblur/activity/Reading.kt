@@ -2,6 +2,7 @@ package com.newsblur.activity
 
 import android.content.ComponentCallbacks2
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
@@ -20,6 +21,8 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -28,8 +31,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.material.appbar.AppBarLayout
@@ -39,14 +44,19 @@ import com.newsblur.BuildConfig
 import com.newsblur.R
 import com.newsblur.database.ReadingAdapter
 import com.newsblur.databinding.ActivityReadingBinding
+import com.newsblur.design.ListenPalette
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Story
+import com.newsblur.listen.ListenEvent
+import com.newsblur.listen.ListenPhase
+import com.newsblur.listen.ListenUiState
 import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingItemFragment.Companion.VERTICAL_SCROLL_DISTANCE_DP
 import com.newsblur.fragment.ReadingPagerFragment
 import com.newsblur.keyboard.KeyboardEvent
 import com.newsblur.keyboard.KeyboardListener
 import com.newsblur.keyboard.KeyboardManager
+import com.newsblur.preference.ListenPreferences
 import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
 import com.newsblur.service.NbSyncManager.UPDATE_STATUS
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
@@ -63,6 +73,7 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.ReaderTargetLoader
 import com.newsblur.util.StateFilter
+import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
@@ -78,6 +89,8 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -236,6 +249,9 @@ abstract class Reading :
 
     @Inject
     lateinit var readerTargetLoader: ReaderTargetLoader
+
+    @Inject
+    lateinit var listenPreferences: ListenPreferences
 
     @Inject
     @IconLoader
@@ -468,6 +484,7 @@ abstract class Reading :
         if (parked) return
         // Reading.kt reapplies preferences after returning from Settings, preserving video suppression.
         endControls?.update()
+        updateToolbarListenButton()
         setOverlayAlpha(toolbarVisibleFraction)
         if (syncServiceState.isHousekeepingRunning()) finish()
         // this view shows stories, it is not safe to perform cleanup
@@ -631,6 +648,9 @@ abstract class Reading :
             }
         }
         updateReaderFullscreenButton()
+        // The toolbar's Listen action does what the story's own Listen button does (ReadingItemFragment.kt).
+        binding.includeToolbar.toolbarListenButton.setOnClickListener { readingFragment?.listenToStory() }
+        updateToolbarListenButton()
 
         traverseBar = ReadingTraverseBar(this, binding, prefsRepo.getSelectedTheme())
         traverseBar.setup()
@@ -735,6 +755,93 @@ abstract class Reading :
         readingViewModel.activeStories.observe(this) {
             setStoryData(it)
         }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listenManager.events.collect(::followListenAdvance)
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // ListenUiState changes on every 200ms tick; the toolbar's Listen action only changes on these values.
+                listenManager.state
+                    .map(::toolbarListenLook)
+                    .distinctUntilChanged()
+                    .collect(::applyToolbarListenLook)
+            }
+        }
+    }
+
+    /** Reading.kt's stories in order, so Listen can continue with the next unread one when a story finishes. */
+    fun listenQueue(): List<Story> = readingAdapter?.storiesSnapshot().orEmpty()
+
+    /**
+     * Whether Listen should continue down this list as sorted rather than to its next unread story: Saved Stories
+     * and Read Stories hold only read stories, so skipping reads would leave nothing to continue to
+     * (ListenAutoContinue.kt).
+     */
+    fun listenFollowsListOrder(): Boolean = fs?.let { it.isAllSaved || it.isSingleSavedTag || it.isAllRead } == true
+
+    /** The feed or folder this reader shows, for Now Playing's "Then from …" (ListenNowPlayingSheet.kt). */
+    fun listenQueueName(): String? =
+        findViewById<android.widget.TextView>(R.id.toolbar_text)
+            ?.text
+            ?.toString()
+            ?.takeIf { it.isNotBlank() }
+
+    /** When Listen auto-continues from the story on screen, the reader turns to the next one with it. */
+    private fun followListenAdvance(event: ListenEvent) {
+        if (event !is ListenEvent.Advanced) return
+        if (currentReadingStory()?.storyHash != event.fromStoryHash) return
+        val position = readingAdapter?.findHash(event.to.storyHash) ?: -1
+        if (position >= 0) navigateToStory(position)
+    }
+
+    /**
+     * What the toolbar's Listen action shows for the story on screen, like the story's own button
+     * (ReadingItemFragment.kt's listenButtonLook): Pause while it plays, Play while it's loaded and paused, and
+     * headphones otherwise. Hidden when the Listen story button is turned off in Settings (StoryButtons.kt).
+     */
+    private data class ToolbarListenLook(
+        val visible: Boolean,
+        @param:DrawableRes val icon: Int,
+        @param:StringRes val description: Int,
+        val active: Boolean,
+    )
+
+    private fun toolbarListenLook(state: ListenUiState): ToolbarListenLook {
+        val hash = currentReadingStory()?.storyHash
+        val isThisStory = state.isStory(hash)
+        val loaded = isThisStory && (state.phase == ListenPhase.READY || state.isLoading)
+        val visible = !parked && listenPreferences.isStoryButtonVisible(StoryButton.LISTEN)
+        return when {
+            isThisStory && state.showsPause -> ToolbarListenLook(visible, R.drawable.ic_listen_pause, R.string.listen_pause, active = true)
+            loaded -> ToolbarListenLook(visible, R.drawable.ic_listen_play, R.string.listen_resume, active = true)
+            else -> ToolbarListenLook(visible, R.drawable.ic_listen, R.string.listen_story_button, active = false)
+        }
+    }
+
+    /** Recomputes the toolbar's Listen action when the story on screen changes, or Settings may have. */
+    private fun updateToolbarListenButton() = applyToolbarListenLook(toolbarListenLook(listenManager.state.value))
+
+    private fun applyToolbarListenLook(look: ToolbarListenLook) {
+        val button = binding.includeToolbar.toolbarListenButton
+        button.visibility = if (look.visible) View.VISIBLE else View.GONE
+        button.setImageResource(look.icon)
+        button.contentDescription = getString(look.description)
+        button.tooltipText = button.contentDescription
+        // The icon's own grey matches the toolbar's other actions; the Listen accent marks the story that's loaded.
+        button.imageTintList =
+            if (look.active) ColorStateList.valueOf(ListenPalette.accentArgb(prefsRepo.getResolvedTheme(this))) else null
+    }
+
+    override fun listenMiniPlayerAnchor(): View? = binding.contentBottomOverlay
+
+    override fun showsListenMiniPlayer(): Boolean = true
+
+    override fun onListenMiniPlayerInsetChanged(insetPx: Int) {
+        // EdgeToEdgeUtil.kt's reader footer reads this, so a story's last buttons scroll clear of the mini player.
+        window.decorView.setTag(R.id.listen_mini_player_inset, insetPx)
+        window.decorView.invalidate()
     }
 
     /**
@@ -1425,6 +1532,7 @@ abstract class Reading :
         }
         checkStoryCount(position)
         updateOverlayText()
+        updateToolbarListenButton()
     }
 
     // interface ScrollChangeListener
@@ -1806,6 +1914,9 @@ abstract class Reading :
             } else {
                 readingAdapter!!.getActiveItem() ?: readingAdapter!!.getExistingItem(pager!!.currentStoryPosition)
             }
+
+    /** A story switched its own view (Listen showing the full article), so the Text button follows it. */
+    fun refreshViewModeControls() = updateOverlayText()
 
     fun viewModeChanged() {
         var frag = readingAdapter!!.getExistingItem(pager!!.currentStoryPosition)

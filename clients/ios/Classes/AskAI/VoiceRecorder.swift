@@ -75,6 +75,15 @@ class VoiceRecorder: NSObject, ObservableObject {
     func startRecording() {
         guard !isRecording else { return }
 
+        // VoiceRecorder.swift takes over the audio session for the microphone, so a story being read aloud
+        // (Listen/ListenPlayer.swift) pauses first instead of going silent while it still looks like it's playing.
+        if ListenPlayer.shared.wantsToPlay {
+            ListenPlayer.shared.pause()
+        }
+        if ListenMediaPlayer.shared.wantsToPlay {
+            ListenMediaPlayer.shared.pause()
+        }
+
         // Reset state
         error = nil
         transcribedText = ""

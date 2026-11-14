@@ -36,6 +36,7 @@ data class GestureSwipeAction(
                     GestureAction.GEST_ACTION_MENU -> R.drawable.ic_more_vertical
                     GestureAction.GEST_ACTION_SHARE -> R.drawable.ic_share
                     GestureAction.GEST_ACTION_ASK_AI -> R.drawable.ic_ask_ai
+                    GestureAction.GEST_ACTION_LISTEN -> R.drawable.ic_listen
                     GestureAction.GEST_ACTION_TRAIN -> R.drawable.ic_feed_train
                     GestureAction.GEST_ACTION_NOTIFICATIONS -> R.drawable.ic_notifications
                     GestureAction.GEST_ACTION_READ_RANGE -> R.drawable.ic_mark_read

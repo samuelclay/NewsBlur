@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Sieh, welche KI-Inhalts- und Bildfilter auf einen Artikel zutreffen, und verwalte deine Filter im Trainer. „Ausblenden“ hat jetzt Vorrang vor KI-Filtertreffern.\n\nSpiele Podcasts im Listen-Player von NewsBlur mit Überspringen-Steuerung, AirPlay und einer Warteschlange ab, die Podcasts mit vorgelesenen Artikeln mischt. Setze die Wiedergabe geräteübergreifend dort fort, wo du aufgehört hast.\n\nListen kann jetzt über der Musik anderer Apps vorlesen. Aktiviere unter „Aktuelle Wiedergabe“ die Option „Über andere Audioinhalte abspielen“, wähle aus, ob die Musik beim Sprechen leiser werden soll, und passe die Balance zwischen Musik und Stimme an."
+  },
+  "android": {
+    "release_notes": "Sieh dir KI-Filtertreffer an und verwalte Filter im neu gestalteten Trainer. „Ausblenden“ hat Vorrang vor KI-Filtertreffern. Spiele Podcasts in Listen mit Überspringen-Steuerung, einer gemischten Warteschlange für Podcasts und vorgelesene Artikel sowie geräteübergreifend synchronisierter Wiedergabeposition ab. Listen kann über der Musik anderer Apps vorlesen. Die Musik kann optional leiser werden; außerdem lässt sich die Balance zwischen Musik und Stimme anpassen."
+  },
+  "macos": {
+    "whats_new": "Sieh, welche KI-Inhalts- und Bildfilter auf einen Artikel zutreffen, und verwalte deine Filter im Trainer. „Ausblenden“ hat jetzt Vorrang vor KI-Filtertreffern.\n\nSpiele Podcasts im Listen-Player von NewsBlur mit Überspringen-Steuerung, AirPlay und einer Warteschlange ab, die Podcasts mit vorgelesenen Artikeln mischt. Setze die Wiedergabe geräteübergreifend dort fort, wo du aufgehört hast."
+  }
+}

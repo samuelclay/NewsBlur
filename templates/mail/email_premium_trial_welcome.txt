@@ -17,7 +17,45 @@
 
 {% trans "No credit card required. After 30 days, you can continue enjoying these features for just $36/year." %}
 
-{% trans "Explore NewsBlur:" %} https://newsblur.com/?next=premium
+{% trans "Want even more? Meet Premium Archive." %}
+
+{% trans "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:" %}
+
+    * {% trans "Follow up to 4,096 sites" %}
+    * {% trans "Web Feeds from any website, even without RSS" %}
+    * {% trans "Listen to 1 hour of stories read aloud a week" %}
+    * {% trans "Ask AI questions about stories" %}
+    * {% trans "Apply training across a folder" %}
+    * {% trans "Apply training globally" %}
+    * {% trans "Daily briefing with your top stories and keywords" %}
+    * {% trans "Every story archived and searchable forever" %}
+    * {% trans "Cluster duplicate stories across all your feeds" %}
+    * {% trans "Train stories on full text content" %}
+    * {% trans "Notifications on trained intelligence classifiers" %}
+    * {% trans "Choose when stories are marked as read" %}
+    * {% trans "Customize auto-read by site or folder" %}
+    * {% trans "Feeds back-filled for complete archive" %}
+    * {% trans "Discover related stories across your archive" %}
+    * {% trans "Export trained stories from folders" %}
+    * {% trans "Stories can stay unread forever" %}
+    * {% trans "Filter stories by date range" %}
+    * {% trans "Connect AI agents with MCP server and CLI" %}
+
+{% trans "All of this for just $99/year." %}
+
+{% trans "Upgrade to Premium Archive:" %} https://newsblur.com/?next=premium
+
+{% trans "Need the most? Meet Premium Pro." %}
+
+{% trans "Premium Pro is built for power users. You get everything in Archive, plus:" %}
+
+    * {% trans "Follow up to 10,000 sites" %}
+    * {% trans "All feeds fetched every 5-15 minutes" %}
+    * {% trans "Train stories with regular expressions" %}
+    * {% trans "Listen to 10 hours of stories read aloud a week" %}
+    * {% trans "Priority support" %}
+
+{% trans "All of this for $29/month." %}
 
 {% trans "Welcome aboard!" %}
 - Sam Clay{% endblock body %}

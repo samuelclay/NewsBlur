@@ -1,0 +1,1 @@
+Fixes an issue on tablets where marking a feed as read could send NewsBlur to the background. Both the bottom button and the feed menu now keep the app open so you can continue reading.

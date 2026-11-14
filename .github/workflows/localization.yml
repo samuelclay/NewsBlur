@@ -36,7 +36,9 @@ concurrency:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    # localization.yml pins Ubuntu 24.04: ubuntu-latest moved to 26.04, where actions/setup-python
+    # has no Python 3.9 (the version the NewsBlur containers run).
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
@@ -55,7 +57,9 @@ jobs:
   translate:
     if: github.event_name != 'pull_request'
     needs: validate
-    runs-on: ubuntu-latest
+    # localization.yml pins Ubuntu 24.04: ubuntu-latest moved to 26.04, where actions/setup-python
+    # has no Python 3.9 (the version the NewsBlur containers run).
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:
       contents: write

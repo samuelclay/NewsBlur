@@ -1,0 +1,47 @@
+{
+  "deployed_commit": "f5005e58ff",
+  "verified_at": "2026-11-09T04:46:28.000Z",
+  "commands": [
+    "make deploy_static",
+    "make deploy",
+    "make celery"
+  ],
+  "servers": {
+    "web": [
+      "happ-count-1",
+      "happ-count-2",
+      "happ-push-1",
+      "happ-push-2",
+      "happ-refresh-1",
+      "happ-refresh-2",
+      "happ-refresh-3",
+      "happ-refresh-4",
+      "happ-web-01",
+      "happ-web-02",
+      "happ-web-03",
+      "happ-web-04",
+      "happ-web-05",
+      "happ-web-06"
+    ],
+    "task": [
+      "htask-celery-01",
+      "htask-celery-02",
+      "htask-celery-03",
+      "htask-celery-04",
+      "htask-celery-05",
+      "htask-celery-06",
+      "htask-celery-07",
+      "htask-celery-08",
+      "htask-celery-09",
+      "htask-celery-10",
+      "htask-celery-11",
+      "htask-celery-12",
+      "htask-celery-13",
+      "htask-celery-14",
+      "htask-work-1",
+      "htask-work-2",
+      "htask-work-3"
+    ]
+  },
+  "verification": "Ansible recaps for the static, app and task plays: every host ok, failed=0, unreachable=0 (45 host recaps)"
+}

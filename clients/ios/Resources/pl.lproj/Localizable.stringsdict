@@ -82,6 +82,26 @@
 			<string>%@ komentarzy</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ filtrów treści</string>
+			<key>many</key>
+			<string>%@ filtrów treści</string>
+			<key>one</key>
+			<string>%@ filtr treści</string>
+			<key>other</key>
+			<string>Filtry treści: %@</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -242,6 +262,86 @@
 			<string>%@ wyróżnionych artykułów</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Pozostało dziś %@ bezpłatnych podglądów artykułów</string>
+			<key>many</key>
+			<string>Pozostało %@ bezpłatnych podglądów artykułów na dziś</string>
+			<key>one</key>
+			<string>Pozostał dziś %@ bezpłatny podgląd artykułu</string>
+			<key>other</key>
+			<string>Pozostało dziś %@ darmowych podglądów artykułów</string>
+		</dict>
+	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ filtrów obrazów</string>
+			<key>many</key>
+			<string>%@ filtry obrazów</string>
+			<key>one</key>
+			<string>Filtr obrazów: %@</string>
+			<key>other</key>
+			<string>Filtry obrazów: %@</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ dopasowania</string>
+			<key>many</key>
+			<string>%@ dopasowań</string>
+			<key>one</key>
+			<string>Dopasowanie: %@</string>
+			<key>other</key>
+			<string>%@ dopasowania</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Pozostało w tym miesiącu %@ minuty</string>
+			<key>many</key>
+			<string>Pozostało %@ minut w tym miesiącu</string>
+			<key>one</key>
+			<string>Pozostała %@ minuta w tym miesiącu</string>
+			<key>other</key>
+			<string>Pozostało minut w tym miesiącu: %@</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -382,6 +482,26 @@
 			<string>Pozostało %@ artykułów</string>
 		</dict>
 	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ artykułów/mies.</string>
+			<key>many</key>
+			<string>%@ artykułów/mies.</string>
+			<key>one</key>
+			<string>%@ artykuł/mies.</string>
+			<key>other</key>
+			<string>%@ artykułów/mies.</string>
+		</dict>
+	</dict>
 	<key>%@ stories/month</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -440,6 +560,26 @@
 			<string>%@ nieprzeczytany artykuł</string>
 			<key>other</key>
 			<string>%@ nieprzeczytanych artykułów</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Pozostało %@ podglądy głosu</string>
+			<key>many</key>
+			<string>Pozostało %@ podglądów głosowych</string>
+			<key>one</key>
+			<string>Pozostał %@ podgląd głosowy</string>
+			<key>other</key>
+			<string>Pozostało %@ podglądów głosowych</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -542,6 +682,26 @@
 			<string>Opublikowano również w %@ witrynach</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Wstecz o %@ sekundy</string>
+			<key>many</key>
+			<string>Wstecz o %@ sekund</string>
+			<key>one</key>
+			<string>Wstecz o %@ sekundę</string>
+			<key>other</key>
+			<string>Wstecz o %@ sekund</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -580,6 +740,26 @@
 			<string>Obserwujący</string>
 			<key>other</key>
 			<string>Obserwujący</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Do przodu o %@ sekundy</string>
+			<key>many</key>
+			<string>Do przodu o %@ sekund</string>
+			<key>one</key>
+			<string>Do przodu o %@ sekundę</string>
+			<key>other</key>
+			<string>Do przodu o %@ sekund</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
@@ -880,6 +1060,26 @@
 			<string>Subskrybujesz %@ witrynę</string>
 			<key>other</key>
 			<string>Subskrybujesz %@ witryn</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>✓ %2$@ z %1$@ obrazów pasuje do tego filtra</string>
+			<key>many</key>
+			<string>✓ %2$@ z %1$@ obrazów pasuje do tego filtra</string>
+			<key>one</key>
+			<string>✓ %2$@ z %1$@ obrazów pasuje do tego filtra</string>
+			<key>other</key>
+			<string>✓ %2$@ z %1$@ obrazów pasuje do tego filtra</string>
 		</dict>
 	</dict>
 </dict>

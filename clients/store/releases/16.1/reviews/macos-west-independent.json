@@ -1,0 +1,290 @@
+{
+  "version": "16.0.2",
+  "platform": "macos",
+  "reviewer": "mac_patch_east",
+  "review_type": "independent_of_translator",
+  "reviewed_at": "2026-10-29T19:08:13Z",
+  "status": "passed",
+  "findings": [],
+  "corrections": [],
+  "source_files": {
+    "clients/store/metadata/en.json": "ca1f7dffaaa5e7f030c35208d9f89451f8bb5647c7817105375588d145732f2a",
+    "clients/store/releases/16.0.2/en.json": "cdc0468e8f1a585243041f3a500dabcb14d6470b446bcb192a7efc149e979059",
+    "clients/store/products/en.json": "c5eaa284ccd335c3e9e4b90310569b31436b994b2b33565bb70d535a9d4f8313"
+  },
+  "locales": [
+    {
+      "language": "es",
+      "status": "passed",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "checks": [
+        "complete English meaning",
+        "natural language and correct locale",
+        "Mac click and keyboard terminology",
+        "notification after closing window ordering",
+        "21 listening languages",
+        "queue sync and playback controls",
+        "Archive and Pro full listening; Free and Premium 30-second previews",
+        "billing and subscription facts unchanged",
+        "brand and URLs unchanged",
+        "Apple field limits including UTF-8 keyword bytes",
+        "other platforms preserved"
+      ],
+      "character_counts": {
+        "name": 20,
+        "subtitle": 30,
+        "description": 3034,
+        "promotional_text": 149,
+        "keywords": 86,
+        "whats_new": 604
+      },
+      "metadata_sha256": "cca1cb2634312aaf7d4e1c9642c829e26d3c35fbf1565b948db8f4b36c80dbad",
+      "release_notes_sha256": "3d669bc019df156b916a66d916bfb28460cb1918ce43db44c1c3e713348fb1be"
+    },
+    {
+      "language": "fr",
+      "status": "passed",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "checks": [
+        "complete English meaning",
+        "natural language and correct locale",
+        "Mac click and keyboard terminology",
+        "notification after closing window ordering",
+        "21 listening languages",
+        "queue sync and playback controls",
+        "Archive and Pro full listening; Free and Premium 30-second previews",
+        "billing and subscription facts unchanged",
+        "brand and URLs unchanged",
+        "Apple field limits including UTF-8 keyword bytes",
+        "other platforms preserved"
+      ],
+      "character_counts": {
+        "name": 22,
+        "subtitle": 25,
+        "description": 3287,
+        "promotional_text": 147,
+        "keywords": 83,
+        "whats_new": 648
+      },
+      "metadata_sha256": "a31c3cfd437addfee8333282871a15db5dc21350f04621ac1d5c8572328b5075",
+      "release_notes_sha256": "d86b65c0c9f9ae2be3ca598de9518c4341ca7d124c72d4aba42fd7e4f67b7634"
+    },
+    {
+      "language": "de",
+      "status": "passed",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "checks": [
+        "complete English meaning",
+        "natural language and correct locale",
+        "Mac click and keyboard terminology",
+        "notification after closing window ordering",
+        "21 listening languages",
+        "queue sync and playback controls",
+        "Archive and Pro full listening; Free and Premium 30-second previews",
+        "billing and subscription facts unchanged",
+        "brand and URLs unchanged",
+        "Apple field limits including UTF-8 keyword bytes",
+        "other platforms preserved"
+      ],
+      "character_counts": {
+        "name": 20,
+        "subtitle": 27,
+        "description": 3227,
+        "promotional_text": 163,
+        "keywords": 80,
+        "whats_new": 659
+      },
+      "metadata_sha256": "d813027094c928e5eb585a8f0c59c6a54ea20077c3b4b04aec9dcf023b526ac0",
+      "release_notes_sha256": "75cd9451eb029faf6e7fa40af77c47b76417848151b2fb803672ff6a9257a674"
+    },
+    {
+      "language": "pt-BR",
+      "status": "passed",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "checks": [
+        "complete English meaning",
+        "natural language and correct locale",
+        "Mac click and keyboard terminology",
+        "notification after closing window ordering",
+        "21 listening languages",
+        "queue sync and playback controls",
+        "Archive and Pro full listening; Free and Premium 30-second previews",
+        "billing and subscription facts unchanged",
+        "brand and URLs unchanged",
+        "Apple field limits including UTF-8 keyword bytes",
+        "other platforms preserved"
+      ],
+      "character_counts": {
+        "name": 20,
+        "subtitle": 21,
+        "description": 2889,
+        "promotional_text": 147,
+        "keywords": 81,
+        "whats_new": 590
+      },
+      "metadata_sha256": "d7d931fc2fe9b7f29a54b070198c6f1f6189b791084e76c3a3a860f41708a70d",
+      "release_notes_sha256": "d9e32e52cb5515d66cccd29a312aab796e6074837d1833ddf3496e588c354079"
+    },
+    {
+      "language": "it",
+      "status": "passed",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "checks": [
+        "complete English meaning",
+        "natural language and correct locale",
+        "Mac click and keyboard terminology",
+        "notification after closing window ordering",
+        "21 listening languages",
+        "queue sync and playback controls",
+        "Archive and Pro full listening; Free and Premium 30-second previews",
+        "billing and subscription facts unchanged",
+        "brand and URLs unchanged",
+        "Apple field limits including UTF-8 keyword bytes",
+        "other platforms preserved"
+      ],
+      "character_counts": {
+        "name": 21,
+        "subtitle": 27,
+        "description": 3071,
+        "promotional_text": 150,
+        "keywords": 80,
+        "whats_new": 598
+      },
+      "metadata_sha256": "446fafc7f686754849240ae0792bc196de9db256a511203e4f38df5e67cdcaff",
+      "release_notes_sha256": "4541302bec5d111148b153d92aa954bb51115e8661133820687a3b9eaade2216"
+    },
+    {
+      "language": "nl",
+      "status": "passed",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "checks": [
+        "complete English meaning",
+        "natural language and correct locale",
+        "Mac click and keyboard terminology",
+        "notification after closing window ordering",
+        "21 listening languages",
+        "queue sync and playback controls",
+        "Archive and Pro full listening; Free and Premium 30-second previews",
+        "billing and subscription facts unchanged",
+        "brand and URLs unchanged",
+        "Apple field limits including UTF-8 keyword bytes",
+        "other platforms preserved"
+      ],
+      "character_counts": {
+        "name": 19,
+        "subtitle": 23,
+        "description": 2922,
+        "promotional_text": 169,
+        "keywords": 78,
+        "whats_new": 582
+      },
+      "metadata_sha256": "92fdcab6f8d8119edae5a579648313912ad1649572ec8099928fa8580e9d9bd1",
+      "release_notes_sha256": "8cd4287db02a6c8e5c66139bd2a4d27a5b444ef7ed792a10886c9ef70948740c"
+    },
+    {
+      "language": "pl",
+      "status": "passed",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "checks": [
+        "complete English meaning",
+        "natural language and correct locale",
+        "Mac click and keyboard terminology",
+        "notification after closing window ordering",
+        "21 listening languages",
+        "queue sync and playback controls",
+        "Archive and Pro full listening; Free and Premium 30-second previews",
+        "billing and subscription facts unchanged",
+        "brand and URLs unchanged",
+        "Apple field limits including UTF-8 keyword bytes",
+        "other platforms preserved"
+      ],
+      "character_counts": {
+        "name": 21,
+        "subtitle": 28,
+        "description": 2993,
+        "promotional_text": 153,
+        "keywords": 82,
+        "whats_new": 584
+      },
+      "metadata_sha256": "23d06bb34c947d8fdfc0c70fa027a4fed7a52cd76a2a47e35f6aa431ad617d06",
+      "release_notes_sha256": "25b244578d06c2d015fce8e2a75dded3e823477ca9f7c52beed58557e723fcba"
+    }
+  ]
+}

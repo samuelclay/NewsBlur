@@ -1,0 +1,100 @@
+{
+  "version": "16.0.6",
+  "languages": [
+    "ar",
+    "he",
+    "hi",
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "fields": "Android listing, subscriptions, release notes",
+  "unchanged": "Retained and reviewed translations for unchanged English paragraphs, titles and benefits.",
+  "review": "Independent review pending",
+  "files": {
+    "ar": {
+      "short_length": 48,
+      "note_length": 177,
+      "product_description_lengths": [
+        109,
+        117
+      ]
+    },
+    "he": {
+      "short_length": 59,
+      "note_length": 166,
+      "product_description_lengths": [
+        101,
+        107
+      ]
+    },
+    "hi": {
+      "short_length": 67,
+      "note_length": 204,
+      "product_description_lengths": [
+        118,
+        118
+      ]
+    },
+    "id": {
+      "short_length": 76,
+      "note_length": 226,
+      "product_description_lengths": [
+        129,
+        143
+      ]
+    },
+    "vi": {
+      "short_length": 61,
+      "note_length": 190,
+      "product_description_lengths": [
+        123,
+        133
+      ]
+    },
+    "th": {
+      "short_length": 59,
+      "note_length": 158,
+      "product_description_lengths": [
+        103,
+        106
+      ]
+    },
+    "ja": {
+      "short_length": 38,
+      "note_length": 106,
+      "product_description_lengths": [
+        60,
+        64
+      ]
+    },
+    "ko": {
+      "short_length": 46,
+      "note_length": 107,
+      "product_description_lengths": [
+        72,
+        89
+      ]
+    },
+    "zh-Hans": {
+      "short_length": 30,
+      "note_length": 75,
+      "product_description_lengths": [
+        46,
+        52
+      ]
+    },
+    "zh-Hant": {
+      "short_length": 30,
+      "note_length": 78,
+      "product_description_lengths": [
+        48,
+        53
+      ]
+    }
+  }
+}

@@ -23,6 +23,7 @@ from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 from django.utils import timezone as django_tz
 
+from apps.analyzer.models import MClassifierAuthor
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 
@@ -134,3 +135,89 @@ class Test_UnreadRecalcRace(TransactionTestCase):
         fresh = UserSubscription.objects.get(pk=sub.pk)
         self.assertEqual(fresh.unread_count_neutral, 3)
         self.assertFalse(fresh.needs_unread_recalc)
+
+
+class Test_AuthorRegexUnreadCounts(TransactionTestCase):
+    """apps/reader/test_unread_counts.py: calculate_feed_scores (apps/reader/models.py) left
+    author regex classifiers out of the unread counts, so a Pro user's liked author regex
+    showed a story as focus in the story list while the feed's focus count missed it."""
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+        "subscriptions.json",
+        "apps/rss_feeds/fixtures/gawker1.json",
+    ]
+
+    FEED_ID = 1
+    USER_ID = 3  # conesus
+
+    def setUp(self):
+        self.r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        self.user = User.objects.get(pk=self.USER_ID)
+        feed = Feed.objects.get(pk=self.FEED_ID)
+
+        # Keep the user "active" so calculate_feed_scores doesn't early-return.
+        self.user.profile.last_seen_on = datetime.datetime.now()
+        self.user.profile.save()
+
+        MStory.objects(story_feed_id=self.FEED_ID, story_guid__startswith="author-regex-count-").delete()
+        MClassifierAuthor.objects(user_id=self.USER_ID, feed_id=self.FEED_ID).delete()
+        self.r.delete("RS:%s" % self.USER_ID)
+        self.r.delete("RS:%s:%s" % (self.USER_ID, self.FEED_ID))
+        self.r.delete("zF:%s" % self.FEED_ID)
+        self.r.delete("zU:%s:%s" % (self.USER_ID, self.FEED_ID))
+
+        now_ts = int(django_tz.now().timestamp())
+        for i, author in enumerate(["Pat Regex", "Pat Regexington", "Someone Else"]):
+            guid = "author-regex-count-%s" % i
+            story = MStory(
+                story_feed_id=self.FEED_ID,
+                story_date=django_tz.now(),
+                story_title="Author Regex Count Story %s" % i,
+                story_content="Content %s" % i,
+                story_guid=guid,
+                story_permalink="http://example.com/%s" % guid,
+                story_author_name=author,
+            )
+            story.save()
+            self.r.zadd("zF:%s" % self.FEED_ID, {story.story_hash: now_ts})
+
+        MClassifierAuthor.objects.create(
+            user_id=self.USER_ID,
+            feed_id=self.FEED_ID,
+            social_user_id=0,
+            author="^Pat Regex",
+            is_regex=True,
+            score=1,
+        )
+        self.sub, _ = UserSubscription.objects.update_or_create(
+            user=self.user,
+            feed=feed,
+            defaults={
+                "active": True,
+                "is_trained": True,
+                "needs_unread_recalc": True,
+                "mark_read_date": datetime.datetime.now() - datetime.timedelta(days=1),
+                "last_read_date": datetime.datetime.now() - datetime.timedelta(hours=1),
+            },
+        )
+
+    def tearDown(self):
+        self.r.delete("zF:%s" % self.FEED_ID)
+        MStory.objects(story_feed_id=self.FEED_ID, story_guid__startswith="author-regex-count-").delete()
+        MClassifierAuthor.objects(user_id=self.USER_ID, feed_id=self.FEED_ID).delete()
+
+    def counts(self, is_pro):
+        self.user.profile.is_pro = is_pro
+        self.user.profile.save()
+        sub = UserSubscription.objects.get(pk=self.sub.pk)
+        sub.calculate_feed_scores(silent=True)
+        fresh = UserSubscription.objects.get(pk=self.sub.pk)
+        return fresh.unread_count_positive, fresh.unread_count_neutral, fresh.unread_count_negative
+
+    def test_pro_author_regex_counts_matching_stories_as_focus(self):
+        self.assertEqual(self.counts(is_pro=True), (2, 1, 0))
+
+    def test_author_regex_does_not_count_without_pro(self):
+        self.assertEqual(self.counts(is_pro=False), (0, 3, 0))

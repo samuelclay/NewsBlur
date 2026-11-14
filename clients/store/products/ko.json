@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premium 기능과 스토리 영구 보관"
+        "description": "스토리 영구 보관과 주 1시간 듣기"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "5~15분마다 피드 가져오기"
+        "description": "잦은 피드 업데이트와 주 10시간 듣기"
       }
     },
     "subscription_groups": {
@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium 구독",
-        "description": "폴더를 하나의 목록으로 읽고, 피드를 검색하고, 저장한 스토리를 태그로 정리하세요. 피드도 더 빠르게 업데이트됩니다.",
+        "description": "폴더를 하나의 목록에서 읽고, 피드를 검색하고, 저장한 스토리를 태그로 정리하세요. 더 빠른 피드 업데이트도 이용할 수 있습니다.",
         "benefits": [
           "폴더를 하나의 스토리 목록으로 읽기",
           "여러 피드에서 검색",
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive 구독",
-        "description": "Premium의 모든 기능과 함께 모든 스토리를 영구 보관하고 검색할 수 있습니다. 스토리를 원하는 만큼 읽지 않은 상태로 유지하세요.",
+        "description": "프리미엄의 모든 기능, 검색 가능한 영구 스토리 보관함, 주 1시간 듣기를 제공합니다. 스토리를 원하는 만큼 읽지 않은 상태로 유지하세요. 듣기 한도는 일요일에 초기화됩니다.",
         "benefits": [
-          "Premium의 모든 기능",
+          "프리미엄의 모든 기능",
           "스토리를 영원히 읽지 않은 상태로 유지",
-          "모든 스토리 영구 보관",
-          "전체 스토리 보관함 검색"
+          "검색 가능한 영구 스토리 보관함",
+          "주 1시간 듣기"
         ]
       }
     }

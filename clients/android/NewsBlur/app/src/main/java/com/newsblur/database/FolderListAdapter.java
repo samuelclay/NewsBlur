@@ -864,8 +864,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      */
     private void addSpecialRow(String specialRowName) {
         activeFolderNames.add(specialRowName);
-        List<Feed> emptyList = Collections.emptyList();
-        activeFolderChildren.add(emptyList);
+        // FolderListAdapter.java can insert a preview before the root folder has loaded.
+        activeFolderChildren.add(new ArrayList<Feed>());
         folderNeutCounts.add(0);
         folderPosCounts.add(0);
     }

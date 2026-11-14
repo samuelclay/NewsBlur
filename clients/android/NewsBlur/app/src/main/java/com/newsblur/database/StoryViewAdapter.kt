@@ -494,6 +494,10 @@ class StoryViewAdapter(
         }
     }
 
+    /** StoryViewAdapter.kt's stories in list order, for Listen's Up Next (ListenManager.kt). */
+    @Synchronized
+    fun storiesSnapshot(): List<Story> = stories.toList()
+
     @Synchronized
     fun getStory(position: Int): Story? =
         if (position >= storyCount || position < 0) {
@@ -978,6 +982,11 @@ class StoryViewAdapter(
                                 fs,
                             ).show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
                     }
+                GestureAction.GEST_ACTION_LISTEN ->
+                    // StoryViewAdapter.kt queues the list as shown, so Listen continues with the next unread story.
+                    com.newsblur.listen.ListenManager
+                        .from(context)
+                        .listen(target, storiesSnapshot())
                 GestureAction.GEST_ACTION_ASK_AI -> {
                     val tag = com.newsblur.askai.AskAiBottomSheetFragment.TAG
                     if (context.supportFragmentManager.findFragmentByTag(tag) == null) {

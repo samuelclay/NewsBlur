@@ -193,6 +193,24 @@
         </div>
     </div>
 
+    <!-- Listen -->
+    <div class="NB-feature-section" id="listen">
+        <div class="NB-feature-section-text">
+            <div class="NB-feature-section-badge NB-feature-badge-archive">{% trans "Archive" %}</div>
+            <h2 class="NB-feature-section-name">{% trans "Listen" %}</h2>
+            <p class="NB-feature-section-description">
+                {% trans "Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Each paragraph is highlighted as it's read, stories queue up in Up Next, and when one ends the next unread story begins. Listen works out each story's language and reads it with your voice for that language, in any of NewsBlur's 21 languages." %}
+            </p>
+            <div class="NB-feature-section-links">
+                <a href="https://blog.newsblur.com/2026/10/30/listen-to-your-stories/" class="NB-feature-section-blog" target="_blank"><img src="{{ MEDIA_URL }}img/favicon.png" class="NB-feature-blog-favicon"> {% trans "Read more on the NewsBlur Blog" %}</a>
+                <a href="{% url "feature-listen" %}" class="NB-feature-section-cta">{% trans "See Listen" %}</a>
+            </div>
+        </div>
+        <div class="NB-feature-section-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/listen.jpg" alt="{% trans 'Listen playing on a MacBook, an iPad, an iPhone, and an Android phone' %}">
+        </div>
+    </div>
+
     <!-- Story Clustering -->
     <div class="NB-feature-section" id="clustering">
         <div class="NB-feature-section-text">

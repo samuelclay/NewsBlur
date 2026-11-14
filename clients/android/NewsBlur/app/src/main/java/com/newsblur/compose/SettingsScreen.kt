@@ -41,6 +41,7 @@ import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.ListAlt
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
+import androidx.compose.material.icons.automirrored.rounded.PlaylistPlay
 import androidx.compose.material.icons.automirrored.rounded.ShortText
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Apps
@@ -51,8 +52,11 @@ import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.FormatColorFill
 import androidx.compose.material.icons.rounded.Forum
 import androidx.compose.material.icons.rounded.Gesture
+import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Lock
@@ -60,9 +64,14 @@ import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.PanTool
 import androidx.compose.material.icons.rounded.Photo
+import androidx.compose.material.icons.rounded.Psychology
 import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material.icons.rounded.RecordVoiceOver
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.SmartButton
 import androidx.compose.material.icons.rounded.SortByAlpha
+import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material.icons.rounded.SwipeRightAlt
@@ -105,6 +114,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.newsblur.R
+import com.newsblur.listen.ListenSpeed
+import com.newsblur.listen.formatListenSpeed
+import com.newsblur.preference.ListenDelivery
+import com.newsblur.preference.ListenPrefKeys
+import com.newsblur.preference.ListenSettings
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
@@ -120,6 +134,7 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadFilter
+import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryOrder
@@ -176,6 +191,14 @@ data class SettingsUiState(
     val readerEdgeAction: String = "back",
     val enableNotifications: Boolean = false,
     val showAskAi: Boolean = true,
+    val showTrainButton: Boolean = true,
+    val showSaveButton: Boolean = true,
+    val showShareButton: Boolean = true,
+    val showListenButton: Boolean = true,
+    val listenDelivery: String = ListenDelivery.NATURAL.value,
+    val listenSpeed: Double = ListenSettings.DEFAULT_SPEED,
+    val listenAutoContinue: Boolean = true,
+    val listenHighlight: Boolean = true,
     val hasSubscription: Boolean = false,
     val appIconFlavorId: String = AppIconManager.defaultFlavor.id,
     val appIconAppearanceMode: AppIconAppearanceMode = AppIconAppearanceMode.AUTO,
@@ -245,6 +268,14 @@ fun buildSettingsUiState(
         readerEdgeAction = prefsRepo.getReaderGesture("reader_left_edge", "back"),
         enableNotifications = prefsRepo.isEnableNotifications(),
         showAskAi = prefsRepo.isShowAskAi(),
+        showTrainButton = prefsRepo.isShowStoryButton(StoryButton.TRAIN),
+        showSaveButton = prefsRepo.isShowStoryButton(StoryButton.SAVE),
+        showShareButton = prefsRepo.isShowStoryButton(StoryButton.SHARE),
+        showListenButton = prefsRepo.isShowStoryButton(StoryButton.LISTEN),
+        listenDelivery = ListenDelivery.fromValue(sharedPreferences.getString(ListenPrefKeys.DELIVERY, null)).value,
+        listenSpeed = sharedPreferences.getFloat(ListenPrefKeys.SPEED, ListenSettings.DEFAULT_SPEED.toFloat()).toDouble(),
+        listenAutoContinue = sharedPreferences.getBoolean(ListenPrefKeys.AUTO_CONTINUE, true),
+        listenHighlight = sharedPreferences.getBoolean(ListenPrefKeys.HIGHLIGHT, true),
         hasSubscription = prefsRepo.hasSubscription(),
         appIconFlavorId = appIconSelection.flavor.id,
         appIconAppearanceMode = appIconSelection.mode,
@@ -262,6 +293,7 @@ fun SettingsScreen(
     onAppIconSelected: (AppIconFlavor, AppIconAppearanceMode) -> Unit,
     onAppIconUpgrade: () -> Unit,
     onDeleteOfflineStories: () -> Unit,
+    onListenVoices: () -> Unit = {},
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val palette = settingsPalette(state.theme)
@@ -445,6 +477,7 @@ fun SettingsScreen(
             GestureAction.GEST_ACTION_SAVE,
             GestureAction.GEST_ACTION_UNSAVE,
             GestureAction.GEST_ACTION_STATISTICS,
+            GestureAction.GEST_ACTION_LISTEN,
         )
     val storyLongPressOptions = gestureOptions(*GestureChoices.storyLongPress.toTypedArray())
     val feedSwipeOptions =
@@ -476,12 +509,35 @@ fun SettingsScreen(
             ChoiceOption("text", stringResource(R.string.gesture_text)),
             ChoiceOption("unread", stringResource(R.string.gesture_unread)),
             ChoiceOption("save", stringResource(R.string.gesture_save)),
+            ChoiceOption("listen", stringResource(R.string.gesture_listen)),
             ChoiceOption("none", stringResource(R.string.gesture_none)),
         )
     val confirmMarkReadTitle = stringResource(R.string.settings_confirm_mark_all_read).stripTrailingEllipsis()
     val markStoryReadTitle = stringResource(R.string.settings_mark_story_read_title)
     val previewImagesTitle = stringResource(R.string.settings_preview_images_title)
     val defaultBrowserTitle = stringResource(R.string.default_browser).stripTrailingEllipsis()
+    val listenSpeedTitle = stringResource(R.string.settings_listen_speed)
+    // SettingsScreen.kt offers the presets, plus a custom rate set from the player so it still reads as chosen.
+    val listenSpeedOptions =
+        (ListenSpeed.PRESETS + ListenSpeed.clamp(state.listenSpeed))
+            .distinctBy(ListenSpeed::prefString)
+            .sorted()
+            .map { ChoiceOption(ListenSpeed.prefString(it), formatListenSpeed(it)) }
+    val listenDeliveryOptions =
+        (ListenDelivery.presets + if (state.listenDelivery == ListenDelivery.CUSTOM.value) listOf(ListenDelivery.CUSTOM) else emptyList())
+            .map { delivery ->
+                ChoiceOption(
+                    delivery.value,
+                    stringResource(
+                        when (delivery) {
+                            ListenDelivery.STEADY -> R.string.listen_delivery_steady
+                            ListenDelivery.NATURAL -> R.string.listen_delivery_natural
+                            ListenDelivery.EXPRESSIVE -> R.string.listen_delivery_expressive
+                            ListenDelivery.CUSTOM -> R.string.listen_delivery_custom
+                        },
+                    ),
+                )
+            }
     val fontTitle = stringResource(R.string.font).stripTrailingEllipsis()
     val networkTitle = stringResource(R.string.menu_network_select).stripTrailingEllipsis()
     val cacheAgeTitle = stringResource(R.string.menu_cache_age_select).stripTrailingEllipsis()
@@ -860,6 +916,47 @@ fun SettingsScreen(
                 palette = palette,
                 onCheckedChange = { onBooleanChanged(PrefConstants.READER_CONTROLS_ALWAYS_VISIBLE, it) },
             )
+        }
+
+        // SettingsScreen.kt: each story button's toggle syncs through the server's show_sideoption prefs.
+        SettingsSection(
+            title = stringResource(R.string.settings_story_buttons),
+            icon = Icons.Rounded.SmartButton,
+            iconColor = NewsblurBlue,
+            palette = palette,
+        ) {
+            Text(
+                text = stringResource(R.string.settings_story_buttons_summary),
+                color = palette.textSecondary,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 14.dp, end = 14.dp, top = 12.dp),
+            )
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_show_train),
+                icon = Icons.Rounded.Psychology,
+                iconColor = NewsblurPurple,
+                checked = state.showTrainButton,
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(StoryButton.TRAIN.prefKey, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_show_save),
+                icon = Icons.Rounded.Star,
+                iconColor = NewsblurOrange,
+                checked = state.showSaveButton,
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(StoryButton.SAVE.prefKey, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_show_share),
+                icon = Icons.Rounded.Share,
+                iconColor = NewsblurTeal,
+                checked = state.showShareButton,
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(StoryButton.SHARE.prefKey, it) },
+            )
             RowDivider(palette)
             ToggleSettingsRow(
                 title = stringResource(R.string.settings_show_ask_ai),
@@ -867,7 +964,77 @@ fun SettingsScreen(
                 iconColor = NewsblurOrange,
                 checked = state.showAskAi,
                 palette = palette,
-                onCheckedChange = { onBooleanChanged(PrefConstants.SHOW_ASK_AI, it) },
+                onCheckedChange = { onBooleanChanged(StoryButton.ASK_AI.prefKey, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_show_listen),
+                icon = Icons.Rounded.Headphones,
+                iconColor = NewsblurCyan,
+                checked = state.showListenButton,
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(StoryButton.LISTEN.prefKey, it) },
+            )
+        }
+
+        SettingsSection(
+            title = stringResource(R.string.settings_listen),
+            icon = Icons.Rounded.Headphones,
+            iconColor = NewsblurCyan,
+            palette = palette,
+        ) {
+            ActionSettingsRow(
+                title = stringResource(R.string.settings_listen_voices),
+                icon = Icons.Rounded.RecordVoiceOver,
+                iconColor = NewsblurCyan,
+                subtitle = stringResource(R.string.settings_listen_voices_summary),
+                palette = palette,
+                onClick = onListenVoices,
+            )
+            RowDivider(palette)
+            SegmentedSettingsRow(
+                title = stringResource(R.string.settings_listen_delivery),
+                icon = Icons.Rounded.GraphicEq,
+                iconColor = NewsblurPurple,
+                selectedValue = state.listenDelivery,
+                options = listenDeliveryOptions,
+                palette = palette,
+                onSelected = { onStringChanged(ListenPrefKeys.DELIVERY, it) },
+            )
+            RowDivider(palette)
+            ValueSettingsRow(
+                title = listenSpeedTitle,
+                icon = Icons.Rounded.Speed,
+                iconColor = NewsblurBlue,
+                currentValue = formatListenSpeed(state.listenSpeed),
+                palette = palette,
+                onClick = {
+                    dialogState =
+                        ChoiceDialogState(
+                            title = listenSpeedTitle,
+                            selectedValue = ListenSpeed.prefString(state.listenSpeed),
+                            options = listenSpeedOptions,
+                            onSelect = { onStringChanged(ListenPrefKeys.SPEED, it) },
+                        )
+                },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.listen_auto_continue),
+                icon = Icons.AutoMirrored.Rounded.PlaylistPlay,
+                iconColor = NewsblurTeal,
+                checked = state.listenAutoContinue,
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(ListenPrefKeys.AUTO_CONTINUE, it) },
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.listen_highlight),
+                icon = Icons.Rounded.FormatColorFill,
+                iconColor = NewsblurOrange,
+                checked = state.listenHighlight,
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(ListenPrefKeys.HIGHLIGHT, it) },
             )
         }
 

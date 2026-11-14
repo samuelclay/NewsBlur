@@ -289,6 +289,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     searchContainerView.tag = 100; // Tag for theme updates
 
 #if TARGET_OS_MACCATALYST
+    searchContainerView.backgroundColor = UIColor.clearColor;
     CGFloat searchHorizontalInset = kMacFeedHeaderHorizontalInset;
 #else
     CGFloat searchHorizontalInset = 8;
@@ -377,11 +378,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 #if TARGET_OS_MACCATALYST
     self.innerView.backgroundColor = UIColor.clearColor;
     
-    if (ThemeManager.themeManager.isLikeSystem) {
-        self.view.backgroundColor = UIColor.clearColor;
-    } else {
-        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    }
+    self.view.backgroundColor = UIColor.clearColor;
+    self.view.opaque = NO;
+    self.navigationController.view.backgroundColor = UIColor.clearColor;
 #else
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
 #endif
@@ -406,16 +405,21 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self updateTheme];
     [self layoutHeaderCounts:0];
 
+#if TARGET_OS_MACCATALYST
+    self.feedTitlesTable.backgroundColor = UIColor.clearColor;
+    self.feedTitlesTable.opaque = NO;
+#else
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+#endif
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
     self.feedTitlesTable.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     
 #if TARGET_OS_MACCATALYST
-    // Workaround for Catalyst bug.
-    self.feedTitlesLeadingConstraint.constant = -10;
-    self.feedTitlesTrailingConstraint.constant = -10;
+    // FeedsObjCViewController.m uses the full sidebar width now that SplitViewController.swift removes the system background inset.
+    self.feedTitlesLeadingConstraint.constant = 0;
+    self.feedTitlesTrailingConstraint.constant = 0;
 #endif
     
     if (@available(iOS 15.0, *)) {
@@ -772,8 +776,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     [super viewDidLayoutSubviews];
 #if TARGET_OS_MACCATALYST
     if (self.feedSearchContainerView) {
-        // FeedsObjCViewController.m extends the table 10 points past each sidebar edge for Catalyst rows.
-        // Measure search against the visible sidebar so that workaround does not consume its margins.
+        // FeedsObjCViewController.m measures search against the visible sidebar bounds to preserve its margins.
         CGRect sidebarBounds = [self.feedSearchContainerView convertRect:self.innerView.bounds fromView:self.innerView];
         CGRect searchFrame = self.searchField.frame;
         searchFrame.origin.x = CGRectGetMinX(sidebarBounds) + kMacFeedHeaderHorizontalInset;
@@ -794,7 +797,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     if (usesVerticalToolbar) {
         // FeedsObjCViewController.m manually reserves only the bottom safe area because this table disables automatic adjustment.
-        CGFloat bottomInset = MAX(0, self.view.safeAreaInsets.bottom);
+        CGFloat bottomInset = MAX(0, self.view.safeAreaInsets.bottom) +
+            [ListenStoryBridge miniPlayerInsetForView:self.feedTitlesTable];
         UIEdgeInsets inset = self.feedTitlesTable.contentInset;
         if (inset.bottom != bottomInset) {
             inset.bottom = bottomInset;
@@ -836,7 +840,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 #endif
     self.toolbarBottomConstraint.constant = -toolbarBottomGap;
     CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
-    CGFloat totalBottomInset = MAX(toolbarHeight + toolbarBottomGap, safeAreaBottom);
+    // FeedsObjCViewController.m also clears the Listen mini player (Listen/ListenMiniPlayer.swift) when it covers this list.
+    CGFloat totalBottomInset = MAX(toolbarHeight + toolbarBottomGap, safeAreaBottom) +
+        [ListenStoryBridge miniPlayerInsetForView:self.feedTitlesTable];
 
     UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
     if (currentInset.bottom != totalBottomInset) {
@@ -1065,13 +1071,14 @@ static BOOL NBBoolPreferenceValue(id value) {
     CGFloat availableWidth = MAX(0, toolbarWidth - 128);
     CGFloat contentWidth = allTextWidth + selectedContentWidth + iconOnlyCount * 14;
     // FeedsObjCViewController.m reduces text only after all segment padding is exhausted for a longer translation.
-    while (contentWidth > availableWidth && font.pointSize > 6) {
+    while (contentWidth > availableWidth && font.pointSize > 5.5) {
         font = [UIFont systemFontOfSize:font.pointSize - 0.5];
         allTextWidth = ceil([titles[0] sizeWithAttributes:@{NSFontAttributeName: font}].width);
         selectedContentWidth = selected == 0 ? 0 : ceil([titles[selected] sizeWithAttributes:@{NSFontAttributeName: font}].width) + 18;
         contentWidth = allTextWidth + selectedContentWidth + iconOnlyCount * 14;
     }
-    CGFloat controlWidth = MIN(availableWidth, contentWidth + 4 * 12);
+    // FeedsObjCViewController.m gives each segment 12pt on either side when space permits, reducing padding for narrow sidebars.
+    CGFloat controlWidth = MIN(availableWidth, contentWidth + 4 * 24);
     CGFloat segmentPadding = MAX(0, (controlWidth - contentWidth) / 4);
     CGFloat allWidth = allTextWidth + segmentPadding;
     CGFloat selectedWidth = selectedContentWidth + segmentPadding;
@@ -1568,6 +1575,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
     [self syncStoryClusteringDefaultsFromUserProfile:appDelegate.dictUserProfile];
+    // Listen/ListenPreferences.swift adopts the synced Listen and story button preferences.
+    [ListenStoryBridge syncFromUserProfile:appDelegate.dictUserProfile];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
@@ -2026,6 +2035,14 @@ static BOOL NBBoolPreferenceValue(id value) {
             [self.appDelegate showPremiumDialog];
         }];
     }
+
+    // FeedsObjCViewController.m offers natural language classifier billing beside the subscription (UsageBillingView.swift),
+    // unless UsageBillingFeature.swift holds it out of this release.
+    if (UsageBillingFeature.isEnabled) {
+        [viewController addFeedListTitle:[NBLocalization text:@"Usage Billing"] iconName:@"icons8-prompt-100" selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showUsageBillingDialog];
+        }];
+    }
     
     [viewController addFeedListTitle:[NBLocalization text:@"Support Forum"] iconName:@"feed-menu-feedback" selectionShouldDismiss:YES handler:^{
         NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
@@ -2240,11 +2257,9 @@ static BOOL NBBoolPreferenceValue(id value) {
     [super systemAppearanceDidChange:isDark];
     
 #if TARGET_OS_MACCATALYST
-    if (ThemeManager.themeManager.isLikeSystem) {
-        self.view.backgroundColor = UIColor.clearColor;
-    } else {
-        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    }
+    self.view.backgroundColor = UIColor.clearColor;
+    self.view.opaque = NO;
+    self.navigationController.view.backgroundColor = UIColor.clearColor;
 #endif
 }
 
@@ -2260,6 +2275,12 @@ static BOOL NBBoolPreferenceValue(id value) {
     UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
     appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
     appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
+#if TARGET_OS_MACCATALYST
+    // FeedsObjCViewController.m shares the native window material with SceneDelegate.swift's toolbar.
+    [appearance configureWithTransparentBackground];
+    self.navigationController.navigationBar.backgroundColor = UIColor.clearColor;
+    self.navigationController.navigationBar.translucent = YES;
+#endif
     if (@available(iOS 13.0, *)) {
         UIBarButtonItemAppearance *buttonAppearance = [[UIBarButtonItemAppearance alloc] init];
         NSDictionary *textAttributes = @{NSForegroundColorAttributeName: tintColor};
@@ -2311,11 +2332,9 @@ static BOOL NBBoolPreferenceValue(id value) {
         self.sidebarBarButton.tintColor = tintColor;
     }
 #if TARGET_OS_MACCATALYST
-    if (ThemeManager.themeManager.isLikeSystem) {
-        self.view.backgroundColor = UIColor.clearColor;
-    } else {
-        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    }
+    self.view.backgroundColor = UIColor.clearColor;
+    self.view.opaque = NO;
+    self.navigationController.view.backgroundColor = UIColor.clearColor;
 #else
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
@@ -2356,6 +2375,9 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     // Update search field colors for theme
     self.feedTitlesTable.tableHeaderView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+#if TARGET_OS_MACCATALYST
+    self.feedTitlesTable.tableHeaderView.backgroundColor = UIColor.clearColor;
+#endif
     self.feedSearchContainerView.backgroundColor = self.feedTitlesTable.tableHeaderView.backgroundColor;
     self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
     self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
@@ -2373,7 +2395,12 @@ static BOOL NBBoolPreferenceValue(id value) {
         self.searchField.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
+#if TARGET_OS_MACCATALYST
+    self.feedTitlesTable.backgroundColor = UIColor.clearColor;
+    self.feedTitlesTable.opaque = NO;
+#else
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+#endif
     
     [self reloadFeedTitlesTable];
     
@@ -2450,6 +2477,9 @@ static BOOL NBBoolPreferenceValue(id value) {
         identifier = notification.userInfo.allKeys.firstObject;
     }
     
+    // Listen/ListenPreferences.swift sends Listen and story button preferences to the server.
+    if ([ListenStoryBridge preferenceDidChange:identifier]) return;
+
     if ([identifier isEqualToString:@"split_behavior"]) {
         [self.appDelegate updateSplitBehavior:YES];
     } else if ([identifier isEqualToString:@"dashboard_layout"]) {
@@ -2545,6 +2575,9 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
             [AccountDeletionController presentFromController:self.appDelegate.splitViewController];
         }];
+    } else if ([key isEqualToString:@"listen_voice"]) {
+        UIViewController *presenter = [self.appDelegate.feedsNavigationController presentedViewController];
+        [ListenStoryBridge presentVoiceSettingsFrom:presenter];
     } else if ([key isEqualToString:@"app_icon"]) {
         [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
             [self.appDelegate showPremiumDialog];
@@ -3074,6 +3107,10 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     CGRect rect = CGRectMake(0.0, 0.0, tableView.frame.size.width, height + font.pointSize*2);
     FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
+#if TARGET_OS_MACCATALYST
+    folderTitle.opaque = NO;
+    folderTitle.backgroundColor = UIColor.clearColor;
+#endif
     folderTitle.section = (int)section;
     [(FeedsViewController *)self installFolderContextMenu:folderTitle];
     
@@ -4652,7 +4689,7 @@ heightForHeaderInSection:(NSInteger)section {
     // FeedsObjCViewController.m shares these margins with SyncNotifierView.swift and the search field.
     self.userInfoView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(0, kMacFeedHeaderHorizontalInset,
                                                                              0, kMacFeedHeaderHorizontalInset);
-    self.userInfoView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE0E0E0, 0xE8DED0, 0x4F4F4F, 0x292B2C);
+    self.userInfoView.backgroundColor = UIColor.clearColor;
 #else
     if (!orientation) {
         orientation = self.view.window.windowScene.interfaceOrientation;

@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Os controles para tablets estão de volta: expanda a lista de feeds, os títulos dos artigos ou o artigo para tela cheia, de forma independente. Arraste as divisórias para redimensionar os painéis; o NewsBlur lembra suas larguras.\n\nInclui a interface em 21 idiomas e os controles do próximo artigo em posição fixa da versão 16.0."
+  },
+  "macos": {
+    "whats_new": "Esta atualização deixa a leitura no Mac mais confortável.\n\nEspaço rola o artigo para baixo e, ao chegar ao fim, abre o próximo artigo não lido. Shift-Espaço rola para cima e, ao chegar ao início, volta ao artigo anterior. Escolha quanto cada toque rola a página em Preferências ou Atalhos de teclado.\n\nAbra Atalhos de teclado diretamente pelo menu de configurações do artigo.\n\nO NewsBlur agora lembra o tamanho e a posição da janela quando você encerra e reabre o app.\n\nOs nomes dos modelos de Perguntar à IA também foram atualizados."
   }
 }

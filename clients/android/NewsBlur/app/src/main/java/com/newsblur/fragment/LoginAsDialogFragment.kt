@@ -52,7 +52,7 @@ class LoginAsDialogFragment : DialogFragment() {
                     if (result) {
                         SyncService.stop(requireContext())
                         syncServiceState.clearState()
-                        prefsRepo.clearPrefsAndDbForLoginAs(dbHelper)
+                        prefsRepo.clearPrefsAndDbForLoginAs(requireContext(), dbHelper)
                         userApi.updateUserProfile()
                     }
                     result

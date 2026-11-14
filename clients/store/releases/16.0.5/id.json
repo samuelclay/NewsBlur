@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Memperbaiki crash di tablet Samsung lama dan perangkat lain saat membuka NewsBlur atau kembali ke feed. Juga memperbaiki crash pada artikel besar, pratinjau feed, folder berisi satu feed, widget, dan jumlah komentar yang diterjemahkan. Mengurangi macet saat aplikasi dimulai, sinkronisasi, dan pemeriksaan langganan."
+  }
+}

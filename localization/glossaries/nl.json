@@ -115,8 +115,8 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Vind ik leuk / Vind ik niet leuk / Vind ik helemaal niet leuk (Super dislike); short state words leuk / niet leuk / neutraal",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Vind ik leuk / Vind ik niet leuk / Verbergen (Hide, formerly Super dislike); short state words leuk / niet leuk / neutraal",
       "avoid": [
         "zoals (for the verb like)",
         "Zeer sterk afkeuren",
@@ -125,6 +125,15 @@
         "afkeuren"
       ],
       "note": "Trainer question: check that the inserted like/dislike words and the template produce one grammatical sentence on web (reader_classifier.js) and iOS (TrainerView.swift)."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Verbergen",
+      "avoid": [
+        "helemaal niet leuk"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (‘Verbergen’ weegt zwaarder dan alles). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

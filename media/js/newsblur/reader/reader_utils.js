@@ -145,30 +145,27 @@ NEWSBLUR.utils = {
         var intelligence = story.get('intelligence');
         if (!intelligence) return score;
 
-        // AI prompt classifier takes absolute priority
-        var prompt = intelligence['prompt'] || 0;
-        if (prompt != 0) return prompt;
+        // reader_utils.js: Same order as apps/analyzer/models.py compute_story_score.
+        // The AI prompt score is a classifier like any other: +1 for a focus match,
+        // -1 for a hidden match, 0 when it didn't match. A manual Hide (-2) beats
+        // everything, then the strongest like, then the strongest dislike, then the feed.
+        var classifier_scores = [
+            intelligence['title'],
+            intelligence['title_regex'] || 0,
+            intelligence['author'],
+            intelligence['author_regex'] || 0,
+            intelligence['tags'],
+            intelligence['text'] || 0,
+            intelligence['text_regex'] || 0,
+            intelligence['url'] || 0,
+            intelligence['url_regex'] || 0,
+            intelligence['prompt'] || 0
+        ];
+        var score_max = Math.max.apply(Math, classifier_scores);
+        var score_min = Math.min.apply(Math, classifier_scores);
+        if (score_min <= -2) return score_min;        // a Hide beats any like; keep -2 so it reads as a Hide
 
-        var score_max = Math.max(intelligence['title'],
-            intelligence['title_regex'] || 0,
-            intelligence['author'],
-            intelligence['author_regex'] || 0,
-            intelligence['tags'],
-            intelligence['text'] || 0,
-            intelligence['text_regex'] || 0,
-            intelligence['url'] || 0,
-            intelligence['url_regex'] || 0);
-        var score_min = Math.min(intelligence['title'],
-            intelligence['title_regex'] || 0,
-            intelligence['author'],
-            intelligence['author_regex'] || 0,
-            intelligence['tags'],
-            intelligence['text'] || 0,
-            intelligence['text_regex'] || 0,
-            intelligence['url'] || 0,
-            intelligence['url_regex'] || 0);
-        if (score_min <= -2) score = score_min;       // super downvote beats everything
-        else if (score_max > 0) score = score_max;
+        if (score_max > 0) score = score_max;
         else if (score_min < 0) score = score_min;
 
         if (score == 0) score = intelligence['feed'];
@@ -330,7 +327,8 @@ NEWSBLUR.utils = {
 
     make_feed_chooser: function (options) {
         options = options || {};
-        var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
+        // data-nb-picker: shown as a searchable list with icons (views/feed_folder_picker_view.js)
+        var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser', 'data-nb-picker': 'feeds' });
         var $folders_optgroup = $.make('optgroup', { label: gettext("Folders") });
         var $feeds_optgroup = $.make('optgroup', { label: gettext("Sites") });
         var $social_feeds_optgroup = $.make('optgroup', { label: gettext("Blurblogs") });
@@ -418,7 +416,8 @@ NEWSBLUR.utils = {
     make_folders: function (selected_folder_title, toplevel, select_name, include_special_folders, filter_feed_ids) {
         // console.log('make_folders', selected_folder_title);
         var folders = NEWSBLUR.assets.get_folders();
-        var $options = $.make('select', { className: 'NB-folders', name: select_name });
+        // data-nb-picker: shown as a searchable list with icons (views/feed_folder_picker_view.js)
+        var $options = $.make('select', { className: 'NB-folders', name: select_name, 'data-nb-picker': 'folders' });
 
         if (include_special_folders) {
             var $option = $.make('option', { value: 'river:global' }, gettext("Global Shared Stories"));
@@ -477,12 +476,12 @@ NEWSBLUR.utils = {
             }
         }
 
-        $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title, filter_feed_ids);
+        $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title, filter_feed_ids, 0);
 
         return $options;
     },
 
-    make_folder_options: function ($options, items, depth, selected_folder_title, filter_feed_ids) {
+    make_folder_options: function ($options, items, depth, selected_folder_title, filter_feed_ids, level) {
         var self = this;
         items.each(function (item) {
             if (item.is_folder()) {
@@ -495,13 +494,14 @@ NEWSBLUR.utils = {
                     if (!has_filtered_feed) return;
                 }
                 var $option = $.make('option', {
-                    value: 'river:' + item.get('folder_title')
+                    value: 'river:' + item.get('folder_title'),
+                    'data-depth': level || 0
                 }, depth + ' ' + item.get('folder_title'));
                 $options.append($option);
                 if (item.get('folder_title') == selected_folder_title) {
                     $option.attr('selected', true);
                 }
-                $options = self.make_folder_options($options, item.folders, depth + '&nbsp;&nbsp;&nbsp;', selected_folder_title, filter_feed_ids);
+                $options = self.make_folder_options($options, item.folders, depth + '&nbsp;&nbsp;&nbsp;', selected_folder_title, filter_feed_ids, (level || 0) + 1);
             }
         });
 

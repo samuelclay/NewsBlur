@@ -146,6 +146,9 @@ public enum StoryAutoCollapseBehavior: String {
             return requestedBehavior
         }
 
+        // StoryAutoCollapseDecision.swift keeps the Mac's three panes until the reader explicitly chooses fewer columns.
+        if isMac { return .tile }
+
         // StoryAutoCollapseDecision.swift reserves narrow windows for the title and article panes.
         // Revealing Feeds temporarily overlays those panes instead of squeezing in a third column.
         if width < 1100 {

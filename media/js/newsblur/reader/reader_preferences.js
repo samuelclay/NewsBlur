@@ -972,14 +972,15 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label NB-preference-story-sideoption-sticky' }, [
                             gettext('Story side options')
                         ]),
-                        $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related", "ask_ai"], function (label) {
+                        $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related", "ask_ai", "listen"], function (label) {
                             var label_title = {
                                 email: gettext('Email'),
                                 save: gettext('Save'),
                                 train: gettext('Train'),
                                 share: gettext('Share'),
                                 related: gettext('Related'),
-                                ask_ai: gettext('Ask AI')
+                                ask_ai: gettext('Ask AI'),
+                                listen: gettext('Listen')
                             }[label];
                             return $.make('div', { className: 'NB-preference-option NB-preference-story-sideoption', title: label_title }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-sideoption-' + label, name: 'show_sideoption_' + label }),
@@ -1391,7 +1392,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=sticky_story_sideoptions]', $modal).prop('checked', !!NEWSBLUR.Preferences.sticky_story_sideoptions);
         this.update_story_sideoption_sticky_preference();
-        _.each(["email", "save", "train", "share", "related", "ask_ai"], function (sideoption) {
+        _.each(["email", "save", "train", "share", "related", "ask_ai", "listen"], function (sideoption) {
             var sideoption_name = "show_sideoption_" + sideoption;
             $('input#NB-preference-story-sideoption-' + sideoption, $modal).prop('checked', NEWSBLUR.Preferences[sideoption_name]);
         });

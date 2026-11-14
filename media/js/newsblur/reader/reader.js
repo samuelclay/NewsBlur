@@ -1781,6 +1781,9 @@
         //              banner shows the "Back to trainer" return link.
         //   feed_id  - fallback site when a dashboard trainer has no active
         //              story list to reload.
+        //   trainer_snapshot - where the reader was in the trainer, from
+        //              make_matching_view_snapshot in reader_classifier.js, so
+        //              "Back to trainer" can return there (reopen_trainer).
         open_classifier_filter: function (type, value, opts) {
             opts = opts || {};
             if (!type || !value) return;
@@ -1808,6 +1811,7 @@
             }
             var source_story_hash = Object.prototype.hasOwnProperty.call(opts, 'story_hash') ?
                 opts.story_hash : previous_filter.story_hash;
+            var origin = opts.origin || previous_filter.origin || 'pill';
 
             this.flags['classifier_filter'] = {
                 type: type,
@@ -1820,7 +1824,9 @@
                 story_hash: source_story_hash || null,
                 classifier_scope: classifier_scope,
                 classifier_folder_name: classifier_folder_name || null,
-                origin: opts.origin || previous_filter.origin || 'pill'
+                origin: origin,
+                trainer_snapshot: origin === 'trainer' ?
+                    (opts.trainer_snapshot || previous_filter.trainer_snapshot || null) : null
             };
             var classifier_filter = this.flags['classifier_filter'];
 
@@ -4525,6 +4531,21 @@
             NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer({ 'score': score });
         },
 
+        // reader.js: "Back to trainer" from the classifier filter banner. Reopens the
+        // trainer the reader left, opened the same way, and hands it the snapshot from
+        // make_matching_view_snapshot in reader_classifier.js to restore its tab and place.
+        reopen_trainer: function (snapshot) {
+            var options = _.extend({}, snapshot.options, { restore: snapshot });
+
+            if (snapshot.kind === 'story') {
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(snapshot.story_id, snapshot.feed_id, options);
+            } else if (snapshot.kind === 'feed') {
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierFeed(snapshot.feed_id, options);
+            } else {
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierTrainer(options);
+            }
+        },
+
         open_friends_modal: function () {
             NEWSBLUR.assets.preference('has_found_friends', true);
             NEWSBLUR.reader.check_hide_getting_started();
@@ -4982,6 +5003,15 @@
                 stopPropagation: function () { }
             };
             story_view.show_ask_ai_menu(fake_event);
+        },
+
+        // reader.js: Listen reads a story aloud through the sidebar media player
+        // (media_player_view.js, apps/listen). Toggles play/pause when it's the story playing.
+        toggle_listen: function (story) {
+            if (!story) story = this.active_story;
+            if (story && !story.get) story = this.model.get_story(story);
+            if (!story || !NEWSBLUR.app.media_player) return;
+            NEWSBLUR.app.media_player.listen_to_story(story);
         },
 
         open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model, thinking) {
@@ -5565,14 +5595,13 @@
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-folder-move', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-folder-move-save NB-modal-submit-green NB-modal-submit-button' }, gettext('Save')),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, gettext('Move to folder'))
                     ]),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-folder-move-confirm NB-modal-submit', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position' }, [
-                            $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-folder-move-save NB-modal-submit-green NB-modal-submit-button' }, gettext('Save')),
-                            $.make('div', { className: 'NB-menu-manage-image' }),
-                            $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders())
+                            $.make('div', { className: 'NB-change-folders' })
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-folder-rename', role: "button" }, [
@@ -5606,6 +5635,11 @@
                 var starred_title = story.get('starred') ? gettext('Unsave this story') : gettext('Save this story');
                 var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
                 var shared_title = story.get('shared') ? gettext('Shared') : gettext('Share to your Blurblog');
+                var is_listening = NEWSBLUR.app.media_player && NEWSBLUR.app.media_player.is_listening_to(story.get('story_hash'));
+                var listen_title = is_listening && NEWSBLUR.app.media_player.is_playing ?
+                    gettext('Pause listening') : gettext('Listen to this story');
+                var listen_queued = NEWSBLUR.app.media_player &&
+                    NEWSBLUR.app.media_player.listen_queue_state(story.get('story_hash')) === 'queued';
                 var order = NEWSBLUR.assets.view_setting(this.active_feed, 'order');
                 var in_river = this.flags.river_view || this.flags.social_view;
                 var story_feed_muted = story_feed && !story_feed.get('active');
@@ -5737,6 +5771,16 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-listen', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, listen_title),
+                        (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro &&
+                            $.make('div', { className: 'NB-menu-manage-subtitle' }, gettext('30 second preview')))
+                    ]),
+                    (!is_listening && $.make('li', { className: 'NB-menu-item NB-menu-manage-story-listen-queue', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, listen_queued ? gettext('Remove from Up Next') : gettext('Add to Up Next'))
+                    ])),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-thirdparty' }, _.map(NEWSBLUR.assets.third_party_sharing_services, function (label, key) {
                         return NEWSBLUR.Preferences['story_share_' + key] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-' + key }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text(label).parent().addClass('NB-menu-manage-highlight-' + key);
@@ -6097,12 +6141,16 @@
                     $feed_item.on('mouseenter.feed_submenu', function () {
                         clearTimeout(hide_timer);
                         show_timer = setTimeout(function () {
+                            // Repositioning would undo expand_folder_picker's slide of an open picker.
+                            if (self.flags['showing_confirm_input_on_manage_menu'] && $feed_submenu.is(':visible')) return;
                             self.show_story_feed_submenu($feed_item, $feed_submenu, $manage_menu_container);
                         }, 100);
                     });
                     $feed_item.on('mouseleave.feed_submenu', function () {
                         clearTimeout(show_timer);
                         hide_timer = setTimeout(function () {
+                            // Typing in an open folder picker shouldn't depend on where the mouse is.
+                            if (self.flags['showing_confirm_input_on_manage_menu']) return;
                             self.hide_story_feed_submenu($feed_submenu);
                         }, 300);
                     });
@@ -6112,6 +6160,7 @@
                     });
                     $feed_submenu.on('mouseleave.feed_submenu', function () {
                         hide_timer = setTimeout(function () {
+                            if (self.flags['showing_confirm_input_on_manage_menu']) return;
                             self.hide_story_feed_submenu($feed_submenu);
                         }, 300);
                     });
@@ -6336,156 +6385,331 @@
         // ========================
 
         show_confirm_move_menu_item: function (feed_id, $feed) {
-            var self = this;
             var $move = $('.NB-menu-manage-feed-move,.NB-menu-manage-folder-move');
             var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
-            var $position = $('.NB-menu-manage-confirm-position', $confirm);
-            var $add = $(".NB-add-folders,.NB-change-folders", $confirm);
-            var $save = $(".NB-menu-manage-feed-move-save");
-            var $select = $('select', $confirm);
-            var isFeed = _.isNumber(feed_id);
+            var $save = $('.NB-menu-manage-move-save');
 
-            if (isFeed) {
+            if (_.isNumber(feed_id)) {
                 var feed = this.model.get_feed(feed_id);
-                var feed_view = feed.get_view($feed, true);
-                var in_folder = feed_view.options.folder_title;
-                feed.set('menu_folders', null, { silent: true });
-                var $folders = this.make_folders_multiselect(feed);
-                $add.html($folders);
-                $save.addClass("NB-disabled").attr('disabled', "disabled").text(gettext('Select folders'));
+                var in_folders = feed.in_folders();
+                this.folder_picker = {
+                    feed_id: feed_id,
+                    multiple: true,
+                    original: in_folders,
+                    selected: in_folders,
+                    disabled: []
+                };
             } else {
+                // reader.js: a folder view's collection holds its children, so its parent is
+                // the collection that holds the folder's own model.
                 var folder_view = NEWSBLUR.assets.folders.get_view($feed) ||
                     this.active_folder.folder_view;
-                var in_folder = folder_view.collection.options.title;
+                var parent_folder = folder_view.model.collection.options.title;
+                this.folder_picker = {
+                    feed_id: null,
+                    multiple: false,
+                    original: [parent_folder],
+                    selected: [parent_folder],
+                    disabled: NEWSBLUR.folder_picker_utils.disabled_folder_targets(
+                        folder_view.options.folder_title,
+                        folder_view.collection.child_folder_names()
+                    )
+                };
             }
+            this.folder_picker.query = '';
+            this.folder_picker.highlighted = null;
+
+            $('.NB-change-folders', $confirm).html(this.make_folder_picker());
+            this.render_folder_picker();
 
             $move.addClass('NB-menu-manage-feed-move-cancel');
             $('.NB-menu-manage-title', $move).text(gettext('Cancel'));
-            $position.css('position', 'relative');
-            var height = $confirm.height();
-            $position.css('position', 'absolute');
-            $confirm.css({ 'height': 0, 'display': 'block' }).animate({ 'height': height }, {
-                'duration': 380,
-                'easing': 'easeOutQuart'
-            });
-            if (isFeed) {
-                $save.fadeIn(380);
-            }
+            this.expand_folder_picker($confirm);
+            $save.fadeIn(380);
             this.flags['showing_confirm_input_on_manage_menu'] = true;
-
-            if (!_.isNumber(feed_id)) {
-                $('select', $confirm).focus().select();
-                $('option', $select).each(function () {
-                    if ($(this).attr('value') == in_folder) {
-                        $(this).prop('selected', 'selected');
-                        return false;
-                    }
-                });
-            }
         },
 
-        make_folders_multiselect: function (feed, in_folders) {
-            var folders = NEWSBLUR.assets.get_folders();
-            if (!in_folders) in_folders = feed.in_folders();
-            in_folders = _.unique(in_folders.concat(feed.get('menu_folders') || []));
-            feed.set('menu_folders', in_folders, { silent: true });
-            var $options = $.make('div', { className: 'NB-folders' });
-            var $option = this.make_folder_selectable(gettext('Top Level'), '', 0, _.any(in_folders, function (folder) {
-                return !folder;
-            }));
-            $options.append($option);
-
-            $options = this.make_folders_multiselect_options($options, folders, 1, in_folders);
-
-            return $options;
-        },
-
-        make_folders_multiselect_options: function ($options, items, depth, in_folders) {
+        make_folder_picker: function () {
             var self = this;
+            var $input = $.make('input', {
+                type: 'text',
+                className: 'NB-folder-picker-filter-input',
+                placeholder: gettext('Filter folders'),
+                autocomplete: 'off',
+                spellcheck: 'false'
+            });
+
+            $input.on('input', function () {
+                var picker = self.folder_picker;
+                picker.query = $input.val();
+                picker.highlighted = picker.query ?
+                    NEWSBLUR.folder_picker_utils.first_match(self.folder_picker_rows()) : null;
+                self.render_folder_picker_rows();
+                self.scroll_folder_picker_to('.NB-folder-option-highlighted');
+            });
+            $input.on('keydown', function (e) {
+                self.handle_folder_picker_key(e, $input);
+            });
+
+            return $.make('div', { className: 'NB-folder-picker' }, [
+                $.make('div', { className: 'NB-folder-picker-filter' }, [$input]),
+                $.make('div', { className: 'NB-folder-picker-list' })
+            ]);
+        },
+
+        // Flattens the Backbone folder collections into the plain tree that
+        // folder_picker_utils.js builds rows from.
+        folder_picker_tree: function (items) {
+            var self = this;
+            var tree = [];
             items.each(function (item) {
                 if (item.is_folder()) {
-                    var title = item.get('folder_title');
-                    var $option = self.make_folder_selectable(title, title, depth, _.contains(in_folders, title));
-                    $options.append($option);
-                    $options = self.make_folders_multiselect_options($options, item.folders, depth + 1, in_folders);
+                    tree.push({
+                        title: item.get('folder_title'),
+                        children: self.folder_picker_tree(item.folders)
+                    });
                 }
             });
-
-            return $options;
+            return tree;
         },
 
-        make_folder_selectable: function (folder_title, folder_value, depth, selected) {
+        folder_picker_rows: function () {
+            var picker = this.folder_picker;
+            var rows = NEWSBLUR.folder_picker_utils.build_rows(this.folder_picker_tree(NEWSBLUR.assets.get_folders()), {
+                selected: picker.selected,
+                disabled: picker.disabled,
+                top_level_title: gettext('Top Level')
+            });
+            return NEWSBLUR.folder_picker_utils.filter_rows(rows, picker.query);
+        },
+
+        make_folder_picker_row: function (row) {
+            var picker = this.folder_picker;
+            var class_names = _.compact([
+                'NB-folder-option',
+                row.selected && 'NB-folder-option-active',
+                row.disabled && 'NB-folder-option-disabled',
+                !row.matches && 'NB-folder-option-context',
+                row.value === picker.highlighted && 'NB-folder-option-highlighted'
+            ]);
+
+            // Top Level has no icon of its own, so it keeps the plain folder from reader.css.
             return $.make('div', {
-                className: "NB-folder-option " + (selected ? "NB-folder-option-active" : ""),
-                style: 'padding-left: ' + depth * 12 + 'px;'
+                className: class_names.join(' '),
+                style: '--nb-folder-depth: ' + row.depth
             }, [
-                $.make('div', { className: 'NB-icon-add' }),
-                $.make('div', { className: 'NB-icon' }),
-                $.make('div', { className: 'NB-folder-option-title' }, folder_title)
-            ]).data('folder', folder_value);
+                $.make('div', { className: 'NB-folder-option-check' }),
+                $.make('div', { className: 'NB-folder-option-icon' }, [row.value && $.favicon_el('river:' + row.value)]),
+                $.make('div', { className: 'NB-folder-option-title', dir: 'auto' }, row.title),
+                (picker.feed_id && $.make('div', { className: 'NB-icon-add' }))
+            ]).data('folder', row.value).data('depth', row.depth);
         },
 
-        switch_change_folder: function (feed_id, folder_value) {
-            var feed = this.model.get_feed(feed_id);
-            var in_folders = feed.get('menu_folders');
-
-            if (_.contains(in_folders, folder_value)) {
-                in_folders = _.without(in_folders, folder_value);
-            } else {
-                in_folders = in_folders.concat(folder_value);
-            }
-
-            feed.set('menu_folders', in_folders, { silent: true });
-
-            this.render_change_folders(feed, in_folders);
+        render_folder_picker: function () {
+            this.render_folder_picker_rows();
+            this.render_folder_picker_save();
         },
 
-        render_change_folders: function (feed, in_folders) {
-            var $confirm = $('.NB-menu-manage-feed-move-confirm,.NB-menu-manage-folder-move-confirm');
-            var $add = $(".NB-add-folders,.NB-change-folders", $confirm);
-            var $save = $(".NB-menu-manage-feed-move-save");
+        render_folder_picker_rows: function () {
+            var $list = $('.NB-menu-manage-container .NB-folder-picker-list');
+            var scroll_top = $list.scrollTop();
+            var rows = this.folder_picker_rows();
 
-            var $folders = this.make_folders_multiselect(feed, in_folders);
-            $add.html($folders);
-
-            if (_.isEqual(in_folders, feed.in_folders())) {
-                $save.addClass("NB-disabled").attr('disabled', "disabled").text(gettext('Select folders'));
-            } else {
-                $save.toggleClass("NB-disabled", !in_folders.length)
-                    .attr('disabled', !in_folders.length ? "disabled" : false);
+            $list.empty().append(_.map(rows, this.make_folder_picker_row, this));
+            if (!rows.length) {
+                $list.append($.make('div', { className: 'NB-folder-picker-empty' }, gettext('No folders match')));
             }
-
-            if (!in_folders.length) {
-                $save.text(gettext('Select a folder'));
-            } else {
-                $save.text(interpolate(ngettext("Save %(count)s folder", "Save %(count)s folders", in_folders.length), {count: in_folders.length}, true));
-            }
+            $list.scrollTop(scroll_top);
         },
 
-        show_add_folder_in_menu: function (feed_id, $folder, folder) {
+        render_folder_picker_save: function () {
+            var picker = this.folder_picker;
+            var $save = $('.NB-menu-manage-container .NB-menu-manage-move-save');
+            var state = NEWSBLUR.folder_picker_utils.save_state(picker.selected, picker.original);
+            var label;
+
+            if (state.action == 'empty') {
+                label = gettext('Select a folder');
+            } else if (state.action == 'unchanged') {
+                label = picker.multiple ? gettext('Select folders') : gettext('Select a folder');
+            } else if (state.action == 'move') {
+                label = interpolate(gettext('Move to %(folder)s'), {
+                    folder: state.folder || gettext('Top Level')
+                }, true);
+            } else {
+                label = interpolate(ngettext("Save %(count)s folder", "Save %(count)s folders", state.count), { count: state.count }, true);
+            }
+
+            var disabled = state.action == 'empty' || state.action == 'unchanged';
+            $save.toggleClass('NB-disabled', disabled)
+                .attr('disabled', disabled ? 'disabled' : false)
+                .attr('title', label)
+                .text(label);
+        },
+
+        // Sizes the folder list to show every folder the window has room for, then slides
+        // the menu so the whole picker stays on screen (folder_picker_utils.js: menu_top).
+        expand_folder_picker: function ($confirm) {
             var self = this;
+            var utils = NEWSBLUR.folder_picker_utils;
+            // reader.js: a story's menu puts Change folders in its fixed-position feed flyout
+            // (show_story_feed_submenu), so that flyout is the menu to size and slide.
+            var $container = $confirm.closest('.NB-menu-manage-story-feed-submenu');
+            if (!$container.length) $container = $('.NB-menu-manage-container');
+            var $position = $('.NB-menu-manage-confirm-position', $confirm);
+            var $list = $('.NB-folder-picker-list', $confirm);
+            var margin = 12;
+            var window_height = $(window).height();
 
-            if ($folder.siblings('.NB-add-folder-form').length) {
-                var feed = this.model.get_feed(feed_id);
-                var in_folders = feed.get('menu_folders');
-                this.render_change_folders(feed, in_folders);
+            $container.css({ 'max-height': '', 'overflow-y': '', 'overflow-x': '' });
+            var menu_height = $container.outerHeight();
+            var offset_top = $container[0].getBoundingClientRect().top;
+            var css_top = parseFloat($container.css('top'));
+
+            $position.css('position', 'relative');
+            $confirm.css({ 'height': 'auto', 'display': 'block' });
+            var chrome_height = $confirm.outerHeight() - $list.outerHeight();
+            var list_height = utils.list_height({
+                content_height: $list[0].scrollHeight,
+                available_height: window_height - 2 * margin - menu_height - chrome_height,
+                min_height: 120
+            });
+            $list.css('height', list_height);
+            var height = $confirm.height();
+            $position.css('position', 'absolute');
+
+            var new_offset_top = utils.menu_top({
+                top: offset_top,
+                height: menu_height,
+                grow: height,
+                window_height: window_height,
+                margin: margin,
+                inverse: $container.hasClass('NB-inverse')
+            });
+            if (menu_height + height > window_height - 2 * margin) {
+                $container.css({ 'max-height': window_height - 2 * margin, 'overflow-y': 'auto', 'overflow-x': 'hidden' });
+            }
+            this.folder_picker.$container = $container;
+            this.folder_picker.container_top = css_top;
+            $container.animate({ 'top': css_top + new_offset_top - offset_top }, {
+                'duration': 380,
+                'easing': 'easeOutQuart',
+                'queue': false
+            });
+
+            this.scroll_folder_picker_to('.NB-folder-option-active');
+            $confirm.css({ 'height': 0 }).animate({ 'height': height }, {
+                'duration': 380,
+                'easing': 'easeOutQuart',
+                'complete': function () {
+                    var input = $('.NB-folder-picker-filter-input', $confirm)[0];
+                    if (input) input.focus({ preventScroll: true });
+                }
+            });
+        },
+
+        scroll_folder_picker_to: function (selector) {
+            var $list = $('.NB-menu-manage-container .NB-folder-picker-list');
+            var $row = $(selector, $list).first();
+            if (!$row.length) {
+                $list.scrollTop(0);
                 return;
             }
 
-            var $add = $.make('div', { className: 'NB-add-folder-form' }, [
+            var row_top = $row[0].offsetTop;
+            var row_bottom = row_top + $row.outerHeight();
+            var list_height = $list.innerHeight();
+            if (row_top < $list.scrollTop() || row_bottom > $list.scrollTop() + list_height) {
+                $list.scrollTop(row_top - list_height / 3);
+            }
+        },
+
+        handle_folder_picker_key: function (e, $input) {
+            var picker = this.folder_picker;
+            var utils = NEWSBLUR.folder_picker_utils;
+
+            if (e.which == 40 || e.which == 38) {
+                e.preventDefault();
+                picker.highlighted = utils.next_highlight(this.folder_picker_rows(), picker.highlighted, e.which == 40 ? 1 : -1);
+                this.render_folder_picker_rows();
+                this.scroll_folder_picker_to('.NB-folder-option-highlighted');
+            } else if (e.which == 13) {
+                e.preventDefault();
+                // Enter picks the highlighted folder first, and a second Enter saves it.
+                if (!_.isNull(picker.highlighted) && !_.isEqual(picker.selected, [picker.highlighted])) {
+                    this.choose_folder_picker_folder(picker.highlighted);
+                } else {
+                    this.save_folder_picker();
+                }
+            } else if (e.which == 27) {
+                e.preventDefault();
+                e.stopPropagation();
+                if ($input.val()) {
+                    $input.val('').trigger('input');
+                } else {
+                    var $menu = $('.NB-menu-manage-container .NB-menu-manage');
+                    this.flags['showing_confirm_input_on_manage_menu'] = false;
+                    this.hide_manage_menu(picker.feed_id ? 'feed' : 'folder', $menu.data('$feed') || $menu.data('$folder'), true);
+                }
+            }
+        },
+
+        choose_folder_picker_folder: function (folder_value) {
+            var picker = this.folder_picker;
+            if (_.contains(picker.disabled, folder_value)) return;
+
+            picker.selected = NEWSBLUR.folder_picker_utils.choose_folder(picker.selected, folder_value);
+            picker.highlighted = folder_value;
+            this.render_folder_picker();
+        },
+
+        toggle_folder_picker_folder: function (folder_value) {
+            var picker = this.folder_picker;
+            if (!picker.multiple) {
+                return this.choose_folder_picker_folder(folder_value);
+            }
+
+            picker.selected = NEWSBLUR.folder_picker_utils.toggle_folder(picker.selected, folder_value);
+            picker.highlighted = folder_value;
+            this.render_folder_picker();
+        },
+
+        save_folder_picker: function () {
+            var picker = this.folder_picker;
+            var state = NEWSBLUR.folder_picker_utils.save_state(picker.selected, picker.original);
+            if (state.action != 'move' && state.action != 'save') return;
+
+            var $menu = $('.NB-menu-manage-container .NB-menu-manage');
+            if (picker.feed_id) {
+                this.manage_menu_move_feed(picker.feed_id, $menu.data('$feed'));
+            } else {
+                this.manage_menu_move_folder($menu.data('folder_name'), $menu.data('$folder'));
+            }
+        },
+
+        show_add_folder_in_menu: function ($folder) {
+            var self = this;
+
+            if ($folder.next('.NB-add-folder-form').length) {
+                this.render_folder_picker_rows();
+                return;
+            }
+            $('.NB-menu-manage-container .NB-add-folder-form').remove();
+
+            var $add = $.make('div', {
+                className: 'NB-add-folder-form',
+                style: '--nb-folder-depth: ' + ($folder.data('depth') + 1)
+            }, [
                 $.make('div', { className: 'NB-icon' }),
                 $.make('input', { className: 'NB-input', placeholder: gettext("New folder name...") }),
                 $.make('div', { className: 'NB-menu-manage-add-folder-save NB-modal-submit-green NB-modal-submit-button' }, gettext('Add'))
-            ]).data('in_folder', $folder.data('folder')).data('feed_id', feed_id);
-            $add.css('paddingLeft', parseInt($folder.css('paddingLeft'), 10) + 12);
+            ]).data('in_folder', $folder.data('folder'));
             $folder.after($add);
 
             $('input', $add).focus().bind('keyup', 'return', function (e) {
                 self.add_folder_to_folder();
             }).bind('keyup', 'esc', function (e) {
-                var feed = self.model.get_feed(feed_id);
-                var in_folders = feed.get('menu_folders');
-                self.render_change_folders(feed, in_folders);
+                self.render_folder_picker_rows();
             });
         },
 
@@ -6503,21 +6727,16 @@
                 NEWSBLUR.assets.folders.reset(_.compact(data.folders), { parse: true });
             }
 
-            var $form = $('.NB-add-folder-form');
-            var feed_id = $form.data('feed_id');
-            var feed = this.model.get_feed(feed_id);
-            var in_folders = feed.get('menu_folders');
-
             NEWSBLUR.assets.feeds.trigger('reset');
 
-            this.render_change_folders(feed, in_folders);
+            this.render_folder_picker_rows();
         },
 
         manage_menu_move_feed: function (feed_id, $feed) {
             var self = this;
             var feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
-            var in_folders = feed.get('menu_folders');
+            var in_folders = this.folder_picker.selected;
             var feed_view = feed.get_view($feed);
 
             var moved = feed.move_to_folders(in_folders, { view: feed_view });
@@ -6530,17 +6749,14 @@
         },
 
         manage_menu_move_folder: function (folder, $folder) {
-            var self = this;
-            var to_folder = $('.NB-menu-manage-folder-move-confirm select').val();
+            var picker = this.folder_picker;
+            var to_folder = picker.selected[0];
             var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
                 this.active_folder.folder_view;
-            var in_folder = folder_view.collection.options.title;
-            var folder_name = folder_view.options.folder_title;
-            var child_folders = folder_view.collection.child_folder_names();
 
-            if (to_folder == in_folder ||
-                to_folder == folder_name ||
-                _.contains(child_folders, to_folder)) {
+            if (_.isUndefined(to_folder) ||
+                to_folder == picker.original[0] ||
+                _.contains(picker.disabled, to_folder)) {
                 return this.hide_confirm_move_menu_item();
             }
 
@@ -6558,7 +6774,8 @@
             var $move_feed = $('.NB-menu-manage-feed-move');
             var $confirm_folder = $('.NB-menu-manage-folder-move-confirm');
             var $confirm_feed = $('.NB-menu-manage-feed-move-confirm');
-            var $save = $(".NB-menu-manage-feed-move-save");
+            var $save = $(".NB-menu-manage-move-save");
+            var picker = this.folder_picker;
 
             $move_folder.removeClass('NB-menu-manage-feed-move-cancel');
             $move_feed.removeClass('NB-menu-manage-feed-move-cancel');
@@ -6578,6 +6795,12 @@
             $confirm_feed.slideUp(500);
             $confirm_folder.slideUp(500);
             $save.hide();
+            // reader.js: expand_folder_picker slid the menu to fit the picker, so slide it back.
+            if (picker && picker.$container) {
+                picker.$container.css({ 'max-height': '', 'overflow-y': '', 'overflow-x': '' })
+                    .animate({ 'top': picker.container_top }, { 'duration': 500, 'queue': false });
+                picker.$container = null;
+            }
             this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
 
@@ -8932,26 +9155,25 @@
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.manage_menu_delete_folder(folder_name, $folder);
             });
-            var adding_icon = false;
-            $.targetIs(e, { tagSelector: '.NB-icon-add', childOf: '.NB-menu-manage' }, function ($t, $p) {
-                e.preventDefault();
-                e.stopPropagation();
-                adding_icon = true;
-                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                var $folder = $t.parents('.NB-folder-option');
-                var folder = $folder.data('folder');
-                self.show_add_folder_in_menu(feed_id, $folder, folder || '');
-            });
+            // reader.js: make_folder_picker_row. A folder's name moves the feed there, its check
+            // circle adds or removes it as an extra folder, and its + adds a subfolder.
             $.targetIs(e, { tagSelector: '.NB-folder-option', childOf: '.NB-menu-manage' }, function ($t, $p) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (adding_icon) return;
-                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                self.switch_change_folder(feed_id, $t.data('folder') || '');
+                var $target = $(e.target);
+                if ($target.closest('.NB-icon-add').length) {
+                    self.show_add_folder_in_menu($t);
+                } else if ($target.closest('.NB-folder-option-check').length) {
+                    self.toggle_folder_picker_folder($t.data('folder'));
+                } else {
+                    self.choose_folder_picker_folder($t.data('folder'));
+                }
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-move' }, function ($t, $p) {
                 e.preventDefault();
                 e.stopPropagation();
+                // The Save button sits inside this row and has its own handler below.
+                if ($(e.target).closest('.NB-menu-manage-move-save').length) return;
 
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                 var $feed = $t.parents('.NB-menu-manage').data('$feed');
@@ -8972,21 +9194,10 @@
 
                 self.add_folder_to_folder();
             });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-move-save' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-move-save' }, function ($t, $p) {
                 e.preventDefault();
                 e.stopPropagation();
-                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
-                var $folder = $t.parents('.NB-menu-manage').data('$folder');
-                self.manage_menu_move_folder(folder_name, $folder);
-            });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-move-save' }, function ($t, $p) {
-                e.preventDefault();
-                e.stopPropagation();
-                if ($t.hasClass('NB-disabled')) return;
-
-                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                var $feed = $t.parents('.NB-menu-manage').data('$feed');
-                self.manage_menu_move_feed(feed_id, $feed);
+                self.save_folder_picker();
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-move-confirm' }, function ($t, $p) {
                 e.preventDefault();
@@ -9112,6 +9323,18 @@
                 var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
                 var story = NEWSBLUR.assets.get_story(story_id);
                 story.toggle_starred();
+            });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-listen' }, function ($t, $p) {
+                e.preventDefault();
+                var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
+                self.toggle_listen(NEWSBLUR.assets.get_story(story_id));
+            });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-listen-queue' }, function ($t, $p) {
+                e.preventDefault();
+                var story_id = $t.closest('.NB-menu-manage-story').data('story_id');
+                if (NEWSBLUR.app.media_player) {
+                    NEWSBLUR.app.media_player.toggle_listen_queue(NEWSBLUR.assets.get_story(story_id));
+                }
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-exception' }, function ($t, $p) {
                 e.preventDefault();
@@ -9893,6 +10116,10 @@
             $document.bind('keydown', 'shift+x', function (e) {
                 e.preventDefault();
                 NEWSBLUR.reader.active_story.story_view.expand_story();
+            });
+            $document.bind('keydown', 'y', function (e) {
+                e.preventDefault();
+                self.toggle_listen();
             });
             $document.bind('keydown', 'shift+y', function (e) {
                 e.preventDefault();

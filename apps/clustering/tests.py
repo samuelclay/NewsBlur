@@ -743,6 +743,28 @@ class Test_SameFeedClusterFolding(TestCase):
         under_original = [s["story_hash"] for s in result[0].get("cluster_stories", [])]
         self.assertIn(repost["story_hash"], under_original)
 
+    def test_folded_story_keeps_its_matched_ai_prompts(self):
+        """A folded on-page story carries its prompt_classifiers, so the apps refreshing its score
+        after a classifier save also update or clear its AI pills (clients/ios StoryScoreRefresher.swift)."""
+        from apps.clustering.models import apply_clustering_to_stories
+
+        original = self.story(self.blog, "a1c100", self.IOS_TITLE, score=1)
+        original["prompt_classifiers"] = []
+        repost = self.story(self.blog, "a1c200", self.IOS_TITLE, score=1)
+        repost["prompt_classifiers"] = [
+            {"prompt": "Non-apple related news", "score": 1, "include_images": False}
+        ]
+        forum_copy = "%s:a1c300" % self.forum_posts.pk
+        self.store_cluster(forum_copy, [forum_copy, original["story_hash"], repost["story_hash"]])
+
+        result = apply_clustering_to_stories([original, repost], self.user)
+
+        members = {s["story_hash"]: s for s in result[0].get("cluster_stories", [])}
+        self.assertEqual(
+            members[repost["story_hash"]]["prompt_classifiers"],
+            [{"prompt": "Non-apple related news", "score": 1, "include_images": False}],
+        )
+
     def test_river_still_folds_related_story_from_another_feed(self):
         from apps.clustering.models import apply_clustering_to_stories
 

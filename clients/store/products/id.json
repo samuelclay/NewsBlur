@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premium dan arsip artikel permanen"
+        "description": "Arsip artikel permanen dan 1 jam audio per minggu"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "Feed diambil setiap 5 hingga 15 menit"
+        "description": "Feed sering diperbarui dan 10 jam audio per minggu"
       }
     },
     "subscription_groups": {
@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "Langganan NewsBlur Premium",
-        "description": "Baca isi folder dalam satu daftar, cari di feed, atur artikel tersimpan dengan tag, dan dapatkan pembaruan feed lebih cepat.",
+        "description": "Baca folder dalam satu daftar, cari di feed Anda, atur artikel tersimpan dengan tag, dan nikmati pembaruan feed yang lebih cepat.",
         "benefits": [
           "Baca folder dalam satu daftar artikel",
           "Cari di seluruh feed",
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "Langganan NewsBlur Premium Archive",
-        "description": "Dapatkan semua fitur Premium, plus arsip permanen yang dapat dicari untuk setiap artikel. Biarkan artikel berstatus belum dibaca selama yang Anda inginkan.",
+        "description": "Semua fitur Premium, arsip artikel permanen yang dapat ditelusuri, dan 1 jam mendengarkan per minggu. Biarkan artikel belum dibaca selama Anda mau. Kuota diperbarui hari Minggu.",
         "benefits": [
           "Semua fitur Premium",
           "Artikel belum dibaca tanpa batas waktu",
-          "Arsipkan setiap artikel secara permanen",
-          "Cari di seluruh arsip artikel Anda"
+          "Arsip artikel permanen dengan pencarian",
+          "1 jam mendengarkan per minggu"
         ]
       }
     }

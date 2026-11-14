@@ -123,8 +123,8 @@
     },
     {
       "concept": "Like / Dislike (trainer)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "אהבתי / לא אהבתי; Super Dislike → סלידה חזקה or מאוד לא אהבתי",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "אהבתי / לא אהבתי; Hide (the level above Like, formerly Super Dislike) → הסתרה",
       "avoid": [
         "לא אוהב",
         "לא אוהב במיוחד"
@@ -132,8 +132,18 @@
       "note": "First-person past tense is gender-neutral; לא אוהב is masculine present → low terminology. «לא אוהב במיוחד» = not particularly fond (weaker, not stronger) → medium meaning. Trainer question (reader_classifier.js make_like_dislike_title / TrainerView.swift, the lowercase like/dislike words are used only there): template «מה %(like)s ומה %(dislike)s בכתבה הזו?» with like «אהבת», dislike «לא אהבת»; iOS «מה 👍 %1$@ ומה 👎 %2$@ בכתבה הזו?»."
     },
     {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "הסתרה",
+      "avoid": [
+        "סלידה חזקה",
+        "מאוד לא אהבתי"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (״הסתרה״ גוברת על הכול). The old Super dislike names are retired."
+    },
+    {
       "concept": "beats / (like wins)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
       "use": "גובר על / (אהבתי גובר)",
       "avoid": [
         "מכה",

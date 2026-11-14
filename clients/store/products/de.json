@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premium mit dauerhaftem Artikelarchiv"
+        "description": "Dauerhaftes Archiv und 1 Stunde Hörzeit pro Woche"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "Feeds alle 5 bis 15 Minuten aktualisiert"
+        "description": "Häufige Feedupdates und 10 Stunden Hörzeit pro Woche"
       }
     },
     "subscription_groups": {
@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium-Abonnement",
-        "description": "Lies Ordner in einer Liste, durchsuche Feeds, ordne gespeicherte Artikel mit Tags und erhalte schnellere Feed-Aktualisierungen.",
+        "description": "Lies Ordner in einer Liste, durchsuche deine Feeds, ordne gespeicherte Artikel mit Tags und profitiere von schnelleren Feed-Aktualisierungen.",
         "benefits": [
           "Ordner in einer Artikelliste lesen",
           "Feeds übergreifend durchsuchen",
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive-Abonnement",
-        "description": "Alles aus Premium plus ein dauerhaftes, durchsuchbares Archiv jedes Artikels. Lass Artikel so lange ungelesen, wie du möchtest.",
+        "description": "Alle Premium-Funktionen, ein dauerhaftes durchsuchbares Archiv und 1 Stunde Hörzeit pro Woche. Lass Artikel beliebig lange ungelesen. Das Hörkontingent wird sonntags zurückgesetzt.",
         "benefits": [
           "Alles aus Premium",
           "Artikel für immer ungelesen lassen",
-          "Jeden Artikel dauerhaft archivieren",
-          "Das gesamte Artikelarchiv durchsuchen"
+          "Dauerhaftes durchsuchbares Archiv",
+          "1 Stunde Hörzeit pro Woche"
         ]
       }
     }

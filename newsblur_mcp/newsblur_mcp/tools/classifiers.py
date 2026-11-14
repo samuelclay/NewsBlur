@@ -22,7 +22,7 @@ async def _train_classifier(
     like_feed: bool | None = None,
     dislike_feed: bool | None = None,
 ) -> dict:
-    """Train the intelligence classifier to like, dislike, or super-dislike stories."""
+    """Train the intelligence classifier to like, dislike, or hide stories."""
     # NewsBlur's classifier API expects repeated form fields for multiple values
     # (e.g. like_title=python&like_title=rust), so we build a list of tuples
     fields = [("feed_id", feed_id)]
@@ -78,11 +78,12 @@ async def newsblur_train_classifier(
     like_feed: bool | None = None,
     dislike_feed: bool | None = None,
 ) -> dict:
-    """Train the intelligence classifier to like, dislike, or super-dislike stories.
+    """Train the intelligence classifier to like, dislike, or hide stories.
 
-    Liked attributes boost future stories (green/focus), disliked attributes
-    suppress them (red/hidden), and super-dislike always hides a story,
-    overriding every like.
+    Liked attributes boost future stories (green/focus) and disliked attributes
+    suppress them (red/hidden). Hide, the strongest level, is set with the
+    super_dislike_* fields: a story that matches it is always hidden, even
+    when it also matches a like.
 
     Args:
         feed_id: Feed ID to train on.

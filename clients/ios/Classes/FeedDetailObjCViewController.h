@@ -158,6 +158,7 @@
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
 - (void)cancelMarkStoryReadTimer;
 - (BOOL)markStoryReadIfNeeded:(NSDictionary *)story isScrolling:(BOOL)isScrolling;
+- (void)prepareStorySelectionAtLocation:(NSInteger)location;
 - (void)finishMarkAsSaved:(NSDictionary *)params;
 - (void)failedMarkAsSaved:(NSDictionary *)params;
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;

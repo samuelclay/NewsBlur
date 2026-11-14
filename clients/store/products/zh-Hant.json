@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "包含 Premium 功能，並可永久封存文章"
+        "description": "永久文章封存及每週 1 小時聆聽"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "每 5 至 15 分鐘擷取一次訂閱來源"
+        "description": "頻繁更新訂閱來源，每週 10 小時聆聽"
       }
     },
     "subscription_groups": {
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive 訂閱",
-        "description": "包含 Premium 的所有功能，還可永久封存並搜尋每篇文章。文章想保持未讀狀態多久都可以。",
+        "description": "包含 Premium 的所有功能、可搜尋的永久文章封存庫，以及每週 1 小時聆聽時間。文章想保持未讀狀態多久都可以。聆聽時間每週日重設。",
         "benefits": [
           "Premium 的所有功能",
           "文章可永遠保持未讀狀態",
-          "永久封存每篇文章",
-          "搜尋完整的文章封存庫"
+          "可搜尋的永久文章封存庫",
+          "每週 1 小時聆聽"
         ]
       }
     }

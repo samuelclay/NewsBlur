@@ -7,11 +7,11 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Premium ve kalıcı haber arşivi"
+        "description": "Kalıcı haber arşivi ve haftada 1 saat dinleme"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
-        "description": "Akışlar her 5 ila 15 dakikada alınır"
+        "description": "Sık akış güncellemeleri ve haftada 10 saat dinleme"
       }
     },
     "subscription_groups": {
@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium Aboneliği",
-        "description": "Klasörleri tek listede okuyun, akışlarda arayın, kaydedilen haberleri etiketlerle düzenleyin ve akış güncellemelerini daha hızlı alın.",
+        "description": "Klasörleri tek listede okuyun, akışlarınızda arayın, kaydedilen haberleri etiketlerle düzenleyin ve daha hızlı akış güncellemelerinden yararlanın.",
         "benefits": [
           "Klasörleri tek haber listesinde okuyun",
           "Akışlar arasında arama yapın",
@@ -35,12 +35,12 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive Aboneliği",
-        "description": "Premium’daki her şeye ek olarak her haber için kalıcı, aranabilir arşiv. Haberleri istediğiniz kadar uzun süre okunmamış tutun.",
+        "description": "Tüm Premium özellikleri, kalıcı ve aranabilir haber arşivi, haftada 1 saat dinleme. Haberleri dilediğiniz kadar okunmamış tutun. Dinleme süresi pazar yenilenir.",
         "benefits": [
           "Premium’daki her şey",
           "Haberleri süresiz okunmamış tutun",
-          "Her haberi kalıcı olarak arşivleyin",
-          "Tüm haber arşivinizde arama yapın"
+          "Kalıcı ve aranabilir haber arşivi",
+          "Haftada 1 saat dinleme"
         ]
       }
     }

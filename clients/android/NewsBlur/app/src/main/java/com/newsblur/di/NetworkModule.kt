@@ -14,14 +14,20 @@ import com.newsblur.network.AskAiApi
 import com.newsblur.network.AskAiApiImpl
 import com.newsblur.network.BriefingApi
 import com.newsblur.network.BriefingApiImpl
+import com.newsblur.network.ClassifierApi
+import com.newsblur.network.ClassifierApiImpl
 import com.newsblur.network.FeedApi
 import com.newsblur.network.FeedApiImpl
 import com.newsblur.network.FolderApi
 import com.newsblur.network.FolderApiImpl
+import com.newsblur.network.ListenApi
+import com.newsblur.network.ListenApiImpl
 import com.newsblur.network.NetworkClient
 import com.newsblur.network.NetworkClientImpl
 import com.newsblur.network.StoryApi
 import com.newsblur.network.StoryApiImpl
+import com.newsblur.network.UsageBillingApi
+import com.newsblur.network.UsageBillingApiImpl
 import com.newsblur.network.UserApi
 import com.newsblur.network.UserApiImpl
 import com.newsblur.network.domain.StoriesResponse
@@ -130,10 +136,34 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    fun provideListenApi(
+        @ApplicationContext context: Context,
+        gson: Gson,
+        networkClient: NetworkClient,
+        @ApiOkHttpClient apiOkHttpClient: OkHttpClient,
+        customUserAgent: CustomUserAgent,
+    ): ListenApi = ListenApiImpl(context, gson, networkClient, apiOkHttpClient, customUserAgent)
+
+    @Singleton
+    @Provides
     fun provideBriefingApi(
         gson: Gson,
         networkClient: NetworkClient,
     ): BriefingApi = BriefingApiImpl(gson, networkClient)
+
+    @Singleton
+    @Provides
+    fun provideClassifierApi(
+        gson: Gson,
+        networkClient: NetworkClient,
+    ): ClassifierApi = ClassifierApiImpl(gson, networkClient)
+
+    @Singleton
+    @Provides
+    fun provideUsageBillingApi(
+        gson: Gson,
+        networkClient: NetworkClient,
+    ): UsageBillingApi = UsageBillingApiImpl(gson, networkClient)
 
     @Singleton
     @Provides

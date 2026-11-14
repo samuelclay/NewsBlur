@@ -74,6 +74,24 @@
 			<string>%@ comentarios</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ filtros de contenido</string>
+			<key>one</key>
+			<string>%@ filtro de contenido</string>
+			<key>other</key>
+			<string>%@ filtros de contenido</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -218,6 +236,78 @@
 			<string>%@ artículos de Enfoque</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Te quedan %@ vistas previas gratuitas de artículos para hoy</string>
+			<key>one</key>
+			<string>Queda %@ vista previa gratuita de artículo hoy</string>
+			<key>other</key>
+			<string>Te quedan %@ vistas previas gratuitas de artículos para hoy</string>
+		</dict>
+	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ filtros de imagen</string>
+			<key>one</key>
+			<string>%@ filtro de imagen</string>
+			<key>other</key>
+			<string>%@ filtros de imagen</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ coincidencias</string>
+			<key>one</key>
+			<string>%@ coincidencia</string>
+			<key>other</key>
+			<string>%@ coincidencias</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Quedan %@ minutos este mes</string>
+			<key>one</key>
+			<string>Te queda %@ minuto este mes</string>
+			<key>other</key>
+			<string>Quedan %@ minutos este mes</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -344,6 +434,24 @@
 			<string>Quedan %@ artículos</string>
 		</dict>
 	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ artículos/mes</string>
+			<key>one</key>
+			<string>%@ artículo/mes</string>
+			<key>other</key>
+			<string>%@ artículos/mes</string>
+		</dict>
+	</dict>
 	<key>%@ stories/month</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -396,6 +504,24 @@
 			<string>%@ artículo sin leer</string>
 			<key>other</key>
 			<string>%@ artículos sin leer</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Te quedan %@ vistas previas de voz</string>
+			<key>one</key>
+			<string>Queda %@ vista previa de voz</string>
+			<key>other</key>
+			<string>Quedan %@ vistas previas de voz</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -488,6 +614,24 @@
 			<string>También publicado por %@ sitios</string>
 		</dict>
 	</dict>
+	<key>Back %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_back_seconds@</string>
+		<key>skip_back_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Retroceder %@ segundos</string>
+			<key>one</key>
+			<string>Retroceder %@ segundo</string>
+			<key>other</key>
+			<string>Retroceder %@ segundos</string>
+		</dict>
+	</dict>
 	<key>Delete %@ sites?</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -522,6 +666,24 @@
 			<string>Seguidor</string>
 			<key>other</key>
 			<string>Seguidores</string>
+		</dict>
+	</dict>
+	<key>Forward %@ seconds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@skip_forward_seconds@</string>
+		<key>skip_forward_seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Avanzar %@ segundos</string>
+			<key>one</key>
+			<string>Avanzar %@ segundo</string>
+			<key>other</key>
+			<string>Avanzar %@ segundos</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
@@ -792,6 +954,24 @@
 			<string>Estás suscrito a %@ sitio</string>
 			<key>other</key>
 			<string>Estás suscrito a %@ sitios</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>✓ %2$@ de %1$@ imágenes coinciden con este filtro</string>
+			<key>one</key>
+			<string>✓ %2$@ de %1$@ imágenes coincide con este filtro</string>
+			<key>other</key>
+			<string>✓ %2$@ de %1$@ imágenes coinciden con este filtro</string>
 		</dict>
 	</dict>
 </dict>
