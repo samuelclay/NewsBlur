@@ -173,10 +173,19 @@ class OpenAIProvider(LLMProvider):
         key = getattr(settings, "OPENAI_API_KEY", None)
         return bool(key) and key.startswith("sk-") and not _is_placeholder(key)
 
+    def _client(self):
+        return openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+
+    def _token_limit(self, max_tokens: int) -> dict:
+        # providers.py: OpenAI reasoning models (gpt-5-*) include internal reasoning
+        # tokens in max_completion_tokens, so we need a much higher limit to leave
+        # room for actual content output after reasoning.
+        return {"max_completion_tokens": max(max_tokens * 5, 16384)}
+
     def stream_response(
         self, messages: list, model_id: str, thinking_config: Optional[dict] = None
     ) -> Generator[str, None, None]:
-        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        client = self._client()
         kwargs = {
             "model": model_id,
             "messages": messages,
@@ -203,15 +212,11 @@ class OpenAIProvider(LLMProvider):
         max_tokens: int = 4096,
         thinking_config: Optional[dict] = None,
     ) -> str:
-        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        # providers.py: OpenAI reasoning models (gpt-5-*) include internal reasoning
-        # tokens in max_completion_tokens, so we need a much higher limit to leave
-        # room for actual content output after reasoning.
-        effective_max = max(max_tokens * 5, 16384)
+        client = self._client()
         kwargs = {
             "model": model_id,
             "messages": messages,
-            "max_completion_tokens": effective_max,
+            **self._token_limit(max_tokens),
         }
         if thinking_config and "reasoning_effort" in thinking_config:
             kwargs["extra_body"] = {"reasoning_effort": thinking_config["reasoning_effort"]}
@@ -241,165 +246,31 @@ class OpenAIProvider(LLMProvider):
         return f"OpenAI API error: {str(error)}"
 
 
-class OpenAICompatibleProvider(LLMProvider):
-    """Provider for OpenAI-compatible Chat Completions APIs.
-
-    Supported provider-specific settings are:
-
-    * ``base_url``: API endpoint, normally including ``/v1``.
-    * ``api_key``: inline key, taking precedence over ``api_key_setting``.
-    * ``api_key_setting``: Django setting containing the key. Defaults to
-      ``OPENAI_COMPATIBLE_API_KEY``; there is no fallback to the hosted OpenAI
-      key.
-    * ``default_headers``: additional request headers.
-    * ``stream_options``: defaults to ``{"include_usage": True}``; set to
-      ``False`` or ``{}`` to omit them.
-    * ``extra_body``: additional Chat Completions request fields.
-    * ``max_tokens_parameter``: non-streaming token limit field, defaulting to
-      ``max_tokens`` (some APIs use ``max_completion_tokens``).
-    * ``max_tokens_multiplier``: multiply the requested non-streaming token limit
-      by this value (defaults to 1).
-    * ``max_tokens_minimum``: lower bound applied after multiplying the
-      non-streaming limit, if set.
-    * ``thinking_config``: ``reasoning_effort``, when supported; overrides the same
-      field in `extra_body`.
-    * ``thinking_model_id``: alternate model ID for Ask AI's thinking mode.
-
-    Ask AI and Web Feed calls stream, so their requests do not use the
-    non-streaming token-limit options. Servers need to support the configured
-    Chat Completions fields; compatibility varies between implementations.
-
-    For servers without authentication, supply a nonempty dummy key such as
-    `unused-local-key`, distinct from the default value. The OpenAI SDK still
-    needs a key and sends it in the Authorization header; the server must accept
-    or ignore that header.
+class OpenAICompatibleProvider(OpenAIProvider):
+    """A server that speaks OpenAI's Chat Completions API, such as Ollama, vLLM, llama.cpp,
+    LM Studio or OpenRouter. Each ASK_AI_MODELS or BRIEFING_MODELS entry with
+    "provider": "openai_compatible" names its server with "base_url" and, when the server
+    checks one, its key with "api_key". apps/ask_ai/providers.py
     """
 
-    DEFAULT_API_KEY_SETTING = "OPENAI_COMPATIBLE_API_KEY"
-
-    def _api_key_setting(self) -> str:
-        return self.model_config.get("api_key_setting", self.DEFAULT_API_KEY_SETTING)
-
-    def _api_key(self) -> Optional[str]:
-        if self.model_config.get("api_key"):
-            return self.model_config["api_key"]
-        return getattr(settings, self._api_key_setting(), None)
+    # providers.py: The OpenAI SDK won't build a client without a key, and servers without
+    # authentication ignore it. Never fall back to OPENAI_API_KEY, which would hand the
+    # hosted key to a server it wasn't issued for.
+    UNAUTHENTICATED_API_KEY = "unused"
 
     def is_configured(self) -> bool:
-        key = self._api_key()
-        return bool(key) and not _is_placeholder(key)
+        return bool(self.model_config.get("base_url"))
 
     def _client(self):
-        kwargs = {"api_key": self._api_key()}
-        if self.model_config.get("base_url"):
-            kwargs["base_url"] = self.model_config["base_url"]
-        if self.model_config.get("default_headers"):
-            kwargs["default_headers"] = self.model_config["default_headers"]
-        return openai.OpenAI(**kwargs)
-
-    def _merged_extra_body(self, thinking_config: Optional[dict] = None) -> Optional[dict]:
-        extra_body = dict(self.model_config.get("extra_body") or {})
-        if thinking_config and "reasoning_effort" in thinking_config:
-            extra_body["reasoning_effort"] = thinking_config["reasoning_effort"]
-        return extra_body or None
-
-    def _max_tokens_kwargs(self, max_tokens: int) -> dict:
-        parameter = self.model_config.get("max_tokens_parameter", "max_tokens")
-        multiplier = self.model_config.get("max_tokens_multiplier", 1)
-        effective_max = max_tokens * multiplier
-        minimum = self.model_config.get("max_tokens_minimum")
-        if minimum:
-            effective_max = max(effective_max, minimum)
-        return {parameter: effective_max}
-
-    def _chat_completion_kwargs(
-        self,
-        messages: list,
-        model_id: str,
-        *,
-        stream: bool = False,
-        max_tokens: Optional[int] = None,
-        thinking_config: Optional[dict] = None,
-    ) -> dict:
-        kwargs = {
-            "model": model_id,
-            "messages": messages,
-        }
-        if stream:
-            kwargs["stream"] = True
-            stream_options = self.model_config.get(
-                "stream_options",
-                {"include_usage": True},
-            )
-            if stream_options:
-                kwargs["stream_options"] = stream_options
-        if max_tokens is not None:
-            kwargs.update(self._max_tokens_kwargs(max_tokens))
-        extra_body = self._merged_extra_body(thinking_config)
-        if extra_body:
-            kwargs["extra_body"] = extra_body
-        return kwargs
-
-    def stream_response(
-        self, messages: list, model_id: str, thinking_config: Optional[dict] = None
-    ) -> Generator[str, None, None]:
-        self._last_input_tokens = 0
-        self._last_output_tokens = 0
-        client = self._client()
-        kwargs = self._chat_completion_kwargs(
-            messages,
-            model_id,
-            stream=True,
-            thinking_config=thinking_config,
+        return openai.OpenAI(
+            base_url=self.model_config["base_url"],
+            api_key=self.model_config.get("api_key") or self.UNAUTHENTICATED_API_KEY,
         )
-        response = client.chat.completions.create(**kwargs)
 
-        for chunk in response:
-            # apps/ask_ai/providers.py: Some compatible servers omit usage entirely.
-            if chunk.usage:
-                self._last_input_tokens = chunk.usage.prompt_tokens
-                self._last_output_tokens = chunk.usage.completion_tokens
-            if chunk.choices and chunk.choices[0].delta.content:
-                yield chunk.choices[0].delta.content
-
-    def generate(
-        self,
-        messages: list,
-        model_id: str,
-        max_tokens: int = 4096,
-        thinking_config: Optional[dict] = None,
-    ) -> str:
-        self._last_input_tokens = 0
-        self._last_output_tokens = 0
-        client = self._client()
-        kwargs = self._chat_completion_kwargs(
-            messages, model_id, max_tokens=max_tokens, thinking_config=thinking_config
-        )
-        response = client.chat.completions.create(**kwargs)
-
-        if response.usage:
-            self._last_input_tokens = response.usage.prompt_tokens
-            self._last_output_tokens = response.usage.completion_tokens
-
-        return response.choices[0].message.content or ""
-
-    @property
-    def error_types(self) -> tuple:
-        return (openai.APITimeoutError, openai.APIError)
-
-    def format_error(self, error: Exception) -> str:
-        provider_name = self.model_config.get("vendor_display", "OpenAI-compatible")
-        api_key_setting = self._api_key_setting()
-        if isinstance(error, openai.APITimeoutError):
-            return f"{provider_name} API timeout"
-        if isinstance(error, openai.APIStatusError):
-            if error.status_code == 401:
-                return f"{provider_name} API key is invalid. Please check your {api_key_setting} setting."
-            if error.status_code == 403:
-                return f"{provider_name} API access denied. Your API key may be invalid or lack permissions. Please check your {api_key_setting} setting."
-            if error.status_code == 429:
-                return f"{provider_name} API rate limit exceeded. Please try again later."
-        return f"{provider_name} API error: {str(error)}"
+    def _token_limit(self, max_tokens: int) -> dict:
+        # providers.py: max_tokens is the limit compatible servers understand, and the 16384
+        # floor is for OpenAI's reasoning models, so the caller's limit goes through as is.
+        return {"max_tokens": max_tokens}
 
 
 class XAIProvider(LLMProvider):
@@ -601,25 +472,10 @@ PROVIDER_CLASSES = {
     "xai": XAIProvider,
 }
 
-OPENAI_COMPAT_CONFIG_KEYS = (
-    "api_key",
-    "api_key_setting",
-    "base_url",
-    "default_headers",
-    "stream_options",
-    "max_tokens_parameter",
-    "max_tokens_multiplier",
-    "max_tokens_minimum",
-    "extra_body",
-)
-
-
-def _copy_openai_compat_config(entry: dict, cfg: dict):
-    if entry.get("provider_class") != OpenAICompatibleProvider:
-        return
-    for config_key in OPENAI_COMPAT_CONFIG_KEYS:
-        if config_key in cfg:
-            entry[config_key] = cfg[config_key]
+# providers.py: Optional per-model settings copied from ASK_AI_MODELS and BRIEFING_MODELS.
+# base_url and api_key are for OpenAICompatibleProvider. get_models_for_frontend and
+# get_briefing_models_for_frontend leave them out, so they never reach a browser.
+OPTIONAL_MODEL_SETTINGS = ("thinking_config", "thinking_model_id", "base_url", "api_key")
 
 
 # Model registry: single source of truth for all model configuration.
@@ -708,7 +564,7 @@ def _load_models():
     Self-hosters can define ASK_AI_MODELS in settings as a dict of model configs:
         ASK_AI_MODELS = {
             "my-model": {
-                "provider": "openai",  # one of: anthropic, openai, google, xai
+                "provider": "openai",  # one of: anthropic, openai, google, xai, openai_compatible
                 "model_id": "gpt-4o-mini",
                 "display_name": "GPT-4o Mini",
                 "order": 1,
@@ -729,15 +585,13 @@ def _load_models():
             "provider_class": provider_class,
             "model_id": cfg["model_id"],
             "display_name": cfg.get("display_name", key),
-            "vendor": cfg.get("vendor", provider_slug),
-            "vendor_display": cfg.get("vendor_display", cfg.get("vendor", provider_slug).title()),
+            "vendor": provider_slug,
+            "vendor_display": cfg.get("vendor_display", provider_slug.title()),
             "order": cfg.get("order", 99),
         }
-        if "thinking_config" in cfg:
-            entry["thinking_config"] = cfg["thinking_config"]
-        if "thinking_model_id" in cfg:
-            entry["thinking_model_id"] = cfg["thinking_model_id"]
-        _copy_openai_compat_config(entry, cfg)
+        for name in OPTIONAL_MODEL_SETTINGS:
+            if name in cfg:
+                entry[name] = cfg[name]
         models[key] = entry
     return models if models else _DEFAULT_MODELS
 
@@ -875,15 +729,13 @@ def _load_briefing_models():
             "provider_class": provider_class,
             "model_id": cfg["model_id"],
             "display_name": cfg.get("display_name", key),
-            "vendor": cfg.get("vendor", provider_slug),
-            "vendor_display": cfg.get("vendor_display", cfg.get("vendor", provider_slug).title()),
+            "vendor": provider_slug,
+            "vendor_display": cfg.get("vendor_display", provider_slug.title()),
             "order": cfg.get("order", 99),
         }
-        if "thinking_config" in cfg:
-            entry["thinking_config"] = cfg["thinking_config"]
-        if "thinking_model_id" in cfg:
-            entry["thinking_model_id"] = cfg["thinking_model_id"]
-        _copy_openai_compat_config(entry, cfg)
+        for name in OPTIONAL_MODEL_SETTINGS:
+            if name in cfg:
+                entry[name] = cfg[name]
         models[key] = entry
     return models if models else _DEFAULT_BRIEFING_MODELS
 

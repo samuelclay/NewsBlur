@@ -536,23 +536,24 @@ class Test_Summary(TestCase):
         BRIEFING_MODELS={
             "local": {
                 "provider": "openai_compatible",
-                "model_id": "local-model",
-                "vendor": "local",
-                "api_key": "unused-local-key",
-                "base_url": "http://inference:8080/v1",
-                "thinking_config": {"reasoning_effort": "medium"},
+                "model_id": "qwen2.5:1.5b",
+                "base_url": "http://ollama:11434/v1",
+                "api_key": "local-server-key",
             }
         }
     )
     @patch("apps.briefing.summary.LLMCostTracker")
     @patch("apps.ask_ai.providers.openai.OpenAI")
-    def test_summary_uses_custom_provider_with_thinking(self, mock_client, mock_cost):
+    def test_summary_from_an_openai_compatible_server(self, mock_client, mock_cost):
+        """A self-hosted BRIEFING_MODELS entry writes the briefing through its own server."""
         from apps.briefing.summary import generate_briefing_summary
 
         mock_client.return_value.chat.completions.create.return_value = SimpleNamespace(
             usage=SimpleNamespace(prompt_tokens=31, completion_tokens=11),
             choices=[
-                SimpleNamespace(message=SimpleNamespace(content='<div class="NB-briefing-summary">Local</div>'))
+                SimpleNamespace(
+                    message=SimpleNamespace(content='<div class="NB-briefing-summary">Local</div>')
+                )
             ],
         )
         feed = Feed.objects.create(
@@ -561,24 +562,20 @@ class Test_Summary(TestCase):
         story = self._make_summary_story(feed, "Test Story", "Some content", "local-summary-guid")
         try:
             with patch.object(providers, "BRIEFING_MODELS", providers._load_briefing_models()):
-                html, metadata = generate_briefing_summary(
+                result = generate_briefing_summary(
                     self.id(), [self._scored_from_story(story)], datetime.datetime.utcnow(), model="local"
                 )
+            self.assertIsNotNone(result)
+            html, metadata = result
             self.assertIn("Local", html)
             self.assertEqual(metadata["model_name"], "local")
-            self.assertEqual(metadata["input_tokens"], 31)
-            self.assertEqual(metadata["output_tokens"], 11)
-            mock_client.assert_called_once_with(
-                api_key="unused-local-key", base_url="http://inference:8080/v1"
-            )
-            mock_client.return_value.chat.completions.create.assert_called_once()
-            kwargs = mock_client.return_value.chat.completions.create.call_args.kwargs
-            self.assertEqual(kwargs["model"], "local-model")
-            self.assertEqual(kwargs["extra_body"], {"reasoning_effort": "medium"})
-            self.assertGreater(kwargs["max_tokens"], 0)
-            self.assertNotIn("max_completion_tokens", kwargs)
-            self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "local")
-            self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "local-model")
+            self.assertEqual((metadata["input_tokens"], metadata["output_tokens"]), (31, 11))
+            mock_client.assert_called_once_with(base_url="http://ollama:11434/v1", api_key="local-server-key")
+            request = mock_client.return_value.chat.completions.create.call_args.kwargs
+            self.assertEqual(request["model"], "qwen2.5:1.5b")
+            # tests.py: The briefing's own limit, not the 16384 floor hosted OpenAI gets.
+            self.assertNotIn("max_completion_tokens", request)
+            self.assertLessEqual(request["max_tokens"], 4096)
         finally:
             MStory.objects(story_hash=story.story_hash).delete()
             feed.delete()
