@@ -172,6 +172,18 @@ class Test_AskAIOpenAICompatible(AskAITaskTestCase):
             (cost["model"], cost["input_tokens"], cost["output_tokens"]), ("qwen2.5:1.5b", 42, 7)
         )
 
+    @override_settings(ASK_AI_MODEL="anthropic", ASK_AI_MODELS={"local": LOCAL_MODEL})
+    def test_ask_ai_model_left_at_anthropic_answers_with_a_listed_model(self):
+        """Listing only your own models in ASK_AI_MODELS, without also changing ASK_AI_MODEL,
+        still answers."""
+        self._load_registry_from_settings()
+
+        result = AskAIQuestion(user_id=1, story_hash="1:abc123", question_id="sentence")
+
+        self.assertEqual(result["code"], 1)
+        request = self.openai_client.return_value.chat.completions.create.call_args.kwargs
+        self.assertEqual(request["model"], "qwen2.5:1.5b")
+
     @override_settings(
         OPENAI_API_KEY="sk-hosted-openai-key",
         ASK_AI_MODELS={"local": LOCAL_MODEL, "router": ROUTER_MODEL},

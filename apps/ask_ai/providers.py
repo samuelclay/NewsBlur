@@ -558,6 +558,15 @@ def _resolve_key(model_name, registry):
     return MODEL_ALIASES.get(model_name, model_name)
 
 
+def _valid_registry_default(model_name, registry, fallback="openai"):
+    model_name = _resolve_key(model_name, registry)
+    if model_name in registry:
+        return model_name
+    if fallback in registry:
+        return fallback
+    return next(iter(registry))
+
+
 def _load_models():
     """Load models, applying settings override if ASK_AI_MODELS is defined.
 
@@ -598,7 +607,9 @@ def _load_models():
 
 MODELS = _load_models()
 VALID_MODELS = list(MODELS.keys())
-DEFAULT_MODEL = _resolve_key(getattr(settings, "ASK_AI_MODEL", "anthropic"), MODELS)
+DEFAULT_MODEL = _valid_registry_default(
+    getattr(settings, "ASK_AI_MODEL", "anthropic"), MODELS, fallback="anthropic"
+)
 
 # MODEL_VENDORS includes both current and historical models for metrics tracking.
 # When retiring a model, remove it from MODELS above but keep it here.
@@ -742,15 +753,6 @@ def _load_briefing_models():
 
 BRIEFING_MODELS = _load_briefing_models()
 VALID_BRIEFING_MODELS = list(BRIEFING_MODELS.keys())
-
-
-def _valid_registry_default(model_name, registry, fallback="openai"):
-    model_name = _resolve_key(model_name, registry)
-    if model_name in registry:
-        return model_name
-    if fallback in registry:
-        return fallback
-    return next(iter(registry))
 
 
 DEFAULT_BRIEFING_MODEL = _valid_registry_default(
