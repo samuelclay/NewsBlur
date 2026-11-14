@@ -8,6 +8,7 @@ import kotlin.math.abs
 /** ReaderTapGestures.kt ignores drags, pinches, and canceled touches before recognizing a double tap. */
 class ReaderTapGestures(
     private val view: View,
+    private val prepareSingleTap: ((Float, Float) -> Runnable)? = null,
     private val perform: (Boolean) -> Boolean,
 ) : View.OnTouchListener {
     private val slop = ViewConfiguration.get(view.context).scaledTouchSlop
@@ -25,6 +26,9 @@ class ReaderTapGestures(
     private var secondY = 0f
     private var firstPointerId = -1
     private var secondPointerId = -1
+    private var pendingSingleTap: Runnable? = null
+    var touchSequence = 0L
+        private set
 
     override fun onTouch(
         v: View,
@@ -32,6 +36,9 @@ class ReaderTapGestures(
     ): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                touchSequence++
+                pendingSingleTap?.let { view.removeCallbacks(it) }
+                pendingSingleTap = null
                 downX = event.x
                 downY = event.y
                 downTime = event.eventTime
@@ -52,28 +59,45 @@ class ReaderTapGestures(
             }
             MotionEvent.ACTION_MOVE, MotionEvent.ACTION_POINTER_UP -> checkMovement(event)
             MotionEvent.ACTION_CANCEL -> {
+                touchSequence++
+                pendingSingleTap?.let { view.removeCallbacks(it) }
+                pendingSingleTap = null
                 moved = true
                 priorTime = 0
             }
             MotionEvent.ACTION_UP -> {
                 checkMovement(event)
-                if (moved || event.eventTime - downTime > ViewConfiguration.getTapTimeout() * 2) {
+                val duration = event.eventTime - downTime
+                if (moved || duration >= ViewConfiguration.getLongPressTimeout()) {
                     priorTime = 0
                     return false
                 }
+                val fastTap = duration <= ViewConfiguration.getTapTimeout() * 2
                 val double =
-                    priorTime != 0L &&
+                    fastTap && priorTime != 0L &&
                         downTime - priorTime <= ViewConfiguration.getDoubleTapTimeout() &&
                         priorFingers == fingers &&
                         abs(downX - priorX) < doubleSlop &&
                         abs(downY - priorY) < doubleSlop
-                priorTime = event.eventTime
+                priorTime = if (fastTap) event.eventTime else 0L
                 priorX = downX
                 priorY = downY
                 priorFingers = fingers
                 if (double) {
                     priorTime = 0
                     return perform(fingers == 2)
+                }
+                if (fingers == 1) {
+                    // ReaderTapGestures.kt captures the document before waiting for a possible second tap.
+                    prepareSingleTap?.invoke(event.x, event.y)?.let { action ->
+                        val sequence = touchSequence
+                        val confirmed = Runnable {
+                            pendingSingleTap = null
+                            if (sequence == touchSequence) action.run()
+                        }
+                        pendingSingleTap = confirmed
+                        view.postDelayed(confirmed, ViewConfiguration.getDoubleTapTimeout().toLong())
+                    }
                 }
             }
         }

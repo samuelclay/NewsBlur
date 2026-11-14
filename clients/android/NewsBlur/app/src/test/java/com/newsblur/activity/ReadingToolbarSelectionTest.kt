@@ -7,6 +7,7 @@ import com.newsblur.databinding.ActivityReadingBinding
 import com.newsblur.util.UIUtils
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager.widget.ViewPager
 import com.newsblur.database.ReadingAdapter
 import com.newsblur.util.executeAsyncTask
 import io.mockk.every
@@ -19,6 +20,75 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 class ReadingToolbarSelectionTest {
+    @Test
+    fun test_canceled_horizontal_peek_restores_hidden_traversal_without_expanding_toolbar() {
+        mockkStatic(UIUtils::class)
+        try {
+            val reading = mockk<Reading>(relaxed = true)
+            val binding = mockk<ActivityReadingBinding>(relaxed = true)
+            val left = mockk<ConstraintLayout>(relaxed = true)
+            val right = mockk<ConstraintLayout>(relaxed = true)
+            val pager = mockk<ViewPager>(relaxed = true)
+            for ((name, value) in mapOf(
+                "readingOverlayLeftGroup" to left,
+                "readingOverlayRightGroup" to right,
+                "readingOverlaySend" to mockk<AppCompatImageButton>(relaxed = true),
+                "readingOverlayLeftSeparator" to mockk<View>(relaxed = true),
+            )) {
+                ActivityReadingBinding::class.java.getDeclaredField(name).apply {
+                    isAccessible = true
+                    set(binding, value)
+                }
+            }
+            for ((name, value) in mapOf("binding" to binding, "pager" to pager, "toolbarVisibleFraction" to 0f)) {
+                Reading::class.java.getDeclaredField(name).apply {
+                    isAccessible = true
+                    set(reading, value)
+                }
+            }
+            every { pager.currentItem } returns 3
+            every { binding.root.measuredWidth } returns 0
+            every { reading.runOnUiThread(any()) } answers { firstArg<Runnable>().run() }
+            every { reading.onPageScrollStateChanged(any()) } answers { callOriginal() }
+            every { reading.onPageSelected(any()) } answers { callOriginal() }
+            every { reading["revealTraversalControls"]() } answers { callOriginal() }
+            every { reading.onReaderScroll(any()) } answers { callOriginal() }
+            every { reading.enableOverlays() } answers { callOriginal() }
+            every { reading["setOverlayAlpha"](any<Float>()) } answers { callOriginal() }
+            every { UIUtils.setViewAlpha(any(), any(), any()) } returns Unit
+            every { UIUtils.dp2px(reading, any<Int>()) } answers { secondArg<Int>() }
+
+            reading.onPageScrollStateChanged(ViewPager.SCROLL_STATE_DRAGGING)
+            reading.onPageScrollStateChanged(ViewPager.SCROLL_STATE_SETTLING)
+            reading.onPageScrollStateChanged(ViewPager.SCROLL_STATE_IDLE)
+            reading.enableOverlays()
+
+            verify { UIUtils.setViewAlpha(left, 1f, true) }
+            verify { UIUtils.setViewAlpha(right, 1f, true) }
+            org.junit.Assert.assertEquals(0f, Reading::class.java.getDeclaredField("toolbarVisibleFraction").apply {
+                isAccessible = true
+            }.getFloat(reading))
+            reading.onReaderScroll(20)
+            verify { UIUtils.setViewAlpha(left, 0.75f, true) }
+            reading.onReaderScroll(60)
+            verify { UIUtils.setViewAlpha(left, 0f, true) }
+            reading.onPageScrollStateChanged(ViewPager.SCROLL_STATE_DRAGGING)
+            every { pager.currentItem } returns 4
+            reading.onPageScrollStateChanged(ViewPager.SCROLL_STATE_IDLE)
+            val revealFraction = Reading::class.java.getDeclaredField("traversalRevealFraction").apply {
+                isAccessible = true
+            }
+            org.junit.Assert.assertEquals(0f, revealFraction.getFloat(reading))
+            reading.onPageScrollStateChanged(ViewPager.SCROLL_STATE_DRAGGING)
+            reading.onPageScrollStateChanged(ViewPager.SCROLL_STATE_IDLE)
+            org.junit.Assert.assertEquals(1f, revealFraction.getFloat(reading))
+            reading.onPageSelected(5)
+            org.junit.Assert.assertEquals(0f, revealFraction.getFloat(reading))
+        } finally {
+            unmockkStatic(UIUtils::class)
+        }
+    }
+
     @Test
     fun fullscreenExitRestoresCurrentControlVisibilityWithoutExpandingToolbar() {
         mockkStatic(UIUtils::class)

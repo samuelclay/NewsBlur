@@ -2423,34 +2423,57 @@ class ReadingItemFragment :
         webview.setBackgroundColor(Color.TRANSPARENT)
         articleReveal.prepare(webview)
         syncStoryLoadingUi()
-        webview.setOnTouchListener(
-            com.newsblur.view.ReaderTapGestures(webview) { twoFingers ->
-                val action =
-                    if (twoFingers) {
-                        prefsRepo.getReaderGesture("reader_two_finger_double_tap", "text")
-                    } else {
-                        prefsRepo.getReaderGesture("reader_double_tap", "original")
-                    }
-                if (webview.hitTestResult?.type != HitTestResult.UNKNOWN_TYPE) {
-                    false
+        lateinit var gestures: com.newsblur.view.ReaderTapGestures
+        gestures = com.newsblur.view.ReaderTapGestures(webview, prepareSingleTap = { x, y ->
+            val generation = webview.documentGeneration
+            val touchSequence = gestures.touchSequence
+            var confirmed = false
+            var blank = false
+            fun revealIfConfirmed() {
+                if (confirmed && blank && gestures.touchSequence == touchSequence) onBlankStoryTap(webview, generation)
+            }
+            // ReadingItemFragment.kt captures the hit before a link or script can move the page during confirmation.
+            webview.evaluateJavascript("NB_is_blank_story_tap_at($x, $y, ${webview.width});") { result ->
+                blank = result == "true"
+                revealIfConfirmed()
+            }
+            Runnable {
+                confirmed = true
+                revealIfConfirmed()
+            }
+        }) { twoFingers ->
+            val action =
+                if (twoFingers) {
+                    prefsRepo.getReaderGesture("reader_two_finger_double_tap", "text")
                 } else {
-                    when (action) {
-                        "original" -> openBrowser()
-                        "text" -> switchSelectedViewMode()
-                        "unread" -> story?.let { feedUtils.markStoryUnread(it, requireContext()) }
-                        "save" -> story?.let { feedUtils.setStorySaved(it, true, requireContext(), emptyList(), emptyList()) }
-                        "listen" -> listenToStory()
-                    }
-                    action != "none"
+                    prefsRepo.getReaderGesture("reader_double_tap", "original")
                 }
-            },
-        )
+            if (webview.hitTestResult?.type != HitTestResult.UNKNOWN_TYPE) {
+                false
+            } else {
+                when (action) {
+                    "original" -> openBrowser()
+                    "text" -> switchSelectedViewMode()
+                    "unread" -> story?.let { feedUtils.markStoryUnread(it, requireContext()) }
+                    "save" -> story?.let { feedUtils.setStorySaved(it, true, requireContext(), emptyList(), emptyList()) }
+                    "listen" -> listenToStory()
+                }
+                action != "none"
+            }
+        }
+        webview.setOnTouchListener(gestures)
 
         webview.fragment = this
         webview.activity = readingActivity
         webview.setWebviewActionDelegate { action, selectedText ->
             handleWebviewAction(action, selectedText)
         }
+    }
+
+    private fun onBlankStoryTap(webview: NewsblurWebview, generation: Long) {
+        if (readingWebview !== webview || view == null || !isResumed || storyImageViewer != null ||
+            generation != webview.documentGeneration) return
+        (activity as? Reading)?.onStoryBlankTap(this)
     }
 
     fun openStoryImage(webview: NewsblurWebview, json: String) {

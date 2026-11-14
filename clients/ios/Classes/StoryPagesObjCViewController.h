@@ -103,6 +103,7 @@
 @property (nonatomic) BOOL temporarilyMarkedUnread;
 @property (nonatomic) CGFloat navBarFadeAccumulator;
 @property (nonatomic) CGFloat traverseFadeAccumulator;
+@property (nonatomic) CGFloat traverseUpwardAccumulator;
 @property (nonatomic, strong) StoryToolbar *storyToolbar;
 @property (nonatomic, strong) StoryToolbarScrollHandler *toolbarScrollHandler;
 

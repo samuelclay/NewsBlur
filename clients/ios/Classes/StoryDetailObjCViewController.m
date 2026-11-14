@@ -237,10 +237,12 @@
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
         if (inDoubleTap) return;
+        NSUInteger generation = self.storyLoadGeneration;
         // storyDetailView.js opens article images without triggering the reader's chrome gesture.
         CGPoint offset = self.webView.scrollView.contentOffset;
         [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblurOpenImageAt(%f, %f, %f, %f, %f)",
                                          pt.x, pt.y, offset.x, offset.y, self.webView.bounds.size.width] completionHandler:^(id openedImage, NSError *error) {
+            if (generation != self.storyLoadGeneration || self.appDelegate.storyPagesViewController.currentPage != self) return;
             if ([openedImage isKindOfClass:NSNumber.class] && [openedImage boolValue]) return;
             if (![self isKindOfClass:StoryDetailViewController.class]) {
                 [self continueTapAtPoint:pt];
@@ -248,29 +250,21 @@
             }
             // Listen/ListenStoryBridge.swift jumps playback to a tapped paragraph of the story being read aloud.
             [(StoryDetailViewController *)self listenHandleTapAt:pt completion:^(BOOL handled) {
-                if (!handled) [self continueTapAtPoint:pt];
+                if (!handled && generation == self.storyLoadGeneration && self.appDelegate.storyPagesViewController.currentPage == self) {
+                    [self continueTapAtPoint:pt];
+                }
             }];
         }];
     }
 }
 
 - (void)continueTapAtPoint:(CGPoint)pt {
-    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-        // Special case to handle the story title, Train, Save, and Share buttons.
-        if ([self isTag:tagName equalTo:@"DIV"]) {
-            [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
-                [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
-                    if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
-                        [self.appDelegate.storyPagesViewController tappedStory];
-                    }
-                }];
-            }];
-
-            return;
-        }
-
-        // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
-        if (![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
+    NSUInteger generation = self.storyLoadGeneration;
+    CGPoint offset = self.webView.scrollView.contentOffset;
+    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblur_is_blank_story_tap_at(%f, %f, %f, %f, %f)",
+                                     pt.x, pt.y, offset.x, offset.y, self.webView.bounds.size.width] completionHandler:^(id blank, NSError *error) {
+        if (generation == self.storyLoadGeneration && self.appDelegate.storyPagesViewController.currentPage == self &&
+            [self canOpenStoryImageForAccessibility:NO] && [blank isKindOfClass:NSNumber.class] && [blank boolValue]) {
             [self.appDelegate.storyPagesViewController tappedStory];
         }
     }];
@@ -2484,12 +2478,26 @@
             [self refreshHeader];
         }
 
+        StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+        CGFloat revealDelta = deltaY;
+        if (deltaY > 0 || atTopForFade) {
+            pagesVC.traverseUpwardAccumulator = 0.0;
+        } else if (deltaY < 0) {
+            // StoryDetailObjCViewController.m shares the toolbar's upward intent threshold with traversal on every platform.
+            CGFloat threshold = pagesVC.toolbarScrollHandler ? pagesVC.toolbarScrollHandler.showThreshold : 20.0;
+            if (self.lastDragDirectionDown) {
+                revealDelta = 0;
+            } else {
+                pagesVC.traverseUpwardAccumulator += -deltaY;
+                if (insetAdjustedTop >= 50 && pagesVC.traverseUpwardAccumulator <= threshold) revealDelta = 0;
+            }
+        }
+
 #if !TARGET_OS_MACCATALYST
         if (!atTopForFade) {
             self.hasScrolledAwayFromTop = YES;
         }
 
-        StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
         if (pagesVC.isCustomToolbarActive) {
             // Scroll-based toolbar: translate toolbar with scroll deltas
             // Only reset toolbar when user actively scrolls to top (not on programmatic/bounce scrolls)
@@ -2522,7 +2530,7 @@
                 // At top (first load) or at bottom: hold current nav bar state
             } else if (self.canHideNavigationBar) {
                 CGFloat fadeDistance = 80.0;
-                CGFloat newAccum = pagesVC.navBarFadeAccumulator + deltaY;
+                CGFloat newAccum = pagesVC.navBarFadeAccumulator + revealDelta;
                 newAccum = MAX(0.0, MIN(fadeDistance, newAccum));
                 pagesVC.navBarFadeAccumulator = newAccum;
                 CGFloat alpha = 1.0 - (newAccum / fadeDistance);
@@ -2539,11 +2547,10 @@
         }
 
         if (!atTopForFade && !atBottom && !singlePage) {
-            StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
             CGFloat traverseFadeDistance = 80.0;
             BOOL isUserTraverseScroll = self.isUserScrolling && (isUserDragging || scrollView.isDecelerating);
             CGFloat newAccum = [StoryTraverseFadeDecision accumulatorWithCurrentAccumulator:pagesVC.traverseFadeAccumulator
-                                                                                     deltaY:deltaY
+                                                                                     deltaY:revealDelta
                                                                                fadeDistance:traverseFadeDistance
                                                                                isUserScroll:isUserTraverseScroll];
             pagesVC.traverseFadeAccumulator = newAccum;
