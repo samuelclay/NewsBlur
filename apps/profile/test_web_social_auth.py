@@ -405,6 +405,7 @@ class Test_WebSocialAuthentication(TransactionTestCase):
         self.assertEqual(SocialIdentity.objects.get().user_id, user.pk)
         self.assertEqual(User.objects.get().email, "account@example.com")
 
+    @override_settings(NEWSBLUR_URL="https://www.newsblur.com")
     def test_auth_pages_do_not_block_parsing_on_external_font_stylesheets(self):
         # test_web_social_auth.py reproduces stalled typography CSS blocking base.html's body script.
         for path in ("/account/login", "/account/social/continue"):
@@ -428,6 +429,20 @@ class Test_WebSocialAuthentication(TransactionTestCase):
                             'rel="stylesheet"' in fallback and href in fallback for fallback in fallback_links
                         )
                     )
+
+    def test_self_hosted_login_page_never_asks_typography_for_fonts(self):
+        # test_web_social_auth.py: typography.com answers a 403 to any site but newsblur.com, so a
+        # self-hosted NEWSBLUR_URL renders the fallback font stacks without the request.
+        for newsblur_url, loads_fonts in (
+            ("https://www.newsblur.com", True),
+            ("https://staging.newsblur.com", True),
+            ("https://localhost", False),
+            ("https://news.example.org", False),
+            ("https://mynewsblur.com", False),
+        ):
+            with self.subTest(newsblur_url=newsblur_url), override_settings(NEWSBLUR_URL=newsblur_url):
+                html = self.client.get("/account/login").content.decode()
+                self.assertEqual("cloud.typography.com" in html, loads_fonts)
 
     def test_apple_post_without_session_cookie_returns_to_initiating_browser(self):
         params = self.start("apple")
