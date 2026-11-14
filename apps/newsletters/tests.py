@@ -1,5 +1,6 @@
 """Tests for email newsletter ingestion."""
 
+import html
 import json
 import uuid
 from datetime import datetime
@@ -330,6 +331,56 @@ Original plain newsletter body""",
         self.assertEqual(story.story_title, "May the 4th Be With You!")
         self.assertIn("Original plain newsletter body", story.story_content_str)
         self.assertNotIn("Forwarded Message", story.story_content_str)
+
+    def test_text_part_holding_escaped_html_source_renders_as_html(self):
+        # POLITICO Europe's Playbooks forwarded from Gmail arrive with the text part set to
+        # the HTML source escaped twice, plus a plain footer.
+        newsletter_html = (
+            '<div id="pl-newsletter-header"><p style="max-height: 0px;overflow: hidden;">'
+            "Das POLITICO-Briefing zu den wichtigsten Ereignissen des Tages in Berlin.</p>"
+            '<table border="0" width="100%"><tbody><tr><td align="center">'
+            '<img src="https://www.politico.eu/wp-content/uploads/2024/09/30/nl-header.png" '
+            'alt="Berlin Playbook" width="600" /></td></tr></tbody></table></div>'
+            '<p>Guten Morgen. <a href="https://dmp.politico.eu/?destination=online&amp;s=1">'
+            "Online lesen</a></p>"
+        )
+        newsletter_text = (
+            html.escape(html.escape(newsletter_html))
+            + "\n\nUnsubscribe from all emails : https://api.politico.eu/unsubscribe/abc\nPOLITICO SRL"
+        )
+
+        for suffix, html_part in [("with-html-part", newsletter_html), ("without-html-part", "")]:
+            with self.subTest(suffix):
+                response = self.client.post(
+                    reverse("newsletter-receive"),
+                    data=json.dumps(
+                        {
+                            "envelope": {"recipient": "newsletteruser-abc123@newsletters.newsblur.com"},
+                            "from": {
+                                "name": "POLITICO Berlin Playbook",
+                                "email": "berlinplaybook@politico.eu",
+                            },
+                            "subject": "Die Podcast-Highlights der Woche",
+                            "html": html_part,
+                            "text": newsletter_text,
+                            "timestamp": 1700000000,
+                            "message-id": "%s-%s" % (self.guid_prefix, suffix),
+                            "headers": {},
+                        }
+                    ),
+                    content_type="application/json",
+                )
+
+                self.assertEqual(response.status_code, 200)
+                story = MStory.objects.get(story_guid="%s-%s" % (self.guid_prefix, suffix))
+                content = story.story_content_str
+                self.assertIn("<table", content)
+                self.assertIn(
+                    'src="https://www.politico.eu/wp-content/uploads/2024/09/30/nl-header.png"', content
+                )
+                self.assertIn('href="https://dmp.politico.eu/?destination=online&amp;s=1"', content)
+                self.assertNotIn("&lt;", content)
+                self.assertNotIn("&amp;lt;", content)
 
 
 class Test_EmailNewsletterMergeRace(NewsletterFixture, TransactionTestCase):
