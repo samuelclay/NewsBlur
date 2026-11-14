@@ -45,6 +45,42 @@ class FeedsSidebarResizePanGestureRecognizer: UIPanGestureRecognizer {
 
 /// Subclass of `UISplitViewController` to enable customizations.
 class SplitViewController: UISplitViewController {
+    var readerNavigationController: UINavigationController? {
+#if targetEnvironment(macCatalyst)
+        if let container = macReaderContainer {
+            return container.readerNavigationController
+        }
+#endif
+        return viewController(for: .secondary) as? UINavigationController
+    }
+
+#if targetEnvironment(macCatalyst)
+    private var macReaderContainer: MacReaderContainerViewController? {
+        let secondary = viewController(for: .secondary)
+        return (secondary as? MacReaderContainerViewController)
+            ?? ((secondary as? UINavigationController)?.viewControllers.first as? MacReaderContainerViewController)
+    }
+
+    func installMacReaderChrome() {
+        guard let reader = viewController(for: .secondary) as? UINavigationController else { return }
+        setViewController(nil, for: .secondary)
+        let container = MacReaderContainerViewController(reader: reader)
+        let navigation = UINavigationController(rootViewController: container)
+        navigation.setNavigationBarHidden(true, animated: false)
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        navigation.navigationBar.standardAppearance = appearance
+        navigation.navigationBar.scrollEdgeAppearance = appearance
+        MacReaderChrome.clearBackground(of: navigation.view)
+        MacReaderChrome.clearBackground(of: navigation.navigationBar)
+        setViewController(navigation, for: .secondary)
+        primaryBackgroundStyle = .none
+        MacReaderChrome.clearBackground(of: view)
+        MacReaderChrome.clearBackground(of: view.window)
+        updateTheme()
+    }
+#endif
+
     private var ownsCompactPhoneWidth = false
     private var previousPhoneWidthOverride: UIUserInterfaceSizeClass?
     private var isUpdatingPhoneWidthPolicy = false
@@ -142,7 +178,14 @@ class SplitViewController: UISplitViewController {
 
     /// Update the theme of the split view controller.
     @objc func updateTheme() {
+#if targetEnvironment(macCatalyst)
+        headerView.backgroundColor = .clear
+        MacReaderChrome.clearBackground(of: viewIfLoaded)
+        macReaderContainer?.updateTheme()
+        MacReaderChrome.updateTheme()
+#else
         headerView.backgroundColor = ThemeManager.color(fromRGB: [0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222])
+#endif
         feedsDividerView.updateTheme()
         setNeedsStatusBarAppearanceUpdate()
         // SplitViewController.swift carries theme changes to the Listen mini player and sheets.
@@ -217,7 +260,7 @@ class SplitViewController: UISplitViewController {
         updateDuoSidebarWidthPolicy()
 
         // SplitViewController.swift reconciles embedded panes after UIKit resolves the actual fold-dependent display mode.
-        let detailNavigation = viewController(for: .secondary) as? UINavigationController
+        let detailNavigation = readerNavigationController
         (detailNavigation?.viewControllers.first as? DetailViewController)?.updateResolvedFeedSidebarLayout()
         updateFeedsDividerPosition()
         updateDuoEmptyReaderProtection()
