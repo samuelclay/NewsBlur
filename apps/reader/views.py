@@ -2410,20 +2410,15 @@ def load_read_stories(request):
             has_more = False
             message = "You must be a premium subscriber to search."
     else:
-        # Ask for one story past the page: if it comes back, there is more. Oldest-first
-        # pages count back from the end of the list, where one more would shift the
-        # page, so there a full page means "maybe more".
-        extra = 0 if order == "oldest" else 1
         story_hashes = RUserStory.get_read_stories(
             user.pk,
             offset=offset,
-            limit=limit + extra,
+            limit=limit,
             order=order,
             date_filter_start=date_filter_start_utc,
             date_filter_end=date_filter_end_utc,
         )
-        has_more = len(story_hashes) >= limit + extra
-        story_hashes = story_hashes[:limit]
+        has_more = len(story_hashes) >= limit
         mstories = MStory.objects(story_hash__in=story_hashes).order_by()
         stories = Feed.format_stories(mstories)
         stories = sorted(

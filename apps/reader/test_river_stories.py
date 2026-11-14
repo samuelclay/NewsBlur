@@ -2513,3 +2513,32 @@ class Test_RiverStories(TransactionTestCase):
             (river_page,) = self._load_river_pages({"limit": 1}, pages=1, first_page=page)
             self.assertEqual(feed_page["has_more"], expected, f"single feed page {page}")
             self.assertEqual(river_page["has_more"], expected, f"river page {page}")
+
+    def _load_pages(self, url, params, pages):
+        """GET pages 1 to `pages` and return each page's story hashes and has_more."""
+        page_hashes, has_more = [], []
+        for page in range(1, pages + 1):
+            response = self.client.get(url, {**params, "page": page})
+            self.assertEqual(response.status_code, 200)
+            content = json.decode(response.content)
+            page_hashes.append([story["story_hash"] for story in content["stories"]])
+            has_more.append(content.get("has_more"))
+        return page_hashes, has_more
+
+    def test_read_stories__pages_tile_in_both_orders(self):
+        """Every read story lands on exactly one page, newest first and oldest first."""
+        self.client.login(username="conesus", password="test")
+        read_hashes = self.test_story_hashes[:7]
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        key = f"lRS:{self.user.pk}"
+        # lRS is newest first, the way RUserStory.mark_read pushes it (apps/reader/models.py).
+        r.delete(key)
+        r.rpush(key, *read_hashes)
+        self.addCleanup(r.delete, key)
+
+        for order, expected in (("newest", read_hashes), ("oldest", read_hashes[::-1])):
+            pages, has_more = self._load_pages(
+                reverse("load-read-stories"), {"limit": 3, "order": order}, pages=3
+            )
+            self.assertEqual(pages, [expected[:3], expected[3:6], expected[6:]], order)
+            self.assertEqual(has_more, [True, True, False], order)
