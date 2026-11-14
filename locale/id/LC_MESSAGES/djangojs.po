@@ -237,6 +237,12 @@ msgstr[0] "%(count)s feed"
 msgstr[1] "%(count)s feed"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "%(count)s feed sejauh ini"
+msgstr[1] "%(count)s feed sejauh ini"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s pengikut"
@@ -585,6 +591,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "%(remaining)s dari %(limit)s pencarian tersisa hari ini"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1288,6 +1302,9 @@ msgstr "Domain yang Diizinkan"
 msgid "Alphabetical"
 msgstr "Urut abjad"
 
+msgid "Already in NewsBlur’s feed index"
+msgstr "Sudah ada di indeks feed NewsBlur"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
@@ -1583,6 +1600,9 @@ msgstr "Berdasarkan minat Anda"
 msgid "Begin Training"
 msgstr "Mulai Pelatihan"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Catatan perjalanan bersepeda jarak jauh dan tur sepeda"
+
 msgid "Bio"
 msgstr "Bio"
 
@@ -1631,6 +1651,9 @@ msgstr "Judul Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Ulasan buku fiksi ilmiah dan fantasi terbaru"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
@@ -2313,6 +2336,9 @@ msgstr "Menghapus..."
 msgid "Delivery"
 msgstr "Penyampaian"
 
+msgid "Describe"
+msgstr "Jelaskan"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Jelaskan artikel yang Anda cari, dan kami akan menganalisis ulang halaman untuk menemukannya."
 
@@ -2321,11 +2347,20 @@ msgstr ""
 "Jelaskan sebuah topik dan AI akan menilai setiap artikel berdasarkan perintah Anda untuk menyorot atau "
 "menyembunyikan artikel yang cocok."
 
+msgid "Describe the feeds you’re looking for"
+msgstr "Jelaskan feed yang Anda cari"
+
 msgid "Describe what to focus or hide"
 msgstr "Jelaskan hal yang ingin difokuskan atau disembunyikan"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Jelaskan apa yang perlu dicari, dan AI akan menganalisis gambar setiap artikel berdasarkan perintah Anda."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "Jelaskan apa yang ingin Anda baca dan biarkan NewsBlur menemukan feed yang cocok"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Mendeskripsikan feed yang Anda inginkan adalah fitur premium. Upgrade ke pencarian berdasarkan deskripsi."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2441,6 +2476,9 @@ msgstr "Jangan tampilkan pratinjau, hanya tampilkan judul artikel"
 
 msgid "Don't show a thumbnail"
 msgstr "Jangan tampilkan gambar mini"
+
+msgid "Done"
+msgstr "Selesai"
 
 msgid "Done!"
 msgstr "Selesai!"
@@ -2599,6 +2637,9 @@ msgstr "Aktifkan pengelompokan artikel"
 
 msgid "Enable the sites you want"
 msgstr "Aktifkan situs yang Anda inginkan"
+
+msgid "Engineers writing about how large systems fail"
+msgstr "Insinyur yang menulis tentang cara sistem besar mengalami kegagalan"
 
 msgid "English"
 msgstr "Bahasa Inggris"
@@ -2783,6 +2824,9 @@ msgstr "Wajah"
 msgid "Fact check this story"
 msgstr "Periksa fakta artikel ini"
 
+msgid "Failed"
+msgstr "Gagal"
+
 msgid "Failed to connect to server"
 msgstr "Gagal terhubung ke server"
 
@@ -2952,6 +2996,9 @@ msgstr "File"
 msgid "Filled Icons"
 msgstr "Ikon Terisi"
 
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Fotografi film dengan catatan tentang kamera dan jenis film"
+
 msgid "Filter by date range"
 msgstr "Filter berdasarkan rentang tanggal"
 
@@ -3009,6 +3056,16 @@ msgstr "Temukan Teman %(value_1)s"
 
 msgid "Find Friends"
 msgstr "Cari Teman"
+
+msgid "Find feeds"
+msgstr "Temukan feed"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "Temukan feed tentang “%(term)s”"
+
+msgid "Find feeds by describing them"
+msgstr "Temukan feed dengan mendeskripsikannya"
 
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Temukan alamat email NewsBlur unik Anda di dialog Buletin Email"
@@ -3162,6 +3219,12 @@ msgid "Forwarding email address"
 msgstr "Alamat email penerusan"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "Ditemukan %(count)s feed yang cocok dengan deskripsi Anda"
+msgstr[1] "Ditemukan %(count)s feed yang cocok dengan deskripsi Anda"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "Menemukan %(count)s pola. Pilih yang paling sesuai dengan artikel yang Anda inginkan."
@@ -3169,6 +3232,12 @@ msgstr[1] "Menemukan %(count)s pola. Pilih yang paling cocok dengan artikel yang
 
 msgid "Found in the Account dialog"
 msgstr "Ada di dialog Akun"
+
+msgid "Found on the web"
+msgstr "Ditemukan di web"
+
+msgid "Found on the web during this search"
+msgstr "Ditemukan di web selama pencarian ini"
 
 msgid "Free"
 msgstr "Gratis"
@@ -3558,6 +3627,9 @@ msgstr "Seberapa banyak emosi"
 msgid "How often"
 msgstr "Seberapa sering"
 
+msgid "How well this feed matches your description"
+msgstr "Seberapa cocok feed ini dengan deskripsi Anda"
+
 msgid "I'm Following"
 msgstr "Saya Mengikuti"
 
@@ -3673,6 +3745,9 @@ msgstr "Mengindeks feed Anda untuk pencarian"
 msgid "Indexing..."
 msgstr "Mengindeks..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "Pengembang game indie yang menulis tentang proyek yang sedang mereka kerjakan"
+
 msgid "Infrequent Site Stories"
 msgstr "Artikel Situs yang Jarang Diperbarui"
 
@@ -3731,6 +3806,12 @@ msgstr "Januari"
 
 msgid "Japanese"
 msgstr "Bahasa Jepang"
+
+msgid "Judging"
+msgstr "Menilai"
+
+msgid "Judging…"
+msgstr "Menilai…"
 
 msgid "July"
 msgstr "Juli"
@@ -3911,8 +3992,17 @@ msgstr "Memuat suara..."
 msgid "Loading your blocklist settings..."
 msgstr "Memuat pengaturan daftar blokir Anda..."
 
+msgid "Loading your search…"
+msgstr "Memuat pencarian Anda…"
+
 msgid "Loading..."
 msgstr "Memuat..."
+
+msgid "Loading…"
+msgstr "Memuat…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Berita dan acara lokal di Portland, Oregon"
 
 msgid "Location"
 msgstr "Lokasi"
@@ -3934,6 +4024,9 @@ msgstr "Bacaan Panjang"
 
 msgid "Long Reads on NewsBlur"
 msgstr "Bacaan Panjang di NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "Esai panjang tentang kota, perumahan, dan transportasi umum"
 
 msgid "Long reads for later"
 msgstr "Bacaan panjang untuk nanti"
@@ -4100,6 +4193,10 @@ msgstr "Cocok melalui judul duplikat"
 
 msgid "Matched via related topics"
 msgstr "Cocok melalui topik terkait"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "Cocok dengan “%(query)s”"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Mencocokkan judul artikel yang memuat semua kata kunci"
@@ -4333,6 +4430,9 @@ msgstr "Tidak pernah kedaluwarsa"
 msgid "Never gonna expire. Congrats!"
 msgstr "Tidak akan pernah kedaluwarsa. Selamat!"
 
+msgid "New"
+msgstr "Baru"
+
 msgid "New Arrivals"
 msgstr "Pendatang Baru"
 
@@ -4389,6 +4489,9 @@ msgstr "NewsBlur terhubung ke layanan lain"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur mendeteksi %(language)s dari browser Anda."
 
+msgid "NewsBlur index"
+msgstr "indeks NewsBlur"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur sedang tidak berfungsi. <br> Coba lagi nanti."
 
@@ -4400,6 +4503,13 @@ msgstr "NewsBlur otomatis memantau perubahan pada halaman"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur di iOS dengan semua fitur lengkap"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"NewsBlur membaca deskripsi Anda, menelusuri indeks feed dan web terbuka, lalu menilai setiap kecocokan. "
+"Proses ini dapat memakan waktu satu menit."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur akan menemukan feed RSS untuk situs ini secara otomatis."
@@ -4475,6 +4585,9 @@ msgstr "Feed tidak ditemukan"
 
 msgid "No feeds found in this category."
 msgstr "Tidak ada feed dalam kategori ini."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "Tidak ada feed yang cocok dengan deskripsi tersebut. Coba deskripsikan dengan cara lain."
 
 msgid "No folders match"
 msgstr "Tidak ada folder yang cocok"
@@ -5045,6 +5158,9 @@ msgstr "Per Situs"
 msgid "Per-feed notification settings"
 msgstr "Pengaturan notifikasi per feed"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Blog pribadi tentang merestorasi rumah-rumah tua"
+
 msgid "Phrase to match in story text"
 msgstr "Frasa yang cocok dalam teks artikel"
 
@@ -5182,6 +5298,9 @@ msgstr[1] "Uji Coba Premium (%(count)s hari)"
 
 msgid "Premium details"
 msgstr "Detail Premium"
+
+msgid "Premium feature"
+msgstr "Fitur premium"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
@@ -5550,6 +5669,9 @@ msgstr "Hapus"
 msgid "Remove from Up Next"
 msgstr "Hapus dari Berikutnya"
 
+msgid "Remove from history"
+msgstr "Hapus dari riwayat"
+
 msgid "Remove this list"
 msgstr "Hapus daftar ini"
 
@@ -5652,6 +5774,9 @@ msgstr "Coba lagi"
 
 msgid "Retry fetching and parsing"
 msgstr "Coba lagi mengambil dan mengurai"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "Ulasan aplikasi iOS baru dengan banyak tangkapan layar"
 
 msgid "Rewinding..."
 msgstr "Memutar kembali..."
@@ -5817,6 +5942,9 @@ msgstr "Pengiriman terjadwal (harian atau dua kali sehari)"
 msgid "Science"
 msgstr "Sains"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Ilmuwan yang menjelaskan penelitian baru dengan bahasa sederhana"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Pengklasifikasi dengan cakupan folder atau global hanya tersedia bagi pelanggan %(plan)s."
@@ -5842,6 +5970,9 @@ msgstr "Cari di semua artikel tersimpan dan tag"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Cari di semua langganan Anda dengan pencarian teks lengkap yang didukung Elasticsearch."
+
+msgid "Search again"
+msgstr "Cari lagi"
 
 msgid "Search archives..."
 msgstr "Cari arsip..."
@@ -5911,6 +6042,9 @@ msgstr "Cari artikel Anda"
 msgid "Search: \"%(value_1)s\""
 msgstr "Pencarian: \"%(value_1)s\""
 
+msgid "Searches you run will be kept here."
+msgstr "Pencarian yang Anda lakukan akan tersimpan di sini."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "Mencari \"<b>%(query)s</b>\" di <b>%(feed_title)s</b>"
@@ -5918,11 +6052,23 @@ msgstr "Mencari \"<b>%(query)s</b>\" di <b>%(feed_title)s</b>"
 msgid "Searching RSS feeds..."
 msgstr "Mencari feed RSS..."
 
+msgid "Searching feeds"
+msgstr "Menelusuri feed"
+
+msgid "Searching for"
+msgstr "Mencari"
+
 msgid "Searching saved stories..."
 msgstr "Menelusuri artikel tersimpan..."
 
+msgid "Searching the web"
+msgstr "Menelusuri web"
+
 msgid "Searching your archive..."
 msgstr "Menelusuri arsip Anda..."
+
+msgid "Searching…"
+msgstr "Mencari…"
 
 msgid "Seconds to skip backward"
 msgstr "Detik untuk mundur"
@@ -6261,8 +6407,8 @@ msgstr "Notifikasi Situs"
 msgid "Site Settings"
 msgstr "Pengaturan Situs"
 
-msgid "Site URL or search by name..."
-msgstr "URL situs atau cari berdasarkan nama..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL situs, nama, atau jelaskan apa yang ingin Anda baca"
 
 msgid "Site by Site"
 msgstr "Situs per Situs"
@@ -6308,6 +6454,9 @@ msgstr "Sosial"
 
 msgid "Social Connections"
 msgstr "Koneksi Sosial"
+
+msgid "Something went wrong while searching."
+msgstr "Terjadi kesalahan saat mencari."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6448,6 +6597,12 @@ msgstr "Memulai pengategorian..."
 
 msgid "Starting trial..."
 msgstr "Memulai uji coba..."
+
+msgid "Starting your search…"
+msgstr "Memulai pencarian Anda…"
+
+msgid "Starting…"
+msgstr "Memulai…"
 
 msgid "Statistics"
 msgstr "Statistik"
@@ -6868,6 +7023,12 @@ msgstr "Terima kasih! Anda memiliki %(bold_start)sakun Premium Archive%(bold_end
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Terima kasih! Anda memiliki %(bold_start)sakun Premium Pro%(bold_end)s."
 
+msgid "That search could not be loaded."
+msgstr "Pencarian tersebut tidak dapat dimuat."
+
+msgid "That search is no longer in your history."
+msgstr "Pencarian tersebut tidak lagi ada dalam riwayat Anda."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Layanan AI terlalu lama merespons. Silakan coba lagi."
 
@@ -6948,6 +7109,9 @@ msgstr "Halaman asli telah dinonaktifkan oleh penerbit."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "HTML halaman diambil dan diurai untuk mengekstrak struktur konten."
+
+msgid "The search could not be started."
+msgstr "Pencarian tidak dapat dimulai."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
@@ -7337,6 +7501,9 @@ msgstr "Coba istilah pencarian lain atau tempel URL secara langsung."
 msgid "Try again"
 msgstr "Coba lagi"
 
+msgid "Try describing something like"
+msgstr "Coba jelaskan sesuatu seperti"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "Coba kata kunci lain, atau hapus pencarian untuk melihat semuanya."
 
@@ -7430,6 +7597,9 @@ msgstr "Kesalahan tidak diketahui"
 
 msgid "Unknown question"
 msgstr "Pertanyaan tidak dikenal"
+
+msgid "Unlimited searches"
+msgstr "Pencarian tanpa batas"
 
 msgid "Unlock"
 msgstr "Buka"
@@ -7695,6 +7865,9 @@ msgstr "Rekaman suara gagal. Silakan coba lagi."
 msgid "Voice settings"
 msgstr "Pengaturan suara"
 
+msgid "Waiting for a verdict…"
+msgstr "Menunggu keputusan…"
+
 msgid "Warning: This is actually permanent"
 msgstr "Peringatan: Tindakan ini benar-benar permanen"
 
@@ -7748,6 +7921,9 @@ msgstr "Rabu"
 
 msgid "Weekly"
 msgstr "Mingguan"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Resep vegetarian untuk hari kerja dengan foto langkah demi langkah"
 
 msgid "Welcome to NewsBlur"
 msgstr "Selamat datang di NewsBlur"
@@ -8144,6 +8320,9 @@ msgstr "Akun premium Anda akan diturunkan pada:"
 
 msgid "Your profile"
 msgstr "Profil Anda"
+
+msgid "Your searches"
+msgstr "Pencarian Anda"
 
 msgid "Your subscription is no longer active."
 msgstr "Langganan Anda tidak lagi aktif."

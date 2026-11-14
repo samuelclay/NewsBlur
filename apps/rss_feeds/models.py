@@ -331,7 +331,7 @@ class Feed(models.Model):
     def is_daily_briefing(self):
         return self.feed_address.startswith("daily-briefing:")
 
-    def canonical(self, full=False, include_favicon=True):
+    def canonical(self, full=False, include_favicon=True, include_similar=True):
         feed = {
             "id": self.pk,
             "feed_title": self.feed_title,
@@ -365,8 +365,11 @@ class Feed(models.Model):
             "s3_page": self.s3_page,
             "s3_icon": self.s3_icon,
             "disabled_page": not self.has_page,
-            "similar_feeds": [f["pk"] for f in self.similar_feeds.values("pk")],
         }
+        # apps/rss_feeds/models.py: one query per feed, so a caller serializing a list it never shows
+        # similar feeds for (apps/describe/models.py hydrate_results) can leave it out.
+        if include_similar:
+            feed["similar_feeds"] = [f["pk"] for f in self.similar_feeds.values("pk")]
 
         if include_favicon:
             try:

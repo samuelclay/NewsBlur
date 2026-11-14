@@ -30,12 +30,13 @@ class Test_Discovery {
     @get:Rule val main = MainDispatcherRule()
     private val api = mockk<DiscoveryApi>()
     private val feeds = mockk<FeedApi>()
+    private val describe = mockk<DescribeApi>()
     private val viewPreferences = DiscoveryPreferencesFixture().preference
 
     private fun json(value: String) = JsonParser.parseString(value).asJsonObject
 
     private fun model(saved: SavedStateHandle = SavedStateHandle()) =
-        DiscoveryViewModel(api, feeds, saved, viewPreferences).apply {
+        DiscoveryViewModel(api, feeds, describe, saved, viewPreferences).apply {
             workerDispatcher =
                 main.dispatcher
         }

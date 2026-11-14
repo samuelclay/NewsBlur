@@ -30,6 +30,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.TrendingUp
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Folder
@@ -94,6 +95,7 @@ fun AddSiteSheet(
     onToggleFolder: () -> Unit,
     onSubmit: (String) -> Unit,
     onDiscover: (DiscoveryTab) -> Unit,
+    onDescribe: (String) -> Unit,
 ) {
     val colors = ReaderSheetPalette.colors(theme)
     val configuration = LocalConfiguration.current
@@ -103,6 +105,9 @@ fun AddSiteSheet(
     val enabled = !state.submitting
     val folderOnly = state.query.isBlank() && state.creatingFolder
     val canSubmit = enabled && (state.query.isNotBlank() || (folderOnly && state.newFolder.isNotBlank()))
+    // AddSiteSheet.kt: a description with spaces runs a Describe search (DescribeTab.kt) instead of an add-by-URL attempt.
+    val describePrompt = remember(state.query) { AddSiteDescribeDecision.prompt(state.query) }
+    val submit = { if (describePrompt != null) onDescribe(describePrompt) else onSubmit(state.query.trim()) }
     Column(
         Modifier
             .fillMaxWidth()
@@ -147,7 +152,7 @@ fun AddSiteSheet(
                         modifier = Modifier.fillMaxWidth(),
                         loading = state.searching,
                         onChange = onQueryChanged,
-                        onGo = { onSubmit(state.query.trim()) },
+                        onGo = submit,
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.weight(1f)) {
@@ -232,7 +237,7 @@ fun AddSiteSheet(
                                 .heightIn(min = 44.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(if (canSubmit || state.submitting) colors.siteButton else colors.border)
-                                .clickable(enabled = canSubmit, role = Role.Button) { onSubmit(state.query.trim()) }
+                                .clickable(enabled = canSubmit, role = Role.Button, onClick = submit)
                                 .padding(horizontal = 14.dp, vertical = 12.dp),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -245,7 +250,13 @@ fun AddSiteSheet(
                                 )
                             } else {
                                 Text(
-                                    stringResource(if (folderOnly) R.string.add_site_add_folder else R.string.i18n_add_site),
+                                    stringResource(
+                                        when {
+                                            folderOnly -> R.string.add_site_add_folder
+                                            describePrompt != null -> R.string.describe_find_feeds
+                                            else -> R.string.i18n_add_site
+                                        },
+                                    ),
                                     color = Color.White,
                                     fontSize = 16.sp,
                                     lineHeight = 20.sp,
@@ -281,7 +292,7 @@ fun AddSiteSheet(
                             colors,
                             Modifier.fillMaxWidth(),
                             onChange = onFolderNameChanged,
-                            onGo = { onSubmit(state.query.trim()) },
+                            onGo = submit,
                         )
                     }
                     state.error?.let {
@@ -302,25 +313,32 @@ fun AddSiteSheet(
                 items(AddSiteDiscoveryShortcut.entries, key = { it.name }) { shortcut ->
                     DiscoveryShortcut(shortcut, colors, enabled) { onDiscover(shortcut.tab) }
                 }
-            } else if (state.results.isNotEmpty()) {
-                itemsIndexed(
-                    state.results,
-                    key = { index, result -> "${result.id}:${result.url}:$index" },
-                    span = { _, _ -> GridItemSpan(maxLineSpan) },
-                ) { _, result ->
-                    Column(Modifier.background(colors.cardBackground)) {
-                        SiteResultRow(result, colors, iconLoader, enabled) { onSubmit(result.url) }
-                        HorizontalDivider(color = colors.border.copy(alpha = 0.5f))
+            } else {
+                if (describePrompt != null) {
+                    item(key = "describe", span = { GridItemSpan(maxLineSpan) }) {
+                        DescribeRow(describePrompt, colors, enabled) { onDescribe(describePrompt) }
                     }
                 }
-            } else if (state.searched && !state.searching && state.error == null) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        stringResource(R.string.i18n_no_sites_found_you_can_also_add_a_site_by_url),
-                        Modifier.padding(16.dp),
-                        color = colors.textSecondary,
-                        fontSize = 14.sp,
-                    )
+                if (state.results.isNotEmpty()) {
+                    itemsIndexed(
+                        state.results,
+                        key = { index, result -> "${result.id}:${result.url}:$index" },
+                        span = { _, _ -> GridItemSpan(maxLineSpan) },
+                    ) { _, result ->
+                        Column(Modifier.background(colors.cardBackground)) {
+                            SiteResultRow(result, colors, iconLoader, enabled) { onSubmit(result.url) }
+                            HorizontalDivider(color = colors.border.copy(alpha = 0.5f))
+                        }
+                    }
+                } else if (state.searched && !state.searching && state.error == null) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            stringResource(R.string.i18n_no_sites_found_you_can_also_add_a_site_by_url),
+                            Modifier.padding(16.dp),
+                            color = colors.textSecondary,
+                            fontSize = 14.sp,
+                        )
+                    }
                 }
             }
         }
@@ -351,6 +369,7 @@ private fun DiscoveryShortcut(
         } else {
             val icon = when (shortcut.tab) {
                 DiscoveryTab.SEARCH -> Icons.AutoMirrored.Rounded.TrendingUp
+                DiscoveryTab.DESCRIBE -> Icons.Rounded.AutoAwesome
                 DiscoveryTab.WEB -> Icons.Rounded.Public
                 DiscoveryTab.POPULAR -> Icons.Rounded.LocalFireDepartment
                 DiscoveryTab.YOUTUBE -> Icons.Rounded.SmartDisplay
@@ -366,6 +385,38 @@ private fun DiscoveryShortcut(
             color = colors.textPrimary,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
+        )
+    }
+}
+
+// AddSiteSheet.kt: the Describe row sits above the site matches, like the web's add-site "Find feeds about" row.
+@Composable
+private fun DescribeRow(
+    prompt: String,
+    colors: ReaderSheetPalette.Colors,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(colors.cardBackground)
+            .border(1.dp, colors.border, RoundedCornerShape(8.dp))
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 11.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(20.dp), colors.accent)
+        Text(
+            stringResource(R.string.add_site_describe_row, BidiText.isolate(prompt)),
+            color = colors.textPrimary,
+            fontSize = 15.sp,
+            lineHeight = 19.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

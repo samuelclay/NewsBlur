@@ -119,6 +119,16 @@ msgid_plural "%(count)s days"
 msgstr[0] "%(count)s วัน"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s ชั่วโมง"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s นาที"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s เดือน"
@@ -1288,6 +1298,10 @@ msgstr "แพ็กเกจแบบชำระเงินที่ถูก
 msgid "Check the FAQ"
 msgstr "ดูคำถามที่พบบ่อย"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "กำลังตรวจสอบ %(site)s เพื่อหาฟีด"
+
 msgid "Chief Morale Officer"
 msgstr "หัวหน้าฝ่ายขวัญกำลังใจ"
 
@@ -1656,8 +1670,18 @@ msgstr "ค่าเริ่มต้น"
 msgid "Delete"
 msgstr "ลบ"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "อธิบายสั้นๆ ว่าคุณอยากอ่านอะไร"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "การอธิบายฟีดที่ต้องการเป็นฟีเจอร์พรีเมียม อัปเกรดเพื่อค้นหาด้วยคำอธิบาย"
+
 msgid "Description"
 msgstr "คำอธิบาย"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "คำอธิบายจำกัดไว้ที่ %(limit)d อักขระ"
 
 msgid "Developer"
 msgstr "นักพัฒนา"
@@ -3079,6 +3103,10 @@ msgstr[0] ""
 "ไม่ได้เข้ามาดู NewsBlur เป็นเวลา %(counter)s เดือนแล้ว มีหลายอย่างเปลี่ยนแปลงไปตั้งแต่นั้น "
 "เราเพิ่งเปิดตัวการออกแบบใหม่ทั้งหมด พร้อมฟีเจอร์แชร์บทความ (Blurblog) และแอป iOS/Android แบบเนทีฟ "
 "หากคิดถึงฟีเจอร์เดิมของ Google Reader คุณจะต้องชอบ NewsBlur เวอร์ชันใหม่"
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "กำลังประเมินฟีด %(count)s รายการตามคำอธิบายของคุณ"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4769,6 +4797,9 @@ msgstr "การอ่านข่าวสนุกยิ่งขึ้นเ
 msgid "Reading stories across folders with River of News"
 msgstr "อ่านบทความจากหลายโฟลเดอร์ด้วยฟีดข่าวรวม"
 
+msgid "Reading your description"
+msgstr "กำลังอ่านคำอธิบายของคุณ"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5144,6 +5175,12 @@ msgstr "ค้นหาในคลังการอ่านจากการ
 msgid "Search your entire archive with full-text search"
 msgstr "ค้นหาทั้งคลังบทความด้วยการค้นหาข้อความเต็ม"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "กำลังค้นหาฟีดของ NewsBlur"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "กำลังค้นหาฟีดเว็บที่ NewsBlur ยังไม่พบ"
+
 msgid "Searching your sites and saved stories"
 msgstr "ค้นหาในเว็บไซต์และบทความที่บันทึกไว้ของคุณ"
 
@@ -5413,6 +5450,9 @@ msgstr "มีผู้ใช้ที่อยู่อีเมลนี้แ
 
 msgid "Someone is already using that username."
 msgstr "มีผู้ใช้ชื่อนี้แล้ว"
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "เกิดข้อผิดพลาดระหว่างค้นหา โปรดลองอีกครั้ง"
 
 msgid "Something went wrong..."
 msgstr "เกิดข้อผิดพลาดบางอย่าง..."
@@ -5739,6 +5779,12 @@ msgstr "รายการนี้ไม่ได้กำลังเล่น
 msgid "That part of the story doesn't exist."
 msgstr "ไม่มีส่วนนี้ในบทความ"
 
+msgid "That search is no longer in your history."
+msgstr "การค้นหานี้ไม่มีอยู่ในประวัติแล้ว"
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "การค้นหานี้ยังทำงานอยู่ โปรดรอให้เสร็จก่อน"
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "เรื่องนี้ถูกนำออกจากฟีดแล้ว ไม่จำเป็นต้องทำเครื่องหมายว่ายังไม่อ่าน"
 
@@ -5883,6 +5929,12 @@ msgstr "เนื้อหาต้นฉบับของบทความจ
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "เหมือนฟีดทั่วไป ผู้ใช้ Premium และ Pro จะได้รับการอัปเดตบ่อยกว่า"
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "ค้นหาไม่สามารถเชื่อมต่อกับบริการที่จำเป็นได้ โปรดลองอีกครั้ง"
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "การค้นหาใช้เวลานานเกินไป นี่คือผลลัพธ์ที่พบจนถึงตอนนี้"
+
 msgid "The shared comment cannot be found."
 msgstr "ไม่พบความคิดเห็นที่แชร์"
 
@@ -5993,6 +6045,9 @@ msgstr "นี่เป็นฟีด RSS อยู่แล้ว กำลั
 
 msgid "This payment has been refunded."
 msgstr "คืนเงินสำหรับการชำระเงินนี้แล้ว"
+
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "การค้นหานี้หยุดก่อนเสร็จสิ้น ค้นหาอีกครั้งเพื่อลองใหม่"
 
 msgid "This story has no text to read aloud."
 msgstr "บทความนี้ไม่มีข้อความให้อ่านออกเสียง"
@@ -6812,6 +6867,9 @@ msgstr "เมื่อวาน %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "เมื่อวานนี้ %(time)s"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "มีการค้นหาที่กำลังทำงานอยู่แล้ว โปรดรอให้เสร็จก่อน"
+
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
@@ -6926,6 +6984,11 @@ msgid ""
 msgstr ""
 "คุณได้ติดตาม <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>"
+
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "วันนี้คุณค้นหาแบบอธิบายได้อีก %(count)s ครั้ง (รีเซ็ตในอีก %(time)s)"
 
 msgid "You have a follow request:"
 msgstr "คุณได้รับคำขอติดตาม:"
@@ -7183,6 +7246,10 @@ msgid ""
 msgstr ""
 "คุณเพิ่งใช้งาน NewsBlur เมื่อไม่นานมานี้ จึงอาจไม่ได้ตั้งใจเปลี่ยนกลับไปใช้บัญชีฟรีใช่ไหม "
 "บางทีคุณอาจแค่ต้องต่ออายุบัญชี Premium ให้เราช่วยคุณต่ออายุได้เลย"
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "วันนี้ใช้การค้นหาด้วยคำอธิบายครบ %(limit)s ครั้งแล้ว จำกัดจะรีเซ็ตใน %(time)s"
 
 msgid "YouTube search request failed."
 msgstr "คำขอค้นหา YouTube ล้มเหลว"

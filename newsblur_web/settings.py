@@ -476,6 +476,7 @@ INSTALLED_APPS = (
     "apps.search",
     "apps.categories",
     "apps.discover",
+    "apps.describe",
     "apps.ask_ai",
     "apps.listen",
     "apps.webfeed",
@@ -533,6 +534,7 @@ CELERY_TASK_ROUTES = {
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
+    "describe-feeds-search": {"queue": "work_queue", "binding_key": "work_queue"},
     "compute-story-clusters": {"queue": "update_feeds", "binding_key": "update_feeds"},
 }
 CELERY_TASK_QUEUES = {
@@ -615,6 +617,7 @@ CELERY_IMPORTS = (
     "apps.search.tasks",
     "apps.statistics.tasks",
     "apps.ask_ai.tasks",
+    "apps.describe.tasks",
     "apps.archive_extension.tasks",
     "apps.archive_assistant.tasks",
     "apps.briefing.tasks",

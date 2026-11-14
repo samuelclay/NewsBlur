@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@-map, ingeklapt, %2$@";
 "%1$@ followed %2$@." = "%1$@ is %2$@ gaan volgen.";
 "%1$@ of %2$@ of listening left this week" = "Je hebt deze week nog %1$@ van de %2$@ luistertijd over";
+"%1$@ of %2$@ searches left today" = "Je hebt vandaag nog %1$@ van de %2$@ zoekopdrachten over";
 "%1$@ of %2$@ sites indexed" = "%1$@ van %2$@ sites geïndexeerd";
 "%1$@ of %2$@ story previews used today" = "Vandaag %1$@ van de %2$@ artikelvoorbeelden gebruikt";
 "%1$@ on all sites (%2$@)" = "%1$@ op alle sites (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "%@ feeds toegevoegd.";
 "%@ feeds couldn’t be added." = "%@ feeds konden niet worden toegevoegd.";
 "%@ feeds selected" = "%@ feeds geselecteerd";
+"%@ feeds so far" = "Tot nu toe %@ feeds";
 "%@ focused stories" = "%@ focusartikelen";
 "%@ folder" = "map %@";
 "%@ free story previews left today" = "Vandaag nog %@ gratis artikelvoorbeelden";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ abonnees";
 "%@ unread stories" = "%@ ongelezen artikelen";
 "%@ voice previews left" = "%@ stemvoorbeelden over";
+"%@/10" = "%@/10";
 "%@/story" = "%@/artikel";
+"%@d ago" = "%@ d geleden";
+"%@w ago" = "%@ weken geleden";
 "%@×" = "%@×";
 "%ldd ago" = "%ld d geleden";
 "%ldh ago" = "%ld uur geleden";
@@ -197,7 +202,9 @@
 "Back %@ seconds" = "%@ seconden terug";
 "Back to story titles" = "Terug naar de artikeltitels";
 "Based on your interests" = "Op basis van je interesses";
+"Bike touring and long-distance cycling trip reports" = "Fietstochten en reisverslagen van langeafstandsritten";
 "Black" = "Zwart";
+"Book reviews of new science fiction and fantasy" = "Boekbesprekingen van nieuwe sciencefiction en fantasy";
 "Bottom" = "Onderaan";
 "Brightness Override" = "Helderheid overschrijven";
 "Brightness threshold" = "Helderheidsdrempel";
@@ -310,9 +317,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Als je je account verwijdert, worden je feeds, opgeslagen artikelen en accountgegevens definitief verwijderd. Dit kan niet ongedaan worden gemaakt.";
 "Deleting..." = "Bezig met verwijderen...";
 "Delivery" = "Bezorging";
+"Describe" = "Beschrijven";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Beschrijf een onderwerp en AI beoordeelt elk artikel op basis van je prompt om overeenkomsten uit te lichten of te verbergen.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "Beschrijf de feeds die je zoekt, bijvoorbeeld ‘recensies van nieuwe iOS-apps met screenshots’";
 "Describe what to focus or hide" = "Beschrijf wat je wilt uitlichten of verbergen";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "Beschrijf waar je naar wilt zoeken; AI analyseert de afbeeldingen bij elk artikel aan de hand van je prompt.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "Beschrijf wat je wilt lezen en NewsBlur vindt passende feeds";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "Beschrijven welke feeds je wilt, is een Premium-functie. Upgrade om op beschrijving te zoeken.";
 "Discover" = "Ontdekken";
 "Discover more to read" = "Ontdek meer om te lezen";
 "Discover related sites" = "Gerelateerde sites ontdekken";
@@ -344,6 +355,7 @@
 "Email" = "E-mail";
 "Ember Orange" = "Gloeiend oranje";
 "Enabled" = "Ingeschakeld";
+"Engineers writing about how large systems fail" = "Ingenieurs die schrijven over hoe grote systemen falen";
 "Enter URL phrase..." = "Voer een URL-frase in...";
 "Enter a custom search query..." = "Voer een aangepaste zoekopdracht in...";
 "Enter a web page URL..." = "Voer de URL van een webpagina in...";
@@ -373,6 +385,7 @@
 "Extra Small" = "Extra klein";
 "Extra Tall" = "Extra hoog";
 "Extra small" = "Extra klein";
+"Failed" = "Mislukt";
 "Faster" = "Sneller";
 "Favorited" = "Aan favorieten toegevoegd";
 "Favoriting" = "Toevoegen aan favorieten";
@@ -387,9 +400,13 @@
 "Fetching recent stories..." = "Recente artikelen ophalen...";
 "Fetching stories from this site..." = "Artikelen van deze site ophalen...";
 "Fetching text..." = "Tekst ophalen...";
+"Film photography with notes on cameras and film stocks" = "Analoge fotografie met informatie over camera’s en films";
 "Filter" = "Filteren";
 "Filter stories by date range" = "Artikelen filteren op datumbereik";
 "Find Friends" = "Vrienden zoeken";
+"Find feeds" = "Feeds zoeken";
+"Find feeds about “%@”" = "Feeds zoeken over ‘%@’";
+"Find feeds by describing them" = "Vind feeds door ze te beschrijven";
 "Find in Feed" = "Zoeken in feed";
 "Find in Sites" = "Zoeken in sites";
 "Find in feed" = "Zoeken in feed";
@@ -429,6 +446,8 @@
 "Forgot Password?" = "Wachtwoord vergeten?";
 "Forgot your password?" = "Wachtwoord vergeten?";
 "Forward %@ seconds" = "%@ seconden vooruit";
+"Found %@ feeds that match your description" = "%@ feeds gevonden die bij je beschrijving passen";
+"Found on the web" = "Gevonden op internet";
 "Frequency" = "Frequentie";
 "Friday" = "vrijdag";
 "Friends" = "Vrienden";
@@ -484,6 +503,7 @@
 "Import or upload sites" = "Sites importeren of uploaden";
 "Imported %@ sites" = "%@ sites geïmporteerd";
 "Importing sites..." = "Sites importeren...";
+"In progress" = "Bezig";
 "In-app Safari" = "Safari in de app";
 "In-app browser" = "Browser in de app";
 "Include" = "Opnemen";
@@ -492,6 +512,7 @@
 "Include in bundle" = "Opnemen in bundel";
 "Included in bundle" = "Inbegrepen in bundel";
 "Increase or remove your limit" = "Verhoog of verwijder je limiet";
+"Indie game developers writing about their work in progress" = "Indiegameontwikkelaars die schrijven over hun werk in uitvoering";
 "Infrequent Site Stories" = "Artikelen van weinig actieve sites";
 "Infrequent Stories" = "Artikelen van weinig actieve sites";
 "Infrequent stories per month" = "Grens voor weinig actieve sites";
@@ -502,6 +523,8 @@
 "Interactions" = "Interacties";
 "Invalid: %@" = "Ongeldig: %@";
 "Invoice" = "Factuur";
+"Judging" = "Beoordelen";
+"Judging…" = "Beoordelen…";
 "Keeps the dark icon no matter how your device is set." = "Behoudt het donkere pictogram, ongeacht de instelling van je apparaat.";
 "Keeps the light icon no matter how your device is set." = "Houdt het lichte pictogram aan, ongeacht de instelling van je apparaat.";
 "Keyboard Shortcuts" = "Sneltoetsen";
@@ -540,8 +563,10 @@
 "Loading sources" = "Bronnen laden";
 "Loading voices…" = "Stemmen laden…";
 "Loading your feeds…" = "Je feeds laden…";
+"Loading your search…" = "Je zoekopdracht wordt geladen…";
 "Loading..." = "Laden...";
 "Loading…" = "Laden…";
+"Local news and events in Portland, Oregon" = "Lokaal nieuws en evenementen in Portland, Oregon";
 "Log In" = "Inloggen";
 "Log Out" = "Uitloggen";
 "Logged in as %@" = "Ingelogd als %@";
@@ -553,6 +578,7 @@
 "Logout" = "Uitloggen";
 "Long Reads" = "Lange artikelen";
 "Long [preview length]" = "Lang";
+"Long essays about cities, housing and public transit" = "Lange essays over steden, huisvesting en openbaar vervoer";
 "Long press" = "Lang indrukken";
 "Long press on feeds and folders" = "Houd feeds en mappen lang ingedrukt";
 "Long press on story titles" = "Houd artikeltitels lang ingedrukt";
@@ -608,6 +634,8 @@
 "Mark this site as read" = "Deze site als gelezen markeren";
 "Mark this story as read" = "Markeer dit artikel als gelezen";
 "Match" = "Overeenkomst";
+"Match score %@" = "Overeenkomstscore %@";
+"Matched “%@”" = "Komt overeen met ‘%@’";
 "Matches story" = "Komt overeen met artikel";
 "Meadow Sage" = "Weidesalie";
 "Medium [grid height]" = "Gemiddeld";
@@ -666,6 +694,7 @@
 "Natural language text and image classifiers" = "Classifiers in natuurlijke taal voor tekst en afbeeldingen";
 "Nested" = "Genest";
 "Never" = "Nooit";
+"New" = "Nieuw";
 "New Folder" = "Nieuwe map";
 "New Site" = "Nieuwe site";
 "New folder name" = "Naam van nieuwe map";
@@ -676,7 +705,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur controleert op wijzigingen en voegt nieuwe artikelen toe aan je feed.";
 "NewsBlur detected %@ from your device." = "NewsBlur heeft %@ gedetecteerd op je apparaat.";
+"NewsBlur index" = "NewsBlur-index";
 "NewsBlur password" = "NewsBlur-wachtwoord";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur leest je beschrijving, doorzoekt de feedindex en het openbare web en beoordeelt vervolgens elke overeenkomst. Dit kan een minuut duren.";
 "Next" = "Volgende";
 "Next Folder" = "Volgende map";
 "Next Site" = "Volgende site";
@@ -693,6 +724,7 @@
 "No Story Lists" = "Geen artikellijsten";
 "No Widget Sites" = "Geen widgetsites";
 "No briefings yet" = "Nog geen briefings";
+"No feeds matched that description. Try describing it another way." = "Er zijn geen feeds gevonden die bij die beschrijving passen. Probeer het eens anders te omschrijven.";
 "No feeds to show yet. Try another interest or search all sites." = "Er zijn nog geen feeds om weer te geven. Probeer een andere interesse of zoek op alle sites.";
 "No friends to suggest." = "Geen vrienden om voor te stellen.";
 "No interests or sites found. Try another search." = "Geen interesses of sites gevonden. Probeer een andere zoekopdracht.";
@@ -773,6 +805,7 @@
 "Pause Listening" = "Luisteren pauzeren";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Percentage van het zichtbare artikel waarover je scrolt met Spatie of Shift-Spatie";
 "Permanently delete account" = "Account definitief verwijderen";
+"Personal blogs about restoring old houses" = "Persoonlijke blogs over het opknappen van oude huizen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Kies de taal die NewsBlur moet gebruiken. Je kunt dit altijd wijzigen in Voorkeuren.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Kies de taal die je in NewsBlur wilt gebruiken. Je kunt deze op elk moment wijzigen via het NewsBlur-menu.";
 "Pick which model writes your Daily Briefing" = "Kies welk model je dagelijkse briefing schrijft";
@@ -800,6 +833,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium-abonnement";
+"Premium feature" = "Premium-functie";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium-abonnees kunnen een aangepast NewsBlur-pictogram kiezen. Elke variant bevat een lichte en donkere versie.";
 "Preparing audio…" = "Audio voorbereiden…";
 "Preview ended. Premium Archive unlocks full stories" = "De voorvertoning is afgelopen. Premium Archive geeft toegang tot volledige artikelen";
@@ -838,6 +872,7 @@
 "Read Widely Read Stories" = "Veelgelezen artikelen lezen";
 "Read Widget Site Stories" = "Artikelen van de widgetsite lezen";
 "Read by %@" = "Voorgelezen door %@";
+"Reading" = "Lezen";
 "Reading Stories" = "Artikelen lezen";
 "Reading a story" = "Een artikel lezen";
 "Reading by folder is only available to" = "Lezen per map is alleen beschikbaar voor";
@@ -859,6 +894,7 @@
 "Reloading..." = "Opnieuw laden...";
 "Remove This List" = "Deze lijst verwijderen";
 "Remove from Up Next" = "Verwijderen uit Hierna afspelen";
+"Remove from history" = "Verwijderen uit geschiedenis";
 "Removed from Up Next" = "Verwijderd uit Hierna afspelen";
 "Rename" = "Hernoemen";
 "Rename \"%@\"" = "Hernoem \"%@\"";
@@ -882,6 +918,7 @@
 "Retry" = "Opnieuw proberen";
 "Retry Google Reader" = "Google Reader opnieuw proberen";
 "Retry icons" = "Pictogrammen opnieuw proberen";
+"Reviews of new iOS apps with lots of screenshots" = "Recensies van nieuwe iOS-apps met veel schermafbeeldingen";
 "River of News (reading by folder)" = "Nieuwsstroom (lezen per map)";
 "Rows" = "Rijen";
 "Ruby Red" = "Robijnrood";
@@ -909,10 +946,12 @@
 "Saving search..." = "Zoekopdracht opslaan...";
 "Saving..." = "Opslaan...";
 "Schedule" = "Planning";
+"Scientists explaining new research in plain language" = "Wetenschappers die nieuw onderzoek in begrijpelijke taal uitleggen";
 "Scroll horizontally" = "Horizontaal scrollen";
 "Scroll to Comments" = "Scroll naar reacties";
 "Scroll to comments" = "Naar de reacties scrollen";
 "Search YouTube channels..." = "YouTube-kanalen zoeken...";
+"Search again" = "Opnieuw zoeken";
 "Search feeds" = "Feeds zoeken";
 "Search interests and sites" = "Zoek interesses en sites";
 "Search newsletters..." = "Nieuwsbrieven zoeken...";
@@ -921,6 +960,10 @@
 "Search stories" = "Artikelen zoeken";
 "Search subreddits..." = "Subreddits zoeken...";
 "Search voices" = "Stemmen zoeken";
+"Searches you run will be kept here." = "Zoekopdrachten die je uitvoert, worden hier bewaard.";
+"Searching feeds" = "Feeds zoeken";
+"Searching for" = "Zoeken naar";
+"Searching the web" = "Op het web zoeken";
 "Searching…" = "Zoeken…";
 "Sections" = "Secties";
 "Select All" = "Alles selecteren";
@@ -1008,6 +1051,7 @@
 "Small Right" = "Klein rechts";
 "Small [text size]" = "Klein";
 "Some feed icons couldn’t load." = "Sommige feedpictogrammen konden niet worden geladen.";
+"Something went wrong while searching." = "Er is iets misgegaan tijdens het zoeken.";
 "Sources" = "Bronnen";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Met Spatie en Shift-Spatie scrol je met dit percentage van het zichtbare artikel. Onderaan opent Spatie het volgende ongelezen artikel. Bovenaan opent Shift-Spatie het vorige artikel.";
 "Space scroll amount" = "Scrollafstand met Spatie";
@@ -1021,6 +1065,8 @@
 "Standard" = "Standaard";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Start muziek in de Muziek-app of Spotify; Luisteren leest eroverheen. De bediening van die app verschijnt op het toegangsscherm.";
 "Start reading" = "Begin met lezen";
+"Starting your search…" = "Je zoekopdracht wordt gestart…";
+"Starting…" = "Starten…";
 "Statistics" = "Statistieken";
 "Statistics…" = "Statistieken…";
 "Stay connected" = "Blijf verbonden";
@@ -1112,6 +1158,7 @@
 "Text from yesterday" = "Tekst van gisteren";
 "Text view" = "Tekstweergave";
 "Text view conveniently extracts the story" = "De tekstweergave haalt het artikel handig op";
+"That search could not be loaded." = "Deze zoekopdracht kon niet worden geladen.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "Dit was een voorbeeld van 30 seconden. Met Premium Archive kun je volledige artikelen beluisteren.";
 "The audio couldn't be loaded. Try again in a moment." = "De audio kon niet worden geladen. Probeer het zo meteen opnieuw.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "De volledige tekstweergave is een <a href=\"http://ios.newsblur.com/premium\">premiumfunctie</a>";
@@ -1119,6 +1166,9 @@
 "The icon follows your device's light and dark appearance." = "Het pictogram past zich aan het lichte of donkere uiterlijk van je apparaat aan.";
 "The most important stories from your feeds" = "De belangrijkste artikelen uit je feeds";
 "The request failed. Please try again." = "Het verzoek is mislukt. Probeer het opnieuw.";
+"The search could not be started." = "De zoekopdracht kon niet worden gestart.";
+"The search could not be started: %@" = "De zoekopdracht kon niet worden gestart: %@";
+"The search is taking too long. Try searching again." = "Het zoeken duurt te lang. Probeer het opnieuw.";
 "The story doesn't link anywhere." = "Het artikel bevat geen link.";
 "Theme" = "Thema";
 "Theme variant for dark mode" = "Themavariant voor donkere modus";
@@ -1143,6 +1193,7 @@
 "Title only" = "Alleen titel";
 "Titles in grid" = "Titels in raster";
 "Titles in list" = "Titels in lijst";
+"Today" = "Vandaag";
 "Toggle Full Screen" = "Volledig scherm in-/uitschakelen";
 "Toggle Read/Unread" = "Gelezen/ongelezen omschakelen";
 "Toggle read/unread" = "Gelezen/ongelezen omschakelen";
@@ -1168,6 +1219,7 @@
 "Try %@" = "Probeer %@";
 "Try again" = "Probeer het opnieuw";
 "Try another name, or paste a site URL in Search." = "Probeer een andere naam of plak een site-URL in Zoeken.";
+"Try describing something like" = "Probeer iets te beschrijven zoals";
 "Try search again" = "Zoek opnieuw";
 "Trying Feed" = "Feed wordt geprobeerd";
 "Tuesday" = "dinsdag";
@@ -1192,6 +1244,7 @@
 "Unable to save notification settings." = "Meldingsinstellingen kunnen niet worden opgeslagen.";
 "Understand" = "Begrijpen";
 "Unfavorited" = "Niet meer favoriet";
+"Unlimited searches" = "Onbeperkt zoeken";
 "Unlock full discovery" = "Volledige ontdekking ontgrendelen";
 "Unmute All" = "Alles weer inschakelen";
 "Unmute site" = "Site niet meer dempen";
@@ -1243,11 +1296,13 @@
 "Voice" = "Stem";
 "Voice and music balance" = "Balans tussen stem en muziek";
 "Voice settings" = "Steminstellingen";
+"Waiting for a verdict…" = "Wachten op een oordeel…";
 "Warm" = "Warm";
 "Web" = "Web";
 "Web Feeds from any website, even without RSS" = "Webfeeds van elke website, zelfs zonder RSS";
 "Wednesday" = "woensdag";
 "Weekly" = "Wekelijks";
+"Weeknight vegetarian recipes with step-by-step photos" = "Vegetarische recepten voor doordeweeks, met stap-voor-stapfoto’s";
 "Welcome back" = "Welkom terug";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Wat vind je 👍 %1$@ en 👎 %2$@ aan deze site?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "Wat vind je 👍 %1$@ en 👎 %2$@ aan dit artikel?";
@@ -1286,6 +1341,7 @@
 "Your premium pro subscription is active" = "Je Premium Pro-abonnement is actief";
 "Your premium subscription is active" = "Je premiumabonnement is actief";
 "Your reading list" = "Je leeslijst";
+"Your searches" = "Je zoekopdrachten";
 "You’re all set up." = "Je bent helemaal klaar.";
 "at %@" = "om %@";
 "by %@" = "door %@";

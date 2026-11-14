@@ -93,6 +93,49 @@ struct DiscoverColors {
         themedColor(light: 0x405BA8, sepia: 0x405BA8, medium: 0x3B7CC5, dark: 0x3B7CC5)
     }
 
+    // DiscoverColors.swift follows the .NB-describe-score pills in reader.css and darkmode.css.
+    static func scoreBackground(_ tone: DescribeResult.ScoreTone) -> Color {
+        switch tone {
+        case .high: return themedColor(light: 0xE3F3DB, sepia: 0xE3F3DB, medium: 0x2F4A25, dark: 0x2F4A25)
+        case .medium: return themedColor(light: 0xFFF1D6, sepia: 0xFFF1D6, medium: 0x4A3A1A, dark: 0x4A3A1A)
+        case .low: return themedColor(light: 0xF2F2F2, sepia: 0xF0E8DC, medium: 0x333333, dark: 0x333333)
+        case .pending: return themedColor(light: 0xEEF2F8, sepia: 0xEEF2F8, medium: 0x2A3443, dark: 0x2A3443)
+        }
+    }
+
+    static func scoreText(_ tone: DescribeResult.ScoreTone) -> Color {
+        switch tone {
+        case .high: return themedColor(light: 0x2F6B17, sepia: 0x2F6B17, medium: 0x9FD67F, dark: 0x9FD67F)
+        case .medium: return themedColor(light: 0x8A5A00, sepia: 0x8A5A00, medium: 0xF0C56B, dark: 0xF0C56B)
+        case .low: return themedColor(light: 0x777777, sepia: 0x8B7B6B, medium: 0x999999, dark: 0x999999)
+        case .pending: return themedColor(light: 0x5C89C9, sepia: 0x5C89C9, medium: 0x8FB4EA, dark: 0x8FB4EA)
+        }
+    }
+
+    // DiscoverColors.swift follows the .NB-describe-source badges: blue for the web, grey for the index.
+    static func sourceBackground(fromWeb: Bool) -> Color {
+        fromWeb ? themedColor(light: 0xEAF0FB, sepia: 0xEAF0FB, medium: 0x27354A, dark: 0x27354A)
+                : themedColor(light: 0xF2F4F6, sepia: 0xF0E8DC, medium: 0x333333, dark: 0x333333)
+    }
+
+    static func sourceText(fromWeb: Bool) -> Color {
+        fromWeb ? themedColor(light: 0x2F5F9E, sepia: 0x2F5F9E, medium: 0x8FB4EA, dark: 0x8FB4EA)
+                : themedColor(light: 0x777777, sepia: 0x8B7B6B, medium: 0x999999, dark: 0x999999)
+    }
+
+    // DiscoverColors.swift follows the .NB-describe-step states: green once done, blue while current, grey ahead.
+    static var stepDone: Color {
+        themedColor(light: 0x5BA03A, sepia: 0x5BA03A, medium: 0x7CC45A, dark: 0x7CC45A)
+    }
+
+    static var stepCurrent: Color {
+        themedColor(light: 0x5C89C9, sepia: 0x5C89C9, medium: 0x8FB4EA, dark: 0x8FB4EA)
+    }
+
+    static var stepUpcoming: Color {
+        themedColor(light: 0xD0D4D8, sepia: 0xD4C8B8, medium: 0x5A5A5A, dark: 0x404040)
+    }
+
     static func themedColor(light: Int, sepia: Int, medium: Int, dark: Int) -> Color {
         guard let themeManager = ThemeManager.shared else {
             return colorFromHex(light)

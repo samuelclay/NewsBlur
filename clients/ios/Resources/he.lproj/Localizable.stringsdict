@@ -218,6 +218,24 @@
 			<string>נבחרו %@ פידים</string>
 		</dict>
 	</dict>
+	<key>%@ feeds so far</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_feeds_so_far@</string>
+		<key>describe_feeds_so_far</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>עד כה %@ פיד</string>
+			<key>other</key>
+			<string>%@ פידים עד כה</string>
+			<key>two</key>
+			<string>פידים עד כה: %@</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -684,6 +702,24 @@
 			<string>קדימה %@ שניות</string>
 			<key>two</key>
 			<string>קדימה %@ שניות</string>
+		</dict>
+	</dict>
+	<key>Found %@ feeds that match your description</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_found_feeds@</string>
+		<key>describe_found_feeds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נמצא פיד %@ שתואם לתיאור שלך</string>
+			<key>other</key>
+			<string>נמצאו %@ פידים שתואמים לתיאור שלך</string>
+			<key>two</key>
+			<string>נמצאו %@ פידים שמתאימים לתיאור שלך</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

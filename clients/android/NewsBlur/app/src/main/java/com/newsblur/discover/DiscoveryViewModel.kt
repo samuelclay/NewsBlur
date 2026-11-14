@@ -48,6 +48,7 @@ data class DiscoveryState(
     val newsTopic: String = "",
     val newsCategory: String = "",
     val language: String = "en",
+    val describe: DescribeState = DescribeState(),
 ) {
     val page: DiscoveryPage get() = pages[tab] ?: DiscoveryPage()
 }
@@ -58,6 +59,7 @@ class DiscoveryViewModel
     constructor(
         private val api: DiscoveryApi,
         private val feedApi: FeedApi,
+        private val describeApi: DescribeApi,
         private val saved: SavedStateHandle,
         private val viewPreferences: DiscoveryViewPreferences,
     ) : ViewModel() {
@@ -76,6 +78,7 @@ class DiscoveryViewModel
                     language = saved["language"] ?: "en",
                     web = WebDiscoveryState(url = saved["webUrl"] ?: "", hint = saved["webHint"] ?: ""),
                     pages = DiscoveryTab.entries.associateWith { tab -> DiscoveryPage(query = saved["query_${tab.name}"] ?: "") },
+                    describe = DescribeState(prompt = saved[DESCRIBE_PROMPT] ?: ""),
                 ),
             )
         val state = mutable.asStateFlow()
@@ -83,6 +86,9 @@ class DiscoveryViewModel
         private val generations = mutableMapOf<DiscoveryTab, Int>()
         private var webJob: Job? = null
         private var webGeneration = 0
+        private var describeJob: Job? = null
+        private var describeGeneration = 0
+        private var describeHistoryLoading = false
 
         init {
             viewModelScope.launch {
@@ -115,7 +121,10 @@ class DiscoveryViewModel
         fun selectTab(tab: DiscoveryTab) {
             saved[TAB] = tab.name
             mutable.update { it.copy(tab = tab, error = null, notice = null) }
-            if (tab != DiscoveryTab.WEB && tab != DiscoveryTab.GOOGLE && !state.value.page.loaded && !state.value.page.loading) load(tab)
+            when {
+                tab == DiscoveryTab.DESCRIBE -> describeLoadHistory()
+                tab != DiscoveryTab.WEB && tab != DiscoveryTab.GOOGLE && !state.value.page.loaded && !state.value.page.loading -> load(tab)
+            }
         }
 
         fun setFolders(
@@ -544,9 +553,220 @@ class DiscoveryViewModel
             api.request(path, params, post)
         }
 
+        // Describe ------------------------------------------------------------------------------------------------
+        // DiscoveryViewModel.kt owns the Describe search so it keeps polling while a result's preview is open on top,
+        // and so the results and composer text are intact when the preview closes.
+
+        private fun describeUpdate(change: (DescribeState) -> DescribeState) {
+            mutable.update { it.copy(describe = change(it.describe)) }
+        }
+
+        fun describeEdit(prompt: String) {
+            saved[DESCRIBE_PROMPT] = prompt
+            describeUpdate { it.copy(prompt = prompt) }
+        }
+
+        // DiscoverSitesActivity.kt seeds a description typed into the add-site sheet (AddSiteSheet.kt) and runs it at once.
+        fun describeSeed(prompt: String) {
+            selectTab(DiscoveryTab.DESCRIBE)
+            describeStart(prompt)
+        }
+
+        fun describeStart(
+            prompt: String = state.value.describe.prompt,
+            searchId: String? = null,
+        ) {
+            val text = prompt.trim()
+            if (text.isBlank() || state.value.describe.starting) return
+            // DiscoveryViewModel.kt: the search on screen keeps its poll until the server accepts this start. The composer in
+            // DescribeTab.kt stays enabled while a search runs and the server allows one search per user, so a rejected or
+            // failed start must leave the running search updating. The generation only moves once a new search replaces it.
+            val token = describeGeneration
+            describeEdit(text)
+            describeUpdate { it.copy(starting = true, error = null, upgradeMessage = null) }
+            viewModelScope.launch {
+                try {
+                    val result = withContext(workerDispatcher) { describeApi.start(text, searchId, UUID.randomUUID().toString()) }
+                    if (token != describeGeneration) return@launch
+                    when (result) {
+                        is DescribeStart.Started -> {
+                            describeJob?.cancel()
+                            val started = ++describeGeneration
+                            describeJob = coroutineContext[Job]
+                            describeShow(result.search, result.usage, toTop = true, syncPrompt = true)
+                            describePoll(started)
+                        }
+                        is DescribeStart.Denied ->
+                            describeUpdate {
+                                it.copy(
+                                    starting = false,
+                                    usage = result.usage ?: it.usage,
+                                    upgradeMessage = if (result.upgrade) result.message else null,
+                                    error = if (result.upgrade) null else describeError(result.message, DescribeError.StartFailed),
+                                )
+                            }
+                    }
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: Exception) {
+                    if (token == describeGeneration) {
+                        describeUpdate { it.copy(starting = false, error = describeError(error, DescribeError.StartFailed)) }
+                    }
+                }
+            }
+        }
+
+        fun describeAgain() {
+            val search = state.value.describe.search ?: return
+            describeStart(search.prompt, search.id)
+        }
+
+        // DiscoveryViewModel.kt replays a history entry from the server cache and resumes polling if it is still running.
+        fun describeOpen(searchId: String) {
+            if (searchId.isBlank() || state.value.describe.search?.id == searchId) return
+            describeJob?.cancel()
+            val token = ++describeGeneration
+            saved[DESCRIBE_SEARCH_ID] = searchId
+            describeUpdate { it.copy(search = null, loading = true, starting = false, error = null, upgradeMessage = null) }
+            describeJob =
+                viewModelScope.launch {
+                    try {
+                        val search = withContext(workerDispatcher) { describeApi.status(searchId) }
+                        if (token != describeGeneration) return@launch
+                        describeShow(search, null, toTop = false, syncPrompt = true)
+                        describePoll(token)
+                    } catch (cancelled: CancellationException) {
+                        throw cancelled
+                    } catch (error: Exception) {
+                        if (token == describeGeneration) {
+                            describeUpdate { it.copy(loading = false, error = describeError(error, DescribeError.LoadFailed)) }
+                        }
+                    }
+                }
+        }
+
+        fun describeDelete(searchId: String) {
+            viewModelScope.launch {
+                try {
+                    val history = withContext(workerDispatcher) { describeApi.delete(searchId) }
+                    describeUpdate { it.copy(history = history, error = null) }
+                    if (state.value.describe.search?.id == searchId) describeNew()
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: Exception) {
+                    describeUpdate { it.copy(error = describeError(error, DescribeError.DeleteFailed)) }
+                }
+            }
+        }
+
+        fun describeNew() {
+            describeJob?.cancel()
+            describeGeneration++
+            saved[DESCRIBE_SEARCH_ID] = null
+            describeEdit("")
+            describeUpdate { it.copy(search = null, starting = false, loading = false, error = null, upgradeMessage = null) }
+        }
+
+        private fun describeLoadHistory() {
+            if (state.value.describe.historyLoaded || describeHistoryLoading) return
+            describeHistoryLoading = true
+            viewModelScope.launch {
+                try {
+                    val history = withContext(workerDispatcher) { describeApi.history() }
+                    describeUpdate { it.copy(history = history.searches, usage = history.usage ?: it.usage, historyLoaded = true) }
+                    // DiscoveryViewModel.kt: after process death the open search comes back from the server cache.
+                    val restored = saved.get<String>(DESCRIBE_SEARCH_ID)
+                    val current = state.value.describe
+                    if (!restored.isNullOrBlank() && current.search == null && !current.starting && !current.loading) {
+                        if (history.searches.any { it.id == restored }) describeOpen(restored) else saved[DESCRIBE_SEARCH_ID] = null
+                    }
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (_: Exception) {
+                    // DiscoveryViewModel.kt: an unreachable history rail stays empty; starting a search reports its own error.
+                    describeUpdate { it.copy(historyLoaded = true) }
+                } finally {
+                    describeHistoryLoading = false
+                }
+            }
+        }
+
+        private fun describeShow(
+            search: DescribeSearch,
+            usage: DescribeUsage?,
+            toTop: Boolean,
+            syncPrompt: Boolean,
+            polled: Boolean = false,
+        ) {
+            saved[DESCRIBE_SEARCH_ID] = search.id
+            if (syncPrompt) saved[DESCRIBE_PROMPT] = search.prompt
+            describeUpdate {
+                it.copy(
+                    prompt = if (syncPrompt) search.prompt else it.prompt,
+                    search = search,
+                    history = describeHistoryWith(it.history, search.summary, toTop),
+                    usage = usage ?: it.usage,
+                    // DiscoveryViewModel.kt: a poll can land while describeStart is in flight or just after it was rejected,
+                    // so it leaves the start flag and the rejection message alone.
+                    starting = if (polled) it.starting else false,
+                    loading = false,
+                    error = if (polled) it.error else null,
+                )
+            }
+        }
+
+        // DiscoveryViewModel.kt: a started or re-run search is the newest, so it moves to the top of the rail like the web.
+        private fun describeHistoryWith(
+            history: List<DescribeSummary>,
+            summary: DescribeSummary,
+            toTop: Boolean,
+        ): List<DescribeSummary> =
+            when {
+                toTop -> listOf(summary) + history.filter { it.id != summary.id }
+                history.any { it.id == summary.id } -> history.map { if (it.id == summary.id) summary else it }
+                else -> listOf(summary) + history
+            }
+
+        // DiscoveryViewModel.kt polls /discover/describe/status every 2.5 seconds; results are replaced wholesale and the
+        // cards keyed by feed id in DescribeTab.kt update in place, so verdicts and pruned feeds never flash the list.
+        private suspend fun describePoll(token: Int) {
+            while (token == describeGeneration && state.value.describe.search?.running == true) {
+                delay(DESCRIBE_POLL_INTERVAL_MS)
+                val searchId = state.value.describe.search?.id ?: return
+                try {
+                    val search = withContext(workerDispatcher) { describeApi.status(searchId) }
+                    if (token != describeGeneration) return
+                    describeShow(search, null, toTop = false, syncPrompt = false, polled = true)
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: DescribeRequestException) {
+                    // DiscoveryViewModel.kt: a server reply ends the poll (the search was deleted elsewhere); a dropped request retries.
+                    if (error.serverMessage != null && token == describeGeneration) {
+                        describeUpdate { it.copy(error = DescribeError.Message(error.serverMessage)) }
+                        return
+                    }
+                } catch (_: Exception) {
+                    if (token != describeGeneration) return
+                }
+            }
+        }
+
+        private fun describeError(
+            error: Exception,
+            fallback: DescribeError,
+        ): DescribeError = describeError((error as? DescribeRequestException)?.serverMessage.orEmpty(), fallback)
+
+        private fun describeError(
+            message: String,
+            fallback: DescribeError,
+        ): DescribeError = message.takeIf { it.isNotBlank() }?.let { DescribeError.Message(it) } ?: fallback
+
         companion object {
             const val TAB = "tab"
             const val FOLDER = "folder"
+            const val DESCRIBE_PROMPT = "describe_prompt"
+            const val DESCRIBE_SEARCH_ID = "describe_search_id"
+            const val DESCRIBE_POLL_INTERVAL_MS = 2500L
 
             internal fun isAddress(query: String) = query.contains("://") || (!query.contains(' ') && query.contains('.'))
         }

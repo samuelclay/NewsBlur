@@ -96,11 +96,34 @@ struct AddSiteView: View {
     var onDismiss: () -> Void
     var onEditingChanged: ((Bool) -> Void)?
     var onDiscover: ((DiscoverTab) -> Void)?
+    // AddSiteView.swift hands a written description to the Describe tab of Discover Sites (DescribeTabView.swift).
+    var onDescribe: ((String) -> Void)?
 
     private enum InputField: Hashable {
         case url, folder
     }
     @FocusState private var focusedField: InputField?
+
+    private var describePrompt: String? {
+        guard onDescribe != nil else { return nil }
+        return viewModel.describePrompt
+    }
+
+    private var showsAutocompleteList: Bool {
+        (!viewModel.autocompleteResults.isEmpty || describePrompt != nil) && !viewModel.isAdding
+    }
+
+    // AddSiteView.swift routes a description to Describe before trying it as a site address, like save_add_url in
+    // reader_add_feed.js.
+    private func submitInput() {
+        if let prompt = describePrompt, let onDescribe {
+            onDescribe(prompt)
+        } else if viewModel.searchText.contains(".") {
+            viewModel.addSite()
+        } else {
+            viewModel.onSearchTextChanged()
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -131,7 +154,7 @@ struct AddSiteView: View {
                     .padding(.top, 4)
             }
 
-            if !viewModel.autocompleteResults.isEmpty && !viewModel.isAdding {
+            if showsAutocompleteList {
                 autocompleteList
             }
 
@@ -189,6 +212,7 @@ struct AddSiteView: View {
         let icon: (name: String, set: String)
         switch tab {
         case .search: icon = ("search", "lucide")
+        case .describe: icon = ("sparkles", "lucide")
         case .webFeed: icon = ("globe", "lucide")
         case .popular: icon = ("fire", "heroicons-solid")
         case .youtube: icon = ("youtube", "lucide")
@@ -273,14 +297,8 @@ struct AddSiteView: View {
                     .disableAutocorrection(true)
                     .keyboardType(.URL)
                     .focused($focusedField, equals: .url)
-                    .submitLabel(viewModel.searchText.contains(".") ? .done : .search)
-                    .onSubmit {
-                        if viewModel.searchText.contains(".") {
-                            viewModel.addSite()
-                        } else {
-                            viewModel.onSearchTextChanged()
-                        }
-                    }
+                    .submitLabel(viewModel.searchText.contains(".") && describePrompt == nil ? .done : .search)
+                    .onSubmit(submitInput)
                     .accessibilityIdentifier("add-site-url-field")
 
                 if viewModel.isSearching {
@@ -348,7 +366,7 @@ struct AddSiteView: View {
 
             Spacer().frame(width: 8)
 
-            Button(action: { viewModel.addSite() }) {
+            Button(action: submitInput) {
                 Text(NBLocalization.text("Add site"))
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(.white)
@@ -452,6 +470,10 @@ struct AddSiteView: View {
     private var autocompleteList: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
+                // AddSiteView.swift keeps the Describe row nearest the input, like the web's autocomplete menu.
+                if let prompt = describePrompt {
+                    describeRow(prompt)
+                }
                 ForEach(Array(viewModel.autocompleteResults.enumerated()), id: \.element.id) { index, result in
                     autocompleteRow(result, index: index)
                 }
@@ -459,6 +481,48 @@ struct AddSiteView: View {
         }
         .padding(.top, 8)
         .accessibilityIdentifier("add-site-autocomplete-list")
+    }
+
+    private func describeRow(_ prompt: String) -> some View {
+        Button(action: { onDescribe?(prompt) }) {
+            HStack(spacing: 10) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(AddSiteColors.accent)
+                    .frame(width: 28, height: 28)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(String(format: NBLocalization.text("Find feeds about “%@”"), prompt))
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(AddSiteColors.textPrimary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+
+                    Text(NBLocalization.text("Describe what you want to read and NewsBlur finds matching feeds"))
+                        .font(.system(size: 12))
+                        .foregroundColor(AddSiteColors.textSecondary)
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: 4)
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(AddSiteColors.textSecondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+        .accessibilityIdentifier("add-site-describe-row")
+        .background(AddSiteColors.cardBackground)
+        .overlay(
+            Rectangle()
+                .fill(AddSiteColors.border.opacity(0.5))
+                .frame(height: 1),
+            alignment: .bottom
+        )
     }
 
     private func autocompleteRow(_ result: AutocompleteResult, index: Int) -> some View {

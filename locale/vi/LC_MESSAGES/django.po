@@ -121,6 +121,16 @@ msgid_plural "%(count)s days"
 msgstr[0] "%(count)s ngày"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s giờ"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s phút"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s tháng"
@@ -1305,6 +1315,10 @@ msgstr "Gói trả phí rẻ nhất"
 msgid "Check the FAQ"
 msgstr "Xem câu hỏi thường gặp"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "Đang kiểm tra %(site)s để tìm nguồn cấp dữ liệu"
+
 msgid "Chief Morale Officer"
 msgstr "Giám đốc phụ trách tinh thần"
 
@@ -1673,8 +1687,18 @@ msgstr "Mặc định"
 msgid "Delete"
 msgstr "Xóa"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "Hãy mô tả ngắn gọn nội dung bạn muốn đọc."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Mô tả nguồn cấp bạn muốn tìm là tính năng Premium. Nâng cấp để tìm kiếm theo mô tả."
+
 msgid "Description"
 msgstr "Mô tả"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "Mô tả có giới hạn %(limit)d ký tự"
 
 msgid "Developer"
 msgstr "Nhà phát triển"
@@ -3115,6 +3139,10 @@ msgstr[0] ""
 "tôi vừa ra mắt một thiết kế hoàn toàn mới, cùng tính năng chia sẻ bài viết (Blurblog) và ứng dụng "
 "iOS/Android chính thức. Nếu bạn nhớ các tính năng cũ của Google Reader, bạn sẽ thích phiên bản NewsBlur "
 "mới."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "Đang đánh giá %(count)s nguồn cấp dựa trên mô tả của bạn"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4836,6 +4864,9 @@ msgstr "Đọc tin tức vui hơn khi có bạn bè. Chia sẻ bài viết trên
 msgid "Reading stories across folders with River of News"
 msgstr "Đọc bài viết trong các thư mục bằng Dòng tin"
 
+msgid "Reading your description"
+msgstr "Đang đọc mô tả của bạn"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5213,6 +5244,12 @@ msgstr "Tìm kiếm Kho lưu trữ bài đã đọc"
 msgid "Search your entire archive with full-text search"
 msgstr "Tìm kiếm toàn bộ kho lưu trữ bằng chức năng tìm kiếm toàn văn"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "Đang tìm trong các nguồn cấp của NewsBlur"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "Đang tìm trên web các nguồn cấp mà NewsBlur chưa thấy"
+
 msgid "Searching your sites and saved stories"
 msgstr "Tìm kiếm trong các trang web và bài viết đã lưu"
 
@@ -5485,6 +5522,9 @@ msgstr "Email này đã được người khác sử dụng."
 
 msgid "Someone is already using that username."
 msgstr "Tên người dùng này đã có người sử dụng."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "Đã xảy ra lỗi khi tìm kiếm. Vui lòng thử lại."
 
 msgid "Something went wrong..."
 msgstr "Đã xảy ra lỗi..."
@@ -5824,6 +5864,12 @@ msgstr "Mục đó không phát"
 msgid "That part of the story doesn't exist."
 msgstr "Phần đó của bài viết không tồn tại."
 
+msgid "That search is no longer in your history."
+msgstr "Tìm kiếm đó không còn trong lịch sử của bạn."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "Tìm kiếm đó vẫn đang chạy. Hãy đợi hoàn tất trước."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Bài viết đó đã bị xóa khỏi nguồn cấp, không cần đánh dấu là chưa đọc."
 
@@ -5972,6 +6018,12 @@ msgstr "Bài viết gốc từ các nguồn cấp RSS bị cắt ngắn được
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Giống như các nguồn cấp thông thường. Người dùng Premium và Pro được cập nhật thường xuyên hơn."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "Không thể kết nối đến các dịch vụ cần thiết để tìm kiếm. Vui lòng thử lại."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "Tìm kiếm đã hết thời gian, nên đây là những gì tìm được cho đến lúc này."
+
 msgid "The shared comment cannot be found."
 msgstr "Không tìm thấy bình luận được chia sẻ."
 
@@ -6085,6 +6137,9 @@ msgstr "Đây đã là nguồn cấp dữ liệu RSS. Đang đăng ký trực ti
 
 msgid "This payment has been refunded."
 msgstr "Khoản thanh toán này đã được hoàn tiền."
+
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Tìm kiếm này đã dừng trước khi hoàn tất. Tìm kiếm lại để thử lại."
 
 msgid "This story has no text to read aloud."
 msgstr "Bài viết này không có văn bản để đọc thành tiếng."
@@ -6926,6 +6981,9 @@ msgstr "Hôm qua, %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "Hôm qua, %(time)s"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Bạn đã có một lượt tìm kiếm đang chạy. Hãy chờ lượt đó hoàn tất trước."
+
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
@@ -7041,6 +7099,11 @@ msgid ""
 msgstr ""
 "Bạn đã theo dõi <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>."
+
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "Hôm nay bạn còn %(count)s lượt tìm kiếm bằng mô tả (đặt lại sau %(time)s)."
 
 msgid "You have a follow request:"
 msgstr "Bạn có yêu cầu theo dõi:"
@@ -7318,6 +7381,10 @@ msgid ""
 msgstr ""
 "Gần đây bạn đã sử dụng NewsBlur, nên có thể bạn không định chuyển lại sang tài khoản miễn phí? Có lẽ bạn "
 "chỉ cần gia hạn tài khoản Premium. Hãy để chúng tôi giúp bạn."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "Bạn đã dùng hết %(limit)s lượt tìm kiếm bằng mô tả hôm nay. Giới hạn sẽ được đặt lại sau %(time)s."
 
 msgid "YouTube search request failed."
 msgstr "Yêu cầu tìm kiếm YouTube không thành công."

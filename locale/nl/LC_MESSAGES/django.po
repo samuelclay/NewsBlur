@@ -129,6 +129,18 @@ msgstr[0] "%(count)s dag"
 msgstr[1] "%(count)s dagen"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s uur"
+msgstr[1] "%(count)s uur"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minuut"
+msgstr[1] "%(count)s minuten"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s maand"
@@ -1327,6 +1339,10 @@ msgstr "Goedkoopste betaalde abonnement"
 msgid "Check the FAQ"
 msgstr "Bekijk de FAQ"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "%(site)s controleren op een feed"
+
 msgid "Chief Morale Officer"
 msgstr "Hoofd moreel"
 
@@ -1698,8 +1714,18 @@ msgstr "Standaard"
 msgid "Delete"
 msgstr "Verwijderen"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "Beschrijf in een paar woorden wat je wilt lezen."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Beschrijven welke feeds je zoekt is een Premium-functie. Upgrade om op beschrijving te zoeken."
+
 msgid "Description"
 msgstr "Beschrijving"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "Beschrijvingen mogen maximaal %(limit)d tekens bevatten"
 
 msgid "Developer"
 msgstr "Ontwikkelaar"
@@ -3155,6 +3181,10 @@ msgstr[1] ""
 "Je hebt %(counter)s maanden geleden voor het laatst naar NewsBlur gekeken. Sindsdien is er veel veranderd. "
 "We hebben net een volledig vernieuwd ontwerp gelanceerd, met gedeelde artikelen (blurblogs) en native iOS- "
 "en Android-apps. Mis je de oude functies van Google Reader, dan zul je de nieuwe NewsBlur geweldig vinden."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "%(count)s feeds worden beoordeeld op basis van je beschrijving"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4885,6 +4915,9 @@ msgstr "Nieuws lezen is leuker met vrienden. Deel artikelen op je openbare Blurb
 msgid "Reading stories across folders with River of News"
 msgstr "Artikelen in verschillende mappen lezen met de Nieuwsstroom"
 
+msgid "Reading your description"
+msgstr "Je beschrijving lezen"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5264,6 +5297,12 @@ msgstr "Doorzoek je leesarchief"
 msgid "Search your entire archive with full-text search"
 msgstr "Doorzoek je volledige archief met zoeken in de volledige tekst"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "De feeds van NewsBlur doorzoeken"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "Op het web zoeken naar feeds die NewsBlur nog niet heeft gezien"
+
 msgid "Searching your sites and saved stories"
 msgstr "Je sites en opgeslagen artikelen doorzoeken"
 
@@ -5540,6 +5579,9 @@ msgstr "Iemand gebruikt dat e-mailadres al."
 
 msgid "Someone is already using that username."
 msgstr "Iemand gebruikt deze gebruikersnaam al."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "Er is iets misgegaan tijdens het zoeken. Probeer het opnieuw."
 
 msgid "Something went wrong..."
 msgstr "Er is iets misgegaan..."
@@ -5880,6 +5922,12 @@ msgstr "Dit item wordt niet afgespeeld"
 msgid "That part of the story doesn't exist."
 msgstr "Dat deel van het artikel bestaat niet."
 
+msgid "That search is no longer in your history."
+msgstr "Die zoekopdracht staat niet meer in je geschiedenis."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "Die zoekopdracht is nog bezig. Wacht tot deze is afgerond."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Dit artikel is uit de feed verwijderd; je hoeft het niet als ongelezen te markeren."
 
@@ -6029,6 +6077,12 @@ msgstr "Het oorspronkelijke artikel uit afgekorte RSS-feeds wordt naadloos uitge
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Hetzelfde als gewone feeds. Premium- en Pro-gebruikers krijgen updates vaker."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "De zoekopdracht kon de benodigde services niet bereiken. Probeer het opnieuw."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "De zoekopdracht duurde te lang. Dit is wat er tot nu toe is gevonden."
+
 msgid "The shared comment cannot be found."
 msgstr "De gedeelde reactie kan niet worden gevonden."
 
@@ -6148,6 +6202,9 @@ msgstr "Dit is al een RSS-feed. Er wordt rechtstreeks op geabonneerd."
 
 msgid "This payment has been refunded."
 msgstr "Deze betaling is terugbetaald."
+
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Deze zoekopdracht is gestopt voordat deze klaar was. Zoek opnieuw om het opnieuw te proberen."
 
 msgid "This story has no text to read aloud."
 msgstr "Dit artikel bevat geen tekst om voor te lezen."
@@ -6979,6 +7036,9 @@ msgstr "Gisteren, %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "Gisteren, %(time)s"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Je hebt al een zoekopdracht lopen. Wacht eerst tot deze klaar is."
+
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
@@ -7100,6 +7160,12 @@ msgid ""
 msgstr ""
 "Je bent <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span> gaan volgen."
+
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "Je hebt vandaag nog %(count)s zoekopdracht voor Beschrijven (wordt gereset over %(time)s)."
+msgstr[1] "Je hebt vandaag nog %(count)s zoekopdrachten voor Beschrijven (wordt gereset over %(time)s)."
 
 msgid "You have a follow request:"
 msgstr "Je hebt een volgverzoek:"
@@ -7389,6 +7455,12 @@ msgid ""
 msgstr ""
 "Je bent onlangs op NewsBlur geweest, dus misschien was het niet je bedoeling om terug te gaan naar het "
 "gratis account. Misschien hoef je alleen je Premium-abonnement te verlengen. We helpen je daarbij."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr ""
+"Je hebt vandaag alle %(limit)s zoekopdrachten met beschrijvingen gebruikt. Je limiet wordt over %(time)s "
+"opnieuw ingesteld."
 
 msgid "YouTube search request failed."
 msgstr "Zoekopdracht op YouTube is mislukt."

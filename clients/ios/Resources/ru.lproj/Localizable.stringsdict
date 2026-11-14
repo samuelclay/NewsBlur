@@ -242,6 +242,26 @@
 			<string>Выбрано %@ лент</string>
 		</dict>
 	</dict>
+	<key>%@ feeds so far</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_feeds_so_far@</string>
+		<key>describe_feeds_so_far</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Пока найдено %@ ленты</string>
+			<key>many</key>
+			<string>Пока найдено %@ лент</string>
+			<key>one</key>
+			<string>Пока найдено %@ лента</string>
+			<key>other</key>
+			<string>Пока найдено лент: %@</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -760,6 +780,26 @@
 			<string>Вперёд на %@ секунду</string>
 			<key>other</key>
 			<string>Вперёд на %@ секунд</string>
+		</dict>
+	</dict>
+	<key>Found %@ feeds that match your description</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_found_feeds@</string>
+		<key>describe_found_feeds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Найдено %@ ленты, соответствующих вашему описанию</string>
+			<key>many</key>
+			<string>По вашему описанию найдено лент: %@</string>
+			<key>one</key>
+			<string>Найдена %@ лента, соответствующая вашему описанию</string>
+			<key>other</key>
+			<string>По вашему описанию найдено лент: %@</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

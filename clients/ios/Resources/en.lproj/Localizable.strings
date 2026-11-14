@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@ folder, collapsed, %2$@";
 "%1$@ followed %2$@." = "%1$@ followed %2$@.";
 "%1$@ of %2$@ of listening left this week" = "%1$@ of %2$@ of listening left this week";
+"%1$@ of %2$@ searches left today" = "%1$@ of %2$@ searches left today";
 "%1$@ of %2$@ sites indexed" = "%1$@ of %2$@ sites indexed";
 "%1$@ of %2$@ story previews used today" = "%1$@ of %2$@ story previews used today";
 "%1$@ on all sites (%2$@)" = "%1$@ on all sites (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "%@ feeds added.";
 "%@ feeds couldn’t be added." = "%@ feeds couldn’t be added.";
 "%@ feeds selected" = "%@ feeds selected";
+"%@ feeds so far" = "%@ feeds so far";
 "%@ focused stories" = "%@ focused stories";
 "%@ folder" = "%@ folder";
 "%@ free story previews left today" = "%@ free story previews left today";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ subscribers";
 "%@ unread stories" = "%@ unread stories";
 "%@ voice previews left" = "%@ voice previews left";
+"%@/10" = "%@/10";
 "%@/story" = "%@/story";
+"%@d ago" = "%@d ago";
+"%@w ago" = "%@w ago";
 "%@×" = "%@×";
 "%ldd ago" = "%ldd ago";
 "%ldh ago" = "%ldh ago";
@@ -197,7 +202,9 @@
 "Back %@ seconds" = "Back %@ seconds";
 "Back to story titles" = "Back to story titles";
 "Based on your interests" = "Based on your interests";
+"Bike touring and long-distance cycling trip reports" = "Bike touring and long-distance cycling trip reports";
 "Black" = "Black";
+"Book reviews of new science fiction and fantasy" = "Book reviews of new science fiction and fantasy";
 "Bottom" = "Bottom";
 "Brightness Override" = "Brightness Override";
 "Brightness threshold" = "Brightness threshold";
@@ -310,9 +317,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone.";
 "Deleting..." = "Deleting...";
 "Delivery" = "Delivery";
+"Describe" = "Describe";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Describe a topic and AI will score each story against your prompt to focus or hide matches.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”";
 "Describe what to focus or hide" = "Describe what to focus or hide";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "Describe what to look for and AI will analyze each story’s images against your prompt.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "Describe what you want to read and NewsBlur finds matching feeds";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "Describing the feeds you want is a premium feature. Upgrade to search by description.";
 "Discover" = "Discover";
 "Discover more to read" = "Discover more to read";
 "Discover related sites" = "Discover related sites";
@@ -344,6 +355,7 @@
 "Email" = "Email";
 "Ember Orange" = "Ember Orange";
 "Enabled" = "Enabled";
+"Engineers writing about how large systems fail" = "Engineers writing about how large systems fail";
 "Enter URL phrase..." = "Enter URL phrase...";
 "Enter a custom search query..." = "Enter a custom search query...";
 "Enter a web page URL..." = "Enter a web page URL...";
@@ -373,6 +385,7 @@
 "Extra Small" = "Extra Small";
 "Extra Tall" = "Extra Tall";
 "Extra small" = "Extra small";
+"Failed" = "Failed";
 "Faster" = "Faster";
 "Favorited" = "Favorited";
 "Favoriting" = "Favoriting";
@@ -387,9 +400,13 @@
 "Fetching recent stories..." = "Fetching recent stories...";
 "Fetching stories from this site..." = "Fetching stories from this site...";
 "Fetching text..." = "Fetching text...";
+"Film photography with notes on cameras and film stocks" = "Film photography with notes on cameras and film stocks";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter stories by date range";
 "Find Friends" = "Find Friends";
+"Find feeds" = "Find feeds";
+"Find feeds about “%@”" = "Find feeds about “%@”";
+"Find feeds by describing them" = "Find feeds by describing them";
 "Find in Feed" = "Find in Feed";
 "Find in Sites" = "Find in Sites";
 "Find in feed" = "Find in feed";
@@ -429,6 +446,8 @@
 "Forgot Password?" = "Forgot Password?";
 "Forgot your password?" = "Forgot your password?";
 "Forward %@ seconds" = "Forward %@ seconds";
+"Found %@ feeds that match your description" = "Found %@ feeds that match your description";
+"Found on the web" = "Found on the web";
 "Frequency" = "Frequency";
 "Friday" = "Friday";
 "Friends" = "Friends";
@@ -484,6 +503,7 @@
 "Import or upload sites" = "Import or upload sites";
 "Imported %@ sites" = "Imported %@ sites";
 "Importing sites..." = "Importing sites...";
+"In progress" = "In progress";
 "In-app Safari" = "In-app Safari";
 "In-app browser" = "In-app browser";
 "Include" = "Include";
@@ -492,6 +512,7 @@
 "Include in bundle" = "Include in bundle";
 "Included in bundle" = "Included in bundle";
 "Increase or remove your limit" = "Increase or remove your limit";
+"Indie game developers writing about their work in progress" = "Indie game developers writing about their work in progress";
 "Infrequent Site Stories" = "Infrequent Site Stories";
 "Infrequent Stories" = "Infrequent Stories";
 "Infrequent stories per month" = "Infrequent stories per month";
@@ -502,6 +523,8 @@
 "Interactions" = "Interactions";
 "Invalid: %@" = "Invalid: %@";
 "Invoice" = "Invoice";
+"Judging" = "Judging";
+"Judging…" = "Judging…";
 "Keeps the dark icon no matter how your device is set." = "Keeps the dark icon no matter how your device is set.";
 "Keeps the light icon no matter how your device is set." = "Keeps the light icon no matter how your device is set.";
 "Keyboard Shortcuts" = "Keyboard Shortcuts";
@@ -540,8 +563,10 @@
 "Loading sources" = "Loading sources";
 "Loading voices…" = "Loading voices…";
 "Loading your feeds…" = "Loading your feeds…";
+"Loading your search…" = "Loading your search…";
 "Loading..." = "Loading...";
 "Loading…" = "Loading…";
+"Local news and events in Portland, Oregon" = "Local news and events in Portland, Oregon";
 "Log In" = "Log In";
 "Log Out" = "Log Out";
 "Logged in as %@" = "Logged in as %@";
@@ -553,6 +578,7 @@
 "Logout" = "Logout";
 "Long Reads" = "Long Reads";
 "Long [preview length]" = "Long";
+"Long essays about cities, housing and public transit" = "Long essays about cities, housing and public transit";
 "Long press" = "Long press";
 "Long press on feeds and folders" = "Long press on feeds and folders";
 "Long press on story titles" = "Long press on story titles";
@@ -608,6 +634,8 @@
 "Mark this site as read" = "Mark this site as read";
 "Mark this story as read" = "Mark this story as read";
 "Match" = "Match";
+"Match score %@" = "Match score %@";
+"Matched “%@”" = "Matched “%@”";
 "Matches story" = "Matches story";
 "Meadow Sage" = "Meadow Sage";
 "Medium [grid height]" = "Medium";
@@ -666,6 +694,7 @@
 "Natural language text and image classifiers" = "Natural language text and image classifiers";
 "Nested" = "Nested";
 "Never" = "Never";
+"New" = "New";
 "New Folder" = "New Folder";
 "New Site" = "New Site";
 "New folder name" = "New folder name";
@@ -676,7 +705,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur checks for changes and delivers new stories to your feed.";
 "NewsBlur detected %@ from your device." = "NewsBlur detected %@ from your device.";
+"NewsBlur index" = "NewsBlur index";
 "NewsBlur password" = "NewsBlur password";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute.";
 "Next" = "Next";
 "Next Folder" = "Next Folder";
 "Next Site" = "Next Site";
@@ -693,6 +724,7 @@
 "No Story Lists" = "No Story Lists";
 "No Widget Sites" = "No Widget Sites";
 "No briefings yet" = "No briefings yet";
+"No feeds matched that description. Try describing it another way." = "No feeds matched that description. Try describing it another way.";
 "No feeds to show yet. Try another interest or search all sites." = "No feeds to show yet. Try another interest or search all sites.";
 "No friends to suggest." = "No friends to suggest.";
 "No interests or sites found. Try another search." = "No interests or sites found. Try another search.";
@@ -773,6 +805,7 @@
 "Pause Listening" = "Pause Listening";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Percentage of the visible story scrolled by Space or Shift-Space";
 "Permanently delete account" = "Permanently delete account";
+"Personal blogs about restoring old houses" = "Personal blogs about restoring old houses";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu.";
 "Pick which model writes your Daily Briefing" = "Pick which model writes your Daily Briefing";
@@ -800,6 +833,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium Subscription";
+"Premium feature" = "Premium feature";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants.";
 "Preparing audio…" = "Preparing audio…";
 "Preview ended. Premium Archive unlocks full stories" = "Preview ended. Premium Archive unlocks full stories";
@@ -838,6 +872,7 @@
 "Read Widely Read Stories" = "Read Widely Read Stories";
 "Read Widget Site Stories" = "Read Widget Site Stories";
 "Read by %@" = "Read by %@";
+"Reading" = "Reading";
 "Reading Stories" = "Reading Stories";
 "Reading a story" = "Reading a story";
 "Reading by folder is only available to" = "Reading by folder is only available to";
@@ -859,6 +894,7 @@
 "Reloading..." = "Reloading...";
 "Remove This List" = "Remove This List";
 "Remove from Up Next" = "Remove from Up Next";
+"Remove from history" = "Remove from history";
 "Removed from Up Next" = "Removed from Up Next";
 "Rename" = "Rename";
 "Rename \"%@\"" = "Rename \"%@\"";
@@ -882,6 +918,7 @@
 "Retry" = "Retry";
 "Retry Google Reader" = "Retry Google Reader";
 "Retry icons" = "Retry icons";
+"Reviews of new iOS apps with lots of screenshots" = "Reviews of new iOS apps with lots of screenshots";
 "River of News (reading by folder)" = "River of News (reading by folder)";
 "Rows" = "Rows";
 "Ruby Red" = "Ruby Red";
@@ -909,10 +946,12 @@
 "Saving search..." = "Saving search...";
 "Saving..." = "Saving...";
 "Schedule" = "Schedule";
+"Scientists explaining new research in plain language" = "Scientists explaining new research in plain language";
 "Scroll horizontally" = "Scroll horizontally";
 "Scroll to Comments" = "Scroll to Comments";
 "Scroll to comments" = "Scroll to comments";
 "Search YouTube channels..." = "Search YouTube channels...";
+"Search again" = "Search again";
 "Search feeds" = "Search feeds";
 "Search interests and sites" = "Search interests and sites";
 "Search newsletters..." = "Search newsletters...";
@@ -921,6 +960,10 @@
 "Search stories" = "Search stories";
 "Search subreddits..." = "Search subreddits...";
 "Search voices" = "Search voices";
+"Searches you run will be kept here." = "Searches you run will be kept here.";
+"Searching feeds" = "Searching feeds";
+"Searching for" = "Searching for";
+"Searching the web" = "Searching the web";
 "Searching…" = "Searching…";
 "Sections" = "Sections";
 "Select All" = "Select All";
@@ -1008,6 +1051,7 @@
 "Small Right" = "Small Right";
 "Small [text size]" = "Small";
 "Some feed icons couldn’t load." = "Some feed icons couldn’t load.";
+"Something went wrong while searching." = "Something went wrong while searching.";
 "Sources" = "Sources";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story.";
 "Space scroll amount" = "Space scroll amount";
@@ -1021,6 +1065,8 @@
 "Standard" = "Standard";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen.";
 "Start reading" = "Start reading";
+"Starting your search…" = "Starting your search…";
+"Starting…" = "Starting…";
 "Statistics" = "Statistics";
 "Statistics…" = "Statistics…";
 "Stay connected" = "Stay connected";
@@ -1112,6 +1158,7 @@
 "Text from yesterday" = "Text from yesterday";
 "Text view" = "Text view";
 "Text view conveniently extracts the story" = "Text view conveniently extracts the story";
+"That search could not be loaded." = "That search could not be loaded.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "That was a 30 second preview. Premium Archive unlocks full stories.";
 "The audio couldn't be loaded. Try again in a moment." = "The audio couldn't be loaded. Try again in a moment.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>";
@@ -1119,6 +1166,9 @@
 "The icon follows your device's light and dark appearance." = "The icon follows your device's light and dark appearance.";
 "The most important stories from your feeds" = "The most important stories from your feeds";
 "The request failed. Please try again." = "The request failed. Please try again.";
+"The search could not be started." = "The search could not be started.";
+"The search could not be started: %@" = "The search could not be started: %@";
+"The search is taking too long. Try searching again." = "The search is taking too long. Try searching again.";
 "The story doesn't link anywhere." = "The story doesn't link anywhere.";
 "Theme" = "Theme";
 "Theme variant for dark mode" = "Theme variant for dark mode";
@@ -1143,6 +1193,7 @@
 "Title only" = "Title only";
 "Titles in grid" = "Titles in grid";
 "Titles in list" = "Titles in list";
+"Today" = "Today";
 "Toggle Full Screen" = "Toggle Full Screen";
 "Toggle Read/Unread" = "Toggle Read/Unread";
 "Toggle read/unread" = "Toggle read/unread";
@@ -1168,6 +1219,7 @@
 "Try %@" = "Try %@";
 "Try again" = "Try again";
 "Try another name, or paste a site URL in Search." = "Try another name, or paste a site URL in Search.";
+"Try describing something like" = "Try describing something like";
 "Try search again" = "Try search again";
 "Trying Feed" = "Trying Feed";
 "Tuesday" = "Tuesday";
@@ -1192,6 +1244,7 @@
 "Unable to save notification settings." = "Unable to save notification settings.";
 "Understand" = "Understand";
 "Unfavorited" = "Unfavorited";
+"Unlimited searches" = "Unlimited searches";
 "Unlock full discovery" = "Unlock full discovery";
 "Unmute All" = "Unmute All";
 "Unmute site" = "Unmute site";
@@ -1243,11 +1296,13 @@
 "Voice" = "Voice";
 "Voice and music balance" = "Voice and music balance";
 "Voice settings" = "Voice settings";
+"Waiting for a verdict…" = "Waiting for a verdict…";
 "Warm" = "Warm";
 "Web" = "Web";
 "Web Feeds from any website, even without RSS" = "Web Feeds from any website, even without RSS";
 "Wednesday" = "Wednesday";
 "Weekly" = "Weekly";
+"Weeknight vegetarian recipes with step-by-step photos" = "Weeknight vegetarian recipes with step-by-step photos";
 "Welcome back" = "Welcome back";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "What do you 👍 %1$@ and 👎 %2$@ about this site?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "What do you 👍 %1$@ and 👎 %2$@ about this story?";
@@ -1286,6 +1341,7 @@
 "Your premium pro subscription is active" = "Your premium pro subscription is active";
 "Your premium subscription is active" = "Your premium subscription is active";
 "Your reading list" = "Your reading list";
+"Your searches" = "Your searches";
 "You’re all set up." = "You’re all set up.";
 "at %@" = "at %@";
 "by %@" = "by %@";

@@ -242,6 +242,26 @@
 			<string>Вибрано стрічок: %@</string>
 		</dict>
 	</dict>
+	<key>%@ feeds so far</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_feeds_so_far@</string>
+		<key>describe_feeds_so_far</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Поки що %@ стрічки</string>
+			<key>many</key>
+			<string>Поки що %@ стрічок</string>
+			<key>one</key>
+			<string>Поки що %@ стрічка</string>
+			<key>other</key>
+			<string>Стрічок наразі: %@</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -760,6 +780,26 @@
 			<string>Перемотати вперед на %@ секунду</string>
 			<key>other</key>
 			<string>Перемотати вперед на %@ секунд</string>
+		</dict>
+	</dict>
+	<key>Found %@ feeds that match your description</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_found_feeds@</string>
+		<key>describe_found_feeds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>За вашим описом знайдено %@ стрічки</string>
+			<key>many</key>
+			<string>За вашим описом знайдено %@ стрічок</string>
+			<key>one</key>
+			<string>Знайдено стрічку, що відповідає вашому опису: %@</string>
+			<key>other</key>
+			<string>За вашим описом знайдено %@ стрічок</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
