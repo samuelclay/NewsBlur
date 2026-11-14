@@ -66,6 +66,24 @@ original_page = (app) =>
             res.sendStatus 500
 
 
+    # Feed.expire_original_page (apps/rss_feeds/models.py) deletes a page nobody has opened
+    # in a month. A file that's already gone counts as deleted.
+    app.delete /^\/original_page\/(\d+)\/?/, (req, res) ->
+        feedId = parseInt req.params[0], 10
+        feedIdDir = splitFeedId feedId
+        filePath = "#{DB_PATH}/#{feedIdDir}.zhtml"
+
+        fsPromises.unlink(filePath).then ->
+            log.debug "Deleting: #{feedId} (#{filePath})"
+            res.send "OK"
+        .catch (err) ->
+            if err.code is 'ENOENT'
+                res.send "OK"
+            else
+                log.debug "Error deleting original page: #{feedId} (#{filePath}) #{err}"
+                res.sendStatus 500
+
+
     splitFeedId = (feedId) ->
         feedId += ''
         # x2 = if feedId.length > 1 then '.' + feedId[1] else ''

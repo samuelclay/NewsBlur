@@ -711,7 +711,6 @@
     <string name="intel_feed_header">ทั้งหมดจากผู้เผยแพร่</string>
     <string name="intel_super_dislike">ซ่อนบทความที่ตรงกัน</string>
     <string name="explainer_super_dislike">ซ่อน</string>
-    <string name="explainer_ai_filter">ตัวกรอง AI</string>
     <string name="explainer_like">ชอบ</string>
     <string name="explainer_dislike">ไม่ชอบ</string>
     <string name="explainer_beats">ชนะ</string>
@@ -719,7 +718,6 @@
     <string name="explainer_example1_result">บทความจะแสดงในมุมมองโฟกัส</string>
     <string name="explainer_example2_header">“ซ่อน” มีผลเหนือทุกอย่าง แม้แต่ “ชอบ”</string>
     <string name="explainer_example2_result">บทความจะถูกซ่อนเสมอ</string>
-    <string name="explainer_example3_header">ตัวกรอง AI มีผลเหนือการชอบและไม่ชอบ แต่ไม่เหนือการซ่อน</string>
     <string name="trainer_question_story">คุณชอบ 👍 %1$s และไม่ชอบ 👎 %2$s อะไรเกี่ยวกับบทความนี้</string>
     <string name="trainer_question_site">คุณชอบ 👍 %1$s และไม่ชอบ 👎 %2$s อะไรเกี่ยวกับเว็บไซต์นี้</string>
     <string name="trainer_question_like">ชอบ</string>

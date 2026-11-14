@@ -127,3 +127,28 @@ class Test_LLMCostPricing(TestCase):
         at_threshold = LLMCostTracker.calculate_cost("grok-4.7", 200_000, 1_000)
         self.assertAlmostEqual(below, 199_999 / 1_000_000 * 2.00 + 1_000 / 1_000_000 * 6.00)
         self.assertAlmostEqual(at_threshold, 200_000 / 1_000_000 * 4.00 + 1_000 / 1_000_000 * 12.00)
+
+
+class Test_RedListenMonitor(TestCase):
+    """The /monitor/redlisten Prometheus endpoint in apps/monitor/views/newsblur_redlisten.py."""
+
+    def test_exports_usage_spend_by_kind_and_the_month_end_projection(self):
+        from apps.rss_feeds.fake_redis import FakeRedis
+        from utils.redlisten import RedListenBudget
+
+        fake_redis = FakeRedis()
+        budget = RedListenBudget(r=fake_redis)
+        fake_redis.hset(budget.usage_key(), mapping={"requests": 120, "results": 4500})
+        fake_redis.hset(budget.spend_key(), mapping={"scheduled_requests": 6, "one_off_requests": 9})
+
+        with patch("apps.monitor.views.newsblur_redlisten.redis.Redis", return_value=fake_redis):
+            response = self.client.get("/monitor/redlisten")
+
+        body = response.content.decode()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('redlisten{metric="requests_used"} 120', body)
+        self.assertIn('redlisten{metric="today_requests",kind="one_off"} 9', body)
+        self.assertIn('redlisten{metric="last_day_requests",kind="scheduled"}', body)
+        self.assertIn('redlisten{metric="projected_month_requests"}', body)
+        projected = float(body.split('redlisten{metric="projected_month_requests"} ')[1].split()[0])
+        self.assertGreaterEqual(projected, 120 + 15)

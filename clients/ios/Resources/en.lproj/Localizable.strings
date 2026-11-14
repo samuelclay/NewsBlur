@@ -93,7 +93,6 @@
 "< 90/month" = "< 90/month";
 "A clearer, closer sound" = "A clearer, closer sound";
 "A personal news reader bringing\npeople together to talk about the world." = "A personal news reader bringing\npeople together to talk about the world.";
-"AI Filter" = "AI Filter";
 "AI filters are saved but won't run until you %@." = "AI filters are saved but won't run until you %@.";
 "AI finds the stories" = "AI finds the stories";
 "ALL" = "ALL";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "Already have an account? Sign in";
 "Already have feeds?" = "Already have feeds?";
 "Also published by %@ sites" = "Also published by %@ sites";
-"An AI filter overrides likes and dislikes, but not Hide" = "An AI filter overrides likes and dislikes, but not Hide";
 "Analyze" = "Analyze";
 "Analyzing images..." = "Analyzing images...";
 "App Badge" = "App Badge";
@@ -1063,7 +1061,6 @@
 "Story options" = "Story options";
 "Story order" = "Story order";
 "Story settings" = "Story settings";
-"Story shows in Focus view" = "Story shows in Focus view";
 "Story title preview" = "Story title preview";
 "Story titles" = "Story titles";
 "Story titles layout" = "Story titles layout";

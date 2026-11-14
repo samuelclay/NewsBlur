@@ -719,7 +719,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="intel_feed_header">Alles vom Herausgeber</string>
     <string name="intel_super_dislike">Passende Artikel ausblenden</string>
     <string name="explainer_super_dislike">Ausblenden</string>
-    <string name="explainer_ai_filter">KI-Filter</string>
     <string name="explainer_like">Gefällt mir</string>
     <string name="explainer_dislike">Gefällt mir nicht</string>
     <string name="explainer_beats">schlägt</string>
@@ -727,7 +726,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="explainer_example1_result">Artikel wird in der Fokusansicht angezeigt</string>
     <string name="explainer_example2_header">„Ausblenden“ hat Vorrang vor allem, sogar vor „Gefällt mir“</string>
     <string name="explainer_example2_result">Artikel wird immer ausgeblendet</string>
-    <string name="explainer_example3_header">Ein KI-Filter setzt „Gefällt mir“ und „Gefällt mir nicht“ außer Kraft, aber nicht „Ausblenden“.</string>
     <string name="trainer_question_story">Was gefällt dir 👍 %1$s und was gefällt dir nicht 👎 %2$s an diesem Artikel?</string>
     <string name="trainer_question_site">Was gefällt dir 👍 %1$s und was gefällt dir nicht 👎 %2$s an dieser Website?</string>
     <string name="trainer_question_like">Gefällt mir</string>

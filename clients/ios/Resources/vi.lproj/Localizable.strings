@@ -93,7 +93,6 @@
 "< 90/month" = "< 90/tháng";
 "A clearer, closer sound" = "Âm thanh rõ và gần hơn";
 "A personal news reader bringing\npeople together to talk about the world." = "Trình đọc tin cá nhân giúp mọi người cùng trò chuyện về thế giới.";
-"AI Filter" = "Bộ lọc AI";
 "AI filters are saved but won't run until you %@." = "Bộ lọc AI đã được lưu nhưng sẽ không chạy cho đến khi bạn %@.";
 "AI finds the stories" = "AI tìm các bài viết";
 "ALL" = "TẤT CẢ";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "Đã có tài khoản? Đăng nhập";
 "Already have feeds?" = "Bạn đã có nguồn cấp?";
 "Also published by %@ sites" = "Cũng được đăng trên %@ trang";
-"An AI filter overrides likes and dislikes, but not Hide" = "Bộ lọc AI ghi đè lượt Thích và Không thích, nhưng không ghi đè Ẩn";
 "Analyze" = "Phân tích";
 "Analyzing images..." = "Đang phân tích hình ảnh...";
 "App Badge" = "Huy hiệu ứng dụng";
@@ -1063,7 +1061,6 @@
 "Story options" = "Tùy chọn bài viết";
 "Story order" = "Thứ tự bài viết";
 "Story settings" = "Cài đặt bài viết";
-"Story shows in Focus view" = "Bài viết xuất hiện trong chế độ xem Tập trung";
 "Story title preview" = "Xem trước tiêu đề bài viết";
 "Story titles" = "Tiêu đề bài viết";
 "Story titles layout" = "Bố cục tiêu đề bài viết";

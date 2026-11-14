@@ -1,7 +1,8 @@
 {
-  "deployed_commit": "ac6897a8c3699350f8c37d442508d52d56dcb0ef",
-  "verified_at": "2026-11-07T17:54:23.229Z",
+  "deployed_commit": "f5005e58ff",
+  "verified_at": "2026-11-09T04:46:28.000Z",
   "commands": [
+    "make deploy_static",
     "make deploy",
     "make celery"
   ],
@@ -42,10 +43,5 @@
       "htask-work-3"
     ]
   },
-  "health_check": {
-    "command": "./utils/check_health.sh --quick",
-    "healthy_components": 15
-  },
-  "workers_ready_after_reload": 17,
-  "healthy_task_containers": 17
+  "verification": "Ansible recaps for the static, app and task plays: every host ok, failed=0, unreachable=0 (45 host recaps)"
 }

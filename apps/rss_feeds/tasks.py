@@ -227,6 +227,17 @@ def PushFeeds(feed_id, xml):
         feed.update(options=options)
 
 
+@app.task(name="poll-redlisten", time_limit=50 * 60, soft_time_limit=45 * 60, ignore_result=True)
+def PollRedListen():
+    """Hourly: fetch every subreddit and Reddit user that active feeds read, in batches
+    on the RedListen budget, and schedule the feeds that gained posts.
+    See utils/redlisten_poller.py. apps/rss_feeds/tasks.py"""
+    from utils.redlisten_poller import RedListenPoller
+
+    settings.LOG_TO_STREAM = True
+    RedListenPoller().poll()
+
+
 @app.task(name="trim-abandoned-feeds", time_limit=60 * 60, soft_time_limit=55 * 60, ignore_result=True)
 def TrimAbandonedFeeds(time_budget_seconds=50 * 60):
     """Daily: trims feeds nobody has been seen reading in DAYS_OF_UNREAD days

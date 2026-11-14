@@ -1,28 +1,32 @@
-"""Fetch subreddit, user, and individual-post Reddit feeds through Reddit's API.
+"""Render subreddit, user, comment-thread and search Reddit feeds from RedListen.
 
-Reddit rate-limits unauthenticated .rss requests aggressively (HTTP 429), so this
-module fetches subreddit/user listings and individual-post comment threads through
-Reddit's OAuth2 app-only API instead and renders them into an Atom feed that the
-normal feedparser pipeline can ingest. Individual-post feeds (/comments/<id>/.rss)
-render the submission followed by its comments as entries.
+Reddit blocked NewsBlur's API client in October 2026 and retires its RSS feeds on
+13 Nov 2026, so Reddit data comes from RedListen (utils/redlisten.py), on a monthly
+budget of requests and results. Every Reddit feed is rendered into an Atom feed that
+the normal feedparser pipeline ingests, and each kind of feed spends differently:
 
-Two pieces of shared coordination live in Redis (settings.REDIS_FEED_UPDATE_POOL),
-so every celery fetch worker cooperates:
+  * Subreddit, multireddit and user feeds read the posts the hourly poller
+    (utils/redlisten_poller.py) cached in utils/reddit_post_cache.py, so a scheduled
+    fetch spends nothing. A fetch a reader asked for (insta-fetch, refresh, retry:
+    options["reader_requested"], set by Feed.update in apps/rss_feeds/models.py) or a
+    brand-new feed's first fetch asks RedListen directly as a one-off.
+  * Comment-thread feeds (/comments/<id>/) and search feeds (/search?q=) cannot be
+    batched, so each fetch is its own request, sized by how many new items the feed's
+    last fetch found. The scheduler fetches them at most every 12 hours
+    (reddit_fetch_floor_minutes, used by apps/rss_feeds/models.py).
 
-  * the OAuth2 app-only access token is cached and reused until shortly before it
-    expires, so we only hit the token endpoint about once a day, and
-  * a fixed one-minute-window counter keeps the whole fleet under Reddit's free-tier
-    budget of ~100 requests/minute. When the budget for the current minute is spent,
-    fetch() returns None and sets self.rate_limited, so utils/feed_fetcher.py records a
-    429 in fetch history and the feed simply backs off until the next cycle. This is
-    expected backpressure, so it is a return flag rather than a raised exception.
-
-Credentials come from settings.REDDIT_CLIENT_ID / settings.REDDIT_CLIENT_SECRET.
+RedListen serves the newest posts for every listing sort, so hot and top feeds read
+as new. Reddit's front page, r/all and r/popular are not served. When the budget or
+the per-minute limit is spent, fetch() returns None and sets self.rate_limited, so
+utils/feed_fetcher.py records a 429 and the feed backs off. That is expected
+backpressure, so it is a return flag rather than a raised exception.
 See utils/reddit_fetcher.py.
 """
 
 import datetime
 import html
+import json
+import math
 import re
 import urllib.parse
 
@@ -32,18 +36,57 @@ from django.conf import settings
 from django.utils import feedgenerator
 
 from utils import log as logging
+from utils.reddit_post_cache import (
+    MAX_POSTS_PER_TARGET,
+    RedditPostCache,
+    subreddit_target,
+    user_target,
+)
+from utils.redlisten import DENIED_BUDGET, ONE_OFF, SCHEDULED, RedListenClient
 
-# Reddit's free OAuth tier averages ~100 requests/minute per client. We cap the
-# shared budget a little below that to leave headroom for the occasional token
-# refresh and for the discover_subreddits batch job, which shares the same client.
-REDDIT_REQUESTS_PER_MINUTE = getattr(settings, "REDDIT_API_REQUESTS_PER_MINUTE", 95)
-
-# Redis keys (settings.REDIS_FEED_UPDATE_POOL, db 4) shared across all fetch workers.
-TOKEN_CACHE_KEY = "reddit_api:access_token"
-RATE_LIMIT_KEY = "reddit_api:ratelimit"
-
-# How many posts to pull per fetch, matching the size of Reddit's default .rss page.
+# How many posts a one-off live listing fetch asks for, the size of Reddit's .rss page.
 LISTING_LIMIT = 25
+
+# Matches the Reddit addresses utils/feed_fetcher.py routes here. Also used as a Postgres
+# iregex by utils/redlisten_poller.py, so it sticks to syntax both understand.
+REDDIT_ADDRESS_PATTERN = r"^(https?://)?([a-z0-9]+\.)?reddit\.com/"
+REDDIT_ADDRESS_RE = re.compile(REDDIT_ADDRESS_PATTERN, re.IGNORECASE)
+
+# What kind of Reddit feed an address is. See RedditFetcher.feed_kind().
+KIND_LISTING = "listing"  # subreddit, multireddit or user: served by the poller's cache
+KIND_COMMENTS = "comments"  # one post's comment thread: its own request
+KIND_SEARCH = "search"  # a search query: its own request
+KIND_PERSONAL_RSS = "personal_rss"  # Reddit's own tokenized RSS from /prefs/feeds/
+KIND_UNSUPPORTED = "unsupported"  # front page, r/all, r/popular
+
+# Scheduling floors per kind (apps/rss_feeds/models.py get_next_scheduled_update). The
+# poller schedules a listing feed as soon as new posts land, so fetching one more often
+# than the hourly poll only re-reads the cache.
+POLLED_FEED_FLOOR_MINUTES = 60
+SINGLE_FEED_FLOOR_MINUTES = 12 * 60
+# A comment-thread or search feed doubles its floor for each fetch in a row that found
+# nothing new, up to a week, and drops back to SINGLE_FEED_FLOOR_MINUTES when something
+# arrives: most threads go quiet within days and would otherwise spend two requests a day.
+SINGLE_FEED_MAX_FLOOR_MINUTES = 7 * 24 * 60
+
+# Subreddit and user names as Reddit allows them; anything else never reaches a URL.
+SUBREDDIT_NAME_RE = re.compile(r"^[A-Za-z0-9_]{2,21}$")
+USERNAME_RE = re.compile(r"^[A-Za-z0-9_-]{3,20}$")
+# Listings RedListen does not serve, or that would be the whole site.
+UNSERVED_SUBREDDITS = {"all", "popular", "friends", "mod", "random", "randnsfw"}
+
+# A comment-thread or search fetch asks for about 1.5x the new items the feed's last
+# fetch found, within these bounds, since every returned item is billed. The state
+# lives in Redis per feed (settings.REDIS_FEED_UPDATE_POOL).
+SINGLE_FEED_STATE_KEY = "redlisten:feed:%s"
+SINGLE_FEED_STATE_TTL = 60 * 60 * 24 * 30
+SINGLE_FEED_MIN_LIMIT = 5
+SINGLE_FEED_MAX_LIMIT = 25
+SINGLE_FEED_FIRST_LIMIT = 10
+
+# RedListen sorts threads by new, old or top only.
+REDLISTEN_COMMENT_SORTS = {"new": "new", "old": "old"}
+REDLISTEN_SEARCH_TIME_FILTERS = {"hour", "day", "week", "month", "year"}
 
 # Listing sorts Reddit exposes as URL path segments (e.g. /r/python/new/.rss). The
 # bare /r/<sub>/.rss feed is "hot", so that is our default.
@@ -84,47 +127,229 @@ def scrub_control_chars(value):
     return value
 
 
+MARKDOWN_LINK_RE = re.compile(r"\[([^\]\n]+)\]\((https?://[^\s)]+)\)")
+BARE_URL_RE = re.compile(r"\bhttps?://[^\s<]+")
+# Where a bare URL ends: at an escaped quote or angle bracket, and before trailing punctuation.
+URL_STOPS = ("&quot;", "&#x27;", "&lt;", "&gt;")
+URL_TRAILING_PUNCTUATION = ".,;:!?)]"
+LIST_ITEM_RE = re.compile(r"^\s*([*+-]|\d+[.)])\s+")
+HEADING_RE = re.compile(r"^#{1,6}\s+")
+
+
+def markdown_inline(text):
+    """Links, emphasis and code spans for one line of already-escaped markdown."""
+    placeholders = []
+
+    def hold(markup):
+        placeholders.append(markup)
+        return "\x00%s\x00" % (len(placeholders) - 1)
+
+    def bare_link(match):
+        url = match.group(0)
+        for stop in URL_STOPS:
+            url = url.split(stop)[0]
+        url = url.rstrip(URL_TRAILING_PUNCTUATION)
+        if not url:
+            return match.group(0)
+        return hold('<a href="%s">%s</a>' % (url, url)) + match.group(0)[len(url) :]
+
+    text = re.sub(r"`([^`\n]+)`", lambda m: hold("<code>%s</code>" % m.group(1)), text)
+    text = MARKDOWN_LINK_RE.sub(lambda m: hold('<a href="%s">%s</a>' % (m.group(2), m.group(1))), text)
+    text = BARE_URL_RE.sub(bare_link, text)
+    text = re.sub(r"\*\*(?=\S)(.+?)(?<=\S)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"(?<![\w*])\*(?=\S)(.+?)(?<=\S)\*(?![\w*])", r"<em>\1</em>", text)
+    text = re.sub(r"~~(?=\S)(.+?)(?<=\S)~~", r"<del>\1</del>", text)
+    return re.sub(r"\x00(\d+)\x00", lambda m: placeholders[int(m.group(1))], text)
+
+
+def markdown_to_html(text):
+    """Render Reddit post and comment markdown as simple HTML.
+
+    RedListen sends Reddit text as markdown only (selftext_html and body_html are
+    null), and no markdown library ships in the image, so this covers what Reddit
+    posts lean on: paragraphs, line breaks, links, emphasis, code, quotes, lists and
+    headings. The text is escaped first, quotes included, so no markup from the post
+    survives and a quote in a link cannot leave its href. See utils/reddit_fetcher.py.
+    """
+    if not text:
+        return ""
+    escaped = html.escape(html.unescape(text), quote=True)
+    escaped = escaped.replace("\r\n", "\n").replace("&amp;#x200B;", "").replace("&#x200B;", "")
+    blocks = []
+    for block in re.split(r"\n[ \t]*\n", escaped.strip()):
+        lines = [line for line in block.split("\n") if line.strip()]
+        if not lines:
+            continue
+        if block.startswith("```") or all(line.startswith("    ") for line in lines):
+            code = "\n".join(line[4:] if line.startswith("    ") else line for line in lines)
+            blocks.append("<pre><code>%s</code></pre>" % code.strip("`").strip("\n"))
+        elif all(line.lstrip().startswith("&gt;") for line in lines):
+            quoted = [markdown_inline(line.lstrip()[4:].strip()) for line in lines]
+            blocks.append("<blockquote><p>%s</p></blockquote>" % "<br>".join(quoted))
+        elif all(LIST_ITEM_RE.match(line) for line in lines):
+            tag = "ol" if re.match(r"^\s*\d", lines[0]) else "ul"
+            items = "".join("<li>%s</li>" % markdown_inline(LIST_ITEM_RE.sub("", line)) for line in lines)
+            blocks.append("<%s>%s</%s>" % (tag, items, tag))
+        elif len(lines) == 1 and HEADING_RE.match(lines[0]):
+            blocks.append("<p><strong>%s</strong></p>" % markdown_inline(HEADING_RE.sub("", lines[0])))
+        elif len(lines) == 1 and re.match(r"^\s*([-*_])(\s*\1){2,}\s*$", lines[0]):
+            blocks.append("<hr>")
+        else:
+            blocks.append("<p>%s</p>" % "<br>".join(markdown_inline(line.strip()) for line in lines))
+    return "".join(blocks)
+
+
+def listing_targets(listing_path):
+    """Poller cache targets for a listing path: ["r:python", "r:golang"] for
+    r/python+golang, ["u:spez"] for user/spez/submitted, [] for anything unserved."""
+    if not listing_path:
+        return []
+    if listing_path.startswith("user/"):
+        name = listing_path.split("/")[1]
+        return [user_target(name)] if USERNAME_RE.match(name) else []
+    if listing_path.startswith("r/"):
+        names = []
+        for name in listing_path[2:].split("+"):
+            if SUBREDDIT_NAME_RE.match(name) and name.lower() not in UNSERVED_SUBREDDITS:
+                names.append(subreddit_target(name))
+        return list(dict.fromkeys(names))
+    return []
+
+
+def is_reddit_address(address):
+    return bool(address and REDDIT_ADDRESS_RE.match(address.strip()))
+
+
+def reddit_fetch_floor_minutes(address, feed_id=None):
+    """The shortest interval the scheduler may fetch this Reddit feed at, or None for
+    feeds that are not Reddit or that spend nothing extra. A quiet comment-thread or
+    search feed (feed_id given) backs off further. See utils/reddit_fetcher.py."""
+    if not is_reddit_address(address):
+        return None
+    kind = RedditFetcher.for_address(address).feed_kind()
+    if kind in (KIND_COMMENTS, KIND_SEARCH):
+        quiet_fetches = 0
+        if feed_id:
+            fetcher = RedditFetcher(AddressOnlyFeed(address, pk=feed_id))
+            quiet_fetches = fetcher.single_feed_state().get("quiet") or 0
+        return min(SINGLE_FEED_FLOOR_MINUTES * 2**quiet_fetches, SINGLE_FEED_MAX_FLOOR_MINUTES)
+    if kind == KIND_LISTING:
+        return POLLED_FEED_FLOOR_MINUTES
+    return None
+
+
+def reddit_max_entries(address):
+    """How many entries ProcessFeed (utils/feed_fetcher.py) may take from one fetch of
+    this feed, or None for its usual cap. A subreddit or user feed renders every post the
+    poller cached, up to one poll's worth for a target, and each was paid for, so all of
+    them are processed."""
+    if not is_reddit_address(address):
+        return None
+    if RedditFetcher.for_address(address).feed_kind() == KIND_LISTING:
+        return MAX_POSTS_PER_TARGET
+    return None
+
+
+class AddressOnlyFeed:
+    """Stands in for a Feed when only its address needs parsing (the poller and the
+    scheduler classify thousands of addresses without loading feeds)."""
+
+    def __init__(self, address, pk=None):
+        self.pk = pk
+        self.feed_address = address
+        self.feed_link = ""
+        self.feed_title = ""
+        self.log_title = address or ""
+        self.fetched_once = True
+
+
 class RedditFetcher:
     def __init__(self, feed, options=None):
         self.feed = feed
         self.options = options or {}
         self.address = self.feed.feed_address or self.feed.feed_link or ""
-        # Set True when a fetch is skipped because the shared per-minute Reddit budget
-        # is spent (locally or per Reddit's own 429). This is expected backpressure,
+        # Set True when a fetch is skipped because the RedListen budget or per-minute
+        # limit is spent (ours or RedListen's own 429). This is expected backpressure,
         # not an error, so the caller reads the flag instead of catching an exception
         # and records a 429 in fetch history to back the feed off. See utils/feed_fetcher.py.
         self.rate_limited = False
-        # Preserve Reddit's HTTP failures for fetch history in utils/feed_fetcher.py.
+        # Preserve HTTP failures, and say why when it is not obvious, for fetch history
+        # in utils/feed_fetcher.py.
         self.http_error_status = None
+        self.error_message = None
+
+    @classmethod
+    def for_address(cls, address):
+        return cls(AddressOnlyFeed(address))
 
     def fetch(self):
         """Return an Atom feed string for this Reddit feed, or None if unfetchable.
 
-        When the shared minute budget is spent, returns None and sets self.rate_limited
-        so the caller can record a 429 and back off. See utils/feed_fetcher.py.
+        When the RedListen budget or per-minute limit is spent, returns None and sets
+        self.rate_limited so the caller can record a 429 and back off. See
+        utils/feed_fetcher.py.
         """
-        if self.should_fetch_original_rss():
+        kind = self.feed_kind()
+        if kind == KIND_PERSONAL_RSS:
             return self.fetch_original_rss()
+        if kind == KIND_COMMENTS:
+            return self.fetch_comments_feed(self.extract_article_id())
+        if kind == KIND_SEARCH:
+            return self.fetch_search_feed(*self.extract_search_request())
+        if kind == KIND_LISTING:
+            listing_path, _, _ = self.extract_listing_request()
+            return self.fetch_listing_feed(listing_path)
 
-        # Individual-post feeds (/comments/<id>/) render the submission and its thread,
-        # so they take a different API endpoint than subreddit/user listings.
-        article_id = self.extract_article_id()
-        if article_id:
-            return self.fetch_comments_feed(article_id)
+        logging.debug(
+            "   ***> [%-30s] ~FRReddit feed is not served by RedListen: %s"
+            % (self.feed.log_title[:30], self.address)
+        )
+        self.http_error_status = 404
+        self.error_message = "Not a subreddit, multireddit or user feed Reddit data can be read for"
+        return None
 
-        listing_path, sort, query_params = self.extract_listing_request()
-        if not listing_path:
-            logging.debug(
-                "   ***> [%-30s] ~FRReddit feed has no subreddit/user: %s"
-                % (self.feed.log_title[:30], self.address)
-            )
-            return None
+    def feed_kind(self):
+        """Which KIND_* this feed's address is. See utils/reddit_fetcher.py."""
+        if self.should_fetch_original_rss():
+            return KIND_PERSONAL_RSS
+        if self.extract_article_id():
+            return KIND_COMMENTS
+        if self.extract_search_request():
+            return KIND_SEARCH
+        listing_path, _, _ = self.extract_listing_request()
+        if listing_targets(listing_path):
+            return KIND_LISTING
+        return KIND_UNSUPPORTED
 
-        children = self.fetch_listing(listing_path, sort, query_params=query_params)
-        if children is None:
-            return None
+    def poll_targets(self):
+        """The poller cache targets this feed reads, or [] when the poller does not
+        serve it (comment threads, searches, personal RSS, the front page)."""
+        if self.feed_kind() != KIND_LISTING:
+            return []
+        listing_path, _, _ = self.extract_listing_request()
+        return listing_targets(listing_path)
 
-        return self.build_feed(listing_path, children)
+    def reader_requested(self):
+        """True for a fetch a reader asked for (insta-fetch, refresh, retry). Not the
+        same as options["force"], which utils/feed_fetcher.py also sets on a random 1% of
+        scheduled fetches; Feed.update records the caller's intent before that."""
+        return bool(self.options.get("reader_requested"))
+
+    def spend_kind(self):
+        """A fetch a reader asked for may spend the reserved last 1%."""
+        return ONE_OFF if self.reader_requested() else SCHEDULED
+
+    def note_failure(self, result):
+        """Carry a failed RedListen call into the flags utils/feed_fetcher.py reads."""
+        if result.throttled:
+            self.rate_limited = True
+            if result.denied == DENIED_BUDGET or result.error_code in (
+                "quota_exceeded",
+                "items_quota_exceeded",
+            ):
+                self.error_message = "Monthly Reddit budget reached"
+        elif result.status and result.status != 200:
+            self.http_error_status = result.status
 
     def parsed_url(self):
         """Return a parsed URL, accepting stored Reddit addresses without a scheme."""
@@ -156,14 +381,15 @@ class RedditFetcher:
     def should_fetch_original_rss(self):
         """True for Reddit's tokenized personal RSS URLs from /prefs/feeds/.
 
-        The OAuth app-only listing API cannot reproduce these public but personalized
-        feeds, whose identity lives in the ?feed= token. Fetch the original RSS URL
-        instead of rewriting it to r/popular.
+        RedListen has no logged-in view, so it cannot reproduce these public but
+        personalized feeds, whose identity lives in the ?feed= token. Fetch the original
+        RSS URL from Reddit for as long as Reddit serves it (Reddit retires RSS on
+        13 Nov 2026).
         """
         return bool(self.first_query_value(self.query_params(), "feed"))
 
     def fetch_original_rss(self):
-        """Fetch a tokenized Reddit RSS URL without converting it through OAuth."""
+        """Fetch a tokenized Reddit RSS URL straight from Reddit."""
         try:
             resp = requests.get(self.address, headers={"User-Agent": USER_AGENT}, timeout=15)
         except requests.RequestException as e:
@@ -249,6 +475,38 @@ class RedditFetcher:
 
         return listing_path, sort, self.listing_query_params(query, sort)
 
+    def extract_search_request(self):
+        """Map a Reddit search feed URL to a RedListen search, or None.
+
+        Examples:
+            https://www.reddit.com/search.rss?q=newsblur          -> ("/search.json", "newsblur", None)
+            https://www.reddit.com/r/rss/search.rss?q=x&restrict_sr=1&t=week
+                                                                  -> ("/r/rss/search.json", "x", "week")
+
+        A subreddit search only stays in its subreddit with restrict_sr, as on Reddit.
+        """
+        segments = self.normalized_listing_segments()
+        if "search" not in segments:
+            return None
+        query = self.query_params()
+        q = (self.first_query_value(query, "q") or "").strip()
+        if not q:
+            return None
+        time_filter = self.first_query_value(query, "t")
+        if time_filter not in REDLISTEN_SEARCH_TIME_FILTERS:
+            time_filter = None
+        path = "/search.json"
+        restrict = self.first_query_value(query, "restrict_sr") in ("1", "on", "true")
+        if (
+            restrict
+            and len(segments) >= 3
+            and segments[0] == "r"
+            and segments[2] == "search"
+            and SUBREDDIT_NAME_RE.match(segments[1])
+        ):
+            path = "/r/%s/search.json" % segments[1]
+        return path, q, time_filter
+
     def listing_query_params(self, query, sort):
         """Preserve supported Reddit listing query filters through the API rewrite."""
         params = {}
@@ -288,63 +546,115 @@ class RedditFetcher:
         return DEFAULT_COMMENT_SORT
 
     def fetch_comments_feed(self, article_id):
-        """Fetch a single submission and its comment thread as an Atom feed string.
+        """Fetch a single submission and its newest comments as an Atom feed string.
 
-        Returns None on failure. When throttled (locally or by Reddit) it also sets
-        self.rate_limited so the caller can record a 429. See utils/reddit_fetcher.py.
+        Returns None on failure. When throttled it also sets self.rate_limited so the
+        caller can record a 429. See utils/reddit_fetcher.py.
         """
-        if not self.reserve_rate_limit_slot():
-            self.rate_limited = True
-            return None
-
-        token = self.access_token()
-        if not token:
-            return None
-
-        url = "https://oauth.reddit.com/comments/%s" % article_id
-        params = {"limit": MAX_COMMENTS, "raw_json": 1, "sort": self.comment_sort()}
-        headers = {"Authorization": f"Bearer {token}", "User-Agent": USER_AGENT}
-        try:
-            resp = requests.get(url, params=params, headers=headers, timeout=15)
-        except requests.RequestException as e:
-            logging.debug(
-                "   ***> [%-30s] ~FRReddit comments request failed: %s: %s"
-                % (self.feed.log_title[:30], self.address, e)
-            )
-            return None
-
-        if resp.status_code != 200:
-            self.http_error_status = resp.status_code
-        if resp.status_code == 429:
-            # Reddit disagrees with our local counter (clock skew, shared client); treat
-            # it as backpressure too so the feed backs off.
-            self.rate_limited = True
-            return None
-        if resp.status_code == 401:
-            self.clear_cached_token()
-            logging.debug(
-                "   ***> [%-30s] ~FRReddit auth rejected (401): %s" % (self.feed.log_title[:30], self.address)
-            )
-            return None
-        if resp.status_code != 200:
-            logging.debug(
-                "   ***> [%-30s] ~FRReddit comments HTTP %s: %s"
-                % (self.feed.log_title[:30], resp.status_code, self.address)
-            )
+        limit = self.single_feed_limit()
+        sort = REDLISTEN_COMMENT_SORTS.get(self.comment_sort(), "top")
+        result = RedListenClient().get(
+            "/comments/%s.json" % article_id,
+            params={"sort": sort, "limit": limit},
+            kind=self.spend_kind(),
+            max_results=limit + 1,
+        )
+        if not result.ok:
+            self.note_failure(result)
             return None
 
         try:
-            payload = resp.json()
-            post = payload[0]["data"]["children"][0]["data"]
-            comment_children = payload[1]["data"]["children"]
-        except (ValueError, IndexError, KeyError, TypeError):
+            post = result.payload[0]["data"]["children"][0]["data"]
+            comment_children = result.payload[1]["data"]["children"]
+        except (IndexError, KeyError, TypeError):
             logging.debug(
                 "   ***> [%-30s] ~FRReddit comments unexpected payload: %s"
                 % (self.feed.log_title[:30], self.address)
             )
             return None
 
+        comments = []
+        self.flatten_comments(comment_children, comments)
+        self.save_single_feed_state(limit, [comment.get("created_utc") for comment in comments])
         return self.build_comments_feed(post, comment_children)
+
+    def fetch_search_feed(self, path, q, time_filter):
+        """Fetch the newest posts matching a Reddit search as an Atom feed string."""
+        limit = self.single_feed_limit()
+        # Reddit's search sorts by relevance by default; a feed wants the newest.
+        params = {"q": q, "type": "link", "sort": "new", "limit": limit}
+        if time_filter:
+            params["t"] = time_filter
+        result = RedListenClient().get(path, params=params, kind=self.spend_kind(), max_results=limit)
+        if not result.ok:
+            self.note_failure(result)
+            return None
+
+        try:
+            children = result.payload["data"]["children"]
+        except (KeyError, TypeError):
+            logging.debug(
+                "   ***> [%-30s] ~FRReddit search unexpected payload: %s"
+                % (self.feed.log_title[:30], self.address)
+            )
+            return None
+
+        posts = [child.get("data") or {} for child in children if child.get("kind") == "t3"]
+        self.save_single_feed_state(limit, [post.get("created_utc") for post in posts])
+        return self.build_feed("search?%s" % urllib.parse.urlencode({"q": q}), children)
+
+    def fetch_listing_feed(self, listing_path):
+        """Render a subreddit, multireddit or user feed from the poller's cache.
+
+        Every post the cache retains is rendered, so a busy subreddit's whole hourly batch
+        reaches the feed. A fetch a reader asked for, or the first fetch of a feed the
+        poller has not reached yet, asks RedListen directly as a one-off first. If that
+        fails, the cache still serves whatever it has. See utils/reddit_post_cache.py.
+        """
+        targets = listing_targets(listing_path)
+        cache = RedditPostCache()
+        first_fetch = not getattr(self.feed, "fetched_once", True) and not cache.has_any(targets)
+        live_failed = False
+        if self.reader_requested() or first_fetch:
+            live_failed = not self.fetch_live_listing(listing_path, targets, cache)
+
+        posts = cache.posts(targets)
+        if live_failed and not posts:
+            return None
+        # Served from the cache after all, so a failed live call is not this fetch's result.
+        self.rate_limited = False
+        self.http_error_status = None
+        self.error_message = None
+        return self.build_feed(listing_path, [{"kind": "t3", "data": post} for post in posts])
+
+    def fetch_live_listing(self, listing_path, targets, cache):
+        """Ask RedListen for a listing's newest posts as a one-off and cache them.
+        Returns True when RedListen answered."""
+        if listing_path.startswith("user/"):
+            path = "/user/%s/submitted.json" % targets[0][2:]
+        else:
+            path = "/r/%s/new.json" % "+".join(target[2:] for target in targets)
+        result = RedListenClient().get(
+            path, params={"limit": LISTING_LIMIT}, kind=ONE_OFF, max_results=LISTING_LIMIT
+        )
+        if not result.ok:
+            self.note_failure(result)
+            return False
+
+        by_target = {}
+        for child in (result.payload.get("data") or {}).get("children") or []:
+            post = child.get("data") or {}
+            if child.get("kind") != "t3" or not post.get("id"):
+                continue
+            if listing_path.startswith("user/"):
+                target = targets[0]
+            else:
+                target = subreddit_target(post.get("subreddit") or "")
+            by_target.setdefault(target, []).append(post)
+        for target, posts in by_target.items():
+            if target in targets:
+                cache.add(target, posts)
+        return True
 
     def build_comments_feed(self, post, comment_children):
         """Render a submission and its comments into an Atom feed string."""
@@ -400,8 +710,9 @@ class RedditFetcher:
 
         author = comment.get("author") or "[deleted]"
         permalink = "https://www.reddit.com%s" % comment.get("permalink", "")
+        # RedListen sends markdown only, so render body when body_html is absent.
         body_html = comment.get("body_html") or ""
-        body = html.unescape(body_html) if body_html else ""
+        body = html.unescape(body_html) if body_html else markdown_to_html(comment.get("body"))
 
         snippet = " ".join((comment.get("body") or "").split())[:100]
         title = ("%s: %s" % (author, snippet)) if snippet else "Comment by %s" % author
@@ -419,72 +730,6 @@ class RedditFetcher:
             "unique_id": "reddit_comment:%s" % comment_id,
             "pubdate": datetime.datetime.utcfromtimestamp(created),
         }
-
-    def fetch_listing(self, listing_path, sort, query_params=None):
-        """Fetch a Reddit listing through the OAuth API, returning its children list.
-
-        Returns the list of post objects, or None on failure. When throttled (locally
-        or by Reddit) it also sets self.rate_limited so the caller can record a 429.
-        """
-        if not self.reserve_rate_limit_slot():
-            self.rate_limited = True
-            return None
-
-        token = self.access_token()
-        if not token:
-            return None
-
-        params = {"limit": LISTING_LIMIT, "raw_json": 1}
-        if query_params:
-            params.update(query_params)
-
-        # User listings take the sort as a query param; subreddit listings as a path.
-        if listing_path.startswith("user/"):
-            url = f"https://oauth.reddit.com/{listing_path}"
-            params["sort"] = sort
-        else:
-            url = f"https://oauth.reddit.com/{listing_path}/{sort}"
-
-        headers = {"Authorization": f"Bearer {token}", "User-Agent": USER_AGENT}
-        try:
-            resp = requests.get(url, params=params, headers=headers, timeout=15)
-        except requests.RequestException as e:
-            logging.debug(
-                "   ***> [%-30s] ~FRReddit request failed: %s: %s"
-                % (self.feed.log_title[:30], self.address, e)
-            )
-            return None
-
-        if resp.status_code != 200:
-            self.http_error_status = resp.status_code
-        if resp.status_code == 429:
-            # Reddit disagrees with our local counter (clock skew, shared client).
-            # Treat it the same as a local budget miss so the feed backs off.
-            self.rate_limited = True
-            return None
-        if resp.status_code == 401:
-            # The cached token is no longer valid; drop it so the next fetch re-auths.
-            self.clear_cached_token()
-            logging.debug(
-                "   ***> [%-30s] ~FRReddit auth rejected (401): %s" % (self.feed.log_title[:30], self.address)
-            )
-            return None
-        if resp.status_code != 200:
-            logging.debug(
-                "   ***> [%-30s] ~FRReddit HTTP %s: %s"
-                % (self.feed.log_title[:30], resp.status_code, self.address)
-            )
-            return None
-
-        try:
-            children = resp.json().get("data", {}).get("children", [])
-        except ValueError:
-            logging.debug(
-                "   ***> [%-30s] ~FRReddit returned non-JSON: %s" % (self.feed.log_title[:30], self.address)
-            )
-            return None
-
-        return children
 
     def build_feed(self, listing_path, children):
         """Render Reddit listing children into an Atom feed string."""
@@ -555,15 +800,18 @@ class RedditFetcher:
     def story_content(self, post, author, permalink):
         """Build the HTML body for a post: selftext, images, and a footer.
 
-        We request listings with raw_json=1, so selftext_html already contains real
-        HTML rather than entity-escaped markup. Images are reattached from the post's
-        media (galleries, direct image, preview, or thumbnail) because Reddit's own
-        .rss omits them. See utils/reddit_fetcher.py.
+        RedListen sends selftext as markdown, rendered by markdown_to_html; a post
+        that carries selftext_html is used as is. Images are reattached from the post's
+        media (galleries, direct image, media_urls, preview, or thumbnail) because
+        Reddit's own .rss omits them. See utils/reddit_fetcher.py.
         """
         body = ""
         selftext_html = post.get("selftext_html")
         if selftext_html:
             body += html.unescape(selftext_html)
+        elif post.get("selftext"):
+            # RedListen sends markdown only. See markdown_to_html.
+            body += markdown_to_html(post["selftext"])
 
         body += self.media_html(post)
 
@@ -592,6 +840,10 @@ class RedditFetcher:
         elif post.get("post_hint") == "image" or self.is_image_url(post.get("url")):
             if post.get("url"):
                 urls = [post["url"]]
+
+        # RedListen lists a post's images (gallery items, link previews) in media_urls.
+        if not urls:
+            urls = self.media_url_images(post)
 
         # Fall back to the preview source, then a real thumbnail, for anything else
         # that carries an image (e.g. link posts with a rich preview).
@@ -628,6 +880,22 @@ class RedditFetcher:
                 urls.append(url)
         return urls
 
+    def media_url_images(self, post):
+        """Image URLs from RedListen's media_urls, one per image. RedListen lists the
+        full-size image first and then smaller renditions of it (?width=140...), and
+        streaming video manifests that an <img> cannot show."""
+        urls = []
+        seen_paths = set()
+        for url in post.get("media_urls") or []:
+            if not isinstance(url, str) or not url.startswith("http"):
+                continue
+            path = html.unescape(url).split("?")[0]
+            if path in seen_paths or path.lower().endswith((".m3u8", ".mpd")):
+                continue
+            seen_paths.add(path)
+            urls.append(url)
+        return urls
+
     def preview_source_url(self, post):
         """Return the full-size Reddit preview image URL, if the post has one."""
         try:
@@ -645,69 +913,46 @@ class RedditFetcher:
         """True for reddit-hosted URLs (gallery pages, i.redd.it, permalinks)."""
         return bool(url) and ("reddit.com/" in url or "redd.it" in url)
 
-    # --- Shared Redis coordination (token cache + rate limiter) ------------------
+    # --- Per-feed page sizing for comment-thread and search feeds ------------------
 
     def redis_connection(self):
         return redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
-    def reserve_rate_limit_slot(self):
-        """Atomically claim one slot in the shared per-minute Reddit API budget.
-
-        Uses a fixed one-minute window: the first request of a window sets a 60s TTL,
-        and at most REDDIT_REQUESTS_PER_MINUTE claims succeed before the window rolls
-        over. Returns True if a slot was claimed, False if the budget is spent.
-        See utils/reddit_fetcher.py.
-        """
-        r = self.redis_connection()
-        count = r.incr(RATE_LIMIT_KEY)
-        if count == 1:
-            r.expire(RATE_LIMIT_KEY, 60)
-        elif r.ttl(RATE_LIMIT_KEY) < 0:
-            # Guard the rare case where the window key lost its expiry (e.g. a worker
-            # crashed between INCR and EXPIRE) so the limiter can never wedge shut.
-            r.expire(RATE_LIMIT_KEY, 60)
-        return count <= REDDIT_REQUESTS_PER_MINUTE
-
-    def access_token(self):
-        """Return a cached OAuth2 app-only token, fetching a new one when needed."""
-        r = self.redis_connection()
-        token = r.get(TOKEN_CACHE_KEY)
-        if token:
-            return token
-
-        client_id = getattr(settings, "REDDIT_CLIENT_ID", None)
-        client_secret = getattr(settings, "REDDIT_CLIENT_SECRET", None)
-        if not client_id or not client_secret:
-            logging.debug("   ***> ~FRReddit API credentials are not configured")
-            return None
-
+    def single_feed_state(self):
+        if not getattr(self.feed, "pk", None):
+            return {}
+        raw = self.redis_connection().get(SINGLE_FEED_STATE_KEY % self.feed.pk)
         try:
-            resp = requests.post(
-                "https://www.reddit.com/api/v1/access_token",
-                auth=(client_id, client_secret),
-                data={"grant_type": "client_credentials"},
-                headers={"User-Agent": USER_AGENT},
-                timeout=10,
-            )
-        except requests.RequestException as e:
-            logging.debug("   ***> ~FRReddit auth request failed: %s" % e)
-            return None
+            return json.loads(raw) if raw else {}
+        except ValueError:
+            return {}
 
-        if resp.status_code != 200:
-            self.http_error_status = resp.status_code
-            self.rate_limited = resp.status_code == 429
-            logging.debug("   ***> ~FRReddit auth failed: HTTP %s" % resp.status_code)
-            return None
+    def single_feed_limit(self):
+        """How many items to ask for: every item returned is billed, so a thread that
+        has gone quiet asks for a few and a busy one asks for more. A fetch a reader
+        asked for always takes the full page."""
+        if self.reader_requested():
+            return SINGLE_FEED_MAX_LIMIT
+        return self.single_feed_state().get("limit") or SINGLE_FEED_FIRST_LIMIT
 
-        payload = resp.json()
-        token = payload.get("access_token")
-        if not token:
-            return None
-
-        # Cache until 10 minutes before Reddit says the token expires.
-        ttl = max(int(payload.get("expires_in", 3600)) - 600, 60)
-        r.set(TOKEN_CACHE_KEY, token, ex=ttl)
-        return token
-
-    def clear_cached_token(self):
-        self.redis_connection().delete(TOKEN_CACHE_KEY)
+    def save_single_feed_state(self, limit, created_times):
+        """Size the next fetch from how many items this one found that the last one
+        had not: about 1.5x that, or the full page when every item was new. Also count
+        fetches in a row that found nothing new, which stretch the feed's scheduling floor
+        (reddit_fetch_floor_minutes)."""
+        if not getattr(self.feed, "pk", None):
+            return
+        created_times = [created for created in created_times if created]
+        previous = self.single_feed_state()
+        previous_newest = previous.get("newest") or 0
+        new_count = sum(1 for created in created_times if created > previous_newest)
+        if created_times and new_count >= limit:
+            next_limit = SINGLE_FEED_MAX_LIMIT
+        else:
+            next_limit = math.ceil(new_count * 1.5) + 3
+        next_limit = max(SINGLE_FEED_MIN_LIMIT, min(SINGLE_FEED_MAX_LIMIT, next_limit))
+        quiet = 0 if new_count else (previous.get("quiet") or 0) + 1
+        state = {"limit": next_limit, "newest": max(created_times + [previous_newest]), "quiet": quiet}
+        self.redis_connection().set(
+            SINGLE_FEED_STATE_KEY % self.feed.pk, json.dumps(state), ex=SINGLE_FEED_STATE_TTL
+        )

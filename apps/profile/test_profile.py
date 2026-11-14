@@ -5,11 +5,13 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.management import call_command
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
 from apps.profile.models import PaymentHistory, Profile, StripeIds
+from apps.social.models import MSocialProfile
 from utils import json_functions as json
 
 
@@ -2751,3 +2753,31 @@ class Test_StaffPremiumUpgradeEmail(TestCase):
         msg = mail.outbox[0]
         self.assertIn("Listened:      0 min past week, 0 min all time", msg.body)
         self.assertIn("<strong>0</strong> past week, 0 all time", msg.alternatives[0][0])
+
+
+class Test_DefaultSiteDomain(TestCase):
+    """New self-hosted installs take their Site domain from NEWSBLUR_URL (apps/profile/apps.py)."""
+
+    def setUp(self):
+        self.site = Site.objects.get(pk=settings.SITE_ID)
+
+    @override_settings(NEWSBLUR_URL="https://news.example.org:8443")
+    def test_migrate_replaces_django_placeholder_domain(self):
+        self.site.domain = "example.com"
+        self.site.save()
+
+        call_command("migrate", verbosity=0)
+
+        photo_url = MSocialProfile(user_id=1).email_photo_url
+        self.assertEqual(
+            photo_url, "https://news.example.org:8443/media/img/reader/default_profile_photo.png"
+        )
+
+    @override_settings(NEWSBLUR_URL="https://news.example.org")
+    def test_migrate_keeps_a_domain_already_set(self):
+        self.site.domain = "reader.mydomain.net"
+        self.site.save()
+
+        call_command("migrate", verbosity=0)
+
+        self.assertEqual(Site.objects.get(pk=settings.SITE_ID).domain, "reader.mydomain.net")

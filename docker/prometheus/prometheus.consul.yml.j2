@@ -198,6 +198,17 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    # RedListen Reddit budget (apps/monitor/views/newsblur_redlisten.py). Usage moves
+    # with the hourly poll, so a slow scrape loses nothing.
+    - job_name: 'redlisten'
+      scrape_interval: 5m
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/redlisten
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'db_times'
       static_configs:
         - targets: ['{{ monitor_server }}']

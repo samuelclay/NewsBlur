@@ -2610,13 +2610,32 @@
     UIView *host = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewport.width, viewport.height)];
     host.userInteractionEnabled = NO;
     host.accessibilityElementsHidden = YES;
+#if TARGET_OS_MACCATALYST
+    // StoryPagesObjCViewController.m keeps live preparation below an opaque reader surface, away from the translucent window chrome.
+    UIView *cover = self.view;
+    if (cover.window != window || !cover.superview) cover = appDelegate.feedDetailViewController.viewIfLoaded;
+    if (cover.window != window || !cover.superview) cover = appDelegate.detailViewController.viewIfLoaded;
+    if (cover.window == window && cover.superview) {
+        host.clipsToBounds = YES;
+        host.translatesAutoresizingMaskIntoConstraints = NO;
+        [cover.superview insertSubview:host belowSubview:cover];
+        [NSLayoutConstraint activateConstraints:@[
+            [host.leadingAnchor constraintEqualToAnchor:cover.leadingAnchor],
+            [host.trailingAnchor constraintEqualToAnchor:cover.trailingAnchor],
+            [host.topAnchor constraintEqualToAnchor:cover.topAnchor],
+            [host.bottomAnchor constraintEqualToAnchor:cover.bottomAnchor]
+        ]];
+        [cover.superview layoutIfNeeded];
+    }
+#else
     [window insertSubview:host atIndex:0];
+#endif
     CGRect pageFrame = page.view.frame;
     pageFrame.size = viewport;
     page.view.frame = pageFrame;
     // StoryPagesObjCViewController.m keeps controller containment while WebKit paints behind the visible app.
     [host addSubview:page.webView];
-    page.webView.frame = host.bounds;
+    page.webView.frame = CGRectMake(0, 0, viewport.width, viewport.height);
     [page.webView layoutIfNeeded];
     return host;
 }
@@ -2912,7 +2931,9 @@
     }
     CGSize viewport = self.scrollView.bounds.size;
     if (!CGSizeEqualToSize(page.webView.bounds.size, viewport)) {
+#if !TARGET_OS_MACCATALYST
         self.storyPreparationHost.frame = CGRectMake(0, 0, viewport.width, viewport.height);
+#endif
         CGRect frame = page.view.frame;
         frame.size = viewport;
         page.view.frame = frame;

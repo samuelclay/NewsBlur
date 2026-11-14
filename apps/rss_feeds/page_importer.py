@@ -71,7 +71,9 @@ class PageImporter(object):
 
     def fetch_page(self, urllib_fallback=False, requests_exception=None):
         try:
-            self.fetch_page_timeout(urllib_fallback=urllib_fallback, requests_exception=requests_exception)
+            return self.fetch_page_timeout(
+                urllib_fallback=urllib_fallback, requests_exception=requests_exception
+            )
         except TimeoutError:
             logging.user(
                 self.request,
@@ -147,8 +149,7 @@ class PageImporter(object):
                     data = open(feed_link, "r").read()
                 except IOError:
                     self.feed.feed_link = "http://" + feed_link
-                    self.fetch_page(urllib_fallback=True)
-                    return
+                    return self.fetch_page(urllib_fallback=True)
             if data:
                 html = self.rewrite_page(data)
                 if html:
@@ -196,7 +197,7 @@ class PageImporter(object):
                 capture_exception(e)
                 flush()
             if not urllib_fallback:
-                self.fetch_page(urllib_fallback=True)
+                return self.fetch_page(urllib_fallback=True)
         else:
             self.feed.save_page_history(200, "OK")
 
@@ -433,14 +434,38 @@ class PageImporter(object):
                 )
             return feed_page
 
-    def save_page_node(self, html):
+    @property
+    def node_page_url(self):
         domain = "node-page.service.consul:8008"
         if settings.DOCKERBUILD:
             domain = "node:8008"
-        url = "http://%s/original_page/%s" % (
-            domain,
-            self.feed.pk,
-        )
+        return "http://%s/original_page/%s" % (domain, self.feed.pk)
+
+    def delete_page(self):
+        """Delete the stored page from wherever save_page put it. Returns whether the page
+        is gone, so Feed.expire_original_page can try again after a failure."""
+        if settings.BACKED_BY_AWS.get("pages_on_node"):
+            # node/original_page.coffee answers 200 whether or not there was a file.
+            try:
+                response = requests.delete(self.node_page_url, timeout=10)
+            except requests.exceptions.RequestException as e:
+                logging.debug(
+                    "   ---> [%-30s] ~FRFailed to delete page on node: %s" % (self.feed.log_title[:30], e)
+                )
+                return False
+            if response.status_code != 200:
+                logging.debug(
+                    "   ---> [%-30s] ~FRFailed to delete page on node: %s"
+                    % (self.feed.log_title[:30], response.status_code)
+                )
+                return False
+        if settings.BACKED_BY_AWS.get("pages_on_s3") and self.feed.s3_page:
+            self.delete_page_s3()
+        MFeedPage.objects(feed_id=self.feed.pk).delete()
+        return True
+
+    def save_page_node(self, html):
+        url = self.node_page_url
         compressed_html = zlib.compress(smart_bytes(html))
         response = requests.post(
             url,

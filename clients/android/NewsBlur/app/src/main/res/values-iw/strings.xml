@@ -727,7 +727,6 @@
     <string name="intel_feed_header">הכול מהמפרסם</string>
     <string name="intel_super_dislike">הסתרת כתבות תואמות</string>
     <string name="explainer_super_dislike">הסתרה</string>
-    <string name="explainer_ai_filter">מסנן AI</string>
     <string name="explainer_like">אהבתי</string>
     <string name="explainer_dislike">לא אהבתי</string>
     <string name="explainer_beats">גובר על</string>
@@ -735,7 +734,6 @@
     <string name="explainer_example1_result">הכתבה מופיעה בתצוגת המיקוד</string>
     <string name="explainer_example2_header">״הסתרה״ גוברת על הכול, אפילו על ״אהבתי״</string>
     <string name="explainer_example2_result">הכתבה תמיד מוסתרת</string>
-    <string name="explainer_example3_header">מסנן AI גובר על אהבתי ולא אהבתי, אך לא על הסתרה</string>
     <string name="trainer_question_story">מה מוצא חן בעיניך 👍 %1$s ומה לא 👎 %2$s בכתבה הזו?</string>
     <string name="trainer_question_site">מה מוצא חן בעיניך 👍 %1$s ומה לא 👎 %2$s באתר הזה?</string>
     <string name="trainer_question_like">אהבת</string>

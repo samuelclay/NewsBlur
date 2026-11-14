@@ -78,6 +78,7 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.fields import AutoOneToOneField
+from utils.reddit_fetcher import reddit_fetch_floor_minutes
 from utils.story_functions import (
     create_imageproxy_signed_url,
     htmldiff,
@@ -126,6 +127,10 @@ def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
 
 
 class Feed(models.Model):
+    # The original page stops being fetched, and the stored copy is deleted, this long after
+    # the Original view was last opened.
+    ORIGINAL_PAGE_UNUSED_DAYS = 30
+
     feed_address = models.URLField(max_length=764, db_index=True)
     feed_address_locked = models.BooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
@@ -157,6 +162,9 @@ class Feed(models.Model):
     has_feed_exception = models.BooleanField(default=False, db_index=True)
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)
+    # When the Original view was last opened. The fetcher only fetches and stores the
+    # original page while this is recent, see is_original_page_in_use.
+    page_last_read_date = models.DateTimeField(null=True, blank=True)
     exception_code = models.IntegerField(default=0)
     errors_since_good = models.IntegerField(default=0)
     min_to_decay = models.IntegerField(default=0)
@@ -1266,6 +1274,41 @@ class Feed(models.Model):
             self.active = True
             self.save()
 
+    @property
+    def is_original_page_in_use(self):
+        """Whether somebody opened the Original view recently enough to keep fetching the page."""
+        if not self.page_last_read_date:
+            return False
+        cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=self.ORIGINAL_PAGE_UNUSED_DAYS)
+        return self.page_last_read_date > cutoff
+
+    def mark_original_page_read(self):
+        """Called when the Original view is opened (apps/reader/views.py load_feed_page).
+        Stamped at most once a day so a busy feed's readers aren't each a write."""
+        now = datetime.datetime.utcnow()
+        if self.page_last_read_date and self.page_last_read_date > now - datetime.timedelta(days=1):
+            return
+        self.page_last_read_date = now
+        self.save(update_fields=["page_last_read_date"])
+
+    def expire_original_page(self):
+        """Delete the stored page of a feed whose Original view hasn't been opened in
+        ORIGINAL_PAGE_UNUSED_DAYS, and forget the date. Called on every fetch by
+        utils/feed_fetcher.py fetch_original_page. The date stays if the delete fails, so
+        the next fetch tries again."""
+        from apps.rss_feeds.page_importer import PageImporter
+
+        if not self.page_last_read_date or self.is_original_page_in_use:
+            return
+        if not PageImporter(self).delete_page():
+            return
+        logging.debug(
+            "   ---> [%-30s] ~FYDeleted original page, last opened %s"
+            % (self.log_title[:30], self.page_last_read_date)
+        )
+        self.page_last_read_date = None
+        self.save(update_fields=["page_last_read_date"])
+
     def save_raw_feed(self, raw_feed, fetch_date):
         MFetchHistory.add(feed_id=self.pk, fetch_type="raw_feed", code=200, message=raw_feed, date=fetch_date)
 
@@ -1877,6 +1920,10 @@ class Feed(models.Model):
             "timeout": 10,
             "single_threaded": kwargs.get("single_threaded", True),
             "force": kwargs.get("force"),
+            # Who asked: utils/feed_fetcher.py also forces a random 1% of scheduled fetches,
+            # and Reddit feeds only spend RedListen's reserved one-off budget on fetches a
+            # reader asked for (utils/reddit_fetcher.py).
+            "reader_requested": kwargs.get("reader_requested", bool(kwargs.get("force"))),
             "force_fp": kwargs.get("force_fp"),
             "compute_scores": kwargs.get("compute_scores", True),
             "mongodb_replication_lag": kwargs.get("mongodb_replication_lag", None),
@@ -1903,7 +1950,7 @@ class Feed(models.Model):
                 self.save(update_fields=["feed_address", "feed_link"])
 
         # Per-domain fetch budget shared across all task servers, modeled on the
-        # Reddit API budget in utils/reddit_fetcher.py. When a domain's per-minute
+        # RedListen minute window in utils/redlisten.py. When a domain's per-minute
         # budget is spent, silently defer this fetch (no fetch history, no exception)
         # instead of hammering the site: one Pro user's 1,100 abebooks.com web feeds
         # at Pro speed added up to ~175,000 fetches/day against a single domain.
@@ -3725,6 +3772,16 @@ class Feed(models.Model):
                     "Forbidden penalty: %s min -> %s min (%s hour min for %s subs)"
                     % (before_forbidden, total, hours, self.num_subscribers)
                 )
+
+        # Reddit feeds come from RedListen on a monthly budget (utils/reddit_fetcher.py).
+        # Subreddit and user feeds read the hourly poller's cache, which schedules them as
+        # soon as new posts land, so fetching them faster than the poll only re-reads it.
+        # Comment-thread and search feeds spend their own requests, so they fetch at most
+        # twice a day, overriding the Pro boost above, and back off further while quiet.
+        reddit_floor = reddit_fetch_floor_minutes(self.feed_address, self.pk)
+        if reddit_floor and total < reddit_floor:
+            adjustments.append("Reddit via RedListen minimum: %s min -> %s min" % (total, reddit_floor))
+            total = reddit_floor
 
         if verbose and adjustments:
             logging.debug(

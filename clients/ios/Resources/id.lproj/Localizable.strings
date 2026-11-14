@@ -93,7 +93,6 @@
 "< 90/month" = "< 90/bulan";
 "A clearer, closer sound" = "Suara yang lebih jernih dan dekat";
 "A personal news reader bringing\npeople together to talk about the world." = "Pembaca berita pribadi yang menyatukan\norang-orang untuk membicarakan dunia.";
-"AI Filter" = "Filter AI";
 "AI filters are saved but won't run until you %@." = "Filter AI tersimpan, tetapi tidak akan berjalan sampai Anda %@.";
 "AI finds the stories" = "AI menemukan artikel";
 "ALL" = "SEMUA";
@@ -167,7 +166,6 @@
 "Already have an account? Sign in" = "Sudah punya akun? Masuk";
 "Already have feeds?" = "Sudah punya feed?";
 "Also published by %@ sites" = "Juga diterbitkan oleh %@ situs";
-"An AI filter overrides likes and dislikes, but not Hide" = "Filter AI mengesampingkan Suka dan Tidak suka, tetapi tidak Sembunyikan";
 "Analyze" = "Analisis";
 "Analyzing images..." = "Menganalisis gambar...";
 "App Badge" = "Lencana Aplikasi";
@@ -1063,7 +1061,6 @@
 "Story options" = "Opsi artikel";
 "Story order" = "Urutan artikel";
 "Story settings" = "Pengaturan artikel";
-"Story shows in Focus view" = "Artikel ditampilkan di tampilan Fokus";
 "Story title preview" = "Pratinjau judul artikel";
 "Story titles" = "Judul artikel";
 "Story titles layout" = "Tata letak judul artikel";
