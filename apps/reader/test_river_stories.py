@@ -17,14 +17,28 @@ from django.test import TestCase, TransactionTestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.analyzer.models import MClassifierPrompt, MClassifierTitle
+from apps.analyzer.models import (
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierPrompt,
+    MClassifierTag,
+    MClassifierText,
+    MClassifierTitle,
+    MClassifierUrl,
+)
+from apps.profile.middleware import SQLLogToConsoleMiddleware
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
+from apps.search.models import SearchStory
 from apps.statistics.rtrending import RTrendingStory
 from utils import json_functions as json
 
 
+# DEBUG_QUERIES turns on query recording and the Redis instrumentation these tests count. The console
+# logger would read the recorded queries and turn recording off at the end of each request
+# (apps/profile/middleware.py), so it passes responses through and count_queries reads them instead.
 @override_settings(DEBUG_QUERIES=True)
+@patch.object(SQLLogToConsoleMiddleware, "process_response", lambda self, request, response: response)
 class Test_RiverStories(TransactionTestCase):
     """
     Test river stories endpoint with query counting to prevent performance regressions.
@@ -99,9 +113,11 @@ class Test_RiverStories(TransactionTestCase):
                 story_guid = story_guid_base
                 suffix = 0
 
-                while MStory.objects(
-                    story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid)
-                ).only("story_hash").first():
+                while (
+                    MStory.objects(story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid))
+                    .only("story_hash")
+                    .first()
+                ):
                     suffix += 1
                     story_guid = f"{story_guid_base}-{suffix}"
 
@@ -213,6 +229,56 @@ class Test_RiverStories(TransactionTestCase):
             f">>> Normal aggregation used redis_story: {counts['redis_story']} queries (expected for multi-feed)"
         )
 
+    @patch.object(SearchStory, "query_tag", create=True)
+    def test_river_tag_filter_queries_matching_tags_instead_of_recent_story_batch(self, query_tag):
+        """Folder tag filters should paginate indexed matches, not post-filter a raw river window."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+
+        source_story = MStory.objects.get(story_hash=self.test_story_hashes[0])
+        source_story.story_tags = ["deep-folder-tag"]
+        source_story.save()
+        indexed_story_hashes = self.test_story_hashes[1:13]
+        for indexed_story in MStory.objects(story_hash__in=indexed_story_hashes):
+            indexed_story.story_tags = ["deep-folder-tag"]
+            indexed_story.save()
+        # Simulate a full search-index page that does not yet contain the
+        # story whose tag the user just clicked.
+        query_tag.return_value = indexed_story_hashes
+
+        response = self.client.post(
+            reverse("load-river-stories"),
+            {
+                "feeds": self.test_feeds,
+                "read_filter": "all",
+                "page": 1,
+                "classifier_filter_type": "tag",
+                "classifier_filter_value": "deep-folder-tag",
+                "classifier_filter_scope": "folder",
+                "classifier_filter_source_story": source_story.story_hash,
+            },
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        query_tag.assert_called_once_with(
+            self.test_feeds,
+            "deep-folder-tag",
+            order="newest",
+            offset=0,
+            limit=12,
+        )
+        self.assertEqual(
+            len(content["stories"]),
+            13,
+        )
+        self.assertEqual(
+            {story["story_hash"] for story in content["stories"]},
+            set(indexed_story_hashes) | {source_story.story_hash},
+        )
+
     def test_trending_stories__training_applies_to_well_read_and_long_reads(self):
         """Widely Read and Long Reads should include story classifier scores."""
         self.client.login(username="conesus", password="test")
@@ -222,9 +288,7 @@ class Test_RiverStories(TransactionTestCase):
 
         feed_id = self.test_feeds[0]
         story_hash = self.test_story_hashes[0]
-        story_date = int(
-            MStory.objects.get(story_hash=story_hash).story_date.timestamp()
-        )
+        story_date = int(MStory.objects.get(story_hash=story_hash).story_date.timestamp())
         MClassifierTitle.objects(user_id=self.user.pk, feed_id=feed_id, title="Test Story").delete()
         MClassifierPrompt.objects(
             user_id=self.user.pk, feed_id=feed_id, prompt="stories about test content"
@@ -239,16 +303,12 @@ class Test_RiverStories(TransactionTestCase):
                 user_id=self.user.pk, feed_id=feed_id, prompt="stories about test content"
             ).delete()
         )
-        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).update(
-            is_trained=True
-        )
+        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).update(is_trained=True)
 
         r_stats = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         r_stats.delete(RTrendingStory.WELL_READ_KEY)
         r_stats.delete(RTrendingStory.LONG_READS_KEY)
-        self.addCleanup(
-            lambda: r_stats.delete(RTrendingStory.WELL_READ_KEY, RTrendingStory.LONG_READS_KEY)
-        )
+        self.addCleanup(lambda: r_stats.delete(RTrendingStory.WELL_READ_KEY, RTrendingStory.LONG_READS_KEY))
         r_stats.zadd(RTrendingStory.WELL_READ_KEY, {story_hash: story_date})
         r_stats.zadd(RTrendingStory.LONG_READS_KEY, {story_hash: story_date})
 
@@ -295,6 +355,185 @@ class Test_RiverStories(TransactionTestCase):
                     }
                 ],
             )
+
+    def test_good_reads_loads_for_everyone(self):
+        """Good Reads is open to every reader, not just staff."""
+        self.client.login(username="conesus", password="test")
+
+        story_hash = self.test_story_hashes[0]
+        story_date = int(MStory.objects.get(story_hash=story_hash).story_date.timestamp())
+        r_stats = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        r_stats.delete(RTrendingStory.GOOD_READS_KEY, RTrendingStory.GOOD_READS_DIVERSE_KEY)
+        self.addCleanup(
+            lambda: r_stats.delete(RTrendingStory.GOOD_READS_KEY, RTrendingStory.GOOD_READS_DIVERSE_KEY)
+        )
+        r_stats.zadd(RTrendingStory.GOOD_READS_KEY, {story_hash: story_date})
+
+        self.user.is_staff = False
+        self.user.save(update_fields=["is_staff"])
+        response = self.client.get(
+            reverse("load-trending-stories"),
+            {"trending_type": "good_reads", "read_filter": "all"},
+        )
+        content = json.decode(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([story["story_hash"] for story in content["stories"]], [story_hash])
+
+    def test_trending_stories__feed_classifiers_apply_without_subscription(self):
+        """Widely Read and Long Reads should apply feed-scoped classifiers to unsubscribed feeds."""
+        self.client.login(username="conesus", password="test")
+
+        self.user.profile.is_premium = True
+        self.user.profile.is_archive = True
+        self.user.profile.is_pro = True
+        self.user.profile.has_scoped_classifiers = False
+        self.user.profile.save()
+
+        feed_id = self.test_feeds[0]
+        story_hash = self.test_story_hashes[0]
+        story = MStory.objects.get(story_hash=story_hash)
+        story.story_tags = ["test-tag"]
+        story.save()
+        story_date = int(story.story_date.timestamp())
+
+        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).delete()
+
+        r_stats = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        r_stats.delete(RTrendingStory.WELL_READ_KEY)
+        r_stats.delete(RTrendingStory.LONG_READS_KEY)
+        self.addCleanup(lambda: r_stats.delete(RTrendingStory.WELL_READ_KEY, RTrendingStory.LONG_READS_KEY))
+        r_stats.zadd(RTrendingStory.WELL_READ_KEY, {story_hash: story_date})
+        r_stats.zadd(RTrendingStory.LONG_READS_KEY, {story_hash: story_date})
+
+        created_classifiers = [
+            MClassifierFeed(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                score=-1,
+            ).save(),
+            MClassifierTitle(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                title="Test Story",
+                score=-2,
+            ).save(),
+            MClassifierTitle(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                title=r"^Test Story",
+                score=-2,
+                is_regex=True,
+            ).save(),
+            MClassifierAuthor(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                author="Author 0",
+                score=-2,
+            ).save(),
+            MClassifierAuthor(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                author=r"^Author",
+                score=-2,
+                is_regex=True,
+            ).save(),
+            MClassifierTag(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                tag="test-tag",
+                score=-2,
+            ).save(),
+            MClassifierText(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                text="Content 0",
+                score=-2,
+            ).save(),
+            MClassifierText(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                text=r"Content\s+0",
+                score=-2,
+                is_regex=True,
+            ).save(),
+            MClassifierUrl(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                url="example.com",
+                score=-2,
+            ).save(),
+            MClassifierUrl(
+                user_id=self.user.pk,
+                feed_id=feed_id,
+                social_user_id=0,
+                url=r"example\.com",
+                score=-2,
+                is_regex=True,
+            ).save(),
+        ]
+        self.addCleanup(lambda: [classifier.delete() for classifier in created_classifiers])
+
+        for trending_type in ["well_read", "long_reads"]:
+            response = self.client.get(
+                reverse("load-trending-stories"),
+                {"trending_type": trending_type, "read_filter": "all"},
+            )
+            content = json.decode(response.content)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(content["stories"]), 1)
+            returned_story = content["stories"][0]
+            self.assertEqual(returned_story["story_hash"], story_hash)
+            self.assertEqual(
+                returned_story["intelligence"],
+                {
+                    "feed": -1,
+                    "author": -2,
+                    "author_regex": -2,
+                    "tags": -2,
+                    "title": -2,
+                    "title_regex": -2,
+                    "text": -2,
+                    "text_regex": -2,
+                    "url": -2,
+                    "url_regex": -2,
+                    "prompt": 0,
+                },
+            )
+            # Super dislikes ship their real -2 in the API (so clients can tell
+            # them apart from a -1 dislike) instead of collapsing to -1.
+            self.assertEqual(returned_story["score"], -2)
+
+        author_regex_classifier = next(
+            classifier
+            for classifier in created_classifiers
+            if isinstance(classifier, MClassifierAuthor) and classifier.is_regex
+        )
+        for classifier in created_classifiers:
+            if classifier != author_regex_classifier:
+                classifier.delete()
+
+        for trending_type in ["well_read", "long_reads"]:
+            response = self.client.get(
+                reverse("load-trending-stories"),
+                {"trending_type": trending_type, "read_filter": "all"},
+            )
+            content = json.decode(response.content)
+            returned_story = content["stories"][0]
+
+            self.assertEqual(returned_story["intelligence"]["author"], 0)
+            self.assertEqual(returned_story["intelligence"]["author_regex"], -2)
+            self.assertEqual(returned_story["score"], -2)
 
     def test_river_stories__newest_backfills_past_stale_redis_hashes(self):
         """Newest river loads should skip stale Redis hashes that no longer exist in Mongo."""
@@ -380,9 +619,11 @@ class Test_RiverStories(TransactionTestCase):
             story_guid_base = f"river-all-read-status-{feed_id}-{i}"
             story_guid = story_guid_base
             suffix = 0
-            while MStory.objects(
-                story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid)
-            ).only("story_hash").first():
+            while (
+                MStory.objects(story_hash=MStory.feed_guid_hash_unsaved(feed_id, story_guid))
+                .only("story_hash")
+                .first()
+            ):
                 suffix += 1
                 story_guid = f"{story_guid_base}-{suffix}"
 
@@ -585,6 +826,36 @@ class Test_RiverStories(TransactionTestCase):
         self.assertEqual(response.status_code, 404)
         feed_stories.assert_not_called()
 
+    def test_river_stories__scores_without_content(self):
+        """include_story_content=false keeps each story's scores and drops its content, the way
+        load_single_feed's flag does, for the iOS score refresh after a classifier save."""
+        self.client.login(username="conesus", password="test")
+        if not self.test_story_hashes:
+            self.skipTest("No test stories created in setUp")
+        hashes = self.test_story_hashes[:3]
+
+        with_content = json.decode(
+            self.client.post(reverse("load-river-stories"), {"h": hashes, "include_hidden": "true"}).content
+        )
+        without_content = json.decode(
+            self.client.post(
+                reverse("load-river-stories"),
+                {"h": hashes, "include_hidden": "true", "include_story_content": "false"},
+            ).content
+        )
+
+        self.assertTrue(with_content["stories"])
+        self.assertTrue(all("story_content" in story for story in with_content["stories"]))
+        self.assertEqual(
+            sorted(story["story_hash"] for story in without_content["stories"]),
+            sorted(story["story_hash"] for story in with_content["stories"]),
+        )
+        for story in without_content["stories"]:
+            self.assertNotIn("story_content", story)
+            self.assertIn("intelligence", story)
+            self.assertIn("score", story)
+            self.assertIn("prompt_classifiers", story)
+
     def test_river_stories__specific_story_hashes(self):
         """
         Test loading specific story hashes - THIS IS THE BUG WE FIXED.
@@ -761,6 +1032,63 @@ class Test_RiverStories(TransactionTestCase):
 
         # Should not increase significantly with date filter
         self.assertLess(counts["total"], 30, "Single feed with date filter should be reasonable")
+
+    def train_author_regex(self, is_pro):
+        """Like the "^Author 0$" author regex on the first test feed. Returns that feed's
+        three test stories' hashes, the first by "Author 0"."""
+        feed_id = self.test_feeds[0]
+        self.user.profile.is_pro = is_pro
+        self.user.profile.save()
+        MClassifierAuthor.objects(user_id=self.user.pk, feed_id=feed_id).delete()
+        self.addCleanup(lambda: MClassifierAuthor.objects(user_id=self.user.pk, feed_id=feed_id).delete())
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=feed_id,
+            social_user_id=0,
+            author="^Author 0$",
+            is_regex=True,
+            score=1,
+        )
+        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).update(is_trained=True)
+        return self.test_story_hashes[:3]
+
+    def author_regex_intelligence(self, stories, story_hashes):
+        by_hash = {story["story_hash"]: story for story in stories}
+        return [(by_hash[h]["intelligence"]["author_regex"], by_hash[h]["score"]) for h in story_hashes]
+
+    def river_author_regex(self, story_hashes):
+        response = self.client.post(
+            reverse("load-river-stories"), {"h": story_hashes, "include_hidden": "true"}
+        )
+        self.assertEqual(response.status_code, 200)
+        return self.author_regex_intelligence(json.decode(response.content)["stories"], story_hashes)
+
+    def single_feed_author_regex(self, story_hashes):
+        response = self.client.get(
+            reverse("load-single-feed", kwargs={"feed_id": self.test_feeds[0]}),
+            {"read_filter": "all", "include_hidden": "true"},
+        )
+        self.assertEqual(response.status_code, 200)
+        return self.author_regex_intelligence(json.decode(response.content)["stories"], story_hashes)
+
+    def test_river_and_single_feed__pro_author_regex_scores_the_story(self):
+        """/reader/river_stories and /reader/feed used to leave author_regex out of each story's
+        intelligence, so a Pro user's author regex never scored a story and the clients'
+        scorers read it as 0."""
+        self.client.login(username="conesus", password="test")
+        story_hashes = self.train_author_regex(is_pro=True)
+
+        expected = [(1, 1), (0, 0), (0, 0)]
+        self.assertEqual(self.river_author_regex(story_hashes), expected)
+        self.assertEqual(self.single_feed_author_regex(story_hashes), expected)
+
+    def test_river_and_single_feed__author_regex_needs_pro(self):
+        self.client.login(username="conesus", password="test")
+        story_hashes = self.train_author_regex(is_pro=False)
+
+        expected = [(0, 0), (0, 0), (0, 0)]
+        self.assertEqual(self.river_author_regex(story_hashes), expected)
+        self.assertEqual(self.single_feed_author_regex(story_hashes), expected)
 
     def test_starred_stories__normal_load(self):
         """Test loading starred stories."""
@@ -1540,7 +1868,8 @@ class Test_RiverStories(TransactionTestCase):
 
         truth = story_hashes[: test_limit * 2]
         page1 = [
-            story["story_hash"] for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
+            story["story_hash"]
+            for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
         ]
         self.assertEqual(page1, truth[:test_limit])
 
@@ -1614,7 +1943,8 @@ class Test_RiverStories(TransactionTestCase):
 
         truth = story_hashes[: test_limit * 2]
         page1 = [
-            story["story_hash"] for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
+            story["story_hash"]
+            for story in usersub.get_stories(offset=0, limit=test_limit, read_filter="unread")
         ]
         self.assertEqual(page1, truth[:test_limit])
         self.assertTrue(r.exists(f"zU:{self.user.pk}:{feed_id}"))
@@ -1666,9 +1996,7 @@ class Test_RiverStories(TransactionTestCase):
             def zrange(self, key, *args, **kwargs):
                 values = self.redis_client.zrange(key, *args, **kwargs)
                 if key == f"zUP:{usersub.user_id}:{usersub.feed_id}":
-                    return [
-                        v.decode("utf-8") if isinstance(v, bytes) else v for v in values
-                    ]
+                    return [v.decode("utf-8") if isinstance(v, bytes) else v for v in values]
                 return values
 
         r.delete(f"RS:{self.user.pk}")

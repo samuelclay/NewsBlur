@@ -1,0 +1,183 @@
+{
+  "version": "16.0.2",
+  "platform": "macos",
+  "reviewer": "mac_patch_central",
+  "translator": "mac_patch_east",
+  "independent": true,
+  "status": "passed",
+  "english_sources": [
+    "clients/store/metadata/en.json",
+    "clients/store/releases/16.0.2/en.json",
+    "clients/store/products/en.json"
+  ],
+  "checks": [
+    "Complete English meaning and shipping capabilities",
+    "Notification after window close and loading failure",
+    "Listen language count, paragraph highlighting, Mac click interaction, queue synchronization",
+    "Premium Archive and Premium Pro full listening; Free and Premium 30-second previews",
+    "Both Chinese scripts and local terminology",
+    "Field limits with UTF-8 bytes for keywords",
+    "Product IDs, URLs, billing terms, other-platform values preserved"
+  ],
+  "corrections": [
+    {
+      "language": "vi",
+      "field": "whats_new",
+      "issue": "Feature introduction needed a noun phrase to read naturally.",
+      "resolution": "Added Tính năng before Nghe."
+    },
+    {
+      "language": "ko",
+      "field": "promotional_text",
+      "issue": "Literal day phrasing was less natural in this context.",
+      "resolution": "Used 일상에 맞게 for fit your daily life."
+    }
+  ],
+  "locales": [
+    {
+      "language": "vi",
+      "status": "passed",
+      "reviewed_fields": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "description_chars": 2887,
+      "promotion_chars": 158,
+      "keywords_bytes": 82,
+      "notes_chars": 508,
+      "source_urls_preserved": true,
+      "other_platforms_preserved": true,
+      "metadata_sha256": "9f8fd2c572fa3c4dcf5dcb9b324742aad245551b6813dfc15355845b1ec65d50",
+      "release_sha256": "a2c5490dfc783c09015dd1c7d2957eff1b4c324cdd31fabe47678e777e42e0b3"
+    },
+    {
+      "language": "th",
+      "status": "passed",
+      "reviewed_fields": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "description_chars": 2410,
+      "promotion_chars": 130,
+      "keywords_bytes": 95,
+      "notes_chars": 426,
+      "source_urls_preserved": true,
+      "other_platforms_preserved": true,
+      "metadata_sha256": "1ccb87a640af7430dbaf01b47d057bf67f513fcdae279bce829d710504a0498a",
+      "release_sha256": "845db31c850a78bb884a4e24c69de8caac8a6a1fe20b05dcb74b8c7e17e16b37"
+    },
+    {
+      "language": "ja",
+      "status": "passed",
+      "reviewed_fields": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "description_chars": 1436,
+      "promotion_chars": 101,
+      "keywords_bytes": 95,
+      "notes_chars": 259,
+      "source_urls_preserved": true,
+      "other_platforms_preserved": true,
+      "metadata_sha256": "4f3ac6960740c343b818e80c644273f137010c77914ae0300d779873c0d54016",
+      "release_sha256": "07b24f7f16b981714c5f5ca571d1d5caef96f50e13d7c1bee09c78987cc1bb0c"
+    },
+    {
+      "language": "ko",
+      "status": "passed",
+      "reviewed_fields": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "description_chars": 1584,
+      "promotion_chars": 89,
+      "keywords_bytes": 84,
+      "notes_chars": 281,
+      "source_urls_preserved": true,
+      "other_platforms_preserved": true,
+      "metadata_sha256": "5fd8a1e2b405c7909e72de2cb220e6c466a270b04eb2f4378e7a01e8f60b2636",
+      "release_sha256": "b74738c5c0abbe35cd2af1a6fbd131f76ed2163db7898e55a1a94c7bec117d76"
+    },
+    {
+      "language": "zh-Hans",
+      "status": "passed",
+      "reviewed_fields": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "description_chars": 1051,
+      "promotion_chars": 62,
+      "keywords_bytes": 91,
+      "notes_chars": 181,
+      "source_urls_preserved": true,
+      "other_platforms_preserved": true,
+      "metadata_sha256": "8d50a8fa95ecef8c3f201f0af11720fde179e350d8d1623628c24520bc81f378",
+      "release_sha256": "1a0afd5ac98fd0750b4c77c8e5552189872375d9a3be77d56158a16a5a8561fc"
+    },
+    {
+      "language": "zh-Hant",
+      "status": "passed",
+      "reviewed_fields": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "description_chars": 1087,
+      "promotion_chars": 87,
+      "keywords_bytes": 87,
+      "notes_chars": 208,
+      "source_urls_preserved": true,
+      "other_platforms_preserved": true,
+      "metadata_sha256": "5c8f9d8bf84d296cb73b4c0fbbe22d6375fa4787b5e27ca01778201eb186abdb",
+      "release_sha256": "62ad928d6c381fe76ac50ee9c2a71e53438050cbf97ccbcb1c1fa7331527e4f6"
+    }
+  ],
+  "product_findings": []
+}

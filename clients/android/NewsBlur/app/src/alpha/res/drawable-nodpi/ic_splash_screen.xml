@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Match the main/res/drawable-nodpi/ic_splash_screen.xml padding with the Alpha artwork. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:bottom="44dp"
+        android:drawable="@drawable/app_icon_alpha"
+        android:left="44dp"
+        android:right="44dp"
+        android:top="44dp" />
+</layer-list>

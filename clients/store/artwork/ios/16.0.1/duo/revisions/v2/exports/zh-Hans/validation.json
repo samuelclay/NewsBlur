@@ -1,0 +1,58 @@
+{
+  "language": "zh-Hans",
+  "revision": "v2",
+  "checked_at": "2026-10-26T15:29:07Z",
+  "note": "Only panels 1 and 4 are new. Panels 2 and 3 reference unchanged original exports. Visual review and store readback remain required.",
+  "files": [
+    {
+      "path": "revisions/v2/exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-closed-2853x2007-01-v2.png",
+      "panel": 1,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1257543,
+      "sha256": "3d75e0cf15b0bddebf655dcb592b655ced38251e38425cf908e3bac45669d47b",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.5423,
+        "largest_tile_error": 0.9258,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-02.png",
+      "panel": 2,
+      "sha256": "4c23f46eb65512ea4b96429c1176416fe9046deb1d5a7d1dba0520d971dcd25b",
+      "disposition": "original_preserved_byte_for_byte",
+      "bytes": 1192123
+    },
+    {
+      "path": "exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-03.png",
+      "panel": 3,
+      "sha256": "2680548a5cb129ba0595642837074ecd43821685eb38aa64cea0213f281633ca",
+      "disposition": "original_preserved_byte_for_byte",
+      "bytes": 1902025
+    },
+    {
+      "path": "revisions/v2/exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-04-v2.png",
+      "panel": 4,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 2149896,
+      "sha256": "53f30803b3000390bf65b7682cef6b2cd5c57be36ba4d61ec5550246690bc6b2",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.7865,
+        "largest_tile_error": 1.2174,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    }
+  ]
+}

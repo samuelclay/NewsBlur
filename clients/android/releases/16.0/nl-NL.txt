@@ -1,0 +1,3 @@
+De interface van NewsBlur ondersteunt nu 21 talen. Kies je taal in de app, met een voorbeeld in je taal en in het Engels. Arabisch en Hebreeuws lezen van rechts naar links. Artikelen blijven zoals gepubliceerd.
+
+De knoppen voor het volgende artikel blijven op hun plek, ook wanneer Volgende verandert in Klaar. Aanmeldknoppen zijn beter leesbaar in donkere thema’s.

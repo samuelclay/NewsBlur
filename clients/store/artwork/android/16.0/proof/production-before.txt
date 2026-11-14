@@ -1,0 +1,209 @@
+- progressbar
+- generic: Loading Google Play Console
+- banner:
+  - link "Google Play Console logo":
+    - /url: /console/u/3/developers/6280481402178293168/app-list
+    - button "Google Play Console logo"
+  - button "Unread notifications Close notification center":
+    - img: notifications_unread
+    - generic: Unread notifications
+  - dialog "Notifications popup":
+    - list:
+      - generic "Unread 2 apps in total Oct 16 App update published. Users should see changes immediately, but this may take longer. Collapse notification":
+        - generic: New
+        - 'img "NewsBlur: RSS News Reader"'
+        - img "Turn Touch"
+        - definition:
+          - generic: "2"
+        - generic: Oct 16
+        - generic: App update published. Users should see changes immediately, but this may take longer.
+      - button "Go to Publishing overview" [active]:
+        - generic: Go to Publishing overview
+      - 'button "Unread NewsBlur: RSS News Reader Sep 24 14 deep links may be failing because your web domains aren''t associated with your app Expand notification"':
+        - 'img "NewsBlur: RSS News Reader"'
+        - generic: "NewsBlur: RSS News Reader"
+        - generic: Sep 24
+        - img: expand_more
+        - generic: 14 deep links may be failing because your web domains aren't associated with your app
+      - button "Unread NewsBlur, Inc. Sep 21 Enhanced fraud protection on developer-initiated refunds Expand notification":
+        - img "NewsBlur, Inc."
+        - generic: NewsBlur, Inc.
+        - generic: Sep 21
+        - img: expand_more
+        - generic: Enhanced fraud protection on developer-initiated refunds
+  - 'button "NewsBlur: RSS News Reader"':
+    - generic: "NewsBlur: RSS News Reader"
+  - button "Switch developer accounts":
+    - img "Switch developer accounts"
+- navigation:
+  - link "All apps":
+    - /url: /console/u/3/developers/6280481402178293168/app-list
+    - img: keyboard_backspace
+    - generic: All apps
+  - list:
+    - listitem "Dashboard":
+      - button "Dashboard":
+        - img: dashboard
+        - generic: Dashboard
+    - listitem "Statistics":
+      - button "Statistics":
+        - img: bar_chart
+        - generic: Statistics
+    - listitem "Publishing overview":
+      - button "Publishing overview":
+        - img: overview
+        - generic: Publishing overview
+    - listitem "Protected with Play":
+      - button "Protected with Play":
+        - img: shield
+        - generic: Protected with Play
+    - listitem "Test and release":
+      - button "Test and release":
+        - img: rocket_launch
+        - generic: Test and release
+      - list:
+        - listitem "Latest releases and bundles":
+          - button "Latest releases and bundles":
+            - generic: Latest releases and bundles
+        - listitem "Production":
+          - button "Production":
+            - generic: Production
+        - listitem "Testing":
+          - button "Testing":
+            - generic: Testing
+            - img: expand_more
+        - listitem "Pre-registration":
+          - button "Pre-registration":
+            - generic: Pre-registration
+        - listitem "App integrity":
+          - button "App integrity":
+            - generic: App integrity
+        - listitem "Advanced settings":
+          - button "Advanced settings":
+            - generic: Advanced settings
+    - listitem "Monitor and improve":
+      - button "Monitor and improve":
+        - img: vital_signs
+        - generic: Monitor and improve
+    - listitem "Grow users":
+      - button "Grow users":
+        - img: finance_mode
+        - generic: Grow users
+    - listitem "Monetize with Play":
+      - button "Monetize with Play":
+        - img: sell
+        - generic: Monetize with Play
+- heading "Test and release" [level=1]
+- button "Select form factors. Phones, Tablets, Desktop (Googlebook OS, ChromeOS), Android XR":
+  - img: phonelink
+  - generic: Phones, Tablets, Desktop (Googlebook OS, ChromeOS), Android XR
+  - img: arrow_drop_down
+- img: overview
+- generic: Publishing overview
+- generic: You have no unpublished changes
+- link "Go to publishing page":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/publishing
+  - img: arrow_right_alt
+- img: rocket
+- heading "Latest production release" [level=2]
+- list:
+  - img: draft
+  - generic: "16.0"
+  - generic: "Release name: 16.0"
+  - text: •
+  - img: schedule
+  - generic: 20 hours ago
+- link "Go to Latest production release page":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/tracks/production?releaseType=defaultReleases
+  - img: arrow_right_alt
+- generic: Rollout percentage
+- generic: 100%
+- button "Total release installs"
+- generic: "0"
+- button "Install base"
+- generic: 0.0%
+- button "App installs"
+- generic: 6.68K
+- button "Release crash rate"
+- generic: "-"
+- button "Hourly granularity":
+  - generic: Hourly
+  - img: arrow_drop_down
+- link "Go to Android vitals":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/vitals/metrics/details?versionCode=292&aggregationPeriod=AGGREGATION_PERIOD_24H&days=28&metric=USER_PERCEIVED_CRASHES&granularity=HOURLY_GRANULARITY
+  - img: arrow_right_alt
+- button "Release ANR rate"
+- generic: "-"
+- button "Hourly granularity":
+  - generic: Hourly
+  - img: arrow_drop_down
+- link "Go to Android vitals":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/vitals/metrics/details?versionCode=292&aggregationPeriod=AGGREGATION_PERIOD_24H&days=28&metric=USER_PERCEIVED_ANRS&granularity=HOURLY_GRANULARITY
+  - img: arrow_right_alt
+- img: slow_motion_video
+- heading "Open testing" [level=2]
+- generic: No current active releases
+- link "Go to Open testing page":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/tracks/open-testing?releaseType=defaultReleases
+  - img: arrow_right_alt
+- img: sound_sampler
+- heading "Closed testing" [level=2]
+- link "Get started with Closed testing":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/closed-testing?releaseType=defaultReleases
+  - generic: Get started
+  - img: arrow_right_alt
+- generic: Test your app with a larger group of trusted users using email addresses, Google Groups, or access codes. You can create multiple closed testing tracks to test different features at the same time.
+- img: motion_play
+- heading "Internal testing" [level=2]
+- link "Get started with Internal testing":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/tracks/internal-testing?releaseType=defaultReleases
+  - generic: Get started
+  - img: arrow_right_alt
+- generic: Quickly distribute your app to up to 100 internal testers using email addresses
+- img: send_to_mobile
+- heading "Internal app sharing" [level=2]
+- link "Get started with Internal app sharing":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/releases/internal-app-sharing
+  - generic: Get started
+  - img: arrow_right_alt
+- generic: Easily share app bundles with your internal team using a link, to iterate on early versions of your app
+- img: playlist_add_check
+- heading "For your next release" [level=2]
+- heading "Edge-to-edge may not display for all users" [level=3]
+- paragraph: From Android 15, apps targeting SDK 35 will display edge-to-edge by default. Apps targeting SDK 35 should handle insets to make sure that their app displays correctly on Android 15 and later. Investigate this issue and allow time to test edge-to-edge and make the required updates. Alternatively, call enableEdgeToEdge() for Kotlin or EdgeToEdge.enable() for Java for backward compatibility.
+- generic: User experience
+- generic: "Release name: 16.0"
+- generic: Is this useful?
+- button "Thumb up button for reporting the information as useful":
+  - img: thumb_up
+- button "Thumb down button for reporting the information as not useful":
+  - img: thumb_down
+- link "Learn more about this issue (opens in new tab)":
+  - /url: https://developer.android.com/about/versions/15/behavior-changes-15#edge-to-edge
+  - generic: Learn more
+  - img: open_in_new
+- heading "Your app uses deprecated APIs or parameters for edge-to-edge" [level=3]
+- paragraph: One or more of the APIs you use or parameters that you set for edge-to-edge and window display have been deprecated in Android 15. To fix this, migrate away from these APIs or parameters.
+- generic: User experience
+- generic: "Release name: 16.0"
+- generic: Is this useful?
+- button "Thumb up button for reporting the information as useful":
+  - img: thumb_up
+- button "Thumb down button for reporting the information as not useful":
+  - img: thumb_down
+- button "Read more":
+  - generic: Read more
+  - img: read_more
+- link "Product updates":
+  - /url: https://play.google.com/console/about/whats-new/
+- link "Status dashboard":
+  - /url: https://status.play.google.com/
+- link "Help":
+  - /url: /console/u/3/developers/6280481402178293168/help-and-support?app=4972990522498280751
+- generic: © 2026 Google
+- link "Privacy":
+  - /url: https://www.google.com/policies/privacy/
+- link "Developer Distribution Agreement":
+  - /url: https://play.google.com/about/developer-distribution-agreement.html
+- link "Terms of Service":
+  - /url: https://play.google.com/about/console/terms-of-service/

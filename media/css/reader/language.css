@@ -1,0 +1,433 @@
+/* ===================== */
+/* = Language Chooser  = */
+/* ===================== */
+
+/* language.css styles the one-time language chooser from reader_language.js, both in its own modal
+   and as the first page of the intro. In bilingual mode the detected language and English face each
+   other like a bilingual edition, with every row lined up across the hairline. */
+
+.NB-language-chooser {
+    --nb-language-surface: #FFFFFF;
+    --nb-language-ink: #404040;
+    --nb-language-text: #606060;
+    --nb-language-muted: #95968E;
+    --nb-language-rule: #E4E3DE;
+    --nb-language-link-underline: rgba(0, 0, 0, 0.22);
+    --nb-language-option-surface: #FFFFFF;
+    --nb-language-option-hover: #F7F8F5;
+    --nb-language-option-selected: rgba(33, 116, 18, 0.06);
+    --nb-language-option-selected-border: rgba(33, 116, 18, 0.42);
+    --nb-language-check: #217412;
+    --nb-language-focus: #5C89C9;
+
+    --nb-language-padding-inline: 36px;
+    --nb-language-padding-bottom: 30px;
+
+    container-type: inline-size;
+    box-sizing: border-box;
+    padding: 36px var(--nb-language-padding-inline) var(--nb-language-padding-bottom);
+    color: var(--nb-language-text);
+    font-size: 15px;
+    line-height: 1.45;
+    text-align: start;
+}
+
+.NB-language-chooser *,
+.NB-language-chooser *::before,
+.NB-language-chooser *::after {
+    box-sizing: border-box;
+}
+
+/* language.css mirrors i18n_scripts.html: tracking breaks joined and stacked scripts. */
+.NB-language-chooser [lang="ar"],
+.NB-language-chooser [lang="he"],
+.NB-language-chooser [lang="hi"],
+.NB-language-chooser [lang="th"] {
+    letter-spacing: normal;
+}
+
+.NB-modal.NB-modal-language {
+    padding: 0;
+}
+
+.NB-language-chooser .NB-language-tag {
+    margin: 0 0 6px;
+    color: var(--nb-language-muted);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.NB-modal .NB-language-chooser .NB-language-title {
+    margin: 0 0 12px;
+    color: var(--nb-language-ink);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-shadow: none;
+    text-wrap: balance;
+}
+
+.NB-language-chooser .NB-language-body {
+    margin: 0 0 10px;
+    color: var(--nb-language-text);
+    font-size: 15px;
+    line-height: 1.45;
+    text-wrap: pretty;
+}
+
+.NB-language-chooser .NB-language-note {
+    margin: 0 0 24px;
+    color: var(--nb-language-text);
+    font-size: 14px;
+    line-height: 1.45;
+    text-wrap: pretty;
+}
+
+/* Both choices use NewsBlur's primary button at full width: the same choice in two languages.
+   .NB-modal raises specificity over the generic button margins in modals.css and reader_rtl.css. */
+.NB-modal .NB-language-chooser .NB-language-button {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    padding: 11px 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.NB-language-chooser .NB-language-link {
+    margin: 0;
+    padding: 4px 0;
+    border: none;
+    background: none;
+    color: var(--nb-language-text);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: start;
+    text-decoration: underline;
+    text-decoration-color: var(--nb-language-link-underline);
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition: text-decoration-color 0.15s ease, color 0.15s ease;
+}
+
+.NB-language-chooser .NB-language-link:hover {
+    color: var(--nb-language-ink);
+    text-decoration-color: currentColor;
+}
+
+.NB-language-chooser button:focus-visible {
+    outline: 2px solid var(--nb-language-focus);
+    outline-offset: 2px;
+}
+
+.NB-language-chooser button[disabled] {
+    cursor: default;
+}
+
+/* ============== */
+/* = Bilingual  = */
+/* ============== */
+
+/* language.css lines the two columns up on shared rows (tag, title, body, note, button, link) through
+   subgrid, so a longer translation pushes the matching English row down with it. */
+.NB-language-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+    grid-template-rows: repeat(6, auto);
+    column-gap: 32px;
+}
+
+.NB-language-columns .NB-language-column {
+    display: grid;
+    grid-row: 1 / span 6;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+    min-width: 0;
+}
+
+.NB-language-columns .NB-language-column:first-child {
+    grid-column: 1;
+}
+
+.NB-language-columns .NB-language-column:last-child {
+    grid-column: 3;
+}
+
+.NB-language-columns .NB-language-column > * {
+    align-self: start;
+}
+
+.NB-language-columns .NB-language-column > .NB-language-button {
+    align-self: stretch;
+}
+
+.NB-language-columns .NB-language-column > .NB-language-link {
+    justify-self: start;
+    margin-top: 10px;
+}
+
+.NB-language-columns .NB-language-rule {
+    grid-column: 2;
+    grid-row: 1 / span 6;
+    background-color: var(--nb-language-rule);
+}
+
+@supports not (grid-template-rows: subgrid) {
+    .NB-language-columns .NB-language-column {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .NB-language-columns .NB-language-column > .NB-language-note {
+        flex: 1;
+    }
+
+    .NB-language-columns .NB-language-column > .NB-language-link {
+        align-self: flex-start;
+    }
+}
+
+/* ========= */
+/* = Grid  = */
+/* ========= */
+
+.NB-language-heading.NB-language-source {
+    margin: 14px 0 0;
+}
+
+.NB-modal .NB-language-chooser .NB-language-heading .NB-language-title {
+    margin-bottom: 6px;
+}
+
+.NB-language-heading .NB-language-body {
+    margin: 0;
+}
+
+.NB-modal .NB-language-chooser .NB-language-source .NB-language-title {
+    margin-bottom: 2px;
+    color: var(--nb-language-muted);
+    font-size: 15px;
+}
+
+.NB-language-chooser .NB-language-source .NB-language-body {
+    color: var(--nb-language-muted);
+    font-size: 14px;
+}
+
+.NB-language-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 24px 0 12px;
+}
+
+.NB-language-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 12px 8px 14px;
+    padding-inline: 14px 12px;
+    border: 1px solid var(--nb-language-rule);
+    border-radius: 8px;
+    background-color: var(--nb-language-option-surface);
+    color: var(--nb-language-ink);
+    font-size: 15px;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.NB-language-option:hover {
+    background-color: var(--nb-language-option-hover);
+}
+
+.NB-language-option.NB-active {
+    border-color: var(--nb-language-option-selected-border);
+    background-color: var(--nb-language-option-selected);
+}
+
+/* The radio stays in the accessibility tree and keyboard order; the cell is its visible face. */
+.NB-language-option input {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.NB-language-option:has(input:focus-visible) {
+    outline: 2px solid var(--nb-language-focus);
+    outline-offset: 2px;
+}
+
+.NB-language-option-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.NB-language-option-check {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    background-color: var(--nb-language-check);
+    -webkit-mask: url('/media/embed/icons/nouns/accept.svg') no-repeat center / contain;
+    mask: url('/media/embed/icons/nouns/accept.svg') no-repeat center / contain;
+    visibility: hidden;
+}
+
+.NB-language-option.NB-active .NB-language-option-check {
+    visibility: visible;
+}
+
+/* The primary button sits at the end with Back across from it; row-reverse keeps the button first
+   in keyboard order. The footer sticks to the bottom of a dialog that scrolls on short screens, so
+   the choice stays in reach while the grid scrolls beneath it. */
+.NB-language-footer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 calc(-1 * var(--nb-language-padding-inline)) calc(-1 * var(--nb-language-padding-bottom));
+    padding: 12px var(--nb-language-padding-inline) var(--nb-language-padding-bottom);
+    background-color: var(--nb-language-surface);
+}
+
+
+.NB-modal .NB-language-footer .NB-language-button {
+    width: auto;
+    min-width: 220px;
+    max-width: 100%;
+}
+
+/* ============== */
+/* = Narrow     = */
+/* ============== */
+
+@container (max-width: 520px) {
+    .NB-language-columns {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: none;
+        row-gap: 28px;
+    }
+
+    .NB-language-columns .NB-language-column,
+    .NB-language-columns .NB-language-column:first-child,
+    .NB-language-columns .NB-language-column:last-child {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .NB-language-columns .NB-language-column > .NB-language-link {
+        align-self: flex-start;
+    }
+
+    .NB-language-columns .NB-language-rule {
+        grid-column: 1;
+        grid-row: auto;
+        height: 1px;
+    }
+
+    .NB-language-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .NB-language-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .NB-modal .NB-language-footer .NB-language-button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .NB-language-footer .NB-language-back {
+        align-self: center;
+    }
+}
+
+/* The standalone modal uses the phone's full width instead of simplemodal's 40px side margins. */
+@media (max-width: 600px) {
+    #simplemodal-container.NB-language-container {
+        left: 16px !important;
+        width: calc(100vw - 32px) !important;
+    }
+
+    .NB-language-chooser {
+        --nb-language-padding-inline: 22px;
+        --nb-language-padding-bottom: 22px;
+        padding-top: 28px;
+    }
+}
+
+/* ============= */
+/* = Intro     = */
+/* ============= */
+
+/* language.css: On the intro's first page, the chooser replaces the welcome title, logo and step bar. */
+.NB-modal-intro.NB-intro-language .NB-modal-title,
+.NB-modal-intro.NB-intro-language .NB-modal-page,
+.NB-modal-intro.NB-intro-language .NB-intro-spinning-logo,
+.NB-modal-intro.NB-intro-language .NB-modal-submit-bottom {
+    display: none;
+}
+
+.NB-modal-intro .NB-page.NB-page-0 {
+    height: auto;
+    overflow: visible;
+}
+
+/* Without the intro's own padding, the chooser lays out exactly as it does in the standalone dialog. */
+.NB-modal.NB-modal-intro.NB-intro-language {
+    padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-language-chooser .NB-language-link,
+    .NB-language-option {
+        transition: none;
+    }
+}
+
+/* ============ */
+/* = Dark     = */
+/* ============ */
+
+.NB-dark .NB-language-chooser {
+    --nb-language-surface: #2F3840;
+    --nb-language-ink: #D8D8D8;
+    --nb-language-text: #B4B8BB;
+    --nb-language-muted: #858D93;
+    --nb-language-rule: rgba(255, 255, 255, 0.12);
+    --nb-language-link-underline: rgba(255, 255, 255, 0.28);
+    --nb-language-option-surface: rgba(255, 255, 255, 0.02);
+    --nb-language-option-hover: rgba(255, 255, 255, 0.06);
+    --nb-language-option-selected: rgba(120, 190, 100, 0.12);
+    --nb-language-option-selected-border: rgba(140, 200, 120, 0.5);
+    --nb-language-check: #8CC878;
+    --nb-language-focus: #7FA6DC;
+}

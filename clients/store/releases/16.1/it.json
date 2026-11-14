@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Scopri Ascolta, un nuovo modo di goderti i tuoi articoli.\n\nTocca Ascolta per sentire un articolo letto ad alta voce in una delle 21 lingue. Segui i paragrafi evidenziati, tocca un paragrafo per passare direttamente a quel punto e scegli una voce per ogni lingua. Regola l’espressività e la velocità di riproduzione da 0,5× a 3×.\n\nAggiungi articoli alla lista In coda, riordina la coda e continua ad ascoltare con lo schermo bloccato o mentre usi un’altra app. La coda si sincronizza tra i dispositivi. La riproduzione automatica passa all’articolo non letto successivo e gli articoli terminati vengono segnati come letti.\n\nAscolta è incluso in Premium Archive e Premium Pro. Gli account gratuiti e Premium possono provare anteprime degli articoli di 30 secondi.\n\nQuesto aggiornamento rende anche la navigazione più fluida e risolve problemi di scorrimento nella griglia degli articoli."
+  },
+  "android": {
+    "release_notes": "Scopri Ascolta: articoli letti ad alta voce in 21 lingue. Scegli le voci, segui i paragrafi evidenziati, tocca per saltare e regola la velocità. Aggiungi articoli alla lista In coda, sincronizzata tra i dispositivi. Ascolta anche con lo schermo bloccato. La riproduzione automatica passa all’articolo non letto successivo. Ascolto completo incluso in Premium Archive e Premium Pro; anteprime di 30 secondi per account gratuiti e Premium."
+  },
+  "macos": {
+    "whats_new": "Questo aggiornamento risolve un problema per cui l’elenco degli articoli poteva restare in caricamento aprendo una notifica dopo aver chiuso la finestra di NewsBlur.\n\nAscolta è ora disponibile su Mac. Ascolta articoli in 21 lingue, segui i paragrafi evidenziati, scegli le voci, regola la velocità e aggiungi articoli alla lista In coda. La coda si sincronizza tra i tuoi dispositivi. L’ascolto completo è incluso in Premium Archive e Premium Pro; gli account gratuiti e Premium possono provare anteprime di 30 secondi.\n\nInclude anche una correzione per lo scorrimento della griglia degli articoli."
+  }
+}

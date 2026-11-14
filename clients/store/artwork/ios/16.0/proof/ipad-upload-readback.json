@@ -1,0 +1,197 @@
+{
+  "checked_at": "2026-10-17T05:01:02.527Z",
+  "version": "16.0",
+  "languages": 21,
+  "count": 84,
+  "placements": {
+    "en": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-en-2064x2752-01.png",
+        "newsblur-16.0-en-2064x2752-02.png",
+        "newsblur-16.0-en-2064x2752-03.png",
+        "newsblur-16.0-en-2064x2752-04.png"
+      ]
+    },
+    "ar": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-ar-2064x2752-01.png",
+        "newsblur-16.0-ar-2064x2752-02.png",
+        "newsblur-16.0-ar-2064x2752-03.png",
+        "newsblur-16.0-ar-2064x2752-04.png"
+      ]
+    },
+    "de": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-de-2064x2752-01.png",
+        "newsblur-16.0-de-2064x2752-02.png",
+        "newsblur-16.0-de-2064x2752-03.png",
+        "newsblur-16.0-de-2064x2752-04.png"
+      ]
+    },
+    "fr": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-fr-2064x2752-01.png",
+        "newsblur-16.0-fr-2064x2752-02.png",
+        "newsblur-16.0-fr-2064x2752-03.png",
+        "newsblur-16.0-fr-2064x2752-04.png"
+      ]
+    },
+    "he": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-he-2064x2752-01.png",
+        "newsblur-16.0-he-2064x2752-02.png",
+        "newsblur-16.0-he-2064x2752-03.png",
+        "newsblur-16.0-he-2064x2752-04.png"
+      ]
+    },
+    "es": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-es-2064x2752-01.png",
+        "newsblur-16.0-es-2064x2752-02.png",
+        "newsblur-16.0-es-2064x2752-03.png",
+        "newsblur-16.0-es-2064x2752-04.png"
+      ]
+    },
+    "it": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-it-2064x2752-01.png",
+        "newsblur-16.0-it-2064x2752-02.png",
+        "newsblur-16.0-it-2064x2752-03.png",
+        "newsblur-16.0-it-2064x2752-04.png"
+      ]
+    },
+    "nl": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-nl-2064x2752-01.png",
+        "newsblur-16.0-nl-2064x2752-02.png",
+        "newsblur-16.0-nl-2064x2752-03.png",
+        "newsblur-16.0-nl-2064x2752-04.png"
+      ]
+    },
+    "pl": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-pl-2064x2752-01.png",
+        "newsblur-16.0-pl-2064x2752-02.png",
+        "newsblur-16.0-pl-2064x2752-03.png",
+        "newsblur-16.0-pl-2064x2752-04.png"
+      ]
+    },
+    "pt-BR": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-pt-BR-2064x2752-01.png",
+        "newsblur-16.0-pt-BR-2064x2752-02.png",
+        "newsblur-16.0-pt-BR-2064x2752-03.png",
+        "newsblur-16.0-pt-BR-2064x2752-04.png"
+      ]
+    },
+    "ru": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-ru-2064x2752-01.png",
+        "newsblur-16.0-ru-2064x2752-02.png",
+        "newsblur-16.0-ru-2064x2752-03.png",
+        "newsblur-16.0-ru-2064x2752-04.png"
+      ]
+    },
+    "tr": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-tr-2064x2752-01.png",
+        "newsblur-16.0-tr-2064x2752-02.png",
+        "newsblur-16.0-tr-2064x2752-03.png",
+        "newsblur-16.0-tr-2064x2752-04.png"
+      ]
+    },
+    "uk": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-uk-2064x2752-01.png",
+        "newsblur-16.0-uk-2064x2752-02.png",
+        "newsblur-16.0-uk-2064x2752-03.png",
+        "newsblur-16.0-uk-2064x2752-04.png"
+      ]
+    },
+    "hi": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-hi-2064x2752-01.png",
+        "newsblur-16.0-hi-2064x2752-02.png",
+        "newsblur-16.0-hi-2064x2752-03.png",
+        "newsblur-16.0-hi-2064x2752-04.png"
+      ]
+    },
+    "id": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-id-2064x2752-01.png",
+        "newsblur-16.0-id-2064x2752-02.png",
+        "newsblur-16.0-id-2064x2752-03.png",
+        "newsblur-16.0-id-2064x2752-04.png"
+      ]
+    },
+    "vi": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-vi-2064x2752-01.png",
+        "newsblur-16.0-vi-2064x2752-02.png",
+        "newsblur-16.0-vi-2064x2752-03.png",
+        "newsblur-16.0-vi-2064x2752-04.png"
+      ]
+    },
+    "th": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-th-2064x2752-01.png",
+        "newsblur-16.0-th-2064x2752-02.png",
+        "newsblur-16.0-th-2064x2752-03.png",
+        "newsblur-16.0-th-2064x2752-04.png"
+      ]
+    },
+    "ja": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-ja-2064x2752-01.png",
+        "newsblur-16.0-ja-2064x2752-02.png",
+        "newsblur-16.0-ja-2064x2752-03.png",
+        "newsblur-16.0-ja-2064x2752-04.png"
+      ]
+    },
+    "ko": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-ko-2064x2752-01.png",
+        "newsblur-16.0-ko-2064x2752-02.png",
+        "newsblur-16.0-ko-2064x2752-03.png",
+        "newsblur-16.0-ko-2064x2752-04.png"
+      ]
+    },
+    "zh-Hans": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-zh-Hans-2064x2752-01.png",
+        "newsblur-16.0-zh-Hans-2064x2752-02.png",
+        "newsblur-16.0-zh-Hans-2064x2752-03.png",
+        "newsblur-16.0-zh-Hans-2064x2752-04.png"
+      ]
+    },
+    "zh-Hant": {
+      "count": 4,
+      "files": [
+        "newsblur-16.0-zh-Hant-2064x2752-01.png",
+        "newsblur-16.0-zh-Hant-2064x2752-02.png",
+        "newsblur-16.0-zh-Hant-2064x2752-03.png",
+        "newsblur-16.0-zh-Hant-2064x2752-04.png"
+      ]
+    }
+  }
+}

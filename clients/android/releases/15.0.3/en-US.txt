@@ -1,0 +1,5 @@
+Stories open faster, with the title and controls appearing immediately and the article fading in as it loads.
+Redesigned feed and story menus with icons, clearer actions, and persistent row highlights.
+Improved All, Unread, Focus, and Saved labels and spacing.
+Blue loading bars, more reliable infinite scrolling, and an end-of-list flourish.
+Smoother back gestures and story selection, plus the selected font's actual name in reader settings.

@@ -11,6 +11,7 @@ import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.DailyBriefingDeepLink
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.Log
 import com.newsblur.util.NotificationUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,9 +36,13 @@ class InitActivity : AppCompatActivity() {
     @Inject
     lateinit var syncServiceState: SyncServiceState
 
+    @Inject lateinit var onboarding: com.newsblur.onboarding.OnboardingGate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        // AppCompat has restored its stored locale by now, so InitActivity.kt can line it up with the language pref.
+        LanguageSettings.reconcile(this)
 
         // Keep the splash screen visible for this Activity
         splashScreen.setKeepOnScreenCondition { true }
@@ -56,11 +61,20 @@ class InitActivity : AppCompatActivity() {
     }
 
     // see if a user is already logged in; if so, jump to the Main activity
-    private fun userAuthCheck() {
+    private suspend fun userAuthCheck() {
         val briefingIntent = DailyBriefingDeepLink.createLaunchIntent(this, intent?.data)
         if (prefsRepo.hasCookie()) {
             SubscriptionSyncService.schedule(this)
-            startActivity(briefingIntent ?: Intent(this, Main::class.java))
+            val destination =
+                if (briefingIntent == null &&
+                    onboarding.shouldOpen()
+                ) {
+                    Intent(this, OnboardingActivity::class.java).putExtra("initial_setup", true)
+                } else {
+                    briefingIntent
+                        ?: Intent(this, Main::class.java)
+                }
+            startActivity(destination)
         } else {
             val loginActivityIntent =
                 Intent(this, LoginActivity::class.java).apply {

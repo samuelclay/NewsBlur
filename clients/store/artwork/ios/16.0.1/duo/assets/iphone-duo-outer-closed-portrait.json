@@ -1,0 +1,25 @@
+{
+  "frame": "iphone-duo-outer-closed-portrait.png",
+  "width": 1574,
+  "height": 2194,
+  "pose": "closed",
+  "clip": "frame-alpha",
+  "opening": {
+    "x": 88,
+    "y": 80,
+    "width": 1398,
+    "height": 2034,
+    "cornerRadius": 0
+  },
+  "measurement": {
+    "horizontal_center_clear": [
+      88,
+      1485
+    ],
+    "vertical_center_clear": [
+      80,
+      2113
+    ],
+    "source": "Apple PNG/iPhone Duo - Night Sky - Outer Closed Portrait.png"
+  }
+}

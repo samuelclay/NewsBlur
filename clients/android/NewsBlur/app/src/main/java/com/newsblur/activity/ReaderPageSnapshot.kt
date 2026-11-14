@@ -1,0 +1,120 @@
+package com.newsblur.activity
+
+import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.Rect
+import android.os.Handler
+import android.os.Looper
+import android.view.PixelCopy
+import android.view.View
+import android.view.animation.DecelerateInterpolator
+import android.widget.FrameLayout
+import android.widget.ImageView
+import androidx.core.view.doOnPreDraw
+import androidx.viewpager.widget.ViewPager
+import com.newsblur.R
+import com.newsblur.databinding.ActivityReadingBinding
+import com.newsblur.util.UIUtils
+
+/** Reading.kt retains one window-rendered viewport, including WebView, while its bounded pager prepares a jump. */
+internal class ReaderPageSnapshot(
+    private val activity: Activity,
+    private val binding: ActivityReadingBinding,
+    private val pager: ViewPager,
+) {
+    private var generation = 0
+    private var bitmap: Bitmap? = null
+    private var snapshot: ImageView? = null
+
+    fun capture(completion: (Boolean) -> Unit) {
+        val requestGeneration = ++generation
+        // ReaderPageSnapshot.kt captures after layout/draw so a just-finished slide cannot leave a partial snapshot.
+        binding.content.doOnPreDraw {
+            binding.content.post {
+                if (generation != requestGeneration) return@post
+                val location = IntArray(2)
+                binding.content.getLocationInWindow(location)
+                val bounds = Rect().apply {
+                    left = location[0]
+                    top = location[1]
+                    right = left + binding.content.width
+                    bottom = top + binding.content.height
+                }
+                val decor = activity.window.decorView
+                if (!decor.isAttachedToWindow || bounds.isEmpty || !bounds.intersect(0, 0, decor.width, decor.height)) {
+                    completion(false)
+                    return@post
+                }
+                val captured = try {
+                    Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888)
+                } catch (_: OutOfMemoryError) {
+                    completion(false)
+                    return@post
+                }
+                try {
+                    PixelCopy.request(activity.window, bounds, captured, { result ->
+                        if (generation != requestGeneration || result != PixelCopy.SUCCESS) {
+                            captured.recycle()
+                            if (generation == requestGeneration) completion(false)
+                            return@request
+                        }
+                        bitmap = captured
+                        snapshot = ImageView(activity).apply {
+                            scaleType = ImageView.ScaleType.FIT_XY
+                            setImageBitmap(captured)
+                            isClickable = true
+                            contentDescription = activity.getString(R.string.loading)
+                            binding.content.addView(
+                                this,
+                                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, bounds.height()),
+                            )
+                        }
+                        prepareReaderSurface(pager)
+                        pager.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        completion(true)
+                    }, Handler(Looper.getMainLooper()))
+                } catch (_: IllegalArgumentException) {
+                    captured.recycle()
+                    completion(false)
+                }
+            }
+        }
+        binding.content.invalidate()
+    }
+
+    fun animate(direction: Int, completion: () -> Unit) {
+        // A later story slides in from the end edge, which is the left edge in right-to-left layouts.
+        val distance = direction * binding.content.width.toFloat() * UIUtils.towardEndSign(activity)
+        pager.alpha = 1f
+        pager.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+        if (distance == 0f) {
+            completion()
+            return
+        }
+        pager.translationX = distance
+        // ReaderPageSnapshot.kt keeps the complete outgoing article stationary while the prepared
+        // page slides over it. Captured controls stay aligned beneath the live fixed controls.
+        pager.bringToFront()
+        val interpolator = DecelerateInterpolator()
+        pager.animate().translationX(0f).setDuration(180L).setInterpolator(interpolator).withEndAction(completion).start()
+    }
+
+    fun freezeForExit() {
+        generation++
+        pager.animate().cancel()
+    }
+
+    fun release() {
+        freezeForExit()
+        pager.alpha = 1f
+        pager.translationX = 0f
+        pager.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+        snapshot?.let {
+            it.setImageDrawable(null)
+            binding.content.removeView(it)
+        }
+        snapshot = null
+        bitmap?.recycle()
+        bitmap = null
+    }
+}

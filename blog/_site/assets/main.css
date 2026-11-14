@@ -292,13 +292,24 @@ body.at-top-init .site-header {
     font-size: 26px;
   }
 }
+@media screen and (max-width: 420px) {
+  .site-title {
+    font-size: clamp(15px, 12vw - 24px, 26px);
+  }
+}
 .site-title .site-title-image {
   float: left;
+  flex-shrink: 0;
   margin: 8px 18px 8px 0;
 }
 @media screen and (max-width: 600px) {
   .site-title .site-title-image {
     margin-top: 4px;
+  }
+}
+@media screen and (max-width: 420px) {
+  .site-title .site-title-image {
+    margin-right: 4px;
   }
 }
 .site-title .site-title-image img {

@@ -1,0 +1,22 @@
+{
+  "capturedAt": "2026-11-01T16:32:07Z",
+  "source": "Authenticated Google Play Console publishing overview",
+  "url": "https://play.google.com/console/u/1/developers/6280481402178293168/app/4972990522498280751/publishing",
+  "version": "16.1.1",
+  "versionCode": 300,
+  "reviewState": "Changes in review",
+  "quickChecks": "Running; Console will forward changes when checks complete successfully",
+  "rolloutPercent": 100,
+  "targeting": "All previously targeted countries",
+  "managedPublishing": false,
+  "changes": 22,
+  "storeListingLocales": 21,
+  "releaseNoteLocales": 21,
+  "publicationState": "Not yet approved or public",
+  "uiEvidence": [
+    "Changes in review",
+    "16.1.1 Start full rollout",
+    "Managed publishing off"
+  ],
+  "apiNote": "Initial API edit commit returned 403. Release upload, listing saves, and final submission completed through authenticated Console. google-final-readback.json verifies persisted content from a fresh edit."
+}

@@ -1,18 +1,18 @@
 {% extends "mail/email_base.txt" %}
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
-{% block body %}You have a follow request: {{ follower_profile.username }}.
+{% block body %}{% current_domain as domain %}{% blocktrans with username=follower_profile.username %}You have a follow request: {{ username }}.{% endblocktrans %}
 
-    {{ follower_profile.blurblog_url }} - {{ follower_profile.shared_stories_count }} shared {{ follower_profile.shared_stories_count|pluralize:"story,stories" }} - {{ follower_profile.follower_count }} follower{{ follower_profile.follower_count|pluralize }}
+    {{ follower_profile.blurblog_url }} - {% blocktrans count counter=follower_profile.shared_stories_count %}{{ counter }} shared story{% plural %}{{ counter }} shared stories{% endblocktrans %} - {% blocktrans count counter=follower_profile.follower_count %}{{ counter }} follower{% plural %}{{ counter }} followers{% endblocktrans %}
 
-Approve or ignore this follow request on NewsBlur: https://{% current_domain %}{{ user.profile.autologin_url }}
+{% trans "Approve or ignore this follow request on NewsBlur:" %} https://{{ domain }}{{ user.profile.autologin_url }}
 {% if common_followers %}
-You follow {{ common_followers|length }} {{ common_followers|pluralize:"person,people" }} who follow{{ common_followers|pluralize:"s," }} {{ follower_profile.username }}:
+{% blocktrans with username=follower_profile.username count counter=common_followers|length %}You follow {{ counter }} person who follows {{ username }}:{% plural %}You follow {{ counter }} people who follow {{ username }}:{% endblocktrans %}
 
 {% for follower in common_followers %} * {{ follower.username }}: {{ follower.blurblog_url }}
 {% endfor %}{% endif %}
 
-{% if common_followings %}You follow {{ common_followings|length }} {{ common_followings|pluralize:"person,people" }} that {{ follower_profile.username }} also follows:
+{% if common_followings %}{% blocktrans with username=follower_profile.username count counter=common_followings|length %}You follow {{ counter }} person that {{ username }} also follows:{% plural %}You follow {{ counter }} people that {{ username }} also follows:{% endblocktrans %}
 
 {% for following in common_followings %} * {{ following.username }}: {{ following.blurblog_url }}
 {% endfor %}{% endif %}{% endblock %}

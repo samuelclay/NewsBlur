@@ -1,0 +1,3 @@
+Sửa lỗi văng ứng dụng khi mở NewsBlur, kiểm tra số bài chưa đọc, xác nhận thao tác đọc và khôi phục trạng thái trình đọc. Nâng cấp cơ sở dữ liệu giữ nguyên bài viết trong bộ nhớ đệm và thao tác ngoại tuyến đang chờ.
+
+Có điều khiển toàn màn hình trên máy tính bảng và ghi nhớ độ rộng các ngăn, 21 ngôn ngữ giao diện, cùng điều khiển Bài viết tiếp theo ở vị trí cố định.

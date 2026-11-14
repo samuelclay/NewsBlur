@@ -1,0 +1,8 @@
+PASS: list mode selected
+CAPTURE: Sepia 1.3x font
+PASS: list mode selected
+PASS: grid mode selected
+PASS: list mode selected
+PASS: icon remains usable in landscape with larger text
+PASS: list mode selected
+PASS: restored AUTO theme, normal font and automatic rotation; List remains selected

@@ -1,0 +1,46 @@
+{
+  "version": "16.1.1",
+  "build": 354,
+  "source": "aa45aa8a5944fdea184cb5b6e6294a646c62f39c",
+  "fixCommit": "d198af6aed",
+  "tag": "iOS_16.1.1_354",
+  "archive": "/tmp/NewsBlur-iOS-16.1.1-354.xcarchive",
+  "archiveResult": "succeeded",
+  "archiveSignature": "codesign --verify --deep --strict passed; App Store export signs for distribution",
+  "validation": {
+    "onboarding": {
+      "tests": 46,
+      "failures": 0,
+      "log": "/tmp/newsblur-354-final-tests.log"
+    },
+    "backendAuthentication": {
+      "tests": 61,
+      "failures": 0,
+      "log": "/tmp/newsblur-apple-signin-backend.log"
+    },
+    "hostedView": {
+      "tests": 1,
+      "failures": 0,
+      "log": "/tmp/newsblur-354-visual-tests.log",
+      "note": "Isolated original username continuation and authenticated destination fixture, not a live Apple authorization round trip"
+    },
+    "localization": {
+      "languages": 21,
+      "translate": "passed, no missing translations",
+      "check": "passed",
+      "compile": "passed"
+    },
+    "independentReview": "No security or functional blockers; localized new error paths using an existing catalog message"
+  },
+  "metadata": {
+    "versionUnchanged": true,
+    "existingLocalesPreserved": 21,
+    "reviewNotesUpdated": true
+  },
+  "platformScope": "iOS only; macOS 16.1.1 already READY_FOR_SALE",
+  "uploadResult": "EXPORT SUCCEEDED",
+  "processingState": "VALID",
+  "submissionState": "WAITING_FOR_REVIEW",
+  "submittedAt": "2026-11-03T16:11:10.622Z",
+  "reviewURL": "https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/2665ed57-b2bd-43d1-9b3c-d503f3972616"
+}

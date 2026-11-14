@@ -1,0 +1,97 @@
+{
+  "checked_at": "2026-11-07T17:46:44.950Z",
+  "pull_request": 2202,
+  "reviewed_head": "727e00da671fcbe7aaf0e74184cb39a0d40c55a0",
+  "merge_commit": "20c929f135e87d164f2375d73dda88820f9298e8",
+  "release_commit": "ac6897a8c3699350f8c37d442508d52d56dcb0ef",
+  "unresolved_review_threads": 0,
+  "checks": [
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297614/job/128473377322",
+      "name": "Publish immutable Android version tag",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297614/job/128471624661",
+      "name": "F-Droid compatibility and unsigned APK",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297728/job/128471503072",
+      "name": "post_feedback",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297603/job/128471471602",
+      "name": "translate",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297603/job/128471260514",
+      "name": "validate",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297635/job/128471260628",
+      "name": "test",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297614/job/128471260410",
+      "name": "Select exact Android release commit",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297606/job/128471260443",
+      "name": "iOS Tests",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297712/job/128471260917",
+      "name": "claude-review",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297683/job/128471260594",
+      "name": "Android Tests",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297728/job/128471261069",
+      "name": "codex-review",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395297606/job/128471261745",
+      "name": "iOS UI Tests",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/samuelclay/NewsBlur/actions/runs/42395293595/job/128471248857",
+      "name": "Android Tests",
+      "state": "SUCCESS"
+    }
+  ],
+  "ios_app_hosted_tests": {
+    "executed": 1117,
+    "skipped": 49,
+    "failures": 0
+  },
+  "ios_ui_smoke_tests": {
+    "executed": 3,
+    "failures": 0
+  }
+}

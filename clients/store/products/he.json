@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "קריאת תיקיות, חיפוש ותגיות לכתבות שמורות"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "ארכיון כתבות קבוע ושעת האזנה בשבוע"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "עדכוני פידים תכופים ו־10 שעות האזנה בשבוע"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "מינויי NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "מינוי NewsBlur Premium",
+        "description": "קראו תיקיות ברשימה אחת, חפשו בפידים, ארגנו כתבות שמורות בעזרת תגיות ותיהנו מעדכוני פידים מהירים יותר.",
+        "benefits": [
+          "קריאת תיקיות ברשימת כתבות אחת",
+          "חיפוש בכל הפידים",
+          "תגיות לכתבות שמורות",
+          "עדכוני פידים מהירים יותר"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "מינוי NewsBlur Premium Archive",
+        "description": "כל תכונות Premium, ארכיון כתבות קבוע וניתן לחיפוש ושעת האזנה בשבוע. השאירו כתבות שלא נקראו כמה זמן שתרצו. מכסת ההאזנה מתחדשת ביום ראשון.",
+        "benefits": [
+          "כל מה שכלול ב־Premium",
+          "כתבות שלא נקראו ללא הגבלת זמן",
+          "ארכיון כתבות קבוע וניתן לחיפוש",
+          "שעת האזנה אחת בשבוע"
+        ]
+      }
+    }
+  }
+}

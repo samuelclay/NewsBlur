@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Чтение папок, поиск, теги сохранённых статей"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Постоянный архив и 1 час прослушивания в неделю"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Частые обновления лент и 10 часов аудио в неделю"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "Подписки NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "Подписка NewsBlur Premium",
+        "description": "Читайте папки в одном списке, ищите в лентах, упорядочивайте сохранённые статьи с помощью тегов и получайте более быстрые обновления лент.",
+        "benefits": [
+          "Читайте папки в одном списке статей",
+          "Поиск по всем лентам",
+          "Теги для сохранённых статей",
+          "Более частое обновление лент"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "Подписка NewsBlur Premium Archive",
+        "description": "Все функции Premium, постоянный архив статей с поиском и 1 час прослушивания в неделю. Храните статьи непрочитанными сколько хотите. Лимит аудио обновляется в воскресенье.",
+        "benefits": [
+          "Все возможности Premium",
+          "Храните статьи непрочитанными бессрочно",
+          "Постоянный архив статей с поиском",
+          "1 час прослушивания в неделю"
+        ]
+      }
+    }
+  }
+}

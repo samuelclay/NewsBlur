@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Entdecke Anhören, eine neue Art, deine Artikel zu genießen.\n\nTippe auf Anhören, um dir einen Artikel in einer von 21 Sprachen vorlesen zu lassen. Folge den hervorgehobenen Absätzen, tippe auf einen Absatz, um dorthin zu springen, und wähle für jede Sprache eine Stimme. Passe den Ausdruck und das Wiedergabetempo von 0,5× bis 3× an.\n\nFüge Artikel zu Als Nächstes hinzu, ändere die Reihenfolge und höre bei gesperrtem Bildschirm oder in einer anderen App weiter. Deine Warteschlange wird zwischen Geräten synchronisiert. Automatisch fortfahren spielt den nächsten ungelesenen Artikel ab. Fertig angehörte Artikel werden als gelesen markiert.\n\nAnhören ist in Premium Archive und Premium Pro enthalten. Kostenlose Konten und Premium-Konten können 30-Sekunden-Hörproben von Artikeln ausprobieren.\n\nDieses Update macht außerdem die Navigation flüssiger und behebt Probleme beim Scrollen im Artikelraster."
+  },
+  "android": {
+    "release_notes": "Neu: Anhören liest Artikel in 21 Sprachen vor. Wähle Stimmen, folge markierten Absätzen, tippe zum Springen und ändere das Tempo. Füge Artikel zu Als Nächstes hinzu; die Warteschlange synchronisiert sich zwischen Geräten. Höre bei gesperrtem Bildschirm weiter. Automatisch fortfahren spielt den nächsten ungelesenen Artikel. Vollständiges Anhören mit Premium Archive und Premium Pro; 30-Sekunden-Hörproben für kostenlose Konten und Premium."
+  },
+  "macos": {
+    "whats_new": "Dieses Update behebt ein Problem, bei dem die Artikelliste nach dem Öffnen einer Mitteilung endlos laden konnte, wenn das NewsBlur-Fenster zuvor geschlossen worden war.\n\nAnhören ist jetzt auf dem Mac verfügbar. Lass dir Artikel in 21 Sprachen vorlesen, folge den hervorgehobenen Absätzen, wähle Stimmen, passe das Tempo an und stelle Artikel unter Als Nächstes in die Warteschlange. Deine Warteschlange wird geräteübergreifend synchronisiert. Vollständiges Anhören ist in Premium Archive und Premium Pro enthalten; kostenlose Konten und Premium-Konten können 30-Sekunden-Hörproben ausprobieren.\n\nAußerdem wurde das Scrollen durch das Artikelraster korrigiert."
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "language": "zh-Hans",
+  "checked_at": "2026-10-17T02:15:03Z",
+  "capture_format": "CoreGraphics/CoreText opaque PNG",
+  "note": "Technical validation does not establish visual approval or store persistence.",
+  "files": [
+    {
+      "path": "exports/zh-Hans/1206x2622/panel-1.png",
+      "panel": 1,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 1041582,
+      "sha256": "b48d81b046c0e2a81b6ca5ddc1f22dd39e8332ade5fabe68d96711556171d601",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.4096,
+        "largest_tile_error": 0.8529,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:17:07Z"
+    },
+    {
+      "path": "exports/zh-Hans/1206x2622/panel-2.png",
+      "panel": 2,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 486453,
+      "sha256": "7125ffe7b7350392580326c73cee0c39ba12eb3d72a67e9d78245752968904a3",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.1313,
+        "largest_tile_error": 0.6901,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:17:07Z"
+    },
+    {
+      "path": "exports/zh-Hans/1206x2622/panel-3.png",
+      "panel": 3,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 1954951,
+      "sha256": "616bbab18518e020ddaed004e2df93fc9af7d1780850b1c5cea4da2707bcfd78",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.6879,
+        "largest_tile_error": 1.9128,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:17:07Z"
+    },
+    {
+      "path": "exports/zh-Hans/1206x2622/panel-4.png",
+      "panel": 4,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 880475,
+      "sha256": "f27b249d737520bdbf9c093817c9356cb3c0591eba02cf9241ce3ec6155644d7",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.2833,
+        "largest_tile_error": 0.6237,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:17:07Z"
+    }
+  ]
+}

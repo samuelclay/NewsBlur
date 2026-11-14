@@ -1,4 +1,4 @@
-{% load social_tags %}
+{% load i18n social_tags utils_tags %}
 
 <style>
 .NB-story-comment {
@@ -6,19 +6,19 @@
     border-bottom: 1px solid #A6A6A6;
     background-color: #FCFCFC;
     position: relative;
-    padding: 4px 28px 8px 80px;
+    padding: {% bidi "4px 28px 8px 80px" "4px 80px 8px 28px" %};
     line-height: 20px;
     overflow: hidden;
 }
 .NB-story-comment .NB-user-avatar {
     position: absolute;
-    left: 28px;
+    {% bidi "left" "right" %}: 28px;
     top: 10px;
     cursor: pointer;
 }
 .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     top: 26px;
-    left: 28px;
+    {% bidi "left" "right" %}: 28px;
     z-index: 1;
 }
 .NB-story-comment .NB-user-avatar img {
@@ -39,12 +39,12 @@
 .NB-story-comment .NB-story-comment-reshares {
     position: absolute;
     top: 0px;
-    left: 8px;
+    {% bidi "left" "right" %}: 8px;
     z-index: 0;
 }
 .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     top: 12px;
-    left: 36px;
+    {% bidi "left" "right" %}: 36px;
 }
 .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
     width: 22px;
@@ -53,11 +53,11 @@
     border-radius: 3px;
 }
 .NB-story-comment .NB-story-comment-username {
-    float: left;
+    float: {% bidi "left" "right" %};
     font-size: 11px;
     color: #1D4BA6;
     font-weight: bold;
-    margin: 0 10px 0 0;
+    margin: {% bidi "0 10px 0 0" "0 0 0 10px" %};
     text-shadow: 0 -1px 0 #F0F0F0;
     cursor: pointer;
 }
@@ -66,17 +66,17 @@
     font-size: 10px;
     color: #9D9D9D;
     font-weight: bold;
-    float: left;
+    float: {% bidi "left" "right" %};
 }
 .NB-story-comment .NB-story-comment-content {
-    float: left;
+    float: {% bidi "left" "right" %};
     color: #303030;
     clear: both;
     padding: 0 0 6px 0;
 }
 .NB-story-comment .NB-story-comment-reply-button {
-    padding: 4px 24px 4px 12px;
-    float: left;
+    padding: {% bidi "4px 24px 4px 12px" "4px 12px 4px 24px" %};
+    float: {% bidi "left" "right" %};
     cursor: pointer;
 }
 .NB-story-comment .NB-story-comment-reply-button .NB-story-comment-reply-button-wrapper {
@@ -100,7 +100,7 @@
     overflow: hidden;
     clear: both;
     position: relative;
-    padding: 6px 0 6px 32px;
+    padding: {% bidi "6px 0 6px 32px" "6px 32px 6px 0" %};
     line-height: 18px;
 }
 .NB-story-comment-reply .NB-story-comment-reply-photo {
@@ -109,14 +109,14 @@
     border-radius: 3px;
     position: absolute;
     margin: 0;
-    left: 0px;
+    {% bidi "left" "right" %}: 0px;
     top: 10px;
     cursor: pointer;
 }
 .NB-story-comment-reply-content {
     clear: both;
     color: #303030;
-    float: left;
+    float: {% bidi "left" "right" %};
 }
 </style>
 
@@ -135,9 +135,9 @@
                 </div>
             {% endif %}
             <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
-            <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
+            <div class="NB-story-comment-date">{% blocktrans with time=comment.shared_date %}{{ time }} ago{% endblocktrans %}</div>
         </div>
-        <div class="NB-story-comment-content">
+        <div class="NB-story-comment-content" dir="auto">
             {% autoescape off %}
             {{ comment.comments|linebreaksbr }}
             {% endautoescape %}
@@ -150,8 +150,8 @@
                     <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
                 </a>
                 <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
-                <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
-                <div class="NB-story-comment-reply-content">{{ reply.comments|safe }}</div>
+                <div class="NB-story-comment-date NB-story-comment-reply-date">{% blocktrans with time=reply.publish_date %}{{ time }} ago{% endblocktrans %}</div>
+                <div class="NB-story-comment-reply-content" dir="auto">{{ reply.comments|safe }}</div>
             </div>
             {% endfor %}
         </div>

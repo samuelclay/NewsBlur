@@ -1,0 +1,70 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/Reading.kt:134:38 'static field TRIM_MEMORY_MODERATE: Int' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/Reading.kt:335:27 The corresponding parameter in the supertype 'NbActivity' is named 'savedInstanceState'. This may cause problems when calling this function with named arguments.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/Reading.kt:365:25 'fun getSerializableExtra(p0: String!): Serializable?' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/Reading.kt:389:56 'fun getSerializable(p0: String?): Serializable?' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/StoryListKind.kt:67:9 This annotation is currently applied to the value parameter only, but in the future it will also be applied to field.
+- To opt in to applying to both value parameter and field, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/StoryListKind.kt:68:9 This annotation is currently applied to the value parameter only, but in the future it will also be applied to field.
+- To opt in to applying to both value parameter and field, add '-Xannotation-default-target=param-property' to your compiler arguments.
+- To keep applying to the value parameter only, use the '@param:' annotation target.
+
+See https://youtrack.jetbrains.com/issue/KT-73255 for more details.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/StoryListKind.kt:389:39 'fun getSerializableExtra(p0: String!): Serializable?' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/StoryListKind.kt:401:35 'fun getSerializableExtra(p0: String!): Serializable?' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/util/LastStoryList.kt:64:47 'fun getSerializableExtra(p0: String!): Serializable?' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/widget/WidgetProvider.kt:97:16 'fun setRemoteAdapter(p0: Int, p1: Intent!): Unit' is deprecated. Deprecated in Java.
+w: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/app/src/main/java/com/newsblur/widget/WidgetProvider.kt:135:30 'fun notifyAppWidgetViewDataChanged(p0: Int, p1: Int): Unit' is deprecated. Deprecated in Java.
+
+> Task :app:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:hiltAggregateDepsDebug UP-TO-DATE
+> Task :app:hiltJavaCompileDebug UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:transformDebugClassesWithAsm
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac UP-TO-DATE
+> Task :app:hiltAggregateDepsDebugUnitTest UP-TO-DATE
+> Task :app:hiltJavaCompileDebugUnitTest NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:transformDebugUnitTestClassesWithAsm
+> Task :app:testDebugUnitTest
+
+[Incubating] Problems report is available at: file:///Users/sclay/projects/newsblur/clients/android/NewsBlur/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 32s
+36 actionable tasks: 10 executed, 26 up-to-date

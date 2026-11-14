@@ -1,0 +1,58 @@
+{
+  "language": "nl",
+  "revision": "v2",
+  "checked_at": "2026-10-26T15:23:51Z",
+  "note": "Only panels 1 and 4 are new. Panels 2 and 3 reference unchanged original exports. Visual review and store readback remain required.",
+  "files": [
+    {
+      "path": "revisions/v2/exports/nl/newsblur-16.0.1-nl-duo-closed-2853x2007-01-v2.png",
+      "panel": 1,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1268551,
+      "sha256": "d87d3117616a090b34a4a7c2a66cf3b01fbbb7d6c0882418c52148e4c2c0e2be",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.5428,
+        "largest_tile_error": 0.9258,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/nl/newsblur-16.0.1-nl-duo-inner-2853x2007-02.png",
+      "panel": 2,
+      "sha256": "be1737031da13a840dcdab33be9a3daedafef1ab826853f76be08ef1ede20f69",
+      "disposition": "original_preserved_byte_for_byte",
+      "bytes": 1200209
+    },
+    {
+      "path": "exports/nl/newsblur-16.0.1-nl-duo-inner-2853x2007-03.png",
+      "panel": 3,
+      "sha256": "532a5ce2117d7075546c4b213e2e6141dd612e6b652023c938b6a9bacf5e7738",
+      "disposition": "original_preserved_byte_for_byte",
+      "bytes": 1900406
+    },
+    {
+      "path": "revisions/v2/exports/nl/newsblur-16.0.1-nl-duo-inner-2853x2007-04-v2.png",
+      "panel": 4,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 2153705,
+      "sha256": "05b19d24d29e5273b755dcce25edcf2ab3fcb0f2c459720ff3123ad717fecd40",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.7886,
+        "largest_tile_error": 1.2174,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    }
+  ]
+}

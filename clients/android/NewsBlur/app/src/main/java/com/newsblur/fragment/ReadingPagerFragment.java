@@ -32,7 +32,7 @@ public class ReadingPagerFragment extends NbFragment {
 
         Reading activity = ((Reading) getActivity());
 
-		binding.readingPager.addOnPageChangeListener(activity);
+        // Reading.kt listens for page changes itself, translating ViewPager's pages into story positions.
         activity.offerPager(binding.readingPager, getChildFragmentManager());
 		return v;
 	}

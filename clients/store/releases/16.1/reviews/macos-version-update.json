@@ -1,0 +1,30 @@
+{
+  "original_version": "16.0.2",
+  "final_version": "16.1",
+  "reason": "User requested Listen and notification fix together as 16.1 after translation review completed.",
+  "copy_changed": false,
+  "review_records": "Original independent review reports retained with their original version and hashes. Mac-only release-note values were moved unchanged into the 16.1 files alongside existing iOS and Android values.",
+  "current_files_sha256": {
+    "clients/store/releases/16.1/ar.json": "45ad4735c4e9b9f3b845c5b40b5801ab30a25f08b27b7b1a78530352496469f6",
+    "clients/store/releases/16.1/de.json": "e5835da0052c095333c55c0ead36d42f9e58af4f3b9594a7708486fdbb9908b5",
+    "clients/store/releases/16.1/en.json": "10b0694d5075d7c020497175a53d46eec3e0b67335e7a8d531ec90adbb441e84",
+    "clients/store/releases/16.1/es.json": "b4cb522222aafc2a0ad59e0ca0968d3134a5f2e285600fe9e4134110946cc124",
+    "clients/store/releases/16.1/fr.json": "7e33c339662189f5c0914bec0a8b61c372358dfb1c0270b0f0e1ee23406df5c8",
+    "clients/store/releases/16.1/he.json": "06b2f82d673ccd1ffe285e7bda85b5b657470c3e6f3939b47ce0ef953829594e",
+    "clients/store/releases/16.1/hi.json": "48a5800d602e5c7a71474f611a49e9fe64760af662d5b9dbddc7a284671d4896",
+    "clients/store/releases/16.1/id.json": "7d848dfab95afbed61ec04910f14e00c2cdbf5d4ecccf5acb56aaa57195e132a",
+    "clients/store/releases/16.1/it.json": "7dada55672f1133308c6427ed45c8a6bef830a898d1326b41433b00f3f568b96",
+    "clients/store/releases/16.1/ja.json": "c1d3f240c2f37c1afe8577ecd335e3264154643327a0ba62d1b5be6f6a9f3a20",
+    "clients/store/releases/16.1/ko.json": "5f1d3f22096590f53764e320d5a7ce0e5424c437e46a47b72c2ffb19becd6e8d",
+    "clients/store/releases/16.1/nl.json": "9730379c658b8171c77f48eeedc7a910535963d069d551a8ff00a07743c2fe54",
+    "clients/store/releases/16.1/pl.json": "5c395433715b028950e630926c746739c2cf0463e546b81760fecadef1c92c25",
+    "clients/store/releases/16.1/pt-BR.json": "c0d079c2f25b8781f32242db388b10ec991db69750a7d00825d850d16f5f3e6c",
+    "clients/store/releases/16.1/ru.json": "fccf88229c83dcb14dc4ea1b42182867424c56b48a0e14c9b94ef8907ea580fe",
+    "clients/store/releases/16.1/th.json": "d25a6fa4d0a7221f7f182fe152b4049fd24db4c28c41e9ee0faa13bd3a1987e4",
+    "clients/store/releases/16.1/tr.json": "b32365710b331624d70c1589a4e935b33fcd053ab8588398ea79c9095a4d5cbb",
+    "clients/store/releases/16.1/uk.json": "9736c9940fe9a791d809a3821281f832dafad3d4cd5beb05a601d0f2fd680931",
+    "clients/store/releases/16.1/vi.json": "24f5caaae8f6b3d30398a5a0ec534921cf2c7232162965ecee18014a2c82d9c7",
+    "clients/store/releases/16.1/zh-Hans.json": "6c1856ae4af30221b9f5e4b37b1ffc2b78d35fa597af3178512456f564bb1b45",
+    "clients/store/releases/16.1/zh-Hant.json": "1aae64e0d571096efd84ae2eb200143a03d56356aa5cf1c518ee3080416b099d"
+  }
+}

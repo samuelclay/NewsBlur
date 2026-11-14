@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.compose.SettingsScreen
@@ -29,15 +30,24 @@ import com.newsblur.compose.buildSettingsUiState
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
+import com.newsblur.listen.ListenManager
+import com.newsblur.listen.ListenVoiceSettingsFragment
+import com.newsblur.listen.ListenVoiceSettingsViewModel
 import com.newsblur.network.UserApi
+import com.newsblur.preference.ClusterMarkReadPreference
+import com.newsblur.preference.ListenPrefKeys
+import com.newsblur.preference.ListenPreferences
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
 import com.newsblur.util.AppIconManager
 import com.newsblur.util.FeedUtils.Companion.triggerSync
+import com.newsblur.util.LanguageSettings
+import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
+import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,7 +73,15 @@ class SettingsFragment : Fragment() {
     @Inject
     lateinit var userApi: UserApi
 
+    @Inject
+    lateinit var listenPreferences: ListenPreferences
+
+    @Inject
+    lateinit var listenManager: ListenManager
+
     private var uiState by mutableStateOf(SettingsUiState())
+    private var clusterMarkReadSaving = false
+    private val clusterMarkReadPreference by lazy { ClusterMarkReadPreference(prefsRepo, userApi) }
 
     private val preferenceChangeListener =
         OnSharedPreferenceChangeListener { _, _ ->
@@ -109,6 +127,7 @@ class SettingsFragment : Fragment() {
                 ) {
                     SettingsScreen(
                         state = uiState,
+                        onLanguageSelected = ::updateLanguage,
                         onBooleanChanged = ::updateBooleanPreference,
                         onStringChanged = ::updateStringPreference,
                         onStoryClusteringEnabledChanged = ::updateStoryClusteringEnabled,
@@ -116,6 +135,7 @@ class SettingsFragment : Fragment() {
                         onAppIconSelected = ::updateAppIcon,
                         onAppIconUpgrade = ::showSubscription,
                         onDeleteOfflineStories = ::deleteOfflineStories,
+                        onListenVoices = ::openListenVoices,
                     )
                 }
             }
@@ -123,15 +143,40 @@ class SettingsFragment : Fragment() {
 
     private fun refreshUiState() {
         val context = context ?: return
-        uiState = buildSettingsUiState(context, prefsRepo, sharedPreferences)
+        uiState = buildSettingsUiState(context, prefsRepo, sharedPreferences).copy(clusterMarkReadSaving = clusterMarkReadSaving)
+    }
+
+    private fun updateLanguage(language: String) {
+        val context = requireContext().applicationContext
+        // SettingsFragment.kt marks the choice pending before saving it, so a feed refresh already in flight
+        // cannot revert it. SyncService.kt clears the flag after its next refresh saves the same language.
+        LanguageSettings.select(context, language, pending = true)
+        // Switching languages recreates this screen, so the save outlives the fragment.
+        ProcessLifecycleOwner.get().lifecycleScope.launch {
+            val saved = withContext(Dispatchers.IO) { userApi.setPreference("language", language) }
+            if (!saved) {
+                val message = LanguageSettings.localizedContext(context).getString(R.string.language_save_failed)
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun updateBooleanPreference(
         key: String,
         value: Boolean,
     ) {
+        if (key == PrefConstants.CLUSTER_MARK_READ) {
+            updateClusterMarkReadPreference(value)
+            return
+        }
         if (key == PrefConstants.ENABLE_NOTIFICATIONS) {
             handleNotificationsPreferenceChange(value)
+            return
+        }
+        // SettingsFragment.kt syncs story buttons and Listen choices with the web and iOS.
+        if (key in StoryButton.prefKeys || key in ListenPrefKeys.booleans) {
+            listenPreferences.saveInBackground(mapOf(key to value))
+            refreshUiState()
             return
         }
         prefsRepo.putBoolean(key, value)
@@ -142,7 +187,15 @@ class SettingsFragment : Fragment() {
         key: String,
         value: String,
     ) {
-        sharedPreferences.edit { putString(key, value) }
+        if (key == PrefConstants.STORY_MARK_READ_BEHAVIOR) {
+            prefsRepo.setMarkStoryReadBehavior(MarkStoryReadBehavior.valueOf(value))
+        } else if (key == ListenPrefKeys.SPEED) {
+            value.toDoubleOrNull()?.let(listenManager::setSpeed)
+        } else if (key == ListenPrefKeys.DELIVERY) {
+            listenPreferences.saveInBackground(mapOf(key to value))
+        } else {
+            sharedPreferences.edit { putString(key, value) }
+        }
         refreshUiState()
     }
 
@@ -153,6 +206,28 @@ class SettingsFragment : Fragment() {
 
     private fun updateClusterMode(clusterMode: String) {
         updateStoryClusteringPreference(true, clusterMode)
+    }
+
+    private fun updateClusterMarkReadPreference(enabled: Boolean) {
+        if (clusterMarkReadSaving || !prefsRepo.getIsArchive()) return
+        clusterMarkReadSaving = true
+        refreshUiState()
+        lifecycleScope.launch {
+            try {
+                val saved = withContext(Dispatchers.IO) { clusterMarkReadPreference.setEnabled(enabled) }
+                if (saved) {
+                    syncServiceState.forceFeedsFolders()
+                    context?.let { triggerSync(it) }
+                } else {
+                    context?.let {
+                        Toast.makeText(it, R.string.settings_cluster_mark_read_save_failed, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } finally {
+                clusterMarkReadSaving = false
+                refreshUiState()
+            }
+        }
     }
 
     private fun updateAppIcon(
@@ -167,6 +242,14 @@ class SettingsFragment : Fragment() {
                 .makeText(requireContext(), R.string.settings_app_icon_save_failed, Toast.LENGTH_SHORT)
                 .show()
         }
+    }
+
+    private fun openListenVoices() {
+        ListenVoiceSettingsFragment.show(
+            parentFragmentManager,
+            storyHash = null,
+            language = ListenVoiceSettingsViewModel.languageFor(java.util.Locale.getDefault()),
+        )
     }
 
     private fun showSubscription() {

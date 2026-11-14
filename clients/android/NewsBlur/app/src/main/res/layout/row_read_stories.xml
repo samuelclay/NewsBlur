@@ -8,10 +8,10 @@
         android:id="@+id/row_read_icon"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="13dp"
-        android:layout_marginRight="13dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginEnd="13dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/ic_indicator_unread" />
 
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/row_read_icon"
+        android:layout_toEndOf="@id/row_read_icon"
         android:text="@string/read_stories_title"
         android:letterSpacing="@dimen/extra_letter_spacing" />
 

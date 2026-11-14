@@ -1,5 +1,6 @@
 import math
 import os
+import random
 import shutil
 
 import psutil
@@ -30,7 +31,11 @@ limit_request_fields = 1000
 worker_tmp_dir = "/dev/shm"
 reload = False
 
-workers = max(int(math.floor(GIGS_OF_MEMORY * 2)), 3)
+# 1.5 workers per GB: measured worker RSS averages ~400MB and grows toward
+# 600MB over a max_requests lifetime, so 2/GB oversubscribed the host (15
+# workers x ~500MB on 7.7GB with no swap) and the kernel OOM killer made up
+# the difference by killing workers mid-request.
+workers = max(int(math.floor(GIGS_OF_MEMORY * 1.5)), 3)
 
 if workers > 16:
     workers = 16
@@ -59,8 +64,87 @@ for filename in os.listdir(prom_folder):
     except Exception as e:
         print("Failed to delete %s. Reason: %s" % (file_path, e))
 
-from prometheus_client import multiprocess
+# Prometheus selects multiprocess mode at import time, after the directory is configured above.
+from utils.prometheus_worker_slots import (  # noqa: E402
+    lowest_free_slot,
+    use_worker_slot,
+)
+
+# Gunicorn has no max_memory_per_child, so recycle memory-heavy workers by hand.
+# Mirrors CELERY_WORKER_MAX_MEMORY_PER_CHILD in newsblur_web/settings.py. Reusing
+# slots means the extra churn no longer leaves metric files behind.
+#
+# The budget is derived from what the host can actually sustain, so worker count
+# and per-worker budget can never contradict each other: a fixed 750MB budget
+# once let 15 workers hold 11GB of permission on a 7.6GB host, and the kernel
+# OOM killer collected the debt from workers that were all under budget.
+# Reserve 1GB for the OS, Consul, dnsmasq, and Docker; split the rest. The
+# 1.15 divisor keeps the reserve intact even if every worker draws maximum
+# jitter, since the jitter below is +/-15% of this base.
+max_worker_memory_bytes = max(
+    int((psutil.virtual_memory().total - 1024**3) / workers / 1.15),
+    256 * 1024 * 1024,
+)
+
+# Workers serving the same traffic grow at the same rate, so a single shared
+# threshold would retire them all at once and leave nothing to serve requests.
+# Each worker takes a slightly different limit, for the same reason
+# max_requests_jitter exists.
+max_worker_memory_jitter_bytes = int(max_worker_memory_bytes * 0.15)
+
+# psutil.Process() binds to whichever pid is alive when it is built, so a worker
+# has to build its own after forking. The master's would report the master.
+worker_process = None
+worker_memory_limit = max_worker_memory_bytes
 
 
-def child_exit(server, worker):
-    multiprocess.mark_process_dead(worker.pid)
+def pre_fork(server, worker):
+    """Assign the worker a Prometheus slot, in the master, before it forks.
+
+    server.WORKERS holds exactly the live workers, so the slots it reports are the
+    ones still in use and a reaped worker's slot frees itself. The child inherits
+    this worker object through the fork and reads the slot back in post_fork.
+    """
+    live_slots = [
+        live.prometheus_slot for live in server.WORKERS.values() if hasattr(live, "prometheus_slot")
+    ]
+    worker.prometheus_slot = lowest_free_slot(live_slots)
+
+
+def post_fork(server, worker):
+    """Bind the worker to its slot before Django constructs any metric."""
+    global worker_process, worker_memory_limit
+    worker_process = psutil.Process()
+    worker_memory_limit = max_worker_memory_bytes + random.randint(
+        -max_worker_memory_jitter_bytes, max_worker_memory_jitter_bytes
+    )
+
+    slot = getattr(worker, "prometheus_slot", None)
+    if slot is None:
+        # Falling back to pid-named files keeps metrics working, but they
+        # accumulate, so say so loudly rather than degrade in silence.
+        server.log.error("Worker %s has no Prometheus slot; its metric files will accumulate", worker.pid)
+        return
+    use_worker_slot(prom_folder, slot)
+
+
+def post_request(worker, req, environ, resp):
+    """Retire a worker that has outgrown its memory budget, once it has replied.
+
+    Gunicorn calls this after the response is written, so clearing `alive` only
+    stops the worker accepting the next connection. It is the same graceful path
+    max_requests already uses: nothing in flight is dropped. The point is to
+    retire the worker before the kernel OOM killer SIGKILLs it mid-request, which
+    is what turns into 502s today.
+    """
+    if worker_process is None or not worker.alive:
+        return
+
+    rss = worker_process.memory_info().rss
+    if rss > worker_memory_limit:
+        worker.log.info(
+            "Autorestarting worker after current request: RSS %sMB exceeds %sMB",
+            rss // (1024 * 1024),
+            worker_memory_limit // (1024 * 1024),
+        )
+        worker.alive = False

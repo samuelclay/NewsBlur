@@ -43,7 +43,11 @@
         [lock signal];
     }];
     
-    [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
+    BOOL completed = [lock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:30]];
+    if (!completed) {
+        [self cancel];
+        [manager invalidateSessionCancelingTasks:YES];
+    }
     [lock unlock];
 
     NSLog(@"Finished syncing stories");
@@ -56,59 +60,41 @@
         return;
     }
     
+    if (![results isKindOfClass:[NSDictionary class]]) return;
+    NSDictionary *hashes = results[@"unread_feed_story_hashes"];
+    if (![hashes isKindOfClass:[NSDictionary class]]) return;
+    for (id feed in hashes) {
+        if (![hashes[feed] isKindOfClass:[NSArray class]]) return;
+        for (id tuple in hashes[feed]) {
+            if (![tuple isKindOfClass:[NSArray class]] || [tuple count] < 2 ||
+                ![tuple[0] isKindOfClass:[NSString class]] ||
+                ![tuple[1] respondsToSelector:@selector(doubleValue)]) return;
+        }
+    }
+
+    __block BOOL cleaned = NO;
     [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-//        NSLog(@"Storing unread story hashes...");
-        [db executeUpdate:@"DROP TABLE unread_hashes"];
-        [self.appDelegate setupDatabase:db force:NO];
-        NSDictionary *hashes = [results objectForKey:@"unread_feed_story_hashes"];
-        for (NSString *feed in [hashes allKeys]) {
-            NSArray *story_hashes = [hashes objectForKey:feed];
-            for (NSArray *story_hash_tuple in story_hashes) {
-                [db executeUpdate:@"INSERT into unread_hashes"
-                 "(story_feed_id, story_hash, story_timestamp) VALUES "
-                 "(?, ?, ?)",
-                 feed,
-                 [story_hash_tuple objectAtIndex:0],
-                 [story_hash_tuple objectAtIndex:1]
-                 ];
+        if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
+        BOOL success = [db executeUpdate:@"DELETE FROM unread_hashes"];
+        for (NSString *feed in hashes) {
+            for (NSArray *tuple in hashes[feed]) {
+                if (!success) break;
+                success = [db executeUpdate:@"INSERT INTO unread_hashes (story_feed_id, story_hash, story_timestamp) VALUES (?, ?, ?)", feed, tuple[0], tuple[1]];
             }
         }
+        NSInteger limit = [[NSUserDefaults standardUserDefaults] integerForKey:@"offline_store_limit"];
+        BOOL oldestFirst = [[[NSUserDefaults standardUserDefaults] stringForKey:@"default_order"] isEqualToString:@"oldest"];
+        if (success) success = [OfflineCacheCleanup pruneDatabase:db limit:limit oldestFirst:oldestFirst];
+        *rollback = !success;
+        cleaned = success;
     }];
-    [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        // Once all unread hashes are in, only keep under preference for offline limit
-        NSInteger offlineLimit = [[NSUserDefaults standardUserDefaults]
-                                  integerForKey:@"offline_store_limit"];
-        NSString *order;
-        NSString *orderComp;
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"]
-             isEqualToString:@"oldest"]) {
-            order = @"ASC";
-            orderComp = @">";
-        } else {
-            order = @"DESC";
-            orderComp = @"<";
-        }
-        NSString *lastStorySql = [NSString stringWithFormat:
-                                  @"SELECT story_timestamp FROM unread_hashes "
-                                  "ORDER BY story_timestamp %@ LIMIT 1 OFFSET %ld",
-                                  order, (long)offlineLimit];
-        FMResultSet *cursor = [db executeQuery:lastStorySql];
-        int offlineLimitTimestamp = 0;
-        while ([cursor next]) {
-            offlineLimitTimestamp = [cursor intForColumn:@"story_timestamp"];
-            break;
-        }
-        [cursor close];
-        
-        if (offlineLimitTimestamp) {
-//            NSLog(@"Deleting stories over limit: %ld - %d", (long)offlineLimit, offlineLimitTimestamp);
-            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM unread_hashes WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
-            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM stories WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
-            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM text WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]];
-//            [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM story_scrolls WHERE story_timestamp %@ %d", orderComp, offlineLimitTimestamp]]; // Don't cleanup story scrolls just yet
-        }
+    if (!cleaned || self.isCancelled) return;
+    [self.appDelegate.database inDatabase:^(FMDatabase *db) {
+        if (self.isCancelled || self.appDelegate.clearingOfflineCache) return;
+        [OfflineCacheCleanup removeUnreferencedImagesWithDatabase:db directory:[self.appDelegate.documentsURL URLByAppendingPathComponent:@"story_images"]];
+        [OfflineCacheCleanup compactDatabase:db force:NO];
     }];
-    
+
     self.appDelegate.totalUnfetchedStoryCount = 0;
     self.appDelegate.remainingUnfetchedStoryCount = 0;
     self.appDelegate.latestFetchedStoryDate = 0;
@@ -116,7 +102,9 @@
     self.appDelegate.remainingUncachedImagesCount = 0;
     
 //    NSLog(@"Done syncing Unreads...");
-    [self.appDelegate startOfflineFetchStories];
+    if (!self.isCancelled && !self.appDelegate.clearingOfflineCache) {
+        [self.appDelegate startOfflineFetchStories];
+    }
 }
 
 @end

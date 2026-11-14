@@ -1,0 +1,30 @@
+{
+  "language": "zh-Hans",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:24:17Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Simplified Chinese glyphs and captions are intact; no punctuation begins a line, no clipping.",
+    "Native Simplified Chinese source/search/navigation/filter/date controls visible; cooking photos and article content loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-01.png",
+      "sha256": "5266e8c5dae2ccd96c05988932c82439d3cce34e36ac795289095eac4a4a1a36"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-02.png",
+      "sha256": "4c23f46eb65512ea4b96429c1176416fe9046deb1d5a7d1dba0520d971dcd25b"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-03.png",
+      "sha256": "2680548a5cb129ba0595642837074ecd43821685eb38aa64cea0213f281633ca"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-04.png",
+      "sha256": "b6d75a0b316848fa60ff5265fc167596352f0c1575768121c100624c1b1a89a9"
+    }
+  ],
+  "contact_sha256": "d074b0c40c00d136ebeb21a2f7cbb2eb4aa458c88935cc109e9eb521d2b87143"
+}

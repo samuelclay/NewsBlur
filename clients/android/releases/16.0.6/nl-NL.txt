@@ -1,0 +1,1 @@
+Verhelpt een probleem op tablets waarbij het markeren van een feed als gelezen NewsBlur naar de achtergrond kon sturen. Zowel de knop onderaan als het feedmenu houdt de app nu open, zodat je kunt blijven lezen.

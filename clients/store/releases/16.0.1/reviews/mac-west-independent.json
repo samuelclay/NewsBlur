@@ -1,0 +1,172 @@
+{
+  "version": "16.0.1",
+  "platform": "macos",
+  "reviewer": "mac_copy_east",
+  "translation_author": "mac_copy_west",
+  "independent": true,
+  "reviewed_at": "2026-10-25T04:42:42.138Z",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "source": "clients/store/metadata/en.json and clients/store/releases/16.0.1/en.json",
+  "reviewed_fields": [
+    "name",
+    "subtitle",
+    "description",
+    "keywords",
+    "promotional_text",
+    "whats_new",
+    "ios.subscriptions",
+    "ios.subscription_groups"
+  ],
+  "english_review": {
+    "result": "pass",
+    "evidence": [
+      "StoryDetailObjCViewController.m tryScrollingDown: checks top and bottom boundaries, calls doNextUnreadStory/changeToPreviousPage, uses space_scroll_spacing for scroll amount.",
+      "SceneDelegate.swift restores and saves normal Mac window geometry via mac_main_window_frame.",
+      "English states actual patch behaviors without claiming current store availability."
+    ]
+  },
+  "findings": [],
+  "changes": [],
+  "notes": [
+    "Reviewed complete Mac listing and release notes for meaning, omissions, register, natural language, terminology and feature claims.",
+    "Reviewed all shared Apple subscription and group text against English; identifiers, plan claims and billing disclosures remain accurate.",
+    "Shared names/subtitles, canonical URLs, field length limits and UTF-8 keyword limits pass.",
+    "No translation defects requiring edits found."
+  ],
+  "results": [
+    {
+      "language": "es",
+      "result": "pass",
+      "files": [
+        {
+          "path": "clients/store/metadata/es.json",
+          "sha256": "8593852af7f18056c553f11b9210655e1375a6c270c5aa2777727b1094725938"
+        },
+        {
+          "path": "clients/store/releases/16.0.1/es.json",
+          "sha256": "aed627691ae7102572883d4b33819464f04e39594f6d50e2587edf7f2edb4a03"
+        },
+        {
+          "path": "clients/store/products/es.json",
+          "sha256": "a9607837faa11f892d3d87a15f1072ac58f289d50ee6405b1f92b12ff4c753b7"
+        }
+      ]
+    },
+    {
+      "language": "fr",
+      "result": "pass",
+      "files": [
+        {
+          "path": "clients/store/metadata/fr.json",
+          "sha256": "b7539aa863dcc4dc5c71bf2b57ce69eabcae009f789ad12bc2eec4134c025f4e"
+        },
+        {
+          "path": "clients/store/releases/16.0.1/fr.json",
+          "sha256": "fc76cd33ceabed07375d42d6ad93b84f3b98606f1b65ce6735ff1d3c44a9aa31"
+        },
+        {
+          "path": "clients/store/products/fr.json",
+          "sha256": "5cf1ecf9f02cdccf3a4bce1c7c4d199df7b24d05951c31d2608260636f7397ff"
+        }
+      ]
+    },
+    {
+      "language": "de",
+      "result": "pass",
+      "files": [
+        {
+          "path": "clients/store/metadata/de.json",
+          "sha256": "632f8c238a81b95cdc7df1ae3d281bdcdfe8129234d0d49c7016f36c69e20563"
+        },
+        {
+          "path": "clients/store/releases/16.0.1/de.json",
+          "sha256": "fa9a73622a15b4295ab71a9f5aaa0f7751492abd3960720779bc509e2d5eb27e"
+        },
+        {
+          "path": "clients/store/products/de.json",
+          "sha256": "d1f447606e705d932e75b5893f149106e5b4519d942931e6954fac2c36648361"
+        }
+      ]
+    },
+    {
+      "language": "pt-BR",
+      "result": "pass",
+      "files": [
+        {
+          "path": "clients/store/metadata/pt-BR.json",
+          "sha256": "d49f066b83ccde23fe0c64e0bccb9265b37946cbdce7a5cb3a75c3bd7f854a36"
+        },
+        {
+          "path": "clients/store/releases/16.0.1/pt-BR.json",
+          "sha256": "111947d53e42892cbe6dbad6e4430a412bede69f481092f0900a319c3ffae23e"
+        },
+        {
+          "path": "clients/store/products/pt-BR.json",
+          "sha256": "338f39ca02c55b106ea28fdb22ba9da049880e3dc5ba4a9510ecc24a0e9e70d6"
+        }
+      ]
+    },
+    {
+      "language": "it",
+      "result": "pass",
+      "files": [
+        {
+          "path": "clients/store/metadata/it.json",
+          "sha256": "98e471996af6700c6309ba416fe8c8bd5b72723c57f2e9022210f66bbec2c37e"
+        },
+        {
+          "path": "clients/store/releases/16.0.1/it.json",
+          "sha256": "9fa259eb85dda65fd7a0118093e7856caa7aac7b13c09f16e2633816b76215ac"
+        },
+        {
+          "path": "clients/store/products/it.json",
+          "sha256": "e775ff11c64f46de32a133f2bc64759c46fb36d95894c2eca1f32d0058a192a9"
+        }
+      ]
+    },
+    {
+      "language": "nl",
+      "result": "pass",
+      "files": [
+        {
+          "path": "clients/store/metadata/nl.json",
+          "sha256": "cac64c1127ace770c873bdcfb65fc9305c2e3d0a6f33bb3c13c5edbbd3099655"
+        },
+        {
+          "path": "clients/store/releases/16.0.1/nl.json",
+          "sha256": "fdc1f3774e75242fe7941ad33fb0b106d8316e640df262641e0cb085ec195d20"
+        },
+        {
+          "path": "clients/store/products/nl.json",
+          "sha256": "1698cf096b664f336c91fe02b64574259daba6e4f48c8990d09d849b54d5ec73"
+        }
+      ]
+    },
+    {
+      "language": "pl",
+      "result": "pass",
+      "files": [
+        {
+          "path": "clients/store/metadata/pl.json",
+          "sha256": "0eaee6550d64741db19140c2f2d9ac067513cd3a104655e6e50310192e8473d2"
+        },
+        {
+          "path": "clients/store/releases/16.0.1/pl.json",
+          "sha256": "5ca57db1dbde5baf7964394c8f1034806cf502b1f89636bab67a0d9bb2b8cab5"
+        },
+        {
+          "path": "clients/store/products/pl.json",
+          "sha256": "459274cd8104153b2297f3bdcc322a0152c1025d415854676085dc5a4f2077b7"
+        }
+      ]
+    }
+  ]
+}

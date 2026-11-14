@@ -1,0 +1,39 @@
+{
+  "version": "16.1.1",
+  "batch": "west",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "status": "translated_and_self_reviewed",
+  "independent_review": "pending",
+  "scope": [
+    "All listing fields compared with English; unchanged accurate copy retained",
+    "Weekly allowance and ordered Saved/Read paragraphs translated on all three platforms",
+    "Apple promotional copy and Archive/Pro subscription descriptions updated",
+    "Android Archive description and four benefits updated",
+    "Complete iOS/macOS and Android release notes translated"
+  ],
+  "checks": [
+    "Brand names, URLs and product identifiers preserved",
+    "Archive 1 hour per week, Pro 10 hours per week, reset every Sunday",
+    "No Mac reading-toolbar claim",
+    "Next story and Now Playing terminology aligned with current app catalogs",
+    "Field lengths checked, including keywords in UTF-8 bytes",
+    "No new unsupported capability claims"
+  ],
+  "limits": {
+    "apple_promotional_text": 175,
+    "apple_description": 4000,
+    "apple_keywords_utf8_bytes": 100,
+    "apple_subscription_description": 55,
+    "google_release_notes": 500,
+    "google_subscription_description": 200,
+    "google_benefit": 40
+  }
+}

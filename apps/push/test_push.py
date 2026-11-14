@@ -25,7 +25,9 @@
 
 import urllib
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
+from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -85,6 +87,42 @@ class PSHBTestBase:
 
 
 class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
+    @patch("apps.push.models.Feed.get_by_id", return_value=None)
+    def test_already_deleted_feed_is_ignored(self, mock_get_feed):
+        feed = Feed.objects.create(
+            feed_link="topic",
+            feed_title="Feed deleted before push subscription",
+            hash_address_and_link="test_already_deleted_feed",
+        )
+
+        subscription = PushSubscription.objects.subscribe(
+            "topic", feed, hub="hub", callback="callback", lease_seconds=2000
+        )
+
+        self.assertIsNone(subscription)
+        mock_get_feed.assert_called_once_with(feed.id)
+        self.assertEqual(self.requests, [])
+
+    @patch("apps.push.models.Feed.get_by_id")
+    @patch.object(PushSubscriptionManager, "get_or_create")
+    def test_deleted_feed_during_subscription_is_ignored(self, mock_get_or_create, mock_get_feed):
+        feed = Feed.objects.create(
+            feed_link="topic",
+            feed_title="Feed deleted during push subscription",
+            hash_address_and_link="test_deleted_feed_during_subscription",
+        )
+        mock_get_feed.side_effect = [feed, None]
+        mock_get_or_create.side_effect = IntegrityError("feed was deleted concurrently")
+
+        subscription = PushSubscription.objects.subscribe(
+            "topic", feed, hub="hub", callback="callback", lease_seconds=2000
+        )
+
+        self.assertIsNone(subscription)
+        self.assertEqual(mock_get_feed.call_count, 2)
+        mock_get_or_create.assert_called_once_with(feed=feed)
+        self.assertEqual(self.requests, [])
+
     def test_sync_verify(self):
         """
         If the hub returns a 204 response, the subscription is verified and

@@ -8,6 +8,13 @@
   "log_level": "INFO",
   "log_file": "/var/log/consul/consul.log",
   "enable_syslog": true,
+  {# Bind the client HTTP/DNS API to loopback only. Clients never need their #}
+  {# 8500/8600 reachable over the network (apps use the local agent, and #}
+  {# Prometheus service discovery talks to the consul servers, not clients). #}
+  {# This overrides client_addr=0.0.0.0 from consul.hcl (loaded earlier) and #}
+  {# keeps a client's API off the public internet even if its host firewall is #}
+  {# misconfigured. Cluster gossip uses bind_addr below, which is unaffected. #}
+  "client_addr": "127.0.0.1",
   "retry_join": [{{ consul_manager_ip.stdout|trim }}],
   {% if inventory_hostname.startswith("hdb") and inventory_hostname|regex_replace("\-?\d+", "") not in hdb_cloud_servers %}
   "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^en(p|o)\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",

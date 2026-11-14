@@ -19,8 +19,10 @@ import com.newsblur.network.APIConstants
 import com.newsblur.network.FeedApi
 import com.newsblur.network.NetworkClient
 import com.newsblur.network.StoryApi
+import com.newsblur.network.UserApi
 import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.StoriesResponse
+import com.newsblur.preference.ListenPreferences
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager.UPDATE_DB_READY
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
@@ -34,16 +36,19 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.CursorFilters
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FileCache
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.ReadingAction
 import com.newsblur.util.StateFilter
+import com.newsblur.util.TryFeedStore
 import com.newsblur.util.doLocal
 import com.newsblur.util.doRemote
 import com.newsblur.util.toContentValues
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -51,10 +56,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import java.util.Date
 import javax.inject.Inject
@@ -65,7 +70,13 @@ open class SyncService :
     JobService(),
     CoroutineScope {
     @Inject
+    lateinit var userApi: UserApi
+
+    @Inject
     lateinit var storyApi: StoryApi
+
+    @Inject
+    lateinit var tryFeedStore: TryFeedStore
 
     @Inject
     lateinit var feedApi: FeedApi
@@ -74,7 +85,11 @@ open class SyncService :
     lateinit var networkClient: NetworkClient
 
     @Inject
-    lateinit var dbHelper: BlurDatabaseHelper
+    lateinit var dbHelperLazy: dagger.Lazy<BlurDatabaseHelper>
+
+    // NbApplication.kt warms this singleton on IO; eager injection would block service startup
+    // on that same database lock. SyncService.kt first accesses it from its IO coroutine work.
+    val dbHelper: BlurDatabaseHelper get() = dbHelperLazy.get()
 
     @IconFileCache
     @Inject
@@ -92,10 +107,17 @@ open class SyncService :
     lateinit var prefsRepo: PrefsRepo
 
     @Inject
+    lateinit var listenPreferences: ListenPreferences
+
+    @Inject
     lateinit var syncServiceState: SyncServiceState
 
     private val serviceJob = SupervisorJob()
+    private val syncRequests = SyncRequestCoordinator(primarySyncRunner)
     private var mainJob: Job? = null
+    private var scheduledJob: Job? = null
+    private var foregroundRequested = false
+    private var metadataSubSyncPending = false
 
     override val coroutineContext: CoroutineContext =
         CoroutineName("SyncService") +
@@ -142,15 +164,14 @@ open class SyncService :
             return false
         }
         Log.d(this, "onStartJob")
-        mainJob?.cancel()
-        mainJob =
-            launch {
-                try {
-                    sync()
-                } finally {
-                    jobFinished(params, false)
-                }
-            }
+        val job = requestPrimarySync()
+        if (mainJob !== job) foregroundRequested = false
+        job.invokeOnCompletion {
+            // SyncService.kt must finish scheduled jobs even when canceled before acquiring the runner.
+            jobFinished(params, false)
+        }
+        mainJob = job
+        scheduledJob = job
         return true // async
     }
 
@@ -168,16 +189,23 @@ open class SyncService :
             stopSelf(startId)
             return START_NOT_STICKY
         }
-        mainJob?.cancel()
-        mainJob = launch { sync() }
+        mainJob = requestPrimarySync()
+        foregroundRequested = true
         return START_NOT_STICKY
     }
 
     override fun onStopJob(params: JobParameters?): Boolean {
         Log.d(this, "onStopJob")
-        syncServiceState.setServiceState(ServiceState.Idle)
-        mainJob?.cancel()
-        mainJob = null
+        if (!hiltInjected) return false
+        val stoppedJob = scheduledJob
+        scheduledJob = null
+        // SyncService.kt coalesces scheduled and foreground wakeups onto the same worker.
+        // A scheduler stop must not cancel an active UI request that joined that worker.
+        if (mainJob === stoppedJob && !foregroundRequested) {
+            stoppedJob?.cancel()
+            syncServiceState.setServiceState(ServiceState.Idle)
+            mainJob = null
+        }
         return false
     }
 
@@ -186,7 +214,16 @@ open class SyncService :
         Log.d(this, "onNetworkChanged")
     }
 
-    private suspend fun sync() =
+    private fun requestPrimarySync(): Job {
+        var prefetchAllowed = false
+        return syncRequests.request(
+            this,
+            foreground = { prefetchAllowed = syncForeground() },
+            background = { if (prefetchAllowed) syncBackground() },
+        )
+    }
+
+    private suspend fun syncForeground(): Boolean =
         supervisorScope {
             Log.d(this, "Starting primary sync")
             ensureActive()
@@ -199,49 +236,59 @@ open class SyncService :
 
             if (!NetworkUtils.isOnline(this@SyncService)) {
                 Log.d(this.javaClass.name, "Skipping sync: device is offline")
-                return@supervisorScope
+                return@supervisorScope false
             }
 
             if (!isAppForeground && !prefsRepo.isBackgroundNeeded(this@SyncService)) {
                 Log.d(this.javaClass.name, "Skipping sync: device is in the background and background sync is disabled")
-                return@supervisorScope
+                return@supervisorScope false
             }
 
             if (!isAppForeground && !prefsRepo.isBackgroundNetworkAllowed(this@SyncService)) {
                 Log.d(this.javaClass.name, "Skipping sync: network type not appropriate for background sync.")
-                return@supervisorScope
-            }
-
-            val subSyncJobs = mutableListOf<Job>()
-
-            fun trackSubSync(job: Job) {
-                subSyncJobs += job
+                return@supervisorScope false
             }
 
             // first: catch up
             syncActions()
+            ensureActive()
 
             // if MD is stale, sync it first so unreads don't get backwards with story unread state
-            syncMetadata(this, ::trackSubSync)
+            syncMetadata()
+            ensureActive()
 
             // handle fetching of stories that are actively being requested by the live UI
             syncPendingFeedStories()
+            ensureActive()
 
             // re-apply the local state of any actions executed before local UI interaction
             finishActions()
+            ensureActive()
 
             // after all actions, double-check local state vs remote state consistency
             checkRecounts()
+            ensureActive()
+            true
+        }
+
+    private suspend fun syncBackground() =
+        supervisorScope {
+            val subSyncJobs = mutableListOf<Job>()
+            if (metadataSubSyncPending) {
+                subSyncJobs += cleanupSubService.launchIn(this)
+                subSyncJobs += starredSubService.launchIn(this)
+            }
 
             // async story and image prefetch are lower priority and don't affect active reading, do them last
-            unreadsSubService.launchIn(this).also { trackSubSync(it) }
-            imagePrefetchSubService.launchIn(this).also { trackSubSync(it) }
+            subSyncJobs += unreadsSubService.launchIn(this)
+            subSyncJobs += imagePrefetchSubService.launchIn(this)
 
             // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
             // here in case some made it through the feed sync loop first
             pushNotifications()
 
             subSyncJobs.joinAll()
+            metadataSubSyncPending = false
 
             Log.d(this, "Finishing primary sync")
 
@@ -251,7 +298,10 @@ open class SyncService :
 
     override fun onDestroy() {
         Log.d(this, "onDestroy")
-        syncServiceState.setServiceState(ServiceState.Idle)
+        // SyncService.kt also receives teardown after onCreate stops a failed Hilt injection.
+        if (::syncServiceState.isInitialized) {
+            syncServiceState.setServiceState(ServiceState.Idle)
+        }
         coroutineContext.cancel()
         super.onDestroy()
     }
@@ -297,6 +347,7 @@ open class SyncService :
     }
 
     private suspend fun syncActions() {
+        currentCoroutineContext().ensureActive()
         if (backoffBackgroundCalls()) return
 
         var c: Cursor? = null
@@ -310,6 +361,7 @@ open class SyncService :
             val stateFilter = prefsRepo.getStateFilter()
 
             actionsLoop@ while (c.moveToNext()) {
+                currentCoroutineContext().ensureActive()
                 sendSyncUpdate(UPDATE_STATUS)
                 val id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID))
                 val ra: ReadingAction?
@@ -328,6 +380,9 @@ open class SyncService :
                 val response: NewsBlurResponse?
                 try {
                     response = ra.doRemote(syncServiceState, feedApi, storyApi, dbHelper, stateFilter)
+                } catch (e: CancellationException) {
+                    // SyncService.kt keeps canceled actions queued for the next generation.
+                    throw e
                 } catch (e: Exception) {
                     Log.e(this.javaClass.name, "Discarding reading action that threw unexpected exception", e)
                     dbHelper.clearAction(id)
@@ -369,10 +424,8 @@ open class SyncService :
      * The very first step of a sync - get the feed/folder list, unread counts, and
      * unread hashes. Doing this resets pagination on the server!
      */
-    private suspend fun syncMetadata(
-        scope: CoroutineScope,
-        trackSubSync: (Job) -> Unit,
-    ) {
+    private suspend fun syncMetadata() {
+        currentCoroutineContext().ensureActive()
         if (backoffBackgroundCalls()) return
 
         val untriedActions = dbHelper.getUntriedActionCount()
@@ -402,6 +455,7 @@ open class SyncService :
 
         try {
             val feedResponse = feedApi.getFolderFeedMapping(true)
+            currentCoroutineContext().ensureActive()
 
             if (feedResponse == null) {
                 noteHardAPIFailure()
@@ -435,6 +489,7 @@ open class SyncService :
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
             prefsRepo.setArchive(feedResponse.isArchive, feedResponse.premiumExpire)
             prefsRepo.setPro(feedResponse.isPro, feedResponse.premiumExpire)
+            feedResponse.usageBillingState?.let(prefsRepo::setUsageBillingState)
             prefsRepo.setIsStaff(feedResponse.isStaff)
             prefsRepo.setExtToken(feedResponse.shareExtToken)
             feedResponse.storyClustering?.let {
@@ -442,6 +497,18 @@ open class SyncService :
             }
             feedResponse.clusterMode?.let {
                 prefsRepo.putString(PrefConstants.CLUSTER_MODE, it)
+            }
+            prefsRepo.putBoolean(PrefConstants.CLUSTER_MARK_READ, feedResponse.clusterMarkRead)
+            // SyncService.kt brings in the Listen settings and story button toggles saved on other devices.
+            listenPreferences.applyServerPreferences(feedResponse.preferences)
+            // SyncService.kt saves a language chosen on this device first; otherwise the account's language wins.
+            val localLanguage = LanguageSettings.selected(this)
+            if (LanguageSettings.pending(this)) {
+                if (userApi.setPreference("language", localLanguage)) {
+                    LanguageSettings.select(this, localLanguage)
+                }
+            } else if (localLanguage != feedResponse.language) {
+                LanguageSettings.select(this, feedResponse.language)
             }
 
             // note all feeds that belong to some folder so we can find orphans
@@ -523,9 +590,10 @@ open class SyncService :
             Log.i(this.javaClass.name, "got feed list")
 
             unreadsSubService.doMetadata()
-            unreadsSubService.launchIn(scope).also { trackSubSync(it) }
-            cleanupSubService.launchIn(scope).also { trackSubSync(it) }
-            starredSubService.launchIn(scope).also { trackSubSync(it) }
+            metadataSubSyncPending = true
+        } catch (e: CancellationException) {
+            syncServiceState.doFeedsFolders = true
+            throw e
         } finally {
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
         }
@@ -535,13 +603,14 @@ open class SyncService :
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
     private suspend fun syncPendingFeedStories() {
+        val generationContext = currentCoroutineContext()
+        generationContext.ensureActive()
         // track whether we actually tried to handle the feedset and found we had nothing
         // more to do, in which case we will clear it
         var finished = false
+        var totalStoriesSeen = 0
 
-        val fs = syncServiceState.pendingFeed
-
-        try {
+        val request = synchronized(syncServiceState.pendingFeedMutex) {
             // see if we need to quickly reset fetch state for a feed. we
             // do this before the loop to prevent-mid loop state corruption
             synchronized(syncServiceState.resetFeedMutex) {
@@ -557,84 +626,128 @@ open class SyncService :
                     dbHelper.sessionFeedSet = null
                 }
             }
-
-            if (fs == null) {
-                Log.d(this.javaClass.name, "No feed set to sync")
-                return
+            syncServiceState.pendingFeed?.let {
+                StoryPageRequest.capture(syncServiceState, CursorFilters(prefsRepo, it), prefsRepo.getInfrequentCutoff())
             }
+        } ?: return
+        val fs = request.feedSet
+        val cursorFilters = request.cursorFilters
 
-            prepareReadingSession(prefsRepo, dbHelper, fs)
+        fun commitCurrent(requireReadySession: Boolean = false, commit: () -> Unit): Boolean =
+            request.commitIfCurrent(
+                syncServiceState,
+                CursorFilters(prefsRepo, fs),
+                prefsRepo.getInfrequentCutoff(),
+                sessionReady = { generationContext.isActive && (!requireReadySession || dbHelper.isFeedSetReady(fs)) },
+                commit = commit,
+            )
 
-            syncServiceState.lastFeedSet = fs
-
-            if (syncServiceState.exhaustedFeeds.contains(fs)) {
-                Log.i(this.javaClass.name, "No more stories for feed set: $fs")
-                finished = true
-                return
-            }
-
-            if (!syncServiceState.feedPagesSeen.containsKey(fs)) {
-                syncServiceState.addFeedPagesSeen(fs, 0)
-                syncServiceState.addFeedStoriesSeen(fs, 0)
-                syncServiceState.workaroundReadStoryTimestamp = (Date()).time
-                syncServiceState.workaroundGlobalSharedStoryTimestamp = (Date()).time
-            }
-            var pageNumber: Int = syncServiceState.feedPagesSeen[fs]!!
-            var totalStoriesSeen: Int = syncServiceState.feedStoriesSeen[fs]!!
-
-            val cursorFilters = CursorFilters(prefsRepo, fs)
+        try {
+            var pageNumber = 0
+            if (!commitCurrent {
+                prepareReadingSession(prefsRepo, dbHelper, fs)
+                syncServiceState.lastFeedSet = fs
+                if (syncServiceState.exhaustedFeeds.contains(fs)) {
+                    finished = true
+                } else {
+                    if (!syncServiceState.feedPagesSeen.containsKey(fs)) {
+                        syncServiceState.addFeedPagesSeen(fs, 0)
+                        syncServiceState.addFeedStoriesSeen(fs, 0)
+                        syncServiceState.workaroundReadStoryTimestamp = (Date()).time
+                        syncServiceState.workaroundGlobalSharedStoryTimestamp = (Date()).time
+                    }
+                    pageNumber = syncServiceState.feedPagesSeen[fs]!!
+                    totalStoriesSeen = syncServiceState.feedStoriesSeen[fs]!!
+                }
+            }) return
+            if (finished) return
 
             syncServiceState.setServiceState(ServiceState.StorySync)
             sendSyncUpdate(UPDATE_STATUS)
 
-            ensureActive()
-            while (isActive && totalStoriesSeen < syncServiceState.pendingFeedTarget) {
-                // bail if the active view has changed
-                if (fs != syncServiceState.pendingFeed) {
-                    return
-                }
+            while (true) {
+                var needsPage = false
+                if (!commitCurrent { needsPage = totalStoriesSeen < syncServiceState.pendingFeedTarget }) return
+                if (!needsPage) break
 
-                ensureActive()
+                // SyncService.kt is itself a CoroutineScope; check the current generation,
+                // not the service's still-active SupervisorJob.
+                currentCoroutineContext().ensureActive()
 
                 pageNumber++
-                val apiResponse =
+                var apiResponse =
                     storyApi.getStories(
                         fs,
                         pageNumber,
                         cursorFilters.storyOrder,
                         cursorFilters.readFilter,
-                        prefsRepo.getInfrequentCutoff(),
+                        request.infrequentCutoff,
                     )
+                currentCoroutineContext().ensureActive()
 
                 if (!isStoryResponseGood(apiResponse)) return
 
-                if (fs != syncServiceState.pendingFeed) {
-                    return
+                // SyncService.kt refreshes only a confirmed empty first API page, never an empty SQL cursor.
+                if (TryFeedStoryFetcher.shouldRefresh(fs, pageNumber, apiResponse, tryFeedStore.isTryFeed(fs.getSingleFeed()))) {
+                    if (!commitCurrent { syncServiceState.setTryFeedRefreshStatus(fs, TryFeedRefreshStatus.FETCHING) }) return
+                    sendSyncUpdate(UPDATE_STATUS)
+                    val refresh = TryFeedStoryFetcher(storyApi).refresh(fs.getSingleFeed()!!, cursorFilters.storyOrder, cursorFilters.readFilter) {
+                        commitCurrent() {} && tryFeedStore.isTryFeed(fs.getSingleFeed())
+                    }
+                    when (refresh) {
+                        is TryFeedStoryFetcher.Result.Complete -> {
+                            apiResponse = refresh.response
+                            if (!commitCurrent {
+                                syncServiceState.setTryFeedRefreshStatus(fs, if (refresh.response.stories.isEmpty()) TryFeedRefreshStatus.EMPTY else TryFeedRefreshStatus.NONE)
+                            }) return
+                        }
+                        TryFeedStoryFetcher.Result.Failed -> {
+                            // SyncService.kt exhausts this attempt so list observers cannot restart it; explicit refresh resets it.
+                            if (!commitCurrent {
+                                syncServiceState.setTryFeedRefreshStatus(fs, TryFeedRefreshStatus.FAILED)
+                                syncServiceState.addFeedSetExhausted(fs)
+                                syncServiceState.addFeedPagesSeen(fs, pageNumber)
+                                finished = true
+                            }) return
+                            sendSyncUpdate(UPDATE_STORY or UPDATE_STATUS)
+                            return
+                        }
+                        TryFeedStoryFetcher.Result.Stale -> return
+                    }
                 }
 
-                insertStories(apiResponse!!, fs, cursorFilters.stateFilter)
+                // SyncService.kt validates and inserts under the same session lock used by resets.
+                if (!commitCurrent(requireReadySession = true) {
+                    insertStories(apiResponse!!, fs, cursorFilters.stateFilter)
+                    syncServiceState.addFeedPagesSeen(fs, pageNumber)
+                    totalStoriesSeen += apiResponse.stories.size
+                    syncServiceState.addFeedStoriesSeen(fs, totalStoriesSeen)
+                    if (apiResponse.stories.isEmpty()) {
+                        syncServiceState.addFeedSetExhausted(fs)
+                        finished = true
+                    }
+                }) return
                 // re-do any very recent actions that were incorrectly overwritten by this page
                 finishActions()
                 sendSyncUpdate(UPDATE_STORY or UPDATE_STATUS)
 
-                syncServiceState.addFeedPagesSeen(fs, pageNumber)
-                totalStoriesSeen += apiResponse.stories.size
-                syncServiceState.addFeedStoriesSeen(fs, totalStoriesSeen)
-                if (apiResponse.stories.size == 0) {
-                    syncServiceState.addFeedSetExhausted(fs)
-                    finished = true
-                    return
-                }
+                if (finished) return
 
                 // don't let the page loop block actions
                 if (dbHelper.getUntriedActionCount() > 0) return
             }
+            currentCoroutineContext().ensureActive()
             finished = true
         } finally {
-            sendSyncUpdate(UPDATE_STATUS)
-            synchronized(syncServiceState.pendingFeedMutex) {
-                if (finished && fs == syncServiceState.pendingFeed) syncServiceState.pendingFeed = null
+            if (finished) {
+                commitCurrent {
+                    // SyncService.kt keeps a larger target requested after the last page check.
+                    if (syncServiceState.exhaustedFeeds.contains(fs) || totalStoriesSeen >= syncServiceState.pendingFeedTarget) {
+                        syncServiceState.pendingFeed = null
+                    }
+                }
             }
+            sendSyncUpdate(UPDATE_STATUS)
         }
     }
 
@@ -909,6 +1022,9 @@ open class SyncService :
     fun isDisabledFeed(feedId: String): Boolean = disabledFeedIds.contains(feedId)
 
     companion object {
+        // SyncService.kt can be recreated while a canceled blocking request is winding down.
+        private val primarySyncRunner = SyncJobRunner()
+
         fun stop(context: Context) {
             Log.i(SyncService::class.java.name, "Stop service")
             val stopIntent = Intent(context, SyncService::class.java)

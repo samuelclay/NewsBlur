@@ -1,0 +1,1 @@
+Peningkatan mendengarkan: mulai dari bilah baca dan lanjutkan dengan Artikel berikutnya di pemutar mini. Lanjut otomatis mengikuti urutan Artikel Tersimpan dan Artikel yang Sudah Dibaca, bergerak ke bawah daftar. Judul berulang dibaca sekali. Kuota mingguan: 1 jam dengan Premium Archive, 10 jam dengan Premium Pro, diperbarui hari Minggu. Pengaturan menampilkan sisa jam dan menit.

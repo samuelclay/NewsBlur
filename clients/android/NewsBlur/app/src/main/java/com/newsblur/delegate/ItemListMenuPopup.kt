@@ -15,11 +15,9 @@ import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.newsblur.R
 import com.newsblur.activity.ItemsList
 import com.newsblur.databinding.PopupItemlistMenuBinding
-import com.newsblur.databinding.ViewMainMenuRowBinding
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PopupMenuTextScaler
 import com.newsblur.util.UIUtils
@@ -43,27 +41,16 @@ class ItemListMenuPopup(
     }
 
     companion object {
-        private val actionItemIds =
-            intArrayOf(
-                R.id.menu_save_search,
-                R.id.menu_rename_folder,
-                R.id.menu_mute_folder,
-                R.id.menu_unmute_folder,
-                R.id.menu_delete_folder,
-                R.id.menu_intel,
-                R.id.menu_notifications,
-                R.id.menu_statistics,
-                R.id.menu_rename_feed,
-                R.id.menu_instafetch_feed,
-                R.id.menu_delete_feed,
-                R.id.menu_infrequent_cutoff,
-            )
-
         @JvmStatic
-        fun hasVisibleActions(menu: Menu): Boolean = actionItemIds.any { menu.findItem(it)?.isVisible == true }
+        fun hasVisibleActions(menu: Menu): Boolean = StoryTitleSettingsMenu.hasVisibleActions(menu)
     }
 
     fun show(anchor: View): PopupWindow {
+        if (content == Content.ACTIONS) {
+            return FeedMenuPopover.showWithActions(activity, anchor, controller.buildMenuModel(), activity.prefsRepo.getResolvedTheme(activity), StoryTitleSettingsMenu.actions) { item ->
+                controller.onMenuItemSelected(item.itemId)
+            }
+        }
         val binding = PopupItemlistMenuBinding.inflate(LayoutInflater.from(activity))
         val popupWindow =
             PopupWindow(
@@ -86,7 +73,6 @@ class ItemListMenuPopup(
 
         tintSectionHeaders(binding, textColor, accessoryColor)
         styleToggleGroups(binding, palette)
-        configureThemeSelector(binding, palette)
         bindMenu(binding, controller.buildMenuModel(), popupWindow, dividerColor, textColor, accessoryColor, anchor)
         PopupMenuTextScaler.apply(binding.root, activity.prefsRepo.getListTextSize())
 
@@ -111,98 +97,10 @@ class ItemListMenuPopup(
     ) {
         binding.dividerActions.visibility = View.GONE
 
-        when (content) {
-            Content.VISUAL -> {
-                binding.containerActions.visibility = View.GONE
-                hideSections(binding, isVisible = true)
-                configureSections(binding, menu, popupWindow, anchor)
-            }
-
-            Content.ACTIONS -> {
-                binding.containerActions.visibility = View.VISIBLE
-                hideSections(binding, isVisible = false)
-                configureActionRows(binding, menu, popupWindow, dividerColor, textColor, accessoryColor)
-            }
-        }
+        binding.containerActions.visibility = View.GONE
+        hideSections(binding, isVisible = true)
+        configureSections(binding, menu, popupWindow, anchor)
     }
-
-    private fun configureActionRows(
-        binding: PopupItemlistMenuBinding,
-        menu: Menu,
-        popupWindow: PopupWindow,
-        dividerColor: Int,
-        textColor: Int,
-        accessoryColor: Int,
-    ) {
-        binding.containerActions.removeAllViews()
-        val rows = buildActionRows(menu, popupWindow)
-        if (rows.isEmpty()) return
-
-        rows.forEachIndexed { index, row ->
-            val rowBinding = ViewMainMenuRowBinding.inflate(LayoutInflater.from(activity), binding.containerActions, false)
-            rowBinding.textMenuTitle.text = row.title
-            rowBinding.textMenuTitle.setTextColor(textColor)
-            rowBinding.iconMenu.setImageResource(row.iconRes)
-            rowBinding.iconMenu.setColorFilter(accessoryColor)
-            rowBinding.iconAccessory.visibility = if (row.showAccessory) View.VISIBLE else View.GONE
-            rowBinding.iconAccessory.setColorFilter(accessoryColor)
-            rowBinding.root.setOnClickListener {
-                popupWindow.dismiss()
-                row.onClick()
-            }
-            binding.containerActions.addView(rowBinding.root)
-            if (index < rows.lastIndex) {
-                binding.containerActions.addView(makeDivider(dividerColor))
-            }
-        }
-    }
-
-    private fun maybeAddActionRow(
-        menu: Menu,
-        itemId: Int,
-        iconRes: Int,
-    ): ActionRow? {
-        val item = menu.findItem(itemId) ?: return null
-        if (!item.isVisible) return null
-        return ActionRow(
-            title = item.title.toString(),
-            iconRes = iconRes,
-            onClick = {
-                controller.onMenuItemSelected(itemId)
-            },
-        )
-    }
-
-    private fun buildActionRows(
-        menu: Menu,
-        popupWindow: PopupWindow,
-    ): List<ActionRow> =
-        buildList {
-            maybeAddActionRow(menu, R.id.menu_rename_folder, R.drawable.ic_file_edit)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_mute_folder, R.drawable.mute_black)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_unmute_folder, R.drawable.mute_black)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_delete_folder, R.drawable.ic_clear)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_intel, R.drawable.ic_feed_train)?.let(::add)
-            menu.findItem(R.id.menu_notifications)?.takeIf { it.isVisible }?.let {
-                add(
-                    ActionRow(
-                        title = it.title.toString(),
-                        iconRes = R.drawable.nb_menu_notifications,
-                        showAccessory = true,
-                        onClick = {
-                            popupWindow.dismiss()
-                            showNotificationsDialog(menu)
-                        },
-                    ),
-                )
-            }
-            maybeAddActionRow(menu, R.id.menu_statistics, R.drawable.ic_burst)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_rename_feed, R.drawable.ic_file_edit)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_instafetch_feed, R.drawable.ic_cloud_download)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_delete_feed, R.drawable.ic_clear)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_infrequent_cutoff, R.drawable.ic_calendar)?.let(::add)
-            maybeAddActionRow(menu, R.id.menu_save_search, R.drawable.ic_search)?.let(::add)
-        }
 
     private fun configureSections(
         binding: PopupItemlistMenuBinding,
@@ -212,7 +110,6 @@ class ItemListMenuPopup(
     ) {
         binding.sectionOrder.visibility = visibleFor(menu, R.id.menu_story_order)
         binding.sectionReadFilter.visibility = visibleFor(menu, R.id.menu_read_filter)
-        binding.sectionMarkReadOnScroll.visibility = visibleFor(menu, R.id.menu_mark_read_on_scroll)
         binding.sectionContentPreview.visibility = visibleFor(menu, R.id.menu_story_content_preview_style)
         binding.sectionThumbnailPreview.visibility = visibleFor(menu, R.id.menu_story_thumbnail_style)
         binding.sectionListStyle.visibility = visibleFor(menu, R.id.menu_story_list_style)
@@ -235,14 +132,6 @@ class ItemListMenuPopup(
             when (checkedId) {
                 binding.btnReadFilterAll.id -> handleSelection(binding, popupWindow, R.id.menu_read_filter_all_stories, dismissAfter = true)
                 binding.btnReadFilterUnread.id -> handleSelection(binding, popupWindow, R.id.menu_read_filter_unread_only, dismissAfter = true)
-            }
-        }
-
-        binding.groupMarkReadOnScroll.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            when (checkedId) {
-                binding.btnMarkReadOnScrollOff.id -> handleSelection(binding, popupWindow, R.id.menu_mark_read_on_scroll_disabled)
-                binding.btnMarkReadOnScrollOn.id -> handleSelection(binding, popupWindow, R.id.menu_mark_read_on_scroll_enabled)
             }
         }
 
@@ -277,17 +166,14 @@ class ItemListMenuPopup(
             }
         }
 
-        binding.groupTextSize.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (!isChecked) return@addOnButtonCheckedListener
-            when (checkedId) {
-                binding.btnTextSizeXs.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xs)
-                binding.btnTextSizeS.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_s)
-                binding.btnTextSizeM.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_m)
-                binding.btnTextSizeL.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_l)
-                binding.btnTextSizeXl.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xl)
-                binding.btnTextSizeXxl.id -> handleTextSizeSelection(binding, popupWindow, anchor, R.id.menu_text_size_xxl)
+        binding.groupTextSize.addView(ListMenuSegments.fontSize(activity) { id ->
+            handleTextSizeSelection(binding, popupWindow, anchor, id)
+        })
+        binding.groupTheme.addView(ListMenuSegments.theme(activity) { id ->
+            if (ListMenuSegments.themes.getValue(id) != activity.prefsRepo.getSelectedTheme()) {
+                handleSelection(binding, popupWindow, id, dismissAfter = true)
             }
-        }
+        })
 
         binding.groupSpacing.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
@@ -297,23 +183,6 @@ class ItemListMenuPopup(
             }
         }
 
-        listOf(
-            Triple(binding.btnThemeAuto, R.id.menu_theme_auto, PrefConstants.ThemeValue.AUTO),
-            Triple(binding.btnThemeLight, R.id.menu_theme_light, PrefConstants.ThemeValue.LIGHT),
-            Triple(binding.btnThemeSepia, R.id.menu_theme_sepia, PrefConstants.ThemeValue.SEPIA),
-            Triple(binding.btnThemeDark, R.id.menu_theme_dark, PrefConstants.ThemeValue.DARK),
-            Triple(binding.btnThemeBlack, R.id.menu_theme_black, PrefConstants.ThemeValue.BLACK),
-        ).forEach { (button, itemId, theme) ->
-            button.setOnClickListener {
-                val selectedTheme = selectedTheme(controller.buildMenuModel())
-                if (theme == selectedTheme) {
-                    updateThemeSelection(binding, theme)
-                    return@setOnClickListener
-                }
-                updateThemeSelection(binding, theme)
-                handleSelection(binding, popupWindow, itemId, dismissAfter = true)
-            }
-        }
     }
 
     private fun handleSelection(
@@ -354,8 +223,6 @@ class ItemListMenuPopup(
         if (menu.findItem(R.id.menu_read_filter_all_stories)?.isChecked == true) binding.groupReadFilter.check(binding.btnReadFilterAll.id)
         if (menu.findItem(R.id.menu_read_filter_unread_only)?.isChecked == true) binding.groupReadFilter.check(binding.btnReadFilterUnread.id)
 
-        if (menu.findItem(R.id.menu_mark_read_on_scroll_disabled)?.isChecked == true) binding.groupMarkReadOnScroll.check(binding.btnMarkReadOnScrollOff.id)
-        if (menu.findItem(R.id.menu_mark_read_on_scroll_enabled)?.isChecked == true) binding.groupMarkReadOnScroll.check(binding.btnMarkReadOnScrollOn.id)
 
         if (menu.findItem(R.id.menu_story_content_preview_none)?.isChecked == true) binding.groupContentPreview.check(binding.btnContentPreviewNone.id)
         if (menu.findItem(R.id.menu_story_content_preview_small)?.isChecked == true) binding.groupContentPreview.check(binding.btnContentPreviewSmall.id)
@@ -373,30 +240,11 @@ class ItemListMenuPopup(
         if (menu.findItem(R.id.menu_list_style_grid_m)?.isChecked == true) binding.groupListStyle.check(binding.btnListStyleGridM.id)
         if (menu.findItem(R.id.menu_list_style_grid_f)?.isChecked == true) binding.groupListStyle.check(binding.btnListStyleGridF.id)
 
-        if (menu.findItem(R.id.menu_text_size_xs)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeXs.id)
-        if (menu.findItem(R.id.menu_text_size_s)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeS.id)
-        if (menu.findItem(R.id.menu_text_size_m)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeM.id)
-        if (menu.findItem(R.id.menu_text_size_l)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeL.id)
-        if (menu.findItem(R.id.menu_text_size_xl)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeXl.id)
-        if (menu.findItem(R.id.menu_text_size_xxl)?.isChecked == true) binding.groupTextSize.check(binding.btnTextSizeXxl.id)
 
         if (menu.findItem(R.id.menu_spacing_compact)?.isChecked == true) binding.groupSpacing.check(binding.btnSpacingCompact.id)
         if (menu.findItem(R.id.menu_spacing_comfortable)?.isChecked == true) binding.groupSpacing.check(binding.btnSpacingComfortable.id)
 
-        updateThemeSelection(
-            binding,
-            selectedTheme(menu),
-        )
     }
-
-    private fun selectedTheme(menu: Menu): PrefConstants.ThemeValue =
-        when {
-            menu.findItem(R.id.menu_theme_auto)?.isChecked == true -> PrefConstants.ThemeValue.AUTO
-            menu.findItem(R.id.menu_theme_light)?.isChecked == true -> PrefConstants.ThemeValue.LIGHT
-            menu.findItem(R.id.menu_theme_sepia)?.isChecked == true -> PrefConstants.ThemeValue.SEPIA
-            menu.findItem(R.id.menu_theme_dark)?.isChecked == true -> PrefConstants.ThemeValue.DARK
-            else -> PrefConstants.ThemeValue.BLACK
-        }
 
     private fun styleToggleGroups(
         binding: PopupItemlistMenuBinding,
@@ -405,11 +253,9 @@ class ItemListMenuPopup(
         listOf(
             binding.groupOrder to listOf(binding.btnOrderNewest, binding.btnOrderOldest),
             binding.groupReadFilter to listOf(binding.btnReadFilterAll, binding.btnReadFilterUnread),
-            binding.groupMarkReadOnScroll to listOf(binding.btnMarkReadOnScrollOff, binding.btnMarkReadOnScrollOn),
             binding.groupContentPreview to listOf(binding.btnContentPreviewNone, binding.btnContentPreviewSmall, binding.btnContentPreviewMedium, binding.btnContentPreviewLarge),
             binding.groupThumbnailPreview to listOf(binding.btnThumbnailPreviewNone, binding.btnThumbnailPreviewLeftSmall, binding.btnThumbnailPreviewLeftLarge, binding.btnThumbnailPreviewRightSmall, binding.btnThumbnailPreviewRightLarge),
             binding.groupListStyle to listOf(binding.btnListStyleList, binding.btnListStyleGridC, binding.btnListStyleGridM, binding.btnListStyleGridF),
-            binding.groupTextSize to listOf(binding.btnTextSizeXs, binding.btnTextSizeS, binding.btnTextSizeM, binding.btnTextSizeL, binding.btnTextSizeXl, binding.btnTextSizeXxl),
             binding.groupSpacing to listOf(binding.btnSpacingCompact, binding.btnSpacingComfortable),
         ).forEach { (group, buttons) ->
             styleToggleGroup(group, buttons, palette)
@@ -465,78 +311,6 @@ class ItemListMenuPopup(
         }
     }
 
-    private fun configureThemeSelector(
-        binding: PopupItemlistMenuBinding,
-        palette: ItemListPopupPalette,
-    ) {
-        val buttonInset = UIUtils.dp2px(activity, 4)
-        val buttonRadius = UIUtils.dp2px(activity, 7)
-
-        binding.groupTheme.setPadding(buttonInset, buttonInset, buttonInset, buttonInset)
-        binding.groupTheme.background =
-            GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = UIUtils.dp2px(activity, 12f)
-                setColor(ContextCompat.getColor(activity, palette.themeGroupBackgroundColor))
-                setStroke(UIUtils.dp2px(activity, 1), ContextCompat.getColor(activity, palette.themeGroupBorderColor))
-            }
-
-        val buttonTint =
-            ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                intArrayOf(
-                    ContextCompat.getColor(activity, palette.themeGroupSelectedColor),
-                    Color.TRANSPARENT,
-                ),
-            )
-        val autoTextColors =
-            ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                intArrayOf(
-                    ContextCompat.getColor(activity, palette.themeGroupSelectedTextColor),
-                    ContextCompat.getColor(activity, palette.themeGroupTextColor),
-                ),
-            )
-
-        listOf(
-            binding.btnThemeAuto,
-            binding.btnThemeLight,
-            binding.btnThemeSepia,
-            binding.btnThemeDark,
-            binding.btnThemeBlack,
-        ).forEach { button ->
-            button.isCheckable = true
-            button.backgroundTintList = buttonTint
-            button.strokeWidth = 0
-            button.cornerRadius = buttonRadius
-            button.insetTop = 0
-            button.insetBottom = 0
-            button.minimumHeight = 0
-            button.gravity = Gravity.CENTER
-            button.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            button.setPadding(0, 0, 0, 0)
-        }
-        listOf(binding.btnThemeLight, binding.btnThemeSepia, binding.btnThemeDark, binding.btnThemeBlack).forEach { button ->
-            button.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_TOP
-        }
-        binding.btnThemeAuto.setTextColor(autoTextColors)
-    }
-
-    private fun updateThemeSelection(
-        binding: PopupItemlistMenuBinding,
-        selectedTheme: PrefConstants.ThemeValue,
-    ) {
-        listOf(
-            binding.btnThemeAuto to PrefConstants.ThemeValue.AUTO,
-            binding.btnThemeLight to PrefConstants.ThemeValue.LIGHT,
-            binding.btnThemeSepia to PrefConstants.ThemeValue.SEPIA,
-            binding.btnThemeDark to PrefConstants.ThemeValue.DARK,
-            binding.btnThemeBlack to PrefConstants.ThemeValue.BLACK,
-        ).forEach { (button, theme) ->
-            button.isChecked = theme == selectedTheme
-        }
-    }
-
     private fun tintSectionHeaders(
         binding: PopupItemlistMenuBinding,
         textColor: Int,
@@ -545,7 +319,6 @@ class ItemListMenuPopup(
         listOf(
             binding.textSectionOrder,
             binding.textSectionReadFilter,
-            binding.textSectionMarkReadOnScroll,
             binding.textSectionContentPreview,
             binding.textSectionThumbnailPreview,
             binding.textSectionListStyle,
@@ -557,7 +330,6 @@ class ItemListMenuPopup(
         listOf(
             binding.iconSectionOrder,
             binding.iconSectionReadFilter,
-            binding.iconSectionMarkReadOnScroll,
             binding.iconSectionContentPreview,
             binding.iconSectionThumbnailPreview,
             binding.iconSectionListStyle,
@@ -565,22 +337,6 @@ class ItemListMenuPopup(
             binding.iconSectionSpacing,
             binding.iconSectionTheme,
         ).forEach { it.setColorFilter(accessoryColor) }
-    }
-
-    private fun showNotificationsDialog(menu: Menu) {
-        val notificationsItem = menu.findItem(R.id.menu_notifications) ?: return
-        val submenu = notificationsItem.subMenu ?: return
-        val titles = Array(submenu.size()) { index -> submenu.getItem(index).title }
-        val checkedIndex = (0 until submenu.size()).firstOrNull { submenu.getItem(it).isChecked } ?: -1
-
-        val dialog =
-            MaterialAlertDialogBuilder(activity)
-            .setTitle(notificationsItem.title)
-            .setSingleChoiceItems(titles, checkedIndex) { dialog, which ->
-                controller.onMenuItemSelected(submenu.getItem(which).itemId)
-                dialog.dismiss()
-            }.show()
-        dialog.window?.decorView?.let { PopupMenuTextScaler.apply(it, activity.prefsRepo.getListTextSize()) }
     }
 
     private fun applyCardWidth(
@@ -612,45 +368,8 @@ class ItemListMenuPopup(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         )
-        val popupWidth = binding.root.measuredWidth
-        val margin = UIUtils.dp2px(activity, 8)
-        val availableHeight = displayFrame.height() - margin * 2
-        val popupHeight = min(binding.root.measuredHeight, availableHeight)
-        val location = IntArray(2)
-        anchor.getLocationInWindow(location)
-        val minX = displayFrame.left + margin
-        val maxX = displayFrame.right - popupWidth - margin
-        val x =
-            (location[0] + anchor.width - popupWidth + UIUtils.dp2px(activity, 4))
-                .coerceIn(min(minX, maxX), max(minX, maxX))
-        val preferredBelow = location[1] + anchor.height - UIUtils.dp2px(activity, 4)
-        val preferredAbove = location[1] - popupHeight + UIUtils.dp2px(activity, 4)
-        val y =
-            if (preferredBelow + popupHeight <= displayFrame.bottom - margin) {
-                preferredBelow
-            } else {
-                preferredAbove.coerceAtLeast(displayFrame.top + margin)
-            }
-        if (isShowing) {
-            popupWindow.update(x, y, popupWidth, popupHeight)
-        } else {
-            popupWindow.height = popupHeight
-            popupWindow.showAtLocation(anchor.rootView, Gravity.NO_GRAVITY, x, y)
-        }
+        com.newsblur.util.AnchoredPopover.show(anchor, popupWindow, binding.root.measuredWidth, binding.root.measuredHeight, isShowing)
     }
-
-    private fun makeDivider(color: Int): View =
-        View(activity).apply {
-            layoutParams =
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    UIUtils.dp2px(activity, 1),
-                ).apply {
-                    marginStart = UIUtils.dp2px(activity, 44)
-                    marginEnd = UIUtils.dp2px(activity, 14)
-                }
-            setBackgroundColor(color)
-        }
 
     private fun visibleFor(
         menu: Menu,
@@ -665,7 +384,6 @@ class ItemListMenuPopup(
         listOf(
             binding.sectionOrder,
             binding.sectionReadFilter,
-            binding.sectionMarkReadOnScroll,
             binding.sectionContentPreview,
             binding.sectionThumbnailPreview,
             binding.sectionListStyle,
@@ -737,13 +455,6 @@ class ItemListMenuPopup(
     private fun resolvedTheme(): PrefConstants.ThemeValue =
         activity.prefsRepo.getResolvedTheme(activity)
 }
-
-private data class ActionRow(
-    val title: String,
-    val iconRes: Int,
-    val showAccessory: Boolean = false,
-    val onClick: () -> Unit,
-)
 
 private data class ItemListPopupPalette(
     val backgroundColor: Int,

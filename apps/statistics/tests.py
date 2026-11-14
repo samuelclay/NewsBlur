@@ -3,14 +3,17 @@ Tests for the statistics app, including load time and trending feed functionalit
 """
 
 import datetime
-from unittest.mock import patch
+from collections import Counter
+from unittest.mock import MagicMock, patch
 
 import redis
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
+from apps.rss_feeds.models import MStory
 from apps.statistics.models import MStatistics
 from apps.statistics.rmcp_usage import RMCPUsage
+from apps.statistics.rscrapingbee import RScrapingBee
 from apps.statistics.rstats import RStats
 from apps.statistics.rtrending import RTrendingStory
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
@@ -80,12 +83,28 @@ class Test_RTrendingStory(TestCase):
 
     def setUp(self):
         self.r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        for pattern in ["fRT:*", "sRTi:*", "sRTc:*", "fRTc:*"]:
+        for pattern in [
+            "fRT:*",
+            "sRTi:*",
+            "sRTc:*",
+            "fRTc:*",
+            "sRTud:*",
+            "sRTqa:*",
+            "trending:*",
+        ]:
             for key in self.r.scan_iter(match=pattern):
                 self.r.delete(key)
 
     def tearDown(self):
-        for pattern in ["fRT:*", "sRTi:*", "sRTc:*", "fRTc:*"]:
+        for pattern in [
+            "fRT:*",
+            "sRTi:*",
+            "sRTc:*",
+            "fRTc:*",
+            "sRTud:*",
+            "sRTqa:*",
+            "trending:*",
+        ]:
             for key in self.r.scan_iter(match=pattern):
                 self.r.delete(key)
 
@@ -149,6 +168,201 @@ class Test_RTrendingStory(TestCase):
         self.assertEqual(detailed[1]["total_seconds"], 100)
         self.assertEqual(detailed[1]["reader_count"], 20)
         self.assertEqual(detailed[1]["avg_seconds_per_reader"], 5.0)
+
+    def test_distinct_user_durations_keep_longest_session_per_user(self):
+        """Repeated sessions from one account count as one reader with its longest dwell."""
+        RTrendingStory.add_read_time("100:story", 20, user_id=1)
+        RTrendingStory.add_read_time("100:story", 45, user_id=1)
+        RTrendingStory.add_read_time("100:story", 30, user_id=2)
+
+        durations = RTrendingStory.get_distinct_user_durations(days=1)
+
+        self.assertEqual(sorted(durations["100:story"].values()), [30, 45])
+
+    def test_distinct_user_duration_is_capped(self):
+        """A foreground session cannot dominate rankings with an implausibly long duration."""
+        RTrendingStory.add_read_time("100:story", 5000, user_id=1)
+
+        durations = RTrendingStory.get_distinct_user_durations(days=1)
+
+        self.assertEqual(durations["100:story"]["1"], RTrendingStory.MAX_READ_TIME_SECONDS)
+
+    def test_quality_actions_are_unique_per_user(self):
+        """Saving and sharing the same story still represents one committed reader."""
+        RTrendingStory.record_quality_action("100:story", user_id=1)
+        RTrendingStory.record_quality_action("100:story", user_id=1)
+        RTrendingStory.record_quality_action("100:story", user_id=2)
+
+        actions = RTrendingStory.get_quality_action_users(days=1)
+
+        self.assertEqual(actions["100:story"], {"1", "2"})
+
+    def test_length_aware_long_read_threshold(self):
+        """Required dwell scales with article length and remains within sensible bounds."""
+        self.assertEqual(RTrendingStory.required_long_read_seconds(600), 45)
+        self.assertEqual(RTrendingStory.required_long_read_seconds(1200), 75)
+        self.assertEqual(RTrendingStory.required_long_read_seconds(3000), 180)
+        self.assertEqual(RTrendingStory.required_long_read_seconds(10000), 180)
+
+    def test_good_read_quality_gate(self):
+        """Good Reads needs a commitment action unless four people read deeply."""
+        self.assertTrue(RTrendingStory.good_read_qualifies(deep_reader_count=2, action_count=1))
+        self.assertTrue(RTrendingStory.good_read_qualifies(deep_reader_count=4, action_count=0))
+        self.assertFalse(RTrendingStory.good_read_qualifies(deep_reader_count=3, action_count=0))
+
+    def test_diversity_blocks_cap_sources_topics_and_clusters(self):
+        """A 12-story block contains one canonical source, one cluster, and at most three topics."""
+        candidates = []
+        for i in range(16):
+            candidates.append(
+                {
+                    "story_hash": f"{i}:story",
+                    "feed_id": i,
+                    "domain": f"source-{i}.example.com",
+                    "publisher": f"Source {i}",
+                    "topic": "technology" if i < 6 else f"topic-{i}",
+                    "cluster_id": "duplicate-cluster" if i in (0, 1) else None,
+                    "title_key": f"story {i}",
+                }
+            )
+        candidates.insert(
+            2,
+            {
+                "story_hash": "99:second-source-story",
+                "feed_id": 0,
+                "domain": "source-0.example.com",
+                "publisher": "Source 0",
+                "topic": "other",
+                "cluster_id": None,
+                "title_key": "second source story",
+            },
+        )
+
+        diversified = RTrendingStory.diversify_candidates(candidates, block_size=12)
+        first_block = diversified[:12]
+
+        self.assertEqual(len(first_block), 12)
+        self.assertEqual(len({story["feed_id"] for story in first_block}), 12)
+        self.assertEqual(len({story["domain"] for story in first_block}), 12)
+        self.assertLessEqual(sum(story["topic"] == "technology" for story in first_block), 3)
+        self.assertEqual(
+            sum(story["cluster_id"] == "duplicate-cluster" for story in diversified),
+            1,
+        )
+
+    def test_good_reads_reserves_small_feed_slots(self):
+        """Good Reads gives four first-page positions to qualified small feeds."""
+        candidates = []
+        for i in range(16):
+            candidates.append(
+                {
+                    "story_hash": f"{i}:story",
+                    "feed_id": i,
+                    "domain": f"source-{i}.example.com",
+                    "publisher": f"Source {i}",
+                    "topic": f"topic-{i}",
+                    "cluster_id": None,
+                    "title_key": f"story {i}",
+                    "active_subscribers": 500 if i < 12 else 25,
+                }
+            )
+
+        diversified = RTrendingStory.diversify_candidates(candidates, small_feed_slots=4)
+
+        self.assertEqual(
+            sum(story["active_subscribers"] <= 50 for story in diversified[:12]),
+            4,
+        )
+
+    @patch("apps.discover.models.PopularFeed.objects")
+    @patch("apps.rss_feeds.models.Feed.objects")
+    @patch("apps.rss_feeds.models.MStory.objects")
+    @patch("apps.statistics.rtrending.redis.Redis")
+    def test_materialize_diverse_list_disables_default_story_ordering(
+        self, mock_redis_class, mock_story_objects, mock_feed_objects, mock_popular_objects
+    ):
+        mock_redis = mock_redis_class.return_value
+        mock_redis.zrevrange.return_value = [b"1:abcdef"]
+        mock_redis.pipeline.return_value.execute.return_value = []
+        mock_story_objects.return_value.order_by.return_value.only.return_value = []
+        mock_feed_objects.filter.return_value.only.return_value = []
+        mock_popular_objects.filter.return_value.order_by.return_value.values_list.return_value = []
+
+        result = RTrendingStory._materialize_diverse_list("trending:test", "trending:test:diverse")
+
+        self.assertEqual(result, [])
+        mock_story_objects.return_value.order_by.assert_called_once_with()
+
+    def test_diversity_caps_canonical_sources_at_ten_percent(self):
+        """Repeated feeds, domains, and publishers never exceed 10% of a diverse list."""
+        candidates = []
+        for i in range(20):
+            source = 0 if i < 10 else i
+            candidates.append(
+                {
+                    "story_hash": f"{i}:story",
+                    "feed_id": source,
+                    "domain": f"source-{source}.example.com",
+                    "publisher": f"Source {source}",
+                    "topic": f"topic-{i}",
+                    "cluster_id": None,
+                    "title_key": f"story {i}",
+                }
+            )
+
+        diversified = RTrendingStory.diversify_candidates(candidates)
+        counts = Counter(story["feed_id"] for story in diversified)
+
+        self.assertLessEqual(max(counts.values()) / len(diversified), 0.10)
+
+    @patch.object(RTrendingStory, "materialize_diverse_lists")
+    @patch.object(RTrendingStory, "get_quality_action_users", return_value={})
+    @patch.object(
+        RTrendingStory,
+        "get_distinct_user_durations",
+        return_value={"1:abcdef": {1: 60, 2: 60, 3: 60, 4: 60}},
+    )
+    @patch("apps.rss_feeds.models.Feed.objects")
+    @patch("apps.rss_feeds.models.MStory.objects")
+    def test_refresh_disables_default_story_ordering(
+        self, mock_story_objects, mock_feed_objects, mock_durations, mock_actions, mock_materialize
+    ):
+        """The content lookup must clear MStory's -story_date sort. Without it, Mongo runs a
+        blocking in-memory sort over story_hash__in with no supporting index, which blew past
+        its 32MB limit once the accumulated lists grew and stalled every refresh."""
+        mock_story_objects.return_value.order_by.return_value.only.return_value = []
+        mock_feed_objects.filter.return_value.only.return_value = []
+
+        RTrendingStory.refresh_trending_lists(days=1)
+
+        mock_story_objects.return_value.order_by.assert_called_once_with()
+
+    @patch.object(RTrendingStory, "materialize_diverse_lists")
+    def test_refresh_qualifies_two_distinct_length_aware_readers(self, mock_materialize):
+        """Hourly refresh adds a text story when two people clear its length-aware dwell."""
+        story = MStory(
+            story_feed_id=100,
+            story_date=datetime.datetime.now(),
+            story_title="A substantial test essay",
+            story_content="word " * 1200,
+            story_guid="distinct-reader-long-read",
+            story_permalink="https://example.com/long-read",
+        )
+        story.save()
+        self.addCleanup(lambda: MStory.objects(story_hash=story.story_hash).delete())
+        RTrendingStory.add_read_time(story.story_hash, 80, user_id=1)
+        RTrendingStory.add_read_time(story.story_hash, 90, user_id=2)
+        RTrendingStory.record_quality_action(story.story_hash, user_id=1)
+
+        result = RTrendingStory.refresh_trending_lists(days=1)
+
+        self.assertIsNotNone(self.r.zscore(RTrendingStory.WELL_READ_KEY, story.story_hash))
+        self.assertIsNotNone(self.r.zscore(RTrendingStory.LONG_READS_KEY, story.story_hash))
+        self.assertIsNotNone(self.r.zscore(RTrendingStory.GOOD_READS_KEY, story.story_hash))
+        self.assertEqual(result["well_read"], 1)
+        self.assertEqual(result["long_reads"], 1)
+        self.assertEqual(result["good_reads"], 1)
+        mock_materialize.assert_called_once_with()
 
 
 class Test_RTrendingSubscription(TestCase):
@@ -294,3 +508,205 @@ class Test_RMCPUsage(TestCase):
 
         self.assertEqual(weekly["requests"], 5)
         self.assertEqual(weekly["unique_users"], 3)
+
+
+class Test_RScrapingBee(TestCase):
+    """Tests for Redis-backed ScrapingBee proxy usage metrics (apps/statistics/rscrapingbee.py)."""
+
+    def setUp(self):
+        self.r = RScrapingBee._redis()
+        self._delete_keys()
+
+    def tearDown(self):
+        self._delete_keys()
+
+    def _delete_keys(self):
+        for pattern in (
+            "sbCalls:*",
+            "sbCredits:*",
+            "sbDomains:*",
+            "sbDomainCredits:*",
+            "sbUsage",
+            "sbUserCredits:*",
+            "sbUsersCharged:*",
+            "sbUserBudget",
+        ):
+            for key in self.r.scan_iter(match=pattern):
+                self.r.delete(key)
+
+    def test_record_counts_calls_credits_and_domains(self):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/feed.xml", credits=1)
+        RScrapingBee.record("feed", 500, url="https://www.example.com/feed.xml", credits=0)
+        RScrapingBee.record("original_story", 404, url="https://news.example.org/story", credits=1)
+        RScrapingBee.record("webfeed", None, url="https://news.example.org/", credits=0)
+
+        stats = RScrapingBee.get_stats_for_prometheus()
+
+        self.assertEqual(stats["calls"][("feed", "200")], 1)
+        self.assertEqual(stats["calls"][("feed", "500")], 1)
+        self.assertEqual(stats["calls"][("original_story", "404")], 1)
+        self.assertEqual(stats["calls"][("webfeed", "error")], 1)
+        self.assertEqual(stats["calls_today"], 4)
+        self.assertEqual(stats["credits"], {"feed": 1, "original_story": 1, "webfeed": 0})
+        self.assertEqual(stats["credits_today"], 2)
+        self.assertCountEqual(stats["top_domains"], [("example.com", 1, 2), ("news.example.org", 1, 2)])
+
+    def test_record_never_raises(self):
+        with patch.object(RScrapingBee, "_redis", side_effect=redis.ConnectionError("down")):
+            RScrapingBee.record("feed", 200, url="https://www.example.com/feed.xml", credits=1)
+
+    def test_credits_come_from_spb_cost_header(self):
+        self.assertEqual(
+            RScrapingBee.credits_for_response(MagicMock(status_code=200, headers={"Spb-cost": "5"})), 5
+        )
+        self.assertEqual(RScrapingBee.credits_for_response(MagicMock(status_code=200, headers={})), 1)
+        self.assertEqual(RScrapingBee.credits_for_response(MagicMock(status_code=404, headers={})), 1)
+        self.assertEqual(RScrapingBee.credits_for_response(MagicMock(status_code=500, headers={})), 0)
+        self.assertEqual(RScrapingBee.credits_for_response(MagicMock(status_code=304, headers={})), 0)
+
+    def test_daily_totals_cover_requested_days_oldest_first(self):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/feed.xml", credits=1)
+        RScrapingBee.record("feed", 500, url="https://www.example.com/feed.xml", credits=0)
+
+        totals = RScrapingBee.get_daily_totals(days=3)
+
+        self.assertEqual(len(totals), 3)
+        self.assertEqual(totals[0][1:], (0, 0))
+        self.assertEqual(totals[-1][0], datetime.date.today().strftime("%Y-%m-%d"))
+        self.assertEqual(totals[-1][1:], (2, 1))
+
+    @override_settings(SCRAPINGBEE_API_KEY="test-key")
+    @patch("apps.statistics.rscrapingbee.requests.get")
+    def test_account_usage_is_read_once_and_cached(self, mock_get):
+        renewal = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        mock_get.return_value = MagicMock(status_code=200)
+        mock_get.return_value.json.return_value = {
+            "max_api_credit": 1000,
+            "used_api_credit": 250,
+            "max_concurrency": 100,
+            "current_concurrency": 1,
+            "renewal_subscription_date": renewal.isoformat(),
+        }
+
+        first = RScrapingBee.get_account_usage()
+        second = RScrapingBee.get_account_usage()
+
+        self.assertEqual(mock_get.call_count, 1)
+        self.assertEqual(first["used"], 250)
+        self.assertEqual(first["max"], 1000)
+        self.assertEqual(first["remaining"], 750)
+        self.assertEqual(first["used_pct"], 25.0)
+        self.assertTrue(9.9 < first["days_to_renewal"] <= 10.0)
+        self.assertEqual(second, first)
+
+    @override_settings(SCRAPINGBEE_API_KEY=None)
+    def test_account_usage_without_api_key_is_empty(self):
+        self.assertEqual(RScrapingBee.get_account_usage(), {})
+
+    @override_settings(SCRAPINGBEE_HOST_DAILY_CREDIT_CAP=3)
+    def test_host_over_budget_once_daily_credits_reach_the_cap(self):
+        for _ in range(2):
+            RScrapingBee.record(
+                "webfeed", 200, url="https://www.abebooks.com/servlet/SearchResults?x=1", credits=1
+            )
+
+        self.assertFalse(RScrapingBee.host_over_budget("https://www.abebooks.com/servlet/SearchResults?x=2"))
+
+        RScrapingBee.record("feed", 200, url="https://abebooks.com/other", credits=1)
+
+        self.assertTrue(RScrapingBee.host_over_budget("https://www.abebooks.com/servlet/SearchResults?x=3"))
+        self.assertFalse(RScrapingBee.host_over_budget("https://www.example.com/feed.xml"))
+
+    @override_settings(SCRAPINGBEE_HOST_DAILY_CREDIT_CAP=1)
+    def test_capped_skips_are_counted_and_exported(self):
+        RScrapingBee.record("webfeed", 200, url="https://www.abebooks.com/a", credits=1)
+        RScrapingBee.record_capped("webfeed", url="https://www.abebooks.com/b")
+        RScrapingBee.record_capped("feed", url="https://www.abebooks.com/c")
+
+        stats = RScrapingBee.get_stats_for_prometheus()
+
+        self.assertEqual(stats["calls"][("webfeed", "capped")], 1)
+        self.assertEqual(stats["calls"][("feed", "capped")], 1)
+        self.assertEqual(stats["credits_today"], 1)
+        self.assertEqual(stats["host_credit_cap"], 1)
+        self.assertEqual(stats["hosts_over_cap"], 1)
+
+    def test_record_skip_counts_the_reason_as_a_status(self):
+        RScrapingBee.record_skip("feed", "dormant", url="https://www.example.com/feed.xml")
+        RScrapingBee.record_skip("feed", "dormant", url="https://www.example.com/feed.xml")
+        RScrapingBee.record_capped("webfeed", url="https://www.abebooks.com/a")
+
+        stats = RScrapingBee.get_stats_for_prometheus()
+
+        self.assertEqual(stats["calls"][("feed", "dormant")], 2)
+        self.assertEqual(stats["calls"][("webfeed", "capped")], 1)
+        self.assertEqual(stats["credits_today"], 0)
+
+    def test_record_charges_credits_to_the_feeds_subscribers(self):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/feed.xml", credits=1, user_ids=[11, 12])
+        RScrapingBee.record("feed", 200, url="https://www.example.com/other.xml", credits=1, user_ids=[11])
+        RScrapingBee.record("feed", 500, url="https://www.example.com/feed.xml", credits=0, user_ids=[13])
+
+        self.assertEqual(
+            RScrapingBee.user_credits_this_period([11, 12, 13, 14]), {11: 2, 12: 1, 13: 0, 14: 0}
+        )
+        self.assertEqual(RScrapingBee.users_charged_recently(days=7), 2)
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=None, SCRAPINGBEE_USER_BUDGET_MIN_USERS=10)
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.get_account_usage")
+    def test_user_period_budget_shares_remaining_credits_between_active_proxy_users(self, mock_usage):
+        """Remaining credits are split across the users charged in the last week (never fewer than
+        the configured floor), so the pool lasts to renewal no matter who reads what."""
+        mock_usage.return_value = {
+            "remaining": 5000,
+            "days_to_renewal": 20.0,
+            "renewal": "2026-09-30T10:28:41",
+        }
+        for uid in range(1, 26):
+            RScrapingBee.record(
+                "feed", 200, url="https://www.example.com/%s" % uid, credits=1, user_ids=[uid]
+            )
+
+        self.assertEqual(RScrapingBee.user_period_budget(), 200)  # 5000 / 25 users
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=None, SCRAPINGBEE_USER_BUDGET_MIN_USERS=1000)
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.get_account_usage")
+    def test_user_period_budget_never_drops_below_one_credit(self, mock_usage):
+        mock_usage.return_value = {
+            "remaining": 300,
+            "days_to_renewal": 20.0,
+            "renewal": "2026-09-30T10:28:41",
+        }
+
+        self.assertEqual(RScrapingBee.user_period_budget(), 1)  # 300 / 1000 users floors to 1
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=7)
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.get_account_usage", return_value={})
+    def test_user_period_budget_setting_overrides_the_dynamic_share(self, mock_usage):
+        self.assertEqual(RScrapingBee.user_period_budget(), 7)
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=2)
+    def test_users_over_budget_only_when_every_subscriber_has_spent_their_share(self):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/a", credits=2, user_ids=[21])
+        RScrapingBee.record("feed", 200, url="https://www.example.com/b", credits=1, user_ids=[22])
+
+        self.assertTrue(RScrapingBee.users_over_budget([21]))
+        self.assertFalse(RScrapingBee.users_over_budget([21, 22]))
+        self.assertFalse(RScrapingBee.users_over_budget([23]))
+        self.assertFalse(RScrapingBee.users_over_budget([]))
+
+    @override_settings(SCRAPINGBEE_USER_PERIOD_CREDIT_BUDGET=1)
+    @patch("apps.statistics.rscrapingbee.RScrapingBee.get_account_usage", return_value={})
+    def test_stats_report_user_budget_and_users_over_it(self, mock_usage):
+        RScrapingBee.record("feed", 200, url="https://www.example.com/a", credits=1, user_ids=[31, 32])
+        RScrapingBee.record("feed", 200, url="https://www.example.com/b", credits=0, user_ids=[33])
+
+        stats = RScrapingBee.get_stats_for_prometheus()
+
+        self.assertEqual(stats["user_budget"], 1)
+        self.assertEqual(stats["users_charged_period"], 2)
+        self.assertEqual(stats["users_over_budget"], 2)
+
+    def test_host_over_budget_is_false_when_redis_is_down(self):
+        with patch.object(RScrapingBee, "_redis", side_effect=redis.ConnectionError("down")):
+            self.assertFalse(RScrapingBee.host_over_budget("https://www.abebooks.com/a"))

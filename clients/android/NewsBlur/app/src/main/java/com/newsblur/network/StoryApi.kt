@@ -20,6 +20,13 @@ interface StoryApi {
         infrequentCutoff: Int,
     ): StoriesResponse?
 
+    suspend fun getTryFeedStories(
+        feedId: String,
+        order: StoryOrder,
+        filter: ReadFilter,
+        forceRefresh: Boolean,
+    ): StoriesResponse?
+
     suspend fun getStoryText(
         feedId: String?,
         storyId: String,

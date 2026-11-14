@@ -1,0 +1,27 @@
+PASS wide fills 393px pane: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":196.5454559326172,"bleed":true}
+PASS linked fills 393px pane: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":196.5454559326172,"bleed":true}
+PASS nested fills 393px pane: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":196.5454559326172,"bleed":true}
+PASS portrait fills 393px pane: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":589.6363525390625,"bleed":true}
+PASS publisher classes survive: "publisher-photo NB-large-image"
+PASS nested caption keeps its inset: {"left":32,"right":361.0909118652344,"width":329.0909118652344,"height":24,"bleed":false}
+PASS portrait aspect ratio stays natural: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":589.6363525390625,"bleed":true}
+PASS repeated initialization is stable: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":196.5454559326172,"bleed":true}
+PASS text stays inset: {"left":12,"right":381.0909118652344,"width":369.0909118652344,"height":24,"bleed":false}
+PASS small stays contained: {"left":14,"right":94,"width":80,"height":60,"bleed":false}
+PASS icon stays contained: {"left":96,"right":112,"width":16,"height":16,"bleed":false}
+PASS inline stays contained: {"left":14,"right":383.0909118652344,"width":369.0909118652344,"height":184.5454559326172,"bleed":false}
+PASS list stays contained: {"left":54,"right":383.0909118652344,"width":329.0909118652344,"height":164.5454559326172,"bleed":false}
+PASS table stays contained: {"left":16.81818199157715,"right":380.272741317749,"width":363.4545593261719,"height":181.72727966308594,"bleed":false}
+PASS quote stays contained: {"left":33.92045593261719,"right":363.8977508544922,"width":329.977294921875,"height":164.9886474609375,"bleed":false}
+PASS banner stays contained: {"left":14,"right":383.0909118652344,"width":369.0909118652344,"height":6.1477274894714355,"bleed":false}
+PASS declared-small stays contained: {"left":14,"right":383.0909118652344,"width":369.0909118652344,"height":184.5454559326172,"bleed":false}
+PASS styled-small stays contained: {"left":14,"right":383.0909118652344,"width":369.0909118652344,"height":184.5454559326172,"bleed":false}
+PASS clipped stays contained: {"left":24,"right":373.0909118652344,"width":349.0909118652344,"height":174.5454559326172,"bleed":false}
+PASS floated stays contained: {"left":10,"right":379.0909118652344,"width":369.0909118652344,"height":184.5454559326172,"bleed":false}
+PASS small image is not enlarged: {"left":14,"right":94,"width":80,"height":60,"bleed":false}
+PASS delayed fills 393px pane: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":196.5454559326172,"bleed":true}
+PASS responsive fills 393px pane: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":196.5454559326172,"bleed":true}
+PASS wide fills 700px pane: {"left":0,"right":700,"width":700,"height":350,"bleed":true}
+PASS image too small for wider pane loses full bleed: {"left":14,"right":614,"width":600,"height":300,"bleed":false}
+PASS no horizontal document overflow: 700
+PASS responsive fills 393px pane: {"left":0,"right":393.0909118652344,"width":393.0909118652344,"height":196.5454559326172,"bleed":true}

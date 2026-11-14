@@ -1,0 +1,14 @@
+[
+  {
+    "id": "b37d8bd5-adec-4cc8-adb1-0d80f83afb22",
+    "platform": "MAC_OS",
+    "submittedDate": "2026-11-10T01:02:44.772Z",
+    "state": "WAITING_FOR_REVIEW"
+  },
+  {
+    "id": "47a495cf-f2aa-45e9-8c00-ad5abfb722d9",
+    "platform": "IOS",
+    "submittedDate": "2026-11-10T00:58:12.697Z",
+    "state": "WAITING_FOR_REVIEW"
+  }
+]
