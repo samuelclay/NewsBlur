@@ -1,6 +1,7 @@
 package com.newsblur.view
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
@@ -8,10 +9,15 @@ import android.view.animation.AnimationSet
 import android.view.animation.OvershootInterpolator
 import android.view.animation.ScaleAnimation
 import android.view.animation.TranslateAnimation
+import com.newsblur.util.PrefConstants
 
 /** ReaderMotion.kt animates presentation without changing layout, swipe offsets, or theme colors. */
 object ReaderMotion {
     private val departures = java.util.WeakHashMap<View, ValueAnimator>()
+
+    @JvmStatic fun isReducedMotion(context: Context): Boolean =
+        context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
+            .getBoolean(PrefConstants.REDUCE_MOTION, false)
 
     /** ReaderMotion.kt keeps semantic visibility immediate and fades only a noninteractive drawing copy. */
     @JvmStatic fun visibility(view: View, visibility: Int) {
@@ -37,10 +43,11 @@ object ReaderMotion {
             val animation = ValueAnimator.ofFloat(0f, 1f)
             departures[view] = animation
             animation.duration = 220
+            val distance = if (isReducedMotion(view.context)) 0f else 8 * view.resources.displayMetrics.density
             animation.addUpdateListener {
                 val fraction = it.animatedValue as Float
                 ghost.alpha = ((1f - fraction) * 255).toInt()
-                val lift = (8 * view.resources.displayMetrics.density * fraction).toInt()
+                val lift = (distance * fraction).toInt()
                 ghost.setBounds(left, top - lift, left + bitmap.width, top + bitmap.height - lift)
             }
             animation.addListener(object : android.animation.AnimatorListenerAdapter() {
@@ -85,17 +92,20 @@ object ReaderMotion {
         if (ThemeTransition.isRevealing(view)) return true
         view.startAnimation(AnimationSet(false).apply {
             addAnimation(AlphaAnimation(0f, 1f).apply { duration = 240 })
-            addAnimation(TranslateAnimation(0f, 0f, distance * view.resources.displayMetrics.density, 0f).apply {
-                duration = 350
-                interpolator = OvershootInterpolator(.7f)
-            })
+            if (!isReducedMotion(view.context)) {
+                addAnimation(TranslateAnimation(0f, 0f, distance * view.resources.displayMetrics.density, 0f).apply {
+                    duration = 350
+                    interpolator = OvershootInterpolator(.7f)
+                })
+            }
             startOffset = delay.coerceAtMost(175)
         })
         return true
     }
 
     @JvmStatic fun pop(view: View) {
-        if (!view.isAttachedToWindow || !ValueAnimator.areAnimatorsEnabled() || com.newsblur.util.ViewUtils.isPowerSaveMode(view.context)) return
+        if (!view.isAttachedToWindow || !ValueAnimator.areAnimatorsEnabled() ||
+            com.newsblur.util.ViewUtils.isPowerSaveMode(view.context) || isReducedMotion(view.context)) return
         view.startAnimation(ScaleAnimation(.86f, 1f, .86f, 1f,
             Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f).apply {
             duration = 320

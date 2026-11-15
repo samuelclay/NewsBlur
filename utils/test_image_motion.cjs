@@ -4,9 +4,9 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function harness({ reduced_motion = true, animations = true } = {}) {
+function harness({ reduced_motion = false, animations = false, reduce_motion = false } = {}) {
     const image_animations = [];
-    const preferences = { animations };
+    const preferences = { animations, reduce_motion };
     class Element {
         constructor(tag) { this.tag = tag; this.nodeName = tag.toUpperCase(); this.listeners = {}; this.children = []; this.isConnected = true; this.complete = true; }
         appendChild(child) { child.parentNode = this; this.children.push(child); }
@@ -104,13 +104,31 @@ test('disabling reader animations opens and closes images immediately without sy
 });
 
 test('changing the animation preference while an image is open makes dismissal immediate', () => {
-    const h = harness({ reduced_motion: false });
+    const h = harness({ reduced_motion: false, animations: true });
     assert.equal(h.image_animations.length, 1, 'The enabled preference still permits image opening motion');
     h.preferences.animations = false;
     h.close.onclick();
     assert.equal(h.image_animations.length, 1, 'Dismissal must read the current preference rather than the opening value');
     assert.equal(h.dialog.isConnected, false);
 });
+
+// test_image_motion.cjs guards against sharing the zero spatial duration with image opacity fades.
+for (const system of [false, true]) {
+    test(`${system ? 'system' : 'saved'} Reduce Motion fades images in and out without zooming`, () => {
+        const h = harness({ animations: true, reduce_motion: !system, reduced_motion: system });
+        assert.equal(h.image_animations.length, 1);
+        h.close.onclick();
+        assert.equal(h.image_animations.length, 2);
+        for (const animation of h.image_animations) {
+            assert.ok(animation.options.duration > 0);
+            assert.ok(animation.frames.every(frame => !('transform' in frame)));
+            assert.notEqual(animation.frames[0].opacity, animation.frames.at(-1).opacity);
+        }
+        h.image_animations.at(-1).onfinish();
+        assert.equal(h.dialog.isConnected, false);
+        assert.equal(h.document.activeElement, h.prior_focus);
+    });
+}
 
 test('character shortcuts stay inside the dialog while modifier tracking remains current', () => {
     const h = harness();

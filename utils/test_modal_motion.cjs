@@ -16,7 +16,7 @@ test('dialog dismissal preserves its live styling until the exit finishes', () =
     const holder = element(), $ = () => holder;
     $.modal = { close() { closed++; } };
     const NEWSBLUR = { motion: {
-        depart() {}, duration: value => value,
+        depart() {}, fade_duration: value => value,
         exit(_, complete) { finish = complete; }
     } };
     vm.runInNewContext(fs.readFileSync('media/js/newsblur/common/modal.js', 'utf8'), { NEWSBLUR, $ });
@@ -43,7 +43,7 @@ test('dialog sections are prepared before the parent entrance makes them transpa
         return { 0: { style: {} }, addClass() { return this; }, show() { return this; },
             fadeIn(_, done) { done(); } };
     }
-    const NEWSBLUR = { motion: { duration: value => value, enter(element) {
+    const NEWSBLUR = { motion: { fade_duration: value => value, enter(element) {
         element.style.opacity = '0';
         order.push('parent');
     } } };

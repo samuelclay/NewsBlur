@@ -1295,6 +1295,9 @@ msgstr ""
 msgid "Any time"
 msgstr "Mọi lúc"
 
+msgid "Appearance"
+msgstr "Giao diện"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3668,6 +3671,9 @@ msgstr "Chỉ có tiêu đề với ít lời bình"
 msgid "Just the headlines, no commentary"
 msgstr "Chỉ tiêu đề, không có bình luận"
 
+msgid "Keep fades, without movement."
+msgstr "Giữ hiệu ứng mờ dần, không chuyển động."
+
 msgid "Keep others unread"
 msgstr "Giữ các bài khác ở trạng thái chưa đọc"
 
@@ -5396,6 +5402,9 @@ msgstr "Đã đổi"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Giảm bớt sự lộn xộn trong dòng tin của bạn"
+
+msgid "Reduce motion"
+msgstr "Giảm chuyển động"
 
 msgid "Refer"
 msgstr "Giới thiệu"

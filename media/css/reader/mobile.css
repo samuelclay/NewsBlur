@@ -33,6 +33,8 @@ body.NB-mobile {
     --nb-mobile-ease: cubic-bezier(0.2, 0.85, 0.25, 1);
     --nb-mobile-duration: 380ms;
     --nb-mobile-motion-factor: 1;
+    --nb-mobile-fade-factor: 1;
+    --nb-mobile-sheet-animation: NB-mobile-sheet-up;
     --nb-mobile-spinner-animation: NB-mobile-spin 800ms linear infinite;
     --nb-mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
     /* How far a screen reaches below the visible page, under iOS Safari's toolbar. Set inline
@@ -79,6 +81,15 @@ html[dir="rtl"] body.NB-mobile {
 body.NB-mobile.NB-no-animations {
     --nb-mobile-duration: 0ms;
     --nb-mobile-motion-factor: 0;
+    --nb-mobile-fade-factor: 0;
+    --nb-mobile-spinner-animation: none;
+}
+
+/* mobile.css preserves opacity fades while removing the spatial part of entrances. */
+body.NB-mobile.NB-reduce-motion {
+    --nb-mobile-duration: 0ms;
+    --nb-mobile-motion-factor: 0;
+    --nb-mobile-sheet-animation: NB-mobile-sheet-fade;
     --nb-mobile-spinner-animation: none;
 }
 
@@ -91,6 +102,7 @@ body.NB-mobile.NB-no-animations .NB-end-line {
     body.NB-mobile {
         --nb-mobile-duration: 0ms;
         --nb-mobile-motion-factor: 0;
+        --nb-mobile-sheet-animation: NB-mobile-sheet-fade;
         --nb-mobile-spinner-animation: none;
     }
 
@@ -355,7 +367,7 @@ body.NB-mobile .NB-mobile-screen.NB-mobile-animating {
 }
 
 body.NB-mobile .NB-mobile-screen.NB-mobile-animating::after {
-    transition: opacity var(--nb-mobile-duration) var(--nb-mobile-ease);
+    transition: opacity calc(380ms * var(--nb-mobile-fade-factor)) var(--nb-mobile-ease);
 }
 
 /* mobile.css: while a finger drags a screen, views/mobile_layout_view.js writes the transform
@@ -838,7 +850,7 @@ body.NB-mobile .tipsy {
    the list is the only thing on screen, so it fades to a hint. */
 body.NB-mobile.NB-mobile-screen-is-feeds .NB-feedlist .feed.NB-selected,
 body.NB-mobile.NB-mobile-screen-is-feeds .NB-feeds-header.NB-selected {
-    transition: background-color calc(600ms * var(--nb-mobile-motion-factor)) ease;
+    transition: background-color calc(600ms * var(--nb-mobile-fade-factor)) ease;
 }
 
 /* ================= */
@@ -1864,7 +1876,7 @@ body.NB-mobile .NB-mobile-segmented-option {
     font-weight: 600;
     color: var(--nb-mobile-bar-subtext);
     cursor: pointer;
-    transition: background-color calc(160ms * var(--nb-mobile-motion-factor)) ease, color calc(160ms * var(--nb-mobile-motion-factor)) ease;
+    transition: background-color calc(160ms * var(--nb-mobile-fade-factor)) ease, color calc(160ms * var(--nb-mobile-fade-factor)) ease;
 }
 
 body.NB-mobile .NB-mobile-segmented-option.NB-disabled {
@@ -2088,7 +2100,7 @@ body.NB-mobile #simplemodal-container {
     padding: 0 !important;
     margin: 0 !important;
     box-sizing: border-box;
-    animation: NB-mobile-sheet-up calc(340ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
+    animation: var(--nb-mobile-sheet-animation) calc(340ms * var(--nb-mobile-fade-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile #simplemodal-container .simplemodal-wrap {
@@ -2448,6 +2460,11 @@ body.NB-mobile .NB-story-options-desktop-layout {
     to { transform: translate3d(0, 0, 0); }
 }
 
+@keyframes NB-mobile-sheet-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* ============================================== */
 /* = Popovers and menus become bottom sheets    = */
 /* ============================================== */
@@ -2537,7 +2554,7 @@ body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet {
     overflow-y: auto !important;
     overscroll-behavior-y: contain;
     z-index: 2001 !important;
-    animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
+    animation: var(--nb-mobile-sheet-animation) calc(300ms * var(--nb-mobile-fade-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage-arrow {
@@ -2651,7 +2668,7 @@ body.NB-mobile .NB-menu-ask-ai-container {
     border-radius: 16px 16px 0 0 !important;
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25) !important;
     z-index: 2001 !important;
-    animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
+    animation: var(--nb-mobile-sheet-animation) calc(300ms * var(--nb-mobile-fade-factor)) var(--nb-mobile-ease);
 }
 
 /* mobile.css: a story's Share form, its Save tags and notes, and its Related stories slide up
@@ -2672,7 +2689,7 @@ body.NB-mobile .NB-mobile-sideoption-sheet {
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
     color: var(--nb-mobile-bar-text);
     z-index: 2001;
-    animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
+    animation: var(--nb-mobile-sheet-animation) calc(300ms * var(--nb-mobile-fade-factor)) var(--nb-mobile-ease);
     transition: transform calc(240ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
 }
 
@@ -2878,7 +2895,7 @@ body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded {
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
     z-index: 2001;
     cursor: default;
-    animation: NB-mobile-sheet-up calc(300ms * var(--nb-mobile-motion-factor)) var(--nb-mobile-ease);
+    animation: var(--nb-mobile-sheet-animation) calc(300ms * var(--nb-mobile-fade-factor)) var(--nb-mobile-ease);
 }
 
 body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded::before {

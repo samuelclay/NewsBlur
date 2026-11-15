@@ -444,7 +444,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             this.$el.addClass('NB-folder-collapsed');
             $children.animate({ 'opacity': 0 }, {
                 'queue': false,
-                'duration': options.force_collapse ? 0 : NEWSBLUR.motion.duration(100),
+                'duration': options.force_collapse ? 0 : NEWSBLUR.motion.fade_duration(100),
                 'complete': function () {
                     self.show_collapsed_folder_count();
                     self.show_folder_highlight_status();

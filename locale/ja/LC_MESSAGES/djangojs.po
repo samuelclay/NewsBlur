@@ -1281,6 +1281,9 @@ msgstr "公開されているあらゆるウェブページに対応：Twitter�
 msgid "Any time"
 msgstr "すべての期間"
 
+msgid "Appearance"
+msgstr "外観"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3613,6 +3616,9 @@ msgstr "コメントを最小限にした見出しのみ"
 msgid "Just the headlines, no commentary"
 msgstr "解説なしの見出しのみ"
 
+msgid "Keep fades, without movement."
+msgstr "動きをなくし、フェードは維持します。"
+
 msgid "Keep others unread"
 msgstr "他の記事を未読のままにする"
 
@@ -5317,6 +5323,9 @@ msgstr "引き換え済み"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "記事の流れをすっきり整理"
+
+msgid "Reduce motion"
+msgstr "動きを減らす"
 
 msgid "Refer"
 msgstr "紹介"

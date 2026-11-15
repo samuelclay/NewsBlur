@@ -34,12 +34,13 @@ function css_rules(css, reduced, rules = []) {
     }
     return rules;
 }
-function timing(selector, property, reduced, disabled) {
+function timing(selector, property, reduced, disabled, saved_reduced = false) {
     const rules = css_rules(read('media/css/reader/mobile.css'), reduced);
     const vars = {}, style = {};
     for (const rule of rules) {
         if (rule.selectors.includes('body.NB-mobile') ||
-            disabled && rule.selectors.includes('body.NB-mobile.NB-no-animations')) Object.assign(vars, rule.declarations);
+            disabled && rule.selectors.includes('body.NB-mobile.NB-no-animations') ||
+            saved_reduced && rule.selectors.includes('body.NB-mobile.NB-reduce-motion')) Object.assign(vars, rule.declarations);
         if (rule.selectors.includes(selector)) Object.assign(style, rule.declarations);
     }
     let value = style[property];
@@ -64,9 +65,15 @@ const css_cases = [
     ['body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded', 'animation']
 ];
 for (const [selector, property] of css_cases) {
-    test(`${selector} stops automatically moving for either motion opt-out`, () => {
+    test(`${selector} ${property} respects movement reduction while preserving sheet fades`, () => {
         assert.ok(timing(selector, property, false, false) > 0);
-        assert.equal(timing(selector, property, true, false), 0, 'system Reduce Motion');
+        if (property === 'animation') {
+            assert.ok(timing(selector, property, true, false) > 0, 'system Reduce Motion retains the sheet fade');
+            assert.ok(timing(selector, property, false, false, true) > 0, 'saved Reduce Motion retains the sheet fade');
+        } else {
+            assert.equal(timing(selector, property, true, false), 0, 'system Reduce Motion removes sliding');
+            assert.equal(timing(selector, property, false, false, true), 0, 'saved Reduce Motion removes sliding');
+        }
         assert.equal(timing(selector, property, false, true), 0, 'NewsBlur no animations');
     });
 }
@@ -104,8 +111,8 @@ function fixture(disabled = true) {
 test('reader body follows the animations preference on load and after a save', () => {
     const f = fixture();
     const body = f.element();
-    let enabled = false;
-    const reader = { $s: { $body: body }, model: { preference: name => name === 'animations' ? enabled : undefined } };
+    let enabled = false, reduced = false;
+    const reader = { $s: { $body: body }, model: { preference: name => name === 'animations' ? enabled : name === 'reduce_motion' ? reduced : undefined } };
     f.context.NEWSBLUR.Reader.add_body_classes.call(reader);
     assert.ok(body.classes.has('NB-no-animations'));
     enabled = 0;
@@ -114,6 +121,14 @@ test('reader body follows the animations preference on load and after a save', (
     enabled = true;
     f.context.NEWSBLUR.Reader.add_body_classes.call(reader);
     assert.ok(!body.classes.has('NB-no-animations'));
+    assert.ok(!body.classes.has('NB-reduce-motion'));
+    reduced = true;
+    f.context.NEWSBLUR.Reader.add_body_classes.call(reader);
+    assert.ok(body.classes.has('NB-reduce-motion'));
+    assert.ok(!body.classes.has('NB-no-animations'), 'Reducing movement must not select the all-animation opt-out');
+    reduced = false;
+    f.context.NEWSBLUR.Reader.add_body_classes.call(reader);
+    assert.ok(!body.classes.has('NB-reduce-motion'));
 });
 
 for (const dismiss of [false, true]) {

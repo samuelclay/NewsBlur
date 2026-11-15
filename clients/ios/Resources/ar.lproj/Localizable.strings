@@ -170,6 +170,7 @@
 "Analyzing images..." = "جارٍ تحليل الصور...";
 "App Badge" = "شارة التطبيق";
 "App Icon" = "أيقونة التطبيق";
+"Appearance" = "المظهر";
 "Apply training across a folder" = "تطبيق التدريب على مجلد";
 "Apply training globally" = "تطبيق التدريب على مستوى التطبيق";
 "Arctic Cyan" = "سماوي قطبي";
@@ -502,6 +503,7 @@
 "Interactions" = "التفاعلات";
 "Invalid: %@" = "غير صالح: %@";
 "Invoice" = "فاتورة";
+"Keep fades, without movement." = "الاحتفاظ بالتلاشي دون حركة.";
 "Keeps the dark icon no matter how your device is set." = "يُبقي الأيقونة داكنة مهما كان إعداد جهازك.";
 "Keeps the light icon no matter how your device is set." = "يُبقي الأيقونة فاتحة مهما كانت إعدادات جهازك.";
 "Keyboard Shortcuts" = "اختصارات لوحة المفاتيح";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "يقرأ قصصك الـ %@";
 "Recommended for %@" = "موصى به لـ %@";
 "Recording..." = "جارٍ التسجيل...";
+"Reduce motion" = "تقليل الحركة";
 "Refine with a hint" = "حسّن النتيجة بتلميح";
 "Refine with this title" = "تحسين النتيجة بهذا العنوان";
 "Refresh NewsBlur" = "تحديث NewsBlur";

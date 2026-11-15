@@ -1447,6 +1447,9 @@ msgstr ""
 msgid "Any time"
 msgstr "Kiedykolwiek"
 
+msgid "Appearance"
+msgstr "Wygląd"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3853,6 +3856,9 @@ msgstr "Tylko nagłówki, z minimalnym komentarzem"
 msgid "Just the headlines, no commentary"
 msgstr "Same nagłówki, bez komentarza"
 
+msgid "Keep fades, without movement."
+msgstr "Zachowaj przenikanie, bez ruchu."
+
 msgid "Keep others unread"
 msgstr "Pozostaw pozostałe jako nieprzeczytane"
 
@@ -5635,6 +5641,9 @@ msgstr "Zrealizowano"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Uporządkuj strumień artykułów"
+
+msgid "Reduce motion"
+msgstr "Ogranicz ruch"
 
 msgid "Refer"
 msgstr "Poleć"

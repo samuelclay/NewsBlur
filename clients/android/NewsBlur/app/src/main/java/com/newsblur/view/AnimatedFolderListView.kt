@@ -79,7 +79,7 @@ class AnimatedFolderListView
                     override fun onPreDraw(): Boolean {
                         viewTreeObserver.removeOnPreDrawListener(this)
                         pendingLayout = null
-                        val lift = resources.displayMetrics.density * 8f
+                        val lift = if (ReaderMotion.isReducedMotion(context)) 0f else resources.displayMetrics.density * 8f
                         leavingRows = before.map { snapshot ->
                             LeavingRow(
                                 snapshot,
@@ -209,6 +209,7 @@ class AnimatedFolderListView
                     anchorBottom = anchorBottom,
                     expanding = expanding,
                     revealDistance = resources.displayMetrics.density * 16f,
+                    reduceMotion = ReaderMotion.isReducedMotion(context),
                 ).associateBy { it.after.id }
             movingViews = currentViews.map { (row, view) -> MovingView(view, motions.getValue(row.id)) }
             val visibleIds = currentViews.mapTo(mutableSetOf()) { it.first.id }

@@ -170,6 +170,7 @@
 "Analyzing images..." = "Bilder werden analysiert…";
 "App Badge" = "App-Symbolkennzeichen";
 "App Icon" = "App-Symbol";
+"Appearance" = "Darstellung";
 "Apply training across a folder" = "Training auf einen Ordner anwenden";
 "Apply training globally" = "Training global anwenden";
 "Arctic Cyan" = "Arktisches Cyan";
@@ -502,6 +503,7 @@
 "Interactions" = "Interaktionen";
 "Invalid: %@" = "Ungültig: %@";
 "Invoice" = "Rechnung";
+"Keep fades, without movement." = "Überblendungen beibehalten, ohne Bewegung.";
 "Keeps the dark icon no matter how your device is set." = "Behält das dunkle Symbol unabhängig von den Geräteeinstellungen bei.";
 "Keeps the light icon no matter how your device is set." = "Behält das helle Symbol bei, unabhängig von den Geräteeinstellungen.";
 "Keyboard Shortcuts" = "Tastenkombinationen";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "Liest deine Artikel von %@ vor";
 "Recommended for %@" = "Empfohlen für %@";
 "Recording..." = "Aufnahme läuft…";
+"Reduce motion" = "Bewegung reduzieren";
 "Refine with a hint" = "Mit einem Hinweis verfeinern";
 "Refine with this title" = "Mit diesem Titel verfeinern";
 "Refresh NewsBlur" = "NewsBlur aktualisieren";

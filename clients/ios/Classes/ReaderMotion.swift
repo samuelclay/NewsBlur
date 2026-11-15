@@ -81,10 +81,31 @@ import SwiftUI
 }
 
 @objcMembers final class ReaderMotion: NSObject {
+    static var reduceMotion: Bool {
+        UserDefaults.standard.bool(forKey: "reduce_motion") || UIAccessibility.isReduceMotionEnabled
+    }
+    static let preferenceDidChangeNotification = Notification.Name("NewsBlurReduceMotionChanged")
+    private static let animatedViews = NSHashTable<UIView>.weakObjects()
+
+    static func preferencesDidChange() {
+        // ReaderMotion.swift removes only spatial tracks, leaving an in-flight fade at its original time.
+        if reduceMotion {
+            for view in animatedViews.allObjects {
+                view.layer.removeAnimation(forKey: "readerPop")
+                for key in ["readerEntrance", "readerControlChange"] {
+                    guard let group = view.layer.animation(forKey: key)?.copy() as? CAAnimationGroup else { continue }
+                    group.animations = group.animations?.filter { ($0 as? CAPropertyAnimation)?.keyPath == "opacity" }
+                    view.layer.add(group, forKey: key)
+                }
+            }
+        }
+        NotificationCenter.default.post(name: preferenceDidChangeNotification, object: nil)
+    }
+
     private static var themeSnapshotKey: UInt8 = 0
 
     static func beginThemeTransition(_ window: UIWindow?) -> UIView? {
-        guard let window, !window.isHidden, !UIAccessibility.isReduceMotionEnabled,
+        guard let window, !window.isHidden,
               UIApplication.shared.applicationState == .active,
               let snapshot = window.snapshotView(afterScreenUpdates: false) else { return nil }
         // ReaderMotion.swift captures the current presentation before replacing an interrupted crossfade.
@@ -102,7 +123,7 @@ import SwiftUI
         snapshot.superview?.layoutIfNeeded()
         // ReaderMotion.swift lets SwiftUI and the article WebView publish the new theme under the cover.
         DispatchQueue.main.async {
-            UIView.animate(withDuration: UIAccessibility.isReduceMotionEnabled ? 0 : 0.3,
+            UIView.animate(withDuration: 0.3,
                            delay: 0, options: [.curveEaseOut, .beginFromCurrentState, .allowUserInteraction]) {
                 snapshot.alpha = 0
             } completion: { _ in
@@ -126,6 +147,7 @@ import SwiftUI
         forName: UIAccessibility.reduceMotionStatusDidChangeNotification, object: nil, queue: .main
     ) { _ in
         if UIAccessibility.isReduceMotionEnabled { finishPendingEntrancesForReducedMotion() }
+        preferencesDidChange()
     }
     static func session(_ owner: NSObject) -> ReaderMotionSession {
         if let session = objc_getAssociatedObject(owner, &sessionKey) as? ReaderMotionSession { return session }
@@ -170,7 +192,7 @@ import SwiftUI
         guard view.window != nil, session.presentationReady else {
             // ReaderMotion.swift holds cached story content through preparation/push without changing reusable view alpha.
             // ReaderMotion.swift keeps rows prepared behind the article visible when returning to an already presented list.
-            if UIAccessibility.isReduceMotionEnabled || session.hasPresented {
+            if session.hasPresented {
                 session.markSeen(key)
                 view.layer.removeAnimation(forKey: "readerEntrance")
                 view.layer.removeAnimation(forKey: "readerWaitingForAppearance")
@@ -275,7 +297,7 @@ import SwiftUI
 
     /// ReaderMotion.swift retires a presentation copy; data and reusable cells update immediately.
     static func leave(_ view: UIView) {
-        guard !UIAccessibility.isReduceMotionEnabled, view.window != nil, !view.isHidden,
+        guard view.window != nil, !view.isHidden,
               view.alpha > 0, let host = view.superview,
               let snapshot = view.snapshotView(afterScreenUpdates: false) else { return }
         snapshot.frame = view.frame
@@ -284,12 +306,12 @@ import SwiftUI
         host.addSubview(snapshot)
         UIView.animate(withDuration: 0.22, delay: 0, options: [.curveEaseOut]) {
             snapshot.alpha = 0
-            snapshot.transform = CGAffineTransform(translationX: 0, y: -8)
+            if !reduceMotion { snapshot.transform = CGAffineTransform(translationX: 0, y: -8) }
         } completion: { _ in snapshot.removeFromSuperview() }
     }
 
     static func retireLoadingRows(_ table: UITableView) {
-        guard !UIAccessibility.isReduceMotionEnabled, table.window != nil,
+        guard table.window != nil,
               !table.isHidden, table.alpha > 0, let host = table.superview else { return }
         // ReaderMotion.swift inspects existing views: visibleCells can force layout during a data reload
         // and invoke FeedDetailObjCViewController.m's pagination callbacks before the reload is complete.
@@ -308,7 +330,7 @@ import SwiftUI
             host.addSubview(snapshot)
             UIView.animate(withDuration: 0.24, delay: 0, options: [.curveEaseOut]) {
                 snapshot.alpha = 0
-                snapshot.transform = CGAffineTransform(translationX: 0, y: -10)
+                if !reduceMotion { snapshot.transform = CGAffineTransform(translationX: 0, y: -10) }
             } completion: { _ in snapshot.removeFromSuperview() }
         }
     }
@@ -319,7 +341,8 @@ import SwiftUI
 
     private static func animateEntrance(_ view: UIView, start: CFTimeInterval, distance: CGFloat, fadeDuration: Double = 0.18) {
         view.layer.removeAnimation(forKey: "readerEntrance")
-        guard !UIAccessibility.isReduceMotionEnabled else { return }
+        animatedViews.add(view)
+        _ = reduceMotionObserver
         // ReaderMotion.swift uses additive presentation motion so toolbar and swipe transforms remain owned by navigation.
         let lift = CASpringAnimation(keyPath: "transform.translation.y")
         lift.isAdditive = true
@@ -334,14 +357,15 @@ import SwiftUI
         let fade = CABasicAnimation(keyPath: "opacity")
         fade.fromValue = 0; fade.toValue = view.layer.opacity; fade.duration = fadeDuration
         let group = CAAnimationGroup()
-        group.animations = [lift, fade]; group.duration = 0.36
+        group.animations = reduceMotion ? [fade] : [lift, fade]; group.duration = 0.36
         group.beginTime = view.layer.convertTime(start, from: nil)
         group.fillMode = .backwards
         view.layer.add(group, forKey: "readerEntrance")
     }
 
     static func pop(_ view: UIView) {
-        guard !UIAccessibility.isReduceMotionEnabled else { return }
+        guard !reduceMotion else { return }
+        animatedViews.add(view)
         let animation = CAKeyframeAnimation(keyPath: "transform.scale")
         animation.values = [1, 0.86, 1.12, 1]
         animation.keyTimes = [0, 0.2, 0.65, 1]
@@ -403,8 +427,7 @@ import SwiftUI
             let state = ControlState(label: label(view), enabled: control?.isEnabled ?? true, selected: control?.isSelected ?? false)
             states[key] = state
             if let previous = presentation.states[key] {
-                if previous != state, view.layer.animation(forKey: "readerEntrance") == nil,
-                   !UIAccessibility.isReduceMotionEnabled {
+                if previous != state, view.layer.animation(forKey: "readerEntrance") == nil {
                     let fade = CABasicAnimation(keyPath: "opacity")
                     fade.fromValue = view.layer.opacity * 0.6
                     fade.toValue = view.layer.opacity
@@ -415,8 +438,9 @@ import SwiftUI
                     lift.toValue = 0
                     lift.duration = 0.22
                     let change = CAAnimationGroup()
-                    change.animations = [fade, lift]
+                    change.animations = reduceMotion ? [fade] : [fade, lift]
                     change.duration = 0.22
+                    animatedViews.add(view)
                     view.layer.add(change, forKey: "readerControlChange")
                 }
             } else {
@@ -460,7 +484,7 @@ import SwiftUI
     }
 
     static func finishRefresh(_ control: UIRefreshControl) {
-        guard control.isRefreshing, !UIAccessibility.isReduceMotionEnabled else { control.endRefreshing(); return }
+        guard control.isRefreshing else { control.endRefreshing(); return }
         let check = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
         check.tintColor = control.tintColor
         check.frame = CGRect(x: control.bounds.midX - 12, y: control.bounds.midY - 12, width: 24, height: 24)
@@ -489,15 +513,17 @@ struct ReaderEntrance: ViewModifier {
     @ObservedObject var session: ReaderMotionSession
     let key: String
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage("reduce_motion") private var reduceMotionPreference = false
     @Environment(\.readerMotionViewport) private var viewport
     @State private var appeared = false
     @State private var appearedVisit = -1
 
-    private var isVisible: Bool { reduceMotion || session.entrancesStopped || (appeared && appearedVisit == session.visit) }
+    private var isVisible: Bool { session.entrancesStopped || (appeared && appearedVisit == session.visit) }
 
     func body(content: Content) -> some View {
         content.modifier(ReaderEntranceEffect(progress: isVisible ? 1 : 0,
-                                             stopped: reduceMotion || session.entrancesStopped))
+                                             stopped: session.entrancesStopped,
+                                             reduceMotion: reduceMotion || reduceMotionPreference))
             .background(GeometryReader { geometry in
                 Color.clear
                     .onAppear { reveal(in: geometry.frame(in: .global)) }
@@ -509,7 +535,6 @@ struct ReaderEntrance: ViewModifier {
                         reveal(in: geometry.frame(in: .global))
                     }
             })
-            .onChange(of: reduceMotion) { _ in appearedVisit = session.visit; appeared = true }
     }
 
     private func reveal(in frame: CGRect) {
@@ -517,7 +542,7 @@ struct ReaderEntrance: ViewModifier {
         guard !appeared || appearedVisit != session.visit else { return }
         guard session.presentationReady, !viewport.isEmpty, frame.intersects(viewport) else { return }
         if appearedVisit != session.visit { appeared = false; appearedVisit = session.visit }
-        guard !reduceMotion, let start = session.start(for: key, frame: frame, viewport: viewport) else { appeared = true; return }
+        guard let start = session.start(for: key, frame: frame, viewport: viewport) else { appeared = true; return }
         let delay = max(0, start - CACurrentMediaTime())
         withAnimation(.spring(response: 0.36, dampingFraction: 0.76).delay(delay)) { appeared = true }
     }
@@ -526,6 +551,7 @@ struct ReaderEntrance: ViewModifier {
 private struct ReaderEntranceEffect: AnimatableModifier {
     var progress: CGFloat
     let stopped: Bool
+    let reduceMotion: Bool
     var animatableData: CGFloat {
         get { progress }
         set { progress = newValue }
@@ -533,6 +559,6 @@ private struct ReaderEntranceEffect: AnimatableModifier {
 
     func body(content: Content) -> some View {
         // ReaderMotion.swift bypasses even an already scheduled SwiftUI spring as soon as scrolling starts.
-        content.opacity(stopped ? 1 : Double(progress)).offset(y: stopped ? 0 : 12 * (1 - progress))
+        content.opacity(stopped ? 1 : Double(progress)).offset(y: stopped || reduceMotion ? 0 : 12 * (1 - progress))
     }
 }

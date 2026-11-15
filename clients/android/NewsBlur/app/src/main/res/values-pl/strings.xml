@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">Rozmiar czcionki tytułów kanałów i artykułów</string>
     <string name="language_title">Język</string>
     <string name="settings_cat_general">Ogólne</string>
+    <string name="settings_cat_appearance">Wygląd</string>
+    <string name="settings_reduce_motion">Ogranicz ruch</string>
+    <string name="settings_reduce_motion_summary">Zachowaj przenikanie, bez ruchu.</string>
     <string name="language_current">Język: %1$s</string>
     <string name="language_automatic">Automatycznie (język urządzenia)</string>
     <string name="language_save_failed">Nie udało się zapisać języka. Spróbuj ponownie.</string>

@@ -1281,6 +1281,9 @@ msgstr "任何公開網頁：Twitter 個人檔案、Reddit 討論串、GitHub �
 msgid "Any time"
 msgstr "任何時間"
 
+msgid "Appearance"
+msgstr "外觀"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3613,6 +3616,9 @@ msgstr "只有標題，幾乎沒有評論"
 msgid "Just the headlines, no commentary"
 msgstr "只有標題，沒有評論"
 
+msgid "Keep fades, without movement."
+msgstr "保留淡入淡出，取消移動效果。"
+
 msgid "Keep others unread"
 msgstr "保留其他文章為未讀"
 
@@ -5317,6 +5323,9 @@ msgstr "已兌換"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "減少新聞流中的雜訊"
+
+msgid "Reduce motion"
+msgstr "減少動態效果"
 
 msgid "Refer"
 msgstr "推薦"

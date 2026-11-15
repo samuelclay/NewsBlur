@@ -1367,6 +1367,9 @@ msgstr ""
 msgid "Any time"
 msgstr "בכל עת"
 
+msgid "Appearance"
+msgstr "מראה"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3735,6 +3738,9 @@ msgstr "רק כותרות, עם פרשנות מינימלית"
 msgid "Just the headlines, no commentary"
 msgstr "רק כותרות, בלי פרשנות"
 
+msgid "Keep fades, without movement."
+msgstr "שמירה על מעברי עמעום ללא תנועה."
+
 msgid "Keep others unread"
 msgstr "השאר אחרים כלא נקראו"
 
@@ -5471,6 +5477,9 @@ msgstr "נוצל"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "לצמצם את העומס בזרם הכתבות שלך"
+
+msgid "Reduce motion"
+msgstr "הפחתת תנועה"
 
 msgid "Refer"
 msgstr "הפנה"

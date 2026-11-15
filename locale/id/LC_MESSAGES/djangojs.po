@@ -1371,6 +1371,9 @@ msgstr ""
 msgid "Any time"
 msgstr "Kapan saja"
 
+msgid "Appearance"
+msgstr "Tampilan"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3762,6 +3765,9 @@ msgstr "Hanya judul dengan sedikit komentar"
 msgid "Just the headlines, no commentary"
 msgstr "Hanya judul, tanpa komentar"
 
+msgid "Keep fades, without movement."
+msgstr "Pertahankan efek pudar, tanpa gerakan."
+
 msgid "Keep others unread"
 msgstr "Biarkan yang lain tetap belum dibaca"
 
@@ -5514,6 +5520,9 @@ msgstr "Telah ditukarkan"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Kurangi kepadatan di aliran artikel Anda"
+
+msgid "Reduce motion"
+msgstr "Kurangi gerakan"
 
 msgid "Refer"
 msgstr "Ajak Teman"

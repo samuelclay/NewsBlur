@@ -170,6 +170,7 @@
 "Analyzing images..." = "画像を分析中...";
 "App Badge" = "アプリアイコンのバッジ";
 "App Icon" = "アプリアイコン";
+"Appearance" = "外観";
 "Apply training across a folder" = "フォルダー全体に学習を適用";
 "Apply training globally" = "学習内容を全体に適用";
 "Arctic Cyan" = "アークティックシアン";
@@ -502,6 +503,7 @@
 "Interactions" = "やり取り";
 "Invalid: %@" = "無効：%@";
 "Invoice" = "請求書";
+"Keep fades, without movement." = "動きをなくし、フェードは維持します。";
 "Keeps the dark icon no matter how your device is set." = "デバイスの設定にかかわらず、暗いアイコンを維持します。";
 "Keeps the light icon no matter how your device is set." = "デバイスの設定にかかわらず、ライトアイコンを表示します。";
 "Keyboard Shortcuts" = "キーボードショートカット";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "あなたの%@件の記事を読み上げます";
 "Recommended for %@" = "%@におすすめ";
 "Recording..." = "録音中...";
+"Reduce motion" = "動きを減らす";
 "Refine with a hint" = "ヒントを加えて絞り込む";
 "Refine with this title" = "このタイトルで絞り込む";
 "Refresh NewsBlur" = "NewsBlurを更新";

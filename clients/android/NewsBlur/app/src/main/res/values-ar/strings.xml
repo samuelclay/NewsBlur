@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">حجم خط الخلاصات وعناوين القصص</string>
     <string name="language_title">اللغة</string>
     <string name="settings_cat_general">عام</string>
+    <string name="settings_cat_appearance">المظهر</string>
+    <string name="settings_reduce_motion">تقليل الحركة</string>
+    <string name="settings_reduce_motion_summary">الاحتفاظ بالتلاشي دون حركة.</string>
     <string name="language_current">اللغة: %1$s</string>
     <string name="language_automatic">تلقائي (لغة الجهاز)</string>
     <string name="language_save_failed">تعذّر حفظ لغتك. يُرجى المحاولة مجددًا.</string>

@@ -148,6 +148,7 @@ import kotlin.math.abs
 @Immutable
 data class SettingsUiState(
     val theme: ThemeValue = ThemeValue.AUTO,
+    val reduceMotion: Boolean = false,
     val enableOffline: Boolean = false,
     val enableImagePrefetch: Boolean = false,
     val networkSelect: String = PrefConstants.NETWORK_SELECT_NOMONONME,
@@ -214,6 +215,7 @@ fun buildSettingsUiState(
     val appIconSelection = AppIconManager.currentSelection(context)
     return SettingsUiState(
         theme = prefsRepo.getSelectedTheme(),
+        reduceMotion = prefsRepo.getBoolean(PrefConstants.REDUCE_MOTION, false),
         enableOffline = prefsRepo.isOfflineEnabled(),
         enableImagePrefetch = prefsRepo.isImagePrefetchEnabled(),
         networkSelect =
@@ -582,6 +584,22 @@ fun SettingsScreen(
                 currentValue = options.labelFor(selected),
                 palette = palette,
                 choiceDialog = ChoiceDialogState(languageTitle, selected, options, onSelect = onLanguageSelected),
+            )
+        }
+        SettingsSection(
+            title = stringResource(R.string.settings_cat_appearance),
+            icon = Icons.Rounded.Contrast,
+            iconColor = NewsblurPurple,
+            palette = palette,
+        ) {
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_reduce_motion),
+                icon = Icons.Rounded.AutoAwesome,
+                iconColor = NewsblurPurple,
+                checked = state.reduceMotion,
+                subtitle = stringResource(R.string.settings_reduce_motion_summary),
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.REDUCE_MOTION, it) },
             )
         }
         SettingsSection(

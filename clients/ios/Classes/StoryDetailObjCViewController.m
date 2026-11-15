@@ -140,6 +140,8 @@
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.navigationDelegate = self;
     self.webView.allowsLinkPreview = YES;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateReaderMotionPreference)
+                                                name:ReaderMotion.preferenceDidChangeNotification object:nil];
     
     [self.webView.scrollView setDirectionalLockEnabled:YES];
     [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPagesViewController.isHorizontal];
@@ -3337,12 +3339,17 @@
     self.webView.accessibilityElementsHidden = NO;
     if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] fadePreparedStory hash=%@ page=%p gen=%lu", self.activeStoryId, self, (unsigned long)self.storyLoadGeneration);
     // StoryDetailObjCViewController.m reveals only the finished document; native reader controls are already usable.
-    if (!UIAccessibilityIsReduceMotionEnabled()) {
-        [self.webView evaluateJavaScript:@"newsblurAnimateStoryEntrance()" completionHandler:nil];
-    }
-    [UIView animateWithDuration:UIAccessibilityIsReduceMotionEnabled() ? 0 : .14
+    NSString *entrance = [NSString stringWithFormat:@"newsblurAnimateStoryEntrance(%@)", ReaderMotion.reduceMotion ? @"true" : @"false"];
+    [self.webView evaluateJavaScript:entrance completionHandler:nil];
+    [UIView animateWithDuration:.14
                           delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                      animations:^{ self.webView.alpha = 1; } completion:nil];
+}
+
+- (void)updateReaderMotionPreference {
+    // StoryDetailObjCViewController.m updates comments arriving after the preference changes without replaying the article.
+    NSString *script = [NSString stringWithFormat:@"newsblurReduceMotion = %@", ReaderMotion.reduceMotion ? @"true" : @"false"];
+    [self.webView evaluateJavaScript:script completionHandler:nil];
 }
 
 - (void)finishPreparingStoryPresentation {

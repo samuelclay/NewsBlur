@@ -1281,6 +1281,9 @@ msgstr "공개된 웹페이지라면 무엇이든 가능합니다. Twitter 프�
 msgid "Any time"
 msgstr "전체 기간"
 
+msgid "Appearance"
+msgstr "모양"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3621,6 +3624,9 @@ msgstr "최소한의 논평과 함께 헤드라인만"
 msgid "Just the headlines, no commentary"
 msgstr "의견 없이 헤드라인만"
 
+msgid "Keep fades, without movement."
+msgstr "움직임 없이 페이드 효과를 유지합니다."
+
 msgid "Keep others unread"
 msgstr "나머지는 읽지 않은 상태로 유지"
 
@@ -5325,6 +5331,9 @@ msgstr "사용 완료"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "스토리 스트림의 복잡함 줄이기"
+
+msgid "Reduce motion"
+msgstr "동작 줄이기"
 
 msgid "Refer"
 msgstr "추천"

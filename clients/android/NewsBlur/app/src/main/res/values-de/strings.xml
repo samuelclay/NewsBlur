@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">Schriftgröße für Feeds und Artikeltitel</string>
     <string name="language_title">Sprache</string>
     <string name="settings_cat_general">Allgemein</string>
+    <string name="settings_cat_appearance">Darstellung</string>
+    <string name="settings_reduce_motion">Bewegung reduzieren</string>
+    <string name="settings_reduce_motion_summary">Überblendungen beibehalten, ohne Bewegung.</string>
     <string name="language_current">Sprache: %1$s</string>
     <string name="language_automatic">Automatisch (Gerätesprache)</string>
     <string name="language_save_failed">Deine Sprache konnte nicht gespeichert werden. Bitte versuche es erneut.</string>

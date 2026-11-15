@@ -170,6 +170,7 @@
 "Analyzing images..." = "Afbeeldingen analyseren...";
 "App Badge" = "Appbadge";
 "App Icon" = "App-pictogram";
+"Appearance" = "Weergave";
 "Apply training across a folder" = "Training toepassen op een map";
 "Apply training globally" = "Training overal toepassen";
 "Arctic Cyan" = "Arctisch cyaan";
@@ -502,6 +503,7 @@
 "Interactions" = "Interacties";
 "Invalid: %@" = "Ongeldig: %@";
 "Invoice" = "Factuur";
+"Keep fades, without movement." = "Overgangen met vervagen behouden, zonder beweging.";
 "Keeps the dark icon no matter how your device is set." = "Behoudt het donkere pictogram, ongeacht de instelling van je apparaat.";
 "Keeps the light icon no matter how your device is set." = "Houdt het lichte pictogram aan, ongeacht de instelling van je apparaat.";
 "Keyboard Shortcuts" = "Sneltoetsen";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "Leest je %@-artikelen voor";
 "Recommended for %@" = "Aanbevolen voor %@";
 "Recording..." = "Opnemen...";
+"Reduce motion" = "Beweging verminderen";
 "Refine with a hint" = "Verfijn met een aanwijzing";
 "Refine with this title" = "Verfijnen met deze titel";
 "Refresh NewsBlur" = "NewsBlur vernieuwen";

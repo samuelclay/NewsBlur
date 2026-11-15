@@ -209,7 +209,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
             options.immediate = true;
         }
-        if (!NEWSBLUR.assets.preference('animations')) options.immediate = true;
+        if (!NEWSBLUR.motion.duration(1)) options.immediate = true;
         if (options.scroll_to_comments) {
             $story = $('.NB-feed-story-comments', $story);
         }

@@ -185,7 +185,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             return;
         }
 
-        if (!NEWSBLUR.assets.preference('animations') ||
+        if (!NEWSBLUR.motion.duration(1) ||
             NEWSBLUR.reader.story_view == 'feed' ||
             NEWSBLUR.reader.story_view == 'story' ||
             NEWSBLUR.reader.flags['page_view_showing_feed_view']) options.immediate = true;

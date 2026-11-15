@@ -23,7 +23,7 @@ NEWSBLUR.Modal.prototype = {
             'overlayClose': this.options.overlayClose,
             'onOpen': function (dialog) {
                 self.flags.open = true;
-                dialog.overlay.fadeIn(NEWSBLUR.motion.duration(200), function () {
+                dialog.overlay.fadeIn(NEWSBLUR.motion.fade_duration(200), function () {
                     dialog.container.addClass(self.options.modal_container_class);
                     dialog.container.show();
                     dialog.data.show();
@@ -72,7 +72,7 @@ NEWSBLUR.Modal.prototype = {
                     $('.NB-modal-holder').empty().remove();
                     $.modal.close(callback);
                 }
-                dialog.overlay.fadeOut(NEWSBLUR.motion.duration(200), complete_close);
+                dialog.overlay.fadeOut(NEWSBLUR.motion.fade_duration(200), complete_close);
                 // modal.js keeps ID-based styling on the live container throughout its exit.
                 NEWSBLUR.motion.exit(container, function () {
                     container.style.opacity = 0;

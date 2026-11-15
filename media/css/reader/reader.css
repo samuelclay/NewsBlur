@@ -27472,6 +27472,26 @@ h5.NB-classifier-section-header {
     margin: -5px 6px 0 2px;
 }
 
+.NB-modal-preferences .NB-preference.NB-preference-reduce-motion .NB-preference-options {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    column-gap: 4px;
+}
+
+.NB-modal-preferences .NB-preference.NB-preference-reduce-motion .NB-preference-options label {
+    float: none;
+    margin: 0;
+    padding: 0;
+}
+
+.NB-modal-preferences .NB-preference-reduce-motion .NB-preference-description {
+    grid-column: 2;
+    margin-top: 4px;
+    font-size: 12px;
+    opacity: .7;
+}
+
 .NB-modal-preferences .NB-preference-feedorder label img {
     vertical-align: middle;
     margin: -3px 6px 0 2px;
@@ -44521,15 +44541,18 @@ span.NB-briefing-inline-favicon {
 }
 
 /* reader.css keeps motion independent of palette, text direction, and layout geometry. */
-@media (prefers-reduced-motion: no-preference) {
-    .NB-story-title .story_title, .NB-story-title .NB-storytitles-indicator,
-    .NB-feed-story .NB-feed-story-title, .NB-feedlist .feed_counts {
-        transition: color 180ms ease, background-color 180ms ease, opacity 180ms ease;
-    }
-    .NB-intelligence-slider-control, .NB-feedlist-collapse-icon {
-        transition: background-color 220ms ease, color 180ms ease;
-    }
-    .NB-story-title-search-input { transition: width 260ms cubic-bezier(.2,.8,.3,1); }
+.NB-story-title .story_title, .NB-story-title .NB-storytitles-indicator,
+.NB-feed-story .NB-feed-story-title, .NB-feedlist .feed_counts {
+    transition: color 180ms ease, background-color 180ms ease, opacity 180ms ease;
+}
+.NB-intelligence-slider-control, .NB-feedlist-collapse-icon {
+    transition: background-color 220ms ease, color 180ms ease;
+}
+.NB-story-title-search-input { transition: width 260ms cubic-bezier(.2,.8,.3,1); }
+body.NB-reduce-motion .NB-story-title-search-input,
+body.NB-no-animations .NB-story-title-search-input { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+    .NB-story-title-search-input { transition: none; }
 }
 
 /* image_motion.js keeps a native modal focus boundary and returns focus without scrolling. */

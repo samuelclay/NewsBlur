@@ -1369,6 +1369,9 @@ msgstr ""
 msgid "Any time"
 msgstr "Op elk moment"
 
+msgid "Appearance"
+msgstr "Weergave"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3752,6 +3755,9 @@ msgstr "Alleen de koppen, met minimaal commentaar"
 msgid "Just the headlines, no commentary"
 msgstr "Alleen de koppen, geen commentaar"
 
+msgid "Keep fades, without movement."
+msgstr "Overgangen met vervagen behouden, zonder beweging."
+
 msgid "Keep others unread"
 msgstr "Andere artikelen ongelezen laten"
 
@@ -5510,6 +5516,9 @@ msgstr "Ingewisseld"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Breng meer overzicht in je stroom aan artikelen"
+
+msgid "Reduce motion"
+msgstr "Beweging verminderen"
 
 msgid "Refer"
 msgstr "Doorverwijzen"

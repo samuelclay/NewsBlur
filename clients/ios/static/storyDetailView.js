@@ -801,21 +801,27 @@ var newsblurMotionRecords = new WeakMap();
 var newsblurMotionObserver;
 var newsblurMotionMutationObserver;
 var newsblurMotionReady = false;
+var newsblurReduceMotion = false;
 function newsblurRefreshStoryMotion() {
     if (newsblurMotionReady) newsblurAnimateStoryEntrance();
 }
-function newsblurAnimateStoryEntrance() {
+function newsblurAnimateStoryEntrance(reduceMotion) {
+    if (typeof reduceMotion === 'boolean') newsblurReduceMotion = reduceMotion;
     newsblurMotionReady = true;
     function animate(element, index) {
         var record = newsblurMotionRecords.get(element);
         if (!record || record.element !== element || element.isConnected === false) return;
         record.presented = true;
-        if (!element.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        element.animate([
+        if (!element.animate) return;
+        var frames = [
             { opacity: record.changed ? .6 : 0, transform: record.changed ? 'translateY(3px)' : 'translateY(10px)' },
             { opacity: 1, transform: 'translateY(-.5px)', offset: .8 },
             { opacity: 1, transform: 'translateY(0)' }
-        ], { duration: record.changed ? 220 : 320, delay: record.changed ? 0 : Math.min(index * 25, 150),
+        ];
+        if (newsblurReduceMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            frames.forEach(function(frame) { delete frame.transform; });
+        }
+        element.animate(frames, { duration: record.changed ? 220 : 320, delay: record.changed ? 0 : Math.min(index * 25, 150),
             easing: 'cubic-bezier(.2,.75,.3,1)', fill: 'backwards' });
     }
     if (!newsblurMotionObserver && window.IntersectionObserver) {
@@ -890,7 +896,7 @@ function newsblurAnimateStoryEntrance() {
 
 // storyDetailView.js adds feedback to existing actions without delaying their native bridge.
 $('.NB-save-button, .NB-button').live('click', function () {
-    if (!this.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!this.animate || newsblurReduceMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     this.animate([{ transform: 'scale(.86)' }, { transform: 'scale(1.12)', offset: .65 }, { transform: 'scale(1)' }],
         { duration: 320, easing: 'ease-out' });
 });

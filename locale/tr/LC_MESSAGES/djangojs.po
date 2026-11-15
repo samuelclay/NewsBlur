@@ -1295,6 +1295,9 @@ msgstr ""
 msgid "Any time"
 msgstr "Tüm zamanlar"
 
+msgid "Appearance"
+msgstr "Görünüm"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3677,6 +3680,9 @@ msgstr "Yalnızca başlıklar, en az yorumla"
 msgid "Just the headlines, no commentary"
 msgstr "Yalnızca başlıklar, yorum yok"
 
+msgid "Keep fades, without movement."
+msgstr "Solma geçişlerini koru, hareketi kaldır."
+
 msgid "Keep others unread"
 msgstr "Diğerlerini okunmamış bırak"
 
@@ -5409,6 +5415,9 @@ msgstr "Kullanıldı"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Haber akışınızdaki kalabalığı azaltın"
+
+msgid "Reduce motion"
+msgstr "Hareketi azalt"
 
 msgid "Refer"
 msgstr "Davet et"

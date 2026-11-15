@@ -68,12 +68,33 @@ test('native article cascades each action, social section, comment and cluster i
     assert.equal(h.animations.at(-1).node, comment);
 });
 
-test('native article Reduce Motion renders all sections without animation', () => {
+test('native article system Reduce Motion preserves opacity fades without movement', () => {
     const h = article(true);
     h.add('.NB-share-button');
     h.add('.NB-story-comment');
     h.context.newsblurAnimateStoryEntrance();
-    assert.equal(h.animations.length, 0);
+    assert.equal(h.animations.length, 2);
+    for (const animation of h.animations) {
+        assert.equal(animation.frames[0].opacity, 0);
+        assert.equal(animation.frames.at(-1).opacity, 1);
+        assert.ok(animation.frames.every(frame => !frame.transform));
+        assert.ok(animation.options.duration > 0);
+    }
+});
+
+test('native article app preference keeps fades and updates newly visible sections immediately', () => {
+    const h = article();
+    h.add('.NB-story-title');
+    h.context.newsblurAnimateStoryEntrance(true);
+    assert.equal(h.animations.length, 1);
+    assert.ok(h.animations[0].frames.every(frame => !frame.transform));
+    assert.equal(h.animations[0].frames[0].opacity, 0);
+    h.add('.NB-story-comment');
+    h.context.newsblurRefreshStoryMotion();
+    assert.ok(h.animations.at(-1).frames.every(frame => !frame.transform));
+    h.add('.NB-story-cluster-detail-header');
+    h.context.newsblurAnimateStoryEntrance(false);
+    assert.ok(h.animations.at(-1).frames.some(frame => frame.transform));
 });
 
 test('hidden actions wait for visibility and comment replies do not double animate', () => {
@@ -112,7 +133,8 @@ test('offscreen sections wait for appearance, enter top to bottom, and respect a
     h.context.newsblurRefreshStoryMotion();
     h.preference.matches = true;
     h.observer.callback([entry(comment)]);
-    assert.equal(h.animations.length, 2);
+    assert.equal(h.animations.length, 3);
+    assert.ok(h.animations.at(-1).frames.every(frame => !frame.transform));
 });
 
 test('rebuilding identical side options does not replay and saving animates only Save', () => {

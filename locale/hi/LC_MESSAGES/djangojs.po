@@ -1367,6 +1367,9 @@ msgstr ""
 msgid "Any time"
 msgstr "कभी भी"
 
+msgid "Appearance"
+msgstr "प्रकटन"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3747,6 +3750,9 @@ msgstr "बस सुर्खियाँ, बहुत कम टिप्प�
 msgid "Just the headlines, no commentary"
 msgstr "सिर्फ़ सुर्खियाँ, कोई टिप्पणी नहीं"
 
+msgid "Keep fades, without movement."
+msgstr "बिना गति के फ़ेड प्रभाव बनाए रखें।"
+
 msgid "Keep others unread"
 msgstr "बाकी को अपठित रखें"
 
@@ -5495,6 +5501,9 @@ msgstr "भुनाया गया"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "अपनी समाचार धारा में अव्यवस्था कम करें"
+
+msgid "Reduce motion"
+msgstr "गति कम करें"
 
 msgid "Refer"
 msgstr "रेफ़र करें"

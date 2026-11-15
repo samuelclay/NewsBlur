@@ -3,13 +3,36 @@ NEWSBLUR.motion = (function () {
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     var running = new Map();
     var part_observers = new WeakMap();
-    function animations_enabled() {
-        if (reduced.matches) return false;
+    function preference(name) {
         // motion.js also runs before assetmodel.js initializes, when template preferences are already available.
-        var preference = NEWSBLUR.assets && typeof NEWSBLUR.assets.preference === 'function' ?
-            NEWSBLUR.assets.preference('animations') : undefined;
-        if (preference === undefined && NEWSBLUR.Preferences) preference = NEWSBLUR.Preferences.animations;
-        return preference !== false && preference !== 0;
+        var value = NEWSBLUR.assets && typeof NEWSBLUR.assets.preference === 'function' ?
+            NEWSBLUR.assets.preference(name) : undefined;
+        if (value === undefined && NEWSBLUR.Preferences) value = NEWSBLUR.Preferences[name];
+        return value;
+    }
+    function animations_enabled() {
+        var value = preference('animations');
+        return value !== false && value !== 0;
+    }
+    function reduce_motion() {
+        var value = preference('reduce_motion');
+        return reduced.matches || value === true || value === 1;
+    }
+    function opacity_frames(frames) {
+        return frames.map(function (frame) {
+            var result = Object.assign({}, frame);
+            delete result.transform;
+            return result;
+        });
+    }
+    function preference_changed() {
+        running.forEach(function (animation) {
+            if (!animations_enabled()) animation.cancel();
+            else if (reduce_motion() && animation.effect) {
+                // motion.js removes movement from the existing timeline without restarting or cancelling its fade.
+                animation.effect.setKeyframes(opacity_frames(animation.effect.getKeyframes()));
+            }
+        });
     }
     // motion.js snapshots rendered layout and paint, not hundreds of unrelated computed browser properties.
     var snapshot_properties = ('display position top right bottom left box-sizing width height min-width min-height max-width max-height ' +
@@ -26,7 +49,7 @@ NEWSBLUR.motion = (function () {
         var previous = running.get(element);
         if (previous) previous.cancel();
         if (!animations_enabled()) { if (complete) complete(); return; }
-        var animation = element.animate(frames, {
+        var animation = element.animate(reduce_motion() ? opacity_frames(frames) : frames, {
             duration: duration, delay: delay || 0, fill: 'backwards',
             easing: 'cubic-bezier(.2,.75,.3,1)'
         });
@@ -416,10 +439,11 @@ NEWSBLUR.motion = (function () {
         owner.motion_observer.reveal();
         owner.motion_observer.before_paint();
     }
-    reduced.addEventListener('change', function () {
-        if (!animations_enabled()) { running.forEach(function (animation) { animation.cancel(); }); running.clear(); }
-    });
+    reduced.addEventListener('change', preference_changed);
     return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, article: article,
         article_parts: article_parts, feedbar_parts: feedbar_parts, watch_parts: watch_parts, pause_parts: pause_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
-        duration: function (milliseconds) { return animations_enabled() ? milliseconds : 0; } };
+        reduced: reduce_motion, preference_changed: preference_changed,
+        frames: function (frames) { return reduce_motion() ? opacity_frames(frames) : frames; },
+        duration: function (milliseconds) { return animations_enabled() && !reduce_motion() ? milliseconds : 0; },
+        fade_duration: function (milliseconds) { return animations_enabled() ? milliseconds : 0; } };
 })();

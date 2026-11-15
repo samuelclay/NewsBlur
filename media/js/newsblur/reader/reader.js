@@ -302,7 +302,7 @@
             };
             var offset_multiplier = story_pane_view_offsets[view] || 0;
             var story_pane_animation_duration = options.resize ? 0 :
-                (this.model.preference('animations') ? 550 : 0);
+                NEWSBLUR.motion.duration(550);
             var story_pane_position = options.resize ? -100 * offset_multiplier + '%' :
                 -1 * offset_multiplier * this.$s.$feed_iframe.width();
 
@@ -692,6 +692,9 @@
             // reader.js shares the saved motion preference with mobile.css transitions.
             var animations = this.model.preference('animations');
             this.$s.$body.toggleClass('NB-no-animations', animations === false || animations === 0);
+            var reduce_motion = this.model.preference('reduce_motion');
+            this.$s.$body.toggleClass('NB-reduce-motion', reduce_motion === true || reduce_motion === 1);
+            if (NEWSBLUR.motion && NEWSBLUR.motion.preference_changed) NEWSBLUR.motion.preference_changed();
             this.$s.$body.toggleClass('NB-is-premium', NEWSBLUR.Globals.is_premium);
             this.$s.$body.toggleClass('NB-is-anonymous', NEWSBLUR.Globals.is_anonymous);
             this.$s.$body.toggleClass('NB-is-authenticated', NEWSBLUR.Globals.is_authenticated);

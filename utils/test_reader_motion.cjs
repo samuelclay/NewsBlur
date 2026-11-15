@@ -77,6 +77,10 @@ function harness() {
                         element: this, frames, options,
                         cancel() { this.cancelled = true; this.oncancel?.(); }
                     };
+                    animation.effect = {
+                        getKeyframes: () => animation.frames,
+                        setKeyframes: frames => { animation.frames = frames; }
+                    };
                     animations.push(animation);
                     return animation;
                 }
@@ -88,6 +92,46 @@ function harness() {
         paint: () => { const pending = [...frames.values()]; frames.clear(); pending.forEach(callback => callback()); }
     };
 }
+
+// test_reader_motion.cjs protects opacity from the blanket reduce-motion early return that used to skip every entrance.
+for (const system of [false, true]) {
+    test(`${system ? 'system' : 'saved'} Reduce Motion preserves feed, title, article, and exit fades without movement`, () => {
+        const h = harness(), owner = {}, root = h.root();
+        h.context.NEWSBLUR.Preferences = { animations: true, reduce_motion: !system };
+        h.preference.matches = system;
+        const feed = h.record('feed'), title = h.record('title'), detail = h.record('detail');
+        [feed, title, detail].forEach((row, index) => h.visible(row, index * 50));
+        h.motion.cascade([feed.el]);
+        h.motion.watch(owner, [title], root, 'titles', { animate_on_scroll: false });
+        detail.el.className = 'NB-feed-story-content';
+        const article = { querySelectorAll: selector => selector.includes('.NB-feed-story-content') ? [detail.el] : [] };
+        h.motion.article(article);
+        h.motion.exit(detail.el);
+        assert.equal(h.animations.length, 4, 'Each entrance and exit retains a fade');
+        for (const animation of h.animations) {
+            assert.ok(animation.options.duration > 0);
+            assert.ok(animation.frames.some(frame => frame.opacity === 0));
+            assert.ok(animation.frames.some(frame => frame.opacity === 1));
+            assert.ok(animation.frames.every(frame => !('transform' in frame)), 'Reduced animation must not move the content');
+        }
+        assert.equal(h.motion.duration(350), 0, 'Spatial transitions finish immediately');
+        assert.equal(h.motion.fade_duration(350), 350, 'Opacity durations stay intact');
+    });
+}
+
+test('saved Reduce Motion changes active movement without cancelling its fade and restores movement for future visits', () => {
+    const h = harness(), row = h.record('story');
+    const preferences = h.context.NEWSBLUR.Preferences = { animations: true };
+    h.motion.enter(row.el);
+    assert.ok(h.animations[0].frames.some(frame => frame.transform), 'Movement remains on by default');
+    preferences.reduce_motion = true;
+    h.motion.preference_changed();
+    assert.ok(!h.animations[0].cancelled, 'The existing opacity timeline must continue');
+    assert.ok(h.animations[0].frames.every(frame => !('transform' in frame)));
+    preferences.reduce_motion = false;
+    h.motion.enter(row.el);
+    assert.ok(h.animations[1].frames.some(frame => frame.transform));
+});
 
 
 test('reader animation preference disables entrances, exits, and duration helpers', () => {
@@ -459,7 +503,7 @@ test('document viewport clipping preserves nested overflow and hidden document a
     assert.equal(h.animations.length, 1, 'Document boxes use the viewport once nested content becomes visible');
 });
 
-test('interrupting an exit or enabling reduced motion finishes its cleanup exactly once', () => {
+test('interrupting an exit or finishing a reduced-motion fade cleans up exactly once', () => {
     const h = harness(), row = h.record('a');
     let cleaned = 0;
     h.motion.exit(row.el, () => cleaned++);
@@ -468,20 +512,27 @@ test('interrupting an exit or enabling reduced motion finishes its cleanup exact
     h.motion.exit(row.el, () => cleaned++);
     h.preference.matches = true;
     h.preference.change();
+    assert.equal(cleaned, 1, 'Changing motion must let the outgoing fade finish');
+    h.animations.at(-1).onfinish();
     assert.equal(cleaned, 2);
     h.motion.exit(row.el, () => cleaned++);
+    h.animations.at(-1).onfinish();
+    h.animations.at(-1).oncancel();
     assert.equal(cleaned, 3);
 });
 
-test('reduced motion cancels active effects and does not hide subsequent content', () => {
+test('system reduced motion removes active movement while subsequent content still fades in', () => {
     const h = harness(), row = h.record('a');
     h.motion.enter(row.el);
     assert.equal(h.animations.length, 1);
     h.preference.matches = true;
     h.preference.change();
-    assert.equal(h.animations[0].cancelled, true);
+    assert.ok(!h.animations[0].cancelled);
+    assert.ok(h.animations[0].frames.every(frame => !('transform' in frame)));
     h.motion.enter(row.el);
-    assert.equal(h.animations.length, 1);
+    assert.equal(h.animations.length, 2);
+    assert.equal(h.animations[1].frames[0].opacity, 0);
+    assert.ok(h.animations[1].frames.every(frame => !('transform' in frame)));
 });
 
 test('story title scrolling finishes opening effects and keeps later rows and pagination fully rendered', () => {
@@ -576,11 +627,12 @@ test('controls honor reduced motion and still remember their presented state', (
     h.visible(action);
     root.querySelectorAll = () => [action.el];
     h.motion.watch_parts(root, '.parts');
-    assert.equal(h.animations.length, 0);
+    assert.equal(h.animations.length, 1);
+    assert.ok(h.animations[0].frames.every(frame => !('transform' in frame)));
     h.preference.matches = false;
     h.mutations[0].callback();
     h.paint();
-    assert.equal(h.animations.length, 0, 'Enabling motion must not replay the current bar');
+    assert.equal(h.animations.length, 1, 'Enabling motion must not replay the current bar');
 });
 
 test('control mutations share one prepaint scan and disconnect cancels queued work', () => {
@@ -848,23 +900,26 @@ test('scrolling ends queued title pages and later pages remain fully visible', (
     assert.equal(h.animations.length, 6, 'Pagination after scrolling must not hide new titles');
 });
 
-test('reduced motion clears an opening backlog without delaying later content when reenabled', () => {
+test('reduced motion preserves the opening fade sequence and later content keeps its order', () => {
     const h = harness(), owner = {}, root = h.root();
     const first = h.record('first'), second = h.record('second');
     h.visible(first); h.visible(second, 80);
     h.motion.watch(owner, [first, second], root, 'feed', { animate_on_scroll: false });
     h.preference.matches = true;
     h.preference.change();
-    assert.ok(h.animations.every(animation => animation.cancelled));
+    assert.ok(h.animations.every(animation => !animation.cancelled));
+    assert.ok(h.animations.every(animation => animation.frames.every(frame => !('transform' in frame))));
     const reduced = h.record('reduced');
     h.visible(reduced);
     h.motion.watch(owner, [reduced], root, 'feed', { animate_on_scroll: false });
-    assert.equal(h.animations.length, 2, 'Reduced Motion presents arriving content immediately');
+    assert.equal(h.animations.length, 3, 'Reduced Motion fades in arriving content');
+    assert.ok(h.animations[2].options.delay > h.animations[1].options.delay);
     h.preference.matches = false;
     const next = h.record('next');
     h.visible(next);
     h.motion.watch(owner, [next], root, 'feed', { animate_on_scroll: false });
-    assert.equal(h.animations.at(-1).options.delay, 0);
+    assert.ok(h.animations.at(-1).options.delay > h.animations[2].options.delay);
+    assert.ok(h.animations.at(-1).frames.some(frame => frame.transform));
 });
 
 test('feed and dialog rows retain independent batch cascades', () => {

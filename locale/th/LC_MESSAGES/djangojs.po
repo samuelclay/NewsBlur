@@ -1293,6 +1293,9 @@ msgstr ""
 msgid "Any time"
 msgstr "ไม่จำกัดเวลา"
 
+msgid "Appearance"
+msgstr "รูปลักษณ์"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3647,6 +3650,9 @@ msgstr "มีแต่พาดหัว พร้อมคำบรรยา�
 msgid "Just the headlines, no commentary"
 msgstr "มีแค่พาดหัว ไม่มีความเห็นประกอบ"
 
+msgid "Keep fades, without movement."
+msgstr "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว"
+
 msgid "Keep others unread"
 msgstr "คงสถานะยังไม่อ่านให้บทความอื่น"
 
@@ -5363,6 +5369,9 @@ msgstr "แลกใช้แล้ว"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "ลดความรกในรายการบทความของคุณ"
+
+msgid "Reduce motion"
+msgstr "ลดการเคลื่อนไหว"
 
 msgid "Refer"
 msgstr "แนะนำ"

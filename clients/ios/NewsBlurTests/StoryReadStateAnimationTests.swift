@@ -652,6 +652,85 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor final class Test_ReaderMotion: XCTestCase {
+    func test_reduceMotionPreferenceKeepsRowFadeAndRestoresMovementWhenDisabled() throws {
+        // StoryReadStateAnimationTests.swift protects the preference's movement-only contract when a feed opens.
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "reduce_motion")
+        defer {
+            if let previous { defaults.set(previous, forKey: "reduce_motion") }
+            else { defaults.removeObject(forKey: "reduce_motion") }
+        }
+        let row = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 80))
+        row.alpha = 0.4
+        let window = motionWindow(containing: [row])
+        defer { window.isHidden = true }
+        let owner = NSObject()
+        defaults.set(true, forKey: "reduce_motion")
+        ReaderMotion.row(row, key: "reduced", owner: owner, scrolling: false, position: 0)
+        let reduced = try XCTUnwrap(row.layer.animation(forKey: "readerEntrance") as? CAAnimationGroup)
+        let reducedParts = try XCTUnwrap(reduced.animations as? [CABasicAnimation])
+        XCTAssertEqual(reducedParts.map(\.keyPath), ["opacity"])
+        let fade = try XCTUnwrap(reducedParts.first)
+        XCTAssertEqual((fade.fromValue as? NSNumber)?.doubleValue, 0)
+        XCTAssertEqual(try XCTUnwrap(fade.toValue as? NSNumber).doubleValue, 0.4, accuracy: 0.001)
+        XCTAssertGreaterThan(fade.duration, 0)
+        XCTAssertEqual(row.alpha, 0.4, accuracy: 0.001)
+
+        defaults.set(false, forKey: "reduce_motion")
+        ReaderMotion.session(owner).reset()
+        ReaderMotion.row(row, key: "full-motion", owner: owner, scrolling: false, position: 0)
+        let full = try XCTUnwrap(row.layer.animation(forKey: "readerEntrance") as? CAAnimationGroup)
+        XCTAssertTrue(full.animations?.contains { ($0 as? CABasicAnimation)?.keyPath == "transform.translation.y" } == true)
+    }
+
+    func test_reduceMotionPreferenceKeepsChangedControlFadeWithoutLift() throws {
+        // StoryReadStateAnimationTests.swift catches controls accidentally using a separate all-or-nothing policy.
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "reduce_motion")
+        defer {
+            if let previous { defaults.set(previous, forKey: "reduce_motion") }
+            else { defaults.removeObject(forKey: "reduce_motion") }
+        }
+        defaults.set(true, forKey: "reduce_motion")
+        let bar = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 44))
+        let button = UIButton(frame: bar.bounds)
+        button.accessibilityLabel = "Save"
+        bar.addSubview(button)
+        let window = motionWindow(containing: [bar])
+        defer { window.isHidden = true }
+        ReaderMotion.controls([button], in: bar)
+        button.layer.removeAllAnimations()
+        button.accessibilityLabel = "Saved"
+        ReaderMotion.controls([button], in: bar)
+        let change = try XCTUnwrap(button.layer.animation(forKey: "readerControlChange") as? CAAnimationGroup)
+        XCTAssertEqual(change.animations?.compactMap { ($0 as? CABasicAnimation)?.keyPath }, ["opacity"])
+        XCTAssertGreaterThan(change.duration, 0)
+    }
+
+    func test_turningOnReduceMotionRemovesAnActiveLiftWithoutRestartingItsFade() throws {
+        // StoryReadStateAnimationTests.swift protects changing the real Preferences toggle during an entrance.
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: "reduce_motion")
+        defer {
+            if let previous { defaults.set(previous, forKey: "reduce_motion") }
+            else { defaults.removeObject(forKey: "reduce_motion") }
+        }
+        defaults.removeObject(forKey: "reduce_motion")
+        let row = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 80))
+        let window = motionWindow(containing: [row])
+        defer { window.isHidden = true }
+        ReaderMotion.enter(row)
+        let original = try XCTUnwrap(row.layer.animation(forKey: "readerEntrance") as? CAAnimationGroup)
+        XCTAssertTrue(original.animations?.contains { ($0 as? CABasicAnimation)?.keyPath == "transform.translation.y" } == true,
+                      "An unset preference must retain the default movement")
+        defaults.set(true, forKey: "reduce_motion")
+        PreferencesViewModel().valueChanged(key: "reduce_motion", value: true)
+        let updated = try XCTUnwrap(row.layer.animation(forKey: "readerEntrance") as? CAAnimationGroup)
+        XCTAssertEqual(updated.animations?.compactMap { ($0 as? CABasicAnimation)?.keyPath }, ["opacity"])
+        XCTAssertEqual(updated.beginTime, original.beginTime)
+        XCTAssertEqual(updated.duration, original.duration)
+    }
+
     func test_feedEntranceWorkDoesNotGrowWithOffscreenFolders() throws {
         // StoryReadStateAnimationTests.swift protects filter responsiveness: scanning preceding folders per visible row made large subscriptions stall.
         func displayWork(sectionCount: Int) throws -> Int {

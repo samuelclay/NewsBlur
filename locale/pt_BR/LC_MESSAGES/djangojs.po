@@ -1371,6 +1371,9 @@ msgstr ""
 msgid "Any time"
 msgstr "Qualquer data"
 
+msgid "Appearance"
+msgstr "Aparência"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3759,6 +3762,9 @@ msgstr "Apenas manchetes, com comentários mínimos"
 msgid "Just the headlines, no commentary"
 msgstr "Só as manchetes, sem comentários"
 
+msgid "Keep fades, without movement."
+msgstr "Manter as transições de opacidade, sem movimento."
+
 msgid "Keep others unread"
 msgstr "Manter os demais como não lidos"
 
@@ -5517,6 +5523,9 @@ msgstr "Resgatado"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Reduza a confusão no seu fluxo de notícias"
+
+msgid "Reduce motion"
+msgstr "Reduzir movimento"
 
 msgid "Refer"
 msgstr "Indicar"

@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">Cỡ chữ tiêu đề nguồn cấp và bài viết</string>
     <string name="language_title">Ngôn ngữ</string>
     <string name="settings_cat_general">Chung</string>
+    <string name="settings_cat_appearance">Giao diện</string>
+    <string name="settings_reduce_motion">Giảm chuyển động</string>
+    <string name="settings_reduce_motion_summary">Giữ hiệu ứng mờ dần, không chuyển động.</string>
     <string name="language_current">Ngôn ngữ: %1$s</string>
     <string name="language_automatic">Tự động (ngôn ngữ thiết bị)</string>
     <string name="language_save_failed">Không thể lưu ngôn ngữ của bạn. Vui lòng thử lại.</string>

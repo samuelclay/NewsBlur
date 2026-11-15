@@ -170,6 +170,7 @@
 "Analyzing images..." = "Đang phân tích hình ảnh...";
 "App Badge" = "Huy hiệu ứng dụng";
 "App Icon" = "Biểu tượng ứng dụng";
+"Appearance" = "Giao diện";
 "Apply training across a folder" = "Áp dụng huấn luyện cho toàn bộ thư mục";
 "Apply training globally" = "Áp dụng việc huấn luyện trên toàn hệ thống";
 "Arctic Cyan" = "Xanh lục lam Bắc Cực";
@@ -502,6 +503,7 @@
 "Interactions" = "Tương tác";
 "Invalid: %@" = "Không hợp lệ: %@";
 "Invoice" = "Hóa đơn";
+"Keep fades, without movement." = "Giữ hiệu ứng mờ dần, không chuyển động.";
 "Keeps the dark icon no matter how your device is set." = "Luôn giữ biểu tượng tối bất kể thiết lập trên thiết bị của bạn.";
 "Keeps the light icon no matter how your device is set." = "Luôn dùng biểu tượng sáng bất kể cài đặt thiết bị của bạn.";
 "Keyboard Shortcuts" = "Phím tắt";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "Đọc bài viết %@ của bạn";
 "Recommended for %@" = "Được đề xuất cho %@";
 "Recording..." = "Đang ghi…";
+"Reduce motion" = "Giảm chuyển động";
 "Refine with a hint" = "Tinh chỉnh bằng gợi ý";
 "Refine with this title" = "Tinh chỉnh bằng tiêu đề này";
 "Refresh NewsBlur" = "Làm mới NewsBlur";
