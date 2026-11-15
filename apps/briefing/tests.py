@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, call, patch
 
 import pytz
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from django.test.client import Client
@@ -578,6 +579,21 @@ class Test_Summary(TestCase):
             # tests.py: The briefing's own limit, not the 16384 floor hosted OpenAI gets.
             self.assertNotIn("max_completion_tokens", request)
             self.assertLessEqual(request["max_tokens"], 4096)
+
+            configured = {
+                **settings.BRIEFING_MODELS["local"],
+                "max_tokens_parameter": "max_completion_tokens",
+                "max_tokens_multiplier": 5,
+            }
+            with self.settings(BRIEFING_MODELS={"local": configured}):
+                with patch.object(providers, "BRIEFING_MODELS", providers._load_briefing_models()):
+                    configured_result = generate_briefing_summary(
+                        self.id(), [self._scored_from_story(story)], datetime.datetime.utcnow(), model="local"
+                    )
+            self.assertIsNotNone(configured_result)
+            configured_request = mock_client.return_value.chat.completions.create.call_args.kwargs
+            self.assertNotIn("max_tokens", configured_request)
+            self.assertEqual(configured_request["max_completion_tokens"], request["max_tokens"] * 5)
         finally:
             MStory.objects(story_hash=story.story_hash).delete()
             feed.delete()

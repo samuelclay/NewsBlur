@@ -262,6 +262,11 @@ class OpenAICompatibleProvider(OpenAIProvider):
     Optional "extra_body" adds request fields to both streaming and non-streaming
     calls, for example {"top_k": 40}. Explicit thinking_config.reasoning_effort
     overrides the same field in extra_body; other fields pass through unchanged.
+
+    Non-streaming calls accept "max_tokens_parameter" (default "max_tokens") and
+    "max_tokens_multiplier" (default 1) to name and scale the caller's token limit.
+    Most local & hosted providers include reasoning in the token budget; the
+    multiplier works around this (see "OpenAIProvider._token_limit()").
     """
 
     # providers.py: The OpenAI SDK won't build a client without a key, and servers without
@@ -279,9 +284,9 @@ class OpenAICompatibleProvider(OpenAIProvider):
         )
 
     def _token_limit(self, max_tokens: int) -> dict:
-        # providers.py: max_tokens is the limit compatible servers understand, and the 16384
-        # floor is for OpenAI's reasoning models, so the caller's limit goes through as is.
-        return {"max_tokens": max_tokens}
+        parameter = self.model_config.get("max_tokens_parameter", "max_tokens")
+        multiplier = self.model_config.get("max_tokens_multiplier", 1)
+        return {parameter: max_tokens * multiplier}
 
     def _merged_extra_body(self, thinking_config: Optional[dict] = None) -> dict:
         extra_body = dict(self.model_config.get("extra_body") or {})
@@ -491,7 +496,14 @@ PROVIDER_CLASSES = {
 # providers.py: Optional per-model settings copied from ASK_AI_MODELS and BRIEFING_MODELS.
 # base_url and api_key are for OpenAICompatibleProvider. get_models_for_frontend and
 # get_briefing_models_for_frontend leave them out, so they never reach a browser.
-OPTIONAL_MODEL_SETTINGS = ("thinking_config", "thinking_model_id", "base_url", "api_key")
+OPTIONAL_MODEL_SETTINGS = (
+    "thinking_config",
+    "thinking_model_id",
+    "base_url",
+    "api_key",
+    "max_tokens_parameter",
+    "max_tokens_multiplier",
+)
 
 
 # Model registry: single source of truth for all model configuration.
