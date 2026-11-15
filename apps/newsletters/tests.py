@@ -1,5 +1,6 @@
 """Tests for email newsletter ingestion."""
 
+import html
 import json
 import uuid
 from datetime import datetime
@@ -330,6 +331,95 @@ Original plain newsletter body""",
         self.assertEqual(story.story_title, "May the 4th Be With You!")
         self.assertIn("Original plain newsletter body", story.story_content_str)
         self.assertNotIn("Forwarded Message", story.story_content_str)
+
+    def test_text_part_holding_escaped_html_source_renders_as_html(self):
+        # POLITICO Europe's Playbooks forwarded from Gmail arrive with the text part set to
+        # the HTML source escaped twice, plus a plain footer.
+        newsletter_html = (
+            '<div id="pl-newsletter-header"><p style="max-height: 0px;overflow: hidden;">'
+            "Das POLITICO-Briefing zu den wichtigsten Ereignissen des Tages in Berlin.</p>"
+            '<table border="0" width="100%"><tbody><tr><td align="center">'
+            '<img src="https://www.politico.eu/wp-content/uploads/2024/09/30/nl-header.png" '
+            'alt="Berlin Playbook" width="600" /></td></tr></tbody></table></div>'
+            '<p>Guten Morgen. <a href="https://dmp.politico.eu/?destination=online&amp;s=1">'
+            "Online lesen</a></p>"
+            "<p>Das Formular nutzt <code>&lt;div&gt;</code> statt Tabellen.</p>"
+        )
+        newsletter_text = (
+            html.escape(html.escape(newsletter_html))
+            + "\n\nUnsubscribe from all emails : https://api.politico.eu/unsubscribe/abc\nPOLITICO SRL"
+        )
+
+        for suffix, html_part in [("with-html-part", newsletter_html), ("without-html-part", "")]:
+            with self.subTest(suffix):
+                response = self.client.post(
+                    reverse("newsletter-receive"),
+                    data=json.dumps(
+                        {
+                            "envelope": {"recipient": "newsletteruser-abc123@newsletters.newsblur.com"},
+                            "from": {
+                                "name": "POLITICO Berlin Playbook",
+                                "email": "berlinplaybook@politico.eu",
+                            },
+                            "subject": "Die Podcast-Highlights der Woche",
+                            "html": html_part,
+                            "text": newsletter_text,
+                            "timestamp": 1700000000,
+                            "message-id": "%s-%s" % (self.guid_prefix, suffix),
+                            "headers": {},
+                        }
+                    ),
+                    content_type="application/json",
+                )
+
+                self.assertEqual(response.status_code, 200)
+                story = MStory.objects.get(story_guid="%s-%s" % (self.guid_prefix, suffix))
+                content = story.story_content_str
+                self.assertIn("<table", content)
+                self.assertIn(
+                    'src="https://www.politico.eu/wp-content/uploads/2024/09/30/nl-header.png"', content
+                )
+                self.assertIn('href="https://dmp.politico.eu/?destination=online&amp;s=1"', content)
+                self.assertIn("<code>&lt;div&gt;</code>", content)
+                self.assertNotIn("&lt;table", content)
+                self.assertNotIn("&amp;lt;", content)
+
+    def test_plain_text_newsletter_quoting_markup_keeps_its_paragraphs(self):
+        story = self.receive(
+            "plain-quoting-markup",
+            **{
+                "body-html": "",
+                "body-plain": "Wrap each answer in a &lt;p&gt; element.\n\nFull guide: https://example.com/guide",
+            },
+        )
+
+        content = story.story_content_str
+        self.assertIn("&lt;p&gt; element.</p>", content)
+        self.assertIn('href="https://example.com/guide"', content)
+
+    def test_html_newsletter_with_escaped_code_sample_keeps_it_as_text(self):
+        sample = "<code>&lt;ul&gt;&lt;li&gt;One&lt;/li&gt;&lt;li&gt;Two&lt;/li&gt;&lt;li&gt;Three&lt;/li&gt;&lt;/ul&gt;</code>"
+        cases = [
+            (
+                "inside-plain-markup",
+                "<div><h1>Frontend Weekly</h1><p>Build the menu as %s with one item per page.</p>"
+                "<p>See you next week.</p></div>" % sample,
+            ),
+            (
+                "inside-unlisted-tags",
+                "<section><h2>Tip</h2><pre>%s</pre><footer>Frontend Weekly</footer></section>" % sample,
+            ),
+            ("inside-escaped-markup", html.escape("<div><pre>%s</pre></div>" % sample, quote=False)),
+        ]
+
+        for suffix, body_html in cases:
+            with self.subTest(suffix):
+                story = self.receive(
+                    "html-code-sample-%s" % suffix,
+                    **{"body-html": body_html, "body-plain": "Hi"},
+                )
+
+                self.assertIn(sample, story.story_content_str)
 
 
 class Test_EmailNewsletterMergeRace(NewsletterFixture, TransactionTestCase):
