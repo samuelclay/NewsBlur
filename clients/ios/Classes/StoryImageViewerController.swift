@@ -455,11 +455,11 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         scroll.alpha = 0
         controls.alpha = 0
         let target = imageView.convert(imageView.bounds, to: view)
-        UIView.animate(withDuration: UIAccessibility.isReduceMotionEnabled ? 0.18 : 0.35, delay: 0,
-                       usingSpringWithDamping: 1, initialSpringVelocity: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+        UIView.animate(withDuration: ReaderMotion.reduceMotion ? 0.18 : 0.35, delay: 0,
+                       usingSpringWithDamping: 0.86, initialSpringVelocity: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
             self.backdrop.alpha = 1
             self.controls.alpha = 1
-            if UIAccessibility.isReduceMotionEnabled { flying.alpha = 0 } else { flying.frame = target }
+            if ReaderMotion.reduceMotion { flying.alpha = 0 } else { flying.frame = target }
         } completion: { _ in
             flying.removeFromSuperview()
             self.transitionImage = nil
@@ -555,13 +555,13 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         view.insertSubview(flying, belowSubview: controls)
         scroll.alpha = 0
         spinner.stopAnimating()
-        UIView.animate(withDuration: UIAccessibility.isReduceMotionEnabled ? 0.18 : 0.3, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState]) {
+        UIView.animate(withDuration: ReaderMotion.reduceMotion ? 0.18 : 0.3, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState]) {
             self.backdrop.alpha = 0
             self.controls.alpha = 0
             self.hoverDisclosure.alpha = 0
             self.actionDisclosure.alpha = 0
             self.status.alpha = 0
-            if let rect, !UIAccessibility.isReduceMotionEnabled { flying.frame = self.view.convert(rect, from: self.view.window) }
+            if let rect, !ReaderMotion.reduceMotion { flying.frame = self.view.convert(rect, from: self.view.window) }
             else { flying.alpha = 0 }
         } completion: { _ in self.dismiss(animated: false, completion: completion) }
     }

@@ -170,6 +170,7 @@
 "Analyzing images..." = "이미지 분석 중...";
 "App Badge" = "앱 배지";
 "App Icon" = "앱 아이콘";
+"Appearance" = "모양";
 "Apply training across a folder" = "폴더 전체에 학습 적용";
 "Apply training globally" = "학습 내용을 전체에 적용";
 "Arctic Cyan" = "북극 시안";
@@ -502,6 +503,7 @@
 "Interactions" = "상호작용";
 "Invalid: %@" = "유효하지 않음: %@";
 "Invoice" = "청구서";
+"Keep fades, without movement." = "움직임 없이 페이드 효과를 유지합니다.";
 "Keeps the dark icon no matter how your device is set." = "기기 설정과 관계없이 어두운 아이콘을 유지합니다.";
 "Keeps the light icon no matter how your device is set." = "기기 설정과 관계없이 밝은 아이콘을 유지합니다.";
 "Keyboard Shortcuts" = "키보드 단축키";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "내 %@ 스토리 읽기";
 "Recommended for %@" = "%@에 추천";
 "Recording..." = "녹음 중...";
+"Reduce motion" = "동작 줄이기";
 "Refine with a hint" = "힌트로 다듬기";
 "Refine with this title" = "이 제목으로 조건 좁히기";
 "Refresh NewsBlur" = "NewsBlur 새로고침";

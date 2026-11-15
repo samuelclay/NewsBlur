@@ -16,6 +16,7 @@ import SwiftUI
     let appDelegate = NewsBlurAppDelegate.shared!
     
     let settings = StorySettings()
+    let motionSession = ReaderMotionSession()
     
     var isDarkTheme: Bool {
         return ThemeManager.shared.isDarkTheme

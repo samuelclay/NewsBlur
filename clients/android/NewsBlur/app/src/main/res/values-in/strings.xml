@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">Ukuran font judul feed dan artikel</string>
     <string name="language_title">Bahasa</string>
     <string name="settings_cat_general">Umum</string>
+    <string name="settings_cat_appearance">Tampilan</string>
+    <string name="settings_reduce_motion">Kurangi gerakan</string>
+    <string name="settings_reduce_motion_summary">Pertahankan efek pudar, tanpa gerakan.</string>
     <string name="language_current">Bahasa: %1$s</string>
     <string name="language_automatic">Otomatis (bahasa perangkat)</string>
     <string name="language_save_failed">Bahasa tidak dapat disimpan. Silakan coba lagi.</string>

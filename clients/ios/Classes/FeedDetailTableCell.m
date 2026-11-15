@@ -85,6 +85,7 @@ static UIFont *indicatorFont = nil;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        self.backgroundColor = ThemeManager.shared.storyListBackgroundColor;
         cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
         cellContent.opaque = YES;
         self.isReadAvailable = YES;
@@ -103,6 +104,9 @@ static UIFont *indicatorFont = nil;
 }
 
 - (void)drawRect:(CGRect)rect {
+    // FeedDetailTableCell.m leaves the themed surface visible while contentView fades into place.
+    UIColor *surface = ThemeManager.shared.storyListBackgroundColor;
+    if (![self.backgroundColor isEqual:surface]) self.backgroundColor = surface;
     ((FeedDetailTableCellView *)cellContent).cell = self;
     ((FeedDetailTableCellView *)cellContent).storyImage = nil;
     ((FeedDetailTableCellView *)cellContent).appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -240,18 +244,25 @@ static UIFont *indicatorFont = nil;
 - (void)setStoryHash:(NSString *)newStoryHash {
     if (storyHash != newStoryHash && ![storyHash isEqualToString:newStoryHash]) {
         [cellContent.layer removeAnimationForKey:kCATransition];
+        [self.contentView.layer removeAnimationForKey:@"readerEntrance"];
+        [self.contentView.layer removeAnimationForKey:@"readerWaitingForAppearance"];
     }
     storyHash = newStoryHash;
 }
 
 - (void)prepareForReuse {
     [cellContent.layer removeAnimationForKey:kCATransition];
+    [self.contentView.layer removeAnimationForKey:@"readerEntrance"];
+    [self.contentView.layer removeAnimationForKey:@"readerWaitingForAppearance"];
     [super prepareForReuse];
 }
 
 - (void)didMoveToWindow {
     [super didMoveToWindow];
-    if (!self.window) [cellContent.layer removeAnimationForKey:kCATransition];
+    if (!self.window) {
+        [cellContent.layer removeAnimationForKey:kCATransition];
+        [self.contentView.layer removeAnimationForKey:@"readerWaitingForAppearance"];
+    }
 }
 
 - (void)setSiteFavicon:(UIImage *)newSiteFavicon {
@@ -378,7 +389,7 @@ static UIFont *indicatorFont = nil;
         CGFloat comfortMargin = isComfortable ? 4 : 0;
         UIColor *backgroundColor = isHighlighted ?
             UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) :
-            UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x000000);
+            ThemeManager.shared.storyListBackgroundColor;
         UIColor *clusterBackgroundColor = isHighlighted ?
             UIColorFromLightSepiaMediumDarkRGB(0xEEF5FD, 0xE7D8C6, 0x38424B, 0x1A1F23) :
             UIColorFromLightSepiaMediumDarkRGB(0xE8F0F8, 0xECDEC9, 0x363C43, 0x101418);
@@ -631,7 +642,7 @@ static UIFont *indicatorFont = nil;
     } else {
         backgroundColor = isHighlighted ?
             UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) :
-            UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x000000);
+            ThemeManager.shared.storyListBackgroundColor;
     }
     [backgroundColor set];
     

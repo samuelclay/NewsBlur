@@ -170,6 +170,7 @@
 "Analyzing images..." = "Анализ изображений...";
 "App Badge" = "Значок приложения";
 "App Icon" = "Значок приложения";
+"Appearance" = "Внешний вид";
 "Apply training across a folder" = "Применить обучение ко всей папке";
 "Apply training globally" = "Применить обучение ко всем лентам";
 "Arctic Cyan" = "Арктический циан";
@@ -502,6 +503,7 @@
 "Interactions" = "Взаимодействия";
 "Invalid: %@" = "Недопустимо: %@";
 "Invoice" = "Счёт";
+"Keep fades, without movement." = "Сохранить плавное появление и исчезновение без движения.";
 "Keeps the dark icon no matter how your device is set." = "Тёмный значок будет отображаться независимо от настроек устройства.";
 "Keeps the light icon no matter how your device is set." = "Всегда использует светлый значок независимо от настроек устройства.";
 "Keyboard Shortcuts" = "Сочетания клавиш";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "Читает ваши статьи из %@";
 "Recommended for %@" = "Рекомендовано для %@";
 "Recording..." = "Запись...";
+"Reduce motion" = "Уменьшить движение";
 "Refine with a hint" = "Уточнить с помощью подсказки";
 "Refine with this title" = "Уточнить по этому заголовку";
 "Refresh NewsBlur" = "Обновить NewsBlur";

@@ -170,6 +170,7 @@
 "Analyzing images..." = "छवियों का विश्लेषण हो रहा है…";
 "App Badge" = "ऐप बैज";
 "App Icon" = "ऐप आइकन";
+"Appearance" = "प्रकटन";
 "Apply training across a folder" = "किसी फ़ोल्डर की सभी साइटों पर प्रशिक्षण लागू करें";
 "Apply training globally" = "प्रशिक्षण सभी जगह लागू करें";
 "Arctic Cyan" = "आर्कटिक सियान";
@@ -502,6 +503,7 @@
 "Interactions" = "इंटरैक्शन";
 "Invalid: %@" = "अमान्य: %@";
 "Invoice" = "चालान";
+"Keep fades, without movement." = "बिना गति के फ़ेड प्रभाव बनाए रखें।";
 "Keeps the dark icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, गहरा आइकन बनाए रखता है।";
 "Keeps the light icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, हल्का आइकन बनाए रखता है।";
 "Keyboard Shortcuts" = "कीबोर्ड शॉर्टकट";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "आपके %@ लेख पढ़ता है";
 "Recommended for %@" = "%@ के लिए सुझाया गया";
 "Recording..." = "रिकॉर्ड हो रहा है...";
+"Reduce motion" = "गति कम करें";
 "Refine with a hint" = "संकेत देकर परिष्कृत करें";
 "Refine with this title" = "इस शीर्षक से खोज को बेहतर बनाएँ";
 "Refresh NewsBlur" = "NewsBlur रीफ़्रेश करें";

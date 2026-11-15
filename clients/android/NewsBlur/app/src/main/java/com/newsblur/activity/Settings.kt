@@ -29,10 +29,13 @@ class Settings :
 
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.settings), true)
 
-        supportFragmentManager
-            .beginTransaction()
-            .replace(binding.container.id, SettingsFragment())
-            .commit()
+        // Settings.kt leaves the restored fragment and its Compose saved state intact after rotation.
+        if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.container.id, SettingsFragment())
+                .commit()
+        }
 
         val prefs = getSharedPreferences(PrefConstants.PREFERENCES, 0)
         prefs.registerOnSharedPreferenceChangeListener(this)

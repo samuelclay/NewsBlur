@@ -1670,6 +1670,9 @@ msgstr ""
 msgid "Any time"
 msgstr "في أي وقت"
 
+msgid "Appearance"
+msgstr "المظهر"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3604,6 +3607,9 @@ msgstr "عرض كامل"
 msgid "Full-Text Search"
 msgstr "بحث في النص الكامل"
 
+msgid "Full-screen list"
+msgstr "قائمة بملء الشاشة"
+
 msgid "Full-text search across all stories"
 msgstr "بحث بالنص الكامل في جميع القصص"
 
@@ -4005,6 +4011,9 @@ msgstr "قصص المواقع قليلة التحديث"
 msgid "Infrequent stories per month"
 msgstr "حد القصص الشهري للمواقع قليلة التحديث"
 
+msgid "Inline list"
+msgstr "قائمة مضمّنة"
+
 msgid "Insta-fetch stories"
 msgstr "جلب القصص فورًا"
 
@@ -4080,6 +4089,9 @@ msgstr "العناوين فقط مع أقل قدر من التعليق"
 msgid "Just the headlines, no commentary"
 msgstr "العناوين فقط، بلا تعليق"
 
+msgid "Keep fades, without movement."
+msgstr "الاحتفاظ بالتلاشي دون حركة."
+
 msgid "Keep others unread"
 msgstr "إبقاء القصص الأخرى غير مقروءة"
 
@@ -4140,6 +4152,9 @@ msgstr "آخر تحديث"
 
 msgid "Last seen:"
 msgstr "آخر ظهور:"
+
+msgid "Layout"
+msgstr "التخطيط"
 
 msgid "Leave unread"
 msgstr "اتركها غير مقروءة"
@@ -4228,6 +4243,9 @@ msgstr "جارٍ تحميل الخلاصات..."
 
 msgid "Loading more briefings..."
 msgstr "جارٍ تحميل المزيد من الموجزات..."
+
+msgid "Loading the next unread story..."
+msgstr "جارٍ تحميل القصة التالية غير المقروءة..."
 
 msgid "Loading voices..."
 msgstr "جارٍ تحميل الأصوات..."
@@ -4785,6 +4803,9 @@ msgstr "الخطوة التالية "
 msgid "Next story"
 msgstr "القصة التالية"
 
+msgid "Next unread"
+msgstr "غير المقروءة التالية"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "بعد ذلك، أنشئ فلترًا يضم جميع نشراتك الإخبارية لإعادة توجيهها إلى العنوان المخصص على NewsBlur."
 
@@ -5092,6 +5113,16 @@ msgstr "عذرًا، حدثت مشكلة أثناء جلب عنوان URL هذا
 
 msgid "Old password"
 msgstr "كلمة المرور القديمة"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "أقدم من %(count)s يومًا"
+msgstr[1] "أقدم من %(count)s يوم"
+msgstr[2] "أقدم من %(count)s يومين"
+msgstr[3] "أقدم من %(count)s أيام"
+msgstr[4] "أقدم من %(count)s يومًا"
+msgstr[5] "أقدم من %(count)s يوم"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -5877,6 +5908,9 @@ msgstr "تم الاسترداد"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "قلّل الفوضى في سيل القصص لديك"
+
+msgid "Reduce motion"
+msgstr "تقليل الحركة"
 
 msgid "Refer"
 msgstr "إحالة"
@@ -6942,6 +6976,12 @@ msgstr "القصص الأقدم من %(date)s"
 msgid "Stories on %(date)s"
 msgstr "القصص في %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "تُفتح القصص داخل القائمة"
+
+msgid "Stories open on their own screen"
+msgstr "تُفتح القصص على شاشة مستقلة"
+
 msgid "Stories per day"
 msgstr "القصص يوميًا"
 
@@ -6992,6 +7032,9 @@ msgstr "تنسيق القصة"
 
 msgid "Story URL"
 msgstr "رابط القصة"
+
+msgid "Story cards open on their own screen"
+msgstr "تُفتح بطاقات القصص على شاشة مستقلة"
 
 msgid "Story clustering"
 msgstr "تجميع القصص"

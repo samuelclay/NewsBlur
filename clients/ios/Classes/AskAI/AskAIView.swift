@@ -139,17 +139,19 @@ struct AskAIView: View {
     // MARK: - Question Selector View
 
     private var questionSelectorView: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Summarize Section
-                summarizeSection
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Summarize Section
+                    summarizeSection
 
-                // Understand Section
-                understandSection
-
-                // Custom Question Section
-                customQuestionSection
+                    // Understand Section
+                    understandSection
+                }
             }
+
+            // AskAIView.swift keeps the entire composer visible when a tablet keyboard shrinks the popover.
+            customQuestionSection
         }
         .padding(.top, 12)
         .background(NewsBlurColors.background)

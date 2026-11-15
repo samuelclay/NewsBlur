@@ -911,11 +911,15 @@ import XCTest
         try await checkRealPaintedArticleSelection(replacesTextDuringMotion: false)
     }
 
+    func test_retappingPaintedStoryPreservesDocumentAndNextSelectionLoadsOnce() async throws {
+        try await checkRealPaintedArticleSelection(replacesTextDuringMotion: false, retapsSelectedStory: true)
+    }
+
     func test_fullTextArrivingDuringRealPageMotionWaitsBehindPaintedContent() async throws {
         try await checkRealPaintedArticleSelection(replacesTextDuringMotion: true)
     }
 
-    private func checkRealPaintedArticleSelection(replacesTextDuringMotion: Bool) async throws {
+    private func checkRealPaintedArticleSelection(replacesTextDuringMotion: Bool, retapsSelectedStory: Bool = false) async throws {
         let defaults = UserDefaults.standard
         let originalDirection = defaults.object(forKey: "scroll_stories_horizontally")
         defaults.set(true, forKey: "scroll_stories_horizontally")
@@ -1014,6 +1018,30 @@ import XCTest
         }
         realPages[0].webView.scrollView.contentOffset.y = 280
         let initialReadingPosition = realPages[0].webView.scrollView.contentOffset.y
+        let titleSelection = RetapPaintedStoryFeed()
+        titleSelection.appDelegate = fixture.app
+        titleSelection.storiesCollection = collection
+        titleSelection.setValue(stories.indices.map { ["type": 0, "story_location": $0] }, forKey: "visibleStoryRows")
+        var originalReloads = 0
+        var destinationLoads = 0
+        if retapsSelectedStory {
+            fixture.app.simulatedPhone = false
+            fixture.pages.simulatedPhone = false
+            (realPages[0].webView as? RealStoryLoadWebView)?.selectionLoadObserver = { _ in originalReloads += 1 }
+            (realPages[2].webView as? RealStoryLoadWebView)?.selectionLoadObserver = { html in
+                // StoryDetailLoadingTests.swift counts article documents, excluding the cleared spare page's empty HTML.
+                if html.contains("Prepared article 21") { destinationLoads += 1 }
+            }
+            fixture.pages.isAnimatedIntoPlace = true
+            fixture.pages.runsActualAppearanceCallbacks = true
+            titleSelection.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 0, section: 0))
+            titleSelection.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 0, section: 0))
+            fixture.pages.runsActualAppearanceCallbacks = false
+            XCTAssertTrue(fixture.pages.isAnimatedIntoPlace, "A retap must not reset the completed whole-reader entrance")
+            XCTAssertTrue(fixture.pages.currentPage === realPages[0])
+            XCTAssertEqual(realPages[0].webView.scrollView.contentOffset.y, initialReadingPosition, accuracy: 1)
+            XCTAssertEqual(originalReloads, 0)
+        }
         let started = expectation(description: "The prepared destination starts its real article scan")
         let completed = expectation(description: "Real article selection finishes its visible scan")
         fixture.pages.beforeNavigation = { _ in completed.fulfill() }
@@ -1038,13 +1066,23 @@ import XCTest
             started.fulfill()
         }
         motion.start()
-        fixture.app.activeStory = stories[20] as? [AnyHashable: Any]
-        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 20, "animated": true])
+        if retapsSelectedStory {
+            titleSelection.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 20, section: 0))
+        } else {
+            fixture.app.activeStory = stories[20] as? [AnyHashable: Any]
+            fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 20, "animated": true])
+        }
         XCTAssertFalse(realPages[1].readyForPresentation, "Selection must start a fresh paint check for the intermediate article")
         await waitForState("The intermediate article finishes its second paint check while destination parsing is held") {
             destinationParser.isHeld && realPages[1].readyForPresentation
         }
         guard destinationParser.isHeld && realPages[1].readyForPresentation else { return }
+        if retapsSelectedStory {
+            let pendingPage = fixture.pages.value(forKey: "pendingPresentationPage") as? StoryDetailViewController
+            titleSelection.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 20, section: 0))
+            XCTAssertTrue((fixture.pages.value(forKey: "pendingPresentationPage") as? StoryDetailViewController) === pendingPage,
+                          "Retapping the pending destination must preserve the in-flight document")
+        }
         destinationParser.release()
         await fulfillment(of: [started], timeout: SimulatorTestTiming.realWorkTimeout)
         await delay(0.12)
@@ -1085,6 +1123,12 @@ import XCTest
         motion.stop()
         XCTAssertGreaterThanOrEqual(Set(motion.positions.map { Int($0.rounded()) }).count, 5)
         XCTAssertEqual(fixture.pages.currentPage.activeStoryId, "painted-20")
+        if retapsSelectedStory {
+            XCTAssertEqual(originalReloads, 0)
+            XCTAssertEqual(destinationLoads, 1)
+            XCTAssertEqual(fixture.pages.pageChanges, [20])
+            XCTAssertTrue(fixture.pages.isAnimatedIntoPlace)
+        }
         XCTAssertEqual(realPages[0].webView.scrollView.contentOffset.y, initialReadingPosition, accuracy: 1)
         XCTAssertEqual(fixture.pages.children.count, 3)
         XCTAssertTrue(realPages.allSatisfy { $0.view.superview === fixture.pages.scrollView && $0.webView.superview === $0.view })
@@ -3389,6 +3433,8 @@ import XCTest
 
 private class StoryGeometryAppDelegate: NewsBlurAppDelegate {
     var compactWidthOverride: Bool?
+    var simulatedPhone: Bool?
+    override var isPhone: Bool { simulatedPhone ?? super.isPhone }
     override var isCompactWidth: Bool { compactWidthOverride ?? super.isCompactWidth }
 }
 
@@ -3425,6 +3471,7 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private class StoryLoadToolbarPages: StoryPagesViewController {
+    var runsActualAppearanceCallbacks = false
     var customToolbarOverride: Bool?
     var verticalToolbarOverride: Bool?
     var runsActualScrollSizing = false
@@ -3432,8 +3479,8 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     override var usesVerticalReaderToolbar: Bool { verticalToolbarOverride ?? super.usesVerticalReaderToolbar }
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
-    override func viewWillAppear(_ animated: Bool) {}
-    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillAppear(_ animated: Bool) { if runsActualAppearanceCallbacks { super.viewWillAppear(animated) } }
+    override func viewDidAppear(_ animated: Bool) { if runsActualAppearanceCallbacks { super.viewDidAppear(animated) } }
     override func viewWillDisappear(_ animated: Bool) {}
     override func viewDidDisappear(_ animated: Bool) {}
     override func viewWillLayoutSubviews() {}
@@ -3637,6 +3684,19 @@ private final class NextButtonReadingStories: StoriesCollection {
     override func syncStory(asRead story: [AnyHashable: Any]!) {
         // StoryDetailLoadingTests.swift intercepts only server transport; local read state and counts use StoriesCollection.m.
         if let hash = story["story_hash"] as? String { syncedHashes.append(hash) }
+    }
+}
+
+@MainActor private final class RetapPaintedStoryFeed: FeedDetailViewController {
+    override func viewDidLoad() {}
+    @objc(isPhoneOrCompact) func usesCompactLayout() -> Bool { false }
+    override func markStoryReadIfNeeded(_ story: [AnyHashable: Any]!, isScrolling: Bool) -> Bool { false }
+    override func reload() {}
+    override func loadStory(atRow row: Int) {
+        // StoryDetailLoadingTests.swift isolates title selection while preserving production document preparation and presentation.
+        let index = storiesCollection.index(fromLocation: row)
+        appDelegate.activeStory = storiesCollection.activeFeedStories[index] as? [AnyHashable: Any]
+        appDelegate.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": row, "animated": true])
     }
 }
 

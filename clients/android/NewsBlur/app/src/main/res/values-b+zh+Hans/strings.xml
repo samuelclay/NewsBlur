@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">订阅源和文章标题字体大小</string>
     <string name="language_title">语言</string>
     <string name="settings_cat_general">常规</string>
+    <string name="settings_cat_appearance">外观</string>
+    <string name="settings_reduce_motion">减少动态效果</string>
+    <string name="settings_reduce_motion_summary">保留淡入淡出，取消移动效果。</string>
     <string name="language_current">语言：%1$s</string>
     <string name="language_automatic">自动（设备语言）</string>
     <string name="language_save_failed">无法保存你的语言设置，请重试。</string>

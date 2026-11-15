@@ -69,6 +69,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             ]),
             $.make('form', { className: 'NB-preferences-form' }, [
                 $.make('div', { className: 'NB-tab NB-tab-general NB-active' }, [
+                    $.make('div', { className: 'NB-preference NB-preference-reduce-motion' }, [
+                        $.make('div', { className: 'NB-preference-label' }, gettext('Appearance')),
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('input', { id: 'NB-preference-reduce-motion', type: 'checkbox', name: 'reduce_motion' }),
+                            $.make('label', { 'for': 'NB-preference-reduce-motion' }, gettext('Reduce motion')),
+                            $.make('div', { className: 'NB-preference-description' }, gettext('Keep fades, without movement.'))
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference' }, [
                         $.make('label', { className: 'NB-preference-label', 'for': 'NB-preference-language' }, gettext('Language')),
                         $.make('div', { className: 'NB-preference-options' }, [
@@ -1354,6 +1362,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=reduce_motion]', $modal).prop('checked', NEWSBLUR.Preferences.reduce_motion === true || NEWSBLUR.Preferences.reduce_motion === 1);
         $('input[name=dateformat]', $modal).each(function () {
             if ($(this).val() == "" + NEWSBLUR.Preferences.dateformat) {
                 $(this).prop('checked', true);

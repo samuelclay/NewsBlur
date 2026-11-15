@@ -1,0 +1,63 @@
+<en-US>
+NewsBlur 17 brings lively, ordered animations to feeds, folders, story titles, and articles, plus fast transitions between All, Unread, Focus, and Saved. Turn on Reduce motion in Preferences > Appearance to remove movement while keeping fades. It's off by default. Discovery tags have more room on phones, and tablet dialogs work better when rotating the screen.
+</en-US>
+<es-ES>
+NewsBlur 17 anima feeds, carpetas, títulos y artículos en orden, con cambios rápidos entre Todo, No leído, Enfoque y Guardado. Activa Reducir movimiento en Preferencias > Apariencia para quitar el movimiento y conservar los fundidos. Está desactivado por defecto. Las etiquetas de descubrimiento tienen más espacio en teléfonos y los diálogos de tabletas funcionan mejor al girar la pantalla.
+</es-ES>
+<fr-FR>
+NewsBlur 17 anime flux, dossiers, titres et articles dans l’ordre, avec des transitions rapides entre Tout, Non lus, Prioritaires et Enregistrés. Activez Réduire les animations dans Préférences > Apparence pour supprimer le mouvement et garder les fondus. L’option est désactivée par défaut. Les tags de découverte ont plus de place sur téléphone et les boîtes de dialogue s’adaptent mieux à la rotation sur tablette.
+</fr-FR>
+<de-DE>
+NewsBlur 17 animiert Feeds, Ordner, Titel und Artikel in ihrer Reihenfolge. Der Wechsel zwischen Alle, Ungelesen, Fokus und Gespeichert ist schnell. Bewegung reduzieren unter Einstellungen > Darstellung entfernt Bewegung, behält aber Ein- und Ausblenden bei. Standardmäßig ausgeschaltet. Entdecken-Tags haben auf Smartphones mehr Platz, Tablet-Dialoge funktionieren beim Drehen des Bildschirms besser.
+</de-DE>
+<pt-BR>
+O NewsBlur 17 anima feeds, pastas, títulos e artigos em ordem, com transições rápidas entre Todos, Não lidos, Foco e Salvo. Ative Reduzir movimento em Preferências > Aparência para remover movimentos e manter as transições de opacidade. A opção vem desativada. As tags de descoberta têm mais espaço nos celulares, e as caixas de diálogo dos tablets funcionam melhor ao girar a tela.
+</pt-BR>
+<it-IT>
+NewsBlur 17 anima feed, cartelle, titoli e articoli in ordine, con passaggi rapidi tra Tutti, Non letti, In evidenza e Salvati. Attiva Riduci movimento in Preferenze > Aspetto per eliminare il movimento e mantenere le dissolvenze. L’opzione è disattivata per impostazione predefinita. I tag per scoprire siti hanno più spazio sui telefoni e i dialoghi sui tablet funzionano meglio ruotando lo schermo.
+</it-IT>
+<nl-NL>
+NewsBlur 17 animeert feeds, mappen, titels en artikelen op volgorde, met snelle overgangen tussen Alles, Ongelezen, Focus en Opgeslagen. Zet Beweging verminderen aan onder Voorkeuren > Weergave om beweging te verwijderen en het geleidelijk verschijnen en verdwijnen te behouden. Standaard staat dit uit. Ontdekkingstags krijgen meer ruimte op telefoons en dialoogvensters op tablets werken beter bij het draaien van het scherm.
+</nl-NL>
+<pl-PL>
+NewsBlur 17 animuje kanały, foldery, tytuły i artykuły po kolei. Szybko przełączaj widoki Wszystkie, Nieprzeczytane, Wyróżnione i Zapisane. Ogranicz ruch w Preferencje > Wygląd usuwa ruch, zachowując płynne pojawianie się i zanikanie. Domyślnie wyłączone. Tagi przy odkrywaniu witryn mają więcej miejsca na telefonach, a dialogi na tabletach lepiej działają przy obracaniu ekranu.
+</pl-PL>
+<tr-TR>
+NewsBlur 17; akışlara, klasörlere, haber başlıklarına ve makalelere canlı, sıralı animasyonlar getirir. Tümü, Okunmamış, Odak ve Kaydedildi arasında hızlı geçiş yapın. Tercihler > Görünüm’de Hareketi azalt seçeneği hareketi kaldırır, belirme ve kaybolma efektlerini korur. Varsayılan olarak kapalıdır. Telefonlarda keşif etiketlerine daha çok yer ayrılır; tabletlerde ekran döndürüldüğünde iletişim kutuları daha iyi çalışır.
+</tr-TR>
+<ru-RU>
+NewsBlur 17: живая последовательная анимация лент, папок, заголовков и статей, быстрые переходы между «Все», «Непрочитанное», «Фокус» и «Сохранено». В «Настройки > Внешний вид» включите «Уменьшить движение», чтобы отключить перемещение, сохранив плавное появление и исчезновение. По умолчанию выключено. Тегам поиска новых сайтов стало просторнее на телефонах, а диалоги на планшетах лучше работают при повороте экрана.
+</ru-RU>
+<uk>
+NewsBlur 17: жвава послідовна анімація стрічок, папок, заголовків і статей, швидкі переходи між «Усі», «Непрочитане», «Фокус» і «Збережені». У «Налаштування > Вигляд» увімкніть «Зменшити рух», щоб вимкнути переміщення, зберігши плавну появу й зникнення. Типово вимкнено. Тегам пошуку нових сайтів стало просторіше на телефонах, а діалоги на планшетах краще працюють під час повороту екрана.
+</uk>
+<ar>
+يضيف NewsBlur 17 حركات حيوية ومتتابعة للخلاصات والمجلدات وعناوين القصص والمقالات، مع انتقالات سريعة بين «الكل» و«غير مقروء» و«تركيز» و«المحفوظة». فعّل «تقليل الحركة» في «التفضيلات»، ضمن «المظهر»، لإزالة الحركة مع إبقاء الظهور والاختفاء التدريجيين. يكون معطّلًا افتراضيًا. تتسع مساحة وسوم اكتشاف المواقع على الهواتف، وتعمل مربعات الحوار على الأجهزة اللوحية بشكل أفضل عند تدوير الشاشة.
+</ar>
+<iw-IL>
+גרסה 17 של NewsBlur מוסיפה אנימציות חיות ומדורגות לפידים, לתיקיות, לכותרות ולכתבות, ומעברים מהירים בין הכול, לא נקרא, מיקוד ושמורות. הפעילו ״הפחתת תנועה״ בהעדפות, תחת ״מראה״, כדי להסיר תנועה ולשמור על הופעה והיעלמות הדרגתיות. המתג כבוי כברירת מחדל. תגיות גילוי אתרים מקבלות יותר מקום בטלפונים, ותיבות דו־שיח בטאבלטים פועלות טוב יותר בסיבוב המסך.
+</iw-IL>
+<hi-IN>
+NewsBlur 17 में फ़ीड, फ़ोल्डर, शीर्षक और लेख क्रम से जीवंत एनिमेशन के साथ आते हैं। “सभी”, “अपठित”, “फ़ोकस” और “सहेजा गया” के बीच तेज़ी से जाएँ। प्राथमिकताएँ > प्रकटन में “गति कम करें” चालू करें: हलचल हटेगी, लेकिन धीरे-धीरे दिखने और ओझल होने के प्रभाव रहेंगे। यह डिफ़ॉल्ट रूप से बंद है। फोन पर खोज टैग को अधिक जगह मिलती है और टैबलेट घुमाने पर डायलॉग बेहतर काम करते हैं।
+</hi-IN>
+<id>
+NewsBlur 17 membawa animasi hidup dan berurutan ke feed, folder, judul, dan artikel, serta transisi cepat antara Semua, Belum dibaca, Fokus, dan Disimpan. Aktifkan Kurangi gerakan di Preferensi > Tampilan untuk menghilangkan gerakan tanpa menghilangkan efek muncul dan memudar. Nonaktif secara default. Tag penemuan situs lebih lapang di ponsel, dan dialog tablet bekerja lebih baik saat layar diputar.
+</id>
+<vi>
+NewsBlur 17 thêm hiệu ứng tuần tự sinh động cho nguồn cấp, thư mục, tiêu đề và nội dung bài viết, cùng chuyển cảnh nhanh giữa Tất cả, Chưa đọc, Tập trung và Đã lưu. Bật Giảm chuyển động trong Tùy chọn > Giao diện để bỏ chuyển động mà giữ hiệu ứng hiện dần và mờ dần. Mặc định tắt. Thẻ khám phá có thêm chỗ trên điện thoại; hộp thoại trên máy tính bảng hoạt động tốt hơn khi xoay màn hình.
+</vi>
+<th>
+NewsBlur 17 เพิ่มภาพเคลื่อนไหวตามลำดับให้ฟีด โฟลเดอร์ ชื่อบทความ และเนื้อหา สลับทั้งหมด ยังไม่อ่าน โฟกัส และบันทึกแล้วได้เร็วขึ้น เปิดลดการเคลื่อนไหวใน การตั้งค่า > รูปลักษณ์ เพื่อหยุดการขยับแต่คงเอฟเฟ็กต์จางเข้าและออก ค่าเริ่มต้นปิดอยู่ แท็กค้นพบมีพื้นที่มากขึ้นบนโทรศัพท์ และกล่องโต้ตอบบนแท็บเล็ตทำงานดีขึ้นเมื่อหมุนหน้าจอ
+</th>
+<ja-JP>
+NewsBlur 17では、フィード、フォルダー、記事タイトル、本文が画面の順番に心地よく現れ、「すべて」「未読」「フォーカス」「保存済み」もすばやく切り替わります。「設定」>「外観」の「動きを減らす」をオンにすると、動きをなくしてフェードだけを残せます。初期設定ではオフです。スマートフォンではサイト探索のタグ表示を広げ、タブレットでは画面回転時のダイアログの動作を改善しました。
+</ja-JP>
+<ko-KR>
+NewsBlur 17에서 피드, 폴더, 스토리 제목과 본문이 순서대로 생동감 있게 나타납니다. 전체, 읽지 않음, 집중, 저장됨 간 전환도 빨라졌습니다. 환경 설정 > 모양에서 동작 줄이기를 켜면 움직임 없이 페이드 효과만 유지됩니다. 기본값은 꺼짐입니다. 휴대폰의 사이트 발견 태그 공간을 넓히고, 태블릿에서 화면 회전 시 대화상자가 더 잘 작동하도록 개선했습니다.
+</ko-KR>
+<zh-CN>
+NewsBlur 17 为订阅源、文件夹、文章标题和正文带来灵动有序的动画，并加快“全部”“未读”“聚焦”和“已保存”之间的切换。在“偏好设置”>“外观”中开启“减少动态效果”，即可去掉画面移动并保留淡入淡出；此选项默认关闭。手机上的网站发现标签有了更多空间，平板电脑上的对话框也更好地适应屏幕旋转。
+</zh-CN>
+<zh-TW>
+NewsBlur 17 為訂閱來源、資料夾、文章標題和內文帶來生動有序的動畫，並加快「全部」「未讀」「焦點」和「已儲存」之間的切換。在「偏好設定」>「外觀」中開啟「減少動態效果」，即可移除畫面移動並保留淡入淡出；此選項預設關閉。手機上的探索標籤有更多空間，平板電腦上的對話框也更能配合螢幕旋轉。
+</zh-TW>

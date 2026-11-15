@@ -125,6 +125,7 @@ public class PrefConstants {
     public static final String LANGUAGE_DIALOG_DEBUG = "language_dialog_debug";
 
     public static final String THEME = "theme";
+    public static final String REDUCE_MOTION = "reduce_motion";
     public static final String THEME_LIGHT_VARIANT = "theme_light_variant";
     public static final String THEME_DARK_VARIANT = "theme_dark_variant";
     public enum ThemeValue {

@@ -170,6 +170,7 @@
 "Analyzing images..." = "正在分析图片…";
 "App Badge" = "应用角标";
 "App Icon" = "应用图标";
+"Appearance" = "外观";
 "Apply training across a folder" = "将训练应用于整个文件夹";
 "Apply training globally" = "全局应用训练";
 "Arctic Cyan" = "北极青";
@@ -502,6 +503,7 @@
 "Interactions" = "互动";
 "Invalid: %@" = "无效：%@";
 "Invoice" = "发票";
+"Keep fades, without movement." = "保留淡入淡出，取消移动效果。";
 "Keeps the dark icon no matter how your device is set." = "无论设备设置如何，图标始终保持深色。";
 "Keeps the light icon no matter how your device is set." = "无论设备如何设置，始终显示浅色图标。";
 "Keyboard Shortcuts" = "键盘快捷键";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "为你朗读 %@ 篇文章";
 "Recommended for %@" = "为 %@ 推荐";
 "Recording..." = "正在录制…";
+"Reduce motion" = "减少动态效果";
 "Refine with a hint" = "添加提示以优化";
 "Refine with this title" = "使用此标题优化";
 "Refresh NewsBlur" = "刷新 NewsBlur";

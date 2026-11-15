@@ -170,6 +170,7 @@
 "Analyzing images..." = "Analyzing images...";
 "App Badge" = "App Badge";
 "App Icon" = "App Icon";
+"Appearance" = "Appearance";
 "Apply training across a folder" = "Apply training across a folder";
 "Apply training globally" = "Apply training globally";
 "Arctic Cyan" = "Arctic Cyan";
@@ -502,6 +503,7 @@
 "Interactions" = "Interactions";
 "Invalid: %@" = "Invalid: %@";
 "Invoice" = "Invoice";
+"Keep fades, without movement." = "Keep fades, without movement.";
 "Keeps the dark icon no matter how your device is set." = "Keeps the dark icon no matter how your device is set.";
 "Keeps the light icon no matter how your device is set." = "Keeps the light icon no matter how your device is set.";
 "Keyboard Shortcuts" = "Keyboard Shortcuts";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "Reads your %@ stories";
 "Recommended for %@" = "Recommended for %@";
 "Recording..." = "Recording...";
+"Reduce motion" = "Reduce motion";
 "Refine with a hint" = "Refine with a hint";
 "Refine with this title" = "Refine with this title";
 "Refresh NewsBlur" = "Refresh NewsBlur";

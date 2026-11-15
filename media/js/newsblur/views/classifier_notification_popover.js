@@ -72,13 +72,7 @@ NEWSBLUR.Views.ClassifierNotificationPopover = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_archive) {
             var $bell = this.options.$bell;
             if ($bell) {
-                // 1. Shake the bell to signal "denied"
-                $bell.removeClass('NB-shake');
-                $bell[0].offsetWidth;
-                $bell.addClass('NB-shake');
-                setTimeout(function () { $bell.removeClass('NB-shake'); }, 500);
-
-                // 2. Show a brief "Requires Premium Archive" tooltip above the bell
+                // classifier_notification_popover.js explains the restriction without moving the bell.
                 $('.NB-scope-tooltip').remove();
                 var $tip = $('<div class="NB-scope-tooltip NB-scope-tooltip-denied">' + _.escape(gettext('Requires Premium Archive')) + '</div>');
                 $('body').append($tip);

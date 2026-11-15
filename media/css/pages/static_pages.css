@@ -840,11 +840,7 @@ body.NB-static-alt-self-hosted .NB-splash-dropdown-grid-item-alt-self-hosted {
     font-size: 16px;
     font-weight: 600;
     text-decoration: none;
-    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.NB-feature-detail-cta a:hover {
-    transform: translateY(-1px);
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-static .NB-feature-detail-cta-primary {
@@ -1456,12 +1452,11 @@ pre.NB-feature-detail-code {
     border: none;
     background: rgba(255, 255, 255, 0.35);
     text-decoration: none;
-    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-pricing-crosslink:hover {
     background: rgba(255, 255, 255, 0.55);
-    transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
@@ -1518,10 +1513,6 @@ pre.NB-feature-detail-code {
     display: inline-block;
     transition: transform 0.15s ease;
     margin-left: 2px;
-}
-
-.NB-pricing-cta:hover .NB-pricing-cta-arrow {
-    transform: translateX(3px);
 }
 
 .NB-pricing-crosslink:hover .NB-pricing-crosslink-arrow {
@@ -1708,12 +1699,8 @@ pre.NB-feature-detail-code {
     text-decoration: none;
     text-align: center;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
     margin-top: 12px;
-}
-
-.NB-pricing-cta:active {
-    transform: scale(0.96);
 }
 
 .NB-pricing-cta-premium {
@@ -2120,15 +2107,13 @@ h3.NB-pricing-faq-question {
 
 .NB-compare-link-arrow {
     opacity: 0;
-    transform: translateX(-6px);
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    transition: opacity 0.15s ease;
     font-size: 13px;
     color: rgba(192, 90, 14, 0.7);
 }
 
 .NB-compare-link-item:hover .NB-compare-link-arrow {
     opacity: 1;
-    transform: translateX(0);
 }
 
 @media (max-width: 600px) {
@@ -2729,12 +2714,8 @@ a.NB-faq-tier {
     border: 0;
     text-decoration: none;
     color: inherit;
-    transition: background 0.2s ease, transform 0.15s ease;
+    transition: background 0.2s ease;
     background: rgba(75, 85, 99, 0.07);
-}
-
-a.NB-faq-tier:hover {
-    transform: translateY(-1px);
 }
 
 a.NB-faq-tier-free {
@@ -2848,11 +2829,7 @@ a.NB-faq-button {
     text-decoration: none;
     line-height: 1;
     border: 1px solid transparent;
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-
-a.NB-faq-button:active {
-    transform: translateY(1px);
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 a.NB-faq-button-primary {
@@ -3309,17 +3286,13 @@ a.NB-faq-button-secondary:hover {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-image 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    transition: background-image 0.15s ease, box-shadow 0.15s ease;
     letter-spacing: 0.2px;
 }
 
 .NB-forgot-password-submit:hover {
     background: linear-gradient(135deg, rgba(34, 197, 94, 1) 0%, rgba(22, 163, 74, 1) 100%);
     box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
-}
-
-.NB-forgot-password-submit:active {
-    transform: scale(0.96);
 }
 
 .NB-forgot-password-back {

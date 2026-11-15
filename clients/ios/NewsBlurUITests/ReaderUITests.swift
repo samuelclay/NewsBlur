@@ -1467,6 +1467,37 @@ final class ReaderUITests: XCTestCase {
         attachScreenshot(named: "gesture-groups-swipes-on")
     }
 
+    func test_reduceMotionPreferencePersistsAcrossRelaunch() {
+        // ReaderUITests.swift protects the actual switch binding and persistence, beyond ReaderMotion's animation policy.
+        if UIDevice.current.userInterfaceIdiom == .pad { XCUIDevice.shared.orientation = .landscapeLeft }
+        app.launchArguments = ["-newsblur-ui-test-animations"]
+        func showToggle() -> XCUIElement {
+            launch(on: "preferences")
+            let toggle = app.switches["reduce_motion"]
+            let scroll = app.scrollViews.firstMatch
+            XCTAssertTrue(scroll.waitForExistence(timeout: 10))
+            for _ in 0..<16 {
+                if toggle.isHittable { return toggle }
+                scroll.swipeUp(velocity: .slow)
+            }
+            XCTAssertTrue(toggle.isHittable)
+            return toggle
+        }
+        let toggle = showToggle()
+        let original = toggle.value as? String
+        attachScreenshot(named: "reduce-motion-original")
+        toggle.tap()
+        let changed = toggle.value as? String
+        XCTAssertNotEqual(changed, original)
+        attachScreenshot(named: "reduce-motion-toggled")
+        app.terminate()
+        let restored = showToggle()
+        XCTAssertEqual(restored.value as? String, changed)
+        attachScreenshot(named: "reduce-motion-after-relaunch")
+        restored.tap()
+        XCTAssertEqual(restored.value as? String, original)
+    }
+
     func test_feedSwipeDirectionsWorkWithStorySwipesDisabled() {
         for right in [false, true] {
             app = XCUIApplication()

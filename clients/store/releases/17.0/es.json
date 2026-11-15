@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 da más vida a tus lecturas. Los feeds, los títulos de carpetas y artículos y las secciones de los artículos se animan en el orden en que los ves. Cambiar entre Todos, No leído, Enfoque y Guardado es rápido y fluido.\n\n¿Prefieres menos movimiento? La nueva opción Reducir movimiento en Preferencias > Apariencia elimina los desplazamientos y los cambios de escala, pero conserva los fundidos suaves. Está desactivada por defecto.\n\nEsta versión también suaviza la carga de artículos en el modo Gris, da más espacio a las etiquetas de descubrimiento en iPhone y mejora los diálogos y controles en iPhone y iPad."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 da más vida a tus lecturas. Los feeds, los títulos de carpetas y artículos y las secciones de los artículos se animan en el orden en que los ves. Cambiar entre Todos, No leído, Enfoque y Guardado es rápido y fluido.\n\n¿Prefieres menos movimiento? La nueva opción Reducir movimiento en Preferencias > Apariencia elimina los desplazamientos y los cambios de escala, pero conserva los fundidos suaves. Está desactivada por defecto.\n\nEsta versión también refina el marco del lector en Mac, mejora los controles de descubrimiento y suaviza las transiciones entre artículos."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17 anima feeds, carpetas, títulos y artículos en orden, con cambios rápidos entre Todo, No leído, Enfoque y Guardado. Activa Reducir movimiento en Preferencias > Apariencia para quitar el movimiento y conservar los fundidos. Está desactivado por defecto. Las etiquetas de descubrimiento tienen más espacio en teléfonos y los diálogos de tabletas funcionan mejor al girar la pantalla."
+  }
+}

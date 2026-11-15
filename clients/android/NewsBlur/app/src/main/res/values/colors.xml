@@ -161,8 +161,8 @@
     <color name="segmented_control_text_black">#AAAAAA</color>
     <color name="segmented_control_selected_text_light">#000000</color>
     <color name="segmented_control_selected_text_sepia">#3C3226</color>
-    <color name="segmented_control_selected_text_dark">#FFFFFF</color>
-    <color name="segmented_control_selected_text_black">#FFFFFF</color>
+    <color name="segmented_control_selected_text_dark">#1C1C1E</color>
+    <color name="segmented_control_selected_text_black">#1C1C1E</color>
     <color name="segmented_control_border_light">#C0C0C0</color>
     <color name="segmented_control_border_sepia">#C8B8A8</color>
     <color name="segmented_control_border_dark">#555555</color>
@@ -229,17 +229,17 @@
 
     <color name="story_action_button_background_light">#0A000000</color>
     <color name="story_action_button_border_light">#1A000000</color>
-    <color name="story_action_button_text_light">#66000000</color>
+    <color name="story_action_button_text_light">#99000000</color>
     <color name="story_action_button_text_dimmed_light">#40000000</color>
     <color name="story_action_button_ripple_light">#14000000</color>
     <color name="story_action_button_background_sepia">#0D503C1E</color>
     <color name="story_action_button_border_sepia">#26503C1E</color>
-    <color name="story_action_button_text_sepia">#66503C1E</color>
+    <color name="story_action_button_text_sepia">#CC503C1E</color>
     <color name="story_action_button_text_dimmed_sepia">#40503C1E</color>
     <color name="story_action_button_ripple_sepia">#14503C1E</color>
     <color name="story_action_button_background_dark">#0FFFFFFF</color>
     <color name="story_action_button_border_dark">#26FFFFFF</color>
-    <color name="story_action_button_text_dark">#99C8C8C8</color>
+    <color name="story_action_button_text_dark">#FFC8C8C8</color>
     <color name="story_action_button_text_dimmed_dark">#66C8C8C8</color>
     <color name="story_action_button_ripple_dark">#1FFFFFFF</color>
     <color name="story_action_button_background_black">#14FFFFFF</color>

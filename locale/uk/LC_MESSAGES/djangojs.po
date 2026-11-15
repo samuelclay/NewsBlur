@@ -1450,6 +1450,9 @@ msgstr ""
 msgid "Any time"
 msgstr "У будь-який час"
 
+msgid "Appearance"
+msgstr "Вигляд"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3368,6 +3371,9 @@ msgstr "На всю ширину"
 msgid "Full-Text Search"
 msgstr "Повнотекстовий пошук"
 
+msgid "Full-screen list"
+msgstr "Повноекранний список"
+
 msgid "Full-text search across all stories"
 msgstr "Повнотекстовий пошук у всіх статтях"
 
@@ -3770,6 +3776,9 @@ msgstr "Статті з нечасто оновлюваних сайтів"
 msgid "Infrequent stories per month"
 msgstr "Поріг нечасто оновлюваних сайтів"
 
+msgid "Inline list"
+msgstr "Вбудований список"
+
 msgid "Insta-fetch stories"
 msgstr "Миттєво завантажити статті"
 
@@ -3847,6 +3856,9 @@ msgstr "Лише заголовки з мінімумом коментарів"
 msgid "Just the headlines, no commentary"
 msgstr "Лише заголовки, без коментарів"
 
+msgid "Keep fades, without movement."
+msgstr "Зберегти плавну появу та зникнення без руху."
+
 msgid "Keep others unread"
 msgstr "Залишити інші непрочитаними"
 
@@ -3907,6 +3919,9 @@ msgstr "Останнє оновлення"
 
 msgid "Last seen:"
 msgstr "Востаннє в мережі:"
+
+msgid "Layout"
+msgstr "Макет"
 
 msgid "Leave unread"
 msgstr "Залишити непрочитаним"
@@ -3995,6 +4010,9 @@ msgstr "Завантаження стрічок..."
 
 msgid "Loading more briefings..."
 msgstr "Завантаження інших оглядів..."
+
+msgid "Loading the next unread story..."
+msgstr "Завантаження наступної непрочитаної статті..."
 
 msgid "Loading voices..."
 msgstr "Завантаження голосів..."
@@ -4530,6 +4548,9 @@ msgstr "Наступний крок "
 msgid "Next story"
 msgstr "Наступна стаття"
 
+msgid "Next unread"
+msgstr "Наступна непрочитана"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Далі створіть фільтр для всіх своїх розсилок, щоб вони пересилали листи на спеціальну адресу NewsBlur."
 
@@ -4834,6 +4855,13 @@ msgstr "О ні, не вдалося отримати цю URL-адресу, і 
 
 msgid "Old password"
 msgstr "Старий пароль"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Старші за %(count)s день"
+msgstr[1] "Старші за %(count)s дні"
+msgstr[2] "Старші за %(count)s днів"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -5603,6 +5631,9 @@ msgstr "Активовано"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Позбудьтеся зайвого в потоці статей"
+
+msgid "Reduce motion"
+msgstr "Зменшити рух"
 
 msgid "Refer"
 msgstr "Рекомендувати"
@@ -6654,6 +6685,12 @@ msgstr "Статті старші за %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Статті за %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Статті відкриваються у списку"
+
+msgid "Stories open on their own screen"
+msgstr "Статті відкриваються на окремому екрані"
+
 msgid "Stories per day"
 msgstr "Статей на день"
 
@@ -6704,6 +6741,9 @@ msgstr "Типографіка статей"
 
 msgid "Story URL"
 msgstr "URL статті"
+
+msgid "Story cards open on their own screen"
+msgstr "Картки статей відкриваються на окремому екрані"
 
 msgid "Story clustering"
 msgstr "Групування статей"

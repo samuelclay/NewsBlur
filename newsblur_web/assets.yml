@@ -146,6 +146,7 @@ stylesheets:
     - css/reader/status.css
     - css/reader/darkmode.css
     - css/reader/language.css
+    - css/reader/mobile.css
     - css/jquery-ui/jquery-ui.theme.css
     - css/jquery-ui/jquery-ui.structure.css
     - css/vendor/jquery.tagit.css

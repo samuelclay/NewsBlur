@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">Размер шрифта названий лент и статей</string>
     <string name="language_title">Язык</string>
     <string name="settings_cat_general">Общие</string>
+    <string name="settings_cat_appearance">Внешний вид</string>
+    <string name="settings_reduce_motion">Уменьшить движение</string>
+    <string name="settings_reduce_motion_summary">Сохранить плавное появление и исчезновение без движения.</string>
     <string name="language_current">Язык: %1$s</string>
     <string name="language_automatic">Автоматически (язык устройства)</string>
     <string name="language_save_failed">Не удалось сохранить язык. Попробуйте ещё раз.</string>

@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">Dimensione del carattere dei titoli di feed e articoli</string>
     <string name="language_title">Lingua</string>
     <string name="settings_cat_general">Generale</string>
+    <string name="settings_cat_appearance">Aspetto</string>
+    <string name="settings_reduce_motion">Riduci movimento</string>
+    <string name="settings_reduce_motion_summary">Mantieni le dissolvenze, senza movimento.</string>
     <string name="language_current">Lingua: %1$s</string>
     <string name="language_automatic">Automatico (lingua del dispositivo)</string>
     <string name="language_save_failed">Impossibile salvare la lingua. Riprova.</string>

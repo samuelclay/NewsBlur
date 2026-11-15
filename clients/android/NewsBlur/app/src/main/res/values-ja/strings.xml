@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">フィードと記事タイトルのフォントサイズ</string>
     <string name="language_title">言語</string>
     <string name="settings_cat_general">全般</string>
+    <string name="settings_cat_appearance">外観</string>
+    <string name="settings_reduce_motion">動きを減らす</string>
+    <string name="settings_reduce_motion_summary">動きをなくし、フェードは維持します。</string>
     <string name="language_current">言語：%1$s</string>
     <string name="language_automatic">自動（デバイスの言語）</string>
     <string name="language_save_failed">言語を保存できませんでした。もう一度お試しください。</string>

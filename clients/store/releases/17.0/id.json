@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 menghadirkan pengalaman membaca yang lebih hidup. Feed, judul folder, judul artikel, dan bagian artikel muncul dengan animasi sesuai urutannya di layar. Beralih antara Semua, Belum dibaca, Fokus, dan Tersimpan kini cepat dan mulus.\n\nIngin lebih sedikit gerakan? Tombol Kurangi gerakan yang baru di Preferensi > Tampilan meniadakan pergeseran dan perubahan ukuran, sambil mempertahankan efek muncul dan memudar yang lembut. Pengaturan ini nonaktif secara default.\n\nRilis ini juga memperhalus pemuatan artikel dalam mode Abu-abu, memberi lebih banyak ruang bagi tag penemuan situs di iPhone, serta menyempurnakan dialog dan kontrol di iPhone dan iPad."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 menghadirkan pengalaman membaca yang lebih hidup. Feed, judul folder, judul artikel, dan bagian artikel muncul dengan animasi sesuai urutannya di layar. Beralih antara Semua, Belum dibaca, Fokus, dan Tersimpan kini cepat dan mulus.\n\nIngin lebih sedikit gerakan? Tombol Kurangi gerakan yang baru di Preferensi > Tampilan meniadakan pergeseran dan perubahan ukuran, sambil mempertahankan efek muncul dan memudar yang lembut. Pengaturan ini nonaktif secara default.\n\nRilis ini juga menyempurnakan bingkai pembaca Mac dan kontrol penemuan situs, serta memperhalus transisi antarartikel."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17 membawa animasi hidup dan berurutan ke feed, folder, judul, dan artikel, serta transisi cepat antara Semua, Belum dibaca, Fokus, dan Disimpan. Aktifkan Kurangi gerakan di Preferensi > Tampilan untuk menghilangkan gerakan tanpa menghilangkan efek muncul dan memudar. Nonaktif secara default. Tag penemuan situs lebih lapang di ponsel, dan dialog tablet bekerja lebih baik saat layar diputar."
+  }
+}

@@ -170,6 +170,7 @@
 "Analyzing images..." = "Аналіз зображень...";
 "App Badge" = "Значок програми";
 "App Icon" = "Іконка застосунку";
+"Appearance" = "Вигляд";
 "Apply training across a folder" = "Застосувати навчання до всієї папки";
 "Apply training globally" = "Застосувати навчання глобально";
 "Arctic Cyan" = "Арктичний блакитний";
@@ -502,6 +503,7 @@
 "Interactions" = "Взаємодії";
 "Invalid: %@" = "Недійсне значення: %@";
 "Invoice" = "Рахунок";
+"Keep fades, without movement." = "Зберегти плавну появу та зникнення без руху.";
 "Keeps the dark icon no matter how your device is set." = "Завжди використовує темну іконку, незалежно від налаштувань пристрою.";
 "Keeps the light icon no matter how your device is set." = "Завжди використовує світлу іконку, незалежно від налаштувань вашого пристрою.";
 "Keyboard Shortcuts" = "Комбінації клавіш";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "Читає ваші статті з %@";
 "Recommended for %@" = "Рекомендовано для %@";
 "Recording..." = "Запис…";
+"Reduce motion" = "Зменшити рух";
 "Refine with a hint" = "Уточнити за допомогою підказки";
 "Refine with this title" = "Уточнити за цією назвою";
 "Refresh NewsBlur" = "Оновити NewsBlur";

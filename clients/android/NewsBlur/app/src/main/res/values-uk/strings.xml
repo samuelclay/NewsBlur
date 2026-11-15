@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">Розмір шрифту стрічки та заголовків статей</string>
     <string name="language_title">Мова</string>
     <string name="settings_cat_general">Загальні</string>
+    <string name="settings_cat_appearance">Вигляд</string>
+    <string name="settings_reduce_motion">Зменшити рух</string>
+    <string name="settings_reduce_motion_summary">Зберегти плавну появу та зникнення без руху.</string>
     <string name="language_current">Мова: %1$s</string>
     <string name="language_automatic">Автоматично (мова пристрою)</string>
     <string name="language_save_failed">Не вдалося зберегти мову. Спробуйте ще раз.</string>

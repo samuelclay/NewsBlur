@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">फ़ीड और लेख के शीर्षक का फ़ॉन्ट आकार</string>
     <string name="language_title">भाषा</string>
     <string name="settings_cat_general">सामान्य</string>
+    <string name="settings_cat_appearance">प्रकटन</string>
+    <string name="settings_reduce_motion">गति कम करें</string>
+    <string name="settings_reduce_motion_summary">बिना गति के फ़ेड प्रभाव बनाए रखें।</string>
     <string name="language_current">भाषा: %1$s</string>
     <string name="language_automatic">स्वचालित (डिवाइस की भाषा)</string>
     <string name="language_save_failed">आपकी भाषा सेव नहीं हो सकी। कृपया फिर से कोशिश करें।</string>

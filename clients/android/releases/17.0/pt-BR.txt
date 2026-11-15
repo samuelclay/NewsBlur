@@ -1,0 +1,1 @@
+O NewsBlur 17 anima feeds, pastas, títulos e artigos em ordem, com transições rápidas entre Todos, Não lidos, Foco e Salvo. Ative Reduzir movimento em Preferências > Aparência para remover movimentos e manter as transições de opacidade. A opção vem desativada. As tags de descoberta têm mais espaço nos celulares, e as caixas de diálogo dos tablets funcionam melhor ao girar a tela.
