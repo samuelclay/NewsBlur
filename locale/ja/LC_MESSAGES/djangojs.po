@@ -221,6 +221,11 @@ msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s件のフィード"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "これまでに%(count)s件のフィード"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s人のフォロワー"
@@ -518,6 +523,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone、iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "本日の検索残り %(remaining)s 件／%(limit)s 件"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1205,6 +1218,9 @@ msgstr "許可するドメイン"
 msgid "Alphabetical"
 msgstr "アルファベット順"
 
+msgid "Already in NewsBlur’s feed index"
+msgstr "すでに NewsBlur のフィードインデックスにあります"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
@@ -1488,6 +1504,9 @@ msgstr "興味に基づく"
 msgid "Begin Training"
 msgstr "学習を開始"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "自転車ツーリングや長距離サイクリングの旅行記"
+
 msgid "Bio"
 msgstr "自己紹介"
 
@@ -1536,6 +1555,9 @@ msgstr "Blurblogのタイトル"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "新作SF・ファンタジー小説の書評"
 
 msgid "Bookmarklet"
 msgstr "ブックマークレット"
@@ -2202,17 +2224,29 @@ msgstr "削除中..."
 msgid "Delivery"
 msgstr "話し方"
 
+msgid "Describe"
+msgstr "説明"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "探している記事の内容を説明してください。ページを再解析して見つけます。"
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "トピックを説明すると、AIが各記事をプロンプトに照らして評価し、一致する記事を優先表示または非表示にします。"
 
+msgid "Describe the feeds you’re looking for"
+msgstr "探しているフィードを説明してください"
+
 msgid "Describe what to focus or hide"
 msgstr "注目する内容、または非表示にする内容を説明してください"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "探したい内容を入力すると、AIがプロンプトに基づいて各記事の画像を分析します。"
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "読みたい内容を説明すると、NewsBlurが一致するフィードを見つけます"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "お探しのフィードを説明して検索する機能はプレミアム機能です。説明で検索するにはアップグレードしてください。"
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2328,6 +2362,9 @@ msgstr "プレビューを表示せず、記事のタイトルだけを表示"
 
 msgid "Don't show a thumbnail"
 msgstr "サムネイルを表示しない"
+
+msgid "Done"
+msgstr "完了"
 
 msgid "Done!"
 msgstr "完了！"
@@ -2475,6 +2512,9 @@ msgstr "記事のクラスタリングを有効にする"
 
 msgid "Enable the sites you want"
 msgstr "利用したいサイトを有効にする"
+
+msgid "Engineers writing about how large systems fail"
+msgstr "大規模システムの障害について書くエンジニア"
 
 msgid "English"
 msgstr "英語"
@@ -2655,6 +2695,9 @@ msgstr "顔"
 msgid "Fact check this story"
 msgstr "この記事のファクトチェック"
 
+msgid "Failed"
+msgstr "失敗しました"
+
 msgid "Failed to connect to server"
 msgstr "サーバーに接続できませんでした"
 
@@ -2824,6 +2867,9 @@ msgstr "ファイル"
 msgid "Filled Icons"
 msgstr "塗りつぶしアイコン"
 
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "カメラやフィルム銘柄についてのメモがあるフィルム写真"
+
 msgid "Filter by date range"
 msgstr "期間で絞り込む"
 
@@ -2879,6 +2925,16 @@ msgstr "%(value_1)sの友達を探す"
 
 msgid "Find Friends"
 msgstr "友達を探す"
+
+msgid "Find feeds"
+msgstr "フィードを検索"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "「%(term)s」に関するフィードを探す"
+
+msgid "Find feeds by describing them"
+msgstr "説明でフィードを検索"
 
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "「メールニュースレター」ダイアログで、あなた専用のNewsBlurメールアドレスを確認できます"
@@ -3027,12 +3083,23 @@ msgid "Forwarding email address"
 msgstr "転送先メールアドレス"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "説明に一致するフィードが %(count)s 件見つかりました"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "%(count)s 件のパターンが見つかりました。読みたい記事に最もよく合うものを選択してください。"
 
 msgid "Found in the Account dialog"
 msgstr "アカウントダイアログにあります"
+
+msgid "Found on the web"
+msgstr "ウェブで見つかったフィード"
+
+msgid "Found on the web during this search"
+msgstr "今回の検索でウェブ上から見つかりました"
 
 msgid "Free"
 msgstr "無料"
@@ -3418,6 +3485,9 @@ msgstr "感情の強さ"
 msgid "How often"
 msgstr "頻度"
 
+msgid "How well this feed matches your description"
+msgstr "このフィードが説明にどの程度一致するか"
+
 msgid "I'm Following"
 msgstr "フォロー中"
 
@@ -3526,6 +3596,9 @@ msgstr "検索用にフィードをインデックス化しています"
 msgid "Indexing..."
 msgstr "インデックス作成中..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "インディーゲーム開発者による、制作中のゲームについての記事"
+
 msgid "Infrequent Site Stories"
 msgstr "更新頻度の低いサイトの記事"
 
@@ -3582,6 +3655,12 @@ msgstr "1月"
 
 msgid "Japanese"
 msgstr "日本語"
+
+msgid "Judging"
+msgstr "判定中"
+
+msgid "Judging…"
+msgstr "評価中…"
 
 msgid "July"
 msgstr "7月"
@@ -3760,8 +3839,17 @@ msgstr "音声を読み込み中..."
 msgid "Loading your blocklist settings..."
 msgstr "ブロックリストの設定を読み込んでいます..."
 
+msgid "Loading your search…"
+msgstr "検索を読み込み中…"
+
 msgid "Loading..."
 msgstr "読み込み中..."
+
+msgid "Loading…"
+msgstr "読み込み中…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "オレゴン州ポートランドの地域ニュースとイベント"
 
 msgid "Location"
 msgstr "場所"
@@ -3783,6 +3871,9 @@ msgstr "長文記事"
 
 msgid "Long Reads on NewsBlur"
 msgstr "NewsBlurの長文記事"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "都市、住宅、公共交通に関する長文エッセイ"
 
 msgid "Long reads for later"
 msgstr "あとで読む長文記事"
@@ -3941,6 +4032,10 @@ msgstr "タイトルの重複で一致"
 
 msgid "Matched via related topics"
 msgstr "関連トピックから一致"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "「%(query)s」に一致"
 
 msgid "Matches story titles containing all keywords"
 msgstr "すべてのキーワードを含む記事タイトルに一致"
@@ -4168,6 +4263,9 @@ msgstr "期限なし"
 msgid "Never gonna expire. Congrats!"
 msgstr "有効期限はありません。おめでとうございます！"
 
+msgid "New"
+msgstr "新着"
+
 msgid "New Arrivals"
 msgstr "新着"
 
@@ -4224,6 +4322,9 @@ msgstr "NewsBlurと連携するサービス"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlurがブラウザから%(language)sを検出しました。"
 
+msgid "NewsBlur index"
+msgstr "NewsBlurのインデックス"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlurは現在ダウンしています。<br>しばらくしてからもう一度お試しください。"
 
@@ -4235,6 +4336,11 @@ msgstr "NewsBlurがページの変更を自動で監視します"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "全機能を備えたiOS版NewsBlur"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr "NewsBlurが説明を読み、フィードのインデックスとウェブ全体を検索し、一致した候補を評価します。1分ほどかかる場合があります。"
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlurがこのサイトのRSSフィードを自動的に見つけます。"
@@ -4310,6 +4416,9 @@ msgstr "フィードが見つかりません"
 
 msgid "No feeds found in this category."
 msgstr "このカテゴリーにフィードはありません。"
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "説明に一致するフィードがありません。別の表現でお試しください。"
 
 msgid "No folders match"
 msgstr "一致するフォルダーはありません"
@@ -4861,6 +4970,9 @@ msgstr "サイトごと"
 msgid "Per-feed notification settings"
 msgstr "フィードごとの通知設定"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "古い家の修復について書く個人ブログ"
+
 msgid "Phrase to match in story text"
 msgstr "記事本文で一致させるフレーズ"
 
@@ -4995,6 +5107,9 @@ msgstr[0] "プレミアムトライアル（%(count)s日間）"
 
 msgid "Premium details"
 msgstr "プレミアムの詳細"
+
+msgid "Premium feature"
+msgstr "プレミアム機能"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
@@ -5354,6 +5469,9 @@ msgstr "削除"
 msgid "Remove from Up Next"
 msgstr "次に再生から削除"
 
+msgid "Remove from history"
+msgstr "履歴から削除"
+
 msgid "Remove this list"
 msgstr "このリストを削除"
 
@@ -5455,6 +5573,9 @@ msgstr "再試行"
 
 msgid "Retry fetching and parsing"
 msgstr "取得と解析を再試行"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "スクリーンショットが豊富な新しい iOS アプリのレビュー"
 
 msgid "Rewinding..."
 msgstr "巻き戻しています…"
@@ -5612,6 +5733,9 @@ msgstr "配信スケジュール（毎日または1日2回）"
 msgid "Science"
 msgstr "科学"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "新しい研究をわかりやすく解説する科学者"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "適用範囲を指定した分類器は%(plan)sの購読者のみご利用いただけます。"
@@ -5637,6 +5761,9 @@ msgstr "保存したすべての記事とタグを検索"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Elasticsearchを活用した全文検索で、すべての購読フィードを検索できます。"
+
+msgid "Search again"
+msgstr "もう一度検索"
 
 msgid "Search archives..."
 msgstr "アーカイブを検索…"
@@ -5706,6 +5833,9 @@ msgstr "記事を検索"
 msgid "Search: \"%(value_1)s\""
 msgstr "検索：「%(value_1)s」"
 
+msgid "Searches you run will be kept here."
+msgstr "実行した検索はここに保存されます。"
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "<b>%(feed_title)s</b>で「<b>%(query)s</b>」を検索中"
@@ -5713,11 +5843,23 @@ msgstr "<b>%(feed_title)s</b>で「<b>%(query)s</b>」を検索中"
 msgid "Searching RSS feeds..."
 msgstr "RSSフィードを検索しています..."
 
+msgid "Searching feeds"
+msgstr "フィードを検索中"
+
+msgid "Searching for"
+msgstr "検索対象"
+
 msgid "Searching saved stories..."
 msgstr "保存した記事を検索中..."
 
+msgid "Searching the web"
+msgstr "ウェブを検索中"
+
 msgid "Searching your archive..."
 msgstr "アーカイブを検索中..."
+
+msgid "Searching…"
+msgstr "検索中…"
 
 msgid "Seconds to skip backward"
 msgstr "巻き戻す秒数"
@@ -6047,8 +6189,8 @@ msgstr "サイト通知"
 msgid "Site Settings"
 msgstr "サイト設定"
 
-msgid "Site URL or search by name..."
-msgstr "サイトURLまたは名前で検索..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "サイトのURLや名前、または読みたい内容を入力"
 
 msgid "Site by Site"
 msgstr "サイトごと"
@@ -6094,6 +6236,9 @@ msgstr "ソーシャル"
 
 msgid "Social Connections"
 msgstr "ソーシャル接続"
+
+msgid "Something went wrong while searching."
+msgstr "検索中に問題が発生しました。"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6231,6 +6376,12 @@ msgstr "カテゴリ分けを開始しています..."
 
 msgid "Starting trial..."
 msgstr "トライアルを開始しています…"
+
+msgid "Starting your search…"
+msgstr "検索を開始しています…"
+
+msgid "Starting…"
+msgstr "開始中…"
 
 msgid "Statistics"
 msgstr "統計"
@@ -6645,6 +6796,12 @@ msgstr "ありがとうございます！%(bold_start)sプレミアムアーカ�
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "ありがとうございます！%(bold_start)sプレミアム Proアカウント%(bold_end)sをご利用中です。"
 
+msgid "That search could not be loaded."
+msgstr "検索を読み込めませんでした。"
+
+msgid "That search is no longer in your history."
+msgstr "その検索は履歴にありません。"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AIサービスからの応答に時間がかかりすぎています。もう一度お試しください。"
 
@@ -6714,6 +6871,9 @@ msgstr "配信元により元のページが無効化されています。"
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "ページのHTMLを取得・解析し、コンテンツの構造を抽出します。"
+
+msgid "The search could not be started."
+msgstr "検索を開始できませんでした。"
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "選択した表示形式はサイトごとに記憶されるため、要約のみのフィードではテキスト表示をデフォルトにできます。"
@@ -7079,6 +7239,9 @@ msgstr "別の検索語を試すか、URLを直接貼り付けてください。
 msgid "Try again"
 msgstr "もう一度お試しください"
 
+msgid "Try describing something like"
+msgstr "たとえば、次のように説明してください"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "別のキーワードを試すか、検索をクリアしてすべて表示してください。"
 
@@ -7168,6 +7331,9 @@ msgstr "不明なエラー"
 
 msgid "Unknown question"
 msgstr "不明な質問"
+
+msgid "Unlimited searches"
+msgstr "検索回数無制限"
 
 msgid "Unlock"
 msgstr "ロックを解除"
@@ -7423,6 +7589,9 @@ msgstr "音声の録音に失敗しました。もう一度お試しください
 msgid "Voice settings"
 msgstr "音声設定"
 
+msgid "Waiting for a verdict…"
+msgstr "判定を待っています…"
+
 msgid "Warning: This is actually permanent"
 msgstr "警告：この操作は本当に取り消せません"
 
@@ -7472,6 +7641,9 @@ msgstr "水曜日"
 
 msgid "Weekly"
 msgstr "毎週"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "平日の夜に作れる、手順写真付きのベジタリアンレシピ"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlurへようこそ"
@@ -7849,6 +8021,9 @@ msgstr "プレミアムアカウントは次の日にダウングレードされ
 
 msgid "Your profile"
 msgstr "プロフィール"
+
+msgid "Your searches"
+msgstr "検索履歴"
 
 msgid "Your subscription is no longer active."
 msgstr "購読はすでに有効ではありません。"

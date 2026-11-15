@@ -89,6 +89,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     TABS: [
         { id: 'search', label: gettext('Search'), icon: '/media/img/icons/nouns/search.svg', mono: true },
+        { id: 'describe', label: gettext('Describe'), icon: '/media/img/icons/lucide/sparkles.svg', mono: true },
         { id: 'web-feed', label: gettext('Web Feed'), icon: '/media/img/icons/nouns/web-feed.svg', mono: true },
         { id: 'popular', label: gettext('Popular'), icon: '/media/img/icons/heroicons-solid/fire.svg', mono: true },
         { id: 'youtube', label: 'YouTube', icon: '/media/img/icons/lucide/youtube.svg', mono: true },
@@ -301,9 +302,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (this.options.initial_url) {
             this.webfeed_state.url = this.options.initial_url;
         }
-        if (this.options.initial_query) {
+        // add_site_view.js: a description typed in the add-feed popover opens the Describe tab, not Search.
+        if (this.options.initial_query && this.active_tab !== 'describe') {
             this.search_query = this.options.initial_query;
         }
+        this.describe_view = null;
 
         this.render();
 
@@ -416,6 +419,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     close: function () {
+        if (this.describe_view) {
+            this.describe_view.close();
+            this.describe_view = null;
+        }
         this.$el.remove();
     },
 
@@ -635,6 +642,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     render_active_tab: function () {
         var tab_renderers = {
             'search': 'render_search_tab',
+            'describe': 'render_describe_tab',
             'popular': 'render_popular_tab',
             'youtube': 'render_youtube_tab',
             'reddit': 'render_reddit_tab',
@@ -648,6 +656,34 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var renderer = tab_renderers[this.active_tab];
         if (renderer && this[renderer]) {
             this[renderer]();
+        }
+    },
+
+    // ================
+    // = Describe Tab =
+    // ================
+
+    // add_site_view.js: the Describe tab is its own view (describe_feeds_view.js) mounted in the tab pane.
+    // Try/Add/Stats clicks inside its cards are handled by this view's delegated events.
+    render_describe_tab: function () {
+        var $tab = this.$('.NB-add-site-describe-tab');
+        if (this.describe_view) {
+            this.describe_view.on_shown();
+            return;
+        }
+        this.describe_view = new NEWSBLUR.Views.DescribeFeedsView({
+            add_site_view: this,
+            initial_query: this.options.initial_tab === 'describe' ? this.options.initial_query : null,
+            initial_search_id: this.options.initial_search_id,
+            initial_scroll_top: this.options.initial_scroll_top
+        });
+        $tab.html(this.describe_view.render().el);
+        this.describe_view.on_shown();
+    },
+
+    handle_describe_event: function (data) {
+        if (this.describe_view) {
+            this.describe_view.handle_event(data);
         }
     },
 
@@ -4822,6 +4858,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var tab_label = tab_info ? tab_info.label : tab;
         var origin = { tab: tab, tab_label: tab_label };
 
+        if (tab === 'describe' && this.describe_view) {
+            _.extend(origin, this.describe_view.get_origin());
+            return origin;
+        }
+
         var tab_config = this.TAB_SEARCH_CONFIG[tab];
         if (tab_config) {
             var state = this[tab_config.state_key];
@@ -5704,7 +5745,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     // add_site_view.js - navigate_to_state: called on back/forward when view is already open
-    navigate_to_state: function (tab, category, subcategory) {
+    navigate_to_state: function (tab, category, subcategory, options) {
+        options = options || {};
         var target_tab = tab || 'search';
         if (target_tab === 'trending') target_tab = 'search';
         var deslug_cat = category ? this._deslugify(category) : null;
@@ -5756,6 +5798,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }
 
         this.render_active_tab();
+        if (target_tab === 'describe' && options.search_id && this.describe_view &&
+            this.describe_view.loading_search_id !== options.search_id) {
+            this.describe_view.open_search(options.search_id, { scroll_top: options.scroll_top });
+        }
         this.bind_scroll_handler();
         this.update_tab_overflow();
         this.update_url();

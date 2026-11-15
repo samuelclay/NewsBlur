@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@ klasörü, daraltılmış, %2$@";
 "%1$@ followed %2$@." = "%1$@, %2$@ kişisini takip etti.";
 "%1$@ of %2$@ of listening left this week" = "Bu hafta dinleme sürenizin %1$@ / %2$@ kadarı kaldı";
+"%1$@ of %2$@ searches left today" = "Bugün %1$@ aramadan %2$@ tanesi kaldı";
 "%1$@ of %2$@ sites indexed" = "%2$@ siteden %1$@ tanesi dizine eklendi";
 "%1$@ of %2$@ story previews used today" = "Bugün kullanılan haber önizlemelerinin %1$@ / %2$@ kadarı";
 "%1$@ on all sites (%2$@)" = "Tüm sitelerde %1$@ (%2$@)";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "%@ akış eklendi.";
 "%@ feeds couldn’t be added." = "%@ akış eklenemedi.";
 "%@ feeds selected" = "%@ akış seçildi";
+"%@ feeds so far" = "Şu ana kadar %@ akış";
 "%@ focused stories" = "%@ odaklanılan haber";
 "%@ folder" = "%@ klasörü";
 "%@ free story previews left today" = "Bugün %@ ücretsiz haber önizlemesi hakkınız kaldı";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ abone";
 "%@ unread stories" = "%@ okunmamış haber";
 "%@ voice previews left" = "%@ ses önizlemesi kaldı";
+"%@/10" = "%@/10";
 "%@/story" = "%@/haber";
+"%@d ago" = "%@ gün önce";
+"%@w ago" = "%@ hafta önce";
 "%@×" = "%@×";
 "%ldd ago" = "%ld gün önce";
 "%ldh ago" = "%ld saat önce";
@@ -197,7 +202,9 @@
 "Back %@ seconds" = "%@ saniye geri";
 "Back to story titles" = "Haber başlıklarına dön";
 "Based on your interests" = "İlgi alanlarınıza göre";
+"Bike touring and long-distance cycling trip reports" = "Bisiklet turları ve uzun mesafeli bisiklet gezisi günlükleri";
 "Black" = "Siyah";
+"Book reviews of new science fiction and fantasy" = "Yeni bilim kurgu ve fantastik kitap incelemeleri";
 "Bottom" = "Alt";
 "Brightness Override" = "Parlaklık Ayarı";
 "Brightness threshold" = "Parlaklık eşiği";
@@ -310,9 +317,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Hesabınızı silmek akışlarınızı, kaydedilmiş haberlerinizi ve hesap verilerinizi kalıcı olarak kaldırır. Bu işlem geri alınamaz.";
 "Deleting..." = "Siliniyor...";
 "Delivery" = "Anlatım";
+"Describe" = "Tarif edin";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Bir konu açıklayın; yapay zekâ, odaklanmanız veya gizlemeniz için her haberi isteminizle karşılaştırıp puanlasın.";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "Aradığınız akışları “ekran görüntülü yeni iOS uygulama incelemeleri” gibi açıklayın";
 "Describe what to focus or hide" = "Neyi öne çıkarmak veya gizlemek istediğinizi açıklayın";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "Neye bakılması gerektiğini açıklayın; yapay zekâ her haberin görsellerini isteminize göre analiz eder.";
+"Describe what you want to read and NewsBlur finds matching feeds" = "Okumak istediklerinizi tarif edin, eşleşen akışları NewsBlur bulsun";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "İstediğiniz akışları açıklama özelliği Premium'a özeldir. Açıklamaya göre arama yapmak için yükseltin.";
 "Discover" = "Keşfet";
 "Discover more to read" = "Okuyacak daha fazla şey keşfedin";
 "Discover related sites" = "İlgili siteleri keşfet";
@@ -344,6 +355,7 @@
 "Email" = "E-posta";
 "Ember Orange" = "Kor Turuncusu";
 "Enabled" = "Etkin";
+"Engineers writing about how large systems fail" = "Büyük sistemlerin nasıl arızalandığını yazan mühendisler";
 "Enter URL phrase..." = "URL ifadesi girin...";
 "Enter a custom search query..." = "Özel arama sorgusu girin...";
 "Enter a web page URL..." = "Bir web sayfası URL'si girin...";
@@ -373,6 +385,7 @@
 "Extra Small" = "Çok küçük";
 "Extra Tall" = "Çok uzun";
 "Extra small" = "Çok küçük";
+"Failed" = "Başarısız";
 "Faster" = "Daha hızlı";
 "Favorited" = "Favorilere eklendi";
 "Favoriting" = "Favorilere ekleniyor";
@@ -387,9 +400,13 @@
 "Fetching recent stories..." = "Son haberler alınıyor...";
 "Fetching stories from this site..." = "Bu siteden haberler alınıyor...";
 "Fetching text..." = "Metin alınıyor...";
+"Film photography with notes on cameras and film stocks" = "Fotoğraf makineleri ve film türleri hakkında notlarla analog fotoğrafçılık";
 "Filter" = "Filtre";
 "Filter stories by date range" = "Haberleri tarih aralığına göre filtrele";
 "Find Friends" = "Arkadaş Bul";
+"Find feeds" = "Akış bul";
+"Find feeds about “%@”" = "“%@” hakkında akış bul";
+"Find feeds by describing them" = "Açıklayarak akış bulun";
 "Find in Feed" = "Akışta Bul";
 "Find in Sites" = "Sitelerde bul";
 "Find in feed" = "Akışta bul";
@@ -429,6 +446,8 @@
 "Forgot Password?" = "Şifrenizi mi unuttunuz?";
 "Forgot your password?" = "Şifrenizi mi unuttunuz?";
 "Forward %@ seconds" = "%@ saniye ileri";
+"Found %@ feeds that match your description" = "Açıklamanızla eşleşen %@ akış bulundu";
+"Found on the web" = "Web'de bulundu";
 "Frequency" = "Sıklık";
 "Friday" = "Cuma";
 "Friends" = "Arkadaşlar";
@@ -484,6 +503,7 @@
 "Import or upload sites" = "Siteleri içe aktar veya yükle";
 "Imported %@ sites" = "%@ site içe aktarıldı";
 "Importing sites..." = "Siteler içe aktarılıyor...";
+"In progress" = "Devam ediyor";
 "In-app Safari" = "Uygulama içi Safari";
 "In-app browser" = "Uygulama içi tarayıcı";
 "Include" = "Dahil et";
@@ -492,6 +512,7 @@
 "Include in bundle" = "Pakete dahil et";
 "Included in bundle" = "Pakete dâhil";
 "Increase or remove your limit" = "Sınırınızı artırın veya kaldırın";
+"Indie game developers writing about their work in progress" = "Geliştirme sürecindeki çalışmalarını yazan bağımsız oyun geliştiricileri";
 "Infrequent Site Stories" = "Seyrek Güncellenen Sitelerin Haberleri";
 "Infrequent Stories" = "Seyrek Haberler";
 "Infrequent stories per month" = "Seyrek haber eşiği (aylık)";
@@ -502,6 +523,8 @@
 "Interactions" = "Etkileşimler";
 "Invalid: %@" = "Geçersiz: %@";
 "Invoice" = "Fatura";
+"Judging" = "Değerlendiriliyor";
+"Judging…" = "Değerlendiriliyor…";
 "Keeps the dark icon no matter how your device is set." = "Cihazınızın ayarı ne olursa olsun koyu simgeyi kullanır.";
 "Keeps the light icon no matter how your device is set." = "Cihazınız nasıl ayarlanmış olursa olsun açık renkli simgeyi kullanır.";
 "Keyboard Shortcuts" = "Klavye Kısayolları";
@@ -540,8 +563,10 @@
 "Loading sources" = "Kaynaklar yükleniyor";
 "Loading voices…" = "Sesler yükleniyor…";
 "Loading your feeds…" = "Akışlarınız yükleniyor…";
+"Loading your search…" = "Aramanız yükleniyor…";
 "Loading..." = "Yükleniyor...";
 "Loading…" = "Yükleniyor…";
+"Local news and events in Portland, Oregon" = "Portland, Oregon'dan yerel haberler ve etkinlikler";
 "Log In" = "Giriş Yap";
 "Log Out" = "Oturumu kapat";
 "Logged in as %@" = "%@ olarak giriş yapıldı";
@@ -553,6 +578,7 @@
 "Logout" = "Çıkış yap";
 "Long Reads" = "Uzun Okumalar";
 "Long [preview length]" = "Uzun";
+"Long essays about cities, housing and public transit" = "Şehirler, konut ve toplu taşıma hakkında uzun yazılar";
 "Long press" = "Basılı tut";
 "Long press on feeds and folders" = "Akışlara ve klasörlere uzun basın";
 "Long press on story titles" = "Haber başlıklarına uzun basın";
@@ -608,6 +634,8 @@
 "Mark this site as read" = "Bu siteyi okundu olarak işaretle";
 "Mark this story as read" = "Bu haberi okundu olarak işaretle";
 "Match" = "Eşleşme";
+"Match score %@" = "Eşleşme puanı %@";
+"Matched “%@”" = "“%@” ile eşleşti";
 "Matches story" = "Haberle eşleşiyor";
 "Meadow Sage" = "Çayır Adaçayı";
 "Medium [grid height]" = "Orta";
@@ -666,6 +694,7 @@
 "Natural language text and image classifiers" = "Doğal dil metin ve görsel sınıflandırıcıları";
 "Nested" = "İç içe";
 "Never" = "Asla";
+"New" = "Yeni";
 "New Folder" = "Yeni Klasör";
 "New Site" = "Yeni Site";
 "New folder name" = "Yeni klasör adı";
@@ -676,7 +705,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur değişiklikleri kontrol eder ve yeni haberleri akışınıza iletir.";
 "NewsBlur detected %@ from your device." = "NewsBlur cihazınızın dilini algıladı: %@.";
+"NewsBlur index" = "NewsBlur dizini";
 "NewsBlur password" = "NewsBlur parolası";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur açıklamanızı okur, akış dizininde ve açık web'de arama yapar, ardından her eşleşmeyi değerlendirir. Bu işlem bir dakika sürebilir.";
 "Next" = "Sonraki";
 "Next Folder" = "Sonraki Klasör";
 "Next Site" = "Sonraki site";
@@ -693,6 +724,7 @@
 "No Story Lists" = "Haber listesi yok";
 "No Widget Sites" = "Widget sitesi yok";
 "No briefings yet" = "Henüz özet yok";
+"No feeds matched that description. Try describing it another way." = "Bu açıklamayla eşleşen akış bulunamadı. Başka şekilde tarif etmeyi deneyin.";
 "No feeds to show yet. Try another interest or search all sites." = "Henüz gösterilecek akış yok. Başka bir ilgi alanı deneyin veya tüm sitelerde arayın.";
 "No friends to suggest." = "Önerilecek arkadaş yok.";
 "No interests or sites found. Try another search." = "İlgi alanı veya site bulunamadı. Başka bir arama deneyin.";
@@ -773,6 +805,7 @@
 "Pause Listening" = "Dinlemeyi duraklat";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "Boşluk veya Shift-Boşluk ile görüntülenen haberin kaydırılacağı yüzde";
 "Permanently delete account" = "Hesabı kalıcı olarak sil";
+"Personal blogs about restoring old houses" = "Eski evleri restore etmeyi anlatan kişisel bloglar";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur’da kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman NewsBlur menüsünden değiştirebilirsiniz.";
 "Pick which model writes your Daily Briefing" = "Günlük Özetinizi hangi modelin yazacağını seçin";
@@ -800,6 +833,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium Abonelik";
+"Premium feature" = "Premium özellik";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium aboneleri özel bir NewsBlur simgesi seçebilir. Her tasarımın açık ve koyu sürümleri vardır.";
 "Preparing audio…" = "Ses hazırlanıyor…";
 "Preview ended. Premium Archive unlocks full stories" = "Önizleme sona erdi. Premium Archive, haberlerin tamamının kilidini açar";
@@ -838,6 +872,7 @@
 "Read Widely Read Stories" = "Çok Okunan Haberleri Oku";
 "Read Widget Site Stories" = "Widget Sitelerinin Haberlerini Oku";
 "Read by %@" = "%@ tarafından okunuyor";
+"Reading" = "Okuma";
 "Reading Stories" = "Haber Okuma";
 "Reading a story" = "Bir haberi okurken";
 "Reading by folder is only available to" = "Klasöre göre okuma yalnızca şu kullanıcılar için kullanılabilir:";
@@ -859,6 +894,7 @@
 "Reloading..." = "Yeniden yükleniyor...";
 "Remove This List" = "Bu Listeyi Kaldır";
 "Remove from Up Next" = "Sıradan çıkar";
+"Remove from history" = "Geçmişten kaldır";
 "Removed from Up Next" = "Sıradan çıkarıldı";
 "Rename" = "Yeniden adlandır";
 "Rename \"%@\"" = "\"%@\" adını değiştir";
@@ -882,6 +918,7 @@
 "Retry" = "Yeniden dene";
 "Retry Google Reader" = "Google Reader'ı Yeniden Dene";
 "Retry icons" = "Simgeleri yeniden dene";
+"Reviews of new iOS apps with lots of screenshots" = "Ekran görüntüsü bol yeni iOS uygulamalarının incelemeleri";
 "River of News (reading by folder)" = "Haber Akışı (klasöre göre okuma)";
 "Rows" = "Satırlar";
 "Ruby Red" = "Yakut Kırmızısı";
@@ -909,10 +946,12 @@
 "Saving search..." = "Arama kaydediliyor...";
 "Saving..." = "Kaydediliyor...";
 "Schedule" = "Zamanla";
+"Scientists explaining new research in plain language" = "Yeni araştırmaları herkesin anlayacağı bir dille açıklayan bilim insanları";
 "Scroll horizontally" = "Yatay kaydır";
 "Scroll to Comments" = "Yorumlara kaydır";
 "Scroll to comments" = "Yorumlara kaydır";
 "Search YouTube channels..." = "YouTube kanallarında ara...";
+"Search again" = "Yeniden ara";
 "Search feeds" = "Akışlarda ara";
 "Search interests and sites" = "İlgi alanlarında ve sitelerde ara";
 "Search newsletters..." = "Bültenlerde ara...";
@@ -921,6 +960,10 @@
 "Search stories" = "Haberlerde ara";
 "Search subreddits..." = "Subreddit'lerde ara...";
 "Search voices" = "Ses ara";
+"Searches you run will be kept here." = "Yaptığınız aramalar burada saklanır.";
+"Searching feeds" = "Akışlar aranıyor";
+"Searching for" = "Şunun için aranıyor";
+"Searching the web" = "Web'de aranıyor";
 "Searching…" = "Aranıyor…";
 "Sections" = "Bölümler";
 "Select All" = "Tümünü seç";
@@ -1008,6 +1051,7 @@
 "Small Right" = "Sağda Küçük";
 "Small [text size]" = "Küçük";
 "Some feed icons couldn’t load." = "Bazı akış simgeleri yüklenemedi.";
+"Something went wrong while searching." = "Arama sırasında bir sorun oluştu.";
 "Sources" = "Kaynaklar";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Boşluk ve Shift-Boşluk, görüntülenen haberin bu yüzdesi kadar kaydırır. En altta Boşluk, sonraki okunmamış haberi açar. En üstte Shift-Boşluk, önceki haberi açar.";
 "Space scroll amount" = "Boşluk tuşuyla kaydırma miktarı";
@@ -1021,6 +1065,8 @@
 "Standard" = "Standart";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "Music uygulamasında veya Spotify'da müzik başlatın; Dinle özelliği müziğin üzerine haberleri okur. Kilit ekranındaki kontrolleri o uygulama yönetir.";
 "Start reading" = "Okumaya başla";
+"Starting your search…" = "Aramanız başlatılıyor…";
+"Starting…" = "Başlatılıyor…";
 "Statistics" = "İstatistikler";
 "Statistics…" = "İstatistikler…";
 "Stay connected" = "Bağlantıda kalın";
@@ -1112,6 +1158,7 @@
 "Text from yesterday" = "Dünden kalan metin";
 "Text view" = "Metin görünümü";
 "Text view conveniently extracts the story" = "Metin görünümü, haberin içeriğini kolayca ayıklar";
+"That search could not be loaded." = "Bu arama yüklenemedi.";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "Bu, 30 saniyelik bir önizlemeydi. Premium Archive tüm haberlerin kilidini açar.";
 "The audio couldn't be loaded. Try again in a moment." = "Ses yüklenemedi. Birazdan tekrar deneyin.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Tam Metin görünümü bir <a href=\"http://ios.newsblur.com/premium\">premium özelliktir</a>";
@@ -1119,6 +1166,9 @@
 "The icon follows your device's light and dark appearance." = "Simge, cihazınızın açık ve koyu görünüm ayarını izler.";
 "The most important stories from your feeds" = "Akışlarınızdaki en önemli haberler";
 "The request failed. Please try again." = "İstek başarısız oldu. Lütfen tekrar deneyin.";
+"The search could not be started." = "Arama başlatılamadı.";
+"The search could not be started: %@" = "Arama başlatılamadı: %@";
+"The search is taking too long. Try searching again." = "Arama çok uzun sürüyor. Yeniden aramayı deneyin.";
 "The story doesn't link anywhere." = "Haber hiçbir yere bağlantı vermiyor.";
 "Theme" = "Tema";
 "Theme variant for dark mode" = "Koyu mod tema çeşidi";
@@ -1143,6 +1193,7 @@
 "Title only" = "Yalnızca başlık";
 "Titles in grid" = "Izgarada başlıklar";
 "Titles in list" = "Listedeki başlıklar";
+"Today" = "Bugün";
 "Toggle Full Screen" = "Tam ekranı aç/kapat";
 "Toggle Read/Unread" = "Okundu/Okunmadı olarak değiştir";
 "Toggle read/unread" = "Okundu/okunmadı olarak değiştir";
@@ -1168,6 +1219,7 @@
 "Try %@" = "%@ dene";
 "Try again" = "Tekrar dene";
 "Try another name, or paste a site URL in Search." = "Başka bir ad deneyin veya Arama'ya bir site URL'si yapıştırın.";
+"Try describing something like" = "Şuna benzer bir şey açıklamayı deneyin:";
 "Try search again" = "Tekrar aramayı deneyin";
 "Trying Feed" = "Akış deneniyor";
 "Tuesday" = "Salı";
@@ -1192,6 +1244,7 @@
 "Unable to save notification settings." = "Bildirim ayarları kaydedilemedi.";
 "Understand" = "Anladım";
 "Unfavorited" = "Favorilerden çıkarıldı";
+"Unlimited searches" = "Sınırsız arama";
 "Unlock full discovery" = "Keşfin tüm özelliklerini açın";
 "Unmute All" = "Tümünün sesini aç";
 "Unmute site" = "Sitenin sesini aç";
@@ -1243,11 +1296,13 @@
 "Voice" = "Ses";
 "Voice and music balance" = "Ses ve müzik dengesi";
 "Voice settings" = "Ses ayarları";
+"Waiting for a verdict…" = "Bir karar bekleniyor…";
 "Warm" = "Sıcak";
 "Web" = "Web";
 "Web Feeds from any website, even without RSS" = "RSS olmasa bile herhangi bir web sitesinden web akışları";
 "Wednesday" = "Çarşamba";
 "Weekly" = "Haftalık";
+"Weeknight vegetarian recipes with step-by-step photos" = "Adım adım fotoğraflarla hafta içi akşamlarına uygun vejetaryen tarifler";
 "Welcome back" = "Tekrar hoş geldiniz";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Bu sitede neyi 👍 %1$@, neyi 👎 %2$@?";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "Bu haberde neyi 👍 %1$@, neyi 👎 %2$@?";
@@ -1286,6 +1341,7 @@
 "Your premium pro subscription is active" = "Premium Pro aboneliğiniz etkin";
 "Your premium subscription is active" = "Premium aboneliğiniz etkin";
 "Your reading list" = "Okuma listeniz";
+"Your searches" = "Aramalarınız";
 "You’re all set up." = "Her şey hazır.";
 "at %@" = "%@ saatinde";
 "by %@" = "%@ tarafından";

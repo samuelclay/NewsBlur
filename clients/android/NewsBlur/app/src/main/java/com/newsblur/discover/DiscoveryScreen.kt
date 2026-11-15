@@ -76,6 +76,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.newsblur.R
+import com.newsblur.design.DescribePalette
 import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
@@ -89,8 +90,10 @@ fun DiscoveryScreen(
     thumbnailLoader: ImageLoader,
     onBack: () -> Unit,
     onQuickAdd: () -> Unit,
+    onUpgrade: () -> Unit = {},
 ) {
     val colors = ReaderSheetPalette.colors(theme)
+    val describePalette = DescribePalette.colors(theme)
     CompositionLocalProvider(LocalContentColor provides colors.textPrimary) {
         Column(
             Modifier
@@ -162,6 +165,7 @@ fun DiscoveryScreen(
                     when (state.tab) {
                         DiscoveryTab.WEB -> item { WebFeedForm(state, model, colors) }
                         DiscoveryTab.GOOGLE -> item { GoogleNewsForm(state, model, colors) }
+                        DiscoveryTab.DESCRIBE -> describeItems(state, model, colors, describePalette, loader, thumbnailLoader, onUpgrade)
                         else -> {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -550,6 +554,7 @@ private fun GoogleNewsForm(
 private fun tabTitle(tab: DiscoveryTab): String =
     when (tab) {
         DiscoveryTab.SEARCH -> stringResource(R.string.discover_tab_search)
+        DiscoveryTab.DESCRIBE -> stringResource(R.string.discover_tab_describe)
         DiscoveryTab.WEB -> stringResource(R.string.discover_tab_web_feed)
         DiscoveryTab.POPULAR -> stringResource(R.string.discover_tab_popular)
         DiscoveryTab.NEWSLETTERS -> stringResource(R.string.discover_tab_newsletters)
@@ -562,6 +567,7 @@ private fun tabTitle(tab: DiscoveryTab): String =
 private fun tabHint(tab: DiscoveryTab): Int =
     when (tab) {
         DiscoveryTab.SEARCH -> R.string.discover_hint_search
+        DiscoveryTab.DESCRIBE -> R.string.describe_placeholder
         DiscoveryTab.WEB -> R.string.discover_web_page_url
         DiscoveryTab.POPULAR -> R.string.discover_hint_popular
         DiscoveryTab.YOUTUBE -> R.string.discover_hint_youtube

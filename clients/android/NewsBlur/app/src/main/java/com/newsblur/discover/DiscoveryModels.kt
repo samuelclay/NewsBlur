@@ -10,6 +10,7 @@ enum class DiscoveryTab(
     val hint: String,
 ) {
     SEARCH("Search", hint = "Search sites or paste a URL"),
+    DESCRIBE("Describe", hint = "Describe the feeds you’re looking for"),
     WEB("Web Feed", hint = "Web page URL"),
     POPULAR("Popular", hint = "Search popular sites"),
     YOUTUBE("YouTube", "youtube", "Search channels or paste a URL"),

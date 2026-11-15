@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@フォルダー、折りたたみ済み、%2$@";
 "%1$@ followed %2$@." = "%1$@さんが%2$@さんをフォローしました。";
 "%1$@ of %2$@ of listening left this week" = "今週の聴取可能時間は%1$@／%2$@です";
+"%1$@ of %2$@ searches left today" = "本日、残り%1$@/%2$@回検索できます";
 "%1$@ of %2$@ sites indexed" = "%2$@件中%1$@件のサイトをインデックス済み";
 "%1$@ of %2$@ story previews used today" = "本日使用した記事のプレビュー：%1$@／%2$@";
 "%1$@ on all sites (%2$@)" = "すべてのサイトで%1$@（%2$@）";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "%@ 件のフィードを追加しました。";
 "%@ feeds couldn’t be added." = "%@件のフィードを追加できませんでした。";
 "%@ feeds selected" = "%@件のフィードを選択中";
+"%@ feeds so far" = "%@ 件のフィード";
 "%@ focused stories" = "フォーカス記事 %@ 件";
 "%@ folder" = "%@フォルダー";
 "%@ free story previews left today" = "本日残り%@件の記事プレビューを無料で利用できます";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@人の購読者";
 "%@ unread stories" = "%@件の未読記事";
 "%@ voice previews left" = "音声の試聴残り %@ 回";
+"%@/10" = "%@/10";
 "%@/story" = "%@/記事";
+"%@d ago" = "%@日前";
+"%@w ago" = "%@週間前";
 "%@×" = "%@×";
 "%ldd ago" = "%ld日前";
 "%ldh ago" = "%ld時間前";
@@ -197,7 +202,9 @@
 "Back %@ seconds" = "%@秒戻る";
 "Back to story titles" = "記事タイトルに戻る";
 "Based on your interests" = "興味に基づく";
+"Bike touring and long-distance cycling trip reports" = "自転車ツーリングや長距離サイクリングの旅行記";
 "Black" = "黒";
+"Book reviews of new science fiction and fantasy" = "新作のSF・ファンタジー小説の書評";
 "Bottom" = "下";
 "Brightness Override" = "明るさの上書き";
 "Brightness threshold" = "明るさのしきい値";
@@ -310,9 +317,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "アカウントを完全に削除すると、フィード、保存した記事、アカウントデータが削除されます。この操作は取り消せません。";
 "Deleting..." = "削除中...";
 "Delivery" = "読み上げ方";
+"Describe" = "説明";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "トピックを説明してください。AIが各記事をプロンプトに照らして評価し、一致する記事をフォーカスまたは非表示にします。";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "「スクリーンショット付きの新しい iOS アプリのレビュー」のように、お探しのフィードを説明してください";
 "Describe what to focus or hide" = "フォーカスまたは非表示にする内容を説明";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "探したい内容を説明してください。AIが各記事の画像をプロンプトに照らして分析します。";
+"Describe what you want to read and NewsBlur finds matching feeds" = "読みたい内容を説明すると、NewsBlurが一致するフィードを見つけます";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "お探しのフィードを説明して検索する機能はプレミアム機能です。説明で検索するにはアップグレードしてください。";
 "Discover" = "見つける";
 "Discover more to read" = "もっと読むものを見つける";
 "Discover related sites" = "関連サイトを探す";
@@ -344,6 +355,7 @@
 "Email" = "メール";
 "Ember Orange" = "エンバーオレンジ";
 "Enabled" = "有効";
+"Engineers writing about how large systems fail" = "大規模システムの障害について書くエンジニア";
 "Enter URL phrase..." = "URLのフレーズを入力...";
 "Enter a custom search query..." = "カスタム検索クエリを入力...";
 "Enter a web page URL..." = "ウェブページのURLを入力...";
@@ -373,6 +385,7 @@
 "Extra Small" = "極小";
 "Extra Tall" = "極高";
 "Extra small" = "極小";
+"Failed" = "失敗しました";
 "Faster" = "速く";
 "Favorited" = "お気に入りに追加済み";
 "Favoriting" = "お気に入り登録中";
@@ -387,9 +400,13 @@
 "Fetching recent stories..." = "最近の記事を取得中...";
 "Fetching stories from this site..." = "このサイトの記事を取得中...";
 "Fetching text..." = "テキストを取得中...";
+"Film photography with notes on cameras and film stocks" = "カメラやフィルムの種類についてのメモを添えたフィルム写真";
 "Filter" = "フィルター";
 "Filter stories by date range" = "日付範囲で記事を絞り込む";
 "Find Friends" = "友達を探す";
+"Find feeds" = "フィードを探す";
+"Find feeds about “%@”" = "「%@」に関するフィードを検索";
+"Find feeds by describing them" = "説明からフィードを探す";
 "Find in Feed" = "フィード内を検索";
 "Find in Sites" = "サイト内を検索";
 "Find in feed" = "フィード内を検索";
@@ -429,6 +446,8 @@
 "Forgot Password?" = "パスワードをお忘れですか？";
 "Forgot your password?" = "パスワードをお忘れですか？";
 "Forward %@ seconds" = "%@秒進む";
+"Found %@ feeds that match your description" = "説明に一致するフィードが%@件見つかりました";
+"Found on the web" = "ウェブで見つかったフィード";
 "Frequency" = "頻度";
 "Friday" = "金曜日";
 "Friends" = "友達";
@@ -484,6 +503,7 @@
 "Import or upload sites" = "サイトをインポートまたはアップロード";
 "Imported %@ sites" = "%@件のサイトをインポートしました";
 "Importing sites..." = "サイトをインポート中…";
+"In progress" = "進行中";
 "In-app Safari" = "アプリ内Safari";
 "In-app browser" = "アプリ内ブラウザー";
 "Include" = "含める";
@@ -492,6 +512,7 @@
 "Include in bundle" = "バンドルに含める";
 "Included in bundle" = "バンドルに含まれています";
 "Increase or remove your limit" = "上限を引き上げる、または解除";
+"Indie game developers writing about their work in progress" = "インディーゲーム開発者による、制作中のゲームについての記事";
 "Infrequent Site Stories" = "更新頻度の低いサイトの記事";
 "Infrequent Stories" = "更新頻度の低いサイトの記事";
 "Infrequent stories per month" = "月あたりの低頻度記事数";
@@ -502,6 +523,8 @@
 "Interactions" = "やり取り";
 "Invalid: %@" = "無効：%@";
 "Invoice" = "請求書";
+"Judging" = "判定中";
+"Judging…" = "判定中…";
 "Keeps the dark icon no matter how your device is set." = "デバイスの設定にかかわらず、暗いアイコンを維持します。";
 "Keeps the light icon no matter how your device is set." = "デバイスの設定にかかわらず、ライトアイコンを表示します。";
 "Keyboard Shortcuts" = "キーボードショートカット";
@@ -540,8 +563,10 @@
 "Loading sources" = "ソースを読み込み中";
 "Loading voices…" = "音声を読み込み中…";
 "Loading your feeds…" = "フィードを読み込み中…";
+"Loading your search…" = "検索を読み込み中…";
 "Loading..." = "読み込み中...";
 "Loading…" = "読み込み中…";
+"Local news and events in Portland, Oregon" = "オレゴン州ポートランドの地域ニュースとイベント";
 "Log In" = "ログイン";
 "Log Out" = "ログアウト";
 "Logged in as %@" = "%@としてログイン中";
@@ -553,6 +578,7 @@
 "Logout" = "ログアウト";
 "Long Reads" = "長文記事";
 "Long [preview length]" = "長";
+"Long essays about cities, housing and public transit" = "都市、住宅、公共交通についての長文エッセイ";
 "Long press" = "長押し";
 "Long press on feeds and folders" = "フィードやフォルダーを長押し";
 "Long press on story titles" = "記事のタイトルを長押し";
@@ -608,6 +634,8 @@
 "Mark this site as read" = "このサイトを既読にする";
 "Mark this story as read" = "この記事を既読にする";
 "Match" = "一致";
+"Match score %@" = "一致スコア %@";
+"Matched “%@”" = "「%@」に一致";
 "Matches story" = "記事に一致";
 "Meadow Sage" = "メドウセージ";
 "Medium [grid height]" = "中";
@@ -666,6 +694,7 @@
 "Natural language text and image classifiers" = "自然言語のテキスト・画像分類器";
 "Nested" = "入れ子";
 "Never" = "しない";
+"New" = "新着";
 "New Folder" = "新しいフォルダー";
 "New Site" = "新しいサイト";
 "New folder name" = "新しいフォルダー名";
@@ -676,7 +705,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlurが変更を確認し、新しい記事をフィードに配信します。";
 "NewsBlur detected %@ from your device." = "NewsBlurはデバイスから%@を検出しました。";
+"NewsBlur index" = "NewsBlur インデックス";
 "NewsBlur password" = "NewsBlurのパスワード";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlurが説明を読み、フィードのインデックスと公開ウェブを検索し、一致する候補をすべて判定します。1分ほどかかる場合があります。";
 "Next" = "次へ";
 "Next Folder" = "次のフォルダー";
 "Next Site" = "次のサイト";
@@ -693,6 +724,7 @@
 "No Story Lists" = "記事一覧がありません";
 "No Widget Sites" = "ウィジェットサイトがありません";
 "No briefings yet" = "ブリーフィングはまだありません";
+"No feeds matched that description. Try describing it another way." = "説明に一致するフィードは見つかりませんでした。別の表現で試してください。";
 "No feeds to show yet. Try another interest or search all sites." = "表示できるフィードがまだありません。別の興味のある項目を選ぶか、すべてのサイトを検索してください。";
 "No friends to suggest." = "おすすめできる友達はいません。";
 "No interests or sites found. Try another search." = "興味のある項目やサイトが見つかりません。別のキーワードで検索してください。";
@@ -773,6 +805,7 @@
 "Pause Listening" = "読み上げを一時停止";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "SpaceキーまたはShift-Spaceキーでスクロールする、表示中の記事に対する割合";
 "Permanently delete account" = "アカウントを完全に削除";
+"Personal blogs about restoring old houses" = "古い家の修復について書く個人ブログ";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlurで使用する言語を選択してください。この設定はいつでも「設定」で変更できます。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlurで使用する言語を選択してください。この設定はいつでもNewsBlurメニューで変更できます。";
 "Pick which model writes your Daily Briefing" = "デイリーブリーフィングの生成に使用するモデルを選択";
@@ -800,6 +833,7 @@
 "Premium Archive" = "プレミアムアーカイブ";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "プレミアム購読";
+"Premium feature" = "プレミアム機能";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "プレミアム購読者はNewsBlurアイコンをカスタマイズできます。各デザインにはライト版とダーク版があります。";
 "Preparing audio…" = "音声を準備中…";
 "Preview ended. Premium Archive unlocks full stories" = "プレビューが終了しました。プレミアムアーカイブで記事全文をお読みいただけます";
@@ -838,6 +872,7 @@
 "Read Widely Read Stories" = "よく読まれている記事を読む";
 "Read Widget Site Stories" = "ウィジェットサイトの記事を読む";
 "Read by %@" = "%@による読み上げ";
+"Reading" = "読み込み中";
 "Reading Stories" = "記事を読む";
 "Reading a story" = "記事を読んでいるとき";
 "Reading by folder is only available to" = "フォルダー別の閲覧は、次のプランでのみ利用できます";
@@ -859,6 +894,7 @@
 "Reloading..." = "再読み込み中...";
 "Remove This List" = "このリストを削除";
 "Remove from Up Next" = "次に再生から削除";
+"Remove from history" = "履歴から削除";
 "Removed from Up Next" = "次に再生から削除しました";
 "Rename" = "名前を変更";
 "Rename \"%@\"" = "「%@」の名前を変更";
@@ -882,6 +918,7 @@
 "Retry" = "再試行";
 "Retry Google Reader" = "Google Readerを再試行";
 "Retry icons" = "アイコンを再読み込み";
+"Reviews of new iOS apps with lots of screenshots" = "スクリーンショットが豊富な新しいiOSアプリのレビュー";
 "River of News (reading by folder)" = "ニュースの流れ（フォルダー別に読む）";
 "Rows" = "行";
 "Ruby Red" = "ルビーレッド";
@@ -909,10 +946,12 @@
 "Saving search..." = "検索を保存中...";
 "Saving..." = "保存中…";
 "Schedule" = "スケジュール";
+"Scientists explaining new research in plain language" = "新しい研究をわかりやすく解説する科学者";
 "Scroll horizontally" = "横スクロール";
 "Scroll to Comments" = "コメントまでスクロール";
 "Scroll to comments" = "コメントまでスクロール";
 "Search YouTube channels..." = "YouTubeチャンネルを検索...";
+"Search again" = "もう一度検索";
 "Search feeds" = "フィードを検索";
 "Search interests and sites" = "興味・サイトを検索";
 "Search newsletters..." = "ニュースレターを検索...";
@@ -921,6 +960,10 @@
 "Search stories" = "記事を検索";
 "Search subreddits..." = "サブレディットを検索...";
 "Search voices" = "音声を検索";
+"Searches you run will be kept here." = "実行した検索はここに保存されます。";
+"Searching feeds" = "フィードを検索中";
+"Searching for" = "検索対象";
+"Searching the web" = "ウェブを検索中";
 "Searching…" = "検索中…";
 "Sections" = "セクション";
 "Select All" = "すべて選択";
@@ -1008,6 +1051,7 @@
 "Small Right" = "右・小";
 "Small [text size]" = "小";
 "Some feed icons couldn’t load." = "一部のフィードアイコンを読み込めませんでした。";
+"Something went wrong while searching." = "検索中に問題が発生しました。";
 "Sources" = "ソース";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "SpaceキーとShift-Spaceキーで、表示中の記事のこの割合分だけスクロールします。下端では、Spaceキーで次の未読記事を開きます。上端では、Shift-Spaceキーで前の記事を開きます。";
 "Space scroll amount" = "Spaceキーでスクロールする量";
@@ -1021,6 +1065,8 @@
 "Standard" = "標準";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "MusicアプリまたはSpotifyで音楽を再生すると、Listenがその上から読み上げます。ロック画面の操作は、そのアプリのコントロールに切り替わります。";
 "Start reading" = "読み始める";
+"Starting your search…" = "検索を開始しています…";
+"Starting…" = "開始中…";
 "Statistics" = "統計";
 "Statistics…" = "統計…";
 "Stay connected" = "つながりを保つ";
@@ -1112,6 +1158,7 @@
 "Text from yesterday" = "昨日のテキスト";
 "Text view" = "テキスト表示";
 "Text view conveniently extracts the story" = "テキスト表示では記事の本文を手軽に抽出できます";
+"That search could not be loaded." = "この検索を読み込めませんでした。";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "30秒のプレビューです。プレミアムアーカイブに登録すると、記事全文を利用できます。";
 "The audio couldn't be loaded. Try again in a moment." = "音声を読み込めませんでした。しばらくしてからもう一度お試しください。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "テキスト表示の全機能は<a href=\"http://ios.newsblur.com/premium\">プレミアム機能</a>です";
@@ -1119,6 +1166,9 @@
 "The icon follows your device's light and dark appearance." = "アイコンは、お使いのデバイスのライト／ダーク表示設定に従います。";
 "The most important stories from your feeds" = "フィードの中で特に重要な記事";
 "The request failed. Please try again." = "リクエストに失敗しました。もう一度お試しください。";
+"The search could not be started." = "検索を開始できませんでした。";
+"The search could not be started: %@" = "検索を開始できませんでした：%@";
+"The search is taking too long. Try searching again." = "検索に時間がかかりすぎています。もう一度検索してください。";
 "The story doesn't link anywhere." = "この記事にはリンクがありません。";
 "Theme" = "テーマ";
 "Theme variant for dark mode" = "ダークモードのテーマバリエーション";
@@ -1143,6 +1193,7 @@
 "Title only" = "タイトルのみ";
 "Titles in grid" = "グリッド内のタイトル";
 "Titles in list" = "リスト内のタイトル";
+"Today" = "今日";
 "Toggle Full Screen" = "全画面表示を切り替え";
 "Toggle Read/Unread" = "既読／未読を切り替え";
 "Toggle read/unread" = "既読／未読を切り替え";
@@ -1168,6 +1219,7 @@
 "Try %@" = "%@を試す";
 "Try again" = "もう一度試す";
 "Try another name, or paste a site URL in Search." = "別の名前を試すか、検索にサイトのURLを貼り付けてください。";
+"Try describing something like" = "次のように説明してみてください";
 "Try search again" = "もう一度検索";
 "Trying Feed" = "フィードを試す";
 "Tuesday" = "火曜日";
@@ -1192,6 +1244,7 @@
 "Unable to save notification settings." = "通知設定を保存できません。";
 "Understand" = "理解する";
 "Unfavorited" = "お気に入り解除済み";
+"Unlimited searches" = "検索回数無制限";
 "Unlock full discovery" = "すべての発見機能を利用";
 "Unmute All" = "すべてのミュートを解除";
 "Unmute site" = "サイトのミュートを解除";
@@ -1243,11 +1296,13 @@
 "Voice" = "音声";
 "Voice and music balance" = "音声と音楽のバランス";
 "Voice settings" = "音声設定";
+"Waiting for a verdict…" = "判定を待っています…";
 "Warm" = "暖色";
 "Web" = "ウェブ";
 "Web Feeds from any website, even without RSS" = "RSSがなくても、あらゆるウェブサイトのウェブフィードを購読";
 "Wednesday" = "水曜日";
 "Weekly" = "週ごと";
+"Weeknight vegetarian recipes with step-by-step photos" = "手順ごとの写真付き、平日の夜に作るベジタリアンレシピ";
 "Welcome back" = "おかえりなさい";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "このサイトで👍 %1$@するもの、👎 %2$@するものは？";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "この記事で👍 %1$@するもの、👎 %2$@するものは？";
@@ -1286,6 +1341,7 @@
 "Your premium pro subscription is active" = "プレミアムプロの購読が有効です";
 "Your premium subscription is active" = "プレミアムサブスクリプションは有効です";
 "Your reading list" = "読書リスト";
+"Your searches" = "検索履歴";
 "You’re all set up." = "設定が完了しました。";
 "at %@" = "日時：%@";
 "by %@" = "著者：%@";

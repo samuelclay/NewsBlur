@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@ 資料夾，已收合，%2$@";
 "%1$@ followed %2$@." = "%1$@ 追蹤了 %2$@。";
 "%1$@ of %2$@ of listening left this week" = "本週聆聽時間剩餘 %1$@／共 %2$@";
+"%1$@ of %2$@ searches left today" = "今天還可搜尋 %1$@ 次，共 %2$@ 次";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 個網站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@／%2$@ 次文章預覽";
 "%1$@ on all sites (%2$@)" = "%1$@ 個網站（%2$@）";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "已新增 %@ 個訂閱來源。";
 "%@ feeds couldn’t be added." = "有 %@ 個訂閱來源無法新增。";
 "%@ feeds selected" = "已選取 %@ 個訂閱來源";
+"%@ feeds so far" = "目前有 %@ 個訂閱來源";
 "%@ focused stories" = "%@ 篇焦點文章";
 "%@ folder" = "%@ 資料夾";
 "%@ free story previews left today" = "今天還可免費預覽 %@ 篇文章";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ 位訂閱者";
 "%@ unread stories" = "%@ 篇未讀文章";
 "%@ voice previews left" = "剩餘 %@ 次語音預覽";
+"%@/10" = "%@/10";
 "%@/story" = "%@/篇文章";
+"%@d ago" = "%@ 天前";
+"%@w ago" = "%@ 週前";
 "%@×" = "%@ 倍";
 "%ldd ago" = "%ld 天前";
 "%ldh ago" = "%ld 小時前";
@@ -197,7 +202,9 @@
 "Back %@ seconds" = "往回 %@ 秒";
 "Back to story titles" = "返回文章標題";
 "Based on your interests" = "根據你的興趣";
+"Bike touring and long-distance cycling trip reports" = "單車旅行與長途騎乘遊記";
 "Black" = "黑色";
+"Book reviews of new science fiction and fantasy" = "新科幻與奇幻作品的書評";
 "Bottom" = "底部";
 "Brightness Override" = "亮度覆寫";
 "Brightness threshold" = "亮度閾值";
@@ -310,9 +317,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "永久刪除帳戶會移除你的訂閱來源、已儲存的文章和帳戶資料。此操作無法復原。";
 "Deleting..." = "正在刪除…";
 "Delivery" = "呈現方式";
+"Describe" = "描述";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "描述一個主題，AI 就會根據你的提示為每篇文章評分，並將符合條件的文章設為焦點或隱藏。";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "描述你要找的訂閱來源，例如「附有螢幕截圖的新 iOS App 評測」";
 "Describe what to focus or hide" = "描述要聚焦或隱藏的內容";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "描述你要尋找的內容，AI 就會根據你的提示分析每篇文章中的圖片。";
+"Describe what you want to read and NewsBlur finds matching feeds" = "描述你想看的內容，NewsBlur 就會找出相符的訂閱來源";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "描述你想找的訂閱來源是進階功能。升級後即可透過描述搜尋。";
 "Discover" = "探索";
 "Discover more to read" = "探索更多閱讀內容";
 "Discover related sites" = "探索相關網站";
@@ -344,6 +355,7 @@
 "Email" = "電子郵件";
 "Ember Orange" = "餘燼橘";
 "Enabled" = "已啟用";
+"Engineers writing about how large systems fail" = "工程師撰文探討大型系統如何故障";
 "Enter URL phrase..." = "輸入網址詞組…";
 "Enter a custom search query..." = "輸入自訂搜尋條件…";
 "Enter a web page URL..." = "輸入網頁網址…";
@@ -373,6 +385,7 @@
 "Extra Small" = "特小";
 "Extra Tall" = "特高";
 "Extra small" = "特小";
+"Failed" = "失敗";
 "Faster" = "更快";
 "Favorited" = "已加入最愛";
 "Favoriting" = "正在加入最愛";
@@ -387,9 +400,13 @@
 "Fetching recent stories..." = "正在擷取最近的文章…";
 "Fetching stories from this site..." = "正在擷取此網站的文章…";
 "Fetching text..." = "正在擷取文字…";
+"Film photography with notes on cameras and film stocks" = "底片攝影，分享相機與底片種類的筆記";
 "Filter" = "篩選";
 "Filter stories by date range" = "依日期範圍篩選文章";
 "Find Friends" = "尋找朋友";
+"Find feeds" = "尋找訂閱來源";
+"Find feeds about “%@”" = "尋找關於「%@」的訂閱來源";
+"Find feeds by describing them" = "描述內容以尋找訂閱來源";
 "Find in Feed" = "在訂閱來源中尋找";
 "Find in Sites" = "在網站中尋找";
 "Find in feed" = "在訂閱來源中尋找";
@@ -429,6 +446,8 @@
 "Forgot Password?" = "忘記密碼？";
 "Forgot your password?" = "忘記密碼？";
 "Forward %@ seconds" = "往前 %@ 秒";
+"Found %@ feeds that match your description" = "找到 %@ 個符合你描述的訂閱來源";
+"Found on the web" = "在網路上找到";
 "Frequency" = "頻率";
 "Friday" = "星期五";
 "Friends" = "朋友";
@@ -484,6 +503,7 @@
 "Import or upload sites" = "匯入或上傳網站";
 "Imported %@ sites" = "已匯入 %@ 個網站";
 "Importing sites..." = "正在匯入網站…";
+"In progress" = "進行中";
 "In-app Safari" = "App 內 Safari";
 "In-app browser" = "應用程式內瀏覽器";
 "Include" = "包含";
@@ -492,6 +512,7 @@
 "Include in bundle" = "加入套件";
 "Included in bundle" = "已包含在套件中";
 "Increase or remove your limit" = "提高或移除你的上限";
+"Indie game developers writing about their work in progress" = "撰寫開發進度的獨立遊戲開發者";
 "Infrequent Site Stories" = "不常更新的網站文章";
 "Infrequent Stories" = "不常更新的網站文章";
 "Infrequent stories per month" = "不常更新網站的每月文章數";
@@ -502,6 +523,8 @@
 "Interactions" = "互動";
 "Invalid: %@" = "無效：%@";
 "Invoice" = "發票";
+"Judging" = "正在判斷";
+"Judging…" = "正在判斷…";
 "Keeps the dark icon no matter how your device is set." = "無論裝置如何設定，都會維持深色圖示。";
 "Keeps the light icon no matter how your device is set." = "無論裝置設定為何，圖示都會保持淺色。";
 "Keyboard Shortcuts" = "鍵盤快速鍵";
@@ -540,8 +563,10 @@
 "Loading sources" = "正在載入來源";
 "Loading voices…" = "正在載入語音…";
 "Loading your feeds…" = "正在載入你的訂閱來源…";
+"Loading your search…" = "正在載入你的搜尋…";
 "Loading..." = "載入中…";
 "Loading…" = "載入中…";
+"Local news and events in Portland, Oregon" = "美國奧勒岡州波特蘭的地方新聞與活動";
 "Log In" = "登入";
 "Log Out" = "登出";
 "Logged in as %@" = "目前登入身分：%@";
@@ -553,6 +578,7 @@
 "Logout" = "登出";
 "Long Reads" = "長篇閱讀";
 "Long [preview length]" = "長";
+"Long essays about cities, housing and public transit" = "關於城市、住宅與大眾運輸的長篇文章";
 "Long press" = "長按";
 "Long press on feeds and folders" = "長按訂閱來源和資料夾";
 "Long press on story titles" = "長按文章標題";
@@ -608,6 +634,8 @@
 "Mark this site as read" = "將此網站標記為已讀";
 "Mark this story as read" = "將這篇文章標記為已讀";
 "Match" = "符合";
+"Match score %@" = "符合度分數 %@";
+"Matched “%@”" = "符合「%@」";
 "Matches story" = "文章中有相符內容";
 "Meadow Sage" = "草原鼠尾草綠";
 "Medium [grid height]" = "中";
@@ -666,6 +694,7 @@
 "Natural language text and image classifiers" = "自然語言文字與影像分類器";
 "Nested" = "巢狀";
 "Never" = "永不";
+"New" = "新增";
 "New Folder" = "新增資料夾";
 "New Site" = "新增網站";
 "New folder name" = "新資料夾名稱";
@@ -676,7 +705,9 @@
 "NewsBlur Premium" = "NewsBlur Premium";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur 會檢查內容是否有變更，並將新文章送至你的訂閱來源。";
 "NewsBlur detected %@ from your device." = "NewsBlur 偵測到你的裝置使用 %@。";
+"NewsBlur index" = "NewsBlur 索引";
 "NewsBlur password" = "NewsBlur 密碼";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur 會讀取你的描述，搜尋訂閱來源索引和公開網路，然後逐一判斷符合條件的結果。這可能需要一分鐘。";
 "Next" = "下一步";
 "Next Folder" = "下一個資料夾";
 "Next Site" = "下一個網站";
@@ -693,6 +724,7 @@
 "No Story Lists" = "沒有文章清單";
 "No Widget Sites" = "沒有小工具網站";
 "No briefings yet" = "目前沒有簡報";
+"No feeds matched that description. Try describing it another way." = "沒有符合這項描述的訂閱來源。試著換個方式描述。";
 "No feeds to show yet. Try another interest or search all sites." = "目前沒有可顯示的訂閱來源。請嘗試其他興趣，或搜尋所有網站。";
 "No friends to suggest." = "沒有可推薦的朋友。";
 "No interests or sites found. Try another search." = "找不到興趣或網站。請嘗試其他搜尋。";
@@ -773,6 +805,7 @@
 "Pause Listening" = "暫停聆聽";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "按空白鍵或 Shift-空白鍵時，捲動目前顯示文章的百分比";
 "Permanently delete account" = "永久刪除帳戶";
+"Personal blogs about restoring old houses" = "記錄老屋修復的個人部落格";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在「偏好設定」中變更。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在 NewsBlur 選單中變更。";
 "Pick which model writes your Daily Briefing" = "選擇用來撰寫每日簡報的模型";
@@ -800,6 +833,7 @@
 "Premium Archive" = "Premium Archive";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium 訂閱";
+"Premium feature" = "進階功能";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium 訂閱者可以選擇自訂的 NewsBlur 圖示。每種樣式都包含淺色和深色版本。";
 "Preparing audio…" = "正在準備音訊…";
 "Preview ended. Premium Archive unlocks full stories" = "預覽已結束。Premium Archive 可解鎖完整文章";
@@ -838,6 +872,7 @@
 "Read Widely Read Stories" = "閱讀廣受閱讀的文章";
 "Read Widget Site Stories" = "閱讀小工具網站文章";
 "Read by %@" = "由 %@ 朗讀";
+"Reading" = "閱讀中";
 "Reading Stories" = "閱讀文章";
 "Reading a story" = "正在閱讀文章";
 "Reading by folder is only available to" = "依資料夾閱讀僅適用於";
@@ -859,6 +894,7 @@
 "Reloading..." = "正在重新載入…";
 "Remove This List" = "移除此清單";
 "Remove from Up Next" = "從接下來播放中移除";
+"Remove from history" = "從記錄中移除";
 "Removed from Up Next" = "已從接下來播放中移除";
 "Rename" = "重新命名";
 "Rename \"%@\"" = "重新命名「%@」";
@@ -882,6 +918,7 @@
 "Retry" = "重試";
 "Retry Google Reader" = "重試 Google Reader";
 "Retry icons" = "重試載入圖示";
+"Reviews of new iOS apps with lots of screenshots" = "新 iOS App 的評測，附有大量螢幕截圖";
 "River of News (reading by folder)" = "新聞流（依資料夾閱讀）";
 "Rows" = "列";
 "Ruby Red" = "紅寶石紅";
@@ -909,10 +946,12 @@
 "Saving search..." = "正在儲存搜尋…";
 "Saving..." = "正在儲存…";
 "Schedule" = "排程";
+"Scientists explaining new research in plain language" = "科學家以淺白易懂的語言解說最新研究";
 "Scroll horizontally" = "水平捲動";
 "Scroll to Comments" = "捲動至留言";
 "Scroll to comments" = "捲動至留言";
 "Search YouTube channels..." = "搜尋 YouTube 頻道…";
+"Search again" = "再次搜尋";
 "Search feeds" = "搜尋訂閱來源";
 "Search interests and sites" = "搜尋興趣與網站";
 "Search newsletters..." = "搜尋電子報…";
@@ -921,6 +960,10 @@
 "Search stories" = "搜尋文章";
 "Search subreddits..." = "搜尋 subreddit…";
 "Search voices" = "搜尋語音";
+"Searches you run will be kept here." = "你執行的搜尋會保留在這裡。";
+"Searching feeds" = "正在搜尋訂閱來源";
+"Searching for" = "正在搜尋";
+"Searching the web" = "正在搜尋網路";
 "Searching…" = "正在搜尋…";
 "Sections" = "區段";
 "Select All" = "全選";
@@ -1008,6 +1051,7 @@
 "Small Right" = "小型靠右";
 "Small [text size]" = "小";
 "Some feed icons couldn’t load." = "部分訂閱來源圖示無法載入。";
+"Something went wrong while searching." = "搜尋時發生錯誤。";
 "Sources" = "來源";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "空白鍵和 Shift-空白鍵會依此百分比捲動目前顯示的文章。在底部按空白鍵會開啟下一篇未讀文章。在頂部按 Shift-空白鍵會開啟上一篇文章。";
 "Space scroll amount" = "空白鍵捲動幅度";
@@ -1021,6 +1065,8 @@
 "Standard" = "標準";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "在「音樂」App 或 Spotify 播放音樂，Listen 會在音樂上方朗讀。該 App 的控制項會接管鎖定畫面。";
 "Start reading" = "開始閱讀";
+"Starting your search…" = "正在開始搜尋…";
+"Starting…" = "開始中…";
 "Statistics" = "統計資料";
 "Statistics…" = "統計資料…";
 "Stay connected" = "保持連線";
@@ -1112,6 +1158,7 @@
 "Text from yesterday" = "昨天的文字";
 "Text view" = "文字檢視";
 "Text view conveniently extracts the story" = "文字檢視會方便地擷取文章內容";
+"That search could not be loaded." = "無法載入此搜尋。";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "這是 30 秒預覽。Premium Archive 可解鎖完整文章。";
 "The audio couldn't be loaded. Try again in a moment." = "無法載入音訊。請稍後再試。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "完整文字檢視是 <a href=\"http://ios.newsblur.com/premium\">進階功能</a>";
@@ -1119,6 +1166,9 @@
 "The icon follows your device's light and dark appearance." = "圖示會配合裝置的淺色與深色外觀。";
 "The most important stories from your feeds" = "你的訂閱來源中最重要的文章";
 "The request failed. Please try again." = "要求失敗，請再試一次。";
+"The search could not be started." = "無法開始搜尋。";
+"The search could not be started: %@" = "無法開始搜尋：%@";
+"The search is taking too long. Try searching again." = "搜尋花費太久時間，請再試一次。";
 "The story doesn't link anywhere." = "這篇文章沒有連結到任何地方。";
 "Theme" = "佈景主題";
 "Theme variant for dark mode" = "深色模式的主題變體";
@@ -1143,6 +1193,7 @@
 "Title only" = "僅標題";
 "Titles in grid" = "格狀檢視中的標題";
 "Titles in list" = "清單中的標題";
+"Today" = "今天";
 "Toggle Full Screen" = "切換全螢幕";
 "Toggle Read/Unread" = "切換已讀／未讀";
 "Toggle read/unread" = "切換已讀／未讀";
@@ -1168,6 +1219,7 @@
 "Try %@" = "試試 %@";
 "Try again" = "再試一次";
 "Try another name, or paste a site URL in Search." = "請嘗試其他名稱，或在搜尋中貼上網站網址。";
+"Try describing something like" = "試著描述類似這樣的內容";
 "Try search again" = "再次嘗試搜尋";
 "Trying Feed" = "預覽訂閱來源";
 "Tuesday" = "星期二";
@@ -1192,6 +1244,7 @@
 "Unable to save notification settings." = "無法儲存通知設定。";
 "Understand" = "了解";
 "Unfavorited" = "已取消最愛";
+"Unlimited searches" = "無限次搜尋";
 "Unlock full discovery" = "解鎖完整探索功能";
 "Unmute All" = "全部取消靜音";
 "Unmute site" = "取消靜音網站";
@@ -1243,11 +1296,13 @@
 "Voice" = "語音";
 "Voice and music balance" = "語音與音樂平衡";
 "Voice settings" = "語音設定";
+"Waiting for a verdict…" = "等待結果…";
 "Warm" = "暖色";
 "Web" = "網頁";
 "Web Feeds from any website, even without RSS" = "任何網站的網頁訂閱來源，即使沒有 RSS 也可以";
 "Wednesday" = "星期三";
 "Weekly" = "每週";
+"Weeknight vegetarian recipes with step-by-step photos" = "平日晚餐的蔬食食譜，附上逐步照片";
 "Welcome back" = "歡迎回來";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "你 👍 %1$@ 和 👎 %2$@ 這個網站的哪些地方？";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "你 👍 %1$@ 和 👎 %2$@ 這篇文章的哪些地方？";
@@ -1286,6 +1341,7 @@
 "Your premium pro subscription is active" = "你的 Premium Pro 訂閱已啟用";
 "Your premium subscription is active" = "你的 Premium 訂閱已啟用";
 "Your reading list" = "你的閱讀清單";
+"Your searches" = "你的搜尋";
 "You’re all set up." = "一切就緒。";
 "at %@" = "於 %@";
 "by %@" = "由 %@ 撰寫";

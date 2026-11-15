@@ -254,6 +254,13 @@ msgstr[1] "%(count)s стрічки"
 msgstr[2] "%(count)s стрічок"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "Поки що %(count)s стрічка"
+msgstr[1] "Поки що %(count)s стрічки"
+msgstr[2] "Поки що %(count)s стрічок"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s підписник"
@@ -649,6 +656,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "Сьогодні залишилося пошуків: %(remaining)s із %(limit)s"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1364,6 +1379,9 @@ msgstr "Дозволені домени"
 msgid "Alphabetical"
 msgstr "За алфавітом"
 
+msgid "Already in NewsBlur’s feed index"
+msgstr "Уже є в індексі стрічок NewsBlur"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
@@ -1665,6 +1683,9 @@ msgstr "На основі ваших інтересів"
 msgid "Begin Training"
 msgstr "Почати навчання"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Звіти про велотуризм і далекі велосипедні подорожі"
+
 msgid "Bio"
 msgstr "Про себе"
 
@@ -1715,6 +1736,9 @@ msgstr "Назва Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblogs"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Огляди нових науково-фантастичних і фентезійних книжок"
 
 msgid "Bookmarklet"
 msgstr "Букмарклет"
@@ -2400,6 +2424,9 @@ msgstr "Видалення..."
 msgid "Delivery"
 msgstr "Подача"
 
+msgid "Describe"
+msgstr "Описати"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Опишіть статтю, яку шукаєте, і ми повторно проаналізуємо сторінку, щоб знайти її."
 
@@ -2408,11 +2435,20 @@ msgstr ""
 "Опишіть тему, і ШІ оцінюватиме кожну статтю за вашим запитом, щоб зосередити увагу на відповідних або "
 "приховати їх."
 
+msgid "Describe the feeds you’re looking for"
+msgstr "Опишіть, які стрічки ви шукаєте"
+
 msgid "Describe what to focus or hide"
 msgstr "Опишіть, на чому зосередитися або що приховати"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Опишіть, що потрібно шукати, і ШІ проаналізує зображення кожної статті відповідно до вашого запиту."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "Опишіть, що ви хочете читати, і NewsBlur знайде відповідні стрічки"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Пошук стрічок за описом — це функція Premium. Перейдіть на вищий план, щоб шукати за описом."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2528,6 +2564,9 @@ msgstr "Не показувати попередній перегляд, від�
 
 msgid "Don't show a thumbnail"
 msgstr "Не показувати мініатюру"
+
+msgid "Done"
+msgstr "Готово"
 
 msgid "Done!"
 msgstr "Готово!"
@@ -2687,6 +2726,9 @@ msgstr "Увімкнути групування статей"
 
 msgid "Enable the sites you want"
 msgstr "Увімкніть потрібні сайти"
+
+msgid "Engineers writing about how large systems fail"
+msgstr "Інженери про те, як виходять з ладу великі системи"
 
 msgid "English"
 msgstr "Англійська"
@@ -2871,6 +2913,9 @@ msgstr "Обличчя"
 msgid "Fact check this story"
 msgstr "Перевірити факти в цій статті"
 
+msgid "Failed"
+msgstr "Не вдалося"
+
 msgid "Failed to connect to server"
 msgstr "Не вдалося підключитися до сервера"
 
@@ -3040,6 +3085,9 @@ msgstr "Файли"
 msgid "Filled Icons"
 msgstr "Заповнені піктограми"
 
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Плівкова фотографія з нотатками про камери та фотоплівку"
+
 msgid "Filter by date range"
 msgstr "Фільтрувати за діапазоном дат"
 
@@ -3095,6 +3143,16 @@ msgstr "Знайти друзів із %(value_1)s"
 
 msgid "Find Friends"
 msgstr "Знайти друзів"
+
+msgid "Find feeds"
+msgstr "Знайти стрічки"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "Знайти стрічки про «%(term)s»"
+
+msgid "Find feeds by describing them"
+msgstr "Знайти стрічки за описом"
 
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Знайдіть свою унікальну адресу NewsBlur у вікні «Поштові розсилки»."
@@ -3249,6 +3307,13 @@ msgid "Forwarding email address"
 msgstr "Адреса електронної пошти для пересилання"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "За вашим описом знайдено %(count)s стрічку"
+msgstr[1] "За вашим описом знайдено %(count)s стрічки"
+msgstr[2] "За вашим описом знайдено %(count)s стрічок"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "Знайдено %(count)s шаблон. Виберіть той, що найкраще відповідає потрібним вам статтям."
@@ -3257,6 +3322,12 @@ msgstr[2] "Знайдено %(count)s шаблонів. Виберіть той,
 
 msgid "Found in the Account dialog"
 msgstr "Знайдіть у вікні «Обліковий запис»"
+
+msgid "Found on the web"
+msgstr "Знайдено в інтернеті"
+
+msgid "Found on the web during this search"
+msgstr "Знайдено в інтернеті під час цього пошуку"
 
 msgid "Free"
 msgstr "Безкоштовно"
@@ -3646,6 +3717,9 @@ msgstr "Рівень емоційності"
 msgid "How often"
 msgstr "Як часто"
 
+msgid "How well this feed matches your description"
+msgstr "Наскільки ця стрічка відповідає вашому опису"
+
 msgid "I'm Following"
 msgstr "Я стежу"
 
@@ -3764,6 +3838,9 @@ msgstr "Індексація ваших стрічок для пошуку"
 msgid "Indexing..."
 msgstr "Індексація..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "Незалежні розробники ігор, які розповідають про свою роботу над грою"
+
 msgid "Infrequent Site Stories"
 msgstr "Статті з нечасто оновлюваних сайтів"
 
@@ -3822,6 +3899,12 @@ msgstr "Січень"
 
 msgid "Japanese"
 msgstr "Японська"
+
+msgid "Judging"
+msgstr "Оцінювання"
+
+msgid "Judging…"
+msgstr "Оцінювання…"
 
 msgid "July"
 msgstr "Липень"
@@ -4002,8 +4085,17 @@ msgstr "Завантаження голосів..."
 msgid "Loading your blocklist settings..."
 msgstr "Завантаження налаштувань списку блокування…"
 
+msgid "Loading your search…"
+msgstr "Завантаження результатів пошуку…"
+
 msgid "Loading..."
 msgstr "Завантаження..."
+
+msgid "Loading…"
+msgstr "Завантаження…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Місцеві новини та події в Портленді, штат Орегон"
 
 msgid "Location"
 msgstr "Розташування"
@@ -4025,6 +4117,9 @@ msgstr "Довгі статті"
 
 msgid "Long Reads on NewsBlur"
 msgstr "Довгі статті на NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "Довгі есе про міста, житло та громадський транспорт"
 
 msgid "Long reads for later"
 msgstr "Довгі статті на потім"
@@ -4195,6 +4290,10 @@ msgstr "Збіг за дубльованим заголовком"
 
 msgid "Matched via related topics"
 msgstr "Збіг за пов’язаними темами"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "Збіг за запитом «%(query)s»"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Знаходить статті, у заголовках яких є всі ключові слова"
@@ -4432,6 +4531,9 @@ msgstr "Безстроково"
 msgid "Never gonna expire. Congrats!"
 msgstr "Термін дії ніколи не закінчиться. Вітаємо!"
 
+msgid "New"
+msgstr "Нові"
+
 msgid "New Arrivals"
 msgstr "Нові надходження"
 
@@ -4488,6 +4590,9 @@ msgstr "NewsBlur, підключений до інших сервісів"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur визначив мову вашого браузера: %(language)s."
 
+msgid "NewsBlur index"
+msgstr "Індекс NewsBlur"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur наразі не працює. <br> Спробуйте незабаром."
 
@@ -4499,6 +4604,13 @@ msgstr "NewsBlur автоматично відстежує зміни на ст�
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur на iOS з повним набором функцій"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"NewsBlur читає ваш опис, шукає у своєму індексі стрічок і відкритому інтернеті, а потім оцінює кожен "
+"результат. Це може тривати хвилину."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur автоматично знайде RSS-стрічку цього сайту."
@@ -4574,6 +4686,9 @@ msgstr "Стрічок не знайдено"
 
 msgid "No feeds found in this category."
 msgstr "У цій категорії стрічок не знайдено."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "За цим описом не знайдено стрічок. Спробуйте сформулювати його інакше."
 
 msgid "No folders match"
 msgstr "Папок не знайдено"
@@ -5151,6 +5266,9 @@ msgstr "Для кожного сайту"
 msgid "Per-feed notification settings"
 msgstr "Налаштування сповіщень для кожної стрічки"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Особисті блоги про відновлення старих будинків"
+
 msgid "Phrase to match in story text"
 msgstr "Фраза для пошуку в тексті статті"
 
@@ -5287,6 +5405,9 @@ msgstr[2] "Пробний період Premium (%(count)s днів)"
 
 msgid "Premium details"
 msgstr "Деталі Premium"
+
+msgid "Premium feature"
+msgstr "Функція Premium"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
@@ -5660,6 +5781,9 @@ msgstr "Вилучити"
 msgid "Remove from Up Next"
 msgstr "Видалити з черги «Далі»"
 
+msgid "Remove from history"
+msgstr "Видалити з історії"
+
 msgid "Remove this list"
 msgstr "Видалити цей список"
 
@@ -5763,6 +5887,9 @@ msgstr "Повторити"
 
 msgid "Retry fetching and parsing"
 msgstr "Повторити завантаження й обробку"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "Огляди нових програм для iOS із великою кількістю знімків екрана"
 
 msgid "Rewinding..."
 msgstr "Повернення назад..."
@@ -5930,6 +6057,9 @@ msgstr "Запланована доставка (щодня або двічі н
 msgid "Science"
 msgstr "Наука"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Науковці простою мовою пояснюють нові дослідження"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Класифікатори з обмеженою сферою дії доступні лише передплатникам %(plan)s."
@@ -5955,6 +6085,9 @@ msgstr "Шукайте серед усіх збережених статей і 
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Шукайте в усіх своїх підписках за допомогою повнотекстового пошуку на базі Elasticsearch."
+
+msgid "Search again"
+msgstr "Шукати знову"
 
 msgid "Search archives..."
 msgstr "Пошук в архівах..."
@@ -6024,6 +6157,9 @@ msgstr "Шукайте у своїх статтях"
 msgid "Search: \"%(value_1)s\""
 msgstr "Пошук: «%(value_1)s»"
 
+msgid "Searches you run will be kept here."
+msgstr "Тут зберігатимуться ваші пошукові запити."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "Пошук у <b>%(feed_title)s</b> за запитом «<b>%(query)s</b>»"
@@ -6031,11 +6167,23 @@ msgstr "Пошук у <b>%(feed_title)s</b> за запитом «<b>%(query)s</
 msgid "Searching RSS feeds..."
 msgstr "Пошук RSS-стрічок..."
 
+msgid "Searching feeds"
+msgstr "Пошук стрічок"
+
+msgid "Searching for"
+msgstr "Пошук"
+
 msgid "Searching saved stories..."
 msgstr "Пошук у збережених статтях..."
 
+msgid "Searching the web"
+msgstr "Пошук в інтернеті"
+
 msgid "Searching your archive..."
 msgstr "Пошук в архіві..."
+
+msgid "Searching…"
+msgstr "Пошук…"
 
 msgid "Seconds to skip backward"
 msgstr "Секунд для перемотування назад"
@@ -6375,8 +6523,8 @@ msgstr "Сповіщення сайту"
 msgid "Site Settings"
 msgstr "Налаштування сайту"
 
-msgid "Site URL or search by name..."
-msgstr "URL сайту або пошук за назвою..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL сайту, назва або опишіть, що хочете читати"
 
 msgid "Site by Site"
 msgstr "Окремо для кожного сайту"
@@ -6422,6 +6570,9 @@ msgstr "Соціальні функції"
 
 msgid "Social Connections"
 msgstr "Соціальні зв’язки"
+
+msgid "Something went wrong while searching."
+msgstr "Під час пошуку сталася помилка."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6565,6 +6716,12 @@ msgstr "Починаємо категоризацію..."
 
 msgid "Starting trial..."
 msgstr "Починаємо пробний період..."
+
+msgid "Starting your search…"
+msgstr "Початок пошуку…"
+
+msgid "Starting…"
+msgstr "Запуск…"
 
 msgid "Statistics"
 msgstr "Статистика"
@@ -6985,6 +7142,12 @@ msgstr "Дякуємо! У вас є %(bold_start)sобліковий запис
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Дякуємо! У вас %(bold_start)sобліковий запис Premium Pro%(bold_end)s."
 
+msgid "That search could not be loaded."
+msgstr "Не вдалося завантажити цей пошук."
+
+msgid "That search is no longer in your history."
+msgstr "Цього пошуку більше немає у вашій історії."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Служба ШІ надто довго не відповідала. Спробуйте ще раз."
 
@@ -7064,6 +7227,9 @@ msgstr "Видавець вимкнув оригінальну сторінку.
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "HTML-код сторінки завантажується та аналізується для визначення структури вмісту."
+
+msgid "The search could not be started."
+msgstr "Не вдалося почати пошук."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
@@ -7452,6 +7618,9 @@ msgstr "Спробуйте інший пошуковий запит або вс�
 msgid "Try again"
 msgstr "Спробувати ще раз"
 
+msgid "Try describing something like"
+msgstr "Спробуйте описати щось на кшталт"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "Спробуйте інші ключові слова або очистьте пошук, щоб переглянути все."
 
@@ -7545,6 +7714,9 @@ msgstr "Невідома помилка"
 
 msgid "Unknown question"
 msgstr "Невідоме запитання"
+
+msgid "Unlimited searches"
+msgstr "Необмежена кількість пошуків"
 
 msgid "Unlock"
 msgstr "Розблокувати"
@@ -7816,6 +7988,9 @@ msgstr "Не вдалося записати голос. Спробуйте ще
 msgid "Voice settings"
 msgstr "Налаштування голосу"
 
+msgid "Waiting for a verdict…"
+msgstr "Очікування результату…"
+
 msgid "Warning: This is actually permanent"
 msgstr "Увага: цю дію неможливо скасувати"
 
@@ -7867,6 +8042,9 @@ msgstr "Середа"
 
 msgid "Weekly"
 msgstr "Щотижня"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Вегетаріанські рецепти на будні з покроковими фото"
 
 msgid "Welcome to NewsBlur"
 msgstr "Ласкаво просимо до NewsBlur"
@@ -8268,6 +8446,9 @@ msgstr "Термін дії вашого преміум-акаунта заве�
 
 msgid "Your profile"
 msgstr "Ваш профіль"
+
+msgid "Your searches"
+msgstr "Ваші пошукові запити"
 
 msgid "Your subscription is no longer active."
 msgstr "Термін дії вашої підписки завершився."

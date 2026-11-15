@@ -11,6 +11,7 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@ 文件夹，已折叠，%2$@";
 "%1$@ followed %2$@." = "%1$@ 关注了 %2$@。";
 "%1$@ of %2$@ of listening left this week" = "本周还剩 %1$@，共 %2$@ 收听时长";
+"%1$@ of %2$@ searches left today" = "今天还剩 %1$@ / %2$@ 次搜索";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 个网站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@ / %2$@ 次文章试听";
 "%1$@ on all sites (%2$@)" = "%1$@（所有网站，%2$@）";
@@ -38,6 +39,7 @@
 "%@ feeds added." = "已添加 %@ 个订阅源。";
 "%@ feeds couldn’t be added." = "无法添加 %@ 个订阅源。";
 "%@ feeds selected" = "已选择 %@ 个订阅源";
+"%@ feeds so far" = "目前已有 %@ 个订阅源";
 "%@ focused stories" = "%@ 篇聚焦文章";
 "%@ folder" = "%@ 文件夹";
 "%@ free story previews left today" = "今天还剩 %@ 次免费文章试听";
@@ -59,7 +61,10 @@
 "%@ subscribers" = "%@ 位订阅者";
 "%@ unread stories" = "%@ 篇未读文章";
 "%@ voice previews left" = "剩余 %@ 次语音试听";
+"%@/10" = "%@/10";
 "%@/story" = "%@/篇文章";
+"%@d ago" = "%@ 天前";
+"%@w ago" = "%@ 周前";
 "%@×" = "%@×";
 "%ldd ago" = "%ld 天前";
 "%ldh ago" = "%ld 小时前";
@@ -197,7 +202,9 @@
 "Back %@ seconds" = "后退 %@ 秒";
 "Back to story titles" = "返回文章标题";
 "Based on your interests" = "根据你的兴趣";
+"Bike touring and long-distance cycling trip reports" = "自行车旅行与长途骑行游记";
 "Black" = "黑色";
+"Book reviews of new science fiction and fantasy" = "新科幻与奇幻作品书评";
 "Bottom" = "底部";
 "Brightness Override" = "按亮度切换主题";
 "Brightness threshold" = "亮度阈值";
@@ -310,9 +317,13 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "删除账户将永久移除你的订阅源、已保存的文章和账户数据。此操作无法撤销。";
 "Deleting..." = "正在删除…";
 "Delivery" = "朗读风格";
+"Describe" = "描述";
 "Describe a topic and AI will score each story against your prompt to focus or hide matches." = "描述一个主题，AI 会根据你的提示为每篇文章评分，以聚焦或隐藏匹配的文章。";
+"Describe the feeds you’re looking for, like “reviews of new iOS apps with screenshots”" = "描述你要查找的订阅源，例如“带截图的新 iOS 应用评测”";
 "Describe what to focus or hide" = "描述要聚焦或隐藏的内容";
 "Describe what to look for and AI will analyze each story’s images against your prompt." = "描述你要查找的内容，AI 会根据你的提示分析每篇文章中的图片。";
+"Describe what you want to read and NewsBlur finds matching feeds" = "描述你想读的内容，NewsBlur 会找到匹配的订阅源";
+"Describing the feeds you want is a premium feature. Upgrade to search by description." = "描述你想要的订阅源是高级版功能。升级后即可按描述搜索。";
 "Discover" = "发现";
 "Discover more to read" = "发现更多可阅读内容";
 "Discover related sites" = "发现相关网站";
@@ -344,6 +355,7 @@
 "Email" = "电子邮件";
 "Ember Orange" = "余烬橙";
 "Enabled" = "已启用";
+"Engineers writing about how large systems fail" = "工程师撰写大型系统故障分析";
 "Enter URL phrase..." = "输入网址短语…";
 "Enter a custom search query..." = "输入自定义搜索查询…";
 "Enter a web page URL..." = "输入网页 URL…";
@@ -373,6 +385,7 @@
 "Extra Small" = "超小";
 "Extra Tall" = "特高";
 "Extra small" = "超小";
+"Failed" = "失败";
 "Faster" = "更快";
 "Favorited" = "已点赞";
 "Favoriting" = "点赞中";
@@ -387,9 +400,13 @@
 "Fetching recent stories..." = "正在获取近期文章…";
 "Fetching stories from this site..." = "正在从此网站获取文章…";
 "Fetching text..." = "正在获取文本…";
+"Film photography with notes on cameras and film stocks" = "胶片摄影，以及相机和胶卷的使用心得";
 "Filter" = "筛选";
 "Filter stories by date range" = "按日期范围筛选文章";
 "Find Friends" = "查找好友";
+"Find feeds" = "查找订阅源";
+"Find feeds about “%@”" = "查找关于“%@”的订阅源";
+"Find feeds by describing them" = "通过描述查找订阅源";
 "Find in Feed" = "在订阅源中查找";
 "Find in Sites" = "在网站中查找";
 "Find in feed" = "在订阅源中查找";
@@ -429,6 +446,8 @@
 "Forgot Password?" = "忘记密码？";
 "Forgot your password?" = "忘记密码？";
 "Forward %@ seconds" = "前进 %@ 秒";
+"Found %@ feeds that match your description" = "找到 %@ 个符合描述的订阅源";
+"Found on the web" = "在网上找到";
 "Frequency" = "频率";
 "Friday" = "星期五";
 "Friends" = "好友";
@@ -484,6 +503,7 @@
 "Import or upload sites" = "导入或上传网站";
 "Imported %@ sites" = "已导入 %@ 个网站";
 "Importing sites..." = "正在导入网站…";
+"In progress" = "进行中";
 "In-app Safari" = "应用内 Safari";
 "In-app browser" = "应用内浏览器";
 "Include" = "包含";
@@ -492,6 +512,7 @@
 "Include in bundle" = "加入合集";
 "Included in bundle" = "已加入合集";
 "Increase or remove your limit" = "提高或移除你的限额";
+"Indie game developers writing about their work in progress" = "独立游戏开发者分享他们正在开发的作品";
 "Infrequent Site Stories" = "低频网站文章";
 "Infrequent Stories" = "低频更新的文章";
 "Infrequent stories per month" = "低频网站的每月文章数上限";
@@ -502,6 +523,8 @@
 "Interactions" = "互动";
 "Invalid: %@" = "无效：%@";
 "Invoice" = "发票";
+"Judging" = "正在判断";
+"Judging…" = "正在判断…";
 "Keeps the dark icon no matter how your device is set." = "无论设备设置如何，图标始终保持深色。";
 "Keeps the light icon no matter how your device is set." = "无论设备如何设置，始终显示浅色图标。";
 "Keyboard Shortcuts" = "键盘快捷键";
@@ -540,8 +563,10 @@
 "Loading sources" = "正在加载来源";
 "Loading voices…" = "正在加载语音…";
 "Loading your feeds…" = "正在加载你的订阅源…";
+"Loading your search…" = "正在加载你的搜索…";
 "Loading..." = "正在加载…";
 "Loading…" = "正在加载…";
+"Local news and events in Portland, Oregon" = "俄勒冈州波特兰市的本地新闻与活动";
 "Log In" = "登录";
 "Log Out" = "退出登录";
 "Logged in as %@" = "已以 %@ 身份登录";
@@ -553,6 +578,7 @@
 "Logout" = "退出登录";
 "Long Reads" = "长篇阅读";
 "Long [preview length]" = "长";
+"Long essays about cities, housing and public transit" = "关于城市、住房和公共交通的长篇文章";
 "Long press" = "长按";
 "Long press on feeds and folders" = "长按订阅源和文件夹";
 "Long press on story titles" = "长按文章标题";
@@ -608,6 +634,8 @@
 "Mark this site as read" = "将此网站标记为已读";
 "Mark this story as read" = "将这篇文章标为已读";
 "Match" = "匹配";
+"Match score %@" = "匹配分数 %@";
+"Matched “%@”" = "匹配“%@”";
 "Matches story" = "文章中有匹配项";
 "Meadow Sage" = "鼠尾草绿";
 "Medium [grid height]" = "中";
@@ -666,6 +694,7 @@
 "Natural language text and image classifiers" = "自然语言文本和图像分类器";
 "Nested" = "嵌套";
 "Never" = "从不";
+"New" = "新建";
 "New Folder" = "新建文件夹";
 "New Site" = "新网站";
 "New folder name" = "新文件夹名称";
@@ -676,7 +705,9 @@
 "NewsBlur Premium" = "NewsBlur 高级版";
 "NewsBlur checks for changes and delivers new stories to your feed." = "NewsBlur 会检查变化，并将新文章推送到你的订阅源。";
 "NewsBlur detected %@ from your device." = "NewsBlur 检测到你的设备使用的是 %@。";
+"NewsBlur index" = "NewsBlur 索引";
 "NewsBlur password" = "NewsBlur 密码";
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It can take a minute." = "NewsBlur 会读取你的描述，在订阅源索引和开放网络中搜索，然后评估每个匹配结果。可能需要一分钟。";
 "Next" = "下一步";
 "Next Folder" = "下一个文件夹";
 "Next Site" = "下一个网站";
@@ -693,6 +724,7 @@
 "No Story Lists" = "无文章列表";
 "No Widget Sites" = "没有小组件网站";
 "No briefings yet" = "暂无简报";
+"No feeds matched that description. Try describing it another way." = "没有订阅源符合该描述。试着换种方式描述。";
 "No feeds to show yet. Try another interest or search all sites." = "暂无订阅源可显示。请尝试其他兴趣，或搜索所有网站。";
 "No friends to suggest." = "没有可推荐的好友。";
 "No interests or sites found. Try another search." = "未找到兴趣或网站。请尝试其他搜索词。";
@@ -773,6 +805,7 @@
 "Pause Listening" = "暂停收听";
 "Percentage of the visible story scrolled by Space or Shift-Space" = "按空格键或 Shift-Space 滚动可见文章的百分比";
 "Permanently delete account" = "永久删除账户";
+"Personal blogs about restoring old houses" = "记录老房子修复过程的个人博客";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "选择你希望 NewsBlur 使用的语言。你可以随时在“偏好设置”中更改。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "选择你希望 NewsBlur 使用的语言。你可以随时在 NewsBlur 菜单中更改。";
 "Pick which model writes your Daily Briefing" = "选择用于撰写每日简报的模型";
@@ -800,6 +833,7 @@
 "Premium Archive" = "高级归档版";
 "Premium Pro" = "高级专业版";
 "Premium Subscription" = "高级订阅";
+"Premium feature" = "高级版功能";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "高级版订阅者可以选择自定义的 NewsBlur 图标。每种样式都包含浅色和深色版本。";
 "Preparing audio…" = "正在准备音频…";
 "Preview ended. Premium Archive unlocks full stories" = "试听已结束。高级归档版可解锁完整文章";
@@ -838,6 +872,7 @@
 "Read Widely Read Stories" = "阅读广受阅读的文章";
 "Read Widget Site Stories" = "阅读小组件网站文章";
 "Read by %@" = "由 %@ 朗读";
+"Reading" = "正在阅读";
 "Reading Stories" = "阅读文章";
 "Reading a story" = "阅读文章";
 "Reading by folder is only available to" = "按文件夹阅读仅适用于";
@@ -859,6 +894,7 @@
 "Reloading..." = "正在重新加载…";
 "Remove This List" = "移除此列表";
 "Remove from Up Next" = "从接下来播放中移除";
+"Remove from history" = "从历史记录中移除";
 "Removed from Up Next" = "已从接下来播放中移除";
 "Rename" = "重命名";
 "Rename \"%@\"" = "重命名“%@”";
@@ -882,6 +918,7 @@
 "Retry" = "重试";
 "Retry Google Reader" = "重试 Google Reader";
 "Retry icons" = "重新加载图标";
+"Reviews of new iOS apps with lots of screenshots" = "配有大量截图的新 iOS 应用评测";
 "River of News (reading by folder)" = "新闻流（按文件夹阅读）";
 "Rows" = "行";
 "Ruby Red" = "宝石红";
@@ -909,10 +946,12 @@
 "Saving search..." = "正在保存搜索…";
 "Saving..." = "正在保存…";
 "Schedule" = "安排";
+"Scientists explaining new research in plain language" = "科学家用通俗易懂的语言解读最新研究";
 "Scroll horizontally" = "横向滚动";
 "Scroll to Comments" = "滚动到评论";
 "Scroll to comments" = "滚动到评论";
 "Search YouTube channels..." = "搜索 YouTube 频道…";
+"Search again" = "再次搜索";
 "Search feeds" = "搜索订阅源";
 "Search interests and sites" = "搜索兴趣和网站";
 "Search newsletters..." = "搜索简报…";
@@ -921,6 +960,10 @@
 "Search stories" = "搜索文章";
 "Search subreddits..." = "搜索 Reddit 子版块…";
 "Search voices" = "搜索语音";
+"Searches you run will be kept here." = "你进行的搜索会保存在这里。";
+"Searching feeds" = "正在搜索订阅源";
+"Searching for" = "正在搜索";
+"Searching the web" = "正在搜索网页";
 "Searching…" = "正在搜索…";
 "Sections" = "版块";
 "Select All" = "全选";
@@ -1008,6 +1051,7 @@
 "Small Right" = "右侧小图";
 "Small [text size]" = "小";
 "Some feed icons couldn’t load." = "部分订阅源图标无法加载。";
+"Something went wrong while searching." = "搜索时出了点问题。";
 "Sources" = "来源";
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "空格键和 Shift-Space 按可见文章的此百分比滚动。滚动到底部时，按空格键打开下一篇未读文章。滚动到顶部时，按 Shift-Space 打开上一篇文章。";
 "Space scroll amount" = "空格键滚动幅度";
@@ -1021,6 +1065,8 @@
 "Standard" = "标准";
 "Start music in the Music app or Spotify and Listen reads over it. That app's controls take over the lock screen." = "在“音乐”应用或 Spotify 中播放音乐，Listen 会在音乐上方朗读。该应用的控制项会接管锁定屏幕。";
 "Start reading" = "开始阅读";
+"Starting your search…" = "正在开始搜索…";
+"Starting…" = "正在开始…";
 "Statistics" = "统计";
 "Statistics…" = "统计…";
 "Stay connected" = "保持联系";
@@ -1112,6 +1158,7 @@
 "Text from yesterday" = "昨天的文本";
 "Text view" = "文本视图";
 "Text view conveniently extracts the story" = "文本视图可便捷地提取文章内容";
+"That search could not be loaded." = "无法加载该搜索。";
 "That was a 30 second preview. Premium Archive unlocks full stories." = "这是 30 秒试听。升级到高级归档版即可解锁完整文章。";
 "The audio couldn't be loaded. Try again in a moment." = "无法加载音频。请稍后重试。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "完整的文本视图是<a href=\"http://ios.newsblur.com/premium\">高级功能</a>";
@@ -1119,6 +1166,9 @@
 "The icon follows your device's light and dark appearance." = "图标会跟随设备的浅色和深色外观。";
 "The most important stories from your feeds" = "订阅源中最重要的文章";
 "The request failed. Please try again." = "请求失败，请重试。";
+"The search could not be started." = "无法开始搜索。";
+"The search could not be started: %@" = "无法开始搜索：%@";
+"The search is taking too long. Try searching again." = "搜索耗时过长，请重试。";
 "The story doesn't link anywhere." = "这篇文章没有链接到任何地方。";
 "Theme" = "主题";
 "Theme variant for dark mode" = "深色模式主题变体";
@@ -1143,6 +1193,7 @@
 "Title only" = "仅标题";
 "Titles in grid" = "网格中的标题";
 "Titles in list" = "列表中的标题";
+"Today" = "今天";
 "Toggle Full Screen" = "切换全屏";
 "Toggle Read/Unread" = "切换已读/未读";
 "Toggle read/unread" = "切换已读/未读状态";
@@ -1168,6 +1219,7 @@
 "Try %@" = "试读 %@";
 "Try again" = "重试";
 "Try another name, or paste a site URL in Search." = "请尝试其他名称，或在搜索中粘贴网站网址。";
+"Try describing something like" = "试着描述类似这样的内容";
 "Try search again" = "重新搜索";
 "Trying Feed" = "正在试读订阅源";
 "Tuesday" = "星期二";
@@ -1192,6 +1244,7 @@
 "Unable to save notification settings." = "无法保存通知设置。";
 "Understand" = "了解";
 "Unfavorited" = "已取消点赞";
+"Unlimited searches" = "不限次数搜索";
 "Unlock full discovery" = "解锁完整发现功能";
 "Unmute All" = "全部取消屏蔽";
 "Unmute site" = "取消屏蔽网站";
@@ -1243,11 +1296,13 @@
 "Voice" = "语音";
 "Voice and music balance" = "语音和音乐平衡";
 "Voice settings" = "语音设置";
+"Waiting for a verdict…" = "正在等待评估结果…";
 "Warm" = "暖色";
 "Web" = "网页";
 "Web Feeds from any website, even without RSS" = "来自任何网站的网页订阅源，即使没有 RSS";
 "Wednesday" = "星期三";
 "Weekly" = "每周";
+"Weeknight vegetarian recipes with step-by-step photos" = "适合工作日晚餐的素食食谱，附分步照片";
 "Welcome back" = "欢迎回来";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "你对这个网站中哪些内容 👍 %1$@，又有哪些内容 👎 %2$@？";
 "What do you 👍 %1$@ and 👎 %2$@ about this story?" = "你对这篇文章中哪些内容 👍 %1$@，又有哪些内容 👎 %2$@？";
@@ -1286,6 +1341,7 @@
 "Your premium pro subscription is active" = "你的高级专业版订阅已生效";
 "Your premium subscription is active" = "你的高级版订阅已生效";
 "Your reading list" = "你的阅读列表";
+"Your searches" = "你的搜索";
 "You’re all set up." = "一切就绪。";
 "at %@" = "时间：%@";
 "by %@" = "作者：%@";

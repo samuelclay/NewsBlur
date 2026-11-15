@@ -218,6 +218,24 @@
 			<string>%@ feeds seleccionados</string>
 		</dict>
 	</dict>
+	<key>%@ feeds so far</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_feeds_so_far@</string>
+		<key>describe_feeds_so_far</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ feeds hasta ahora</string>
+			<key>one</key>
+			<string>%@ feed hasta ahora</string>
+			<key>other</key>
+			<string>%@ feeds hasta ahora</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -684,6 +702,24 @@
 			<string>Avanzar %@ segundo</string>
 			<key>other</key>
 			<string>Avanzar %@ segundos</string>
+		</dict>
+	</dict>
+	<key>Found %@ feeds that match your description</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_found_feeds@</string>
+		<key>describe_found_feeds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Se encontraron %@ feeds que coinciden con tu descripción</string>
+			<key>one</key>
+			<string>Se encontró %@ feed que coincide con tu descripción</string>
+			<key>other</key>
+			<string>Se encontraron %@ feeds que coinciden con tu descripción</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

@@ -78,6 +78,17 @@ import SwiftUI
                     discover.initialTab = tab
                     NewsBlurAppDelegate.shared()?.detailViewController.showDiscoverSites(discover)
                 }
+            },
+            onDescribe: { [weak self] prompt in
+                // AddSiteSheetViewController.swift hands the description to Discover Sites and leaves the sheet clean.
+                self?.dismiss(animated: true) {
+                    Self.sharedViewModel?.searchText = ""
+                    Self.sharedViewModel?.autocompleteResults = []
+                    let discover = DiscoverSitesViewController()
+                    discover.initialTab = .describe
+                    discover.initialDescribePrompt = prompt
+                    NewsBlurAppDelegate.shared()?.detailViewController.showDiscoverSites(discover)
+                }
             }
         )
 

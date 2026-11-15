@@ -9,6 +9,7 @@ enum class AddSiteDiscoveryShortcut(
     val tab: DiscoveryTab,
     @StringRes val titleRes: Int?,
 ) {
+    DESCRIBE(DiscoveryTab.DESCRIBE, R.string.discover_tab_describe),
     WEB(DiscoveryTab.WEB, R.string.discover_tab_web_feed),
     POPULAR(DiscoveryTab.POPULAR, R.string.discover_tab_popular),
     TRENDING(DiscoveryTab.SEARCH, R.string.add_site_shortcut_trending),

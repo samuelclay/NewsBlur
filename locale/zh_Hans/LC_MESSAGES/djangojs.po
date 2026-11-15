@@ -221,6 +221,11 @@ msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s 个订阅源"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "目前有 %(count)s 个订阅源"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s 位关注者"
@@ -518,6 +523,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone、iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "今天还可搜索 %(remaining)s 次，共 %(limit)s 次"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1205,6 +1218,9 @@ msgstr "允许的域名"
 msgid "Alphabetical"
 msgstr "按字母顺序"
 
+msgid "Already in NewsBlur’s feed index"
+msgstr "已在 NewsBlur 的订阅源索引中"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
@@ -1488,6 +1504,9 @@ msgstr "根据你的兴趣"
 msgid "Begin Training"
 msgstr "开始训练"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "自行车旅行与长途骑行游记"
+
 msgid "Bio"
 msgstr "简介"
 
@@ -1536,6 +1555,9 @@ msgstr "Blurblog 标题"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "新科幻与奇幻小说书评"
 
 msgid "Bookmarklet"
 msgstr "书签工具"
@@ -2202,17 +2224,29 @@ msgstr "正在删除…"
 msgid "Delivery"
 msgstr "表达方式"
 
+msgid "Describe"
+msgstr "描述"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "描述一下你要找的文章，我们会重新分析页面并帮你找到它。"
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "描述一个主题，AI 会根据你的提示为每篇文章评分，帮你聚焦或隐藏匹配内容。"
 
+msgid "Describe the feeds you’re looking for"
+msgstr "描述你要查找的订阅源"
+
 msgid "Describe what to focus or hide"
 msgstr "描述要聚焦或隐藏的内容"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "描述你要查找的内容，AI 将根据你的提示分析每篇文章的图片。"
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "描述你想读的内容，让 NewsBlur 为你寻找匹配的订阅源"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "描述你想要的订阅源是高级版功能。升级后即可按描述搜索。"
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2328,6 +2362,9 @@ msgstr "不显示预览，仅显示文章标题"
 
 msgid "Don't show a thumbnail"
 msgstr "不显示缩略图"
+
+msgid "Done"
+msgstr "完成"
 
 msgid "Done!"
 msgstr "完成！"
@@ -2475,6 +2512,9 @@ msgstr "启用文章聚类"
 
 msgid "Enable the sites you want"
 msgstr "启用你想要的网站"
+
+msgid "Engineers writing about how large systems fail"
+msgstr "撰写大型系统故障分析的工程师"
 
 msgid "English"
 msgstr "英语"
@@ -2655,6 +2695,9 @@ msgstr "表情"
 msgid "Fact check this story"
 msgstr "核查这篇文章"
 
+msgid "Failed"
+msgstr "失败"
+
 msgid "Failed to connect to server"
 msgstr "无法连接到服务器"
 
@@ -2824,6 +2867,9 @@ msgstr "文件"
 msgid "Filled Icons"
 msgstr "实心图标"
 
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "胶片摄影，以及相机和胶片型号笔记"
+
 msgid "Filter by date range"
 msgstr "按日期范围筛选"
 
@@ -2879,6 +2925,16 @@ msgstr "查找 %(value_1)s 好友"
 
 msgid "Find Friends"
 msgstr "查找好友"
+
+msgid "Find feeds"
+msgstr "查找订阅源"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "查找有关“%(term)s”的订阅源"
+
+msgid "Find feeds by describing them"
+msgstr "通过描述查找订阅源"
 
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "在“电子邮件简报”对话框中查找你的专属 NewsBlur 邮箱地址"
@@ -3027,12 +3083,23 @@ msgid "Forwarding email address"
 msgstr "转发邮箱地址"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "找到 %(count)s 个符合你描述的订阅源"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "找到 %(count)s 种模式。请选择最符合你想要的文章的模式。"
 
 msgid "Found in the Account dialog"
 msgstr "在“账户”对话框中找到"
+
+msgid "Found on the web"
+msgstr "在网上找到"
+
+msgid "Found on the web during this search"
+msgstr "在本次搜索中通过网页找到"
 
 msgid "Free"
 msgstr "免费"
@@ -3418,6 +3485,9 @@ msgstr "情感表达程度"
 msgid "How often"
 msgstr "频率"
 
+msgid "How well this feed matches your description"
+msgstr "此订阅源与你的描述的匹配程度"
+
 msgid "I'm Following"
 msgstr "我关注的人"
 
@@ -3526,6 +3596,9 @@ msgstr "正在为搜索建立订阅源索引"
 msgid "Indexing..."
 msgstr "正在建立索引……"
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "独立游戏开发者分享他们正在开发的作品"
+
 msgid "Infrequent Site Stories"
 msgstr "低频网站文章"
 
@@ -3582,6 +3655,12 @@ msgstr "一月"
 
 msgid "Japanese"
 msgstr "日语"
+
+msgid "Judging"
+msgstr "正在评判"
+
+msgid "Judging…"
+msgstr "正在评估…"
 
 msgid "July"
 msgstr "七月"
@@ -3760,8 +3839,17 @@ msgstr "正在加载语音…"
 msgid "Loading your blocklist settings..."
 msgstr "正在加载你的屏蔽列表设置…"
 
+msgid "Loading your search…"
+msgstr "正在加载你的搜索…"
+
 msgid "Loading..."
 msgstr "正在加载……"
+
+msgid "Loading…"
+msgstr "正在加载…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "俄勒冈州波特兰的本地新闻和活动"
 
 msgid "Location"
 msgstr "位置"
@@ -3783,6 +3871,9 @@ msgstr "长篇阅读"
 
 msgid "Long Reads on NewsBlur"
 msgstr "NewsBlur 上的长篇阅读"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "关于城市、住房和公共交通的长篇文章"
 
 msgid "Long reads for later"
 msgstr "稍后阅读的长篇文章"
@@ -3941,6 +4032,10 @@ msgstr "通过重复标题匹配"
 
 msgid "Matched via related topics"
 msgstr "通过相关主题匹配"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "匹配“%(query)s”"
 
 msgid "Matches story titles containing all keywords"
 msgstr "匹配标题包含所有关键词的文章"
@@ -4168,6 +4263,9 @@ msgstr "永不过期"
 msgid "Never gonna expire. Congrats!"
 msgstr "永不过期。恭喜！"
 
+msgid "New"
+msgstr "新建"
+
 msgid "New Arrivals"
 msgstr "新加入"
 
@@ -4224,6 +4322,9 @@ msgstr "NewsBlur 已连接到其他服务"
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur 根据你的浏览器检测到 %(language)s。"
 
+msgid "NewsBlur index"
+msgstr "NewsBlur 索引"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur 当前不可用。<br> 请稍后重试。"
 
@@ -4235,6 +4336,11 @@ msgstr "NewsBlur 会自动监测页面变化"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "在 iOS 上使用功能齐全的 NewsBlur"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr "NewsBlur 会读取你的描述，搜索其订阅源索引和开放网络，然后评估每个匹配结果。可能需要一分钟。"
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur 将自动查找此网站的 RSS 源。"
@@ -4310,6 +4416,9 @@ msgstr "未找到订阅源"
 
 msgid "No feeds found in this category."
 msgstr "此分类中没有找到订阅源。"
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "没有订阅源符合该描述。试着换种方式描述。"
 
 msgid "No folders match"
 msgstr "没有匹配的文件夹"
@@ -4861,6 +4970,9 @@ msgstr "按网站"
 msgid "Per-feed notification settings"
 msgstr "单个订阅源的通知设置"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "记录老房修复过程的个人博客"
+
 msgid "Phrase to match in story text"
 msgstr "要在文章文本中匹配的短语"
 
@@ -4995,6 +5107,9 @@ msgstr[0] "高级版试用（%(count)s 天）"
 
 msgid "Premium details"
 msgstr "高级版详情"
+
+msgid "Premium feature"
+msgstr "高级版功能"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
@@ -5354,6 +5469,9 @@ msgstr "移除"
 msgid "Remove from Up Next"
 msgstr "从接下来播放中移除"
 
+msgid "Remove from history"
+msgstr "从历史记录中移除"
+
 msgid "Remove this list"
 msgstr "移除此列表"
 
@@ -5455,6 +5573,9 @@ msgstr "重试"
 
 msgid "Retry fetching and parsing"
 msgstr "重新获取并解析"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "新 iOS 应用评测，附有大量截图"
 
 msgid "Rewinding..."
 msgstr "正在回退…"
@@ -5612,6 +5733,9 @@ msgstr "定时发送（每天一次或两次）"
 msgid "Science"
 msgstr "科学"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "用通俗语言解读最新研究的科学家"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "范围限定分类器仅对 %(plan)s 订阅用户开放。"
@@ -5637,6 +5761,9 @@ msgstr "搜索所有已保存的文章和标签"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "使用 Elasticsearch 全文搜索，检索所有订阅内容。"
+
+msgid "Search again"
+msgstr "再次搜索"
 
 msgid "Search archives..."
 msgstr "搜索归档…"
@@ -5706,6 +5833,9 @@ msgstr "搜索你的文章"
 msgid "Search: \"%(value_1)s\""
 msgstr "搜索：“%(value_1)s”"
 
+msgid "Searches you run will be kept here."
+msgstr "你进行的搜索会保存在这里。"
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "正在 <b>%(feed_title)s</b> 中搜索“<b>%(query)s</b>”"
@@ -5713,11 +5843,23 @@ msgstr "正在 <b>%(feed_title)s</b> 中搜索“<b>%(query)s</b>”"
 msgid "Searching RSS feeds..."
 msgstr "正在搜索 RSS 源…"
 
+msgid "Searching feeds"
+msgstr "正在搜索订阅源"
+
+msgid "Searching for"
+msgstr "正在搜索"
+
 msgid "Searching saved stories..."
 msgstr "正在搜索已保存的文章…"
 
+msgid "Searching the web"
+msgstr "正在搜索网页"
+
 msgid "Searching your archive..."
 msgstr "正在搜索你的归档…"
+
+msgid "Searching…"
+msgstr "正在搜索…"
 
 msgid "Seconds to skip backward"
 msgstr "向后跳过的秒数"
@@ -6047,8 +6189,8 @@ msgstr "网站通知"
 msgid "Site Settings"
 msgstr "网站设置"
 
-msgid "Site URL or search by name..."
-msgstr "网站 URL 或按名称搜索…"
+msgid "Site URL, name, or describe what you want to read"
+msgstr "网站网址、名称，或描述你想阅读的内容"
 
 msgid "Site by Site"
 msgstr "逐个网站"
@@ -6094,6 +6236,9 @@ msgstr "社交"
 
 msgid "Social Connections"
 msgstr "社交关系"
+
+msgid "Something went wrong while searching."
+msgstr "搜索时出了点问题。"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6231,6 +6376,12 @@ msgstr "正在开始分类……"
 
 msgid "Starting trial..."
 msgstr "正在开始试用…"
+
+msgid "Starting your search…"
+msgstr "正在开始搜索…"
+
+msgid "Starting…"
+msgstr "正在开始…"
 
 msgid "Statistics"
 msgstr "统计"
@@ -6645,6 +6796,12 @@ msgstr "谢谢！你拥有一个%(bold_start)s高级归档版账户%(bold_end)s�
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "谢谢！你拥有一个%(bold_start)s高级专业版账户%(bold_end)s。"
 
+msgid "That search could not be loaded."
+msgstr "无法加载该搜索。"
+
+msgid "That search is no longer in your history."
+msgstr "该搜索已不在你的历史记录中。"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 服务响应超时，请重试。"
 
@@ -6712,6 +6869,9 @@ msgstr "发布者已禁用原始页面。"
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "抓取并解析页面 HTML，以提取内容结构。"
+
+msgid "The search could not be started."
+msgstr "无法开始搜索。"
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "所选视图会按网站分别记住，因此仅显示摘要的订阅源可以默认使用文本视图。"
@@ -7077,6 +7237,9 @@ msgstr "请尝试其他搜索词，或直接粘贴 URL。"
 msgid "Try again"
 msgstr "重试"
 
+msgid "Try describing something like"
+msgstr "试着描述一下，比如"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "试试其他关键词，或清除搜索以查看全部内容。"
 
@@ -7166,6 +7329,9 @@ msgstr "未知错误"
 
 msgid "Unknown question"
 msgstr "未知问题"
+
+msgid "Unlimited searches"
+msgstr "无限次搜索"
 
 msgid "Unlock"
 msgstr "解锁"
@@ -7421,6 +7587,9 @@ msgstr "语音录制失败，请重试。"
 msgid "Voice settings"
 msgstr "语音设置"
 
+msgid "Waiting for a verdict…"
+msgstr "正在等待评定结果…"
+
 msgid "Warning: This is actually permanent"
 msgstr "警告：此操作无法撤销"
 
@@ -7470,6 +7639,9 @@ msgstr "星期三"
 
 msgid "Weekly"
 msgstr "每周"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "工作日晚餐素食食谱，附分步照片"
 
 msgid "Welcome to NewsBlur"
 msgstr "欢迎使用 NewsBlur"
@@ -7847,6 +8019,9 @@ msgstr "你的高级账户将于以下日期降级："
 
 msgid "Your profile"
 msgstr "你的个人资料"
+
+msgid "Your searches"
+msgstr "你的搜索"
 
 msgid "Your subscription is no longer active."
 msgstr "你的订阅已失效。"

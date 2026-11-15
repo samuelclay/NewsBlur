@@ -221,6 +221,11 @@ msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s ฟีด"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "ฟีด %(count)s รายการจนถึงตอนนี้"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "ผู้ติดตาม %(count)s คน"
@@ -518,6 +523,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "วันนี้เหลือการค้นหา %(remaining)s จาก %(limit)s ครั้ง"
+
+#, python-format
+msgid "%(score)s/10"
+msgstr "%(score)s/10"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1213,6 +1226,9 @@ msgstr "โดเมนที่อนุญาต"
 msgid "Alphabetical"
 msgstr "ตามตัวอักษร"
 
+msgid "Already in NewsBlur’s feed index"
+msgstr "มีอยู่ในดัชนีฟีดของ NewsBlur แล้ว"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
@@ -1500,6 +1516,9 @@ msgstr "อิงตามความสนใจของคุณ"
 msgid "Begin Training"
 msgstr "เริ่มฝึก"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "บันทึกการเดินทางท่องเที่ยวด้วยจักรยานและการปั่นระยะไกล"
+
 msgid "Bio"
 msgstr "ประวัติส่วนตัว"
 
@@ -1548,6 +1567,9 @@ msgstr "ชื่อ Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "รีวิวหนังสือนิยายวิทยาศาสตร์และแฟนตาซีเล่มใหม่"
 
 msgid "Bookmarklet"
 msgstr "บุ๊กมาร์กเล็ต"
@@ -2222,17 +2244,29 @@ msgstr "กำลังลบ..."
 msgid "Delivery"
 msgstr "การนำเสนอ"
 
+msgid "Describe"
+msgstr "อธิบาย"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "อธิบายบทความที่คุณกำลังหา แล้วเราจะวิเคราะห์หน้าเว็บอีกครั้งเพื่อค้นหา"
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "อธิบายหัวข้อ แล้ว AI จะให้คะแนนแต่ละเรื่องตามคำสั่งของคุณ เพื่อเน้นหรือซ่อนเรื่องที่ตรงกัน"
 
+msgid "Describe the feeds you’re looking for"
+msgstr "อธิบายฟีดที่คุณกำลังค้นหา"
+
 msgid "Describe what to focus or hide"
 msgstr "อธิบายสิ่งที่ต้องการเน้นหรือซ่อน"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "อธิบายสิ่งที่ต้องการค้นหา แล้ว AI จะวิเคราะห์ภาพของแต่ละบทความตามคำสั่งของคุณ"
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "อธิบายสิ่งที่คุณต้องการอ่าน แล้วให้ NewsBlur ค้นหาฟีดที่ตรงกัน"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "การอธิบายฟีดที่ต้องการเป็นฟีเจอร์สำหรับสมาชิก Premium อัปเกรดเพื่อค้นหาด้วยคำอธิบาย"
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2348,6 +2382,9 @@ msgstr "ไม่ต้องแสดงตัวอย่าง แสดง�
 
 msgid "Don't show a thumbnail"
 msgstr "ไม่ต้องแสดงภาพขนาดย่อ"
+
+msgid "Done"
+msgstr "เสร็จสิ้น"
 
 msgid "Done!"
 msgstr "เสร็จแล้ว!"
@@ -2497,6 +2534,9 @@ msgstr "เปิดใช้การจัดกลุ่มบทความ
 
 msgid "Enable the sites you want"
 msgstr "เปิดใช้งานเว็บไซต์ที่คุณต้องการ"
+
+msgid "Engineers writing about how large systems fail"
+msgstr "วิศวกรเขียนเกี่ยวกับความล้มเหลวของระบบขนาดใหญ่"
 
 msgid "English"
 msgstr "ภาษาอังกฤษ"
@@ -2679,6 +2719,9 @@ msgstr "ใบหน้า"
 msgid "Fact check this story"
 msgstr "ตรวจสอบข้อเท็จจริงของเรื่องนี้"
 
+msgid "Failed"
+msgstr "ไม่สำเร็จ"
+
 msgid "Failed to connect to server"
 msgstr "เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ"
 
@@ -2848,6 +2891,9 @@ msgstr "ไฟล์"
 msgid "Filled Icons"
 msgstr "ไอคอนแบบทึบ"
 
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "การถ่ายภาพด้วยฟิล์ม พร้อมบันทึกเกี่ยวกับกล้องและชนิดของฟิล์ม"
+
 msgid "Filter by date range"
 msgstr "กรองตามช่วงวันที่"
 
@@ -2903,6 +2949,16 @@ msgstr "ค้นหาเพื่อนจาก %(value_1)s"
 
 msgid "Find Friends"
 msgstr "ค้นหาเพื่อน"
+
+msgid "Find feeds"
+msgstr "ค้นหาฟีด"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "ค้นหาฟีดเกี่ยวกับ “%(term)s”"
+
+msgid "Find feeds by describing them"
+msgstr "ค้นหาฟีดด้วยการอธิบาย"
 
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "ค้นหาที่อยู่อีเมล NewsBlur เฉพาะของคุณได้ในหน้าต่างจดหมายข่าวทางอีเมล"
@@ -3053,12 +3109,23 @@ msgid "Forwarding email address"
 msgstr "ที่อยู่อีเมลสำหรับส่งต่อ"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "พบฟีด %(count)s รายการที่ตรงกับคำอธิบาย"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "พบรูปแบบ %(count)s รูปแบบ เลือกรูปแบบที่ตรงกับบทความที่คุณต้องการมากที่สุด"
 
 msgid "Found in the Account dialog"
 msgstr "พบในกล่องโต้ตอบบัญชี"
+
+msgid "Found on the web"
+msgstr "พบบนเว็บ"
+
+msgid "Found on the web during this search"
+msgstr "พบในเว็บระหว่างการค้นหานี้"
 
 msgid "Free"
 msgstr "ฟรี"
@@ -3448,6 +3515,9 @@ msgstr "ระดับอารมณ์"
 msgid "How often"
 msgstr "ความถี่"
 
+msgid "How well this feed matches your description"
+msgstr "ฟีดนี้ตรงกับคำอธิบายของคุณมากเพียงใด"
+
 msgid "I'm Following"
 msgstr "ฉันกำลังติดตาม"
 
@@ -3560,6 +3630,9 @@ msgstr "กำลังจัดทำดัชนีฟีดของคุณ
 msgid "Indexing..."
 msgstr "กำลังจัดทำดัชนี..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "นักพัฒนาเกมอินดี้ที่เขียนเกี่ยวกับผลงานระหว่างพัฒนา"
+
 msgid "Infrequent Site Stories"
 msgstr "บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย"
 
@@ -3616,6 +3689,12 @@ msgstr "มกราคม"
 
 msgid "Japanese"
 msgstr "ภาษาญี่ปุ่น"
+
+msgid "Judging"
+msgstr "กำลังประเมิน"
+
+msgid "Judging…"
+msgstr "กำลังประเมิน…"
 
 msgid "July"
 msgstr "กรกฎาคม"
@@ -3796,8 +3875,17 @@ msgstr "กำลังโหลดเสียงพูด..."
 msgid "Loading your blocklist settings..."
 msgstr "กำลังโหลดการตั้งค่ารายการบล็อกของคุณ..."
 
+msgid "Loading your search…"
+msgstr "กำลังโหลดการค้นหา…"
+
 msgid "Loading..."
 msgstr "กำลังโหลด..."
+
+msgid "Loading…"
+msgstr "กำลังโหลด…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "ข่าวท้องถิ่นและกิจกรรมในพอร์ตแลนด์ รัฐออริกอน"
 
 msgid "Location"
 msgstr "ตำแหน่งที่ตั้ง"
@@ -3819,6 +3907,9 @@ msgstr "บทความอ่านยาว"
 
 msgid "Long Reads on NewsBlur"
 msgstr "บทความอ่านยาวบน NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "บทความอ่านยาวเกี่ยวกับเมือง ที่อยู่อาศัย และระบบขนส่งสาธารณะ"
 
 msgid "Long reads for later"
 msgstr "บทความยาวไว้อ่านทีหลัง"
@@ -3979,6 +4070,10 @@ msgstr "ตรงกันจากชื่อเรื่องที่ซ้
 
 msgid "Matched via related topics"
 msgstr "ตรงกันจากหัวข้อที่เกี่ยวข้อง"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "ตรงกับ “%(query)s”"
 
 msgid "Matches story titles containing all keywords"
 msgstr "ตรงกับชื่อเรื่องที่มีคำสำคัญทั้งหมด"
@@ -4208,6 +4303,9 @@ msgstr "ไม่มีวันหมดอายุ"
 msgid "Never gonna expire. Congrats!"
 msgstr "ไม่มีวันหมดอายุ ยินดีด้วย!"
 
+msgid "New"
+msgstr "ใหม่"
+
 msgid "New Arrivals"
 msgstr "มาใหม่"
 
@@ -4264,6 +4362,9 @@ msgstr "บริการอื่นๆ ที่เชื่อมต่อ�
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur ตรวจพบ %(language)s จากเบราว์เซอร์ของคุณ"
 
+msgid "NewsBlur index"
+msgstr "ดัชนี NewsBlur"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "ขณะนี้ NewsBlur ใช้งานไม่ได้ <br> โปรดลองอีกครั้งในภายหลัง"
 
@@ -4275,6 +4376,11 @@ msgstr "NewsBlur ตรวจสอบการเปลี่ยนแปลง
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur บน iOS พร้อมฟีเจอร์ครบครัน"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr "NewsBlur อ่านคำอธิบายของคุณ ค้นหาในดัชนีฟีดและเว็บสาธารณะ แล้วประเมินผลลัพธ์แต่ละรายการ อาจใช้เวลาสักครู่"
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur จะค้นหาฟีด RSS ของเว็บไซต์นี้ให้อัตโนมัติ"
@@ -4350,6 +4456,9 @@ msgstr "ไม่พบฟีด"
 
 msgid "No feeds found in this category."
 msgstr "ไม่พบฟีดในหมวดหมู่นี้"
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "ไม่พบฟีดที่ตรงกับคำอธิบายนั้น ลองอธิบายด้วยวิธีอื่น"
 
 msgid "No folders match"
 msgstr "ไม่มีโฟลเดอร์ที่ตรงกัน"
@@ -4903,6 +5012,9 @@ msgstr "แยกตามเว็บไซต์"
 msgid "Per-feed notification settings"
 msgstr "ตั้งค่าการแจ้งเตือนแยกตามฟีด"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "บล็อกส่วนตัวเกี่ยวกับการบูรณะบ้านเก่า"
+
 msgid "Phrase to match in story text"
 msgstr "วลีที่ตรงกับข้อความในบทความ"
 
@@ -5037,6 +5149,9 @@ msgstr[0] "ทดลองใช้ Premium (%(count)s วัน)"
 
 msgid "Premium details"
 msgstr "รายละเอียด Premium"
+
+msgid "Premium feature"
+msgstr "ฟีเจอร์ Premium"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
@@ -5400,6 +5515,9 @@ msgstr "นำออก"
 msgid "Remove from Up Next"
 msgstr "นำออกจากคิวถัดไป"
 
+msgid "Remove from history"
+msgstr "นำออกจากประวัติ"
+
 msgid "Remove this list"
 msgstr "นำรายการนี้ออก"
 
@@ -5501,6 +5619,9 @@ msgstr "ลองอีกครั้ง"
 
 msgid "Retry fetching and parsing"
 msgstr "ลองดึงและแยกวิเคราะห์อีกครั้ง"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "รีวิวแอป iOS ใหม่ที่มีภาพหน้าจอจำนวนมาก"
 
 msgid "Rewinding..."
 msgstr "กำลังย้อนกลับ..."
@@ -5662,6 +5783,9 @@ msgstr "กำหนดเวลาส่ง (ทุกวันหรือว�
 msgid "Science"
 msgstr "วิทยาศาสตร์"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "นักวิทยาศาสตร์อธิบายงานวิจัยใหม่ด้วยภาษาที่เข้าใจง่าย"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "ตัวจัดประเภทแบบกำหนดขอบเขตมีให้เฉพาะสมาชิก %(plan)s เท่านั้น"
@@ -5687,6 +5811,9 @@ msgstr "ค้นหาบทความและแท็กที่บัน
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "ค้นหาข้อความเต็มในรายการติดตามทั้งหมดของคุณด้วย Elasticsearch"
+
+msgid "Search again"
+msgstr "ค้นหาอีกครั้ง"
 
 msgid "Search archives..."
 msgstr "ค้นหาในคลัง…"
@@ -5756,6 +5883,9 @@ msgstr "ค้นหาบทความของคุณ"
 msgid "Search: \"%(value_1)s\""
 msgstr "ค้นหา: \"%(value_1)s\""
 
+msgid "Searches you run will be kept here."
+msgstr "การค้นหาที่คุณทำจะแสดงที่นี่"
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "กำลังค้นหา <b>%(feed_title)s</b> ด้วยคำว่า \"<b>%(query)s</b>\""
@@ -5763,11 +5893,23 @@ msgstr "กำลังค้นหา <b>%(feed_title)s</b> ด้วยคำ�
 msgid "Searching RSS feeds..."
 msgstr "กำลังค้นหาฟีด RSS..."
 
+msgid "Searching feeds"
+msgstr "กำลังค้นหาฟีด"
+
+msgid "Searching for"
+msgstr "กำลังค้นหา"
+
 msgid "Searching saved stories..."
 msgstr "กำลังค้นหาบทความที่บันทึกไว้..."
 
+msgid "Searching the web"
+msgstr "กำลังค้นหาเว็บ"
+
 msgid "Searching your archive..."
 msgstr "กำลังค้นหาในคลังของคุณ..."
+
+msgid "Searching…"
+msgstr "กำลังค้นหา…"
 
 msgid "Seconds to skip backward"
 msgstr "จำนวนวินาทีที่จะข้ามย้อนกลับ"
@@ -6099,8 +6241,8 @@ msgstr "การแจ้งเตือนจากเว็บไซต์"
 msgid "Site Settings"
 msgstr "การตั้งค่าเว็บไซต์"
 
-msgid "Site URL or search by name..."
-msgstr "URL ของเว็บไซต์ หรือค้นหาด้วยชื่อ..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL เว็บไซต์ ชื่อเว็บไซต์ หรืออธิบายสิ่งที่ต้องการอ่าน"
 
 msgid "Site by Site"
 msgstr "ทีละเว็บไซต์"
@@ -6146,6 +6288,9 @@ msgstr "โซเชียล"
 
 msgid "Social Connections"
 msgstr "การเชื่อมต่อทางสังคม"
+
+msgid "Something went wrong while searching."
+msgstr "เกิดข้อผิดพลาดระหว่างค้นหา"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6283,6 +6428,12 @@ msgstr "กำลังเริ่มจัดหมวดหมู่..."
 
 msgid "Starting trial..."
 msgstr "กำลังเริ่มช่วงทดลองใช้..."
+
+msgid "Starting your search…"
+msgstr "กำลังเริ่มค้นหา…"
+
+msgid "Starting…"
+msgstr "กำลังเริ่ม…"
 
 msgid "Statistics"
 msgstr "สถิติ"
@@ -6697,6 +6848,12 @@ msgstr "ขอบคุณ! คุณมีบัญชี %(bold_start)sPremium
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "ขอบคุณ! คุณมีบัญชี %(bold_start)sPremium Pro%(bold_end)s"
 
+msgid "That search could not be loaded."
+msgstr "โหลดการค้นหานี้ไม่ได้"
+
+msgid "That search is no longer in your history."
+msgstr "การค้นหานี้ไม่มีอยู่ในประวัติแล้ว"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "บริการ AI ใช้เวลาตอบกลับนานเกินไป โปรดลองอีกครั้ง"
 
@@ -6772,6 +6929,9 @@ msgstr "ผู้เผยแพร่ปิดใช้งานหน้าเ
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "ระบบจะดึงและแยกวิเคราะห์ HTML ของหน้าเว็บเพื่อแยกโครงสร้างเนื้อหา"
+
+msgid "The search could not be started."
+msgstr "เริ่มการค้นหาไม่ได้"
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
@@ -7151,6 +7311,9 @@ msgstr "ลองใช้คำค้นหาอื่น หรือวา�
 msgid "Try again"
 msgstr "ลองอีกครั้ง"
 
+msgid "Try describing something like"
+msgstr "ลองอธิบายสิ่งที่ต้องการ เช่น"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "ลองใช้คำค้นอื่น หรือล้างการค้นหาเพื่อดูทั้งหมด"
 
@@ -7242,6 +7405,9 @@ msgstr "ข้อผิดพลาดที่ไม่ทราบสาเห
 
 msgid "Unknown question"
 msgstr "ไม่ทราบคำถาม"
+
+msgid "Unlimited searches"
+msgstr "ค้นหาได้ไม่จำกัด"
 
 msgid "Unlock"
 msgstr "ปลดล็อก"
@@ -7497,6 +7663,9 @@ msgstr "บันทึกเสียงไม่สำเร็จ โปร�
 msgid "Voice settings"
 msgstr "การตั้งค่าเสียง"
 
+msgid "Waiting for a verdict…"
+msgstr "กำลังรอผลการตัดสิน…"
+
 msgid "Warning: This is actually permanent"
 msgstr "คำเตือน: การดำเนินการนี้ย้อนกลับไม่ได้"
 
@@ -7546,6 +7715,9 @@ msgstr "วันพุธ"
 
 msgid "Weekly"
 msgstr "รายสัปดาห์"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "สูตรอาหารมังสวิรัติสำหรับมื้อเย็นวันธรรมดา พร้อมภาพทีละขั้นตอน"
 
 msgid "Welcome to NewsBlur"
 msgstr "ยินดีต้อนรับสู่ NewsBlur"
@@ -7931,6 +8103,9 @@ msgstr "บัญชีพรีเมียมของคุณจะปรั
 
 msgid "Your profile"
 msgstr "โปรไฟล์ของคุณ"
+
+msgid "Your searches"
+msgstr "การค้นหาของคุณ"
 
 msgid "Your subscription is no longer active."
 msgstr "การสมัครของคุณไม่มีผลใช้งานแล้ว"

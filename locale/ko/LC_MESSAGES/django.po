@@ -119,6 +119,16 @@ msgid_plural "%(count)s days"
 msgstr[0] "%(count)s일"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s시간"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s분"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s개월"
@@ -1233,6 +1243,10 @@ msgstr "가장 저렴한 유료 요금제"
 msgid "Check the FAQ"
 msgstr "FAQ를 확인하세요"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "%(site)s에서 피드를 확인하는 중"
+
 msgid "Chief Morale Officer"
 msgstr "최고 사기 책임자"
 
@@ -1593,8 +1607,18 @@ msgstr "기본값"
 msgid "Delete"
 msgstr "삭제"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "읽고 싶은 내용을 몇 단어로 설명해 주세요."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "원하는 피드를 설명해 검색하는 기능은 프리미엄 기능입니다. 설명으로 검색하려면 업그레이드하세요."
+
 msgid "Description"
 msgstr "설명"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "설명은 %(limit)d자까지 입력할 수 있습니다"
 
 msgid "Developer"
 msgstr "개발자"
@@ -2946,6 +2970,10 @@ msgid_plural ""
 msgstr[0] ""
 "NewsBlur를 마지막으로 보신 지 %(counter)s개월이 지났습니다. 그사이 많은 것이 바뀌었습니다. 공유 스토리(Blurblog)와 iOS/Android 네이티브 앱을 포함해 전면 "
 "개편된 디자인을 선보였습니다. 예전 Google Reader 기능이 그리우시다면 새로운 NewsBlur가 분명 마음에 드실 겁니다."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "설명과 %(count)s 피드를 비교하고 있습니다"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4547,6 +4575,9 @@ msgstr "친구와 함께라면 뉴스를 읽는 일이 더 즐겁습니다. 공�
 msgid "Reading stories across folders with River of News"
 msgstr "뉴스 스트림으로 폴더 전체의 스토리 읽기"
 
+msgid "Reading your description"
+msgstr "설명을 읽는 중"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -4909,6 +4940,12 @@ msgstr "브라우저로 읽은 페이지의 읽기 아카이브 검색"
 msgid "Search your entire archive with full-text search"
 msgstr "전체 아카이브를 전문 검색으로 검색"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "NewsBlur의 피드를 검색하는 중"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "NewsBlur에서 아직 확인하지 않은 피드를 웹에서 검색하고 있습니다"
+
 msgid "Searching your sites and saved stories"
 msgstr "사이트와 저장한 스토리 검색"
 
@@ -5173,6 +5210,9 @@ msgstr "이미 누군가 이 이메일 주소를 사용하고 있습니다."
 
 msgid "Someone is already using that username."
 msgstr "이미 누군가 해당 사용자 이름을 사용하고 있습니다."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "검색 중 문제가 발생했습니다. 다시 시도하세요."
 
 msgid "Something went wrong..."
 msgstr "문제가 발생했습니다..."
@@ -5496,6 +5536,12 @@ msgstr "해당 항목이 재생 중이 아닙니다"
 msgid "That part of the story doesn't exist."
 msgstr "스토리의 해당 부분이 존재하지 않습니다."
 
+msgid "That search is no longer in your history."
+msgstr "해당 검색어는 더 이상 검색 기록에 없습니다."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "검색이 아직 실행 중입니다. 먼저 완료될 때까지 기다리세요."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "이 스토리는 피드에서 삭제되었으므로 읽지 않음으로 표시할 필요가 없습니다."
 
@@ -5629,6 +5675,12 @@ msgstr "잘린 RSS 피드의 원본 스토리를 매끄럽게 확장해 보여�
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "일반 피드와 동일합니다. 프리미엄 및 프로 사용자는 더 자주 업데이트됩니다."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "검색에 필요한 서비스에 연결할 수 없습니다. 다시 시도해 주세요."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "검색 시간이 초과되어 현재까지 찾은 결과를 표시합니다."
+
 msgid "The shared comment cannot be found."
 msgstr "공유된 댓글을 찾을 수 없습니다."
 
@@ -5733,6 +5785,9 @@ msgstr "이미 RSS 피드입니다. 바로 구독합니다."
 
 msgid "This payment has been refunded."
 msgstr "결제가 환불되었습니다."
+
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "검색이 완료되기 전에 중단되었습니다. 다시 검색하여 재시도하세요."
 
 msgid "This story has no text to read aloud."
 msgstr "이 스토리에는 소리 내어 읽을 텍스트가 없습니다."
@@ -6498,6 +6553,9 @@ msgstr "어제, %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "어제, %(time)s"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "이미 검색이 진행 중입니다. 완료될 때까지 기다려 주세요."
+
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
@@ -6606,6 +6664,11 @@ msgid ""
 msgstr ""
 "<span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>을(를) 팔로우했습니다."
+
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "오늘 설명 검색을 %(count)s회 더 할 수 있습니다(초기화: %(time)s)."
 
 msgid "You have a follow request:"
 msgstr "팔로우 요청이 있습니다:"
@@ -6846,6 +6909,10 @@ msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
 msgstr "최근에 NewsBlur를 이용하셨으니, 무료 계정으로 돌아가려던 것은 아니셨을지도 모르겠습니다. 프리미엄 계정을 갱신하기만 하면 될 수도 있습니다. 갱신을 도와드리겠습니다."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "오늘 사용할 수 있는 설명 검색 %(limit)s회를 모두 사용했습니다. 한도는 %(time)s에 초기화됩니다."
 
 msgid "YouTube search request failed."
 msgstr "YouTube 검색 요청에 실패했습니다."

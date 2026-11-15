@@ -242,6 +242,26 @@
 			<string>Wybrano %@ kanałów</string>
 		</dict>
 	</dict>
+	<key>%@ feeds so far</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_feeds_so_far@</string>
+		<key>describe_feeds_so_far</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Jak dotąd %@ kanały</string>
+			<key>many</key>
+			<string>%@ kanałów na razie</string>
+			<key>one</key>
+			<string>Jak dotąd %@ kanał</string>
+			<key>other</key>
+			<string>Dotychczas: %@ kanałów</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -760,6 +780,26 @@
 			<string>Do przodu o %@ sekundę</string>
 			<key>other</key>
 			<string>Do przodu o %@ sekund</string>
+		</dict>
+	</dict>
+	<key>Found %@ feeds that match your description</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@describe_found_feeds@</string>
+		<key>describe_found_feeds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Znaleziono %@ kanały pasujące do opisu</string>
+			<key>many</key>
+			<string>Znaleziono %@ kanałów pasujących do Twojego opisu</string>
+			<key>one</key>
+			<string>Znaleziono %@ kanał pasujący do Twojego opisu</string>
+			<key>other</key>
+			<string>Znaleziono %@ kanałów pasujących do Twojego opisu</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>

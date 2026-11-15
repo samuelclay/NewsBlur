@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 
 from apps.discover import views
 
@@ -20,4 +20,5 @@ urlpatterns = [
     url(r"^similar/feeds/?$", views.discover_feeds, name="discover-feeds-post"),
     url(r"^similar/stories/(?P<story_hash>\w+:[\w\d]+)/?$", views.discover_stories, name="discover-stories"),
     url(r"^index/?$", views.discover_index, name="discover-index"),
+    url(r"^describe/", include("apps.describe.urls")),
 ]

@@ -16,7 +16,9 @@ struct OnboardingImportReceipt {
 
 @MainActor
 final class OnboardingAPI {
-    static var session = URLSession.shared
+    // OnboardingViewController.swift signs in through the same session as the Discover view models, so a simulator
+    // pointed at a local stack can log in (DevelopmentServerTrust.swift); elsewhere this is URLSession.shared.
+    static var session = DevelopmentServerTrust.session
     static func request(_ path: String, body: [String: String]? = nil) async throws -> [String: Any] {
         let base = NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com"
         guard let url = URL(string: base + path) else { throw error("Invalid server address.") }

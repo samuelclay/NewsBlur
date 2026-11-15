@@ -6753,3 +6753,165 @@ a.mention, a.mention-group {
     color: #303030;
     background-color: rgba(230, 230, 230, 0.95);
 }
+
+/* Describe tab (describe_feeds_view.js) */
+.NB-dark .NB-describe-rail-title,
+.NB-dark .NB-describe-empty-title {
+    color: #777;
+}
+
+.NB-dark .NB-describe-history-item:hover {
+    background: #2A2A2A;
+}
+
+.NB-dark .NB-describe-history-item.NB-active {
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-describe-history-prompt {
+    color: #DDD;
+}
+
+.NB-dark .NB-describe-history-meta,
+.NB-dark .NB-describe-history-empty,
+.NB-dark .NB-describe-usage {
+    color: #777;
+}
+
+.NB-dark .NB-describe-usage {
+    border-top-color: #333;
+}
+
+.NB-dark .NB-describe-history-delete:hover {
+    background: #444;
+    color: #EEE;
+}
+
+.NB-dark .NB-describe-composer-box {
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-describe-composer-box:focus-within {
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-describe-input {
+    color: #E8E8E8;
+    background: transparent;
+    border: none;
+}
+
+.NB-dark .NB-describe-input::placeholder,
+.NB-dark .NB-describe-composer-hint {
+    color: #777;
+}
+
+.NB-dark .NB-describe-status {
+    background: #252525;
+    border-color: #3A3A3A;
+}
+
+.NB-dark .NB-describe-status.NB-error {
+    background: #3A2525;
+    border-color: #6B3A3A;
+}
+
+.NB-dark .NB-describe-status-message {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-describe-status-count,
+.NB-dark .NB-describe-queries,
+.NB-dark .NB-describe-usage-message {
+    color: #999;
+}
+
+.NB-dark .NB-describe-step,
+.NB-dark .NB-describe-query {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #888;
+}
+
+.NB-dark .NB-describe-step.NB-done {
+    color: #7CC25A;
+    border-color: #3F5F33;
+}
+
+.NB-dark .NB-describe-step.NB-current {
+    color: #8FB4EA;
+    border-color: #3F5A80;
+}
+
+.NB-dark .NB-describe-query {
+    color: #BBB;
+}
+
+.NB-dark .NB-describe-loading {
+    color: #777;
+}
+
+.NB-dark .NB-describe-score-high {
+    background: #2F4A25;
+    color: #9FD67F;
+}
+
+.NB-dark .NB-describe-score-medium {
+    background: #4A3A1A;
+    color: #F0C56B;
+}
+
+.NB-dark .NB-describe-score-low {
+    background: #333;
+    color: #999;
+}
+
+.NB-dark .NB-describe-score-pending {
+    background: #2A3443;
+    color: #8FB4EA;
+}
+
+.NB-dark .NB-describe-source {
+    background: #333;
+    color: #999;
+}
+
+.NB-dark .NB-describe-source-web {
+    background: #27354A;
+    color: #8FB4EA;
+}
+
+.NB-dark .NB-describe-reason {
+    background: #252525;
+    color: #CCC;
+}
+
+.NB-dark .NB-describe-reason-pending {
+    color: #777;
+    border-left-color: #444;
+}
+
+.NB-dark .NB-describe-example,
+.NB-dark .NB-describe-upgrade-card {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #DDD;
+}
+
+.NB-dark .NB-describe-upgrade-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-describe-upgrade-desc {
+    color: #AAA;
+}
+
+.NB-dark .NB-autocomplete-describe {
+    background: #27354A;
+}
+
+.NB-dark .NB-autocomplete-describe .NB-add-autocomplete-title {
+    color: #8FB4EA;
+}
