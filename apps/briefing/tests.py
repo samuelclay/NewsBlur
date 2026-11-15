@@ -539,6 +539,7 @@ class Test_Summary(TestCase):
                 "model_id": "qwen2.5:1.5b",
                 "base_url": "http://ollama:11434/v1",
                 "api_key": "local-server-key",
+                "extra_body": {"top_k": 40},
             }
         }
     )
@@ -573,6 +574,7 @@ class Test_Summary(TestCase):
             mock_client.assert_called_once_with(base_url="http://ollama:11434/v1", api_key="local-server-key")
             request = mock_client.return_value.chat.completions.create.call_args.kwargs
             self.assertEqual(request["model"], "qwen2.5:1.5b")
+            self.assertEqual(request["extra_body"], {"top_k": 40})
             # tests.py: The briefing's own limit, not the 16384 floor hosted OpenAI gets.
             self.assertNotIn("max_completion_tokens", request)
             self.assertLessEqual(request["max_tokens"], 4096)

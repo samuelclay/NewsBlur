@@ -167,6 +167,7 @@ WEBFEED_MODEL = "openai"  # Options: anthropic, openai, google, xai
 #     "vendor_display": "Ollama",
 #     "base_url": "http://ollama:11434/v1",
 #     "api_key": "",  # only if the server checks one
+#     "extra_body": {"top_k": 40},  # optional request fields
 # }
 # ASK_AI_MODELS = {"local": LOCAL_MODEL}
 # BRIEFING_MODELS = {"local": LOCAL_MODEL}

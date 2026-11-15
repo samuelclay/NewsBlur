@@ -29,6 +29,7 @@ LOCAL_MODEL = {
     "provider": "openai_compatible",
     "model_id": "qwen2.5:1.5b",
     "base_url": "http://ollama:11434/v1",
+    "extra_body": {"top_k": 40},
 }
 ROUTER_MODEL = {
     "provider": "openai_compatible",
@@ -167,6 +168,8 @@ class Test_AskAIOpenAICompatible(AskAITaskTestCase):
         self.openai_client.assert_called_once_with(
             base_url="http://ollama:11434/v1", api_key="local-server-key"
         )
+        request = self.openai_client.return_value.chat.completions.create.call_args.kwargs
+        self.assertEqual(request["extra_body"], LOCAL_MODEL["extra_body"])
         cost = self.record_usage.call_args.kwargs
         self.assertEqual(
             (cost["model"], cost["input_tokens"], cost["output_tokens"]), ("qwen2.5:1.5b", 42, 7)
@@ -206,5 +209,5 @@ class Test_AskAIOpenAICompatible(AskAITaskTestCase):
         ):
             self.assertEqual([model["key"] for model in frontend_models], ["local", "router"])
             serialized = json.dumps(frontend_models)
-            for private in ("ollama:11434", "router.example", "router-key"):
+            for private in ("ollama:11434", "router.example", "router-key", "top_k"):
                 self.assertNotIn(private, serialized)

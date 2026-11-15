@@ -182,6 +182,11 @@ class OpenAIProvider(LLMProvider):
         # room for actual content output after reasoning.
         return {"max_completion_tokens": max(max_tokens * 5, 16384)}
 
+    def _merged_extra_body(self, thinking_config: Optional[dict] = None) -> dict:
+        if thinking_config and "reasoning_effort" in thinking_config:
+            return {"reasoning_effort": thinking_config["reasoning_effort"]}
+        return {}
+
     def stream_response(
         self, messages: list, model_id: str, thinking_config: Optional[dict] = None
     ) -> Generator[str, None, None]:
@@ -192,8 +197,9 @@ class OpenAIProvider(LLMProvider):
             "stream": True,
             "stream_options": {"include_usage": True},
         }
-        if thinking_config and "reasoning_effort" in thinking_config:
-            kwargs["extra_body"] = {"reasoning_effort": thinking_config["reasoning_effort"]}
+        extra_body = self._merged_extra_body(thinking_config)
+        if extra_body:
+            kwargs["extra_body"] = extra_body
 
         response = client.chat.completions.create(**kwargs)
 
@@ -218,8 +224,9 @@ class OpenAIProvider(LLMProvider):
             "messages": messages,
             **self._token_limit(max_tokens),
         }
-        if thinking_config and "reasoning_effort" in thinking_config:
-            kwargs["extra_body"] = {"reasoning_effort": thinking_config["reasoning_effort"]}
+        extra_body = self._merged_extra_body(thinking_config)
+        if extra_body:
+            kwargs["extra_body"] = extra_body
 
         response = client.chat.completions.create(**kwargs)
 
@@ -251,6 +258,10 @@ class OpenAICompatibleProvider(OpenAIProvider):
     LM Studio or OpenRouter. Each ASK_AI_MODELS or BRIEFING_MODELS entry with
     "provider": "openai_compatible" names its server with "base_url" and, when the server
     checks one, its key with "api_key". apps/ask_ai/providers.py
+
+    Optional "extra_body" adds request fields to both streaming and non-streaming
+    calls, for example {"top_k": 40}. Explicit thinking_config.reasoning_effort
+    overrides the same field in extra_body; other fields pass through unchanged.
     """
 
     # providers.py: The OpenAI SDK won't build a client without a key, and servers without
@@ -271,6 +282,11 @@ class OpenAICompatibleProvider(OpenAIProvider):
         # providers.py: max_tokens is the limit compatible servers understand, and the 16384
         # floor is for OpenAI's reasoning models, so the caller's limit goes through as is.
         return {"max_tokens": max_tokens}
+
+    def _merged_extra_body(self, thinking_config: Optional[dict] = None) -> dict:
+        extra_body = dict(self.model_config.get("extra_body") or {})
+        extra_body.update(super()._merged_extra_body(thinking_config))
+        return extra_body
 
 
 class XAIProvider(LLMProvider):
@@ -601,6 +617,8 @@ def _load_models():
         for name in OPTIONAL_MODEL_SETTINGS:
             if name in cfg:
                 entry[name] = cfg[name]
+        if provider_class is OpenAICompatibleProvider and "extra_body" in cfg:
+            entry["extra_body"] = cfg["extra_body"]
         models[key] = entry
     return models if models else _DEFAULT_MODELS
 
@@ -747,6 +765,8 @@ def _load_briefing_models():
         for name in OPTIONAL_MODEL_SETTINGS:
             if name in cfg:
                 entry[name] = cfg[name]
+        if provider_class is OpenAICompatibleProvider and "extra_body" in cfg:
+            entry["extra_body"] = cfg["extra_body"]
         models[key] = entry
     return models if models else _DEFAULT_BRIEFING_MODELS
 
