@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 macht das Lesen lebendiger. Feeds, Ordnerüberschriften, Artikeltitel und Artikelabschnitte erscheinen animiert in ihrer Reihenfolge auf dem Bildschirm. Der Wechsel zwischen Alle, Ungelesen, Fokus und Gespeichert ist schnell und flüssig.\n\nDu möchtest weniger Bewegung? Der neue Schalter Bewegung reduzieren unter Einstellungen > Darstellung entfernt Verschieben und Skalieren, behält aber sanftes Ein- und Ausblenden bei. Er ist standardmäßig ausgeschaltet.\n\nDiese Version lädt Artikel im grauen Design außerdem mit sanfteren Übergängen, gibt den Entdecken-Tags auf dem iPhone mehr Platz und verbessert Dialoge und Bedienelemente auf iPhone und iPad."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 macht das Lesen lebendiger. Feeds, Ordnerüberschriften, Artikeltitel und Artikelabschnitte erscheinen animiert in ihrer Reihenfolge auf dem Bildschirm. Der Wechsel zwischen Alle, Ungelesen, Fokus und Gespeichert ist schnell und flüssig.\n\nDu möchtest weniger Bewegung? Der neue Schalter Bewegung reduzieren unter Einstellungen > Darstellung entfernt Verschieben und Skalieren, behält aber sanftes Ein- und Ausblenden bei. Er ist standardmäßig ausgeschaltet.\n\nDiese Version verfeinert außerdem den Reader-Rahmen auf dem Mac, verbessert die Entdecken-Bedienelemente und macht Übergänge zwischen Artikeln sanfter."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17 animiert Feeds, Ordner, Titel und Artikel in ihrer Reihenfolge. Der Wechsel zwischen Alle, Ungelesen, Fokus und Gespeichert ist schnell. Bewegung reduzieren unter Einstellungen > Darstellung entfernt Bewegung, behält aber Ein- und Ausblenden bei. Standardmäßig ausgeschaltet. Entdecken-Tags haben auf Smartphones mehr Platz, Tablet-Dialoge funktionieren beim Drehen des Bildschirms besser."
+  }
+}

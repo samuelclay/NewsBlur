@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "O NewsBlur 17 traz mais vida à leitura. Feeds, títulos de pastas e artigos e seções dos artigos aparecem com animações na ordem em que você os vê. Alternar entre Todos, Não lidos, Foco e Salvo é rápido e fluido.\n\nPrefere menos movimento? A nova opção Reduzir movimento em Preferências > Aparência remove deslocamentos e mudanças de escala, mas mantém as suaves transições de opacidade. Ela vem desativada por padrão.\n\nEsta versão também suaviza o carregamento de artigos no modo Cinza, dá mais espaço às tags de descoberta no iPhone e melhora caixas de diálogo e controles no iPhone e no iPad."
+  },
+  "macos": {
+    "whats_new": "O NewsBlur 17 traz mais vida à leitura. Feeds, títulos de pastas e artigos e seções dos artigos aparecem com animações na ordem em que você os vê. Alternar entre Todos, Não lidos, Foco e Salvo é rápido e fluido.\n\nPrefere menos movimento? A nova opção Reduzir movimento em Preferências > Aparência remove deslocamentos e mudanças de escala, mas mantém as suaves transições de opacidade. Ela vem desativada por padrão.\n\nEsta versão também aprimora a moldura do leitor no Mac, melhora os controles de descoberta e suaviza as transições entre artigos."
+  },
+  "android": {
+    "release_notes": "O NewsBlur 17 anima feeds, pastas, títulos e artigos em ordem, com transições rápidas entre Todos, Não lidos, Foco e Salvo. Ative Reduzir movimento em Preferências > Aparência para remover movimentos e manter as transições de opacidade. A opção vem desativada. As tags de descoberta têm mais espaço nos celulares, e as caixas de diálogo dos tablets funcionam melhor ao girar a tela."
+  }
+}
