@@ -1656,6 +1656,8 @@
                 '$feed_in_social_feed_list': {}
             });
 
+            // reader.js: paging starts over, so the page still loading for the last feed or folder is thrown out.
+            NEWSBLUR.assets.cancel_story_pages();
             $.extend(this.counts, {
                 'page': 1,
                 'find_next_unread_on_page_of_feed_stories_load': 0,

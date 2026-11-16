@@ -203,6 +203,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     },
 
+    // assetmodel.js: reader.js reset_feed calls this as a feed or folder opens. Every page after a feed's
+    // first, and every page of a river, starred or read list, loads one at a time in the feed_page group,
+    // whose 'clear' queue only drops requests that haven't started. Aborting the one in flight too means
+    // its stories never join the new list (make_request ignores aborts) and the new first page starts now.
+    cancel_story_pages: function () {
+        this.ajax['feed_page'].clear(true);
+    },
+
     theme: function () {
         var theme = this.preference('theme');
         var is_auto = theme == 'auto';
