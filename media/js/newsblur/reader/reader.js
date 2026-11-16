@@ -1579,9 +1579,16 @@
         // = Feed bar - Individual Feeds =
         // ===============================
 
-        reset_feed: function (options) {
+        reset_feed: function (options, transition) {
             options = options || {};
             if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.feed_reset();
+            // reader.js: the story titles fade out as they look now, before the river class, selection and
+            // scroll position below change under them. The story pane fades too when a river or folder is on
+            // either side of the switch (river openers pass entering_river); between single feeds it empties at once.
+            NEWSBLUR.app.story_titles.depart();
+            if (this.flags.river_view || (transition && transition.entering_river)) {
+                NEWSBLUR.app.story_list.depart();
+            }
 
             // Clean up any active voice recordings from Ask AI menu
             var $menu = $('.NB-menu-ask-ai-container');
@@ -2589,7 +2596,7 @@
             options = options || {};
             var $story_titles = this.$s.$story_titles;
 
-            this.reset_feed(options);
+            this.reset_feed(options, { entering_river: true });
             this.hide_splash_page();
             if (options.story_id) {
                 this.flags['select_story_in_feed'] = options.story_id;
@@ -2704,7 +2711,7 @@
                 new_section && !same_section;
 
             if (!switching_section) {
-                this.reset_feed(options);
+                this.reset_feed(options, { entering_river: true });
                 this.hide_splash_page();
             }
 
@@ -2881,7 +2888,7 @@
             options = options || {};
             var self = this;
 
-            this.reset_feed(options);
+            this.reset_feed(options, { entering_river: true });
             this.hide_splash_page();
 
             this.active_feed = 'river:briefing-admin';
@@ -3033,7 +3040,7 @@
             options = options || {};
             var $story_titles = this.$s.$story_titles;
 
-            this.reset_feed(options);
+            this.reset_feed(options, { entering_river: true });
             this.hide_splash_page();
             this.active_feed = 'read';
             if (options.story_id) {
@@ -3106,7 +3113,7 @@
             $folder = $folder || this.$s.$feed_list;
             var folder_title = folder && folder.get('folder_title') || 'Everything';
 
-            this.reset_feed(options);
+            this.reset_feed(options, { entering_river: true });
 
             if (options.story_id) {
                 this.flags['select_story_in_feed'] = options.story_id;
@@ -3254,7 +3261,7 @@
             var $story_titles = this.$s.$story_titles;
             var folder_title = options.global ? "Global Blurblogs" : "Blurblogs";
 
-            this.reset_feed(options);
+            this.reset_feed(options, { entering_river: true });
             this.hide_splash_page();
 
             this.active_feed = options.global ? 'river:global' : 'river:blurblogs';
@@ -3373,7 +3380,7 @@
             };
             var folder_title = folder_titles[trending_type] || folder_titles['well_read'];
 
-            this.reset_feed(options);
+            this.reset_feed(options, { entering_river: true });
             this.hide_splash_page();
 
             this.active_feed = 'trending:' + trending_type;

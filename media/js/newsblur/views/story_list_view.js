@@ -128,6 +128,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.end_loading();
     },
 
+    depart: function () {
+        // story_list_view.js: reader.js reset_feed fades the open stories out before it scrolls this pane
+        // to the top and empties it. Layout switches call clear() without fading.
+        NEWSBLUR.motion.depart(this.el, { snapshot_layout: true });
+    },
+
     clear: function () {
         _.invoke(this.stories, 'destroy');
         this.$el.empty();

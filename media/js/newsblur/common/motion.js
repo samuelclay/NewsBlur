@@ -35,7 +35,7 @@ NEWSBLUR.motion = (function () {
         });
     }
     // motion.js snapshots rendered layout and paint, not hundreds of unrelated computed browser properties.
-    var snapshot_properties = ('display position top right bottom left box-sizing width height min-width min-height max-width max-height ' +
+    var snapshot_properties = ('display position top right bottom left z-index box-sizing width height min-width min-height max-width max-height ' +
         'margin-top margin-right margin-bottom margin-left padding-top padding-right padding-bottom padding-left ' +
         'border-top-width border-right-width border-bottom-width border-left-width border-top-style border-right-style border-bottom-style border-left-style ' +
         'border-top-color border-right-color border-bottom-color border-left-color border-radius ' +
@@ -89,11 +89,118 @@ NEWSBLUR.motion = (function () {
             target.style.animation = 'none';
             target.style.transition = 'none';
         }
-        function copy_rendered(source) {
-            var copy = source.cloneNode(false);
+        function intersects(bounds) {
+            return bounds.bottom > clip.top && bounds.top < clip.bottom && bounds.right > clip.left && bounds.left < clip.right;
+        }
+        function within(bounds) {
+            return bounds.top >= clip.top && bounds.bottom <= clip.bottom && bounds.left >= clip.left && bounds.right <= clip.right;
+        }
+        function run_bounds(nodes) {
+            var range = document.createRange();
+            range.setStartBefore(nodes[0]);
+            range.setEndAfter(nodes[nodes.length - 1]);
+            return range.getBoundingClientRect();
+        }
+        // motion.js splits a box's children into blocks and runs of text and inline elements, each laid out on
+        // its own. It returns null when that would change the drawing: lines wrapping around floats, an ordered
+        // list numbering the items left out, or inline content in a flex or grid box.
+        function parts_of(source, display) {
+            if (source.nodeName === 'OL') return null;
+            var parts = [], run = null, floats = false, runs = false;
+            for (var index = 0; index < source.childNodes.length; index++) {
+                var child = source.childNodes[index];
+                if (child.nodeType === 1) {
+                    var style = getComputedStyle(child);
+                    if (style.display === 'none') continue;
+                    if (style.display === 'contents') return null;
+                    if (/^(block|flow-root|list-item|flex|grid|table)$/.test(style.display)) {
+                        floats = floats || style.float !== 'none';
+                        parts.push({ block: child });
+                        run = null;
+                        continue;
+                    }
+                } else if (child.nodeType !== 3 || !/\S/.test(child.nodeValue)) {
+                    // motion.js drops comments and the whitespace between blocks, which draw nothing.
+                    if (run) run.nodes.push(child);
+                    continue;
+                }
+                if (!run) { run = { nodes: [] }; parts.push(run); runs = true; }
+                run.nodes.push(child);
+            }
+            if (runs && (floats || !/^(block|flow-root|list-item|inline-block|table-cell)$/.test(display))) return null;
+            return parts;
+        }
+        // motion.js pins rows in place even when offscreen rows above them are omitted from the snapshot.
+        function pin(child, copy, bounds, child_bounds) {
+            var child_copy = copy_rendered(child, child_bounds);
+            stuck = stuck.filter(function (item) { return item.copy !== child_copy; });
+            Object.assign(child_copy.style, { position: 'absolute', margin: 0, boxSizing: 'border-box',
+                left: (child_bounds.left - bounds.left - (parseFloat(copy.style.borderLeftWidth) || 0)) + 'px',
+                top: (child_bounds.top - bounds.top - (parseFloat(copy.style.borderTopWidth) || 0)) + 'px',
+                width: child_bounds.width + 'px', height: child_bounds.height + 'px', transform: 'none' });
+            copy.appendChild(child_copy);
+        }
+        function pin_children(source, copy, bounds) {
+            Array.from(source.children).forEach(function (child) {
+                var child_bounds = child.getBoundingClientRect();
+                if (child.getClientRects().length && intersects(child_bounds)) pin(child, copy, bounds, child_bounds);
+            });
+        }
+        // motion.js copies only the parts of a long story that are on screen: visible blocks are pinned in place
+        // and each visible run of text flows in a box as wide as the original, moved onto its first line once drawn.
+        var runs = [];
+        function pin_parts(source, copy, bounds, parts) {
+            var padding_left = parseFloat(copy.style.paddingLeft) || 0;
+            var padding_right = parseFloat(copy.style.paddingRight) || 0;
+            parts.forEach(function (part, index) {
+                if (part.block) {
+                    var child_bounds = part.block.getBoundingClientRect();
+                    if (part.block.getClientRects().length && intersects(child_bounds)) pin(part.block, copy, bounds, child_bounds);
+                    return;
+                }
+                var live = run_bounds(part.nodes);
+                if (!intersects(live)) return;
+                // motion.js uses its own element name so story stylesheet rules for divs cannot reach the box.
+                var box = document.createElement('nb-motion-run');
+                part.nodes.forEach(function (node) { box.appendChild(copy_rendered(node)); });
+                Object.assign(box.style, { display: 'block', position: 'absolute', margin: 0, padding: 0, border: 0,
+                    left: padding_left + 'px', width: (source.clientWidth - padding_left - padding_right) + 'px',
+                    top: (live.top - bounds.top) + 'px' });
+                if (index) box.style.textIndent = '0px';
+                copy.appendChild(box);
+                runs.push({ box: box, container: copy, offset: live.top - bounds.top });
+            });
+        }
+        // motion.js pins sticky parts, like a Feed view story's header bar, where they were stuck rather than
+        // where they sit in the flow, since the copy's own box never scrolls.
+        var stuck = [];
+        function copy_rendered(source, bounds) {
+            // motion.js draws embedded media as an empty box of the same size, since a copied iframe or video
+            // would load, and could play, its source again.
+            var media = /^(IFRAME|VIDEO|AUDIO|OBJECT|EMBED)$/.test(source.nodeName);
+            var copy = media ? document.createElement('div') : source.cloneNode(false);
             if (source.nodeType !== 1) return copy;
             if (!source.getClientRects().length) { copy.style.display = 'none'; return copy; }
             copy_style(source, copy);
+            bounds = bounds || source.getBoundingClientRect();
+            if (copy.style.position === 'sticky') {
+                stuck.push({ copy: copy, bounds: bounds });
+                Object.assign(copy.style, { position: 'relative', top: '0px', left: '0px', right: 'auto', bottom: 'auto' });
+            }
+            if (media) {
+                // motion.js keeps the media's box: an inline div would ignore the width and height it copied.
+                if (copy.style.display === 'inline') copy.style.display = 'inline-block';
+                return copy;
+            }
+            // motion.js copies a box whole unless it is taller than the visible area, like a long story: a row
+            // that merely runs past the edge is cheap to copy and keeps every detail, like a floated thumbnail.
+            var taller = bounds.height > clip.bottom - clip.top;
+            var parts = taller && !within(bounds) && source.children.length ? parts_of(source, copy.style.display) : null;
+            if (parts) {
+                if (copy.style.position === 'static') copy.style.position = 'relative';
+                pin_parts(source, copy, bounds, parts);
+                return copy;
+            }
             Array.from(source.childNodes).forEach(function (child) { copy.appendChild(copy_rendered(child)); });
             return copy;
         }
@@ -101,19 +208,7 @@ NEWSBLUR.motion = (function () {
         var ghost = element.cloneNode(!snapshot_layout);
         if (snapshot_layout) {
             copy_style(element, ghost);
-            var border_left = parseFloat(ghost.style.borderLeftWidth) || 0;
-            var border_top = parseFloat(ghost.style.borderTopWidth) || 0;
-            Array.from(element.children).forEach(function (child) {
-                var bounds = child.getBoundingClientRect();
-                if (!child.getClientRects().length || bounds.bottom <= clip.top || bounds.top >= clip.bottom ||
-                    bounds.right <= clip.left || bounds.left >= clip.right) return;
-                var copy = copy_rendered(child);
-                // motion.js pins rows in place even when offscreen rows above them are omitted from the snapshot.
-                Object.assign(copy.style, { position: 'absolute', margin: 0, boxSizing: 'border-box',
-                    left: (bounds.left - rect.left - border_left) + 'px', top: (bounds.top - rect.top - border_top) + 'px',
-                    width: bounds.width + 'px', height: bounds.height + 'px', transform: 'none' });
-                ghost.appendChild(copy);
-            });
+            pin_children(element, ghost, rect);
         }
         // motion.js removes live layout immediately; the inert copy cannot capture focus or clicks.
         ghost.removeAttribute('id');
@@ -126,6 +221,18 @@ NEWSBLUR.motion = (function () {
         ghost.style.clipPath = 'inset(' + [Math.max(0, clip.top - rect.top), Math.max(0, rect.right - clip.right),
             Math.max(0, rect.bottom - clip.bottom), Math.max(0, clip.left - rect.left)].map(function (n) { return n + 'px'; }).join(' ') + ')';
         document.body.appendChild(ghost);
+        // motion.js reads every place before moving anything, so each pass lays the ghost out once. A run of
+        // text moves by the gap between its first line here and in the original, measured from its own box.
+        runs.map(function (run) {
+            return run.offset - (run_bounds(Array.from(run.box.childNodes)).top - run.container.getBoundingClientRect().top);
+        }).forEach(function (shift, index) {
+            runs[index].box.style.top = (parseFloat(runs[index].box.style.top) + shift) + 'px';
+        });
+        stuck.map(function (item) { return item.copy.getBoundingClientRect(); }).forEach(function (resting, index) {
+            var item = stuck[index];
+            item.copy.style.top = (item.bounds.top - resting.top) + 'px';
+            item.copy.style.left = (item.bounds.left - resting.left) + 'px';
+        });
         exit(ghost, function () { ghost.remove(); });
     }
     function remove(elements) {

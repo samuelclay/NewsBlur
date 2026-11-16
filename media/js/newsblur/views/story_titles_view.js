@@ -429,9 +429,18 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.fill_out();
     },
 
+    depart: function () {
+        // story_titles_view.js: reader.js reset_feed fades the rows out while they still have the river
+        // class, selection and scroll they were drawn with, and the clear() that follows reuses that copy.
+        if (this.departed) return;
+        this.departed = true;
+        NEWSBLUR.motion.depart(this.el, { snapshot_layout: true });
+    },
+
     clear: function () {
         // console.log(['clear story titles', this.stories.length, this.$el]);
-        NEWSBLUR.motion.depart(this.el, { snapshot_layout: true });
+        this.depart();
+        this.departed = false;
         if (this.motion_observer) this.motion_observer.disconnect();
         _.invoke(this.stories, 'destroy');
         this.cache = {};
