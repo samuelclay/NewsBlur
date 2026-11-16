@@ -72,6 +72,17 @@
     - never
     - static
 
+# deploy_app_group.yml: ansible-core 2.22's git module, fetching a shallow checkout that sits on a detached
+# commit, reads refs/remotes/origin/HEAD and fails with "'NoneType' object has no attribute 'startswith'" if
+# it's missing. A normal clone has that ref; staging's single-refspec checkout doesn't, so give it one.
+# Only staging sets git_depth (ansible/group_vars/staging.yml). This doesn't choose the deployed branch.
+- name: Give shallow checkouts the origin/HEAD ref the git module expects
+  command: git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/{{ git_branch }}
+  args:
+    chdir: /srv/newsblur
+  changed_when: false
+  when: git_depth is defined
+
 - name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
