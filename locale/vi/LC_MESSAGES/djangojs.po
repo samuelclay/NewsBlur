@@ -1295,6 +1295,9 @@ msgstr ""
 msgid "Any time"
 msgstr "Mọi lúc"
 
+msgid "Appearance"
+msgstr "Giao diện"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3187,6 +3190,9 @@ msgstr "Toàn chiều rộng"
 msgid "Full-Text Search"
 msgstr "Tìm kiếm toàn văn"
 
+msgid "Full-screen list"
+msgstr "Danh sách toàn màn hình"
+
 msgid "Full-text search across all stories"
 msgstr "Tìm kiếm toàn văn trong tất cả bài viết"
 
@@ -3585,6 +3591,9 @@ msgstr "Bài viết từ trang ít cập nhật"
 msgid "Infrequent stories per month"
 msgstr "Số bài mỗi tháng của trang ít cập nhật"
 
+msgid "Inline list"
+msgstr "Danh sách nội tuyến"
+
 msgid "Insta-fetch stories"
 msgstr "Tải bài viết ngay"
 
@@ -3662,6 +3671,9 @@ msgstr "Chỉ có tiêu đề với ít lời bình"
 msgid "Just the headlines, no commentary"
 msgstr "Chỉ tiêu đề, không có bình luận"
 
+msgid "Keep fades, without movement."
+msgstr "Giữ hiệu ứng mờ dần, không chuyển động."
+
 msgid "Keep others unread"
 msgstr "Giữ các bài khác ở trạng thái chưa đọc"
 
@@ -3722,6 +3734,9 @@ msgstr "Cập nhật lần cuối"
 
 msgid "Last seen:"
 msgstr "Lần cuối hoạt động:"
+
+msgid "Layout"
+msgstr "Bố cục"
 
 msgid "Leave unread"
 msgstr "Để lại trạng thái chưa đọc"
@@ -3810,6 +3825,9 @@ msgstr "Đang tải nguồn cấp dữ liệu..."
 
 msgid "Loading more briefings..."
 msgstr "Đang tải thêm bản tin tóm tắt..."
+
+msgid "Loading the next unread story..."
+msgstr "Đang tải bài viết chưa đọc tiếp theo..."
 
 msgid "Loading voices..."
 msgstr "Đang tải giọng đọc..."
@@ -4329,6 +4347,9 @@ msgstr "Bước tiếp theo "
 msgid "Next story"
 msgstr "Bài viết tiếp theo"
 
+msgid "Next unread"
+msgstr "Bài viết chưa đọc tiếp theo"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
 "Tiếp theo, hãy tạo bộ lọc cho tất cả bản tin của bạn để chuyển tiếp chúng đến địa chỉ tùy chỉnh trên "
@@ -4633,6 +4654,11 @@ msgstr "Ôi không, đã xảy ra sự cố khi lấy URL đó và không có l�
 
 msgid "Old password"
 msgstr "Mật khẩu cũ"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Cũ hơn %(count)s ngày"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -5376,6 +5402,9 @@ msgstr "Đã đổi"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Giảm bớt sự lộn xộn trong dòng tin của bạn"
+
+msgid "Reduce motion"
+msgstr "Giảm chuyển động"
 
 msgid "Refer"
 msgstr "Giới thiệu"
@@ -6411,6 +6440,12 @@ msgstr "Bài viết cũ hơn %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Bài viết vào %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Bài viết mở ngay trong danh sách"
+
+msgid "Stories open on their own screen"
+msgstr "Bài viết mở trên màn hình riêng"
+
 msgid "Stories per day"
 msgstr "Số bài viết mỗi ngày"
 
@@ -6461,6 +6496,9 @@ msgstr "Kiểu chữ bài viết"
 
 msgid "Story URL"
 msgstr "URL bài viết"
+
+msgid "Story cards open on their own screen"
+msgstr "Thẻ bài viết mở trên màn hình riêng"
 
 msgid "Story clustering"
 msgstr "Nhóm bài viết"

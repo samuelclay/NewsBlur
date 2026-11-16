@@ -787,6 +787,13 @@
 
 - (void)viewDidLayoutSubviews {
     [self updateReaderToolbarPresentation];
+    // StoryPagesObjCViewController.m starts individual controls once their persistent bars are visible.
+    [self.traverseBar updateMotion];
+    [self.storyToolbar updateMotion];
+    if (![self hasHiddenReaderAncestor] && self.view.window && self.navigationController.topViewController == (self.isPhoneOrCompact ? self : appDelegate.detailViewController)) {
+        [ReaderMotion toolbarControls:self.navigationController.navigationBar];
+        [ReaderMotion toolbarControls:self.navigationController.toolbar];
+    }
     if ([self hasHiddenReaderAncestor]) {
         [super viewDidLayoutSubviews];
         return;
@@ -2812,11 +2819,11 @@
         [self cancelPendingStoryPresentation];
         return;
     }
-    BOOL animateSelection = !self.retainsDuoSourceArticle && !openImmediately && animated && !redrawCover && !self.isPhoneOrCompact && !UIAccessibilityIsReduceMotionEnabled() &&
+    BOOL animateSelection = !self.retainsDuoSourceArticle && !openImmediately && animated && !redrawCover && !self.isPhoneOrCompact && !ReaderMotion.reduceMotion &&
         self.view.window && currentPage.hasStory && !currentPage.webView.hidden &&
         !self.isDraggingScrollview && !self.scrollView.dragging && !self.scrollView.decelerating &&
         currentPage.pageIndex >= 0 && ![currentPage.activeStoryId isEqualToString:hash];
-    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] selectionAnimation eligible=%d requested=%d openImmediately=%d retained=%d redraw=%d compact=%d reduceMotion=%d window=%d hasStory=%d hidden=%d dragging=%d/%d/%d from=%ld to=%ld", animateSelection, animated, openImmediately, self.retainsDuoSourceArticle, redrawCover != nil, self.isPhoneOrCompact, UIAccessibilityIsReduceMotionEnabled(), self.view.window != nil, currentPage.hasStory, currentPage.webView.hidden, self.isDraggingScrollview, self.scrollView.dragging, self.scrollView.decelerating, (long)currentPage.pageIndex, (long)pageIndex);
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] selectionAnimation eligible=%d requested=%d openImmediately=%d retained=%d redraw=%d compact=%d reduceMotion=%d window=%d hasStory=%d hidden=%d dragging=%d/%d/%d from=%ld to=%ld", animateSelection, animated, openImmediately, self.retainsDuoSourceArticle, redrawCover != nil, self.isPhoneOrCompact, ReaderMotion.reduceMotion, self.view.window != nil, currentPage.hasStory, currentPage.webView.hidden, self.isDraggingScrollview, self.scrollView.dragging, self.scrollView.decelerating, (long)currentPage.pageIndex, (long)pageIndex);
     BOOL distantSelection = animateSelection && labs(pageIndex - currentPage.pageIndex) > 1;
 
     BOOL forward = pageIndex > currentPage.pageIndex;
@@ -2942,7 +2949,7 @@
         return;
     }
 
-    if (self.pendingPresentationAnimated && !UIAccessibilityIsReduceMotionEnabled() &&
+    if (self.pendingPresentationAnimated && !ReaderMotion.reduceMotion &&
         page != currentPage && currentPage.hasStory && !currentPage.webView.hidden && self.view.window) {
         [self animatePreparedStorySelection:page location:location];
     } else {

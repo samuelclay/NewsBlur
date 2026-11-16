@@ -170,6 +170,7 @@
 "Analyzing images..." = "Görseller analiz ediliyor...";
 "App Badge" = "Uygulama rozeti";
 "App Icon" = "Uygulama Simgesi";
+"Appearance" = "Görünüm";
 "Apply training across a folder" = "Eğitimi bir klasörün tamamına uygula";
 "Apply training globally" = "Eğitimi genel olarak uygula";
 "Arctic Cyan" = "Arktik Camgöbeği";
@@ -502,6 +503,7 @@
 "Interactions" = "Etkileşimler";
 "Invalid: %@" = "Geçersiz: %@";
 "Invoice" = "Fatura";
+"Keep fades, without movement." = "Solma geçişlerini koru, hareketi kaldır.";
 "Keeps the dark icon no matter how your device is set." = "Cihazınızın ayarı ne olursa olsun koyu simgeyi kullanır.";
 "Keeps the light icon no matter how your device is set." = "Cihazınız nasıl ayarlanmış olursa olsun açık renkli simgeyi kullanır.";
 "Keyboard Shortcuts" = "Klavye Kısayolları";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "%@ haberlerinizi okur";
 "Recommended for %@" = "%@ için önerilir";
 "Recording..." = "Kaydediliyor...";
+"Reduce motion" = "Hareketi azalt";
 "Refine with a hint" = "Bir ipucuyla ayrıntılandırın";
 "Refine with this title" = "Bu başlıkla aramayı daralt";
 "Refresh NewsBlur" = "NewsBlur'ı yenile";

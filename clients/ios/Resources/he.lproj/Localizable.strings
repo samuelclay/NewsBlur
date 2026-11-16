@@ -170,6 +170,7 @@
 "Analyzing images..." = "מתבצע ניתוח של התמונות...";
 "App Badge" = "תג אפליקציה";
 "App Icon" = "סמל האפליקציה";
+"Appearance" = "מראה";
 "Apply training across a folder" = "החלת האימון על תיקייה";
 "Apply training globally" = "החלת האימון על כל האתרים";
 "Arctic Cyan" = "ציאן ארקטי";
@@ -502,6 +503,7 @@
 "Interactions" = "אינטראקציות";
 "Invalid: %@" = "לא תקין: %@";
 "Invoice" = "חשבונית";
+"Keep fades, without movement." = "שמירה על מעברי עמעום ללא תנועה.";
 "Keeps the dark icon no matter how your device is set." = "משאיר את הסמל הכהה ללא קשר להגדרות המכשיר שלך.";
 "Keeps the light icon no matter how your device is set." = "הסמל יישאר בהיר ללא קשר להגדרות המכשיר שלכם.";
 "Keyboard Shortcuts" = "קיצורי מקלדת";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "מקריא את הכתבות שלך ב־%@";
 "Recommended for %@" = "מומלץ עבור %@";
 "Recording..." = "מקליט…";
+"Reduce motion" = "הפחתת תנועה";
 "Refine with a hint" = "חדדו בעזרת רמז";
 "Refine with this title" = "צמצום לפי הכותרת הזו";
 "Refresh NewsBlur" = "רענון NewsBlur";

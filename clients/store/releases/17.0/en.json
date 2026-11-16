@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 brings a more lively reading experience. Feeds, folder headings, story titles, and article sections animate into place in the order you see them. Switching between All, Unread, Focus, and Saved is fast and fluid.\n\nPrefer less movement? The new Reduce motion toggle in Preferences > Appearance removes sliding and scaling while keeping the gentle fades. It's off by default.\n\nThis release also smooths story loading in Gray mode, gives discovery tags more room on iPhone, and improves dialogs and controls on iPhone and iPad."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 brings a more lively reading experience. Feeds, folder headings, story titles, and article sections animate into place in the order you see them. Switching between All, Unread, Focus, and Saved is fast and fluid.\n\nPrefer less movement? The new Reduce motion toggle in Preferences > Appearance removes sliding and scaling while keeping the gentle fades. It's off by default.\n\nThis release also refines the Mac reader frame, improves discovery controls, and smooths transitions between stories."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17 brings lively, ordered animations to feeds, folders, story titles, and articles, plus fast transitions between All, Unread, Focus, and Saved. Turn on Reduce motion in Preferences > Appearance to remove movement while keeping fades. It's off by default. Discovery tags have more room on phones, and tablet dialogs work better when rotating the screen."
+  }
+}

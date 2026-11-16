@@ -170,6 +170,7 @@
 "Analyzing images..." = "Menganalisis gambar...";
 "App Badge" = "Lencana Aplikasi";
 "App Icon" = "Ikon Aplikasi";
+"Appearance" = "Tampilan";
 "Apply training across a folder" = "Terapkan pelatihan ke seluruh folder";
 "Apply training globally" = "Terapkan pelatihan secara global";
 "Arctic Cyan" = "Sian Arktik";
@@ -502,6 +503,7 @@
 "Interactions" = "Interaksi";
 "Invalid: %@" = "Tidak valid: %@";
 "Invoice" = "Faktur";
+"Keep fades, without movement." = "Pertahankan efek pudar, tanpa gerakan.";
 "Keeps the dark icon no matter how your device is set." = "Tetap menggunakan ikon gelap terlepas dari pengaturan perangkat Anda.";
 "Keeps the light icon no matter how your device is set." = "Ikon terang tetap digunakan, apa pun pengaturan perangkat Anda.";
 "Keyboard Shortcuts" = "Pintasan Keyboard";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "Membacakan artikel %@ Anda";
 "Recommended for %@" = "Direkomendasikan untuk %@";
 "Recording..." = "Merekam...";
+"Reduce motion" = "Kurangi gerakan";
 "Refine with a hint" = "Persempit dengan petunjuk";
 "Refine with this title" = "Persempit dengan judul ini";
 "Refresh NewsBlur" = "Muat Ulang NewsBlur";

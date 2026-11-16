@@ -411,6 +411,7 @@ class StoryTitlesHeaderBar: NSObject {
         buildPillBar(in: headerContainer)
         buildSearchContainer(in: headerContainer)
         buildLayout(in: headerContainer)
+        ReaderMotion.cascade([discoverPill, optionsPill, searchPill, markReadContainer])
         updateTheme()
 
         let heightConstraint = headerContainer.heightAnchor.constraint(equalToConstant: headerHeight)
@@ -531,6 +532,7 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     @objc private func pillTouchUp(_ sender: UIButton) {
+        ReaderMotion.pop(sender)
         UIView.animate(withDuration: 0.2) { sender.alpha = 1.0 }
     }
 
@@ -1140,8 +1142,9 @@ class StoryTitlesHeaderBar: NSObject {
         // unrelated pending constraint changes (e.g. initial layout).
         if changed {
             let duration: TimeInterval = active ? 0.25 : 0.4
+            if active { ReaderMotion.enter(searchContainer, distance: 8) }
 
-            UIView.animate(withDuration: 0.3, delay: 0, options: active ? .curveEaseOut : .curveEaseIn) {
+            UIView.animate(withDuration: ReaderMotion.reduceMotion ? 0 : 0.3, delay: 0, options: [.beginFromCurrentState, active ? .curveEaseOut : .curveEaseIn]) {
                 self.headerHeightConstraint?.constant = height
                 self.headerContainer.superview?.layoutIfNeeded()
             } completion: { _ in

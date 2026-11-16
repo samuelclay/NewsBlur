@@ -1,6 +1,9 @@
 <resources>
     <string name="language_title">Language</string>
     <string name="settings_cat_general">General</string>
+    <string name="settings_cat_appearance">Appearance</string>
+    <string name="settings_reduce_motion">Reduce motion</string>
+    <string name="settings_reduce_motion_summary">Keep fades, without movement.</string>
     <string name="language_current">Language: %1$s</string>
     <string name="language_automatic">Automatic (device language)</string>
     <string name="language_save_failed">Could not save your language. Please try again.</string>

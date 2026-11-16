@@ -68,8 +68,9 @@ object PopoverEntranceAnimation {
             content.pivotX = pivot.x
             content.pivotY = pivot.y
             content.alpha = 0f
-            content.scaleX = INITIAL_SCALE
-            content.scaleY = INITIAL_SCALE
+            val initialScale = if (com.newsblur.view.ReaderMotion.isReducedMotion(content.context)) 1f else INITIAL_SCALE
+            content.scaleX = initialScale
+            content.scaleY = initialScale
             content.addOnAttachStateChangeListener(this)
             if (content.isAttachedToWindow) onViewAttachedToWindow(content)
         }

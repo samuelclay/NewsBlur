@@ -8,6 +8,28 @@ class FolderListTransitionTest {
     private fun row(id: Long, top: Float, alpha: Float = 1f) =
         FolderListTransition.Row(id, top, 50, alpha)
 
+    // FolderListTransitionTest.kt protects fades during real folder rearrangement: disabling the
+    // whole transition would flash incoming rows, while keeping its geometry would move them.
+    @Test
+    fun reducedMotionKeepsIncomingAndOutgoingFadesAtTheirFinalAndOriginalPositions() {
+        for (expanding in listOf(true, false)) {
+            val before = listOf(row(1, 100f), row(2, 150f), row(3, 200f))
+            val after = listOf(row(1, 100f), row(4, 150f), row(3, 250f))
+            val normal = FolderListTransition.plan(before, after, 600f, 150f, expanding, 24f)
+            val reduced = FolderListTransition.plan(before, after, 600f, 150f, expanding, 24f, reduceMotion = true)
+            for (motion in reduced) {
+                val original = normal.single { it.after.id == motion.after.id }
+                assertEquals(original.before.alpha, motion.before.alpha, 0f)
+                assertEquals(original.after.alpha, motion.after.alpha, 0f)
+                assertEquals("Reduced folder transitions must stay in place", motion.before.top, motion.after.top, 0f)
+                val finalRow = after.firstOrNull { it.id == motion.after.id }
+                assertEquals(finalRow?.top ?: original.before.top, motion.before.top, 0f)
+            }
+            assertEquals(0f, reduced.single { it.after.id == 4L }.before.alpha, 0f)
+            assertEquals(0f, reduced.single { it.after.id == 2L }.after.alpha, 0f)
+        }
+    }
+
     @Test
     fun expansionKeepsHeadingAnchoredAndMovesFollowingRowsByTheirActualDistance() {
         val motions =

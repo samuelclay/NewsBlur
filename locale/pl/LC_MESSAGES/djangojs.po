@@ -1447,6 +1447,9 @@ msgstr ""
 msgid "Any time"
 msgstr "Kiedykolwiek"
 
+msgid "Appearance"
+msgstr "Wygląd"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -3369,6 +3372,9 @@ msgstr "Pełna szerokość"
 msgid "Full-Text Search"
 msgstr "Wyszukiwanie pełnotekstowe"
 
+msgid "Full-screen list"
+msgstr "Lista pełnoekranowa"
+
 msgid "Full-text search across all stories"
 msgstr "Wyszukiwanie pełnotekstowe we wszystkich artykułach"
 
@@ -3770,6 +3776,9 @@ msgstr "Artykuły z rzadko aktualizowanych witryn"
 msgid "Infrequent stories per month"
 msgstr "Próg rzadko aktualizowanych witryn"
 
+msgid "Inline list"
+msgstr "Lista śródwierszowa"
+
 msgid "Insta-fetch stories"
 msgstr "Pobierz artykuły natychmiast"
 
@@ -3847,6 +3856,9 @@ msgstr "Tylko nagłówki, z minimalnym komentarzem"
 msgid "Just the headlines, no commentary"
 msgstr "Same nagłówki, bez komentarza"
 
+msgid "Keep fades, without movement."
+msgstr "Zachowaj przenikanie, bez ruchu."
+
 msgid "Keep others unread"
 msgstr "Pozostaw pozostałe jako nieprzeczytane"
 
@@ -3907,6 +3919,9 @@ msgstr "Ostatnia aktualizacja"
 
 msgid "Last seen:"
 msgstr "Ostatnio widziano:"
+
+msgid "Layout"
+msgstr "Układ"
 
 msgid "Leave unread"
 msgstr "Pozostaw jako nieprzeczytane"
@@ -3995,6 +4010,9 @@ msgstr "Wczytywanie kanałów..."
 
 msgid "Loading more briefings..."
 msgstr "Wczytywanie kolejnych przeglądów..."
+
+msgid "Loading the next unread story..."
+msgstr "Wczytywanie następnego nieprzeczytanego artykułu..."
 
 msgid "Loading voices..."
 msgstr "Wczytywanie głosów..."
@@ -4530,6 +4548,9 @@ msgstr "Następny krok "
 msgid "Next story"
 msgstr "Następny artykuł"
 
+msgid "Next unread"
+msgstr "Następny nieprzeczytany"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
 "Następnie utwórz filtr obejmujący wszystkie newslettery, aby były przekazywane na niestandardowy adres w "
@@ -4836,6 +4857,13 @@ msgstr "O nie, wystąpił problem z pobraniem tego adresu URL i nie ma dobrego w
 
 msgid "Old password"
 msgstr "Stare hasło"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Starsze niż %(count)s dzień"
+msgstr[1] "Starsze niż %(count)s dni"
+msgstr[2] "Starsze niż %(count)s dni"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -5613,6 +5641,9 @@ msgstr "Zrealizowano"
 
 msgid "Reduce clutter in your river of stories"
 msgstr "Uporządkuj strumień artykułów"
+
+msgid "Reduce motion"
+msgstr "Ogranicz ruch"
 
 msgid "Refer"
 msgstr "Poleć"
@@ -6666,6 +6697,12 @@ msgstr "Artykuły starsze niż %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Artykuły z dnia %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Artykuły otwierają się na liście"
+
+msgid "Stories open on their own screen"
+msgstr "Artykuły otwierają się na osobnym ekranie"
+
 msgid "Stories per day"
 msgstr "Artykuły dziennie"
 
@@ -6716,6 +6753,9 @@ msgstr "Typografia artykułów"
 
 msgid "Story URL"
 msgstr "Adres URL artykułu"
+
+msgid "Story cards open on their own screen"
+msgstr "Karty artykułów otwierają się na osobnym ekranie"
 
 msgid "Story clustering"
 msgstr "Grupowanie artykułów"

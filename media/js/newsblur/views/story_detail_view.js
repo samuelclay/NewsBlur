@@ -110,6 +110,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     // =============
 
     render: function () {
+        // story_detail_view.js animates newly presented content, never a selection of content already on screen.
+        var animate_entrance = !this._motion_rendered || !this.el.isConnected || !this.el.getClientRects().length;
+        this._motion_rendered = true;
         var params = this.get_render_params();
         params['story_header'] = this.story_header_template(params);
         this.sideoptions_view = new NEWSBLUR.Views.StorySideoptionsView({
@@ -148,6 +151,18 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_cluster_stories();
         this.render_briefing_admin_badge();
         this.attach_handlers();
+        NEWSBLUR.motion.article_parts(this.el);
+        // story_detail_view.js preserves appearance state without observing every unselected article forever.
+        if (!this.model.get('selected')) NEWSBLUR.motion.pause_parts(this.el);
+        if (animate_entrance && this._motion_entrance_frame == null) {
+            this._motion_entrance_frame = requestAnimationFrame(_.bind(function () {
+                this._motion_entrance_frame = null;
+                if (this.el.isConnected) {
+                    NEWSBLUR.motion.article(this.el);
+                    if (!this.model.get('selected')) NEWSBLUR.motion.pause_parts(this.el);
+                }
+            }, this));
+        }
         // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
         // }
 
@@ -710,6 +725,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             });
             story_view.render();
             story_view.$el.addClass('NB-story-cluster-detail-item');
+            story_view.$el.attr('data-motion-key', 'cluster:' + story_data.story_hash);
             self._cluster_title_views.push(story_view);
             $container.append(story_view.$el);
         });
@@ -758,6 +774,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     destroy: function () {
         // console.log(["destroy story detail", this.model.get('story_title')]);
+        if (this._motion_entrance_frame != null) cancelAnimationFrame(this._motion_entrance_frame);
+        this._motion_entrance_frame = null;
+        NEWSBLUR.motion.unwatch_parts(this.el);
         if (this._cluster_title_views) {
             _.each(this._cluster_title_views, function (view) { view.remove(); });
             this._cluster_title_views = null;
@@ -876,6 +895,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_selected: function (model, selected, options) {
         options = options || {};
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
+        // story_detail_view.js observes individual actions and async social/cluster sections without moving their bars.
+        if (selected) NEWSBLUR.motion.article_parts(this.el, { animate: this._motion_entrance_frame != null });
+        else NEWSBLUR.motion.pause_parts(this.el);
         _.defer(_.bind(this.update_sideoptions_sticky_state, this));
         NEWSBLUR.app.taskbar_info.hide_stories_error();
 
@@ -1284,7 +1306,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 } else {
                     $scroll = NEWSBLUR.reader.$s.$feed_scroll;
                 }
-                offset += $scroll.scrollTop();
+                // story_detail_view.js: a footnote's offset already counts the page's scroll when the
+                // page scrolls in place of the list (mobile_layout_view.js Page scroll).
+                if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.page_scrolls($scroll[0])) {
+                    offset -= $scroll.offset().top;
+                } else {
+                    offset += $scroll.scrollTop();
+                }
                 $scroll.stop().scrollTo(offset - 60, {
                     duration: 340,
                     axis: 'y',
@@ -1942,7 +1970,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     show_manage_menu_rightclick: function (e) {
-        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        if (!e.mobile_long_press && !NEWSBLUR.assets.preference('show_contextmenus')) return;
 
         return this.show_manage_menu(e);
     },
@@ -1959,7 +1987,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     show_feed_manage_menu_rightclick: function (e) {
-        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        if (!e.mobile_long_press && !NEWSBLUR.assets.preference('show_contextmenus')) return;
         return this.show_feed_manage_menu(e);
     },
 
@@ -2128,6 +2156,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     toggle_starred: function () {
+        // story_detail_view.js opens a phone's saved editor without discarding existing tags or notes.
+        // The story toolbar retains its independent save/unsave toggle.
+        var save_view = this.sideoptions_view && this.sideoptions_view.save_view;
+        if (save_view && NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.active && this.model.get('starred')) {
+            save_view.open_as_sheet = true;
+            save_view.toggle_feed_story_save_dialog({ resize_open: true });
+            return;
+        }
+        if (save_view) save_view.open_as_sheet = !this.model.get('starred');
         this.model.toggle_starred();
     },
 

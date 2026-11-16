@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -114,12 +113,12 @@ fun ListenVoiceSettingsSheet(
         modifier = Modifier.fillMaxWidth().heightIn(max = maxHeight),
         color = colors.sheetBackground,
     ) {
+        // ListenVoiceSettingsSheet.kt already receives the keyboard-safe bounds from NewsBlurBottomSheet's window.
         Column(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .imePadding()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 18.dp),
         ) {

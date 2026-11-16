@@ -168,7 +168,7 @@ html[dir="rtl"] .NB-story blockquote:dir(rtl) {
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
 }
 .NB-button.NB-share-button div {
-    color: rgba(80, 60, 30, 0.4);
+    color: rgba(80, 60, 30, 0.8);
     text-shadow: none;
     border: 0.5px solid rgba(80, 60, 30, 0.15);
     background: rgba(80, 60, 30, 0.05);
@@ -189,7 +189,7 @@ html[dir="rtl"] .NB-story blockquote:dir(rtl) {
 
 .NB-button.NB-share-button:active div,
 .NB-button.NB-share-button.NB-button-active div {
-    color: rgba(80, 60, 30, 0.6);
+    color: rgba(80, 60, 30, 0.9);
     background: rgba(80, 60, 30, 0.1);
     text-shadow: none;
 }

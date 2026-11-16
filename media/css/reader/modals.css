@@ -296,11 +296,7 @@ fieldset legend {
     background: linear-gradient(to top, #DCDCDC, #D2D2D2);
     border-radius: 6px;
     border: none;
-    transition: background-color 0.15s ease, background-image 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-}
-
-.NB-modal-submit-button:active:not(.NB-disabled) {
-    transform: scale(0.96);
+    transition: background-color 0.15s ease, background-image 0.15s ease, box-shadow 0.15s ease;
 }
 
 .NB-modal-submit-green {

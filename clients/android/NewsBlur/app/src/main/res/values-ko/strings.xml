@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">피드 및 스토리 제목 글꼴 크기</string>
     <string name="language_title">언어</string>
     <string name="settings_cat_general">일반</string>
+    <string name="settings_cat_appearance">모양</string>
+    <string name="settings_reduce_motion">동작 줄이기</string>
+    <string name="settings_reduce_motion_summary">움직임 없이 페이드 효과를 유지합니다.</string>
     <string name="language_current">언어: %1$s</string>
     <string name="language_automatic">자동(기기 언어)</string>
     <string name="language_save_failed">언어를 저장하지 못했습니다. 다시 시도해 주세요.</string>

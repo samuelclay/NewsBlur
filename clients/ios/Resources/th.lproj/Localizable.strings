@@ -170,6 +170,7 @@
 "Analyzing images..." = "กำลังวิเคราะห์รูปภาพ...";
 "App Badge" = "ป้ายแอป";
 "App Icon" = "ไอคอนแอป";
+"Appearance" = "รูปลักษณ์";
 "Apply training across a folder" = "ใช้การฝึกกับทั้งโฟลเดอร์";
 "Apply training globally" = "ใช้การฝึกกับทุกฟีด";
 "Arctic Cyan" = "สีฟ้าไซแอนอาร์กติก";
@@ -502,6 +503,7 @@
 "Interactions" = "การโต้ตอบ";
 "Invalid: %@" = "ไม่ถูกต้อง: %@";
 "Invoice" = "ใบแจ้งหนี้";
+"Keep fades, without movement." = "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว";
 "Keeps the dark icon no matter how your device is set." = "คงไอคอนสีเข้มไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keeps the light icon no matter how your device is set." = "คงไอคอนสว่างไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keyboard Shortcuts" = "แป้นพิมพ์ลัด";
@@ -845,6 +847,7 @@
 "Reads your %@ stories" = "อ่านบทความของคุณ %@";
 "Recommended for %@" = "แนะนำสำหรับ %@";
 "Recording..." = "กำลังบันทึก...";
+"Reduce motion" = "ลดการเคลื่อนไหว";
 "Refine with a hint" = "ปรับให้ละเอียดด้วยคำใบ้";
 "Refine with this title" = "ปรับการค้นหาด้วยชื่อนี้";
 "Refresh NewsBlur" = "รีเฟรช NewsBlur";

@@ -41,6 +41,9 @@
     <string name="story_title_list_font_size">訂閱來源與文章標題字級</string>
     <string name="language_title">語言</string>
     <string name="settings_cat_general">一般</string>
+    <string name="settings_cat_appearance">外觀</string>
+    <string name="settings_reduce_motion">減少動態效果</string>
+    <string name="settings_reduce_motion_summary">保留淡入淡出，取消移動效果。</string>
     <string name="language_current">語言：%1$s</string>
     <string name="language_automatic">自動（裝置語言）</string>
     <string name="language_save_failed">無法儲存你的語言設定。請再試一次。</string>

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 ożywia czytanie. Kanały, nagłówki folderów, tytuły i sekcje artykułów pojawiają się z animacją w kolejności widocznej na ekranie. Przełączanie widoków Wszystkie, Nieprzeczytane, Wyróżnione i Zapisane jest szybkie i płynne.\n\nWolisz mniej ruchu? Nowy przełącznik Ogranicz ruch w Preferencje > Wygląd usuwa przesuwanie i skalowanie, zachowując delikatne pojawianie się i zanikanie. Domyślnie jest wyłączony.\n\nTa wersja łagodzi też przejścia podczas ładowania artykułów w trybie szarym, daje więcej miejsca tagom przy odkrywaniu witryn na iPhonie oraz poprawia okna dialogowe i elementy sterujące na iPhonie i iPadzie."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 ożywia czytanie. Kanały, nagłówki folderów, tytuły i sekcje artykułów pojawiają się z animacją w kolejności widocznej na ekranie. Przełączanie widoków Wszystkie, Nieprzeczytane, Wyróżnione i Zapisane jest szybkie i płynne.\n\nWolisz mniej ruchu? Nowy przełącznik Ogranicz ruch w Preferencje > Wygląd usuwa przesuwanie i skalowanie, zachowując delikatne pojawianie się i zanikanie. Domyślnie jest wyłączony.\n\nTa wersja dopracowuje też ramkę czytnika na Macu, poprawia elementy sterujące odkrywaniem witryn i łagodzi przejścia między artykułami."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17 animuje kanały, foldery, tytuły i artykuły po kolei. Szybko przełączaj widoki Wszystkie, Nieprzeczytane, Wyróżnione i Zapisane. Ogranicz ruch w Preferencje > Wygląd usuwa ruch, zachowując płynne pojawianie się i zanikanie. Domyślnie wyłączone. Tagi przy odkrywaniu witryn mają więcej miejsca na telefonach, a dialogi na tabletach lepiej działają przy obracaniu ekranu."
+  }
+}
