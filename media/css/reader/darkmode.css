@@ -6753,3 +6753,16 @@ a.mention, a.mention-group {
     color: #303030;
     background-color: rgba(230, 230, 230, 0.95);
 }
+
+/* darkmode.css: The new stories pill (media/js/newsblur/views/new_stories_indicator_view.js) keeps its accent
+   but drops to a deeper blue with a heavier shadow on the dark list. */
+.NB-dark .NB-new-stories-indicator {
+    background: #3F6EA8;
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.30),
+        0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.NB-dark .NB-new-stories-indicator:hover {
+    background: #4A7CB8;
+}
