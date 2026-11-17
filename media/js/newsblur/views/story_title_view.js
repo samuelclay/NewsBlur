@@ -1068,7 +1068,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             return this.select_story(e);
         }
 
-        NEWSBLUR.app.story_tab_view.prepare_story(this.model, true);
+        // story_title_view.js: this click opens the story in Story view by hand, so the story pane slides.
+        NEWSBLUR.app.story_tab_view.prepare_story(this.model, true, { slide: true });
         NEWSBLUR.app.story_tab_view.open_story(this.model);
         return false;
     },

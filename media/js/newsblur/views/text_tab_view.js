@@ -23,7 +23,8 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     // = Actions =
     // ===========
 
-    fetch_and_render: function (story, is_temporary) {
+    fetch_and_render: function (story, is_temporary, options) {
+        options = options || {};
         if (!story) story = NEWSBLUR.reader.active_story;
         if (!story && is_temporary) {
             NEWSBLUR.reader.show_next_story(1);
@@ -32,8 +33,11 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         if (!story) return;
 
         if (is_temporary && _.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
+            // text_tab_view.js: options.slide comes from Shift+Enter, a choice made by hand, so reader.js
+            // position_story_pane slides over. Listen following along passes nothing and jumps.
             NEWSBLUR.reader.switch_taskbar_view('text', {
-                skip_save_type: is_temporary ? 'text' : false
+                skip_save_type: is_temporary ? 'text' : false,
+                slide: options.slide
             });
         }
 
