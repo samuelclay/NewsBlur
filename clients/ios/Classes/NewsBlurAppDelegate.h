@@ -484,6 +484,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
+- (void)refreshVisibleInteractions;
 - (NSArray *)updateSavedSearches:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
 - (void)renameFolder:(NSString *)newTitle;

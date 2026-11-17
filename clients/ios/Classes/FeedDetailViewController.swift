@@ -374,6 +374,18 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
 
     private var gridViewController: UIHostingController<FeedDetailGridView>?
+
+    /// The grid or card layout's scroll view, which NewStoriesPill.swift scrolls to stories it inserted.
+    var gridScrollView: UIScrollView? {
+        guard let root = gridViewController?.view else { return nil }
+        var pending: [UIView] = [root]
+        while !pending.isEmpty {
+            let candidate = pending.removeFirst()
+            if let scrollView = candidate as? UIScrollView { return scrollView }
+            pending.append(contentsOf: candidate.subviews)
+        }
+        return nil
+    }
     
     private var dashboardViewController: UIHostingController<FeedDetailDashboardView>?
 
@@ -640,6 +652,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         if let headerContainer = storyTitlesHeaderBar?.headerContainer {
             view.bringSubviewToFront(headerContainer)
         }
+        // NewStoriesPill.swift's pill floats over whichever layout is showing, including one added just now.
+        bringNewStoriesPillToFront()
     }
     
     var reloadWorkItem: DispatchWorkItem?

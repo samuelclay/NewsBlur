@@ -468,6 +468,39 @@
     self.storyLocationsCount = (int)[self.activeFeedStoryLocations count];
 }
 
+// StoriesCollection.m merges stories that arrived over the socket (RealtimeUpdates.swift) into the loaded list,
+// each at its place in the list's order, the way storiesByIncludingNotificationStory: places its story.
+- (NSInteger)insertRealtimeStories:(NSArray *)stories {
+    NSMutableArray *merged = [NSMutableArray arrayWithArray:self.activeFeedStories ?: @[]];
+    NSMutableSet *listedHashes = [NSMutableSet setWithCapacity:merged.count];
+    for (NSDictionary *story in merged) {
+        if (story[@"story_hash"]) [listedHashes addObject:story[@"story_hash"]];
+    }
+    BOOL oldestFirst = [self.activeOrder isEqualToString:@"oldest"];
+    NSInteger inserted = 0;
+    for (NSDictionary *story in stories) {
+        NSString *storyHash = story[@"story_hash"];
+        if (![storyHash isKindOfClass:[NSString class]] || [listedHashes containsObject:storyHash]) continue;
+        double timestamp = [story[@"story_timestamp"] doubleValue];
+        NSUInteger insertion = merged.count;
+        for (NSUInteger index = 0; index < merged.count; index++) {
+            double otherTimestamp = [merged[index][@"story_timestamp"] doubleValue];
+            if (oldestFirst ? timestamp < otherTimestamp : timestamp > otherTimestamp) {
+                insertion = index;
+                break;
+            }
+        }
+        [merged insertObject:story atIndex:insertion];
+        [listedHashes addObject:storyHash];
+        inserted += 1;
+    }
+    if (!inserted) return 0;
+    self.activeFeedStories = merged;
+    self.storyCount = (int)merged.count;
+    [self calculateStoryLocations];
+    return inserted;
+}
+
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
     self.activeFeedStories = [self storiesByIncludingNotificationStory:activeFeedStoriesValue];
     self.storyCount = (int)[self.activeFeedStories count];

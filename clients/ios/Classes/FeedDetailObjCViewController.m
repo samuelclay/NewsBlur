@@ -3609,6 +3609,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 #pragma mark Stories
 
 - (void)renderStories:(NSArray *)newStories {
+    // FeedDetailObjCViewController.m drops stories RealtimeUpdates.swift was holding for the list a first page replaces.
+    if (storiesCollection.feedPage == 1 && self == appDelegate.feedDetailViewController) {
+        [RealtimeUpdates.shared storyListDidReload];
+    }
     NSInteger newStoriesCount = [newStories count];
     NSInteger previousStoryCount = storiesCollection.storyLocationsCount;
     BOOL premiumRestriction = !appDelegate.isPremium &&
@@ -7549,6 +7553,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     // Story titles header pill bar (includes search container)
     [self.storyTitlesHeaderBar updateTheme];
+    // FeedDetailObjCViewController.m recolors NewStoriesPill.swift's pill, which only the Swift story list shows.
+    if ([self isKindOfClass:[FeedDetailViewController class]]) {
+        [(FeedDetailViewController *)self updateNewStoriesPillTheme];
+    }
     [self.bottomNextFeedControl updateTheme];
 
     if (navigationThemeChanged || !self.appDelegate.detailViewController.navigationItem.titleView) {

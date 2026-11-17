@@ -1317,6 +1317,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 - (void)returnToApp {
     NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-1 * BACKGROUND_REFRESH_SECONDS)];
     NSLog(@"Left app: %@ - %f", self.leftAppDate, [self.leftAppDate timeIntervalSinceDate:decayDate]);
+    // FeedsObjCViewController.m skips the reload when the realtime socket stayed connected the whole time
+    // (the Mac app keeps it open while hidden), since RealtimeUpdates.swift already applied every change.
+    if ([RealtimeUpdates.shared hasStayedConnectedSince:self.leftAppDate]) return;
     if ([self.leftAppDate timeIntervalSinceDate:decayDate] < 0) {
         [appDelegate reloadFeedsView:YES];
     }
@@ -1366,6 +1369,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     NSString *urlFeedList;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
+    // A feed list load ends in a full count refresh, which covers RealtimeUpdates.swift's catch-up.
+    [RealtimeUpdates.shared noteFullCountRefresh];
     
     if (self.inPullToRefresh_) {
         urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true&include_inactive=true",
@@ -1824,7 +1829,10 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self loadNotificationStory];
     }
     
-    if (finished && !self.isOffline) [appDelegate feedSubscriptionsDidLoad];
+    if (finished && !self.isOffline) {
+        [appDelegate feedSubscriptionsDidLoad];
+        [RealtimeUpdates.shared feedListDidLoad];
+    }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
@@ -4562,6 +4570,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     if (!feedId) {
         [self.appDelegate cancelOfflineQueue];
+        [RealtimeUpdates.shared noteFullCountRefresh];
     }
     
     [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -4599,6 +4608,29 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)finishRefreshingFeedList:(NSDictionary *)results feedId:(NSString *)feedId {
+    [self finishRefreshingFeedList:results feedId:feedId loadFavicons:YES];
+}
+
+// FeedsObjCViewController.m applies the counts RealtimeUpdates.swift fetched for the feeds the socket named. It
+// skips the favicon download a full refresh does, and updates blurblog rows, which read dictSocialFeeds.
+- (void)applyRealtimeUnreadCounts:(NSDictionary *)results {
+    NSDictionary *socialCounts = [results[@"social_feeds"] isKindOfClass:[NSDictionary class]] ? results[@"social_feeds"] : nil;
+    if (socialCounts.count) {
+        NSMutableDictionary *socialFeeds = [self.appDelegate.dictSocialFeeds mutableCopy] ?: [NSMutableDictionary dictionary];
+        for (NSString *socialId in socialCounts) {
+            NSDictionary *counts = socialCounts[socialId];
+            NSString *key = [NSString stringWithFormat:@"%@", socialId];
+            if (![counts isKindOfClass:[NSDictionary class]] || ![socialFeeds[key] isKindOfClass:[NSDictionary class]]) continue;
+            NSMutableDictionary *socialFeed = [socialFeeds[key] mutableCopy];
+            [socialFeed addEntriesFromDictionary:[counts dictionaryWithValuesForKeys:@[@"ps", @"nt", @"ng"]]];
+            socialFeeds[key] = socialFeed;
+        }
+        self.appDelegate.dictSocialFeeds = socialFeeds;
+    }
+    [self finishRefreshingFeedList:results feedId:@"realtime" loadFavicons:NO];
+}
+
+- (void)finishRefreshingFeedList:(NSDictionary *)results feedId:(NSString *)feedId loadFavicons:(BOOL)loadFavicons {
     NSUInteger accountGeneration = self.feedListAccountGeneration;
     NSInteger intelligenceLevel = self.appDelegate.selectedIntelligence;
     // FeedsObjCViewController.m computes visibility on snapshots, then publishes on main
@@ -4685,7 +4717,7 @@ heightForHeaderInSection:(NSInteger)section {
             if (!feedId) {
                 [self.appDelegate startOfflineQueue];
             }
-            [self loadFavicons];
+            if (loadFavicons) [self loadFavicons];
 //            if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
 //                [UIView animateWithDuration:0.2 animations:^{
 //                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchField.frame));
