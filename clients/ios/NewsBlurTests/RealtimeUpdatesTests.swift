@@ -183,4 +183,125 @@ import XCTest
         XCTAssertEqual(hashes, newestFirst ? expected : expected.reversed())
         XCTAssertEqual(Int(collection.storyCount), expected.count)
     }
+
+
+    private func story(_ hash: String, _ timestamp: Int) -> [String: Any] {
+        ["story_hash": hash, "story_feed_id": 12, "story_timestamp": "\(timestamp)", "read_status": 0,
+         "intelligence": ["feed": 0, "author": 0, "tags": 0, "title": 0]]
+    }
+
+    private func hashes(_ stories: [[String: Any]]) -> [String] {
+        stories.compactMap { $0["story_hash"] as? String }
+    }
+
+    // Filling the gap must keep every story exactly once and in the list's order: a page that overlaps the stories
+    // already listed moves the cursor past them instead of listing them again.
+    func test_newestPagesFillTheGapWithoutListingAStoryTwice() {
+        let listed = [story("12:e", 500), story("12:d", 400), story("12:a", 100)]
+        let first = NewStoriesGapMerge.merge(page: [story("12:i", 900), story("12:h", 800)], into: listed,
+                                             cursor: 0, oldestFirst: false)
+        XCTAssertEqual(hashes(first.stories), ["12:i", "12:h", "12:e", "12:d", "12:a"])
+        XCTAssertEqual(first.cursor, 2, "the gap sits between the newest page and the stories already listed")
+        XCTAssertFalse(first.reachedEnd)
+
+        let second = NewStoriesGapMerge.merge(page: [story("12:g", 700), story("12:e", 500), story("12:c", 300)],
+                                              into: first.stories, cursor: first.cursor, oldestFirst: false)
+        XCTAssertEqual(hashes(second.stories), ["12:i", "12:h", "12:g", "12:e", "12:d", "12:c", "12:a"])
+        XCTAssertEqual(second.inserted, ["12:g", "12:c"])
+        XCTAssertEqual(second.cursor, 6)
+    }
+
+    // A listed story read on another device drops out of an unread list's fresh pages; the cursor must still pass it,
+    // or every later story would land above it, out of order.
+    func test_gapCursorPassesListedStoriesThePagesNoLongerInclude() {
+        let listed = [story("12:read", 500), story("12:b", 200)]
+        let result = NewStoriesGapMerge.merge(page: [story("12:c", 300)], into: listed, cursor: 0, oldestFirst: false)
+        XCTAssertEqual(hashes(result.stories), ["12:read", "12:c", "12:b"])
+    }
+
+    // The gap closes when a page reaches the last listed story, handing paging back to the list; an oldest-first
+    // list's new stories join its end.
+    func test_gapClosesWhenThePagesReachTheEndOfTheList() {
+        let listed = [story("12:a", 100), story("12:b", 200)]
+        let caughtUp = NewStoriesGapMerge.merge(page: [story("12:b", 200), story("12:c", 300)], into: listed,
+                                                cursor: 1, oldestFirst: true)
+        XCTAssertEqual(hashes(caughtUp.stories), ["12:a", "12:b", "12:c"])
+        XCTAssertTrue(caughtUp.reachedEnd)
+
+        let stillOpen = NewStoriesGapMerge.merge(page: [story("12:x", 900)], into: listed, cursor: 0, oldestFirst: false)
+        XCTAssertFalse(stillOpen.reachedEnd)
+    }
+
+    // A list left open overnight must stop fetching once the pill holds 20, yet still count what arrives after.
+    func test_pillStopsFetchingAtTheCapButKeepsCounting() {
+        var buffer = RealtimeNewStoryBuffer()
+        let list = storyList(unreadOnly: true)
+        var fetched = 0
+        for index in 0..<(RealtimeNewStories.prefetchCap + 5) where buffer.announce("12:s\(index)", list: list) {
+            fetched += 1
+        }
+        XCTAssertEqual(fetched, RealtimeNewStories.prefetchCap)
+        let pending = buffer.takePending(limit: 100)
+        _ = buffer.addFetched(pending.enumerated().map { story($1, 1000 + $0) }, userProfiles: [], list: list,
+                              listedHashes: [])
+
+        XCTAssertEqual(buffer.pillCount(list: list), RealtimeNewStories.prefetchCap + 5)
+        XCTAssertTrue(buffer.needsNewestPage(list: list), "anything unfetched loads the newest page instead")
+        XCTAssertFalse(buffer.announce("12:more", list: list))
+    }
+
+    // A story read elsewhere must leave the count whether it was fetched or only counted.
+    func test_storiesReadElsewhereLeaveThePillCount() {
+        var buffer = RealtimeNewStoryBuffer()
+        let list = storyList(unreadOnly: true)
+        for index in 0...RealtimeNewStories.prefetchCap { _ = buffer.announce("12:s\(index)", list: list) }
+        _ = buffer.addFetched([story("12:s0", 100)], userProfiles: [], list: list, listedHashes: [])
+        let before = buffer.pillCount(list: list)
+
+        buffer.setReadState(storyHash: "12:s0", read: true, list: list)
+        buffer.setReadState(storyHash: "12:s\(RealtimeNewStories.prefetchCap)", read: true, list: list)
+
+        XCTAssertEqual(buffer.pillCount(list: list), before - 2)
+    }
+
+    // A few stories under the cap go straight in; only an overflow loads the newest page.
+    func test_fewStoriesInsertDirectly() {
+        var buffer = RealtimeNewStoryBuffer()
+        let list = storyList(unreadOnly: true)
+        _ = buffer.announce("12:a", list: list)
+        _ = buffer.addFetched([story("12:a", 100)], userProfiles: [], list: list, listedHashes: [])
+        XCTAssertFalse(buffer.needsNewestPage(list: list))
+    }
+
+    // Only time spent scrolling away from the pill counts toward hiding it, and pauses between scrolls don't.
+    func test_pillHidesAfterFiveSecondsOfScrollingAway() {
+        var presence = NewStoriesPillPresence()
+        var time: TimeInterval = 0
+        var hidden = false
+        // Scrolling toward the pill never adds up.
+        for _ in 0..<200 { time += 0.05; hidden = presence.scrolled(awayFromPill: false, at: time) || hidden }
+        XCTAssertFalse(hidden)
+        // Long pauses between scrolls add at most a quarter second each.
+        for _ in 0..<10 { time += 10; hidden = presence.scrolled(awayFromPill: true, at: time) || hidden }
+        XCTAssertFalse(hidden)
+        XCTAssertLessThanOrEqual(presence.timeScrollingAway, 10 * NewStoriesPillPresence.longestScrollStep)
+        // Steady scrolling away tucks it away once five seconds have added up.
+        while !hidden && time < 1_000 { time += 0.05; hidden = presence.scrolled(awayFromPill: true, at: time) }
+        XCTAssertTrue(hidden)
+        XCTAssertGreaterThanOrEqual(presence.timeScrollingAway, NewStoriesPillPresence.hideAfterScrollingAway)
+    }
+
+    // A tucked-away pill returns only after three minutes with no scrolling at all, and every scroll restarts that.
+    func test_tuckedAwayPillReturnsAfterThreeIdleMinutes() {
+        var presence = NewStoriesPillPresence()
+        var time: TimeInterval = 0
+        while !presence.isHiddenByScrolling { time += 0.05; _ = presence.scrolled(awayFromPill: true, at: time) }
+        let idle = NewStoriesPillPresence.returnAfterIdle
+        XCTAssertFalse(presence.shouldReturn(at: time + idle - 1))
+
+        // Scrolling toward the pill also restarts the wait.
+        _ = presence.scrolled(awayFromPill: false, at: time + 60)
+        XCTAssertFalse(presence.shouldReturn(at: time + idle + 1))
+        XCTAssertTrue(presence.shouldReturn(at: time + 60 + idle))
+    }
 }

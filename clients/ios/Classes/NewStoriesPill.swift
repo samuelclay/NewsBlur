@@ -97,42 +97,116 @@ import UIKit
     }
 }
 
+/// NewStoriesPill.swift: whether the pill stays out while the reader scrolls away from it. Scrolling away (down from
+/// the top pill of a newest-first list, up from the bottom pill of an oldest-first one) for `hideAfterScrollingAway`
+/// in all tucks it away; it comes back once nothing has scrolled for `returnAfterIdle`. The web and Android use the
+/// same numbers.
+struct NewStoriesPillPresence {
+    static let hideAfterScrollingAway: TimeInterval = 5
+    static let returnAfterIdle: TimeInterval = 180
+    /// The most one step of scrolling adds, so a pause between scrolls doesn't count.
+    static let longestScrollStep: TimeInterval = 0.25
+
+    private(set) var timeScrollingAway: TimeInterval = 0
+    private var lastScrollAway: TimeInterval?
+    private(set) var isHiddenByScrolling = false
+    private(set) var lastScroll: TimeInterval?
+
+    /// The list scrolled at `time`. Returns true when this scroll tucks the pill away.
+    mutating func scrolled(awayFromPill away: Bool, at time: TimeInterval) -> Bool {
+        lastScroll = time
+        guard !isHiddenByScrolling else { return false }
+        guard away else {
+            lastScrollAway = nil
+            return false
+        }
+        if let lastScrollAway { timeScrollingAway += min(max(time - lastScrollAway, 0), Self.longestScrollStep) }
+        lastScrollAway = time
+        guard timeScrollingAway >= Self.hideAfterScrollingAway else { return false }
+        isHiddenByScrolling = true
+        return true
+    }
+
+    /// When a tucked-away pill may come back, unless the list scrolls again first.
+    func returnTime(idle: TimeInterval = Self.returnAfterIdle) -> TimeInterval? {
+        guard isHiddenByScrolling else { return nil }
+        return (lastScroll ?? 0) + idle
+    }
+
+    func shouldReturn(at time: TimeInterval, idle: TimeInterval = Self.returnAfterIdle) -> Bool {
+        guard let returnTime = returnTime(idle: idle) else { return false }
+        return time >= returnTime
+    }
+}
+
+/// NewStoriesPill.swift clips the pill to the list's edge under the bar above it, or over the bar below it, so the
+/// pill slides out from beneath that bar and never draws over it. Touches outside the pill reach the list.
+final class NewStoriesPillTrack: UIView {
+    static let height: CGFloat = 64
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let view = super.hitTest(point, with: event)
+        return view === self ? nil : view
+    }
+}
+
+/// NewStoriesPill.swift's state for the pill on one story list: where it is, and the scroll watch that tucks it away.
+@MainActor final class NewStoriesPillState: NSObject {
+    var presence = NewStoriesPillPresence()
+    var isPresented = false
+    var scrollObservation: NSKeyValueObservation?
+    weak var observedScrollView: UIScrollView?
+    var returnWork: DispatchWorkItem?
+
+    func stopWatching() {
+        scrollObservation?.invalidate()
+        scrollObservation = nil
+        observedScrollView = nil
+        returnWork?.cancel()
+        returnWork = nil
+    }
+}
+
 extension FeedDetailViewController {
+    private static var newStoriesPillStateKey: UInt8 = 0
+
+    private var newStoriesPillState: NewStoriesPillState {
+        if let state = objc_getAssociatedObject(self, &Self.newStoriesPillStateKey) as? NewStoriesPillState { return state }
+        let state = NewStoriesPillState()
+        objc_setAssociatedObject(self, &Self.newStoriesPillStateKey, state, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        return state
+    }
+
+    private var newStoriesPillTrack: NewStoriesPillTrack? {
+        view.subviews.first { $0 is NewStoriesPillTrack } as? NewStoriesPillTrack
+    }
+
     private var newStoriesPill: NewStoriesPill? {
-        view.subviews.first { $0 is NewStoriesPill } as? NewStoriesPill
+        newStoriesPillTrack?.subviews.first { $0 is NewStoriesPill } as? NewStoriesPill
     }
 
     /// Show or update the pill. RealtimeUpdates.swift passes the number of waiting stories the list would show.
     @objc func showNewStoriesPill(count: Int, atBottom: Bool) {
         guard isViewLoaded else { return }
-        if let pill = newStoriesPill, pill.atBottom != atBottom { pill.removeFromSuperview() }
-        let pill = newStoriesPill ?? makeNewStoriesPill(atBottom: atBottom)
-        let appearing = pill.isHidden || pill.alpha < 1
-        pill.configure(count: count, atBottom: atBottom)
-        view.bringSubviewToFront(pill)
-        guard appearing else { return }
-        pill.isHidden = false
-        let offset: CGFloat = atBottom ? 12 : -12
-        if UIAccessibility.isReduceMotionEnabled {
-            pill.transform = .identity
-            UIView.animate(withDuration: 0.2) { pill.alpha = 1 }
-        } else {
-            pill.transform = CGAffineTransform(translationX: 0, y: offset)
-            UIView.animate(withDuration: 0.32, delay: 0, usingSpringWithDamping: 0.82, initialSpringVelocity: 0,
-                           options: [.allowUserInteraction, .beginFromCurrentState]) {
-                pill.alpha = 1
-                pill.transform = .identity
-            }
+        if let pill = newStoriesPill, pill.atBottom != atBottom {
+            newStoriesPillTrack?.removeFromSuperview()
+            newStoriesPillState.isPresented = false
         }
+        let pill = newStoriesPill ?? makeNewStoriesPill(atBottom: atBottom)
+        pill.configure(count: count, atBottom: atBottom)
+        if let track = newStoriesPillTrack { view.bringSubviewToFront(track) }
+        watchScrollingForNewStoriesPill(atBottom: atBottom)
+        // The count keeps up while scrolling keeps the pill tucked away.
+        guard !newStoriesPillState.presence.isHiddenByScrolling else { return }
+        slideNewStoriesPill(in: true)
     }
 
     @objc func hideNewStoriesPill() {
-        guard isViewLoaded, let pill = newStoriesPill, !pill.isHidden else { return }
-        UIView.animate(withDuration: 0.18, delay: 0, options: [.beginFromCurrentState]) {
-            pill.alpha = 0
-        } completion: { finished in
-            if finished && pill.alpha == 0 { pill.isHidden = true }
-        }
+        guard isViewLoaded else { return }
+        let state = newStoriesPillState
+        state.stopWatching()
+        state.presence = NewStoriesPillPresence()
+        slideNewStoriesPill(in: false)
     }
 
     @objc func updateNewStoriesPillTheme() {
@@ -140,26 +214,128 @@ extension FeedDetailViewController {
     }
 
     func bringNewStoriesPillToFront() {
-        if let pill = newStoriesPill { view.bringSubviewToFront(pill) }
+        if let track = newStoriesPillTrack { view.bringSubviewToFront(track) }
     }
 
     private func makeNewStoriesPill(atBottom: Bool) -> NewStoriesPill {
+        let track = NewStoriesPillTrack()
+        track.translatesAutoresizingMaskIntoConstraints = false
+        track.clipsToBounds = true
+        view.addSubview(track)
         let pill = NewStoriesPill(frame: .zero)
         pill.translatesAutoresizingMaskIntoConstraints = false
-        pill.alpha = 0
         pill.isHidden = true
+        pill.transform = Self.newStoriesPillTuckedAway(atBottom: atBottom)
         pill.addTarget(self, action: #selector(didTapNewStoriesPill), for: .touchUpInside)
-        view.addSubview(pill)
-        var constraints = [pill.centerXAnchor.constraint(equalTo: view.centerXAnchor)]
+        track.addSubview(pill)
+        var constraints = [
+            track.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            track.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            track.heightAnchor.constraint(equalToConstant: NewStoriesPillTrack.height),
+            pill.centerXAnchor.constraint(equalTo: track.centerXAnchor)
+        ]
         if atBottom {
-            constraints.append(pill.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -14))
-        } else if let headerBar = storyTitlesHeaderBar {
-            constraints.append(pill.topAnchor.constraint(equalTo: headerBar.contentTopAnchor, constant: 10))
+            constraints.append(track.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor))
+            constraints.append(pill.bottomAnchor.constraint(equalTo: track.bottomAnchor, constant: -14))
         } else {
-            constraints.append(pill.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10))
+            if let headerBar = storyTitlesHeaderBar {
+                constraints.append(track.topAnchor.constraint(equalTo: headerBar.contentTopAnchor))
+            } else {
+                constraints.append(track.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor))
+            }
+            constraints.append(pill.topAnchor.constraint(equalTo: track.topAnchor, constant: 10))
         }
         NSLayoutConstraint.activate(constraints)
         return pill
+    }
+
+    /// Where the pill waits, just past the track's edge under the bar.
+    private static func newStoriesPillTuckedAway(atBottom: Bool) -> CGAffineTransform {
+        CGAffineTransform(translationX: 0, y: atBottom ? NewStoriesPillTrack.height : -NewStoriesPillTrack.height)
+    }
+
+    /// Slides the pill out from under its bar, or back under it; with Reduce Motion it fades.
+    private func slideNewStoriesPill(in presenting: Bool) {
+        guard let pill = newStoriesPill else { return }
+        let state = newStoriesPillState
+        guard state.isPresented != presenting else { return }
+        state.isPresented = presenting
+        let reduceMotion = ReaderMotion.reduceMotion
+        let tucked = Self.newStoriesPillTuckedAway(atBottom: pill.atBottom)
+        if presenting {
+            pill.isHidden = false
+            if reduceMotion {
+                pill.transform = .identity
+                pill.alpha = 0
+            } else {
+                pill.alpha = 1
+            }
+        }
+        let animator = UIViewPropertyAnimator(duration: NewStoriesArrivalTiming.pillSlideDuration,
+                                              timingParameters: reduceMotion ? UICubicTimingParameters(animationCurve: .easeOut)
+                                                : UICubicTimingParameters(controlPoint1: CGPoint(x: 0.22, y: 1),
+                                                                          controlPoint2: CGPoint(x: 0.36, y: 1)))
+        animator.isInterruptible = true
+        animator.addAnimations {
+            if reduceMotion {
+                pill.alpha = presenting ? 1 : 0
+            } else {
+                pill.transform = presenting ? .identity : tucked
+            }
+        }
+        animator.addCompletion { [weak pill, weak state] _ in
+            guard let pill, let state, !state.isPresented else { return }
+            pill.isHidden = true
+            pill.transform = tucked
+            pill.alpha = 1
+        }
+        animator.startAnimation()
+    }
+
+    /// Watches the list's scrolling while the pill is out, or tucked away by scrolling.
+    private func watchScrollingForNewStoriesPill(atBottom: Bool) {
+        let state = newStoriesPillState
+        guard let scrollView = isLegacyTable ? storyTitlesTable : gridScrollView else { return }
+        guard state.observedScrollView !== scrollView else { return }
+        state.scrollObservation?.invalidate()
+        state.observedScrollView = scrollView
+        state.scrollObservation = scrollView.observe(\.contentOffset, options: [.old, .new]) { [weak self] scrollView, change in
+            guard let old = change.oldValue, let new = change.newValue, old.y != new.y,
+                  scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating else { return }
+            MainActor.assumeIsolated {
+                self?.newStoriesPillListScrolled(by: new.y - old.y, atBottom: atBottom)
+            }
+        }
+    }
+
+    private func newStoriesPillListScrolled(by delta: CGFloat, atBottom: Bool) {
+        let state = newStoriesPillState
+        let away = atBottom ? delta < 0 : delta > 0
+        guard state.presence.scrolled(awayFromPill: away, at: CACurrentMediaTime()) else { return }
+        slideNewStoriesPill(in: false)
+        scheduleNewStoriesPillReturn()
+    }
+
+    /// Brings a tucked-away pill back once the list has sat still long enough, if stories are still waiting.
+    private func scheduleNewStoriesPillReturn() {
+        let state = newStoriesPillState
+        state.returnWork?.cancel()
+        guard let returnTime = state.presence.returnTime() else { return }
+        let work = DispatchWorkItem { [weak self] in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                let state = self.newStoriesPillState
+                guard state.presence.isHiddenByScrolling else { return }
+                guard state.presence.shouldReturn(at: CACurrentMediaTime()) else {
+                    self.scheduleNewStoriesPillReturn()
+                    return
+                }
+                state.presence = NewStoriesPillPresence()
+                if (self.newStoriesPill?.count ?? 0) > 0 { self.slideNewStoriesPill(in: true) }
+            }
+        }
+        state.returnWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + max(0, returnTime - CACurrentMediaTime()), execute: work)
     }
 
     @objc private func didTapNewStoriesPill() {
@@ -291,13 +467,19 @@ extension FeedDetailViewController {
         let present = { [weak self] in
             guard let self, let hashes = insert() else { return }
             let session = self.storyCache.motionSession
-            hashes.forEach { session.markSeen($0) }
+            hashes.forEach { session.markArriving($0) }
             // An oldest-first list scrolls down to its new end first; the cards rise once they're in view.
             let scrollsToBottom = atBottom && scrollView != nil
             let start = CACurrentMediaTime() + (scrollsToBottom && !reduceMotion ? NewStoriesArrivalTiming.scrollDuration : 0)
             let cache = self.storyCache
             let arrivals = cache.newStoryArrivals
-            let total = arrivals.plan(hashes: hashes, atBottom: atBottom, start: start, reduceMotion: reduceMotion)
+            // Grid cards keep their own places, so only the cards that land on screen cascade; staggering the rest
+            // would leave the top of the screen empty while cards below it go first.
+            let rowHeight: CGFloat = cache.isGrid ? cache.settings.gridHeight + 20 : 90
+            let columns = cache.isGrid ? max(cache.settings.gridColumns, 1) : 1
+            let onScreen = max(1, Int(ceil((scrollView?.bounds.height ?? 800) / rowHeight)) * columns)
+            let total = arrivals.plan(hashes: hashes, atBottom: atBottom, start: start, reduceMotion: reduceMotion,
+                                      onScreen: onScreen)
             if let cascade = arrivals.cascade {
                 // A lazy grid stops drawing the cards pushed off the bottom, so a one-card-per-row grid covers its
                 // old cards with a picture of them that slides down, uncovering the new cards above it.
@@ -355,7 +537,7 @@ extension FeedDetailViewController {
     private static var newStoriesTableArrivalKey: UInt8 = 0
 
     /// The running table arrival, held here so a second tap, or a list that reloads, can stop it.
-    private var newStoriesTableArrival: NewStoriesTableArrival? {
+    var newStoriesTableArrival: NewStoriesTableArrival? {
         get { objc_getAssociatedObject(self, &Self.newStoriesTableArrivalKey) as? NewStoriesTableArrival }
         set { objc_setAssociatedObject(self, &Self.newStoriesTableArrivalKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
@@ -372,6 +554,8 @@ enum NewStoriesArrivalTiming {
     static let staggerSpan: Double = 0.40
     /// With Reduce Motion on, rows only fade in, this quickly.
     static let reducedMotionFade: Double = 0.15
+    /// How long the pill takes to slide out from under its bar, or back under it.
+    static let pillSlideDuration: Double = 0.3
     /// How long the list takes to scroll to where the stories arrive.
     static let scrollDuration: Double = 0.3
 
@@ -671,16 +855,20 @@ extension View {
     /// edge for one the reader scrolled past.
     var isSettling: Bool { CACurrentMediaTime() < settlesAt }
 
-    /// Plans `hashes`, in list order, and returns how long the cascade lasts.
-    func plan(hashes: [String], atBottom: Bool, start: CFTimeInterval, reduceMotion: Bool) -> Double {
+    /// Plans `hashes`, in list order, and returns how long the cascade lasts. Only the `onScreen` cards nearest
+    /// where the stories arrive cascade; the others are off screen and simply take their places.
+    func plan(hashes: [String], atBottom: Bool, start: CFTimeInterval, reduceMotion: Bool,
+              onScreen: Int = .max) -> Double {
         generation += 1
         arrivals.removeAll()
         transitions.removeAll()
         cascade = nil
-        let count = hashes.count
+        let count = min(hashes.count, max(onScreen, 1))
         let stagger = reduceMotion ? 0 : NewStoriesArrivalTiming.stagger(count: count)
         // NewStoriesPill.swift: the bottom-most new card leads at the top of the list, the topmost at its end.
-        let delays = hashes.indices.map { Double(atBottom ? $0 : count - 1 - $0) * stagger }
+        let delays = hashes.indices.map { index in
+            atBottom ? Double(min(index, count - 1)) * stagger : Double(max(count - 1 - index, 0)) * stagger
+        }
         let total = reduceMotion ? NewStoriesArrivalTiming.reducedMotionFade
             : (delays.max() ?? 0) + NewStoriesArrivalTiming.duration
         settlesAt = start + total + 0.1

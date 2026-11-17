@@ -155,6 +155,11 @@ enum RealtimeNewStories {
     /// The web ignores stories dated more than an hour ahead (media/js/newsblur/views/dashboard_river_view.js).
     static let futureTolerance: TimeInterval = 60 * 60
 
+    /// How many announced stories the list fetches ahead for the pill. Past this, announcements are only counted, and
+    /// tapping the pill loads the list's newest page instead (NewStoriesGapStream.swift). A list left open overnight
+    /// would otherwise fetch every story announced since. The web and Android use the same number.
+    static let prefetchCap = 20
+
     /// Whether a `feed:story:new` announcement is worth fetching for the open list.
     static func shouldFetch(storyHash: String, feedId: String, timestamp: TimeInterval, list: RealtimeStoryList,
                             knownHashes: Set<String>, listedTimestamps: [TimeInterval], now: Date) -> Bool {
@@ -219,6 +224,74 @@ enum RealtimeNewStories {
     }
 }
 
+/// The open list's announced stories, waiting for the pill: those about to be fetched, those fetched, and those
+/// announced past `RealtimeNewStories.prefetchCap`, which are only counted.
+struct RealtimeNewStoryBuffer {
+    /// Announced stories waiting for the next batched fetch.
+    private(set) var pendingHashes: [String] = []
+    /// Fetched stories that belong in the list, in its order.
+    private(set) var stories: [[String: Any]] = []
+    /// Announced stories the list didn't fetch because the pill already holds as many as it fetches ahead.
+    private(set) var unfetchedHashes: [String] = []
+    /// The user profiles that came with the fetched stories.
+    private(set) var userProfiles: [Any] = []
+
+    var isEmpty: Bool { pendingHashes.isEmpty && stories.isEmpty && unfetchedHashes.isEmpty }
+
+
+    var knownHashes: Set<String> {
+        Set(pendingHashes).union(unfetchedHashes).union(stories.compactMap { $0["story_hash"] as? String })
+    }
+
+    /// Takes an announcement `RealtimeNewStories.shouldFetch` accepted. Returns whether it should be fetched; past the
+    /// cap it's only counted.
+    mutating func announce(_ storyHash: String, list: RealtimeStoryList) -> Bool {
+        if RealtimeNewStories.visibleCount(stories, list: list) + pendingHashes.count < RealtimeNewStories.prefetchCap {
+            pendingHashes.append(storyHash)
+            return true
+        }
+        unfetchedHashes.append(storyHash)
+        return false
+    }
+
+    /// The pending announcements for one request, at most `limit` of them.
+    mutating func takePending(limit: Int) -> [String] {
+        let taken = Array(pendingHashes.prefix(limit))
+        pendingHashes.removeFirst(taken.count)
+        return taken
+    }
+
+    /// Adds fetched stories, keeping only those that belong in the list. Returns how many it kept.
+    mutating func addFetched(_ fetched: [[String: Any]], userProfiles profiles: [Any], list: RealtimeStoryList,
+                             listedHashes: Set<String>) -> Int {
+        let accepted = RealtimeNewStories.insertable(fetched, list: list, knownHashes: listedHashes.union(
+            stories.compactMap { $0["story_hash"] as? String }))
+        guard !accepted.isEmpty else { return 0 }
+        stories = RealtimeNewStories.insertable(stories + accepted, list: list, knownHashes: [])
+        userProfiles += profiles
+        return accepted.count
+    }
+
+    /// Another device read or unread a story. An unread list drops a waiting story once it's read.
+    mutating func setReadState(storyHash: String, read: Bool, list: RealtimeStoryList?) {
+        if let index = stories.firstIndex(where: { $0["story_hash"] as? String == storyHash }) {
+            stories[index]["read_status"] = read ? 1 : 0
+            if let list { stories = RealtimeNewStories.insertable(stories, list: list, knownHashes: []) }
+        }
+        if read, list?.unreadOnly ?? true { unfetchedHashes.removeAll { $0 == storyHash } }
+    }
+
+    /// The number the pill shows: fetched stories the list would show, plus every unfetched announcement.
+    func pillCount(list: RealtimeStoryList) -> Int {
+        RealtimeNewStories.visibleCount(stories, list: list) + unfetchedHashes.count
+    }
+
+    /// Whether tapping the pill loads the list's newest page instead of inserting the fetched stories.
+    func needsNewestPage(list: RealtimeStoryList) -> Bool {
+        !unfetchedHashes.isEmpty || RealtimeNewStories.visibleCount(stories, list: list) > RealtimeNewStories.prefetchCap
+    }
+}
+
 /// Live updates over node/unread_counts.coffee's socket, the way a web tab gets them: stories read or unread on
 /// another device, feeds whose counts changed or that fetched new stories, new stories for the open list, saved
 /// story counts, interactions and feed list reloads.
@@ -267,17 +340,16 @@ enum RealtimeNewStories {
 
     // New stories for the open list: announced hashes waiting to be fetched, then fetched stories waiting for a tap.
     private var newStoryListKey: String?
-    private var pendingNewStoryHashes: [String] = []
     private var newStoryFetchWork: DispatchWorkItem?
     private var newStoryFetchDate: Date?
     private var newStoryFetchGeneration = 0
-    private(set) var bufferedStories: [[String: Any]] = []
-    private var bufferedUserProfiles: [Any] = []
+    private var newStories = RealtimeNewStoryBuffer()
 
     init(socket: NewsBlurSocketClient = .shared) {
         self.socket = socket
         super.init()
     }
+
 
     private var appDelegate: NewsBlurAppDelegate? { NewsBlurAppDelegate.shared() }
 
@@ -663,14 +735,16 @@ enum RealtimeNewStories {
 
         if newStoryListKey != list.key { clearNewStories(keepingKey: list.key) }
         let listedStories = (collection.activeFeedStories ?? []).compactMap { $0 as? [String: Any] }
-        let knownHashes = Set(listedStories.compactMap { $0["story_hash"] as? String })
-            .union(pendingNewStoryHashes)
-            .union(bufferedStories.compactMap { $0["story_hash"] as? String })
+        let knownHashes = Set(listedStories.compactMap { $0["story_hash"] as? String }).union(newStories.knownHashes)
         guard RealtimeNewStories.shouldFetch(storyHash: storyHash, feedId: feedId, timestamp: timestamp, list: list,
                                              knownHashes: knownHashes,
                                              listedTimestamps: listedStories.map(RealtimeNewStories.timestamp(of:)),
                                              now: Date()) else { return }
-        pendingNewStoryHashes.append(storyHash)
+        guard newStories.announce(storyHash, list: list) else {
+            Self.log("feed:story:new \(storyHash) counted without fetching, the pill holds enough")
+            showNewStoriesPill(list: list)
+            return
+        }
         Self.log("feed:story:new \(storyHash) joins the open list")
 
         let subscribers = Self.subscriberCount(feedId: feedId, appDelegate: appDelegate)
@@ -690,13 +764,9 @@ enum RealtimeNewStories {
         newStoryFetchWork = nil
         newStoryFetchDate = nil
         guard let appDelegate, let host = appDelegate.url, let list = openStoryList(), list.key == newStoryListKey,
-              !pendingNewStoryHashes.isEmpty else {
-            pendingNewStoryHashes = []
-            return
-        }
+              !newStories.pendingHashes.isEmpty else { return }
         // apps/reader/views.py load_river_stories__redis reads at most 100 hashes.
-        let hashes = Array(pendingNewStoryHashes.prefix(StoryScoreRefresher.batchSize))
-        pendingNewStoryHashes = []
+        let hashes = newStories.takePending(limit: StoryScoreRefresher.batchSize)
         let generation = newStoryFetchGeneration
         let parameters: [String: Any] = ["h": hashes, "include_hidden": "true"]
         appDelegate.get("\(host)/reader/river_stories", parameters: parameters, success: { [weak self] _, response in
@@ -716,31 +786,28 @@ enum RealtimeNewStories {
             return
         }
         let listedHashes = Set((collection.activeFeedStories ?? []).compactMap { ($0 as? [String: Any])?["story_hash"] as? String })
-        let knownHashes = listedHashes.union(bufferedStories.compactMap { $0["story_hash"] as? String })
-        let stories = RealtimeNewStories.insertable(results["stories"] as? [[String: Any]] ?? [], list: list,
-                                                    knownHashes: knownHashes)
-        Self.log("fetched \((results["stories"] as? [Any])?.count ?? 0) new stories, \(stories.count) belong in the list")
-        guard !stories.isEmpty else { return }
-        bufferedStories = RealtimeNewStories.insertable(bufferedStories + stories, list: list, knownHashes: [])
-        bufferedUserProfiles += results["user_profiles"] as? [Any] ?? []
+        let kept = newStories.addFetched(results["stories"] as? [[String: Any]] ?? [],
+                                         userProfiles: results["user_profiles"] as? [Any] ?? [], list: list,
+                                         listedHashes: listedHashes)
+        Self.log("fetched \((results["stories"] as? [Any])?.count ?? 0) new stories, \(kept) belong in the list")
+        guard kept > 0 else { return }
         showNewStoriesPill(list: list)
     }
 
     private func updateBufferedReadState(storyHash: String, read: Bool) {
-        guard let index = bufferedStories.firstIndex(where: { $0["story_hash"] as? String == storyHash }) else { return }
-        bufferedStories[index]["read_status"] = read ? 1 : 0
-        if let list = openStoryList(), list.key == newStoryListKey {
-            bufferedStories = RealtimeNewStories.insertable(bufferedStories, list: list, knownHashes: [])
-            showNewStoriesPill(list: list)
-        }
+        let list = openStoryList()
+        guard newStories.knownHashes.contains(storyHash) else { return }
+        newStories.setReadState(storyHash: storyHash, read: read, list: list?.key == newStoryListKey ? list : nil)
+        if let list, list.key == newStoryListKey { showNewStoriesPill(list: list) }
     }
 
     private func showNewStoriesPill(list: RealtimeStoryList) {
-        let visible = RealtimeNewStories.visibleCount(bufferedStories, list: list)
-        Self.log("\(bufferedStories.count) new stories waiting, \(visible) shown by the list's filter")
+        let count = newStories.pillCount(list: list)
+        Self.log("\(newStories.stories.count) new stories fetched, \(newStories.unfetchedHashes.count) more announced, " +
+                 "\(count) shown by the list's filter")
         guard let feedDetail = appDelegate?.feedDetailViewController else { return }
-        if visible > 0 {
-            feedDetail.showNewStoriesPill(count: visible, atBottom: list.oldestFirst)
+        if count > 0 {
+            feedDetail.showNewStoriesPill(count: count, atBottom: list.oldestFirst)
         } else {
             feedDetail.hideNewStoriesPill()
         }
@@ -751,13 +818,20 @@ enum RealtimeNewStories {
     func insertBufferedStories() {
         guard let appDelegate, appDelegate.storiesCollection != nil,
               let feedDetail = appDelegate.feedDetailViewController, let list = openStoryList(),
-              list.key == newStoryListKey, !bufferedStories.isEmpty else {
+              list.key == newStoryListKey, !newStories.isEmpty else {
             clearNewStories()
             return
         }
-        let stories = bufferedStories
-        let profiles = bufferedUserProfiles
+        let needsNewestPage = newStories.needsNewestPage(list: list)
+        let stories = newStories.stories
+        let profiles = newStories.userProfiles
         clearNewStories(keepingKey: list.key)
+        if needsNewestPage {
+            // More stories arrived than the pill fetched: the list loads its newest page and fills in below it.
+            Self.log("loading the newest page for \(list.key)")
+            feedDetail.startNewStoriesStream(listKey: list.key, oldestFirst: list.oldestFirst)
+            return
+        }
 
         var openStoryHash: String?
         feedDetail.presentNewStories(atBottom: list.oldestFirst, insert: { [weak self] in
@@ -788,18 +862,17 @@ enum RealtimeNewStories {
     /// The open list loaded its first page again, or another list opened.
     func storyListDidReload() {
         appDelegate?.feedDetailViewController?.cancelNewStoriesArrival()
+        appDelegate?.feedDetailViewController?.cancelNewStoriesStream()
         clearNewStories()
     }
 
     private func clearNewStories(keepingKey key: String? = nil) {
         newStoryListKey = key
-        pendingNewStoryHashes = []
         newStoryFetchWork?.cancel()
         newStoryFetchWork = nil
         newStoryFetchDate = nil
         newStoryFetchGeneration += 1
-        bufferedStories = []
-        bufferedUserProfiles = []
+        newStories = RealtimeNewStoryBuffer()
         appDelegate?.feedDetailViewController?.hideNewStoriesPill()
     }
 }

@@ -99,6 +99,7 @@
 - (NSInteger)locationOfStoryId:(id)storyId;
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
+- (void)replaceStoriesKeepingReadState:(NSArray *)stories;
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 - (void)addStories:(NSArray *)stories;
 - (NSInteger)insertRealtimeStories:(NSArray *)stories;

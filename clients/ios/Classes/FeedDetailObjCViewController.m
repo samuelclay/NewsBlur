@@ -55,7 +55,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 typedef NS_ENUM(NSUInteger, FeedDetailVisibleRowType)
 {
     FeedDetailVisibleRowTypeStory = 0,
-    FeedDetailVisibleRowTypeCluster
+    FeedDetailVisibleRowTypeCluster,
+    // NewStoriesGapStream.swift: where the newest page's stories stop and the stories already listed resume.
+    FeedDetailVisibleRowTypeGap
 };
 
 static NSString * const FeedDetailVisibleRowTypeKey = @"type";
@@ -85,6 +87,7 @@ static const NSInteger NBTryFeedTitleFallbackPageCount = 5;
 @property (readwrite) BOOL inPullToRefresh_;
 @property (nonatomic) BOOL isFadingTable;
 @property (nonatomic, strong) NBLoadingCell *storyLoadingCell;
+@property (nonatomic, strong) NBLoadingCell *storyGapLoadingCell;
 @property (nonatomic, copy) NSString *navigationTheme;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
@@ -798,27 +801,71 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     NSMutableArray<NSDictionary *> *rows = [NSMutableArray arrayWithCapacity:(NSUInteger)(storyCount - startLocation)];
+    NSInteger gapAfterLocation = [self newStoriesGapAfterLocation];
+    if (startLocation == 0 && gapAfterLocation == -1) {
+        [rows addObject:@{ FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeGap) }];
+    }
     for (NSInteger location = startLocation; location < storyCount; location++) {
         [rows addObject:@{
             FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeStory),
             FeedDetailVisibleRowStoryLocationKey: @(location)
         }];
 
-        if (![self shouldShowStoryClustering]) {
-            continue;
+        if ([self shouldShowStoryClustering]) {
+            NSDictionary *story = [self getStoryAtLocation:location];
+            for (NSDictionary *clusterStory in [self visibleClusterStoriesForStory:story]) {
+                [rows addObject:@{
+                    FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeCluster),
+                    FeedDetailVisibleRowStoryLocationKey: @(location),
+                    FeedDetailVisibleRowClusterStoryKey: clusterStory
+                }];
+            }
         }
 
-        NSDictionary *story = [self getStoryAtLocation:location];
-        for (NSDictionary *clusterStory in [self visibleClusterStoriesForStory:story]) {
+        if (location == gapAfterLocation) {
             [rows addObject:@{
-                FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeCluster),
-                FeedDetailVisibleRowStoryLocationKey: @(location),
-                FeedDetailVisibleRowClusterStoryKey: clusterStory
+                FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeGap),
+                FeedDetailVisibleRowStoryLocationKey: @(location)
             }];
         }
     }
 
     return rows;
+}
+
+// FeedDetailObjCViewController.m places NewStoriesGapStream.swift's gap after the last visible story above its
+// cursor: -1 puts it above every row, NSNotFound means there's no gap.
+- (NSInteger)newStoriesGapAfterLocation {
+    if (![self isKindOfClass:[FeedDetailViewController class]]) return NSNotFound;
+    NSInteger cursor = [(FeedDetailViewController *)self newStoriesGapStoryIndex];
+    if (cursor == NSNotFound) return NSNotFound;
+    NSInteger gapAfterLocation = -1;
+    NSArray *locations = storiesCollection.activeFeedStoryLocations;
+    for (NSInteger location = 0; location < (NSInteger)locations.count; location++) {
+        if ([locations[(NSUInteger)location] integerValue] >= cursor) break;
+        gapAfterLocation = location;
+    }
+    return gapAfterLocation;
+}
+
+- (BOOL)isNewStoriesGapRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
+    return rowDescriptor && [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeGap;
+}
+
+// NewStoriesGapStream.swift loads its next page while the gap, or for a list without one the bottom, is about to show.
+- (BOOL)isNewStoriesGapNearViewport {
+    if (!self.isLegacyTable) return NO;
+    UITableView *table = self.storyTitlesTable;
+    CGFloat reach = MAX(500.0, CGRectGetHeight(table.bounds));
+    CGRect nearby = CGRectInset(table.bounds, 0, -reach);
+    NSArray<NSDictionary *> *rows = [self storyRowDescriptors];
+    for (NSInteger row = 0; row < (NSInteger)rows.count; row++) {
+        if ([rows[(NSUInteger)row][FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeGap) continue;
+        return CGRectIntersectsRect([table rectForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]], nearby);
+    }
+    CGFloat remaining = table.contentSize.height - CGRectGetHeight(table.bounds) - table.contentOffset.y;
+    return remaining <= reach;
 }
 
 - (NSDictionary *)storyAppendContext {
@@ -2626,6 +2673,20 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     return theFeedDetailURL;
 }
 
+// NewStoriesGapStream.swift drops the page the list's own paging was loading, which its fresh pages replace. The
+// request id stays: StoryFirstPageLoad keeps it as its generation, and a new one would make every later page stale.
+- (void)abandonPageInFlight {
+    [self.currentFetchTask cancel];
+    self.currentFetchTask = nil;
+    self.pageFetching = NO;
+}
+
+// NewStoriesGapStream.swift requests the open list's pages exactly as opening it does.
+- (NSString *)newStoriesStreamRequestURLForPage:(NSInteger)page {
+    if (storiesCollection.isRiverView) return [self riverRequestURLForPage:(int)page];
+    return [self feedRequestURLForPage:(int)page];
+}
+
 - (NSString *)normalFirstPageRequestURL {
     if (!self.isLegacyTable || self.isDashboard || self.dashboardIndex >= 0 ||
         storiesCollection.inSearch || storiesCollection.isSocialView || storiesCollection.isSocialRiverView ||
@@ -3079,6 +3140,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback {
+    // NewStoriesGapStream.swift serves every later page once the new stories pill has loaded the newest page.
+    if (page > 1 && [self isKindOfClass:[FeedDetailViewController class]] &&
+        [(FeedDetailViewController *)self newStoriesStreamTakesNextPage:callback]) return;
     if (!storiesCollection.activeFeed || (!callback && (self.pageFetching || self.pageFinished))) return;
     if (page > 1 && (self.firstPageLoad.pending || (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline))) return;
     if (page == 1) {
@@ -3253,6 +3317,9 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback {
+    // NewStoriesGapStream.swift serves every later page once the new stories pill has loaded the newest page.
+    if (page > 1 && [self isKindOfClass:[FeedDetailViewController class]] &&
+        [(FeedDetailViewController *)self newStoriesStreamTakesNextPage:callback]) return;
     if (self.pageFetching || self.pageFinished) return;
     if (page > 1 && (self.firstPageLoad.pending || (self.firstPageLoad && !self.firstPageLoad.authoritativeReceived && self.isOnline))) return;
     if (page == 1) {
@@ -3370,25 +3437,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 #pragma mark -
 #pragma mark Processing Stories
 
-- (void)finishedLoadingFeed:(NSDictionary *)results feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId {
-    if (self.dashboardIndex >= 0 && !self.isDashboard) {
-        return;
-    }
-    
-    appDelegate.hasLoadedFeedDetail = YES;
-    self.isOnline = YES;
-    self.isShowingFetching = NO;
-    NSString *receivedFeedId = [NSString stringWithFormat:@"%@", [results objectForKey:@"feed_id"]];
-    
-    if (!(storiesCollection.isRiverView ||
-          storiesCollection.isSavedView ||
-          storiesCollection.isReadView ||
-          storiesCollection.isWidgetView ||
-          storiesCollection.isSocialView ||
-          storiesCollection.isSocialRiverView)
-        && ![receivedFeedId isEqualToString:sentFeedId]) {
-        return;
-    }
+// FeedDetailObjCViewController.m files a page's feeds and classifiers; NewStoriesGapStream.swift's pages need them too.
+- (void)absorbStoryPageFeedsAndClassifiers:(NSDictionary *)results feedId:(NSString *)receivedFeedId {
     NSArray *newFeeds = [results objectForKey:@"feeds"];
     if ([newFeeds isKindOfClass:[NSArray class]] && newFeeds.count) {
         for (int i = 0; i < newFeeds.count; i++){
@@ -3419,7 +3469,29 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
     storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+}
+
+- (void)finishedLoadingFeed:(NSDictionary *)results feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId {
+    if (self.dashboardIndex >= 0 && !self.isDashboard) {
+        return;
+    }
     
+    appDelegate.hasLoadedFeedDetail = YES;
+    self.isOnline = YES;
+    self.isShowingFetching = NO;
+    NSString *receivedFeedId = [NSString stringWithFormat:@"%@", [results objectForKey:@"feed_id"]];
+    
+    if (!(storiesCollection.isRiverView ||
+          storiesCollection.isSavedView ||
+          storiesCollection.isReadView ||
+          storiesCollection.isWidgetView ||
+          storiesCollection.isSocialView ||
+          storiesCollection.isSocialRiverView)
+        && ![receivedFeedId isEqualToString:sentFeedId]) {
+        return;
+    }
+    [self absorbStoryPageFeedsAndClassifiers:results feedId:receivedFeedId];
+
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];
     if (storiesCollection.feedPage == 1) {
@@ -4698,6 +4770,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     NSDictionary *rowDescriptor = self.isLegacyTable ? [self storyRowDescriptorForIndexPath:indexPath] : nil;
+    if (rowDescriptor && [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeGap) {
+        if (!self.storyGapLoadingCell) {
+            self.storyGapLoadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 41)];
+        }
+        return self.storyGapLoadingCell;
+    }
     BOOL isClusterRow = [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster;
     NSInteger location = [self storyLocationForIndexPath:indexPath];
     NSInteger parentLocation = isClusterRow ? [self storyLocationForScrollingAtIndexPath:indexPath] : location;
@@ -5072,6 +5150,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 //}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.isLegacyTable && [self isNewStoriesGapRowAtIndexPath:indexPath]) {
+        [tableView deselectRowAtIndexPath:indexPath animated:NO];
+        return;
+    }
     NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
     if (clusterStory) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -5278,7 +5360,10 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
         FeedDetailTableCell *storyCell = (FeedDetailTableCell *)cell;
         if (storyCell.storyHash) [ReaderMotion row:cell.contentView key:storyCell.storyHash owner:self scrolling:tableView.dragging || tableView.decelerating position:[ReaderMotion positionForIndexPath:indexPath table:tableView]];
     }
-    if ([cell class] == [NBLoadingCell class]) {
+    if (cell == self.storyGapLoadingCell && [self isKindOfClass:[FeedDetailViewController class]]) {
+        [(NBLoadingCell *)cell animate];
+        [(FeedDetailViewController *)self newStoriesGapDidAppear];
+    } else if ([cell class] == [NBLoadingCell class]) {
         [ReaderMotion row:cell key:[NSString stringWithFormat:@"loading-%ld", (long)storiesCollection.storyLocationsCount] owner:self scrolling:NO];
         [(NBLoadingCell *)cell animate];
     } else if (![cell isKindOfClass:[FeedDetailTableCell class]]) {
@@ -5337,6 +5422,9 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (tableView == self.storyTitlesTable && self.isLegacyTable && [self isNewStoriesGapRowAtIndexPath:indexPath]) {
+        return 41;
+    }
     BOOL cacheRowHeight = tableView == self.storyTitlesTable && self.isLegacyTable &&
         !storiesCollection.isDailyBriefing && indexPath.section == 0 &&
         indexPath.row >= 0 && indexPath.row < self.visibleStoryRows.count;
@@ -6004,7 +6092,7 @@ finish_height_measurement:
         if (row) {
             // FeedDetailObjCViewController.m measures the parent cell, including its preview.
             // Every Match/Related row follows that parent, so its midpoint is already behind us.
-            BOOL isChild = [row[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster;
+            BOOL isChild = [row[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory;
             if (isChild || visibleTop >= CGRectGetMidY([table rectForRowAtIndexPath:indexPath])) {
                 nextLocation += 1;
             }
@@ -6119,7 +6207,7 @@ finish_height_measurement:
             return storiesCollection.storyLocationsCount;
         }
 
-        if ([rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeCluster) {
+        if ([rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory) {
             return NSNotFound;
         }
 

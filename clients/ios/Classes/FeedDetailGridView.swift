@@ -142,23 +142,31 @@ struct FeedDetailGridView: View {
     func makeCardSections(reader: GeometryProxy) -> some View {
         if cache.isPhoneOrCompact {
             Section(footer: makeLoadingView()) {
+                makeNewStoriesGap(atTop: true)
+
                 ForEach(cache.before, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
+                    makeNewStoriesGap(after: story)
                 }
 
                 if let story = cache.selected {
                     makeCardView(for: story, reader: reader)
                         .id(story.id)
+                    makeNewStoriesGap(after: story)
                 }
 
                 ForEach(cache.after, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
+                    makeNewStoriesGap(after: story)
                 }
             }
         } else {
             Section {
+                makeNewStoriesGap(atTop: true)
+
                 ForEach(cache.before, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
+                    makeNewStoriesGap(after: story)
                 }
             }
 
@@ -173,6 +181,7 @@ struct FeedDetailGridView: View {
             Section(header: makeStoryView(reader: reader), footer: makeLoadingView()) {
                 ForEach(cache.after, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
+                    makeNewStoriesGap(after: story)
                 }
             }
         }
@@ -229,6 +238,14 @@ struct FeedDetailGridView: View {
         }
     }
     
+    /// NewStoriesGapStream.swift's gap between the newest page's cards and the cards already listed.
+    @ViewBuilder
+    func makeNewStoriesGap(after story: Story? = nil, atTop: Bool = false) -> some View {
+        if atTop ? cache.newStoriesGapAtTop : (story != nil && story?.id == cache.newStoriesGapAfterID) {
+            NewStoriesGapView(isGrid: cache.isGrid)
+        }
+    }
+
     @ViewBuilder
     func makeLoadingView() -> some View {
         FeedDetailLoadingView(feedDetailInteraction: feedDetailInteraction, cache: cache)
