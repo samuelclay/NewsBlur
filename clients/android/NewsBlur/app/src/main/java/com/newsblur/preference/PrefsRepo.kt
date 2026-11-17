@@ -121,6 +121,7 @@ class PrefsRepo(
             putString(AppConstants.LAST_APP_VERSION, appVersion)
             // also make sure we auto-trigger an update, since all data are now gone
             putLong(AppConstants.LAST_SYNC_TIME, 0L)
+            putLong(AppConstants.LAST_UNREAD_SYNC_TIME, 0L)
         }
     }
 
@@ -366,7 +367,21 @@ class PrefsRepo(
      * how long it has been until another is needed.
      */
     fun updateLastSyncTime() {
-        prefs.edit { putLong(AppConstants.LAST_SYNC_TIME, (Date()).time) }
+        prefs.edit {
+            putLong(AppConstants.LAST_SYNC_TIME, (Date()).time)
+            // A feed/folder list sync also starts the unread story download.
+            putLong(AppConstants.LAST_UNREAD_SYNC_TIME, (Date()).time)
+        }
+    }
+
+    /** Whether the unread story download for offline reading is due, on the same schedule as the feed list sync. */
+    fun isTimeToSyncUnreads(): Boolean {
+        val lastTime = prefs.getLong(AppConstants.LAST_UNREAD_SYNC_TIME, 1L)
+        return lastTime + AppConstants.AUTO_SYNC_TIME_MILLIS < Date().time
+    }
+
+    fun updateLastUnreadSyncTime() {
+        prefs.edit { putLong(AppConstants.LAST_UNREAD_SYNC_TIME, (Date()).time) }
     }
 
     private fun getLastVacuumTime(): Long = prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L)

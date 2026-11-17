@@ -436,12 +436,18 @@ open class SyncService :
         }
 
         // RealtimeUpdates.kt keeps counts current while its socket is live, so the periodic reload can wait.
-        val isTimeToAutoSync =
-            prefsRepo.isTimeToAutoSync() && !RealtimeUpdates.from(this).keepsCountsCurrent(prefsRepo.getLastSyncTime())
+        val realtimeKeepsCountsCurrent = RealtimeUpdates.from(this).keepsCountsCurrent(prefsRepo.getLastSyncTime())
+        val isTimeToAutoSync = prefsRepo.isTimeToAutoSync() && !realtimeKeepsCountsCurrent
         if (syncServiceState.doFeedsFolders || isTimeToAutoSync) {
             prefsRepo.updateLastSyncTime()
             syncServiceState.doFeedsFolders = false
         } else {
+            // The feed list reload also started the unread story download, which keeps offline reading and
+            // notifications current. That download keeps its schedule while realtime holds the reload off.
+            if (realtimeKeepsCountsCurrent && prefsRepo.isTimeToSyncUnreads()) {
+                prefsRepo.updateLastUnreadSyncTime()
+                unreadsSubService.doMetadata()
+            }
             return
         }
 
