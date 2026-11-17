@@ -3,9 +3,16 @@
 // (handle_realtime_new_story) and puts them into the list when the pill is clicked. It floats at the top of a
 // newest-first list and at the bottom of an oldest-first one, like the iOS and Android apps'
 // (clients/ios/Classes/NewStoriesPill.swift).
+//
+// It keeps out of the way of reading: after REALTIME_PILL_HIDE_AFTER_SCROLLING of scrolling away from it (down
+// from the top pill, up from the bottom one) it slides away, and it comes back only once the list hasn't scrolled
+// for REALTIME_PILL_RETURN_AFTER_IDLE. Both numbers live in reader.js's constants.
 NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
 
     className: 'NB-new-stories-indicator',
+
+    // new_stories_indicator_view.js: pauses between scroll events longer than this don't count as scrolling.
+    SCROLL_GAP_LIMIT: 250,
 
     events: {
         'click': 'on_click',
@@ -16,6 +23,14 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
         this.$container = options.$container;
         this.count = 0;
         this.at_bottom = false;
+        this.reset_scrolling();
+        this.last_scroll_at = 0;
+        this.last_scroll_top = null;
+        this.note_scroll = _.bind(this.note_scroll, this);
+        // new_stories_indicator_view.js: a phone list scrolls the page itself while at rest (mobile.css
+        // NB-mobile-page-scroll), so both scrollers count.
+        this.$container.on('scroll', this.note_scroll);
+        $(window).on('scroll', this.note_scroll);
     },
 
     render: function () {
@@ -37,26 +52,78 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
 
     show: function (count, at_bottom) {
         if (!count) return this.hide();
-        var appearing = !this.count || this.at_bottom != at_bottom;
+        var moved = this.at_bottom != !!at_bottom;
         this.count = count;
         this.at_bottom = !!at_bottom;
         var label = interpolate(ngettext("%(count)s new story", "%(count)s new stories", count),
             { count: Inflector.commas(count) }, true);
         this.$('.NB-new-stories-indicator-label').text(label);
         this.$el.attr('aria-label', label).toggleClass('NB-at-bottom', this.at_bottom);
-        if (appearing) {
+        if (moved) {
             this.$el.removeClass('NB-visible');
             (this.at_bottom ? this.$bottom_anchor : this.$top_anchor).append(this.$el);
-            // new_stories_indicator_view.js: the next frame, so the CSS transition runs instead of snapping in.
-            _.defer(_.bind(function () {
-                if (this.count) this.$el.addClass('NB-visible');
-            }, this));
+        }
+        if (this.hidden_by_scrolling) {
+            this.schedule_return();
+        } else {
+            this.slide_in();
         }
     },
 
     hide: function () {
         this.count = 0;
+        this.reset_scrolling();
         this.$el.removeClass('NB-visible');
+    },
+
+    slide_in: function () {
+        if (this.$el.hasClass('NB-visible')) return;
+        // new_stories_indicator_view.js: the next frame, so the CSS transition runs instead of snapping in.
+        _.defer(_.bind(function () {
+            if (this.count && !this.hidden_by_scrolling) this.$el.addClass('NB-visible');
+        }, this));
+    },
+
+    reset_scrolling: function () {
+        this.hidden_by_scrolling = false;
+        this.scrolled_away = 0;
+        clearTimeout(this.return_timer);
+        this.return_timer = null;
+    },
+
+    // new_stories_indicator_view.js: adds up the time spent scrolling away from the visible pill, and restarts the
+    // idle wait of a pill that scrolling hid.
+    note_scroll: function () {
+        var now = Date.now();
+        var scroll_top = NEWSBLUR.reader.$s.$story_titles.scrollTop();
+        var previous_top = this.last_scroll_top;
+        var previous_at = this.last_scroll_at;
+        this.last_scroll_top = scroll_top;
+        this.last_scroll_at = now;
+        if (!this.count) return;
+        if (this.hidden_by_scrolling) return this.schedule_return();
+        if (previous_top === null || !this.$el.hasClass('NB-visible')) return;
+        var away = this.at_bottom ? scroll_top < previous_top : scroll_top > previous_top;
+        if (!away) return;
+        this.scrolled_away += Math.min(now - previous_at, this.SCROLL_GAP_LIMIT);
+        if (this.scrolled_away >= NEWSBLUR.reader.constants.REALTIME_PILL_HIDE_AFTER_SCROLLING) {
+            this.hidden_by_scrolling = true;
+            this.$el.removeClass('NB-visible');
+            this.schedule_return();
+        }
+    },
+
+    schedule_return: function () {
+        clearTimeout(this.return_timer);
+        var idle = NEWSBLUR.reader.constants.REALTIME_PILL_RETURN_AFTER_IDLE;
+        var wait = Math.max(0, this.last_scroll_at + idle - Date.now());
+        this.return_timer = setTimeout(_.bind(function () {
+            this.return_timer = null;
+            if (!this.count || Date.now() - this.last_scroll_at < idle) return;
+            this.hidden_by_scrolling = false;
+            this.scrolled_away = 0;
+            this.slide_in();
+        }, this), wait);
     },
 
     on_click: function (e) {
