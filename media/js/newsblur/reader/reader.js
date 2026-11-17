@@ -7975,7 +7975,20 @@
             this.locks.scrolling = setTimeout(_.bind(function () {
                 this.flags.scrolling_by_selecting_story_title = false;
             }, this), 500);
-            var added = this.model.stories.insert_realtime_stories(stories, list.oldest_first);
+            // reader.js: common/motion.js slides the stories in from the top, or up into the end of an oldest-first list.
+            var collection = this.model.stories;
+            var added = [];
+            NEWSBLUR.motion.arrive(NEWSBLUR.app.story_titles.el, function () {
+                added = _.sortBy(collection.insert_realtime_stories(stories, list.oldest_first), function (story) {
+                    return collection.indexOf(story);
+                });
+                return _.compact(_.map(added, function (story) {
+                    return story.story_title_view && story.story_title_view.el;
+                }));
+            }, {
+                root: this.$s.$body.hasClass('NB-mobile-page-scroll') ? null : $story_titles[0],
+                from_bottom: list.oldest_first
+            });
             if (!added.length) return;
 
             // reader.js: a story that belongs further down (an oldest-first list, or one dated before the rows at

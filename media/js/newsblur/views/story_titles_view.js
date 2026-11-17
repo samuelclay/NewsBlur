@@ -441,7 +441,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 this.stories = this.stories.concat(stories);
                 this.$el.append($stories);
             }
-            NEWSBLUR.motion.watch(this, stories, this.$story_titles[0], NEWSBLUR.reader.active_feed, { animate_on_scroll: false });
+            // story_titles_view.js: stories from the new stories pill arrive with motion.js arrive instead of the
+            // entrance a page of titles gets.
+            if (!options.inserted) {
+                NEWSBLUR.motion.watch(this, stories, this.$story_titles[0], NEWSBLUR.reader.active_feed, { animate_on_scroll: false });
+            }
             if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story || this.options.on_trending_feed) {
                 var $extras = this.$el.find('.NB-story-title-container .NB-story-title:not(.NB-hidden)').slice(5);
                 $extras.addClass('NB-hidden');
