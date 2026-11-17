@@ -74,6 +74,10 @@ public class BlurDatabaseHelper {
     private final SQLiteDatabase dbRO;
     private final SQLiteDatabase dbRW;
 
+    // BlurDatabaseHelper.java lists the stories NewStoriesPill.kt added at the edge of the open list, whatever
+    // their dates, until the reading session restarts and they fall back into date order.
+    private final Set<String> pinnedSessionStoryHashes = new LinkedHashSet<>();
+
     public BlurDatabaseHelper(Context context) {
         com.newsblur.util.Log.d(this.getClass().getName(), "new DB conn requested");
         synchronized (RW_MUTEX) {
@@ -612,6 +616,7 @@ public class BlurDatabaseHelper {
     }
 
     public void prepareOrderedReadingSession(@NonNull FeedSet fs, @NonNull List<String> storyHashes) {
+        unpinSessionStories();
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
@@ -1453,7 +1458,18 @@ public class BlurDatabaseHelper {
         } else if (fs.isAllSaved()) {
             q.append(" ORDER BY ").append(DatabaseConstants.getSavedStoriesSortOrder(order));
         } else {
-            q.append(" ORDER BY ").append(DatabaseConstants.getStorySortOrder(order));
+            q.append(" ORDER BY ");
+            String[] pinned = getPinnedSessionStoryHashes().toArray(new String[0]);
+            if (pinned.length > 0) {
+                // Pinned stories sort first in a newest-first list and last in an oldest-first one, in date
+                // order among themselves. The session selection's GROUP BY keeps a later page that
+                // brings the same story from listing it twice.
+                q.append(DatabaseConstants.STORY_HASH).append(" IN (");
+                for (int i = 0; i < pinned.length; i++) q.append(i == 0 ? "?" : ", ?");
+                q.append(order == StoryOrder.NEWEST ? ") DESC, " : ") ASC, ");
+            }
+            q.append(DatabaseConstants.getStorySortOrder(order));
+            return rawQuery(q.toString(), pinned.length > 0 ? pinned : null, cancellationSignal);
         }
         return rawQuery(q.toString(), null, cancellationSignal);
     }
@@ -1473,8 +1489,10 @@ public class BlurDatabaseHelper {
     }
 
     /**
-     * NewStoriesPill.kt adds stories RealtimeUpdates.kt already stored to the open list. The session
-     * query orders by story date, so they land at the top or bottom without re-fetching a page.
+     * NewStoriesPill.kt adds stories RealtimeUpdates.kt already stored to the open list, without
+     * re-fetching a page. They are pinned to the list's edge (getActiveStoriesCursorNoPrep): the top of
+     * a newest-first list and the end of an oldest-first one, even a story published days ago and
+     * fetched only now.
      */
     public void addStoriesToReadingSession(@NonNull Collection<String> storyHashes) {
         synchronized (RW_MUTEX) {
@@ -1490,6 +1508,25 @@ public class BlurDatabaseHelper {
             } finally {
                 dbRW.endTransaction();
             }
+        }
+        synchronized (pinnedSessionStoryHashes) {
+            for (String storyHash : storyHashes) {
+                if (!TextUtils.isEmpty(storyHash)) pinnedSessionStoryHashes.add(storyHash);
+            }
+        }
+    }
+
+    /** The stories NewStoriesPill.kt pinned to the open list's edge, for StoryViewAdapter.kt. */
+    @NonNull
+    public Set<String> getPinnedSessionStoryHashes() {
+        synchronized (pinnedSessionStoryHashes) {
+            return new HashSet<>(pinnedSessionStoryHashes);
+        }
+    }
+
+    private void unpinSessionStories() {
+        synchronized (pinnedSessionStoryHashes) {
+            pinnedSessionStoryHashes.clear();
         }
     }
 
@@ -1512,6 +1549,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {
             dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);
         }
+        unpinSessionStories();
     }
 
     /**

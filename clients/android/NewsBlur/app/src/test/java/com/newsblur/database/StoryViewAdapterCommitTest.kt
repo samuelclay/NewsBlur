@@ -603,7 +603,7 @@ class StoryViewAdapterCommitTest {
             every { adapter["commitStoryDiff"](any<StoryViewAdapter.StoryDifference>()) } answers { callOriginal() }
             every { adapter["rebuildDisplayItemsFromCurrentStories"]() } answers { callOriginal() }
             every { adapter["visibleDisplayItemCount"]() } answers { items.size }
-            every { adapter["applySkipBackfill"](any<List<Story>>(), any<Boolean>()) } answers { firstArg<List<Story>>() }
+            every { adapter["applySkipBackfill"](any<List<Story>>(), any<Boolean>(), any<Set<String>>()) } answers { firstArg<List<Story>>() }
             every { adapter["buildDisplayItems"](any<List<Story>>()) } answers {
                 val incoming = firstArg<List<Story>>()
                 val shape = incoming.flatMapIndexed { index, story ->

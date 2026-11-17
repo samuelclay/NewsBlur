@@ -336,12 +336,14 @@ class StoryViewAdapter(
         oldScrollState: Parcelable?,
         skipBackFillingStories: Boolean,
         onCommitted: Runnable? = null,
+        pinnedStoryHashes: Set<String> = emptySet(),
     ) {
         lastLoadId = loadId
         // StoryViewAdapter.kt keeps explicit restoration even when its batch is superseded in the queue.
         oldScrollState?.let { this.oldScrollState = it }
         val runner = diffRunner ?: newDiffRunner().also { diffRunner = it }
-        val submission = StorySubmission(stories, loadId, rv, skipBackFillingStories, diffGeneration, onCommitted)
+        val submission =
+            StorySubmission(stories, loadId, rv, skipBackFillingStories, diffGeneration, onCommitted, pinnedStoryHashes)
         latestSubmission = submission
         runner.submit(submission)
     }
@@ -361,7 +363,7 @@ class StoryViewAdapter(
         val startedAt = if (BuildConfig.DEBUG) SystemClock.elapsedRealtime() else 0L
         if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "start id=${submission.loadId} rows=${submission.stories.size}")
         activeFeedIds = null
-        val filtered = applySkipBackfill(submission.stories, submission.skipBackfill)
+        val filtered = applySkipBackfill(submission.stories, submission.skipBackfill, submission.pinnedStoryHashes)
         val newItems = buildDisplayItems(filtered)
         val oldItems = synchronized(this) { displayItems.toList() }
         val diff = DiffUtil.calculateDiff(DisplayItemDiffer(oldItems, newItems), false)
@@ -417,6 +419,7 @@ class StoryViewAdapter(
         val skipBackfill: Boolean,
         val generation: Long,
         val onCommitted: Runnable?,
+        val pinnedStoryHashes: Set<String> = emptySet(),
     )
 
     internal data class StoryDifference(
@@ -458,14 +461,18 @@ class StoryViewAdapter(
     private fun applySkipBackfill(
         incoming: List<Story>,
         skip: Boolean,
+        pinnedStoryHashes: Set<String>,
     ): List<Story> {
         if (!skip) return incoming
 
         val currentHashes = getStoryHashes(stories)
+        // StoryViewAdapter.kt measures the list's date range without the stories NewStoriesPill.kt pinned to
+        // its edge: one published days ago would otherwise hold back every page dated after it.
+        val dated = stories.filter { it.storyHash !in pinnedStoryHashes }.ifEmpty { stories }.toMutableList()
         val threshold: Long =
             when (storyOrder) {
-                StoryOrder.NEWEST -> getOldestStoryTimestamp(stories)
-                StoryOrder.OLDEST -> getNewestStoryTimestamp(stories)
+                StoryOrder.NEWEST -> getOldestStoryTimestamp(dated)
+                StoryOrder.OLDEST -> getNewestStoryTimestamp(dated)
             }
 
         return incoming.filter { s ->

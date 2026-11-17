@@ -367,7 +367,7 @@ public class ItemSetFragment extends NbFragment {
 
         if (!dbHelper.isFeedSetReady(getFeedSet())) {
             com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
-            updateAdapter(Collections.emptyList(), storyBatch.getLoadId(), -1);
+            updateAdapter(Collections.emptyList(), storyBatch.getLoadId(), -1, Collections.emptySet());
             triggerRefresh(1, null);
         } else {
             dataSeenYet = true;
@@ -376,7 +376,8 @@ public class ItemSetFragment extends NbFragment {
                 realtimeOpenList = currentFeedSet;
                 realtimeUpdates.setOpenStoryList(currentFeedSet);
             }
-            updateAdapter(storyBatch.getStories(), storyBatch.getLoadId(), storyBatch.getIndexOfLastUnread());
+            updateAdapter(storyBatch.getStories(), storyBatch.getLoadId(), storyBatch.getIndexOfLastUnread(),
+                    storyBatch.getPinnedStoryHashes());
             if (storyBatch.getStories().isEmpty()) {
                 triggerRefresh(1, 0);
             }
@@ -465,29 +466,14 @@ public class ItemSetFragment extends NbFragment {
         // Moving the list here counts as scrolling it: the rows it uncovers don't run the opening cascade.
         adapter.finishOpeningEntrances(binding.itemgridfragmentGrid);
         if (atTop) {
-            // A newest-first list shows its new stories at the top, including any held back above it. Stories dated
-            // further down than a screenful are brought near the top instead, as on iOS (NewStoriesPill.swift) and
-            // the web.
-            List<Integer> positions = adapter.displayPositionsOfStories(added);
-            int firstPosition = positions.isEmpty() ? 0 : positions.get(0);
-            if (firstPosition / Math.max(1, layoutManager.getSpanCount()) < rowsOnScreen()) {
-                scrollToTop();
-            } else {
-                layoutManager.scrollToPositionWithOffset(firstPosition, UIUtils.dp2px(requireContext(), 40));
-            }
+            // A newest-first list lists the pill's stories at its top whatever their dates
+            // (BlurDatabaseHelper.java pins them), with any it held back since the last resume just below.
+            scrollToTop();
         } else {
             binding.itemgridfragmentGrid.smoothScrollToPosition(adapter.getDisplayPositionForStoryIndex(firstIndex));
         }
         // NewStoriesEntrance.kt slides them in during the frame that first lays them out.
         newStoriesEntrance = NewStoriesEntrance.start(binding.itemgridfragmentGrid, adapter, added, atTop);
-    }
-
-    /** How many rows of the story list fit on screen; a phone held sideways shows only one or two. */
-    private int rowsOnScreen() {
-        int first = layoutManager.findFirstVisibleItemPosition();
-        int lastWhole = layoutManager.findLastCompletelyVisibleItemPosition();
-        if (first == RecyclerView.NO_POSITION || lastWhole == RecyclerView.NO_POSITION) return 1;
-        return Math.max(1, (lastWhole - first + 1) / Math.max(1, layoutManager.getSpanCount()));
     }
 
     private void finishNewStoriesEntrance() {
@@ -593,7 +579,7 @@ public class ItemSetFragment extends NbFragment {
                 (!hasStories() || binding.itemgridfragmentGrid.getChildCount() > 0);
     }
 
-    private void updateAdapter(@NonNull List<Story> stories, Long loadId, int lastUnreadIndex) {
+    private void updateAdapter(@NonNull List<Story> stories, Long loadId, int lastUnreadIndex, @NonNull Set<String> pinnedStoryHashes) {
         FeedSet submittedFeed = FeedSet.fromCompactSerial(getFeedSet().toCompactSerial());
         RecyclerView submittedGrid = binding.itemgridfragmentGrid;
         adapter.updateFeedSet(submittedFeed);
@@ -614,7 +600,7 @@ public class ItemSetFragment extends NbFragment {
             updateBottomNextFeedControl();
             ItemsList activity = (ItemsList) getActivity();
             if (activity != null) activity.refreshStoryStatusIndicators();
-        });
+        }, pinnedStoryHashes);
         gridState = null;
     }
 

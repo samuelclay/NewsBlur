@@ -68,9 +68,15 @@ class ItemSetFragmentCommitTest {
     fun submittingStoriesDoesNotRequestAnotherPageUsingTheOldEmptyAdapter() {
         val fixture = Fixture()
         val stories = listOf(Story().apply { storyHash = "1:cached" })
-        ItemSetFragment::class.java.getDeclaredMethod("updateAdapter", List::class.java, Long::class.javaObjectType, Int::class.javaPrimitiveType).apply {
+        ItemSetFragment::class.java.getDeclaredMethod(
+            "updateAdapter",
+            List::class.java,
+            Long::class.javaObjectType,
+            Int::class.javaPrimitiveType,
+            Set::class.java,
+        ).apply {
             isAccessible = true
-        }.invoke(fixture.fragment, stories, 1L, -1)
+        }.invoke(fixture.fragment, stories, 1L, -1, emptySet<String>())
 
         // ItemSetFragment.java must wait for the diff commit before sending a count to SyncServiceState.kt.
         assertTrue("No paging demand before the adapter commit", fixture.fragment.requestedCounts.isEmpty())
