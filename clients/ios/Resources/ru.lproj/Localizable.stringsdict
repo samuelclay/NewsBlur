@@ -342,6 +342,22 @@
 			<string>В этом месяце осталось минут: %@</string>
 		</dict>
 	</dict>
+	<key>%@ new stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@new_story_count@</string>
+		<key>new_story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ new story</string>
+			<key>other</key>
+			<string>%@ new stories</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
