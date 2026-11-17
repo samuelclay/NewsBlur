@@ -90,7 +90,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         var rows = this.$('.feed:not(.NB-empty), .folder_title').toArray().map(function (el) {
             return { el: el, model: { id: el.getAttribute('data-id') || 'folder:' + $(el).find('.folder_title_text').text() } };
         });
-        NEWSBLUR.motion.watch(this, rows, this.$s.$feed_lists[0], 'feeds');
+        NEWSBLUR.motion.watch(this, rows, this.$s.$feed_lists[0], 'feeds', { continue_cascade: true });
         // this.count_collapsed_unread_stories();
 
         this.$s.$feed_link_error.css({ 'display': 'none' });
