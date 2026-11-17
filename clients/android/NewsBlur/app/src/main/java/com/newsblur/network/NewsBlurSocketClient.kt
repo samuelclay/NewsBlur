@@ -9,6 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -32,6 +35,11 @@ class NewsBlurSocketClient
         private val mainHandler = Handler(Looper.getMainLooper())
         private val eventHandlers = linkedMapOf<String, MutableList<(Any?) -> Unit>>()
 
+        // NewsBlurSocketClient.kt: node/unread_counts.coffee emits feed and user events as
+        // (channel, message), so realtime handlers get every argument, not just the first.
+        private val argumentHandlers = linkedMapOf<String, MutableList<(List<Any?>) -> Unit>>()
+        private val _subscribed = MutableStateFlow(false)
+
         private var webSocket: WebSocket? = null
         private var pingTimeoutJob: Job? = null
         private var reconnectJob: Job? = null
@@ -48,21 +56,40 @@ class NewsBlurSocketClient
         val connected: Boolean
             get() = synchronized(lock) { isConnected }
 
+        /** True once the server has acknowledged `subscribe:feeds` on the current connection. */
+        val subscribed: StateFlow<Boolean> = _subscribed.asStateFlow()
+
+        /**
+         * Connects as [username], or updates the subscribed feeds on the open connection.
+         * Null [feeds] keeps the current subscription, so Ask AI (AskAiViewModel.kt) can make sure
+         * the socket is up without replacing the feeds RealtimeUpdates.kt subscribed to.
+         */
         fun connect(
             username: String,
-            feeds: List<String> = emptyList(),
+            feeds: List<String>? = null,
         ) {
             val generation: Int
             synchronized(lock) {
-                if ((isConnected || isConnecting) && this.username == username && this.feeds == feeds) {
-                    return
+                if ((isConnected || isConnecting) && this.username == username) {
+                    if (feeds == null || this.feeds == feeds) return
+                    this.feeds = feeds
+                    // A connection still opening subscribes with the new list once Socket.IO connects.
+                    if (!isConnected) return
+                    generation = -1
+                } else {
+                    if (this.username != username) this.feeds = emptyList()
+                    this.username = username
+                    if (feeds != null) this.feeds = feeds
+                    isConnecting = true
+                    connectionGeneration += 1
+                    generation = connectionGeneration
+                    tearDownConnectionLocked()
                 }
-                this.username = username
-                this.feeds = feeds
-                isConnecting = true
-                connectionGeneration += 1
-                generation = connectionGeneration
-                tearDownConnectionLocked()
+            }
+            if (generation == -1) {
+                // node/unread_counts.coffee replaces the Redis subscriber on a repeated subscribe:feeds.
+                subscribeToFeeds()
+                return
             }
 
             val request = Request.Builder().url(buildSocketUrl()).build()
@@ -119,8 +146,10 @@ class NewsBlurSocketClient
                 isConnecting = false
                 username = null
                 feeds = emptyList()
+                connectionGeneration += 1
                 tearDownConnectionLocked()
             }
+            _subscribed.value = false
         }
 
         fun subscribe(
@@ -136,6 +165,22 @@ class NewsBlurSocketClient
         fun unsubscribe(event: String) {
             synchronized(lock) {
                 eventHandlers.remove(event)
+            }
+        }
+
+        /** Like [subscribe], but [handler] receives every event argument, e.g. (channel, message). */
+        fun subscribeArguments(
+            event: String,
+            handler: (List<Any?>) -> Unit,
+        ) {
+            synchronized(lock) {
+                argumentHandlers.getOrPut(event) { mutableListOf() } += handler
+            }
+        }
+
+        fun unsubscribeArguments(event: String) {
+            synchronized(lock) {
+                argumentHandlers.remove(event)
             }
         }
 
@@ -190,14 +235,16 @@ class NewsBlurSocketClient
         private fun handleEvent(message: String) {
             val payload = runCatching { JSONArray(message) }.getOrNull() ?: return
             val eventName = payload.optString(0)
-            val eventData = if (payload.length() > 1) jsonValueToAny(payload.opt(1)) else null
-            val handlers =
+            val arguments = (1 until payload.length()).map { jsonValueToAny(payload.opt(it)) }
+            val (handlers, argHandlers) =
                 synchronized(lock) {
-                    eventHandlers[eventName]?.toList()
-                } ?: return
+                    eventHandlers[eventName]?.toList().orEmpty() to argumentHandlers[eventName]?.toList().orEmpty()
+                }
+            if (handlers.isEmpty() && argHandlers.isEmpty()) return
 
             mainHandler.post {
-                handlers.forEach { it(eventData) }
+                handlers.forEach { it(arguments.firstOrNull()) }
+                argHandlers.forEach { it(arguments) }
             }
         }
 
@@ -226,6 +273,7 @@ class NewsBlurSocketClient
                 put(currentUsername)
             }
             sendRawMessage("42$payload")
+            _subscribed.value = true
         }
 
         private fun resetPingTimeout() {
@@ -245,6 +293,7 @@ class NewsBlurSocketClient
                 isConnecting = false
                 tearDownConnectionLocked()
             }
+            _subscribed.value = false
             if (shouldReconnect) {
                 scheduleReconnect()
             }
@@ -253,11 +302,9 @@ class NewsBlurSocketClient
         private fun scheduleReconnect() {
             reconnectJob?.cancel()
             val reconnectUsername: String
-            val reconnectFeeds: List<String>
             val delaySeconds: Long
             synchronized(lock) {
                 reconnectUsername = this.username ?: return
-                reconnectFeeds = this.feeds
                 reconnectAttempts += 1
                 delaySeconds = minOf(reconnectAttempts * 2L, 30L)
             }
@@ -265,7 +312,8 @@ class NewsBlurSocketClient
             reconnectJob =
                 scope.launch {
                     delay(delaySeconds * 1000L)
-                    connect(reconnectUsername, reconnectFeeds)
+                    // The stored feed list is kept, including any update made while disconnected.
+                    connect(reconnectUsername)
                 }
         }
 
