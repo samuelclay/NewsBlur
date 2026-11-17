@@ -36,7 +36,9 @@ import Foundation
     private var pingTimeoutTimer: DispatchSourceTimer?
     private var reconnectTimer: DispatchSourceTimer?
     private var reconnectAttempts = 0
-    private let maxReconnectAttempts = 10
+    /// NewsBlurSocketClient.swift keeps retrying after a long outage at this interval, since the Mac app
+    /// stays connected for as long as it runs.
+    private let maximumReconnectDelay: TimeInterval = 60
 
     /// Incremented on each connection attempt to ignore stale callbacks
     private var connectionGeneration: Int = 0
@@ -45,6 +47,8 @@ import Foundation
     private var feeds: [String] = []
     private var isConnected = false
     private var isConnecting = false
+    /// Set by `connect` and cleared by `disconnect`, so a drop only reconnects a socket someone still wants.
+    private var shouldReconnect = false
     private var sid: String?
 
     /// Server-provided ping settings from Engine.IO open packet
@@ -52,6 +56,13 @@ import Foundation
     private var serverPingTimeout: TimeInterval = 120.0
 
     private var eventHandlers: [String: [(Any) -> Void]] = [:]
+    /// Handlers that receive every argument of an event. The feed and user channels emit
+    /// `(channel, message)`, which `eventHandlers` would cut down to the channel alone.
+    private var argumentHandlers: [String: [([Any]) -> Void]] = [:]
+
+    /// Called on the main queue with `true` once Socket.IO accepts the connection and the feed
+    /// subscription is sent, and with `false` when an established connection drops or is closed.
+    var onConnectionChange: ((Bool) -> Void)?
     private let serverURLProvider: () -> String?
 
     init(serverURLProvider: @escaping () -> String? = { NewsBlurAppDelegate.shared()?.url }) {
@@ -85,6 +96,8 @@ import Foundation
 
             self.username = username
             self.feeds = feeds
+            self.shouldReconnect = true
+            self.cancelReconnectTimer()
             self.isConnecting = true
             self.connectionGeneration += 1
             let generation = self.connectionGeneration
@@ -106,12 +119,40 @@ import Foundation
         queue.async { [weak self] in
             guard let self = self else { return }
             NSLog("NewsBlurSocketClient: Disconnecting")
+            let wasConnected = self.isConnected
+            self.shouldReconnect = false
             self.connectionGeneration += 1
             self.cancelReconnectTimer()
             self.tearDownConnection()
             self.isConnected = false
             self.isConnecting = false
             self.reconnectAttempts = 0
+            if wasConnected { self.notifyConnectionChange(false) }
+        }
+    }
+
+    /// Replace the feeds this connection listens to. A live connection resubscribes in place, since the
+    /// server swaps its Redis subscriber on every `subscribe:feeds`, and a later reconnect uses the new list.
+    func updateFeeds(_ feeds: [String]) {
+        queue.async { [weak self] in
+            guard let self, feeds != self.feeds else { return }
+            self.feeds = feeds
+            if self.isConnected { self.subscribeToFeeds() }
+        }
+    }
+
+    /// Run one raw Engine.IO frame through the parser, as the receive loop does. NewsBlurTests use it.
+    func receive(frame: String) {
+        queue.async { [weak self] in
+            guard let self else { return }
+            self.handleMessage(frame, generation: self.connectionGeneration)
+        }
+    }
+
+    /// Subscribe to every argument of an event, such as `user:update`'s channel and message.
+    func subscribeArguments(event: String, handler: @escaping ([Any]) -> Void) {
+        queue.async { [weak self] in
+            self?.argumentHandlers[event, default: []].append(handler)
         }
     }
 
@@ -174,8 +215,11 @@ import Foundation
         NSLog("NewsBlurSocketClient: Connecting to \(url)")
 
         let configuration = URLSessionConfiguration.default
+        // The server pings every 30 seconds, so a request timeout only fires on a connection that went quiet.
         configuration.timeoutIntervalForRequest = 120
-        configuration.timeoutIntervalForResource = 300
+        // A WebSocket task is one resource for as long as it stays open. A 5 minute limit here dropped every
+        // connection after 5 minutes, and RealtimeUpdates.swift then recounted every feed to catch up.
+        configuration.timeoutIntervalForResource = 7 * 24 * 60 * 60
 
         session = URLSession(configuration: configuration, delegate: self, delegateQueue: delegateQueue)
         webSocketTask = session?.webSocketTask(with: url)
@@ -271,6 +315,7 @@ import Foundation
         case "0": // Connect acknowledgment
             NSLog("NewsBlurSocketClient: Socket.IO connected")
             subscribeToFeeds()
+            notifyConnectionChange(true)
 
         case "1": // Disconnect
             NSLog("NewsBlurSocketClient: Socket.IO disconnected by server")
@@ -299,6 +344,16 @@ import Foundation
         let eventData = json.count > 1 ? json[1] : nil
         let handlers = eventHandlers[eventName]
         let wildcardHandlers = eventHandlers["*"]
+        let eventArgumentHandlers = argumentHandlers[eventName]
+        let arguments = Array(json.dropFirst())
+
+        if let eventArgumentHandlers {
+            DispatchQueue.main.async {
+                for handler in eventArgumentHandlers {
+                    handler(arguments)
+                }
+            }
+        }
 
         // Dispatch event handlers on main queue for UI safety
         if let handlers = handlers {
@@ -338,13 +393,19 @@ import Foundation
         // Must be called on self.queue
         guard let username = username else { return }
 
-        let feedsJson = (try? JSONSerialization.data(withJSONObject: feeds)) ?? Data()
-        let feedsString = String(data: feedsJson, encoding: .utf8) ?? "[]"
-
-        let message = "42[\"subscribe:feeds\",\(feedsString),\"\(username)\"]"
-        sendRawMessage(message)
+        let payload: [Any] = ["subscribe:feeds", feeds, username]
+        guard let data = try? JSONSerialization.data(withJSONObject: payload),
+              let message = String(data: data, encoding: .utf8) else { return }
+        sendRawMessage("42\(message)")
 
         NSLog("NewsBlurSocketClient: Subscribed to \(feeds.count) feeds for \(username)")
+    }
+
+    private func notifyConnectionChange(_ connected: Bool) {
+        // Must be called on self.queue
+        DispatchQueue.main.async { [weak self] in
+            self?.onConnectionChange?(connected)
+        }
     }
 
     // MARK: - Sending Messages
@@ -387,19 +448,21 @@ import Foundation
 
         if wasConnected {
             NSLog("NewsBlurSocketClient: Disconnected, scheduling reconnect")
+            notifyConnectionChange(false)
+            if shouldReconnect { scheduleReconnect() }
+        } else if shouldReconnect && reconnectTimer == nil {
+            // NewsBlurSocketClient.swift retries a connection that failed before it opened, which a dropped
+            // network causes after the Mac app's earlier connection was already lost.
             scheduleReconnect()
         }
     }
 
     private func scheduleReconnect() {
         // Must be called on self.queue
-        guard reconnectAttempts < maxReconnectAttempts else {
-            NSLog("NewsBlurSocketClient: Max reconnect attempts reached")
-            return
-        }
-
         reconnectAttempts += 1
-        let delay = min(Double(reconnectAttempts) * 2.0, 30.0)
+        let backoff = min(Double(reconnectAttempts) * 2.0, maximumReconnectDelay)
+        // Spread the retries so every client doesn't return the moment the socket server comes back.
+        let delay = backoff * Double.random(in: 0.75...1.25)
 
         NSLog("NewsBlurSocketClient: Reconnecting in \(delay)s (attempt \(reconnectAttempts))")
 
@@ -407,8 +470,9 @@ import Foundation
         let timer = DispatchSource.makeTimerSource(queue: queue)
         timer.schedule(deadline: .now() + delay)
         timer.setEventHandler { [weak self] in
-            guard let self = self, let username = self.username else { return }
-            self.isConnecting = false
+            guard let self = self, self.shouldReconnect else { return }
+            self.reconnectTimer = nil
+            self.isConnecting = true
             self.isConnected = false
             self.connectWebSocket()
         }
