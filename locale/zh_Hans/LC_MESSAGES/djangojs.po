@@ -281,6 +281,11 @@ msgid_plural "%(count)s months"
 msgstr[0] "%(count)s 个月"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] ""
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "%(count)s 份新闻简报"

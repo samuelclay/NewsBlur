@@ -339,6 +339,13 @@ msgstr[1] "%(count)s miesiące"
 msgstr[2] "%(count)s miesięcy"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "%(count)s newsletter"
