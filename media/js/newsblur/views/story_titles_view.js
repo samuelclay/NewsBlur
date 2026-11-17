@@ -616,6 +616,29 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
     },
 
+    // story_titles_view.js: While reader.js pages in the stories behind the new stories pill
+    // (page_in_realtime_new_stories), a loading gap sits at its cursor, between the stories it brought in and the
+    // ones listed before. scroll() loads the next page as the gap comes near, and it goes when the gap closes.
+    place_realtime_gap: function () {
+        var gap = this.collection.realtime_gap;
+        var $gap = this.$('.NB-realtime-gap');
+        if (!gap || gap.met) {
+            $gap.remove();
+            return;
+        }
+        if (!$gap.length) $gap = $.make('div', { className: 'NB-realtime-gap NB-load-line' });
+        var next = this.collection.at(gap.cursor);
+        var next_el = next && next.story_title_view && next.story_title_view.el;
+        var $end = this.$('.NB-end-line').first();
+        if (next_el && next_el.parentNode == this.el) {
+            $(next_el).before($gap);
+        } else if ($end.length) {
+            $end.before($gap);
+        } else {
+            this.$el.append($gap);
+        }
+    },
+
     end_loading: function () {
         var $endbar = this.$story_titles.find('.NB-end-line');
         NEWSBLUR.motion.remove($endbar);
@@ -847,6 +870,17 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         var position = $story_titles.position();
         if (!position) return;
+
+        var gap = this.collection.realtime_gap;
+        var $gap = gap && !gap.met && this.$('.NB-realtime-gap');
+        if ($gap && $gap.length) {
+            // story_titles_view.js: the stories behind the new stories pill page in at their gap, not at the end.
+            var list_top = this.page_scrolls() ? 0 : $story_titles[0].getBoundingClientRect().top;
+            if ($gap[0].getBoundingClientRect().top - list_top < this.viewport_height() * 2) {
+                NEWSBLUR.reader.load_page_of_feed_stories({ scroll_to_loadbar: false });
+            }
+            return;
+        }
 
         var container_offset = position.top;
         var visible_height = this.viewport_height() * 2;

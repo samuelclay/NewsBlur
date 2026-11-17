@@ -960,6 +960,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.feed_id = feed_id;
                 this.starred_stories = data.starred_stories;
                 this.stories.reset(data.stories, { added: data.stories.length });
+            } else if (data.stories && this.stories.realtime_gap) {
+                // assetmodel.js: a page of the fresh paging the new stories pill started joins at reader.js's cursor.
+                NEWSBLUR.reader.merge_realtime_gap_page(data.stories);
             } else if (data.stories) {
                 // console.log(['adding to river', data.stories.length, ' stories']);
                 this.stories.add(data.stories, { silent: true });
