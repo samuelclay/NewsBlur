@@ -185,8 +185,10 @@ struct FeedDetailGridView: View {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
             .onPreferenceChange(CardKey.self) {
+                // NewStoriesPill.swift slides new cards in from above the top edge, which isn't the reader scrolling.
                 if !story.isClusterStory,
                    feedDetailInteraction.isMarkReadOnScroll,
+                   !cache.newStoryArrivals.isSettling,
                    StoryScrollReadDecision.shouldMarkRead(storyID: "\(story.id)", frames: $0) {
                     NSLog("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
                     
@@ -203,6 +205,7 @@ struct FeedDetailGridView: View {
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)
             }
+            .modifier(NewStoryArrivalModifier(arrivals: cache.newStoryArrivals, hash: story.hash))
     }
     
     @ViewBuilder

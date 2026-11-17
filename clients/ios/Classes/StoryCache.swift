@@ -17,6 +17,8 @@ import SwiftUI
     
     let settings = StorySettings()
     let motionSession = ReaderMotionSession()
+    /// NewStoriesPill.swift's plan for the cards the new stories pill slides into the list.
+    let newStoryArrivals = NewStoryArrivals()
     
     var isDarkTheme: Bool {
         return ThemeManager.shared.isDarkTheme

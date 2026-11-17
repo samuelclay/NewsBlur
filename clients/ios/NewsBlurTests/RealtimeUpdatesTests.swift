@@ -163,8 +163,9 @@ import XCTest
         XCTAssertEqual(RealtimeNewStories.visibleCount(stories, list: storyList(intelligence: 0)), 2)
     }
 
-    // Inserted stories land in order among the loaded ones, and a story already listed isn't listed twice.
-    func test_insertedStoriesTakeTheirPlaceInTheLoadedList() {
+    // Stories the pill holds go where the reader is looking, the top of a newest-first list or the end of an
+    // oldest-first one, even one published before stories already listed; a story already listed isn't listed twice.
+    func test_insertedStoriesJoinTheListsNewEndWhateverTheirDates() {
         let collection = StoriesCollection()
         let newestFirst = collection.activeOrder != "oldest"
         func story(_ hash: String, _ timestamp: Int) -> [String: Any] {
@@ -178,7 +179,7 @@ import XCTest
 
         XCTAssertEqual(inserted, 2)
         let hashes = (collection.activeFeedStories ?? []).compactMap { ($0 as? [String: Any])?["story_hash"] as? String }
-        let expected = ["12:e", "12:c", "12:d", "12:b", "12:a"]
+        let expected = ["12:e", "12:d", "12:c", "12:b", "12:a"]
         XCTAssertEqual(hashes, newestFirst ? expected : expected.reversed())
         XCTAssertEqual(Int(collection.storyCount), expected.count)
     }

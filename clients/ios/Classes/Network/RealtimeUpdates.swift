@@ -746,9 +746,10 @@ enum RealtimeNewStories {
         }
     }
 
-    /// FeedDetailViewController.swift's pill was tapped: put the waiting stories into the list.
+    /// FeedDetailViewController.swift's pill was tapped: put the waiting stories into the list, which
+    /// NewStoriesPill.swift slides into place.
     func insertBufferedStories() {
-        guard let appDelegate, let collection = appDelegate.storiesCollection,
+        guard let appDelegate, appDelegate.storiesCollection != nil,
               let feedDetail = appDelegate.feedDetailViewController, let list = openStoryList(),
               list.key == newStoryListKey, !bufferedStories.isEmpty else {
             clearNewStories()
@@ -758,24 +759,35 @@ enum RealtimeNewStories {
         let profiles = bufferedUserProfiles
         clearNewStories(keepingKey: list.key)
 
-        let openStoryHash = appDelegate.storyPagesViewController?.currentPage?.activeStoryId
-        guard collection.insertRealtimeStories(stories) > 0 else { return }
-        if !profiles.isEmpty { collection.addFeedUserProfiles(profiles) }
-        feedDetail.reloadImmediately()
-        if let openStoryHash {
-            let location = collection.location(ofStoryId: openStoryHash)
-            if location >= 0 { appDelegate.storyPagesViewController.preserveCurrentPage(atLocation: location) }
-        }
-        appDelegate.storyPagesViewController.setNextPreviousButtons()
-        let firstVisibleHash = stories.first { story in
-            guard let hash = story["story_hash"] as? String else { return false }
-            return collection.location(ofStoryId: hash) >= 0
-        }?["story_hash"] as? String
-        feedDetail.scrollToRealtimeStory(hash: firstVisibleHash, atBottom: list.oldestFirst)
+        var openStoryHash: String?
+        feedDetail.presentNewStories(atBottom: list.oldestFirst, insert: { [weak self] in
+            // RealtimeUpdates.swift: a newest-first list scrolls to its top first, and may have changed meanwhile.
+            guard let self, let appDelegate = self.appDelegate, let collection = appDelegate.storiesCollection,
+                  self.openStoryList()?.key == list.key else { return nil }
+            openStoryHash = appDelegate.storyPagesViewController?.currentPage?.activeStoryId
+            guard collection.insertRealtimeStories(stories) > 0 else { return nil }
+            if !profiles.isEmpty { collection.addFeedUserProfiles(profiles) }
+            let locations = stories.compactMap { story -> (String, Int)? in
+                guard let hash = story["story_hash"] as? String else { return nil }
+                let location = collection.location(ofStoryId: hash)
+                return location >= 0 ? (hash, Int(location)) : nil
+            }
+            return locations.sorted { $0.1 < $1.1 }.map(\.0)
+        }, reload: { [weak self] in
+            guard let appDelegate = self?.appDelegate, let collection = appDelegate.storiesCollection,
+                  let feedDetail = appDelegate.feedDetailViewController else { return }
+            feedDetail.reloadImmediately()
+            if let openStoryHash {
+                let location = collection.location(ofStoryId: openStoryHash)
+                if location >= 0 { appDelegate.storyPagesViewController.preserveCurrentPage(atLocation: location) }
+            }
+            appDelegate.storyPagesViewController.setNextPreviousButtons()
+        })
     }
 
     /// The open list loaded its first page again, or another list opened.
     func storyListDidReload() {
+        appDelegate?.feedDetailViewController?.cancelNewStoriesArrival()
         clearNewStories()
     }
 

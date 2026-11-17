@@ -5,6 +5,7 @@
 //  Copyright © 2026 NewsBlur. All rights reserved.
 //
 
+import SwiftUI
 import UIKit
 
 /// The "3 new stories" capsule that floats over the story list when RealtimeUpdates.swift has fetched stories that
@@ -166,32 +167,598 @@ extension FeedDetailViewController {
         RealtimeUpdates.shared.insertBufferedStories()
     }
 
-    /// The stories that arrived join the list by date, so one published a while before it was fetched can land
-    /// below others. Show the first of them: the list's top when it's one of the first few rows, otherwise that row.
-    @objc func scrollToRealtimeStory(hash: String?, atBottom: Bool) {
-        guard let collection = storiesCollection else { return }
-        let location = hash.map { collection.location(ofStoryId: $0) } ?? -1
-        let staysAtTop = !atBottom && location <= Self.newStoryRowsShownFromTop
+    /// Put the stories the pill was holding into the list and slide them into place: from above the top of a
+    /// newest-first list, pushing the rows below them down, or rising into place at the end of an oldest-first one.
+    /// `insert` adds them to StoriesCollection and returns the hashes the list shows, in list order, or nil when it
+    /// added nothing; `reload` redraws the list. RealtimeUpdates.swift supplies both.
+    func presentNewStories(atBottom: Bool, insert: @escaping () -> [String]?, reload: @escaping () -> Void) {
+        newStoriesTableArrival?.finish(cancelled: true)
+        guard isViewLoaded, !isDashboard else {
+            if insert() != nil { reload() }
+            return
+        }
         if isLegacyTable {
-            guard let table = storyTitlesTable else { return }
-            table.layoutIfNeeded()
-            if staysAtTop || location < 0 {
-                table.setContentOffset(CGPoint(x: 0, y: -table.adjustedContentInset.top), animated: true)
-            } else if let path = indexPath(forStoryLocation: location) {
-                table.scrollToRow(at: path, at: atBottom ? .middle : .top, animated: true)
-            }
-        } else if let scrollView = gridScrollView {
-            // The SwiftUI grid gets no scroll hooks of its own: an onChange added to FeedDetailGridView.swift crashed
-            // Mac Catalyst when the reader opened a story. A newest-first list shows its new stories at the top; an
-            // oldest-first one gains them at the bottom.
-            scrollView.layoutIfNeeded()
-            let inset = scrollView.adjustedContentInset
-            let bottom = max(-inset.top, scrollView.contentSize.height - scrollView.bounds.height + inset.bottom)
-            scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: atBottom ? bottom : -inset.top),
-                                        animated: true)
+            presentNewStoriesInTable(atBottom: atBottom, insert: insert, reload: reload)
+        } else {
+            presentNewStoriesInCards(atBottom: atBottom, insert: insert, reload: reload)
         }
     }
 
-    /// A new story this close to the top of a newest-first list is in view once the list scrolls to its top.
-    private static var newStoryRowsShownFromTop: Int { 2 }
+    /// The list opened another feed or folder, or loaded its first page again: stop sliding rows that left it.
+    @objc func cancelNewStoriesArrival() {
+        newStoriesTableArrival?.finish(cancelled: true)
+    }
+
+    private func presentNewStoriesInTable(atBottom: Bool, insert: @escaping () -> [String]?,
+                                          reload: @escaping () -> Void) {
+        guard let table = storyTitlesTable, table.window != nil, !table.isHidden else {
+            if insert() != nil { reload() }
+            return
+        }
+        let reduceMotion = ReaderMotion.reduceMotion
+        let top = -table.adjustedContentInset.top
+        // NewStoriesPill.swift brings a newest-first list to its top before the stories go in, so the reader sees
+        // them arrive. Scrolling up never passes a story, so mark-read-on-scroll leaves the list alone.
+        guard !atBottom, table.contentOffset.y > top + 1 else {
+            insertNewStoriesInTable(table, atBottom: atBottom, insert: insert, reload: reload)
+            return
+        }
+        if reduceMotion {
+            table.contentOffset = CGPoint(x: table.contentOffset.x, y: top)
+            insertNewStoriesInTable(table, atBottom: atBottom, insert: insert, reload: reload)
+            return
+        }
+        let scroll = NewStoriesTableArrival(scrollingTable: table, to: top)
+        newStoriesTableArrival = scroll
+        scroll.start { [weak self, weak scroll, weak table] finished in
+            guard let self, self.newStoriesTableArrival === scroll else { return }
+            self.newStoriesTableArrival = nil
+            if finished, let table {
+                self.insertNewStoriesInTable(table, atBottom: atBottom, insert: insert, reload: reload)
+            } else if insert() != nil {
+                reload()
+            }
+        }
+    }
+
+    private func insertNewStoriesInTable(_ table: UITableView, atBottom: Bool, insert: () -> [String]?,
+                                         reload: () -> Void) {
+        let reduceMotion = ReaderMotion.reduceMotion
+        let oldOffset = table.contentOffset.y
+        // NewStoriesPill.swift keeps a picture of the rows on screen: those pushed off the bottom of a newest-first
+        // list no longer have cells, but must still slide down and away.
+        let snapshot = atBottom || reduceMotion ? nil : table.snapshotView(afterScreenUpdates: false)
+        guard let hashes = insert() else { return }
+        // NewStoriesPill.swift slides these rows itself, so ReaderMotion.swift's entrance must not also lift them.
+        let session = ReaderMotion.session(self)
+        hashes.forEach { session.markSeen($0) }
+        reload()
+        guard !hashes.isEmpty, let collection = storiesCollection else { return }
+        // FeedDetailObjCViewController.m's reload may select or restore a row; the arrival starts from the list as
+        // the reader saw it.
+        table.contentOffset = CGPoint(x: table.contentOffset.x, y: oldOffset)
+        table.layoutIfNeeded()
+        let rows: [NewStoriesTableArrival.Row] = hashes.compactMap { hash in
+            let location = collection.location(ofStoryId: hash)
+            guard location >= 0, let path = indexPath(forStoryLocation: location) else { return nil }
+            let rect = table.rectForRow(at: path)
+            return NewStoriesTableArrival.Row(hash: hash, location: Int(location), minY: rect.minY, height: rect.height)
+        }.sorted { $0.minY < $1.minY }
+        guard let first = rows.first else { return }
+
+        let inset = table.adjustedContentInset
+        let minimum = -inset.top
+        let maximum = max(minimum, table.contentSize.height - table.bounds.height + inset.bottom)
+        let visibleTop = oldOffset + inset.top
+        let visibleBottom = oldOffset + table.bounds.height - inset.bottom
+        let motion: NewStoriesTableArrival.Motion
+        var target = oldOffset
+        if atBottom {
+            motion = reduceMotion ? .fade : .rise
+            // NewStoriesPill.swift scrolls only when the first new row isn't already wholly on screen.
+            if first.minY < visibleTop || first.minY + first.height > visibleBottom {
+                let visibleHeight = table.bounds.height - inset.top - inset.bottom
+                target = min(max(first.minY + first.height / 2 - visibleHeight / 2 - inset.top, minimum), maximum)
+            }
+        } else {
+            // StoriesCollection.m put the stories at the top, where the list now is.
+            motion = reduceMotion ? .fade : .push
+        }
+        let arrival = NewStoriesTableArrival(table: table, rows: rows, motion: motion, reduceMotion: reduceMotion,
+                                             target: target)
+        if motion == .push, let snapshot {
+            arrival.addLeavingRows(snapshot, oldOffset: oldOffset)
+        }
+        newStoriesTableArrival = arrival
+        arrival.start { [weak self, weak arrival] _ in
+            if let self, self.newStoriesTableArrival === arrival { self.newStoriesTableArrival = nil }
+        }
+    }
+
+    private func presentNewStoriesInCards(atBottom: Bool, insert: @escaping () -> [String]?,
+                                          reload: @escaping () -> Void) {
+        let reduceMotion = ReaderMotion.reduceMotion
+        let scrollView = gridScrollView
+        // NewStoriesPill.swift brings a newest-first list to its top first, so the reader sees the stories arrive.
+        var scrollsToTop = false
+        if !atBottom, let scrollView {
+            let top = -scrollView.adjustedContentInset.top
+            if scrollView.contentOffset.y > top + 1 {
+                scrollsToTop = !reduceMotion
+                scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: top), animated: !reduceMotion)
+            }
+        }
+        let present = { [weak self] in
+            guard let self, let hashes = insert() else { return }
+            let session = self.storyCache.motionSession
+            hashes.forEach { session.markSeen($0) }
+            // An oldest-first list scrolls down to its new end first; the cards rise once they're in view.
+            let scrollsToBottom = atBottom && scrollView != nil
+            let start = CACurrentMediaTime() + (scrollsToBottom && !reduceMotion ? NewStoriesArrivalTiming.scrollDuration : 0)
+            let cache = self.storyCache
+            let arrivals = cache.newStoryArrivals
+            let total = arrivals.plan(hashes: hashes, atBottom: atBottom, start: start, reduceMotion: reduceMotion)
+            if let cascade = arrivals.cascade {
+                // A lazy grid stops drawing the cards pushed off the bottom, so a one-card-per-row grid covers its
+                // old cards with a picture of them that slides down, uncovering the new cards above it.
+                if cache.isGrid, cache.settings.gridColumns == 1, let scrollView {
+                    self.slideLeavingCards(in: scrollView,
+                                           by: CGFloat(hashes.count) * (cache.settings.gridHeight + 20))
+                }
+                // The cards already listed glide down to their new places as the new ones slide in above them;
+                // FeedDetailCardView.swift keeps the reload from also crossfading every card's contents.
+                var transaction = SwiftUI.Transaction(animation: cascade)
+                transaction.isNewStoryArrival = true
+                withTransaction(transaction) { reload() }
+            } else {
+                reload()
+            }
+            if scrollsToBottom, let scrollView {
+                scrollView.layoutIfNeeded()
+                let inset = scrollView.adjustedContentInset
+                let bottom = max(-inset.top, scrollView.contentSize.height - scrollView.bounds.height + inset.bottom)
+                scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: bottom), animated: !reduceMotion)
+            }
+            let generation = arrivals.generation
+            DispatchQueue.main.asyncAfter(deadline: .now() + (start - CACurrentMediaTime()) + total + 1) {
+                arrivals.clear(generation: generation)
+            }
+        }
+        if scrollsToTop {
+            DispatchQueue.main.asyncAfter(deadline: .now() + NewStoriesArrivalTiming.scrollDuration, execute: present)
+        } else {
+            present()
+        }
+    }
+
+    /// A picture of the cards on screen, over the SwiftUI list, sliding down `distance` on the arrival's curve. It is
+    /// opaque, in FeedDetailGridView.swift's background color, so the real cards moving beneath it never show twice.
+    private func slideLeavingCards(in scrollView: UIScrollView, by distance: CGFloat) {
+        guard let picture = scrollView.snapshotView(afterScreenUpdates: false) else { return }
+        picture.frame = scrollView.bounds
+        picture.backgroundColor = ThemeManager.color(fromRGB: [0xE0E0E0, 0xF3E2CB, 0x363636, 0x000000])
+        picture.isUserInteractionEnabled = false
+        scrollView.addSubview(picture)
+        let slide = CABasicAnimation(keyPath: "transform.translation.y")
+        slide.fromValue = 0
+        slide.toValue = distance
+        slide.duration = NewStoriesArrivalTiming.duration
+        slide.timingFunction = CAMediaTimingFunction(controlPoints: 0.22, 1, 0.36, 1)
+        slide.fillMode = .forwards
+        slide.isRemovedOnCompletion = false
+        picture.layer.add(slide, forKey: "newStoryArrival")
+        DispatchQueue.main.asyncAfter(deadline: .now() + NewStoriesArrivalTiming.duration + 0.05) {
+            picture.removeFromSuperview()
+        }
+    }
+
+    private static var newStoriesTableArrivalKey: UInt8 = 0
+
+    /// The running table arrival, held here so a second tap, or a list that reloads, can stop it.
+    private var newStoriesTableArrival: NewStoriesTableArrival? {
+        get { objc_getAssociatedObject(self, &Self.newStoriesTableArrivalKey) as? NewStoriesTableArrival }
+        set { objc_setAssociatedObject(self, &Self.newStoriesTableArrivalKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    }
+}
+
+/// NewStoriesPill.swift: one timing for the stories the pill puts into the list. The web and Android apps use the
+/// same numbers, so the stories arrive alike on every platform.
+enum NewStoriesArrivalTiming {
+    /// How long each row takes to slide into place.
+    static let duration: Double = 0.32
+    /// The delay between one row and the next.
+    static let stagger: Double = 0.07
+    /// The longest the stagger may spread a cascade, however many stories arrive at once.
+    static let staggerSpan: Double = 0.40
+    /// With Reduce Motion on, rows only fade in, this quickly.
+    static let reducedMotionFade: Double = 0.15
+    /// How long the list takes to scroll to where the stories arrive.
+    static let scrollDuration: Double = 0.3
+
+    static func stagger(count: Int) -> Double {
+        count > 1 ? min(stagger, staggerSpan / Double(count - 1)) : 0
+    }
+
+    static var animation: Animation { .timingCurve(0.22, 1, 0.36, 1, duration: duration) }
+
+    /// cubic-bezier(0.22, 1, 0.36, 1), the curve `animation` uses, for motion UIKit draws frame by frame.
+    static func ease(_ progress: Double) -> Double {
+        let x = min(max(progress, 0), 1)
+        func bezier(_ t: Double, _ first: Double, _ second: Double) -> Double {
+            let u = 1 - t
+            return 3 * u * u * t * first + 3 * u * t * t * second + t * t * t
+        }
+        var low = 0.0, high = 1.0, t = x
+        for _ in 0..<24 {
+            t = (low + high) / 2
+            if bezier(t, 0.22, 0.36) < x { low = t } else { high = t }
+        }
+        return bezier(t, 1, 1)
+    }
+}
+
+/// NewStoriesPill.swift slides the stories the pill put into the UITableView story list into place.
+///
+/// A newest-first list pushes: new row i (0 is the topmost of k) starts (k - 1 - i) staggers in and is still
+/// c_i(t) = h_i * (1 - ease(t / duration)) of its height short of its place, and every row is drawn c_i higher for
+/// each new row at or above it. The list doesn't scroll, so the table keeps drawing the rows on screen; each gets
+/// its offset as an additive Core Animation track, and a picture of the rows pushed off the bottom slides away with
+/// them. An oldest-first list scrolls to the new rows if they're off screen, then lets each rise from its own
+/// height below its place, the topmost first. The same class also scrolls a list to its top beforehand.
+@MainActor final class NewStoriesTableArrival: NSObject {
+    struct Row {
+        let hash: String
+        let location: Int
+        let minY: CGFloat
+        let height: CGFloat
+    }
+
+    enum Motion {
+        /// Scroll only, before the stories go in.
+        case scroll
+        /// A newest-first list's rows slide down from above, pushing the rows below.
+        case push
+        /// An oldest-first list's rows rise from below.
+        case rise
+        /// Reduce Motion: the rows only fade in.
+        case fade
+    }
+
+    private static let animationKey = "newStoryArrival"
+    private static let roleKey = "newStoryArrivalRole"
+
+    private weak var table: UITableView?
+    private let rows: [Row]
+    private let rowIndex: [String: Int]
+    private let motion: Motion
+    private let reduceMotion: Bool
+    private let delays: [Double]
+    private let duration: Double
+    private let total: Double
+    private let target: CGFloat
+    private var startOffset: CGFloat = 0
+    private var scrollDuration: Double = 0
+    private var scrollStart: CFTimeInterval = 0
+    private var slideStart: CFTimeInterval = 0
+    private var displayLink: CADisplayLink?
+    private var leavingRows: UIView?
+    private var animations: [String: CAAnimation] = [:]
+    private var onFinish: ((Bool) -> Void)?
+
+    init(table: UITableView, rows: [Row], motion: Motion, reduceMotion: Bool, target: CGFloat) {
+        self.table = table
+        self.rows = rows
+        self.rowIndex = Dictionary(rows.enumerated().map { ($1.hash, $0) }, uniquingKeysWith: { first, _ in first })
+        self.motion = motion
+        self.reduceMotion = reduceMotion
+        self.target = target
+        let count = rows.count
+        let stagger = motion == .push || motion == .rise ? NewStoriesArrivalTiming.stagger(count: count) : 0
+        // The bottom-most new row leads a push from the top; the topmost leads a rise at the end.
+        delays = rows.indices.map { Double(motion == .push ? count - 1 - $0 : $0) * stagger }
+        duration = reduceMotion ? NewStoriesArrivalTiming.reducedMotionFade : NewStoriesArrivalTiming.duration
+        total = (delays.max() ?? 0) + duration
+        super.init()
+    }
+
+    convenience init(scrollingTable table: UITableView, to target: CGFloat) {
+        self.init(table: table, rows: [], motion: .scroll, reduceMotion: false, target: target)
+    }
+
+    /// The rows a push moves off the bottom, pictured before the reload in `snapshot`, which shows the table's
+    /// bounds at `oldOffset`.
+    func addLeavingRows(_ snapshot: UIView, oldOffset: CGFloat) {
+        guard let table, let first = rows.first else { return }
+        let height = rows.reduce(0) { $0 + $1.height }
+        let visibleBottom = oldOffset + table.bounds.height
+        // Before the reload, everything from the first new row down was `height` higher than it is now.
+        let top = max(first.minY, visibleBottom - height)
+        guard top < visibleBottom else { return }
+        let container = UIView(frame: CGRect(x: 0, y: top + height, width: table.bounds.width,
+                                             height: visibleBottom - top))
+        container.clipsToBounds = true
+        container.isUserInteractionEnabled = false
+        snapshot.frame = CGRect(x: 0, y: oldOffset - top, width: table.bounds.width, height: table.bounds.height)
+        container.addSubview(snapshot)
+        table.addSubview(container)
+        leavingRows = container
+    }
+
+    /// Runs the arrival; `onFinish` learns whether it ran to its end rather than being stopped.
+    func start(onFinish: @escaping (Bool) -> Void) {
+        guard let table else { onFinish(false); return }
+        self.onFinish = onFinish
+        startOffset = table.contentOffset.y
+        scrollDuration = abs(target - startOffset) < 1 || reduceMotion ? 0 : NewStoriesArrivalTiming.scrollDuration
+        if scrollDuration == 0 { setOffset(target, in: table) }
+        scrollStart = CACurrentMediaTime()
+        slideStart = scrollStart + scrollDuration
+        if let leavingRows, let animation = animation(for: "above-\(rows.count)")?.copy() as? CAAnimation {
+            animation.beginTime = leavingRows.layer.convertTime(slideStart, from: nil)
+            leavingRows.layer.add(animation, forKey: Self.animationKey)
+        }
+        table.layoutIfNeeded()
+        attachAnimations(in: table)
+        let link = CADisplayLink(target: self, selector: #selector(tick(_:)))
+        link.add(to: .main, forMode: .common)
+        displayLink = link
+    }
+
+    func finish(cancelled: Bool) {
+        guard let link = displayLink else { return }
+        link.invalidate()
+        displayLink = nil
+        leavingRows?.removeFromSuperview()
+        leavingRows = nil
+        if let table {
+            if !cancelled { setOffset(target, in: table) }
+            for cell in table.visibleCells {
+                if cancelled { cell.layer.removeAnimation(forKey: Self.animationKey) }
+                cell.layer.setValue(nil, forKey: Self.roleKey)
+            }
+        }
+        let onFinish = self.onFinish
+        self.onFinish = nil
+        onFinish?(!cancelled)
+    }
+
+    @objc private func tick(_ link: CADisplayLink) {
+        guard let table, table.window != nil else { finish(cancelled: true); return }
+        // NewStoriesPill.swift hands the list back as soon as the reader touches it.
+        if table.isTracking { finish(cancelled: true); return }
+        let now = CACurrentMediaTime()
+        if now < slideStart {
+            let progress = NewStoriesArrivalTiming.ease((now - scrollStart) / scrollDuration)
+            setOffset(startOffset + (target - startOffset) * progress, in: table)
+            table.layoutIfNeeded()
+        } else {
+            setOffset(target, in: table)
+        }
+        let end = motion == .scroll ? slideStart : slideStart + total
+        if now >= end {
+            finish(cancelled: false)
+        } else {
+            attachAnimations(in: table)
+        }
+    }
+
+    private func setOffset(_ offset: CGFloat, in table: UITableView) {
+        guard abs(table.contentOffset.y - offset) > 0.01 else { return }
+        table.contentOffset = CGPoint(x: table.contentOffset.x, y: offset)
+    }
+
+    private func progress(of row: Int, at time: Double) -> Double {
+        NewStoriesArrivalTiming.ease((time - delays[row]) / duration)
+    }
+
+    /// How far the new rows before `end` are still short of their places.
+    private func collapse(before end: Int, at time: Double) -> CGFloat {
+        (0..<min(end, rows.count)).reduce(0) { sum, row in
+            sum + rows[row].height * CGFloat(1 - progress(of: row, at: time))
+        }
+    }
+
+    /// A row's part in the arrival: a new row, or, in a push, a row below `n` new rows.
+    private func role(of cell: UITableViewCell, at path: IndexPath, in table: UITableView) -> String? {
+        if let hash = (cell as? FeedDetailTableCell)?.storyHash, let index = rowIndex[hash] { return "new-\(index)" }
+        guard motion == .push else { return nil }
+        let minY = table.rectForRow(at: path).minY
+        let above = rows.filter { $0.minY < minY }.count
+        return above > 0 ? "above-\(above)" : nil
+    }
+
+    private func attachAnimations(in table: UITableView) {
+        guard motion != .scroll else { return }
+        for cell in table.visibleCells {
+            guard let path = table.indexPath(for: cell) else { continue }
+            let role = role(of: cell, at: path, in: table)
+            // A table reuses cells as it scrolls, so a cell may now show a row the arrival doesn't move.
+            if cell.layer.value(forKey: Self.roleKey) as? String == role,
+               role == nil || cell.layer.animation(forKey: Self.animationKey) != nil { continue }
+            cell.layer.removeAnimation(forKey: Self.animationKey)
+            cell.layer.setValue(role, forKey: Self.roleKey)
+            guard let role, let animation = animation(for: role)?.copy() as? CAAnimation else { continue }
+            animation.beginTime = cell.layer.convertTime(slideStart, from: nil)
+            cell.layer.add(animation, forKey: Self.animationKey)
+        }
+    }
+
+    private func animation(for role: String) -> CAAnimation? {
+        if let animation = animations[role] { return animation }
+        let parts = role.split(separator: "-")
+        guard parts.count == 2, let index = Int(parts[1]) else { return nil }
+        let isNew = parts[0] == "new"
+        let samples = max(2, Int((total * 60).rounded(.up)) + 1)
+        let times = (0..<samples).map { Double($0) / Double(samples - 1) }
+        var tracks: [CAAnimation] = []
+        if motion == .push || motion == .rise {
+            let offsets: [CGFloat] = times.map { fraction in
+                let time = fraction * total
+                if motion == .rise { return rows[index].height * CGFloat(1 - progress(of: index, at: time)) }
+                return -collapse(before: isNew ? index + 1 : index, at: time)
+            }
+            if offsets.contains(where: { abs($0) > 0.01 }) {
+                let slide = CAKeyframeAnimation(keyPath: "transform.translation.y")
+                slide.values = offsets
+                slide.keyTimes = times.map { NSNumber(value: $0) }
+                slide.isAdditive = true
+                slide.duration = total
+                slide.fillMode = .both
+                tracks.append(slide)
+            }
+        }
+        if isNew {
+            let fade = CAKeyframeAnimation(keyPath: "opacity")
+            fade.values = times.map { progress(of: index, at: $0 * total) }
+            fade.keyTimes = times.map { NSNumber(value: $0) }
+            fade.duration = total
+            fade.fillMode = .both
+            tracks.append(fade)
+        }
+        guard !tracks.isEmpty else { return nil }
+        let group = CAAnimationGroup()
+        group.animations = tracks
+        group.duration = total
+        group.fillMode = .backwards
+        group.isRemovedOnCompletion = true
+        animations[role] = group
+        return group
+    }
+}
+
+private struct NewStoryArrivalTransactionKey: TransactionKey {
+    static let defaultValue = false
+}
+
+extension SwiftUI.Transaction {
+    /// NewStoriesPill.swift marks the reload that puts the pill's stories into the SwiftUI list.
+    var isNewStoryArrival: Bool {
+        get { self[NewStoryArrivalTransactionKey.self] }
+        set { self[NewStoryArrivalTransactionKey.self] = newValue }
+    }
+}
+
+extension View {
+    /// NewStoriesPill.swift: shows this view's changes at once during the reload that puts new stories into the
+    /// list, so only the cards' places animate.
+    func withoutNewStoryArrivalAnimation() -> some View {
+        transaction { if $0.isNewStoryArrival { $0.animation = nil } }
+    }
+}
+
+/// NewStoriesPill.swift's plan for the cards the pill puts into the SwiftUI grid or card list
+/// (FeedDetailGridView.swift), read by each card as it's drawn.
+@MainActor final class NewStoryArrivals {
+    struct Arrival {
+        let start: CFTimeInterval
+        let delay: Double
+        /// 1 rises from below, 0 only fades.
+        let direction: CGFloat
+        let animation: Animation
+    }
+
+    private var arrivals: [String: Arrival] = [:]
+    private var transitions: [String: AnyTransition] = [:]
+    /// The reload's animation when new stories arrive at the top of the list.
+    private(set) var cascade: Animation?
+    private(set) var generation = 0
+    private var settlesAt: CFTimeInterval = 0
+
+    func arrival(for hash: String) -> Arrival? { arrivals[hash] }
+    func transition(for hash: String) -> AnyTransition? { transitions[hash] }
+
+    /// Whether cards are still sliding into place, when FeedDetailGridView.swift must not take a card above the top
+    /// edge for one the reader scrolled past.
+    var isSettling: Bool { CACurrentMediaTime() < settlesAt }
+
+    /// Plans `hashes`, in list order, and returns how long the cascade lasts.
+    func plan(hashes: [String], atBottom: Bool, start: CFTimeInterval, reduceMotion: Bool) -> Double {
+        generation += 1
+        arrivals.removeAll()
+        transitions.removeAll()
+        cascade = nil
+        let count = hashes.count
+        let stagger = reduceMotion ? 0 : NewStoriesArrivalTiming.stagger(count: count)
+        // NewStoriesPill.swift: the bottom-most new card leads at the top of the list, the topmost at its end.
+        let delays = hashes.indices.map { Double(atBottom ? $0 : count - 1 - $0) * stagger }
+        let total = reduceMotion ? NewStoriesArrivalTiming.reducedMotionFade
+            : (delays.max() ?? 0) + NewStoriesArrivalTiming.duration
+        settlesAt = start + total + 0.1
+        if reduceMotion || atBottom {
+            // Cards arriving at the end of the list may still be off screen, so each rises or fades once it's in view.
+            let animation = reduceMotion ? Animation.easeOut(duration: NewStoriesArrivalTiming.reducedMotionFade)
+                : NewStoriesArrivalTiming.animation
+            for (index, hash) in hashes.enumerated() {
+                arrivals[hash] = Arrival(start: start, delay: delays[index], direction: reduceMotion ? 0 : 1,
+                                         animation: animation)
+            }
+            return total
+        }
+        // A lazy SwiftUI grid draws only the cards whose places are on screen, so each new card slides down by its
+        // own height into its place rather than from a stack above the list, which would leave the screen empty.
+        cascade = NewStoriesArrivalTiming.animation
+        for (index, hash) in hashes.enumerated() {
+            transitions[hash] = AnyTransition.asymmetric(
+                insertion: AnyTransition.move(edge: .top).combined(with: .opacity)
+                    .animation(NewStoriesArrivalTiming.animation.delay(delays[index])),
+                removal: .opacity)
+        }
+        return total
+    }
+
+    func clear(generation: Int) {
+        guard generation == self.generation else { return }
+        arrivals.removeAll()
+        transitions.removeAll()
+        cascade = nil
+    }
+}
+
+/// NewStoriesPill.swift brings in a card the pill put into the SwiftUI list. A card arriving at the top of the list
+/// slides in with the reload's transaction; one arriving at the end, which may be off screen, rises once it's in
+/// view. Cards that were already listed keep SwiftUI's default fade for any other insertion.
+struct NewStoryArrivalModifier: ViewModifier {
+    @State private var arrival: NewStoryArrivals.Arrival?
+    @State private var progress: CGFloat
+    @State private var height: CGFloat = 0
+    @State private var started = false
+    @Environment(\.readerMotionViewport) private var viewport
+    private let transition: AnyTransition
+
+    init(arrivals: NewStoryArrivals, hash: String) {
+        let arrival = arrivals.arrival(for: hash)
+        _arrival = State(initialValue: arrival)
+        _progress = State(initialValue: arrival == nil ? 1 : 0)
+        transition = arrivals.transition(for: hash) ?? (arrival == nil ? .opacity : .identity)
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .offset(y: (arrival?.direction ?? 0) * height * (1 - progress))
+            .opacity(Double(progress))
+            .background(Group {
+                if arrival != nil && !started {
+                    GeometryReader { geometry in
+                        Color.clear
+                            .onAppear { reveal(in: geometry.frame(in: .global)) }
+                            .onChange(of: geometry.frame(in: .global)) { reveal(in: $0) }
+                            .onChange(of: viewport) { _ in reveal(in: geometry.frame(in: .global)) }
+                    }
+                }
+            })
+            .transition(transition)
+    }
+
+    private func reveal(in frame: CGRect) {
+        // NewStoriesPill.swift waits for the card to reach the screen, not SwiftUI's offscreen prefetch.
+        guard let arrival, !started, viewport.isEmpty || frame.intersects(viewport) else { return }
+        started = true
+        // The card's height places it a whole card away while it's still invisible; the rise starts on the next
+        // pass, so SwiftUI animates from there rather than from where the card sits.
+        height = frame.height
+        let delay = max(0, arrival.start + arrival.delay - CACurrentMediaTime())
+        DispatchQueue.main.async {
+            withAnimation(arrival.animation.delay(delay)) { progress = 1 }
+        }
+    }
 }
