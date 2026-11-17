@@ -25,6 +25,15 @@ class ClusterReadRepository(private val backend: Backend) {
         apply(accepted, read, false)
     }
 
+    /**
+     * RealtimeUpdates.kt applies a read or unread made on another device, with count changes. A story
+     * with this device's own read action still queued keeps it: that action reaches the server later.
+     */
+    fun applyRemote(hashes: Collection<String>, read: Boolean): Set<FeedSet> {
+        val pending = backend.pendingReadStateHashes()
+        return apply(hashes.filter { it !in pending }, read, true)
+    }
+
     fun applyBulkRead(hashes: Collection<String>, actionTime: Long) {
         apply(hashes, true, false, actionTime)
     }

@@ -1735,4 +1735,9 @@ people together to talk about the world.</string>
     <string name="settings_listen_speed">Playback speed</string>
     <string name="archive_listen">Listen to 1 hour of stories read aloud a week</string>
     <string name="pro_listen">Listen to 10 hours of stories read aloud a week</string>
+    <!-- NewStoriesPill.kt: stories that arrived for the open story list while it was on screen. -->
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d new story</item>
+        <item quantity="other">%d new stories</item>
+    </plurals>
 </resources>

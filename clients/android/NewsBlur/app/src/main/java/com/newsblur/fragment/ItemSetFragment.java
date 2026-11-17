@@ -41,6 +41,7 @@ import com.newsblur.domain.CustomIcon;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.preference.PrefsRepo;
+import com.newsblur.realtime.RealtimeUpdates;
 import com.newsblur.service.SyncServiceState;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.CustomIconRenderer;
@@ -58,6 +59,7 @@ import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
+import com.newsblur.view.NewStoriesPill;
 import com.newsblur.viewModel.StoriesViewModel;
 
 import org.jetbrains.annotations.NotNull;
@@ -97,6 +99,9 @@ public class ItemSetFragment extends NbFragment {
     @Inject
     SyncServiceState syncServiceState;
 
+    @Inject
+    RealtimeUpdates realtimeUpdates;
+
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
     private boolean dataSeenYet = false;
@@ -135,6 +140,15 @@ public class ItemSetFragment extends NbFragment {
     public boolean fullFlingComplete = false;
 
     private FragmentItemgridBinding binding;
+    @Nullable
+    private NewStoriesPill newStoriesPill;
+    // ItemSetFragment.java scrolls to stories NewStoriesPill.kt added once the adapter commits them.
+    @Nullable
+    private String pendingNewStoryScrollHash;
+    @Nullable
+    private RealtimeUpdates.NewStories.Placement pendingNewStoryPlacement;
+    @Nullable
+    private FeedSet realtimeOpenList;
     private RowFleuronBinding fleuronBinding;
     private StoriesViewModel storiesViewModel;
     private int bottomNextFeedRevealPx;
@@ -300,6 +314,12 @@ public class ItemSetFragment extends NbFragment {
             binding.itemgridfragmentGrid.setClipToPadding(false);
         }
         storiesViewModel.getActiveStories().observe(getViewLifecycleOwner(), this::setStories);
+        newStoriesPill = new NewStoriesPill(this, binding.newStoriesPill, binding.bottomNextFeedControl,
+                realtimeUpdates, dbHelper, this::getFeedSet, (hashes, placement) -> {
+                    showAddedNewStories(hashes, placement);
+                    return kotlin.Unit.INSTANCE;
+                });
+        newStoriesPill.start();
 
         FeedSet fs = getFeedSet();
         if (fs == null) {
@@ -314,6 +334,11 @@ public class ItemSetFragment extends NbFragment {
 
     @Override
     public void onDestroyView() {
+        if (realtimeOpenList != null) {
+            realtimeUpdates.clearOpenStoryList(realtimeOpenList);
+            realtimeOpenList = null;
+        }
+        newStoriesPill = null;
         if (floatingStoryHeader != null) {
             floatingStoryHeader.removeOnLayoutChangeListener(floatingStoryHeaderLayoutListener);
             floatingStoryHeader = null;
@@ -335,6 +360,11 @@ public class ItemSetFragment extends NbFragment {
             triggerRefresh(1, null);
         } else {
             dataSeenYet = true;
+            // RealtimeUpdates.kt keeps this list's counts and offers its new stories in the pill.
+            if (!currentFeedSet.equals(realtimeOpenList)) {
+                realtimeOpenList = currentFeedSet;
+                realtimeUpdates.setOpenStoryList(currentFeedSet);
+            }
             updateAdapter(storyBatch.getStories(), storyBatch.getLoadId(), storyBatch.getIndexOfLastUnread());
             if (storyBatch.getStories().isEmpty()) {
                 triggerRefresh(1, 0);
@@ -369,8 +399,43 @@ public class ItemSetFragment extends NbFragment {
         gridState = null;
         dataSeenYet = false;
         skipBackFillingStories = false;
+        pendingNewStoryScrollHash = null;
+        // Restarting with new filters can change which buffered stories would show.
+        FeedSet fs = getFeedSet();
+        if (fs != null) realtimeUpdates.resetNewStories(fs);
         updateLoadingIndicators();
         hideBottomNextFeedControl();
+    }
+
+    /**
+     * NewStoriesPill.kt added these stories to the reading session. The adapter normally holds back
+     * stories newer than the ones on screen after a resume (skipBackFillingStories), so let them in,
+     * then scroll to the first one.
+     */
+    private void showAddedNewStories(@NonNull List<String> hashes, @NonNull RealtimeUpdates.NewStories.Placement placement) {
+        if (!isAdded() || binding == null || hashes.isEmpty()) return;
+        skipBackFillingStories = false;
+        pendingNewStoryScrollHash = hashes.get(0);
+        pendingNewStoryPlacement = placement;
+        hasUpdated();
+    }
+
+    private void scrollToAddedNewStory() {
+        String hash = pendingNewStoryScrollHash;
+        if (hash == null || adapter == null || layoutManager == null) return;
+        if (pendingNewStoryPlacement == RealtimeUpdates.NewStories.Placement.TOP) {
+            // Newest-first lists show every new story at the top, including any held back above it.
+            pendingNewStoryScrollHash = null;
+            scrollToTop();
+            return;
+        }
+        List<Story> stories = adapter.storiesSnapshot();
+        for (int i = 0; i < stories.size(); i++) {
+            if (!hash.equals(stories.get(i).storyHash)) continue;
+            pendingNewStoryScrollHash = null;
+            binding.itemgridfragmentGrid.smoothScrollToPosition(adapter.getDisplayPositionForStoryIndex(i));
+            return;
+        }
     }
 
     /**
@@ -484,6 +549,7 @@ public class ItemSetFragment extends NbFragment {
             submittedGrid.setVisibility(empty ? View.INVISIBLE : View.VISIBLE);
             com.newsblur.view.ReaderMotion.visibility(binding.emptyView, empty ? View.VISIBLE : View.INVISIBLE);
             storyThawCompleted(lastUnreadIndex);
+            scrollToAddedNewStory();
             ensureSufficientStories();
             updateLoadingIndicators();
             updateBottomNextFeedControl();
@@ -611,9 +677,11 @@ public class ItemSetFragment extends NbFragment {
                 grid.setPaddingRelative(grid.getPaddingStart(), grid.getPaddingTop(), grid.getPaddingEnd(), bottomPadding);
             }
         }
-        if (marginParams.bottomMargin == targetBottomMargin) return;
-        marginParams.bottomMargin = targetBottomMargin;
-        binding.bottomNextFeedControl.setLayoutParams(marginParams);
+        if (marginParams.bottomMargin != targetBottomMargin) {
+            marginParams.bottomMargin = targetBottomMargin;
+            binding.bottomNextFeedControl.setLayoutParams(marginParams);
+        }
+        if (newStoriesPill != null) newStoriesPill.refreshPosition();
     }
 
     /** ItemsList.java reports how much of the list Listen's mini player covers, or 0 while it is hidden. */
@@ -676,6 +744,7 @@ public class ItemSetFragment extends NbFragment {
         configureBottomNextFeedTarget(target, ready);
         binding.bottomNextFeedControl.setVisibility(View.VISIBLE);
         binding.bottomNextFeedControl.setAlpha(visibilityProgress);
+        if (newStoriesPill != null) newStoriesPill.refreshPosition();
     }
 
     private void hideBottomNextFeedControl() {
@@ -688,6 +757,7 @@ public class ItemSetFragment extends NbFragment {
         binding.bottomNextFeedControl.configure("site", null, false);
         binding.bottomNextFeedControl.setAlpha(0f);
         binding.bottomNextFeedControl.setVisibility(View.GONE);
+        if (newStoriesPill != null) newStoriesPill.refreshPosition();
     }
 
     private void resetBottomNextFeedDragState() {

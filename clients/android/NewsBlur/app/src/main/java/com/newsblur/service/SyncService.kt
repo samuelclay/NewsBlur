@@ -24,6 +24,7 @@ import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.ListenPreferences
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.service.NbSyncManager.UPDATE_DB_READY
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
@@ -434,7 +435,10 @@ open class SyncService :
             return
         }
 
-        if (syncServiceState.doFeedsFolders || prefsRepo.isTimeToAutoSync()) {
+        // RealtimeUpdates.kt keeps counts current while its socket is live, so the periodic reload can wait.
+        val isTimeToAutoSync =
+            prefsRepo.isTimeToAutoSync() && !RealtimeUpdates.from(this).keepsCountsCurrent(prefsRepo.getLastSyncTime())
+        if (syncServiceState.doFeedsFolders || isTimeToAutoSync) {
             prefsRepo.updateLastSyncTime()
             syncServiceState.doFeedsFolders = false
         } else {

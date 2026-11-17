@@ -21,6 +21,7 @@ import com.newsblur.domain.UserDetails
 import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
 import com.newsblur.service.SubscriptionSyncService
+import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.service.SyncService
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
@@ -210,6 +211,7 @@ class PrefsRepo(
     ) {
         // PrefsRepo.kt stops Listen first so the signed-out account's story stops playing and its notification goes.
         ListenManager.from(context).stopForAccountChange()
+        RealtimeUpdates.from(context).stopForAccountChange()
         SyncService.stop(context)
         syncServiceState.clearState()
 
@@ -250,6 +252,7 @@ class PrefsRepo(
     ) {
         // The previous account's story mustn't keep playing, or report its listening, as the new one.
         ListenManager.from(context).stopForAccountChange()
+        RealtimeUpdates.from(context).stopForAccountChange()
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
         val keys: MutableSet<String> = HashSet(prefs.all.keys)
@@ -351,9 +354,12 @@ class PrefsRepo(
      * data to justify automatically syncing again.
      */
     fun isTimeToAutoSync(): Boolean {
-        val lastTime = prefs.getLong(AppConstants.LAST_SYNC_TIME, 1L)
+        val lastTime = getLastSyncTime()
         return ((lastTime + AppConstants.AUTO_SYNC_TIME_MILLIS) < (Date()).time)
     }
+
+    /** When SyncService.kt last loaded the feed list with counts. */
+    fun getLastSyncTime(): Long = prefs.getLong(AppConstants.LAST_SYNC_TIME, 1L)
 
     /**
      * Make note that a sync of the feed/folder list has been completed, so we can track
