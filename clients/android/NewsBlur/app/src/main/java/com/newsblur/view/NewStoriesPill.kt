@@ -1,9 +1,14 @@
 package com.newsblur.view
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
+import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +27,11 @@ import kotlinx.coroutines.withContext
 /**
  * The "N new stories" pill over ItemSetFragment.java's list. RealtimeUpdates.kt fetches stories that
  * arrive for the open list; a tap adds them to the reading session and ItemSetFragment.java scrolls to
- * them. Nothing moves under the reader's finger until then.
+ * them. Nothing moves under the reader's finger until then. Past RealtimeUpdates.NEW_STORIES_CAP, a tap
+ * instead reloads the list's newest page and fills the gap below it ([onFillGap]).
+ *
+ * The pill slides out from under the toolbar it sits against, and steps aside while the reader keeps
+ * scrolling away from it (PillScrollAway.kt).
  */
 class NewStoriesPill(
     private val fragment: Fragment,
@@ -32,8 +41,14 @@ class NewStoriesPill(
     private val dbHelper: BlurDatabaseHelper,
     private val feedSet: () -> FeedSet?,
     private val onStoriesAdded: (List<String>, Placement) -> Unit,
+    private val onFillGap: (Placement) -> Unit,
 ) {
     private var placement = Placement.TOP
+    private var storiesWaiting = false
+    private var shown = false
+    private var slide: ValueAnimator? = null
+    private val scrollAway = PillScrollAway(android.os.SystemClock::uptimeMillis)
+    private val returnCheck = Runnable { returnAfterIdle() }
 
     fun start() {
         applyTheme()
@@ -90,26 +105,140 @@ class NewStoriesPill(
         pill.layoutParams = params
     }
 
+    /** ItemSetFragment.java's view is going away. */
+    fun stop() {
+        pill.removeCallbacks(returnCheck)
+        slide?.cancel()
+    }
+
+    /** ItemSetFragment.java reports each scroll of the list; scrolling away from the pill eventually hides it. */
+    fun onListScrolled(dy: Int) {
+        if (dy == 0 || !storiesWaiting) return
+        if (!shown && !scrollAway.hiddenByScroll) return
+        val movedAway = if (placement == Placement.TOP) dy > 0 else dy < 0
+        if (scrollAway.onScroll(movedAway)) setShown(false)
+        if (scrollAway.hiddenByScroll) scheduleReturn()
+    }
+
+    private fun scheduleReturn() {
+        pill.removeCallbacks(returnCheck)
+        scrollAway.millisUntilReturn()?.let { pill.postDelayed(returnCheck, it) }
+    }
+
+    private fun returnAfterIdle() {
+        if (scrollAway.returnsNow(storiesWaiting)) setShown(true) else if (scrollAway.hiddenByScroll) scheduleReturn()
+    }
+
     private fun render(state: RealtimeUpdates.NewStories) {
         val current = feedSet()
-        if (current == null || state.feedSet != current || state.storyHashes.isEmpty()) {
-            ReaderMotion.visibility(pill, View.GONE)
+        if (current == null || state.feedSet != current || state.count == 0) {
+            // Another list, a reload, a tap, or every waiting story read elsewhere: start over.
+            storiesWaiting = false
+            scrollAway.reset()
+            pill.removeCallbacks(returnCheck)
+            setShown(false)
             return
         }
+        storiesWaiting = true
         placement = state.placement
-        val count = state.storyHashes.size
+        val count = state.count
         pill.text = pill.resources.getQuantityString(R.plurals.new_stories_pill, count, count)
         pill.contentDescription = pill.text
         applyTheme()
         refreshPosition()
-        ReaderMotion.visibility(pill, View.VISIBLE)
+        // A pill the reader scrolled away from keeps counting while hidden and returns after an idle wait.
+        if (!scrollAway.hiddenByScroll) setShown(true)
+    }
+
+    private fun setShown(show: Boolean) {
+        if (shown == show) return
+        shown = show
+        slide?.cancel()
+        slide = null
+        if (!pill.isAttachedToWindow || !ReaderMotion.canSlide(pill.context)) {
+            pill.translationY = 0f
+            pill.clipBounds = null
+            ReaderMotion.visibility(pill, if (show) View.VISIBLE else View.GONE)
+            return
+        }
+        if (show) {
+            pill.alpha = 1f
+            pill.visibility = View.VISIBLE
+            // NewStoriesPill.kt needs the pill's laid-out place to know how far it slides.
+            pill.doOnPreDraw { if (shown) startSlide(fromHidden = true) }
+            applySlide(0f)
+            pill.invalidate()
+        } else {
+            if (pill.visibility != View.VISIBLE || pill.height == 0) {
+                pill.visibility = View.GONE
+                return
+            }
+            startSlide(fromHidden = false)
+        }
+    }
+
+    private fun startSlide(fromHidden: Boolean) {
+        val start = if (fromHidden) 0f else currentSlideProgress()
+        val end = if (fromHidden) 1f else 0f
+        applySlide(start)
+        slide =
+            ValueAnimator.ofFloat(start, end).apply {
+                duration = PillScrollAway.SLIDE_MILLIS
+                interpolator = android.animation.TimeInterpolator(NewStoriesTimeline::ease)
+                addUpdateListener { applySlide(it.animatedValue as Float) }
+                addListener(
+                    object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            if (slide !== animation) return
+                            slide = null
+                            if (!shown) pill.visibility = View.GONE
+                            applySlide(if (shown) 1f else 0f)
+                        }
+                    },
+                )
+                start()
+            }
+    }
+
+    private var slideProgress = 1f
+
+    private fun currentSlideProgress(): Float = slideProgress
+
+    /**
+     * Places the pill [progress] of the way out from the toolbar edge it hides behind: the top of the list
+     * for the top pill, the bar under the bottom pill. The part still behind that edge is clipped away, so
+     * the pill never draws over the toolbar.
+     */
+    private fun applySlide(progress: Float) {
+        slideProgress = progress
+        if (pill.height == 0) return
+        val gap = UIUtils.dp2px(pill.context, 12)
+        if (placement == Placement.TOP) {
+            val hidden = -(pill.top + pill.height).toFloat()
+            pill.translationY = hidden * (1f - progress)
+            val clipTop = (-(pill.top + pill.translationY)).toInt().coerceIn(0, pill.height)
+            pill.clipBounds = if (clipTop > 0) Rect(0, clipTop, pill.width, pill.height) else null
+        } else {
+            val edge = pill.bottom + gap
+            val hidden = (edge - pill.top).toFloat()
+            pill.translationY = hidden * (1f - progress)
+            val clipBottom = (edge - (pill.top + pill.translationY)).toInt().coerceIn(0, pill.height)
+            pill.clipBounds = if (clipBottom < pill.height) Rect(0, 0, pill.width, clipBottom) else null
+        }
     }
 
     private fun addStories() {
         val fs = feedSet() ?: return
         val shownPlacement = placement
-        val hashes = realtimeUpdates.takeNewStories(fs)
-        if (hashes.isEmpty()) return
+        scrollAway.reset()
+        pill.removeCallbacks(returnCheck)
+        val taken = realtimeUpdates.takeNewStories(fs)
+        if (taken.count == 0) return
+        if (taken.fillsGap) {
+            onFillGap(shownPlacement)
+            return
+        }
+        val hashes = taken.storyHashes
         fragment.viewLifecycleOwner.lifecycleScope.launch {
             withContext(Dispatchers.IO) { dbHelper.addStoriesToReadingSession(hashes) }
             onStoriesAdded(hashes, shownPlacement)

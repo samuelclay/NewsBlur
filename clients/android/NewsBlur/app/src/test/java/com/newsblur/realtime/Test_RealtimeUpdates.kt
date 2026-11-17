@@ -226,6 +226,37 @@ class Test_RealtimeUpdates {
             assertEquals(listOf("1:newer-focus"), realtime.newStories.value.storyHashes)
         }
 
+    // A list left open overnight once fetched every story announced since (thousands of requests). Past the
+    // cap the pill only counts what's announced, and a story read elsewhere leaves that count too.
+    @Test
+    fun test_pill_fetches_up_to_its_cap_and_counts_the_rest() =
+        runTest {
+            val fetched = mutableListOf<String>()
+            coEvery { storyApi.getStoriesByHash(any()) } answers {
+                fetched += firstArg<List<String>>()
+                StoriesResponse().apply { stories = firstArg<List<String>>().map { story(it) }.toTypedArray() }
+            }
+            val realtime = realtime()
+            val feed = FeedSet.singleFeed("1")
+            realtime.setOpenStoryList(feed)
+            val now = EPOCH / 1000
+            val announced = (1..30).map { "1:story$it" }
+            announced.take(25).forEach { realtime.send("feed:story:new", "1:story", "$it,$now") }
+            settle()
+            announced.drop(25).forEach { realtime.send("feed:story:new", "1:story", "$it,$now") }
+            settle()
+
+            assertEquals(RealtimeUpdates.NEW_STORIES_CAP, fetched.size)
+            assertEquals(30, realtime.newStories.value.count)
+            assertTrue(realtime.newStories.value.fillsGap)
+
+            val unfetched = announced.first { it !in fetched }
+            realtime.send("user:update", "sam", "story:read:$unfetched")
+            settle()
+            assertEquals(29, realtime.newStories.value.count)
+            assertEquals(RealtimeUpdates.NEW_STORIES_CAP, fetched.size)
+        }
+
     @Test
     fun test_oldest_first_pill_waits_for_the_last_page() =
         runTest {

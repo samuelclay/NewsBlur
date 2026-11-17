@@ -10,7 +10,6 @@ import android.view.ViewTreeObserver
 import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.database.StoryViewAdapter
-import com.newsblur.util.ViewUtils
 
 /**
  * NewStoriesEntrance.kt's timing and push model, kept apart from views so the cascade can be checked on the JVM.
@@ -383,9 +382,7 @@ class NewStoriesEntrance private constructor(
 
         /** The rows just appear when the system or NewsBlur's own setting turns motion off. */
         @JvmStatic
-        fun isEnabled(context: Context): Boolean =
-            ValueAnimator.areAnimatorsEnabled() && !ReaderMotion.isReducedMotion(context) &&
-                !ViewUtils.isPowerSaveMode(context)
+        fun isEnabled(context: Context): Boolean = ReaderMotion.canSlide(context)
 
         /**
          * Starts the entrance for stories the adapter has just committed. ItemSetFragment.java calls this from the

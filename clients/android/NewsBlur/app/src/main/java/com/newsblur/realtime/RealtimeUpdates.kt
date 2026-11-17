@@ -91,8 +91,19 @@ class RealtimeUpdates internal constructor(
         val feedSet: FeedSet?,
         val storyHashes: List<String>,
         val placement: Placement,
+        // Announced stories past the cap, counted without fetching them.
+        val unfetchedCount: Int = 0,
     ) {
         enum class Placement { TOP, BOTTOM }
+
+        /** What the pill says: the fetched stories plus the announced ones it never fetched. */
+        val count: Int get() = storyHashes.size + unfetchedCount
+
+        /**
+         * More stories than the pill holds: a tap reloads the list's newest page and fills the gap below it
+         * (ItemSetFragment.java) instead of adding these.
+         */
+        val fillsGap: Boolean get() = unfetchedCount > 0 || storyHashes.size > NEW_STORIES_CAP
 
         companion object {
             val NONE = NewStories(null, emptyList(), Placement.TOP)
@@ -120,6 +131,8 @@ class RealtimeUpdates internal constructor(
     private var reloadJob: Job? = null
 
     private val pendingNewStories = LinkedHashMap<String, Long>()
+    // Announced stories that passed the open list's checks after the pill reached its cap.
+    private val unfetchedNewStories = LinkedHashSet<String>()
     private val newStoryTimestamps = HashMap<String, Long>()
     private var newStoryFetchJob: Job? = null
     private val _newStories = MutableStateFlow(NewStories.NONE)
@@ -454,22 +467,35 @@ class RealtimeUpdates internal constructor(
         }
     }
 
-    /** NewStoriesPill.kt takes the buffered stories to add to the open list. */
-    fun takeNewStories(fs: FeedSet): List<String> =
+    /**
+     * NewStoriesPill.kt takes what the pill offered: the buffered stories to add to the open list, or, past
+     * the cap, the signal to reload its newest page (NewStories.fillsGap). Either way the pill starts over.
+     */
+    fun takeNewStories(fs: FeedSet): NewStories =
         synchronized(lock) {
             val current = _newStories.value
-            if (current.feedSet != fs) return emptyList()
-            _newStories.value = NewStories.NONE
-            current.storyHashes.forEach(newStoryTimestamps::remove)
-            current.storyHashes
+            if (current.feedSet != fs) return NewStories.NONE
+            clearNewStoriesLocked()
+            current
         }
 
     private fun clearNewStoriesLocked() {
         newStoryFetchJob?.cancel()
         newStoryFetchJob = null
         pendingNewStories.clear()
+        unfetchedNewStories.clear()
         newStoryTimestamps.clear()
         _newStories.value = NewStories.NONE
+    }
+
+    private fun bufferedNewStoryCountLocked(fs: FeedSet): Int =
+        _newStories.value.takeIf { it.feedSet == fs }?.storyHashes?.size ?: 0
+
+    private fun publishUnfetchedLocked(fs: FeedSet) {
+        val current = _newStories.value
+        val placement = NewStoryRules.placement(CursorFilters(prefsRepo, fs).storyOrder, true) ?: current.placement
+        val base = if (current.feedSet == fs) current else NewStories(fs, emptyList(), placement)
+        _newStories.value = base.copy(unfetchedCount = unfetchedNewStories.size)
     }
 
     private fun FeedSet.coversApiId(apiId: String): Boolean {
@@ -492,7 +518,15 @@ class RealtimeUpdates internal constructor(
         val wait = maxOf(NEW_STORY_THROTTLE_MILLIS, subscriberJitter(message.feedId, NEW_STORY_JITTER_PER_SUBSCRIBER, NEW_STORY_JITTER_CAP))
         synchronized(lock) {
             if (openList != fs) return
-            if (message.storyHash in pendingNewStories || message.storyHash in _newStories.value.storyHashes) return
+            if (message.storyHash in pendingNewStories || message.storyHash in _newStories.value.storyHashes ||
+                message.storyHash in unfetchedNewStories
+            ) return
+            if (bufferedNewStoryCountLocked(fs) >= NEW_STORIES_CAP) {
+                // A list left open overnight would otherwise fetch every story published since.
+                unfetchedNewStories += message.storyHash
+                publishUnfetchedLocked(fs)
+                return
+            }
             pendingNewStories[message.storyHash] = message.timestampSeconds
             if (newStoryFetchJob?.isActive == true) return
             newStoryFetchJob =
@@ -508,7 +542,15 @@ class RealtimeUpdates internal constructor(
             synchronized(lock) {
                 newStoryFetchJob = null
                 if (openList != fs) return
-                pendingNewStories.keys.take(MAX_HASHES_PER_FETCH).onEach(pendingNewStories::remove)
+                // Fetch only as many as the pill can still hold; the rest are counted, not fetched.
+                val room = NEW_STORIES_CAP - bufferedNewStoryCountLocked(fs)
+                if (room <= 0) {
+                    unfetchedNewStories += pendingNewStories.keys
+                    pendingNewStories.clear()
+                    publishUnfetchedLocked(fs)
+                    return
+                }
+                pendingNewStories.keys.take(minOf(room, MAX_HASHES_PER_FETCH)).onEach(pendingNewStories::remove)
             }
         if (hashes.isEmpty()) return
         if (BuildConfig.DEBUG) android.util.Log.d(LOG_TAG, "fetching new stories $hashes")
@@ -547,7 +589,9 @@ class RealtimeUpdates internal constructor(
                 } else {
                     merged.sortedBy { newStoryTimestamps[it] ?: 0L }
                 }
-            if (ordered.isNotEmpty()) _newStories.value = NewStories(fs, ordered, placement)
+            if (ordered.isNotEmpty() || unfetchedNewStories.isNotEmpty()) {
+                _newStories.value = NewStories(fs, ordered, placement, unfetchedNewStories.size)
+            }
             if (pendingNewStories.isNotEmpty() && newStoryFetchJob?.isActive != true) {
                 newStoryFetchJob =
                     scope.launch {
@@ -565,9 +609,18 @@ class RealtimeUpdates internal constructor(
             val fs = current.feedSet ?: return
             // A story read elsewhere no longer belongs in an unread-only list's pill.
             if (CursorFilters(prefsRepo, fs).readFilter != ReadFilter.UNREAD) return
-            val remaining = current.storyHashes - readHashes.toSet()
-            if (remaining.size == current.storyHashes.size) return
-            _newStories.value = if (remaining.isEmpty()) NewStories.NONE else current.copy(storyHashes = remaining)
+            val read = readHashes.toSet()
+            val remaining = current.storyHashes - read
+            pendingNewStories.keys.removeAll(read)
+            val unfetchedBefore = unfetchedNewStories.size
+            unfetchedNewStories.removeAll(read)
+            if (remaining.size == current.storyHashes.size && unfetchedNewStories.size == unfetchedBefore) return
+            _newStories.value =
+                if (remaining.isEmpty() && unfetchedNewStories.isEmpty()) {
+                    NewStories.NONE
+                } else {
+                    current.copy(storyHashes = remaining, unfetchedCount = unfetchedNewStories.size)
+                }
         }
     }
 
@@ -637,6 +690,9 @@ class RealtimeUpdates internal constructor(
         internal const val MAX_SKIPPED_SYNC_MILLIS = 60L * 60L * 1000L
         internal const val FUTURE_STORY_SECONDS = 60L * 60L
         internal const val MAX_HASHES_PER_FETCH = 100
+
+        // The most stories the pill fetches and holds; past it, announcements are only counted.
+        const val NEW_STORIES_CAP = 20
         private const val STARRED_DEBOUNCE_MILLIS = 1_000L
         private const val RELOAD_DEBOUNCE_MILLIS = 2_000L
         private const val SUBSCRIPTION_DEBOUNCE_MILLIS = 1_000L

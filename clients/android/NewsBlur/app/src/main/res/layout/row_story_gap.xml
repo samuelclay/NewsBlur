@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- StoryViewAdapter.kt's gap row: stories are still loading between the newest page and the stories listed before. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.newsblur.view.StoryLoadingBar
+        android:id="@+id/gap_loading_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="76dp" />
+
+</FrameLayout>

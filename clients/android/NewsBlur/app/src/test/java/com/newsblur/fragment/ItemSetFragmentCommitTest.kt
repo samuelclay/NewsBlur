@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.database.StoryViewAdapter
 import com.newsblur.databinding.FragmentItemgridBinding
 import com.newsblur.domain.Story
+import com.newsblur.service.SyncServiceState
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
 import io.mockk.every
@@ -74,9 +75,10 @@ class ItemSetFragmentCommitTest {
             Long::class.javaObjectType,
             Int::class.javaPrimitiveType,
             Set::class.java,
+            String::class.java,
         ).apply {
             isAccessible = true
-        }.invoke(fixture.fragment, stories, 1L, -1, emptySet<String>())
+        }.invoke(fixture.fragment, stories, 1L, -1, emptySet<String>(), null)
 
         // ItemSetFragment.java must wait for the diff commit before sending a count to SyncServiceState.kt.
         assertTrue("No paging demand before the adapter commit", fixture.fragment.requestedCounts.isEmpty())
@@ -112,6 +114,8 @@ class ItemSetFragmentCommitTest {
             setField("binding", binding)
             setField("layoutManager", layoutManager)
             setField("prefsRepo", mockk<PrefsRepo>(relaxed = true))
+            // ItemSetFragment.java checks for a new stories gap stream before asking for the next page.
+            setField("syncServiceState", mockk<SyncServiceState>(relaxed = true).also { every { it.gapStreamLastPage(any()) } returns null })
         }
 
         fun startFollowingStory() {
