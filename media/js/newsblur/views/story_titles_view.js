@@ -395,7 +395,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var pane_anchor = this.options.pane_anchor;
             var story_layout = this.options.override_layout ||
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
-            var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function (story) {
+            // story_titles_view.js: stories.js insert_realtime_stories names the stories it placed inside the
+            // list; a page that loaded is the last stories in the collection.
+            var added_models = options.inserted || this.collection.models.slice(-1 * options.added);
+            var stories = _.compact(_.map(added_models, function (story) {
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
@@ -414,11 +417,30 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     in_add_site_view: in_add_site_view
                 }).render();
             }));
-            this.stories = this.stories.concat(stories);
             var $stories = _.map(stories, function (story) {
                 return story.el;
             });
-            this.$el.append($stories);
+            if (options.inserted) {
+                // story_titles_view.js: placed last to first, so the story after each one is already in place.
+                var placing = _.sortBy(stories, function (view) {
+                    return -collection.indexOf(view.model);
+                });
+                _.each(placing, function (view) {
+                    var next = collection.at(collection.indexOf(view.model) + 1);
+                    var next_el = next && next.story_title_view && next.story_title_view.el;
+                    if (next_el && next_el.parentNode) {
+                        next_el.parentNode.insertBefore(view.el, next_el);
+                    } else {
+                        this.$el.append(view.el);
+                    }
+                }, this);
+                this.stories = _.sortBy(this.stories.concat(stories), function (view) {
+                    return collection.indexOf(view.model);
+                });
+            } else {
+                this.stories = this.stories.concat(stories);
+                this.$el.append($stories);
+            }
             NEWSBLUR.motion.watch(this, stories, this.$story_titles[0], NEWSBLUR.reader.active_feed, { animate_on_scroll: false });
             if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story || this.options.on_trending_feed) {
                 var $extras = this.$el.find('.NB-story-title-container .NB-story-title:not(.NB-hidden)').slice(5);
@@ -426,7 +448,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             }
         }
         this.end_loading();
-        this.fill_out();
+        if (!options.inserted) this.fill_out();
     },
 
     depart: function () {

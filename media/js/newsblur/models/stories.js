@@ -479,6 +479,29 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         }
     },
 
+    // stories.js: Adds stories that arrived over the socket (reader.js insert_realtime_new_stories), each at its
+    // place in the list's order, the way the iOS and Android apps do. It leaves no_more_stories and paging alone:
+    // the server pages from the snapshot it took when the list opened, which never held these stories.
+    insert_realtime_stories: function (stories, oldest_first) {
+        var inserted = [];
+        _.each(stories, function (attributes) {
+            if (this.get_by_story_hash(attributes.story_hash)) return;
+            var timestamp = parseInt(attributes.story_timestamp, 10);
+            var index = this.length;
+            for (var i = 0; i < this.length; i++) {
+                var other = parseInt(this.at(i).get('story_timestamp'), 10);
+                if (oldest_first ? timestamp < other : timestamp > other) {
+                    index = i;
+                    break;
+                }
+            }
+            this.add(attributes, { at: index, silent: true });
+            inserted.push(this.at(index));
+        }, this);
+        if (inserted.length) this.trigger('add', { added: inserted.length, inserted: inserted });
+        return inserted;
+    },
+
     mark_read_pubsub: function (story_hash) {
         var story = this.get_by_story_hash(story_hash);
         if (!story) return;
