@@ -46,6 +46,7 @@ class Test_StoryMotionScope {
         field("diffFeedSet", FeedSet.singleFeed("1"))
         every { adapter.updateFeedSet(any()) } answers { callOriginal() }
         every { adapter.onAttachedToRecyclerView(any()) } answers { callOriginal() }
+        every { adapter.finishOpeningEntrances(any()) } answers { callOriginal() }
         return adapter
     }
 

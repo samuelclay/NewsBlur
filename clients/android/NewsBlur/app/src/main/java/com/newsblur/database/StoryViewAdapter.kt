@@ -522,6 +522,38 @@ class StoryViewAdapter(
     fun getDisplayPositionForStoryIndex(storyIndex: Int): Int =
         storyDisplayPositions.getOrNull(storyIndex) ?: storyIndex
 
+    /** The story a row shows, or the story a cluster row sits under, for NewStoriesEntrance.kt. */
+    @Synchronized
+    fun storyHashAtDisplayPosition(position: Int): String? =
+        if (position >= storyCount || position < 0) {
+            null
+        } else {
+            when (val item = displayItems[position]) {
+                is DisplayItem.StoryRow -> item.story.storyHash
+                is DisplayItem.ClusterRow -> item.parentStoryHash
+            }
+        }
+
+    /** The rows, cluster rows included, of the stories NewStoriesPill.kt added, top to bottom. */
+    @Synchronized
+    fun displayPositionsOfStories(storyHashes: Set<String>): List<Int> =
+        (0 until storyCount).filter { storyHashAtDisplayPosition(it) in storyHashes }
+
+    /**
+     * NewStoriesEntrance.kt animates the rows of stories NewStoriesPill.kt added, so the opening cascade must not
+     * also run on them.
+     */
+    @Synchronized
+    fun markStoriesPresented(storyHashes: Collection<String>) {
+        val added = storyHashes.toSet()
+        displayItems.forEach { item ->
+            when (item) {
+                is DisplayItem.StoryRow -> if (item.story.storyHash in added) motionSeen.add(item.story.storyHash)
+                is DisplayItem.ClusterRow -> if (item.parentStoryHash in added) motionSeen.add(item.clusterStory.storyHash)
+            }
+        }
+    }
+
     @Synchronized
     fun getDisplayPositionForStoryHash(storyHash: String?): Int {
         if (storyHash.isNullOrBlank()) return -1
@@ -693,18 +725,24 @@ class StoryViewAdapter(
         returnHighlight = null
     }
 
+    /**
+     * StoryViewAdapter.kt makes the opening cascade solid as soon as the reader starts scrolling, and when
+     * ItemSetFragment.java moves the list to stories NewStoriesPill.kt added: rows that come into view after either
+     * just appear.
+     */
+    fun finishOpeningEntrances(recyclerView: RecyclerView) {
+        if (motionHasScrolled) return
+        motionHasScrolled = true
+        for (index in 0 until recyclerView.childCount) {
+            val row = recyclerView.getChildAt(index)
+            val holder = recyclerView.getChildViewHolder(row)
+            if (holder is StoryViewHolder || holder is ClusterRowViewHolder) row.clearAnimation()
+        }
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        fun finishOpeningEntrances() {
-            if (motionHasScrolled) return
-            motionHasScrolled = true
-            // StoryViewAdapter.kt makes the opening cascade solid as soon as the reader starts scrolling.
-            for (index in 0 until recyclerView.childCount) {
-                val row = recyclerView.getChildAt(index)
-                val holder = recyclerView.getChildViewHolder(row)
-                if (holder is StoryViewHolder || holder is ClusterRowViewHolder) row.clearAnimation()
-            }
-        }
+        fun finishOpeningEntrances() = finishOpeningEntrances(recyclerView)
         motionScrollListener = object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(view: RecyclerView, newState: Int) {
                 if (newState != RecyclerView.SCROLL_STATE_IDLE) finishOpeningEntrances()

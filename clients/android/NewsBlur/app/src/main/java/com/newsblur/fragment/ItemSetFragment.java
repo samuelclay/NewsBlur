@@ -59,13 +59,18 @@ import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
+import com.newsblur.view.NewStoriesEntrance;
 import com.newsblur.view.NewStoriesPill;
+import com.newsblur.view.StoryGridLayoutManager;
 import com.newsblur.viewModel.StoriesViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -144,9 +149,14 @@ public class ItemSetFragment extends NbFragment {
     private NewStoriesPill newStoriesPill;
     // ItemSetFragment.java scrolls to stories NewStoriesPill.kt added once the adapter commits them.
     @Nullable
-    private String pendingNewStoryScrollHash;
+    private List<String> pendingNewStoryHashes;
+    // The stories already listed when the pill was tapped; anything else in the next commit arrived with it.
+    @NonNull
+    private Set<String> storyHashesBeforeNewStories = Collections.emptySet();
     @Nullable
     private RealtimeUpdates.NewStories.Placement pendingNewStoryPlacement;
+    @Nullable
+    private NewStoriesEntrance newStoriesEntrance;
     @Nullable
     private FeedSet realtimeOpenList;
     private RowFleuronBinding fleuronBinding;
@@ -259,7 +269,7 @@ public class ItemSetFragment extends NbFragment {
         StoryListStyle listStyle = prefsRepo.getStoryListStyle(getFeedSet());
 
         calcColumnCount(listStyle);
-        layoutManager = new GridLayoutManager(getActivity(), columnCount);
+        layoutManager = new StoryGridLayoutManager(requireContext(), columnCount);
         binding.itemgridfragmentGrid.setLayoutManager(layoutManager);
         binding.itemgridfragmentGrid.setItemAnimator(new com.newsblur.view.StoryEntranceItemAnimator());
         setupAnimSpeeds();
@@ -339,6 +349,7 @@ public class ItemSetFragment extends NbFragment {
             realtimeOpenList = null;
         }
         newStoriesPill = null;
+        finishNewStoriesEntrance();
         if (floatingStoryHeader != null) {
             floatingStoryHeader.removeOnLayoutChangeListener(floatingStoryHeaderLayoutListener);
             floatingStoryHeader = null;
@@ -399,7 +410,8 @@ public class ItemSetFragment extends NbFragment {
         gridState = null;
         dataSeenYet = false;
         skipBackFillingStories = false;
-        pendingNewStoryScrollHash = null;
+        pendingNewStoryHashes = null;
+        finishNewStoriesEntrance();
         // Restarting with new filters can change which buffered stories would show.
         FeedSet fs = getFeedSet();
         if (fs != null) realtimeUpdates.resetNewStories(fs);
@@ -410,31 +422,78 @@ public class ItemSetFragment extends NbFragment {
     /**
      * NewStoriesPill.kt added these stories to the reading session. The adapter normally holds back
      * stories newer than the ones on screen after a resume (skipBackFillingStories), so let them in,
-     * then scroll to the first one.
+     * then bring them into view.
      */
     private void showAddedNewStories(@NonNull List<String> hashes, @NonNull RealtimeUpdates.NewStories.Placement placement) {
         if (!isAdded() || binding == null || hashes.isEmpty()) return;
+        finishNewStoriesEntrance();
         skipBackFillingStories = false;
-        pendingNewStoryScrollHash = hashes.get(0);
+        storyHashesBeforeNewStories = new HashSet<>();
+        if (adapter != null) {
+            for (Story story : adapter.storiesSnapshot()) storyHashesBeforeNewStories.add(story.storyHash);
+        }
+        pendingNewStoryHashes = new ArrayList<>(hashes);
         pendingNewStoryPlacement = placement;
         hasUpdated();
     }
 
     private void scrollToAddedNewStory() {
-        String hash = pendingNewStoryScrollHash;
-        if (hash == null || adapter == null || layoutManager == null) return;
-        if (pendingNewStoryPlacement == RealtimeUpdates.NewStories.Placement.TOP) {
-            // Newest-first lists show every new story at the top, including any held back above it.
-            pendingNewStoryScrollHash = null;
-            scrollToTop();
-            return;
-        }
+        List<String> hashes = pendingNewStoryHashes;
+        if (hashes == null || adapter == null || layoutManager == null) return;
+        // ItemSetFragment.java waits for the commit that holds the added stories; an earlier batch may land first.
+        Set<String> added = new HashSet<>(hashes);
         List<Story> stories = adapter.storiesSnapshot();
+        int firstIndex = -1;
         for (int i = 0; i < stories.size(); i++) {
-            if (!hash.equals(stories.get(i).storyHash)) continue;
-            pendingNewStoryScrollHash = null;
-            binding.itemgridfragmentGrid.smoothScrollToPosition(adapter.getDisplayPositionForStoryIndex(i));
-            return;
+            if (added.contains(stories.get(i).storyHash)) {
+                firstIndex = i;
+                break;
+            }
+        }
+        if (firstIndex < 0) return;
+        pendingNewStoryHashes = null;
+        boolean atTop = pendingNewStoryPlacement == RealtimeUpdates.NewStories.Placement.TOP;
+        if (atTop) {
+            // A newest-first list also lets in the stories it held back above the ones on screen
+            // (skipBackFillingStories), and they arrive at the top alongside the pill's.
+            for (Story story : stories) {
+                if (!storyHashesBeforeNewStories.contains(story.storyHash)) added.add(story.storyHash);
+            }
+        }
+        storyHashesBeforeNewStories = Collections.emptySet();
+        adapter.markStoriesPresented(added);
+        // Moving the list here counts as scrolling it: the rows it uncovers don't run the opening cascade.
+        adapter.finishOpeningEntrances(binding.itemgridfragmentGrid);
+        if (atTop) {
+            // A newest-first list shows its new stories at the top, including any held back above it. Stories dated
+            // further down than a screenful are brought near the top instead, as on iOS (NewStoriesPill.swift) and
+            // the web.
+            List<Integer> positions = adapter.displayPositionsOfStories(added);
+            int firstPosition = positions.isEmpty() ? 0 : positions.get(0);
+            if (firstPosition / Math.max(1, layoutManager.getSpanCount()) < rowsOnScreen()) {
+                scrollToTop();
+            } else {
+                layoutManager.scrollToPositionWithOffset(firstPosition, UIUtils.dp2px(requireContext(), 40));
+            }
+        } else {
+            binding.itemgridfragmentGrid.smoothScrollToPosition(adapter.getDisplayPositionForStoryIndex(firstIndex));
+        }
+        // NewStoriesEntrance.kt slides them in during the frame that first lays them out.
+        newStoriesEntrance = NewStoriesEntrance.start(binding.itemgridfragmentGrid, adapter, added, atTop);
+    }
+
+    /** How many rows of the story list fit on screen; a phone held sideways shows only one or two. */
+    private int rowsOnScreen() {
+        int first = layoutManager.findFirstVisibleItemPosition();
+        int lastWhole = layoutManager.findLastCompletelyVisibleItemPosition();
+        if (first == RecyclerView.NO_POSITION || lastWhole == RecyclerView.NO_POSITION) return 1;
+        return Math.max(1, (lastWhole - first + 1) / Math.max(1, layoutManager.getSpanCount()));
+    }
+
+    private void finishNewStoriesEntrance() {
+        if (newStoriesEntrance != null) {
+            newStoriesEntrance.finish();
+            newStoriesEntrance = null;
         }
     }
 
