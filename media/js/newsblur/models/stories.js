@@ -479,24 +479,23 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         }
     },
 
-    // stories.js: Adds stories that arrived over the socket (reader.js insert_realtime_new_stories), each at its
-    // place in the list's order, the way the iOS and Android apps do. It leaves no_more_stories and paging alone:
-    // the server pages from the snapshot it took when the list opened, which never held these stories.
+    // stories.js: Adds stories that arrived over the socket (reader.js insert_realtime_new_stories) at the top of a
+    // newest-first list, or the end of an oldest-first one, where the new stories pill sits. They keep date order
+    // among themselves, but not next to the stories already listed: a story published days ago and fetched just now
+    // still arrives at the top, and takes its dated place the next time the list loads. The iOS and Android apps do
+    // the same. It leaves no_more_stories and paging alone: the server pages from the snapshot it took when the list
+    // opened, which never held these stories.
     insert_realtime_stories: function (stories, oldest_first) {
-        var inserted = [];
-        _.each(stories, function (attributes) {
-            if (this.get_by_story_hash(attributes.story_hash)) return;
-            var timestamp = parseInt(attributes.story_timestamp, 10);
-            var index = this.length;
-            for (var i = 0; i < this.length; i++) {
-                var other = parseInt(this.at(i).get('story_timestamp'), 10);
-                if (oldest_first ? timestamp < other : timestamp > other) {
-                    index = i;
-                    break;
-                }
-            }
-            this.add(attributes, { at: index, silent: true });
-            inserted.push(this.at(index));
+        var arriving = _.sortBy(_.reject(stories, function (attributes) {
+            return this.get_by_story_hash(attributes.story_hash);
+        }, this), function (attributes) {
+            return parseInt(attributes.story_timestamp, 10);
+        });
+        if (!oldest_first) arriving.reverse();
+        var start = oldest_first ? this.length : 0;
+        var inserted = _.map(arriving, function (attributes, offset) {
+            this.add(attributes, { at: start + offset, silent: true });
+            return this.at(start + offset);
         }, this);
         if (inserted.length) this.trigger('add', { added: inserted.length, inserted: inserted });
         return inserted;

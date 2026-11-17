@@ -7963,8 +7963,8 @@
             known_profiles.add(_.reject(user_profiles, function (profile) {
                 return known_profiles.get(profile.id);
             }));
-            // reader.js: a newest-first list goes to its top before the stories arrive, so they push the rows
-            // below them down instead of the browser keeping the old rows in view.
+            // reader.js: a newest-first list goes all the way to its top before the stories arrive there, so they
+            // push the rows below them down instead of the browser keeping the old rows in view.
             var $story_titles = this.$s.$story_titles;
             if (!list.oldest_first) $story_titles.stop().scrollTop(0);
             // reader.js: stories added above the one being read move the Feed view under its mouse indicator,
@@ -7991,12 +7991,9 @@
             });
             if (!added.length) return;
 
-            // reader.js: a story that belongs further down (an oldest-first list, or one dated before the rows at
-            // the top) is brought into view.
-            var first = _.min(added, function (story) {
-                return this.model.stories.indexOf(story);
-            }, this);
-            if ((list.oldest_first || this.model.stories.indexOf(first) > 2) && first.story_title_view) {
+            // reader.js: an oldest-first list gains its new stories at its end, which is brought into view.
+            var first = added[0];
+            if (list.oldest_first && first.story_title_view) {
                 var container_top = $story_titles[0].getBoundingClientRect().top;
                 var target = $story_titles.scrollTop() + first.story_title_view.el.getBoundingClientRect().top -
                     container_top - 40;
