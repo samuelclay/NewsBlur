@@ -268,6 +268,29 @@ test('a single saved voice and malformed rotations keep normal playback', functi
     assert.deepEqual(JSON.parse(JSON.stringify(player.media_element.options.voice_choices)), {});
 });
 
+test('the selected voice gets its name when the picker loads the catalog for another language', function () {
+    const player = load_playing_player();
+    const context = player.context;
+    context.NEWSBLUR.assets.preference = key => key === 'listen_voices' ? JSON.stringify({ fr: 'lou' }) : null;
+    context.NEWSBLUR.ReaderPopover = { extend: (methods, statics) => Object.assign(methods, statics) };
+    vm.runInContext(fs.readFileSync(path.join(repo_root, 'media/js/newsblur/views/listen_settings_popover.js'), 'utf8'), context);
+    const element = { empty() { return this; }, toggleClass() { return this; }, append() {}, scrollTop() { return 0; } };
+    let selectedName;
+    context.$.make = function (tag, attrs, content) {
+        if (attrs.className === 'NB-listen-rotation-name') selectedName = content;
+        return element;
+    };
+    const popover = Object.create(context.NEWSBLUR.ListenSettingsPopover);
+    Object.assign(popover, {
+        media_player: player, language: 'fr', manifest: { language: 'en', voice: { voice_id: 'jon', name: 'Jon' } },
+        voices_by_language: {}, library: { voices: [] }, $: () => element
+    });
+    popover.render_voice_list();
+    popover.voices_by_language.fr = [{ voice_id: 'lou', name: 'Lou' }];
+    popover.render_voice_list();
+    assert.equal(selectedName, 'Lou');
+});
+
 test('adding voices keeps the current narrator, removing cannot empty the mix, and Use voice replaces it', function () {
     const player = load_playing_player();
     const context = player.context;

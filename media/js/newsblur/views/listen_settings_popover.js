@@ -814,15 +814,13 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
     // listen_settings_popover.js: A normal pick replaces the mix. Adding or removing voices
     // affects the next story only; the paragraph playing now keeps its narrator.
     voice_entry: function (voice_id) {
-        var voice = NEWSBLUR.ListenSettingsPopover.voice_cache[voice_id];
-        if (!voice) {
-            voice = _.find((this.voices_by_language || {})[this.language] || [], function (candidate) {
-                return candidate.voice_id === voice_id;
-            });
-        }
+        var voice = _.find((this.voices_by_language || {})[this.language] || [], function (candidate) {
+            return candidate.voice_id === voice_id;
+        });
         if (!voice && this.manifest && this.manifest.voice && this.manifest.voice.voice_id === voice_id) {
             voice = this.manifest.voice;
         }
+        if (!voice) voice = NEWSBLUR.ListenSettingsPopover.voice_cache[voice_id];
         return { voice_id: voice_id, name: voice ? voice.name : gettext('Current voice') };
     },
 
