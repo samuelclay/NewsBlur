@@ -8030,13 +8030,23 @@
         // later page comes from this fresh paging too). merge_realtime_gap_page puts each page's new stories at a
         // cursor: the newest slide in at the top, and story_titles_view.js keeps a loading gap between them and the
         // stories listed before until the pages reach those stories. iOS and Android page in the same way.
-        page_in_realtime_new_stories: function (list) {
+        page_in_realtime_new_stories: function (list, announced_feed_ids) {
             if (this.flags['opening_feed']) {
                 // reader.js: a page of the old paging is still loading; start once it lands.
                 return _.delay(_.bind(function () {
                     var current = this.realtime_new_story_list();
-                    if (current && current.key == list.key) this.page_in_realtime_new_stories(current);
+                    if (current && current.key == list.key) this.page_in_realtime_new_stories(current, announced_feed_ids);
                 }, this), 250);
+            }
+            if (this.flags['river_view'] && this.active_folder &&
+                typeof this.active_folder.feeds_with_unreads === 'function') {
+                // reader.js: a folder pages the feeds that had unread stories when it opened; a feed whose first
+                // unread stories arrived since must be paged too, as must every feed the pill took stories from.
+                var feeds = list.unread_only ? _.pluck(this.active_folder.feeds_with_unreads(), 'id') :
+                    this.active_folder.feed_ids_in_folder();
+                this.cache['river_feeds_with_unreads'] = _.uniq(_.map(feeds, function (feed_id) {
+                    return parseInt(feed_id, 10);
+                }).concat(announced_feed_ids || []));
             }
             var stories = this.model.stories;
             if (!list.oldest_first) this.$s.$story_titles.stop().scrollTop(0);
@@ -8113,9 +8123,11 @@
             var user_profiles = state.user_profiles;
             var overflowing = _.size(state.overflow) > 0 ||
                 this.realtime_visible_new_story_count() > this.constants.REALTIME_NEW_STORY_CAP;
+            var announced_feed_ids = _.uniq(_.map(_.keys(state.buffered).concat(_.keys(state.overflow), state.pending),
+                function (story_hash) { return parseInt(story_hash.split(':')[0], 10); }));
             this.clear_realtime_new_stories(list && list.key);
             if (!list || list.key != state.key) return;
-            if (overflowing) return this.page_in_realtime_new_stories(list);
+            if (overflowing) return this.page_in_realtime_new_stories(list, announced_feed_ids);
             if (!stories.length) return;
 
             var known_profiles = this.model.user_profiles;
