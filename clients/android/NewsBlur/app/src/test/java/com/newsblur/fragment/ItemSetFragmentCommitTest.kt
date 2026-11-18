@@ -98,6 +98,24 @@ class ItemSetFragmentCommitTest {
         assertEquals(listOf(2396), fixture.fragment.requestedCounts)
     }
 
+    // An overflow stream's page can hold only stories the list's filter hides. Before any page placed a gap row there
+    // is no row to scroll to, and normal paging waits on the stream, so the list must page on past it or stay stuck.
+    @Test
+    fun aGapStreamPagesOnPastAPageTheFilterHidesEntirely() {
+        val fixture = Fixture()
+        val feed = FeedSet.singleFeed("1")
+        val syncState = mockk<SyncServiceState>(relaxed = true)
+        every { syncState.gapStreamLastPage(feed) } returns listOf("1:hidden-by-focus")
+        every { syncState.feedStoriesSeen } returns mapOf(feed to 12)
+        every { syncState.requestMoreForFeed(any(), any(), any()) } returns false
+        ItemSetFragment::class.java.getDeclaredField("syncServiceState").apply { isAccessible = true }.set(fixture.fragment, syncState)
+        every { fixture.adapter.gapPosition } returns -1
+
+        fixture.ensureSufficientStories()
+
+        verify { syncState.requestMoreForFeed(feed, 13, null) }
+    }
+
     private class Fixture {
         val fragment = RecordingFragment()
         val adapter = mockk<StoryViewAdapter>(relaxed = true)

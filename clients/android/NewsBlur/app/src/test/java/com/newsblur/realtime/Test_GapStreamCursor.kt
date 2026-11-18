@@ -30,6 +30,14 @@ class Test_GapStreamCursor {
         assertEquals(Gap.Closed, GapStreamCursor.gap(listOf("old2", "old3"), listed, emptySet()))
     }
 
+    // A page the list's filter hides entirely (Focus, or stories the reader's classifiers hide) lists nothing; the gap
+    // row must stay where it was so it can still ask for the page after it.
+    @Test
+    fun test_aPageTheFilterHidesEntirelyKeepsTheGapWhereItWas() {
+        assertEquals(Gap.After("new3"), GapStreamCursor.gap(listOf("hidden1", "hidden2"), listed, emptySet(), previousAnchor = "new3"))
+        assertEquals(Gap.None, GapStreamCursor.gap(listOf("hidden1"), listed, emptySet()))
+    }
+
     // An oldest-first list keeps the pill's pinned stories at its end; they mustn't hold the gap open, or count
     // as the stream's cursor.
     @Test

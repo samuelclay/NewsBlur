@@ -20,10 +20,15 @@ object GapStreamCursor {
         ) : Gap
     }
 
+    /**
+     * [previousAnchor] is where the gap row sat before [latestPage]: a page the list's filter hides entirely leaves
+     * the row there, so it can still ask for the page after it.
+     */
     fun gap(
         latestPage: List<String>,
         listed: List<String>,
         pinned: Set<String>,
+        previousAnchor: String? = null,
     ): Gap {
         // GapStreamCursor.kt measures the end without the pill's pinned stories, which sit at the list's edge.
         val lastListed = listed.indexOfLast { it !in pinned }
@@ -34,6 +39,7 @@ object GapStreamCursor {
             val position = positions[hash] ?: continue
             return if (position >= lastListed) Gap.Closed else Gap.After(hash)
         }
-        return Gap.None
+        val previous = previousAnchor?.takeIf { it !in pinned }?.let(positions::get) ?: return Gap.None
+        return if (previous >= lastListed) Gap.Closed else Gap.After(previousAnchor)
     }
 }

@@ -160,6 +160,9 @@ public class ItemSetFragment extends NbFragment {
     private NewStoriesEntrance newStoriesEntrance;
     // ItemSetFragment.java slides in the new stories of a gap stream's first page once they are listed.
     private boolean awaitingGapStreamFirstPage;
+    // Where the gap row last sat, kept through pages the list's filter hides entirely.
+    @Nullable
+    private String lastGapAnchor;
     @Nullable
     private FeedSet realtimeOpenList;
     private RowFleuronBinding fleuronBinding;
@@ -513,6 +516,7 @@ public class ItemSetFragment extends NbFragment {
         for (Story story : adapter.storiesSnapshot()) storyHashesBeforeNewStories.add(story.storyHash);
         pendingNewStoryPlacement = placement;
         awaitingGapStreamFirstPage = true;
+        lastGapAnchor = null;
         adapter.finishOpeningEntrances(binding.itemgridfragmentGrid);
         if (placement == RealtimeUpdates.NewStories.Placement.TOP) scrollToTop();
         syncServiceState.restartPagingKeepingStories(fs);
@@ -527,23 +531,31 @@ public class ItemSetFragment extends NbFragment {
         if (page == null || page.isEmpty()) return null;
         List<String> listed = new ArrayList<>(stories.size());
         for (Story story : stories) listed.add(story.storyHash);
-        GapStreamCursor.Gap gap = GapStreamCursor.INSTANCE.gap(page, listed, pinnedStoryHashes);
+        GapStreamCursor.Gap gap = GapStreamCursor.INSTANCE.gap(page, listed, pinnedStoryHashes, lastGapAnchor);
         if (gap instanceof GapStreamCursor.Gap.Closed || syncServiceState.isFeedSetExhausted(fs)) {
             syncServiceState.closeGapStream(fs);
+            lastGapAnchor = null;
             return null;
         }
-        return gap instanceof GapStreamCursor.Gap.After ? ((GapStreamCursor.Gap.After) gap).getStoryHash() : null;
+        lastGapAnchor = gap instanceof GapStreamCursor.Gap.After ? ((GapStreamCursor.Gap.After) gap).getStoryHash() : null;
+        return lastGapAnchor;
     }
 
     /** The gap row came near the viewport, as the end of the list does for the usual next page. */
     private void loadGapPageInReach() {
         if (binding == null || adapter == null || layoutManager == null) return;
         FeedSet fs = getFeedSet();
-        if (fs == null || syncServiceState.gapStreamLastPage(fs) == null) return;
+        List<String> page = syncServiceState.gapStreamLastPage(fs);
+        if (fs == null || page == null) return;
         int gap = adapter.getGapPosition();
-        if (gap < 0) return;
-        int lastVisible = layoutManager.findLastVisibleItemPosition();
-        if (gap > lastVisible + Math.max(layoutManager.getChildCount(), 1)) return;
+        if (gap < 0) {
+            // Before any page placed the gap row, a page the list's filter hides entirely leaves nothing to scroll
+            // to; page on past it rather than leave the list stuck.
+            if (page.isEmpty()) return;
+        } else {
+            int lastVisible = layoutManager.findLastVisibleItemPosition();
+            if (gap > lastVisible + Math.max(layoutManager.getChildCount(), 1)) return;
+        }
         Integer seen = syncServiceState.getFeedStoriesSeen().get(fs);
         // A page that added nothing (every story already listed) leaves the gap in reach, so this asks again.
         if (syncServiceState.requestMoreForFeed(fs, (seen == null ? 0 : seen) + 1, null)) triggerSync();
