@@ -1042,6 +1042,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "เพิ่มแท็กบทความ %(count)s รายการ"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "เพิ่ม %(voice)s ในการสลับเสียง"
+
 msgid "Add Folder"
 msgstr "เพิ่มโฟลเดอร์"
 
@@ -1104,6 +1108,9 @@ msgstr "เพิ่มไปยังคิวถัดไป"
 
 msgid "Add to folder"
 msgstr "เพิ่มลงในโฟลเดอร์"
+
+msgid "Add to rotation"
+msgstr "เพิ่มในการสลับเสียง"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2052,6 +2059,9 @@ msgstr "สร้างสรรค์"
 msgid "Credit"
 msgstr "เครดิต"
 
+msgid "Current voice"
+msgstr "เสียงปัจจุบัน"
+
 msgid "Cursors"
 msgstr "เคอร์เซอร์"
 
@@ -2904,6 +2914,10 @@ msgstr "การเงิน"
 msgid "Find %(value_1)s Friends"
 msgstr "ค้นหาเพื่อนจาก %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "ค้นหา %(voice)s ในรายการเสียง"
+
 msgid "Find Friends"
 msgstr "ค้นหาเพื่อน"
 
@@ -3534,6 +3548,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "ในหน้าต่างใหม่"
+
+msgid "In rotation"
+msgstr "อยู่ในการสลับเสียง"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4666,6 +4683,9 @@ msgstr "คำสั่งเดียวด้วย Docker"
 msgid "One sentence"
 msgstr "หนึ่งประโยค"
 
+msgid "One voice per story, in this order."
+msgstr "หนึ่งเสียงต่อบทความ ตามลำดับนี้"
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "สมัครรับข้อมูลได้ในคลิกเดียวบนทุกเว็บไซต์ที่มีฟีด ใช้ URL เพิ่มเว็บไซต์แบบกำหนดเองจากแท็บเพิ่มเติม"
 
@@ -5426,6 +5446,10 @@ msgstr "จำตำแหน่งการเล่นของแต่ละ
 msgid "Remove"
 msgstr "นำออก"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "นำ %(voice)s ออกจากการสลับเสียง"
+
 msgid "Remove from Up Next"
 msgstr "นำออกจากคิวถัดไป"
 
@@ -5865,6 +5889,12 @@ msgstr "เลือกส่วนหนึ่งของ URL เพื่อ�
 
 msgid "Select title phrase"
 msgstr "เลือกวลีในชื่อเรื่อง"
+
+msgid "Selected"
+msgstr "เลือกแล้ว"
+
+msgid "Selected voice"
+msgstr "เสียงที่เลือก"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "การเลือกบทความในรายการชื่อเรื่องจะทำเครื่องหมายบทความนั้นว่าอ่านแล้ว"
@@ -7451,11 +7481,18 @@ msgstr "เปิดใช้การเรียกเก็บเงินต
 msgid "Use %(language)s"
 msgstr "ใช้ %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "ใช้เฉพาะ %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "ใช้รูปแบบเวลา 12 ชั่วโมง"
 
 msgid "Use 24-hour clock"
 msgstr "ใช้รูปแบบเวลา 24 ชั่วโมง"
+
+msgid "Use only this voice"
+msgstr "ใช้เฉพาะเสียงนี้"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "ใช้เทมเพลตพรอมป์ต์สำหรับคัดกรองกล่องจดหมาย ค้นคว้าหัวข้อ และตรวจสอบฟีด"
@@ -7465,6 +7502,9 @@ msgstr "ใช้เมนูบริบทดั้งเดิมของเ
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "ใช้เทมเพลต URL นี้ในส่วนขยายเบราว์เซอร์และโปรแกรมอ่านฟีดเพื่อสมัครรับข้อมูลบน NewsBlur"
+
+msgid "Use voice"
+msgstr "ใช้เสียงนี้"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "ใช้วิดเจ็ตเพื่อดูจำนวนที่ยังไม่ได้อ่านและบทความต่าง ๆ ได้อย่างรวดเร็ว"
@@ -7532,8 +7572,14 @@ msgstr "เสียงพูด"
 msgid "Voice recording failed. Please try again."
 msgstr "บันทึกเสียงไม่สำเร็จ โปรดลองอีกครั้ง"
 
+msgid "Voice rotation"
+msgstr "สลับเสียงอ่าน"
+
 msgid "Voice settings"
 msgstr "การตั้งค่าเสียง"
+
+msgid "Voices"
+msgstr "เสียงอ่าน"
 
 msgid "Warning: This is actually permanent"
 msgstr "คำเตือน: การดำเนินการนี้ย้อนกลับไม่ได้"

@@ -128,10 +128,11 @@ function load_engine(options) {
         })
     };
     const segment_requests = [];
+    const manifest_requests = [];
     const context = {
         NEWSBLUR: {
             assets: {
-                listen_manifest: function (params, callback) { callback(manifest); },
+                listen_manifest: function (params, callback) { manifest_requests.push(params); callback(manifest); },
                 listen_segment: function (manifest_id, index, callback) {
                     segment_requests.push(index);
                     if (cached[index]) {
@@ -161,9 +162,20 @@ function load_engine(options) {
     vm.createContext(context);
     vm.runInContext(fs.readFileSync(path.join(repo_root, 'media/js/vendor/underscore-1.4.3.js'), 'utf8'), context);
     vm.runInContext(fs.readFileSync(path.join(repo_root, 'media/js/newsblur/common/listen_engine.js'), 'utf8'), context);
-    const engine = new context.NEWSBLUR.ListenEngine({ story_hash: '42:abcdef' });
-    return { engine: engine, created: created, clock: clock, segment_requests: segment_requests };
+    const engine = new context.NEWSBLUR.ListenEngine({ story_hash: '42:abcdef', voice_choices: options.voice_choices });
+    return { engine: engine, created: created, clock: clock, segment_requests: segment_requests, manifest_requests: manifest_requests };
 }
+
+// listen_engine_seek.test.js: The detected story language is only known after the server responds.
+// A refresh must pin that story's narrator instead of asking for the next voice in its rotation.
+test('a story sends language-specific voice choices and keeps its narrator on manifest refresh', function () {
+    const { engine, manifest_requests } = load_engine({ voice_choices: { en: 'voice-1', fr: 'voice-2' } });
+    engine.play();
+    assert.deepEqual(JSON.parse(manifest_requests[0].voice_choices), { en: 'voice-1', fr: 'voice-2' });
+    engine.refresh_manifest();
+    assert.equal(manifest_requests[1].voice_id, 'voice-1');
+    assert.equal(manifest_requests[1].language, 'en');
+});
 
 function latest(created) {
     return created[created.length - 1];

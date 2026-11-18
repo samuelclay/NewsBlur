@@ -103,6 +103,7 @@
 "Add" = "जोड़ें";
 "Add %1$@ feeds to “%2$@” folder" = "“%2$@” फ़ोल्डर में %1$@ फ़ीड जोड़ें";
 "Add %@" = "%@ जोड़ें";
+"Add %@ to rotation" = "%@ को क्रम में जोड़ें";
 "Add + Discover Sites" = "साइटें जोड़ें + खोजें";
 "Add Site" = "साइट जोड़ें";
 "Add Sites" = "साइटें जोड़ें";
@@ -390,6 +391,7 @@
 "Fetching text..." = "टेक्स्ट फ़ेच हो रहा है...";
 "Filter" = "फ़िल्टर";
 "Filter stories by date range" = "तिथि सीमा के अनुसार लेख फ़िल्टर करें";
+"Find %@ in the voice list" = "आवाज़ों की सूची में %@ खोजें";
 "Find Friends" = "मित्र खोजें";
 "Find in Feed" = "फ़ीड में खोजें";
 "Find in Sites" = "साइटों में खोजें";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "स्क्रॉल करने या चुनने पर";
 "One" = "एक";
 "One column" = "एक स्तंभ";
+"One voice per story, in this order." = "हर लेख के लिए एक आवाज़, इसी क्रम में।";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "खोज के लिए आपकी %2$@ साइटों में से केवल %1$@ ही अनुक्रमित हैं। सभी साइटों को अनुक्रमित करने और आपके लिए व्यक्तिगत सुझाव पाने के लिए अपग्रेड करें।";
 "Only Title" = "केवल शीर्षक";
 "Only on Selection" = "केवल चयन पर";
@@ -860,6 +863,7 @@
 "Related sites" = "संबंधित साइटें";
 "Reload Sites" = "साइटें फिर से लोड करें";
 "Reloading..." = "फिर से लोड हो रहा है...";
+"Remove %@ from rotation" = "%@ को क्रम से हटाएँ";
 "Remove This List" = "यह सूची हटाएँ";
 "Remove from Up Next" = "अगला सुनें सूची से हटाएँ";
 "Removed from Up Next" = "अगला सुनें सूची से हटाया गया";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "कोई फ़ीड या फ़ोल्डर चुनें";
 "Select a feed variant" = "फ़ीड का एक रूप चुनें";
 "Select feeds to add" = "जोड़ने के लिए फ़ीड चुनें";
+"Selected" = "चयनित";
+"Selected voice" = "चुनी गई आवाज़";
 "Send" = "भेजें";
 "Send This Story To..." = "यह लेख भेजें...";
 "Send To…" = "भेजें…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "%@ का उपयोग करें";
 "Use another sign-in method" = "साइन इन करने का कोई दूसरा तरीका इस्तेमाल करें";
 "Use both" = "दोनों का उपयोग करें";
+"Use only this voice" = "केवल इस आवाज़ का उपयोग करें";
 "Use system size" = "सिस्टम का आकार इस्तेमाल करें";
+"Use voice" = "आवाज़ चुनें";
 "User info" = "उपयोगकर्ता जानकारी";
 "Username" = "उपयोगकर्ता नाम";
 "Username or Email" = "उपयोगकर्ता नाम या ईमेल";
@@ -1245,6 +1253,7 @@
 "View mode" = "दृश्य मोड";
 "Voice" = "आवाज़";
 "Voice and music balance" = "आवाज़ और संगीत का संतुलन";
+"Voice rotation" = "आवाज़ों का क्रम";
 "Voice settings" = "आवाज़ की सेटिंग्स";
 "Warm" = "गर्म";
 "Web" = "वेब";

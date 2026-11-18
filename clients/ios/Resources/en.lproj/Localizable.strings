@@ -103,6 +103,7 @@
 "Add" = "Add";
 "Add %1$@ feeds to “%2$@” folder" = "Add %1$@ feeds to “%2$@” folder";
 "Add %@" = "Add %@";
+"Add %@ to rotation" = "Add %@ to rotation";
 "Add + Discover Sites" = "Add + Discover Sites";
 "Add Site" = "Add Site";
 "Add Sites" = "Add Sites";
@@ -390,6 +391,7 @@
 "Fetching text..." = "Fetching text...";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter stories by date range";
+"Find %@ in the voice list" = "Find %@ in the voice list";
 "Find Friends" = "Find Friends";
 "Find in Feed" = "Find in Feed";
 "Find in Sites" = "Find in Sites";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "On scroll or selection";
 "One" = "One";
 "One column" = "One column";
+"One voice per story, in this order." = "One voice per story, in this order.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.";
 "Only Title" = "Only Title";
 "Only on Selection" = "Only on Selection";
@@ -860,6 +863,7 @@
 "Related sites" = "Related sites";
 "Reload Sites" = "Reload Sites";
 "Reloading..." = "Reloading...";
+"Remove %@ from rotation" = "Remove %@ from rotation";
 "Remove This List" = "Remove This List";
 "Remove from Up Next" = "Remove from Up Next";
 "Removed from Up Next" = "Removed from Up Next";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "Select a feed or folder";
 "Select a feed variant" = "Select a feed variant";
 "Select feeds to add" = "Select feeds to add";
+"Selected" = "Selected";
+"Selected voice" = "Selected voice";
 "Send" = "Send";
 "Send This Story To..." = "Send This Story To...";
 "Send To…" = "Send To…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "Use %@";
 "Use another sign-in method" = "Use another sign-in method";
 "Use both" = "Use both";
+"Use only this voice" = "Use only this voice";
 "Use system size" = "Use system size";
+"Use voice" = "Use voice";
 "User info" = "User info";
 "Username" = "Username";
 "Username or Email" = "Username or Email";
@@ -1245,6 +1253,7 @@
 "View mode" = "View mode";
 "Voice" = "Voice";
 "Voice and music balance" = "Voice and music balance";
+"Voice rotation" = "Voice rotation";
 "Voice settings" = "Voice settings";
 "Warm" = "Warm";
 "Web" = "Web";

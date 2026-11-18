@@ -52,11 +52,14 @@ final class ListenAPI {
         return URL(string: baseURL + path)
     }
 
-    func manifest(storyHash: String, language: String?, voiceId: String?,
+    func manifest(storyHash: String, language: String?, voiceId: String?, voiceChoices: [String: String] = [:],
                   completion: @escaping (Result<ListenManifest, ListenAPIError>) -> Void) {
         var parameters = ["story_hash": storyHash]
         if let language, !language.isEmpty { parameters["language"] = language }
         if let voiceId, !voiceId.isEmpty { parameters["voice_id"] = voiceId }
+        if !voiceChoices.isEmpty, let data = try? JSONSerialization.data(withJSONObject: voiceChoices) {
+            parameters["voice_choices"] = String(decoding: data, as: UTF8.self)
+        }
         post("/listen/manifest", parameters: parameters, parse: { ListenManifest(json: $0) }, completion: completion)
     }
 

@@ -11,7 +11,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -19,6 +24,66 @@ import org.junit.Test
 
 /** Test_ListenPreferences.kt checks how ListenPreferences.kt carries the old device-only Ask AI toggle to the server. */
 class Test_ListenPreferences {
+    @Test
+    fun test_a_delayed_rotation_save_cannot_overwrite_a_later_edit() =
+        runBlocking {
+            val firstStarted = CompletableDeferred<Unit>()
+            val releaseFirst = CompletableDeferred<Unit>()
+            val secondFinished = CompletableDeferred<Unit>()
+            val first = listOf(ListenRotationVoice("a", "Amelia"))
+            val latest = first + ListenRotationVoice("b", "Jon")
+            var serverRotation: List<ListenRotationVoice>? = null
+            val firstFinished = CompletableDeferred<Unit>()
+            coEvery { userApi.setPreferences(any()) } coAnswers {
+                val value = firstArg<Map<String, String>>().getValue(ListenPrefKeys.ROTATIONS)
+                val rotation = ListenPreferenceParser.rotationsValue(JsonParser.parseString(value))["en"]
+                if (rotation == first) {
+                    firstStarted.complete(Unit)
+                    releaseFirst.await()
+                }
+                serverRotation = rotation
+                if (rotation == first) firstFinished.complete(Unit) else secondFinished.complete(Unit)
+                true
+            }
+            listenPreferences.saveInBackground(listenPreferences.rotationChange("en", first))
+            firstStarted.await()
+            val lastSave =
+                async(start = CoroutineStart.UNDISPATCHED) {
+                    listenPreferences.save(listenPreferences.rotationChange("en", latest))
+                }
+            assertEquals(latest, listenPreferences.current().rotations["en"])
+            withTimeoutOrNull(300) { secondFinished.await() }
+            releaseFirst.complete(Unit)
+            firstFinished.await()
+            assertTrue(lastSave.await())
+            assertEquals(latest, serverRotation)
+        }
+
+    // Test_ListenPreferences.kt: adding another voice keeps the first voice unchanged. The rotation key itself
+    // must notify observers; listening only for listen_voices leaves the picker stuck in its single-voice state.
+    @Test
+    fun test_rotation_only_sync_updates_observers_and_preserves_other_languages() =
+        runTest {
+            val french = listOf(ListenRotationVoice("fr-a", "French"))
+            val english = listOf(ListenRotationVoice("a", "Amelia"), ListenRotationVoice("b", "Jon"))
+            listenPreferences.applyServerPreferences(
+                JsonParser.parseString("""{"listen_voice_rotations":{"fr":[{"voice_id":"fr-a","name":"French"}]}}""").asJsonObject,
+            )
+            assertEquals(french, listenPreferences.settings.value.rotations["fr"])
+            coEvery { userApi.setPreferences(any()) } returns true
+            listenPreferences.save(listenPreferences.rotationChange("en", english))
+            assertEquals(english, listenPreferences.settings.value.rotations["en"])
+            assertEquals(french, listenPreferences.settings.value.rotations["fr"])
+            assertEquals("a", listenPreferences.current().voiceFor("en"))
+            val sent = mutableListOf<Map<String, String>>()
+            coVerify { userApi.setPreferences(capture(sent)) }
+            assertEquals(
+                mapOf("en" to english, "fr" to french),
+                ListenPreferenceParser.rotationsValue(JsonParser.parseString(sent.single().getValue(ListenPrefKeys.ROTATIONS))),
+            )
+            assertFalse(sent.single().keys.any { it.contains("position") })
+        }
+
     private val prefs = InMemoryPreferences()
     private val userApi = mockk<UserApi>()
     private val listenPreferences =

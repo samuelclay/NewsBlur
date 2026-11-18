@@ -13554,6 +13554,172 @@ a.NB-feed-story-title.NB-listen-highlight {
     background-color: #fff;
 }
 
+/* reader.css: The rotation stays visible while browsing voices; logical spacing follows RTL. */
+.NB-listen-rotation {
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(107, 90, 214, 0.06);
+}
+
+.NB-listen-rotation-title {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.NB-listen-rotation-description {
+    margin-top: 3px;
+    font-size: 11px;
+    line-height: 1.5;
+    opacity: 0.7;
+}
+
+.NB-listen-rotation-voices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0;
+    margin: 8px 0 0;
+    list-style: none;
+    max-height: 144px;
+    overflow-y: auto;
+}
+
+.NB-listen-rotation-voice {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-inline-start: 10px;
+    padding-inline-end: 0;
+    min-height: 40px;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-radius: 6px;
+    background: rgba(107, 90, 214, 0.09);
+}
+
+.NB-listen-rotation-number {
+    opacity: 0.55;
+    font-variant-numeric: tabular-nums;
+    font-size: 10px;
+}
+
+.NB-listen-rotation-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+/* reader.css: One chosen voice is a compact setting; multiple voices reveal the rotation panel. */
+.NB-listen-rotation.NB-single-voice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0;
+    background: transparent;
+}
+
+.NB-single-voice .NB-listen-rotation-title {
+    font-weight: normal;
+    opacity: 0.7;
+}
+
+.NB-single-voice .NB-listen-rotation-voices {
+    min-width: 0;
+    margin: 0;
+    flex-shrink: 1;
+}
+
+.NB-single-voice .NB-listen-rotation-voice {
+    min-height: 32px;
+    padding-inline-end: 10px;
+}
+
+.NB-listen-voice-use,
+.NB-listen-voice-add,
+.NB-listen-rotation-jump,
+.NB-listen-rotation-remove {
+    color: inherit;
+    font: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.NB-listen-rotation-jump {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    min-height: 40px;
+    padding: 0;
+    text-align: start;
+}
+
+.NB-listen-rotation-jump:hover .NB-listen-rotation-name {
+    text-decoration: underline;
+}
+
+.NB-listen-voice-use {
+    text-align: start;
+    padding: 2px 0;
+    min-height: 40px;
+}
+
+.NB-listen-voice-action-label {
+    display: block;
+    color: #6b5ad6;
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+.NB-listen-voice-use:disabled {
+    cursor: default;
+}
+
+.NB-listen-voice-use:disabled .NB-listen-voice-action-label {
+    color: inherit;
+    opacity: 0.55;
+}
+
+.NB-listen-voice-add,
+.NB-listen-rotation-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    font-size: 22px;
+}
+
+.NB-listen-voice-add svg,
+.NB-listen-rotation-remove svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.NB-listen-voice-add:hover,
+.NB-listen-rotation-remove:hover {
+    background: rgba(107, 90, 214, 0.12);
+}
+
+.NB-listen-voice-add:disabled {
+    cursor: default;
+    opacity: 0.45;
+}
+
+.NB-listen-voice button:focus-visible,
+.NB-listen-rotation button:focus-visible {
+    outline: 2px solid #6b5ad6;
+    outline-offset: 1px;
+}
+
 .NB-listen-voice-header {
     position: sticky;
     top: 0;
@@ -13642,8 +13808,9 @@ a.NB-feed-story-title.NB-listen-highlight {
 }
 
 .NB-listen-voice-preview {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
+    background: transparent;
     flex-shrink: 0;
     box-sizing: border-box;
     display: flex;

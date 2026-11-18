@@ -68,6 +68,9 @@ class ListenVoiceSettingsFragment : BottomSheetDialogFragment() {
             ListenVoiceSettingsActions(
                 onLanguage = viewModel::selectLanguage,
                 onSelectVoice = viewModel::selectVoice,
+                onAddVoice = viewModel::addVoice,
+                onRemoveVoice = viewModel::removeVoice,
+                onRevealVoice = viewModel::revealVoice,
                 onPreviewVoice = viewModel::togglePreview,
                 onFilter = viewModel::setFilter,
                 onClearFilters = viewModel::clearFilters,

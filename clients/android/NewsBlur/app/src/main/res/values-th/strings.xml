@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">บทความโฟกัส</string>
     <string name="story_title_mark_story_read">ทำเครื่องหมายบทความว่าอ่านแล้ว…</string>
     <string name="story_title_list_font_size">ขนาดตัวอักษรของฟีดและชื่อเรื่อง</string>
+    <string name="listen_voice_rotation">สลับเสียงอ่าน</string>
+    <string name="listen_selected_voice">เสียงที่เลือก</string>
+    <string name="listen_rotation_order">หนึ่งเสียงต่อบทความ ตามลำดับนี้</string>
+    <string name="listen_use_voice">ใช้เสียงนี้</string>
+    <string name="listen_use_only_voice">ใช้เฉพาะเสียงนี้</string>
+    <string name="listen_rotation_selected">เลือกแล้ว</string>
+    <string name="listen_find_voice">ค้นหา %1$s ในรายการเสียง</string>
+    <string name="listen_add_rotation_voice">เพิ่ม %1$s ในการสลับเสียง</string>
+    <string name="listen_remove_rotation_voice">นำ %1$s ออกจากการสลับเสียง</string>
     <string name="language_title">ภาษา</string>
     <string name="settings_cat_general">ทั่วไป</string>
     <string name="settings_cat_appearance">รูปลักษณ์</string>

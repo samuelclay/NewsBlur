@@ -162,6 +162,8 @@ private final class FakeListenSession: ListenSessionHandoff {
         isActive = false
     }
 
+    func resetVoiceRotation() {}
+
     func play(queued item: ListenQueueItem) {
         media?.stopForHandoff()
         playedQueued.append(item)

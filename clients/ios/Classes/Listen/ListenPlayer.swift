@@ -82,6 +82,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private var isSettlingSeek = false
     private var generation = 0
     private var voiceOverride: String?
+    private var voiceRotation = ListenVoiceRotationSession()
     private var artwork: MPMediaItemArtwork?
     private var timeObserver: Any?
     private var currentItemObservation: NSKeyValueObservation?
@@ -225,6 +226,8 @@ final class ListenPlayer: NSObject, ObservableObject {
         resetPlayback()
         generation += 1
         let generation = self.generation
+        voiceRotation.beginStory(hash, rotations: ListenPreferences.rotations)
+        if storyHash != hash { voiceOverride = nil }
         self.story = story
         storyHash = hash
         feedId = ListenJSON.string(story["story_feed_id"])
@@ -236,7 +239,6 @@ final class ListenPlayer: NSObject, ObservableObject {
         elapsed = 0
         duration = 0
         playbackError = nil
-        voiceOverride = nil
         speed = ListenPreferences.speed
         player.volume = voiceVolume
         wantsToPlay = true
@@ -244,7 +246,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         updateNowPlaying()
         ListenMiniPlayerController.shared.show()
         saveCurrentItem(isPlaying: true)
-        loadManifest(generation: generation, resumeParagraph: resumeParagraph, voiceId: nil, startsStory: true)
+        loadManifest(generation: generation, resumeParagraph: resumeParagraph, voiceId: voiceOverride, startsStory: true)
     }
 
     func play() {
@@ -305,6 +307,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         if saving, isActive {
             saveCurrentItem(isPlaying: false)
         }
+        resetVoiceRotation()
         clearSession()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         MPNowPlayingInfoCenter.default().playbackState = .stopped
@@ -325,7 +328,12 @@ final class ListenPlayer: NSObject, ObservableObject {
         clearSession()
     }
 
+    func resetVoiceRotation() {
+        voiceRotation = ListenVoiceRotationSession()
+    }
+
     private func clearSession() {
+        voiceOverride = nil
         reportProgress()
         generation += 1
         resetPlayback()
@@ -457,6 +465,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         self.story = story
         storyHash = hash
         voiceOverride = voiceId ?? voiceOverride
+        if let voiceId, let language { voiceRotation.useVoice(voiceId, language: language) }
         wantsToPlay = shouldPlay
         playbackError = nil
         setStatus(shouldPlay ? .loading : .paused)
@@ -577,11 +586,13 @@ final class ListenPlayer: NSObject, ObservableObject {
         isLoadingManifest = true
         pendingJumpParagraph = nil
         beginBackgroundTask()
-        ListenAPI.shared.manifest(storyHash: hash, language: nil, voiceId: voiceId) { [weak self] result in
+        ListenAPI.shared.manifest(storyHash: hash, language: nil, voiceId: voiceId,
+                                  voiceChoices: voiceRotation.choices) { [weak self] result in
             guard let self, generation == self.generation else { return }
             self.isLoadingManifest = false
             switch result {
             case .success(let manifest):
+                self.voiceRotation.record(language: manifest.language, resolvedVoice: manifest.voice?.id)
                 let paragraph = self.pendingJumpParagraph ?? resumeParagraph
                 self.pendingJumpParagraph = nil
                 self.apply(manifest: manifest, resumeParagraph: paragraph)

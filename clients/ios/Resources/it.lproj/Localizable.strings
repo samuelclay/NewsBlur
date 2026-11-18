@@ -103,6 +103,7 @@
 "Add" = "Aggiungi";
 "Add %1$@ feeds to “%2$@” folder" = "Aggiungi %1$@ feed alla cartella “%2$@”";
 "Add %@" = "Aggiungi %@";
+"Add %@ to rotation" = "Aggiungi %@ alla rotazione";
 "Add + Discover Sites" = "Aggiungi + Scopri siti";
 "Add Site" = "Aggiungi sito";
 "Add Sites" = "Aggiungi siti";
@@ -390,6 +391,7 @@
 "Fetching text..." = "Recupero del testo...";
 "Filter" = "Filtro";
 "Filter stories by date range" = "Filtra gli articoli per intervallo di date";
+"Find %@ in the voice list" = "Trova %@ nell’elenco delle voci";
 "Find Friends" = "Trova amici";
 "Find in Feed" = "Cerca nel feed";
 "Find in Sites" = "Cerca nei siti";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "Scorrimento o selezione";
 "One" = "Uno";
 "One column" = "Una colonna";
+"One voice per story, in this order." = "Una voce per articolo, in questo ordine.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Solo %1$@ dei tuoi %2$@ siti sono indicizzati per la scoperta. Passa a un piano superiore per indicizzare tutti i tuoi siti e ricevere consigli personalizzati.";
 "Only Title" = "Solo titolo";
 "Only on Selection" = "Solo sulla selezione";
@@ -860,6 +863,7 @@
 "Related sites" = "Siti correlati";
 "Reload Sites" = "Ricarica i siti";
 "Reloading..." = "Ricaricamento...";
+"Remove %@ from rotation" = "Rimuovi %@ dalla rotazione";
 "Remove This List" = "Rimuovi questo elenco";
 "Remove from Up Next" = "Rimuovi da In coda";
 "Removed from Up Next" = "Rimosso da In coda";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "Seleziona un feed o una cartella";
 "Select a feed variant" = "Seleziona una variante del feed";
 "Select feeds to add" = "Seleziona i feed da aggiungere";
+"Selected" = "Selezionata";
+"Selected voice" = "Voce selezionata";
 "Send" = "Invia";
 "Send This Story To..." = "Invia questo articolo a...";
 "Send To…" = "Invia a…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "Usa %@";
 "Use another sign-in method" = "Usa un altro metodo di accesso";
 "Use both" = "Usa entrambi";
+"Use only this voice" = "Usa solo questa voce";
 "Use system size" = "Usa le dimensioni di sistema";
+"Use voice" = "Usa voce";
 "User info" = "Informazioni utente";
 "Username" = "Nome utente";
 "Username or Email" = "Nome utente o email";
@@ -1245,6 +1253,7 @@
 "View mode" = "Modalità di visualizzazione";
 "Voice" = "Voce";
 "Voice and music balance" = "Bilanciamento tra voce e musica";
+"Voice rotation" = "Rotazione delle voci";
 "Voice settings" = "Impostazioni vocali";
 "Warm" = "Caldo";
 "Web" = "Web";

@@ -1115,6 +1115,10 @@ msgid_plural "Add %(count)s story tags"
 msgstr[0] "Tambahkan %(count)s tag artikel"
 msgstr[1] "Tambahkan %(count)s tag artikel"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "Tambahkan %(voice)s ke rotasi"
+
 msgid "Add Folder"
 msgstr "Tambah Folder"
 
@@ -1177,6 +1181,9 @@ msgstr "Tambahkan ke Berikutnya"
 
 msgid "Add to folder"
 msgstr "Tambahkan ke folder"
+
+msgid "Add to rotation"
+msgstr "Tambahkan ke rotasi"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2141,6 +2148,9 @@ msgstr "Kreatif"
 msgid "Credit"
 msgstr "Kredit"
 
+msgid "Current voice"
+msgstr "Suara saat ini"
+
 msgid "Cursors"
 msgstr "Kursor"
 
@@ -3010,6 +3020,10 @@ msgstr "Keuangan"
 msgid "Find %(value_1)s Friends"
 msgstr "Temukan Teman %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "Temukan %(voice)s dalam daftar suara"
+
 msgid "Find Friends"
 msgstr "Cari Teman"
 
@@ -3647,6 +3661,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "Di jendela baru"
+
+msgid "In rotation"
+msgstr "Dalam rotasi"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4799,6 +4816,9 @@ msgstr "Satu perintah dengan Docker"
 msgid "One sentence"
 msgstr "Satu kalimat"
 
+msgid "One voice per story, in this order."
+msgstr "Satu suara per artikel, sesuai urutan ini."
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
 "Berlangganan dengan sekali klik di situs mana pun yang memiliki feed. Gunakan URL tambah situs khusus dari "
@@ -5577,6 +5597,10 @@ msgstr "Ingat posisi pemutaran untuk setiap episode"
 msgid "Remove"
 msgstr "Hapus"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "Hapus %(voice)s dari rotasi"
+
 msgid "Remove from Up Next"
 msgstr "Hapus dari Berikutnya"
 
@@ -6021,6 +6045,12 @@ msgstr "Pilih bagian URL untuk mencocokkan pola seperti bagian atau kategori."
 
 msgid "Select title phrase"
 msgstr "Pilih frasa judul"
+
+msgid "Selected"
+msgstr "Dipilih"
+
+msgid "Selected voice"
+msgstr "Suara yang dipilih"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Memilih artikel di daftar judul akan menandainya sebagai telah dibaca."
@@ -7646,11 +7676,18 @@ msgstr "Penagihan berdasarkan penggunaan diaktifkan untuk pengklasifikasi bahasa
 msgid "Use %(language)s"
 msgstr "Gunakan %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Gunakan hanya %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "Gunakan format waktu 12 jam"
 
 msgid "Use 24-hour clock"
 msgstr "Gunakan format waktu 24 jam"
+
+msgid "Use only this voice"
+msgstr "Gunakan hanya suara ini"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Gunakan templat prompt untuk memilah kotak masuk, meneliti topik, dan mengaudit feed"
@@ -7660,6 +7697,9 @@ msgstr "Gunakan menu konteks bawaan browser"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "Gunakan templat URL ini di ekstensi browser dan pembaca feed untuk berlangganan di NewsBlur."
+
+msgid "Use voice"
+msgstr "Gunakan suara"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Gunakan widget untuk melihat jumlah belum dibaca dan artikel secara sekilas"
@@ -7731,8 +7771,14 @@ msgstr "Suara"
 msgid "Voice recording failed. Please try again."
 msgstr "Rekaman suara gagal. Silakan coba lagi."
 
+msgid "Voice rotation"
+msgstr "Rotasi suara"
+
 msgid "Voice settings"
 msgstr "Pengaturan suara"
+
+msgid "Voices"
+msgstr "Suara"
 
 msgid "Warning: This is actually permanent"
 msgstr "Peringatan: Tindakan ini benar-benar permanen"

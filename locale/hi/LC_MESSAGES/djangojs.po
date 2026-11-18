@@ -1111,6 +1111,10 @@ msgid_plural "Add %(count)s story tags"
 msgstr[0] "%(count)s लेख टैग जोड़ें"
 msgstr[1] "%(count)s लेख टैग जोड़ें"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "%(voice)s को क्रम में जोड़ें"
+
 msgid "Add Folder"
 msgstr "फ़ोल्डर जोड़ें"
 
@@ -1173,6 +1177,9 @@ msgstr "अगला सुनें सूची में जोड़ें"
 
 msgid "Add to folder"
 msgstr "फ़ोल्डर में जोड़ें"
+
+msgid "Add to rotation"
+msgstr "क्रम में जोड़ें"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2137,6 +2144,9 @@ msgstr "रचनात्मक"
 msgid "Credit"
 msgstr "श्रेय"
 
+msgid "Current voice"
+msgstr "मौजूदा आवाज़"
+
 msgid "Cursors"
 msgstr "कर्सर"
 
@@ -2999,6 +3009,10 @@ msgstr "वित्त"
 msgid "Find %(value_1)s Friends"
 msgstr "%(value_1)s पर मित्र खोजें"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "आवाज़ों की सूची में %(voice)s खोजें"
+
 msgid "Find Friends"
 msgstr "दोस्त खोजें"
 
@@ -3632,6 +3646,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "नई विंडो में"
+
+msgid "In rotation"
+msgstr "क्रम में शामिल"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4780,6 +4797,9 @@ msgstr "Docker के साथ एक कमांड"
 msgid "One sentence"
 msgstr "एक वाक्य"
 
+msgid "One voice per story, in this order."
+msgstr "हर लेख के लिए एक आवाज़, इसी क्रम में।"
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
 "फ़ीड वाली किसी भी साइट पर एक क्लिक में सदस्यता लें। ‘अतिरिक्त’ टैब से कस्टम साइट जोड़ने वाला URL इस्तेमाल "
@@ -5558,6 +5578,10 @@ msgstr "हर एपिसोड के लिए प्लेबैक की 
 msgid "Remove"
 msgstr "हटाएँ"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "%(voice)s को क्रम से हटाएँ"
+
 msgid "Remove from Up Next"
 msgstr "अगला सुनें सूची से हटाएँ"
 
@@ -6002,6 +6026,12 @@ msgstr "सेक्शन या श्रेणियों जैसे प�
 
 msgid "Select title phrase"
 msgstr "शीर्षक वाक्यांश चुनें"
+
+msgid "Selected"
+msgstr "चयनित"
+
+msgid "Selected voice"
+msgstr "चुनी गई आवाज़"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "लेख शीर्षकों में किसी लेख को चुनने से वह पढ़ा हुआ चिह्नित हो जाता है।"
@@ -7614,11 +7644,18 @@ msgstr "प्राकृतिक भाषा क्लासिफ़ाय�
 msgid "Use %(language)s"
 msgstr "%(language)s इस्तेमाल करें"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "केवल %(voice)s का उपयोग करें"
+
 msgid "Use 12-hour clock"
 msgstr "12-घंटे वाली घड़ी इस्तेमाल करें"
 
 msgid "Use 24-hour clock"
 msgstr "24-घंटे वाली घड़ी का उपयोग करें"
+
+msgid "Use only this voice"
+msgstr "केवल इस आवाज़ का उपयोग करें"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "इनबॉक्स छँटाई, विषय शोध और फ़ीड ऑडिट के लिए प्रॉम्प्ट टेम्पलेट इस्तेमाल करें"
@@ -7628,6 +7665,9 @@ msgstr "ब्राउज़र का मूल संदर्भ मेन�
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "NewsBlur पर सदस्यता लेने के लिए ब्राउज़र एक्सटेंशन और फ़ीड रीडर में इस URL टेम्पलेट का उपयोग करें।"
+
+msgid "Use voice"
+msgstr "आवाज़ चुनें"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "अपठित गिनती और लेख एक नज़र में देखने के लिए विजेट इस्तेमाल करें"
@@ -7697,8 +7737,14 @@ msgstr "आवाज़"
 msgid "Voice recording failed. Please try again."
 msgstr "आवाज़ रिकॉर्ड नहीं हो सकी। कृपया फिर से कोशिश करें।"
 
+msgid "Voice rotation"
+msgstr "आवाज़ों का क्रम"
+
 msgid "Voice settings"
 msgstr "आवाज़ की सेटिंग्स"
+
+msgid "Voices"
+msgstr "आवाज़ें"
 
 msgid "Warning: This is actually permanent"
 msgstr "चेतावनी: यह कार्रवाई वास्तव में स्थायी है"

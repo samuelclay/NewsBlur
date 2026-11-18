@@ -1187,6 +1187,10 @@ msgstr[0] "Додати %(count)s тег статті"
 msgstr[1] "Додати %(count)s теги статті"
 msgstr[2] "Додати %(count)s тегів статті"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "Додати %(voice)s до чергування"
+
 msgid "Add Folder"
 msgstr "Додати папку"
 
@@ -1251,6 +1255,9 @@ msgstr "Додати до черги «Далі»"
 
 msgid "Add to folder"
 msgstr "Додати до папки"
+
+msgid "Add to rotation"
+msgstr "Додати до чергування"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2227,6 +2234,9 @@ msgstr "Творчий"
 msgid "Credit"
 msgstr "Бонус"
 
+msgid "Current voice"
+msgstr "Поточний голос"
+
 msgid "Cursors"
 msgstr "Курсори"
 
@@ -3096,6 +3106,10 @@ msgstr "Фінанси"
 msgid "Find %(value_1)s Friends"
 msgstr "Знайти друзів із %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "Знайти %(voice)s у списку голосів"
+
 msgid "Find Friends"
 msgstr "Знайти друзів"
 
@@ -3738,6 +3752,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "У новому вікні"
+
+msgid "In rotation"
+msgstr "У чергуванні"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4896,6 +4913,9 @@ msgstr "Одна команда з Docker"
 msgid "One sentence"
 msgstr "Одне речення"
 
+msgid "One voice per story, in this order."
+msgstr "Один голос на статтю, у цьому порядку."
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
 "Підписуйтеся на будь-якому сайті зі стрічкою в один клік. Скористайтеся спеціальною URL-адресою для "
@@ -5688,6 +5708,10 @@ msgstr "Запам’ятовувати позицію відтворення д
 msgid "Remove"
 msgstr "Вилучити"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "Вилучити %(voice)s із чергування"
+
 msgid "Remove from Up Next"
 msgstr "Видалити з черги «Далі»"
 
@@ -6135,6 +6159,12 @@ msgstr "Виберіть частину URL-адреси, щоб зіставл�
 
 msgid "Select title phrase"
 msgstr "Виберіть фразу із заголовка"
+
+msgid "Selected"
+msgstr "Вибрано"
+
+msgid "Selected voice"
+msgstr "Вибраний голос"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Вибір статті в списку заголовків позначає її як прочитану."
@@ -7766,11 +7796,18 @@ msgstr "Для класифікаторів природної мови ввім
 msgid "Use %(language)s"
 msgstr "Використовувати мову: %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Використовувати лише %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "Використовувати 12-годинний формат часу"
 
 msgid "Use 24-hour clock"
 msgstr "Використовувати 24-годинний формат"
+
+msgid "Use only this voice"
+msgstr "Використовувати лише цей голос"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Використовуйте шаблони запитів для сортування вхідних листів, дослідження тем і перевірки стрічок"
@@ -7782,6 +7819,9 @@ msgid "Use this URL template in browser extensions and feed readers to subscribe
 msgstr ""
 "Використовуйте цей шаблон URL у розширеннях браузера та програмах для читання стрічок, щоб підписуватися на"
 " сайти в NewsBlur."
+
+msgid "Use voice"
+msgstr "Вибрати голос"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Переглядайте кількість непрочитаних статей і самі статті за допомогою віджетів"
@@ -7853,8 +7893,14 @@ msgstr "Голос"
 msgid "Voice recording failed. Please try again."
 msgstr "Не вдалося записати голос. Спробуйте ще раз."
 
+msgid "Voice rotation"
+msgstr "Чергування голосів"
+
 msgid "Voice settings"
 msgstr "Налаштування голосу"
+
+msgid "Voices"
+msgstr "Голоси"
 
 msgid "Warning: This is actually permanent"
 msgstr "Увага: цю дію неможливо скасувати"

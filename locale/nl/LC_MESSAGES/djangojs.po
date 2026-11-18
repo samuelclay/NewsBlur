@@ -1113,6 +1113,10 @@ msgid_plural "Add %(count)s story tags"
 msgstr[0] "%(count)s artikeltag toevoegen"
 msgstr[1] "%(count)s artikeltags toevoegen"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "%(voice)s aan de rotatie toevoegen"
+
 msgid "Add Folder"
 msgstr "Map toevoegen"
 
@@ -1175,6 +1179,9 @@ msgstr "Toevoegen aan Hierna afspelen"
 
 msgid "Add to folder"
 msgstr "Toevoegen aan map"
+
+msgid "Add to rotation"
+msgstr "Toevoegen aan rotatie"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2141,6 +2148,9 @@ msgstr "Creatief"
 msgid "Credit"
 msgstr "Tegoed"
 
+msgid "Current voice"
+msgstr "Huidige stem"
+
 msgid "Cursors"
 msgstr "Cursors"
 
@@ -3002,6 +3012,10 @@ msgstr "Financiën"
 msgid "Find %(value_1)s Friends"
 msgstr "Zoek %(value_1)s-vrienden"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "%(voice)s zoeken in de stemmenlijst"
+
 msgid "Find Friends"
 msgstr "Vrienden zoeken"
 
@@ -3637,6 +3651,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "In een nieuw venster"
+
+msgid "In rotation"
+msgstr "In de rotatie"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4789,6 +4806,9 @@ msgstr "Eén commando met Docker"
 msgid "One sentence"
 msgstr "Eén zin"
 
+msgid "One voice per story, in this order."
+msgstr "Eén stem per artikel, in deze volgorde."
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
 "Abonneer je met één klik op elke site met een feed. Gebruik de aangepaste URL om een site toe te voegen op "
@@ -5573,6 +5593,10 @@ msgstr "Afspeelpositie voor elke aflevering onthouden"
 msgid "Remove"
 msgstr "Verwijderen"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "%(voice)s uit de rotatie verwijderen"
+
 msgid "Remove from Up Next"
 msgstr "Verwijderen uit Hierna afspelen"
 
@@ -6019,6 +6043,12 @@ msgstr "Selecteer een deel van de URL om patronen zoals secties of categorieën 
 
 msgid "Select title phrase"
 msgstr "Selecteer een woordgroep in de titel"
+
+msgid "Selected"
+msgstr "Geselecteerd"
+
+msgid "Selected voice"
+msgstr "Geselecteerde stem"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Als je een artikel in de artikeltitels selecteert, wordt het als gelezen gemarkeerd."
@@ -7638,11 +7668,18 @@ msgstr "Facturering op basis van gebruik is ingeschakeld voor classifiers voor n
 msgid "Use %(language)s"
 msgstr "Gebruik %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Alleen %(voice)s gebruiken"
+
 msgid "Use 12-hour clock"
 msgstr "12-uursnotatie gebruiken"
 
 msgid "Use 24-hour clock"
 msgstr "24-uursnotatie gebruiken"
+
+msgid "Use only this voice"
+msgstr "Alleen deze stem gebruiken"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Gebruik promptsjablonen voor inboxbeheer, onderzoek naar onderwerpen en feedcontroles"
@@ -7652,6 +7689,9 @@ msgstr "Het eigen contextmenu van de browser gebruiken"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "Gebruik deze URL-sjabloon in browserextensies en feedlezers om je op NewsBlur te abonneren."
+
+msgid "Use voice"
+msgstr "Stem gebruiken"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Bekijk ongelezen aantallen en artikelen in één oogopslag met widgets"
@@ -7723,8 +7763,14 @@ msgstr "Stem"
 msgid "Voice recording failed. Please try again."
 msgstr "Spraakopname mislukt. Probeer het opnieuw."
 
+msgid "Voice rotation"
+msgstr "Stemrotatie"
+
 msgid "Voice settings"
 msgstr "Steminstellingen"
+
+msgid "Voices"
+msgstr "Stemmen"
 
 msgid "Warning: This is actually permanent"
 msgstr "Waarschuwing: dit is echt permanent"

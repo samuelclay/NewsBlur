@@ -103,6 +103,7 @@
 "Add" = "新增";
 "Add %1$@ feeds to “%2$@” folder" = "將 %1$@ 個訂閱來源新增至「%2$@」資料夾";
 "Add %@" = "新增 %@";
+"Add %@ to rotation" = "將 %@ 加入輪替";
 "Add + Discover Sites" = "新增＋探索網站";
 "Add Site" = "新增網站";
 "Add Sites" = "新增網站";
@@ -390,6 +391,7 @@
 "Fetching text..." = "正在擷取文字…";
 "Filter" = "篩選";
 "Filter stories by date range" = "依日期範圍篩選文章";
+"Find %@ in the voice list" = "在語音清單中尋找 %@";
 "Find Friends" = "尋找朋友";
 "Find in Feed" = "在訂閱來源中尋找";
 "Find in Sites" = "在網站中尋找";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "捲動或選取時";
 "One" = "一";
 "One column" = "一欄";
+"One voice per story, in this order." = "依此順序，每篇文章使用一種語音。";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "你的 %2$@ 個網站中，只有 %1$@ 個已編入探索索引。升級即可將所有網站編入索引，並取得個人化推薦。";
 "Only Title" = "僅標題";
 "Only on Selection" = "僅在選取時";
@@ -860,6 +863,7 @@
 "Related sites" = "相關網站";
 "Reload Sites" = "重新載入網站";
 "Reloading..." = "正在重新載入…";
+"Remove %@ from rotation" = "將 %@ 移出輪替";
 "Remove This List" = "移除此清單";
 "Remove from Up Next" = "從接下來播放中移除";
 "Removed from Up Next" = "已從接下來播放中移除";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "選取訂閱來源或資料夾";
 "Select a feed variant" = "選擇訂閱來源版本";
 "Select feeds to add" = "選取要新增的訂閱來源";
+"Selected" = "已選取";
+"Selected voice" = "已選擇的語音";
 "Send" = "傳送";
 "Send This Story To..." = "將此篇文章傳送至⋯⋯";
 "Send To…" = "傳送至…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "使用 %@";
 "Use another sign-in method" = "使用其他登入方式";
 "Use both" = "兩者皆用";
+"Use only this voice" = "僅使用此語音";
 "Use system size" = "使用系統大小";
+"Use voice" = "使用此語音";
 "User info" = "使用者資訊";
 "Username" = "使用者名稱";
 "Username or Email" = "使用者名稱或電子郵件";
@@ -1245,6 +1253,7 @@
 "View mode" = "檢視模式";
 "Voice" = "語音";
 "Voice and music balance" = "語音與音樂平衡";
+"Voice rotation" = "語音輪替";
 "Voice settings" = "語音設定";
 "Warm" = "暖色";
 "Web" = "網頁";

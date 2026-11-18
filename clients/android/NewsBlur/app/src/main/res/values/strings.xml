@@ -1,4 +1,13 @@
 <resources>
+    <string name="listen_voice_rotation">Voice rotation</string>
+    <string name="listen_selected_voice">Selected voice</string>
+    <string name="listen_rotation_order">One voice per story, in this order.</string>
+    <string name="listen_use_voice">Use voice</string>
+    <string name="listen_use_only_voice">Use only this voice</string>
+    <string name="listen_rotation_selected">Selected</string>
+    <string name="listen_find_voice">Find %1$s in the voice list</string>
+    <string name="listen_add_rotation_voice">Add %1$s to rotation</string>
+    <string name="listen_remove_rotation_voice">Remove %1$s from rotation</string>
     <string name="language_title">Language</string>
     <string name="settings_cat_general">General</string>
     <string name="settings_cat_appearance">Appearance</string>

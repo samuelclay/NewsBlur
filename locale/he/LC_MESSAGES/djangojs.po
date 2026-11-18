@@ -1111,6 +1111,10 @@ msgid_plural "Add %(count)s story tags"
 msgstr[0] "הוספת %(count)s תגית של הכתבה"
 msgstr[1] "הוספת %(count)s תגיות של הכתבה"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "הוספת %(voice)s לסבב"
+
 msgid "Add Folder"
 msgstr "הוסף תיקייה"
 
@@ -1173,6 +1177,9 @@ msgstr "הוספה לתור הבא"
 
 msgid "Add to folder"
 msgstr "הוסף לתיקייה"
+
+msgid "Add to rotation"
+msgstr "הוספה לסבב"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2133,6 +2140,9 @@ msgstr "יצירתי"
 msgid "Credit"
 msgstr "קרדיט"
 
+msgid "Current voice"
+msgstr "הקול הנוכחי"
+
 msgid "Cursors"
 msgstr "סמני עכבר"
 
@@ -2985,6 +2995,10 @@ msgstr "פיננסים"
 msgid "Find %(value_1)s Friends"
 msgstr "מציאת חברים ב־%(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "איתור %(voice)s ברשימת הקולות"
+
 msgid "Find Friends"
 msgstr "איתור חברים"
 
@@ -3620,6 +3634,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "בחלון חדש"
+
+msgid "In rotation"
+msgstr "בסבב"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4764,6 +4781,9 @@ msgstr "פקודה אחת עם Docker"
 msgid "One sentence"
 msgstr "משפט אחד"
 
+msgid "One voice per story, in this order."
+msgstr "קול אחד לכל כתבה, לפי הסדר הזה."
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "הירשמו בלחיצה אחת בכל אתר עם פיד. השתמשו בכתובת ה־URL המותאמת להוספת אתר מהכרטיסייה ״תוספות״."
 
@@ -5534,6 +5554,10 @@ msgstr "זכור את מיקום ההשמעה בכל פרק"
 msgid "Remove"
 msgstr "הסר"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "הסרת %(voice)s מהסבב"
+
 msgid "Remove from Up Next"
 msgstr "הסרה מהתור הבא"
 
@@ -5978,6 +6002,12 @@ msgstr "בחרו חלק מכתובת ה-URL להתאמה לדפוסים כמו �
 
 msgid "Select title phrase"
 msgstr "בחירת ביטוי מהכותרת"
+
+msgid "Selected"
+msgstr "נבחר"
+
+msgid "Selected voice"
+msgstr "הקול שנבחר"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "בחירת כתבה ברשימת הכותרות מסמנת אותה כנקראה."
@@ -7570,11 +7600,18 @@ msgstr "חיוב לפי שימוש מופעל עבור מסווגי שפה טב�
 msgid "Use %(language)s"
 msgstr "שימוש ב־%(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "שימוש רק ב־%(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "שימוש בשעון של 12 שעות"
 
 msgid "Use 24-hour clock"
 msgstr "שימוש בשעון 24 שעות"
+
+msgid "Use only this voice"
+msgstr "שימוש בקול הזה בלבד"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "השתמשו בתבניות הנחיה למיון תיבת הדואר הנכנס, למחקר נושאים ולבדיקת פידים"
@@ -7584,6 +7621,9 @@ msgstr "השתמשו בתפריט ההקשר המקורי של הדפדפן"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "השתמשו בתבנית כתובת ה-URL הזו בתוספי דפדפן ובקוראי פידים כדי להירשם ל-NewsBlur."
+
+msgid "Use voice"
+msgstr "שימוש בקול"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "השתמשו בווידג'טים כדי לראות במבט חטוף את מספר הפריטים שלא נקראו ואת הכתבות"
@@ -7653,8 +7693,14 @@ msgstr "קול"
 msgid "Voice recording failed. Please try again."
 msgstr "הקלטת הקול נכשלה. נסו שוב."
 
+msgid "Voice rotation"
+msgstr "סבב קולות"
+
 msgid "Voice settings"
 msgstr "הגדרות קול"
+
+msgid "Voices"
+msgstr "קולות"
 
 msgid "Warning: This is actually permanent"
 msgstr "אזהרה: הפעולה הזו בלתי הפיכה"

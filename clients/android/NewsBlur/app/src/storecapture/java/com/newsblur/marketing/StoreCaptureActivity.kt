@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.newsblur.BuildConfig
@@ -57,6 +58,8 @@ class StoreCaptureActivity : ComponentActivity() {
     lateinit var iconCache: FileCache
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // StoreCaptureActivity.kt uses InitActivity.kt's splash artwork and restores its post-splash theme.
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         check(BuildConfig.DEBUG && packageName == "com.newsblur.storecapture")
         val language = intent.getStringExtra("language") ?: "en"
