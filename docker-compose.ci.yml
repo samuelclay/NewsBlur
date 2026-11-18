@@ -3,7 +3,6 @@ services:
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
-      - "CLI_JAVA_OPTS="
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
       - bootstrap.memory_lock=false
