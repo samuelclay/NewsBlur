@@ -307,6 +307,7 @@ final class ListenPlayer: NSObject, ObservableObject {
         if saving, isActive {
             saveCurrentItem(isPlaying: false)
         }
+        resetVoiceRotation()
         clearSession()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         MPNowPlayingInfoCenter.default().playbackState = .stopped
@@ -327,8 +328,11 @@ final class ListenPlayer: NSObject, ObservableObject {
         clearSession()
     }
 
-    private func clearSession() {
+    func resetVoiceRotation() {
         voiceRotation = ListenVoiceRotationSession()
+    }
+
+    private func clearSession() {
         voiceOverride = nil
         reportProgress()
         generation += 1
