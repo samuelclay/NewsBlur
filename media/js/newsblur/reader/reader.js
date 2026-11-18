@@ -7874,6 +7874,9 @@
                 buffered: {},
                 // Announced stories past REALTIME_NEW_STORY_CAP, counted but never fetched.
                 overflow: {},
+                // Reads and unreads on other devices of announced stories not yet fetched: river_stories?h= answers
+                // with a placeholder read state, so these settle it when the fetch lands.
+                read_elsewhere: {},
                 user_profiles: [],
                 fetch_timer: null,
                 fetch_at: null,
@@ -7909,6 +7912,7 @@
             }
             // reader.js: a list left open for hours would otherwise fetch every story its feeds publish. Past the
             // cap the pill only counts the announcements.
+            if (state.read_elsewhere[story_hash] && list.unread_only) return;
             if (this.realtime_visible_new_story_count() + state.pending.length >= this.constants.REALTIME_NEW_STORY_CAP) {
                 state.overflow[story_hash] = true;
                 this.show_realtime_new_stories_pill();
@@ -7956,6 +7960,7 @@
                 var story_hash = attributes.story_hash;
                 if (!list.feed_ids[String(attributes.story_feed_id)]) return;
                 if (this.model.stories.get_by_story_hash(story_hash) || state.buffered[story_hash]) return;
+                if (_.has(state.read_elsewhere, story_hash)) attributes.read_status = state.read_elsewhere[story_hash] ? 1 : 0;
                 if (list.unread_only && attributes.read_status) return;
                 state.buffered[story_hash] = attributes;
             }, this);
@@ -7997,11 +8002,14 @@
             var unread_only = list && list.unread_only;
             if (state.overflow[story_hash]) {
                 if (read && unread_only) delete state.overflow[story_hash];
-            } else {
-                var attributes = state.buffered[story_hash];
-                if (!attributes) return;
-                attributes.read_status = read ? 1 : 0;
+            } else if (state.buffered[story_hash]) {
+                state.buffered[story_hash].read_status = read ? 1 : 0;
                 if (read && unread_only) delete state.buffered[story_hash];
+            } else {
+                // reader.js: a story announced but not fetched yet, or announced later, keeps this read state.
+                if (!list || !list.feed_ids[story_hash.split(':')[0]]) return;
+                state.read_elsewhere[story_hash] = read;
+                return;
             }
             this.show_realtime_new_stories_pill();
         },
