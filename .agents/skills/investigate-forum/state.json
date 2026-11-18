@@ -1,5 +1,19 @@
 {
   "topics": {
+    "13926": {
+      "title": "Traversal button not always available",
+      "url": "https://forum.newsblur.com/t/traversal-button-not-always-available/13926",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-11-18T16:48:42.036Z",
+      "last_posted_at": "2026-11-18T16:47:41.252Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2209",
+      "branch": "forum-13926-story-navigation",
+      "worktree": ".worktree/forum-13926-story-navigation",
+      "note": "Sam requested canceled horizontal peek, ordinary story tap, and upward-scroll reveal on Android, iOS, and Mac Catalyst, and corrected the upward threshold to 20pt/20dp. Merged at his request on 2026-11-18 as d50a20d1ed93d50e363c8d4e7b73ff4f3a190f52. Current-head CI passed and all four automated review threads were resolved. Local native regression tests, iOS real gesture UI test, Catalyst build, Android light/dark/black checks, slow tap, and double-tap smoke checks passed. Mac gestures use shared Apple controllers; no separate manual Mac session. Sam posted the prepared reply as forum post 3 on 2026-11-18; assistant did not post. Requires Android and Apple app releases, not yet released. No server deployment required.",
+      "reply": "I've prepared a fix so you can bring those buttons back with a small sideways peek without changing stories, or by tapping ordinary text or blank space in the story. Scrolling up a little also brings them back, and scrolling down hides them again. This will be in the next Android, iOS, and Mac updates.",
+      "question": null
+    },
     "13907": {
       "title": "Global Classifiers Input Button",
       "url": "https://forum.newsblur.com/t/global-classifiers-input-button/13907",
