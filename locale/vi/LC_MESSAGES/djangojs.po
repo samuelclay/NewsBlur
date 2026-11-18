@@ -4642,6 +4642,9 @@ msgstr "Tháng Mười"
 msgid "Off"
 msgstr "Tắt"
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "Ứng dụng Android chính thức của NewsBlur"
 
@@ -4749,6 +4752,9 @@ msgstr "Chỉ hiển thị bình luận từ bạn bè"
 
 msgid "Only show counts on collapsed folders"
 msgstr "Chỉ hiển thị số lượng trong các thư mục đã thu gọn"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Chỉ cắt ngắn các bài viết được chia sẻ dài trong blurblog"
@@ -6104,6 +6110,9 @@ msgstr "Hiển thị lịch sử"
 
 msgid "Show more related stories"
 msgstr "Hiển thị thêm bài viết liên quan"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "Hiển thị khi tải"

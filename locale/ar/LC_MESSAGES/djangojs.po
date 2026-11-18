@@ -5106,6 +5106,9 @@ msgstr "أكتوبر"
 msgid "Off"
 msgstr "معطّل"
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "تطبيق Android الرسمي من NewsBlur"
 
@@ -5244,6 +5247,9 @@ msgstr "إظهار تعليقات الأصدقاء فقط"
 
 msgid "Only show counts on collapsed folders"
 msgstr "إظهار الأعداد في المجلدات المطوية فقط"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "اقتصر على اقتطاع القصص الطويلة المشتركة في مدونات Blurblog"
@@ -6627,6 +6633,9 @@ msgstr "عرض السجل"
 
 msgid "Show more related stories"
 msgstr "عرض المزيد من القصص ذات الصلة"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "إظهار عند التحميل"

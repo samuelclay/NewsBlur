@@ -4715,6 +4715,9 @@ msgstr "אוקטובר"
 msgid "Off"
 msgstr "כבוי"
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "אפליקציית Android הרשמית של NewsBlur"
 
@@ -4825,6 +4828,9 @@ msgstr "הצגת תגובות מחברים בלבד"
 
 msgid "Only show counts on collapsed folders"
 msgstr "הצגת ספירות רק בתיקיות מכווצות"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "לקצר רק כתבות משותפות ארוכות ב־Blurblog"
@@ -6180,6 +6186,9 @@ msgstr "הצג היסטוריה"
 
 msgid "Show more related stories"
 msgstr "הצג כתבות קשורות נוספות"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "הצג בעת טעינה"

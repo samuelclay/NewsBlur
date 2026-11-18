@@ -4577,6 +4577,9 @@ msgstr "十月"
 msgid "Off"
 msgstr "关闭"
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "官方 NewsBlur Android 应用"
 
@@ -4678,6 +4681,9 @@ msgstr "仅显示好友的评论"
 
 msgid "Only show counts on collapsed folders"
 msgstr "仅在折叠的文件夹上显示计数"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "仅截断 Blurblog 中过长的分享文章"
@@ -6013,6 +6019,9 @@ msgstr "显示历史记录"
 
 msgid "Show more related stories"
 msgstr "显示更多相关文章"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "加载时显示"
