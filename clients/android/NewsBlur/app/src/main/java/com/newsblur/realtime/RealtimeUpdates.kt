@@ -137,6 +137,9 @@ class RealtimeUpdates internal constructor(
     private val lock = Any()
 
     // RealtimeUpdates.kt: each sign-out bumps this, so a response requested for the previous account never writes.
+    // It has its own lock, held across those writes, so only sign-out ever waits on one; the list and the pill take
+    // [lock] from the main thread.
+    private val accountLock = Any()
     private var accountGeneration = 0L
     private var foreground = false
     private var subscribedFeedIds: Set<String> = emptySet()
@@ -212,7 +215,7 @@ class RealtimeUpdates internal constructor(
      * The app stays in the foreground through a login, so listen for the next account's first feed list.
      */
     fun stopForAccountChange() {
-        synchronized(lock) { accountGeneration++ }
+        synchronized(accountLock) { accountGeneration++ }
         stopConnection()
         synchronized(lock) {
             subscribedFeedIds = emptySet()
@@ -291,18 +294,18 @@ class RealtimeUpdates internal constructor(
 
     private fun isLive(): Boolean = synchronized(lock) { liveSince != null }
 
-    private fun currentAccount(): Long = synchronized(lock) { accountGeneration }
+    private fun currentAccount(): Long = synchronized(accountLock) { accountGeneration }
 
     /**
-     * Runs [write] only if the account that made the request is still signed in. It holds the lock
+     * Runs [write] only if the account that made the request is still signed in. It holds [accountLock], which
      * stopForAccountChange takes before PrefsRepo.kt wipes the database, so a late response can't restore the
-     * previous account's stories or counts.
+     * previous account's stories or counts. [write] must not take [lock].
      */
     private inline fun writeForAccount(
         account: Long,
         write: () -> Unit,
     ): Boolean =
-        synchronized(lock) {
+        synchronized(accountLock) {
             if (account != accountGeneration) return@synchronized false
             write()
             true
@@ -599,10 +602,10 @@ class RealtimeUpdates internal constructor(
     }
 
     private suspend fun fetchNewStories(fs: FeedSet) {
-        var account = 0L
+        // Taken before [lock], never inside it: a write holding accountLock must not keep the main thread waiting.
+        val account = currentAccount()
         val hashes =
             synchronized(lock) {
-                account = accountGeneration
                 newStoryFetchJob = null
                 if (openList != fs) return
                 if (!prefsRepo.isNewStoriesPillEnabled()) {

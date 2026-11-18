@@ -340,6 +340,35 @@ class Test_RealtimeUpdates {
             verify(exactly = 0) { db.updateFeedCounts(any(), any()) }
         }
 
+    // A count refresh after reconnecting can write hundreds of feeds. Tapping the pill or opening a list on the main
+    // thread must not wait on that write, or the reader sees the app freeze.
+    @Test
+    fun test_the_pill_and_the_list_never_wait_on_a_database_write() =
+        runTest {
+            coEvery { storyApi.getStoriesByHash(any()) } answers {
+                StoriesResponse().apply { stories = arrayOf(story("1:late")) }
+            }
+            val realtime = realtime()
+            val feed = FeedSet.singleFeed("1")
+            realtime.setOpenStoryList(feed)
+            var mainThreadFinished = false
+            every { db.insertStories(any(), any(), any()) } answers {
+                val mainThread =
+                    Thread {
+                        realtime.takeNewStories(feed)
+                        realtime.setOpenStoryList(feed)
+                    }
+                mainThread.start()
+                mainThread.join(2_000)
+                mainThreadFinished = !mainThread.isAlive
+            }
+            realtime.send("feed:story:new", "1:story", "1:late,${EPOCH / 1000}")
+            settle()
+
+            verify { db.insertStories(any(), any(), any()) }
+            assertTrue(mainThreadFinished)
+        }
+
     // With All Site Stories open, every feed's feed:<id> count update waits for the list to close. A read on another
     // device of a story this device never stored can't adjust that count locally, so the server must recount it.
     @Test
