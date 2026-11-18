@@ -7950,12 +7950,18 @@
             this.show_realtime_new_stories_pill();
         },
 
-        // reader.js: The fetched waiting stories the list would show at the current Focus level.
-        realtime_visible_new_story_count: function () {
-            var score = this.get_unread_view_score();
+        // reader.js: The fetched waiting stories the pill offers: the ones the list shows at the current Focus level,
+        // but never stories the reader's classifiers hide, even while hidden stories are shown. The iOS and Android
+        // pills leave hidden stories out the same way.
+        realtime_offered_new_stories: function () {
+            var score = Math.max(this.get_unread_view_score(), 0);
             return _.filter(_.values(this.realtime_new_stories.buffered), function (attributes) {
                 return new NEWSBLUR.Models.Story(attributes).score() >= score;
-            }).length;
+            });
+        },
+
+        realtime_visible_new_story_count: function () {
+            return this.realtime_offered_new_stories().length;
         },
 
         // reader.js: The pill counts the fetched stories the list would show, plus the announced ones past the cap,
@@ -8080,7 +8086,7 @@
         insert_realtime_new_stories: function () {
             var list = this.realtime_new_story_list();
             var state = this.realtime_new_stories;
-            var stories = _.values(state.buffered);
+            var stories = this.realtime_offered_new_stories();
             var user_profiles = state.user_profiles;
             var overflowing = _.size(state.overflow) > 0 ||
                 this.realtime_visible_new_story_count() > this.constants.REALTIME_NEW_STORY_CAP;
