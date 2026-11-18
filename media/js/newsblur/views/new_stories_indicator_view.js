@@ -8,6 +8,10 @@
 // one) gives it REALTIME_PILL_HIDE_AFTER_SCROLLING before it slides away, whatever the reader does meanwhile, and
 // it comes back only once the list hasn't scrolled for REALTIME_PILL_RETURN_AFTER_IDLE. Both numbers live in
 // reader.js's constants.
+//
+// While stories wait, a full-width "N new stories" row also leads the list (ends an oldest-first one), part of the
+// list like a story title, so the stories can be brought in even after scrolling has sent the pill away. The pill
+// stays hidden while the row is on screen.
 NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
 
     className: 'NB-new-stories-indicator',
@@ -45,6 +49,12 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
         this.$bottom_anchor = $.make('div', { className: 'NB-new-stories-indicator-anchor NB-bottom' });
         this.$container.prepend(this.$top_anchor).append(this.$bottom_anchor);
         this.$top_anchor.append(this.$el);
+        this.$row = $.make('div', { className: 'NB-new-stories-row', role: 'button', tabindex: 0 }, [
+            $.make('span', { className: 'NB-new-stories-indicator-icon', 'aria-hidden': 'true' }),
+            $.make('span', { className: 'NB-new-stories-row-label' })
+        ]);
+        this.$row.find('.NB-new-stories-indicator-icon').html(this.$('.NB-new-stories-indicator-icon').html());
+        this.$row.on('click', _.bind(this.on_click, this)).on('keydown', _.bind(this.on_keydown, this));
         return this;
     },
 
@@ -57,10 +67,13 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
             { count: Inflector.commas(count) }, true);
         this.$('.NB-new-stories-indicator-label').text(label);
         this.$el.attr('aria-label', label).toggleClass('NB-at-bottom', this.at_bottom);
+        this.$row.find('.NB-new-stories-row-label').text(label);
+        this.$row.attr('aria-label', label).toggleClass('NB-at-bottom', this.at_bottom);
         if (moved) {
             this.$el.removeClass('NB-visible');
             (this.at_bottom ? this.$bottom_anchor : this.$top_anchor).append(this.$el);
         }
+        this.place_row();
         if (this.hidden_by_scrolling) {
             this.schedule_return();
         } else {
@@ -72,14 +85,67 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
         this.count = 0;
         this.reset_scrolling();
         this.$el.removeClass('NB-visible');
+        this.place_row();
+    },
+
+    // new_stories_indicator_view.js: the row is in the list while stories are waiting. Adding or removing it above
+    // the stories being read keeps them where they are on screen.
+    place_row: function () {
+        var wanted = !!this.count;
+        var $titles = this.$container.find('.NB-story-titles').first();
+        var placed = this.$row[0].isConnected;
+        var in_place = placed && (this.at_bottom ? this.$row.parent().is($titles) : this.$row.next().is($titles));
+        if (wanted == placed && (!wanted || in_place)) return;
+        var titles_top = $titles.length ? $titles[0].getBoundingClientRect().top : 0;
+        var scroll_top = NEWSBLUR.reader.$s.$story_titles.scrollTop();
+        this.$row.detach();
+        if (wanted && $titles.length) {
+            if (!this.at_bottom) {
+                $titles.before(this.$row);
+            } else {
+                var $end = $titles.children('.NB-end-line').first();
+                if ($end.length) $end.before(this.$row); else $titles.append(this.$row);
+            }
+        }
+        var shift = $titles.length ? $titles[0].getBoundingClientRect().top - titles_top : 0;
+        if (shift && scroll_top > 0) {
+            // new_stories_indicator_view.js: browsers without scroll anchoring would otherwise move the stories.
+            NEWSBLUR.reader.$s.$story_titles.scrollTop(NEWSBLUR.reader.$s.$story_titles.scrollTop() + shift);
+        }
     },
 
     slide_in: function () {
-        if (this.$el.hasClass('NB-visible')) return;
+        if (this.$el.hasClass('NB-visible') || this.row_on_screen()) return;
         // new_stories_indicator_view.js: the next frame, so the CSS transition runs instead of snapping in.
         _.defer(_.bind(function () {
-            if (this.count && !this.hidden_by_scrolling) this.$el.addClass('NB-visible');
+            if (this.count && !this.hidden_by_scrolling && !this.row_on_screen()) this.$el.addClass('NB-visible');
         }, this));
+    },
+
+    // new_stories_indicator_view.js: whether any of the row shows in the list's viewport, below a phone's bars.
+    row_on_screen: function () {
+        if (!this.$row || !this.$row[0].isConnected) return false;
+        var rect = this.$row[0].getBoundingClientRect();
+        var top, bottom;
+        if ($('body').hasClass('NB-mobile-page-scroll')) {
+            top = parseFloat(getComputedStyle(this.$top_anchor[0]).top) || 0;
+            bottom = window.innerHeight;
+        } else {
+            var pane = this.$container[0].getBoundingClientRect();
+            top = pane.top;
+            bottom = pane.bottom;
+        }
+        return rect.bottom > top + 1 && rect.top < bottom - 1;
+    },
+
+    // new_stories_indicator_view.js: the pill gives way to the row while the row is on screen.
+    sync_with_row: function () {
+        if (!this.count || this.hidden_by_scrolling) return;
+        if (this.row_on_screen()) {
+            this.$el.removeClass('NB-visible');
+        } else {
+            this.slide_in();
+        }
     },
 
     reset_scrolling: function () {
@@ -99,6 +165,7 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
         this.last_scroll_at = Date.now();
         if (!this.count) return;
         if (this.hidden_by_scrolling) return this.schedule_return();
+        this.sync_with_row();
         if (this.hide_timer || previous_top === null || !this.$el.hasClass('NB-visible')) return;
         var away = this.at_bottom ? scroll_top < previous_top : scroll_top > previous_top;
         if (!away) return;

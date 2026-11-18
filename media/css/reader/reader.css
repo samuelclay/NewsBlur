@@ -1796,6 +1796,48 @@ img.feed_favicon {
     font-variant-numeric: tabular-nums;
 }
 
+/* reader.css: the row new_stories_indicator_view.js puts at the top of the list (the end of an oldest-first one)
+   while scrolling keeps the pill away, laid out like a story title but plainly a button. */
+.NB-new-stories-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 16px;
+    background: #EAF1FA;
+    color: #3F6EA8;
+    border-bottom: 1px solid #D5E2F2;
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    user-select: none;
+    grid-column: 1 / -1;
+    transition: background-color 120ms ease-out;
+}
+
+.NB-new-stories-row.NB-at-bottom {
+    border-top: 1px solid #D5E2F2;
+    border-bottom: none;
+}
+
+.NB-new-stories-row:hover {
+    background: #DCE8F6;
+}
+
+.NB-new-stories-row:focus-visible {
+    outline: 2px solid #5C89C9;
+    outline-offset: -2px;
+}
+
+.NB-new-stories-row .NB-new-stories-indicator-icon svg {
+    display: block;
+}
+
+.NB-new-stories-row.NB-at-bottom .NB-new-stories-indicator-icon svg {
+    transform: rotate(180deg);
+}
+
 body.NB-reduce-motion .NB-new-stories-indicator {
     transition: opacity 120ms linear;
 }

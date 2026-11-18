@@ -2454,6 +2454,16 @@ border-bottom-color: #303739;
     animation: dark-end-line-animation 1.7s ease infinite;
 }
 
+.NB-dark .NB-new-stories-row {
+    background: #1F2A36;
+    color: #8FB3E0;
+    border-color: #2C3A4A;
+}
+
+.NB-dark .NB-new-stories-row:hover {
+    background: #263445;
+}
+
 .NB-dark .NB-realtime-gap {
     border-top-color: #303739;
     border-bottom-color: #111111;
