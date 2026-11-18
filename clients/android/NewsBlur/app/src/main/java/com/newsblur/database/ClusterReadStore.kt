@@ -106,6 +106,8 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
 
     fun applyRemote(hashes: Collection<String>, read: Boolean): Set<FeedSet> = ClusterReadRepository(this).applyRemote(hashes, read)
 
+    fun withoutLocalCopy(hashes: Collection<String>): Set<String> = ClusterReadRepository(this).withoutLocalCopy(hashes)
+
     fun reconcileServerReadState(hashes: Collection<String>, read: Boolean, requestStartedAt: Long) {
         ClusterReadRepository(this).reconcileServerReadState(hashes, read, requestStartedAt)
     }

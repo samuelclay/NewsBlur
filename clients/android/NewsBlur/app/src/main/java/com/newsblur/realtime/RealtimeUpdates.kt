@@ -135,6 +135,9 @@ class RealtimeUpdates internal constructor(
     }
 
     private val lock = Any()
+
+    // RealtimeUpdates.kt: each sign-out bumps this, so a response requested for the previous account never writes.
+    private var accountGeneration = 0L
     private var foreground = false
     private var subscribedFeedIds: Set<String> = emptySet()
     private var lastSubscription: List<String> = emptyList()
@@ -209,6 +212,7 @@ class RealtimeUpdates internal constructor(
      * The app stays in the foreground through a login, so listen for the next account's first feed list.
      */
     fun stopForAccountChange() {
+        synchronized(lock) { accountGeneration++ }
         stopConnection()
         synchronized(lock) {
             subscribedFeedIds = emptySet()
@@ -287,16 +291,34 @@ class RealtimeUpdates internal constructor(
 
     private fun isLive(): Boolean = synchronized(lock) { liveSince != null }
 
+    private fun currentAccount(): Long = synchronized(lock) { accountGeneration }
+
+    /**
+     * Runs [write] only if the account that made the request is still signed in. It holds the lock
+     * stopForAccountChange takes before PrefsRepo.kt wipes the database, so a late response can't restore the
+     * previous account's stories or counts.
+     */
+    private inline fun writeForAccount(
+        account: Long,
+        write: () -> Unit,
+    ): Boolean =
+        synchronized(lock) {
+            if (account != accountGeneration) return@synchronized false
+            write()
+            true
+        }
+
     private suspend fun catchUpCounts() {
         repeat(CATCH_UP_ATTEMPTS) {
             if (!isLive()) return
             if (dbHelper.getUntriedActionCount() == 0) {
+                val account = currentAccount()
                 val response = feedApi.refreshFeedCounts()
                 if (response == null || response.isError) {
                     Log.w(this, "catch-up count refresh failed")
                     return
                 }
-                applyCounts(response)
+                if (!writeForAccount(account) { applyCounts(response) }) return
                 synchronized(lock) { if (liveSince != null) countsCurrentWhileLive = true }
                 return
             }
@@ -357,6 +379,12 @@ class RealtimeUpdates internal constructor(
                 readFlushJob = null
                 LinkedHashMap(pendingReads).also { pendingReads.clear() }
             }
+        // A story this device holds no copy of can't adjust its feed's count, and while the open list covers that
+        // feed its feed:<id> update waits for the list to close; ask the server for those counts instead.
+        val uncounted = dbHelper.storyHashesWithoutLocalCopy(batch.keys)
+        if (uncounted.isNotEmpty()) {
+            queueCounts(uncounted.map { it.substringBefore(':') }.filter { it.isNotBlank() }.distinct(), USER_UPDATE_DEBOUNCE_MILLIS)
+        }
         val readHashes = mutableListOf<String>()
         var applied = false
         for (read in listOf(true, false)) {
@@ -428,11 +456,12 @@ class RealtimeUpdates internal constructor(
                 countBatcher.add(apiIds, clock() + PENDING_ACTION_RETRY_MILLIS)
             } else {
                 if (BuildConfig.DEBUG) android.util.Log.d(LOG_TAG, "refreshing counts for $apiIds")
+                val account = currentAccount()
                 val response = feedApi.getFeedUnreadCounts(apiIds.toMutableSet())
                 if (response == null || response.isError) {
                     Log.w(this, "realtime count refresh failed for ${apiIds.size} feeds")
                 } else {
-                    applyCounts(response)
+                    writeForAccount(account) { applyCounts(response) }
                 }
             }
         }
@@ -570,8 +599,10 @@ class RealtimeUpdates internal constructor(
     }
 
     private suspend fun fetchNewStories(fs: FeedSet) {
+        var account = 0L
         val hashes =
             synchronized(lock) {
+                account = accountGeneration
                 newStoryFetchJob = null
                 if (openList != fs) return
                 if (!prefsRepo.isNewStoriesPillEnabled()) {
@@ -599,7 +630,7 @@ class RealtimeUpdates internal constructor(
         val filters = CursorFilters(prefsRepo, fs)
         // BlurDatabaseHelper.java stores them for the tap without adding them to the open list yet,
         // and settles each one's read state against what this device already knows.
-        dbHelper.insertStories(response, filters.stateFilter, false)
+        if (!writeForAccount(account) { dbHelper.insertStories(response, filters.stateFilter, false) }) return
         val placement = NewStoryRules.placement(filters.storyOrder, syncServiceState.isFeedSetExhausted(fs)) ?: return
         val subscribed = synchronized(lock) { subscribedFeedIds }
         val accepted =
@@ -678,6 +709,7 @@ class RealtimeUpdates internal constructor(
     }
 
     private suspend fun refreshStarredCounts() {
+        val account = currentAccount()
         val response = feedApi.getStarredCounts()
         if (response == null || response.isError) {
             Log.w(this, "saved story count refresh failed")
@@ -691,7 +723,7 @@ class RealtimeUpdates internal constructor(
                     count = response.starredCount
                     tag = StarredCount.TOTAL_STARRED
                 }.values
-        dbHelper.replaceStarredCounts(values)
+        if (!writeForAccount(account) { dbHelper.replaceStarredCounts(values) }) return
         submitUpdate(UPDATE_METADATA or UPDATE_STORY)
     }
 

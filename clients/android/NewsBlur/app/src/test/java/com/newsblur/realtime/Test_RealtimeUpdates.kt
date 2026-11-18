@@ -23,6 +23,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -66,6 +67,7 @@ class Test_RealtimeUpdates {
         every { prefs.getReadFilter(any()) } returns ReadFilter.UNREAD
         every { prefs.getStoryOrder(any()) } returns StoryOrder.NEWEST
         every { prefs.isNewStoriesPillEnabled() } returns true
+        every { db.storyHashesWithoutLocalCopy(any()) } returns emptySet()
         coEvery { feedApi.getFeedUnreadCounts(any()) } returns UnreadCountResponse()
     }
 
@@ -310,6 +312,47 @@ class Test_RealtimeUpdates {
             settle()
             assertEquals(NewStories.NONE, realtime.newStories.value)
             coVerify(exactly = 0) { storyApi.getStoriesByHash(match { "1:while-off" in it }) }
+        }
+
+    // Logout cancels nothing already in flight: a story or count response that arrives after PrefsRepo.logout() wiped
+    // the database must not write the previous account's stories, saved state or counts back into it.
+    @Test
+    fun test_a_response_held_across_sign_out_never_writes() =
+        runTest {
+            val storyResponse = CompletableDeferred<StoriesResponse>()
+            coEvery { storyApi.getStoriesByHash(any()) } coAnswers { storyResponse.await() }
+            val realtime = realtime()
+            val countResponse = CompletableDeferred<UnreadCountResponse>()
+            coEvery { feedApi.getFeedUnreadCounts(any()) } coAnswers { countResponse.await() }
+            realtime.setOpenStoryList(FeedSet.singleFeed("1"))
+            realtime.send("feed:story:new", "1:story", "1:late,${EPOCH / 1000}")
+            realtime.send("user:update", "sam", "feed:5")
+            settle()
+            coVerify { storyApi.getStoriesByHash(any()) }
+            coVerify { feedApi.getFeedUnreadCounts(any()) }
+
+            realtime.stopForAccountChange()
+            storyResponse.complete(StoriesResponse().apply { stories = arrayOf(story("1:late")) })
+            countResponse.complete(UnreadCountResponse().apply { feeds = mapOf("5" to UnreadCountResponse.UnreadMD()) })
+            runCurrent()
+
+            verify(exactly = 0) { db.insertStories(any(), any(), any()) }
+            verify(exactly = 0) { db.updateFeedCounts(any(), any()) }
+        }
+
+    // With All Site Stories open, every feed's feed:<id> count update waits for the list to close. A read on another
+    // device of a story this device never stored can't adjust that count locally, so the server must recount it.
+    @Test
+    fun test_remote_read_of_a_story_this_device_lacks_recounts_its_feed_under_the_open_river() =
+        runTest {
+            every { db.storyHashesWithoutLocalCopy(any()) } answers { firstArg<Collection<String>>().filter { it == "9:uncached" }.toSet() }
+            val realtime = realtime()
+            realtime.setOpenStoryList(FeedSet.allFeeds())
+            realtime.send("user:update", "sam", "story:read:9:uncached")
+            realtime.send("user:update", "sam", "feed:9")
+            settle()
+
+            assertTrue(countRequests.any { (_, feeds) -> "9" in feeds })
         }
 
     @Test

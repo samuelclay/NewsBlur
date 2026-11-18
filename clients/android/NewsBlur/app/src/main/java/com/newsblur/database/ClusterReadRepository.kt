@@ -29,6 +29,16 @@ class ClusterReadRepository(private val backend: Backend) {
      * RealtimeUpdates.kt applies a read or unread made on another device, with count changes. A story
      * with this device's own read action still queued keeps it: that action reaches the server later.
      */
+    /**
+     * The stories this device holds no copy of, in its story table or in a cluster: a remote read of one can't adjust
+     * its feed's count here (RealtimeUpdates.kt recounts those feeds).
+     */
+    fun withoutLocalCopy(hashes: Collection<String>): Set<String> {
+        val unique = hashes.filter { it.isNotBlank() }.toSet()
+        val embedded = backend.parentsReferencing(unique).values.flatMap { it.toList() }.map { it.storyHash }.toSet()
+        return unique.filter { backend.storedStory(it) == null && it !in embedded }.toSet()
+    }
+
     fun applyRemote(hashes: Collection<String>, read: Boolean): Set<FeedSet> {
         val pending = backend.pendingReadStateHashes()
         return apply(hashes.filter { it !in pending }, read, true)

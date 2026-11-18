@@ -905,6 +905,12 @@ public class BlurDatabaseHelper {
         }
     }
 
+    /** RealtimeUpdates.kt recounts the feeds of remote reads for stories this device holds no copy of. */
+    @NonNull
+    public Set<String> storyHashesWithoutLocalCopy(@NonNull Collection<String> hashes) {
+        return new ClusterReadStore(dbRO).withoutLocalCopy(hashes);
+    }
+
     /** RealtimeUpdates.kt: another device's read or unread, skipping stories with this device's own still queued. */
     @NonNull
     public Set<FeedSet> applyRemoteStoryReadHashes(@NonNull Collection<String> hashes, boolean read) {
