@@ -887,6 +887,9 @@ abstract class Reading :
 
     override fun shouldUseTranslucentTheme(): Boolean = true
 
+    // Reading.kt lets two fingers switch the theme over the story and its original page, as iOS does (ThemeSwipeGesture.kt).
+    override fun hostsThemeSwipe(): Boolean = true
+
     private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
         fs?.let {
             val cursorFilters = CursorFilters(prefsRepo, it)
