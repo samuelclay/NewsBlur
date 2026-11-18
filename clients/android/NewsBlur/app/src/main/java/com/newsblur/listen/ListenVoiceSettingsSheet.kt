@@ -634,7 +634,14 @@ private fun VoiceRow(
             }
         }
         Spacer(Modifier.width(6.dp))
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .clickable(enabled = !soleVoice, role = Role.Button) { actions.onSelectVoice(voice) }
+                    .heightIn(min = 48.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
             Text(
                 text =
                     buildAnnotatedString {
@@ -666,10 +673,7 @@ private fun VoiceRow(
                 ),
                 color = if (soleVoice) colors.textSecondary else colors.accent,
                 fontSize = 12.sp,
-                modifier =
-                    Modifier
-                        .clickable(enabled = !soleVoice, role = Role.Button) { actions.onSelectVoice(voice) }
-                        .padding(vertical = 6.dp),
+                modifier = Modifier.padding(vertical = 6.dp),
             )
         }
         PreviewButton(
