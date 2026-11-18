@@ -65,6 +65,7 @@ class Test_RealtimeUpdates {
         every { prefs.getStateFilter() } returns StateFilter.SOME
         every { prefs.getReadFilter(any()) } returns ReadFilter.UNREAD
         every { prefs.getStoryOrder(any()) } returns StoryOrder.NEWEST
+        every { prefs.isNewStoriesPillEnabled() } returns true
         coEvery { feedApi.getFeedUnreadCounts(any()) } returns UnreadCountResponse()
     }
 
@@ -255,6 +256,32 @@ class Test_RealtimeUpdates {
             settle()
             assertEquals(29, realtime.newStories.value.count)
             assertEquals(RealtimeUpdates.NEW_STORIES_CAP, fetched.size)
+        }
+
+    // "Show new stories as they arrive" off means no pill and no fetching of announced stories, and turning it
+    // off while the pill shows drops what it held, fetched or only counted.
+    @Test
+    fun test_turning_off_new_stories_stops_buffering_and_fetching() =
+        runTest {
+            coEvery { storyApi.getStoriesByHash(any()) } answers {
+                StoriesResponse().apply { stories = firstArg<List<String>>().map { story(it) }.toTypedArray() }
+            }
+            val realtime = realtime()
+            val feed = FeedSet.singleFeed("1")
+            realtime.setOpenStoryList(feed)
+            val now = EPOCH / 1000
+            (1..25).forEach { realtime.send("feed:story:new", "1:story", "1:shown$it,$now") }
+            settle()
+            assertEquals(25, realtime.newStories.value.count)
+
+            every { prefs.isNewStoriesPillEnabled() } returns false
+            realtime.newStoriesSettingChanged()
+            assertEquals(NewStories.NONE, realtime.newStories.value)
+
+            realtime.send("feed:story:new", "1:story", "1:while-off,$now")
+            settle()
+            assertEquals(NewStories.NONE, realtime.newStories.value)
+            coVerify(exactly = 0) { storyApi.getStoriesByHash(match { "1:while-off" in it }) }
         }
 
     @Test

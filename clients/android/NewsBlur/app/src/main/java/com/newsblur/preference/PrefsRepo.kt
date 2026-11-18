@@ -840,6 +840,9 @@ class PrefsRepo(
 
     fun isKeepOldStories() = prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, false)
 
+    /** Whether the open list offers stories that arrive while it's open, in NewStoriesPill.kt. On for every device by default. */
+    fun isNewStoriesPillEnabled() = prefs.getBoolean(PrefConstants.SHOW_NEW_STORIES, true)
+
     fun getMaxCachedAgeMillis(): Long {
         val `val` = prefs.getString(PrefConstants.CACHE_AGE_SELECT, PrefConstants.CACHE_AGE_SELECT_30D)!!
         if (`val` == PrefConstants.CACHE_AGE_SELECT_2D) return PrefConstants.CACHE_AGE_VALUE_2D

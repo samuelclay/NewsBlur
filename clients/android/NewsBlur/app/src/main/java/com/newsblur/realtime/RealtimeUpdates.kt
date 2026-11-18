@@ -460,6 +460,12 @@ class RealtimeUpdates internal constructor(
         queueCounts(released, USER_UPDATE_DEBOUNCE_MILLIS)
     }
 
+    /** SettingsFragment.kt changed "Show new stories as they arrive"; turned off, the pill and what it held go away. */
+    fun newStoriesSettingChanged() {
+        if (prefsRepo.isNewStoriesPillEnabled()) return
+        synchronized(lock) { clearNewStoriesLocked() }
+    }
+
     /** ItemsList.java restarted the list with new filters, so buffered stories may no longer belong. */
     fun resetNewStories(fs: FeedSet) {
         synchronized(lock) {
@@ -509,6 +515,8 @@ class RealtimeUpdates internal constructor(
     // ===== New stories pill =====
 
     private fun onNewStory(message: RealtimeMessage.NewStory) {
+        // With "Show new stories as they arrive" off, the list gains stories only when it reloads or syncs.
+        if (!prefsRepo.isNewStoriesPillEnabled()) return
         val fs = synchronized(lock) { openList } ?: return
         if (message.timestampSeconds > clock() / 1000 + FUTURE_STORY_SECONDS) return
         if (!NewStoryRules.listAccepts(fs, message.feedId, synchronized(lock) { subscribedFeedIds })) return
@@ -542,6 +550,10 @@ class RealtimeUpdates internal constructor(
             synchronized(lock) {
                 newStoryFetchJob = null
                 if (openList != fs) return
+                if (!prefsRepo.isNewStoriesPillEnabled()) {
+                    clearNewStoriesLocked()
+                    return
+                }
                 // Fetch only as many as the pill can still hold; the rest are counted, not fetched.
                 val room = NEW_STORIES_CAP - bufferedNewStoryCountLocked(fs)
                 if (room <= 0) {
