@@ -582,6 +582,9 @@ class RealtimeUpdates internal constructor(
             stories.filter { story ->
                 story.storyHash in hashes &&
                     NewStoryRules.listAccepts(fs, story.feedId, subscribed) &&
+                    // The pill never offers a story the reader's classifiers hide, even in the All state; a reload
+                    // or a page still lists it there.
+                    story.intelligence.calcTotalIntel() >= 0 &&
                     story.isStoryVisibleInState(filters.stateFilter) &&
                     (filters.readFilter == ReadFilter.ALL || !story.read) &&
                     !dbHelper.isStoryInReadingSession(story.storyHash)

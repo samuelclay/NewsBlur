@@ -227,6 +227,34 @@ class Test_RealtimeUpdates {
             assertEquals(listOf("1:newer-focus"), realtime.newStories.value.storyHashes)
         }
 
+    // A story the reader's classifiers hide (a disliked tag, author or title) must never arrive through the pill,
+    // even when the list is in the All state, which lists hidden stories too: Sam's S22 offered two Hoodline
+    // stories his tag filters hide.
+    @Test
+    fun test_pill_never_offers_hidden_stories_even_in_the_all_state() =
+        runTest {
+            every { prefs.getStateFilter() } returns StateFilter.ALL
+            coEvery { storyApi.getStoriesByHash(any()) } answers {
+                StoriesResponse().apply {
+                    stories =
+                        arrayOf(
+                            story("1:hidden-by-tag", score = -1),
+                            story("1:neutral", score = 0, secondsAgo = 30),
+                        )
+                }
+            }
+            val realtime = realtime()
+            val feed = FeedSet.singleFeed("1")
+            realtime.setOpenStoryList(feed)
+            val now = EPOCH / 1000
+            for (hash in listOf("1:hidden-by-tag", "1:neutral")) {
+                realtime.send("feed:story:new", "1:story", "$hash,$now")
+            }
+            settle()
+
+            assertEquals(listOf("1:neutral"), realtime.newStories.value.storyHashes)
+        }
+
     // A list left open overnight once fetched every story announced since (thousands of requests). Past the
     // cap the pill only counts what's announced, and a story read elsewhere leaves that count too.
     @Test
