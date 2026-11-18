@@ -103,6 +103,7 @@
 "Add" = "追加";
 "Add %1$@ feeds to “%2$@” folder" = "%1$@件のフィードを「%2$@」フォルダーに追加";
 "Add %@" = "%@を追加";
+"Add %@ to rotation" = "ローテーションに%@を追加";
 "Add + Discover Sites" = "サイトを追加＋見つける";
 "Add Site" = "サイトを追加";
 "Add Sites" = "サイトを追加";
@@ -390,6 +391,7 @@
 "Fetching text..." = "テキストを取得中...";
 "Filter" = "フィルター";
 "Filter stories by date range" = "日付範囲で記事を絞り込む";
+"Find %@ in the voice list" = "音声一覧で%@を探す";
 "Find Friends" = "友達を探す";
 "Find in Feed" = "フィード内を検索";
 "Find in Sites" = "サイト内を検索";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "スクロール時または選択時";
 "One" = "1つ";
 "One column" = "1列";
+"One voice per story, in this order." = "この順番で、記事ごとに音声を切り替えます。";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "サイト%2$@件のうち、おすすめ用にインデックスされているのは%1$@件のみです。アップグレードすると、すべてのサイトがインデックスされ、パーソナライズされたおすすめを利用できます。";
 "Only Title" = "タイトルのみ";
 "Only on Selection" = "選択した場合のみ";
@@ -860,6 +863,7 @@
 "Related sites" = "関連サイト";
 "Reload Sites" = "サイトを再読み込み";
 "Reloading..." = "再読み込み中...";
+"Remove %@ from rotation" = "ローテーションから%@を削除";
 "Remove This List" = "このリストを削除";
 "Remove from Up Next" = "次に再生から削除";
 "Removed from Up Next" = "次に再生から削除しました";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "フィードまたはフォルダーを選択";
 "Select a feed variant" = "フィードのバリエーションを選択";
 "Select feeds to add" = "追加するフィードを選択";
+"Selected" = "選択中";
+"Selected voice" = "選択中の音声";
 "Send" = "送信";
 "Send This Story To..." = "この記事を送信…";
 "Send To…" = "送信先…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "%@を使用";
 "Use another sign-in method" = "別のサインイン方法を使う";
 "Use both" = "両方を使用";
+"Use only this voice" = "この音声のみを使う";
 "Use system size" = "システムサイズを使用";
+"Use voice" = "この音声を使う";
 "User info" = "ユーザー情報";
 "Username" = "ユーザー名";
 "Username or Email" = "ユーザー名またはメールアドレス";
@@ -1245,6 +1253,7 @@
 "View mode" = "表示モード";
 "Voice" = "音声";
 "Voice and music balance" = "音声と音楽のバランス";
+"Voice rotation" = "音声のローテーション";
 "Voice settings" = "音声設定";
 "Warm" = "暖色";
 "Web" = "ウェブ";

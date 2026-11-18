@@ -136,6 +136,8 @@ class SettingsFragment : Fragment() {
                         onLanguageSelected = ::updateLanguage,
                         onBooleanChanged = ::updateBooleanPreference,
                         onStringChanged = ::updateStringPreference,
+                        onThemeModeSelected = prefsRepo::setThemeMode,
+                        onThemeVariantSelected = prefsRepo::setThemeVariant,
                         onStoryClusteringEnabledChanged = ::updateStoryClusteringEnabled,
                         onClusterModeChanged = ::updateClusterMode,
                         onAppIconSelected = ::updateAppIcon,

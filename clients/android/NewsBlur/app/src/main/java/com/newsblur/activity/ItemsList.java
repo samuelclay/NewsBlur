@@ -647,6 +647,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         return areStoriesDeferred() || (itemSetFragment != null && itemSetFragment.isThemeContentReady());
     }
 
+    // ItemsList.java lets two fingers switch the theme over the story list, as iOS does (ThemeSwipeGesture.kt).
+    @Override protected boolean hostsThemeSwipe() {
+        return true;
+    }
+
     public void toggleStorySearch() {
         if (isStorySearchVisible()) {
             hideStorySearch(true);

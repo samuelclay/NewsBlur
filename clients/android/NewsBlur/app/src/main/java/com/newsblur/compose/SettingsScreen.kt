@@ -63,6 +63,7 @@ import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PanTool
 import androidx.compose.material.icons.rounded.Photo
 import androidx.compose.material.icons.rounded.Psychology
@@ -76,6 +77,7 @@ import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material.icons.rounded.SwipeRightAlt
+import androidx.compose.material.icons.rounded.SwipeVertical
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.TouchApp
@@ -141,6 +143,8 @@ import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryOrder
+import com.newsblur.util.ThemeAppearance
+import com.newsblur.util.ThemeMode
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.VolumeKeyNavigation
 import kotlin.math.abs
@@ -149,6 +153,9 @@ import kotlin.math.abs
 @Immutable
 data class SettingsUiState(
     val theme: ThemeValue = ThemeValue.AUTO,
+    val themeLightVariant: ThemeValue = ThemeValue.LIGHT,
+    val themeDarkVariant: ThemeValue = ThemeValue.DARK,
+    val themeGesture: Boolean = true,
     val reduceMotion: Boolean = false,
     val enableOffline: Boolean = false,
     val enableImagePrefetch: Boolean = false,
@@ -217,6 +224,9 @@ fun buildSettingsUiState(
     val appIconSelection = AppIconManager.currentSelection(context)
     return SettingsUiState(
         theme = prefsRepo.getSelectedTheme(),
+        themeLightVariant = prefsRepo.getThemeLightVariant(),
+        themeDarkVariant = prefsRepo.getThemeDarkVariant(),
+        themeGesture = prefsRepo.isThemeGestureEnabled(),
         reduceMotion = prefsRepo.getBoolean(PrefConstants.REDUCE_MOTION, false),
         enableOffline = prefsRepo.isOfflineEnabled(),
         enableImagePrefetch = prefsRepo.isImagePrefetchEnabled(),
@@ -295,6 +305,8 @@ fun SettingsScreen(
     state: SettingsUiState,
     onBooleanChanged: (String, Boolean) -> Unit,
     onStringChanged: (String, String) -> Unit,
+    onThemeModeSelected: (ThemeMode) -> Unit,
+    onThemeVariantSelected: (ThemeValue) -> Unit,
     onStoryClusteringEnabledChanged: (Boolean) -> Unit,
     onClusterModeChanged: (String) -> Unit,
     onAppIconSelected: (AppIconFlavor, AppIconAppearanceMode) -> Unit,
@@ -303,7 +315,7 @@ fun SettingsScreen(
     onListenVoices: () -> Unit = {},
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    val palette = settingsPalette(state.theme)
+    val palette = settingsPalette(state.theme, state.themeLightVariant, state.themeDarkVariant)
     var showAppIconChooser by rememberSaveable { mutableStateOf(false) }
     val selectedAppIconFlavor = AppIconManager.flavorById(state.appIconFlavorId)
     // The launcher icon's "Use both" mode follows the device's system dark setting.
@@ -595,6 +607,84 @@ fun SettingsScreen(
             iconColor = NewsblurPurple,
             palette = palette,
         ) {
+            // SettingsScreen.kt mirrors iOS's Appearance rows; PrefsRepo.kt maps them onto the one stored theme.
+            // Their short values fill the value column so the three chevrons line up at the trailing edge.
+            val themeTitle = stringResource(R.string.menu_theme_choose)
+            val themeModeOptions =
+                listOf(
+                    ChoiceOption(ThemeMode.AUTO.name, stringResource(R.string.auto)),
+                    ChoiceOption(ThemeMode.LIGHT.name, stringResource(R.string.light)),
+                    ChoiceOption(ThemeMode.DARK.name, stringResource(R.string.dark)),
+                )
+            val themeMode = ThemeAppearance.mode(state.theme).name
+            ValueSettingsRow(
+                title = themeTitle,
+                icon = Icons.Rounded.Palette,
+                iconColor = NewsblurPink,
+                currentValue = themeModeOptions.labelFor(themeMode),
+                subtitle = stringResource(R.string.settings_theme_summary),
+                palette = palette,
+                fillValueWidth = true,
+                choiceDialog =
+                    ChoiceDialogState(themeTitle, themeMode, themeModeOptions, onSelect = { onThemeModeSelected(ThemeMode.valueOf(it)) }),
+            )
+            RowDivider(palette)
+            val lightAppearanceTitle = stringResource(R.string.settings_theme_light_appearance)
+            val lightVariantOptions =
+                listOf(
+                    ChoiceOption(ThemeValue.LIGHT.name, stringResource(R.string.theme_normal)),
+                    ChoiceOption(ThemeValue.SEPIA.name, stringResource(R.string.theme_warm)),
+                )
+            ValueSettingsRow(
+                title = lightAppearanceTitle,
+                icon = Icons.Rounded.LightMode,
+                iconColor = NewsblurOrange,
+                currentValue = lightVariantOptions.labelFor(state.themeLightVariant.name),
+                subtitle = stringResource(R.string.settings_theme_light_appearance_summary),
+                palette = palette,
+                fillValueWidth = true,
+                choiceDialog =
+                    ChoiceDialogState(
+                        lightAppearanceTitle,
+                        state.themeLightVariant.name,
+                        lightVariantOptions,
+                        onSelect = { onThemeVariantSelected(ThemeValue.valueOf(it)) },
+                    ),
+            )
+            RowDivider(palette)
+            val darkAppearanceTitle = stringResource(R.string.settings_theme_dark_appearance)
+            val darkVariantOptions =
+                listOf(
+                    ChoiceOption(ThemeValue.DARK.name, stringResource(R.string.theme_gray)),
+                    ChoiceOption(ThemeValue.BLACK.name, stringResource(R.string.black)),
+                )
+            ValueSettingsRow(
+                title = darkAppearanceTitle,
+                icon = Icons.Rounded.DarkMode,
+                iconColor = NewsblurIndigo,
+                currentValue = darkVariantOptions.labelFor(state.themeDarkVariant.name),
+                subtitle = stringResource(R.string.settings_theme_dark_appearance_summary),
+                palette = palette,
+                fillValueWidth = true,
+                choiceDialog =
+                    ChoiceDialogState(
+                        darkAppearanceTitle,
+                        state.themeDarkVariant.name,
+                        darkVariantOptions,
+                        onSelect = { onThemeVariantSelected(ThemeValue.valueOf(it)) },
+                    ),
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_theme_gesture),
+                icon = Icons.Rounded.SwipeVertical,
+                iconColor = NewsblurPurple,
+                checked = state.themeGesture,
+                subtitle = stringResource(R.string.settings_theme_gesture_summary),
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.THEME_GESTURE, it) },
+            )
+            RowDivider(palette)
             ToggleSettingsRow(
                 title = stringResource(R.string.settings_reduce_motion),
                 icon = Icons.Rounded.AutoAwesome,
@@ -2397,10 +2487,15 @@ private data class SettingsPalette(
 )
 
 @Composable
-private fun settingsPalette(theme: ThemeValue): SettingsPalette {
+private fun settingsPalette(
+    theme: ThemeValue,
+    lightVariant: ThemeValue,
+    darkVariant: ThemeValue,
+): SettingsPalette {
+    // SettingsScreen.kt colors Auto with the chosen Light and Dark appearance, as the rest of the app does.
     val resolvedTheme =
         when (theme) {
-            ThemeValue.AUTO -> if (isSystemInDarkTheme()) ThemeValue.DARK else ThemeValue.LIGHT
+            ThemeValue.AUTO -> if (isSystemInDarkTheme()) darkVariant else lightVariant
             else -> theme
         }
 
@@ -2488,6 +2583,7 @@ private fun settingsPalette(theme: ThemeValue): SettingsPalette {
 }
 
 private val NewsblurBlue = Color(0xFF0A84FF)
+private val NewsblurPink = Color(0xFFFF375F)
 private val NewsblurOrange = Color(0xFFFF9500)
 private val NewsblurPurple = Color(0xFFBF5AF2)
 private val NewsblurGreen = Color(0xFF34C759)

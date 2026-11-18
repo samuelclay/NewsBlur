@@ -1,7 +1,23 @@
 <resources>
+    <string name="listen_voice_rotation">Voice rotation</string>
+    <string name="listen_selected_voice">Selected voice</string>
+    <string name="listen_rotation_order">One voice per story, in this order.</string>
+    <string name="listen_use_voice">Use voice</string>
+    <string name="listen_use_only_voice">Use only this voice</string>
+    <string name="listen_rotation_selected">Selected</string>
+    <string name="listen_find_voice">Find %1$s in the voice list</string>
+    <string name="listen_add_rotation_voice">Add %1$s to rotation</string>
+    <string name="listen_remove_rotation_voice">Remove %1$s from rotation</string>
     <string name="language_title">Language</string>
     <string name="settings_cat_general">General</string>
     <string name="settings_cat_appearance">Appearance</string>
+    <string name="settings_theme_summary">Auto follows system appearance</string>
+    <string name="settings_theme_light_appearance">Light appearance</string>
+    <string name="settings_theme_light_appearance_summary">Theme variant for light mode</string>
+    <string name="settings_theme_dark_appearance">Dark appearance</string>
+    <string name="settings_theme_dark_appearance_summary">Theme variant for dark mode</string>
+    <string name="settings_theme_gesture">Two-finger swipe to switch</string>
+    <string name="settings_theme_gesture_summary">Swipe up/down with two fingers to change theme</string>
     <string name="settings_reduce_motion">Reduce motion</string>
     <string name="settings_reduce_motion_summary">Keep fades, without movement.</string>
     <string name="language_current">Language: %1$s</string>
@@ -889,9 +905,11 @@ people together to talk about the world.</string>
 
     <string name="auto">Auto</string>
     <string name="light">Light</string>
-    <string name="sepia">Sepia</string>
     <string name="dark">Dark</string>
     <string name="black">Black</string>
+    <string name="theme_normal">Normal</string>
+    <string name="theme_warm">Warm</string>
+    <string name="theme_gray">Gray</string>
 
     <string name="settings_gestures">Gestures</string>
 

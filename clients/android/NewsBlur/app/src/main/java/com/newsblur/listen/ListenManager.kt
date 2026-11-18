@@ -239,6 +239,7 @@ class ListenManager
         private var upNextQueueLoaded = false
         private val queueMutex = Mutex()
         private var manifest: ListenManifest? = null
+        private val voiceRotation = ListenVoiceRotationSession()
         private var timeline = ListenTimeline(emptyList())
         private var phase = ListenPhase.IDLE
         private var playWhenReady = false
@@ -626,18 +627,18 @@ class ListenManager
          * new voice. ListenVoiceSettingsViewModel.kt waits for the save before calling this.
          */
         @MainThread
-        fun restartWithCurrentSettings() {
+        fun restartWithCurrentSettings(voiceId: String? = null) {
             val current = story ?: return
             val loadedManifest = manifest ?: return
             val paragraph = ListenSegments.firstParagraph(loadedManifest.segments, currentSegment)
             val language = loadedManifest.language
-            val voiceId = listenPreferences.current().voiceFor(language)
+            val requestedVoice = voiceId ?: voiceRotation.choices[language] ?: loadedManifest.voice?.voiceId
             val wasPlaying = playWhenReady
             startStory(
                 current,
                 startParagraph = paragraph,
                 language = language,
-                voiceId = voiceId,
+                voiceId = requestedVoice,
                 play = wasPlaying,
             )
         }
@@ -645,6 +646,7 @@ class ListenManager
         /** Stops Listen and hides the mini player; what was playing stays the server's current item, paused. */
         @MainThread
         fun close() {
+            voiceRotation.reset()
             saveListenCurrent(isPlaying = false)
             story?.let(::recordHistory)
             reportProgress()
@@ -789,6 +791,10 @@ class ListenManager
             play: Boolean = true,
         ) {
             val previous = story
+            if (target.media == null) {
+                voiceRotation.beginStory(target.storyHash, listenPreferences.current().rotations)
+                if (voiceId != null && language != null) voiceRotation.useVoice(voiceId, language)
+            }
             // Switching between a story read aloud and its own podcast episode counts as switching too.
             if (previous != null && previous.entryId != target.entryId) recordHistory(previous)
             // Switching stories, or restarting this one in a new voice or delivery, reports the old manifest.
@@ -843,11 +849,13 @@ class ListenManager
                         target.storyHash,
                         language = language,
                         voiceId = voiceId,
+                        voiceChoices = voiceRotation.choices,
                     )
                 if (expected != generation) return@launchForStory
                 when (result) {
                     is ListenResult.Failure -> fail(result.error)
                     is ListenResult.Success -> {
+                        voiceRotation.record(result.value.language, result.value.voice?.voiceId)
                         applyManifest(result.value)
                         val segments = result.value.segments
                         if (segments.isEmpty()) {
@@ -1072,7 +1080,7 @@ class ListenManager
                 listenApi.getManifest(
                     current.storyHash,
                     language = old.language,
-                    voiceId = old.voice?.voiceId,
+                    voiceId = voiceRotation.choices[old.language] ?: old.voice?.voiceId,
                 )
             if (expected != generation) return false
             return when (result) {

@@ -391,6 +391,23 @@ test('dialog sections outside the scroll viewport do not compress the visible ca
     assert.deepEqual(h.animations.map(animation => animation.options.delay), [0, 30, 60]);
 });
 
+// test_reader_motion.cjs: the feed list settles after it draws (read sites hiding, headers appearing), which brings
+// more rows into view with no scroll. Those rows used to start a second cascade at the top of the list.
+test('feed rows revealed without a scroll while the list is entering continue its cascade', () => {
+    const h = harness(), owner = {}, root = h.root();
+    h.context.NEWSBLUR.Preferences = { animations: true };
+    const first = [1, 2, 3].map(id => h.record(id));
+    first.forEach((row, index) => h.visible(row, index * 40));
+    const later = [4, 5].map(id => h.record(id));
+    h.motion.watch(owner, [...first, ...later], root, 'feeds', { continue_cascade: true });
+    assert.equal(h.animations.length, 3);
+    later.forEach((row, index) => h.visible(row, 120 + index * 40));
+    h.observers[0].callback(later.map(row => ({ target: row.el, isIntersecting: true })));
+    assert.equal(h.animations.length, 5);
+    const delays = h.animations.map(animation => animation.options.delay);
+    assert.ok(delays.every((delay, index) => index === 0 || delay > delays[index - 1]), delays.join(', '));
+});
+
 test('scrolling into a new batch reveals every row without a stagger backlog', () => {
     const h = harness(), owner = {}, root = h.root();
     const rows = Array.from({ length: 8 }, (_, i) => h.record(i + 1));

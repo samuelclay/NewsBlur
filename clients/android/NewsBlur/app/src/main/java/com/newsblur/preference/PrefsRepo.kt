@@ -47,6 +47,8 @@ import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
+import com.newsblur.util.ThemeAppearance
+import com.newsblur.util.ThemeMode
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.UsageBillingState
 import com.newsblur.util.VolumeKeyNavigation
@@ -872,15 +874,58 @@ class PrefsRepo(
     }
 
     fun setSelectedTheme(value: ThemeValue) {
-        prefs.edit { putString(PrefConstants.THEME, value.name) }
-        // Track the most recently used light/dark variant for Auto mode
-        when (value) {
-            ThemeValue.LIGHT, ThemeValue.SEPIA ->
-                prefs.edit { putString(PrefConstants.THEME_LIGHT_VARIANT, value.name) }
-            ThemeValue.DARK, ThemeValue.BLACK ->
-                prefs.edit { putString(PrefConstants.THEME_DARK_VARIANT, value.name) }
-            ThemeValue.AUTO -> {} // no variant to track
+        // PrefsRepo.kt saves the theme and its remembered variant in one edit, so a theme listener never
+        // sees the new theme beside the old variant.
+        prefs.edit {
+            putString(PrefConstants.THEME, value.name)
+            // Track the most recently used light/dark variant for Auto mode
+            when (value) {
+                ThemeValue.LIGHT, ThemeValue.SEPIA -> putString(PrefConstants.THEME_LIGHT_VARIANT, value.name)
+                ThemeValue.DARK, ThemeValue.BLACK -> putString(PrefConstants.THEME_DARK_VARIANT, value.name)
+                ThemeValue.AUTO -> {} // no variant to track
+            }
         }
+    }
+
+    /** PrefsRepo.kt reads the Light appearance row's choice: LIGHT (Normal) unless the reader picked SEPIA (Warm). */
+    fun getThemeLightVariant(): ThemeValue =
+        if (prefs.getString(PrefConstants.THEME_LIGHT_VARIANT, null) == ThemeValue.SEPIA.name) ThemeValue.SEPIA else ThemeValue.LIGHT
+
+    /** PrefsRepo.kt reads the Dark appearance row's choice: DARK (Gray), Android's default, unless the reader picked BLACK. */
+    fun getThemeDarkVariant(): ThemeValue =
+        if (prefs.getString(PrefConstants.THEME_DARK_VARIANT, null) == ThemeValue.BLACK.name) ThemeValue.BLACK else ThemeValue.DARK
+
+    /** PrefsRepo.kt applies Settings' Theme row: Light and Dark return to the variant last used on that side. */
+    fun setThemeMode(mode: ThemeMode) {
+        setSelectedTheme(ThemeAppearance.themeFor(mode, getThemeLightVariant(), getThemeDarkVariant()))
+    }
+
+    /**
+     * PrefsRepo.kt applies Settings' Light and Dark appearance rows. A variant for the side on screen switches to it; one for the
+     * other side, or chosen in Auto, is only remembered for when that side shows.
+     */
+    fun setThemeVariant(variant: ThemeValue) {
+        val selected = getSelectedTheme()
+        if (selected != ThemeValue.AUTO && ThemeAppearance.mode(selected) == ThemeAppearance.mode(variant)) {
+            setSelectedTheme(variant)
+            return
+        }
+        when (ThemeAppearance.mode(variant)) {
+            ThemeMode.LIGHT -> prefs.edit { putString(PrefConstants.THEME_LIGHT_VARIANT, variant.name) }
+            ThemeMode.DARK -> prefs.edit { putString(PrefConstants.THEME_DARK_VARIANT, variant.name) }
+            ThemeMode.AUTO -> {}
+        }
+    }
+
+    fun isThemeGestureEnabled() = prefs.getBoolean(PrefConstants.THEME_GESTURE, true)
+
+    /** PrefsRepo.kt picks the theme a two-finger swipe (ThemeSwipeGesture.kt) switches to, or null when Settings turned it off. */
+    fun themeAfterSwipe(
+        showing: ThemeValue,
+        fingersMovedDown: Boolean,
+    ): ThemeValue? {
+        if (!isThemeGestureEnabled()) return null
+        return ThemeAppearance.afterSwipe(getSelectedTheme(), showing, getThemeLightVariant(), getThemeDarkVariant(), fingersMovedDown)
     }
 
     /**
@@ -892,13 +937,7 @@ class PrefsRepo(
         val selected = getSelectedTheme()
         if (selected != ThemeValue.AUTO) return selected
         val nightFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        return if (nightFlags == Configuration.UI_MODE_NIGHT_YES) {
-            val darkVariant = prefs.getString(PrefConstants.THEME_DARK_VARIANT, ThemeValue.DARK.name)!!
-            ThemeValue.valueOf(darkVariant)
-        } else {
-            val lightVariant = prefs.getString(PrefConstants.THEME_LIGHT_VARIANT, ThemeValue.LIGHT.name)!!
-            ThemeValue.valueOf(lightVariant)
-        }
+        return if (nightFlags == Configuration.UI_MODE_NIGHT_YES) getThemeDarkVariant() else getThemeLightVariant()
     }
 
     fun getStateFilter(): StateFilter =

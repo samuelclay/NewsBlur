@@ -578,6 +578,9 @@ NEWSBLUR.motion = (function () {
                 }));
                 // motion.js continues one opening timeline across title pages, keeping their fades overlapping.
                 var opening_titles = options.animate_on_scroll === false;
+                // motion.js: rows that come into view without a scroll while earlier rows are still entering, as the
+                // feed list settles after it draws, continue that cascade instead of starting a second one.
+                var continues = opening_titles || (options.continue_cascade && !scrolling);
                 var animate = animations_enabled();
                 if (opening_titles && !animate) finish_titles();
                 var spacing = options.spacing || 35;
@@ -587,8 +590,8 @@ NEWSBLUR.motion = (function () {
                 var step = visible.length > 1 ? Math.min(spacing, spread / (visible.length - 1)) : spacing;
                 entered.forEach(function (element) { if (!running.has(element)) entered.delete(element); });
                 if (!entered.size) last_title_start = null;
-                var now = opening_titles ? performance.now() : 0;
-                var delay = opening_titles && last_title_start !== null && animate ?
+                var now = continues ? performance.now() : 0;
+                var delay = continues && last_title_start !== null && animate ?
                     Math.max(0, last_title_start + step - now) : 0;
                 visible.forEach(function (element, index) {
                     var key = element.nb_motion_key;
@@ -599,7 +602,7 @@ NEWSBLUR.motion = (function () {
                     var row_delay = delay + stagger_delay(index, visible.length, spacing, spread);
                     enter(element, row_delay, scrolling && !opening_titles ? 8 : (options.distance || 16),
                         opening_titles ? 175 : 350);
-                    if (opening_titles && animate) {
+                    if (continues && animate) {
                         entered.add(element);
                         last_title_start = now + row_delay;
                     }

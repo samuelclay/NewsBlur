@@ -154,6 +154,7 @@
                 feed_collection: NEWSBLUR.assets.feeds,
                 socialfeed_collection: NEWSBLUR.assets.social_feeds
             });
+            this.apply_saved_feed_list_filter();
             NEWSBLUR.app.sidebar = new NEWSBLUR.Views.Sidebar();
             NEWSBLUR.app.feed_list = new NEWSBLUR.Views.FeedList({ el: this.$s.$feed_list[0] });
             NEWSBLUR.app.story_titles = new NEWSBLUR.Views.StoryTitlesView({
@@ -7126,6 +7127,20 @@
         // ==========================
         // = Taskbar - Intelligence =
         // ==========================
+
+        // reader.js: the Unread, Focus and Saved filters hide sites through classes on the body and the sidebar,
+        // which load_intelligence_slider applies once the feeds arrive. views/feed_list_view.js starts the list's
+        // entrance as soon as it draws, which is earlier, so the saved filter is applied up front and the cascade
+        // only covers the rows that stay shown.
+        apply_saved_feed_list_filter: function () {
+            var unread_view = this.get_unread_view_score();
+            // reader.js: load_intelligence_slider reads this flag before it sets it, so it goes back afterwards.
+            var showing_starred = this.flags['feed_list_showing_starred'];
+            this.flags['feed_list_showing_starred'] = unread_view >= 2;
+            this.switch_feed_view_unread_view(Math.max(0, Math.min(unread_view, 2)));
+            NEWSBLUR.app.sidebar_header.toggle_hide_read_preference();
+            this.flags['feed_list_showing_starred'] = showing_starred;
+        },
 
         load_intelligence_slider: function () {
             var self = this;

@@ -103,6 +103,7 @@
 "Add" = "เพิ่ม";
 "Add %1$@ feeds to “%2$@” folder" = "เพิ่มฟีด %1$@ รายการไปยังโฟลเดอร์ “%2$@”";
 "Add %@" = "เพิ่ม %@";
+"Add %@ to rotation" = "เพิ่ม %@ ในการสลับเสียง";
 "Add + Discover Sites" = "เพิ่ม + ค้นพบเว็บไซต์";
 "Add Site" = "เพิ่มเว็บไซต์";
 "Add Sites" = "เพิ่มเว็บไซต์";
@@ -390,6 +391,7 @@
 "Fetching text..." = "กำลังดึงข้อความ...";
 "Filter" = "ตัวกรอง";
 "Filter stories by date range" = "กรองบทความตามช่วงวันที่";
+"Find %@ in the voice list" = "ค้นหา %@ ในรายการเสียง";
 "Find Friends" = "ค้นหาเพื่อน";
 "Find in Feed" = "ค้นหาในฟีด";
 "Find in Sites" = "ค้นหาในเว็บไซต์";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "เมื่อเลื่อนหรือเลือก";
 "One" = "หนึ่ง";
 "One column" = "หนึ่งคอลัมน์";
+"One voice per story, in this order." = "หนึ่งเสียงต่อบทความ ตามลำดับนี้";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "มีเพียง %1$@ จาก %2$@ เว็บไซต์ของคุณที่ได้รับการจัดทำดัชนีเพื่อค้นพบเนื้อหา อัปเกรดเพื่อจัดทำดัชนีเว็บไซต์ทั้งหมดและรับคำแนะนำที่ปรับให้เหมาะกับคุณ";
 "Only Title" = "เฉพาะชื่อเรื่อง";
 "Only on Selection" = "เฉพาะเมื่อเลือก";
@@ -860,6 +863,7 @@
 "Related sites" = "เว็บไซต์ที่เกี่ยวข้อง";
 "Reload Sites" = "โหลดเว็บไซต์อีกครั้ง";
 "Reloading..." = "กำลังโหลดใหม่...";
+"Remove %@ from rotation" = "นำ %@ ออกจากการสลับเสียง";
 "Remove This List" = "นำรายการนี้ออก";
 "Remove from Up Next" = "นำออกจากคิวถัดไป";
 "Removed from Up Next" = "นำออกจากคิวถัดไปแล้ว";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "เลือกฟีดหรือโฟลเดอร์";
 "Select a feed variant" = "เลือกเวอร์ชันของฟีด";
 "Select feeds to add" = "เลือกฟีดที่จะเพิ่ม";
+"Selected" = "เลือกแล้ว";
+"Selected voice" = "เสียงที่เลือก";
 "Send" = "ส่ง";
 "Send This Story To..." = "ส่งบทความนี้ไปยัง...";
 "Send To…" = "ส่งไปยัง…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "ใช้ %@";
 "Use another sign-in method" = "ใช้วิธีลงชื่อเข้าใช้อื่น";
 "Use both" = "ใช้ทั้งสองแบบ";
+"Use only this voice" = "ใช้เฉพาะเสียงนี้";
 "Use system size" = "ใช้ขนาดตามระบบ";
+"Use voice" = "ใช้เสียงนี้";
 "User info" = "ข้อมูลผู้ใช้";
 "Username" = "ชื่อผู้ใช้";
 "Username or Email" = "ชื่อผู้ใช้หรืออีเมล";
@@ -1245,6 +1253,7 @@
 "View mode" = "โหมดการแสดงผล";
 "Voice" = "เสียง";
 "Voice and music balance" = "ปรับสมดุลเสียงพูดและดนตรี";
+"Voice rotation" = "สลับเสียงอ่าน";
 "Voice settings" = "การตั้งค่าเสียง";
 "Warm" = "โทนอุ่น";
 "Web" = "เว็บ";

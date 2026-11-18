@@ -444,6 +444,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         return folderFeedList != null && folderFeedList.firstCursorSeenYet;
     }
 
+    // Main.java lets two fingers switch the theme over the feed list, as iOS does (ThemeSwipeGesture.kt).
+    @Override protected boolean hostsThemeSwipe() {
+        return true;
+    }
+
     private boolean motionRefreshRequested = false;
     private boolean motionRefreshStarted = false;
 

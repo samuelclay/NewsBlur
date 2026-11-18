@@ -8,6 +8,40 @@
 
 import Foundation
 
+struct ListenRotationVoice: Equatable, Identifiable {
+    let id: String
+    let name: String
+    var json: [String: String] { ["voice_id": id, "name": name] }
+}
+
+/// ListenPreferences.swift: only the ordered lists sync. This cursor belongs to one listening session.
+struct ListenVoiceRotationSession {
+    private var lastVoices: [String: String] = [:]
+    private var storyHash: String?
+    private(set) var choices: [String: String] = [:]
+
+    mutating func beginStory(_ hash: String, rotations: [String: [ListenRotationVoice]]) {
+        guard storyHash != hash else { return }
+        storyHash = hash
+        choices = rotations.compactMapValues { voices in voices.first?.id }
+        for (language, voices) in rotations where !voices.isEmpty {
+            if let index = voices.firstIndex(where: { $0.id == lastVoices[language] }) {
+                choices[language] = voices[(index + 1) % voices.count].id
+            }
+        }
+    }
+
+    mutating func record(language: String, resolvedVoice: String?) {
+        if choices[language] == nil { choices[language] = resolvedVoice }
+        lastVoices[language] = choices[language]
+    }
+
+    mutating func useVoice(_ id: String, language: String) {
+        choices[language] = id
+        lastVoices[language] = id
+    }
+}
+
 /// How the voice reads: a preset, or custom ElevenLabs voice settings (ListenPreferences.swift).
 struct ListenDeliverySettings: Equatable {
     var delivery: String
@@ -40,6 +74,7 @@ struct ListenDeliverySettings: Equatable {
     static let didChange = Notification.Name("ListenPreferencesDidChange")
 
     static let voicesKey = "listen_voices"
+    static let rotationsKey = "listen_voice_rotations"
     static let deliveryKey = "listen_delivery"
     static let stabilityKey = "listen_stability"
     static let similarityKey = "listen_similarity"
@@ -59,7 +94,7 @@ struct ListenDeliverySettings: Equatable {
         ("listen", "show_sideoption_listen")
     ]
 
-    private static let listenKeys = [voicesKey, deliveryKey, stabilityKey, similarityKey, styleKey, speakerBoostKey,
+    private static let listenKeys = [voicesKey, rotationsKey, deliveryKey, stabilityKey, similarityKey, styleKey, speakerBoostKey,
                                      speedKey, autoContinueKey, highlightKey]
     private static let askAIMigrationKey = "listen_migrated_show_ask_ai"
 
@@ -109,6 +144,33 @@ struct ListenDeliverySettings: Equatable {
         voices[language]
     }
 
+    @nonobjc static var rotations: [String: [ListenRotationVoice]] {
+        let object = ListenJSON.objectFromString(defaults.object(forKey: rotationsKey)) ?? [:]
+        return object.compactMapValues { value in
+            guard let entries = value as? [Any] else { return nil }
+            var seen = Set<String>()
+            let voices = entries.compactMap { value -> ListenRotationVoice? in
+                guard let entry = value as? [String: Any] else { return nil }
+                guard let id = entry["voice_id"] as? String, !id.isEmpty, seen.insert(id).inserted else { return nil }
+                return ListenRotationVoice(id: id, name: entry["name"] as? String ?? id)
+            }
+            return voices.isEmpty ? nil : voices
+        }
+    }
+
+    @nonobjc static func setRotation(_ entries: [ListenRotationVoice], forLanguage language: String,
+                                    completion: ((Bool) -> Void)? = nil) {
+        guard let first = entries.first else { return }
+        var rotations = self.rotations
+        rotations[language] = entries
+        var voices = self.voices
+        voices[language] = first.id
+        guard let rotationData = try? JSONSerialization.data(withJSONObject: rotations.mapValues { $0.map(\.json) }, options: .sortedKeys),
+              let voiceData = try? JSONSerialization.data(withJSONObject: voices, options: .sortedKeys) else { return }
+        save([rotationsKey: String(decoding: rotationData, as: UTF8.self),
+              voicesKey: String(decoding: voiceData, as: UTF8.self)], completion: completion)
+    }
+
     static var deliverySettings: ListenDeliverySettings {
         let delivery = defaults.string(forKey: deliveryKey) ?? "natural"
         return ListenDeliverySettings(
@@ -155,6 +217,13 @@ struct ListenDeliverySettings: Equatable {
     }
 
     private static var speedSave: DispatchWorkItem?
+    private static var rotationWrites: [() -> Void] = []
+    private static var rotationSession = UUID()
+
+    static func resetRotationWrites() {
+        rotationSession = UUID()
+        rotationWrites.removeAll()
+    }
 
     /// Stores the speed at once and sends it after a pause, so dragging the slider saves only where it stops.
     static func setSpeed(_ speed: Double) {
@@ -204,6 +273,7 @@ struct ListenDeliverySettings: Equatable {
         var changed: [String] = []
 
         for key in listenKeys {
+            if !rotationWrites.isEmpty && (key == rotationsKey || key == voicesKey) { continue }
             guard let value = preferences[key], !(value is NSNull) else {
                 // ListenPreferences.swift: the server never saved this one, so it's the default. Clearing it keeps
                 // a previous account's voice or speed from carrying over after switching accounts.
@@ -215,7 +285,7 @@ struct ListenDeliverySettings: Equatable {
             }
             let local: Any?
             switch key {
-            case voicesKey:
+            case voicesKey, rotationsKey:
                 if let string = value as? String {
                     local = string
                 } else if let object = ListenJSON.dictionary(value),
@@ -293,10 +363,32 @@ struct ListenDeliverySettings: Equatable {
             completion?(true)
             return
         }
-        let appDelegate = NewsBlurAppDelegate.shared()
         updateCachedProfile(values)
+        // ListenPreferences.swift: each voice edit replaces the account's whole list. Send them in tap order.
+        guard values[rotationsKey] != nil || values[voicesKey] != nil else {
+            post(values, completion: completion)
+            return
+        }
+        let session = rotationSession
+        rotationWrites.append {
+            post(values) { success in
+                guard rotationSession == session else { return }
+                completion?(success)
+                guard rotationSession == session else { return }
+                rotationWrites.removeFirst()
+                rotationWrites.first?()
+            }
+        }
+        if rotationWrites.count == 1 { rotationWrites[0]() }
+    }
+
+    private static func post(_ values: [String: String], completion: ((Bool) -> Void)?) {
+        guard let appDelegate = NewsBlurAppDelegate.shared() else {
+            completion?(false)
+            return
+        }
         let url = "\(ListenAPI.shared.baseURL)/profile/set_preference"
-        appDelegate?.post(url, parameters: values, success: { _, _ in
+        appDelegate.post(url, parameters: values, success: { _, _ in
             completion?(true)
         }, failure: { _, error in
             NSLog("Failed to save Listen preferences %@: %@", values.keys.joined(separator: ", "),

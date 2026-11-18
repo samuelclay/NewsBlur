@@ -59,6 +59,22 @@ class Test_VisiblePaneTheme {
         verify(exactly = 1) { UIUtils.restartActivity(pane.activity) }
     }
 
+    // Test_VisiblePaneTheme.kt: in Auto, Settings' Light and Dark appearance rows change the colors on screen
+    // without changing the stored theme, so watching only PrefConstants.THEME would leave panes in the old colors.
+    @Test
+    fun test_auto_variant_change_reloads_visible_panes_once() {
+        val pane = Fixture(initial = ThemeValue.AUTO)
+        pane.resume()
+        pane.notify(PrefConstants.THEME_DARK_VARIANT)
+        verify(exactly = 0) { UIUtils.restartActivity(pane.activity) }
+
+        pane.showing = ThemeValue.SEPIA
+        pane.notify(PrefConstants.THEME_LIGHT_VARIANT)
+        pane.notify(PrefConstants.THEME_LIGHT_VARIANT)
+
+        verify(exactly = 1) { UIUtils.restartActivity(pane.activity) }
+    }
+
     @Test
     fun test_unrelated_preferences_do_not_recreate_visible_panes() {
         val pane = Fixture()
@@ -67,12 +83,17 @@ class Test_VisiblePaneTheme {
         verify(exactly = 0) { UIUtils.restartActivity(pane.activity) }
     }
 
-    private class Fixture {
+    private class Fixture(
+        initial: ThemeValue = ThemeValue.LIGHT,
+    ) {
         val activity = mockk<NbActivity>(relaxed = true)
         val preferences = mockk<SharedPreferences>(relaxed = true)
         val listener = slot<SharedPreferences.OnSharedPreferenceChangeListener>()
         private val repo = mockk<PrefsRepo>(relaxed = true)
-        var theme = ThemeValue.LIGHT
+        var theme = initial
+
+        // Test_VisiblePaneTheme.kt: the theme on screen; Auto shows LIGHT until a test picks another variant.
+        var showing = ThemeValue.LIGHT
 
         init {
             NbActivity::class.java.getDeclaredField("prefsRepo").apply {
@@ -81,15 +102,17 @@ class Test_VisiblePaneTheme {
             }
             NbActivity::class.java.getDeclaredField("lastTheme").apply {
                 isAccessible = true
-                set(activity, ThemeValue.LIGHT)
+                set(activity, initial to ThemeValue.LIGHT)
             }
             every { repo.getSelectedTheme() } answers { theme }
+            every { repo.getResolvedTheme(any()) } answers { if (theme == ThemeValue.AUTO) showing else theme }
             every { activity.prefsRepo } returns repo
             every { activity.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE) } returns preferences
             every { preferences.registerOnSharedPreferenceChangeListener(capture(listener)) } just Runs
             every { activity["startObservingThemeChanges"]() } answers { callOriginal() }
             every { activity["stopObservingThemeChanges"]() } answers { callOriginal() }
             every { activity["refreshThemeIfChanged"]() } answers { callOriginal() }
+            every { activity["shownTheme"]() } answers { callOriginal() }
             every { activity["onSharedPreferenceChanged"](any<SharedPreferences>(), any<String>()) } answers { callOriginal() }
         }
 

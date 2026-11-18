@@ -117,6 +117,8 @@ function load_player() {
 // story's first segment is fetched, and pause() fires pause once.
 function FakeListenEngine(options) {
     this.options = options;
+    this.voice_choices = options.voice_choices;
+    this.rotation_voice_id = options.voice_id;
     this.listeners = {};
     this.paused = true;
     this.currentTime = 0;
@@ -212,6 +214,127 @@ function time_display_markup(markup) {
     const match = /<div class="NB-media-player-time[^"]*">([\s\S]*?)<\/div>/.exec(markup);
     return match ? match[0] : '';
 }
+
+// media_player_listen_loading.test.js: Rotation must advance on a new story, never a restart or
+// manifest refresh. Recomputing it when delivery changes would silently switch narrators mid-story.
+test('voice rotation wraps across stories and resets after closing the player', function () {
+    const player = load_playing_player();
+    const preferences = {
+        listen_voice_rotations: JSON.stringify({ en: [
+            { voice_id: 'jon', name: 'Jon' }, { voice_id: 'jane', name: 'Jane' }, { voice_id: 'lee', name: 'Lee' }
+        ], fr: [{ voice_id: 'lea', name: 'Léa' }, { voice_id: 'luc', name: 'Luc' }] })
+    };
+    player.context.NEWSBLUR.assets.preference = key => preferences[key];
+    player.context.NEWSBLUR.ListenFollowAlong = { start() {}, set_playing() {}, clear() {} };
+    player.trigger = function () {};
+    player.listen_open_text_view = function () {};
+
+    function start(hash, language, expected) {
+        player.play_media(listen_item(hash, hash));
+        const engine = player.media_element;
+        assert.equal(engine.options.voice_choices[language], expected);
+        const manifest = { language, voice: { voice_id: expected, name: expected } };
+        engine.manifest = manifest;
+        engine.voice_id = expected;
+        engine.language = language;
+        engine.voice_choices = engine.options.voice_choices;
+        engine.current_paragraph = () => 2;
+        engine.dispatch('listen:manifest', manifest);
+        engine.dispatch('listen:manifest', manifest);
+        return engine;
+    }
+    start('42:a', 'en', 'jon');
+    player.listen_restart();
+    assert.equal(player.media_element.options.voice_id, 'jon');
+    const fallback = start('42:b', 'en', 'jane');
+    // media_player_listen_loading.test.js: An unavailable library narrator falls back, but a
+    // delivery change must still count that story's requested voice as its turn in the rotation.
+    fallback.voice_id = null;
+    fallback.manifest.voice = { voice_id: 'jon', name: 'Jon' };
+    fallback.manifest.voice_fallback = true;
+    player.listen_restart();
+    assert.equal(player.media_element.options.voice_id, 'jane');
+    start('42:c', 'fr', 'lea');
+    start('42:d', 'en', 'lee');
+    start('42:e', 'en', 'jon');
+    player.close_player();
+    start('42:f', 'en', 'jon');
+});
+
+test('a single saved voice and malformed rotations keep normal playback', function () {
+    const player = load_playing_player();
+    player.context.NEWSBLUR.assets.preference = key => key === 'listen_voice_rotations' ? '{bad json' : undefined;
+    player.play_media(listen_item('42:a', 'Story'));
+    assert.deepEqual(JSON.parse(JSON.stringify(player.media_element.options.voice_choices)), {});
+});
+
+test('the selected voice gets its name when the picker loads the catalog for another language', function () {
+    const player = load_playing_player();
+    const context = player.context;
+    context.NEWSBLUR.assets.preference = key => key === 'listen_voices' ? JSON.stringify({ fr: 'lou' }) : null;
+    context.NEWSBLUR.ReaderPopover = { extend: (methods, statics) => Object.assign(methods, statics) };
+    vm.runInContext(fs.readFileSync(path.join(repo_root, 'media/js/newsblur/views/listen_settings_popover.js'), 'utf8'), context);
+    const element = { empty() { return this; }, toggleClass() { return this; }, append() {}, scrollTop() { return 0; } };
+    let selectedName;
+    context.$.make = function (tag, attrs, content) {
+        if (attrs.className === 'NB-listen-rotation-name') selectedName = content;
+        return element;
+    };
+    const popover = Object.create(context.NEWSBLUR.ListenSettingsPopover);
+    Object.assign(popover, {
+        media_player: player, language: 'fr', manifest: { language: 'en', voice: { voice_id: 'jon', name: 'Jon' } },
+        voices_by_language: {}, library: { voices: [] }, $: () => element
+    });
+    popover.render_voice_list();
+    popover.voices_by_language.fr = [{ voice_id: 'lou', name: 'Lou' }];
+    popover.render_voice_list();
+    assert.equal(selectedName, 'Lou');
+});
+
+test('adding voices keeps the current narrator, removing cannot empty the mix, and Use voice replaces it', function () {
+    const player = load_playing_player();
+    const context = player.context;
+    const preferences = { listen_voices: JSON.stringify({ en: 'jon', fr: 'lou' }) };
+    context.NEWSBLUR.assets.preference = key => preferences[key];
+    context.NEWSBLUR.assets.save_preferences = function (values, callback) {
+        Object.assign(preferences, values);
+        if (callback) callback();
+    };
+    context.NEWSBLUR.ReaderPopover = { extend: methods => methods };
+    vm.runInContext(fs.readFileSync(path.join(repo_root, 'media/js/newsblur/views/listen_settings_popover.js'), 'utf8'), context);
+    context.NEWSBLUR.ListenSettingsPopover.voice_cache = {
+        jon: { voice_id: 'jon', name: 'Jon' }, jane: { voice_id: 'jane', name: 'Jane' },
+        lee: { voice_id: 'lee', name: 'Lee' }
+    };
+    const popover = Object.create(context.NEWSBLUR.ListenSettingsPopover);
+    Object.assign(popover, {
+        media_player: player, language: 'en', story_language: 'en',
+        render_voice_list() {}, render_status() {}, fit_list_height() {}, stop_preview() {}
+    });
+    context.$ = function (target) {
+        return { closest() { return this; }, attr() { return target.voice_id; } };
+    };
+    const event = id => ({ currentTarget: { voice_id: id }, preventDefault() {}, stopPropagation() {} });
+    let restarts = 0;
+    player.is_listen = () => true;
+    player.listen_restart = () => { restarts += 1; };
+    player.listen_rotation_positions.en = 'jon';
+    popover.click_voice_add(event('jane'));
+    popover.click_voice_add(event('jane'));
+    assert.deepEqual(JSON.parse(preferences.listen_voice_rotations).en.map(v => v.voice_id), ['jon', 'jane']);
+    assert.equal(player.listen_next_voice_choices().en, 'jane');
+    assert.equal(restarts, 0);
+    popover.click_rotation_remove(event('jon'));
+    popover.click_rotation_remove(event('jane'));
+    assert.deepEqual(JSON.parse(preferences.listen_voice_rotations).en.map(v => v.voice_id), ['jane']);
+    assert.deepEqual(JSON.parse(preferences.listen_voices), { en: 'jane', fr: 'lou' });
+    assert.equal(player.listen_rotation_positions.en, 'jon');
+    popover.click_voice_add(event('lee'));
+    popover.click_voice(event('lee'));
+    assert.deepEqual(JSON.parse(preferences.listen_voice_rotations).en.map(v => v.voice_id), ['lee']);
+    assert.equal(JSON.parse(preferences.listen_voices).en, 'lee');
+    assert.equal(restarts, 1);
+});
 
 test('preparing audio does not grow the player', function () {
     const player = load_player();

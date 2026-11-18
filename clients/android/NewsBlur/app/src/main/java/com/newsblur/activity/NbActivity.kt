@@ -3,6 +3,7 @@ package com.newsblur.activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +24,9 @@ import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.StorySplitView
+import com.newsblur.util.ThemeAppearance
 import com.newsblur.util.UIUtils
+import com.newsblur.view.ThemeSwipeGesture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,9 +52,12 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
     private var listenMiniPlayerHost: ListenMiniPlayerHost? = null
 
     private var uniqueLoginKey: String? = null
-    private var lastTheme: ThemeValue? = null
+    // NbActivity.kt compares the stored theme and the one on screen, since in Auto a Light or Dark appearance
+    // choice changes the colors without changing the stored theme.
+    private var lastTheme: Pair<ThemeValue, ThemeValue>? = null
     private var themePreferences: SharedPreferences? = null
     private var themeTransitionToken: String? = null
+    private val themeSwipe by lazy { ThemeSwipeGesture(this, prefsRepo) }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
@@ -84,7 +90,7 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
         super.onCreate(savedInstanceState)
         themeTransitionToken = savedInstanceState?.getString("themeTransitionToken")
         Log.d(this, "onCreate")
-        lastTheme = prefsRepo.getSelectedTheme()
+        lastTheme = shownTheme()
 
         // in rare cases of process interruption or DB corruption, an activity can launch without valid
         // login creds.  redirect the user back to the loging workflow.
@@ -163,14 +169,16 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         // NbActivity.kt observes each resumed pane, including peers that never leave the foreground.
-        if (themePreferences != null && key == PrefConstants.THEME) refreshThemeIfChanged()
+        if (themePreferences != null && key in ThemeAppearance.preferenceKeys) refreshThemeIfChanged()
     }
+
+    private fun shownTheme() = prefsRepo.getSelectedTheme() to prefsRepo.getResolvedTheme(this)
 
     private fun refreshThemeIfChanged() {
         if (isFinishing || isDestroyed) return
-        val currentSelectedTheme = prefsRepo.getSelectedTheme()
-        if (lastTheme != currentSelectedTheme) {
-            lastTheme = currentSelectedTheme
+        val currentTheme = shownTheme()
+        if (lastTheme != currentTheme) {
+            lastTheme = currentTheme
             themeTransitionToken = com.newsblur.view.ThemeTransition.capture(this)
             UIUtils.restartActivity(this)
         }
@@ -181,6 +189,14 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
         stopObservingThemeChanges()
         super.onPause()
     }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (!hostsThemeSwipe()) return super.dispatchTouchEvent(event)
+        return themeSwipe.dispatch(event) { super.dispatchTouchEvent(it) }
+    }
+
+    /** NbActivity.kt lets two fingers swipe the theme (ThemeSwipeGesture.kt) on the screens iOS offers it. */
+    protected open fun hostsThemeSwipe(): Boolean = false
 
     protected open fun shouldUseTranslucentTheme(): Boolean = false
 

@@ -18,6 +18,7 @@ import com.newsblur.network.ListenVoicePreviewRequest
 import com.newsblur.preference.ListenDelivery
 import com.newsblur.preference.ListenPrefKeys
 import com.newsblur.preference.ListenPreferences
+import com.newsblur.preference.ListenRotationVoice
 import com.newsblur.preference.ListenSettings
 import com.newsblur.preference.ListenVoiceSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -117,7 +118,19 @@ data class ListenVoiceSettingsUiState(
     val previewLoadingVoiceId: String? = null,
     val previewError: ListenError? = null,
     val usage: ListenUsage? = null,
+    val revealVoiceId: String? = null,
+    val revealGeneration: Int = 0,
 ) {
+    val rotation: List<ListenRotationVoice>
+        get() =
+            settings.rotations[language]?.takeIf { it.isNotEmpty() }
+                ?: (settings.voiceFor(language) ?: selectedVoiceId)
+                    ?.let { id ->
+                        listOf(ListenRotationVoice(id, knownVoices[id]?.name ?: id))
+                    }.orEmpty()
+
+    fun voiceName(voice: ListenRotationVoice): String = knownVoices[voice.voiceId]?.name ?: voice.name
+
     val languageName: String
         get() = languages.firstOrNull { it.code == language }?.name ?: language
 
@@ -126,8 +139,11 @@ data class ListenVoiceSettingsUiState(
 
     private val allRecommended: List<ListenVoice>
         get() {
-            val selected = selectedVoiceId?.let { knownVoices[it] }?.takeIf { it.language == null || it.language == language }
-            return ListenVoiceMatching.recommended(curated, selected)
+            val extra =
+                rotation
+                    .filter { entry -> curated.none { it.voiceId == entry.voiceId } }
+                    .map { knownVoices[it.voiceId] ?: ListenVoice(voiceId = it.voiceId, name = it.name) }
+            return extra + curated
         }
 
     val recommended: List<ListenVoice>
@@ -254,14 +270,49 @@ class ListenVoiceSettingsViewModel
         }
 
         fun selectVoice(voice: ListenVoice) {
+            if (state.value.rotation.size == 1 &&
+                state.value.rotation
+                    .first()
+                    .voiceId == voice.voiceId
+            ) {
+                return
+            }
             val language = state.value.language
             mutableState.update {
                 it.copy(selectedVoiceId = voice.voiceId, knownVoices = it.knownVoices + (voice.voiceId to voice))
             }
             viewModelScope.launch {
-                listenPreferences.save(listenPreferences.voiceChange(language, voice.voiceId))
-                restartIfPlaying(language)
+                listenPreferences.save(listenPreferences.rotationChange(language, listOf(ListenRotationVoice(voice.voiceId, voice.name))))
+                restartIfPlaying(language, voice.voiceId)
             }
+        }
+
+        fun addVoice(voice: ListenVoice) {
+            val current = state.value
+            if (current.rotation.any { it.voiceId == voice.voiceId }) return
+            mutableState.update { it.copy(knownVoices = it.knownVoices + (voice.voiceId to voice)) }
+            listenPreferences.saveInBackground(
+                listenPreferences.rotationChange(
+                    current.language,
+                    current.rotation + ListenRotationVoice(voice.voiceId, voice.name),
+                ),
+            )
+        }
+
+        fun removeVoice(voiceId: String) {
+            val current = state.value
+            if (current.rotation.size <= 1) return
+            listenPreferences.saveInBackground(
+                listenPreferences.rotationChange(
+                    current.language,
+                    current.rotation.filter { it.voiceId != voiceId },
+                ),
+            )
+        }
+
+        fun revealVoice(voiceId: String) {
+            if (state.value.hasFilters) clearFilters()
+            mutableState.update { it.copy(revealVoiceId = voiceId, revealGeneration = it.revealGeneration + 1) }
         }
 
         fun selectDelivery(delivery: ListenDelivery) {
@@ -314,11 +365,14 @@ class ListenVoiceSettingsViewModel
 
         fun setHighlight(enabled: Boolean) = listenPreferences.saveInBackground(mapOf(ListenPrefKeys.HIGHLIGHT to enabled))
 
-        private fun restartIfPlaying(language: String?) {
+        private fun restartIfPlaying(
+            language: String?,
+            voiceId: String? = null,
+        ) {
             val playing = listenManager.state.value
             if (!playing.isActive || playing.phase == ListenPhase.ENDED || playing.phase == ListenPhase.PREVIEW_ENDED) return
             if (language != null && playing.language != language) return
-            listenManager.restartWithCurrentSettings()
+            listenManager.restartWithCurrentSettings(voiceId)
         }
 
         // region Filters and the library

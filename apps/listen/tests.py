@@ -288,6 +288,50 @@ class Test_ListenViews(ListenTestCase):
     def post(self, path, data):
         return json.loads(self.client.post(path, data).content)
 
+    def test_web_rotation_uses_the_detected_language_without_changing_saved_voices(self, configured):
+        # tests.py: a web session chooses the next narrator per language. Applying choices before
+        # language detection, or saving them as preferences, breaks native single-voice playback.
+        from apps.listen import voices
+
+        story = self.make_story()
+        voice_ids = list(voices.premade_voice_ids())
+        chosen = next(voice for voice in voice_ids if voice != voices.default_voice_id("en"))
+        response = self.post(
+            "/listen/manifest",
+            {
+                "story_hash": story.story_hash,
+                "voice_choices": json.dumps({"en": chosen, "fr": voices.default_voice_id("fr")}),
+            },
+        )
+        self.assertEqual(response["language"], "en")
+        self.assertEqual(response["voice"]["voice_id"], chosen)
+        normal = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        self.assertEqual(normal["voice"]["voice_id"], voices.default_voice_id("en"))
+        explicit = self.post(
+            "/listen/manifest",
+            {
+                "story_hash": story.story_hash,
+                "voice_choices": json.dumps({"en": chosen}),
+                "voice_id": voices.default_voice_id("en"),
+            },
+        )
+        self.assertEqual(explicit["voice"]["voice_id"], voices.default_voice_id("en"))
+
+    def test_invalid_rotation_choices_fall_back_to_the_normal_voice(self, configured):
+        from apps.listen import voices
+
+        story = self.make_story()
+        for choices in ("{broken", "[]", '{"en": []}', '{"en": "../../v1/x#"}'):
+            with self.subTest(choices=choices):
+                response = self.post(
+                    "/listen/manifest",
+                    {
+                        "story_hash": story.story_hash,
+                        "voice_choices": choices,
+                    },
+                )
+                self.assertEqual(response["voice"]["voice_id"], voices.default_voice_id("en"))
+
     def test_free_users_get_a_thirty_second_preview(self, configured):
         story = self.make_story()
         manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
