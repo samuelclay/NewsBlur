@@ -271,7 +271,7 @@ test('a single saved voice and malformed rotations keep normal playback', functi
 test('adding voices keeps the current narrator, removing cannot empty the mix, and Use voice replaces it', function () {
     const player = load_playing_player();
     const context = player.context;
-    const preferences = { listen_voices: JSON.stringify({ en: 'jon' }) };
+    const preferences = { listen_voices: JSON.stringify({ en: 'jon', fr: 'lou' }) };
     context.NEWSBLUR.assets.preference = key => preferences[key];
     context.NEWSBLUR.assets.save_preferences = function (values, callback) {
         Object.assign(preferences, values);
@@ -304,6 +304,8 @@ test('adding voices keeps the current narrator, removing cannot empty the mix, a
     popover.click_rotation_remove(event('jon'));
     popover.click_rotation_remove(event('jane'));
     assert.deepEqual(JSON.parse(preferences.listen_voice_rotations).en.map(v => v.voice_id), ['jane']);
+    assert.deepEqual(JSON.parse(preferences.listen_voices), { en: 'jane', fr: 'lou' });
+    assert.equal(player.listen_rotation_positions.en, 'jon');
     popover.click_voice_add(event('lee'));
     popover.click_voice(event('lee'));
     assert.deepEqual(JSON.parse(preferences.listen_voice_rotations).en.map(v => v.voice_id), ['lee']);

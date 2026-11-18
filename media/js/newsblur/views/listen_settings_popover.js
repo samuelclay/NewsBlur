@@ -891,15 +891,15 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         var rotations = this.media_player.listen_voice_rotations();
         rotations[language] = rotation;
         var preferences = { listen_voice_rotations: JSON.stringify(rotations) };
-        if (use_voice) {
-            var voices;
-            try { voices = JSON.parse(NEWSBLUR.assets.preference('listen_voices') || '{}'); }
-            catch (err) { voices = {}; }
-            if (!voices || _.isArray(voices) || !_.isObject(voices)) voices = {};
-            voices[language] = use_voice;
+        var voices;
+        try { voices = JSON.parse(NEWSBLUR.assets.preference('listen_voices') || '{}'); }
+        catch (err) { voices = {}; }
+        if (!voices || _.isArray(voices) || !_.isObject(voices)) voices = {};
+        if (voices[language] !== rotation[0].voice_id) {
+            voices[language] = rotation[0].voice_id;
             preferences.listen_voices = JSON.stringify(voices);
-            this.media_player.listen_rotation_positions[language] = use_voice;
         }
+        if (use_voice) this.media_player.listen_rotation_positions[language] = use_voice;
         NEWSBLUR.assets.save_preferences(preferences, callback);
         this.render_voice_list();
         this.render_status();
