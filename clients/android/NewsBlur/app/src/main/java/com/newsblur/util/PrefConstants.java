@@ -128,6 +128,7 @@ public class PrefConstants {
     public static final String REDUCE_MOTION = "reduce_motion";
     public static final String THEME_LIGHT_VARIANT = "theme_light_variant";
     public static final String THEME_DARK_VARIANT = "theme_dark_variant";
+    public static final String THEME_GESTURE = "theme_gesture";
     public enum ThemeValue {
         AUTO,
         LIGHT,

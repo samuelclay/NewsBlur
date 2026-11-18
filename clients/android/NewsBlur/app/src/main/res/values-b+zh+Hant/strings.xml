@@ -42,6 +42,13 @@
     <string name="language_title">語言</string>
     <string name="settings_cat_general">一般</string>
     <string name="settings_cat_appearance">外觀</string>
+    <string name="settings_theme_summary">自動跟隨系統外觀</string>
+    <string name="settings_theme_light_appearance">淺色外觀</string>
+    <string name="settings_theme_light_appearance_summary">淺色模式的主題變體</string>
+    <string name="settings_theme_dark_appearance">深色外觀</string>
+    <string name="settings_theme_dark_appearance_summary">深色模式的主題變體</string>
+    <string name="settings_theme_gesture">雙指滑動即可切換</string>
+    <string name="settings_theme_gesture_summary">用兩指上下滑動以變更主題</string>
     <string name="settings_reduce_motion">減少動態效果</string>
     <string name="settings_reduce_motion_summary">保留淡入淡出，取消移動效果。</string>
     <string name="language_current">語言：%1$s</string>
@@ -784,9 +791,11 @@
     <string name="trainer_regex_help_acronyms">首字母縮寫</string>
     <string name="auto">自動</string>
     <string name="light">淺色</string>
-    <string name="sepia">棕褐色</string>
     <string name="dark">深色</string>
     <string name="black">黑色</string>
+    <string name="theme_normal">一般</string>
+    <string name="theme_warm">暖色</string>
+    <string name="theme_gray">灰色</string>
     <string name="settings_gestures">手勢</string>
     <string name="sync_status_housekeeping">正在整理…</string>
     <string name="sync_status_actions">正在補上 %d 個閱讀動作…</string>

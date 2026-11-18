@@ -42,6 +42,13 @@
     <string name="language_title">Język</string>
     <string name="settings_cat_general">Ogólne</string>
     <string name="settings_cat_appearance">Wygląd</string>
+    <string name="settings_theme_summary">Automatycznie dopasowuje się do wyglądu systemu</string>
+    <string name="settings_theme_light_appearance">Jasny wygląd</string>
+    <string name="settings_theme_light_appearance_summary">Wariant motywu dla jasnego trybu</string>
+    <string name="settings_theme_dark_appearance">Ciemny wygląd</string>
+    <string name="settings_theme_dark_appearance_summary">Wariant motywu dla trybu ciemnego</string>
+    <string name="settings_theme_gesture">Przesuń dwoma palcami, aby przełączyć</string>
+    <string name="settings_theme_gesture_summary">Przesuń dwoma palcami w górę lub w dół, aby zmienić motyw</string>
     <string name="settings_reduce_motion">Ogranicz ruch</string>
     <string name="settings_reduce_motion_summary">Zachowaj przenikanie, bez ruchu.</string>
     <string name="language_current">Język: %1$s</string>
@@ -808,9 +815,11 @@
     <string name="trainer_regex_help_acronyms">Skrótowce</string>
     <string name="auto">Automatycznie</string>
     <string name="light">Jasny</string>
-    <string name="sepia">Sepia</string>
     <string name="dark">Ciemny</string>
     <string name="black">Czarny</string>
+    <string name="theme_normal">Normalny</string>
+    <string name="theme_warm">Ciepły</string>
+    <string name="theme_gray">Szary</string>
     <string name="settings_gestures">Gesty</string>
     <string name="sync_status_housekeeping">Porządkowanie…</string>
     <string name="sync_status_actions">Synchronizowanie %d działań związanych z czytaniem…</string>

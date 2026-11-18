@@ -42,6 +42,13 @@
     <string name="language_title">Sprache</string>
     <string name="settings_cat_general">Allgemein</string>
     <string name="settings_cat_appearance">Darstellung</string>
+    <string name="settings_theme_summary">Automatisch dem Systemdesign folgen</string>
+    <string name="settings_theme_light_appearance">Helles Erscheinungsbild</string>
+    <string name="settings_theme_light_appearance_summary">Design-Variante für den hellen Modus</string>
+    <string name="settings_theme_dark_appearance">Dunkles Erscheinungsbild</string>
+    <string name="settings_theme_dark_appearance_summary">Design-Variante für den Dunkelmodus</string>
+    <string name="settings_theme_gesture">Mit zwei Fingern wischen, um zu wechseln</string>
+    <string name="settings_theme_gesture_summary">Mit zwei Fingern nach oben/unten wischen, um das Design zu wechseln</string>
     <string name="settings_reduce_motion">Bewegung reduzieren</string>
     <string name="settings_reduce_motion_summary">Überblendungen beibehalten, ohne Bewegung.</string>
     <string name="language_current">Sprache: %1$s</string>
@@ -792,9 +799,11 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="trainer_regex_help_acronyms">Akronyme</string>
     <string name="auto">Automatisch</string>
     <string name="light">Hell</string>
-    <string name="sepia">Sepia</string>
     <string name="dark">Dunkel</string>
     <string name="black">Schwarz</string>
+    <string name="theme_normal">Normal</string>
+    <string name="theme_warm">Warm</string>
+    <string name="theme_gray">Grau</string>
     <string name="settings_gestures">Gesten</string>
     <string name="sync_status_housekeeping">Wird aufgeräumt…</string>
     <string name="sync_status_actions">%d Leseaktionen werden synchronisiert …</string>

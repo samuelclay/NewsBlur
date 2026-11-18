@@ -42,6 +42,13 @@
     <string name="language_title">Ngôn ngữ</string>
     <string name="settings_cat_general">Chung</string>
     <string name="settings_cat_appearance">Giao diện</string>
+    <string name="settings_theme_summary">Tự động theo giao diện hệ thống</string>
+    <string name="settings_theme_light_appearance">Giao diện sáng</string>
+    <string name="settings_theme_light_appearance_summary">Biến thể giao diện cho chế độ sáng</string>
+    <string name="settings_theme_dark_appearance">Giao diện tối</string>
+    <string name="settings_theme_dark_appearance_summary">Biến thể giao diện cho chế độ tối</string>
+    <string name="settings_theme_gesture">Vuốt bằng hai ngón tay để chuyển đổi</string>
+    <string name="settings_theme_gesture_summary">Vuốt lên/xuống bằng hai ngón tay để đổi giao diện</string>
     <string name="settings_reduce_motion">Giảm chuyển động</string>
     <string name="settings_reduce_motion_summary">Giữ hiệu ứng mờ dần, không chuyển động.</string>
     <string name="language_current">Ngôn ngữ: %1$s</string>
@@ -784,9 +791,11 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="trainer_regex_help_acronyms">Từ viết tắt</string>
     <string name="auto">Tự động</string>
     <string name="light">Sáng</string>
-    <string name="sepia">Nâu đỏ</string>
     <string name="dark">Tối</string>
     <string name="black">Đen</string>
+    <string name="theme_normal">Bình thường</string>
+    <string name="theme_warm">Ấm</string>
+    <string name="theme_gray">Xám</string>
     <string name="settings_gestures">Cử chỉ</string>
     <string name="sync_status_housekeeping">Đang dọn dẹp…</string>
     <string name="sync_status_actions">Đang đồng bộ %d thao tác đọc…</string>

@@ -42,6 +42,13 @@
     <string name="language_title">ภาษา</string>
     <string name="settings_cat_general">ทั่วไป</string>
     <string name="settings_cat_appearance">รูปลักษณ์</string>
+    <string name="settings_theme_summary">ปรับตามรูปลักษณ์ของระบบโดยอัตโนมัติ</string>
+    <string name="settings_theme_light_appearance">รูปลักษณ์สว่าง</string>
+    <string name="settings_theme_light_appearance_summary">รูปแบบธีมสำหรับโหมดสว่าง</string>
+    <string name="settings_theme_dark_appearance">รูปลักษณ์มืด</string>
+    <string name="settings_theme_dark_appearance_summary">รูปแบบธีมสำหรับโหมดมืด</string>
+    <string name="settings_theme_gesture">ปัดด้วยสองนิ้วเพื่อสลับ</string>
+    <string name="settings_theme_gesture_summary">ปัดขึ้น/ลงด้วยสองนิ้วเพื่อเปลี่ยนธีม</string>
     <string name="settings_reduce_motion">ลดการเคลื่อนไหว</string>
     <string name="settings_reduce_motion_summary">คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว</string>
     <string name="language_current">ภาษา: %1$s</string>
@@ -784,9 +791,11 @@
     <string name="trainer_regex_help_acronyms">คำย่อ</string>
     <string name="auto">อัตโนมัติ</string>
     <string name="light">สว่าง</string>
-    <string name="sepia">ซีเปีย</string>
     <string name="dark">มืด</string>
     <string name="black">สีดำ</string>
+    <string name="theme_normal">ปกติ</string>
+    <string name="theme_warm">โทนอุ่น</string>
+    <string name="theme_gray">สีเทา</string>
     <string name="settings_gestures">ท่าทาง</string>
     <string name="sync_status_housekeeping">กำลังจัดระเบียบ…</string>
     <string name="sync_status_actions">กำลังซิงค์การอ่าน %d รายการ…</string>

@@ -42,6 +42,13 @@
     <string name="language_title">言語</string>
     <string name="settings_cat_general">全般</string>
     <string name="settings_cat_appearance">外観</string>
+    <string name="settings_theme_summary">システムの外観設定に自動で合わせる</string>
+    <string name="settings_theme_light_appearance">ライトテーマ</string>
+    <string name="settings_theme_light_appearance_summary">ライトモードのテーマバリエーション</string>
+    <string name="settings_theme_dark_appearance">ダーク表示</string>
+    <string name="settings_theme_dark_appearance_summary">ダークモードのテーマバリエーション</string>
+    <string name="settings_theme_gesture">2本指でスワイプして切り替え</string>
+    <string name="settings_theme_gesture_summary">2本指で上下にスワイプしてテーマを変更</string>
     <string name="settings_reduce_motion">動きを減らす</string>
     <string name="settings_reduce_motion_summary">動きをなくし、フェードは維持します。</string>
     <string name="language_current">言語：%1$s</string>
@@ -784,9 +791,11 @@
     <string name="trainer_regex_help_acronyms">頭字語</string>
     <string name="auto">自動</string>
     <string name="light">ライト</string>
-    <string name="sepia">セピア</string>
     <string name="dark">ダーク</string>
     <string name="black">黒</string>
+    <string name="theme_normal">標準</string>
+    <string name="theme_warm">暖色</string>
+    <string name="theme_gray">グレー</string>
     <string name="settings_gestures">ジェスチャー</string>
     <string name="sync_status_housekeeping">整理中…</string>
     <string name="sync_status_actions">%d件の既読操作を同期中…</string>

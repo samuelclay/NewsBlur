@@ -42,6 +42,13 @@
     <string name="language_title">Мова</string>
     <string name="settings_cat_general">Загальні</string>
     <string name="settings_cat_appearance">Вигляд</string>
+    <string name="settings_theme_summary">«Автоматично» відповідає оформленню системи</string>
+    <string name="settings_theme_light_appearance">Світле оформлення</string>
+    <string name="settings_theme_light_appearance_summary">Варіант теми для світлого режиму</string>
+    <string name="settings_theme_dark_appearance">Темний режим</string>
+    <string name="settings_theme_dark_appearance_summary">Варіант теми для темного режиму</string>
+    <string name="settings_theme_gesture">Проведіть двома пальцями, щоб перемкнутися</string>
+    <string name="settings_theme_gesture_summary">Проведіть двома пальцями вгору/вниз, щоб змінити тему</string>
     <string name="settings_reduce_motion">Зменшити рух</string>
     <string name="settings_reduce_motion_summary">Зберегти плавну появу та зникнення без руху.</string>
     <string name="language_current">Мова: %1$s</string>
@@ -808,9 +815,11 @@
     <string name="trainer_regex_help_acronyms">Абревіатури</string>
     <string name="auto">Автоматично</string>
     <string name="light">Світла</string>
-    <string name="sepia">Сепія</string>
     <string name="dark">Темна</string>
     <string name="black">Чорна</string>
+    <string name="theme_normal">Звичайний</string>
+    <string name="theme_warm">Теплий</string>
+    <string name="theme_gray">Сіра</string>
     <string name="settings_gestures">Жести</string>
     <string name="sync_status_housekeeping">Упорядковуємо…</string>
     <string name="sync_status_actions">Синхронізація дій читання (%d)…</string>

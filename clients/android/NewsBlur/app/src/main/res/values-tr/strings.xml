@@ -42,6 +42,13 @@
     <string name="language_title">Dil</string>
     <string name="settings_cat_general">Genel</string>
     <string name="settings_cat_appearance">Görünüm</string>
+    <string name="settings_theme_summary">Sistem görünümünü otomatik izler</string>
+    <string name="settings_theme_light_appearance">Açık görünüm</string>
+    <string name="settings_theme_light_appearance_summary">Açık mod için tema çeşidi</string>
+    <string name="settings_theme_dark_appearance">Koyu görünüm</string>
+    <string name="settings_theme_dark_appearance_summary">Koyu mod tema çeşidi</string>
+    <string name="settings_theme_gesture">Geçiş yapmak için iki parmakla kaydırın</string>
+    <string name="settings_theme_gesture_summary">Temayı değiştirmek için iki parmağınızla yukarı/aşağı kaydırın</string>
     <string name="settings_reduce_motion">Hareketi azalt</string>
     <string name="settings_reduce_motion_summary">Solma geçişlerini koru, hareketi kaldır.</string>
     <string name="language_current">Dil: %1$s</string>
@@ -792,9 +799,11 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="trainer_regex_help_acronyms">Kısaltmalar</string>
     <string name="auto">Otomatik</string>
     <string name="light">Açık</string>
-    <string name="sepia">Sepya</string>
     <string name="dark">Koyu</string>
     <string name="black">Siyah</string>
+    <string name="theme_normal">Normal</string>
+    <string name="theme_warm">Sıcak</string>
+    <string name="theme_gray">Gri</string>
     <string name="settings_gestures">Hareketler</string>
     <string name="sync_status_housekeeping">Düzenleniyor…</string>
     <string name="sync_status_actions">%d okuma işlemi eşitleniyor…</string>

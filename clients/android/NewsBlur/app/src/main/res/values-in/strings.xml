@@ -42,6 +42,13 @@
     <string name="language_title">Bahasa</string>
     <string name="settings_cat_general">Umum</string>
     <string name="settings_cat_appearance">Tampilan</string>
+    <string name="settings_theme_summary">Otomatis mengikuti tampilan sistem</string>
+    <string name="settings_theme_light_appearance">Tampilan terang</string>
+    <string name="settings_theme_light_appearance_summary">Varian tema untuk mode terang</string>
+    <string name="settings_theme_dark_appearance">Tampilan gelap</string>
+    <string name="settings_theme_dark_appearance_summary">Varian tema untuk mode gelap</string>
+    <string name="settings_theme_gesture">Geser dengan dua jari untuk beralih</string>
+    <string name="settings_theme_gesture_summary">Geser ke atas/bawah dengan dua jari untuk mengubah tema</string>
     <string name="settings_reduce_motion">Kurangi gerakan</string>
     <string name="settings_reduce_motion_summary">Pertahankan efek pudar, tanpa gerakan.</string>
     <string name="language_current">Bahasa: %1$s</string>
@@ -784,9 +791,11 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="trainer_regex_help_acronyms">Akronim</string>
     <string name="auto">Otomatis</string>
     <string name="light">Terang</string>
-    <string name="sepia">Sepia</string>
     <string name="dark">Gelap</string>
     <string name="black">Hitam</string>
+    <string name="theme_normal">Normal</string>
+    <string name="theme_warm">Hangat</string>
+    <string name="theme_gray">Abu-abu</string>
     <string name="settings_gestures">Gestur</string>
     <string name="sync_status_housekeeping">Sedang merapikan…</string>
     <string name="sync_status_actions">Menyinkronkan %d tindakan membaca…</string>

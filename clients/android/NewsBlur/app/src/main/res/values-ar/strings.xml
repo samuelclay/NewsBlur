@@ -42,6 +42,13 @@
     <string name="language_title">اللغة</string>
     <string name="settings_cat_general">عام</string>
     <string name="settings_cat_appearance">المظهر</string>
+    <string name="settings_theme_summary">اتباع مظهر النظام تلقائيًا</string>
+    <string name="settings_theme_light_appearance">المظهر الفاتح</string>
+    <string name="settings_theme_light_appearance_summary">تنويعة السمة للوضع الفاتح</string>
+    <string name="settings_theme_dark_appearance">المظهر الداكن</string>
+    <string name="settings_theme_dark_appearance_summary">تنويعة السمة للوضع الداكن</string>
+    <string name="settings_theme_gesture">اسحب بإصبعين للتبديل</string>
+    <string name="settings_theme_gesture_summary">اسحب لأعلى أو لأسفل بإصبعين لتغيير السمة</string>
     <string name="settings_reduce_motion">تقليل الحركة</string>
     <string name="settings_reduce_motion_summary">الاحتفاظ بالتلاشي دون حركة.</string>
     <string name="language_current">اللغة: %1$s</string>
@@ -824,9 +831,11 @@
     <string name="trainer_regex_help_acronyms">اختصارات</string>
     <string name="auto">تلقائي</string>
     <string name="light">فاتح</string>
-    <string name="sepia">سيبيا</string>
     <string name="dark">داكن</string>
     <string name="black">أسود</string>
+    <string name="theme_normal">عادي</string>
+    <string name="theme_warm">دافئ</string>
+    <string name="theme_gray">رمادي</string>
     <string name="settings_gestures">الإيماءات</string>
     <string name="sync_status_housekeeping">جارٍ الترتيب…</string>
     <string name="sync_status_actions">جارٍ مزامنة إجراءات القراءة (%d)…</string>
