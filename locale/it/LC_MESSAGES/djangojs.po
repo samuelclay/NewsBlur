@@ -1115,6 +1115,10 @@ msgid_plural "Add %(count)s story tags"
 msgstr[0] "Aggiungi %(count)s tag all'articolo"
 msgstr[1] "Aggiungi %(count)s tag all'articolo"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "Aggiungi %(voice)s alla rotazione"
+
 msgid "Add Folder"
 msgstr "Aggiungi cartella"
 
@@ -1179,6 +1183,9 @@ msgstr "Aggiungi a In coda"
 
 msgid "Add to folder"
 msgstr "Aggiungi alla cartella"
+
+msgid "Add to rotation"
+msgstr "Aggiungi alla rotazione"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2145,6 +2152,9 @@ msgstr "Creatività"
 msgid "Credit"
 msgstr "Credito"
 
+msgid "Current voice"
+msgstr "Voce attuale"
+
 msgid "Cursors"
 msgstr "Cursori"
 
@@ -3008,6 +3018,10 @@ msgstr "Finanza"
 msgid "Find %(value_1)s Friends"
 msgstr "Trova amici su %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "Trova %(voice)s nell’elenco delle voci"
+
 msgid "Find Friends"
 msgstr "Trova amici"
 
@@ -3649,6 +3663,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "In una nuova finestra"
+
+msgid "In rotation"
+msgstr "Nella rotazione"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4801,6 +4818,9 @@ msgstr "Un solo comando con Docker"
 msgid "One sentence"
 msgstr "Una frase"
 
+msgid "One voice per story, in this order."
+msgstr "Una voce per articolo, in questo ordine."
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
 "Iscriviti con un clic a qualsiasi sito con un feed. Usa l’URL personalizzato per aggiungere siti, nella "
@@ -5589,6 +5609,10 @@ msgstr "Ricorda la posizione di riproduzione per ogni episodio"
 msgid "Remove"
 msgstr "Rimuovi"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "Rimuovi %(voice)s dalla rotazione"
+
 msgid "Remove from Up Next"
 msgstr "Rimuovi da In coda"
 
@@ -6035,6 +6059,12 @@ msgstr "Seleziona una parte dell'URL per trovare corrispondenze con schemi come 
 
 msgid "Select title phrase"
 msgstr "Seleziona una frase del titolo"
+
+msgid "Selected"
+msgstr "Selezionata"
+
+msgid "Selected voice"
+msgstr "Voce selezionata"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Selezionare un articolo nell'elenco dei titoli lo segna come letto."
@@ -7660,11 +7690,18 @@ msgstr "La fatturazione a consumo è attiva per i classificatori del linguaggio 
 msgid "Use %(language)s"
 msgstr "Usa %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Usa solo %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "Usa il formato a 12 ore"
 
 msgid "Use 24-hour clock"
 msgstr "Usa il formato 24 ore"
+
+msgid "Use only this voice"
+msgstr "Usa solo questa voce"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Usa modelli di prompt per smistare la posta in arrivo, fare ricerche su argomenti e verificare i feed"
@@ -7676,6 +7713,9 @@ msgid "Use this URL template in browser extensions and feed readers to subscribe
 msgstr ""
 "Usa questo modello di URL nelle estensioni del browser e nei lettori di feed per iscriverti ai siti su "
 "NewsBlur."
+
+msgid "Use voice"
+msgstr "Usa voce"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Usa i widget per vedere a colpo d'occhio il numero di elementi non letti e gli articoli"
@@ -7745,8 +7785,14 @@ msgstr "Voce"
 msgid "Voice recording failed. Please try again."
 msgstr "Registrazione vocale non riuscita. Riprova."
 
+msgid "Voice rotation"
+msgstr "Rotazione delle voci"
+
 msgid "Voice settings"
 msgstr "Impostazioni vocali"
+
+msgid "Voices"
+msgstr "Voci"
 
 msgid "Warning: This is actually permanent"
 msgstr "Attenzione: questa operazione è davvero permanente"

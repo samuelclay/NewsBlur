@@ -1044,6 +1044,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "%(count)s haber etiketi ekle"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "%(voice)s sesini döngüye ekle"
+
 msgid "Add Folder"
 msgstr "Klasör Ekle"
 
@@ -1106,6 +1110,9 @@ msgstr "Sıraya ekle"
 
 msgid "Add to folder"
 msgstr "Klasöre ekle"
+
+msgid "Add to rotation"
+msgstr "Döngüye ekle"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2064,6 +2071,9 @@ msgstr "Yaratıcı"
 msgid "Credit"
 msgstr "Kredi"
 
+msgid "Current voice"
+msgstr "Geçerli ses"
+
 msgid "Cursors"
 msgstr "İmleçler"
 
@@ -2928,6 +2938,10 @@ msgstr "Finans"
 msgid "Find %(value_1)s Friends"
 msgstr "%(value_1)s Arkadaşlarını Bul"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "Ses listesinde %(voice)s sesini bul"
+
 msgid "Find Friends"
 msgstr "Arkadaş Bul"
 
@@ -3562,6 +3576,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "Yeni pencerede"
+
+msgid "In rotation"
+msgstr "Döngüde"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4700,6 +4717,9 @@ msgstr "Docker ile tek komut"
 msgid "One sentence"
 msgstr "Tek cümle"
 
+msgid "One voice per story, in this order."
+msgstr "Bu sırayla, her yazı için bir ses."
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
 "Akış içeren herhangi bir sitede tek tıklamayla abone olun. Ekstralar sekmesindeki özel site ekleme URL'sini"
@@ -5472,6 +5492,10 @@ msgstr "Her bölüm için oynatma konumunu hatırla"
 msgid "Remove"
 msgstr "Kaldır"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "%(voice)s sesini döngüden çıkar"
+
 msgid "Remove from Up Next"
 msgstr "Sıradan çıkar"
 
@@ -5915,6 +5939,12 @@ msgstr "Bölüm veya kategori gibi kalıpları eşleştirmek için URL'nin bir k
 
 msgid "Select title phrase"
 msgstr "Başlık ifadesi seçin"
+
+msgid "Selected"
+msgstr "Seçili"
+
+msgid "Selected voice"
+msgstr "Seçili ses"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Haber başlıkları listesinden bir haber seçmek, onu okunmuş olarak işaretler."
@@ -7520,11 +7550,18 @@ msgstr "Doğal dil sınıflandırıcıları için kullanıma dayalı faturaland�
 msgid "Use %(language)s"
 msgstr "%(language)s kullan"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Yalnızca %(voice)s sesini kullan"
+
 msgid "Use 12-hour clock"
 msgstr "12 saatlik saat biçimini kullan"
 
 msgid "Use 24-hour clock"
 msgstr "24 saatlik saat biçimini kullan"
+
+msgid "Use only this voice"
+msgstr "Yalnızca bu sesi kullan"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Gelen kutusu ayıklama, konu araştırması ve akış denetimleri için istem şablonları kullanın"
@@ -7534,6 +7571,9 @@ msgstr "Yerel tarayıcı bağlam menüsünü kullan"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "NewsBlur'a abone olmak için tarayıcı uzantılarında ve akış okuyucularında bu URL şablonunu kullanın."
+
+msgid "Use voice"
+msgstr "Sesi kullan"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Okunmamış sayılarını ve haberleri bir bakışta görmek için widget'ları kullanın"
@@ -7601,8 +7641,14 @@ msgstr "Ses"
 msgid "Voice recording failed. Please try again."
 msgstr "Ses kaydı başarısız oldu. Lütfen tekrar deneyin."
 
+msgid "Voice rotation"
+msgstr "Ses döngüsü"
+
 msgid "Voice settings"
 msgstr "Ses ayarları"
+
+msgid "Voices"
+msgstr "Sesler"
 
 msgid "Warning: This is actually permanent"
 msgstr "Uyarı: Bu işlem gerçekten kalıcıdır"

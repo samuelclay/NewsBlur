@@ -103,6 +103,7 @@
 "Add" = "Ekle";
 "Add %1$@ feeds to “%2$@” folder" = "“%2$@” klasörüne %1$@ akış ekle";
 "Add %@" = "%@ ekle";
+"Add %@ to rotation" = "%@ sesini döngüye ekle";
 "Add + Discover Sites" = "Site Ekle + Keşfet";
 "Add Site" = "Site Ekle";
 "Add Sites" = "Site ekle";
@@ -390,6 +391,7 @@
 "Fetching text..." = "Metin alınıyor...";
 "Filter" = "Filtre";
 "Filter stories by date range" = "Haberleri tarih aralığına göre filtrele";
+"Find %@ in the voice list" = "Ses listesinde %@ sesini bul";
 "Find Friends" = "Arkadaş Bul";
 "Find in Feed" = "Akışta Bul";
 "Find in Sites" = "Sitelerde bul";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "Kaydırınca veya seçince";
 "One" = "Bir";
 "One column" = "Bir sütun";
+"One voice per story, in this order." = "Bu sırayla, her yazı için bir ses.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Keşif için %2$@ sitenizin yalnızca %1$@ kadarı dizine eklendi. Tüm sitelerinizi dizine eklemek ve kişiselleştirilmiş öneriler almak için planınızı yükseltin.";
 "Only Title" = "Yalnızca başlık";
 "Only on Selection" = "Yalnızca seçilince";
@@ -860,6 +863,7 @@
 "Related sites" = "İlgili siteler";
 "Reload Sites" = "Siteleri yeniden yükle";
 "Reloading..." = "Yeniden yükleniyor...";
+"Remove %@ from rotation" = "%@ sesini döngüden çıkar";
 "Remove This List" = "Bu Listeyi Kaldır";
 "Remove from Up Next" = "Sıradan çıkar";
 "Removed from Up Next" = "Sıradan çıkarıldı";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "Bir akış veya klasör seçin";
 "Select a feed variant" = "Bir akış sürümü seçin";
 "Select feeds to add" = "Eklenecek akışları seçin";
+"Selected" = "Seçili";
+"Selected voice" = "Seçili ses";
 "Send" = "Gönder";
 "Send This Story To..." = "Bu haberi şuraya gönder...";
 "Send To…" = "Şuraya gönder…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "%@ kullan";
 "Use another sign-in method" = "Başka bir giriş yöntemi kullan";
 "Use both" = "İkisini de kullan";
+"Use only this voice" = "Yalnızca bu sesi kullan";
 "Use system size" = "Sistem boyutunu kullan";
+"Use voice" = "Sesi kullan";
 "User info" = "Kullanıcı bilgileri";
 "Username" = "Kullanıcı adı";
 "Username or Email" = "Kullanıcı adı veya e-posta";
@@ -1245,6 +1253,7 @@
 "View mode" = "Görünüm modu";
 "Voice" = "Ses";
 "Voice and music balance" = "Ses ve müzik dengesi";
+"Voice rotation" = "Ses döngüsü";
 "Voice settings" = "Ses ayarları";
 "Warm" = "Sıcak";
 "Web" = "Web";

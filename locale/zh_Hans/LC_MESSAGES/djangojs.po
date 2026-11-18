@@ -1040,6 +1040,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "添加 %(count)s 个文章标签"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "将 %(voice)s 加入轮换"
+
 msgid "Add Folder"
 msgstr "添加文件夹"
 
@@ -1102,6 +1106,9 @@ msgstr "添加到接下来播放"
 
 msgid "Add to folder"
 msgstr "添加到文件夹"
+
+msgid "Add to rotation"
+msgstr "加入轮换"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2034,6 +2041,9 @@ msgstr "创意"
 msgid "Credit"
 msgstr "奖励"
 
+msgid "Current voice"
+msgstr "当前语音"
+
 msgid "Cursors"
 msgstr "光标"
 
@@ -2880,6 +2890,10 @@ msgstr "金融"
 msgid "Find %(value_1)s Friends"
 msgstr "查找 %(value_1)s 好友"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "在语音列表中查找 %(voice)s"
+
 msgid "Find Friends"
 msgstr "查找好友"
 
@@ -3502,6 +3516,9 @@ msgstr "在新标签页中打开<b>%(config_page)s</b>，搜索<b>%(setting)s</b
 
 msgid "In a new window"
 msgstr "在新窗口中"
+
+msgid "In rotation"
+msgstr "已加入轮换"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4626,6 +4643,9 @@ msgstr "使用 Docker 一条命令即可"
 msgid "One sentence"
 msgstr "一句话"
 
+msgid "One voice per story, in this order."
+msgstr "按此顺序，每篇文章使用一种语音。"
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "在任何提供订阅源的网站上一键订阅。请使用“附加功能”标签页中的自定义添加网站 URL。"
 
@@ -5380,6 +5400,10 @@ msgstr "记住每集的播放位置"
 msgid "Remove"
 msgstr "移除"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "将 %(voice)s 移出轮换"
+
 msgid "Remove from Up Next"
 msgstr "从接下来播放中移除"
 
@@ -5813,6 +5837,12 @@ msgstr "选择 URL 的一部分，以匹配版块或类别等模式。"
 
 msgid "Select title phrase"
 msgstr "选择标题短语"
+
+msgid "Selected"
+msgstr "已选择"
+
+msgid "Selected voice"
+msgstr "已选语音"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "在文章标题列表中选择一篇文章会将其标记为已读。"
@@ -7375,11 +7405,18 @@ msgstr "自然语言分类器已启用按使用量计费。"
 msgid "Use %(language)s"
 msgstr "使用 %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "仅使用 %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "使用 12 小时制"
 
 msgid "Use 24-hour clock"
 msgstr "使用 24 小时制"
+
+msgid "Use only this voice"
+msgstr "仅使用此语音"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "使用提示词模板进行收件箱分类、主题研究和订阅源审核"
@@ -7389,6 +7426,9 @@ msgstr "使用浏览器原生右键菜单"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "在浏览器扩展和订阅源阅读器中使用此 URL 模板，即可在 NewsBlur 上订阅。"
+
+msgid "Use voice"
+msgstr "使用此语音"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "使用小组件一览未读数量和文章"
@@ -7456,8 +7496,14 @@ msgstr "语音"
 msgid "Voice recording failed. Please try again."
 msgstr "语音录制失败，请重试。"
 
+msgid "Voice rotation"
+msgstr "语音轮换"
+
 msgid "Voice settings"
 msgstr "语音设置"
+
+msgid "Voices"
+msgstr "语音"
 
 msgid "Warning: This is actually permanent"
 msgstr "警告：此操作无法撤销"

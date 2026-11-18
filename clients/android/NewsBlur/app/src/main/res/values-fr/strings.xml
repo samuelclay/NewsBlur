@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">Articles prioritaires</string>
     <string name="story_title_mark_story_read">Marquer l’article comme lu…</string>
     <string name="story_title_list_font_size">Taille de police des titres des flux et des articles</string>
+    <string name="listen_voice_rotation">Rotation des voix</string>
+    <string name="listen_selected_voice">Voix sélectionnée</string>
+    <string name="listen_rotation_order">Une voix par article, dans cet ordre.</string>
+    <string name="listen_use_voice">Utiliser cette voix</string>
+    <string name="listen_use_only_voice">Utiliser uniquement cette voix</string>
+    <string name="listen_rotation_selected">Sélectionnée</string>
+    <string name="listen_find_voice">Trouver %1$s dans la liste des voix</string>
+    <string name="listen_add_rotation_voice">Ajouter %1$s à la rotation</string>
+    <string name="listen_remove_rotation_voice">Retirer %1$s de la rotation</string>
     <string name="language_title">Langue</string>
     <string name="settings_cat_general">Général</string>
     <string name="settings_cat_appearance">Apparence</string>

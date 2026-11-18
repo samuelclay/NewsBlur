@@ -103,6 +103,7 @@
 "Add" = "Добавить";
 "Add %1$@ feeds to “%2$@” folder" = "Добавить ленты %1$@ в папку «%2$@»";
 "Add %@" = "Добавить %@";
+"Add %@ to rotation" = "Добавить %@ в чередование";
 "Add + Discover Sites" = "Добавить и найти сайты";
 "Add Site" = "Добавить сайт";
 "Add Sites" = "Добавить сайты";
@@ -390,6 +391,7 @@
 "Fetching text..." = "Загрузка текста...";
 "Filter" = "Фильтр";
 "Filter stories by date range" = "Фильтровать статьи по диапазону дат";
+"Find %@ in the voice list" = "Найти %@ в списке голосов";
 "Find Friends" = "Найти друзей";
 "Find in Feed" = "Найти в ленте";
 "Find in Sites" = "Найти на сайтах";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "При прокрутке или выборе";
 "One" = "Один";
 "One column" = "Одна колонка";
+"One voice per story, in this order." = "Один голос на статью, в этом порядке.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Для поиска проиндексировано только %1$@ из %2$@ ваших сайтов. Перейдите на платный тариф, чтобы проиндексировать все сайты и получать персональные рекомендации.";
 "Only Title" = "Только заголовок";
 "Only on Selection" = "Только при выборе";
@@ -860,6 +863,7 @@
 "Related sites" = "Похожие сайты";
 "Reload Sites" = "Перезагрузить сайты";
 "Reloading..." = "Перезагрузка...";
+"Remove %@ from rotation" = "Убрать %@ из чередования";
 "Remove This List" = "Удалить этот список";
 "Remove from Up Next" = "Убрать из очереди «Далее»";
 "Removed from Up Next" = "Убрано из очереди «Далее»";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "Выберите ленту или папку";
 "Select a feed variant" = "Выберите вариант ленты";
 "Select feeds to add" = "Выберите ленты для добавления";
+"Selected" = "Выбран";
+"Selected voice" = "Выбранный голос";
 "Send" = "Отправить";
 "Send This Story To..." = "Отправить эту статью...";
 "Send To…" = "Отправить…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "Использовать язык: %@";
 "Use another sign-in method" = "Использовать другой способ входа";
 "Use both" = "Использовать оба варианта";
+"Use only this voice" = "Использовать только этот голос";
 "Use system size" = "Использовать системный размер";
+"Use voice" = "Выбрать голос";
 "User info" = "Информация о пользователе";
 "Username" = "Имя пользователя";
 "Username or Email" = "Имя пользователя или адрес электронной почты";
@@ -1245,6 +1253,7 @@
 "View mode" = "Режим просмотра";
 "Voice" = "Голос";
 "Voice and music balance" = "Баланс голоса и музыки";
+"Voice rotation" = "Чередование голосов";
 "Voice settings" = "Настройки голоса";
 "Warm" = "Тёплый";
 "Web" = "Веб";

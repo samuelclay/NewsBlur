@@ -1040,6 +1040,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "記事タグを%(count)s個追加"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "ローテーションに%(voice)sを追加"
+
 msgid "Add Folder"
 msgstr "フォルダーを追加"
 
@@ -1102,6 +1106,9 @@ msgstr "次に再生に追加"
 
 msgid "Add to folder"
 msgstr "フォルダーに追加"
+
+msgid "Add to rotation"
+msgstr "ローテーションに追加"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2034,6 +2041,9 @@ msgstr "クリエイティブ"
 msgid "Credit"
 msgstr "クレジット"
 
+msgid "Current voice"
+msgstr "現在の音声"
+
 msgid "Cursors"
 msgstr "カーソル"
 
@@ -2880,6 +2890,10 @@ msgstr "金融"
 msgid "Find %(value_1)s Friends"
 msgstr "%(value_1)sの友達を探す"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "音声一覧で%(voice)sを探す"
+
 msgid "Find Friends"
 msgstr "友達を探す"
 
@@ -3502,6 +3516,9 @@ msgstr "新しいタブで<b>%(config_page)s</b>を開き、<b>%(setting)s</b>�
 
 msgid "In a new window"
 msgstr "新しいウィンドウで開く"
+
+msgid "In rotation"
+msgstr "ローテーションに追加済み"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4626,6 +4643,9 @@ msgstr "Dockerならコマンド1つ"
 msgid "One sentence"
 msgstr "一文"
 
+msgid "One voice per story, in this order."
+msgstr "この順番で、記事ごとに音声を切り替えます。"
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "フィードのあるサイトなら、ワンクリックで購読できます。「その他」タブにあるカスタムサイト追加URLを使用してください。"
 
@@ -5380,6 +5400,10 @@ msgstr "エピソードごとに再生位置を記憶"
 msgid "Remove"
 msgstr "削除"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "ローテーションから%(voice)sを削除"
+
 msgid "Remove from Up Next"
 msgstr "次に再生から削除"
 
@@ -5813,6 +5837,12 @@ msgstr "URLの一部を選択して、セクションやカテゴリーなどの
 
 msgid "Select title phrase"
 msgstr "タイトルのフレーズを選択"
+
+msgid "Selected"
+msgstr "選択中"
+
+msgid "Selected voice"
+msgstr "選択中の音声"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "記事タイトル一覧で記事を選択すると、既読になります。"
@@ -7377,11 +7407,18 @@ msgstr "自然言語分類器では使用量に応じた課金が有効です。
 msgid "Use %(language)s"
 msgstr "%(language)sを使用"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "%(voice)sのみを使う"
+
 msgid "Use 12-hour clock"
 msgstr "12時間制を使用"
 
 msgid "Use 24-hour clock"
 msgstr "24時間表示を使用"
+
+msgid "Use only this voice"
+msgstr "この音声のみを使う"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "受信トレイの整理、トピック調査、フィード監査にプロンプトテンプレートを使用"
@@ -7391,6 +7428,9 @@ msgstr "ブラウザー標準のコンテキストメニューを使用"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "このURLテンプレートをブラウザー拡張機能やフィードリーダーで使うと、NewsBlurでフィードを購読できます。"
+
+msgid "Use voice"
+msgstr "この音声を使う"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "ウィジェットで未読数や記事をひと目で確認できます"
@@ -7458,8 +7498,14 @@ msgstr "音声"
 msgid "Voice recording failed. Please try again."
 msgstr "音声の録音に失敗しました。もう一度お試しください。"
 
+msgid "Voice rotation"
+msgstr "音声のローテーション"
+
 msgid "Voice settings"
 msgstr "音声設定"
+
+msgid "Voices"
+msgstr "音声"
 
 msgid "Warning: This is actually permanent"
 msgstr "警告：この操作は本当に取り消せません"

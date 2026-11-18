@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">聚焦文章</string>
     <string name="story_title_mark_story_read">将文章标记为已读…</string>
     <string name="story_title_list_font_size">订阅源和文章标题字体大小</string>
+    <string name="listen_voice_rotation">语音轮换</string>
+    <string name="listen_selected_voice">已选语音</string>
+    <string name="listen_rotation_order">按此顺序，每篇文章使用一种语音。</string>
+    <string name="listen_use_voice">使用此语音</string>
+    <string name="listen_use_only_voice">仅使用此语音</string>
+    <string name="listen_rotation_selected">已选择</string>
+    <string name="listen_find_voice">在语音列表中查找 %1$s</string>
+    <string name="listen_add_rotation_voice">将 %1$s 加入轮换</string>
+    <string name="listen_remove_rotation_voice">将 %1$s 移出轮换</string>
     <string name="language_title">语言</string>
     <string name="settings_cat_general">常规</string>
     <string name="settings_cat_appearance">外观</string>

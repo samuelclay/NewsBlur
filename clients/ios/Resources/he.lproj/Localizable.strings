@@ -103,6 +103,7 @@
 "Add" = "הוספה";
 "Add %1$@ feeds to “%2$@” folder" = "הוספת %1$@ עדכונים לתיקייה „%2$@”";
 "Add %@" = "הוספה: %@";
+"Add %@ to rotation" = "הוספת %@ לסבב";
 "Add + Discover Sites" = "הוספה + גילוי אתרים";
 "Add Site" = "הוספת אתר";
 "Add Sites" = "הוספת אתרים";
@@ -390,6 +391,7 @@
 "Fetching text..." = "טוען טקסט...";
 "Filter" = "סינון";
 "Filter stories by date range" = "סינון כתבות לפי טווח תאריכים";
+"Find %@ in the voice list" = "איתור %@ ברשימת הקולות";
 "Find Friends" = "מציאת חברים";
 "Find in Feed" = "חיפוש בפיד";
 "Find in Sites" = "חיפוש באתרים";
@@ -740,6 +742,7 @@
 "On scroll or selection" = "בעת גלילה או בחירה";
 "One" = "אחת";
 "One column" = "עמודה אחת";
+"One voice per story, in this order." = "קול אחד לכל כתבה, לפי הסדר הזה.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "רק %1$@ מתוך %2$@ האתרים שלך מאונדקסים לגילוי. שדרג כדי לאנדקס את כל האתרים שלך ולקבל המלצות מותאמות אישית.";
 "Only Title" = "כותרת בלבד";
 "Only on Selection" = "רק בעת בחירה";
@@ -860,6 +863,7 @@
 "Related sites" = "אתרים קשורים";
 "Reload Sites" = "טען מחדש אתרים";
 "Reloading..." = "טוען מחדש...";
+"Remove %@ from rotation" = "הסרת %@ מהסבב";
 "Remove This List" = "הסרת הרשימה הזו";
 "Remove from Up Next" = "הסרה מהתור הבא";
 "Removed from Up Next" = "הוסר מהתור הבא";
@@ -931,6 +935,8 @@
 "Select a feed or folder" = "בחרו פיד או תיקייה";
 "Select a feed variant" = "בחירת גרסה של הפיד";
 "Select feeds to add" = "בחירת פידים להוספה";
+"Selected" = "נבחר";
+"Selected voice" = "הקול שנבחר";
 "Send" = "שליחה";
 "Send This Story To..." = "שלח את הכתבה אל...";
 "Send To…" = "שליחה אל…";
@@ -1231,7 +1237,9 @@
 "Use %@" = "השתמשו ב־%@";
 "Use another sign-in method" = "שימוש בשיטת התחברות אחרת";
 "Use both" = "להשתמש בשניהם";
+"Use only this voice" = "שימוש בקול הזה בלבד";
 "Use system size" = "שימוש בגודל המערכת";
+"Use voice" = "שימוש בקול";
 "User info" = "פרטי משתמש";
 "Username" = "שם משתמש";
 "Username or Email" = "שם משתמש או כתובת אימייל";
@@ -1245,6 +1253,7 @@
 "View mode" = "מצב תצוגה";
 "Voice" = "קול";
 "Voice and music balance" = "איזון בין קול למוזיקה";
+"Voice rotation" = "סבב קולות";
 "Voice settings" = "הגדרות קול";
 "Warm" = "חם";
 "Web" = "אינטרנט";

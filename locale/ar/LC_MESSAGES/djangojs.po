@@ -1396,6 +1396,10 @@ msgstr[3] "أضف %(count)s وسوم للقصة"
 msgstr[4] "أضف %(count)s وسمًا للقصة"
 msgstr[5] "أضف %(count)s وسم للقصة"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "إضافة %(voice)s إلى التناوب"
+
 msgid "Add Folder"
 msgstr "إضافة مجلد"
 
@@ -1458,6 +1462,9 @@ msgstr "إضافة إلى التالي"
 
 msgid "Add to folder"
 msgstr "أضف إلى مجلد"
+
+msgid "Add to rotation"
+msgstr "إضافة إلى التناوب"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2464,6 +2471,9 @@ msgstr "إبداعي"
 msgid "Credit"
 msgstr "رصيد"
 
+msgid "Current voice"
+msgstr "الصوت الحالي"
+
 msgid "Cursors"
 msgstr "المؤشرات"
 
@@ -3328,6 +3338,10 @@ msgstr "التمويل"
 msgid "Find %(value_1)s Friends"
 msgstr "العثور على أصدقاء من %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "العثور على %(voice)s في قائمة الأصوات"
+
 msgid "Find Friends"
 msgstr "البحث عن أصدقاء"
 
@@ -3973,6 +3987,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "في نافذة جديدة"
+
+msgid "In rotation"
+msgstr "ضمن التناوب"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -5155,6 +5172,9 @@ msgstr "أمر واحد باستخدام Docker"
 msgid "One sentence"
 msgstr "جملة واحدة"
 
+msgid "One voice per story, in this order."
+msgstr "صوت واحد لكل مقالة، بهذا الترتيب."
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "اشترك بنقرة واحدة في أي موقع لديه خلاصة. استخدم رابط إضافة موقع مخصص من علامة تبويب الإضافات."
 
@@ -5965,6 +5985,10 @@ msgstr "تذكّر موضع التشغيل لكل حلقة"
 msgid "Remove"
 msgstr "إزالة"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "إزالة %(voice)s من التناوب"
+
 msgid "Remove from Up Next"
 msgstr "إزالة من التالي"
 
@@ -6417,6 +6441,12 @@ msgstr "حدّد جزءًا من عنوان URL لمطابقته مع أنماط
 
 msgid "Select title phrase"
 msgstr "اختيار عبارة العنوان"
+
+msgid "Selected"
+msgstr "محدد"
+
+msgid "Selected voice"
+msgstr "الصوت المحدد"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "يؤدي تحديد قصة من قائمة عناوين القصص إلى وضع علامة «مقروءة» عليها."
@@ -8071,11 +8101,18 @@ msgstr "الفوترة حسب الاستخدام مفعّلة لمصنّفات �
 msgid "Use %(language)s"
 msgstr "استخدم %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "استخدام %(voice)s فقط"
+
 msgid "Use 12-hour clock"
 msgstr "استخدام تنسيق 12 ساعة"
 
 msgid "Use 24-hour clock"
 msgstr "استخدم تنسيق 24 ساعة"
+
+msgid "Use only this voice"
+msgstr "استخدام هذا الصوت فقط"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "استخدم قوالب المطالبات لفرز البريد الوارد، والبحث في الموضوعات، ومراجعة الخلاصات"
@@ -8085,6 +8122,9 @@ msgstr "استخدم قائمة سياق المتصفح الأصلية"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "استخدم قالب عنوان URL هذا في إضافات المتصفح وقارئات الخلاصات للاشتراك في NewsBlur."
+
+msgid "Use voice"
+msgstr "استخدام الصوت"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "استخدم الأدوات المصغّرة للاطلاع على أعداد غير المقروء والقصص بنظرة سريعة"
@@ -8162,8 +8202,14 @@ msgstr "الصوت"
 msgid "Voice recording failed. Please try again."
 msgstr "فشل التسجيل الصوتي. يُرجى المحاولة مرة أخرى."
 
+msgid "Voice rotation"
+msgstr "تناوب الأصوات"
+
 msgid "Voice settings"
 msgstr "إعدادات الصوت"
+
+msgid "Voices"
+msgstr "الأصوات"
 
 msgid "Warning: This is actually permanent"
 msgstr "تحذير: هذا الإجراء نهائي بالفعل"

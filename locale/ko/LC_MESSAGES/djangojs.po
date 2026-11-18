@@ -1040,6 +1040,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "스토리 태그 %(count)s개 추가"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "순환 목록에 %(voice)s 추가"
+
 msgid "Add Folder"
 msgstr "폴더 추가"
 
@@ -1102,6 +1106,9 @@ msgstr "다음 재생 목록에 추가"
 
 msgid "Add to folder"
 msgstr "폴더에 추가"
+
+msgid "Add to rotation"
+msgstr "순환 목록에 추가"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -2038,6 +2045,9 @@ msgstr "크리에이티브"
 msgid "Credit"
 msgstr "크레딧"
 
+msgid "Current voice"
+msgstr "현재 음성"
+
 msgid "Cursors"
 msgstr "커서"
 
@@ -2886,6 +2896,10 @@ msgstr "금융"
 msgid "Find %(value_1)s Friends"
 msgstr "%(value_1)s 친구 찾기"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "음성 목록에서 %(voice)s 찾기"
+
 msgid "Find Friends"
 msgstr "친구 찾기"
 
@@ -3510,6 +3524,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "새 창에서"
+
+msgid "In rotation"
+msgstr "순환 목록에 있음"
 
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
@@ -4634,6 +4651,9 @@ msgstr "Docker로 명령 한 번에 설치"
 msgid "One sentence"
 msgstr "한 문장"
 
+msgid "One voice per story, in this order."
+msgstr "이 순서대로 기사마다 음성을 바꿉니다."
+
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "피드가 있는 사이트에서 한 번의 클릭으로 구독하세요. ‘추가 기능’ 탭에서 사이트 추가용 사용자 지정 URL을 사용하세요."
 
@@ -5388,6 +5408,10 @@ msgstr "에피소드별 재생 위치 기억하기"
 msgid "Remove"
 msgstr "삭제"
 
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "순환 목록에서 %(voice)s 삭제"
+
 msgid "Remove from Up Next"
 msgstr "다음 재생 목록에서 삭제"
 
@@ -5821,6 +5845,12 @@ msgstr "섹션이나 카테고리 같은 패턴과 일치하도록 URL의 일부
 
 msgid "Select title phrase"
 msgstr "제목 구문 선택"
+
+msgid "Selected"
+msgstr "선택됨"
+
+msgid "Selected voice"
+msgstr "선택한 음성"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "스토리 제목 목록에서 스토리를 선택하면 읽음으로 표시됩니다."
@@ -7387,11 +7417,18 @@ msgstr "자연어 분류기에 사용량 기반 요금제가 활성화되어 있
 msgid "Use %(language)s"
 msgstr "%(language)s 사용"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "%(voice)s만 사용"
+
 msgid "Use 12-hour clock"
 msgstr "12시간제 사용"
 
 msgid "Use 24-hour clock"
 msgstr "24시간제 사용"
+
+msgid "Use only this voice"
+msgstr "이 음성만 사용"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "받은편지함 분류, 주제 조사, 피드 점검에 프롬프트 템플릿 사용"
@@ -7401,6 +7438,9 @@ msgstr "브라우저 기본 컨텍스트 메뉴 사용"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "브라우저 확장 프로그램과 피드 리더에서 이 URL 템플릿을 사용해 NewsBlur에서 피드를 구독하세요."
+
+msgid "Use voice"
+msgstr "음성 사용"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "위젯으로 읽지 않은 스토리 수와 새 스토리를 한눈에 확인하세요"
@@ -7468,8 +7508,14 @@ msgstr "음성"
 msgid "Voice recording failed. Please try again."
 msgstr "음성 녹음에 실패했습니다. 다시 시도해 주세요."
 
+msgid "Voice rotation"
+msgstr "음성 순환"
+
 msgid "Voice settings"
 msgstr "음성 설정"
+
+msgid "Voices"
+msgstr "음성"
 
 msgid "Warning: This is actually permanent"
 msgstr "경고: 이 작업은 실제로 영구적입니다"
