@@ -981,6 +981,7 @@
 "Show feed list" = "Show feed list";
 "Show feeds after being read" = "Show feeds after being read";
 "Show hidden stories" = "Show hidden stories";
+"Show new stories as they arrive" = "Show new stories as they arrive";
 "Show original story" = "Show original story";
 "Show original text" = "Show original text";
 "Show public comments" = "Show public comments";
@@ -989,6 +990,7 @@
 "Show unread count" = "Show unread count";
 "Show with feed icons" = "Show with feed icons";
 "Show without icons" = "Show without icons";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Shows an \"N new stories\" pill when stories arrive in the open feed or folder.";
 "Shows the music settings" = "Shows the music settings";
 "Sidebar" = "Sidebar";
 "Sign Up" = "Sign Up";

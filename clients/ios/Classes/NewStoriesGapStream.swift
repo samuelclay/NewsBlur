@@ -127,6 +127,7 @@ extension FeedDetailViewController {
             if let scrollView = isLegacyTable ? storyTitlesTable : gridScrollView {
                 let top = -scrollView.adjustedContentInset.top
                 if scrollView.contentOffset.y > top + 1 {
+                    newStoriesListScrollsItself()
                     scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: top), animated: !reduceMotion)
                 }
             }
@@ -300,6 +301,7 @@ extension FeedDetailViewController {
         let location = storiesCollection.location(ofStoryId: anchor.hash)
         guard location >= 0, let path = indexPath(forStoryLocation: location) else { return }
         table.layoutIfNeeded()
+        newStoriesListScrollsItself()
         table.contentOffset = CGPoint(x: table.contentOffset.x, y: table.rectForRow(at: path).minY - anchor.screenY)
     }
 }

@@ -141,7 +141,8 @@ struct FeedDetailGridView: View {
     @ViewBuilder
     func makeCardSections(reader: GeometryProxy) -> some View {
         if cache.isPhoneOrCompact {
-            Section(footer: makeLoadingView()) {
+            Section(header: makeNewStoriesRow(atBottom: false),
+                    footer: VStack(spacing: 0) { makeNewStoriesRow(atBottom: true); makeLoadingView() }) {
                 makeNewStoriesGap(atTop: true)
 
                 ForEach(cache.before, id: \.id) { story in
@@ -161,7 +162,7 @@ struct FeedDetailGridView: View {
                 }
             }
         } else {
-            Section {
+            Section(header: makeNewStoriesRow(atBottom: false)) {
                 makeNewStoriesGap(atTop: true)
 
                 ForEach(cache.before, id: \.id) { story in
@@ -178,7 +179,8 @@ struct FeedDetailGridView: View {
                     .id(story.id)
             }
 
-            Section(header: makeStoryView(reader: reader), footer: makeLoadingView()) {
+            Section(header: makeStoryView(reader: reader),
+                    footer: VStack(spacing: 0) { makeNewStoriesRow(atBottom: true); makeLoadingView() }) {
                 ForEach(cache.after, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
                     makeNewStoriesGap(after: story)
@@ -238,6 +240,15 @@ struct FeedDetailGridView: View {
         }
     }
     
+    /// NewStoriesPill.swift's inline "N new stories" row, a full-width header at the top of a newest-first list or
+    /// above the end of an oldest-first one.
+    @ViewBuilder
+    func makeNewStoriesRow(atBottom: Bool) -> some View {
+        if let row = cache.newStoriesRow, row.atBottom == atBottom {
+            NewStoriesRowView(row: row, isGrid: cache.isGrid)
+        }
+    }
+
     /// NewStoriesGapStream.swift's gap between the newest page's cards and the cards already listed.
     @ViewBuilder
     func makeNewStoriesGap(after story: Story? = nil, atTop: Bool = false) -> some View {

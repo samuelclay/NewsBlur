@@ -163,6 +163,25 @@ import XCTest
         XCTAssertEqual(RealtimeNewStories.visibleCount(stories, list: storyList(intelligence: 0)), 2)
     }
 
+    // A story the reader's classifiers hide (a disliked tag, author or title) must never arrive through the pill,
+    // even at the All level or with hidden stories shown, which list hidden stories too: Sam's Android phone
+    // offered two Hoodline stories his tag filters hide.
+    func test_pillNeverOffersHiddenStories() {
+        let stories: [[String: Any]] = [
+            ["story_hash": "12:neutral", "story_feed_id": 12, "story_timestamp": "200", "read_status": 0,
+             "intelligence": ["feed": 0, "author": 0, "tags": 0, "title": 0]],
+            ["story_hash": "12:hidden-by-tag", "story_feed_id": 12, "story_timestamp": "300", "read_status": 0,
+             "intelligence": ["feed": 0, "author": 0, "tags": -1, "title": 0]],
+        ]
+        let showingHidden = RealtimeStoryList(key: "feed:12", feedIds: ["12"], oldestFirst: false, unreadOnly: true,
+                                              intelligence: -1, showHiddenStories: true, loadedLastPage: false)
+
+        XCTAssertEqual(RealtimeNewStories.visibleCount(stories, list: storyList(intelligence: -1)), 1)
+        XCTAssertEqual(RealtimeNewStories.visibleCount(stories, list: showingHidden), 1)
+        let inserted = RealtimeNewStories.insertable(stories, list: showingHidden, knownHashes: [])
+        XCTAssertEqual(inserted.compactMap { $0["story_hash"] as? String }, ["12:neutral"])
+    }
+
     // Stories the pill holds go where the reader is looking, the top of a newest-first list or the end of an
     // oldest-first one, even one published before stories already listed; a story already listed isn't listed twice.
     func test_insertedStoriesJoinTheListsNewEndWhateverTheirDates() {
@@ -273,35 +292,135 @@ import XCTest
         XCTAssertFalse(buffer.needsNewestPage(list: list))
     }
 
-    // Only time spent scrolling away from the pill counts toward hiding it, and pauses between scrolls don't.
-    func test_pillHidesAfterFiveSecondsOfScrollingAway() {
+    // The first scroll away from the pill starts a five-second countdown, and nothing the reader does next moves it:
+    // scrolling toward the pill, stopping, or scrolling on.
+    func test_firstScrollAwayTucksThePillAwayFiveSecondsLater() {
         var presence = NewStoriesPillPresence()
-        var time: TimeInterval = 0
-        var hidden = false
-        // Scrolling toward the pill never adds up.
-        for _ in 0..<200 { time += 0.05; hidden = presence.scrolled(awayFromPill: false, at: time) || hidden }
-        XCTAssertFalse(hidden)
-        // Long pauses between scrolls add at most a quarter second each.
-        for _ in 0..<10 { time += 10; hidden = presence.scrolled(awayFromPill: true, at: time) || hidden }
-        XCTAssertFalse(hidden)
-        XCTAssertLessThanOrEqual(presence.timeScrollingAway, 10 * NewStoriesPillPresence.longestScrollStep)
-        // Steady scrolling away tucks it away once five seconds have added up.
-        while !hidden && time < 1_000 { time += 0.05; hidden = presence.scrolled(awayFromPill: true, at: time) }
-        XCTAssertTrue(hidden)
-        XCTAssertGreaterThanOrEqual(presence.timeScrollingAway, NewStoriesPillPresence.hideAfterScrollingAway)
+        XCTAssertNil(presence.scrolled(awayFromPill: false, at: 10), "scrolling toward the pill starts nothing")
+        XCTAssertEqual(presence.scrolled(awayFromPill: true, at: 12), 12 + NewStoriesPillPresence.hideAfterScrollingAway)
+        XCTAssertNil(presence.scrolled(awayFromPill: true, at: 13), "only the first scroll away starts the countdown")
+        XCTAssertNil(presence.scrolled(awayFromPill: false, at: 14))
+
+        XCTAssertFalse(presence.hideTimerFired(at: 16.9))
+        XCTAssertTrue(presence.hideTimerFired(at: 17))
+        XCTAssertTrue(presence.isHiddenByScrolling)
     }
 
-    // A tucked-away pill returns only after three minutes with no scrolling at all, and every scroll restarts that.
+    // A tucked-away pill stays away for three full minutes after it hides, even when the scroll that started the
+    // countdown was the last one, and every later scroll restarts the wait.
     func test_tuckedAwayPillReturnsAfterThreeIdleMinutes() {
         var presence = NewStoriesPillPresence()
-        var time: TimeInterval = 0
-        while !presence.isHiddenByScrolling { time += 0.05; _ = presence.scrolled(awayFromPill: true, at: time) }
+        let hide = NewStoriesPillPresence.hideAfterScrollingAway
         let idle = NewStoriesPillPresence.returnAfterIdle
-        XCTAssertFalse(presence.shouldReturn(at: time + idle - 1))
+        _ = presence.scrolled(awayFromPill: true, at: 0)
+        _ = presence.hideTimerFired(at: hide)
+        XCTAssertFalse(presence.shouldReturn(at: idle + 1), "three minutes from the last scroll, but not from hiding")
+        XCTAssertTrue(presence.shouldReturn(at: hide + idle))
 
-        // Scrolling toward the pill also restarts the wait.
-        _ = presence.scrolled(awayFromPill: false, at: time + 60)
-        XCTAssertFalse(presence.shouldReturn(at: time + idle + 1))
-        XCTAssertTrue(presence.shouldReturn(at: time + 60 + idle))
+        // Scrolling toward the pill also restarts the wait, and doesn't start another countdown.
+        XCTAssertNil(presence.scrolled(awayFromPill: false, at: 60))
+        XCTAssertNil(presence.scrolled(awayFromPill: true, at: 60))
+        XCTAssertFalse(presence.shouldReturn(at: hide + idle))
+        XCTAssertTrue(presence.shouldReturn(at: 60 + idle))
+    }
+
+    // The inline row tops the list whenever stories wait, so the floating pill shows only while the row is off screen,
+    // and stays away after scrolling dismissed it until the idle wait starts it over.
+    func test_pillFloatsOnlyWhileTheRowIsOffScreenAndNotDismissed() {
+        var presence = NewStoriesPillPresence()
+        XCTAssertFalse(presence.showsPill(waiting: 3, rowOnScreen: true), "the row shows the stories already")
+        XCTAssertTrue(presence.showsPill(waiting: 3, rowOnScreen: false))
+        XCTAssertFalse(presence.showsPill(waiting: 0, rowOnScreen: false), "nothing waiting")
+
+        _ = presence.scrolled(awayFromPill: true, at: 0)
+        _ = presence.hideTimerFired(at: NewStoriesPillPresence.hideAfterScrollingAway)
+        XCTAssertFalse(presence.showsPill(waiting: 3, rowOnScreen: false), "dismissed by scrolling")
+
+        // The pill coming back after the idle wait starts its presence over.
+        presence = NewStoriesPillPresence()
+        XCTAssertTrue(presence.showsPill(waiting: 3, rowOnScreen: false))
+    }
+
+    // A Mac's mouse wheel and trackpad move the list without UIKit's tracking, dragging or decelerating flags; that
+    // scrolling must count as scrolling away from the pill, or the pill never tucks away on the Mac.
+    func test_scrollingWithoutTouchCountsTowardHidingThePill() {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+        let scrollView = UIScrollView(frame: window.bounds)
+        scrollView.contentSize = CGSize(width: 320, height: 4_000)
+        window.addSubview(scrollView)
+        window.isHidden = false
+        defer { window.isHidden = true }
+        var moves: [CGFloat] = []
+        let watch = NewStoriesPillScrollWatch(scrollView: scrollView, filter: NewStoriesPillScrollFilter(contentSize: .zero),
+                                              isListMovingItself: { false }, onReaderScroll: { moves.append($0) },
+                                              onLost: {})
+
+        scrollView.contentOffset.y = 40
+        scrollView.contentOffset.y = 100
+        XCTAssertEqual(moves, [40, 60])
+
+        // The pill code's own scroll to the top isn't the reader's.
+        watch.listScrollsItself(at: CACurrentMediaTime())
+        scrollView.contentOffset.y = 0
+        XCTAssertEqual(moves, [40, 60])
+        watch.stop()
+    }
+
+    // Reloads, lazy layout and the pill's own scrolls move the list too; counting them would hide the pill while the
+    // reader sits still.
+    func test_listsOwnMovesDontCountAsScrolling() {
+        var filter = NewStoriesPillScrollFilter(contentSize: CGSize(width: 320, height: 4_000))
+        XCTAssertEqual(filter.readerScroll(from: 0, to: 30, contentSize: CGSize(width: 320, height: 4_000), at: 10), 30)
+        XCTAssertNil(filter.readerScroll(from: 30, to: 90, contentSize: CGSize(width: 320, height: 4_600), at: 10.1),
+                     "a move that comes with a new content size is layout")
+        XCTAssertEqual(filter.readerScroll(from: 90, to: 120, contentSize: CGSize(width: 320, height: 4_600), at: 10.2), 30)
+
+        filter.listScrollsItself(at: 20)
+        XCTAssertNil(filter.readerScroll(from: 120, to: 0, contentSize: CGSize(width: 320, height: 4_600), at: 20.3))
+        XCTAssertEqual(filter.readerScroll(from: 0, to: 25, contentSize: CGSize(width: 320, height: 4_600),
+                                           at: 20 + NewStoriesPillScrollFilter.ownScrollGrace + 0.01), 25)
+    }
+
+    private func withNewStoriesSetting(_ enabled: Bool?, _ body: () -> Void) {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: RealtimeNewStories.settingKey)
+        if let enabled { defaults.set(enabled, forKey: RealtimeNewStories.settingKey) }
+        else { defaults.removeObject(forKey: RealtimeNewStories.settingKey) }
+        defer { defaults.set(previous, forKey: RealtimeNewStories.settingKey) }
+        body()
+    }
+
+    // With "Show new stories as they arrive" off, announcements must not be held for the pill or fetched; the
+    // setting is on unless turned off.
+    func test_newStoriesSettingOffIgnoresAnnouncements() {
+        let list = storyList()
+        let now = Date().timeIntervalSince1970
+        withNewStoriesSetting(false) {
+            let updates = RealtimeUpdates(socket: NewsBlurSocketClient(serverURLProvider: { nil }))
+            updates.receiveNewStory(storyHash: "12:off", feedId: "12", timestamp: now, list: list, listedStories: [])
+            XCTAssertEqual(updates.newStoriesWaiting(for: list), 0)
+            XCTAssertFalse(updates.isNewStoryFetchScheduled)
+        }
+        withNewStoriesSetting(nil) {
+            let updates = RealtimeUpdates(socket: NewsBlurSocketClient(serverURLProvider: { nil }))
+            updates.receiveNewStory(storyHash: "12:on", feedId: "12", timestamp: now, list: list, listedStories: [])
+            XCTAssertEqual(updates.newStoriesWaiting(for: list), 1)
+            XCTAssertTrue(updates.isNewStoryFetchScheduled)
+            updates.storyListDidReload()
+        }
+    }
+
+    // Turning the setting off while stories wait must drop them and the fetch, not leave a pill to come back.
+    func test_turningNewStoriesOffDropsWhatThePillHeld() {
+        let list = storyList()
+        withNewStoriesSetting(nil) {
+            let updates = RealtimeUpdates(socket: NewsBlurSocketClient(serverURLProvider: { nil }))
+            updates.receiveNewStory(storyHash: "12:waiting", feedId: "12", timestamp: Date().timeIntervalSince1970,
+                                    list: list, listedStories: [])
+            UserDefaults.standard.set(false, forKey: RealtimeNewStories.settingKey)
+            updates.newStoriesSettingDidChange()
+            XCTAssertEqual(updates.newStoriesWaiting(for: list), 0)
+            XCTAssertFalse(updates.isNewStoryFetchScheduled)
+        }
     }
 }

@@ -160,6 +160,14 @@ enum RealtimeNewStories {
     /// would otherwise fetch every story announced since. The web and Android use the same number.
     static let prefetchCap = 20
 
+    /// The per-device setting "Show new stories as they arrive" (PreferencesView.swift). Off, the open list gains new
+    /// stories only when it loads again; read state, saved state and unread counts keep syncing.
+    static let settingKey = "show_new_stories_as_they_arrive"
+
+    static func isEnabled(_ defaults: UserDefaults = .standard) -> Bool {
+        defaults.object(forKey: settingKey) as? Bool ?? true
+    }
+
     /// Whether a `feed:story:new` announcement is worth fetching for the open list.
     static func shouldFetch(storyHash: String, feedId: String, timestamp: TimeInterval, list: RealtimeStoryList,
                             knownHashes: Set<String>, listedTimestamps: [TimeInterval], now: Date) -> Bool {
@@ -174,13 +182,14 @@ enum RealtimeNewStories {
         return true
     }
 
-    /// The fetched stories that belong in the list, in its order. Read stories stay out of an unread list.
+    /// The fetched stories that belong in the list, in its order: exactly the ones the pill counts
+    /// (`isOffered`). Read stories stay out of an unread list.
     static func insertable(_ stories: [[String: Any]], list: RealtimeStoryList, knownHashes: Set<String>) -> [[String: Any]] {
         var seen = knownHashes
         var accepted: [[String: Any]] = []
         for story in stories {
             guard let hash = story["story_hash"] as? String, !seen.contains(hash),
-                  list.feedIds.contains(feedId(of: story)) else { continue }
+                  list.feedIds.contains(feedId(of: story)), isOffered(story, list: list) else { continue }
             if list.unreadOnly && intValue(story["read_status"]) != 0 { continue }
             seen.insert(hash)
             accepted.append(story)
@@ -191,14 +200,19 @@ enum RealtimeNewStories {
         }
     }
 
-    /// How many of these stories the list would show, the way StoriesCollection.m calculateStoryLocations decides.
+    /// How many of these stories the pill offers.
     static func visibleCount(_ stories: [[String: Any]], list: RealtimeStoryList) -> Int {
-        stories.filter { story in
-            if list.showHiddenStories { return true }
-            if boolValue(story["sticky"]) { return true }
-            let intelligence = story["intelligence"] as? [AnyHashable: Any] ?? [:]
-            return NewsBlurAppDelegate.computeStoryScore(intelligence) >= list.intelligence
-        }.count
+        stories.filter { isOffered($0, list: list) }.count
+    }
+
+    /// Whether the pill offers this story. Unlike a page of the list, the pill never brings in a story the reader's
+    /// classifiers hide (score below 0), even in a list showing every story or hidden ones; in Focus it needs a
+    /// Focus score. Hidden stories still appear when the list loads.
+    static func isOffered(_ story: [String: Any], list: RealtimeStoryList) -> Bool {
+        let intelligence = story["intelligence"] as? [AnyHashable: Any] ?? [:]
+        let score = NewsBlurAppDelegate.computeStoryScore(intelligence)
+        guard score >= 0 else { return false }
+        return boolValue(story["sticky"]) || score >= max(list.intelligence, 0)
     }
 
     static func feedId(of story: [String: Any]) -> String {
@@ -725,16 +739,23 @@ struct RealtimeNewStoryBuffer {
     }
 
     private func handleNewStory(_ arguments: [Any]) {
-        guard arguments.count >= 2, let channel = arguments[0] as? String, channel.hasSuffix(":story"),
+        guard RealtimeNewStories.isEnabled(),
+              arguments.count >= 2, let channel = arguments[0] as? String, channel.hasSuffix(":story"),
               let message = arguments[1] as? String, let list = openStoryList(),
-              let appDelegate, let collection = appDelegate.storiesCollection else { return }
+              let collection = appDelegate?.storiesCollection else { return }
         let feedId = String(channel.dropLast(":story".count))
         let parts = message.split(separator: ",", maxSplits: 1).map(String.init)
         guard parts.count == 2, let timestamp = TimeInterval(parts[1]) else { return }
-        let storyHash = parts[0]
+        receiveNewStory(storyHash: parts[0], feedId: feedId, timestamp: timestamp, list: list,
+                        listedStories: (collection.activeFeedStories ?? []).compactMap { $0 as? [String: Any] })
+    }
 
+    /// A `feed:story:new` announcement for the open list: hold it for the pill and fetch it in the next batch. With
+    /// "Show new stories as they arrive" off, it's ignored.
+    func receiveNewStory(storyHash: String, feedId: String, timestamp: TimeInterval, list: RealtimeStoryList,
+                         listedStories: [[String: Any]]) {
+        guard RealtimeNewStories.isEnabled() else { return }
         if newStoryListKey != list.key { clearNewStories(keepingKey: list.key) }
-        let listedStories = (collection.activeFeedStories ?? []).compactMap { $0 as? [String: Any] }
         let knownHashes = Set(listedStories.compactMap { $0["story_hash"] as? String }).union(newStories.knownHashes)
         guard RealtimeNewStories.shouldFetch(storyHash: storyHash, feedId: feedId, timestamp: timestamp, list: list,
                                              knownHashes: knownHashes,
@@ -747,7 +768,7 @@ struct RealtimeNewStoryBuffer {
         }
         Self.log("feed:story:new \(storyHash) joins the open list")
 
-        let subscribers = Self.subscriberCount(feedId: feedId, appDelegate: appDelegate)
+        let subscribers = appDelegate.map { Self.subscriberCount(feedId: feedId, appDelegate: $0) } ?? 0
         let spread = min(Self.maximumNewStoryDelay, Double(subscribers) * Self.secondsPerSubscriberForNewStories)
         let fetchDate = Date().addingTimeInterval(Self.newStoryBatchDelay + Double.random(in: 0...max(spread, 0)))
         if let newStoryFetchDate, newStoryFetchDate <= fetchDate { return }
@@ -857,6 +878,21 @@ struct RealtimeNewStoryBuffer {
             }
             appDelegate.storyPagesViewController.setNextPreviousButtons()
         })
+    }
+
+    /// Stories held for the pill, fetched, waiting to be fetched or only counted.
+    func newStoriesWaiting(for list: RealtimeStoryList) -> Int {
+        newStories.pillCount(list: list) + newStories.pendingHashes.count
+    }
+
+    /// Whether a batch of announced stories is waiting to be fetched.
+    var isNewStoryFetchScheduled: Bool { newStoryFetchWork != nil }
+
+    /// PreferencesView.swift turned "Show new stories as they arrive" on or off. Off hides the pill and drops what
+    /// it held; on, the next stories to arrive raise it again.
+    func newStoriesSettingDidChange() {
+        guard !RealtimeNewStories.isEnabled() else { return }
+        clearNewStories()
     }
 
     /// The open list loaded its first page again, or another list opened.

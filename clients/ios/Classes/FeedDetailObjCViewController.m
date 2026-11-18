@@ -57,7 +57,9 @@ typedef NS_ENUM(NSUInteger, FeedDetailVisibleRowType)
     FeedDetailVisibleRowTypeStory = 0,
     FeedDetailVisibleRowTypeCluster,
     // NewStoriesGapStream.swift: where the newest page's stories stop and the stories already listed resume.
-    FeedDetailVisibleRowTypeGap
+    FeedDetailVisibleRowTypeGap,
+    // NewStoriesPill.swift: the inline "N new stories" row standing in for a tucked-away pill.
+    FeedDetailVisibleRowTypeNewStories
 };
 
 static NSString * const FeedDetailVisibleRowTypeKey = @"type";
@@ -802,6 +804,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
     NSMutableArray<NSDictionary *> *rows = [NSMutableArray arrayWithCapacity:(NSUInteger)(storyCount - startLocation)];
     NSInteger gapAfterLocation = [self newStoriesGapAfterLocation];
+    BOOL hasNewStoriesRow = [self isKindOfClass:[FeedDetailViewController class]] &&
+        [(FeedDetailViewController *)self newStoriesRowCount] > 0;
+    BOOL newStoriesRowAtBottom = hasNewStoriesRow && [(FeedDetailViewController *)self newStoriesRowAtBottom];
+    if (startLocation == 0 && hasNewStoriesRow && !newStoriesRowAtBottom) {
+        [rows addObject:@{ FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeNewStories) }];
+    }
     if (startLocation == 0 && gapAfterLocation == -1) {
         [rows addObject:@{ FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeGap) }];
     }
@@ -829,8 +837,81 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             }];
         }
     }
+    if (newStoriesRowAtBottom) {
+        [rows addObject:@{ FeedDetailVisibleRowTypeKey: @(FeedDetailVisibleRowTypeNewStories) }];
+    }
 
     return rows;
+}
+
+- (BOOL)isNewStoriesRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
+    return rowDescriptor && [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeNewStories;
+}
+
+// NewStoriesPill.swift keeps the floating pill away while any of the inline "N new stories" row is on screen.
+- (BOOL)isNewStoriesRowVisible {
+    if (!self.isLegacyTable || !self.isViewLoaded) return NO;
+    UITableView *table = self.storyTitlesTable;
+    NSUInteger rowIndex = [self.visibleStoryRows indexOfObjectPassingTest:^BOOL(NSDictionary *row, NSUInteger index, BOOL *stop) {
+        return [row[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeNewStories;
+    }];
+    if (rowIndex == NSNotFound || rowIndex >= (NSUInteger)[table numberOfRowsInSection:0]) return NO;
+    UIEdgeInsets inset = table.adjustedContentInset;
+    CGRect visible = UIEdgeInsetsInsetRect(table.bounds, UIEdgeInsetsMake(inset.top, 0, inset.bottom, 0));
+    CGRect row = [table rectForRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:0]];
+    return CGRectGetHeight(CGRectIntersection(row, visible)) > 0;
+}
+
+// NewStoriesPill.swift shows or removes the inline "N new stories" row, or changes its count. Only that row changes,
+// and a row added or removed above the reader moves the list by its height, so the stories on screen stay put.
+- (void)newStoriesRowDidChange {
+    if (!self.isLegacyTable || storiesCollection.isDailyBriefing || !self.isViewLoaded) return;
+    UITableView *table = self.storyTitlesTable;
+    NSArray<NSDictionary *> *oldRows = self.visibleStoryRows;
+    NSArray<NSDictionary *> *newRows = [self buildVisibleStoryRows];
+    NSPredicate *isStoryRow = [NSPredicate predicateWithBlock:^BOOL(NSDictionary *row, NSDictionary *bindings) {
+        return [row[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeNewStories;
+    }];
+    BOOL sameStories = oldRows && [[oldRows filteredArrayUsingPredicate:isStoryRow]
+                                   isEqualToArray:[newRows filteredArrayUsingPredicate:isStoryRow]];
+    NSUInteger (^rowIndex)(NSArray<NSDictionary *> *) = ^NSUInteger(NSArray<NSDictionary *> *rows) {
+        return [rows indexOfObjectPassingTest:^BOOL(NSDictionary *row, NSUInteger index, BOOL *stop) {
+            return [row[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeNewStories;
+        }];
+    };
+    NSUInteger oldIndex = oldRows ? rowIndex(oldRows) : NSNotFound;
+    NSUInteger newIndex = rowIndex(newRows);
+    self.visibleStoryRows = newRows;
+    self.storyRowHeightCache = nil;
+    if (!sameStories || table.hasUncommittedUpdates || !self.messageView.hidden || table.numberOfSections != 1 ||
+        [table numberOfRowsInSection:0] != oldRows.count + 1) {
+        [table reloadData];
+        return;
+    }
+    CGFloat top = -table.adjustedContentInset.top;
+    BOOL readerIsBelowTop = table.contentOffset.y > top + 1;
+    [UIView performWithoutAnimation:^{
+        if (oldIndex != NSNotFound && newIndex != NSNotFound) {
+            [table reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:newIndex inSection:0]]
+                         withRowAnimation:UITableViewRowAnimationNone];
+            return;
+        }
+        if (newIndex != NSNotFound) {
+            [table insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:newIndex inSection:0]]
+                         withRowAnimation:UITableViewRowAnimationNone];
+        } else if (oldIndex != NSNotFound) {
+            [table deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:oldIndex inSection:0]]
+                         withRowAnimation:UITableViewRowAnimationNone];
+        }
+        [table layoutIfNeeded];
+        BOOL changedAtTop = (newIndex == 0) || (oldIndex == 0 && newIndex == NSNotFound);
+        if (changedAtTop && readerIsBelowTop) {
+            CGFloat shift = newIndex != NSNotFound ? NewStoriesRowCell.height : -NewStoriesRowCell.height;
+            [(FeedDetailViewController *)self newStoriesListScrollsItself];
+            table.contentOffset = CGPointMake(table.contentOffset.x, MAX(top, table.contentOffset.y + shift));
+        }
+    }];
 }
 
 // FeedDetailObjCViewController.m places NewStoriesGapStream.swift's gap after the last visible story above its
@@ -922,6 +1003,10 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return NO;
     }
 
+    // FeedDetailObjCViewController.m appends a page below the rows; an inline new stories row at the end must move.
+    if ([self.visibleStoryRows.lastObject[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeNewStories) {
+        return NO;
+    }
     // FeedDetailObjCViewController.m only preserves geometry when filtering kept the existing visible prefix.
     for (NSInteger location = 0; location < previousStoryCount; location++) {
         if (![self.renderedStoryLocationIds[location] isEqual:storiesCollection.activeFeedStoryLocationIds[location]]) {
@@ -987,6 +1072,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 
 - (NSInteger)storyLocationForScrollingAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *rowDescriptor = [self storyRowDescriptorForIndexPath:indexPath];
+    // FeedDetailObjCViewController.m: the inline new stories row and a gap above every story belong to no story. At the
+    // top of the list they come before the first story; at the end, after the last.
+    if (rowDescriptor && !rowDescriptor[FeedDetailVisibleRowStoryLocationKey]) {
+        return indexPath.row == 0 ? 0 : storiesCollection.storyLocationsCount;
+    }
     NSNumber *targetLocation = [FeedRowScrollReadDecision targetStoryLocationWithRowStoryLocation:rowDescriptor[FeedDetailVisibleRowStoryLocationKey]
                                                                                  isDailyBriefing:storiesCollection.isDailyBriefing
                                                                                        storyCount:storiesCollection.storyLocationsCount];
@@ -4770,6 +4860,14 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     NSDictionary *rowDescriptor = self.isLegacyTable ? [self storyRowDescriptorForIndexPath:indexPath] : nil;
+    if (rowDescriptor && [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeNewStories) {
+        NewStoriesRowCell *rowCell = [tableView dequeueReusableCellWithIdentifier:NewStoriesRowCell.reuseIdentifier];
+        if (!rowCell) rowCell = [[NewStoriesRowCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                         reuseIdentifier:NewStoriesRowCell.reuseIdentifier];
+        FeedDetailViewController *controller = (FeedDetailViewController *)self;
+        [rowCell configureWithCount:controller.newStoriesRowCount atBottom:controller.newStoriesRowAtBottom];
+        return rowCell;
+    }
     if (rowDescriptor && [rowDescriptor[FeedDetailVisibleRowTypeKey] integerValue] == FeedDetailVisibleRowTypeGap) {
         if (!self.storyGapLoadingCell) {
             self.storyGapLoadingCell = [[NBLoadingCell alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 41)];
@@ -5154,6 +5252,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         [tableView deselectRowAtIndexPath:indexPath animated:NO];
         return;
     }
+    if (self.isLegacyTable && [self isNewStoriesRowAtIndexPath:indexPath]) {
+        [tableView deselectRowAtIndexPath:indexPath animated:NO];
+        [(FeedDetailViewController *)self didTapNewStoriesRow];
+        return;
+    }
     NSDictionary *clusterStory = [self clusterStoryForIndexPath:indexPath];
     if (clusterStory) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -5424,6 +5527,9 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.storyTitlesTable && self.isLegacyTable && [self isNewStoriesGapRowAtIndexPath:indexPath]) {
         return 41;
+    }
+    if (tableView == self.storyTitlesTable && self.isLegacyTable && [self isNewStoriesRowAtIndexPath:indexPath]) {
+        return NewStoriesRowCell.height;
     }
     BOOL cacheRowHeight = tableView == self.storyTitlesTable && self.isLegacyTable &&
         !storiesCollection.isDailyBriefing && indexPath.section == 0 &&
@@ -6089,7 +6195,7 @@ finish_height_measurement:
         nextLocation = [self storyLocationForScrollingAtIndexPath:indexPath];
         if (nextLocation == NSNotFound) return;
         NSDictionary *row = [self storyRowDescriptorForIndexPath:indexPath];
-        if (row) {
+        if (row && row[FeedDetailVisibleRowStoryLocationKey]) {
             // FeedDetailObjCViewController.m measures the parent cell, including its preview.
             // Every Match/Related row follows that parent, so its midpoint is already behind us.
             BOOL isChild = [row[FeedDetailVisibleRowTypeKey] integerValue] != FeedDetailVisibleRowTypeStory;

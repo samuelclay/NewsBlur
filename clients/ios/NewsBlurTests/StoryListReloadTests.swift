@@ -171,7 +171,8 @@ import WebKit
     }
 
     private func makeGeometryFixture(children childCounts: [Int], textSize: FeedDetailTextSize,
-                                     inset: CGFloat = 0, clusterMarkRead: Bool = true, count: Int = 12) throws -> StoryListGeometryFixture {
+                                     inset: CGFloat = 0, clusterMarkRead: Bool = true, count: Int = 12,
+                                     newStoriesRow: NewStoriesRowState? = nil) throws -> StoryListGeometryFixture {
         let app = NewsBlurAppDelegate()
         app.selectedIntelligence = 0
         app.isPremium = true
@@ -196,6 +197,7 @@ import WebKit
         })
         app.storiesCollection = stories
         let controller = StoryListGeometryController()
+        controller.newStoriesRowForTest = newStoriesRow
         controller.appDelegate = app
         controller.storiesCollection = stories
         controller.textSize = textSize
@@ -245,6 +247,26 @@ import WebKit
             fixture.scroll(top: fixture.table.rectForRow(at: next).midY + 0.5)
             fixture.controller.checkScroll()
             XCTAssertEqual(fixture.controller.marked, ["geometry-0", "geometry-1"])
+        }
+    }
+
+    // The inline "N new stories" row isn't a story: it takes no story location, and resting on it or scrolling past it
+    // must not mark stories read. A row without a story once counted as the list's end, marking everything.
+    func test_inlineNewStoriesRowIsNotAStoryForLocationsOrScrollReading() throws {
+        try withGeometryPreferences {
+            for atBottom in [false, true] {
+                let fixture = try makeGeometryFixture(children: [], textSize: .short, count: 4,
+                                                      newStoriesRow: NewStoriesRowState(count: 3, atBottom: atBottom))
+                let rowIndex = atBottom ? 4 : 0
+                XCTAssertTrue(fixture.table.cellForRow(at: IndexPath(row: rowIndex, section: 0)) is NewStoriesRowCell)
+                XCTAssertEqual(fixture.controller.indexPath(forStoryLocation: 0), IndexPath(row: atBottom ? 0 : 1, section: 0))
+                XCTAssertEqual(fixture.controller.indexPath(forStoryLocation: 3), IndexPath(row: atBottom ? 3 : 4, section: 0))
+
+                let row = fixture.table.rectForRow(at: IndexPath(row: rowIndex, section: 0))
+                fixture.scroll(top: row.midY)
+                XCTAssertEqual(fixture.controller.marked, atBottom ? (0..<4).map { "geometry-\($0)" } : [],
+                               "resting on the row marks only the stories above it")
+            }
         }
     }
 
@@ -319,6 +341,9 @@ import WebKit
 // StoryListReloadTests.swift keeps real row geometry and rendering; explicit calls control the scroll event timing.
 @MainActor private final class StoryListGeometryController: FeedDetailViewController {
     var marked = [String]()
+    var newStoriesRowForTest: NewStoriesRowState?
+    override var newStoriesRowCount: Int { newStoriesRowForTest?.count ?? 0 }
+    override var newStoriesRowAtBottom: Bool { newStoriesRowForTest?.atBottom ?? false }
     override var isLegacyTable: Bool { true }
     override var isMarkReadOnScroll: Bool { true }
     override func viewDidLoad() {}

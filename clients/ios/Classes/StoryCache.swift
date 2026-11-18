@@ -76,6 +76,8 @@ import SwiftUI
     /// NewStoriesGapStream.swift's gap follows this story's card, or tops the list.
     @Published var newStoriesGapAfterID: String?
     @Published var newStoriesGapAtTop = false
+    /// NewStoriesPill.swift's inline "N new stories" row, standing in for a tucked-away pill.
+    @Published var newStoriesRow: NewStoriesRowState?
     @Published var openSwipeStoryID: String?
     
     static private(set) var cachedDashboard = [DashList]()

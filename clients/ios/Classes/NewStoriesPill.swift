@@ -70,14 +70,15 @@ import UIKit
     func configure(count: Int, atBottom: Bool) {
         self.count = count
         self.atBottom = atBottom
-        let title = NBLocalization.plural("%@ new stories", groupedCount: count)
+        let title = NewStoriesAppearance.title(count: count)
         titleLabel.text = title
         accessibilityLabel = title
-        arrowImageView.image = UIImage(systemName: atBottom ? "arrow.down" : "arrow.up")?.withRenderingMode(.alwaysTemplate)
+        arrowImageView.image = UIImage(systemName: NewStoriesAppearance.arrowName(atBottom: atBottom))?
+            .withRenderingMode(.alwaysTemplate)
     }
 
     func updateTheme() {
-        capsuleView.backgroundColor = ThemeManager.color(fromRGB: [0x477DBF, 0x8A6A33, 0x4F7FBA, 0x3F6EA8])
+        capsuleView.backgroundColor = ThemeManager.color(fromRGB: NewStoriesAppearance.accentRGB)
         capsuleView.layer.shadowColor = ThemeManager.shared.isDarkTheme
             ? UIColor.black.cgColor
             : ThemeManager.color(fromRGB: [0x3B4A5C]).cgColor
@@ -97,45 +98,134 @@ import UIKit
     }
 }
 
-/// NewStoriesPill.swift: whether the pill stays out while the reader scrolls away from it. Scrolling away (down from
-/// the top pill of a newest-first list, up from the bottom pill of an oldest-first one) for `hideAfterScrollingAway`
-/// in all tucks it away; it comes back once nothing has scrolled for `returnAfterIdle`. The web and Android use the
-/// same numbers.
+/// NewStoriesPill.swift: whether the pill shows. While stories wait, the inline row tops the list (NewStoriesRowCell,
+/// NewStoriesRowView) and the pill floats only while that row is off screen. The first scroll away from
+/// a showing pill (down from the top pill of a newest-first list, up from the bottom pill of an oldest-first one)
+/// starts a `hideAfterScrollingAway` timer; when it runs out the pill tucks away, whatever the reader did meanwhile,
+/// unless it was tapped or hidden first. It comes back `returnAfterIdle` after it tucked away or the last scroll,
+/// whichever came later, and starts over then. The web and Android use the same numbers.
 struct NewStoriesPillPresence {
     static let hideAfterScrollingAway: TimeInterval = 5
     static let returnAfterIdle: TimeInterval = 180
-    /// The most one step of scrolling adds, so a pause between scrolls doesn't count.
-    static let longestScrollStep: TimeInterval = 0.25
 
-    private(set) var timeScrollingAway: TimeInterval = 0
-    private var lastScrollAway: TimeInterval?
+    /// When the pill tucks away, counted from the first scroll away from it.
+    private(set) var hideTime: TimeInterval?
     private(set) var isHiddenByScrolling = false
     private(set) var lastScroll: TimeInterval?
+    private var hiddenAt: TimeInterval?
 
-    /// The list scrolled at `time`. Returns true when this scroll tucks the pill away.
-    mutating func scrolled(awayFromPill away: Bool, at time: TimeInterval) -> Bool {
+    /// The list scrolled at `time`. Returns when the pill should tuck away if this is the first scroll away from it.
+    mutating func scrolled(awayFromPill away: Bool, at time: TimeInterval) -> TimeInterval? {
         lastScroll = time
-        guard !isHiddenByScrolling else { return false }
-        guard away else {
-            lastScrollAway = nil
-            return false
-        }
-        if let lastScrollAway { timeScrollingAway += min(max(time - lastScrollAway, 0), Self.longestScrollStep) }
-        lastScrollAway = time
-        guard timeScrollingAway >= Self.hideAfterScrollingAway else { return false }
+        guard away, hideTime == nil, !isHiddenByScrolling else { return nil }
+        hideTime = time + Self.hideAfterScrollingAway
+        return hideTime
+    }
+
+    /// The timer `scrolled` started ran out at `time`. Returns true when the pill tucks away now.
+    mutating func hideTimerFired(at time: TimeInterval) -> Bool {
+        guard !isHiddenByScrolling, let hideTime, time >= hideTime else { return false }
         isHiddenByScrolling = true
+        hiddenAt = time
         return true
     }
 
-    /// When a tucked-away pill may come back, unless the list scrolls again first.
+    /// Whether the floating pill shows. The inline "N new stories" row tops the list whenever stories wait, so the
+    /// pill stays away while any of the row is on screen, and after scrolling dismissed it.
+    func showsPill(waiting: Int, rowOnScreen: Bool) -> Bool {
+        waiting > 0 && !rowOnScreen && !isHiddenByScrolling
+    }
+
+    /// When a tucked-away pill may come back, unless the list scrolls again first. The scroll that started the
+    /// countdown is often the last one, so the wait also runs from the moment the pill tucked away.
     func returnTime(idle: TimeInterval = Self.returnAfterIdle) -> TimeInterval? {
         guard isHiddenByScrolling else { return nil }
-        return (lastScroll ?? 0) + idle
+        return max(lastScroll ?? 0, hiddenAt ?? 0) + idle
     }
 
     func shouldReturn(at time: TimeInterval, idle: TimeInterval = Self.returnAfterIdle) -> Bool {
         guard let returnTime = returnTime(idle: idle) else { return false }
         return time >= returnTime
+    }
+}
+
+/// NewStoriesPill.swift: which moves of the story list are the reader scrolling. A Mac's mouse wheel and trackpad
+/// scroll a list without UIKit's tracking, dragging or decelerating flags, so every offset change counts except
+/// the list's own: the scrolls the pill code makes (to the top, the arrival, the gap) and moves that come with a new
+/// content size, which are reloads and lazy layout.
+struct NewStoriesPillScrollFilter {
+    /// How long after the pill code scrolls the list its moves aren't the reader's.
+    static let ownScrollGrace: TimeInterval = 0.5
+
+    private var lastContentSize: CGSize
+    private var ignoreUntil: TimeInterval = -.infinity
+
+    init(contentSize: CGSize) {
+        lastContentSize = contentSize
+    }
+
+    /// Starts over with another scroll view, keeping any scroll the pill code just made.
+    mutating func rebase(contentSize: CGSize) {
+        lastContentSize = contentSize
+    }
+
+    /// The pill code is about to scroll the list.
+    mutating func listScrollsItself(at time: TimeInterval) {
+        ignoreUntil = max(ignoreUntil, time + Self.ownScrollGrace)
+    }
+
+    /// How far the reader scrolled the list in this change, or nil when the move was the list's own.
+    mutating func readerScroll(from old: CGFloat, to new: CGFloat, contentSize: CGSize,
+                               at time: TimeInterval) -> CGFloat? {
+        let resized = contentSize != lastContentSize
+        lastContentSize = contentSize
+        guard new != old, !resized, time >= ignoreUntil else { return nil }
+        return new - old
+    }
+}
+
+/// NewStoriesPill.swift watches one list scroll view and reports the reader's scrolling, as
+/// NewStoriesPillScrollFilter decides it.
+@MainActor final class NewStoriesPillScrollWatch: NSObject {
+    private(set) weak var scrollView: UIScrollView?
+    private(set) var filter: NewStoriesPillScrollFilter
+    private var observation: NSKeyValueObservation?
+
+    /// `isListMovingItself` answers whether the pill's own arrival is moving the list; `onReaderScroll` gets each
+    /// reader scroll's distance, `onMove` hears every move, and `onLost` hears that the scroll view left the screen, as
+    /// when SwiftUI replaces it.
+    init(scrollView: UIScrollView, filter: NewStoriesPillScrollFilter, isListMovingItself: @escaping () -> Bool,
+         onReaderScroll: @escaping (CGFloat) -> Void, onMove: @escaping () -> Void = {},
+         onLost: @escaping () -> Void) {
+        self.scrollView = scrollView
+        var rebased = filter
+        rebased.rebase(contentSize: scrollView.contentSize)
+        self.filter = rebased
+        super.init()
+        observation = scrollView.observe(\.contentOffset, options: [.old, .new]) { [weak self] scrollView, change in
+            guard let old = change.oldValue?.y, let new = change.newValue?.y, old != new else { return }
+            let contentSize = scrollView.contentSize
+            let inWindow = scrollView.window != nil
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                guard inWindow else { onLost(); return }
+                let now = CACurrentMediaTime()
+                if isListMovingItself() { self.filter.listScrollsItself(at: now) }
+                if let delta = self.filter.readerScroll(from: old, to: new, contentSize: contentSize, at: now) {
+                    onReaderScroll(delta)
+                }
+                onMove()
+            }
+        }
+    }
+
+    func listScrollsItself(at time: TimeInterval) {
+        filter.listScrollsItself(at: time)
+    }
+
+    func stop() {
+        observation?.invalidate()
+        observation = nil
     }
 }
 
@@ -150,20 +240,174 @@ final class NewStoriesPillTrack: UIView {
     }
 }
 
+/// NewStoriesPill.swift: the inline "N new stories" row that stands in for a tucked-away pill.
+struct NewStoriesRowState: Equatable {
+    let count: Int
+    /// At the end of an oldest-first list rather than the top of a newest-first one.
+    let atBottom: Bool
+    /// The theme it's drawn in, so a theme change redraws it in the table and the cards.
+    var theme = ""
+}
+
+/// NewStoriesPill.swift's colors and label, shared by the pill and the inline row.
+enum NewStoriesAppearance {
+    /// The pill's accent blue in the light, sepia, medium and dark themes.
+    static let accentRGB: [NSNumber] = [0x477DBF, 0x8A6A33, 0x4F7FBA, 0x3F6EA8]
+
+    static func title(count: Int) -> String {
+        NBLocalization.plural("%@ new stories", groupedCount: count)
+    }
+
+    static func arrowName(atBottom: Bool) -> String {
+        atBottom ? "arrow.down" : "arrow.up"
+    }
+}
+
+/// FeedDetailObjCViewController.m's inline row: a full-width button the size of a compact story title, in the pill's
+/// accent blue. It isn't a story, so it has no story location.
+@objcMembers final class NewStoriesRowCell: UITableViewCell {
+    static let reuseIdentifier = "NewStoriesRowCell"
+    static var height: CGFloat { NewStoriesRowView.height(isGrid: false) }
+
+    private let capsuleView = UIView()
+    private let arrowImageView = UIImageView()
+    private let titleLabel = UILabel()
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+        accessibilityIdentifier = "new-stories-row"
+
+        capsuleView.translatesAutoresizingMaskIntoConstraints = false
+        capsuleView.layer.cornerRadius = NewStoriesRowView.capsuleHeight / 2
+        capsuleView.layer.cornerCurve = .continuous
+        capsuleView.isUserInteractionEnabled = false
+        contentView.addSubview(capsuleView)
+
+        arrowImageView.translatesAutoresizingMaskIntoConstraints = false
+        arrowImageView.contentMode = .scaleAspectFit
+        arrowImageView.tintColor = .white
+        arrowImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.font = UIFont(name: "WhitneySSm-Medium", size: 14) ?? .systemFont(ofSize: 14, weight: .semibold)
+        titleLabel.textColor = .white
+        let label = UIStackView(arrangedSubviews: [arrowImageView, titleLabel])
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.spacing = 7
+        label.alignment = .center
+        capsuleView.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            capsuleView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: NewStoriesRowView.listInset),
+            capsuleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -NewStoriesRowView.listInset),
+            capsuleView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            capsuleView.heightAnchor.constraint(equalToConstant: NewStoriesRowView.capsuleHeight),
+            label.centerXAnchor.constraint(equalTo: capsuleView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: capsuleView.centerYAnchor),
+            arrowImageView.widthAnchor.constraint(equalToConstant: 13)
+        ])
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configure(count: Int, atBottom: Bool) {
+        let title = NewStoriesAppearance.title(count: count)
+        titleLabel.text = title
+        accessibilityLabel = title
+        arrowImageView.image = UIImage(systemName: NewStoriesAppearance.arrowName(atBottom: atBottom))?
+            .withRenderingMode(.alwaysTemplate)
+        backgroundColor = ThemeManager.shared.storyListBackgroundColor
+        contentView.backgroundColor = backgroundColor
+        capsuleView.backgroundColor = ThemeManager.color(fromRGB: NewStoriesAppearance.accentRGB)
+    }
+
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+        capsuleView.alpha = highlighted ? 0.8 : 1
+    }
+}
+
+/// FeedDetailGridView.swift's inline row, the SwiftUI twin of NewStoriesRowCell.
+struct NewStoriesRowView: View {
+    private func report(_ frame: CGRect?) {
+        NewsBlurAppDelegate.shared?.feedDetailViewController?.newStoriesRowFrameChanged(frame)
+    }
+
+    static let capsuleHeight: CGFloat = 36
+    static let listInset: CGFloat = 12
+
+    /// The row's height in the list, its capsule and the space around it.
+    static func height(isGrid: Bool) -> CGFloat {
+        capsuleHeight + (isGrid ? 16 : 12)
+    }
+
+    let row: NewStoriesRowState
+    let isGrid: Bool
+
+    var body: some View {
+        let title = NewStoriesAppearance.title(count: row.count)
+        Button {
+            NewsBlurAppDelegate.shared?.feedDetailViewController?.didTapNewStoriesRow()
+        } label: {
+            HStack(spacing: 7) {
+                Image(systemName: NewStoriesAppearance.arrowName(atBottom: row.atBottom))
+                    .font(.system(size: 12, weight: .bold))
+                Text(title)
+                    .font(Font.custom("WhitneySSm-Medium", size: 14))
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity, minHeight: Self.capsuleHeight, maxHeight: Self.capsuleHeight)
+            .background(Capsule().fill(Color.themed(NewStoriesAppearance.accentRGB)))
+            .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, isGrid ? 0 : Self.listInset)
+        .frame(height: Self.height(isGrid: isGrid))
+        // NewStoriesPill.swift keeps the floating pill away while any of this row is on screen.
+        .background(GeometryReader { geometry in
+            Color.clear
+                .onAppear { report(geometry.frame(in: .global)) }
+                .onChange(of: geometry.frame(in: .global)) { report($0) }
+                .onDisappear { report(nil) }
+        })
+        .accessibilityLabel(Text(title))
+        .accessibilityIdentifier("new-stories-row")
+    }
+}
+
 /// NewStoriesPill.swift's state for the pill on one story list: where it is, and the scroll watch that tucks it away.
 @MainActor final class NewStoriesPillState: NSObject {
     var presence = NewStoriesPillPresence()
     var isPresented = false
-    var scrollObservation: NSKeyValueObservation?
-    weak var observedScrollView: UIScrollView?
+    var scrollWatch: NewStoriesPillScrollWatch?
+    /// Kept across watches so a scroll the pill code just made isn't counted on the next scroll view either.
+    var scrollFilter = NewStoriesPillScrollFilter(contentSize: .zero)
     var returnWork: DispatchWorkItem?
+    var hideWork: DispatchWorkItem?
+    /// The inline row the list shows now, so a change can insert or remove just that row.
+    var shownRow: NewStoriesRowState?
+    /// How many stories wait, as the pill and the row show them.
+    var waiting = 0
+    /// FeedDetailGridView.swift's row, in window coordinates, while SwiftUI has it laid out.
+    var rowFrame: CGRect?
 
     func stopWatching() {
-        scrollObservation?.invalidate()
-        scrollObservation = nil
-        observedScrollView = nil
+        stopScrollWatch()
         returnWork?.cancel()
         returnWork = nil
+        hideWork?.cancel()
+        hideWork = nil
+    }
+
+    /// Stops watching the scroll view, keeping the return timer for a pill scrolling tucked away.
+    func stopScrollWatch() {
+        if let scrollWatch { scrollFilter = scrollWatch.filter }
+        scrollWatch?.stop()
+        scrollWatch = nil
     }
 }
 
@@ -185,20 +429,22 @@ extension FeedDetailViewController {
         newStoriesPillTrack?.subviews.first { $0 is NewStoriesPill } as? NewStoriesPill
     }
 
-    /// Show or update the pill. RealtimeUpdates.swift passes the number of waiting stories the list would show.
+    /// Show or update the pill and the inline row. RealtimeUpdates.swift passes the number of waiting stories the list
+    /// would show.
     @objc func showNewStoriesPill(count: Int, atBottom: Bool) {
         guard isViewLoaded else { return }
+        let state = newStoriesPillState
         if let pill = newStoriesPill, pill.atBottom != atBottom {
             newStoriesPillTrack?.removeFromSuperview()
-            newStoriesPillState.isPresented = false
+            state.isPresented = false
         }
         let pill = newStoriesPill ?? makeNewStoriesPill(atBottom: atBottom)
         pill.configure(count: count, atBottom: atBottom)
+        state.waiting = count
         if let track = newStoriesPillTrack { view.bringSubviewToFront(track) }
-        watchScrollingForNewStoriesPill(atBottom: atBottom)
-        // The count keeps up while scrolling keeps the pill tucked away.
-        guard !newStoriesPillState.presence.isHiddenByScrolling else { return }
-        slideNewStoriesPill(in: true)
+        watchScrollingForNewStoriesPill()
+        updateNewStoriesRow()
+        refreshNewStoriesPill()
     }
 
     @objc func hideNewStoriesPill() {
@@ -206,15 +452,90 @@ extension FeedDetailViewController {
         let state = newStoriesPillState
         state.stopWatching()
         state.presence = NewStoriesPillPresence()
+        state.waiting = 0
+        state.rowFrame = nil
         slideNewStoriesPill(in: false)
+        updateNewStoriesRow()
+    }
+
+    /// The inline row FeedDetailObjCViewController.m and FeedDetailGridView.swift show while stories wait, or nil.
+    var newStoriesRow: NewStoriesRowState? {
+        let state = newStoriesPillState
+        guard isViewLoaded, let pill = newStoriesPill, state.waiting > 0, RealtimeNewStories.isEnabled() else { return nil }
+        return NewStoriesRowState(count: state.waiting, atBottom: pill.atBottom, theme: ThemeManager.shared.theme ?? "")
+    }
+
+    /// The inline row's count for FeedDetailObjCViewController.m, 0 when it isn't shown.
+    @objc var newStoriesRowCount: Int { newStoriesRow?.count ?? 0 }
+    @objc var newStoriesRowAtBottom: Bool { newStoriesRow?.atBottom ?? false }
+
+    /// Shows, updates or removes the inline row, keeping the stories on screen where they are.
+    func updateNewStoriesRow() {
+        let state = newStoriesPillState
+        let row = newStoriesRow
+        guard row != state.shownRow else { return }
+        state.shownRow = row
+        if isLegacyTable {
+            newStoriesRowDidChange()
+        } else {
+            // SwiftUI's lazy layout keeps the cards on screen in place when a header appears or leaves above them.
+            storyCache.newStoriesRow = row
+        }
+    }
+
+    /// Whether any of the inline row is on screen.
+    private var isNewStoriesRowOnScreen: Bool {
+        let state = newStoriesPillState
+        guard let row = state.shownRow else { return false }
+        if isLegacyTable { return isNewStoriesRowVisible() }
+        guard let scrollView = gridScrollView, scrollView.window != nil else { return false }
+        let inset = scrollView.adjustedContentInset
+        let visible = scrollView.bounds.inset(by: UIEdgeInsets(top: inset.top, left: 0, bottom: inset.bottom, right: 0))
+        guard let frame = state.rowFrame else {
+            // FeedDetailGridView.swift lays the row out on its next pass; at the top of the list, it's there.
+            return !row.atBottom && visible.minY < NewStoriesRowView.height(isGrid: storyCache.isGrid) + 16
+        }
+        return frame.intersects(scrollView.convert(visible, to: nil))
+    }
+
+    /// Floats the pill when the inline row is off screen, unless scrolling dismissed it.
+    func refreshNewStoriesPill() {
+        let state = newStoriesPillState
+        slideNewStoriesPill(in: state.presence.showsPill(waiting: state.waiting, rowOnScreen: isNewStoriesRowOnScreen))
+    }
+
+    /// FeedDetailGridView.swift's row moved on screen, or left it (nil).
+    func newStoriesRowFrameChanged(_ frame: CGRect?) {
+        let state = newStoriesPillState
+        guard state.rowFrame != frame else { return }
+        state.rowFrame = frame
+        if state.waiting > 0 { refreshNewStoriesPill() }
+    }
+
+    /// FeedDetailObjCViewController.m and FeedDetailGridView.swift: the inline row was tapped. It does what tapping the
+    /// pill does.
+    @objc func didTapNewStoriesRow() {
+        didTapNewStoriesPill()
     }
 
     @objc func updateNewStoriesPillTheme() {
         newStoriesPill?.updateTheme()
+        updateNewStoriesRow()
     }
 
     func bringNewStoriesPillToFront() {
-        if let track = newStoriesPillTrack { view.bringSubviewToFront(track) }
+        guard let track = newStoriesPillTrack else { return }
+        view.bringSubviewToFront(track)
+        // The list may have switched between the table and the cards, or SwiftUI may have made a new scroll view.
+        if newStoriesPillState.waiting > 0 { watchScrollingForNewStoriesPill() }
+    }
+
+    /// The pill code is about to scroll the list; NewStoriesPillScrollFilter doesn't count that as the reader's.
+    @objc func newStoriesListScrollsItself() {
+        let state = newStoriesPillState
+        let now = CACurrentMediaTime()
+        state.scrollFilter.listScrollsItself(at: now)
+        state.scrollWatch?.listScrollsItself(at: now)
     }
 
     private func makeNewStoriesPill(atBottom: Bool) -> NewStoriesPill {
@@ -292,28 +613,51 @@ extension FeedDetailViewController {
         animator.startAnimation()
     }
 
-    /// Watches the list's scrolling while the pill is out, or tucked away by scrolling.
-    private func watchScrollingForNewStoriesPill(atBottom: Bool) {
+    /// Watches the list's scrolling while the pill is out, or tucked away by scrolling, following the list's scroll
+    /// view when it changes.
+    private func watchScrollingForNewStoriesPill() {
         let state = newStoriesPillState
         guard let scrollView = isLegacyTable ? storyTitlesTable : gridScrollView else { return }
-        guard state.observedScrollView !== scrollView else { return }
-        state.scrollObservation?.invalidate()
-        state.observedScrollView = scrollView
-        state.scrollObservation = scrollView.observe(\.contentOffset, options: [.old, .new]) { [weak self] scrollView, change in
-            guard let old = change.oldValue, let new = change.newValue, old.y != new.y,
-                  scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating else { return }
-            MainActor.assumeIsolated {
-                self?.newStoriesPillListScrolled(by: new.y - old.y, atBottom: atBottom)
-            }
-        }
+        guard state.scrollWatch?.scrollView !== scrollView else { return }
+        state.stopScrollWatch()
+        state.scrollWatch = NewStoriesPillScrollWatch(
+            scrollView: scrollView, filter: state.scrollFilter,
+            isListMovingItself: { [weak self] in
+                guard let self else { return false }
+                return self.newStoriesTableArrival != nil || self.storyCache.newStoryArrivals.isSettling
+            },
+            onReaderScroll: { [weak self] delta in
+                guard let self, let pill = self.newStoriesPill else { return }
+                self.newStoriesPillListScrolled(by: delta, atBottom: pill.atBottom)
+            },
+            onMove: { [weak self] in
+                guard let self, self.newStoriesPillState.waiting > 0 else { return }
+                self.refreshNewStoriesPill()
+            },
+            onLost: { [weak self] in
+                DispatchQueue.main.async { [weak self] in self?.watchScrollingForNewStoriesPill() }
+            })
     }
 
     private func newStoriesPillListScrolled(by delta: CGFloat, atBottom: Bool) {
         let state = newStoriesPillState
-        let away = atBottom ? delta < 0 : delta > 0
-        guard state.presence.scrolled(awayFromPill: away, at: CACurrentMediaTime()) else { return }
-        slideNewStoriesPill(in: false)
-        scheduleNewStoriesPillReturn()
+        // Only a scroll away from the pill while it shows starts its countdown; every scroll restarts the idle wait.
+        let away = (atBottom ? delta < 0 : delta > 0) && state.isPresented
+        guard let hideTime = state.presence.scrolled(awayFromPill: away, at: CACurrentMediaTime()) else { return }
+        // The first scroll away starts the countdown; nothing the reader does next stops it, short of a tap.
+        state.hideWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                let state = self.newStoriesPillState
+                state.hideWork = nil
+                guard state.presence.hideTimerFired(at: CACurrentMediaTime()) else { return }
+                self.refreshNewStoriesPill()
+                self.scheduleNewStoriesPillReturn()
+            }
+        }
+        state.hideWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + max(0, hideTime - CACurrentMediaTime()), execute: work)
     }
 
     /// Brings a tucked-away pill back once the list has sat still long enough, if stories are still waiting.
@@ -331,7 +675,7 @@ extension FeedDetailViewController {
                     return
                 }
                 state.presence = NewStoriesPillPresence()
-                if (self.newStoriesPill?.count ?? 0) > 0 { self.slideNewStoriesPill(in: true) }
+                self.refreshNewStoriesPill()
             }
         }
         state.returnWork = work
@@ -380,6 +724,7 @@ extension FeedDetailViewController {
             return
         }
         if reduceMotion {
+            newStoriesListScrollsItself()
             table.contentOffset = CGPoint(x: table.contentOffset.x, y: top)
             insertNewStoriesInTable(table, atBottom: atBottom, insert: insert, reload: reload)
             return
@@ -402,8 +747,9 @@ extension FeedDetailViewController {
         let reduceMotion = ReaderMotion.reduceMotion
         let oldOffset = table.contentOffset.y
         // NewStoriesPill.swift keeps a picture of the rows on screen: those pushed off the bottom of a newest-first
-        // list no longer have cells, but must still slide down and away.
-        let snapshot = atBottom || reduceMotion ? nil : table.snapshotView(afterScreenUpdates: false)
+        // list no longer have cells, but must still slide down and away. It's taken after the screen catches up, as
+        // tapping the inline row has just removed that row.
+        let snapshot = atBottom || reduceMotion ? nil : table.snapshotView(afterScreenUpdates: true)
         guard let hashes = insert() else { return }
         // NewStoriesPill.swift slides these rows itself, so ReaderMotion.swift's entrance must not also lift them.
         let session = ReaderMotion.session(self)
@@ -412,6 +758,7 @@ extension FeedDetailViewController {
         guard !hashes.isEmpty, let collection = storiesCollection else { return }
         // FeedDetailObjCViewController.m's reload may select or restore a row; the arrival starts from the list as
         // the reader saw it.
+        newStoriesListScrollsItself()
         table.contentOffset = CGPoint(x: table.contentOffset.x, y: oldOffset)
         table.layoutIfNeeded()
         let rows: [NewStoriesTableArrival.Row] = hashes.compactMap { hash in
@@ -461,6 +808,7 @@ extension FeedDetailViewController {
             let top = -scrollView.adjustedContentInset.top
             if scrollView.contentOffset.y > top + 1 {
                 scrollsToTop = !reduceMotion
+                newStoriesListScrollsItself()
                 scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: top), animated: !reduceMotion)
             }
         }
@@ -499,6 +847,7 @@ extension FeedDetailViewController {
                 scrollView.layoutIfNeeded()
                 let inset = scrollView.adjustedContentInset
                 let bottom = max(-inset.top, scrollView.contentSize.height - scrollView.bounds.height + inset.bottom)
+                self.newStoriesListScrollsItself()
                 scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: bottom), animated: !reduceMotion)
             }
             let generation = arrivals.generation

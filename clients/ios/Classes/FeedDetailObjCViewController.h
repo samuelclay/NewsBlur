@@ -112,6 +112,8 @@
 - (void)absorbStoryPageFeedsAndClassifiers:(NSDictionary *)results feedId:(NSString *)receivedFeedId;
 - (BOOL)isNewStoriesGapNearViewport;
 - (void)abandonPageInFlight;
+- (void)newStoriesRowDidChange;
+- (BOOL)isNewStoriesRowVisible;
 - (void)testForTryFeed;
 - (void)flashInfrequentStories;
 - (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;
