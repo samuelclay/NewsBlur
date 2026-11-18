@@ -41,6 +41,25 @@ final class Test_ListenPreferences: XCTestCase {
         return ["preferences": String(decoding: data, as: UTF8.self)]
     }
 
+    @MainActor func test_slowRotationSaveCannotOverwriteNewerEdits() throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let oldManager = app.networkManager
+        let oldProfile = app.dictUserProfile
+        let server = DelayedPreferenceServer()
+        app.networkManager = server
+        defer {
+            app.networkManager = oldManager
+            app.dictUserProfile = oldProfile
+        }
+        let first = [ListenRotationVoice(id: "a", name: "Amelia")]
+        let latest = first + [ListenRotationVoice(id: "b", name: "Jon")]
+        ListenPreferences.setRotation(first, forLanguage: "en")
+        ListenPreferences.setRotation(latest, forLanguage: "en")
+        XCTAssertEqual(ListenPreferences.rotations["en"], latest)
+        while let complete = server.requests.popLast() { complete() }
+        XCTAssertEqual(server.savedRotations["en"]?.map { $0["voice_id"] }, ["a", "b"])
+    }
+
     // ListenPreferencesTests.swift: server sync must preserve order and names, discard malformed/duplicate
     // entries, and clear the old account's list. Treating the nested JSON as listen_voices would lose it.
     func test_rotationSyncAndAccountReset() {
@@ -104,5 +123,21 @@ final class Test_ListenPreferences: XCTestCase {
         XCTAssertGreaterThan(changed.writes, 0)
         XCTAssertEqual(changed.listenKeys, [ListenPreferences.speedKey])
         XCTAssertEqual(ListenPreferences.speed, 1.5)
+    }
+}
+
+private final class DelayedPreferenceServer: AFHTTPSessionManager {
+    var requests: [() -> Void] = []
+    var savedRotations: [String: [[String: String]]] = [:]
+    override func post(_ url: String, parameters: Any?, progress: ((Progress) -> Void)?,
+                       success: ((URLSessionDataTask, Any?) -> Void)?,
+                       failure: ((URLSessionDataTask?, Error) -> Void)?) -> URLSessionDataTask? {
+        let task = URLSession.shared.dataTask(with: URL(string: url)!)
+        let values = parameters as? [String: String]
+        requests.append {
+            self.savedRotations = ListenJSON.objectFromString(values?[ListenPreferences.rotationsKey]) as? [String: [[String: String]]] ?? [:]
+            success?(task, ["code": 1])
+        }
+        return task
     }
 }

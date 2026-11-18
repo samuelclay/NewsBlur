@@ -217,6 +217,13 @@ struct ListenDeliverySettings: Equatable {
     }
 
     private static var speedSave: DispatchWorkItem?
+    private static var rotationWrites: [() -> Void] = []
+    private static var rotationSession = UUID()
+
+    static func resetRotationWrites() {
+        rotationSession = UUID()
+        rotationWrites.removeAll()
+    }
 
     /// Stores the speed at once and sends it after a pause, so dragging the slider saves only where it stops.
     static func setSpeed(_ speed: Double) {
@@ -266,6 +273,7 @@ struct ListenDeliverySettings: Equatable {
         var changed: [String] = []
 
         for key in listenKeys {
+            if !rotationWrites.isEmpty && (key == rotationsKey || key == voicesKey) { continue }
             guard let value = preferences[key], !(value is NSNull) else {
                 // ListenPreferences.swift: the server never saved this one, so it's the default. Clearing it keeps
                 // a previous account's voice or speed from carrying over after switching accounts.
@@ -355,10 +363,32 @@ struct ListenDeliverySettings: Equatable {
             completion?(true)
             return
         }
-        let appDelegate = NewsBlurAppDelegate.shared()
         updateCachedProfile(values)
+        // ListenPreferences.swift: each voice edit replaces the account's whole list. Send them in tap order.
+        guard values[rotationsKey] != nil || values[voicesKey] != nil else {
+            post(values, completion: completion)
+            return
+        }
+        let session = rotationSession
+        rotationWrites.append {
+            post(values) { success in
+                guard rotationSession == session else { return }
+                completion?(success)
+                guard rotationSession == session else { return }
+                rotationWrites.removeFirst()
+                rotationWrites.first?()
+            }
+        }
+        if rotationWrites.count == 1 { rotationWrites[0]() }
+    }
+
+    private static func post(_ values: [String: String], completion: ((Bool) -> Void)?) {
+        guard let appDelegate = NewsBlurAppDelegate.shared() else {
+            completion?(false)
+            return
+        }
         let url = "\(ListenAPI.shared.baseURL)/profile/set_preference"
-        appDelegate?.post(url, parameters: values, success: { _, _ in
+        appDelegate.post(url, parameters: values, success: { _, _ in
             completion?(true)
         }, failure: { _, error in
             NSLog("Failed to save Listen preferences %@: %@", values.keys.joined(separator: ", "),

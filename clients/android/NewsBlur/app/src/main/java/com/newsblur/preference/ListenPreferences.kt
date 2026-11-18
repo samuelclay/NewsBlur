@@ -14,13 +14,17 @@ import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.StoryButton
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -321,6 +325,7 @@ class ListenPreferences
         /** The clock that decides whether a local change is recent; Test_ListenPreferences.kt sets its own. */
         internal var elapsedRealtime: () -> Long = { SystemClock.elapsedRealtime() }
         private var speedSaveJob: Job? = null
+        private val rotationWrites = Mutex()
         private val mutableSettings = MutableStateFlow(readSettings())
         val settings: StateFlow<ListenSettings> = mutableSettings.asStateFlow()
 
@@ -364,6 +369,7 @@ class ListenPreferences
         suspend fun save(values: Map<String, Any>): Boolean {
             if (values.isEmpty()) return true
             saveLocally(values)
+            if (ListenPrefKeys.ROTATIONS in values) return sendRotation(values).await()
             return saveRemotely(values)
         }
 
@@ -371,8 +377,22 @@ class ListenPreferences
         fun saveInBackground(values: Map<String, Any>) {
             if (values.isEmpty()) return
             saveLocally(values)
-            NBScope.launch { saveRemotely(values) }
+            if (ListenPrefKeys.ROTATIONS in values) {
+                sendRotation(values)
+            } else {
+                NBScope.launch { saveRemotely(values) }
+            }
         }
+
+        // ListenPreferences.kt: take a place in the mutex before dispatch, in the same order as the UI edits.
+        private fun sendRotation(values: Map<String, Any>) =
+            prefs.getString(PrefConstants.PREF_UNIQUE_LOGIN, null).let { login ->
+                NBScope.async(start = CoroutineStart.UNDISPATCHED) {
+                    rotationWrites.withLock {
+                        login == prefs.getString(PrefConstants.PREF_UNIQUE_LOGIN, null) && saveRemotely(values)
+                    }
+                }
+            }
 
         /**
          * Applies a speed locally at once, so every screen follows the slider, and sends it to the server once

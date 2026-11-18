@@ -110,6 +110,7 @@ import WebKit
     /// Logout, an expired session or a new server: nothing from the old account keeps playing or stays on the
     /// lock screen (NewsBlurAppDelegate.m).
     static func stopForAccountChange() {
+        ListenPreferences.resetRotationWrites()
         if ListenPlayer.shared.isActive {
             ListenPlayer.shared.stop(saving: false)
         }
