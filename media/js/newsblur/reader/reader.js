@@ -8006,8 +8006,13 @@
                 state.buffered[story_hash].read_status = read ? 1 : 0;
                 if (read && unread_only) delete state.buffered[story_hash];
             } else {
-                // reader.js: a story announced but not fetched yet, or announced later, keeps this read state.
+                // reader.js: a story announced but not fetched yet, or announced later, keeps this read state. A
+                // list that hasn't heard an announcement yet takes its key now, so its first one doesn't reset this.
                 if (!list || !list.feed_ids[story_hash.split(':')[0]]) return;
+                if (state.key != list.key) {
+                    this.clear_realtime_new_stories(list.key);
+                    state = this.realtime_new_stories;
+                }
                 state.read_elsewhere[story_hash] = read;
                 return;
             }
