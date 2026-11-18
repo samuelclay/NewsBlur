@@ -423,4 +423,94 @@ import XCTest
             XCTAssertFalse(updates.isNewStoryFetchScheduled)
         }
     }
+
+
+    // /reader/river_stories?h= answers with a placeholder unread state. A story read on another device while it waited
+    // to be fetched, or while the fetch was on its way, must not come back as unread: an unread list doesn't count it,
+    // and a list of every story gets it as read.
+    func test_storyReadElsewhereBeforeItsFetchLandsIsNotOfferedAsUnread() {
+        let unreadList = storyList(unreadOnly: true)
+        var buffer = RealtimeNewStoryBuffer()
+        _ = buffer.announce("12:in-flight", list: unreadList)
+        _ = buffer.announce("12:pending", list: unreadList)
+        let firstFetch = buffer.takePending(limit: 1)
+        buffer.setReadState(storyHash: "12:in-flight", read: true, list: unreadList)
+        buffer.setReadState(storyHash: "12:pending", read: true, list: unreadList)
+        _ = buffer.addFetched([story("12:in-flight", 100)], userProfiles: [], list: unreadList, listedHashes: [],
+                              requested: firstFetch)
+        let secondFetch = buffer.takePending(limit: 1)
+        _ = buffer.addFetched([story("12:pending", 200)], userProfiles: [], list: unreadList, listedHashes: [],
+                              requested: secondFetch)
+        XCTAssertEqual(buffer.pillCount(list: unreadList), 0)
+
+        let everyStory = storyList(unreadOnly: false)
+        var all = RealtimeNewStoryBuffer()
+        _ = all.announce("12:a", list: everyStory)
+        let fetch = all.takePending(limit: 1)
+        all.setReadState(storyHash: "12:a", read: true, list: everyStory)
+        _ = all.addFetched([story("12:a", 100)], userProfiles: [], list: everyStory, listedHashes: [], requested: fetch)
+        XCTAssertEqual(all.stories.first?["read_status"] as? Int, 1)
+    }
+
+    private func makeStreamController(stories: [[String: Any]]) -> (NewStoriesStreamTestController, StoriesCollection) {
+        let app = NewsBlurAppDelegate()
+        app.selectedIntelligence = 0
+        app.recentlyReadStories = NSMutableDictionary()
+        let collection = StoriesCollection()
+        collection.appDelegate = app
+        collection.setStories(stories)
+        app.storiesCollection = collection
+        let controller = NewStoriesStreamTestController()
+        controller.appDelegate = app
+        controller.storiesCollection = collection
+        return (controller, collection)
+    }
+
+    // The newest page merges after the arrival's scroll to the top. If the reader opens another list meanwhile, which
+    // drops the stream as resetFeedDetail does, the old stream's page must not land in the new list or move its paging.
+    func test_pageOfAStreamDroppedDuringTheArrivalMergesNothing() {
+        let (controller, collection) = makeStreamController(stories: [story("12:b", 200), story("12:a", 100)])
+        collection.feedPage = 3
+        let stream = NewStoriesGapStream(listKey: "feed:12", oldestFirst: false, cursorAfterHash: nil)
+        controller.newStoriesStream = stream
+        controller.cancelNewStoriesStream()
+
+        XCTAssertNil(controller.mergeNewStoriesStreamPage([story("12:c", 300)], page: 1, finished: true, stream: stream))
+        XCTAssertEqual(hashes(collection.activeFeedStories as? [[String: Any]] ?? []), ["12:b", "12:a"])
+        XCTAssertEqual(collection.feedPage, 3)
+        XCTAssertFalse(controller.pageFinished)
+
+        controller.newStoriesStream = stream
+        XCTAssertEqual(controller.mergeNewStoriesStreamPage([story("12:c", 300)], page: 1, finished: false, stream: stream),
+                       ["12:c"], "the stream the list still runs merges")
+    }
+
+    // A folder opened while feed 2 had no unread stories leaves feed 2 out of the folder's feed list, yet the pill takes
+    // feed 2's new stories. The newest pages loaded past the cap must ask for feed 2 too, or its stories vanish.
+    func test_newestPagesAskForEveryFeedThePillTakesStoriesFrom() throws {
+        let (controller, collection) = makeStreamController(stories: [story("12:a", 100)])
+        let app = try XCTUnwrap(controller.appDelegate)
+        app.dictFeeds = NSMutableDictionary(dictionary: ["1": ["id": 1, "active": 1], "2": ["id": 2, "active": 1]])
+        app.dictFolders = ["Tech": [1, 2]]
+        collection.isRiverView = true
+        collection.activeFolder = "Tech"
+        collection.activeFolderFeeds = [1]
+
+        controller.startNewStoriesStream(listKey: "folder:Tech", oldestFirst: false)
+
+        let url = try XCTUnwrap(controller.requestedURLs.first)
+        XCTAssertTrue(url.contains("f=1&f=2"), url)
+    }
+}
+
+/// RealtimeUpdatesTests.swift records the newest pages' requests instead of sending them.
+@MainActor private final class NewStoriesStreamTestController: FeedDetailViewController {
+    var requestedURLs: [String] = []
+    override var isLegacyTable: Bool { true }
+    override func reloadTable() {}
+
+    override func newStoriesStreamRequestURL(forPage page: Int) -> String! {
+        requestedURLs.append(super.newStoriesStreamRequestURL(forPage: page) ?? "")
+        return nil
+    }
 }

@@ -119,6 +119,15 @@ extension FeedDetailViewController {
         let stream = NewStoriesGapStream(listKey: listKey, oldestFirst: oldestFirst,
                                          cursorAfterHash: oldestFirst ? stories.last?["story_hash"] as? String : nil)
         newStoriesStream = stream
+        // A folder's feed list was taken when it opened, so an unread river holds only the feeds that had unread
+        // stories then. The pill takes stories from every feed in the folder; the fresh pages, and the list's own
+        // paging after them, ask for all of those.
+        if storiesCollection.isRiverView,
+           let current = RealtimeUpdates.feedIds(of: storiesCollection, appDelegate: appDelegate) {
+            let folderFeeds = storiesCollection.activeFolderFeeds ?? []
+            let added = current.subtracting(folderFeeds.map { "\($0)" }).sorted()
+            if !added.isEmpty { storiesCollection.activeFolderFeeds = folderFeeds + added }
+        }
         // The page the list's own paging was loading belongs to the server's old snapshot.
         abandonPageInFlight()
         pageFinished = false
@@ -209,31 +218,8 @@ extension FeedDetailViewController {
         stream.callbacks = []
         let openStoryHash = appDelegate.storyPagesViewController?.currentPage?.activeStoryId
 
-        // Merges the page and, once it has caught up with the stories already listed, hands paging back to the list.
-        // Returns the stories it added that the list shows, in list order.
-        let merge: () -> [String] = { [weak self] in
-            guard let self else { return [] }
-            let listed = self.listedStories
-            let result = NewStoriesGapMerge.merge(page: pageStories, into: listed, cursor: stream.cursorIndex(in: listed),
-                                                  oldestFirst: stream.oldestFirst)
-            stream.cursorAfterHash = result.cursor > 0 ? result.stories[result.cursor - 1]["story_hash"] as? String : nil
-            let caughtUp = finished || result.reachedEnd
-            NewStoriesGapStream.logger.debug("""
-                newest page \(page, privacy: .public): \(pageStories.count, privacy: .public) stories, \
-                \(result.inserted.count, privacy: .public) added, cursor \(result.cursor, privacy: .public) of \
-                \(result.stories.count, privacy: .public)\(caughtUp ? ", caught up" : "", privacy: .public)
-                """)
-            if caughtUp {
-                if self.newStoriesStream === stream { self.newStoriesStream = nil }
-                self.storiesCollection.feedPage = Int32(page)
-                self.pageFinished = finished
-            }
-            guard !result.inserted.isEmpty else { return [] }
-            self.storiesCollection.replaceStoriesKeepingReadState(result.stories)
-            return result.inserted.compactMap { hash -> (String, Int)? in
-                let location = Int(self.storiesCollection.location(ofStoryId: hash))
-                return location >= 0 ? (hash, location) : nil
-            }.sorted { $0.1 < $1.1 }.map(\.0)
+        let merge: () -> [String]? = { [weak self] in
+            self?.mergeNewStoriesStreamPage(pageStories, page: page, finished: finished, stream: stream)
         }
 
         let reload: () -> Void = { [weak self] in self?.reloadKeepingOpenStory(openStoryHash) }
@@ -244,8 +230,7 @@ extension FeedDetailViewController {
             presentNewStories(atBottom: stream.oldestFirst, insert: merge, reload: reload)
         } else {
             let anchor = gapIsAboveViewport(stream: stream) ? visibleStoryAnchor() : nil
-            _ = merge()
-            reload()
+            if merge() != nil { reload() }
             if let anchor { restoreVisibleStoryAnchor(anchor) }
         }
         callbacks.forEach { $0() }
@@ -259,6 +244,36 @@ extension FeedDetailViewController {
             if storiesCollection.isRiverView { fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil) }
             else { fetchFeedDetail(storiesCollection.feedPage + 1, withCallback: nil) }
         }
+    }
+
+    /// Merges a page into the list and, once it has caught up with the stories already listed, hands paging back to
+    /// the list. Returns the stories it added that the list shows, in list order. The merge can run after the
+    /// arrival's scroll to the top, so a stream the list has dropped since (another feed opened, the list reloaded)
+    /// merges nothing and leaves the list's paging alone.
+    func mergeNewStoriesStreamPage(_ pageStories: [[String: Any]], page: Int, finished: Bool,
+                                   stream: NewStoriesGapStream) -> [String]? {
+        guard newStoriesStream === stream else { return nil }
+        let listed = self.listedStories
+        let result = NewStoriesGapMerge.merge(page: pageStories, into: listed, cursor: stream.cursorIndex(in: listed),
+                                              oldestFirst: stream.oldestFirst)
+        stream.cursorAfterHash = result.cursor > 0 ? result.stories[result.cursor - 1]["story_hash"] as? String : nil
+        let caughtUp = finished || result.reachedEnd
+        NewStoriesGapStream.logger.debug("""
+            newest page \(page, privacy: .public): \(pageStories.count, privacy: .public) stories, \
+            \(result.inserted.count, privacy: .public) added, cursor \(result.cursor, privacy: .public) of \
+            \(result.stories.count, privacy: .public)\(caughtUp ? ", caught up" : "", privacy: .public)
+            """)
+        if caughtUp {
+            self.newStoriesStream = nil
+            self.storiesCollection.feedPage = Int32(page)
+            self.pageFinished = finished
+        }
+        guard !result.inserted.isEmpty else { return [] }
+        self.storiesCollection.replaceStoriesKeepingReadState(result.stories)
+        return result.inserted.compactMap { hash -> (String, Int)? in
+            let location = Int(self.storiesCollection.location(ofStoryId: hash))
+            return location >= 0 ? (hash, location) : nil
+        }.sorted { $0.1 < $1.1 }.map(\.0)
     }
 
     private func addNewStoriesStreamUserProfiles(_ profiles: [[String: Any]]) {

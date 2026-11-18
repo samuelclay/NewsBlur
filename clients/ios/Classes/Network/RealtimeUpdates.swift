@@ -247,6 +247,11 @@ struct RealtimeNewStoryBuffer {
     private(set) var stories: [[String: Any]] = []
     /// Announced stories the list didn't fetch because the pill already holds as many as it fetches ahead.
     private(set) var unfetchedHashes: [String] = []
+    /// Announced stories being fetched now.
+    private(set) var inFlightHashes: Set<String> = []
+    /// Read and unread from other devices for stories not fetched yet. /reader/river_stories?h= answers with a
+    /// placeholder unread state, so these apply when the stories land.
+    private var readOverrides: [String: Bool] = [:]
     /// The user profiles that came with the fetched stories.
     private(set) var userProfiles: [Any] = []
 
@@ -254,7 +259,8 @@ struct RealtimeNewStoryBuffer {
 
 
     var knownHashes: Set<String> {
-        Set(pendingHashes).union(unfetchedHashes).union(stories.compactMap { $0["story_hash"] as? String })
+        Set(pendingHashes).union(unfetchedHashes).union(inFlightHashes)
+            .union(stories.compactMap { $0["story_hash"] as? String })
     }
 
     /// Takes an announcement `RealtimeNewStories.shouldFetch` accepted. Returns whether it should be fetched; past the
@@ -272,12 +278,32 @@ struct RealtimeNewStoryBuffer {
     mutating func takePending(limit: Int) -> [String] {
         let taken = Array(pendingHashes.prefix(limit))
         pendingHashes.removeFirst(taken.count)
+        inFlightHashes.formUnion(taken)
         return taken
     }
 
-    /// Adds fetched stories, keeping only those that belong in the list. Returns how many it kept.
+    /// A fetch failed; its announcements are dropped, as the stories load with the list's next refresh.
+    mutating func fetchFailed(_ hashes: [String]) {
+        for hash in hashes {
+            inFlightHashes.remove(hash)
+            readOverrides[hash] = nil
+        }
+    }
+
+    /// Adds fetched stories, keeping only those that belong in the list, with any read state that arrived while they
+    /// were on their way. Returns how many it kept.
     mutating func addFetched(_ fetched: [[String: Any]], userProfiles profiles: [Any], list: RealtimeStoryList,
-                             listedHashes: Set<String>) -> Int {
+                             listedHashes: Set<String>, requested: [String] = []) -> Int {
+        let fetched = fetched.map { story -> [String: Any] in
+            guard let hash = story["story_hash"] as? String, let read = readOverrides[hash] else { return story }
+            var corrected = story
+            corrected["read_status"] = read ? 1 : 0
+            return corrected
+        }
+        for hash in requested + fetched.compactMap({ $0["story_hash"] as? String }) {
+            inFlightHashes.remove(hash)
+            readOverrides[hash] = nil
+        }
         let accepted = RealtimeNewStories.insertable(fetched, list: list, knownHashes: listedHashes.union(
             stories.compactMap { $0["story_hash"] as? String }))
         guard !accepted.isEmpty else { return 0 }
@@ -288,6 +314,7 @@ struct RealtimeNewStoryBuffer {
 
     /// Another device read or unread a story. An unread list drops a waiting story once it's read.
     mutating func setReadState(storyHash: String, read: Bool, list: RealtimeStoryList?) {
+        if pendingHashes.contains(storyHash) || inFlightHashes.contains(storyHash) { readOverrides[storyHash] = read }
         if let index = stories.firstIndex(where: { $0["story_hash"] as? String == storyHash }) {
             stories[index]["read_status"] = read ? 1 : 0
             if let list { stories = RealtimeNewStories.insertable(stories, list: list, knownHashes: []) }
@@ -794,14 +821,18 @@ struct RealtimeNewStoryBuffer {
             MainActor.assumeIsolated {
                 guard let self, generation == self.newStoryFetchGeneration,
                       let results = response as? [String: Any] else { return }
-                self.bufferFetchedStories(results)
+                self.bufferFetchedStories(results, requested: hashes)
             }
-        }, failure: { _, _ in
+        }, failure: { [weak self] _, _ in
             // A failed fetch drops these announcements. The stories still load with the list's next refresh.
+            MainActor.assumeIsolated {
+                guard let self, generation == self.newStoryFetchGeneration else { return }
+                self.newStories.fetchFailed(hashes)
+            }
         })
     }
 
-    private func bufferFetchedStories(_ results: [String: Any]) {
+    private func bufferFetchedStories(_ results: [String: Any], requested: [String]) {
         guard let list = openStoryList(), list.key == newStoryListKey, let collection = appDelegate?.storiesCollection else {
             clearNewStories()
             return
@@ -809,7 +840,7 @@ struct RealtimeNewStoryBuffer {
         let listedHashes = Set((collection.activeFeedStories ?? []).compactMap { ($0 as? [String: Any])?["story_hash"] as? String })
         let kept = newStories.addFetched(results["stories"] as? [[String: Any]] ?? [],
                                          userProfiles: results["user_profiles"] as? [Any] ?? [], list: list,
-                                         listedHashes: listedHashes)
+                                         listedHashes: listedHashes, requested: requested)
         Self.log("fetched \((results["stories"] as? [Any])?.count ?? 0) new stories, \(kept) belong in the list")
         guard kept > 0 else { return }
         showNewStoriesPill(list: list)
