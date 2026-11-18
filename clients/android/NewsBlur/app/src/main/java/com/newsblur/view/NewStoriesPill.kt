@@ -30,8 +30,8 @@ import kotlinx.coroutines.withContext
  * them. Nothing moves under the reader's finger until then. Past RealtimeUpdates.NEW_STORIES_CAP, a tap
  * instead reloads the list's newest page and fills the gap below it ([onFillGap]).
  *
- * The pill slides out from under the toolbar it sits against, and steps aside while the reader keeps
- * scrolling away from it (PillScrollAway.kt).
+ * The pill slides out from under the toolbar it sits against, and steps aside five seconds after the reader
+ * first scrolls away from it (PillScrollAway.kt).
  */
 class NewStoriesPill(
     private val fragment: Fragment,
@@ -42,17 +42,23 @@ class NewStoriesPill(
     private val feedSet: () -> FeedSet?,
     private val onStoriesAdded: (List<String>, Placement) -> Unit,
     private val onFillGap: (Placement) -> Unit,
+    // ItemSetFragment.java shows an "N new stories" row at the list's edge while this hides; 0 removes it.
+    private val onInlineRowChanged: (Int, Placement) -> Unit,
 ) {
     private var placement = Placement.TOP
     private var storiesWaiting = false
+    private var waitingCount = 0
+    // ItemSetFragment.java reports whether any part of the "N new stories" row is on screen.
+    private var rowOnScreen = false
     private var shown = false
     private var slide: ValueAnimator? = null
     private val scrollAway = PillScrollAway(android.os.SystemClock::uptimeMillis)
     private val returnCheck = Runnable { returnAfterIdle() }
+    private val hideCheck = Runnable { hideAfterScrollingAway() }
 
     fun start() {
         applyTheme()
-        pill.setOnClickListener { addStories() }
+        pill.setOnClickListener { tap() }
         val owner = fragment.viewLifecycleOwner
         owner.lifecycleScope.launch {
             owner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -62,16 +68,7 @@ class NewStoriesPill(
     }
 
     /** Uses the story list status banner's per-theme colors (theme.xml), so every theme styles it. */
-    fun applyTheme() {
-        val radius = pill.resources.displayMetrics.density * 18f
-        pill.background =
-            GradientDrawable().apply {
-                cornerRadius = radius
-                setColor(MaterialColors.getColor(pill, R.attr.storyStatusFetchingBackgroundColor))
-                setStroke(UIUtils.dp2px(pill.context, 1), MaterialColors.getColor(pill, R.attr.storyStatusFetchingBorderColor))
-            }
-        pill.setTextColor(MaterialColors.getColor(pill, R.attr.storyStatusFetchingTextColor))
-    }
+    fun applyTheme() = style(pill)
 
     /**
      * ItemSetFragment.java calls this as the next-site control and the floating toolbar move, which
@@ -108,16 +105,34 @@ class NewStoriesPill(
     /** ItemSetFragment.java's view is going away. */
     fun stop() {
         pill.removeCallbacks(returnCheck)
+        pill.removeCallbacks(hideCheck)
         slide?.cancel()
     }
 
-    /** ItemSetFragment.java reports each scroll of the list; scrolling away from the pill eventually hides it. */
+    /** ItemSetFragment.java's "N new stories" row came into view or left it; the pill makes way for it. */
+    fun setInlineRowOnScreen(onScreen: Boolean) {
+        if (rowOnScreen == onScreen) return
+        rowOnScreen = onScreen
+        setShown(scrollAway.pillShows(storiesWaiting, rowOnScreen))
+    }
+
+    /** ItemSetFragment.java reports each scroll of the list; the first scroll away from the pill starts its hide timer. */
     fun onListScrolled(dy: Int) {
         if (dy == 0 || !storiesWaiting) return
         if (!shown && !scrollAway.hiddenByScroll) return
         val movedAway = if (placement == Placement.TOP) dy > 0 else dy < 0
-        if (scrollAway.onScroll(movedAway)) setShown(false)
+        if (scrollAway.onScroll(movedAway)) scrollAway.millisUntilHide()?.let { pill.postDelayed(hideCheck, it) }
         if (scrollAway.hiddenByScroll) scheduleReturn()
+    }
+
+    private fun hideAfterScrollingAway() {
+        if (!scrollAway.hidesNow()) {
+            // NewStoriesPill.kt's timer can fire a frame early; check back when it is really up.
+            scrollAway.millisUntilHide()?.let { pill.postDelayed(hideCheck, maxOf(it, 1L)) }
+            return
+        }
+        setShown(false)
+        scheduleReturn()
     }
 
     private fun scheduleReturn() {
@@ -126,7 +141,16 @@ class NewStoriesPill(
     }
 
     private fun returnAfterIdle() {
-        if (scrollAway.returnsNow(storiesWaiting)) setShown(true) else if (scrollAway.hiddenByScroll) scheduleReturn()
+        if (scrollAway.returnsNow(storiesWaiting)) {
+            setShown(scrollAway.pillShows(storiesWaiting, rowOnScreen))
+        } else if (scrollAway.hiddenByScroll) {
+            scheduleReturn()
+        }
+    }
+
+    // While stories wait the list carries the row; the pill makes way whenever the row is on screen.
+    private fun updateInlineRow() {
+        onInlineRowChanged(if (scrollAway.showsInlineRow(storiesWaiting)) waitingCount else 0, placement)
     }
 
     private fun render(state: RealtimeUpdates.NewStories) {
@@ -134,20 +158,25 @@ class NewStoriesPill(
         if (current == null || state.feedSet != current || state.count == 0) {
             // Another list, a reload, a tap, or every waiting story read elsewhere: start over.
             storiesWaiting = false
+            waitingCount = 0
             scrollAway.reset()
             pill.removeCallbacks(returnCheck)
+            pill.removeCallbacks(hideCheck)
             setShown(false)
+            updateInlineRow()
             return
         }
         storiesWaiting = true
         placement = state.placement
         val count = state.count
+        waitingCount = count
         pill.text = pill.resources.getQuantityString(R.plurals.new_stories_pill, count, count)
         pill.contentDescription = pill.text
         applyTheme()
         refreshPosition()
         // A pill the reader scrolled away from keeps counting while hidden and returns after an idle wait.
-        if (!scrollAway.hiddenByScroll) setShown(true)
+        setShown(scrollAway.pillShows(storiesWaiting, rowOnScreen))
+        updateInlineRow()
     }
 
     private fun setShown(show: Boolean) {
@@ -227,21 +256,34 @@ class NewStoriesPill(
         }
     }
 
-    private fun addStories() {
+    /** A tap on the pill, or on ItemSetFragment.java's row standing in for it. */
+    fun tap() {
         val fs = feedSet() ?: return
-        val shownPlacement = placement
         scrollAway.reset()
         pill.removeCallbacks(returnCheck)
-        val taken = realtimeUpdates.takeNewStories(fs)
-        if (taken.count == 0) return
-        if (taken.fillsGap) {
-            onFillGap(shownPlacement)
-            return
+        pill.removeCallbacks(hideCheck)
+        when (val action = realtimeUpdates.takeNewStories(fs).tapAction) {
+            RealtimeUpdates.NewStories.TapAction.None -> Unit
+            is RealtimeUpdates.NewStories.TapAction.FillGap -> onFillGap(action.placement)
+            is RealtimeUpdates.NewStories.TapAction.Insert ->
+                fragment.viewLifecycleOwner.lifecycleScope.launch {
+                    withContext(Dispatchers.IO) { dbHelper.addStoriesToReadingSession(action.storyHashes) }
+                    onStoriesAdded(action.storyHashes, action.placement)
+                }
         }
-        val hashes = taken.storyHashes
-        fragment.viewLifecycleOwner.lifecycleScope.launch {
-            withContext(Dispatchers.IO) { dbHelper.addStoriesToReadingSession(hashes) }
-            onStoriesAdded(hashes, shownPlacement)
+    }
+
+    companion object {
+        /** The pill's look, shared by ItemSetFragment.java's inline row so both read as the same button. */
+        @JvmStatic
+        fun style(view: TextView) {
+            view.background =
+                GradientDrawable().apply {
+                    cornerRadius = view.resources.displayMetrics.density * 18f
+                    setColor(MaterialColors.getColor(view, R.attr.storyStatusFetchingBackgroundColor))
+                    setStroke(UIUtils.dp2px(view.context, 1), MaterialColors.getColor(view, R.attr.storyStatusFetchingBorderColor))
+                }
+            view.setTextColor(MaterialColors.getColor(view, R.attr.storyStatusFetchingTextColor))
         }
     }
 }

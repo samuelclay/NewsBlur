@@ -105,6 +105,30 @@ class RealtimeUpdates internal constructor(
          */
         val fillsGap: Boolean get() = unfetchedCount > 0 || storyHashes.size > NEW_STORIES_CAP
 
+        /** What tapping the pill, or the row standing in for it, does with what it offered (NewStoriesPill.kt). */
+        val tapAction: TapAction
+            get() =
+                when {
+                    count == 0 -> TapAction.None
+                    fillsGap -> TapAction.FillGap(placement)
+                    else -> TapAction.Insert(storyHashes, placement)
+                }
+
+        sealed interface TapAction {
+            data object None : TapAction
+
+            /** Add the fetched stories to the list, pinned to its edge, with the arrival cascade. */
+            data class Insert(
+                val storyHashes: List<String>,
+                val placement: Placement,
+            ) : TapAction
+
+            /** Too many to add: reload the list's newest page and fill the gap below it. */
+            data class FillGap(
+                val placement: Placement,
+            ) : TapAction
+        }
+
         companion object {
             val NONE = NewStories(null, emptyList(), Placement.TOP)
         }

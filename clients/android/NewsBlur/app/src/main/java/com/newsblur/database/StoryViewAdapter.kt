@@ -280,6 +280,8 @@ class StoryViewAdapter(
         stories.clear()
         displayItems.clear()
         storyDisplayPositions.clear()
+        newStoriesRow = null
+        committedGapAfterStoryHash = null
         notifyDataSetChanged()
     }
 
@@ -312,6 +314,7 @@ class StoryViewAdapter(
         return when (displayItems.getOrNull(position)) {
             is DisplayItem.ClusterRow -> VIEW_TYPE_CLUSTER_ROW
             is DisplayItem.Gap -> VIEW_TYPE_GAP
+            is DisplayItem.NewStoriesRow -> VIEW_TYPE_NEW_STORIES_ROW
             else ->
                 if (listStyle == StoryListStyle.LIST) {
                     VIEW_TYPE_STORY_ROW
@@ -375,7 +378,7 @@ class StoryViewAdapter(
         if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "start id=${submission.loadId} rows=${submission.stories.size}")
         activeFeedIds = null
         val filtered = applySkipBackfill(submission.stories, submission.skipBackfill, submission.pinnedStoryHashes)
-        val newItems = withGap(buildDisplayItems(filtered), submission.gapAfterStoryHash)
+        val newItems = withNewStoriesRow(withGap(buildDisplayItems(filtered), submission.gapAfterStoryHash), newStoriesRow)
         val oldItems = synchronized(this) { displayItems.toList() }
         val diff = DiffUtil.calculateDiff(DisplayItemDiffer(oldItems, newItems), false)
         if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "end id=${submission.loadId} rows=${newItems.size} elapsedMs=${SystemClock.elapsedRealtime() - startedAt}")
@@ -395,6 +398,7 @@ class StoryViewAdapter(
             displayItems.clear()
             displayItems.addAll(result.items)
             rebuildStoryDisplayPositions()
+            committedGapAfterStoryHash = submission.gapAfterStoryHash
             committedLoadId = submission.loadId
             motionAwaitingFeedCommit = false
             result.diff.dispatchUpdatesTo(this)
@@ -535,7 +539,7 @@ class StoryViewAdapter(
             when (val item = displayItems[position]) {
                 is DisplayItem.StoryRow -> item.story
                 is DisplayItem.ClusterRow -> stories.getOrNull(item.parentStoryIndex)
-                is DisplayItem.Gap -> null
+                is DisplayItem.Gap, is DisplayItem.NewStoriesRow -> null
             }
         }
 
@@ -551,7 +555,7 @@ class StoryViewAdapter(
             when (val item = displayItems[position]) {
                 is DisplayItem.StoryRow -> item.story.storyHash
                 is DisplayItem.ClusterRow -> item.parentStoryHash
-                is DisplayItem.Gap -> null
+                is DisplayItem.Gap, is DisplayItem.NewStoriesRow -> null
             }
         }
 
@@ -571,7 +575,7 @@ class StoryViewAdapter(
             when (item) {
                 is DisplayItem.StoryRow -> if (item.story.storyHash in added) motionSeen.add(item.story.storyHash)
                 is DisplayItem.ClusterRow -> if (item.parentStoryHash in added) motionSeen.add(item.clusterStory.storyHash)
-                is DisplayItem.Gap -> Unit
+                is DisplayItem.Gap, is DisplayItem.NewStoriesRow -> Unit
             }
         }
     }
@@ -584,7 +588,7 @@ class StoryViewAdapter(
             when (item) {
                 is DisplayItem.StoryRow -> if (item.story.storyHash == storyHash) return index
                 is DisplayItem.ClusterRow -> if (item.clusterStory.storyHash == storyHash) return index
-                is DisplayItem.Gap -> Unit
+                is DisplayItem.Gap, is DisplayItem.NewStoriesRow -> Unit
             }
         }
 
@@ -828,6 +832,8 @@ class StoryViewAdapter(
         } else if (viewType == VIEW_TYPE_CLUSTER_ROW) {
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_cluster_row, viewGroup, false)
             return ClusterRowViewHolder(v)
+        } else if (viewType == VIEW_TYPE_NEW_STORIES_ROW) {
+            return NewStoriesRowViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.row_new_stories, viewGroup, false))
         } else if (viewType == VIEW_TYPE_GAP) {
             return GapViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.row_story_gap, viewGroup, false))
         } else if (viewType == VIEW_TYPE_STORY_ROW) {
@@ -1223,7 +1229,7 @@ class StoryViewAdapter(
                     bindClusterReadState(viewHolder, item.clusterStory, animated = true)
                     return
                 }
-                is DisplayItem.Gap, null -> Unit
+                is DisplayItem.Gap, is DisplayItem.NewStoriesRow, null -> Unit
             }
         }
         onBindViewHolder(viewHolder, position)
@@ -1279,6 +1285,13 @@ class StoryViewAdapter(
             }
             is DisplayItem.ClusterRow -> {
                 bindClusterRow(viewHolder as ClusterRowViewHolder, item)
+            }
+            is DisplayItem.NewStoriesRow -> {
+                val label = (viewHolder as NewStoriesRowViewHolder).label
+                label.text = label.resources.getQuantityString(R.plurals.new_stories_pill, item.count, item.count)
+                label.contentDescription = label.text
+                com.newsblur.view.NewStoriesPill.style(label)
+                label.setOnClickListener { onNewStoriesRowClick?.run() }
             }
             is DisplayItem.Gap -> {
                 val loading = (viewHolder as GapViewHolder).loading
@@ -1638,12 +1651,56 @@ class StoryViewAdapter(
 
     }
 
+    /** The "N new stories" row standing in for NewStoriesPill.kt once it steps aside (ItemSetFragment.java). */
+    class NewStoriesRowViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
+        val label: android.widget.TextView = view.findViewById(R.id.new_stories_row_label)
+    }
+
+    /** The "N new stories" row's count, and whether it sits at the top (newest first) or the end of the list. */
+    data class NewStoriesRowState(
+        val count: Int,
+        val atTop: Boolean,
+    )
+
+    // StoryViewAdapter.kt reads this while diffing off the main thread.
+    @Volatile
+    private var newStoriesRow: NewStoriesRowState? = null
+
+    /** What tapping the "N new stories" row does: NewStoriesPill.kt's tap. */
+    var onNewStoriesRowClick: Runnable? = null
+
+    /**
+     * Shows, updates or removes the "N new stories" row. It isn't a story: it has no story index, so next and
+     * previous, mark-read-on-scroll, selection and the story positions all pass over it.
+     */
+    @Synchronized
+    fun setNewStoriesRow(row: NewStoriesRowState?) {
+        if (newStoriesRow == row) return
+        newStoriesRow = row
+        // StoryViewAdapter.kt must not apply a diff calculated without this row; keep the latest batch to resubmit.
+        val pending = latestSubmission
+        invalidateStoryDiffs()
+        val before = displayItems.toList()
+        rebuildDisplayItemsFromCurrentStories()
+        DiffUtil.calculateDiff(DisplayItemDiffer(before, displayItems.toList()), false).dispatchUpdatesTo(this)
+        pending?.let {
+            submitStories(it.stories, it.loadId, it.grid, null, it.skipBackfill, it.onCommitted, it.pinnedStoryHashes, it.gapAfterStoryHash)
+        }
+    }
+
     /** The row between a gap stream's newest stories and the stories listed before them (ItemSetFragment.java). */
     class GapViewHolder(
         view: View,
     ) : RecyclerView.ViewHolder(view) {
         val loading: com.newsblur.view.StoryLoadingBar = view.findViewById(R.id.gap_loading_indicator)
     }
+
+    /** Where the "N new stories" row sits, or -1 without one. */
+    @get:Synchronized
+    val newStoriesRowPosition: Int
+        get() = displayItems.indexOfFirst { it is DisplayItem.NewStoriesRow }
 
     /** Where the gap row sits, or -1 with no gap. */
     @get:Synchronized
@@ -1854,10 +1911,13 @@ class StoryViewAdapter(
         }
     }
 
+    // The gap row's place in the last committed batch, kept when the rows are rebuilt without a new batch.
+    private var committedGapAfterStoryHash: String? = null
+
     private fun rebuildDisplayItemsFromCurrentStories() {
         activeFeedIds = null
         displayItems.clear()
-        displayItems.addAll(buildDisplayItems(stories))
+        displayItems.addAll(withNewStoriesRow(withGap(buildDisplayItems(stories), committedGapAfterStoryHash), newStoriesRow))
         rebuildStoryDisplayPositions()
     }
 
@@ -1869,7 +1929,7 @@ class StoryViewAdapter(
         rebuildDisplayItemsFromCurrentStories()
         notifyDataSetChanged()
         pending?.let {
-            submitStories(it.stories, it.loadId, it.grid, null, it.skipBackfill, it.onCommitted)
+            submitStories(it.stories, it.loadId, it.grid, null, it.skipBackfill, it.onCommitted, it.pinnedStoryHashes, it.gapAfterStoryHash)
         }
     }
 
@@ -1933,6 +1993,16 @@ class StoryViewAdapter(
                 other is ClusterRow && content == other.content
         }
 
+        /** "N new stories": NewStoriesPill.kt's stand-in at the list's edge once the pill steps aside. */
+        data class NewStoriesRow(
+            val count: Int,
+        ) : DisplayItem {
+            override val stableId: Long = "new-stories-row".hashCode().toLong()
+            override val read = false
+
+            override fun presentationMatches(other: DisplayItem): Boolean = other is NewStoriesRow && other.count == count
+        }
+
         /** Stories still loading between a gap stream's newest page and the stories listed before it. */
         data object Gap : DisplayItem {
             override val stableId: Long = "new-stories-gap".hashCode().toLong()
@@ -1950,6 +2020,18 @@ class StoryViewAdapter(
         const val VIEW_TYPE_FOOTER: Int = 3
         const val VIEW_TYPE_CLUSTER_ROW: Int = 4
         const val VIEW_TYPE_GAP: Int = 5
+        const val VIEW_TYPE_NEW_STORIES_ROW: Int = 6
+
+        // StoryViewAdapter.kt puts the "N new stories" row first in a newest-first list and last in an oldest-first one.
+        private fun withNewStoriesRow(
+            items: List<DisplayItem>,
+            row: NewStoriesRowState?,
+        ): List<DisplayItem> {
+            if (row == null || row.count <= 0 || items.isEmpty()) return items
+            return items.toMutableList().apply {
+                if (row.atTop) add(0, DisplayItem.NewStoriesRow(row.count)) else add(DisplayItem.NewStoriesRow(row.count))
+            }
+        }
 
         // StoryViewAdapter.kt puts the gap row after the story above it and that story's cluster rows.
         private fun withGap(
@@ -1963,7 +2045,7 @@ class StoryViewAdapter(
                     when (item) {
                         is DisplayItem.StoryRow -> item.story.storyHash
                         is DisplayItem.ClusterRow -> item.parentStoryHash
-                        is DisplayItem.Gap -> null
+                        is DisplayItem.Gap, is DisplayItem.NewStoriesRow -> null
                     }
                 if (hash == gapAfterStoryHash) anchor = index
             }

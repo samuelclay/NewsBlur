@@ -305,6 +305,7 @@ public class ItemSetFragment extends NbFragment {
                 switch (adapter.getItemViewType(position)) {
                     case StoryViewAdapter.VIEW_TYPE_FOOTER:
                     case StoryViewAdapter.VIEW_TYPE_GAP:
+                    case StoryViewAdapter.VIEW_TYPE_NEW_STORIES_ROW:
                         return columnCount;
                     default:
                         return 1;
@@ -335,7 +336,19 @@ public class ItemSetFragment extends NbFragment {
                 }, placement -> {
                     startGapStream(placement);
                     return kotlin.Unit.INSTANCE;
+                }, (count, placement) -> {
+                    // NewStoriesPill.kt stepped aside: the stories it still offers wait in a row at the list's edge.
+                    if (adapter != null) {
+                        // StoryViewAdapter.kt inserts it without moving what the reader sees (the list keeps its anchor).
+                        adapter.setNewStoriesRow(count > 0 ? new StoryViewAdapter.NewStoriesRowState(count,
+                                placement == RealtimeUpdates.NewStories.Placement.TOP) : null);
+                        if (binding != null) binding.itemgridfragmentGrid.post(this::updateNewStoriesRowOnScreen);
+                    }
+                    return kotlin.Unit.INSTANCE;
                 });
+        adapter.setOnNewStoriesRowClick(() -> {
+            if (newStoriesPill != null) newStoriesPill.tap();
+        });
         newStoriesPill.start();
 
         FeedSet fs = getFeedSet();
@@ -565,6 +578,15 @@ public class ItemSetFragment extends NbFragment {
         newStoriesEntrance = NewStoriesEntrance.start(binding.itemgridfragmentGrid, adapter, added, atTop);
     }
 
+    /** Tells NewStoriesPill.kt whether any part of the "N new stories" row is on screen, so the two never double up. */
+    private void updateNewStoriesRowOnScreen() {
+        if (newStoriesPill == null || adapter == null || layoutManager == null) return;
+        int row = adapter.getNewStoriesRowPosition();
+        boolean onScreen = row >= 0 && row >= layoutManager.findFirstVisibleItemPosition() &&
+                row <= layoutManager.findLastVisibleItemPosition();
+        newStoriesPill.setInlineRowOnScreen(onScreen);
+    }
+
     private void finishNewStoriesEntrance() {
         if (newStoriesEntrance != null) {
             newStoriesEntrance.finish();
@@ -686,6 +708,7 @@ public class ItemSetFragment extends NbFragment {
             storyThawCompleted(lastUnreadIndex);
             scrollToAddedNewStory();
             slideInGapStreamFirstPage();
+            submittedGrid.post(this::updateNewStoriesRowOnScreen);
             ensureSufficientStories();
             updateLoadingIndicators();
             updateBottomNextFeedControl();
@@ -1188,7 +1211,8 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private void onScrolled(int dy) {
-        // NewStoriesPill.kt steps aside while the reader keeps scrolling away from it.
+        // NewStoriesPill.kt makes way for the "N new stories" row, and steps aside once the reader scrolls away.
+        updateNewStoriesRowOnScreen();
         if (newStoriesPill != null) newStoriesPill.onListScrolled(dy);
         // the framework likes to trigger this on init before we even known counts, so disregard those
         if (!dataSeenYet) return;
