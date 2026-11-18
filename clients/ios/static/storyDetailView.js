@@ -36,6 +36,19 @@ var linkAt = function(x, y, attribute) {
     return el && el[attribute];
 };
 
+// StoryDetailObjCViewController.m supplies native coordinates, including the WebView's content inset.
+function newsblur_is_blank_story_tap_at(x, y, offset_x, offset_y, view_width) {
+    if (view_width <= 0) return false;
+    var selection = window.getSelection();
+    if (selection && !selection.isCollapsed) return false;
+    var scale = window.innerWidth / view_width;
+    var target = document.elementFromPoint((x + offset_x) * scale - window.scrollX,
+                                           (y + offset_y) * scale - window.scrollY);
+    return !!(target && target.closest('.NB-story') &&
+        !target.closest('a,button,input,textarea,select,label,summary,img,video,audio,iframe,' +
+                        '[contenteditable],[role="button"],[role="link"],.NB-media-card'));
+}
+
 // StoryImageViewerController.swift converts document coordinates through the native scroll offset.
 var newsblur_image_sequence = 0;
 function newsblurImageRect(token, load_id) {
