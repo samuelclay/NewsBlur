@@ -19,6 +19,31 @@ import org.junit.Test
 
 /** Test_ListenPreferences.kt checks how ListenPreferences.kt carries the old device-only Ask AI toggle to the server. */
 class Test_ListenPreferences {
+    // Test_ListenPreferences.kt: adding another voice keeps the first voice unchanged. The rotation key itself
+    // must notify observers; listening only for listen_voices leaves the picker stuck in its single-voice state.
+    @Test
+    fun test_rotation_only_sync_updates_observers_and_preserves_other_languages() =
+        runTest {
+            val french = listOf(ListenRotationVoice("fr-a", "French"))
+            val english = listOf(ListenRotationVoice("a", "Amelia"), ListenRotationVoice("b", "Jon"))
+            listenPreferences.applyServerPreferences(
+                JsonParser.parseString("""{"listen_voice_rotations":{"fr":[{"voice_id":"fr-a","name":"French"}]}}""").asJsonObject,
+            )
+            assertEquals(french, listenPreferences.settings.value.rotations["fr"])
+            coEvery { userApi.setPreferences(any()) } returns true
+            listenPreferences.save(listenPreferences.rotationChange("en", english))
+            assertEquals(english, listenPreferences.settings.value.rotations["en"])
+            assertEquals(french, listenPreferences.settings.value.rotations["fr"])
+            assertEquals("a", listenPreferences.current().voiceFor("en"))
+            val sent = mutableListOf<Map<String, String>>()
+            coVerify { userApi.setPreferences(capture(sent)) }
+            assertEquals(
+                mapOf("en" to english, "fr" to french),
+                ListenPreferenceParser.rotationsValue(JsonParser.parseString(sent.single().getValue(ListenPrefKeys.ROTATIONS))),
+            )
+            assertFalse(sent.single().keys.any { it.contains("position") })
+        }
+
     private val prefs = InMemoryPreferences()
     private val userApi = mockk<UserApi>()
     private val listenPreferences =

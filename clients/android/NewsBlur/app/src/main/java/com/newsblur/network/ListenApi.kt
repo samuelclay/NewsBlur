@@ -49,6 +49,7 @@ interface ListenApi {
         storyHash: String,
         language: String? = null,
         voiceId: String? = null,
+        voiceChoices: Map<String, String> = emptyMap(),
     ): ListenResult<ListenManifest>
 
     suspend fun getSegment(
