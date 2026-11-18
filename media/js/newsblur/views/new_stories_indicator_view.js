@@ -4,15 +4,13 @@
 // newest-first list and at the bottom of an oldest-first one, like the iOS and Android apps'
 // (clients/ios/Classes/NewStoriesPill.swift).
 //
-// It keeps out of the way of reading: after REALTIME_PILL_HIDE_AFTER_SCROLLING of scrolling away from it (down
-// from the top pill, up from the bottom one) it slides away, and it comes back only once the list hasn't scrolled
-// for REALTIME_PILL_RETURN_AFTER_IDLE. Both numbers live in reader.js's constants.
+// It keeps out of the way of reading: the first scroll away from it (down from the top pill, up from the bottom
+// one) gives it REALTIME_PILL_HIDE_AFTER_SCROLLING before it slides away, whatever the reader does meanwhile, and
+// it comes back only once the list hasn't scrolled for REALTIME_PILL_RETURN_AFTER_IDLE. Both numbers live in
+// reader.js's constants.
 NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
 
     className: 'NB-new-stories-indicator',
-
-    // new_stories_indicator_view.js: pauses between scroll events longer than this don't count as scrolling.
-    SCROLL_GAP_LIMIT: 250,
 
     events: {
         'click': 'on_click',
@@ -86,42 +84,45 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
 
     reset_scrolling: function () {
         this.hidden_by_scrolling = false;
-        this.scrolled_away = 0;
+        clearTimeout(this.hide_timer);
+        this.hide_timer = null;
         clearTimeout(this.return_timer);
         this.return_timer = null;
     },
 
-    // new_stories_indicator_view.js: adds up the time spent scrolling away from the visible pill, and restarts the
-    // idle wait of a pill that scrolling hid.
+    // new_stories_indicator_view.js: the first scroll away from the visible pill starts its countdown, and every
+    // scroll restarts the idle wait of a pill that scrolling hid.
     note_scroll: function () {
-        var now = Date.now();
         var scroll_top = NEWSBLUR.reader.$s.$story_titles.scrollTop();
         var previous_top = this.last_scroll_top;
-        var previous_at = this.last_scroll_at;
         this.last_scroll_top = scroll_top;
-        this.last_scroll_at = now;
+        this.last_scroll_at = Date.now();
         if (!this.count) return;
         if (this.hidden_by_scrolling) return this.schedule_return();
-        if (previous_top === null || !this.$el.hasClass('NB-visible')) return;
+        if (this.hide_timer || previous_top === null || !this.$el.hasClass('NB-visible')) return;
         var away = this.at_bottom ? scroll_top < previous_top : scroll_top > previous_top;
         if (!away) return;
-        this.scrolled_away += Math.min(now - previous_at, this.SCROLL_GAP_LIMIT);
-        if (this.scrolled_away >= NEWSBLUR.reader.constants.REALTIME_PILL_HIDE_AFTER_SCROLLING) {
+        this.hide_timer = setTimeout(_.bind(function () {
+            this.hide_timer = null;
+            if (!this.count || !this.$el.hasClass('NB-visible')) return;
             this.hidden_by_scrolling = true;
+            this.hidden_at = Date.now();
             this.$el.removeClass('NB-visible');
             this.schedule_return();
-        }
+        }, this), NEWSBLUR.reader.constants.REALTIME_PILL_HIDE_AFTER_SCROLLING);
     },
 
+    // new_stories_indicator_view.js: the idle wait counts from the later of the pill hiding and the last scroll, so
+    // the scroll that started its countdown doesn't shorten the wait.
     schedule_return: function () {
         clearTimeout(this.return_timer);
         var idle = NEWSBLUR.reader.constants.REALTIME_PILL_RETURN_AFTER_IDLE;
-        var wait = Math.max(0, this.last_scroll_at + idle - Date.now());
+        var still_since = Math.max(this.last_scroll_at, this.hidden_at || 0);
+        var wait = Math.max(0, still_since + idle - Date.now());
         this.return_timer = setTimeout(_.bind(function () {
             this.return_timer = null;
-            if (!this.count || Date.now() - this.last_scroll_at < idle) return;
+            if (!this.count || Date.now() - Math.max(this.last_scroll_at, this.hidden_at || 0) < idle) return;
             this.hidden_by_scrolling = false;
-            this.scrolled_away = 0;
             this.slide_in();
         }, this), wait);
     },

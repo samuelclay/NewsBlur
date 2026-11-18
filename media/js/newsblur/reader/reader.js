@@ -118,8 +118,8 @@
                 // announced, and clicking it pages the list in afresh (page_in_realtime_new_stories). The iOS and
                 // Android apps use the same cap.
                 REALTIME_NEW_STORY_CAP: 20,
-                // new_stories_indicator_view.js hides the pill after this much scrolling away from it, and brings it
-                // back only once the list hasn't scrolled for REALTIME_PILL_RETURN_AFTER_IDLE.
+                // new_stories_indicator_view.js hides the pill this long after the reader first scrolls away from it,
+                // and brings it back only once the list hasn't scrolled for REALTIME_PILL_RETURN_AFTER_IDLE.
                 REALTIME_PILL_HIDE_AFTER_SCROLLING: 5000,
                 REALTIME_PILL_RETURN_AFTER_IDLE: 3 * 60 * 1000,
                 FILL_OUT_PAGES: 100,
