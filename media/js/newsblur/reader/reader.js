@@ -7868,6 +7868,9 @@
         },
 
         handle_realtime_new_story: function (story_hash, timestamp) {
+            // reader.js: the "Show new stories as they arrive" preference (reader_preferences.js) turns the pill off;
+            // the list then only gains new stories when it reloads.
+            if (NEWSBLUR.assets.preference('realtime_new_stories') === false) return;
             var list = this.realtime_new_story_list();
             if (!list || !story_hash) return;
             var feed_id = story_hash.split(':')[0];
