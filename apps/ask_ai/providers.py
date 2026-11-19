@@ -298,7 +298,7 @@ class OpenAICompatibleProvider(OpenAIProvider):
     def _token_limit(self, max_tokens: int) -> dict:
         parameter = self.model_config.get("max_tokens_parameter", "max_tokens")
         multiplier = self.model_config.get("max_tokens_multiplier", 1)
-        return {parameter: max_tokens * multiplier}
+        return {parameter: int(max_tokens * multiplier)}
 
     def _merged_extra_body(self, thinking_config: Optional[dict] = None) -> dict:
         extra_body = dict(self.model_config.get("extra_body") or {})
@@ -506,13 +506,14 @@ PROVIDER_CLASSES = {
 }
 
 # providers.py: Optional per-model settings copied from ASK_AI_MODELS and BRIEFING_MODELS.
-# base_url and api_key are for OpenAICompatibleProvider. get_models_for_frontend and
-# get_briefing_models_for_frontend leave them out, so they never reach a browser.
+# Everything from base_url on is read only by OpenAICompatibleProvider. get_models_for_frontend
+# and get_briefing_models_for_frontend leave them out, so they never reach a browser.
 OPTIONAL_MODEL_SETTINGS = (
     "thinking_config",
     "thinking_model_id",
     "base_url",
     "api_key",
+    "extra_body",
     "max_tokens_parameter",
     "max_tokens_multiplier",
 )
@@ -641,8 +642,6 @@ def _load_models():
         for name in OPTIONAL_MODEL_SETTINGS:
             if name in cfg:
                 entry[name] = cfg[name]
-        if provider_class is OpenAICompatibleProvider and "extra_body" in cfg:
-            entry["extra_body"] = cfg["extra_body"]
         models[key] = entry
     return models if models else _DEFAULT_MODELS
 
@@ -791,8 +790,6 @@ def _load_briefing_models():
         for name in OPTIONAL_MODEL_SETTINGS:
             if name in cfg:
                 entry[name] = cfg[name]
-        if provider_class is OpenAICompatibleProvider and "extra_body" in cfg:
-            entry["extra_body"] = cfg["extra_body"]
         models[key] = entry
     return models if models else _DEFAULT_BRIEFING_MODELS
 
