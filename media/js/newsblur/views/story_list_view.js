@@ -128,6 +128,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.end_loading();
     },
 
+    depart: function () {
+        // story_list_view.js: reader.js reset_feed fades the open stories out before it scrolls this pane
+        // to the top and empties it. Layout switches call clear() without fading.
+        NEWSBLUR.motion.depart(this.el, { snapshot_layout: true });
+    },
+
     clear: function () {
         _.invoke(this.stories, 'destroy');
         this.$el.empty();
@@ -209,7 +215,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
             options.immediate = true;
         }
-        if (!NEWSBLUR.assets.preference('animations')) options.immediate = true;
+        if (!NEWSBLUR.motion.duration(1)) options.immediate = true;
         if (options.scroll_to_comments) {
             $story = $('.NB-feed-story-comments', $story);
         }
@@ -289,7 +295,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             // console.log(["endbar height full/split", endbar_height, empty_space, pane_height, last_story_offset, last_story_height]);
         }
 
-        this.$('.NB-end-line').remove();
+        NEWSBLUR.motion.remove(this.$('.NB-end-line'));
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
             var last_story = NEWSBLUR.assets.stories.last();
             if (last_story && !last_story.get('selected')) return;
@@ -347,6 +353,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
         $feed_scroll.append($endline);
+        NEWSBLUR.motion.enter($endline[0], 0, 10);
     },
 
     check_premium_river: function () {
@@ -370,7 +377,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
     end_loading: function () {
         var $endbar = NEWSBLUR.reader.$s.$feed_scroll.find('.NB-end-line');
-        $endbar.remove();
+        NEWSBLUR.motion.remove($endbar);
 
         if (this.collection.no_more_stories) {
             this.show_no_more_stories();

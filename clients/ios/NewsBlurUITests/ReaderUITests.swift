@@ -1467,6 +1467,37 @@ final class ReaderUITests: XCTestCase {
         attachScreenshot(named: "gesture-groups-swipes-on")
     }
 
+    func test_reduceMotionPreferencePersistsAcrossRelaunch() {
+        // ReaderUITests.swift protects the actual switch binding and persistence, beyond ReaderMotion's animation policy.
+        if UIDevice.current.userInterfaceIdiom == .pad { XCUIDevice.shared.orientation = .landscapeLeft }
+        app.launchArguments = ["-newsblur-ui-test-animations"]
+        func showToggle() -> XCUIElement {
+            launch(on: "preferences")
+            let toggle = app.switches["reduce_motion"]
+            let scroll = app.scrollViews.firstMatch
+            XCTAssertTrue(scroll.waitForExistence(timeout: 10))
+            for _ in 0..<16 {
+                if toggle.isHittable { return toggle }
+                scroll.swipeUp(velocity: .slow)
+            }
+            XCTAssertTrue(toggle.isHittable)
+            return toggle
+        }
+        let toggle = showToggle()
+        let original = toggle.value as? String
+        attachScreenshot(named: "reduce-motion-original")
+        toggle.tap()
+        let changed = toggle.value as? String
+        XCTAssertNotEqual(changed, original)
+        attachScreenshot(named: "reduce-motion-toggled")
+        app.terminate()
+        let restored = showToggle()
+        XCTAssertEqual(restored.value as? String, changed)
+        attachScreenshot(named: "reduce-motion-after-relaunch")
+        restored.tap()
+        XCTAssertEqual(restored.value as? String, original)
+    }
+
     func test_feedSwipeDirectionsWorkWithStorySwipesDisabled() {
         for right in [false, true] {
             app = XCUIApplication()
@@ -2202,6 +2233,38 @@ final class ReaderUITests: XCTestCase {
         // Give extra timeout for the async fetch + render pipeline on slow CI runners.
         tapElementCenter(nextButton)
         XCTAssertTrue(waitForLabel("Swift Fixture Story Four", on: currentStory, timeout: 30))
+    }
+
+    func test_traverseButtonsReappearAfterBlankTapPeekAndUpwardScroll() {
+        app.launchArguments += ["-newsblur-ui-test-animations", "-scroll_stories_horizontally", "YES"]
+        launch(on: "reader-story-swift-1")
+        let story = app.webViews.firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 10))
+
+        dragUp(on: story, distance: 200)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 < 0.01 })
+        attachScreenshot(named: "traversal-hidden-after-downward-scroll")
+        story.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 > 0.99 })
+        attachScreenshot(named: "traversal-revealed-by-blank-tap")
+
+        dragUp(on: story, distance: 150)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 < 0.01 })
+        let start = story.coordinate(withNormalizedOffset: CGVector(dx: 0.65, dy: 0.5))
+        let peek = start.withOffset(CGVector(dx: -40, dy: 0))
+        start.press(forDuration: 0.2, thenDragTo: peek,
+                    withVelocity: XCUIGestureVelocity(rawValue: 40), thenHoldForDuration: 0.5)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 > 0.99 })
+        XCTAssertTrue(waitForLabel("Swift Fixture Story One", on: currentStoryProbe()))
+        attachScreenshot(named: "traversal-revealed-by-cancelled-peek")
+
+        dragUp(on: story, distance: 150)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 < 0.01 })
+        let upward = start.withOffset(CGVector(dx: 0, dy: 140))
+        start.press(forDuration: 0.2, thenDragTo: upward,
+                    withVelocity: XCUIGestureVelocity(rawValue: 100), thenHoldForDuration: 0.5)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 > 0.99 })
+        attachScreenshot(named: "traversal-revealed-by-upward-scroll")
     }
 
     func test_traverseButtonsFadeRelativeAfterNextWithHiddenToolbar() {

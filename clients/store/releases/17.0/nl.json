@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 maakt lezen levendiger. Feeds, mapkoppen, artikeltitels en artikelonderdelen verschijnen met animaties in de volgorde waarin je ze ziet. Wisselen tussen Alles, Ongelezen, Focus en Opgeslagen gaat snel en soepel.\n\nLiever minder beweging? De nieuwe schakelaar Beweging verminderen onder Voorkeuren > Weergave verwijdert verschuiven en schalen, maar behoudt het geleidelijk verschijnen en verdwijnen. De schakelaar staat standaard uit.\n\nDeze versie maakt ook het laden van artikelen in de grijze modus rustiger, geeft ontdekkingstags meer ruimte op iPhone en verbetert dialoogvensters en bediening op iPhone en iPad."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 maakt lezen levendiger. Feeds, mapkoppen, artikeltitels en artikelonderdelen verschijnen met animaties in de volgorde waarin je ze ziet. Wisselen tussen Alles, Ongelezen, Focus en Opgeslagen gaat snel en soepel.\n\nLiever minder beweging? De nieuwe schakelaar Beweging verminderen onder Voorkeuren > Weergave verwijdert verschuiven en schalen, maar behoudt het geleidelijk verschijnen en verdwijnen. De schakelaar staat standaard uit.\n\nDeze versie verfijnt ook het kader van de Mac-lezer, verbetert de bediening bij het ontdekken van sites en maakt overgangen tussen artikelen rustiger."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17 animeert feeds, mappen, titels en artikelen op volgorde, met snelle overgangen tussen Alles, Ongelezen, Focus en Opgeslagen. Zet Beweging verminderen aan onder Voorkeuren > Weergave om beweging te verwijderen en het geleidelijk verschijnen en verdwijnen te behouden. Standaard staat dit uit. Ontdekkingstags krijgen meer ruimte op telefoons en dialoogvensters op tablets werken beter bij het draaien van het scherm."
+  }
+}

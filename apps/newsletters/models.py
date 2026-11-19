@@ -730,6 +730,13 @@ class EmailNewsletter:
         if "stripped-html" in params and params["stripped-html"] and not force_plain:
             return params["stripped-html"]
         if "body-plain" in params and params["body-plain"]:
+            # apps/newsletters/models.py: Some senders' text part is their HTML source, entity
+            # escaped (POLITICO Europe's Playbooks forwarded from Gmail arrive escaped twice).
+            # That is HTML, not text, so wrapping it in paragraphs would show the markup. Real
+            # plain text that merely quotes a tag doesn't open with one, so it stays text.
+            unescaped_plain = self._maybe_unescape_html(params["body-plain"])
+            if unescaped_plain != params["body-plain"] and unescaped_plain.lstrip().startswith("<"):
+                return unescaped_plain
             return linkify(linebreaks(params["body-plain"]))
 
         if force_plain:
@@ -751,14 +758,27 @@ class EmailNewsletter:
         Some providers (e.g. ImprovMX) send HTML with entities encoded,
         e.g., &lt;table&gt; instead of <table>. BeautifulSoup treats these
         as text rather than tags, causing raw HTML to display to the user.
+        Some arrive encoded more than once (&amp;lt;table&amp;gt;), so this
+        unescapes while escaped tags outnumber real ones, and stops as soon as
+        a pass turns up real markup. An escaped code sample in the newsletter
+        (<code>&lt;div&gt;</code>) is never decoded with it, so it stays text.
         """
-        if not content:
-            return content
-        # apps/newsletters/models.py: Check for entity-encoded HTML tags
-        entity_tag_pattern = r"&lt;/?(?:table|tr|td|th|div|span|p|a|img|br|hr|h[1-6]|ul|ol|li|strong|em|b|i|font|center|blockquote|html|head|body|style|meta)\b"
-        if re.search(entity_tag_pattern, content, re.IGNORECASE):
+        # apps/newsletters/models.py: Entity-encoded HTML tags, up to three encodings deep,
+        # against every real tag (<section>, <pre>, </td>), whatever its name.
+        escaped_tag_pattern = re.compile(
+            r"&(?:amp;)*lt;/?(?:table|tr|td|th|div|span|p|a|img|br|hr|h[1-6]|ul|ol|li|strong|em|b|i"
+            r"|font|center|blockquote|html|head|body|style|meta)\b",
+            re.IGNORECASE,
+        )
+        real_tag_pattern = re.compile(r"</?[a-zA-Z][a-zA-Z0-9-]*(?:\s[^<>]*)?/?>")
+        for _ in range(3):
+            real_tags = len(real_tag_pattern.findall(content or ""))
+            if len(escaped_tag_pattern.findall(content or "")) <= real_tags:
+                break
             logging.debug(" ---> Unescaping entity-encoded HTML in newsletter content")
-            return html_module.unescape(content)
+            content = html_module.unescape(content)
+            if len(real_tag_pattern.findall(content)) > real_tags:
+                break
         return content
 
     def _clean_content(self, content):

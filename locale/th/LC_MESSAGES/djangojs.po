@@ -1042,6 +1042,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "เพิ่มแท็กบทความ %(count)s รายการ"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "เพิ่ม %(voice)s ในการสลับเสียง"
+
 msgid "Add Folder"
 msgstr "เพิ่มโฟลเดอร์"
 
@@ -1104,6 +1108,9 @@ msgstr "เพิ่มไปยังคิวถัดไป"
 
 msgid "Add to folder"
 msgstr "เพิ่มลงในโฟลเดอร์"
+
+msgid "Add to rotation"
+msgstr "เพิ่มในการสลับเสียง"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -1292,6 +1299,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "ไม่จำกัดเวลา"
+
+msgid "Appearance"
+msgstr "รูปลักษณ์"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -2048,6 +2058,9 @@ msgstr "สร้างสรรค์"
 
 msgid "Credit"
 msgstr "เครดิต"
+
+msgid "Current voice"
+msgstr "เสียงปัจจุบัน"
 
 msgid "Cursors"
 msgstr "เคอร์เซอร์"
@@ -2901,6 +2914,10 @@ msgstr "การเงิน"
 msgid "Find %(value_1)s Friends"
 msgstr "ค้นหาเพื่อนจาก %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "ค้นหา %(voice)s ในรายการเสียง"
+
 msgid "Find Friends"
 msgstr "ค้นหาเพื่อน"
 
@@ -3169,6 +3186,9 @@ msgstr "เต็มความกว้าง"
 
 msgid "Full-Text Search"
 msgstr "ค้นหาข้อความเต็ม"
+
+msgid "Full-screen list"
+msgstr "รายการแบบเต็มหน้าจอ"
 
 msgid "Full-text search across all stories"
 msgstr "ค้นหาข้อความเต็มในทุกบทความ"
@@ -3529,6 +3549,9 @@ msgstr ""
 msgid "In a new window"
 msgstr "ในหน้าต่างใหม่"
 
+msgid "In rotation"
+msgstr "อยู่ในการสลับเสียง"
+
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
@@ -3565,6 +3588,9 @@ msgstr "บทความจากเว็บไซต์ที่อัปเ
 
 msgid "Infrequent stories per month"
 msgstr "บทความต่อเดือนของเว็บไซต์ที่อัปเดตไม่บ่อย"
+
+msgid "Inline list"
+msgstr "รายการแบบแสดงในหน้า"
 
 msgid "Insta-fetch stories"
 msgstr "ดึงบทความทันที"
@@ -3641,6 +3667,9 @@ msgstr "มีแต่พาดหัว พร้อมคำบรรยา�
 msgid "Just the headlines, no commentary"
 msgstr "มีแค่พาดหัว ไม่มีความเห็นประกอบ"
 
+msgid "Keep fades, without movement."
+msgstr "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว"
+
 msgid "Keep others unread"
 msgstr "คงสถานะยังไม่อ่านให้บทความอื่น"
 
@@ -3701,6 +3730,9 @@ msgstr "อัปเดตล่าสุด"
 
 msgid "Last seen:"
 msgstr "พบเห็นล่าสุด:"
+
+msgid "Layout"
+msgstr "เลย์เอาต์"
 
 msgid "Leave unread"
 msgstr "คงสถานะยังไม่อ่าน"
@@ -3789,6 +3821,9 @@ msgstr "กำลังโหลดฟีด..."
 
 msgid "Loading more briefings..."
 msgstr "กำลังโหลดสรุปข่าวเพิ่มเติม..."
+
+msgid "Loading the next unread story..."
+msgstr "กำลังโหลดบทความที่ยังไม่อ่านถัดไป..."
 
 msgid "Loading voices..."
 msgstr "กำลังโหลดเสียงพูด..."
@@ -4306,6 +4341,9 @@ msgstr "ขั้นตอนถัดไป "
 msgid "Next story"
 msgstr "บทความถัดไป"
 
+msgid "Next unread"
+msgstr "บทความที่ยังไม่อ่านถัดไป"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "จากนั้นสร้างตัวกรองที่รวมจดหมายข่าวทั้งหมดของคุณ เพื่อส่งต่อไปยังที่อยู่เฉพาะบน NewsBlur"
 
@@ -4610,6 +4648,11 @@ msgid "Old password"
 msgstr "รหัสผ่านเดิม"
 
 #, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "เก่ากว่า %(count)s วัน"
+
+#, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "เก่ากว่า: %(day)s %(month)s %(year)s"
 
@@ -4639,6 +4682,9 @@ msgstr "คำสั่งเดียวด้วย Docker"
 
 msgid "One sentence"
 msgstr "หนึ่งประโยค"
+
+msgid "One voice per story, in this order."
+msgstr "หนึ่งเสียงต่อบทความ ตามลำดับนี้"
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "สมัครรับข้อมูลได้ในคลิกเดียวบนทุกเว็บไซต์ที่มีฟีด ใช้ URL เพิ่มเว็บไซต์แบบกำหนดเองจากแท็บเพิ่มเติม"
@@ -5344,6 +5390,9 @@ msgstr "แลกใช้แล้ว"
 msgid "Reduce clutter in your river of stories"
 msgstr "ลดความรกในรายการบทความของคุณ"
 
+msgid "Reduce motion"
+msgstr "ลดการเคลื่อนไหว"
+
 msgid "Refer"
 msgstr "แนะนำ"
 
@@ -5396,6 +5445,10 @@ msgstr "จำตำแหน่งการเล่นของแต่ละ
 
 msgid "Remove"
 msgstr "นำออก"
+
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "นำ %(voice)s ออกจากการสลับเสียง"
 
 msgid "Remove from Up Next"
 msgstr "นำออกจากคิวถัดไป"
@@ -5836,6 +5889,12 @@ msgstr "เลือกส่วนหนึ่งของ URL เพื่อ�
 
 msgid "Select title phrase"
 msgstr "เลือกวลีในชื่อเรื่อง"
+
+msgid "Selected"
+msgstr "เลือกแล้ว"
+
+msgid "Selected voice"
+msgstr "เสียงที่เลือก"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "การเลือกบทความในรายการชื่อเรื่องจะทำเครื่องหมายบทความนั้นว่าอ่านแล้ว"
@@ -6370,6 +6429,12 @@ msgstr "บทความที่เก่ากว่า %(date)s"
 msgid "Stories on %(date)s"
 msgstr "บทความวันที่ %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "บทความเปิดภายในรายการ"
+
+msgid "Stories open on their own screen"
+msgstr "บทความเปิดในหน้าของตัวเอง"
+
 msgid "Stories per day"
 msgstr "บทความต่อวัน"
 
@@ -6420,6 +6485,9 @@ msgstr "รูปแบบตัวอักษรของบทความ"
 
 msgid "Story URL"
 msgstr "URL ของบทความ"
+
+msgid "Story cards open on their own screen"
+msgstr "การ์ดบทความเปิดในหน้าของตัวเอง"
 
 msgid "Story clustering"
 msgstr "การจัดกลุ่มบทความ"
@@ -7413,11 +7481,18 @@ msgstr "เปิดใช้การเรียกเก็บเงินต
 msgid "Use %(language)s"
 msgstr "ใช้ %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "ใช้เฉพาะ %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "ใช้รูปแบบเวลา 12 ชั่วโมง"
 
 msgid "Use 24-hour clock"
 msgstr "ใช้รูปแบบเวลา 24 ชั่วโมง"
+
+msgid "Use only this voice"
+msgstr "ใช้เฉพาะเสียงนี้"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "ใช้เทมเพลตพรอมป์ต์สำหรับคัดกรองกล่องจดหมาย ค้นคว้าหัวข้อ และตรวจสอบฟีด"
@@ -7427,6 +7502,9 @@ msgstr "ใช้เมนูบริบทดั้งเดิมของเ
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "ใช้เทมเพลต URL นี้ในส่วนขยายเบราว์เซอร์และโปรแกรมอ่านฟีดเพื่อสมัครรับข้อมูลบน NewsBlur"
+
+msgid "Use voice"
+msgstr "ใช้เสียงนี้"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "ใช้วิดเจ็ตเพื่อดูจำนวนที่ยังไม่ได้อ่านและบทความต่าง ๆ ได้อย่างรวดเร็ว"
@@ -7494,8 +7572,14 @@ msgstr "เสียงพูด"
 msgid "Voice recording failed. Please try again."
 msgstr "บันทึกเสียงไม่สำเร็จ โปรดลองอีกครั้ง"
 
+msgid "Voice rotation"
+msgstr "สลับเสียงอ่าน"
+
 msgid "Voice settings"
 msgstr "การตั้งค่าเสียง"
+
+msgid "Voices"
+msgstr "เสียงอ่าน"
 
 msgid "Warning: This is actually permanent"
 msgstr "คำเตือน: การดำเนินการนี้ย้อนกลับไม่ได้"

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 rend la lecture plus vivante. Les flux, les titres de dossiers et d’articles et les sections des articles apparaissent avec une animation, dans leur ordre à l’écran. Le passage entre Tout, Non lus, Prioritaires et Enregistré est rapide et fluide.\n\nVous préférez moins de mouvement ? La nouvelle option Réduire les animations dans Préférences > Apparence supprime les déplacements et les changements d’échelle tout en conservant les fondus doux. Elle est désactivée par défaut.\n\nCette version rend aussi le chargement des articles plus doux en mode Gris, donne plus de place aux tags de découverte sur iPhone et améliore les boîtes de dialogue et les commandes sur iPhone et iPad."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 rend la lecture plus vivante. Les flux, les titres de dossiers et d’articles et les sections des articles apparaissent avec une animation, dans leur ordre à l’écran. Le passage entre Tout, Non lus, Prioritaires et Enregistré est rapide et fluide.\n\nVous préférez moins de mouvement ? La nouvelle option Réduire les animations dans Préférences > Apparence supprime les déplacements et les changements d’échelle tout en conservant les fondus doux. Elle est désactivée par défaut.\n\nCette version affine aussi le cadre du lecteur sur Mac, améliore les commandes de découverte et adoucit les transitions entre les articles."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17 anime flux, dossiers, titres et articles dans l’ordre, avec des transitions rapides entre Tout, Non lus, Prioritaires et Enregistrés. Activez Réduire les animations dans Préférences > Apparence pour supprimer le mouvement et garder les fondus. L’option est désactivée par défaut. Les tags de découverte ont plus de place sur téléphone et les boîtes de dialogue s’adaptent mieux à la rotation sur tablette."
+  }
+}

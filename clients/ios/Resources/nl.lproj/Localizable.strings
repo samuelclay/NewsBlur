@@ -103,6 +103,7 @@
 "Add" = "Toevoegen";
 "Add %1$@ feeds to “%2$@” folder" = "%1$@ feeds toevoegen aan map ‘%2$@’";
 "Add %@" = "%@ toevoegen";
+"Add %@ to rotation" = "%@ aan de rotatie toevoegen";
 "Add + Discover Sites" = "Sites toevoegen + ontdekken";
 "Add Site" = "Site toevoegen";
 "Add Sites" = "Sites toevoegen";
@@ -170,6 +171,7 @@
 "Analyzing images..." = "Afbeeldingen analyseren...";
 "App Badge" = "Appbadge";
 "App Icon" = "App-pictogram";
+"Appearance" = "Weergave";
 "Apply training across a folder" = "Training toepassen op een map";
 "Apply training globally" = "Training overal toepassen";
 "Arctic Cyan" = "Arctisch cyaan";
@@ -391,6 +393,7 @@
 "Fetching text..." = "Tekst ophalen...";
 "Filter" = "Filteren";
 "Filter stories by date range" = "Artikelen filteren op datumbereik";
+"Find %@ in the voice list" = "%@ zoeken in de stemmenlijst";
 "Find Friends" = "Vrienden zoeken";
 "Find in Feed" = "Zoeken in feed";
 "Find in Sites" = "Zoeken in sites";
@@ -504,6 +507,7 @@
 "Interactions" = "Interacties";
 "Invalid: %@" = "Ongeldig: %@";
 "Invoice" = "Factuur";
+"Keep fades, without movement." = "Overgangen met vervagen behouden, zonder beweging.";
 "Keeps the dark icon no matter how your device is set." = "Behoudt het donkere pictogram, ongeacht de instelling van je apparaat.";
 "Keeps the light icon no matter how your device is set." = "Houdt het lichte pictogram aan, ongeacht de instelling van je apparaat.";
 "Keyboard Shortcuts" = "Sneltoetsen";
@@ -741,6 +745,7 @@
 "On scroll or selection" = "Bij scrollen of selecteren";
 "One" = "Eén";
 "One column" = "Eén kolom";
+"One voice per story, in this order." = "Eén stem per artikel, in deze volgorde.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Slechts %1$@ van je %2$@ sites zijn geïndexeerd om te ontdekken. Upgrade om al je sites te indexeren en persoonlijke aanbevelingen te krijgen.";
 "Only Title" = "Alleen titel";
 "Only on Selection" = "Alleen bij selectie";
@@ -848,6 +853,7 @@
 "Reads your %@ stories" = "Leest je %@-artikelen voor";
 "Recommended for %@" = "Aanbevolen voor %@";
 "Recording..." = "Opnemen...";
+"Reduce motion" = "Beweging verminderen";
 "Refine with a hint" = "Verfijn met een aanwijzing";
 "Refine with this title" = "Verfijnen met deze titel";
 "Refresh NewsBlur" = "NewsBlur vernieuwen";
@@ -860,6 +866,7 @@
 "Related sites" = "Gerelateerde sites";
 "Reload Sites" = "Sites opnieuw laden";
 "Reloading..." = "Opnieuw laden...";
+"Remove %@ from rotation" = "%@ uit de rotatie verwijderen";
 "Remove This List" = "Deze lijst verwijderen";
 "Remove from Up Next" = "Verwijderen uit Hierna afspelen";
 "Removed from Up Next" = "Verwijderd uit Hierna afspelen";
@@ -932,6 +939,8 @@
 "Select a feed or folder" = "Selecteer een feed of map";
 "Select a feed variant" = "Selecteer een feedvariant";
 "Select feeds to add" = "Selecteer feeds om toe te voegen";
+"Selected" = "Geselecteerd";
+"Selected voice" = "Geselecteerde stem";
 "Send" = "Verzenden";
 "Send This Story To..." = "Dit artikel verzenden naar...";
 "Send To…" = "Verzenden naar…";
@@ -1233,7 +1242,9 @@
 "Use a custom server" = "Een aangepaste server gebruiken";
 "Use another sign-in method" = "Een andere inlogmethode gebruiken";
 "Use both" = "Beide gebruiken";
+"Use only this voice" = "Alleen deze stem gebruiken";
 "Use system size" = "Systeemgrootte gebruiken";
+"Use voice" = "Stem gebruiken";
 "User info" = "Gebruikersgegevens";
 "Username" = "Gebruikersnaam";
 "Username or Email" = "Gebruikersnaam of e-mailadres";
@@ -1247,6 +1258,7 @@
 "View mode" = "Weergavemodus";
 "Voice" = "Stem";
 "Voice and music balance" = "Balans tussen stem en muziek";
+"Voice rotation" = "Stemrotatie";
 "Voice settings" = "Steminstellingen";
 "Warm" = "Warm";
 "Web" = "Web";

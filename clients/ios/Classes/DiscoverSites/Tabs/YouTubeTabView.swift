@@ -25,16 +25,17 @@ struct YouTubeTabView: View {
                     onSubmit: {
                         viewModel.searchFeeds(type: "youtube", query: viewModel.youtubeState.searchQuery)
                     },
-                    viewMode: $viewModel.feedViewMode
+                    viewMode: showsCategories && UIDevice.current.userInterfaceIdiom != .phone ? nil : $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
 
-                if !viewModel.youtubeState.categories.isEmpty && viewModel.youtubeState.searchQuery.isEmpty {
+                if showsCategories {
                     DiscoverCategoryPillsView(
                         categories: viewModel.youtubeState.categories,
                         selectedCategory: $viewModel.youtubeState.selectedCategory,
-                        selectedSubcategory: $viewModel.youtubeState.selectedSubcategory
+                        selectedSubcategory: $viewModel.youtubeState.selectedSubcategory,
+                        viewMode: UIDevice.current.userInterfaceIdiom == .phone ? nil : $viewModel.feedViewMode
                     )
                     .onChange(of: viewModel.youtubeState.selectedCategory) { _ in
                         reloadFeeds()
@@ -79,6 +80,10 @@ struct YouTubeTabView: View {
                 reloadFeeds()
             }
         }
+    }
+
+    private var showsCategories: Bool {
+        !viewModel.youtubeState.categories.isEmpty && viewModel.youtubeState.searchQuery.isEmpty
     }
 
     @ViewBuilder

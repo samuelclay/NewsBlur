@@ -103,6 +103,7 @@
 "Add" = "Додати";
 "Add %1$@ feeds to “%2$@” folder" = "Додати %1$@ стрічок до папки «%2$@»";
 "Add %@" = "Додати %@";
+"Add %@ to rotation" = "Додати %@ до чергування";
 "Add + Discover Sites" = "Додати + знайти сайти";
 "Add Site" = "Додати сайт";
 "Add Sites" = "Додати сайти";
@@ -170,6 +171,7 @@
 "Analyzing images..." = "Аналіз зображень...";
 "App Badge" = "Значок програми";
 "App Icon" = "Іконка застосунку";
+"Appearance" = "Вигляд";
 "Apply training across a folder" = "Застосувати навчання до всієї папки";
 "Apply training globally" = "Застосувати навчання глобально";
 "Arctic Cyan" = "Арктичний блакитний";
@@ -391,6 +393,7 @@
 "Fetching text..." = "Завантаження тексту...";
 "Filter" = "Фільтр";
 "Filter stories by date range" = "Фільтрувати статті за діапазоном дат";
+"Find %@ in the voice list" = "Знайти %@ у списку голосів";
 "Find Friends" = "Знайти друзів";
 "Find in Feed" = "Знайти у стрічці";
 "Find in Sites" = "Пошук на сайтах";
@@ -504,6 +507,7 @@
 "Interactions" = "Взаємодії";
 "Invalid: %@" = "Недійсне значення: %@";
 "Invoice" = "Рахунок";
+"Keep fades, without movement." = "Зберегти плавну появу та зникнення без руху.";
 "Keeps the dark icon no matter how your device is set." = "Завжди використовує темну іконку, незалежно від налаштувань пристрою.";
 "Keeps the light icon no matter how your device is set." = "Завжди використовує світлу іконку, незалежно від налаштувань вашого пристрою.";
 "Keyboard Shortcuts" = "Комбінації клавіш";
@@ -741,6 +745,7 @@
 "On scroll or selection" = "Під час прокручування або вибору";
 "One" = "Один";
 "One column" = "Одна колонка";
+"One voice per story, in this order." = "Один голос на статтю, у цьому порядку.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Для пошуку проіндексовано лише %1$@ із %2$@ ваших сайтів. Перейдіть на вищий тариф, щоб проіндексувати всі сайти й отримувати персональні рекомендації.";
 "Only Title" = "Лише заголовок";
 "Only on Selection" = "Лише під час вибору";
@@ -848,6 +853,7 @@
 "Reads your %@ stories" = "Читає ваші статті з %@";
 "Recommended for %@" = "Рекомендовано для %@";
 "Recording..." = "Запис…";
+"Reduce motion" = "Зменшити рух";
 "Refine with a hint" = "Уточнити за допомогою підказки";
 "Refine with this title" = "Уточнити за цією назвою";
 "Refresh NewsBlur" = "Оновити NewsBlur";
@@ -860,6 +866,7 @@
 "Related sites" = "Пов’язані сайти";
 "Reload Sites" = "Перезавантажити сайти";
 "Reloading..." = "Перезавантаження...";
+"Remove %@ from rotation" = "Вилучити %@ із чергування";
 "Remove This List" = "Видалити цей список";
 "Remove from Up Next" = "Видалити з черги «Далі»";
 "Removed from Up Next" = "Видалено з черги «Далі»";
@@ -932,6 +939,8 @@
 "Select a feed or folder" = "Виберіть стрічку або папку";
 "Select a feed variant" = "Виберіть варіант стрічки";
 "Select feeds to add" = "Виберіть стрічки для додавання";
+"Selected" = "Вибрано";
+"Selected voice" = "Вибраний голос";
 "Send" = "Надіслати";
 "Send This Story To..." = "Надіслати цю статтю...";
 "Send To…" = "Надіслати…";
@@ -1233,7 +1242,9 @@
 "Use a custom server" = "Використовувати власний сервер";
 "Use another sign-in method" = "Скористатися іншим способом входу";
 "Use both" = "Використовувати обидва";
+"Use only this voice" = "Використовувати лише цей голос";
 "Use system size" = "Системний розмір";
+"Use voice" = "Вибрати голос";
 "User info" = "Інформація про користувача";
 "Username" = "Ім’я користувача";
 "Username or Email" = "Ім’я користувача або електронна пошта";
@@ -1247,6 +1258,7 @@
 "View mode" = "Режим перегляду";
 "Voice" = "Голос";
 "Voice and music balance" = "Баланс голосу та музики";
+"Voice rotation" = "Чергування голосів";
 "Voice settings" = "Налаштування голосу";
 "Warm" = "Теплий";
 "Web" = "Веб";

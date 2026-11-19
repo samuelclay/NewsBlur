@@ -1187,6 +1187,10 @@ msgstr[0] "Додати %(count)s тег статті"
 msgstr[1] "Додати %(count)s теги статті"
 msgstr[2] "Додати %(count)s тегів статті"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "Додати %(voice)s до чергування"
+
 msgid "Add Folder"
 msgstr "Додати папку"
 
@@ -1251,6 +1255,9 @@ msgstr "Додати до черги «Далі»"
 
 msgid "Add to folder"
 msgstr "Додати до папки"
+
+msgid "Add to rotation"
+msgstr "Додати до чергування"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -1449,6 +1456,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "У будь-який час"
+
+msgid "Appearance"
+msgstr "Вигляд"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -2223,6 +2233,9 @@ msgstr "Творчий"
 
 msgid "Credit"
 msgstr "Бонус"
+
+msgid "Current voice"
+msgstr "Поточний голос"
 
 msgid "Cursors"
 msgstr "Курсори"
@@ -3093,6 +3106,10 @@ msgstr "Фінанси"
 msgid "Find %(value_1)s Friends"
 msgstr "Знайти друзів із %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "Знайти %(voice)s у списку голосів"
+
 msgid "Find Friends"
 msgstr "Знайти друзів"
 
@@ -3367,6 +3384,9 @@ msgstr "На всю ширину"
 
 msgid "Full-Text Search"
 msgstr "Повнотекстовий пошук"
+
+msgid "Full-screen list"
+msgstr "Повноекранний список"
 
 msgid "Full-text search across all stories"
 msgstr "Повнотекстовий пошук у всіх статтях"
@@ -3733,6 +3753,9 @@ msgstr ""
 msgid "In a new window"
 msgstr "У новому вікні"
 
+msgid "In rotation"
+msgstr "У чергуванні"
+
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
@@ -3769,6 +3792,9 @@ msgstr "Статті з нечасто оновлюваних сайтів"
 
 msgid "Infrequent stories per month"
 msgstr "Поріг нечасто оновлюваних сайтів"
+
+msgid "Inline list"
+msgstr "Вбудований список"
 
 msgid "Insta-fetch stories"
 msgstr "Миттєво завантажити статті"
@@ -3847,6 +3873,9 @@ msgstr "Лише заголовки з мінімумом коментарів"
 msgid "Just the headlines, no commentary"
 msgstr "Лише заголовки, без коментарів"
 
+msgid "Keep fades, without movement."
+msgstr "Зберегти плавну появу та зникнення без руху."
+
 msgid "Keep others unread"
 msgstr "Залишити інші непрочитаними"
 
@@ -3907,6 +3936,9 @@ msgstr "Останнє оновлення"
 
 msgid "Last seen:"
 msgstr "Востаннє в мережі:"
+
+msgid "Layout"
+msgstr "Макет"
 
 msgid "Leave unread"
 msgstr "Залишити непрочитаним"
@@ -3995,6 +4027,9 @@ msgstr "Завантаження стрічок..."
 
 msgid "Loading more briefings..."
 msgstr "Завантаження інших оглядів..."
+
+msgid "Loading the next unread story..."
+msgstr "Завантаження наступної непрочитаної статті..."
 
 msgid "Loading voices..."
 msgstr "Завантаження голосів..."
@@ -4530,6 +4565,9 @@ msgstr "Наступний крок "
 msgid "Next story"
 msgstr "Наступна стаття"
 
+msgid "Next unread"
+msgstr "Наступна непрочитана"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Далі створіть фільтр для всіх своїх розсилок, щоб вони пересилали листи на спеціальну адресу NewsBlur."
 
@@ -4836,6 +4874,13 @@ msgid "Old password"
 msgstr "Старий пароль"
 
 #, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Старші за %(count)s день"
+msgstr[1] "Старші за %(count)s дні"
+msgstr[2] "Старші за %(count)s днів"
+
+#, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "Старіші за: %(day)s %(month)s %(year)s"
 
@@ -4867,6 +4912,9 @@ msgstr "Одна команда з Docker"
 
 msgid "One sentence"
 msgstr "Одне речення"
+
+msgid "One voice per story, in this order."
+msgstr "Один голос на статтю, у цьому порядку."
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
@@ -5604,6 +5652,9 @@ msgstr "Активовано"
 msgid "Reduce clutter in your river of stories"
 msgstr "Позбудьтеся зайвого в потоці статей"
 
+msgid "Reduce motion"
+msgstr "Зменшити рух"
+
 msgid "Refer"
 msgstr "Рекомендувати"
 
@@ -5656,6 +5707,10 @@ msgstr "Запам’ятовувати позицію відтворення д
 
 msgid "Remove"
 msgstr "Вилучити"
+
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "Вилучити %(voice)s із чергування"
 
 msgid "Remove from Up Next"
 msgstr "Видалити з черги «Далі»"
@@ -6104,6 +6159,12 @@ msgstr "Виберіть частину URL-адреси, щоб зіставл�
 
 msgid "Select title phrase"
 msgstr "Виберіть фразу із заголовка"
+
+msgid "Selected"
+msgstr "Вибрано"
+
+msgid "Selected voice"
+msgstr "Вибраний голос"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Вибір статті в списку заголовків позначає її як прочитану."
@@ -6654,6 +6715,12 @@ msgstr "Статті старші за %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Статті за %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Статті відкриваються у списку"
+
+msgid "Stories open on their own screen"
+msgstr "Статті відкриваються на окремому екрані"
+
 msgid "Stories per day"
 msgstr "Статей на день"
 
@@ -6704,6 +6771,9 @@ msgstr "Типографіка статей"
 
 msgid "Story URL"
 msgstr "URL статті"
+
+msgid "Story cards open on their own screen"
+msgstr "Картки статей відкриваються на окремому екрані"
 
 msgid "Story clustering"
 msgstr "Групування статей"
@@ -7726,11 +7796,18 @@ msgstr "Для класифікаторів природної мови ввім
 msgid "Use %(language)s"
 msgstr "Використовувати мову: %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Використовувати лише %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "Використовувати 12-годинний формат часу"
 
 msgid "Use 24-hour clock"
 msgstr "Використовувати 24-годинний формат"
+
+msgid "Use only this voice"
+msgstr "Використовувати лише цей голос"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Використовуйте шаблони запитів для сортування вхідних листів, дослідження тем і перевірки стрічок"
@@ -7742,6 +7819,9 @@ msgid "Use this URL template in browser extensions and feed readers to subscribe
 msgstr ""
 "Використовуйте цей шаблон URL у розширеннях браузера та програмах для читання стрічок, щоб підписуватися на"
 " сайти в NewsBlur."
+
+msgid "Use voice"
+msgstr "Вибрати голос"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Переглядайте кількість непрочитаних статей і самі статті за допомогою віджетів"
@@ -7813,8 +7893,14 @@ msgstr "Голос"
 msgid "Voice recording failed. Please try again."
 msgstr "Не вдалося записати голос. Спробуйте ще раз."
 
+msgid "Voice rotation"
+msgstr "Чергування голосів"
+
 msgid "Voice settings"
 msgstr "Налаштування голосу"
+
+msgid "Voices"
+msgstr "Голоси"
 
 msgid "Warning: This is actually permanent"
 msgstr "Увага: цю дію неможливо скасувати"

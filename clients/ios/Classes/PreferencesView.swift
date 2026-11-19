@@ -791,9 +791,9 @@ class PreferencesViewModel: ObservableObject {
                 ]
             ),
 
-            // MARK: Theme Section
+            // MARK: Appearance Section
             PreferenceSection(
-                title: NBLocalization.text("Theme"),
+                title: NBLocalization.text("Appearance"),
                 icon: "paintbrush",
                 iconColor: .pink,
                 items: [
@@ -839,6 +839,13 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .purple,
                         type: .toggle(key: "theme_gesture", defaultValue: true),
                         subtitle: NBLocalization.text("Swipe up/down with two fingers to change theme")
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Reduce motion"),
+                        icon: "figure.stand",
+                        iconColor: .indigo,
+                        type: .toggle(key: "reduce_motion", defaultValue: false),
+                        subtitle: NBLocalization.text("Keep fades, without movement.")
                     )
                 ]
             ),
@@ -1320,6 +1327,7 @@ class PreferencesViewModel: ObservableObject {
     }
 
     func valueChanged(key: String, value: Any) {
+        if key == "reduce_motion" { ReaderMotion.preferencesDidChange() }
         if key == "enable_feed_swipes" || key == "enable_story_swipes" {
             withAnimation(.easeInOut(duration: 0.2)) { updateHiddenKeys() }
         } else {

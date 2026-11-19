@@ -40,8 +40,8 @@ object ListMenuSegments {
         create(activity, listOf(
             Option(R.id.menu_theme_auto, activity.getString(R.string.auto)),
             Option(R.id.menu_theme_light, activity.getString(R.string.light), R.drawable.ic_theme_dot_light),
-            Option(R.id.menu_theme_sepia, activity.getString(R.string.sepia), R.drawable.ic_theme_dot_sepia),
-            Option(R.id.menu_theme_dark, activity.getString(R.string.dark), R.drawable.ic_theme_dot_dark),
+            Option(R.id.menu_theme_sepia, activity.getString(R.string.theme_warm), R.drawable.ic_theme_dot_sepia),
+            Option(R.id.menu_theme_dark, activity.getString(R.string.theme_gray), R.drawable.ic_theme_dot_dark),
             Option(R.id.menu_theme_black, activity.getString(R.string.black), R.drawable.ic_theme_dot_black),
         ), themes.entries.first { it.value == activity.prefsRepo.getSelectedTheme() }.key,
             activity.getString(R.string.menu_theme_choose), selected)

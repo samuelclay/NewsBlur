@@ -54,8 +54,13 @@ NSString * const MenuHandler = @"handler";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [[ReaderMotion session:self] reset];
     
     [self.menuTableView reloadData];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    [ReaderMotion row:cell key:[NSString stringWithFormat:@"menu-%lu", (unsigned long)[self itemIndexAtIndexPath:indexPath]] owner:self scrolling:tableView.dragging || tableView.decelerating];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

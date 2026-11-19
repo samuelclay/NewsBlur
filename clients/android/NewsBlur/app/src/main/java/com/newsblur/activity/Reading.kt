@@ -335,6 +335,8 @@ abstract class Reading :
     private var preparedPageStartedAt = 0L
     private var readerIsPaused = true
     private var toolbarVisibleFraction = 1f
+    private var traversalRevealFraction = 0f
+    private var pagerDragStartItem: Int? = null
     private var preparedVisibleStory: Story? = null
     private var preparedVisibleScrollPosition: Float? = null
 
@@ -546,6 +548,7 @@ abstract class Reading :
     }
 
     override fun onDestroy() {
+        if (::traverseBar.isInitialized) traverseBar.close()
         endControls?.close()
         endControls = null
         if (latestReaderRef.get() === this) latestReaderRef.clear()
@@ -638,6 +641,8 @@ abstract class Reading :
                 setOverlayAlpha(toolbarVisibleFraction)
             },
         )
+        ((appBar.layoutParams as CoordinatorLayout.LayoutParams).behavior as? com.newsblur.view.ReaderToolbarBehavior)
+            ?.onReaderScroll = ::onReaderScroll
 
         if (toolbarVisibleFraction == 0f) appBar.setExpanded(false, false)
 
@@ -885,6 +890,9 @@ abstract class Reading :
     }
 
     override fun shouldUseTranslucentTheme(): Boolean = true
+
+    // Reading.kt lets two fingers switch the theme over the story and its original page, as iOS does (ThemeSwipeGesture.kt).
+    override fun hostsThemeSwipe(): Boolean = true
 
     private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
         fs?.let {
@@ -1280,6 +1288,11 @@ abstract class Reading :
         interactiveBackSurface().postDelayed(timeout, 1000L)
     }
 
+    override fun isThemeTransitionReady(): Boolean {
+        val position = pager?.currentStoryPosition ?: return false
+        return readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true
+    }
+
     private fun navigateToStory(position: Int, isHistoryBack: Boolean = false) {
         cancelUnreadSearch()
         val activePager = pager ?: return
@@ -1503,13 +1516,23 @@ abstract class Reading :
     // Pager callbacks from offerPager, already translated from ViewPager's pages into story positions.
     fun onPageScrollStateChanged(arg0: Int) {
         if (arg0 == ViewPager.SCROLL_STATE_DRAGGING) {
+            pagerDragStartItem = pager?.currentItem
             cancelUnreadSearch()
             clearCurrentStoryPins()
+        } else if (arg0 == ViewPager.SCROLL_STATE_IDLE) {
+            val startItem = pagerDragStartItem
+            pagerDragStartItem = null
+            if (startItem != null && startItem == pager?.currentItem) revealTraversalControls()
         }
     }
 
     fun onPageSelected(position: Int) {
         if (parked || preparedPageNavigation?.isPreparing == true) return
+        pagerDragStartItem = null
+        if (traversalRevealFraction > 0f) {
+            traversalRevealFraction = 0f
+            setOverlayAlpha(toolbarVisibleFraction)
+        }
         cancelStoryDwell(clearStory = true)
         val isRestoringSelection = isRestoringState
         val story = readingAdapter?.getStory(position)
@@ -1563,11 +1586,37 @@ abstract class Reading :
             val alpha = when {
                 overlaysSuppressed -> 0f
                 prefsRepo.isReaderControlsAlwaysVisible() || endControls?.isAtArticleEnd == true -> 1f
-                else -> a
+                else -> maxOf(a, traversalRevealFraction)
             }
+            binding.readingOverlayLeftGroup.animate().cancel()
+            binding.readingOverlayRightGroup.animate().cancel()
             UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, alpha, true)
             UIUtils.setViewAlpha(binding.readingOverlayRightGroup, alpha, true)
         }
+    }
+
+    fun onStoryBlankTap(fragment: ReadingItemFragment) {
+        if (fragment === readingFragment) revealTraversalControls()
+    }
+
+    private fun revealTraversalControls() {
+        if (parked || overlaysSuppressed || preparedPageNavigation?.isPreparing == true) return
+        val groups = listOf(binding.readingOverlayLeftGroup, binding.readingOverlayRightGroup)
+        val previousAlphas = groups.map { it.alpha }
+        traversalRevealFraction = 1f
+        setOverlayAlpha(toolbarVisibleFraction)
+        groups.forEachIndexed { index, group ->
+            group.alpha = previousAlphas[index]
+            group.animate().alpha(1f).setDuration(150L).start()
+        }
+    }
+
+    // Reading.kt receives nested scroll intent even when the toolbar is already fully hidden.
+    internal fun onReaderScroll(delta: Int) {
+        if (delta <= 0 || traversalRevealFraction == 0f) return
+        val fadeDistance = UIUtils.dp2px(this, 80).coerceAtLeast(1)
+        traversalRevealFraction = (traversalRevealFraction - delta.toFloat() / fadeDistance).coerceAtLeast(0f)
+        setOverlayAlpha(toolbarVisibleFraction)
     }
 
     /**

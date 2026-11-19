@@ -62,6 +62,7 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
     show_stories_error: function (data, message) {
         NEWSBLUR.log(["show_stories_error", data]);
         this.hide_stories_progress_bar();
+        if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.stories_failed();
 
         NEWSBLUR.app.original_tab_view.iframe_not_busting();
 

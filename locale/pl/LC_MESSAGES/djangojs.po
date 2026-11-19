@@ -1186,6 +1186,10 @@ msgstr[0] "Dodaj %(count)s tag do artykułu"
 msgstr[1] "Dodaj %(count)s tagi do artykułu"
 msgstr[2] "Dodaj %(count)s tagów do artykułu"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "Dodaj %(voice)s do rotacji"
+
 msgid "Add Folder"
 msgstr "Dodaj folder"
 
@@ -1248,6 +1252,9 @@ msgstr "Dodaj do kolejki „Następne”"
 
 msgid "Add to folder"
 msgstr "Dodaj do folderu"
+
+msgid "Add to rotation"
+msgstr "Dodaj do rotacji"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -1446,6 +1453,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "Kiedykolwiek"
+
+msgid "Appearance"
+msgstr "Wygląd"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -2222,6 +2232,9 @@ msgstr "Kreatywność"
 
 msgid "Credit"
 msgstr "Nagroda"
+
+msgid "Current voice"
+msgstr "Bieżący głos"
 
 msgid "Cursors"
 msgstr "Wskaźniki"
@@ -3094,6 +3107,10 @@ msgstr "Finanse"
 msgid "Find %(value_1)s Friends"
 msgstr "Znajdź znajomych z %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "Znajdź %(voice)s na liście głosów"
+
 msgid "Find Friends"
 msgstr "Znajdź znajomych"
 
@@ -3368,6 +3385,9 @@ msgstr "Pełna szerokość"
 
 msgid "Full-Text Search"
 msgstr "Wyszukiwanie pełnotekstowe"
+
+msgid "Full-screen list"
+msgstr "Lista pełnoekranowa"
 
 msgid "Full-text search across all stories"
 msgstr "Wyszukiwanie pełnotekstowe we wszystkich artykułach"
@@ -3733,6 +3753,9 @@ msgstr ""
 msgid "In a new window"
 msgstr "W nowym oknie"
 
+msgid "In rotation"
+msgstr "W rotacji"
+
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
@@ -3769,6 +3792,9 @@ msgstr "Artykuły z rzadko aktualizowanych witryn"
 
 msgid "Infrequent stories per month"
 msgstr "Próg rzadko aktualizowanych witryn"
+
+msgid "Inline list"
+msgstr "Lista śródwierszowa"
 
 msgid "Insta-fetch stories"
 msgstr "Pobierz artykuły natychmiast"
@@ -3847,6 +3873,9 @@ msgstr "Tylko nagłówki, z minimalnym komentarzem"
 msgid "Just the headlines, no commentary"
 msgstr "Same nagłówki, bez komentarza"
 
+msgid "Keep fades, without movement."
+msgstr "Zachowaj przenikanie, bez ruchu."
+
 msgid "Keep others unread"
 msgstr "Pozostaw pozostałe jako nieprzeczytane"
 
@@ -3907,6 +3936,9 @@ msgstr "Ostatnia aktualizacja"
 
 msgid "Last seen:"
 msgstr "Ostatnio widziano:"
+
+msgid "Layout"
+msgstr "Układ"
 
 msgid "Leave unread"
 msgstr "Pozostaw jako nieprzeczytane"
@@ -3995,6 +4027,9 @@ msgstr "Wczytywanie kanałów..."
 
 msgid "Loading more briefings..."
 msgstr "Wczytywanie kolejnych przeglądów..."
+
+msgid "Loading the next unread story..."
+msgstr "Wczytywanie następnego nieprzeczytanego artykułu..."
 
 msgid "Loading voices..."
 msgstr "Wczytywanie głosów..."
@@ -4530,6 +4565,9 @@ msgstr "Następny krok "
 msgid "Next story"
 msgstr "Następny artykuł"
 
+msgid "Next unread"
+msgstr "Następny nieprzeczytany"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
 "Następnie utwórz filtr obejmujący wszystkie newslettery, aby były przekazywane na niestandardowy adres w "
@@ -4838,6 +4876,13 @@ msgid "Old password"
 msgstr "Stare hasło"
 
 #, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Starsze niż %(count)s dzień"
+msgstr[1] "Starsze niż %(count)s dni"
+msgstr[2] "Starsze niż %(count)s dni"
+
+#, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "Starsze niż: %(day)s %(month)s %(year)s"
 
@@ -4869,6 +4914,9 @@ msgstr "Jedno polecenie z Dockerem"
 
 msgid "One sentence"
 msgstr "Jedno zdanie"
+
+msgid "One voice per story, in this order."
+msgstr "Jeden głos na artykuł, w tej kolejności."
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
@@ -5614,6 +5662,9 @@ msgstr "Zrealizowano"
 msgid "Reduce clutter in your river of stories"
 msgstr "Uporządkuj strumień artykułów"
 
+msgid "Reduce motion"
+msgstr "Ogranicz ruch"
+
 msgid "Refer"
 msgstr "Poleć"
 
@@ -5666,6 +5717,10 @@ msgstr "Zapamiętuj miejsce odtwarzania każdego odcinka"
 
 msgid "Remove"
 msgstr "Usuń"
+
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "Usuń %(voice)s z rotacji"
 
 msgid "Remove from Up Next"
 msgstr "Usuń z kolejki „Następne”"
@@ -6116,6 +6171,12 @@ msgstr "Wybierz część adresu URL, aby dopasowywać wzorce, takie jak sekcje l
 
 msgid "Select title phrase"
 msgstr "Wybierz frazę tytułu"
+
+msgid "Selected"
+msgstr "Wybrany"
+
+msgid "Selected voice"
+msgstr "Wybrany głos"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Wybranie artykułu na liście tytułów oznacza go jako przeczytany."
@@ -6666,6 +6727,12 @@ msgstr "Artykuły starsze niż %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Artykuły z dnia %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Artykuły otwierają się na liście"
+
+msgid "Stories open on their own screen"
+msgstr "Artykuły otwierają się na osobnym ekranie"
+
 msgid "Stories per day"
 msgstr "Artykuły dziennie"
 
@@ -6716,6 +6783,9 @@ msgstr "Typografia artykułów"
 
 msgid "Story URL"
 msgstr "Adres URL artykułu"
+
+msgid "Story cards open on their own screen"
+msgstr "Karty artykułów otwierają się na osobnym ekranie"
 
 msgid "Story clustering"
 msgstr "Grupowanie artykułów"
@@ -7745,11 +7815,18 @@ msgstr "Rozliczanie zależne od użycia jest włączone dla klasyfikatorów jęz
 msgid "Use %(language)s"
 msgstr "Użyj języka: %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Używaj tylko %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "Używaj zegara 12-godzinnego"
 
 msgid "Use 24-hour clock"
 msgstr "Używaj zegara 24-godzinnego"
+
+msgid "Use only this voice"
+msgstr "Używaj tylko tego głosu"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr ""
@@ -7761,6 +7838,9 @@ msgstr "Użyj natywnego menu kontekstowego przeglądarki"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "Użyj tego szablonu URL w rozszerzeniach przeglądarki i czytnikach kanałów, aby subskrybować w NewsBlur."
+
+msgid "Use voice"
+msgstr "Użyj głosu"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Korzystaj z widżetów, aby szybko sprawdzać liczbę nieprzeczytanych artykułów i najnowsze wiadomości"
@@ -7834,8 +7914,14 @@ msgstr "Głos"
 msgid "Voice recording failed. Please try again."
 msgstr "Nagrywanie głosu nie powiodło się. Spróbuj ponownie."
 
+msgid "Voice rotation"
+msgstr "Rotacja głosów"
+
 msgid "Voice settings"
 msgstr "Ustawienia głosu"
+
+msgid "Voices"
+msgstr "Głosy"
 
 msgid "Warning: This is actually permanent"
 msgstr "Ostrzeżenie: tej operacji nie można cofnąć"

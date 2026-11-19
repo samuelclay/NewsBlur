@@ -16,6 +16,7 @@ protocol ListenSessionHandoff: AnyObject {
     var isActive: Bool { get }
     /// Stops without hiding the mini player or giving up the audio session; the story goes to History.
     func stopForHandoff()
+    func resetVoiceRotation()
     func play(queued item: ListenQueueItem)
 }
 
@@ -369,6 +370,7 @@ final class ListenMediaPlayer: NSObject, ObservableObject {
             savePosition(isPlaying: false)
             queue.addToHistory(media: media, position: elapsed, duration: duration)
         }
+        environment.listenSession()?.resetVoiceRotation()
         clearSession()
         environment.hideMiniPlayer()
         environment.deactivateAudioSession()

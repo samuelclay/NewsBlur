@@ -83,6 +83,7 @@ class SetupCommentSectionTask(
                 continue
             }
             val commentView = inflater.inflate(R.layout.include_comment, null)
+            commentView.tag = comment.userId
             val commentText = commentView.findViewById<View>(R.id.comment_text) as TextView
             commentText.text = UIUtils.fromHtml(comment.commentText)
             val commentImage = commentView.findViewById<View>(R.id.comment_user_image) as ShapeableImageView
@@ -209,6 +210,7 @@ class SetupCommentSectionTask(
             // for actual comments, also populate the upper icon bar
             if (!comment.isPseudo) {
                 val image = ViewUtils.createSharebarImage(context, commentUser.photoUrl, commentUser.userId, iconLoader)
+                image.tag = comment.userId
                 topCommentViews.add(image)
                 commentingUserIds.add(comment.userId)
             }
@@ -230,6 +232,7 @@ class SetupCommentSectionTask(
                 continue
             }
             val image = ViewUtils.createSharebarImage(context, user.photoUrl, user.userId, iconLoader)
+            image.tag = userId
             topShareViews.add(image)
         }
     }

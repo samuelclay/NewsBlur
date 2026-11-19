@@ -59,6 +59,21 @@ function NB_open_story_image(image, show_actions) {
     return true;
 }
 
+// storyDetailView.js hit-tests native tap candidates; ReaderTapGestures.kt confirms before revealing controls.
+function NB_is_blank_story_tap_at(x, y, native_width) {
+    if (!(native_width > 0)) return false;
+    var viewport = window.visualViewport;
+    var scale = (viewport ? viewport.width : document.documentElement.clientWidth) / native_width;
+    var target = document.elementFromPoint(x * scale + (viewport ? viewport.offsetLeft : 0),
+        y * scale + (viewport ? viewport.offsetTop : 0));
+    var selection = window.getSelection && window.getSelection();
+    if (!target || !target.closest || !target.closest('.NB-story') ||
+        target.closest('a,button,input,textarea,select,label,summary,img,video,audio,iframe,' +
+            '[contenteditable],[role="button"],[role="link"],.NB-media-card') ||
+        (selection && !selection.isCollapsed)) return false;
+    return true;
+}
+
 document.addEventListener('click', function(event) {
     if (NB_open_story_image(event.target, false)) {
         event.preventDefault();

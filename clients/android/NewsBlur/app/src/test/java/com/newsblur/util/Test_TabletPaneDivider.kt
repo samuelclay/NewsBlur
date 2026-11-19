@@ -254,6 +254,31 @@ class Test_TabletPaneDivider {
     }
 
     @Test
+    fun test_search_clear_touch_reaches_the_feed_search_instead_of_starting_a_resize() {
+        val divider = dragFixture()
+        field("dragging").setBoolean(divider, false)
+        val activity = field("activity").get(divider) as Activity
+        val clear = mockk<View>(relaxed = true)
+        every { activity.findViewById<View>(R.id.clear_search_query) } returns clear
+        every { clear.isShown } returns true
+        every { clear.width } returns 24
+        every { clear.height } returns 24
+        every { clear.getLocationOnScreen(any()) } answers {
+            firstArg<IntArray>()[0] = 739
+            firstArg<IntArray>()[1] = 123
+        }
+        val event = touch(MotionEvent.ACTION_DOWN, 751f)
+        every { event.rawY } returns 135f
+
+        // Test_TabletPaneDivider.kt reproduces the search button underneath the tablet's full-height resize strip.
+        org.junit.Assert.assertFalse("The search clear button must receive this touch", divider.onTouchEvent(event))
+        org.junit.Assert.assertFalse("A search tap must not start pane resizing", field("dragging").getBoolean(divider))
+
+        every { clear.isShown } returns false
+        assertTrue("The boundary must remain draggable when the button is absent", divider.onTouchEvent(event))
+    }
+
+    @Test
     fun test_wider_strip_leaves_toolbar_buttons_clickable() {
         val divider = dragFixture()
         val activity = field("activity").get(divider) as Activity

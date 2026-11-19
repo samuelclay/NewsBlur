@@ -103,6 +103,7 @@
 "Add" = "Tambahkan";
 "Add %1$@ feeds to “%2$@” folder" = "Tambahkan %1$@ feed ke folder “%2$@”";
 "Add %@" = "Tambahkan %@";
+"Add %@ to rotation" = "Tambahkan %@ ke rotasi";
 "Add + Discover Sites" = "Tambah + Temukan Situs";
 "Add Site" = "Tambahkan Situs";
 "Add Sites" = "Tambahkan Situs";
@@ -170,6 +171,7 @@
 "Analyzing images..." = "Menganalisis gambar...";
 "App Badge" = "Lencana Aplikasi";
 "App Icon" = "Ikon Aplikasi";
+"Appearance" = "Tampilan";
 "Apply training across a folder" = "Terapkan pelatihan ke seluruh folder";
 "Apply training globally" = "Terapkan pelatihan secara global";
 "Arctic Cyan" = "Sian Arktik";
@@ -391,6 +393,7 @@
 "Fetching text..." = "Mengambil teks...";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter artikel berdasarkan rentang tanggal";
+"Find %@ in the voice list" = "Temukan %@ dalam daftar suara";
 "Find Friends" = "Cari Teman";
 "Find in Feed" = "Cari di Feed";
 "Find in Sites" = "Cari di Situs";
@@ -504,6 +507,7 @@
 "Interactions" = "Interaksi";
 "Invalid: %@" = "Tidak valid: %@";
 "Invoice" = "Faktur";
+"Keep fades, without movement." = "Pertahankan efek pudar, tanpa gerakan.";
 "Keeps the dark icon no matter how your device is set." = "Tetap menggunakan ikon gelap terlepas dari pengaturan perangkat Anda.";
 "Keeps the light icon no matter how your device is set." = "Ikon terang tetap digunakan, apa pun pengaturan perangkat Anda.";
 "Keyboard Shortcuts" = "Pintasan Keyboard";
@@ -741,6 +745,7 @@
 "On scroll or selection" = "Saat menggulir atau memilih";
 "One" = "Satu";
 "One column" = "Satu kolom";
+"One voice per story, in this order." = "Satu suara per artikel, sesuai urutan ini.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Hanya %1$@ dari %2$@ situs Anda yang diindeks untuk penemuan. Tingkatkan paket untuk mengindeks semua situs Anda dan mendapatkan rekomendasi yang dipersonalisasi.";
 "Only Title" = "Hanya Judul";
 "Only on Selection" = "Hanya Saat Dipilih";
@@ -848,6 +853,7 @@
 "Reads your %@ stories" = "Membacakan artikel %@ Anda";
 "Recommended for %@" = "Direkomendasikan untuk %@";
 "Recording..." = "Merekam...";
+"Reduce motion" = "Kurangi gerakan";
 "Refine with a hint" = "Persempit dengan petunjuk";
 "Refine with this title" = "Persempit dengan judul ini";
 "Refresh NewsBlur" = "Muat Ulang NewsBlur";
@@ -860,6 +866,7 @@
 "Related sites" = "Situs terkait";
 "Reload Sites" = "Muat Ulang Situs";
 "Reloading..." = "Memuat ulang...";
+"Remove %@ from rotation" = "Hapus %@ dari rotasi";
 "Remove This List" = "Hapus Daftar Ini";
 "Remove from Up Next" = "Hapus dari Berikutnya";
 "Removed from Up Next" = "Dihapus dari Berikutnya";
@@ -932,6 +939,8 @@
 "Select a feed or folder" = "Pilih feed atau folder";
 "Select a feed variant" = "Pilih varian feed";
 "Select feeds to add" = "Pilih feed untuk ditambahkan";
+"Selected" = "Dipilih";
+"Selected voice" = "Suara yang dipilih";
 "Send" = "Kirim";
 "Send This Story To..." = "Kirim Artikel Ini Ke...";
 "Send To…" = "Kirim ke…";
@@ -1233,7 +1242,9 @@
 "Use a custom server" = "Gunakan server khusus";
 "Use another sign-in method" = "Gunakan metode masuk lain";
 "Use both" = "Gunakan keduanya";
+"Use only this voice" = "Gunakan hanya suara ini";
 "Use system size" = "Gunakan ukuran sistem";
+"Use voice" = "Gunakan suara";
 "User info" = "Info pengguna";
 "Username" = "Nama pengguna";
 "Username or Email" = "Nama pengguna atau email";
@@ -1247,6 +1258,7 @@
 "View mode" = "Mode tampilan";
 "Voice" = "Suara";
 "Voice and music balance" = "Keseimbangan suara dan musik";
+"Voice rotation" = "Rotasi suara";
 "Voice settings" = "Pengaturan suara";
 "Warm" = "Hangat";
 "Web" = "Web";

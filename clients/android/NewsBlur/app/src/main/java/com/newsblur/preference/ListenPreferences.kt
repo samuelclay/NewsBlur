@@ -3,6 +3,7 @@ package com.newsblur.preference
 import android.content.SharedPreferences
 import android.os.SystemClock
 import androidx.core.content.edit
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -13,13 +14,17 @@ import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.StoryButton
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -28,6 +33,7 @@ import javax.inject.Singleton
 /** ListenPreferences.kt uses the server's preference names locally too, so syncing needs no translation. */
 object ListenPrefKeys {
     const val VOICES = "listen_voices"
+    const val ROTATIONS = "listen_voice_rotations"
     const val DELIVERY = "listen_delivery"
     const val STABILITY = "listen_stability"
     const val SIMILARITY = "listen_similarity"
@@ -75,8 +81,14 @@ data class ListenVoiceSettings(
     }
 }
 
+data class ListenRotationVoice(
+    val voiceId: String,
+    val name: String,
+)
+
 data class ListenSettings(
     val voices: Map<String, String> = emptyMap(),
+    val rotations: Map<String, List<ListenRotationVoice>> = emptyMap(),
     val delivery: ListenDelivery = ListenDelivery.NATURAL,
     val stability: Double = DEFAULT_STABILITY,
     val similarity: Double = DEFAULT_SIMILARITY,
@@ -113,6 +125,49 @@ data class ServerPreferenceValues(
  * string except "true" and "false", while the web client may save real numbers and objects.
  */
 object ListenPreferenceParser {
+    fun rotationsValue(element: JsonElement?): Map<String, List<ListenRotationVoice>> {
+        val value =
+            when {
+                element?.isJsonObject == true -> element.asJsonObject
+                element?.isJsonPrimitive == true && element.asJsonPrimitive.isString -> parseObject(element.asString)
+                else -> null
+            } ?: return emptyMap()
+        return value
+            .entrySet()
+            .mapNotNull { (language, entries) ->
+                if (!entries.isJsonArray) return@mapNotNull null
+                val voices =
+                    entries.asJsonArray
+                        .mapNotNull { entry ->
+                            if (!entry.isJsonObject) return@mapNotNull null
+                            val id = entry.asJsonObject.get("voice_id")
+                            if (id?.isJsonPrimitive != true || !id.asJsonPrimitive.isString || id.asString.isBlank()) return@mapNotNull null
+                            ListenRotationVoice(id.asString, stringValue(entry.asJsonObject.get("name")) ?: id.asString)
+                        }.distinctBy { it.voiceId }
+                if (voices.isEmpty()) null else language to voices
+            }.toMap()
+    }
+
+    fun encodeRotations(rotations: Map<String, List<ListenRotationVoice>>): String =
+        JsonObject()
+            .apply {
+                rotations.toSortedMap().forEach { (language, voices) ->
+                    add(
+                        language,
+                        JsonArray().apply {
+                            voices.forEach { voice ->
+                                add(
+                                    JsonObject().apply {
+                                        addProperty("voice_id", voice.voiceId)
+                                        addProperty("name", voice.name)
+                                    },
+                                )
+                            }
+                        },
+                    )
+                }
+            }.toString()
+
     fun booleanValue(element: JsonElement?): Boolean? {
         val primitive = element?.takeIf { it.isJsonPrimitive }?.asJsonPrimitive ?: return null
         return when {
@@ -188,6 +243,9 @@ object ListenPreferenceParser {
         voicesValue(preferences.get(ListenPrefKeys.VOICES))?.let {
             strings[ListenPrefKeys.VOICES] =
                 encodeVoices(it)
+        }
+        if (preferences.has(ListenPrefKeys.ROTATIONS)) {
+            strings[ListenPrefKeys.ROTATIONS] = encodeRotations(rotationsValue(preferences.get(ListenPrefKeys.ROTATIONS)))
         }
         return ServerPreferenceValues(booleans, doubles, strings)
     }
@@ -267,6 +325,7 @@ class ListenPreferences
         /** The clock that decides whether a local change is recent; Test_ListenPreferences.kt sets its own. */
         internal var elapsedRealtime: () -> Long = { SystemClock.elapsedRealtime() }
         private var speedSaveJob: Job? = null
+        private val rotationWrites = Mutex()
         private val mutableSettings = MutableStateFlow(readSettings())
         val settings: StateFlow<ListenSettings> = mutableSettings.asStateFlow()
 
@@ -277,7 +336,8 @@ class ListenPreferences
                     key in ListenPrefKeys.booleans ||
                     key in ListenPrefKeys.doubles ||
                     key in ListenPrefKeys.strings ||
-                    key == ListenPrefKeys.VOICES
+                    key == ListenPrefKeys.VOICES ||
+                    key == ListenPrefKeys.ROTATIONS
                 ) {
                     mutableSettings.value = readSettings()
                 }
@@ -309,6 +369,7 @@ class ListenPreferences
         suspend fun save(values: Map<String, Any>): Boolean {
             if (values.isEmpty()) return true
             saveLocally(values)
+            if (ListenPrefKeys.ROTATIONS in values) return sendRotation(values).await()
             return saveRemotely(values)
         }
 
@@ -316,8 +377,22 @@ class ListenPreferences
         fun saveInBackground(values: Map<String, Any>) {
             if (values.isEmpty()) return
             saveLocally(values)
-            NBScope.launch { saveRemotely(values) }
+            if (ListenPrefKeys.ROTATIONS in values) {
+                sendRotation(values)
+            } else {
+                NBScope.launch { saveRemotely(values) }
+            }
         }
+
+        // ListenPreferences.kt: take a place in the mutex before dispatch, in the same order as the UI edits.
+        private fun sendRotation(values: Map<String, Any>) =
+            prefs.getString(PrefConstants.PREF_UNIQUE_LOGIN, null).let { login ->
+                NBScope.async(start = CoroutineStart.UNDISPATCHED) {
+                    rotationWrites.withLock {
+                        login == prefs.getString(PrefConstants.PREF_UNIQUE_LOGIN, null) && saveRemotely(values)
+                    }
+                }
+            }
 
         /**
          * Applies a speed locally at once, so every screen follows the slider, and sends it to the server once
@@ -371,6 +446,16 @@ class ListenPreferences
         ): Map<String, Any> {
             val voices = current().voices.toMutableMap().apply { put(language, voiceId) }
             return mapOf(ListenPrefKeys.VOICES to voices)
+        }
+
+        fun rotationChange(
+            language: String,
+            voices: List<ListenRotationVoice>,
+        ): Map<String, Any> {
+            if (voices.isEmpty()) return emptyMap()
+            val rotations = current().rotations + (language to voices)
+            return voiceChange(language, voices.first().voiceId) +
+                (ListenPrefKeys.ROTATIONS to ListenPreferenceParser.encodeRotations(rotations))
         }
 
         /** Called by SyncService.kt with the preferences from /reader/feeds. */
@@ -429,6 +514,10 @@ class ListenPreferences
 
         private fun readSettings(): ListenSettings =
             ListenSettings(
+                rotations =
+                    ListenPreferenceParser.rotationsValue(
+                        prefs.getString(ListenPrefKeys.ROTATIONS, null)?.let { JsonPrimitive(it) },
+                    ),
                 voices =
                     ListenPreferenceParser
                         .voicesValue(

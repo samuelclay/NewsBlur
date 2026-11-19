@@ -103,6 +103,7 @@
 "Add" = "Hinzufügen";
 "Add %1$@ feeds to “%2$@” folder" = "%1$@ Feeds zum Ordner „%2$@“ hinzufügen";
 "Add %@" = "%@ hinzufügen";
+"Add %@ to rotation" = "%@ zur Rotation hinzufügen";
 "Add + Discover Sites" = "Websites hinzufügen + entdecken";
 "Add Site" = "Website hinzufügen";
 "Add Sites" = "Websites hinzufügen";
@@ -170,6 +171,7 @@
 "Analyzing images..." = "Bilder werden analysiert…";
 "App Badge" = "App-Symbolkennzeichen";
 "App Icon" = "App-Symbol";
+"Appearance" = "Darstellung";
 "Apply training across a folder" = "Training auf einen Ordner anwenden";
 "Apply training globally" = "Training global anwenden";
 "Arctic Cyan" = "Arktisches Cyan";
@@ -391,6 +393,7 @@
 "Fetching text..." = "Text wird abgerufen…";
 "Filter" = "Filtern";
 "Filter stories by date range" = "Artikel nach Zeitraum filtern";
+"Find %@ in the voice list" = "%@ in der Stimmenliste finden";
 "Find Friends" = "Freunde finden";
 "Find in Feed" = "Im Feed suchen";
 "Find in Sites" = "In Websites suchen";
@@ -504,6 +507,7 @@
 "Interactions" = "Interaktionen";
 "Invalid: %@" = "Ungültig: %@";
 "Invoice" = "Rechnung";
+"Keep fades, without movement." = "Überblendungen beibehalten, ohne Bewegung.";
 "Keeps the dark icon no matter how your device is set." = "Behält das dunkle Symbol unabhängig von den Geräteeinstellungen bei.";
 "Keeps the light icon no matter how your device is set." = "Behält das helle Symbol bei, unabhängig von den Geräteeinstellungen.";
 "Keyboard Shortcuts" = "Tastenkombinationen";
@@ -741,6 +745,7 @@
 "On scroll or selection" = "Beim Scrollen oder Auswählen";
 "One" = "Eins";
 "One column" = "Eine Spalte";
+"One voice per story, in this order." = "Eine Stimme pro Artikel, in dieser Reihenfolge.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Nur %1$@ von %2$@ Websites sind für die Entdeckung indexiert. Führe ein Upgrade durch, um alle deine Websites zu indexieren und personalisierte Empfehlungen zu erhalten.";
 "Only Title" = "Nur Titel";
 "Only on Selection" = "Nur bei Auswahl";
@@ -848,6 +853,7 @@
 "Reads your %@ stories" = "Liest deine Artikel von %@ vor";
 "Recommended for %@" = "Empfohlen für %@";
 "Recording..." = "Aufnahme läuft…";
+"Reduce motion" = "Bewegung reduzieren";
 "Refine with a hint" = "Mit einem Hinweis verfeinern";
 "Refine with this title" = "Mit diesem Titel verfeinern";
 "Refresh NewsBlur" = "NewsBlur aktualisieren";
@@ -860,6 +866,7 @@
 "Related sites" = "Ähnliche Websites";
 "Reload Sites" = "Websites neu laden";
 "Reloading..." = "Wird neu geladen …";
+"Remove %@ from rotation" = "%@ aus der Rotation entfernen";
 "Remove This List" = "Diese Liste entfernen";
 "Remove from Up Next" = "Aus der Wiedergabeliste entfernen";
 "Removed from Up Next" = "Aus der Wiedergabeliste entfernt";
@@ -932,6 +939,8 @@
 "Select a feed or folder" = "Feed oder Ordner auswählen";
 "Select a feed variant" = "Feed-Variante auswählen";
 "Select feeds to add" = "Feeds zum Hinzufügen auswählen";
+"Selected" = "Ausgewählt";
+"Selected voice" = "Ausgewählte Stimme";
 "Send" = "Senden";
 "Send This Story To..." = "Diesen Artikel senden an...";
 "Send To…" = "Senden an…";
@@ -1233,7 +1242,9 @@
 "Use a custom server" = "Benutzerdefinierten Server verwenden";
 "Use another sign-in method" = "Andere Anmeldemethode verwenden";
 "Use both" = "Beides verwenden";
+"Use only this voice" = "Nur diese Stimme verwenden";
 "Use system size" = "Systemgröße verwenden";
+"Use voice" = "Stimme verwenden";
 "User info" = "Benutzerinformationen";
 "Username" = "Benutzername";
 "Username or Email" = "Benutzername oder E-Mail-Adresse";
@@ -1247,6 +1258,7 @@
 "View mode" = "Ansichtsmodus";
 "Voice" = "Stimme";
 "Voice and music balance" = "Balance zwischen Sprache und Musik";
+"Voice rotation" = "Stimmenrotation";
 "Voice settings" = "Spracheinstellungen";
 "Warm" = "Warm";
 "Web" = "Web";

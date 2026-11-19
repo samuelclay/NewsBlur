@@ -1,5 +1,5 @@
 {
-  "verified_at": "2026-10-16",
+  "verified_at": "2026-11-15",
   "language_source": "localization/languages.json",
   "language_count": 21,
   "locales": [
@@ -130,7 +130,9 @@
       "google": "zh-TW"
     }
   ],
-  "unsupported": [],
+  "unsupported": [
+
+  ],
   "locale_notes": [
     "The generic repo Spanish locale maps to Spain for the canonical 21-locale set. For Latin American distribution also generate/adapt es-MX on Apple and es-419 (and optionally es-US) on Google; do not assume es-ES serves every Spanish storefront.",
     "Other optional regional variants: Apple English en-AU/en-CA/en-GB and French fr-CA; Google corresponding English/French and Traditional Chinese zh-HK. These are regional expansions, not additional supported app languages.",
@@ -268,5 +270,5 @@
       ]
     }
   },
-  "google_verified_at": "2026-10-27"
+  "google_verified_at": "2026-11-15"
 }

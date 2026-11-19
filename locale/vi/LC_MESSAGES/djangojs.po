@@ -1044,6 +1044,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "Thêm %(count)s thẻ bài viết"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "Thêm %(voice)s vào vòng luân phiên"
+
 msgid "Add Folder"
 msgstr "Thêm thư mục"
 
@@ -1106,6 +1110,9 @@ msgstr "Thêm vào danh sách phát tiếp theo"
 
 msgid "Add to folder"
 msgstr "Thêm vào thư mục"
+
+msgid "Add to rotation"
+msgstr "Thêm vào vòng luân phiên"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -1294,6 +1301,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "Mọi lúc"
+
+msgid "Appearance"
+msgstr "Giao diện"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -2054,6 +2064,9 @@ msgstr "Sáng tạo"
 
 msgid "Credit"
 msgstr "Tín dụng"
+
+msgid "Current voice"
+msgstr "Giọng đọc hiện tại"
 
 msgid "Cursors"
 msgstr "Con trỏ"
@@ -2918,6 +2931,10 @@ msgstr "Tài chính"
 msgid "Find %(value_1)s Friends"
 msgstr "Tìm bạn bè %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "Tìm %(voice)s trong danh sách giọng đọc"
+
 msgid "Find Friends"
 msgstr "Tìm bạn bè"
 
@@ -3186,6 +3203,9 @@ msgstr "Toàn chiều rộng"
 
 msgid "Full-Text Search"
 msgstr "Tìm kiếm toàn văn"
+
+msgid "Full-screen list"
+msgstr "Danh sách toàn màn hình"
 
 msgid "Full-text search across all stories"
 msgstr "Tìm kiếm toàn văn trong tất cả bài viết"
@@ -3548,6 +3568,9 @@ msgstr ""
 msgid "In a new window"
 msgstr "Trong cửa sổ mới"
 
+msgid "In rotation"
+msgstr "Đang trong vòng luân phiên"
+
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
@@ -3584,6 +3607,9 @@ msgstr "Bài viết từ trang ít cập nhật"
 
 msgid "Infrequent stories per month"
 msgstr "Số bài mỗi tháng của trang ít cập nhật"
+
+msgid "Inline list"
+msgstr "Danh sách nội tuyến"
 
 msgid "Insta-fetch stories"
 msgstr "Tải bài viết ngay"
@@ -3662,6 +3688,9 @@ msgstr "Chỉ có tiêu đề với ít lời bình"
 msgid "Just the headlines, no commentary"
 msgstr "Chỉ tiêu đề, không có bình luận"
 
+msgid "Keep fades, without movement."
+msgstr "Giữ hiệu ứng mờ dần, không chuyển động."
+
 msgid "Keep others unread"
 msgstr "Giữ các bài khác ở trạng thái chưa đọc"
 
@@ -3722,6 +3751,9 @@ msgstr "Cập nhật lần cuối"
 
 msgid "Last seen:"
 msgstr "Lần cuối hoạt động:"
+
+msgid "Layout"
+msgstr "Bố cục"
 
 msgid "Leave unread"
 msgstr "Để lại trạng thái chưa đọc"
@@ -3810,6 +3842,9 @@ msgstr "Đang tải nguồn cấp dữ liệu..."
 
 msgid "Loading more briefings..."
 msgstr "Đang tải thêm bản tin tóm tắt..."
+
+msgid "Loading the next unread story..."
+msgstr "Đang tải bài viết chưa đọc tiếp theo..."
 
 msgid "Loading voices..."
 msgstr "Đang tải giọng đọc..."
@@ -4329,6 +4364,9 @@ msgstr "Bước tiếp theo "
 msgid "Next story"
 msgstr "Bài viết tiếp theo"
 
+msgid "Next unread"
+msgstr "Bài viết chưa đọc tiếp theo"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
 "Tiếp theo, hãy tạo bộ lọc cho tất cả bản tin của bạn để chuyển tiếp chúng đến địa chỉ tùy chỉnh trên "
@@ -4635,6 +4673,11 @@ msgid "Old password"
 msgstr "Mật khẩu cũ"
 
 #, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Cũ hơn %(count)s ngày"
+
+#, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "Cũ hơn: %(day)s %(month)s %(year)s"
 
@@ -4666,6 +4709,9 @@ msgstr "Một lệnh với Docker"
 
 msgid "One sentence"
 msgstr "Một câu"
+
+msgid "One voice per story, in this order."
+msgstr "Mỗi bài viết một giọng đọc, theo thứ tự này."
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
@@ -5377,6 +5423,9 @@ msgstr "Đã đổi"
 msgid "Reduce clutter in your river of stories"
 msgstr "Giảm bớt sự lộn xộn trong dòng tin của bạn"
 
+msgid "Reduce motion"
+msgstr "Giảm chuyển động"
+
 msgid "Refer"
 msgstr "Giới thiệu"
 
@@ -5429,6 +5478,10 @@ msgstr "Ghi nhớ vị trí phát cho từng tập"
 
 msgid "Remove"
 msgstr "Xóa"
+
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "Xóa %(voice)s khỏi vòng luân phiên"
 
 msgid "Remove from Up Next"
 msgstr "Xóa khỏi danh sách phát tiếp theo"
@@ -5871,6 +5924,12 @@ msgstr "Chọn một phần của URL để khớp với các mẫu như mục h
 
 msgid "Select title phrase"
 msgstr "Chọn cụm từ trong tiêu đề"
+
+msgid "Selected"
+msgstr "Đã chọn"
+
+msgid "Selected voice"
+msgstr "Giọng đọc đã chọn"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Chọn một bài viết trong danh sách tiêu đề sẽ đánh dấu bài viết đó là đã đọc."
@@ -6411,6 +6470,12 @@ msgstr "Bài viết cũ hơn %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Bài viết vào %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Bài viết mở ngay trong danh sách"
+
+msgid "Stories open on their own screen"
+msgstr "Bài viết mở trên màn hình riêng"
+
 msgid "Stories per day"
 msgstr "Số bài viết mỗi ngày"
 
@@ -6461,6 +6526,9 @@ msgstr "Kiểu chữ bài viết"
 
 msgid "Story URL"
 msgstr "URL bài viết"
+
+msgid "Story cards open on their own screen"
+msgstr "Thẻ bài viết mở trên màn hình riêng"
 
 msgid "Story clustering"
 msgstr "Nhóm bài viết"
@@ -7464,11 +7532,18 @@ msgstr "Tính phí theo mức sử dụng được bật cho các bộ phân lo�
 msgid "Use %(language)s"
 msgstr "Sử dụng %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Chỉ dùng %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "Dùng đồng hồ 12 giờ"
 
 msgid "Use 24-hour clock"
 msgstr "Dùng đồng hồ 24 giờ"
+
+msgid "Use only this voice"
+msgstr "Chỉ dùng giọng đọc này"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Dùng mẫu câu lệnh để phân loại hộp thư đến, nghiên cứu chủ đề và kiểm tra nguồn cấp dữ liệu"
@@ -7478,6 +7553,9 @@ msgstr "Dùng menu ngữ cảnh gốc của trình duyệt"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "Sử dụng mẫu URL này trong tiện ích mở rộng trình duyệt và trình đọc nguồn cấp để đăng ký trên NewsBlur."
+
+msgid "Use voice"
+msgstr "Dùng giọng đọc"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Dùng tiện ích để xem nhanh số mục chưa đọc và bài viết"
@@ -7547,8 +7625,14 @@ msgstr "Giọng đọc"
 msgid "Voice recording failed. Please try again."
 msgstr "Không thể ghi âm giọng nói. Vui lòng thử lại."
 
+msgid "Voice rotation"
+msgstr "Luân phiên giọng đọc"
+
 msgid "Voice settings"
 msgstr "Cài đặt giọng đọc"
+
+msgid "Voices"
+msgstr "Giọng đọc"
 
 msgid "Warning: This is actually permanent"
 msgstr "Cảnh báo: Thao tác này thực sự không thể hoàn tác"

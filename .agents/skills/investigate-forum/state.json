@@ -459,6 +459,20 @@
         "https://github.com/samuelclay/NewsBlur/pull/2194",
         "https://github.com/samuelclay/NewsBlur/pull/2196"
       ]
+    },
+    "13421": {
+      "title": "Newsletter forwarding: displays as raw html",
+      "url": "https://forum.newsblur.com/t/newsletter-forwarding-displays-as-raw-html/13421",
+      "status": "merged",
+      "tier": 1,
+      "handled_at": "2026-11-14T22:55:00Z",
+      "last_posted_at": "2026-11-14T11:55:36.388Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2213",
+      "branch": "forum-13421-escaped-newsletter-text",
+      "worktree": ".worktree/forum-13421-escaped-newsletter-text",
+      "note": "Follow-up to the Feb 26 fix (fd61bcae9c), which never fired for this sender. pws3141's Gmail-forwarded POLITICO Berlin and London Playbooks arrive via ImprovMX with the text part set to the HTML source escaped twice; _get_content wrapped it in linebreaks/linkify and the longer-content check kept it. #2213 decodes while escaped tags outnumber real ones (stopping once markup appears) and uses a text part that decodes to markup as HTML; 4 review rounds. Merged f8400f9706 and deployed with make deploy on 2026-11-15 (all 14 app hosts ok, push servers verified on f8400f9706). Repair run on prod the same day: 238/238 stories in feeds 9896406 and 10358846 rewritten (story_content_z and image_urls only); re-tally shows all HTML, re-run finds 0 candidates. Reply is ready to post.",
+      "reply": "Found the real cause this time. My February fix never actually kicked in for Politico. Their emails include a plain text version that is really the whole newsletter's HTML source, escaped twice, and NewsBlur was choosing that version over the real HTML because it was longer. The old fix only looked at the HTML version and only undid one layer. Now both versions get decoded properly, so Berlin Playbook renders correctly again, and so does London Playbook, which had the same problem. I also repaired every issue you've already received, so your older Playbooks should display properly too.",
+      "question": null
     }
   }
 }

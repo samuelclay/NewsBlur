@@ -89,6 +89,10 @@
 @property (nonatomic, strong) NSObject *readerHeaderMinimization;
 @property (nonatomic, weak) UIScrollView *readerTopEdgeScrollView;
 @property (nonatomic) BOOL previousReaderTopEdgeHidden;
+@property (nonatomic, weak) StoryDetailViewController *horizontalPeekPage;
+@property (nonatomic) NSInteger horizontalPeekPageIndex;
+@property (nonatomic) CGFloat horizontalPeekStartOffset;
+@property (nonatomic) BOOL horizontalPeekMoved;
 
 - (void)resetTraverseFadeForStoryChange;
 - (void)completePendingStoryPresentationCallingCompletion:(BOOL)callCompletion;
@@ -301,6 +305,8 @@
 
 - (void)resetTraverseFadeForStoryChange {
     self.traverseFadeAccumulator = 0.0;
+    self.traverseUpwardAccumulator = 0.0;
+    self.horizontalPeekPage = nil;
 
     BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
     if (hasFeedOrFolder) {
@@ -787,6 +793,13 @@
 
 - (void)viewDidLayoutSubviews {
     [self updateReaderToolbarPresentation];
+    // StoryPagesObjCViewController.m starts individual controls once their persistent bars are visible.
+    [self.traverseBar updateMotion];
+    [self.storyToolbar updateMotion];
+    if (![self hasHiddenReaderAncestor] && self.view.window && self.navigationController.topViewController == (self.isPhoneOrCompact ? self : appDelegate.detailViewController)) {
+        [ReaderMotion toolbarControls:self.navigationController.navigationBar];
+        [ReaderMotion toolbarControls:self.navigationController.toolbar];
+    }
     if ([self hasHiddenReaderAncestor]) {
         [super viewDidLayoutSubviews];
         return;
@@ -2274,6 +2287,10 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
+    if (sender == self.scrollView && self.isHorizontal && self.horizontalPeekPage &&
+        fabs(sender.contentOffset.x - self.horizontalPeekStartOffset) > 2.0) {
+        self.horizontalPeekMoved = YES;
+    }
     if (self.retainsDuoSourceArticle) return;
     if (inRotation || self.isRepositioningFirstPage || self.storySelectionTransitionHost || [self hasPendingPagerViewportChange]) return;
     if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) { [self setStoryFromScroll]; return; }
@@ -2371,6 +2388,10 @@
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    self.horizontalPeekPage = scrollView == self.scrollView && self.isHorizontal ? currentPage : nil;
+    self.horizontalPeekPageIndex = currentPage.pageIndex;
+    self.horizontalPeekStartOffset = scrollView.contentOffset.x;
+    self.horizontalPeekMoved = NO;
     if (self.pendingPresentationOpenedEarly && self.pendingPresentationPage == currentPage) {
         // StoryPagesObjCViewController.m keeps the visible article's document alive when a short swipe interrupts its entrance fade.
         [currentPage cancelStoryPresentationFadePreservingStory];
@@ -2417,6 +2438,7 @@
     CGFloat targetOffset = [self pageOffsetForIndex:nearestNumber pageAmount:pageAmount axisInset:axisInset];
 
     if (self.isHorizontal) {
+        self.horizontalPeekMoved |= fabs(scrollView.contentOffset.x - self.horizontalPeekStartOffset) > 2.0;
         targetContentOffset->x = targetOffset;
         targetContentOffset->y = -scrollView.adjustedContentInset.top;
     } else {
@@ -2432,6 +2454,10 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
+    StoryDetailViewController *peekPage = self.horizontalPeekPage;
+    NSInteger peekIndex = self.horizontalPeekPageIndex;
+    BOOL peekMoved = self.horizontalPeekMoved;
+    self.horizontalPeekPage = nil;
     self.isDraggingScrollview = NO;
     [self setWebViewsScrollEnabled:YES];
     if (self.storySelectionTransitionHost) return;
@@ -2444,6 +2470,12 @@
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
     NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
                                                   pageAmount:pageAmount];
+    if (self.isHorizontal && peekMoved && peekPage == currentPage &&
+        peekIndex == currentPage.pageIndex && nearestNumber == peekIndex) {
+        self.scrollingToPage = -1;
+        [self revealTraversalControls];
+        return;
+    }
     self.scrollingToPage = nearestNumber;
     [self setStoryFromScroll];
 }
@@ -2812,11 +2844,11 @@
         [self cancelPendingStoryPresentation];
         return;
     }
-    BOOL animateSelection = !self.retainsDuoSourceArticle && !openImmediately && animated && !redrawCover && !self.isPhoneOrCompact && !UIAccessibilityIsReduceMotionEnabled() &&
+    BOOL animateSelection = !self.retainsDuoSourceArticle && !openImmediately && animated && !redrawCover && !self.isPhoneOrCompact && !ReaderMotion.reduceMotion &&
         self.view.window && currentPage.hasStory && !currentPage.webView.hidden &&
         !self.isDraggingScrollview && !self.scrollView.dragging && !self.scrollView.decelerating &&
         currentPage.pageIndex >= 0 && ![currentPage.activeStoryId isEqualToString:hash];
-    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] selectionAnimation eligible=%d requested=%d openImmediately=%d retained=%d redraw=%d compact=%d reduceMotion=%d window=%d hasStory=%d hidden=%d dragging=%d/%d/%d from=%ld to=%ld", animateSelection, animated, openImmediately, self.retainsDuoSourceArticle, redrawCover != nil, self.isPhoneOrCompact, UIAccessibilityIsReduceMotionEnabled(), self.view.window != nil, currentPage.hasStory, currentPage.webView.hidden, self.isDraggingScrollview, self.scrollView.dragging, self.scrollView.decelerating, (long)currentPage.pageIndex, (long)pageIndex);
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] selectionAnimation eligible=%d requested=%d openImmediately=%d retained=%d redraw=%d compact=%d reduceMotion=%d window=%d hasStory=%d hidden=%d dragging=%d/%d/%d from=%ld to=%ld", animateSelection, animated, openImmediately, self.retainsDuoSourceArticle, redrawCover != nil, self.isPhoneOrCompact, ReaderMotion.reduceMotion, self.view.window != nil, currentPage.hasStory, currentPage.webView.hidden, self.isDraggingScrollview, self.scrollView.dragging, self.scrollView.decelerating, (long)currentPage.pageIndex, (long)pageIndex);
     BOOL distantSelection = animateSelection && labs(pageIndex - currentPage.pageIndex) > 1;
 
     BOOL forward = pageIndex > currentPage.pageIndex;
@@ -2942,7 +2974,7 @@
         return;
     }
 
-    if (self.pendingPresentationAnimated && !UIAccessibilityIsReduceMotionEnabled() &&
+    if (self.pendingPresentationAnimated && !ReaderMotion.reduceMotion &&
         page != currentPage && currentPage.hasStory && !currentPage.webView.hidden && self.view.window) {
         [self animatePreparedStorySelection:page location:location];
     } else {
@@ -3508,9 +3540,10 @@
         return;
     }
 
-    self.uiTestTraverseFadeProbeView.accessibilityValue = [NSString stringWithFormat:@"alpha=%.3f accumulator=%.3f",
+    self.uiTestTraverseFadeProbeView.accessibilityValue = [NSString stringWithFormat:@"alpha=%.3f accumulator=%.3f offset=%.1f",
                                                            self.traverseView.alpha,
-                                                           self.traverseFadeAccumulator];
+                                                           self.traverseFadeAccumulator,
+                                                           self.currentPage.webView.scrollView.contentOffset.y];
 }
 
 - (void)setTextButton {
@@ -3931,11 +3964,22 @@
 }
 
 - (void)tappedStory {
+    [self revealTraversalControls];
     if (self.autoscrollAvailable) {
         [self showAutoscrollBriefly:YES];
 //    } else if (self.allowFullscreen) {
 //        [self setNavigationBarHidden: !self.isNavigationBarHidden];
     }
+}
+
+- (void)revealTraversalControls {
+    if (self.usesVerticalReaderToolbar) return;
+    self.traverseFadeAccumulator = 0.0;
+    self.traverseUpwardAccumulator = 0.0;
+    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+        self.traverseView.alpha = 1.0;
+    } completion:nil];
+    [self updateUITestTraverseFadeProbe];
 }
 
 - (void)showAutoscrollBriefly:(BOOL)briefly {

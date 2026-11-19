@@ -14,7 +14,7 @@ import UIKit
 class StoryToolbarScrollHandler: NSObject {
 
     var toolbarHeight: CGFloat = 44.0
-    var showThreshold: CGFloat = 50.0
+    var showThreshold: CGFloat = 20.0
     private(set) var toolbarOffset: CGFloat = 0.0
     private var upwardAccumulator: CGFloat = 0.0
 

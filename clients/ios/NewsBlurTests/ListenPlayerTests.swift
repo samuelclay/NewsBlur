@@ -61,3 +61,65 @@ final class Test_ListenPlayerUpNext: XCTestCase {
         XCTAssertEqual(upNext(after: "not-loaded", in: collection), [])
     }
 }
+
+final class Test_ListenNarratorHandoff: XCTestCase {
+    // ListenPlayerTests.swift: resolve the narrator from the actual manifest request, without downloading speech.
+    private final class Server: AFHTTPSessionManager {
+        override func post(_ url: String, parameters: Any?, progress: ((Progress) -> Void)?,
+                           success: ((URLSessionDataTask, Any?) -> Void)?,
+                           failure: ((URLSessionDataTask?, Error) -> Void)?) -> URLSessionDataTask? {
+            let task = URLSession.shared.dataTask(with: URL(string: url)!)
+            var reply: [String: Any] = ["code": 1, "playback_state": [:]]
+            if url.hasSuffix("/listen/manifest") {
+                let choices = (parameters as? [String: String])?["voice_choices"] ?? "{}"
+                let voices = (try? JSONDecoder().decode([String: String].self, from: Data(choices.utf8))) ?? [:]
+                reply["manifest_id"] = "test"
+                reply["voice"] = ["voice_id": voices["en"] ?? "default"]
+            }
+            success?(task, reply)
+            return task
+        }
+
+        override func get(_ url: String, parameters: Any?, progress: ((Progress) -> Void)?,
+                          success: ((URLSessionDataTask, Any?) -> Void)?,
+                          failure: ((URLSessionDataTask?, Error) -> Void)?) -> URLSessionDataTask? {
+            let task = URLSession.shared.dataTask(with: URL(string: url)!)
+            DispatchQueue.main.async { success?(task, ["playback_state": [:]]) }
+            return task
+        }
+    }
+
+    func test_podcast_handoff_continues_the_rotation_and_closing_either_player_restarts_it() throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let previousManager = app.networkManager
+        let defaults = UserDefaults.standard
+        let key = ListenPreferences.rotationsKey
+        let previousRotation = defaults.object(forKey: key)
+        app.networkManager = Server()
+        defaults.set(#"{"en":[{"voice_id":"a"},{"voice_id":"b"},{"voice_id":"c"}]}"#, forKey: key)
+        let player = ListenPlayer.shared
+        let podcast = ListenMediaPlayer.shared
+        let item = ListenMediaItem(storyHash: "1:podcast", mediaURL: "file:///no-podcast.mp3", title: "", feedId: nil)
+        defer {
+            player.stop(saving: false)
+            podcast.stop(saving: false)
+            ListenQueue.shared.reset()
+            app.networkManager = previousManager
+            defaults.set(previousRotation, forKey: key)
+        }
+
+        func playStory(_ hash: String) -> String? {
+            player.start(story: ["story_hash": hash])
+            return player.manifest?.voice?.id
+        }
+
+        XCTAssertEqual(playStory("1:first"), "a")
+        podcast.start(item)
+        XCTAssertEqual(playStory("1:next"), "b")
+        player.stop()
+        XCTAssertEqual(playStory("1:new"), "a")
+        podcast.start(item)
+        podcast.stop()
+        XCTAssertEqual(playStory("1:again"), "a")
+    }
+}

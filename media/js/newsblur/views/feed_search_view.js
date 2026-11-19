@@ -128,6 +128,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
     },
 
     focus_search: function () {
+        if (!NEWSBLUR.reader.$s.$story_titles_header.hasClass("NB-searching")) NEWSBLUR.motion.enter(this.el, 0, 6);
         if (!NEWSBLUR.reader.flags.searching || !NEWSBLUR.reader.flags.search) {
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = "";
