@@ -187,6 +187,16 @@ class Test_AskAIOpenAICompatible(AskAITaskTestCase):
         request = self.openai_client.return_value.chat.completions.create.call_args.kwargs
         self.assertEqual(request["model"], "qwen2.5:1.5b")
 
+    @override_settings(ASK_AI_MODEL="router", ASK_AI_MODELS={"local": LOCAL_MODEL, "router": ROUTER_MODEL})
+    def test_web_reader_starts_on_the_configured_default_model(self):
+        """The model list the web reader gets marks ASK_AI_MODEL, not the first listed model,
+        as where a user who hasn't picked one starts."""
+        providers = self._load_registry_from_settings()
+
+        defaults = [model["key"] for model in providers.get_models_for_frontend() if model["is_default"]]
+
+        self.assertEqual(defaults, ["router"])
+
     @override_settings(
         OPENAI_API_KEY="sk-hosted-openai-key",
         ASK_AI_MODELS={"local": LOCAL_MODEL, "router": ROUTER_MODEL},

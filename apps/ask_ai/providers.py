@@ -663,7 +663,8 @@ MODEL_VENDORS = {
 def get_models_for_frontend() -> list:
     """Get model list for frontend JavaScript consumption.
 
-    Returns a sorted list of dicts with key, display_name, vendor, vendor_display.
+    Returns a sorted list of dicts with key, display_name, vendor, vendor_display and is_default,
+    which marks the ASK_AI_MODEL a user starts on before choosing one.
     Passed to the frontend via the template tag pipeline as NEWSBLUR.Globals.ask_ai_models.
     """
     return sorted(
@@ -673,6 +674,7 @@ def get_models_for_frontend() -> list:
                 "display_name": m["display_name"],
                 "vendor": m["vendor"],
                 "vendor_display": m["vendor_display"],
+                "is_default": key == DEFAULT_MODEL,
             }
             for key, m in MODELS.items()
         ],
