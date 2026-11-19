@@ -14,3 +14,8 @@
 .mobile-release-phone--tablet .mobile-release-phone__screen { inset: 0; border-radius: 14px; }
 /* The blog's .post img, video cap (_base.scss) is narrower than a tablet figure, so lift it here. */
 .mobile-release-phone--tablet .mobile-release-phone__screen img, .mobile-release-phone--tablet .mobile-release-phone__screen video { max-width: none; }
+/* Stage clips are composed scenes (several devices on one background) shown full width with no frame. */
+.mobile-release-phone--stage { width: 100%; max-width: 100%; }
+.mobile-release-phone--stage .mobile-release-phone__device { filter: none; }
+.mobile-release-phone--stage .mobile-release-phone__screen { inset: 0; border-radius: 10px; background: #f5efe2; }
+.mobile-release-phone--stage .mobile-release-phone__screen img, .mobile-release-phone--stage .mobile-release-phone__screen video { max-width: none; }
