@@ -283,6 +283,18 @@ class OpenAICompatibleProvider(OpenAIProvider):
             api_key=self.model_config.get("api_key") or self.UNAUTHENTICATED_API_KEY,
         )
 
+    def format_error(self, error: Exception) -> str:
+        # providers.py: OpenAIProvider's messages point at OPENAI_API_KEY, which this server never sees.
+        name = self.model_config.get("vendor_display") or "OpenAI-compatible"
+        if isinstance(error, openai.APITimeoutError):
+            return f"{name} API timeout"
+        status_code = getattr(error, "status_code", None)
+        if status_code in (401, 403):
+            return f"{name} rejected the API key. Please check this model's api_key setting."
+        if status_code == 429:
+            return f"{name} API rate limit exceeded. Please try again later."
+        return f"{name} API error: {str(error)}"
+
     def _token_limit(self, max_tokens: int) -> dict:
         parameter = self.model_config.get("max_tokens_parameter", "max_tokens")
         multiplier = self.model_config.get("max_tokens_multiplier", 1)
