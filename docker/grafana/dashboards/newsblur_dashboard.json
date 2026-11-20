@@ -444,7 +444,7 @@
    },
    "gridPos": {
     "h": 8,
-    "w": 5,
+    "w": 6,
     "x": 0,
     "y": 9
    },
@@ -532,8 +532,8 @@
    },
    "gridPos": {
     "h": 8,
-    "w": 5,
-    "x": 5,
+    "w": 6,
+    "x": 6,
     "y": 9
    },
    "id": 264,
@@ -620,8 +620,8 @@
    },
    "gridPos": {
     "h": 8,
-    "w": 5,
-    "x": 10,
+    "w": 6,
+    "x": 12,
     "y": 9
    },
    "id": 230,
@@ -708,8 +708,8 @@
    },
    "gridPos": {
     "h": 8,
-    "w": 5,
-    "x": 15,
+    "w": 6,
+    "x": 18,
     "y": 9
    },
    "id": 231,
@@ -740,94 +740,6 @@
     }
    ],
    "title": "Premium Pro Users",
-   "type": "timeseries"
-  },
-  {
-   "datasource": {
-    "type": "prometheus",
-    "uid": "U1-fPO3Mk"
-   },
-   "fieldConfig": {
-    "defaults": {
-     "color": {
-      "mode": "palette-classic"
-     },
-     "custom": {
-      "axisLabel": "",
-      "axisPlacement": "auto",
-      "barAlignment": 0,
-      "drawStyle": "line",
-      "fillOpacity": 10,
-      "gradientMode": "none",
-      "hideFrom": {
-       "legend": false,
-       "tooltip": false,
-       "viz": false
-      },
-      "lineInterpolation": "linear",
-      "lineWidth": 1,
-      "pointSize": 5,
-      "scaleDistribution": {
-       "type": "linear"
-      },
-      "showPoints": "never",
-      "spanNulls": false,
-      "stacking": {
-       "group": "A",
-       "mode": "none"
-      },
-      "thresholdsStyle": {
-       "mode": "off"
-      }
-     },
-     "mappings": [],
-     "thresholds": {
-      "mode": "absolute",
-      "steps": [
-       {
-        "color": "green",
-        "value": null
-       }
-      ]
-     },
-     "unit": "short"
-    },
-    "overrides": []
-   },
-   "gridPos": {
-    "h": 8,
-    "w": 4,
-    "x": 20,
-    "y": 9
-   },
-   "id": 265,
-   "options": {
-    "legend": {
-     "calcs": [
-      "lastNotNull"
-     ],
-     "displayMode": "list",
-     "placement": "bottom",
-     "showLegend": true
-    },
-    "tooltip": {
-     "mode": "multi",
-     "sort": "none"
-    }
-   },
-   "pluginVersion": "9.0.0",
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "users{category=\"usage_billing\"}",
-     "legendFormat": "Usage Billing Users",
-     "refId": "A"
-    }
-   ],
-   "title": "Usage Billing Users",
    "type": "timeseries"
   },
   {
@@ -13852,7 +13764,7 @@
    },
    "id": 283,
    "panels": [],
-   "title": "AI Classifier Billing",
+   "title": "AI Filters",
    "type": "row"
   },
   {
@@ -13860,130 +13772,7 @@
     "type": "prometheus",
     "uid": "U1-fPO3Mk"
    },
-   "description": "Our API cost vs revenue (cost \u00d7 1.5) from billing users over time. Gap between lines = margin.",
-   "fieldConfig": {
-    "defaults": {
-     "color": {
-      "mode": "palette-classic"
-     },
-     "custom": {
-      "axisCenteredZero": false,
-      "axisColorMode": "text",
-      "axisLabel": "",
-      "axisPlacement": "auto",
-      "barAlignment": 0,
-      "drawStyle": "line",
-      "fillOpacity": 20,
-      "gradientMode": "opacity",
-      "hideFrom": {
-       "legend": false,
-       "tooltip": false,
-       "viz": false
-      },
-      "lineInterpolation": "smooth",
-      "lineWidth": 2,
-      "pointSize": 5,
-      "scaleDistribution": {
-       "type": "linear"
-      },
-      "showPoints": "never",
-      "spanNulls": true,
-      "stacking": {
-       "group": "A",
-       "mode": "none"
-      },
-      "thresholdsStyle": {
-       "mode": "off"
-      }
-     },
-     "decimals": 4,
-     "mappings": [],
-     "thresholds": {
-      "mode": "absolute",
-      "steps": [
-       {
-        "color": "green",
-        "value": null
-       }
-      ]
-     },
-     "unit": "currencyUSD"
-    },
-    "overrides": [
-     {
-      "matcher": {
-       "id": "byName",
-       "options": "Revenue"
-      },
-      "properties": [
-       {
-        "id": "color",
-        "value": {
-         "fixedColor": "green",
-         "mode": "fixed"
-        }
-       }
-      ]
-     },
-     {
-      "matcher": {
-       "id": "byName",
-       "options": "Our Cost"
-      },
-      "properties": [
-       {
-        "id": "color",
-        "value": {
-         "fixedColor": "red",
-         "mode": "fixed"
-        }
-       }
-      ]
-     }
-    ]
-   },
-   "gridPos": {
-    "h": 8,
-    "w": 8,
-    "x": 0,
-    "y": 527
-   },
-   "id": 290,
-   "options": {
-    "legend": {
-     "calcs": [
-      "lastNotNull"
-     ],
-     "displayMode": "table",
-     "placement": "bottom",
-     "showLegend": true
-    },
-    "tooltip": {
-     "mode": "multi",
-     "sort": "desc"
-    }
-   },
-   "targets": [
-    {
-     "expr": "sum(llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=~\"story_classification|vision_classification\",period=\"daily\"}) * 1.5",
-     "legendFormat": "Revenue",
-     "refId": "A"
-    },
-    {
-     "expr": "sum(llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=~\"story_classification|vision_classification\",period=\"daily\"})",
-     "legendFormat": "Our Cost",
-     "refId": "B"
-    }
-   ],
-   "title": "Cost vs Revenue",
-   "type": "timeseries"
-  },
-  {
-   "datasource": {
-    "type": "prometheus",
-    "uid": "U1-fPO3Mk"
-   },
-   "description": "Classifier runs per day: all users vs billing users, text vs image",
+   "description": "Jev requests per day for natural language filters, text vs image",
    "fieldConfig": {
     "defaults": {
      "color": {
@@ -14035,8 +13824,8 @@
    },
    "gridPos": {
     "h": 8,
-    "w": 8,
-    "x": 8,
+    "w": 12,
+    "x": 0,
     "y": 527
    },
    "id": 291,
@@ -14057,23 +13846,13 @@
    "targets": [
     {
      "expr": "llm_costs{metric=\"requests\",billing=\"\",feature=\"story_classification\",period=\"daily\"}",
-     "legendFormat": "Text (all)",
+     "legendFormat": "Text",
      "refId": "A"
     },
     {
      "expr": "llm_costs{metric=\"requests\",billing=\"\",feature=\"vision_classification\",period=\"daily\"}",
-     "legendFormat": "Image (all)",
+     "legendFormat": "Image",
      "refId": "B"
-    },
-    {
-     "expr": "llm_costs{metric=\"requests\",billing=\"usage\",feature=\"story_classification\",period=\"daily\"}",
-     "legendFormat": "Text (billed)",
-     "refId": "C"
-    },
-    {
-     "expr": "llm_costs{metric=\"requests\",billing=\"usage\",feature=\"vision_classification\",period=\"daily\"}",
-     "legendFormat": "Image (billed)",
-     "refId": "D"
     }
    ],
    "title": "Classifier Runs by Type",
@@ -14084,7 +13863,7 @@
     "type": "prometheus",
     "uid": "U1-fPO3Mk"
    },
-   "description": "Actual API cost for text vs image classifiers (billing users only)",
+   "description": "Daily API cost of natural language filters: Jev for text and images, Claude Haiku for describing each filter once",
    "fieldConfig": {
     "defaults": {
      "color": {
@@ -14137,8 +13916,8 @@
    },
    "gridPos": {
     "h": 8,
-    "w": 8,
-    "x": 16,
+    "w": 12,
+    "x": 12,
     "y": 527
    },
    "id": 292,
@@ -14158,225 +13937,23 @@
    },
    "targets": [
     {
-     "expr": "llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"story_classification\",period=\"daily\"}",
+     "expr": "llm_costs{metric=\"cost_usd\",billing=\"\",feature=\"story_classification\",period=\"daily\"}",
      "legendFormat": "Text",
      "refId": "A"
     },
     {
-     "expr": "llm_costs{metric=\"cost_usd\",billing=\"usage\",feature=\"vision_classification\",period=\"daily\"}",
+     "expr": "llm_costs{metric=\"cost_usd\",billing=\"\",feature=\"vision_classification\",period=\"daily\"}",
      "legendFormat": "Image",
      "refId": "B"
-    }
-   ],
-   "title": "Billed Cost by Type",
-   "type": "timeseries"
-  },
-  {
-   "datasource": {
-    "type": "prometheus",
-    "uid": "U1-fPO3Mk"
-   },
-   "description": "Per-user breakdown of AI classifier usage and revenue for billing customers (30-day aggregate)",
-   "fieldConfig": {
-    "defaults": {
-     "custom": {
-      "align": "auto",
-      "cellOptions": {
-       "type": "auto"
-      },
-      "inspect": false
-     },
-     "mappings": [],
-     "thresholds": {
-      "mode": "absolute",
-      "steps": [
-       {
-        "color": "green",
-        "value": null
-       }
-      ]
-     }
-    },
-    "overrides": [
-     {
-      "matcher": {
-       "id": "byName",
-       "options": "Cost"
-      },
-      "properties": [
-       {
-        "id": "unit",
-        "value": "currencyUSD"
-       },
-       {
-        "id": "decimals",
-        "value": 4
-       }
-      ]
-     },
-     {
-      "matcher": {
-       "id": "byName",
-       "options": "Revenue"
-      },
-      "properties": [
-       {
-        "id": "unit",
-        "value": "currencyUSD"
-       },
-       {
-        "id": "decimals",
-        "value": 4
-       }
-      ]
-     }
-    ]
-   },
-   "gridPos": {
-    "h": 8,
-    "w": 24,
-    "x": 0,
-    "y": 535
-   },
-   "id": 293,
-   "options": {
-    "cellHeight": "sm",
-    "footer": {
-     "countRows": false,
-     "fields": "",
-     "reducer": [
-      "sum"
-     ],
-     "show": true
-    },
-    "showHeader": true,
-    "sortBy": [
-     {
-      "desc": true,
-      "displayName": "Cost"
-     }
-    ]
-   },
-   "targets": [
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "llm_costs{metric=\"cost_usd\",billing=\"user\"}",
-     "format": "table",
-     "instant": true,
-     "legendFormat": "",
-     "refId": "A"
     },
     {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "llm_costs{metric=\"revenue_usd\",billing=\"user\"}",
-     "format": "table",
-     "instant": true,
-     "legendFormat": "",
-     "refId": "B"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "llm_costs{metric=\"text_requests\",billing=\"user\"}",
-     "format": "table",
-     "instant": true,
-     "legendFormat": "",
+     "expr": "llm_costs{metric=\"cost_usd\",billing=\"\",feature=\"classifier_description\",period=\"daily\"}",
+     "legendFormat": "Filter descriptions",
      "refId": "C"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "llm_costs{metric=\"vision_requests\",billing=\"user\"}",
-     "format": "table",
-     "instant": true,
-     "legendFormat": "",
-     "refId": "D"
-    },
-    {
-     "datasource": {
-      "type": "prometheus",
-      "uid": "U1-fPO3Mk"
-     },
-     "expr": "llm_costs{metric=\"total_stories\",billing=\"user\"}",
-     "format": "table",
-     "instant": true,
-     "legendFormat": "",
-     "refId": "E"
     }
    ],
-   "title": "Per-User Billing Breakdown",
-   "transformations": [
-    {
-     "id": "joinByField",
-     "options": {
-      "byField": "username",
-      "mode": "outer"
-     }
-    },
-    {
-     "id": "organize",
-     "options": {
-      "excludeByName": {
-       "Time": true,
-       "Time 1": true,
-       "Time 2": true,
-       "Time 3": true,
-       "Time 4": true,
-       "Time 5": true,
-       "__name__": true,
-       "__name__ 1": true,
-       "__name__ 2": true,
-       "__name__ 3": true,
-       "__name__ 4": true,
-       "__name__ 5": true,
-       "billing": true,
-       "billing 1": true,
-       "billing 2": true,
-       "billing 3": true,
-       "billing 4": true,
-       "billing 5": true,
-       "instance": true,
-       "instance 1": true,
-       "instance 2": true,
-       "instance 3": true,
-       "instance 4": true,
-       "instance 5": true,
-       "job": true,
-       "job 1": true,
-       "job 2": true,
-       "job 3": true,
-       "job 4": true,
-       "job 5": true,
-       "metric": true,
-       "metric 1": true,
-       "metric 2": true,
-       "metric 3": true,
-       "metric 4": true,
-       "metric 5": true
-      },
-      "indexByName": {},
-      "renameByName": {
-       "username": "User",
-       "Value #A": "Cost",
-       "Value #B": "Revenue",
-       "Value #C": "Text Classifiers",
-       "Value #D": "Vision Classifiers",
-       "Value #E": "Total Stories"
-      }
-     }
-    }
-   ],
-   "type": "table"
+   "title": "AI Filter Cost by Type",
+   "type": "timeseries"
   },
   {
    "id": 361,
