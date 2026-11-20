@@ -32,7 +32,11 @@ assert.equal(messages[0].title, image.alt);
 assert.equal(messages[0].generation, '7');
 assert.equal(messages[0].rect.width, 360);
 assert.equal(messages[0].browserSrc, image.currentSrc, 'Open Image must use the displayed photo, not its enclosing article link');
-context.NB_open_story_image({ ...image, closest: selector => selector === 'a[href]' ? { href: 'https://example.com/article' } : image.closest(selector) }, true);
+const linked_thumbnail = {
+    ...image,
+    closest: selector => selector === 'a[href]' ? { href: 'https://example.com/article' } : image.closest(selector),
+};
+context.NB_open_story_image(linked_thumbnail, true);
 assert.equal(messages.at(-1).link, 'https://example.com/article');
 assert.equal(messages.at(-1).browserSrc, image.currentSrc, 'Linked photos keep distinct image and article actions');
 attributes['data-nb-original-src'] = 'https://example.com/offline-original.jpg';
@@ -48,7 +52,13 @@ assert.equal(context.NB_story_image_rect('1', 7), null);
 
 let prevented = false, stopped = false;
 listeners.click({ target: image, preventDefault() { prevented = true; }, stopImmediatePropagation() { stopped = true; } });
-assert.ok(prevented && stopped, 'Image taps must not also open an enclosing link');
+assert.ok(prevented && stopped, 'A standalone photo tap opens the viewer');
+
+const before_tap = messages.length;
+prevented = stopped = false;
+listeners.click({ target: linked_thumbnail, preventDefault() { prevented = true; }, stopImmediatePropagation() { stopped = true; } });
+assert.equal(prevented || stopped, false, 'A single tap on a linked thumbnail must follow its article link');
+assert.equal(messages.length, before_tap, 'Following the article must not also open the photo viewer');
 
 for (const change of [
     { complete: false }, { naturalWidth: 1 }, { naturalHeight: 1 }, { tagName: 'VIDEO' },
@@ -61,4 +71,4 @@ assert.equal(context.NB_open_story_image({ ...image, currentSrc: 'data:image/png
 assert.equal(context.NB_open_story_image({ ...image, currentSrc: 'https://appassets.androidplatform.net/images/123.png' }), true);
 context.window.NewsBlurImages = undefined;
 assert.equal(context.NB_open_story_image(image), false, 'Older WebViews retain their existing image/link behavior');
-console.log('PASS: image source selection, linked-image interception, document generations, protected icons, and invalid images');
+console.log('PASS: image source selection, linked-thumbnail navigation, document generations, protected icons, and invalid images');

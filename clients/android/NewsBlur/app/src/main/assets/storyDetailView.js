@@ -38,6 +38,8 @@ function NB_open_story_image(image, show_actions) {
         !image.closest('.NB-story') || hasProtectedImageClass(image) ||
         image.closest('.NB-twitter-rss-author,.NB-twitter-rss-retweet') ||
         !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
+    var link = image.closest('a[href]');
+    if (link && !show_actions) return false;
     var src = image.currentSrc || image.src;
     if (!/^(https?:|data:image\/)/i.test(src)) return false;
     var browser_src = /^https:\/\/appassets\.androidplatform\.net\/images\//i.test(src) ?
@@ -47,7 +49,6 @@ function NB_open_story_image(image, show_actions) {
         token = String(++NB_story_image_sequence);
         image.setAttribute('data-nb-viewer-token', token);
     }
-    var link = image.closest('a[href]');
     window.NewsBlurImages.postMessage(JSON.stringify({
         generation: load.content, token: token, src: src, title: image.alt || image.title || 'Story image',
         browserSrc: browser_src,
