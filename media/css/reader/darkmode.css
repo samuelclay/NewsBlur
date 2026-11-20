@@ -4293,59 +4293,6 @@ a.mention, a.mention-group {
     color: #555;
 }
 
-/* ======================================= */
-/* = AI Classifier Cost Estimate Dark    = */
-/* ======================================= */
-
-.NB-dark .NB-ai-cost-estimate {
-    background: #2a2c2e;
-    border-color: #3a3c3e;
-}
-
-.NB-dark .NB-ai-cost-monthly {
-    color: #e0e0e0;
-}
-
-.NB-dark .NB-ai-cost-monthly small {
-    color: #777;
-}
-
-.NB-dark .NB-ai-cost-separator {
-    color: #555;
-}
-
-.NB-dark .NB-ai-cost-daily {
-    color: #aaa;
-}
-
-.NB-dark .NB-ai-cost-daily small {
-    color: #777;
-}
-
-.NB-dark .NB-ai-cost-breakdown {
-    color: #666;
-}
-
-.NB-dark .NB-ai-cost-preview {
-    color: #666;
-}
-
-.NB-dark .NB-ai-cost-preview b {
-    color: #999;
-}
-
-.NB-dark .NB-ai-billing-setup {
-    background: #4a3f00;
-    border-color: #7a6600;
-    color: #ffd54f;
-}
-
-.NB-dark .NB-ai-billing-manage {
-    background: #1b3a1b;
-    border-color: #2e6b2e;
-    color: #81c784;
-}
-
 /* ====================================== */
 /* = AI Image Filter (VLM) Dark Mode   = */
 /* ====================================== */
