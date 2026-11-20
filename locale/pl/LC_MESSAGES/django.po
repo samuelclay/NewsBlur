@@ -3128,6 +3128,9 @@ msgstr "Nieprawidłowy feed_id"
 msgid "Invalid feed_id."
 msgstr "Nieprawidłowy feed_id."
 
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Nieprawidłowa ścieżka folderu. Wybierz folder ponownie."
+
 msgid "Invalid gift tier."
 msgstr "Nieprawidłowy poziom prezentu."
 
@@ -5958,6 +5961,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Dziękujemy!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Ten folder uległ zmianie. Odśwież kanały i wybierz go ponownie."
 
 msgid "That item isn't playing"
 msgstr "Ten element nie jest odtwarzany"

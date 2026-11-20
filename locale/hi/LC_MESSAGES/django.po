@@ -3059,6 +3059,9 @@ msgstr "अमान्य feed_id"
 msgid "Invalid feed_id."
 msgstr "अमान्य feed_id."
 
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "फ़ोल्डर का पथ सही नहीं है। कृपया फ़ोल्डर फिर से चुनें।"
+
 msgid "Invalid gift tier."
 msgstr "अमान्य उपहार स्तर।"
 
@@ -5835,6 +5838,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "धन्यवाद!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "यह फ़ोल्डर बदल गया है। अपनी फ़ीड रीफ़्रेश करें और फ़ोल्डर फिर से चुनें।"
 
 msgid "That item isn't playing"
 msgstr "वह आइटम चल नहीं रहा है"

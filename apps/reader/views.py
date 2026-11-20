@@ -4440,15 +4440,13 @@ def move_folder_to_folder(request):
                 to_folder=to_folder if to_folder is not None else request.POST.get("to_folder", ""),
             )
         except InvalidFolderPath as exc:
-            return dict(code=-1, message=gettext(str(exc)), folders=json.decode(user_sub_folders.folders))
-
-        if moved:
-            old_path, new_path = moved
-            _update_classifiers_for_folder_path_change(
-                request.user.pk, " - ".join(old_path), " - ".join(new_path)
-            )
+            return dict(code=-1, message=str(exc), folders=json.decode(user_sub_folders.folders))
 
     if moved:
+        old_path, new_path = moved
+        _update_classifiers_for_folder_path_change(
+            request.user.pk, " - ".join(old_path), " - ".join(new_path)
+        )
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(request.user.username, "reload:feeds")
 

@@ -3039,6 +3039,9 @@ msgstr "feed_id không hợp lệ"
 msgid "Invalid feed_id."
 msgstr "feed_id không hợp lệ."
 
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Đường dẫn thư mục không hợp lệ. Vui lòng chọn lại thư mục."
+
 msgid "Invalid gift tier."
 msgstr "Hạng quà tặng không hợp lệ."
 
@@ -5817,6 +5820,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Cảm ơn!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Thư mục này đã thay đổi. Hãy làm mới các nguồn cấp rồi chọn lại thư mục."
 
 msgid "That item isn't playing"
 msgstr "Mục đó không phát"

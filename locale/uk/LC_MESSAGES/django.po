@@ -3115,6 +3115,9 @@ msgstr "Недійсний feed_id"
 msgid "Invalid feed_id."
 msgstr "Недійсний feed_id."
 
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Неприпустимий шлях до папки. Виберіть папку ще раз."
+
 msgid "Invalid gift tier."
 msgstr "Недійсний рівень подарунка."
 
@@ -5923,6 +5926,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Дякуємо!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Ця папка змінилася. Оновіть стрічки й виберіть її ще раз."
 
 msgid "That item isn't playing"
 msgstr "Цей елемент не відтворюється"

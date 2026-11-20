@@ -3074,6 +3074,9 @@ msgstr "feed_id inválido"
 msgid "Invalid feed_id."
 msgstr "feed_id inválido."
 
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "O caminho da pasta é inválido. Selecione a pasta novamente."
+
 msgid "Invalid gift tier."
 msgstr "Nível de presente inválido."
 
@@ -5881,6 +5884,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Obrigado!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Essa pasta mudou. Atualize seus feeds e selecione a pasta novamente."
 
 msgid "That item isn't playing"
 msgstr "Esse item não está sendo reproduzido"

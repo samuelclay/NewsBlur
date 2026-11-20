@@ -62,6 +62,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import add_object_to_folder, chunks
 from utils.folder_paths import (
+    INVALID_FOLDER_PATH,
     InvalidFolderPath,
     iter_folder_paths,
     resolve_folder_path,
@@ -3357,7 +3358,7 @@ class UserSubscriptionFolders(models.Model):
             isinstance(item, dict) and any(name.lower() == folder_name.lower() for name in item)
             for item in destination
         ):
-            raise InvalidFolderPath("Invalid folder path. Please choose the folder again.")
+            raise InvalidFolderPath(INVALID_FOLDER_PATH)
 
         parent = resolve_folder_path(user_sub_folders, source_path[:-1])
         for index, item in enumerate(parent):

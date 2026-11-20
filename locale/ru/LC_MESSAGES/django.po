@@ -3122,6 +3122,9 @@ msgstr "Недопустимый feed_id"
 msgid "Invalid feed_id."
 msgstr "Недопустимый feed_id."
 
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Недопустимый путь к папке. Выберите папку ещё раз."
+
 msgid "Invalid gift tier."
 msgstr "Недопустимый уровень подарка."
 
@@ -5944,6 +5947,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Спасибо!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Эта папка изменилась. Обновите ленты и выберите её ещё раз."
 
 msgid "That item isn't playing"
 msgstr "Этот элемент не воспроизводится"
