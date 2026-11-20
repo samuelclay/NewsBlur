@@ -7823,6 +7823,10 @@
             if (this.flags['splash_page_frontmost'] || this.flags['starred_view'] || this.flags['briefing_view'] ||
                 this.flags['trending_view'] || this.flags['social_view'] || this.flags['archive_view'] ||
                 this.flags['classifier_filter'] || this.flags.search) return null;
+            // reader.js: a date-filtered list only holds its range, and a saved-only list (the Saved slider) only
+            // saved stories, so neither takes new arrivals.
+            if (this.flags.date_filter_start || this.flags.date_filter_end) return null;
+            if (this.model.view_setting(this.active_feed, 'read_filter') == 'starred') return null;
 
             var feed_ids;
             if (this.flags['river_view']) {
@@ -7998,6 +8002,8 @@
             var list = this.realtime_new_story_list();
             var unread_only = list && list.unread_only;
             if (state.overflow[story_hash]) {
+                // reader.js: river_stories?h= answers the click's fetch with a placeholder read state.
+                state.read_elsewhere[story_hash] = read;
                 if (read && unread_only) delete state.overflow[story_hash];
             } else if (state.buffered[story_hash]) {
                 state.buffered[story_hash].read_status = read ? 1 : 0;
@@ -8033,12 +8039,17 @@
         // scrolls (a page bringing one of them again merges into it rather than listing it twice). An oldest-first
         // list instead gains its 20 oldest waiting stories at its end and keeps the rest waiting. The iOS and
         // Android apps do the same.
-        show_newest_realtime_new_stories: function (list, state, announced_feed_ids) {
+        show_newest_realtime_new_stories: function (list, state, announced_feed_ids, generation) {
+            // reader.js: reopening or reloading the list moves the generation on, so a click on the old one is let go.
+            var still_open = _.bind(function () {
+                var current = this.realtime_new_story_list();
+                return current && current.key == list.key && this.realtime_new_stories.generation == generation;
+            }, this);
+            if (!still_open()) return;
             if (this.flags['opening_feed']) {
                 // reader.js: a page of the old paging is still loading; start once it lands.
                 return _.delay(_.bind(function () {
-                    var current = this.realtime_new_story_list();
-                    if (current && current.key == list.key) this.show_newest_realtime_new_stories(current, state, announced_feed_ids);
+                    this.show_newest_realtime_new_stories(list, state, announced_feed_ids, generation);
                 }, this), 250);
             }
             var waiting = _.map(state.buffered, function (attributes, story_hash) {
@@ -8051,8 +8062,11 @@
             var chosen = waiting.slice(0, this.constants.REALTIME_NEW_STORY_CAP);
             var missing = _.pluck(_.reject(chosen, function (entry) { return entry.attributes; }), 'story_hash');
             var show = _.bind(function (fetched) {
-                var current = this.realtime_new_story_list();
-                if (!current || current.key != list.key) return;
+                if (!still_open()) return;
+                if (this.flags['opening_feed']) {
+                    // reader.js: a page of the old paging started while the stories were fetched; let it land first.
+                    return _.delay(show, 250, fetched);
+                }
                 var score = Math.max(this.get_unread_view_score(), 0);
                 var stories = _.compact(_.map(chosen, function (entry) {
                     var attributes = entry.attributes || fetched[entry.story_hash];
@@ -8077,7 +8091,16 @@
                 _.each(data && data.stories, function (attributes) { fetched[attributes.story_hash] = attributes; });
                 if (data && data.user_profiles) state.user_profiles = state.user_profiles.concat(data.user_profiles);
                 show(fetched);
-            }, this), $.noop, { 'ajax_group': 'rapid', 'request_type': 'GET' });
+            }, this), _.bind(function () {
+                // reader.js: the fetch failed, so the stories wait for another click rather than disappearing.
+                if (!still_open()) return;
+                var next = this.realtime_new_stories;
+                _.extend(next.buffered, state.buffered);
+                _.extend(next.overflow, state.overflow);
+                _.extend(next.read_elsewhere, state.read_elsewhere);
+                next.user_profiles = next.user_profiles.concat(state.user_profiles);
+                this.show_realtime_new_stories_pill();
+            }, this), { 'ajax_group': 'rapid', 'request_type': 'GET' });
         },
 
         // reader.js: A newest-first list starts over from the newest waiting stories, and pages from page 1 below them.
@@ -8148,7 +8171,10 @@
                 function (story_hash) { return parseInt(story_hash.split(':')[0], 10); }));
             this.clear_realtime_new_stories(list && list.key);
             if (!list || list.key != state.key) return;
-            if (overflowing) return this.show_newest_realtime_new_stories(list, state, announced_feed_ids);
+            if (overflowing) {
+                return this.show_newest_realtime_new_stories(list, state, announced_feed_ids,
+                    this.realtime_new_stories.generation);
+            }
             if (!stories.length) return;
 
             var known_profiles = this.model.user_profiles;
