@@ -872,10 +872,10 @@
 		B7C1A55C0E20261102000002 /* StoryClassifierScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C1A55C0E20261102000003 /* StoryClassifierScorer.swift */; };
 		B7C1A55C0E20261103000001 /* StoryScoreRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C1A55C0E20261103000003 /* StoryScoreRefresher.swift */; };
 		A97A3B6E6F8D2FE1E56939BB /* NewStoriesPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 127ACDD454996CF380A6E913 /* NewStoriesPill.swift */; };
-		25B32856D32B276FBFAB0169 /* NewStoriesGapStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FC75543700319A41C2EC50 /* NewStoriesGapStream.swift */; };
+		25B32856D32B276FBFAB0169 /* NewStoriesNewestPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FC75543700319A41C2EC50 /* NewStoriesNewestPage.swift */; };
 		B7C1A55C0E20261103000002 /* StoryScoreRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C1A55C0E20261103000003 /* StoryScoreRefresher.swift */; };
 		59A010D2BC16E7E281BD78D4 /* NewStoriesPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 127ACDD454996CF380A6E913 /* NewStoriesPill.swift */; };
-		4387A04088BB5507ECEF9A22 /* NewStoriesGapStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FC75543700319A41C2EC50 /* NewStoriesGapStream.swift */; };
+		4387A04088BB5507ECEF9A22 /* NewStoriesNewestPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FC75543700319A41C2EC50 /* NewStoriesNewestPage.swift */; };
 		17A92A3C289B7C6B00AB0A78 /* saved-stories@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17A92A3B289B7C6B00AB0A78 /* saved-stories@2x.png */; };
 		17AACFE122279A3C00DE6EA4 /* autoscroll_resume@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17AACFD722279A3900DE6EA4 /* autoscroll_resume@2x.png */; };
 		17AACFE222279A3C00DE6EA4 /* autoscroll_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 17AACFD822279A3900DE6EA4 /* autoscroll_off.png */; };
@@ -2028,7 +2028,7 @@
 		B7C1A55C0E20261102000003 /* StoryClassifierScorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryClassifierScorer.swift; sourceTree = "<group>"; };
 		B7C1A55C0E20261103000003 /* StoryScoreRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryScoreRefresher.swift; sourceTree = "<group>"; };
 		127ACDD454996CF380A6E913 /* NewStoriesPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStoriesPill.swift; sourceTree = "<group>"; };
-		07FC75543700319A41C2EC50 /* NewStoriesGapStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStoriesGapStream.swift; sourceTree = "<group>"; };
+		07FC75543700319A41C2EC50 /* NewStoriesNewestPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStoriesNewestPage.swift; sourceTree = "<group>"; };
 		17A92A3B289B7C6B00AB0A78 /* saved-stories@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "saved-stories@2x.png"; sourceTree = "<group>"; };
 		17AACFD722279A3900DE6EA4 /* autoscroll_resume@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "autoscroll_resume@2x.png"; sourceTree = "<group>"; };
 		17AACFD822279A3900DE6EA4 /* autoscroll_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = autoscroll_off.png; sourceTree = "<group>"; };
@@ -3615,7 +3615,7 @@
 				B7C1A55C0E20261102000003 /* StoryClassifierScorer.swift */,
 				B7C1A55C0E20261103000003 /* StoryScoreRefresher.swift */,
 				127ACDD454996CF380A6E913 /* NewStoriesPill.swift */,
-				07FC75543700319A41C2EC50 /* NewStoriesGapStream.swift */,
+				07FC75543700319A41C2EC50 /* NewStoriesNewestPage.swift */,
 				17SCOPE01AAAA00000000003 /* ClassifierScope.swift */,
 				17SCOPE02BBBB00000000003 /* ScopeToggleView.swift */,
 				17BC56A62BBE4A5600A30C41 /* TrainerWord.swift */,
@@ -6169,7 +6169,7 @@
 				B7C1A55C0E20261102000002 /* StoryClassifierScorer.swift in Sources */,
 				B7C1A55C0E20261103000002 /* StoryScoreRefresher.swift in Sources */,
 				59A010D2BC16E7E281BD78D4 /* NewStoriesPill.swift in Sources */,
-				4387A04088BB5507ECEF9A22 /* NewStoriesGapStream.swift in Sources */,
+				4387A04088BB5507ECEF9A22 /* NewStoriesNewestPage.swift in Sources */,
 				17SCOPE01AAAA00000000002 /* ClassifierScope.swift in Sources */,
 				17SCOPE02BBBB00000000002 /* ScopeToggleView.swift in Sources */,
 				1757926D2930605500490924 /* UserTagsViewController.m in Sources */,
@@ -6475,7 +6475,7 @@
 				B7C1A55C0E20261102000001 /* StoryClassifierScorer.swift in Sources */,
 				B7C1A55C0E20261103000001 /* StoryScoreRefresher.swift in Sources */,
 				A97A3B6E6F8D2FE1E56939BB /* NewStoriesPill.swift in Sources */,
-				25B32856D32B276FBFAB0169 /* NewStoriesGapStream.swift in Sources */,
+				25B32856D32B276FBFAB0169 /* NewStoriesNewestPage.swift in Sources */,
 				17SCOPE01AAAA00000000001 /* ClassifierScope.swift in Sources */,
 				17SCOPE02BBBB00000000001 /* ScopeToggleView.swift in Sources */,
 				FF6282151A11613900271FDB /* UserTagsViewController.m in Sources */,

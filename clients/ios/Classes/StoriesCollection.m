@@ -505,8 +505,8 @@
     return arriving.count;
 }
 
-// StoriesCollection.m takes NewStoriesGapStream.swift's merged list without starting the list over: unlike
-// setStories:, it keeps the stories read this session and adds no notification story.
+// StoriesCollection.m takes NewStoriesNewestPage.swift's list without starting the list over: unlike setStories:, it
+// keeps the stories read this session and adds no notification story.
 - (void)replaceStoriesKeepingReadState:(NSArray *)stories {
     self.activeFeedStories = stories;
     self.storyCount = (int)stories.count;

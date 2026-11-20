@@ -143,31 +143,23 @@ struct FeedDetailGridView: View {
         if cache.isPhoneOrCompact {
             Section(header: makeNewStoriesRow(atBottom: false),
                     footer: VStack(spacing: 0) { makeNewStoriesRow(atBottom: true); makeLoadingView() }) {
-                makeNewStoriesGap(atTop: true)
-
                 ForEach(cache.before, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
-                    makeNewStoriesGap(after: story)
                 }
 
                 if let story = cache.selected {
                     makeCardView(for: story, reader: reader)
                         .id(story.id)
-                    makeNewStoriesGap(after: story)
                 }
 
                 ForEach(cache.after, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
-                    makeNewStoriesGap(after: story)
                 }
             }
         } else {
             Section(header: makeNewStoriesRow(atBottom: false)) {
-                makeNewStoriesGap(atTop: true)
-
                 ForEach(cache.before, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
-                    makeNewStoriesGap(after: story)
                 }
             }
 
@@ -183,7 +175,6 @@ struct FeedDetailGridView: View {
                     footer: VStack(spacing: 0) { makeNewStoriesRow(atBottom: true); makeLoadingView() }) {
                 ForEach(cache.after, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
-                    makeNewStoriesGap(after: story)
                 }
             }
         }
@@ -246,14 +237,6 @@ struct FeedDetailGridView: View {
     func makeNewStoriesRow(atBottom: Bool) -> some View {
         if let row = cache.newStoriesRow, row.atBottom == atBottom {
             NewStoriesRowView(row: row, isGrid: cache.isGrid)
-        }
-    }
-
-    /// NewStoriesGapStream.swift's gap between the newest page's cards and the cards already listed.
-    @ViewBuilder
-    func makeNewStoriesGap(after story: Story? = nil, atTop: Bool = false) -> some View {
-        if atTop ? cache.newStoriesGapAtTop : (story != nil && story?.id == cache.newStoriesGapAfterID) {
-            NewStoriesGapView(isGrid: cache.isGrid)
         }
     }
 

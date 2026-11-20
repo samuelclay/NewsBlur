@@ -213,44 +213,6 @@ import XCTest
         stories.compactMap { $0["story_hash"] as? String }
     }
 
-    // Filling the gap must keep every story exactly once and in the list's order: a page that overlaps the stories
-    // already listed moves the cursor past them instead of listing them again.
-    func test_newestPagesFillTheGapWithoutListingAStoryTwice() {
-        let listed = [story("12:e", 500), story("12:d", 400), story("12:a", 100)]
-        let first = NewStoriesGapMerge.merge(page: [story("12:i", 900), story("12:h", 800)], into: listed,
-                                             cursor: 0, oldestFirst: false)
-        XCTAssertEqual(hashes(first.stories), ["12:i", "12:h", "12:e", "12:d", "12:a"])
-        XCTAssertEqual(first.cursor, 2, "the gap sits between the newest page and the stories already listed")
-        XCTAssertFalse(first.reachedEnd)
-
-        let second = NewStoriesGapMerge.merge(page: [story("12:g", 700), story("12:e", 500), story("12:c", 300)],
-                                              into: first.stories, cursor: first.cursor, oldestFirst: false)
-        XCTAssertEqual(hashes(second.stories), ["12:i", "12:h", "12:g", "12:e", "12:d", "12:c", "12:a"])
-        XCTAssertEqual(second.inserted, ["12:g", "12:c"])
-        XCTAssertEqual(second.cursor, 6)
-    }
-
-    // A listed story read on another device drops out of an unread list's fresh pages; the cursor must still pass it,
-    // or every later story would land above it, out of order.
-    func test_gapCursorPassesListedStoriesThePagesNoLongerInclude() {
-        let listed = [story("12:read", 500), story("12:b", 200)]
-        let result = NewStoriesGapMerge.merge(page: [story("12:c", 300)], into: listed, cursor: 0, oldestFirst: false)
-        XCTAssertEqual(hashes(result.stories), ["12:read", "12:c", "12:b"])
-    }
-
-    // The gap closes when a page reaches the last listed story, handing paging back to the list; an oldest-first
-    // list's new stories join its end.
-    func test_gapClosesWhenThePagesReachTheEndOfTheList() {
-        let listed = [story("12:a", 100), story("12:b", 200)]
-        let caughtUp = NewStoriesGapMerge.merge(page: [story("12:b", 200), story("12:c", 300)], into: listed,
-                                                cursor: 1, oldestFirst: true)
-        XCTAssertEqual(hashes(caughtUp.stories), ["12:a", "12:b", "12:c"])
-        XCTAssertTrue(caughtUp.reachedEnd)
-
-        let stillOpen = NewStoriesGapMerge.merge(page: [story("12:x", 900)], into: listed, cursor: 0, oldestFirst: false)
-        XCTAssertFalse(stillOpen.reachedEnd)
-    }
-
     // A list left open overnight must stop fetching once the pill holds 20, yet still count what arrives after.
     func test_pillStopsFetchingAtTheCapButKeepsCounting() {
         var buffer = RealtimeNewStoryBuffer()
@@ -265,7 +227,7 @@ import XCTest
                               listedHashes: [])
 
         XCTAssertEqual(buffer.pillCount(list: list), RealtimeNewStories.prefetchCap + 5)
-        XCTAssertTrue(buffer.needsNewestPage(list: list), "anything unfetched loads the newest page instead")
+        XCTAssertTrue(buffer.needsNewestPage(list: list), "anything unfetched shows the newest stories instead")
         XCTAssertFalse(buffer.announce("12:more", list: list))
     }
 
@@ -283,13 +245,52 @@ import XCTest
         XCTAssertEqual(buffer.pillCount(list: list), before - 2)
     }
 
-    // A few stories under the cap go straight in; only an overflow loads the newest page.
+    // A few stories under the cap go straight in; only an overflow shows the newest stories instead.
     func test_fewStoriesInsertDirectly() {
         var buffer = RealtimeNewStoryBuffer()
         let list = storyList(unreadOnly: true)
         _ = buffer.announce("12:a", list: list)
         _ = buffer.addFetched([story("12:a", 100)], userProfiles: [], list: list, listedHashes: [])
         XCTAssertFalse(buffer.needsNewestPage(list: list))
+    }
+
+    // Past the cap a tap shows the 20 newest-dated waiting stories, fetched or only counted: a newer arrival takes the
+    // place of the oldest one kept, and an older one is left out. An oldest-first list takes the oldest instead.
+    func test_tapPastTheCapPicksTheNewestDatedWaitingStories() {
+        let list = storyList(unreadOnly: true)
+        let cap = RealtimeNewStories.prefetchCap
+        var buffer = RealtimeNewStoryBuffer()
+        for index in 0..<cap { _ = buffer.announce("12:f\(index)", timestamp: TimeInterval(1_000 + index), list: list) }
+        _ = buffer.addFetched((0..<cap).map { story("12:f\($0)", 1_000 + $0) }, userProfiles: [], list: list,
+                              listedHashes: [], requested: buffer.takePending(limit: 100))
+        _ = buffer.announce("12:older", timestamp: 500, list: list)
+        _ = buffer.announce("12:newer", timestamp: 2_000, list: list)
+
+        let newest = buffer.newestWaiting(limit: cap, oldestFirst: false)
+        XCTAssertEqual(newest.unfetchedHashes, ["12:newer"])
+        XCTAssertEqual(Set(hashes(newest.fetched)), Set((1..<cap).map { "12:f\($0)" }), "12:f0 was the oldest kept")
+
+        let oldest = buffer.newestWaiting(limit: cap, oldestFirst: true)
+        XCTAssertEqual(oldest.unfetchedHashes, ["12:older"])
+        XCTAssertFalse(hashes(oldest.fetched).contains("12:f\(cap - 1)"))
+    }
+
+    // A story announced again, as the server does when a feed refetches, must count once.
+    func test_repeatedAnnouncementsCountOnce() {
+        let list = storyList()
+        let now = Date().timeIntervalSince1970
+        withNewStoriesSetting(nil) {
+            let updates = RealtimeUpdates(socket: NewsBlurSocketClient(serverURLProvider: { nil }))
+            for index in 0...RealtimeNewStories.prefetchCap {
+                updates.receiveNewStory(storyHash: "12:s\(index)", feedId: "12", timestamp: now - Double(index),
+                                        list: list, listedStories: [])
+            }
+            updates.receiveNewStory(storyHash: "12:s\(RealtimeNewStories.prefetchCap)", feedId: "12", timestamp: now,
+                                    list: list, listedStories: [])
+            updates.receiveNewStory(storyHash: "12:s0", feedId: "12", timestamp: now, list: list, listedStories: [])
+            XCTAssertEqual(updates.newStoriesWaiting(for: list), RealtimeNewStories.prefetchCap + 1)
+            updates.storyListDidReload()
+        }
     }
 
     // The first scroll away from the pill starts a five-second countdown, and nothing the reader does next moves it:
@@ -466,28 +467,46 @@ import XCTest
         return (controller, collection)
     }
 
-    // The newest page merges after the arrival's scroll to the top. If the reader opens another list meanwhile, which
-    // drops the stream as resetFeedDetail does, the old stream's page must not land in the new list or move its paging.
-    func test_pageOfAStreamDroppedDuringTheArrivalMergesNothing() {
+    // Past the cap a newest-first list shows exactly the newest waiting stories, as if it had just opened: everything
+    // loaded before is dropped, and the list's first page follows without the stories already shown.
+    func test_tapPastTheCapShowsTheNewestStoriesAndPagesFromTheFirstPage() {
+        let (controller, collection) = makeStreamController(stories: (0..<30).map { story("12:old\($0)", 100 - $0) })
+        collection.feedPage = 4
+        let newest = (0..<RealtimeNewStories.prefetchCap).map { story("12:new\($0)", 1_000 - $0) }
+        let firstPage: [String: Any] = ["stories": [story("12:new0", 1_000), story("12:new1", 999), story("12:old0", 100),
+                                                    story("12:page", 99)]]
+
+        controller.replaceWithNewestStories(newest, firstPage: firstPage, profiles: [])
+
+        XCTAssertEqual(hashes(collection.activeFeedStories as? [[String: Any]] ?? []),
+                       hashes(newest) + ["12:old0", "12:page"])
+        XCTAssertEqual(collection.feedPage, 1, "the list pages on from its second page")
+        XCTAssertFalse(controller.pageFinished)
+    }
+
+    // A tap's stories load after the scroll to the top. If the reader opens another list meanwhile, which drops the
+    // load as resetFeedDetail does, they must not land in the new list or move its paging.
+    func test_newestStoriesForAListTheReaderLeftLandNowhere() {
         let (controller, collection) = makeStreamController(stories: [story("12:b", 200), story("12:a", 100)])
         collection.feedPage = 3
-        let stream = NewStoriesGapStream(listKey: "feed:12", oldestFirst: false, cursorAfterHash: nil)
-        controller.newStoriesStream = stream
-        controller.cancelNewStoriesStream()
+        let load = NewestStoriesLoad(fetched: [story("12:c", 300)], needsDetails: false, profiles: [], list: storyList())
+        load.firstPageDone = true
+        controller.newestStoriesLoad = load
+        controller.cancelNewestStories()
 
-        XCTAssertNil(controller.mergeNewStoriesStreamPage([story("12:c", 300)], page: 1, finished: true, stream: stream))
+        controller.completeNewestStories(load)
         XCTAssertEqual(hashes(collection.activeFeedStories as? [[String: Any]] ?? []), ["12:b", "12:a"])
         XCTAssertEqual(collection.feedPage, 3)
-        XCTAssertFalse(controller.pageFinished)
 
-        controller.newStoriesStream = stream
-        XCTAssertEqual(controller.mergeNewStoriesStreamPage([story("12:c", 300)], page: 1, finished: false, stream: stream),
-                       ["12:c"], "the stream the list still runs merges")
+        controller.newestStoriesLoad = load
+        controller.completeNewestStories(load)
+        XCTAssertEqual(hashes(collection.activeFeedStories as? [[String: Any]] ?? []), ["12:c"],
+                       "the list the reader is still in shows them")
     }
 
     // A folder opened while feed 2 had no unread stories leaves feed 2 out of the folder's feed list, yet the pill takes
-    // feed 2's new stories. The newest pages loaded past the cap must ask for feed 2 too, or its stories vanish.
-    func test_newestPagesAskForEveryFeedThePillTakesStoriesFrom() throws {
+    // feed 2's new stories. The list's fresh paging after a tap past the cap must ask for feed 2 too.
+    func test_pagingAfterATapPastTheCapAsksForEveryFeedThePillTakesStoriesFrom() throws {
         let (controller, collection) = makeStreamController(stories: [story("12:a", 100)])
         let app = try XCTUnwrap(controller.appDelegate)
         app.dictFeeds = NSMutableDictionary(dictionary: ["1": ["id": 1, "active": 1], "2": ["id": 2, "active": 1]])
@@ -496,21 +515,22 @@ import XCTest
         collection.activeFolder = "Tech"
         collection.activeFolderFeeds = [1]
 
-        controller.startNewStoriesStream(listKey: "folder:Tech", oldestFirst: false)
+        controller.showNewestStories(fetched: [story("1:a", 200)], unfetchedHashes: [], profiles: [],
+                                     list: storyList())
 
         let url = try XCTUnwrap(controller.requestedURLs.first)
         XCTAssertTrue(url.contains("f=1&f=2"), url)
     }
 }
 
-/// RealtimeUpdatesTests.swift records the newest pages' requests instead of sending them.
+/// RealtimeUpdatesTests.swift records the list's page requests instead of sending them.
 @MainActor private final class NewStoriesStreamTestController: FeedDetailViewController {
     var requestedURLs: [String] = []
     override var isLegacyTable: Bool { true }
     override func reloadTable() {}
 
-    override func newStoriesStreamRequestURL(forPage page: Int) -> String! {
-        requestedURLs.append(super.newStoriesStreamRequestURL(forPage: page) ?? "")
+    override func newestStoriesRequestURL(forPage page: Int) -> String! {
+        requestedURLs.append(super.newestStoriesRequestURL(forPage: page) ?? "")
         return nil
     }
 }

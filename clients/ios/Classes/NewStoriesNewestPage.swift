@@ -1,282 +1,191 @@
 //
-//  NewStoriesGapStream.swift
+//  NewStoriesNewestPage.swift
 //  NewsBlur
 //
 //  Copyright © 2026 NewsBlur. All rights reserved.
 //
 
-import os
-import SwiftUI
 import UIKit
 
-/// NewStoriesGapStream.swift merges a page of the list's stories, loaded afresh, into the stories already listed.
-///
-/// A cursor starts at the top of a newest-first list, or the end of an oldest-first one. A story already listed moves
-/// the cursor to just after it; any other story goes in at the cursor, which moves past it. A listed story the page
-/// should already have reached, being dated before the incoming one in the list's order, can't be in the server's
-/// answer any more (read elsewhere, in an unread list), so the cursor moves past it too.
-enum NewStoriesGapMerge {
-    struct Result {
-        var stories: [[String: Any]]
-        /// Where the next page's first unlisted story goes.
-        var cursor: Int
-        /// The stories this page added, in page order.
-        var inserted: [String]
-        /// The page's last story is the list's last: the fresh pages have caught up with the stories already listed.
-        var reachedEnd: Bool
-    }
-
-    static func merge(page: [[String: Any]], into listed: [[String: Any]], cursor start: Int,
-                      oldestFirst: Bool) -> Result {
-        var stories = listed
-        var cursor = min(max(start, 0), stories.count)
-        var inserted: [String] = []
-        var lastPlaced: Int?
-        for story in page {
-            guard let hash = story["story_hash"] as? String else { continue }
-            if let index = stories.firstIndex(where: { $0["story_hash"] as? String == hash }) {
-                cursor = max(cursor, index + 1)
-                lastPlaced = index
-                continue
-            }
-            let timestamp = RealtimeNewStories.timestamp(of: story)
-            while cursor < stories.count {
-                let listedTimestamp = RealtimeNewStories.timestamp(of: stories[cursor])
-                guard oldestFirst ? listedTimestamp < timestamp : listedTimestamp > timestamp else { break }
-                cursor += 1
-            }
-            stories.insert(story, at: cursor)
-            inserted.append(hash)
-            lastPlaced = cursor
-            cursor += 1
+/// NewStoriesNewestPage.swift: tapping the new stories pill when more stories wait than it fetches ahead
+/// (`RealtimeNewStories.prefetchCap`) shows a newest-first list as if it had just opened. The newest-dated waiting
+/// stories top the list, the stories loaded before are dropped, and the list pages on from its first page.
+enum NewStoriesNewestPage {
+    /// The list after the tap: the newest waiting stories, then the open list's first page without them. The list's
+    /// own paging skips stories already listed from its second page on (FeedDetailObjCViewController.m).
+    static func stories(newest: [[String: Any]], firstPage: [[String: Any]]?) -> [[String: Any]] {
+        var listed = Set(newest.compactMap { $0["story_hash"] as? String })
+        var stories = newest
+        for story in firstPage ?? [] {
+            guard let hash = story["story_hash"] as? String, listed.insert(hash).inserted else { continue }
+            stories.append(story)
         }
-        return Result(stories: stories, cursor: cursor, inserted: inserted,
-                      reachedEnd: lastPlaced.map { $0 == stories.count - 1 } ?? false)
+        return stories
     }
 }
 
-/// The open list's pages, requested afresh from page 1 after the new stories pill held more stories than it fetches
-/// ahead (`RealtimeNewStories.prefetchCap`). The server rebuilds its paging whenever page 1 is requested, so every later
-/// page of this list comes from here until the pages catch up with the stories already listed, when the list's own
-/// paging takes over at the same page.
-@MainActor final class NewStoriesGapStream: NSObject {
-    static let logger = Logger(subsystem: "com.newsblur.NewsBlur", category: "Realtime")
+/// NewStoriesNewestPage.swift's requests for one tap: the picked stories not fetched yet, and the list's first page.
+@MainActor final class NewestStoriesLoad: NSObject {
+    let fetched: [[String: Any]]
+    let readOverrides: [String: Bool]
+    let list: RealtimeStoryList
+    var profiles: [Any]
+    /// The picked stories that had to be fetched, once they have been (empty if none had to be).
+    var details: [[String: Any]]?
+    var firstPageDone = false
+    var firstPage: [String: Any]?
 
-    let listKey: String
-    let oldestFirst: Bool
-    /// The last page loaded; 0 until the first arrives.
-    var page = 0
-    var isLoading = false
-    /// The story just above the cursor, or nil while the cursor is at the top of the list.
-    var cursorAfterHash: String?
-    /// FeedDetailObjCViewController.m's fetchNextPage: callbacks waiting for the next page.
-    var callbacks: [() -> Void] = []
-    /// The SwiftUI grid's gap is on screen (FeedDetailGridView.swift).
-    var isGapOnScreen = false
-
-    init(listKey: String, oldestFirst: Bool, cursorAfterHash: String?) {
-        self.listKey = listKey
-        self.oldestFirst = oldestFirst
-        self.cursorAfterHash = cursorAfterHash
+    init(fetched: [[String: Any]], needsDetails: Bool, readOverrides: [String: Bool] = [:], profiles: [Any],
+         list: RealtimeStoryList) {
+        self.fetched = fetched
+        self.readOverrides = readOverrides
+        self.list = list
+        self.profiles = profiles
+        details = needsDetails ? nil : []
     }
 
-    func cursorIndex(in stories: [[String: Any]]) -> Int {
-        guard let cursorAfterHash else { return 0 }
-        guard let index = stories.firstIndex(where: { $0["story_hash"] as? String == cursorAfterHash }) else {
-            return oldestFirst ? stories.count : 0
-        }
-        return index + 1
-    }
+    var isComplete: Bool { details != nil && firstPageDone }
 }
 
 extension FeedDetailViewController {
-    private static var newStoriesStreamKey: UInt8 = 0
+    private static var newestStoriesLoadKey: UInt8 = 0
+    private static var newestStoriesShownKey: UInt8 = 0
 
-    var newStoriesStream: NewStoriesGapStream? {
-        get { objc_getAssociatedObject(self, &Self.newStoriesStreamKey) as? NewStoriesGapStream }
-        set { objc_setAssociatedObject(self, &Self.newStoriesStreamKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    /// The tap past the cap still loading. Another list opening, or the list loading again, drops it.
+    var newestStoriesLoad: NewestStoriesLoad? {
+        get { objc_getAssociatedObject(self, &Self.newestStoriesLoadKey) as? NewestStoriesLoad }
+        set { objc_setAssociatedObject(self, &Self.newestStoriesLoadKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
 
-    private var listedStories: [[String: Any]] {
-        (storiesCollection.activeFeedStories ?? []).compactMap { $0 as? [String: Any] }
+    /// The stories the last tap put at the top of the list, until the list loads its first page again.
+    private var newestStoriesShown: Set<String> {
+        get { objc_getAssociatedObject(self, &Self.newestStoriesShownKey) as? Set<String> ?? [] }
+        set { objc_setAssociatedObject(self, &Self.newestStoriesShownKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
 
-    /// Where FeedDetailObjCViewController.m and StoryCache.swift draw the gap: the index in StoriesCollection's stories
-    /// the next page's stories go in at, or NSNotFound when there's no gap. An oldest-first list fills in at its end,
-    /// so its bottom loader stands in for the gap.
-    @objc var newStoriesGapStoryIndex: Int {
-        guard let stream = newStoriesStream, !stream.oldestFirst else { return NSNotFound }
-        let stories = listedStories
-        let cursor = stream.cursorIndex(in: stories)
-        return cursor < stories.count ? cursor : NSNotFound
+    /// FeedDetailObjCViewController.m: the newest stories sit above the pages that also hold them, so a page holding
+    /// only those is not the end of the list.
+    @objc func pageRepeatsNewestStories(_ stories: [Any]) -> Bool {
+        let hashes = stories.compactMap { ($0 as? [String: Any])?["story_hash"] as? String }
+        let shown = newestStoriesShown
+        return !hashes.isEmpty && hashes.allSatisfy { shown.contains($0) }
     }
 
-    /// RealtimeUpdates.swift: the pill held more than it fetched. Load the list's newest page and fill in below it.
-    func startNewStoriesStream(listKey: String, oldestFirst: Bool) {
-        cancelNewStoriesStream()
+    /// RealtimeUpdates.swift: more stories wait than the pill fetched. `fetched` and `unfetchedHashes` are the newest
+    /// waiting stories, at most `RealtimeNewStories.prefetchCap` of them; they replace the list, which pages on from
+    /// its first page.
+    func showNewestStories(fetched: [[String: Any]], unfetchedHashes: [String], readOverrides: [String: Bool] = [:],
+                           profiles: [Any], list: RealtimeStoryList) {
         cancelNewStoriesArrival()
-        let stories = listedStories
-        let stream = NewStoriesGapStream(listKey: listKey, oldestFirst: oldestFirst,
-                                         cursorAfterHash: oldestFirst ? stories.last?["story_hash"] as? String : nil)
-        newStoriesStream = stream
+        let load = NewestStoriesLoad(fetched: fetched, needsDetails: !unfetchedHashes.isEmpty,
+                                     readOverrides: readOverrides, profiles: profiles, list: list)
+        newestStoriesLoad = load
         // A folder's feed list was taken when it opened, so an unread river holds only the feeds that had unread
-        // stories then. The pill takes stories from every feed in the folder; the fresh pages, and the list's own
-        // paging after them, ask for all of those.
+        // stories then. The pill takes stories from every feed in the folder, and the list's fresh paging asks for all
+        // of them.
         if storiesCollection.isRiverView,
            let current = RealtimeUpdates.feedIds(of: storiesCollection, appDelegate: appDelegate) {
             let folderFeeds = storiesCollection.activeFolderFeeds ?? []
             let added = current.subtracting(folderFeeds.map { "\($0)" }).sorted()
             if !added.isEmpty { storiesCollection.activeFolderFeeds = folderFeeds + added }
         }
-        // The page the list's own paging was loading belongs to the server's old snapshot.
+        // The page the list's own paging was loading belongs to the server's old snapshot; the list waits for these.
         abandonPageInFlight()
-        pageFinished = false
-        if !oldestFirst {
-            let reduceMotion = ReaderMotion.reduceMotion
-            if let scrollView = isLegacyTable ? storyTitlesTable : gridScrollView {
-                let top = -scrollView.adjustedContentInset.top
-                if scrollView.contentOffset.y > top + 1 {
-                    newStoriesListScrollsItself()
-                    scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: top), animated: !reduceMotion)
+        pageFetching = true
+        scrollNewestStoriesListToTop(animated: !ReaderMotion.reduceMotion)
+
+        if !unfetchedHashes.isEmpty, let host = appDelegate.url {
+            appDelegate.get("\(host)/reader/river_stories", parameters: ["h": unfetchedHashes, "include_hidden": "true"],
+                            success: { [weak self, weak load] _, response in
+                MainActor.assumeIsolated {
+                    guard let self, let load else { return }
+                    let results = response as? [String: Any]
+                    load.details = RealtimeNewStories.applying(load.readOverrides,
+                                                               to: results?["stories"] as? [[String: Any]] ?? [])
+                    load.profiles += results?["user_profiles"] as? [Any] ?? []
+                    self.completeNewestStories(load)
                 }
-            }
-        }
-        reloadImmediately()
-        loadNewStoriesStreamPage()
-    }
-
-    /// Another list opened, the list loaded again, or its filters changed.
-    @objc func cancelNewStoriesStream() {
-        newStoriesStream = nil
-    }
-
-    /// FeedDetailObjCViewController.m's later pages come from the stream while it runs.
-    @objc func newStoriesStreamTakesNextPage(_ callback: (() -> Void)?) -> Bool {
-        guard let stream = newStoriesStream else { return false }
-        if let callback { stream.callbacks.append(callback) }
-        loadNewStoriesStreamPage()
-        return true
-    }
-
-    /// FeedDetailObjCViewController.m showed the table's gap row.
-    @objc func newStoriesGapDidAppear() {
-        loadNewStoriesStreamPage()
-    }
-
-    /// FeedDetailGridView.swift's gap came on screen or left it.
-    func newStoriesGapVisibilityChanged(_ onScreen: Bool) {
-        newStoriesStream?.isGapOnScreen = onScreen
-        if onScreen { loadNewStoriesStreamPage() }
-    }
-
-    private var isNewStoriesStreamEdgeInReach: Bool {
-        guard let stream = newStoriesStream else { return false }
-        if isLegacyTable { return isNewStoriesGapNearViewport() }
-        if stream.oldestFirst { return (lastShownStoryLocation ?? 0) >= Int(storiesCollection.storyLocationsCount) - 5 }
-        return stream.isGapOnScreen
-    }
-
-    func loadNewStoriesStreamPage() {
-        guard let stream = newStoriesStream, !stream.isLoading else { return }
-        // NewStoriesPill.swift's arrival animates rows already on screen; the next page waits until it settles.
-        if newStoriesTableArrival != nil || storyCache.newStoryArrivals.isSettling {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in self?.loadNewStoriesStreamPage() }
-            return
-        }
-        let page = stream.page + 1
-        guard let url = newStoriesStreamRequestURL(forPage: page) else { return }
-        stream.isLoading = true
-        let feedId = storiesCollection.isRiverView ? nil : storiesCollection.activeFeed.map { "\($0["id"] ?? "")" }
-        appDelegate.get(url, parameters: nil, success: { [weak self, weak stream] _, response in
-            MainActor.assumeIsolated {
-                guard let self, let stream, self.newStoriesStream === stream else { return }
-                stream.isLoading = false
-                guard let results = response as? [String: Any],
-                      RealtimeUpdates.shared.openStoryList()?.key == stream.listKey,
-                      feedId == nil || "\(results["feed_id"] ?? "")" == feedId else {
-                    self.cancelNewStoriesStream()
-                    return
+            }, failure: { [weak self, weak load] _, _ in
+                MainActor.assumeIsolated {
+                    guard let self, let load else { return }
+                    load.details = []
+                    self.completeNewestStories(load)
                 }
-                self.applyNewStoriesStreamPage(results, page: page, stream: stream)
-            }
-        }, failure: { [weak stream] _, _ in
-            MainActor.assumeIsolated {
-                // The gap stays; showing it again, or reaching the bottom, asks again.
-                stream?.isLoading = false
-                stream?.callbacks = []
-            }
-        })
-    }
-
-    private func applyNewStoriesStreamPage(_ results: [String: Any], page: Int, stream: NewStoriesGapStream) {
-        absorbStoryPageFeedsAndClassifiers(results, feedId: "\(results["feed_id"] ?? "")")
-        addNewStoriesStreamUserProfiles(results["user_profiles"] as? [[String: Any]] ?? [])
-        let pageStories = results["stories"] as? [[String: Any]] ?? []
-        let finished = pageStories.isEmpty
-        stream.page = page
-        let callbacks = stream.callbacks
-        stream.callbacks = []
-        let openStoryHash = appDelegate.storyPagesViewController?.currentPage?.activeStoryId
-
-        let merge: () -> [String]? = { [weak self] in
-            self?.mergeNewStoriesStreamPage(pageStories, page: page, finished: finished, stream: stream)
-        }
-
-        let reload: () -> Void = { [weak self] in self?.reloadKeepingOpenStory(openStoryHash) }
-        let dryRun = NewStoriesGapMerge.merge(page: pageStories, into: listedStories,
-                                              cursor: stream.cursorIndex(in: listedStories), oldestFirst: stream.oldestFirst)
-        if page == 1 && !dryRun.inserted.isEmpty {
-            // The newest stories slide in at the top, like the pill's own (NewStoriesPill.swift).
-            presentNewStories(atBottom: stream.oldestFirst, insert: merge, reload: reload)
+            })
         } else {
-            let anchor = gapIsAboveViewport(stream: stream) ? visibleStoryAnchor() : nil
-            if merge() != nil { reload() }
-            if let anchor { restoreVisibleStoryAnchor(anchor) }
+            load.details = []
         }
-        callbacks.forEach { $0() }
 
-        if newStoriesStream === stream {
-            if dryRun.inserted.isEmpty && isNewStoriesStreamEdgeInReach {
-                DispatchQueue.main.async { [weak self] in self?.loadNewStoriesStreamPage() }
-            }
-        } else if !pageFinished, isLegacyTable, isNewStoriesGapNearViewport() {
-            // The list's own paging carries on from here; its bottom is already in view.
-            if storiesCollection.isRiverView { fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil) }
-            else { fetchFeedDetail(storiesCollection.feedPage + 1, withCallback: nil) }
+        if let url = newestStoriesRequestURL(forPage: 1) {
+            appDelegate.get(url, parameters: nil, success: { [weak self, weak load] _, response in
+                MainActor.assumeIsolated {
+                    guard let self, let load else { return }
+                    load.firstPage = response as? [String: Any]
+                    load.firstPageDone = true
+                    self.completeNewestStories(load)
+                }
+            }, failure: { [weak self, weak load] _, _ in
+                MainActor.assumeIsolated {
+                    guard let self, let load else { return }
+                    load.firstPageDone = true
+                    self.completeNewestStories(load)
+                }
+            })
+        } else {
+            load.firstPageDone = true
         }
+        completeNewestStories(load)
     }
 
-    /// Merges a page into the list and, once it has caught up with the stories already listed, hands paging back to
-    /// the list. Returns the stories it added that the list shows, in list order. The merge can run after the
-    /// arrival's scroll to the top, so a stream the list has dropped since (another feed opened, the list reloaded)
-    /// merges nothing and leaves the list's paging alone.
-    func mergeNewStoriesStreamPage(_ pageStories: [[String: Any]], page: Int, finished: Bool,
-                                   stream: NewStoriesGapStream) -> [String]? {
-        guard newStoriesStream === stream else { return nil }
-        let listed = self.listedStories
-        let result = NewStoriesGapMerge.merge(page: pageStories, into: listed, cursor: stream.cursorIndex(in: listed),
-                                              oldestFirst: stream.oldestFirst)
-        stream.cursorAfterHash = result.cursor > 0 ? result.stories[result.cursor - 1]["story_hash"] as? String : nil
-        let caughtUp = finished || result.reachedEnd
-        NewStoriesGapStream.logger.debug("""
-            newest page \(page, privacy: .public): \(pageStories.count, privacy: .public) stories, \
-            \(result.inserted.count, privacy: .public) added, cursor \(result.cursor, privacy: .public) of \
-            \(result.stories.count, privacy: .public)\(caughtUp ? ", caught up" : "", privacy: .public)
-            """)
-        if caughtUp {
-            self.newStoriesStream = nil
-            self.storiesCollection.feedPage = Int32(page)
-            self.pageFinished = finished
-        }
-        guard !result.inserted.isEmpty else { return [] }
-        self.storiesCollection.replaceStoriesKeepingReadState(result.stories)
-        return result.inserted.compactMap { hash -> (String, Int)? in
-            let location = Int(self.storiesCollection.location(ofStoryId: hash))
-            return location >= 0 ? (hash, location) : nil
-        }.sorted { $0.1 < $1.1 }.map(\.0)
+    /// Another list opened, or the list loaded again: a tap still loading must not land in it.
+    @objc func cancelNewestStories() {
+        newestStoriesShown = []
+        guard newestStoriesLoad != nil else { return }
+        newestStoriesLoad = nil
+        pageFetching = false
     }
 
-    private func addNewStoriesStreamUserProfiles(_ profiles: [[String: Any]]) {
+    /// Replaces the list once both requests have answered, if the list is still the one the reader tapped in.
+    func completeNewestStories(_ load: NewestStoriesLoad) {
+        guard newestStoriesLoad === load, load.isComplete, let details = load.details else { return }
+        newestStoriesLoad = nil
+        let newest = RealtimeNewStories.insertable(load.fetched + details, list: load.list, knownHashes: [])
+        replaceWithNewestStories(newest, firstPage: load.firstPage, profiles: load.profiles)
+    }
+
+    /// Shows `newest` as the whole list, then the first page of the list without them, and pages on from there.
+    /// `firstPage` is nil when it couldn't load; the list's paging then starts again at its first page.
+    func replaceWithNewestStories(_ newest: [[String: Any]], firstPage: [String: Any]?, profiles: [Any]) {
+        let openStoryHash = appDelegate.storyPagesViewController?.currentPage?.activeStoryId
+        var profiles = profiles
+        if let firstPage {
+            absorbStoryPageFeedsAndClassifiers(firstPage, feedId: "\(firstPage["feed_id"] ?? "")")
+            profiles += firstPage["user_profiles"] as? [Any] ?? []
+        }
+        addNewestStoriesUserProfiles(profiles.compactMap { $0 as? [String: Any] })
+        let pageStories = firstPage?["stories"] as? [[String: Any]]
+        storiesCollection.replaceStoriesKeepingReadState(NewStoriesNewestPage.stories(newest: newest, firstPage: pageStories))
+        newestStoriesShown = Set(newest.compactMap { $0["story_hash"] as? String })
+        forgetFirstPageLoad()
+        storiesCollection.feedPage = firstPage == nil ? 0 : 1
+        pageFetching = false
+        pageFinished = pageStories?.isEmpty ?? false
+        // Every row enters as when the list opens.
+        ReaderMotion.session(self).reset()
+        storyCache.motionSession.reset()
+        scrollNewestStoriesListToTop(animated: false)
+        reloadKeepingOpenStory(openStoryHash)
+    }
+
+    private func scrollNewestStoriesListToTop(animated: Bool) {
+        guard let scrollView = isLegacyTable ? storyTitlesTable : gridScrollView else { return }
+        let top = -scrollView.adjustedContentInset.top
+        guard scrollView.contentOffset.y > top + 1 else { return }
+        newStoriesListScrollsItself()
+        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: top), animated: animated)
+    }
+
+    private func addNewestStoriesUserProfiles(_ profiles: [[String: Any]]) {
         guard !profiles.isEmpty else { return }
         let known = Set((storiesCollection.activeFeedUserProfiles ?? []).compactMap { ($0 as? [String: Any])?["id"].map { "\($0)" } })
         let added = profiles.filter { profile in profile["id"].map { !known.contains("\($0)") } ?? false }
@@ -290,56 +199,5 @@ extension FeedDetailViewController {
             if location >= 0 { appDelegate.storyPagesViewController?.preserveCurrentPage(atLocation: location) }
         }
         appDelegate.storyPagesViewController?.setNextPreviousButtons()
-    }
-
-    /// Whether the reader has scrolled past the gap, so stories filling it would push the rows on screen down.
-    private func gapIsAboveViewport(stream: NewStoriesGapStream) -> Bool {
-        guard isLegacyTable, let anchor = visibleStoryAnchor() else { return false }
-        let stories = listedStories
-        guard let index = stories.firstIndex(where: { $0["story_hash"] as? String == anchor.hash }) else { return false }
-        return index >= stream.cursorIndex(in: stories)
-    }
-
-    /// The first story row on screen and how far below the table's top it sits.
-    private func visibleStoryAnchor() -> (hash: String, screenY: CGFloat)? {
-        guard isLegacyTable, let table = storyTitlesTable else { return nil }
-        let visibleTop = table.contentOffset.y + table.adjustedContentInset.top
-        for cell in table.visibleCells.sorted(by: { $0.frame.minY < $1.frame.minY }) where cell.frame.maxY > visibleTop {
-            guard let hash = (cell as? FeedDetailTableCell)?.storyHash, !hash.isEmpty else { continue }
-            return (hash, cell.frame.minY - table.contentOffset.y)
-        }
-        return nil
-    }
-
-    private func restoreVisibleStoryAnchor(_ anchor: (hash: String, screenY: CGFloat)) {
-        guard let table = storyTitlesTable else { return }
-        let location = storiesCollection.location(ofStoryId: anchor.hash)
-        guard location >= 0, let path = indexPath(forStoryLocation: location) else { return }
-        table.layoutIfNeeded()
-        newStoriesListScrollsItself()
-        table.contentOffset = CGPoint(x: table.contentOffset.x, y: table.rectForRow(at: path).minY - anchor.screenY)
-    }
-}
-
-/// FeedDetailGridView.swift's gap between the newest page's cards and the cards already listed.
-struct NewStoriesGapView: View {
-    let isGrid: Bool
-    @State private var animate = true
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    var body: some View {
-        RoundedRectangle(cornerRadius: isGrid ? 10 : 0)
-            .fill(animate ? Color.themed([0x5C89C9, 0x666666]) : Color.themed([0xE1EBFF, 0x222222]))
-            .frame(height: isGrid ? 120 : 60)
-            .padding(.vertical, isGrid ? 0 : 8)
-            .onAppear {
-                animate.toggle()
-                NewsBlurAppDelegate.shared?.feedDetailViewController?.newStoriesGapVisibilityChanged(true)
-            }
-            .onDisappear {
-                NewsBlurAppDelegate.shared?.feedDetailViewController?.newStoriesGapVisibilityChanged(false)
-            }
-            .animation(reduceMotion ? nil : .easeInOut(duration: 1).repeatForever(autoreverses: true), value: animate)
-            .accessibilityLabel(Text(NBLocalization.text("Loading...")))
     }
 }

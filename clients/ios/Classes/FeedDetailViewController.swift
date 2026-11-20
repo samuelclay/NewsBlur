@@ -240,7 +240,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
 
     override func resetFeedDetail() {
-        cancelNewStoriesStream()
+        cancelNewestStories()
         if isViewLoaded { ReaderMotion.leave(storyTitlesTable) }
         ReaderMotion.session(self).reset()
         storyCache.motionSession.reset()

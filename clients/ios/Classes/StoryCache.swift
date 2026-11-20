@@ -73,9 +73,6 @@ import SwiftUI
     @Published var before = [Story]()
     @Published var selected: Story?
     @Published var after = [Story]()
-    /// NewStoriesGapStream.swift's gap follows this story's card, or tops the list.
-    @Published var newStoriesGapAfterID: String?
-    @Published var newStoriesGapAtTop = false
     /// NewStoriesPill.swift's inline "N new stories" row, standing in for a tucked-away pill.
     @Published var newStoriesRow: NewStoriesRowState?
     @Published var openSwipeStoryID: String?
@@ -156,8 +153,6 @@ import SwiftUI
             }
         }
         
-        updateNewStoriesGap(storiesCollection)
-
         if let folderId = storiesCollection.activeFolder {
             Self.folder = Folder(id: folderId)
         } else {
@@ -203,23 +198,6 @@ import SwiftUI
         
     }
     
-    /// StoryCache.swift places NewStoriesGapStream.swift's gap after the last shown story above its cursor.
-    private func updateNewStoriesGap(_ storiesCollection: StoriesCollection) {
-        let cursor = appDelegate.feedDetailViewController?.newStoriesGapStoryIndex ?? NSNotFound
-        guard cursor != NSNotFound else {
-            if newStoriesGapAfterID != nil { newStoriesGapAfterID = nil }
-            if newStoriesGapAtTop { newStoriesGapAtTop = false }
-            return
-        }
-        var afterID: String?
-        for case let index as Int in storiesCollection.activeFeedStoryLocations ?? [] {
-            guard index < cursor else { break }
-            afterID = (storiesCollection.activeFeedStories?[index] as? [String: Any])?["story_hash"] as? String
-        }
-        newStoriesGapAfterID = afterID
-        newStoriesGapAtTop = afterID == nil
-    }
-
     func reload(story: Story) {
         guard !story.isClusterStory else {
             reload()
