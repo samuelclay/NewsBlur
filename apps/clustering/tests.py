@@ -794,6 +794,23 @@ class Test_SameFeedClusterFolding(TestCase):
             [{"prompt": "Non-apple related news", "score": 1, "include_images": False}],
         )
 
+    def test_new_category_copy_joins_existing_short_headline(self):
+        from apps.clustering.models import store_clusters_to_redis
+
+        members = [f"{feed.pk}:baba35" for feed in (self.blog, self.forum_posts, self.forum_topics)]
+        existing = members[0]
+        self.store_cluster(existing, members[:2])
+        self.cluster_keys.append(f"sCL:{members[2]}")
+        store_clusters_to_redis(
+            {existing: members},
+            candidate_cluster_map={h: existing for h in members[:2]},
+            story_title_map={h: "Election results" for h in members},
+            article_keys=dict.fromkeys(
+                members, ("article-35", "https://example.com/election", "election results")
+            ),
+        )
+        self.assertEqual(self.redis.get(f"sCL:{members[2]}"), self.redis.get(f"sCL:{existing}"))
+
     def test_category_article_visible_in_river_and_briefing(self):
         from datetime import datetime
 

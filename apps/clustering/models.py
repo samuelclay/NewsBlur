@@ -750,6 +750,7 @@ def store_clusters_to_redis(
     key_prefix=CLUSTER_KEY_PREFIX_RELATED,
     zkey_prefix=CLUSTER_ZKEY_PREFIX_RELATED,
     member_tiers=None,
+    article_keys=None,
 ):
     """Write cluster memberships to Redis.
 
@@ -813,9 +814,12 @@ def store_clusters_to_redis(
 
             # Build title-word sets for existing cluster members (for merge validation)
             existing_title_words = []
+            existing_articles = set()
             if story_title_map and existing_members:
                 for em in existing_members:
                     em_str = em.decode() if isinstance(em, bytes) else em
+                    if article_keys and article_keys.get(em_str):
+                        existing_articles.add(article_keys[em_str])
                     em_title = story_title_map.get(em_str, "")
                     if em_title:
                         existing_title_words.append(title_significant_words(em_title))
@@ -839,7 +843,9 @@ def store_clusters_to_redis(
                             has_overlap = any(
                                 len(new_words & ew) >= FUZZY_MIN_INTERSECTION for ew in existing_title_words
                             )
-                            if not has_overlap:
+                            # models.py: A copy of an existing article can have a two-word headline.
+                            same_article = article_keys and article_keys.get(story_hash) in existing_articles
+                            if not (has_overlap or same_article):
                                 skipped_validation += 1
                                 continue
 
