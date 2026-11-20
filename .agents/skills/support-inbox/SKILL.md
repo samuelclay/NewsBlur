@@ -18,7 +18,7 @@ Invoke with a range such as `$support-inbox September 1 through October 20` or `
 
 Open **Reply** on the specific customer message from the NewsBlur account. Keep the recipient, subject and conversation linkage Mail creates. Insert the response above the full original quotation, including its attribution. Clear any selection in the source first, since Mail can quote only the selected passage. If a quote is missing, use the original message to restore it. When editing, select only the authored reply. Replacing the whole body can erase the quotation.
 
-Save, close and reopen the draft. Verify the recipient, the authored response, the attribution and substantive quoted text following the signature. The mailbox preview can hide quoted content. Preserve Sam’s revisions, reuse existing drafts and leave sent or removed drafts alone. Keep replies concise, signed “Sam”. Leave them unsent unless Sam asks to send them.
+Save and close the draft, then read the saved copy from NewsBlur’s Drafts mailbox. Verify the From and To addresses, the authored response, and the full text of the source message after the signature and attribution, including earlier replies quoted by the customer. Ignore whitespace and quote markers when comparing. When Mail exposes message headers, match the draft’s In-Reply-To to the source Message-ID. The mailbox preview can hide quoted content. Preserve Sam’s revisions, reuse existing drafts and leave sent or removed drafts alone. Keep replies concise, signed “Sam”. Leave them unsent unless Sam asks to send them.
 
 ## Track every repository change
 
