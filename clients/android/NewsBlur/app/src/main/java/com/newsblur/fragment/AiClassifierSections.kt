@@ -4,8 +4,14 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.text.Editable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.TextWatcher
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -34,6 +40,7 @@ import com.newsblur.network.domain.PromptTestResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.UIUtils
 import com.newsblur.view.TrainerCapsuleView
 import kotlin.math.roundToInt
 
@@ -43,7 +50,8 @@ import kotlin.math.roundToInt
  * make_image_filter_section and laid out like clients/ios/Classes/TrainerAIPromptSection.swift.
  * Saved prompts are capsules (view/TrainerCapsuleView.kt) that toggle between focus and hidden or
  * get removed, a new prompt can be typed (with a live preview capsule) and tested on the current
- * story.
+ * story. Any account can do all of that, but AI filters only run on Premium Archive or Pro, so
+ * other accounts see a banner leading to the upgrade screen (AiFilterAccess.kt).
  *
  * Prompt edits go straight into [classifier]. Call [commit] right before the trainer saves, then
  * Classifier.recordChanges, as IntelTrainerSections.kt does.
@@ -92,8 +100,6 @@ class AiClassifierSections(
         setColor(fill)
         if (stroke != null) setStroke(dp(1), stroke)
     }
-
-    private fun isActive(score: Int?): Boolean = score == Classifier.LIKE || score == Classifier.DISLIKE
 
     private inner class Section(
         val imagePrompt: Boolean,
@@ -168,14 +174,14 @@ class AiClassifierSections(
                 true
             }
 
-            val canTest = story != null && (!imagePrompt || imageUrls.isNotEmpty())
-            binding.aiTestButton.isVisible = canTest
+            binding.aiTestButton.isVisible = status().showsTestButton
             styleButton(binding.aiTestButton)
             binding.aiTestButton.setText(testLabel())
             binding.aiTestButton.setOnClickListener { runTest() }
 
             bindImageGrid()
             bindPreviewRow()
+            bindArchiveBanner()
             renderSavedList()
             refresh()
         }
@@ -196,9 +202,47 @@ class AiClassifierSections(
         }
 
         fun refresh() {
+            val status = status()
             renderPreviewRow()
-            binding.aiTestButton.isEnabled = typedPrompt.isNotEmpty() && !tester.isTesting
+            binding.aiTestButton.isEnabled = status.testEnabled
             binding.aiTestButton.alpha = if (binding.aiTestButton.isEnabled) 1f else 0.5f
+            binding.aiBanner.isVisible = status.showsArchiveBanner
+        }
+
+        private fun status(): AiSectionStatus =
+            AiFilterAccess.status(
+                isArchive = prefsRepo.getIsArchive(),
+                isPro = prefsRepo.getIsPro(),
+                savedScores = scores.values,
+                typedPrompt = typedPrompt,
+                hasStory = story != null,
+                imagePrompt = imagePrompt,
+                imageCount = imageUrls.size,
+                isTesting = tester.isTesting,
+            )
+
+        /** "AI filters are saved but only run on Premium Archive.", the whole banner opening the upgrade screen. */
+        private fun bindArchiveBanner() {
+            val banner = binding.aiBanner
+            val link = context.getString(R.string.ai_filters_archive_link)
+            val message = context.getString(R.string.ai_filters_archive_only, link)
+            val text = SpannableStringBuilder(message)
+            val start = message.indexOf(link)
+            if (start >= 0) {
+                val end = start + link.length
+                text.setSpan(ForegroundColorSpan(colors.archiveBannerLink), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                text.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                text.setSpan(UnderlineSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            banner.text = text
+            banner.setTextColor(colors.archiveBannerText)
+            banner.background =
+                RippleDrawable(
+                    ColorStateList.valueOf(colors.archiveBannerBorder),
+                    rounded(colors.archiveBannerBackground, colors.archiveBannerBorder),
+                    null,
+                )
+            banner.setOnClickListener { UIUtils.startSubscriptionActivity(context) }
         }
 
         private fun styleButton(button: com.google.android.material.button.MaterialButton) {

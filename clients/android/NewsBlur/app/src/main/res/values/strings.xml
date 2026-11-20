@@ -1530,6 +1530,9 @@ people together to talk about the world.</string>
     <!-- AiClassifierSections.kt: %1$s is the folder's name. -->
     <string name="ai_scope_folder_named">All sites in %1$s</string>
     <string name="ai_scope_requires_archive">Requires Premium Archive</string>
+    <!-- AiClassifierSections.kt: shown when an account without Premium Archive saves or types an AI filter. %1$s is ai_filters_archive_link, shown as a link to the upgrade screen. -->
+    <string name="ai_filters_archive_only">AI filters are saved but only run on %1$s.</string>
+    <string name="ai_filters_archive_link">Premium Archive</string>
 
     <!-- strings.xml: Listen, the read-aloud player (ListenManager.kt and the listen package). -->
     <string name="listen_story_button">Listen</string>

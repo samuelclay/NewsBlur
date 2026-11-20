@@ -16,6 +16,11 @@ object AiClassifierPalette {
         val neutralBackground: Int,
         val neutralText: Int,
         val badgeBackground: Int,
+        // AiClassifierSections.kt's banner for saved AI filters on an account without Premium Archive.
+        val archiveBannerBackground: Int,
+        val archiveBannerBorder: Int,
+        val archiveBannerText: Int,
+        val archiveBannerLink: Int,
         val matchBackground: Int,
         val matchText: Int,
         val matchBorder: Int,
@@ -40,6 +45,10 @@ object AiClassifierPalette {
             neutralBackground = 0xFFEDEEEA.toInt(),
             neutralText = 0xFF707070.toInt(),
             badgeBackground = 0x1A000000,
+            archiveBannerBackground = 0xFFF4EEFC.toInt(),
+            archiveBannerBorder = 0xFFD5C2F2.toInt(),
+            archiveBannerText = 0xFF4E3482.toInt(),
+            archiveBannerLink = 0xFF6B3FBF.toInt(),
             matchBackground = 0xFFE8F5E9.toInt(),
             matchText = 0xFF2E7D32.toInt(),
             matchBorder = 0xFFA5D6A7.toInt(),
@@ -58,6 +67,8 @@ object AiClassifierPalette {
             neutralBackground = 0xFFEDE4D6.toInt(),
             neutralText = 0xFF7A6A5A.toInt(),
             scopeInactive = 0xFFB9AC9A.toInt(),
+            archiveBannerBackground = 0xFFF3EAF2.toInt(),
+            archiveBannerBorder = 0xFFD8C4D6.toInt(),
         )
 
     private val dark =
@@ -69,6 +80,10 @@ object AiClassifierPalette {
             neutralBackground = 0xFF3A3A3C.toInt(),
             neutralText = 0xFFB0B0B0.toInt(),
             badgeBackground = 0x26FFFFFF,
+            archiveBannerBackground = 0xFF2A2238.toInt(),
+            archiveBannerBorder = 0xFF4E3D6E.toInt(),
+            archiveBannerText = 0xFFD9C8F5.toInt(),
+            archiveBannerLink = 0xFFB794F6.toInt(),
             matchBackground = 0xFF1A2E1A.toInt(),
             matchText = 0xFF66BB6A.toInt(),
             matchBorder = 0xFF2E7D32.toInt(),
@@ -85,6 +100,8 @@ object AiClassifierPalette {
     private val black =
         dark.copy(
             neutralBackground = 0xFF262626.toInt(),
+            archiveBannerBackground = 0xFF1C1626.toInt(),
+            archiveBannerBorder = 0xFF3E3158.toInt(),
         )
 
     @JvmStatic
