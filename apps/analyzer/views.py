@@ -4,6 +4,8 @@ Handles saving classifier rules (by title, author, tag, feed, and AI prompt)
 and populating the trainer modal with current classifier state.
 """
 
+from types import SimpleNamespace
+
 import redis
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
@@ -31,6 +33,7 @@ from apps.social.models import MSocialSubscription
 from apps.statistics.rtrending import RTrendingStory
 from utils import json_functions as json
 from utils import log as logging
+from utils.ratelimit import ratelimit
 from utils.user_functions import ajax_login_required, get_user
 
 
@@ -417,149 +420,97 @@ def save_prompt_classifier(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "feed:%s" % feed_id)
 
-    from apps.analyzer.vlm_usage import AIClassifierCostEstimator
-
-    cost_estimate = {}
-    if request.user.profile.can_use_ai_classifiers:
-        estimator = AIClassifierCostEstimator(request.user)
-        cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
-
     return {
         "code": 0,
         "message": "OK",
         "prompt_classifiers": prompt_list,
-        "cost_estimate": cost_estimate,
     }
+
+
+# views.py: How many of a story's images "Test on this story" judges. Each one is downloaded
+# before Jev sees it, and the whole test has to finish inside one web request.
+TEST_PROMPT_MAX_IMAGES = 8
 
 
 @require_POST
 @ajax_login_required
+@ratelimit(minutes=1, requests=20, use_path=True)
 @json.json_view
 def test_prompt_classifier(request):
-    """Test a prompt against a story using AI. Supports text-only or image (VLM) modes."""
-    import zlib
+    """Test an AI filter against one story with Jev, by its text or by each of its images.
 
-    from apps.rss_feeds.models import MStory
-    from utils.ai_functions import (
-        classify_stories_with_ai,
-        classify_stories_with_vision,
-    )
-
-    if not request.user.profile.can_use_ai_classifiers:
-        return {"code": -1, "message": gettext("Usage billing required for AI classifiers")}
+    views.py: Open to every account. Anyone can write AI filters and see how they judge a
+    story; they only score stories on Premium Archive, which the trainer says next to them.
+    """
+    from apps.analyzer import jev
 
     post = request.POST
     prompt_text = post.get("prompt", "").strip()
     story_hash = post.get("story_hash", "")
     include_images = post.get("include_images", "false") == "true"
+    # Test the direction the reader is editing, so a hidden filter is described and
+    # judged the way it will run.
+    classifier_type = "hidden" if post.get("classifier_type") == "hidden" else "focus"
 
     if not prompt_text:
         return {"code": -1, "message": gettext("Missing prompt")}
+    if len(prompt_text) > 500:
+        return {"code": -1, "message": gettext("Prompt too long (max 500 characters)")}
     if not story_hash:
         return {"code": -1, "message": gettext("Missing story_hash")}
+    if not jev.is_configured():
+        return {"code": -1, "message": gettext("AI filters aren't available on this server")}
 
     try:
         story_db = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:
         return {"code": -1, "message": gettext("Story not found")}
 
-    # Build a temporary prompt-like object for the classifier
-    class TempPrompt:
-        pass
-
-    temp_prompt = TempPrompt()
-    temp_prompt.prompt = prompt_text
-    # Preview the direction the user is actually editing, so a hidden classifier
-    # is previewed with the same instructions it will run with.
-    temp_prompt.classifier_type = "hidden" if post.get("classifier_type") == "hidden" else "focus"
+    test_filter = SimpleNamespace(
+        key="test", prompt=prompt_text, classifier_type=classifier_type, include_images=include_images
+    )
 
     if include_images:
-        # VLM mode: classify each image individually so the frontend
-        # can show per-image match/no-match labels.
-        image_urls = story_db.image_urls or []
+        image_urls = (story_db.image_urls or [])[:TEST_PROMPT_MAX_IMAGES]
         if not image_urls:
             return {"code": -1, "message": gettext("Story has no images")}
-
-        # Send each image as its own "story" so VLM returns per-image results
-        image_stories = []
-        for i, url in enumerate(image_urls):
-            image_stories.append(
-                {
-                    "story_id": "img_%d" % i,
-                    "story_title": "",
-                    "story_content": "",
-                    "image_urls": [url],
-                }
-            )
-        results = classify_stories_with_vision(temp_prompt, image_stories, user_id=request.user.pk)
-        if results is None:
+        # Each image is judged as its own story, so the trainer can label every image.
+        image_stories = [
+            {"story_hash": "img_%d" % i, "image_urls": [url]} for i, url in enumerate(image_urls)
+        ]
+        scores = jev.classify_stories([test_filter], image_stories, user_id=request.user.pk).get("test", {})
+        if len(scores) < len(image_stories):
             return {"code": -1, "message": gettext("Classification failed, please try again")}
-
-        # Build per-image results list (ordered by image index)
-        image_results = []
-        for i in range(len(image_urls)):
-            cls = results.get("img_%d" % i, 0)
-            image_results.append(1 if cls != 0 else 0)
-
-        classification = 1 if any(r == 1 for r in image_results) else 0
+        image_results = [1 if scores["img_%d" % i] else 0 for i in range(len(image_stories))]
+        classification = 1 if any(image_results) else 0
     else:
-        # Text-only mode: classify based on title and content
-        story_content = story_db.story_content or ""
-        if story_db.story_content_z:
-            story_content = zlib.decompress(story_db.story_content_z).decode("utf-8")
-
         story_dict = {
-            "story_id": story_hash,
+            "story_hash": story_hash,
             "story_title": story_db.story_title or "",
-            "story_content": story_content,
+            "story_content": story_db.story_content_str or "",
         }
-        results = classify_stories_with_ai(temp_prompt, [story_dict], user_id=request.user.pk)
-        if results is None:
+        scores = jev.classify_stories([test_filter], [story_dict], user_id=request.user.pk).get("test", {})
+        if story_hash not in scores:
             return {"code": -1, "message": gettext("Classification failed, please try again")}
-
-    if not include_images:
-        classification = results.get(story_hash, 0)
-        classification = 1 if classification != 0 else 0
-
-    mode = "vision" if include_images else "text"
-
-    # Include cost estimate so frontend can show per-run cost
-    cost_estimate = {}
-    if request.user.profile.can_use_ai_classifiers:
-        from apps.analyzer.vlm_usage import AIClassifierCostEstimator
-
-        estimator = AIClassifierCostEstimator(request.user)
-        cost_estimate = estimator.get_cost_estimate(feed_id=int(request.POST.get("feed_id", 0)))
+        classification = 1 if scores[story_hash] else 0
 
     logging.user(
         request,
-        "~FBTested %s prompt: ~SB%s~SN → %s ~FW%s" % (mode, story_hash, classification, prompt_text[:50]),
+        "~FBTested %s prompt: ~SB%s~SN → %s ~FW%s"
+        % ("image" if include_images else "text", story_hash, classification, prompt_text[:50]),
     )
 
-    resp = {"code": 0, "classification": classification, "cost_estimate": cost_estimate}
+    response = {
+        "code": 0,
+        "classification": classification,
+        # The topic the filter was understood as, e.g. "sports" for "Hide anything about sports".
+        "description": jev.describe_filter(
+            prompt_text, classifier_type, include_images=include_images, user_id=request.user.pk
+        ),
+    }
     if include_images:
-        resp["image_results"] = image_results
-    return resp
-
-
-@ajax_login_required
-@json.json_view
-def get_ai_classifier_usage(request):
-    from apps.analyzer.vlm_usage import AIClassifierCostEstimator
-
-    if not request.user.profile.can_use_ai_classifiers:
-        return {"code": 0, "can_use_ai": False}
-
-    feed_id = int(request.GET.get("feed_id", 0) or request.POST.get("feed_id", 0))
-    estimator = AIClassifierCostEstimator(request.user)
-    cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
-
-    current_spend, limit, is_limit_reached = request.user.profile.get_usage_billing_spend()
-    cost_estimate["current_cycle_spend"] = round(current_spend, 2)
-    cost_estimate["usage_billing_limit"] = float(limit) if limit else None
-    cost_estimate["is_limit_reached"] = is_limit_reached
-
-    return {"code": 0, "can_use_ai": True, **cost_estimate}
+        response["image_results"] = image_results
+    return response
 
 
 @json.json_view

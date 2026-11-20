@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import redis
 from django.conf import settings
@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from apps.analyzer.models import MClassifierPrompt
+from apps.analyzer.test_jev import fake_jev
 from apps.notifications.models import MUserClassifierNotification, MUserFeedNotification
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed, MStory
@@ -180,16 +181,15 @@ class Test_EmailNotifications(TestCase):
 
 class Test_PromptNotificationFolderScope(TestCase):
     """apps/notifications/tests.py: push_classifier_notifications warms prompt scores with
-    MClassifierPrompt.classify_stories. A prompt scoped to a folder must not run or bill
-    there for a site outside that folder, even when another prompt notification does
-    apply to the site."""
+    MClassifierPrompt.classify_stories. A prompt scoped to a folder must not run there
+    for a site outside that folder, even when another prompt notification does apply to
+    the site."""
 
     def setUp(self):
         self.user = User.objects.create_user(
             username="notifyfolder", password="testpass", email="notifyfolder@example.com"
         )
         self.user.profile.is_archive = True
-        self.user.profile.is_usage_billing = True
         self.user.profile.last_seen_on = datetime.datetime.now()
         self.user.profile.save()
         self.feed = Feed.objects.create(
@@ -252,28 +252,15 @@ class Test_PromptNotificationFolderScope(TestCase):
         MUserClassifierNotification.objects(user_id=self.user.pk).delete()
 
     def test_folder_prompt_is_not_warmed_for_a_feed_outside_its_folder(self):
-        block = MagicMock()
-        block.type = "tool_use"
-        block.name = "classify_stories"
-        block.input = {"classifications": [{"id": self.story.story_hash, "classification": 1}]}
-
-        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
-            "utils.ai_functions.anthropic.Anthropic"
-        ) as MockAnthropic, patch(
-            "utils.ai_functions.LLMCostTracker.record_usage"
-        ) as record_usage, patch.object(
+        with fake_jev(probability=0.95) as api, patch.object(
             MUserClassifierNotification,
             "claim_story_channels",
             return_value={"email": False, "web": False, "ios": False, "android": False},
         ) as claim:
-            create = MockAnthropic.return_value.messages.create
-            create.return_value.content = [block]
             MUserClassifierNotification.push_classifier_notifications(self.feed.pk, 1)
 
-        asked = [call.kwargs["system"] for call in create.call_args_list]
-        self.assertEqual(len(asked), 1, "Only the global prompt applies to Robots Weekly")
-        self.assertIn("robots", asked[0])
-        self.assertNotIn("space", asked[0])
-        self.assertEqual(record_usage.call_count, 1)
+        self.assertEqual(len(api.requests), 1)
+        self.assertEqual(len(api.instructions), 1, "Only the global prompt applies to Robots Weekly")
+        self.assertIn("robots", api.instructions[0])
         # The global prompt's verdict still drives the notification.
         claim.assert_called_once()

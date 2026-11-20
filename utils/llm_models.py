@@ -31,6 +31,12 @@ GOOGLE_MODEL_DISPLAY = "Gemini 3.8 Flash"
 XAI_MODEL = "grok-4.7"
 XAI_MODEL_DISPLAY = "Grok 4.7"
 
+# Natural language text and image filters: TypeSafe's Jev decision model through
+# OpenRouter's Decisions API (apps/analyzer/jev.py). Pinned to a version, not
+# ~typesafe/jev-latest, because jev.py's MATCH_THRESHOLD was picked for this one.
+JEV_MODEL = "typesafe/jev-1.14"
+JEV_MODEL_DISPLAY = "Jev 1.14"
+
 # Heavier tier: Archive Assistant runs long multi-tool searches over years of
 # stories, so it keeps a Sonnet-class model instead of the cheap tier.
 ANTHROPIC_ARCHIVE_MODEL = "claude-sonnet-5-5"

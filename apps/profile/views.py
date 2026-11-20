@@ -7,7 +7,6 @@ and account import/export (OPML).
 
 import calendar
 import datetime
-import functools
 import json as python_json
 import re
 from urllib.parse import urlencode
@@ -24,17 +23,12 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
-from django.http import (
-    HttpResponse,
-    HttpResponseForbidden,
-    HttpResponseRedirect,
-    JsonResponse,
-)
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy
 from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_POST
 from paypal.standard.forms import PayPalPaymentsForm
 from paypal.standard.ipn.views import ipn as paypal_standard_ipn
 
@@ -46,7 +40,6 @@ from apps.analyzer.models import (
     MClassifierTitle,
     MClassifierUrl,
 )
-from apps.api.social_auth import APP_SCHEMES, AppRedirect
 from apps.profile.forms import (
     PLANS,
     AccountSettingsForm,
@@ -1182,345 +1175,6 @@ def stripe_checkout(request):
     return HttpResponseRedirect(checkout_session.url, status=303)
 
 
-# views.py: The iOS and Android apps post a platform to setup_usage_billing and
-# manage_usage_billing and get JSON with the Stripe URL back, since they open it in an
-# in-app browser (ASWebAuthenticationSession on iOS, a Custom Tab on Android) instead
-# of following a redirect. Stripe then returns that browser to usage_billing_app_return,
-# which hands off to the app's fixed scheme from apps/api/social_auth.py APP_SCHEMES.
-USAGE_BILLING_APP_RETURN_STATUSES = ("setup_complete", "cancelled", "portal_return")
-
-
-def _usage_billing_app_platform(request):
-    """views.py: The app platform a usage billing request came from, or None for the web."""
-    platform = request.POST.get("platform")
-    if platform in APP_SCHEMES:
-        return platform
-    return None
-
-
-def _usage_billing_app_return_url(domain, platform, status):
-    return "https://%s%s?%s" % (
-        domain,
-        reverse("usage-billing-app-return"),
-        urlencode({"platform": platform, "status": status}),
-    )
-
-
-def _usage_billing_app_error(message, status=200):
-    # views.py: Errors stay HTTP 200 with code -1, like json_view, because the Android
-    # client drops the body of any non-200 response and would lose the message.
-    return JsonResponse({"code": -1, "message": message}, status=status)
-
-
-def _usage_billing_login_required(view_func):
-    """views.py: login_required for the web. The apps get a JSON 403 instead of a
-    redirect to the login page, which their HTTP clients can't follow."""
-    web_view = login_required(view_func)
-
-    @functools.wraps(view_func)
-    def _view(request, *args, **kwargs):
-        if not request.user.is_authenticated and _usage_billing_app_platform(request):
-            return _usage_billing_app_error(gettext("Please log in to NewsBlur again."), status=403)
-        return web_view(request, *args, **kwargs)
-
-    return _view
-
-
-@_usage_billing_login_required
-@require_POST
-def setup_usage_billing(request):
-    stripe.api_key = settings.STRIPE_SECRET
-    domain = Site.objects.get_current().domain
-    app_platform = _usage_billing_app_platform(request)
-
-    if not settings.STRIPE_PRICE_TEXT_CLASSIFICATION or not settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
-        logging.user(request, "~BR~FRStripe usage billing prices not configured")
-        if app_platform:
-            return _usage_billing_app_error(gettext("Usage-based billing isn't available right now."))
-        return HttpResponseRedirect(reverse("index"))
-
-    # Guard against duplicate subscriptions. Meter events are customer-scoped,
-    # so any extra active sub on the same classifier prices silently double-bills
-    # the user every cycle. Bail out to the billing portal instead of creating
-    # a second subscription.
-    if request.user.profile.stripe_id:
-        classifier_price_ids = {
-            settings.STRIPE_PRICE_TEXT_CLASSIFICATION,
-            settings.STRIPE_PRICE_IMAGE_CLASSIFICATION,
-        }
-        try:
-            existing = stripe.Subscription.list(
-                customer=request.user.profile.stripe_id, status="active", limit=20
-            )
-            for sub in existing.data:
-                for item in sub["items"].data:
-                    if item.price and item.price.id in classifier_price_ids:
-                        logging.user(
-                            request,
-                            "~BR~FRUsage billing already active; redirecting to portal",
-                        )
-                        if app_platform:
-                            return JsonResponse({"code": 0, "already_active": True})
-                        return HttpResponseRedirect(
-                            "https://%s%s?next=payments&usage_billing=already_active"
-                            % (domain, reverse("index"))
-                        )
-        except stripe.error.StripeError as e:
-            logging.user(request, f"~BR~FRStripe subscription list failed: {e}")
-
-    if app_platform:
-        success_url = _usage_billing_app_return_url(domain, app_platform, "setup_complete")
-        cancel_url = _usage_billing_app_return_url(domain, app_platform, "cancelled")
-    else:
-        success_url = "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index"))
-        cancel_url = "https://%s%s?next=payments" % (domain, reverse("index"))
-
-    session_dict = {
-        "line_items": [
-            {
-                "price": settings.STRIPE_PRICE_TEXT_CLASSIFICATION,
-            },
-            {
-                "price": settings.STRIPE_PRICE_IMAGE_CLASSIFICATION,
-            },
-        ],
-        "mode": "subscription",
-        "metadata": {"newsblur_user_id": request.user.pk, "purpose": "usage_billing"},
-        "success_url": success_url,
-        "cancel_url": cancel_url,
-    }
-    if request.user.profile.stripe_id:
-        session_dict["customer"] = request.user.profile.stripe_id
-    else:
-        session_dict["customer_email"] = request.user.email
-
-    try:
-        checkout_session = stripe.checkout.Session.create(**session_dict)
-    except stripe.error.StripeError as e:
-        if not app_platform:
-            raise
-        logging.user(request, f"~BR~FRStripe usage billing checkout failed: {e}")
-        return _usage_billing_app_error(gettext("Couldn't reach Stripe. Please try again."))
-
-    logging.user(request, "~BM~FBLoading Stripe usage billing checkout")
-
-    if app_platform:
-        return JsonResponse({"code": 0, "url": checkout_session.url})
-    return HttpResponseRedirect(checkout_session.url, status=303)
-
-
-@_usage_billing_login_required
-@require_POST
-def manage_usage_billing(request):
-    stripe.api_key = settings.STRIPE_SECRET
-    domain = Site.objects.get_current().domain
-    app_platform = _usage_billing_app_platform(request)
-
-    if not request.user.profile.stripe_id:
-        if app_platform:
-            return _usage_billing_app_error(gettext("No usage billing set up."))
-        return HttpResponseRedirect(reverse("index"))
-
-    if app_platform:
-        return_url = _usage_billing_app_return_url(domain, app_platform, "portal_return")
-    else:
-        return_url = "https://%s%s?next=payments" % (domain, reverse("index"))
-
-    try:
-        portal_session = stripe.billing_portal.Session.create(
-            customer=request.user.profile.stripe_id,
-            return_url=return_url,
-        )
-    except stripe.error.StripeError as e:
-        if not app_platform:
-            raise
-        logging.user(request, f"~BR~FRStripe billing portal failed: {e}")
-        return _usage_billing_app_error(gettext("Couldn't reach Stripe. Please try again."))
-
-    if app_platform:
-        return JsonResponse({"code": 0, "url": portal_session.url})
-    return HttpResponseRedirect(portal_session.url, status=303)
-
-
-@require_GET
-def usage_billing_app_return(request):
-    """views.py: Where Stripe sends the in-app browser after checkout or the billing
-    portal. Redirecting to the app's scheme closes ASWebAuthenticationSession on iOS and
-    reopens the app from its Custom Tab on Android. This needs no login, since the in-app
-    browser has no NewsBlur session, and the destination is only ever a fixed scheme from
-    apps/api/social_auth.py APP_SCHEMES plus a whitelisted status."""
-    platform = request.GET.get("platform")
-    status = request.GET.get("status")
-    if platform not in APP_SCHEMES or status not in USAGE_BILLING_APP_RETURN_STATUSES:
-        logging.user(request, "~BR~FRUnknown usage billing app return: %s / %s" % (platform, status))
-        return HttpResponseRedirect(reverse("index"))
-
-    return AppRedirect("%s://usage-billing?%s" % (APP_SCHEMES[platform], urlencode({"status": status})))
-
-
-@ajax_login_required
-@json.json_view
-def usage_billing_history(request):
-    user = request.user
-
-    import calendar
-
-    # Self-hosted: return local spend data without Stripe
-    if user.profile.is_self_hosted_ai and not user.profile.is_usage_billing:
-        current_spend, limit, is_limit_reached = user.profile.get_usage_billing_spend()
-        now = datetime.datetime.utcnow()
-        cycle_start = now.replace(day=1).strftime("%Y-%m-%d")
-        last_day = calendar.monthrange(now.year, now.month)[1]
-        cycle_end = now.replace(day=last_day).strftime("%Y-%m-%d")
-        return {
-            "invoices": [],
-            "upcoming_invoice": None,
-            "current_cycle_spend": round(current_spend, 2),
-            "usage_billing_limit": float(limit) if limit else None,
-            "is_limit_reached": is_limit_reached,
-            "is_self_hosted": True,
-            "cycle_start": cycle_start,
-            "cycle_end": cycle_end,
-        }
-
-    if not user.profile.stripe_id or not user.profile.is_usage_billing:
-        return {"invoices": [], "upcoming_invoice": None}
-
-    stripe.api_key = settings.STRIPE_SECRET
-    usage_price_ids = set(
-        filter(None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION])
-    )
-
-    if not usage_price_ids:
-        return {"invoices": [], "upcoming_invoice": None}
-
-    invoices = []
-    try:
-        stripe_invoices = stripe.Invoice.list(customer=user.profile.stripe_id, limit=24)
-        for inv in stripe_invoices.data:
-            line_items = []
-            is_usage_invoice = False
-            for line in inv.lines.data:
-                if line.price and line.price.id in usage_price_ids:
-                    is_usage_invoice = True
-                    if line.price.id == settings.STRIPE_PRICE_TEXT_CLASSIFICATION:
-                        desc = "Natural language text classifier"
-                    elif line.price.id == settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
-                        desc = "Natural language image classifier"
-                    else:
-                        desc = line.description or line.price.nickname or "Natural language classifier usage"
-                    line_items.append(
-                        {
-                            "description": desc,
-                            "quantity": line.quantity,
-                            "amount": line.amount / 100.0,
-                        }
-                    )
-            if is_usage_invoice:
-                invoices.append(
-                    {
-                        "date": datetime.datetime.fromtimestamp(inv.created).strftime("%Y-%m-%d"),
-                        "amount": inv.amount_due / 100.0,
-                        "amount_paid": inv.amount_paid / 100.0,
-                        "status": inv.status,
-                        "hosted_invoice_url": inv.hosted_invoice_url,
-                        "invoice_number": inv.number,
-                        "line_items": line_items,
-                    }
-                )
-    except stripe.error.InvalidRequestError:
-        pass
-
-    upcoming_invoice = None
-    try:
-        upcoming = stripe.Invoice.upcoming(customer=user.profile.stripe_id)
-        upcoming_lines = []
-        is_usage = False
-        for line in upcoming.lines.data:
-            if line.price and line.price.id in usage_price_ids:
-                is_usage = True
-                if line.price.id == settings.STRIPE_PRICE_TEXT_CLASSIFICATION:
-                    desc = "Natural language text classifier"
-                elif line.price.id == settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
-                    desc = "Natural language image classifier"
-                else:
-                    desc = line.description or line.price.nickname or "Natural language classifier usage"
-                upcoming_lines.append(
-                    {
-                        "description": desc,
-                        "quantity": line.quantity,
-                        "amount": line.amount / 100.0,
-                    }
-                )
-        if is_usage:
-            upcoming_invoice = {
-                "date": datetime.datetime.fromtimestamp(upcoming.period_end).strftime("%Y-%m-%d"),
-                "amount": sum(l["amount"] for l in upcoming_lines),
-                "status": "upcoming",
-                "line_items": upcoming_lines,
-            }
-    except stripe.error.InvalidRequestError:
-        pass
-
-    current_spend, limit, is_limit_reached = user.profile.get_usage_billing_spend()
-
-    now = datetime.datetime.utcnow()
-    cycle_start = now.replace(day=1).strftime("%Y-%m-%d")
-    last_day = calendar.monthrange(now.year, now.month)[1]
-    cycle_end = now.replace(day=last_day).strftime("%Y-%m-%d")
-
-    return {
-        "invoices": invoices,
-        "upcoming_invoice": upcoming_invoice,
-        "current_cycle_spend": round(current_spend, 2),
-        "usage_billing_limit": float(limit) if limit else None,
-        "is_limit_reached": is_limit_reached,
-        "cycle_start": cycle_start,
-        "cycle_end": cycle_end,
-    }
-
-
-@ajax_login_required
-@require_POST
-@json.json_view
-def save_usage_billing_limit(request):
-    """Save or clear the user's monthly spending limit for AI classifiers."""
-    from decimal import Decimal, InvalidOperation
-
-    from utils.llm_costs import LLMCostTracker
-
-    user = request.user
-    if not user.profile.can_use_ai_classifiers:
-        return {"code": -1, "message": gettext("Usage billing not enabled")}
-
-    limit_str = request.POST.get("limit", "").strip()
-
-    if not limit_str:
-        user.profile.usage_billing_limit = None
-        user.profile.save()
-        LLMCostTracker._invalidate_limit_cache(user.pk)
-        logging.user(request, "~BC~FBCleared AI classifier spending limit")
-        return {"code": 1, "limit": None}
-
-    try:
-        limit = Decimal(limit_str)
-    except (InvalidOperation, ValueError):
-        return {"code": -1, "message": gettext("Invalid amount")}
-
-    if limit <= 0:
-        return {"code": -1, "message": gettext("Limit must be a positive amount")}
-
-    if limit > 10000:
-        return {"code": -1, "message": gettext("Limit cannot exceed $10,000")}
-
-    user.profile.usage_billing_limit = limit
-    user.profile.save()
-    LLMCostTracker._invalidate_limit_cache(user.pk)
-    logging.user(request, "~BC~FBSet AI classifier spending limit to $%.2f" % limit)
-
-    return {"code": 1, "limit": float(limit)}
-
-
 @render_to("reader/activities_module.xhtml")
 def load_activities(request):
     user = get_user(request)
@@ -1602,7 +1256,6 @@ def payment_history(request):
         "premium_expire": user.profile.premium_expire,
         "premium_renewal": user.profile.premium_renewal,
         "active_provider": user.profile.active_provider,
-        "is_usage_billing": user.profile.is_usage_billing,
         "payments": history,
         "statistics": statistics,
         "next_invoice": next_invoice,

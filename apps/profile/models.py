@@ -37,8 +37,6 @@ from zebra.signals import (
     zebra_webhook_checkout_session_completed,
     zebra_webhook_customer_subscription_created,
     zebra_webhook_customer_subscription_updated,
-    zebra_webhook_invoice_payment_failed,
-    zebra_webhook_invoice_payment_succeeded,
 )
 
 from apps.ask_ai.usage import AskAIUsageTracker
@@ -102,6 +100,9 @@ class Profile(models.Model):
     is_grandfathered = models.BooleanField(default=False, blank=True, null=True)
     grandfather_expires = models.DateTimeField(blank=True, null=True)
     has_scoped_classifiers = models.BooleanField(default=False, blank=True, null=True)
+    # models.py: Unused since AI filters moved to Jev and became part of Premium Archive.
+    # Kept until a later deploy drops them, so the release still running during the deploy
+    # that stopped using them can read and write them.
     is_usage_billing = models.BooleanField(default=False, blank=True, null=True)
     usage_billing_limit = models.DecimalField(
         max_digits=8,
@@ -142,72 +143,13 @@ class Profile(models.Model):
     STORE_PLACEHOLDER_IDENTIFIERS = ("missing", "in-progress")
 
     @property
-    def is_self_hosted_ai(self):
-        """True when Stripe billing is not configured but AI provider keys are.
-        Self-hosted users provide their own API keys and pay providers directly.
-        """
-        stripe_configured = bool(
-            getattr(settings, "STRIPE_PRICE_TEXT_CLASSIFICATION", "")
-            and getattr(settings, "STRIPE_PRICE_IMAGE_CLASSIFICATION", "")
-        )
-        if stripe_configured:
-            return False
-        from apps.ask_ai.providers import AnthropicProvider
-
-        return AnthropicProvider().is_configured()
-
-    @property
     def can_use_ai_classifiers(self):
-        return bool(self.is_usage_billing) or self.is_self_hosted_ai
+        """Whether this account's natural language text and image filters score stories.
 
-    def get_usage_billing_spend(self):
-        """Get current billing cycle spend from MLLMCost MongoDB records.
-        Returns (current_spend_usd, limit_usd, is_limit_reached) tuple.
+        models.py: Anyone can create and test AI filters. They run on Premium Archive,
+        which Premium Pro includes, with no usage limit.
         """
-        if not self.is_usage_billing and not self.is_self_hosted_ai:
-            return (0.0, None, False)
-
-        from apps.monitor.models import MLLMCost
-
-        current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
-        limit = float(self.usage_billing_limit) if self.usage_billing_limit else None
-        if current_spend is None:
-            # Analytics is down, so spend is unknown. Fail closed rather than
-            # let usage billing run uncapped.
-            return (None, limit, limit is not None)
-        is_reached = limit is not None and current_spend >= limit
-        return (current_spend, limit, is_reached)
-
-    @property
-    def is_usage_limit_reached(self):
-        """Quick check: has user hit their spending limit? Uses Redis cache."""
-        if not self.usage_billing_limit:
-            return False
-        if not self.is_usage_billing and not self.is_self_hosted_ai:
-            return False
-        return self._check_cached_limit_status()
-
-    def _check_cached_limit_status(self):
-        """Check Redis cache for limit status, fall back to MongoDB."""
-        import redis as redis_lib
-        from django.conf import settings as django_settings
-
-        r = redis_lib.Redis(connection_pool=django_settings.REDIS_STATISTICS_POOL)
-        cache_key = f"usage_limit:{self.user_id}"
-        cached = r.get(cache_key)
-        if cached is not None:
-            return cached == "1"
-
-        from apps.monitor.models import MLLMCost
-
-        current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
-        if current_spend is None:
-            # Analytics is down, so spend is unknown. Fail closed, and don't
-            # cache the guess: the next call should retry once analytics is back.
-            return True
-        is_reached = current_spend >= float(self.usage_billing_limit)
-        r.setex(cache_key, 300, "1" if is_reached else "0")
-        return is_reached
+        return bool(self.is_archive or self.is_pro)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -235,10 +177,12 @@ class Profile(models.Model):
 
     @staticmethod
     def is_usage_billing_subscription(subscription):
-        """True for the AI classifier metered sub that setup_usage_billing creates (apps/profile/views.py).
+        """True for an AI classifier metered sub from the retired usage billing setup.
 
-        It shares the Stripe customer with the yearly tier sub, so switching, canceling, and
-        reactivating the tier sub must all skip it (apps/profile/models.py).
+        Usage billing is gone, but readers who set it up still have one, now billing $0
+        because nothing reports usage to it. It shares the Stripe customer with the yearly
+        tier sub, so switching, canceling, and reactivating the tier sub must all skip it
+        (apps/profile/models.py).
         """
         usage_price_ids = set(
             filter(
@@ -416,13 +360,15 @@ class Profile(models.Model):
             "has_found_friends": self.has_found_friends,
             "has_trained_intelligence": self.has_trained_intelligence,
             "dashboard_date": self.dashboard_date,
-            # models.py: AI classifier billing state for the iOS and Android apps, which read
-            # user_profile from /reader/feeds. The web gets the same values from
+            # models.py: Whether AI filters run on this account, for the iOS and Android apps,
+            # which read user_profile from /reader/feeds. The web reads it from
             # templates/base.html NEWSBLUR.Globals.
-            "is_usage_billing": bool(self.is_usage_billing),
-            "is_self_hosted_ai": self.is_self_hosted_ai,
             "can_use_ai_classifiers": self.can_use_ai_classifiers,
-            "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
+            # models.py: Usage billing is gone. App builds released before then still read
+            # these three, and these values keep their billing screens hidden.
+            "is_usage_billing": False,
+            "is_self_hosted_ai": False,
+            "usage_billing_limit": None,
         }
 
     def save(self, *args, **kwargs):
@@ -4737,32 +4683,12 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
         logging.debug(" ---> Stripe checkout webhook for non-NewsBlur product, ignoring")
         return
 
-    # Handle usage billing setup
     purpose = metadata.get("purpose", "")
     if purpose == "usage_billing":
-        stripe_id = full_json["data"]["object"].get("customer")
-        subscription_id = full_json["data"]["object"].get("subscription")
-        try:
-            profile = User.objects.get(pk=int(newsblur_user_id)).profile
-            if stripe_id and not profile.stripe_id:
-                profile.stripe_id = stripe_id
-            profile.is_usage_billing = True
-            profile.save()
-            # Set $50 billing threshold on the subscription
-            if subscription_id:
-                try:
-                    import stripe
-
-                    stripe.api_key = settings.STRIPE_SECRET
-                    stripe.Subscription.modify(
-                        subscription_id,
-                        billing_thresholds={"amount_gte": 5000},
-                    )
-                except Exception as e:
-                    logging.debug(" ---> Failed to set billing threshold: %s" % e)
-            logging.user(profile.user, "~BC~SB~FBStripe usage billing setup complete")
-        except User.DoesNotExist:
-            logging.debug(" ---> Couldn't find user for usage billing setup: %s" % newsblur_user_id)
+        # models.py: Usage billing for AI filters is retired. A checkout started before
+        # that can still complete; it only created a metered subscription that nothing
+        # reports usage to, so there's nothing to grant.
+        logging.debug(" ---> Ignoring retired usage billing checkout for user %s" % newsblur_user_id)
         return
 
     # Handle gift purchase completion
@@ -4972,79 +4898,6 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
 
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 zebra_webhook_charge_refunded.connect(stripe_payment_history_sync)
-
-
-def stripe_usage_billing_invoice_paid(sender, full_json, **kwargs):
-    """Notify staff when a usage billing threshold invoice is auto-charged."""
-    from apps.profile.tasks import EmailStaffNotification
-
-    invoice = full_json["data"]["object"]
-    billing_reason = invoice.get("billing_reason", "")
-
-    # Only handle threshold-triggered invoices (from $50 billing_thresholds)
-    if billing_reason != "threshold":
-        return
-
-    stripe_customer_id = invoice.get("customer")
-    amount_cents = invoice.get("amount_paid", 0)
-    amount_dollars = amount_cents / 100.0
-    invoice_id = invoice.get("id", "unknown")
-
-    try:
-        profile = Profile.objects.get(stripe_id=stripe_customer_id)
-        username = profile.user.username
-        logging.user(
-            profile.user,
-            "~BC~SB~FBStripe usage billing threshold invoice paid: $%.2f" % amount_dollars,
-        )
-    except Profile.DoesNotExist:
-        username = "unknown (stripe: %s)" % stripe_customer_id
-
-    EmailStaffNotification.delay(
-        event_type="usage_billing_threshold_charged",
-        subject="Usage billing auto-charge: %s charged $%.2f" % (username, amount_dollars),
-        body="User %s was auto-charged $%.2f for natural language classifier usage (threshold invoice).\n"
-        "Invoice: %s\nStripe customer: %s" % (username, amount_dollars, invoice_id, stripe_customer_id),
-    )
-
-
-def stripe_usage_billing_invoice_failed(sender, full_json, **kwargs):
-    """Notify staff when a usage billing threshold invoice payment fails."""
-    from apps.profile.tasks import EmailStaffNotification
-
-    invoice = full_json["data"]["object"]
-    billing_reason = invoice.get("billing_reason", "")
-
-    if billing_reason != "threshold":
-        return
-
-    stripe_customer_id = invoice.get("customer")
-    amount_cents = invoice.get("amount_due", 0)
-    amount_dollars = amount_cents / 100.0
-    invoice_id = invoice.get("id", "unknown")
-
-    try:
-        profile = Profile.objects.get(stripe_id=stripe_customer_id)
-        username = profile.user.username
-        logging.user(
-            profile.user,
-            "~FC~SB~FRStripe usage billing threshold invoice FAILED: $%.2f" % amount_dollars,
-        )
-    except Profile.DoesNotExist:
-        username = "unknown (stripe: %s)" % stripe_customer_id
-
-    EmailStaffNotification.delay(
-        event_type="usage_billing_threshold_failed",
-        subject="FAILED usage billing charge: %s $%.2f" % (username, amount_dollars),
-        body="User %s FAILED to pay $%.2f for natural language classifier usage (threshold invoice).\n"
-        "Invoice: %s\nStripe customer: %s\n\n"
-        "Action needed: check if their payment method is valid."
-        % (username, amount_dollars, invoice_id, stripe_customer_id),
-    )
-
-
-zebra_webhook_invoice_payment_succeeded.connect(stripe_usage_billing_invoice_paid)
-zebra_webhook_invoice_payment_failed.connect(stripe_usage_billing_invoice_failed)
 
 
 def change_password(user, old_password, new_password, only_check=False):
