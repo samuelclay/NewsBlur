@@ -116,8 +116,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
             db.execSQL(DatabaseConstants.CUSTOM_ICON_SQL);
         }
         if (previousVersion < 12 && nextVersion >= 12) {
-            // Story.java keeps matched AI prompt classifiers for the reading header, and Feed.java
-            // keeps stories_last_month for the trainer's AI cost estimates.
+            // Story.java keeps matched AI prompt classifiers for the reading header. stories_last_month
+            // fed the trainer's AI cost estimates, now removed (DatabaseConstants.java).
             db.execSQL("ALTER TABLE " + DatabaseConstants.STORY_TABLE + " ADD COLUMN " +
                     DatabaseConstants.STORY_PROMPT_CLASSIFIERS + " TEXT");
             db.execSQL("ALTER TABLE " + DatabaseConstants.FEED_TABLE + " ADD COLUMN " +

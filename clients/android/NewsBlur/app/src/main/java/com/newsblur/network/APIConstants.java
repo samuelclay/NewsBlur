@@ -68,11 +68,6 @@ public class APIConstants {
 	public static final String PATH_DELETE_FEED = "/reader/delete_feed";
 	public static final String PATH_CLASSIFIER_SAVE = "/classifier/save";
     public static final String PATH_CLASSIFIER_TEST_PROMPT = "/classifier/test_prompt";
-    public static final String PATH_CLASSIFIER_AI_USAGE = "/classifier/ai_classifier_usage";
-    public static final String PATH_SETUP_USAGE_BILLING = "/profile/setup_usage_billing/";
-    public static final String PATH_MANAGE_USAGE_BILLING = "/profile/manage_usage_billing/";
-    public static final String PATH_USAGE_BILLING_HISTORY = "/profile/usage_billing_history";
-    public static final String PATH_SAVE_USAGE_BILLING_LIMIT = "/profile/save_usage_billing_limit";
 	public static final String PATH_STORY_TEXT = "/rss_feeds/original_text";
 	public static final String PATH_STORY_CHANGES = "/rss_feeds/story_changes";
 	public static final String PATH_UNREAD_HASHES = "/reader/unread_story_hashes";

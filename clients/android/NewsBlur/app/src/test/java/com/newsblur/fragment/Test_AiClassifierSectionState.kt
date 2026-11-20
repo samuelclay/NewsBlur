@@ -11,7 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 // Test_AiClassifierSectionState.kt: AiClassifierSections.kt inflates include_ai_classifier_section.xml
 // twice, for text and for images, so both copies share its ids. When the activity is recreated,
 // Android restores saved view state by id, and the image copy's state lands in both: the image
-// prompt's draft shows up in the text box and Save commits it as a billed text prompt. The app has
+// prompt's draft shows up in the text box and Save commits it as a text prompt. The app has
 // no Robolectric to recreate the sheet, so this checks the layout keeps that state from being saved.
 class Test_AiClassifierSectionState {
     // Plain layouts and images keep no state of their own to restore.

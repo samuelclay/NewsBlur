@@ -1,18 +1,11 @@
 package com.newsblur.fragment
 
 import android.content.Context
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.TextPaint
 import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -28,7 +21,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
-import com.newsblur.activity.UsageBillingActivity
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.IncludeAiClassifierSectionBinding
 import com.newsblur.design.AiClassifierPalette
@@ -38,18 +30,11 @@ import com.newsblur.domain.ClassifierScope
 import com.newsblur.domain.Story
 import com.newsblur.network.ClassifierApi
 import com.newsblur.network.PromptTestRequest
-import com.newsblur.network.domain.AiCostEstimate
 import com.newsblur.network.domain.PromptTestResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
-import com.newsblur.util.UsageBillingAction
-import com.newsblur.util.UsageBillingBanner
-import com.newsblur.util.UsageBillingFeature
 import com.newsblur.view.TrainerCapsuleView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 /**
@@ -58,7 +43,7 @@ import kotlin.math.roundToInt
  * make_image_filter_section and laid out like clients/ios/Classes/TrainerAIPromptSection.swift.
  * Saved prompts are capsules (view/TrainerCapsuleView.kt) that toggle between focus and hidden or
  * get removed, a new prompt can be typed (with a live preview capsule) and tested on the current
- * story, and the section shows the monthly cost estimate and the billing or limit banners.
+ * story.
  *
  * Prompt edits go straight into [classifier]. Call [commit] right before the trainer saves, then
  * Classifier.recordChanges, as IntelTrainerSections.kt does.
@@ -84,49 +69,16 @@ class AiClassifierSections(
     private val colors = AiClassifierPalette.colors(theme)
     private val trainerColors = TrainerPalette.colors(theme)
     private val medium: Typeface? = ResourcesCompat.getFont(context, R.font.whitney_ssm_medium_bas)
-    private var billing = prefsRepo.getUsageBillingState()
-    private var costEstimate: AiCostEstimate? = null
-    private var limitReached = false
-    private val feedStories = dbHelper.getFeed(feedId)?.storiesLastMonth ?: 0
-    private val storiesByFeed: Map<String, Int> by lazy { dbHelper.getStoriesLastMonthByFeed() }
-    private val folders by lazy { dbHelper.getFolders() }
     private val sections = listOf(Section(imagePrompt = false), Section(imagePrompt = true))
 
     fun bind() {
         sections.forEach { it.bind() }
-        fetchUsage()
     }
 
     /** Keeps a typed but unadded prompt, since the web saves its live preview pill too. */
     fun commit() {
         sections.forEach { it.commitTypedPrompt() }
     }
-
-    private fun fetchUsage() {
-        fragment.lifecycleScope.launch {
-            val usage = withContext(Dispatchers.IO) { classifierApi.getAiClassifierUsage(feedId) }
-            if (!fragment.isAdded || usage.code != 0) return@launch
-            // AiClassifierSections.kt trusts the server over a stale /reader/feeds sync, such as
-            // right after billing was set up on the web.
-            if (usage.canUseAi != billing.canUseAiClassifiers) {
-                billing = billing.copy(canUseAiClassifiers = usage.canUseAi)
-                prefsRepo.setUsageBillingState(billing)
-            }
-            if (usage.canUseAi) {
-                costEstimate = usage.costEstimate
-                limitReached = usage.isLimitReached
-            }
-            sections.forEach { it.refresh() }
-        }
-    }
-
-    private fun openBilling() {
-        // UsageBillingFeature.kt holds billing for this release, and nothing here links to it then.
-        if (!UsageBillingFeature.opensBillingScreen()) return
-        context.startActivity(Intent(context, UsageBillingActivity::class.java))
-    }
-
-    private fun storiesForScope(scope: ClassifierScope): Int = AiClassifierCost.storiesForScope(scope, feedStories, folders, storiesByFeed)
 
     private fun dp(value: Int): Int = (value * context.resources.displayMetrics.density).roundToInt()
 
@@ -181,11 +133,6 @@ class AiClassifierSections(
             binding.aiSectionExplainer.setTextColor(trainerColors.textSecondary)
             binding.aiSectionExplainer.typeface = medium
             binding.aiSectionExplainer.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-            binding.aiCostBox.background = rounded(trainerColors.insetBackground, radiusDp = 8)
-            binding.aiCostAmounts.setTextColor(trainerColors.textPrimary)
-            binding.aiCostBreakdown.setTextColor(trainerColors.textSecondary)
-            styleButton(binding.aiCostBillingButton)
-            binding.aiCostBillingButton.setOnClickListener { openBilling() }
 
             binding.aiPromptInput.setHint(if (imagePrompt) R.string.ai_image_prompt_hint else R.string.ai_text_prompt_hint)
             binding.aiPromptInput.background = rounded(trainerColors.fieldBackground, trainerColors.fieldBorder)
@@ -252,8 +199,6 @@ class AiClassifierSections(
             renderPreviewRow()
             binding.aiTestButton.isEnabled = typedPrompt.isNotEmpty() && !tester.isTesting
             binding.aiTestButton.alpha = if (binding.aiTestButton.isEnabled) 1f else 0.5f
-            renderCost()
-            renderBanner()
         }
 
         private fun styleButton(button: com.google.android.material.button.MaterialButton) {
@@ -410,106 +355,6 @@ class AiClassifierSections(
         private fun typeLabel(): String =
             context.getString(if (imagePrompt) R.string.ai_prompt_type_image else R.string.ai_prompt_type_content)
 
-        private fun activeScopes(): List<ClassifierScope> {
-            val saved = scores.filterValues(::isActive).keys.map { classifier.promptScope(imagePrompt, it) }
-            return if (typedPrompt.isNotEmpty()) saved + previewScope else saved
-        }
-
-        private fun renderCost() {
-            val estimate = costEstimate
-            val summary =
-                estimate?.let {
-                    AiClassifierCost.estimate(
-                        costPerStory = if (imagePrompt) it.avgCostPerImage else it.avgCostPerText,
-                        feedStories = feedStories,
-                        activeFilterScopes = activeScopes(),
-                        storiesForScope = ::storiesForScope,
-                    )
-                }
-            binding.aiCostBox.isVisible = summary != null
-            if (summary == null) return
-            binding.aiCostAmounts.text = AiClassifierCost.amounts(context.resources, summary)
-            binding.aiCostBreakdown.text = AiClassifierCost.breakdown(context.resources, summary, imagePrompt)
-            // UsageBillingFeature.kt: while billing is held the estimate stays, without a button.
-            val action = UsageBillingFeature.costBoxAction(billing)
-            when (action) {
-                UsageBillingAction.MANAGE -> binding.aiCostBillingButton.setText(R.string.ai_billing_manage_limits)
-                UsageBillingAction.SET_UP -> binding.aiCostBillingButton.setText(R.string.ai_billing_set_up)
-                UsageBillingAction.NONE -> Unit
-            }
-            binding.aiCostBillingButton.isVisible = action != UsageBillingAction.NONE
-        }
-
-        /** reader_classifier.js show_limit_reached_banner and make_ai_billing_banner. */
-        private fun renderBanner() {
-            val banner = binding.aiBanner
-            val hasPrompts = scores.values.any(::isActive) || typedPrompt.isNotEmpty()
-            when (val kind = UsageBillingFeature.banner(limitReached, hasPrompts, billing.canUseAiClassifiers)) {
-                UsageBillingBanner.LIMIT_REACHED, UsageBillingBanner.LIMIT_REACHED_WITH_LINK -> {
-                    banner.background = rounded(colors.limitBannerBackground, colors.limitBannerBorder)
-                    banner.setTextColor(colors.limitBannerText)
-                    val builder = SpannableStringBuilder()
-                    val title = context.getString(R.string.ai_limit_reached_title)
-                    builder.append(title)
-                    builder.setSpan(StyleSpan(Typeface.BOLD), 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    builder.append(" ").append(context.getString(R.string.ai_limit_reached_body))
-                    if (kind.linksToBilling) {
-                        builder.append(" ")
-                        appendLink(builder, context.getString(R.string.ai_limit_reached_link), colors.limitBannerText)
-                    }
-                    showBanner(builder, linked = kind.linksToBilling)
-                }
-                UsageBillingBanner.NOT_ACTIVE -> {
-                    banner.background = rounded(colors.billingBannerBackground, colors.billingBannerBorder)
-                    banner.setTextColor(colors.billingBannerText)
-                    showBanner(context.getString(R.string.ai_filters_not_active))
-                }
-                UsageBillingBanner.SET_UP_BILLING -> {
-                    banner.background = rounded(colors.billingBannerBackground, colors.billingBannerBorder)
-                    banner.setTextColor(colors.billingBannerText)
-                    val link = context.getString(R.string.ai_billing_banner_link)
-                    val message = context.getString(R.string.ai_billing_banner, link)
-                    val builder = SpannableStringBuilder(message)
-                    val start = message.indexOf(link)
-                    if (start >= 0) {
-                        builder.setSpan(linkSpan(colors.billingBannerLink), start, start + link.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                        builder.setSpan(StyleSpan(Typeface.BOLD), start, start + link.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    }
-                    showBanner(builder, linked = true)
-                }
-                UsageBillingBanner.NONE -> banner.isVisible = false
-            }
-        }
-
-        private fun showBanner(
-            text: CharSequence,
-            linked: Boolean = false,
-        ) {
-            binding.aiBanner.text = text
-            binding.aiBanner.movementMethod = if (linked) LinkMovementMethod.getInstance() else null
-            binding.aiBanner.isVisible = true
-        }
-
-        private fun appendLink(
-            builder: SpannableStringBuilder,
-            text: String,
-            color: Int,
-        ) {
-            val start = builder.length
-            builder.append(text)
-            builder.setSpan(linkSpan(color), start, builder.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-
-        private fun linkSpan(color: Int) =
-            object : ClickableSpan() {
-                override fun onClick(widget: View) = openBilling()
-
-                override fun updateDrawState(ds: TextPaint) {
-                    ds.color = color
-                    ds.isUnderlineText = true
-                }
-            }
-
         private fun runTest() {
             val tested = draft
             val storyHash = story?.storyHash ?: return
@@ -522,7 +367,6 @@ class AiClassifierSections(
                 if (!fragment.isAdded) return@run
                 binding.aiTestButton.setText(testLabel())
                 thumbs.forEach { (frame, _) -> frame.alpha = 1f }
-                response.costEstimate?.let { costEstimate = it }
                 // AiClassifierSections.kt drops a result for a draft that changed mid-test, so an
                 // untested prompt never looks verified.
                 if (isCurrent) showTestResult(response)
