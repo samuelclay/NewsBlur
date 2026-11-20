@@ -430,8 +430,10 @@ def save_prompt_classifier(request):
 
 
 # views.py: How many of a story's images "Test on this story" judges. Each one is downloaded
-# before Jev sees it, and the whole test has to finish inside one web request.
-TEST_PROMPT_MAX_IMAGES = 8
+# before Jev sees it, and the whole test has to finish inside one web request: five images
+# download in one round (jev.IMAGE_FETCH_WORKERS) and fit one Jev request
+# (jev.IMAGE_STORIES_PER_REQUEST).
+TEST_PROMPT_MAX_IMAGES = 5
 
 # views.py: Readers without Premium Archive can try AI filters this many times a day, to see
 # whether a filter matches before upgrading. Archive runs the filters and tests without a cap.
@@ -453,8 +455,9 @@ def test_prompt_classifier(request):
 
     views.py: Open to every account. Anyone can write AI filters and see how they judge a
     story; they only score stories on Premium Archive, which the trainer says next to them.
-    Accounts without Archive get TEST_PROMPT_DAILY_LIMIT tests a day. Only tests that
-    return a verdict count, so a failed request doesn't use one up.
+    Accounts without Archive get TEST_PROMPT_DAILY_LIMIT tests a day. A test reserves its
+    slot before Jev is called, so simultaneous tests can't all slip under the limit, and
+    gives it back when it fails, so a failed request doesn't use one up.
     """
     from apps.analyzer import jev
 
@@ -480,32 +483,50 @@ def test_prompt_classifier(request):
     except MStory.DoesNotExist:
         return {"code": -1, "message": gettext("Story not found")}
 
+    image_urls = (story_db.image_urls or [])[:TEST_PROMPT_MAX_IMAGES]
+    if include_images and not image_urls:
+        return {"code": -1, "message": gettext("Story has no images")}
+
     counted = not request.user.profile.can_use_ai_classifiers
-    count_key = _test_prompt_count_key(request.user)
-    r = redis.Redis(connection_pool=settings.REDIS_POOL)
-    if counted and int(r.get(count_key) or 0) >= TEST_PROMPT_DAILY_LIMIT:
-        logging.user(request, "~FRAI filter test limit reached")
-        return {
-            "code": -1,
-            "test_limit_reached": True,
-            "message": ngettext(
-                "You've used today's %(count)s free AI filter test. It resets at midnight. "
-                "Premium Archive includes unlimited tests and runs your filters on every new story.",
-                "You've used today's %(count)s free AI filter tests. They reset at midnight. "
-                "Premium Archive includes unlimited tests and runs your filters on every new story.",
-                TEST_PROMPT_DAILY_LIMIT,
-            )
-            % {"count": TEST_PROMPT_DAILY_LIMIT},
-        }
+    if counted:
+        count_key = _test_prompt_count_key(request.user)
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        reserved = r.incr(count_key)
+        r.expire(count_key, 2 * 24 * 60 * 60)
+        if reserved > TEST_PROMPT_DAILY_LIMIT:
+            r.decr(count_key)
+            logging.user(request, "~FRAI filter test limit reached")
+            return {
+                "code": -1,
+                "test_limit_reached": True,
+                "message": ngettext(
+                    "You've used today's %(count)s free AI filter test. It resets at midnight. "
+                    "Premium Archive includes unlimited tests and runs your filters on every new story.",
+                    "You've used today's %(count)s free AI filter tests. They reset at midnight. "
+                    "Premium Archive includes unlimited tests and runs your filters on every new story.",
+                    TEST_PROMPT_DAILY_LIMIT,
+                )
+                % {"count": TEST_PROMPT_DAILY_LIMIT},
+            }
 
     test_filter = SimpleNamespace(
         key="test", prompt=prompt_text, classifier_type=classifier_type, include_images=include_images
     )
+    succeeded = False
+    try:
+        response = _run_prompt_test(request, test_filter, story_db, image_urls if include_images else None)
+        succeeded = response["code"] == 0
+    finally:
+        if counted and not succeeded:
+            r.decr(count_key)
+    return response
 
-    if include_images:
-        image_urls = (story_db.image_urls or [])[:TEST_PROMPT_MAX_IMAGES]
-        if not image_urls:
-            return {"code": -1, "message": gettext("Story has no images")}
+
+def _run_prompt_test(request, test_filter, story_db, image_urls):
+    """Judge one story's text, or each of its images when image_urls is given, with Jev."""
+    from apps.analyzer import jev
+
+    if image_urls:
         # Each image is judged as its own story, so the trainer can label every image.
         image_stories = [
             {"story_hash": "img_%d" % i, "image_urls": [url]} for i, url in enumerate(image_urls)
@@ -517,23 +538,19 @@ def test_prompt_classifier(request):
         classification = 1 if any(image_results) else 0
     else:
         story_dict = {
-            "story_hash": story_hash,
+            "story_hash": story_db.story_hash,
             "story_title": story_db.story_title or "",
             "story_content": story_db.story_content_str or "",
         }
         scores = jev.classify_stories([test_filter], [story_dict], user_id=request.user.pk).get("test", {})
-        if story_hash not in scores:
+        if story_db.story_hash not in scores:
             return {"code": -1, "message": gettext("Classification failed, please try again")}
-        classification = 1 if scores[story_hash] else 0
-
-    if counted:
-        r.incr(count_key)
-        r.expire(count_key, 2 * 24 * 60 * 60)
+        classification = 1 if scores[story_db.story_hash] else 0
 
     logging.user(
         request,
         "~FBTested %s prompt: ~SB%s~SN → %s ~FW%s"
-        % ("image" if include_images else "text", story_hash, classification, prompt_text[:50]),
+        % ("image" if image_urls else "text", story_db.story_hash, classification, test_filter.prompt[:50]),
     )
 
     response = {
@@ -541,10 +558,13 @@ def test_prompt_classifier(request):
         "classification": classification,
         # The topic the filter was understood as, e.g. "sports" for "Hide anything about sports".
         "description": jev.describe_filter(
-            prompt_text, classifier_type, include_images=include_images, user_id=request.user.pk
+            test_filter.prompt,
+            test_filter.classifier_type,
+            include_images=test_filter.include_images,
+            user_id=request.user.pk,
         ),
     }
-    if include_images:
+    if image_urls:
         response["image_results"] = image_results
     return response
 
