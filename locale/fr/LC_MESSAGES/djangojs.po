@@ -3214,12 +3214,6 @@ msgstr "Gratuit + abonnement · Mac, iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "Gratuit + abonnement · iPhone, iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "Bêta gratuite · Mac, iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "Bêta gratuite · iPhone, iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "Gratuit · Android, iPhone, iPad &amp; Mac"
 

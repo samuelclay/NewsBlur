@@ -3198,12 +3198,6 @@ msgstr "Gratis + abbonamento · Mac, iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "Gratis + abbonamento · iPhone, iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "Beta gratuita · Mac, iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "Beta gratuita · iPhone, iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "Gratis · Android, iPhone, iPad &amp; Mac"
 

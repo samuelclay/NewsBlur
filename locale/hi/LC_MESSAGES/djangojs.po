@@ -3189,12 +3189,6 @@ msgstr "मुफ़्त + सदस्यता · Mac, iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "मुफ़्त + सदस्यता · iPhone, iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "मुफ़्त बीटा · Mac, iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "मुफ़्त बीटा · iPhone, iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "मुफ़्त · Android, iPhone, iPad &amp; Mac"
 

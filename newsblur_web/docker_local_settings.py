@@ -156,6 +156,25 @@ ASK_AI_MODEL = "anthropic"  # Options: anthropic, openai, google, xai
 BRIEFING_MODEL = "openai"  # Options: anthropic, openai, google, xai
 WEBFEED_MODEL = "openai"  # Options: anthropic, openai, google, xai
 
+# Ask AI, Daily Briefing and Web Feed can also run on your own model, served by anything
+# that speaks the OpenAI Chat Completions API (Ollama, vLLM, llama.cpp, LM Studio,
+# OpenRouter). AI filters, the Archive Assistant, voice questions and search embeddings
+# still use the keys above.
+# LOCAL_MODEL = {
+#     "provider": "openai_compatible",
+#     "model_id": "qwen2.5:7b",
+#     "display_name": "Qwen 2.5 7B",
+#     "vendor_display": "Ollama",
+#     "base_url": "http://ollama:11434/v1",
+#     "api_key": "",  # only if the server checks one
+#     "extra_body": {"top_k": 40},  # optional request fields
+#     "max_tokens_parameter": "max_tokens",  # optional non-streaming token limit field
+#     "max_tokens_multiplier": 1,  # optional, work around thinking tokens included in max_tokens
+# }
+# ASK_AI_MODELS = {"local": LOCAL_MODEL}
+# BRIEFING_MODELS = {"local": LOCAL_MODEL}
+# ASK_AI_MODEL = BRIEFING_MODEL = WEBFEED_MODEL = "local"
+
 # ===========
 # = Logging =
 # ===========

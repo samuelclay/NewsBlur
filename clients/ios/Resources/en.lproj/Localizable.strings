@@ -281,6 +281,7 @@
 "Custom Search Query" = "Custom Search Query";
 "Custom [listen delivery]" = "Custom";
 "Custom feed title" = "Custom feed title";
+"Custom server" = "Custom server";
 "Customize auto-read by site or folder" = "Customize auto-read by site or folder";
 "Daily" = "Daily";
 "Daily Briefing" = "Daily Briefing";
@@ -349,6 +350,7 @@
 "Enabled" = "Enabled";
 "Enter URL phrase..." = "Enter URL phrase...";
 "Enter a custom search query..." = "Enter a custom search query...";
+"Enter a valid custom server URL." = "Enter a valid custom server URL.";
 "Enter a web page URL..." = "Enter a web page URL...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to.";
 "Enter author phrase..." = "Enter author phrase...";
@@ -522,6 +524,7 @@
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Layout";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup.";
 "Left" = "Left";
 "Length & Style" = "Length & Style";
 "Light" = "Light";
@@ -882,6 +885,7 @@
 "Reply" = "Reply";
 "Reply to %@" = "Reply to %@";
 "Replying" = "Replying";
+"Reset" = "Reset";
 "Resets %@" = "Resets %@";
 "Resize sidebar" = "Resize sidebar";
 "Restore" = "Restore";
@@ -1238,6 +1242,7 @@
 "Usage billing history" = "Usage billing history";
 "Usage-based billing is enabled for natural language classifiers." = "Usage-based billing is enabled for natural language classifiers.";
 "Use %@" = "Use %@";
+"Use a custom server" = "Use a custom server";
 "Use another sign-in method" = "Use another sign-in method";
 "Use both" = "Use both";
 "Use only this voice" = "Use only this voice";

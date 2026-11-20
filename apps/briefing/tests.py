@@ -1,10 +1,12 @@
 import datetime
 import json as stdlib_json
+from types import SimpleNamespace
 from unittest.mock import MagicMock, call, patch
 
 import pytz
+from django.conf import settings
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
@@ -15,6 +17,7 @@ from apps.analyzer.models import (
     MClassifierTitle,
     ScopedClassifiers,
 )
+from apps.ask_ai import providers
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
     DEFAULT_SECTIONS,
@@ -526,6 +529,71 @@ class Test_Summary(TestCase):
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "openai")
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-6-luna")
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "daily_briefing")
+        finally:
+            MStory.objects(story_hash=story.story_hash).delete()
+            feed.delete()
+
+    @override_settings(
+        BRIEFING_MODELS={
+            "local": {
+                "provider": "openai_compatible",
+                "model_id": "qwen2.5:1.5b",
+                "base_url": "http://ollama:11434/v1",
+                "api_key": "local-server-key",
+                "extra_body": {"top_k": 40},
+            }
+        }
+    )
+    @patch("apps.briefing.summary.LLMCostTracker")
+    @patch("apps.ask_ai.providers.openai.OpenAI")
+    def test_summary_from_an_openai_compatible_server(self, mock_client, mock_cost):
+        """A self-hosted BRIEFING_MODELS entry writes the briefing through its own server."""
+        from apps.briefing.summary import generate_briefing_summary
+
+        mock_client.return_value.chat.completions.create.return_value = SimpleNamespace(
+            usage=SimpleNamespace(prompt_tokens=31, completion_tokens=11),
+            choices=[
+                SimpleNamespace(
+                    message=SimpleNamespace(content='<div class="NB-briefing-summary">Local</div>')
+                )
+            ],
+        )
+        feed = Feed.objects.create(
+            feed_address="https://local-summary.example/rss", feed_title="Local summary"
+        )
+        story = self._make_summary_story(feed, "Test Story", "Some content", "local-summary-guid")
+        try:
+            with patch.object(providers, "BRIEFING_MODELS", providers._load_briefing_models()):
+                result = generate_briefing_summary(
+                    self.id(), [self._scored_from_story(story)], datetime.datetime.utcnow(), model="local"
+                )
+            self.assertIsNotNone(result)
+            html, metadata = result
+            self.assertIn("Local", html)
+            self.assertEqual(metadata["model_name"], "local")
+            self.assertEqual((metadata["input_tokens"], metadata["output_tokens"]), (31, 11))
+            mock_client.assert_called_once_with(base_url="http://ollama:11434/v1", api_key="local-server-key")
+            request = mock_client.return_value.chat.completions.create.call_args.kwargs
+            self.assertEqual(request["model"], "qwen2.5:1.5b")
+            self.assertEqual(request["extra_body"], {"top_k": 40})
+            # tests.py: The briefing's own limit, not the 16384 floor hosted OpenAI gets.
+            self.assertNotIn("max_completion_tokens", request)
+            self.assertLessEqual(request["max_tokens"], 4096)
+
+            configured = {
+                **settings.BRIEFING_MODELS["local"],
+                "max_tokens_parameter": "max_completion_tokens",
+                "max_tokens_multiplier": 5,
+            }
+            with self.settings(BRIEFING_MODELS={"local": configured}):
+                with patch.object(providers, "BRIEFING_MODELS", providers._load_briefing_models()):
+                    configured_result = generate_briefing_summary(
+                        self.id(), [self._scored_from_story(story)], datetime.datetime.utcnow(), model="local"
+                    )
+            self.assertIsNotNone(configured_result)
+            configured_request = mock_client.return_value.chat.completions.create.call_args.kwargs
+            self.assertNotIn("max_tokens", configured_request)
+            self.assertEqual(configured_request["max_completion_tokens"], request["max_tokens"] * 5)
         finally:
             MStory.objects(story_hash=story.story_hash).delete()
             feed.delete()

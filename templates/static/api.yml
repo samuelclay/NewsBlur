@@ -214,7 +214,14 @@
             Search for a keyword or phrase in the feed. Note that only premium users can search feeds.
           optional: true
           example: "pizza"
+        - key: limit
+          desc: "Number of stories per page, from 1 to 100. Values outside that range are clamped to it, and a value that is not a number uses the default (6)."
+          optional: true
+          default: 6
+          example: 20
       tips:
+        - >
+          The response includes a boolean <code>has_more</code>. It is true when this page came back full. A full last page can be followed by one empty page. Stories are counted before classifier filters and hidden stories are removed, so a shorter page can still say true. Page 400 always says false, since page 401 is a 404. Keep paging until it is false.
         - >
           The story score (red, neutral, green) can be computed by following 
           the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> <code>compute_story_score</code> in reader_utils.js on GitHub</a>. Alternatively, you can use the <code>score</code> parameter.
@@ -345,7 +352,14 @@
           optional: true
           default: "false"
           example: 30
+        - key: limit
+          desc: "Number of stories per page. Values below 1 count as 1."
+          optional: true
+          default: 12
+          example: 20
       tips:
+        - >
+          The response includes a boolean <code>has_more</code>. It is true when this page came back full. A full last page can be followed by one empty page. Stories are counted before classifier filters and hidden stories are removed, so a shorter page can still say true. It is always false on page 400, since page 401 is a 404, and for free accounts, which get one page of 3 stories. Keep paging until it is false.
         - >
           Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
           <ul>
@@ -401,6 +415,14 @@
           optional: true
           default: newest
           example: oldest
+        - key: limit
+          desc: "Number of stories per page. Values below 1 count as 1."
+          optional: true
+          default: 10
+          example: 20
+      tips:
+        - >
+          The response includes a boolean <code>has_more</code>. It is true when this page came back full. A full last page can be followed by one empty page. Keep paging until it is false.
 
     - url: /reader/mark_story_hashes_as_read
       method: POST

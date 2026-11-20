@@ -8,7 +8,9 @@ import android.media.ExifInterface
 import android.os.Build
 import android.util.Base64
 import com.newsblur.util.FileCache
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -42,38 +44,55 @@ class StoryImageLoader(
 
     suspend fun load(source: StoryImageSource): StoryImage =
         withContext(Dispatchers.IO) {
-            ensureActive()
-            val localName = StoryImageSource.cachedFileName(source.url)
-            val cached = if (localName != null) File(cache.cacheDir, localName) else cache.getCachedFile(source.url)
-            val data =
-                when {
-                    cached?.isFile == true -> cached.inputStream().use { readBounded(it) }
-                    localName != null -> error("Cached image is no longer available")
-                    source.url.startsWith("data:", ignoreCase = true) -> {
-                        val comma = source.url.indexOf(',')
-                        require(comma > 0)
-                        val encoded = source.url.substring(comma + 1)
-                        if (source.url.substring(0, comma).endsWith(";base64", ignoreCase = true)) {
-                            Base64.decode(encoded, Base64.DEFAULT)
-                        } else {
-                            URLDecoder.decode(encoded.replace("+", "%2B"), "UTF-8").toByteArray(Charsets.UTF_8)
-                        }.also { require(it.size <= MAX_BYTES) }
-                    }
-                    else -> {
-                        val request = client.newCall(Request.Builder().url(source.url).build())
-                        call = request
-                        if (cancelled) request.cancel()
-                        request.execute().use { response ->
-                            check(response.isSuccessful)
-                            val body = response.body ?: error("Empty image response")
-                            require(body.contentLength() <= MAX_BYTES)
-                            body.byteStream().use { readBounded(it) }
-                        }
-                    }
-                }
-            ensureActive()
-            StoryImage(decode(data), data).also { ensureActive() }
+            try {
+                loadImage(source.url)
+            } catch (stopped: CancellationException) {
+                throw stopped
+            } catch (failure: Exception) {
+                checkActive()
+                loadImage(source.thumbnailUrl ?: throw failure)
+            }
         }
+
+    private suspend fun loadImage(url: String): StoryImage {
+        checkActive()
+        val data = readLocalImage(url) ?: run {
+            val request = client.newCall(Request.Builder().url(url).build())
+            call = request
+            if (cancelled) request.cancel()
+            request.execute().use { response ->
+                check(response.isSuccessful)
+                val body = response.body ?: error("Empty image response")
+                require(body.contentLength() <= MAX_BYTES)
+                body.byteStream().use { readBounded(it) }
+            }
+        }
+        checkActive()
+        return StoryImage(decode(data), data).also { checkActive() }
+    }
+
+    private suspend fun checkActive() {
+        currentCoroutineContext().ensureActive()
+        if (cancelled) throw CancellationException("Image load cancelled")
+    }
+
+    private fun readLocalImage(url: String): ByteArray? {
+        if (url.startsWith("data:", ignoreCase = true)) {
+            val comma = url.indexOf(',')
+            require(comma > 0)
+            val encoded = url.substring(comma + 1)
+            return if (url.substring(0, comma).endsWith(";base64", ignoreCase = true)) {
+                Base64.decode(encoded, Base64.DEFAULT)
+            } else {
+                URLDecoder.decode(encoded.replace("+", "%2B"), "UTF-8").toByteArray(Charsets.UTF_8)
+            }.also { require(it.size <= MAX_BYTES) }
+        }
+        val localName = StoryImageSource.cachedFileName(url)
+        val cached = if (localName != null) File(cache.cacheDir, localName) else cache.getCachedFile(url)
+        if (cached?.isFile == true) return cached.inputStream().use { readBounded(it) }
+        check(localName == null) { "Cached image is no longer available" }
+        return null
+    }
 
     private fun readBounded(input: InputStream): ByteArray {
         val result = ByteArrayOutputStream()

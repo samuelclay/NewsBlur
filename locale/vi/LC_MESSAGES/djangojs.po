@@ -3108,12 +3108,6 @@ msgstr "Miễn phí + gói đăng ký · Mac, iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "Miễn phí + thuê bao · iPhone, iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "Beta miễn phí · Mac, iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "Bản beta miễn phí · iPhone, iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "Miễn phí · Android, iPhone, iPad &amp; Mac"
 

@@ -280,6 +280,7 @@
 "Custom Search Query" = "Benutzerdefinierte Suchanfrage";
 "Custom [listen delivery]" = "Benutzerdefiniert";
 "Custom feed title" = "Titel des benutzerdefinierten Feeds";
+"Custom server" = "Benutzerdefinierter Server";
 "Customize auto-read by site or folder" = "Automatisches Markieren als gelesen pro Website oder Ordner anpassen";
 "Daily" = "Täglich";
 "Daily Briefing" = "Tagesbriefing";
@@ -348,6 +349,7 @@
 "Enabled" = "Aktiviert";
 "Enter URL phrase..." = "URL-Ausdruck eingeben...";
 "Enter a custom search query..." = "Benutzerdefinierte Suchanfrage eingeben …";
+"Enter a valid custom server URL." = "Gib eine gültige URL für den benutzerdefinierten Server ein.";
 "Enter a web page URL..." = "URL einer Webseite eingeben...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Gib die URL einer beliebigen Webseite ein. NewsBlur analysiert mit KI die Seitenstruktur, findet Artikel und erstellt einen benutzerdefinierten RSS-Feed, den du abonnieren kannst.";
 "Enter author phrase..." = "Autorenphrase eingeben …";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Lavendel-Iris";
 "Layout" = "Layout";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Leer lassen, um NewsBlur zu verwenden, oder die URL deiner selbst gehosteten Installation eingeben. Die Änderung wird beim nächsten Öffnen der App wirksam.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Lass dieses Feld leer, um NewsBlur zu verwenden, oder gib die URL deiner selbst gehosteten Installation ein. Die Änderung gilt sofort für die Anmeldung und Registrierung.";
 "Left" = "Links";
 "Length & Style" = "Länge & Stil";
 "Light" = "Hell";
@@ -881,6 +884,7 @@
 "Reply" = "Antworten";
 "Reply to %@" = "%@ antworten";
 "Replying" = "Wird geantwortet";
+"Reset" = "Zurücksetzen";
 "Resets %@" = "Wird zurückgesetzt: %@";
 "Resize sidebar" = "Seitenleiste in der Größe ändern";
 "Restore" = "Wiederherstellen";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "Abrechnungsverlauf nach Nutzung";
 "Usage-based billing is enabled for natural language classifiers." = "Nutzungsbasierte Abrechnung ist für Klassifikatoren in natürlicher Sprache aktiviert.";
 "Use %@" = "%@ verwenden";
+"Use a custom server" = "Benutzerdefinierten Server verwenden";
 "Use another sign-in method" = "Andere Anmeldemethode verwenden";
 "Use both" = "Beides verwenden";
 "Use only this voice" = "Nur diese Stimme verwenden";

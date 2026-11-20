@@ -280,6 +280,7 @@
 "Custom Search Query" = "カスタム検索クエリ";
 "Custom [listen delivery]" = "カスタム";
 "Custom feed title" = "カスタムフィード名";
+"Custom server" = "カスタムサーバー";
 "Customize auto-read by site or folder" = "サイトまたはフォルダーごとに自動既読をカスタマイズ";
 "Daily" = "毎日";
 "Daily Briefing" = "デイリーブリーフィング";
@@ -348,6 +349,7 @@
 "Enabled" = "有効";
 "Enter URL phrase..." = "URLのフレーズを入力...";
 "Enter a custom search query..." = "カスタム検索クエリを入力...";
+"Enter a valid custom server URL." = "有効なカスタムサーバー URL を入力してください。";
 "Enter a web page URL..." = "ウェブページのURLを入力...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "任意のウェブページのURLを入力すると、NewsBlurがAIでページ構造を分析して記事を見つけ、購読できる専用のRSSフィードを作成します。";
 "Enter author phrase..." = "著者のフレーズを入力...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "ラベンダーアイリス";
 "Layout" = "レイアウト";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlurを使う場合は空欄のままにしてください。セルフホスト版を使う場合は、そのURLを入力してください。次回アプリを開いたときに反映されます。";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "NewsBlurを使用する場合は空欄のままにしてください。セルフホスト版のインストール先 URL を入力することもできます。ログインと新規登録にすぐ反映されます。";
 "Left" = "左";
 "Length & Style" = "長さとスタイル";
 "Light" = "ライト";
@@ -881,6 +884,7 @@
 "Reply" = "返信";
 "Reply to %@" = "%@に返信";
 "Replying" = "返信中";
+"Reset" = "リセット";
 "Resets %@" = "%@にリセット";
 "Resize sidebar" = "サイドバーのサイズを変更";
 "Restore" = "復元";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "従量課金の履歴";
 "Usage-based billing is enabled for natural language classifiers." = "自然言語分類器の従量課金が有効になっています。";
 "Use %@" = "%@を使用";
+"Use a custom server" = "カスタムサーバーを使用";
 "Use another sign-in method" = "別のサインイン方法を使う";
 "Use both" = "両方を使用";
 "Use only this voice" = "この音声のみを使う";

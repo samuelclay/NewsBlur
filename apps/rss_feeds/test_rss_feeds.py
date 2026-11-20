@@ -6693,6 +6693,66 @@ class Test_PreProcessStoryContentSelection(TestCase):
         self.assertIn(f'<img src="{image_url}" />', out["story_content"])
 
 
+class Test_FetchedStoryIframes(TestCase):
+    """utils/story_functions.py strip_non_embeddable_iframes: a fetched story keeps only the
+    iframes that render inside the reader. Facebook's post plugin can be framed, but Facebook's
+    own pages answer with X-Frame-Options: DENY and Slashdot's feed ads refuse framing too, so
+    those would show as empty boxes."""
+
+    options = {"verbose": False, "force": False, "updates_off": False}
+    facebook_post = (
+        "https://www.facebook.com/plugins/post.php?href="
+        "https%3A%2F%2Fwww.facebook.com%2Ffacebook%2Fvideos%2F10153231379946729%2F&show_text=true&width=500"
+    )
+    unframeable = [
+        "https://www.facebook.com/facebook",
+        "https://notfacebook.com/plugins/post.php?href=x",
+        "http://feedads.g.doubleclick.net/~ah/f/x/300/250",
+    ]
+
+    @patch("apps.rss_feeds.models.Feed.save_feed_history")
+    @patch("apps.rss_feeds.models.Feed.update_all_statistics")
+    @patch("apps.rss_feeds.models.redis")
+    def test_a_fetched_story_keeps_its_facebook_post_embed_and_drops_iframes_that_refuse_framing(
+        self, mock_redis, mock_statistics, mock_history
+    ):
+        import html
+        import re
+
+        import feedparser
+
+        from utils.feed_fetcher import FEED_OK, ProcessFeed
+
+        iframes = "".join(
+            '<iframe src="%s" width="500" height="500"></iframe>' % html.escape(src)
+            for src in [self.facebook_post] + self.unframeable
+        )
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel>
+<title>Comics news</title><link>https://comics.example.com/</link>
+<item><title>New series announced</title><link>https://comics.example.com/new-series</link>
+<guid isPermaLink="false">new-series</guid><pubDate>Sat, 14 Nov 2026 10:00:00 GMT</pubDate>
+<content:encoded><![CDATA[<p>The publisher announced it on Facebook.</p>%s]]></content:encoded></item>
+</channel></rss>""" % (
+            iframes
+        )
+        feed = Feed.objects.create(
+            feed_address="https://comics.example.com/rss",
+            feed_link="https://comics.example.com/",
+            feed_title="Comics news",
+        )
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+
+        pfeed = ProcessFeed(feed.pk, feedparser.parse(xml), dict(self.options))
+        pfeed.refresh_feed()
+        ret_feed, _ = pfeed.process()
+
+        self.assertEqual(ret_feed, FEED_OK)
+        story_content = MStory.objects.get(story_feed_id=feed.pk).story_content_str
+        iframe_srcs = re.findall(r'<iframe[^>]*\bsrc="([^"]*)"', story_content)
+        self.assertEqual([html.unescape(src) for src in iframe_srcs], [self.facebook_post])
+
+
 class Test_IconImporter(TestCase):
     """
     apps/rss_feeds/icon_importer.py: a feed's self-declared images (Atom <icon>

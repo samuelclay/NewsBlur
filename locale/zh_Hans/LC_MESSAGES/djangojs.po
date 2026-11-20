@@ -3065,12 +3065,6 @@ msgstr "免费 + 订阅 · Mac、iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "免费 + 订阅 · iPhone、iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "免费测试版 · Mac、iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "免费测试版 · iPhone、iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "免费 · Android、iPhone、iPad &amp; Mac"
 

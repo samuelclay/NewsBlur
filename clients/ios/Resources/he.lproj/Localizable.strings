@@ -280,6 +280,7 @@
 "Custom Search Query" = "שאילתת חיפוש מותאמת אישית";
 "Custom [listen delivery]" = "מותאם אישית";
 "Custom feed title" = "כותרת פיד מותאמת אישית";
+"Custom server" = "שרת מותאם אישית";
 "Customize auto-read by site or folder" = "התאמה אישית של סימון אוטומטי כנקרא לפי אתר או תיקייה";
 "Daily" = "יומי";
 "Daily Briefing" = "תדריך יומי";
@@ -348,6 +349,7 @@
 "Enabled" = "מופעל";
 "Enter URL phrase..." = "הקלדת ביטוי כתובת URL...";
 "Enter a custom search query..." = "הזינו שאילתת חיפוש מותאמת אישית...";
+"Enter a valid custom server URL." = "יש להזין כתובת URL תקינה לשרת מותאם אישית.";
 "Enter a web page URL..." = "הזינו כתובת URL של דף אינטרנט...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "הזינו כתובת URL של כל דף אינטרנט, ו-NewsBlur תשתמש בבינה מלאכותית כדי לנתח את מבנה הדף, למצוא כתבות וליצור פיד RSS מותאם אישית שאפשר להירשם אליו.";
 "Enter author phrase..." = "הזן ביטוי של מחבר...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "איריס לבנדר";
 "Layout" = "פריסה";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "השאירו ריק כדי להשתמש ב-NewsBlur, או הזינו את כתובת ה-URL של התקנה באירוח עצמי. השינוי ייכנס לתוקף בפעם הבאה שתפתחו את האפליקציה.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "השארת השדה ריק תשתמש ב־NewsBlur, או להזין את כתובת ה־URL של ההתקנה העצמית שלך. ההגדרה נכנסת לתוקף מיד עבור התחברות והרשמה.";
 "Left" = "שמאל";
 "Length & Style" = "אורך וסגנון";
 "Light" = "בהיר";
@@ -881,6 +884,7 @@
 "Reply" = "השב";
 "Reply to %@" = "תגובה אל %@";
 "Replying" = "משיב";
+"Reset" = "איפוס";
 "Resets %@" = "מתאפס ב־%@";
 "Resize sidebar" = "שינוי גודל סרגל הצד";
 "Restore" = "שחזור";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "היסטוריית חיובים לפי שימוש";
 "Usage-based billing is enabled for natural language classifiers." = "חיוב לפי שימוש מופעל עבור מסווגים בשפה טבעית.";
 "Use %@" = "השתמשו ב־%@";
+"Use a custom server" = "שימוש בשרת מותאם אישית";
 "Use another sign-in method" = "שימוש בשיטת התחברות אחרת";
 "Use both" = "להשתמש בשניהם";
 "Use only this voice" = "שימוש בקול הזה בלבד";

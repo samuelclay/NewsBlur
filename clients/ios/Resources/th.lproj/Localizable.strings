@@ -280,6 +280,7 @@
 "Custom Search Query" = "คำค้นหาแบบกำหนดเอง";
 "Custom [listen delivery]" = "กำหนดเอง";
 "Custom feed title" = "ชื่อฟีดที่กำหนดเอง";
+"Custom server" = "เซิร์ฟเวอร์กำหนดเอง";
 "Customize auto-read by site or folder" = "ปรับแต่งการทำเครื่องหมายว่าอ่านอัตโนมัติตามเว็บไซต์หรือโฟลเดอร์";
 "Daily" = "รายวัน";
 "Daily Briefing" = "สรุปข่าวประจำวัน";
@@ -348,6 +349,7 @@
 "Enabled" = "เปิดใช้งาน";
 "Enter URL phrase..." = "ป้อนวลี URL...";
 "Enter a custom search query..." = "ป้อนคำค้นหาที่กำหนดเอง...";
+"Enter a valid custom server URL." = "ป้อน URL เซิร์ฟเวอร์กำหนดเองที่ถูกต้อง";
 "Enter a web page URL..." = "ป้อน URL ของหน้าเว็บ...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "ป้อน URL ของหน้าเว็บใดก็ได้ แล้ว NewsBlur จะใช้ AI วิเคราะห์โครงสร้างของหน้า ค้นหาบทความ และสร้างฟีด RSS แบบกำหนดเองที่คุณสมัครรับได้";
 "Enter author phrase..." = "ป้อนวลีชื่อผู้เขียน...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "ไอริสลาเวนเดอร์";
 "Layout" = "เค้าโครง";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "เว้นว่างไว้เพื่อใช้ NewsBlur หรือป้อน URL ของการติดตั้งที่โฮสต์เอง การเปลี่ยนแปลงจะมีผลเมื่อเปิดแอปครั้งถัดไป";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "เว้นว่างไว้เพื่อใช้ NewsBlur หรือป้อน URL ของการติดตั้งที่โฮสต์เอง การเปลี่ยนแปลงมีผลทันทีสำหรับการเข้าสู่ระบบและสมัครสมาชิก";
 "Left" = "ซ้าย";
 "Length & Style" = "ความยาวและรูปแบบ";
 "Light" = "สว่าง";
@@ -881,6 +884,7 @@
 "Reply" = "ตอบกลับ";
 "Reply to %@" = "ตอบกลับ %@";
 "Replying" = "กำลังตอบกลับ";
+"Reset" = "รีเซ็ต";
 "Resets %@" = "รีเซ็ต %@";
 "Resize sidebar" = "ปรับขนาดแถบด้านข้าง";
 "Restore" = "กู้คืน";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "ประวัติการเรียกเก็บเงินตามการใช้งาน";
 "Usage-based billing is enabled for natural language classifiers." = "เปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนกภาษาธรรมชาติแล้ว";
 "Use %@" = "ใช้ %@";
+"Use a custom server" = "ใช้เซิร์ฟเวอร์กำหนดเอง";
 "Use another sign-in method" = "ใช้วิธีลงชื่อเข้าใช้อื่น";
 "Use both" = "ใช้ทั้งสองแบบ";
 "Use only this voice" = "ใช้เฉพาะเสียงนี้";

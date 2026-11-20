@@ -2367,7 +2367,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             </div>\
                         </div>\
                         <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="<%- gettext("Ask a question...") %>" />\
-                        <div class="NB-menu-ask-ai-submit-menu NB-disabled" data-model="anthropic">\
+                        <div class="NB-menu-ask-ai-submit-menu NB-disabled">\
                             <div class="NB-menu-ask-ai-custom-submit"><%- gettext("Ask") %></div>\
                             <div class="NB-menu-ask-ai-submit-dropdown-trigger" title="<%- gettext("Choose model") %>">\
                                 <span class="NB-dropdown-arrow">▾</span>\
@@ -2411,17 +2411,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         '</div>';
         $menu.find('.NB-menu-ask-ai-model-dropdown').html(dropdown_html);
 
-        // Set model from preference (default to the server's default model key).
-        // Legacy keys from before keys became vendor slugs (Aug 2026) still
-        // live in saved preferences — map them to their vendor key.
-        var legacy_model_keys = {
-            'opus': 'anthropic', 'haiku': 'anthropic',
-            'gpt-5.2': 'openai', 'gpt-5-mini': 'openai',
-            'gemini-3': 'google', 'gemini-flash-lite': 'google',
-            'grok-4.1': 'xai', 'grok-4.1-fast': 'xai'
-        };
-        var saved_model = NEWSBLUR.assets.preference('ask_ai_model') || 'anthropic';
-        saved_model = legacy_model_keys[saved_model] || saved_model;
+        // Set model from preference. Legacy keys from before keys became vendor
+        // slugs (Aug 2026) still live in saved preferences, and a user who never
+        // picked one starts on the first listed model.
+        var saved_model = NEWSBLUR.Views.StoryAskAiView.choose_model_key(NEWSBLUR.assets.preference('ask_ai_model'));
         var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
         $submit_menu.data('model', saved_model);
         $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').removeClass('NB-selected');

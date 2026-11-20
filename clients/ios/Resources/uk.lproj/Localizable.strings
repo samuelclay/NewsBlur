@@ -280,6 +280,7 @@
 "Custom Search Query" = "Власний пошуковий запит";
 "Custom [listen delivery]" = "Власний";
 "Custom feed title" = "Власна назва стрічки";
+"Custom server" = "Власний сервер";
 "Customize auto-read by site or folder" = "Налаштувати автоматичне позначення прочитаним для сайтів або папок";
 "Daily" = "Щодня";
 "Daily Briefing" = "Щоденний огляд";
@@ -348,6 +349,7 @@
 "Enabled" = "Увімкнено";
 "Enter URL phrase..." = "Введіть фразу з URL…";
 "Enter a custom search query..." = "Введіть власний пошуковий запит...";
+"Enter a valid custom server URL." = "Введіть дійсний URL власного сервера.";
 "Enter a web page URL..." = "Введіть URL вебсторінки...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Введіть URL будь-якої вебсторінки, і NewsBlur за допомогою ШІ проаналізує її структуру, знайде статті та створить спеціальну RSS-стрічку, на яку можна підписатися.";
 "Enter author phrase..." = "Введіть фразу автора...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Лавандовий ірис";
 "Layout" = "Макет";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Залиште поле порожнім, щоб використовувати NewsBlur, або введіть URL-адресу власного сервера. Зміни набудуть чинності під час наступного запуску застосунку.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Залиште це поле порожнім, щоб використовувати NewsBlur, або введіть URL вашої власної інсталяції. Зміни набудуть чинності негайно для входу та реєстрації.";
 "Left" = "Ліворуч";
 "Length & Style" = "Довжина й стиль";
 "Light" = "Світла";
@@ -881,6 +884,7 @@
 "Reply" = "Відповісти";
 "Reply to %@" = "Відповісти %@";
 "Replying" = "Надсилання відповіді";
+"Reset" = "Скинути";
 "Resets %@" = "Скидання: %@";
 "Resize sidebar" = "Змінити розмір бічної панелі";
 "Restore" = "Відновити";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "Історія оплати за використання";
 "Usage-based billing is enabled for natural language classifiers." = "Для класифікаторів природної мови ввімкнено оплату за використання.";
 "Use %@" = "Використовувати мову: %@";
+"Use a custom server" = "Використовувати власний сервер";
 "Use another sign-in method" = "Скористатися іншим способом входу";
 "Use both" = "Використовувати обидва";
 "Use only this voice" = "Використовувати лише цей голос";

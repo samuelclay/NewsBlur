@@ -1,8 +1,8 @@
-{% load i18n %}{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+{% load i18n utils_tags %}{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
 <html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <title>{% blocktrans %}Invoice {{ invoice_number }} - NewsBlur{% endblocktrans %}</title>
-    <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+    {% licensed_fonts blocking=True %}
 
     <style>
         * {

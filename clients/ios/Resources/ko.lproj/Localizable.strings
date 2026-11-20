@@ -280,6 +280,7 @@
 "Custom Search Query" = "맞춤 검색어";
 "Custom [listen delivery]" = "사용자 지정";
 "Custom feed title" = "맞춤 피드 제목";
+"Custom server" = "사용자 지정 서버";
 "Customize auto-read by site or folder" = "사이트 또는 폴더별 자동 읽음 설정";
 "Daily" = "매일";
 "Daily Briefing" = "데일리 브리핑";
@@ -348,6 +349,7 @@
 "Enabled" = "사용";
 "Enter URL phrase..." = "URL 문구 입력...";
 "Enter a custom search query..." = "맞춤 검색어 입력...";
+"Enter a valid custom server URL." = "유효한 사용자 지정 서버 URL을 입력하세요.";
 "Enter a web page URL..." = "웹페이지 URL 입력...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "웹페이지 URL을 입력하면 NewsBlur가 AI로 페이지 구조를 분석하고 스토리를 찾아 구독할 수 있는 맞춤 RSS 피드를 만들어 드립니다.";
 "Enter author phrase..." = "작성자 문구 입력...";
@@ -881,6 +883,7 @@
 "Reply" = "답글";
 "Reply to %@" = "%@에게 답글";
 "Replying" = "답글 게시 중";
+"Reset" = "초기화";
 "Resets %@" = "%@ 초기화";
 "Resize sidebar" = "사이드바 크기 조정";
 "Restore" = "복원";
@@ -1235,6 +1238,7 @@
 "Usage billing history" = "사용량 기반 결제 내역";
 "Usage-based billing is enabled for natural language classifiers." = "자연어 분류기의 사용량 기반 결제가 활성화되어 있습니다.";
 "Use %@" = "%@ 사용";
+"Use a custom server" = "사용자 지정 서버 사용";
 "Use another sign-in method" = "다른 로그인 방법 사용";
 "Use both" = "둘 다 사용";
 "Use only this voice" = "이 음성만 사용";
