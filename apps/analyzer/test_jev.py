@@ -65,9 +65,10 @@ def fake_jev(describe=None, **kwargs):
     """
     api = FakeJev(**kwargs)
     descriptions = describe or {}
+    # test_jev.py: Cost records go to the shared analytics Mongo, not the test database.
     with override_settings(OPENROUTER_API_KEY="test-openrouter-key"), patch(
         "apps.analyzer.jev.requests.post", side_effect=api.post
-    ), patch("apps.analyzer.jev.time.sleep"), patch(
+    ), patch("apps.analyzer.jev.time.sleep"), patch("apps.analyzer.jev.LLMCostTracker.record_usage"), patch(
         "apps.analyzer.jev.describe_filter",
         side_effect=lambda text, *args, **kwargs: descriptions.get(text, text),
     ):
