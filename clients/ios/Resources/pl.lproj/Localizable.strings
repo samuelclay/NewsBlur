@@ -280,6 +280,7 @@
 "Custom Search Query" = "Niestandardowe zapytanie wyszukiwania";
 "Custom [listen delivery]" = "Niestandardowy";
 "Custom feed title" = "Niestandardowy tytuł kanału";
+"Custom server" = "Własny serwer";
 "Customize auto-read by site or folder" = "Dostosuj automatyczne oznaczanie jako przeczytane dla witryny lub folderu";
 "Daily" = "Codziennie";
 "Daily Briefing" = "Codzienny przegląd";
@@ -348,6 +349,7 @@
 "Enabled" = "Włączone";
 "Enter URL phrase..." = "Wpisz fragment adresu URL...";
 "Enter a custom search query..." = "Wpisz własne zapytanie wyszukiwania...";
+"Enter a valid custom server URL." = "Wpisz prawidłowy URL własnego serwera.";
 "Enter a web page URL..." = "Wpisz adres URL strony internetowej...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Wpisz adres URL dowolnej strony internetowej, a NewsBlur użyje AI do analizy jej struktury, znajdzie artykuły i utworzy niestandardowy kanał RSS, który możesz subskrybować.";
 "Enter author phrase..." = "Wpisz frazę autora...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Lawendowy irys";
 "Layout" = "Układ";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Pozostaw puste, aby używać NewsBlur, lub wpisz adres URL własnej instalacji. Zmiany zaczną obowiązywać przy następnym uruchomieniu aplikacji.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Pozostaw to pole puste, aby użyć NewsBlur, lub wpisz URL swojej instalacji na własnym serwerze. Zmiana zacznie obowiązywać od razu przy logowaniu i rejestracji.";
 "Left" = "Po lewej";
 "Length & Style" = "Długość i styl";
 "Light" = "Jasny";
@@ -881,6 +884,7 @@
 "Reply" = "Odpowiedz";
 "Reply to %@" = "Odpowiedz użytkownikowi %@";
 "Replying" = "Odpowiadanie";
+"Reset" = "Resetuj";
 "Resets %@" = "Resetuje się %@";
 "Resize sidebar" = "Zmień rozmiar panelu bocznego";
 "Restore" = "Przywróć";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "Historia rozliczeń za użycie";
 "Usage-based billing is enabled for natural language classifiers." = "Rozliczanie według użycia jest włączone dla klasyfikatorów języka naturalnego.";
 "Use %@" = "Użyj %@";
+"Use a custom server" = "Użyj własnego serwera";
 "Use another sign-in method" = "Użyj innej metody logowania";
 "Use both" = "Użyj obu";
 "Use only this voice" = "Używaj tylko tego głosu";

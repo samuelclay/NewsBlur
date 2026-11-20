@@ -280,6 +280,7 @@
 "Custom Search Query" = "自訂搜尋查詢";
 "Custom [listen delivery]" = "自訂";
 "Custom feed title" = "自訂訂閱來源標題";
+"Custom server" = "自訂伺服器";
 "Customize auto-read by site or folder" = "依網站或資料夾自訂自動標記為已讀";
 "Daily" = "每日";
 "Daily Briefing" = "每日簡報";
@@ -348,6 +349,7 @@
 "Enabled" = "已啟用";
 "Enter URL phrase..." = "輸入網址詞組…";
 "Enter a custom search query..." = "輸入自訂搜尋條件…";
+"Enter a valid custom server URL." = "請輸入有效的自訂伺服器 URL。";
 "Enter a web page URL..." = "輸入網頁網址…";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "輸入任何網頁網址，NewsBlur 就會使用 AI 分析頁面結構、尋找文章，並建立可供你訂閱的自訂 RSS 訂閱來源。";
 "Enter author phrase..." = "輸入作者詞組…";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "薰衣草鳶尾";
 "Layout" = "版面配置";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "留空以使用 NewsBlur，或輸入自架安裝版本的網址。下次開啟應用程式時生效。";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "留白即可使用 NewsBlur，或輸入自架安裝版本的 URL。此設定會立即套用於登入和註冊。";
 "Left" = "左";
 "Length & Style" = "長度與風格";
 "Light" = "淺色";
@@ -881,6 +884,7 @@
 "Reply" = "回覆";
 "Reply to %@" = "回覆 %@";
 "Replying" = "回覆中";
+"Reset" = "重設";
 "Resets %@" = "於 %@ 重設";
 "Resize sidebar" = "調整側邊欄大小";
 "Restore" = "還原";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "按用量計費記錄";
 "Usage-based billing is enabled for natural language classifiers." = "自然語言分類器已啟用按用量計費。";
 "Use %@" = "使用 %@";
+"Use a custom server" = "使用自訂伺服器";
 "Use another sign-in method" = "使用其他登入方式";
 "Use both" = "兩者皆用";
 "Use only this voice" = "僅使用此語音";

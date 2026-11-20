@@ -280,6 +280,7 @@
 "Custom Search Query" = "Aangepaste zoekopdracht";
 "Custom [listen delivery]" = "Aangepast";
 "Custom feed title" = "Aangepaste feedtitel";
+"Custom server" = "Aangepaste server";
 "Customize auto-read by site or folder" = "Automatisch als gelezen markeren per site of map aanpassen";
 "Daily" = "Dagelijks";
 "Daily Briefing" = "Dagelijkse briefing";
@@ -348,6 +349,7 @@
 "Enabled" = "Ingeschakeld";
 "Enter URL phrase..." = "Voer een URL-frase in...";
 "Enter a custom search query..." = "Voer een aangepaste zoekopdracht in...";
+"Enter a valid custom server URL." = "Voer een geldige URL van een aangepaste server in.";
 "Enter a web page URL..." = "Voer de URL van een webpagina in...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Voer de URL van een webpagina in. NewsBlur gebruikt AI om de paginastructuur te analyseren, artikelen te vinden en een aangepaste RSS-feed te maken waarop je je kunt abonneren.";
 "Enter author phrase..." = "Voer een auteursfrase in...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Lavendeliris";
 "Layout" = "Lay-out";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Laat leeg om NewsBlur te gebruiken, of voer de URL van je zelf gehoste installatie in. Wordt van kracht wanneer de app de volgende keer wordt geopend.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Laat dit leeg om NewsBlur te gebruiken, of voer de URL van je zelfgehoste installatie in. De instelling wordt direct toegepast voor inloggen en aanmelden.";
 "Left" = "Links";
 "Length & Style" = "Lengte en stijl";
 "Light" = "Licht";
@@ -881,6 +884,7 @@
 "Reply" = "Reageren";
 "Reply to %@" = "Reageren op %@";
 "Replying" = "Reageren";
+"Reset" = "Herstellen";
 "Resets %@" = "Wordt opnieuw ingesteld over %@";
 "Resize sidebar" = "Zijbalkformaat wijzigen";
 "Restore" = "Herstellen";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "Overzicht van gebruikskosten";
 "Usage-based billing is enabled for natural language classifiers." = "Facturering op basis van gebruik is ingeschakeld voor classifiers in natuurlijke taal voor tekst.";
 "Use %@" = "Gebruik %@";
+"Use a custom server" = "Een aangepaste server gebruiken";
 "Use another sign-in method" = "Een andere inlogmethode gebruiken";
 "Use both" = "Beide gebruiken";
 "Use only this voice" = "Alleen deze stem gebruiken";

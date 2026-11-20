@@ -26,8 +26,10 @@ import SwiftUI
     override func viewWillAppear(_ animated: Bool) {
         setLoginBackgroundActive(true)
         account.lastUsed = UserDefaults.standard.string(forKey: "last_auth_method")
+        account.refreshCustomServer()
         if !account.needsUsername && !account.needsLink { account.signup = account.lastUsed == nil }
     }
+    @objc func customServerDidChange() { account.refreshCustomServer() }
     override func viewDidAppear(_ animated: Bool) {
         if pendingAppleRevocationNotice { showAppleRevocationNoticeWhenVisible() }
     }
@@ -62,6 +64,7 @@ import SwiftUI
     @Published var needsUsername = false
     @Published var needsLink = false
     @Published private(set) var canChooseUsername = false
+    @Published private(set) var customServer = OnboardingAccountModel.savedCustomServer()
     weak var controller: UIViewController?
     private var provider = ""
     private var verifier = ""
@@ -305,6 +308,24 @@ import SwiftUI
         message = nil
     }
 
+    /// Points login and signup at a self-hosted server right away; blank restores NewsBlur.
+    /// Returns false, changing nothing, when the entry names no host.
+    func setCustomServer(_ entry: String) -> Bool {
+        let entry = entry.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let server = entry.isEmpty ? "" : NewsBlurAppDelegate.normalizedServerURLString(entry) else { return false }
+        NewsBlurAppDelegate.shared()?.setCustomDomainPreference(server)
+        customServer = server
+        // OnboardingAccountViewController.swift drops a social sign-in ticket issued by the previous server.
+        cancelContinuation()
+        return true
+    }
+
+    func refreshCustomServer() { customServer = Self.savedCustomServer() }
+
+    private static func savedCustomServer() -> String {
+        NewsBlurAppDelegate.normalizedServerURLString(UserDefaults.standard.string(forKey: "custom_domain")) ?? ""
+    }
+
     private func finish(method: String, created: Bool) {
         lastUsed = method
         password = ""
@@ -531,6 +552,7 @@ private struct AccountDeletionView: View {
 
 struct OnboardingAccountView: View {
     @State private var language = NBLocalization.language
+    @State private var showsCustomServer = false
     @ObservedObject var model: OnboardingAccountModel
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     private let gold = Color(red: 251 / 255, green: 219 / 255, blue: 155 / 255)
@@ -565,7 +587,8 @@ struct OnboardingAccountView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text(continuation ? (model.needsLink ? NBLocalization.text("Connect your account") : NBLocalization.text("Choose your username")) : (model.signup ? NBLocalization.text("Create an account") : NBLocalization.text("Welcome back")))
                             .font(.custom("GothamNarrow-Medium", size: 24, relativeTo: .title2))
-                        if !continuation {
+                        // OnboardingAccountViewController.swift offers Apple and Google only for NewsBlur's own server.
+                        if !continuation && model.customServer.isEmpty {
                             VStack(alignment: .trailing, spacing: 6) {
                                 SignInWithAppleButton(.signIn, onRequest: { _ in }, onCompletion: { _ in })
                                     .signInWithAppleButtonStyle(.white).frame(height: 50)
@@ -626,14 +649,81 @@ struct OnboardingAccountView: View {
                             model.signup.toggle(); model.message = nil
                         }.disabled(model.busy)
                     }
+                    Button(model.customServer.isEmpty ? NBLocalization.text("Use a custom server") : model.customServer) {
+                        showsCustomServer = true
+                    }
+                    .font(.custom("WhitneySSm-Book", size: 13, relativeTo: .footnote)).foregroundColor(.white.opacity(0.7))
+                    .lineLimit(1).truncationMode(.middle)
+                    .disabled(model.busy)
+                    .accessibilityIdentifier("onboarding.custom-server")
                 }.padding(24).frame(maxWidth: 520).frame(maxWidth: .infinity, minHeight: geometry.size.height)
             }
         }.font(.custom("WhitneySSm-Book", size: 16, relativeTo: .body)).foregroundColor(.white).tint(gold).preferredColorScheme(.dark)
+            .sheet(isPresented: $showsCustomServer) { OnboardingCustomServerView(model: model).tint(gold) }
     }
     private var badge: some View { Text(NBLocalization.text("Last used")).font(.caption.weight(.semibold)).padding(.horizontal, 8).padding(.vertical, 3).background(.white.opacity(0.15)).clipShape(Capsule()) }
     private func field(_ title: String, text: Binding<String>) -> some View {
         TextField(title, text: text, prompt: Text(title).foregroundColor(.white.opacity(0.65))).textInputAutocapitalization(.never).autocorrectionDisabled()
             .padding(15).background(.white.opacity(0.12)).clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// OnboardingAccountViewController.swift matches Android's CustomServerDialog in LoginScreen.kt.
+private struct OnboardingCustomServerView: View {
+    @ObservedObject var model: OnboardingAccountModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var server: String
+    @State private var invalid = false
+    @State private var height: CGFloat = 320
+    @FocusState private var focused: Bool
+
+    init(model: OnboardingAccountModel) {
+        self.model = model
+        _server = State(initialValue: model.customServer)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(NBLocalization.text("Custom server"))
+                .font(.custom("GothamNarrow-Medium", size: 24, relativeTo: .title2))
+            Text(NBLocalization.text("Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup."))
+                .font(.custom("WhitneySSm-Book", size: 14, relativeTo: .subheadline)).foregroundColor(.white.opacity(0.7))
+                .fixedSize(horizontal: false, vertical: true)
+            TextField(NBLocalization.text("Custom server"), text: $server,
+                      prompt: Text(verbatim: "https://www.newsblur.com").foregroundColor(.white.opacity(0.65)))
+                .keyboardType(.URL).textContentType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                .submitLabel(.done).focused($focused).onSubmit(save)
+                .onChange(of: server) { invalid = false }
+                .padding(15).background(.white.opacity(0.12)).clipShape(RoundedRectangle(cornerRadius: 12))
+                .accessibilityIdentifier("onboarding.custom-server.field")
+            if invalid {
+                Text(NBLocalization.text("Enter a valid custom server URL."))
+                    .font(.subheadline).foregroundColor(Color(red: 1, green: 0.84, blue: 0.60))
+            }
+            if !model.customServer.isEmpty {
+                Button(NBLocalization.text("Reset")) {
+                    _ = model.setCustomServer("")
+                    dismiss()
+                }.frame(maxWidth: .infinity, alignment: .trailing)
+            }
+            HStack(spacing: 20) {
+                Button(NBLocalization.text("Cancel")) { dismiss() }
+                    .keyboardShortcut(.cancelAction).foregroundColor(.white.opacity(0.7))
+                Button(NBLocalization.text("Done"), action: save).buttonStyle(OnboardingAccountButtonStyle())
+            }.padding(.top, 4)
+        }
+        .padding(24)
+        .font(.custom("WhitneySSm-Book", size: 16, relativeTo: .body)).foregroundColor(.white)
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
+        .presentationDetents([.height(height)])
+        .presentationSizing(.form.fitted(horizontal: false, vertical: true))
+        .presentationBackground { OnboardingAccountGlass() }
+        .preferredColorScheme(.dark)
+        .onAppear { focused = true }
+    }
+
+    private func save() {
+        if model.setCustomServer(server) { dismiss() } else { invalid = true }
     }
 }
 

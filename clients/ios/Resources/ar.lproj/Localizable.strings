@@ -280,6 +280,7 @@
 "Custom Search Query" = "استعلام بحث مخصص";
 "Custom [listen delivery]" = "مخصص";
 "Custom feed title" = "عنوان خلاصة مخصّص";
+"Custom server" = "خادم مخصص";
 "Customize auto-read by site or folder" = "تخصيص وضع علامة «مقروءة» تلقائيًا حسب الموقع أو المجلد";
 "Daily" = "يوميًا";
 "Daily Briefing" = "الموجز اليومي";
@@ -348,6 +349,7 @@
 "Enabled" = "مفعّل";
 "Enter URL phrase..." = "أدخل عبارة URL...";
 "Enter a custom search query..." = "أدخل استعلام بحث مخصصًا...";
+"Enter a valid custom server URL." = "أدخل عنوان URL صالحًا لخادم مخصص.";
 "Enter a web page URL..." = "أدخل عنوان URL لصفحة ويب...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "أدخل عنوان URL لأي صفحة ويب، وسيستخدم NewsBlur الذكاء الاصطناعي لتحليل بنية الصفحة والعثور على القصص وإنشاء خلاصة RSS مخصصة يمكنك الاشتراك فيها.";
 "Enter author phrase..." = "أدخل عبارة المؤلف...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "السوسن الخزامي";
 "Layout" = "التخطيط";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "اتركه فارغًا لاستخدام NewsBlur، أو أدخل عنوان URL لتثبيتك المستضاف ذاتيًا. يسري التغيير عند فتح التطبيق في المرة القادمة.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "اترك هذا الحقل فارغًا لاستخدام NewsBlur، أو أدخل عنوان URL لتثبيتك المستضاف ذاتيًا. يسري ذلك فورًا على تسجيل الدخول وإنشاء الحساب.";
 "Left" = "يسار";
 "Length & Style" = "الطول والأسلوب";
 "Light" = "فاتح";
@@ -881,6 +884,7 @@
 "Reply" = "رد";
 "Reply to %@" = "الرد على %@";
 "Replying" = "جارٍ الرد";
+"Reset" = "إعادة تعيين";
 "Resets %@" = "يُعاد الضبط في %@";
 "Resize sidebar" = "تغيير حجم الشريط الجانبي";
 "Restore" = "استعادة";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "سجل فوترة الاستخدام";
 "Usage-based billing is enabled for natural language classifiers." = "الفوترة حسب الاستخدام مفعّلة للمصنّفات باللغة الطبيعية.";
 "Use %@" = "استخدم %@";
+"Use a custom server" = "استخدام خادم مخصص";
 "Use another sign-in method" = "استخدم طريقة أخرى لتسجيل الدخول";
 "Use both" = "استخدم كليهما";
 "Use only this voice" = "استخدام هذا الصوت فقط";

@@ -280,6 +280,7 @@
 "Custom Search Query" = "Пользовательский поисковый запрос";
 "Custom [listen delivery]" = "Настраиваемый";
 "Custom feed title" = "Своё название ленты";
+"Custom server" = "Пользовательский сервер";
 "Customize auto-read by site or folder" = "Настроить автоматическую отметку прочитанного для сайта или папки";
 "Daily" = "Ежедневно";
 "Daily Briefing" = "Ежедневная сводка";
@@ -348,6 +349,7 @@
 "Enabled" = "Включено";
 "Enter URL phrase..." = "Введите часть URL…";
 "Enter a custom search query..." = "Введите собственный поисковый запрос...";
+"Enter a valid custom server URL." = "Введите действительный URL пользовательского сервера.";
 "Enter a web page URL..." = "Введите URL веб-страницы...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Укажите URL любой веб-страницы, и NewsBlur с помощью ИИ проанализирует её структуру, найдёт статьи и создаст персональную RSS-ленту, на которую можно подписаться.";
 "Enter author phrase..." = "Введите часть имени автора…";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Лавандовый ирис";
 "Layout" = "Макет";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Оставьте поле пустым, чтобы использовать NewsBlur, или введите URL своего собственного сервера. Изменение вступит в силу при следующем запуске приложения.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Оставьте поле пустым, чтобы использовать NewsBlur, или введите URL своей самостоятельной установки. Изменение вступит в силу сразу при входе и регистрации.";
 "Left" = "Слева";
 "Length & Style" = "Длина и стиль";
 "Light" = "Светлая";
@@ -881,6 +884,7 @@
 "Reply" = "Ответить";
 "Reply to %@" = "Ответить %@";
 "Replying" = "Отправка ответа";
+"Reset" = "Сбросить";
 "Resets %@" = "Сброс через %@";
 "Resize sidebar" = "Изменить размер боковой панели";
 "Restore" = "Восстановить";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "История оплаты по факту использования";
 "Usage-based billing is enabled for natural language classifiers." = "Для классификаторов естественного языка включена оплата по факту использования.";
 "Use %@" = "Использовать язык: %@";
+"Use a custom server" = "Использовать пользовательский сервер";
 "Use another sign-in method" = "Использовать другой способ входа";
 "Use both" = "Использовать оба варианта";
 "Use only this voice" = "Использовать только этот голос";

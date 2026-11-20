@@ -280,6 +280,7 @@
 "Custom Search Query" = "Consulta de pesquisa personalizada";
 "Custom [listen delivery]" = "Personalizado";
 "Custom feed title" = "Título personalizado do feed";
+"Custom server" = "Servidor personalizado";
 "Customize auto-read by site or folder" = "Personalizar a leitura automática por site ou pasta";
 "Daily" = "Diário";
 "Daily Briefing" = "Resumo diário";
@@ -348,6 +349,7 @@
 "Enabled" = "Ativado";
 "Enter URL phrase..." = "Digite um trecho da URL...";
 "Enter a custom search query..." = "Insira uma consulta de busca personalizada...";
+"Enter a valid custom server URL." = "Informe uma URL válida para o servidor personalizado.";
 "Enter a web page URL..." = "Digite o URL de uma página da web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Insira o URL de qualquer página da web e o NewsBlur usará IA para analisar sua estrutura, encontrar artigos e criar um feed RSS personalizado para você assinar.";
 "Enter author phrase..." = "Digite um trecho do autor...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Íris lavanda";
 "Layout" = "Layout";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Deixe em branco para usar o NewsBlur ou informe o URL da sua instalação auto-hospedada. A alteração será aplicada na próxima vez que o aplicativo for aberto.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Deixe em branco para usar NewsBlur ou informe a URL da sua instalação hospedada por você. A alteração entra em vigor imediatamente para o login e o cadastro.";
 "Left" = "Esquerda";
 "Length & Style" = "Comprimento e estilo";
 "Light" = "Claro";
@@ -881,6 +884,7 @@
 "Reply" = "Responder";
 "Reply to %@" = "Responder a %@";
 "Replying" = "Respondendo";
+"Reset" = "Redefinir";
 "Resets %@" = "Redefine %@";
 "Resize sidebar" = "Redimensionar barra lateral";
 "Restore" = "Restaurar";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "Histórico de cobrança por uso";
 "Usage-based billing is enabled for natural language classifiers." = "A cobrança por uso está ativada para classificadores de linguagem natural.";
 "Use %@" = "Usar %@";
+"Use a custom server" = "Usar um servidor personalizado";
 "Use another sign-in method" = "Usar outro método de login";
 "Use both" = "Usar ambos";
 "Use only this voice" = "Usar apenas esta voz";

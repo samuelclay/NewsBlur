@@ -280,6 +280,7 @@
 "Custom Search Query" = "कस्टम खोज क्वेरी";
 "Custom [listen delivery]" = "कस्टम";
 "Custom feed title" = "कस्टम फ़ीड शीर्षक";
+"Custom server" = "कस्टम सर्वर";
 "Customize auto-read by site or folder" = "साइट या फ़ोल्डर के अनुसार स्वतः-पढ़ने की सुविधा अनुकूलित करें";
 "Daily" = "दैनिक";
 "Daily Briefing" = "दैनिक ब्रीफ़िंग";
@@ -348,6 +349,7 @@
 "Enabled" = "सक्षम";
 "Enter URL phrase..." = "URL वाक्यांश दर्ज करें...";
 "Enter a custom search query..." = "कस्टम खोज क्वेरी दर्ज करें...";
+"Enter a valid custom server URL." = "कृपया मान्य कस्टम सर्वर URL दर्ज करें।";
 "Enter a web page URL..." = "वेब पेज का URL दर्ज करें...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "किसी भी वेब पेज का URL डालें। NewsBlur AI से पेज की संरचना का विश्लेषण करेगा, लेख ढूँढेगा और एक कस्टम RSS फ़ीड बनाएगा, जिसकी आप सदस्यता ले सकते हैं।";
 "Enter author phrase..." = "लेखक का वाक्यांश दर्ज करें...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "लैवेंडर आइरिस";
 "Layout" = "लेआउट";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlur इस्तेमाल करने के लिए खाली छोड़ें, या अपने स्वयं-होस्ट किए गए इंस्टॉलेशन का URL दर्ज करें। यह ऐप अगली बार खुलने पर लागू होगा।";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "इसे खाली छोड़ें तो NewsBlur इस्तेमाल होगा, या अपने स्वयं-होस्ट किए गए इंस्टॉलेशन का URL दर्ज करें। यह लॉग इन और साइन अप के लिए तुरंत प्रभावी होगा।";
 "Left" = "बाएँ";
 "Length & Style" = "लंबाई और शैली";
 "Light" = "हल्का";
@@ -881,6 +884,7 @@
 "Reply" = "जवाब दें";
 "Reply to %@" = "%@ को जवाब दें";
 "Replying" = "जवाब दिया जा रहा है";
+"Reset" = "रीसेट करें";
 "Resets %@" = "%@ पर रीसेट होता है";
 "Resize sidebar" = "साइडबार का आकार बदलें";
 "Restore" = "पुनर्स्थापित करें";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "उपयोग बिलिंग का इतिहास";
 "Usage-based billing is enabled for natural language classifiers." = "प्राकृतिक भाषा क्लासिफ़ायर के लिए उपयोग-आधारित बिलिंग चालू है।";
 "Use %@" = "%@ का उपयोग करें";
+"Use a custom server" = "कस्टम सर्वर इस्तेमाल करें";
 "Use another sign-in method" = "साइन इन करने का कोई दूसरा तरीका इस्तेमाल करें";
 "Use both" = "दोनों का उपयोग करें";
 "Use only this voice" = "केवल इस आवाज़ का उपयोग करें";

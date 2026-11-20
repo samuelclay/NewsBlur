@@ -280,6 +280,7 @@
 "Custom Search Query" = "Truy vấn tìm kiếm tùy chỉnh";
 "Custom [listen delivery]" = "Tùy chỉnh";
 "Custom feed title" = "Tiêu đề nguồn cấp tùy chỉnh";
+"Custom server" = "Máy chủ tùy chỉnh";
 "Customize auto-read by site or folder" = "Tùy chỉnh chế độ tự động đánh dấu đã đọc theo trang hoặc thư mục";
 "Daily" = "Hằng ngày";
 "Daily Briefing" = "Bản tin hằng ngày";
@@ -348,6 +349,7 @@
 "Enabled" = "Đã bật";
 "Enter URL phrase..." = "Nhập cụm URL…";
 "Enter a custom search query..." = "Nhập truy vấn tìm kiếm tùy chỉnh...";
+"Enter a valid custom server URL." = "Nhập URL máy chủ tùy chỉnh hợp lệ.";
 "Enter a web page URL..." = "Nhập URL trang web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Nhập URL của bất kỳ trang web nào, NewsBlur sẽ dùng AI phân tích cấu trúc trang, tìm bài viết và tạo một nguồn cấp RSS tùy chỉnh để bạn đăng ký.";
 "Enter author phrase..." = "Nhập cụm từ về tác giả...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Diên vĩ oải hương";
 "Layout" = "Bố cục";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Để trống để dùng NewsBlur hoặc nhập URL của bản cài đặt tự lưu trữ. Thay đổi có hiệu lực vào lần mở ứng dụng tiếp theo.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Để trống để dùng NewsBlur, hoặc nhập URL của bản cài đặt tự lưu trữ. Thay đổi có hiệu lực ngay khi đăng nhập và đăng ký.";
 "Left" = "Trái";
 "Length & Style" = "Độ dài & phong cách";
 "Light" = "Sáng";
@@ -881,6 +884,7 @@
 "Reply" = "Trả lời";
 "Reply to %@" = "Trả lời %@";
 "Replying" = "Đang trả lời";
+"Reset" = "Đặt lại";
 "Resets %@" = "Đặt lại sau %@";
 "Resize sidebar" = "Đổi kích thước thanh bên";
 "Restore" = "Khôi phục";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "Lịch sử thanh toán theo mức sử dụng";
 "Usage-based billing is enabled for natural language classifiers." = "Thanh toán theo mức sử dụng đã được bật cho các bộ phân loại ngôn ngữ tự nhiên.";
 "Use %@" = "Dùng %@";
+"Use a custom server" = "Dùng máy chủ tùy chỉnh";
 "Use another sign-in method" = "Dùng phương thức đăng nhập khác";
 "Use both" = "Dùng cả hai";
 "Use only this voice" = "Chỉ dùng giọng đọc này";

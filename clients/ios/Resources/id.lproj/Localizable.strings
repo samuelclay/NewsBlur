@@ -280,6 +280,7 @@
 "Custom Search Query" = "Kueri Pencarian Kustom";
 "Custom [listen delivery]" = "Kustom";
 "Custom feed title" = "Judul feed kustom";
+"Custom server" = "Server khusus";
 "Customize auto-read by site or folder" = "Sesuaikan tandai otomatis sebagai telah dibaca per situs atau folder";
 "Daily" = "Harian";
 "Daily Briefing" = "Ringkasan Harian";
@@ -348,6 +349,7 @@
 "Enabled" = "Diaktifkan";
 "Enter URL phrase..." = "Masukkan frasa URL...";
 "Enter a custom search query..." = "Masukkan kueri penelusuran khusus...";
+"Enter a valid custom server URL." = "Masukkan URL server khusus yang valid.";
 "Enter a web page URL..." = "Masukkan URL halaman web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Masukkan URL halaman web apa pun dan NewsBlur akan menggunakan AI untuk menganalisis struktur halaman, menemukan artikel, dan membuat feed RSS khusus yang dapat Anda langgani.";
 "Enter author phrase..." = "Masukkan frasa penulis...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Tata letak";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Kosongkan untuk menggunakan NewsBlur, atau masukkan URL instalasi yang Anda kelola sendiri. Perubahan berlaku saat aplikasi dibuka berikutnya.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Biarkan kosong untuk menggunakan NewsBlur, atau masukkan URL instalasi yang dihosting sendiri. Perubahan langsung berlaku untuk Masuk dan Daftar.";
 "Left" = "Kiri";
 "Length & Style" = "Panjang & Gaya";
 "Light" = "Terang";
@@ -881,6 +884,7 @@
 "Reply" = "Balas";
 "Reply to %@" = "Balas kepada %@";
 "Replying" = "Membalas";
+"Reset" = "Atur ulang";
 "Resets %@" = "Direset %@";
 "Resize sidebar" = "Ubah ukuran bilah samping";
 "Restore" = "Pulihkan";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "Riwayat penagihan berdasarkan penggunaan";
 "Usage-based billing is enabled for natural language classifiers." = "Penagihan berdasarkan penggunaan diaktifkan untuk pengklasifikasi bahasa alami.";
 "Use %@" = "Gunakan %@";
+"Use a custom server" = "Gunakan server khusus";
 "Use another sign-in method" = "Gunakan metode masuk lain";
 "Use both" = "Gunakan keduanya";
 "Use only this voice" = "Gunakan hanya suara ini";

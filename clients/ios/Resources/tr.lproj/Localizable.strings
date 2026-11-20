@@ -280,6 +280,7 @@
 "Custom Search Query" = "Özel arama sorgusu";
 "Custom [listen delivery]" = "Özel";
 "Custom feed title" = "Özel akış başlığı";
+"Custom server" = "Özel sunucu";
 "Customize auto-read by site or folder" = "Otomatik okuma ayarlarını siteye veya klasöre göre özelleştir";
 "Daily" = "Günlük";
 "Daily Briefing" = "Günlük Özet";
@@ -348,6 +349,7 @@
 "Enabled" = "Etkin";
 "Enter URL phrase..." = "URL ifadesi girin...";
 "Enter a custom search query..." = "Özel arama sorgusu girin...";
+"Enter a valid custom server URL." = "Geçerli bir özel sunucu URL’si girin.";
 "Enter a web page URL..." = "Bir web sayfası URL'si girin...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Herhangi bir web sayfasının URL'sini girin; NewsBlur sayfa yapısını yapay zekâyla analiz eder, haberleri bulur ve abone olabileceğiniz özel bir RSS akışı oluşturur.";
 "Enter author phrase..." = "Yazar ifadesini girin...";
@@ -521,6 +523,7 @@
 "Lavender Iris" = "Lavanta Süseni";
 "Layout" = "Düzen";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlur'ı kullanmak için boş bırakın veya kendi barındırdığınız kurulumun URL'sini girin. Değişiklik, uygulama bir sonraki açıldığında geçerli olur.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "NewsBlur kullanmak için bu alanı boş bırakın veya kendi sunucunuzda barındırdığınız kurulumun URL’sini girin. Değişiklik, giriş ve kaydolma işlemlerinde hemen geçerli olur.";
 "Left" = "Sol";
 "Length & Style" = "Uzunluk ve Stil";
 "Light" = "Açık";
@@ -881,6 +884,7 @@
 "Reply" = "Yanıtla";
 "Reply to %@" = "%@ kullanıcısına yanıt ver";
 "Replying" = "Yanıtlanıyor";
+"Reset" = "Sıfırla";
 "Resets %@" = "%@ sıfırlanıyor";
 "Resize sidebar" = "Kenar çubuğunu yeniden boyutlandır";
 "Restore" = "Geri yükle";
@@ -1235,6 +1239,7 @@
 "Usage billing history" = "Kullanım faturalandırma geçmişi";
 "Usage-based billing is enabled for natural language classifiers." = "Doğal dil sınıflandırıcıları için kullanıma dayalı faturalandırma etkin.";
 "Use %@" = "%@ kullan";
+"Use a custom server" = "Özel sunucu kullan";
 "Use another sign-in method" = "Başka bir giriş yöntemi kullan";
 "Use both" = "İkisini de kullan";
 "Use only this voice" = "Yalnızca bu sesi kullan";
