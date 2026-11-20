@@ -8,7 +8,9 @@ import android.media.ExifInterface
 import android.os.Build
 import android.util.Base64
 import com.newsblur.util.FileCache
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -17,7 +19,6 @@ import okhttp3.Request
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.IOException
 import java.io.InputStream
 import java.net.URLDecoder
 import java.nio.ByteBuffer
@@ -43,25 +44,37 @@ class StoryImageLoader(
 
     suspend fun load(source: StoryImageSource): StoryImage =
         withContext(Dispatchers.IO) {
-            ensureActive()
-            val data = readLocalImage(source.url) ?: try {
-                val request = client.newCall(Request.Builder().url(source.url).build())
-                call = request
-                if (cancelled) request.cancel()
-                request.execute().use { response ->
-                    check(response.isSuccessful)
-                    val body = response.body ?: error("Empty image response")
-                    require(body.contentLength() <= MAX_BYTES)
-                    body.byteStream().use { readBounded(it) }
-                }
-            } catch (failure: IOException) {
-                ensureActive()
-                if (cancelled) throw failure
-                source.thumbnailUrl?.let(::readLocalImage) ?: throw failure
+            try {
+                loadImage(source.url)
+            } catch (stopped: CancellationException) {
+                throw stopped
+            } catch (failure: Exception) {
+                checkActive()
+                loadImage(source.thumbnailUrl ?: throw failure)
             }
-            ensureActive()
-            StoryImage(decode(data), data).also { ensureActive() }
         }
+
+    private suspend fun loadImage(url: String): StoryImage {
+        checkActive()
+        val data = readLocalImage(url) ?: run {
+            val request = client.newCall(Request.Builder().url(url).build())
+            call = request
+            if (cancelled) request.cancel()
+            request.execute().use { response ->
+                check(response.isSuccessful)
+                val body = response.body ?: error("Empty image response")
+                require(body.contentLength() <= MAX_BYTES)
+                body.byteStream().use { readBounded(it) }
+            }
+        }
+        checkActive()
+        return StoryImage(decode(data), data).also { checkActive() }
+    }
+
+    private suspend fun checkActive() {
+        currentCoroutineContext().ensureActive()
+        if (cancelled) throw CancellationException("Image load cancelled")
+    }
 
     private fun readLocalImage(url: String): ByteArray? {
         if (url.startsWith("data:", ignoreCase = true)) {
