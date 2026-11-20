@@ -4,6 +4,7 @@ import os
 import random
 import re
 import struct
+from urllib.parse import urlparse
 
 from django import template
 from django.conf import settings
@@ -36,6 +37,30 @@ def current_domain(dev=False, strip_www=False):
     if strip_www:
         domain = domain.replace("www.", "")
     return domain
+
+
+@register.simple_tag(takes_context=True)
+def licensed_fonts(context, blocking=False):
+    """utils_tags.py links the licensed Whitney, Gotham, Chronicle and Sentinel fonts from typography.com.
+
+    typography.com serves these fonts only to newsblur.com and its subdomains, so any other NEWSBLUR_URL
+    host (a self-hosted install, or localhost) gets no link and falls back to the rest of each CSS font
+    stack. The link doesn't block rendering, except where blocking=True: print.xhtml and invoice.xhtml
+    print as soon as their script runs, and a blocking stylesheet holds that script until the fonts arrive.
+    """
+    host = urlparse(settings.NEWSBLUR_URL).hostname or ""
+    if host != "newsblur.com" and not host.endswith(".newsblur.com"):
+        return ""
+    project = "731824" if context.get("debug_assets") else "711824"
+    href = f"https://cloud.typography.com/6565292/{project}/css/fonts.css"
+    if blocking:
+        return format_html('<link rel="stylesheet" type="text/css" href="{}" />', href)
+    return format_html(
+        '<link rel="preload" as="style" onload="this.onload=null;this.rel=\'stylesheet\'" '
+        'type="text/css" href="{0}" />'
+        '<noscript><link rel="stylesheet" type="text/css" href="{0}" /></noscript>',
+        href,
+    )
 
 
 @register.simple_tag(takes_context=True)
