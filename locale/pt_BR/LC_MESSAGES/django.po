@@ -7375,6 +7375,20 @@ msgstr ""
 "Você esteve recentemente no NewsBlur, então talvez não quisesse voltar para a conta gratuita? Talvez só "
 "precise renovar sua conta Premium. Vamos ajudar você a fazer isso."
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"Você já usou o teste gratuito de filtro com IA de hoje (%(count)s). Ele será renovado à meia-noite. O "
+"Premium Archive inclui testes ilimitados e executa seus filtros em cada novo artigo."
+msgstr[1] ""
+"Você já usou os testes gratuitos de filtro com IA de hoje (%(count)s). Eles serão renovados à meia-noite. O"
+" Premium Archive inclui testes ilimitados e executa seus filtros em cada novo artigo."
+
 msgid "YouTube search request failed."
 msgstr "A solicitação de pesquisa do YouTube falhou."
 

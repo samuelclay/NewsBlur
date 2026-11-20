@@ -7296,6 +7296,18 @@ msgstr ""
 "Gần đây bạn đã sử dụng NewsBlur, nên có thể bạn không định chuyển lại sang tài khoản miễn phí? Có lẽ bạn "
 "chỉ cần gia hạn tài khoản Premium. Hãy để chúng tôi giúp bạn."
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"Bạn đã dùng hết lượt dùng thử bộ lọc AI miễn phí hôm nay (%(count)s). Lượt dùng thử sẽ được đặt lại vào lúc"
+" nửa đêm. Premium Archive bao gồm số lượt dùng thử không giới hạn và áp dụng bộ lọc của bạn cho mỗi bài "
+"viết mới."
+
 msgid "YouTube search request failed."
 msgstr "Yêu cầu tìm kiếm YouTube không thành công."
 

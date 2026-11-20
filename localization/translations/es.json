@@ -8138,6 +8138,8 @@
   "e8eb06c64b5a65658ecfac55": "Los resultados muestran los artículos coincidentes con los términos resaltados",
   "e8f44ec03f43c8ff64614e30": "NB-static NB-static-compare NB-static-compare-feedly",
   "e8fdc17267bf6a03623cc931": "» ",
+  "e8ffe260416054d28e72595b:0": "Has usado la prueba gratuita de filtro de IA de hoy: %(count)s. Se restablece a medianoche. Premium Archive incluye pruebas ilimitadas y ejecuta tus filtros en cada artículo nuevo.",
+  "e8ffe260416054d28e72595b:1": "Has usado las pruebas gratuitas de filtro de IA de hoy: %(count)s. Se restablecen a medianoche. Premium Archive incluye pruebas ilimitadas y ejecuta tus filtros en cada artículo nuevo.",
   "e90b6868ab12e30397ec7c51": "¿Nuevo en NewsBlur? Crear una cuenta",
   "e90ea26dde040ffc7e5c0f5a": "Introduce una frase de URL...",
   "e9201626d490651ea7c8f614": "Zona horaria",

@@ -6687,6 +6687,15 @@ msgid ""
 "you just need to renew your premium account. Let's help you do that."
 msgstr "你最近使用過 NewsBlur，所以你可能不是有意要轉回免費帳戶？也許你只需要續訂進階帳戶。我們來幫你處理。"
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] "你已用完今天的 %(count)s 次免費 AI 篩選測試。測試會在午夜重設。Premium Archive 提供不限次數的測試，並會在每篇新文章上執行你的篩選條件。"
+
 msgid "YouTube search request failed."
 msgstr "YouTube 搜尋請求失敗。"
 

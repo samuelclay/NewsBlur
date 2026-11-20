@@ -7330,6 +7330,17 @@ msgstr ""
 "Yakın zamanda NewsBlur'ı kullandınız; belki de ücretsiz hesaba geri dönmek istememiştiniz? Belki de "
 "yalnızca Premium hesabınızı yenilemeniz gerekiyor. Bunu yapmanıza yardımcı olalım."
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"Bugünkü %(count)s ücretsiz yapay zekâ filtresi denemenizi kullandınız. Hak gece yarısı sıfırlanır. Premium "
+"Archive sınırsız deneme içerir ve filtrelerinizi her yeni haberde çalıştırır."
+
 msgid "YouTube search request failed."
 msgstr "YouTube arama isteği başarısız oldu."
 

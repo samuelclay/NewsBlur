@@ -7,6 +7,8 @@ import uuid
 from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
 
+import redis
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase, override_settings
 from django.test.client import Client
@@ -14,6 +16,7 @@ from PIL import Image
 
 from apps.analyzer import jev
 from apps.analyzer.models import MClassifierPrompt
+from apps.analyzer.views import TEST_PROMPT_DAILY_LIMIT, _test_prompt_count_key
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 
@@ -338,8 +341,12 @@ class Test_TestPromptView(TransactionTestCase):
             image_urls=["https://example.com/a.jpg", "https://example.com/b.jpg"],
         )
         self.story.save()
+        # test_jev.py: Test user ids repeat across runs in the shared dev Redis.
+        self.redis = redis.Redis(connection_pool=settings.REDIS_POOL)
+        self.redis.delete(_test_prompt_count_key(self.user))
 
     def tearDown(self):
+        self.redis.delete(_test_prompt_count_key(self.user))
         self.story.delete()
 
     def post(self, **data):
@@ -374,3 +381,25 @@ class Test_TestPromptView(TransactionTestCase):
         with fake_jev(status_code=500):
             result = self.post()
         self.assertEqual(result["code"], -1)
+
+    def test_without_archive_a_reader_gets_ten_tests_a_day(self):
+        """Readers without Premium Archive can try filters a few times a day. A failed test
+        doesn't use one up, and the test past the limit never reaches Jev."""
+        with fake_jev(status_code=500):
+            for _ in range(3):
+                self.assertEqual(self.post()["code"], -1)
+        with fake_jev(probability=0.9) as api:
+            for _ in range(TEST_PROMPT_DAILY_LIMIT):
+                self.assertEqual(self.post()["code"], 0)
+            requests_before = len(api.requests)
+            refused = self.post()
+        self.assertEqual(refused["code"], -1)
+        self.assertTrue(refused["test_limit_reached"])
+        self.assertEqual(len(api.requests), requests_before)
+
+    def test_premium_archive_tests_arent_capped(self):
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+        with fake_jev(probability=0.9):
+            results = [self.post()["code"] for _ in range(TEST_PROMPT_DAILY_LIMIT + 2)]
+        self.assertEqual(set(results), {0})

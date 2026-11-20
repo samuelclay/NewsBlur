@@ -7366,6 +7366,20 @@ msgstr ""
 "Je bent onlangs op NewsBlur geweest, dus misschien was het niet je bedoeling om terug te gaan naar het "
 "gratis account. Misschien hoef je alleen je Premium-abonnement te verlengen. We helpen je daarbij."
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"Je hebt de %(count)s gratis AI-filtertest van vandaag gebruikt. De test wordt om middernacht gereset. Met "
+"Premium Archive krijg je onbeperkt tests en worden je filters op elk nieuw artikel toegepast."
+msgstr[1] ""
+"Je hebt de %(count)s gratis AI-filtertests van vandaag gebruikt. Ze worden om middernacht gereset. Met "
+"Premium Archive krijg je onbeperkt tests en worden je filters op elk nieuw artikel toegepast."
+
 msgid "YouTube search request failed."
 msgstr "Zoekopdracht op YouTube is mislukt."
 

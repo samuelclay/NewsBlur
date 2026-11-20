@@ -7094,6 +7094,20 @@ msgstr ""
 "לאחרונה השתמשת ב־NewsBlur, אז אולי לא התכוונת לעבור בחזרה לחשבון החינמי? אולי רק צריך לחדש את מינוי "
 "ה-Premium שלך. נעזור לך לעשות זאת."
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"ניצלת את בדיקת המסנן החינמית של AI להיום: %(count)s. הספירה מתאפסת בחצות. Premium Archive כולל בדיקות ללא "
+"הגבלה ומפעיל את המסננים שלך על כל כתבה חדשה."
+msgstr[1] ""
+"ניצלת את בדיקות המסנן החינמיות של AI להיום: %(count)s. הספירה מתאפסת בחצות. Premium Archive כולל בדיקות ללא"
+" הגבלה ומפעיל את המסננים שלך על כל כתבה חדשה."
+
 msgid "YouTube search request failed."
 msgstr "בקשת החיפוש ב-YouTube נכשלה."
 

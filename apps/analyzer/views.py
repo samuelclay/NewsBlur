@@ -4,12 +4,13 @@ Handles saving classifier rules (by title, author, tag, feed, and AI prompt)
 and populating the trainer modal with current classifier state.
 """
 
+import datetime
 from types import SimpleNamespace
 
 import redis
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import gettext
+from django.utils.translation import gettext, ngettext
 from django.views.decorators.http import require_POST
 from mongoengine.queryset import NotUniqueError, Q
 
@@ -35,6 +36,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.ratelimit import ratelimit
 from utils.user_functions import ajax_login_required, get_user
+from vendor.timezones.utilities import localtime_for_timezone
 
 
 def index(request):
@@ -431,6 +433,16 @@ def save_prompt_classifier(request):
 # before Jev sees it, and the whole test has to finish inside one web request.
 TEST_PROMPT_MAX_IMAGES = 8
 
+# views.py: Readers without Premium Archive can try AI filters this many times a day, to see
+# whether a filter matches before upgrading. Archive runs the filters and tests without a cap.
+TEST_PROMPT_DAILY_LIMIT = 10
+
+
+def _test_prompt_count_key(user):
+    """Redis key counting today's prompt tests, where today is the reader's own day."""
+    today = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone).date()
+    return "AIT:%s:%s" % (user.pk, today.isoformat())
+
 
 @require_POST
 @ajax_login_required
@@ -441,6 +453,8 @@ def test_prompt_classifier(request):
 
     views.py: Open to every account. Anyone can write AI filters and see how they judge a
     story; they only score stories on Premium Archive, which the trainer says next to them.
+    Accounts without Archive get TEST_PROMPT_DAILY_LIMIT tests a day. Only tests that
+    return a verdict count, so a failed request doesn't use one up.
     """
     from apps.analyzer import jev
 
@@ -465,6 +479,24 @@ def test_prompt_classifier(request):
         story_db = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:
         return {"code": -1, "message": gettext("Story not found")}
+
+    counted = not request.user.profile.can_use_ai_classifiers
+    count_key = _test_prompt_count_key(request.user)
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    if counted and int(r.get(count_key) or 0) >= TEST_PROMPT_DAILY_LIMIT:
+        logging.user(request, "~FRAI filter test limit reached")
+        return {
+            "code": -1,
+            "test_limit_reached": True,
+            "message": ngettext(
+                "You've used today's %(count)s free AI filter test. It resets at midnight. "
+                "Premium Archive includes unlimited tests and runs your filters on every new story.",
+                "You've used today's %(count)s free AI filter tests. They reset at midnight. "
+                "Premium Archive includes unlimited tests and runs your filters on every new story.",
+                TEST_PROMPT_DAILY_LIMIT,
+            )
+            % {"count": TEST_PROMPT_DAILY_LIMIT},
+        }
 
     test_filter = SimpleNamespace(
         key="test", prompt=prompt_text, classifier_type=classifier_type, include_images=include_images
@@ -493,6 +525,10 @@ def test_prompt_classifier(request):
         if story_hash not in scores:
             return {"code": -1, "message": gettext("Classification failed, please try again")}
         classification = 1 if scores[story_hash] else 0
+
+    if counted:
+        r.incr(count_key)
+        r.expire(count_key, 2 * 24 * 60 * 60)
 
     logging.user(
         request,

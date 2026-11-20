@@ -7312,6 +7312,20 @@ msgstr ""
 "आप हाल ही में NewsBlur पर थे, इसलिए शायद आपका इरादा मुफ़्त खाते पर वापस जाने का नहीं था? शायद आपको बस अपनी "
 "प्रीमियम सदस्यता फिर से शुरू करनी है। आइए, इसमें आपकी मदद करें।"
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"आपने आज का %(count)s मुफ़्त AI फ़िल्टर परीक्षण इस्तेमाल कर लिया है। यह आधी रात को रीसेट हो जाता है। Premium"
+" Archive में असीमित परीक्षण शामिल हैं और यह आपके फ़िल्टर हर नए लेख पर चलाता है।"
+msgstr[1] ""
+"आपने आज के %(count)s मुफ़्त AI फ़िल्टर परीक्षण इस्तेमाल कर लिए हैं। ये आधी रात को रीसेट हो जाते हैं। "
+"Premium Archive में असीमित परीक्षण शामिल हैं और यह आपके फ़िल्टर हर नए लेख पर चलाता है।"
+
 msgid "YouTube search request failed."
 msgstr "YouTube खोज अनुरोध विफल रहा।"
 

@@ -6823,6 +6823,15 @@ msgid ""
 "you just need to renew your premium account. Let's help you do that."
 msgstr "최근에 NewsBlur를 이용하셨으니, 무료 계정으로 돌아가려던 것은 아니셨을지도 모르겠습니다. 프리미엄 계정을 갱신하기만 하면 될 수도 있습니다. 갱신을 도와드리겠습니다."
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] "오늘 제공되는 무료 AI 필터 테스트 %(count)s회를 모두 사용했습니다. 자정에 초기화됩니다. 프리미엄 아카이브에는 무제한 테스트가 포함되며, 새 스토리가 올라올 때마다 필터를 실행합니다."
+
 msgid "YouTube search request failed."
 msgstr "YouTube 검색 요청에 실패했습니다."
 
