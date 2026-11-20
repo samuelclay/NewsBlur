@@ -193,9 +193,8 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
         key: 'feedler',
         name: 'Feedler',
-        meta: gettext('Free beta · iPhone, iPad &amp; Mac'),
-        url: 'https://feedlerapp.com/',
-        button: 'TestFlight',
+        meta: gettext('Free + subscription · iPhone, iPad &amp; Mac'),
+        url: 'https://apps.apple.com/app/feedler-the-smart-rss-reader/id6777101828',
         thumbs: ['feedler-1.jpg', 'feedler-2.jpg']
         }),
         this.make_app_row({
@@ -315,9 +314,8 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
         this.make_app_row({
         key: 'feedler',
         name: 'Feedler',
-        meta: gettext('Free beta · Mac, iPhone &amp; iPad'),
-        url: 'https://feedlerapp.com/',
-        button: 'TestFlight',
+        meta: gettext('Free + subscription · Mac, iPhone &amp; iPad'),
+        url: 'https://apps.apple.com/app/feedler-the-smart-rss-reader/id6777101828?platform=mac',
         thumbs: ['feedler-1.jpg', 'feedler-2.jpg']
         }),
         this.make_app_row({

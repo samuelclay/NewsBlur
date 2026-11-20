@@ -22,6 +22,8 @@ class StoryImageView(
     private val source: StoryImageSource,
 ) : View(context) {
     val viewport = ImageViewport()
+    private var imageWidth = source.naturalWidth
+    private var imageHeight = source.naturalHeight
     var bitmap: Bitmap? = null
         set(value) {
             field = value
@@ -102,9 +104,19 @@ class StoryImageView(
     ) {
         animation?.cancel()
         resetDrag()
-        viewport.layout(w.toFloat(), h.toFloat(), source.naturalWidth * density, source.naturalHeight * density)
+        viewport.layout(w.toFloat(), h.toFloat(), imageWidth * density, imageHeight * density)
         update()
         onGeometryChanged()
+    }
+
+    fun showLoadedBitmap(loaded: Bitmap) {
+        if (source.thumbnailUrl != null) {
+            // storyDetailView.js measures the inline thumbnail, which can have a different crop from this photo.
+            imageWidth = loaded.width.toFloat()
+            imageHeight = loaded.height.toFloat()
+            viewport.layout(width.toFloat(), height.toFloat(), imageWidth * density, imageHeight * density)
+        }
+        bitmap = loaded
     }
 
     fun imageRect(): RectF {

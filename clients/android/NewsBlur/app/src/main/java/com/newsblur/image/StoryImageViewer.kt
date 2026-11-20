@@ -297,7 +297,7 @@ class StoryImageViewer(
             try {
                 val loaded = current.load(source)
                 if (closing || loader !== current) return@launch
-                image.bitmap = loaded.bitmap
+                image.showLoadedBitmap(loaded.bitmap)
                 imageData = loaded.data
                 updateActionsEnabled()
                 status.visibility = View.GONE
