@@ -173,8 +173,7 @@
     tapGesture.numberOfTapsRequired = 1;
     tapGesture.delegate = self;
     [tapGesture requireGestureRecognizerToFail:doubleTapGesture];
-    // StoryDetailObjCViewController.m lets article scrolling win over a short image tap.
-    [tapGesture requireGestureRecognizerToFail:self.webView.scrollView.panGestureRecognizer];
+    // StoryDetailObjCViewController.m suppresses taps in scrollViewWillBeginDragging: so the article pan can reset independently.
     [self.webView addGestureRecognizer:tapGesture];
     
     UITapGestureRecognizer *doubleDoubleTapGesture = [[UITapGestureRecognizer alloc]

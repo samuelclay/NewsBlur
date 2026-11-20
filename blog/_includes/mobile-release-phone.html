@@ -2,8 +2,10 @@
 {% if include.image contains 'android-' %}{% assign phone = 'galaxy-s22' %}{% endif %}
 {% comment %}mobile-release-phone.html: device="tablet" shows a landscape tablet recording without a frame.{% endcomment %}
 {% if include.device == 'tablet' %}{% assign phone = 'tablet' %}{% endif %}
+{% comment %}device="stage" shows a full-width composed clip with no frame; ratio="1 / 1" sets its shape before it loads.{% endcomment %}
+{% if include.device == 'stage' %}{% assign phone = 'stage' %}{% endif %}
 <figure class="mobile-release-phone mobile-release-phone--{{ phone }}">
-  <div class="mobile-release-phone__device">
+  <div class="mobile-release-phone__device"{% if include.ratio %} style="aspect-ratio: {{ include.ratio }}"{% endif %}>
     <div class="mobile-release-phone__screen">
       {% if include.video %}
       <video muted loop playsinline controls preload="none" poster="{{ include.image | relative_url }}" aria-label="{{ include.alt | escape }}">

@@ -29,6 +29,7 @@ Actions:
     checkpoint:<name>     - Timestamp a navigation/load event in the current capture
     fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
     pagerfuzz:<seed>,<count>[,forward] - Consecutive swipes over one HID connection; forward advances steadily
+    scrollcatch           - Verify a held reverse drag in the reader-story-swift-1 iPhone UI fixture
     describe              - Print simulator accessibility elements
     waittext:<text>        - Wait up to 90 seconds for accessibility content
     waitphoto:<x>,<y>,<w>,<h> - Wait for a photo in a normalized screenshot region
@@ -52,6 +53,7 @@ Environment:
     IOS_APP_PATH     - Path to the built .app for install
     IOS_SIM_DISPLAY  - Optional simulator screen ID/name for screenshots and video (Duo has two displays)
     IOS_LAUNCH_ARGUMENTS - Optional shell-quoted launch arguments (for UI test fixtures)
+    IOS_IDB_PYTHON   - Python interpreter for idb gesture replays
     IOS_USE_XCTRACE  - Also record an Instruments trace when set to 1
     IOS_SAMPLE_SECONDS - Maximum CPU profile duration (defaults to 600)
 """
@@ -347,6 +349,98 @@ asyncio.run(main())
     subprocess.run([interpreter, "-c", script, UDID, json.dumps(gestures)], check=True)
 
 
+def do_scroll_catch():
+    """Run the gesture replay in the Python environment that supplies idb's HID client."""
+    interpreter = os.environ.get("IOS_IDB_PYTHON")
+    if interpreter:
+        command = [interpreter]
+    else:
+        idb = shutil.which("idb")
+        if not idb:
+            sys.exit("scrollcatch needs idb on PATH or IOS_IDB_PYTHON set to its Python interpreter")
+        with open(idb, "rb") as entrypoint:
+            command = shlex.split(entrypoint.readline().decode().strip().removeprefix("#!"))
+        if not any("python" in arg for arg in command):
+            sys.exit("Set IOS_IDB_PYTHON to the Python interpreter that supplies the idb client")
+    worker = """
+import asyncio, sys
+from run_ios import replay_scroll_catch
+asyncio.run(replay_scroll_catch(sys.argv[1]))
+"""
+    result = subprocess.run([*command, "-c", worker, UDID], cwd=os.path.dirname(os.path.abspath(__file__)))
+    if result.returncode:
+        sys.exit(result.returncode)
+
+
+async def replay_scroll_catch(udid):
+    import asyncio
+    import logging
+    from idb.common import types
+    from idb.common.types import HIDDelay, HIDDirection, HIDPress, HIDTouch, Point
+    from idb.grpc.management import ClientManager
+
+    async def fixture_offset(client):
+        # run_ios.py reads CoreSimulator's tree even if an XCTest session has left the default AX bridge empty.
+        if hasattr(types, "AccessibilityInfoOptions"):
+            backend = getattr(types.AccessibilityBackend, "AX_CORESIMULATOR", None)
+            options = types.AccessibilityInfoOptions(backend=backend)
+        else:
+            options = False  # Older idb clients take a nested boolean.
+        snapshot = await client.accessibility_info(None, options)
+        values = {e.get("AXUniqueId"): e.get("AXValue") for e in json.loads(snapshot.json)}
+        if values.get("story-current-story") != "ui-story-swift-1":
+            sys.exit("Open the reader-story-swift-1 UI fixture before running scrollcatch")
+        state = dict(field.split("=") for field in (values.get("story-traverse-fade-state") or "").split())
+        if "offset" not in state:
+            sys.exit("The installed NewsBlur build does not expose the article offset in the UI fixture")
+        return float(state["offset"])
+
+    def stroke(y, segments):
+        # Each segment is a duration and a vertical distance in points. A zero distance holds the finger down.
+        def touch(direction):
+            return HIDPress(action=HIDTouch(Point(235, y)), direction=direction)
+
+        events = [touch(HIDDirection.DOWN)]
+        for duration, distance in segments:
+            steps = max(1, round(duration * 60)) if distance else 1
+            for _ in range(steps):
+                events.append(HIDDelay(duration=duration / steps))
+                y += distance / steps
+                if distance:
+                    events.append(touch(HIDDirection.DOWN))
+        events.append(touch(HIDDirection.UP))
+        return events
+
+    manager = ClientManager(logger=logging.getLogger("scrollcatch"), companion_path=shutil.which("idb_companion"))
+    async with manager.from_udid(udid=udid) as client:
+        await fixture_offset(client)
+        # run_ios.py reenacts the SE sequence: scroll, brake with a small adjustment, then make a short flick.
+        scroll = stroke(410, [(0.20, -65), (0.34, -52)])
+        brake = stroke(400, [(0.16, -27), (0.07, 0), (0.14, 24), (0.11, -22), (0.06, 0)])
+        flick = stroke(398, [(0.028, 0), (0.07, -38), (0.01, 0)])
+        await client.send_events(scroll + [HIDDelay(duration=1.19)] + brake + [HIDDelay(duration=0.39)] + flick)
+        lift = time.monotonic()
+        await asyncio.sleep(0.85)
+        coasting = await fixture_offset(client)
+        await asyncio.sleep(max(0, lift + 1.53 - time.monotonic()))
+        before = await fixture_offset(client)
+        if before <= coasting:
+            sys.exit(f"The article did not coast toward the catch: {coasting:.1f} -> {before:.1f}")
+        remaining = lift + 1.70 - time.monotonic()
+        if remaining < 0:
+            sys.exit("The accessibility snapshot took too long to catch the flick in flight")
+        await asyncio.sleep(remaining)
+        drag = stroke(375, [(0.20, 0), (0.45, 150), (0.20, 0)])
+        try:
+            await client.send_events(drag[:-1])
+            after = await fixture_offset(client)
+        finally:
+            await client.send_events(drag[-1:])
+        if before - after < 90:
+            sys.exit(f"Held reverse drag failed to move the article back: {before:.1f} -> {after:.1f}")
+        print(f"  Held reverse drag moved the article back {before - after:.1f} points")
+
+
 def do_checkpoint(name):
     """Record a named timestamp for matching navigation with app measurements."""
     event = {"checkpoint": name, "at": time.time()}
@@ -493,6 +587,8 @@ def parse_and_execute(action):
         do_fuzz(arg)
     elif cmd == "pagerfuzz":
         do_pager_fuzz(arg)
+    elif cmd == "scrollcatch":
+        do_scroll_catch()
     elif cmd == "describe":
         subprocess.run(["idb", "ui", "describe-all", "--udid", UDID, "--json"], check=True)
     elif cmd == "waittext":

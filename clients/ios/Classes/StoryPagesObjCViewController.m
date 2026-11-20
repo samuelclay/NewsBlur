@@ -3540,9 +3540,10 @@
         return;
     }
 
-    self.uiTestTraverseFadeProbeView.accessibilityValue = [NSString stringWithFormat:@"alpha=%.3f accumulator=%.3f",
+    self.uiTestTraverseFadeProbeView.accessibilityValue = [NSString stringWithFormat:@"alpha=%.3f accumulator=%.3f offset=%.1f",
                                                            self.traverseView.alpha,
-                                                           self.traverseFadeAccumulator];
+                                                           self.traverseFadeAccumulator,
+                                                           self.currentPage.webView.scrollView.contentOffset.y];
 }
 
 - (void)setTextButton {

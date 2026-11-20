@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-11-05T01:11:18-05:00</updated>
+  <updated>2026-11-19T02:57:14-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,84 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Three new features in Listen: podcasts, your music, and voice rotation</title>
+    <link href="https://blog.newsblur.com/2026/11/19/podcasts-in-listen-and-listen-over-your-music/" rel="alternate" type="text/html" title="Three new features in Listen: podcasts, your music, and voice rotation" />
+    <published>2026-11-19T03:00:00-05:00</published>
+    <updated>2026-11-19T03:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/19/podcasts-in-listen-and-listen-over-your-music</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/19/podcasts-in-listen-and-listen-over-your-music/">
+      <![CDATA[<p>When a story has a podcast episode in it, the iPhone, iPad, Mac, and Android apps used to play it with the plain audio control built into the story. It had no skip buttons and no lock screen controls, and it started from the beginning every time you came back to it. Now episodes play in the same player as <a href="/2026/10/30/listen-to-your-stories/">Listen</a>, with everything that comes with it. Listen itself can now read over your music, and take turns between voices from one story to the next.</p>
+
+<h3 id="play-play-next-play-last">Play, Play Next, Play Last</h3>
+
+<p>Each episode in a story is now a card with three buttons. <strong>Play audio</strong> starts it right away, <strong>Play Next</strong> puts it at the top of Up Next, and <strong>Play Last</strong> puts it at the end.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-podcast-card.webp" alt="An audio card in a story on Android, with Play audio, Play Next, and Play Last buttons" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>The episode plays in the mini player above the bottom bar. Tap it to open Now Playing, with the scrubber, the skip buttons, speed, and Up Next. It keeps playing with the screen off, with controls on the lock screen, in Control Center and Android’s media controls, and on your headphones. iPhone and iPad have an AirPlay button, and Android shows its output picker. The skip buttons use the same intervals you set in the web’s player.</p>
+
+<!-- SCREENSHOT: iPhone Now Playing with a real podcast episode from one of my feeds, framed in the iPhone 17 bezel -->
+
+<p>Videos and YouTube embeds still play inside the story.</p>
+
+<h3 id="pick-up-where-you-left-off-on-any-device">Pick up where you left off, on any device</h3>
+
+<p>Your place in an episode is saved to your account every few seconds while it plays, and again whenever you pause, skip, or leave the app. Start an episode on your phone and the web picks it up at the same spot, or the other way around. Finished episodes move to History, and Up Next holds podcast episodes and Listen stories in one queue. Starting an episode stops a Listen story that’s playing, and the other way around.</p>
+
+<p>This turned up a bug on the server. When you came back to an episode, the web resumed from the last place you paused or started it, not from where you’d actually gotten to while it played. Every device, the web included, now resumes from the latest position.</p>
+
+<h3 id="listen-over-your-music">Listen over your music</h3>
+
+<p>Listen used to pause whatever else was playing. On iPhone, iPad, and Android it can now read your stories over music from another app, like Apple Music or Spotify. Open Now Playing and turn on <strong>Play over other audio</strong> in the new Music section.</p>
+
+<p><img src="/assets/listen-music-balance.webp" alt="The Music section of Listen's Now Playing on iPhone, with Play over other audio and Lower music while voice speaks turned on, and a slider between Music and Voice" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Lower music while voice speaks</strong> is on by default. It dips the music while a story is being read and brings it back up when you pause.</p>
+
+<p>The <strong>Music</strong> and <strong>Voice</strong> slider sets the balance between them. Neither iOS nor Android lets one app turn down another app’s music, so the slider works on the voice instead. Toward Music the voice gets quieter, and toward Voice it gets louder than it would normally play, with a limiter so it doesn’t distort.</p>
+
+<p>These settings stay on each device and don’t sync. The Music section folds away with the arrow in its header, and stays folded. Podcast episodes still pause your music like before. On the Mac, apps already play over each other, so there’s nothing to turn on.</p>
+
+<h3 id="a-different-voice-for-each-story">A different voice for each story</h3>
+
+<p>Listen can also take turns between voices, one per story. In the voice picker, the <strong>+</strong> next to a voice adds it to your rotation, and the list at the top shows the order. The first story gets the first voice, the next story gets the second, and so on. Each time you start listening, the rotation starts again from the top.</p>
+
+<p><img src="/assets/listen-voice-rotation.webp" alt="The Listen voice picker with Amelia and Jon in the voice rotation at the top, numbered 1 and 2, and a + beside each voice in the list below to add it" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The <strong>×</strong> on a voice takes it out of the rotation, and <strong>Use only this voice</strong> goes back to a single narrator. Click a name in the rotation to find that voice in the list. Each language has its own rotation, and your list syncs between the web and the apps.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Podcasts in Listen’s player and Listen over your music are in NewsBlur 16.2 and later for iPhone, iPad, and Mac on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a>, and for Android on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. Voice rotation is on the web now, and comes to the iPhone, iPad, Mac, and Android apps with their next updates. Listen itself is part of <a href="https://newsblur.com/?next=premium">Premium Archive and Premium Pro</a>.</p>
+
+<p>If an episode doesn’t play the way you’d expect, or the balance between your music and Listen needs more range, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    <category term="macos" />
+    
+    
+    <summary type="html">
+      <![CDATA[When a story has a podcast episode in it, the iPhone, iPad, Mac, and Android apps used to play it with the plain audio control built into the story. It had no skip buttons and no lock screen controls, and it started from the beginning every time you came back...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Type a classifier straight into the trainer</title>
@@ -2082,152 +2160,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[Not every website has an RSS feed. Some never did. Some had one years ago and quietly removed it. And some sites have content that updates regularly but was never structured as a feed in the first place: job boards, product listings, event calendars, changelog pages. Until now, if a...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">NewsBlur iOS 26 and macOS Tahoe updates: Major redesign, discover related sites, new story toolbar, and much, much more</title>
-    <link href="https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/" rel="alternate" type="text/html" title="NewsBlur iOS 26 and macOS Tahoe updates: Major redesign, discover related sites, new story toolbar, and much, much more" />
-    <published>2026-03-05T00:00:00-05:00</published>
-    <updated>2026-03-05T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/">
-      <![CDATA[<p>This is a hefty redesign and rethinking of the NewsBlur iOS and Mac app. Every screen has been rethought, from the login page to the story detail to the intelligence trainer. This release adds full support for iOS 26, iPadOS 26, and macOS Tahoe, along with several features that were previously web-only: Discover Related Sites, Ask AI, the Dashboard, and Premium Pro.</p>
-
-<p>Here’s what’s new:</p>
-
-<h3 id="ios-26-and-macos-tahoe">iOS 26 and macOS Tahoe</h3>
-
-<p>NewsBlur is built for the latest Apple platforms. The toolbar is transparent and fades as you scroll. The column layout has been simplified to “feeds beside” or “feeds over” the story detail. On iPad, a new draggable divider lets you resize the feeds and stories columns, and the sidebar auto-collapses when space gets tight. On Mac, the sidebar auto-hides and trackpad swipe gestures work throughout the app.</p>
-
-<p>The default theme is now Auto, so NewsBlur follows your system appearance out of the box. Dark mode correctly overrides the window style to stay consistent with whatever NewsBlur theme you’ve chosen.</p>
-
-<p><img src="/assets/ios-14-ipad-sepia.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="a-warmer-sepia-theme">A warmer sepia theme</h3>
-
-<p>The Sepia theme has been completely reworked with warmer tones that are easier on the eyes for long reading sessions. The theme selector itself has been rewritten across all menus, with improved contrast on the pill buttons so you can clearly see which theme is active.</p>
-
-<p><img src="/assets/ios-14-sepia-theme.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="story-titles-pill-bar">Story titles pill bar</h3>
-
-<p>The top of the story list now has a pill bar with quick access to Discover, Options, Search, and Mark Read. The search bar slides in and out instead of fading, and the mark-read button has a wider tap target with an optional confirmation step.</p>
-
-<p><img src="/assets/ios-14-pill-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="discover-related-sites">Discover related sites</h3>
-
-<p>Discover Related Sites lets you find related feeds from any feed or folder. Tap the Discover button in the new story titles pill bar, browse what’s available, and try a feed before subscribing with a preview banner.</p>
-
-<p><img src="/assets/ios-14-discover-sites.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="list-and-magazine-views">List and magazine views</h3>
-
-<p>Two new story layout options join the existing Grid view. List shows compact rows for scanning headlines quickly. Magazine shows taller rows with larger thumbnails, giving you a richer preview of each story without opening it. Switch between them from the story titles pill bar.</p>
-
-<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
-<img src="/assets/ios-14-ipad-magazine.png" style="width: 48%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/ios-14-ipad-grid.png" style="width: 48%;border: 1px solid rgba(0,0,0,0.1);" />
-</div>
-
-<h3 id="dashboard">Dashboard</h3>
-
-<p>The Dashboard sits at the top of your feed list and shows stories from your favorite feeds, updated every five minutes. Add, remove, and rearrange feeds to build a personal front page that keeps you current throughout the day. It’s the first thing you see when you open the app, and it updates in the background so fresh stories are always waiting.</p>
-
-<p><img src="/assets/ios-14-ipad-dashboard.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="redesigned-login-preferences-and-upgrade">Redesigned login, preferences, and upgrade</h3>
-
-<p>The login screen now features animated Metal shader waves with a frosted glass card. Preferences have moved from the old InAppSettingsKit to a new native SwiftUI PreferencesView. The Premium upgrade screen has been redesigned to include Ask AI integration and the new Premium Pro tier.</p>
-
-<p>Share, Trainer, and Ask AI dialogs are presented as swipeable sheets on iPhone with grabber handles, replacing the old full-screen modals. The sync indicator has moved from a large HUD to a subtle top-right nav bar dot.</p>
-
-<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
-<img src="/assets/ios-14-login.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/ios-14-upgrade.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/ios-14-prefs.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-</div>
-
-<h3 id="ask-ai">Ask AI</h3>
-
-<p>Ask AI brings the same AI-powered Q&amp;A from the web to your phone and Mac. Select a story, tap Ask AI, and ask questions about it. Summarize a long article in one sentence, get the backstory on a developing situation, or fact-check a claim. Pick from multiple AI models and keep the conversation going with follow-ups.</p>
-
-<p><img src="/assets/ios-14-ask-ai.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="push-notifications-with-feed-favicons">Push notifications with feed favicons</h3>
-
-<p>Push notifications now show your feed’s favicon alongside the notification using Communication Notifications. At a glance, you can tell which feed a story came from before you even open it.</p>
-
-<p><img src="/assets/ios-14-push-notifications.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="everything-else">Everything else</h3>
-
-<p>Beyond the headline features, this release includes a long list of improvements and fixes across iPhone, iPad, and Mac.</p>
-
-<h4 id="improvements">Improvements</h4>
-
-<ul>
-  <li>Pinch-to-zoom images to full-sized Quick Look preview in any story.</li>
-  <li>Mark Story Read options: mark read on scroll, on selection, after an interval, or manually.</li>
-  <li>Premium Pro tier added to the iOS upgrade dialog with higher limits.</li>
-  <li>Custom feed and folder icons now supported on iOS.</li>
-  <li>Unmute support for individual feeds.</li>
-  <li>Collapse-all and expand-all button on All Site Stories.</li>
-  <li>Modernized menu bar on Mac and iPad with keyboard shortcuts.</li>
-  <li>Icons added to context menus on Mac and iPad.</li>
-  <li>Redesigned story action buttons with modern styling.</li>
-  <li>Text, URL, and regex classifiers added to the iOS Intelligence Trainer.</li>
-  <li>Compact story title cells with equalized vertical spacing in list view.</li>
-  <li>Fetching/offline banner moved from bottom overlay to top of story titles.</li>
-  <li>Feed list search bar replaced with a compact text field.</li>
-  <li>Scroll-to-hide toolbar synced with swipe-back gestures.</li>
-  <li>Sidebar toggle buttons for showing and hiding the feed list.</li>
-  <li>Redesigned Add Site as a SwiftUI half-height sheet with autocomplete.</li>
-  <li>Story traverse bar and feed bar fade gradually as you scroll.</li>
-  <li>Mac Catalyst: dismiss modals via overlay tap or Escape key.</li>
-  <li>Mac Catalyst: trackpad swipe gesture support.</li>
-  <li>Improved theme selector pill contrast for medium and light themes.</li>
-  <li>Show toolbar when tapping status bar to scroll to top.</li>
-</ul>
-
-<h4 id="fixes">Fixes</h4>
-
-<ul>
-  <li>Fixed WebSocket disconnects from EIO4 protocol and session lifecycle issues.</li>
-  <li>Fixed story width rendering wider than viewport on first load on iPhone.</li>
-  <li>Fixed memory issues with PINCache cost limits.</li>
-  <li>Fixed offline queue priority inversion.</li>
-  <li>Fixed saved stories showing incorrect read/unread status.</li>
-  <li>Fixed YouTube Error 153 with HTTPS and inlined resources.</li>
-  <li>Fixed trainer popover showing empty content on first open.</li>
-  <li>Fixed crashes with custom feed icons in story detail.</li>
-  <li>Fixed blank statistics modal by adding missing JS globals.</li>
-  <li>Fixed white flash and navbar color mismatch when opening stories in dark themes.</li>
-  <li>Fixed sepia theme yellow tint on Mac Catalyst.</li>
-  <li>Fixed (null) username and missing avatar when sharing on Mac Catalyst.</li>
-  <li>Fixed Catalyst pill bar AppKit chrome artifacts.</li>
-  <li>Fixed Mac traverse bar layout, highlights, and previous button state.</li>
-  <li>Fixed Discover popover placement on Mac and iPad.</li>
-  <li>Fixed mark-read pill confirmation.</li>
-  <li>Fixed status bar color and liquid glass gradient boundary.</li>
-  <li>Fixed stale collapsed folder unread counts on iPad.</li>
-  <li>Fixed stale story responses when switching folders quickly on iPad.</li>
-  <li>Fixed Mac Catalyst split divider limited to grab handle area.</li>
-</ul>
-
-<p>NewsBlur for iOS 26, iPadOS 26, and macOS Tahoe is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[This is a hefty redesign and rethinking of the NewsBlur iOS and Mac app. Every screen has been rethought, from the login page to the story detail to the intelligence trainer. This release adds full support for iOS 26, iPadOS 26, and macOS Tahoe, along with several features that were...]]>
     </summary>
     
   </entry>
