@@ -113,7 +113,8 @@ class Test_RealtimeUpdates {
     ) = Story().apply {
         storyHash = hash
         feedId = hash.substringBefore(':')
-        timestamp = EPOCH / 1000 - secondsAgo
+        // StoryTypeAdapter.java parses story_timestamp into milliseconds.
+        timestamp = (EPOCH / 1000 - secondsAgo) * 1000
         intelligence.intelligenceFeed = score
         this.read = read
     }
@@ -279,7 +280,7 @@ class Test_RealtimeUpdates {
 
             assertEquals(RealtimeUpdates.NEW_STORIES_CAP, fetched.size)
             assertEquals(30, realtime.newStories.value.count)
-            assertTrue(realtime.newStories.value.fillsGap)
+            assertTrue(realtime.newStories.value.overCap)
 
             val unfetched = announced.first { it !in fetched }
             realtime.send("user:update", "sam", "story:read:$unfetched")
@@ -340,8 +341,8 @@ class Test_RealtimeUpdates {
             verify(exactly = 0) { db.updateFeedCounts(any(), any()) }
         }
 
-    // A count refresh after reconnecting can write hundreds of feeds. Tapping the pill or opening a list on the main
-    // thread must not wait on that write, or the reader sees the app freeze.
+    // A count refresh after reconnecting can write hundreds of feeds. Opening or reloading a list on the main thread
+    // must not wait on that write, or the reader sees the app freeze.
     @Test
     fun test_the_pill_and_the_list_never_wait_on_a_database_write() =
         runTest {
@@ -355,7 +356,7 @@ class Test_RealtimeUpdates {
             every { db.insertStories(any(), any(), any()) } answers {
                 val mainThread =
                     Thread {
-                        realtime.takeNewStories(feed)
+                        realtime.resetNewStories(FeedSet.singleFeed("2"))
                         realtime.setOpenStoryList(feed)
                     }
                 mainThread.start()
@@ -382,6 +383,74 @@ class Test_RealtimeUpdates {
             settle()
 
             assertTrue(countRequests.any { (_, feeds) -> "9" in feeds })
+        }
+
+    // Past the cap nothing more is fetched, so a list left open overnight doesn't fetch every arrival. A tap then shows
+    // exactly the 20 newest waiting stories, fetched and only-counted alike, as if the list loaded right then: one
+    // request for the counted ones, the list's reading session restarted with just those, and paging reset.
+    @Test
+    fun test_tap_past_the_cap_shows_exactly_the_twenty_newest_and_resets_paging() =
+        runTest {
+            val ages = HashMap<String, Long>()
+            val requests = mutableListOf<List<String>>()
+            coEvery { storyApi.getStoriesByHash(any()) } answers {
+                requests += firstArg<List<String>>()
+                StoriesResponse().apply { stories = firstArg<List<String>>().map { story(it, secondsAgo = ages.getValue(it)) }.toTypedArray() }
+            }
+            val realtime = realtime()
+            val feed = FeedSet.singleFeed("1")
+            realtime.setOpenStoryList(feed)
+            val now = EPOCH / 1000
+            (1..20).forEach {
+                ages["1:old$it"] = 600L + it
+                realtime.send("feed:story:new", "1:story", "1:old$it,${now - 600 - it}")
+            }
+            settle()
+            (1..5).forEach {
+                ages["1:new$it"] = it.toLong()
+                realtime.send("feed:story:new", "1:story", "1:new$it,${now - it}")
+            }
+            realtime.send("feed:story:new", "1:story", "1:new1,${now - 1}")
+            settle()
+            assertEquals("a story announced twice counts once", 25, realtime.newStories.value.count)
+            requests.clear()
+
+            val result = realtime.takeNewStoriesForTap(feed)
+
+            val newest = (1..5).map { "1:new$it" } + (1..15).map { "1:old$it" }
+            assertEquals(RealtimeUpdates.TapResult.Replace(newest), result)
+            assertEquals(listOf((1..5).map { "1:new$it" }), requests)
+            assertEquals(NewStories.NONE, realtime.newStories.value)
+
+            realtime.showOnly(feed, newest)
+            verify { db.prepareOrderedReadingSession(feed, newest) }
+            verify { syncState.restartPaging(feed) }
+        }
+
+    // An oldest-first list isn't reloaded: a tap past the cap adds the 20 oldest-dated waiting stories at its end and
+    // keeps the rest waiting for the next tap.
+    @Test
+    fun test_oldest_first_tap_past_the_cap_adds_the_oldest_twenty_and_keeps_the_rest() =
+        runTest {
+            every { prefs.getStoryOrder(any()) } returns StoryOrder.OLDEST
+            every { syncState.isFeedSetExhausted(any()) } returns true
+            coEvery { storyApi.getStoriesByHash(any()) } answers {
+                StoriesResponse().apply { stories = firstArg<List<String>>().map { story(it) }.toTypedArray() }
+            }
+            val realtime = realtime()
+            val feed = FeedSet.singleFeed("1")
+            realtime.setOpenStoryList(feed)
+            val now = EPOCH / 1000
+            (1..23).forEach { realtime.send("feed:story:new", "1:story", "1:s$it,${now - 100 + it}") }
+            settle()
+
+            val result = realtime.takeNewStoriesForTap(feed)
+
+            assertTrue(result is RealtimeUpdates.TapResult.Insert)
+            result as RealtimeUpdates.TapResult.Insert
+            assertEquals(NewStories.Placement.BOTTOM, result.placement)
+            assertEquals(20, result.storyHashes.size)
+            assertEquals(3, realtime.newStories.value.count)
         }
 
     @Test

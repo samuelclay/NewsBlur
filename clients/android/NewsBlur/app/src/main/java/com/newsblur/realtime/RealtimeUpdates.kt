@@ -87,6 +87,25 @@ class RealtimeUpdates internal constructor(
     )
 
     /** Stories RealtimeUpdates.kt fetched for the open list, waiting for a tap on NewStoriesPill.kt. */
+    /** What NewStoriesPill.kt's tap, or the row standing in for it, shows. */
+    sealed interface TapResult {
+        data object None : TapResult
+
+        /** Add these to the list, pinned to its edge, with the arrival cascade. */
+        data class Insert(
+            val storyHashes: List<String>,
+            val placement: NewStories.Placement,
+        ) : TapResult
+
+        /**
+         * Past the cap on a newest-first list: show only these, the newest waiting, as if the list loaded right then,
+         * and page the rest of the list from its first page again (ItemSetFragment.java).
+         */
+        data class Replace(
+            val storyHashes: List<String>,
+        ) : TapResult
+    }
+
     data class NewStories(
         val feedSet: FeedSet?,
         val storyHashes: List<String>,
@@ -100,34 +119,10 @@ class RealtimeUpdates internal constructor(
         val count: Int get() = storyHashes.size + unfetchedCount
 
         /**
-         * More stories than the pill holds: a tap reloads the list's newest page and fills the gap below it
-         * (ItemSetFragment.java) instead of adding these.
+         * More stories wait than the pill holds: a tap shows the newest [NEW_STORIES_CAP] of them, replacing a
+         * newest-first list (TapResult.Replace), instead of adding them all.
          */
-        val fillsGap: Boolean get() = unfetchedCount > 0 || storyHashes.size > NEW_STORIES_CAP
-
-        /** What tapping the pill, or the row standing in for it, does with what it offered (NewStoriesPill.kt). */
-        val tapAction: TapAction
-            get() =
-                when {
-                    count == 0 -> TapAction.None
-                    fillsGap -> TapAction.FillGap(placement)
-                    else -> TapAction.Insert(storyHashes, placement)
-                }
-
-        sealed interface TapAction {
-            data object None : TapAction
-
-            /** Add the fetched stories to the list, pinned to its edge, with the arrival cascade. */
-            data class Insert(
-                val storyHashes: List<String>,
-                val placement: Placement,
-            ) : TapAction
-
-            /** Too many to add: reload the list's newest page and fill the gap below it. */
-            data class FillGap(
-                val placement: Placement,
-            ) : TapAction
-        }
+        val overCap: Boolean get() = unfetchedCount > 0 || storyHashes.size > NEW_STORIES_CAP
 
         companion object {
             val NONE = NewStories(null, emptyList(), Placement.TOP)
@@ -162,7 +157,8 @@ class RealtimeUpdates internal constructor(
 
     private val pendingNewStories = LinkedHashMap<String, Long>()
     // Announced stories that passed the open list's checks after the pill reached its cap.
-    private val unfetchedNewStories = LinkedHashSet<String>()
+    // Each one's announced date in seconds, so a tap past the cap can pick the newest without fetching them all.
+    private val unfetchedNewStories = LinkedHashMap<String, Long>()
     private val newStoryTimestamps = HashMap<String, Long>()
     private var newStoryFetchJob: Job? = null
     private val _newStories = MutableStateFlow(NewStories.NONE)
@@ -530,16 +526,101 @@ class RealtimeUpdates internal constructor(
     }
 
     /**
-     * NewStoriesPill.kt takes what the pill offered: the buffered stories to add to the open list, or, past
-     * the cap, the signal to reload its newest page (NewStories.fillsGap). Either way the pill starts over.
+     * NewStoriesPill.kt's tap. Up to the cap it adds the fetched stories. Past it, it picks the newest
+     * [NEW_STORIES_CAP] waiting (the oldest, for an oldest-first list), fetching those it only counted in one
+     * request; a newest-first list then shows just those, and an oldest-first one adds them and keeps the rest
+     * waiting.
      */
-    fun takeNewStories(fs: FeedSet): NewStories =
+    suspend fun takeNewStoriesForTap(fs: FeedSet): TapResult {
+        val account = currentAccount()
+        val newestFirst: Boolean
+        val picked: List<String>
+        val toFetch: List<String>
+        val alreadyFetched: Set<String>
         synchronized(lock) {
             val current = _newStories.value
-            if (current.feedSet != fs) return NewStories.NONE
-            clearNewStoriesLocked()
-            current
+            if (current.feedSet != fs || current.count == 0) return TapResult.None
+            if (!current.overCap) {
+                clearNewStoriesLocked()
+                return TapResult.Insert(current.storyHashes, current.placement)
+            }
+            newestFirst = current.placement == NewStories.Placement.TOP
+            val waiting = LinkedHashMap<String, Long>()
+            current.storyHashes.forEach { waiting[it] = (newStoryTimestamps[it] ?: 0L) / 1000 }
+            unfetchedNewStories.forEach { (hash, seconds) -> waiting.putIfAbsent(hash, seconds) }
+            picked = NewStoryRules.pickForTap(waiting, NEW_STORIES_CAP, newestFirst)
+            alreadyFetched = current.storyHashes.toSet()
+            toFetch = picked.filter { it !in alreadyFetched }
+            if (newestFirst) {
+                // The list is about to show only the newest; everything else waiting goes with the list it was for.
+                clearNewStoriesLocked()
+            } else {
+                val remaining = current.storyHashes.filter { it !in picked }
+                picked.forEach { unfetchedNewStories.remove(it); newStoryTimestamps.remove(it) }
+                _newStories.value =
+                    if (remaining.isEmpty() && unfetchedNewStories.isEmpty()) {
+                        NewStories.NONE
+                    } else {
+                        current.copy(storyHashes = remaining, unfetchedCount = unfetchedNewStories.size)
+                    }
+            }
         }
+        val fetched = if (toFetch.isEmpty()) emptySet() else fetchShowable(fs, toFetch, account) ?: return TapResult.None
+        val shown = picked.filter { it in alreadyFetched || it in fetched }
+        if (shown.isEmpty()) return TapResult.None
+        return if (newestFirst) TapResult.Replace(shown) else TapResult.Insert(shown, NewStories.Placement.BOTTOM)
+    }
+
+    /**
+     * A tap past the cap on a newest-first list: the open list's reading session restarts with just [hashes], the
+     * newest waiting, and its paging starts over from the first page. The session lists each story once, so later
+     * pages skip these; the reader scrolls down to where they were.
+     */
+    fun showOnly(
+        fs: FeedSet,
+        hashes: List<String>,
+    ) {
+        val account = currentAccount()
+        writeForAccount(account) {
+            dbHelper.prepareOrderedReadingSession(fs, hashes)
+            syncServiceState.restartPaging(fs)
+        }
+    }
+
+    /**
+     * Fetches [hashes] in one request and stores them, returning those the open list shows: its feeds, its read and
+     * Focus filters, and never a story the reader's classifiers hide. Null when the request failed or the account
+     * changed meanwhile.
+     */
+    private suspend fun fetchShowable(
+        fs: FeedSet,
+        hashes: List<String>,
+        account: Long,
+    ): Set<String>? {
+        val response = storyApi.getStoriesByHash(hashes)
+        val stories = response?.stories
+        if (response == null || response.isError || stories == null) {
+            Log.w(this, "couldn't fetch ${hashes.size} new stories")
+            return null
+        }
+        val filters = CursorFilters(prefsRepo, fs)
+        if (!writeForAccount(account) { dbHelper.insertStories(response, filters.stateFilter, false) }) return null
+        val subscribed = synchronized(lock) { subscribedFeedIds }
+        return stories.filter { it.storyHash in hashes && showsInList(it, fs, filters, subscribed) }.map { it.storyHash }.toSet()
+    }
+
+    private fun showsInList(
+        story: com.newsblur.domain.Story,
+        fs: FeedSet,
+        filters: CursorFilters,
+        subscribed: Set<String>,
+    ): Boolean =
+        NewStoryRules.listAccepts(fs, story.feedId, subscribed) &&
+            // The pill never offers a story the reader's classifiers hide, even in the All state; a reload or a page
+            // still lists it there.
+            story.intelligence.calcTotalIntel() >= 0 &&
+            story.isStoryVisibleInState(filters.stateFilter) &&
+            (filters.readFilter == ReadFilter.ALL || !story.read)
 
     private fun clearNewStoriesLocked() {
         newStoryFetchJob?.cancel()
@@ -584,10 +665,12 @@ class RealtimeUpdates internal constructor(
             if (openList != fs) return
             if (message.storyHash in pendingNewStories || message.storyHash in _newStories.value.storyHashes ||
                 message.storyHash in unfetchedNewStories
-            ) return
+            ) {
+                return
+            }
             if (bufferedNewStoryCountLocked(fs) >= NEW_STORIES_CAP) {
                 // A list left open overnight would otherwise fetch every story published since.
-                unfetchedNewStories += message.storyHash
+                unfetchedNewStories[message.storyHash] = message.timestampSeconds
                 publishUnfetchedLocked(fs)
                 return
             }
@@ -615,7 +698,7 @@ class RealtimeUpdates internal constructor(
                 // Fetch only as many as the pill can still hold; the rest are counted, not fetched.
                 val room = NEW_STORIES_CAP - bufferedNewStoryCountLocked(fs)
                 if (room <= 0) {
-                    unfetchedNewStories += pendingNewStories.keys
+                    pendingNewStories.forEach { (hash, seconds) -> unfetchedNewStories.putIfAbsent(hash, seconds) }
                     pendingNewStories.clear()
                     publishUnfetchedLocked(fs)
                     return
@@ -638,13 +721,7 @@ class RealtimeUpdates internal constructor(
         val subscribed = synchronized(lock) { subscribedFeedIds }
         val accepted =
             stories.filter { story ->
-                story.storyHash in hashes &&
-                    NewStoryRules.listAccepts(fs, story.feedId, subscribed) &&
-                    // The pill never offers a story the reader's classifiers hide, even in the All state; a reload
-                    // or a page still lists it there.
-                    story.intelligence.calcTotalIntel() >= 0 &&
-                    story.isStoryVisibleInState(filters.stateFilter) &&
-                    (filters.readFilter == ReadFilter.ALL || !story.read) &&
+                story.storyHash in hashes && showsInList(story, fs, filters, subscribed) &&
                     !dbHelper.isStoryInReadingSession(story.storyHash)
             }
         if (BuildConfig.DEBUG) {
@@ -686,7 +763,7 @@ class RealtimeUpdates internal constructor(
             val remaining = current.storyHashes - read
             pendingNewStories.keys.removeAll(read)
             val unfetchedBefore = unfetchedNewStories.size
-            unfetchedNewStories.removeAll(read)
+            unfetchedNewStories.keys.removeAll(read)
             if (remaining.size == current.storyHashes.size && unfetchedNewStories.size == unfetchedBefore) return
             _newStories.value =
                 if (remaining.isEmpty() && unfetchedNewStories.isEmpty()) {

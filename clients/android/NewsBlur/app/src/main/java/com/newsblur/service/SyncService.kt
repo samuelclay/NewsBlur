@@ -729,10 +729,6 @@ open class SyncService :
                 // SyncService.kt validates and inserts under the same session lock used by resets.
                 if (!commitCurrent(requireReadySession = true) {
                     insertStories(apiResponse!!, fs, cursorFilters.stateFilter)
-                    // ItemSetFragment.java places the gap after the latest page of a gap stream.
-                    if (apiResponse.stories.isNotEmpty()) {
-                        syncServiceState.recordGapStreamPage(fs, apiResponse.stories.map { it.storyHash })
-                    }
                     syncServiceState.addFeedPagesSeen(fs, pageNumber)
                     totalStoriesSeen += apiResponse.stories.size
                     syncServiceState.addFeedStoriesSeen(fs, totalStoriesSeen)

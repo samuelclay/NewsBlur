@@ -41,7 +41,6 @@ import com.newsblur.domain.CustomIcon;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.preference.PrefsRepo;
-import com.newsblur.realtime.GapStreamCursor;
 import com.newsblur.realtime.RealtimeUpdates;
 import com.newsblur.service.SyncServiceState;
 import com.newsblur.util.AppConstants;
@@ -158,11 +157,6 @@ public class ItemSetFragment extends NbFragment {
     private RealtimeUpdates.NewStories.Placement pendingNewStoryPlacement;
     @Nullable
     private NewStoriesEntrance newStoriesEntrance;
-    // ItemSetFragment.java slides in the new stories of a gap stream's first page once they are listed.
-    private boolean awaitingGapStreamFirstPage;
-    // Where the gap row last sat, kept through pages the list's filter hides entirely.
-    @Nullable
-    private String lastGapAnchor;
     @Nullable
     private FeedSet realtimeOpenList;
     private RowFleuronBinding fleuronBinding;
@@ -307,7 +301,6 @@ public class ItemSetFragment extends NbFragment {
             public int getSpanSize(int position) {
                 switch (adapter.getItemViewType(position)) {
                     case StoryViewAdapter.VIEW_TYPE_FOOTER:
-                    case StoryViewAdapter.VIEW_TYPE_GAP:
                     case StoryViewAdapter.VIEW_TYPE_NEW_STORIES_ROW:
                         return columnCount;
                     default:
@@ -336,8 +329,8 @@ public class ItemSetFragment extends NbFragment {
                 realtimeUpdates, dbHelper, this::getFeedSet, (hashes, placement) -> {
                     showAddedNewStories(hashes, placement);
                     return kotlin.Unit.INSTANCE;
-                }, placement -> {
-                    startGapStream(placement);
+                }, hashes -> {
+                    showReplacedWithNewest();
                     return kotlin.Unit.INSTANCE;
                 }, (count, placement) -> {
                     // NewStoriesPill.kt stepped aside: the stories it still offers wait in a row at the list's edge.
@@ -391,7 +384,7 @@ public class ItemSetFragment extends NbFragment {
 
         if (!dbHelper.isFeedSetReady(getFeedSet())) {
             com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
-            updateAdapter(Collections.emptyList(), storyBatch.getLoadId(), -1, Collections.emptySet(), null);
+            updateAdapter(Collections.emptyList(), storyBatch.getLoadId(), -1, Collections.emptySet());
             triggerRefresh(1, null);
         } else {
             dataSeenYet = true;
@@ -401,7 +394,7 @@ public class ItemSetFragment extends NbFragment {
                 realtimeUpdates.setOpenStoryList(currentFeedSet);
             }
             updateAdapter(storyBatch.getStories(), storyBatch.getLoadId(), storyBatch.getIndexOfLastUnread(),
-                    storyBatch.getPinnedStoryHashes(), gapAnchor(storyBatch.getStories(), storyBatch.getPinnedStoryHashes()));
+                    storyBatch.getPinnedStoryHashes());
             if (storyBatch.getStories().isEmpty()) {
                 triggerRefresh(1, 0);
             }
@@ -436,7 +429,6 @@ public class ItemSetFragment extends NbFragment {
         dataSeenYet = false;
         skipBackFillingStories = false;
         pendingNewStoryHashes = null;
-        awaitingGapStreamFirstPage = false;
         finishNewStoriesEntrance();
         // Restarting with new filters can change which buffered stories would show.
         FeedSet fs = getFeedSet();
@@ -502,92 +494,15 @@ public class ItemSetFragment extends NbFragment {
     }
 
     /**
-     * NewStoriesPill.kt held more stories than it shows. Rather than add them all, page the list from its
-     * newest page again (SyncServiceState.kt), keeping the stories already listed: the newest page slides in at
-     * the top, and the gap between it and the stories listed before fills a page at a time from the gap row.
+     * NewStoriesPill.kt held more stories than it shows: RealtimeUpdates.kt restarted the reading session with just
+     * the newest of them and reset paging. The list starts over from the top as if it had just opened, and scrolling
+     * down pages the rest of it again, skipping the stories already shown.
      */
-    private void startGapStream(@NonNull RealtimeUpdates.NewStories.Placement placement) {
-        FeedSet fs = getFeedSet();
-        if (!isAdded() || binding == null || adapter == null || fs == null) return;
-        finishNewStoriesEntrance();
-        pendingNewStoryHashes = null;
-        skipBackFillingStories = false;
-        storyHashesBeforeNewStories = new HashSet<>();
-        for (Story story : adapter.storiesSnapshot()) storyHashesBeforeNewStories.add(story.storyHash);
-        pendingNewStoryPlacement = placement;
-        awaitingGapStreamFirstPage = true;
-        lastGapAnchor = null;
-        adapter.finishOpeningEntrances(binding.itemgridfragmentGrid);
-        if (placement == RealtimeUpdates.NewStories.Placement.TOP) scrollToTop();
-        syncServiceState.restartPagingKeepingStories(fs);
-        triggerSync();
-    }
-
-    /** Where the gap row goes (GapStreamCursor.kt); once the stream meets the end, paging carries on as usual. */
-    @Nullable
-    private String gapAnchor(@NonNull List<Story> stories, @NonNull Set<String> pinnedStoryHashes) {
-        FeedSet fs = getFeedSet();
-        List<String> page = syncServiceState.gapStreamLastPage(fs);
-        if (page == null || page.isEmpty()) return null;
-        List<String> listed = new ArrayList<>(stories.size());
-        for (Story story : stories) listed.add(story.storyHash);
-        GapStreamCursor.Gap gap = GapStreamCursor.INSTANCE.gap(page, listed, pinnedStoryHashes, lastGapAnchor);
-        if (gap instanceof GapStreamCursor.Gap.Closed || syncServiceState.isFeedSetExhausted(fs)) {
-            syncServiceState.closeGapStream(fs);
-            lastGapAnchor = null;
-            return null;
-        }
-        lastGapAnchor = gap instanceof GapStreamCursor.Gap.After ? ((GapStreamCursor.Gap.After) gap).getStoryHash() : null;
-        return lastGapAnchor;
-    }
-
-    /** The gap row came near the viewport, as the end of the list does for the usual next page. */
-    private void loadGapPageInReach() {
-        if (binding == null || adapter == null || layoutManager == null) return;
-        FeedSet fs = getFeedSet();
-        List<String> page = syncServiceState.gapStreamLastPage(fs);
-        if (fs == null || page == null) return;
-        int gap = adapter.getGapPosition();
-        if (gap < 0) {
-            // Before any page placed the gap row, a page the list's filter hides entirely leaves nothing to scroll
-            // to; page on past it rather than leave the list stuck.
-            if (page.isEmpty()) return;
-        } else {
-            int lastVisible = layoutManager.findLastVisibleItemPosition();
-            if (gap > lastVisible + Math.max(layoutManager.getChildCount(), 1)) return;
-        }
-        Integer seen = syncServiceState.getFeedStoriesSeen().get(fs);
-        // A page that added nothing (every story already listed) leaves the gap in reach, so this asks again.
-        if (syncServiceState.requestMoreForFeed(fs, (seen == null ? 0 : seen) + 1, null)) triggerSync();
-    }
-
-    /** The gap stream's first page is listed: its stories this list didn't have slide in with the arrival cascade. */
-    private void slideInGapStreamFirstPage() {
-        if (!awaitingGapStreamFirstPage || adapter == null || binding == null) return;
-        Set<String> listed = new HashSet<>();
-        for (Story story : adapter.storiesSnapshot()) listed.add(story.storyHash);
-        Set<String> added = new HashSet<>();
-        for (String hash : listed) {
-            if (!storyHashesBeforeNewStories.contains(hash)) added.add(hash);
-        }
-        if (added.isEmpty()) {
-            // Keep waiting while the first page hasn't arrived, or arrived but isn't listed yet. A page of stories
-            // already listed, or a stream that already ended, has nothing to slide in.
-            List<String> page = syncServiceState.gapStreamLastPage(getFeedSet());
-            if (page != null && page.isEmpty()) return;
-            if (page != null) {
-                for (String hash : page) {
-                    if (!storyHashesBeforeNewStories.contains(hash) && !listed.contains(hash)) return;
-                }
-            }
-        }
-        awaitingGapStreamFirstPage = false;
-        storyHashesBeforeNewStories = Collections.emptySet();
-        if (added.isEmpty()) return;
-        adapter.markStoriesPresented(added);
-        boolean atTop = pendingNewStoryPlacement == RealtimeUpdates.NewStories.Placement.TOP;
-        if (atTop) scrollToTop();
-        newStoriesEntrance = NewStoriesEntrance.start(binding.itemgridfragmentGrid, adapter, added, atTop);
+    private void showReplacedWithNewest() {
+        if (!isAdded() || binding == null || adapter == null) return;
+        resetEmptyState();
+        adapter.restartOpeningCascade();
+        hasUpdated();
     }
 
     /** Tells NewStoriesPill.kt whether any part of the "N new stories" row is on screen, so the two never double up. */
@@ -703,7 +618,7 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private void updateAdapter(@NonNull List<Story> stories, Long loadId, int lastUnreadIndex,
-                               @NonNull Set<String> pinnedStoryHashes, @Nullable String gapAfterStoryHash) {
+                               @NonNull Set<String> pinnedStoryHashes) {
         FeedSet submittedFeed = FeedSet.fromCompactSerial(getFeedSet().toCompactSerial());
         RecyclerView submittedGrid = binding.itemgridfragmentGrid;
         adapter.updateFeedSet(submittedFeed);
@@ -719,14 +634,13 @@ public class ItemSetFragment extends NbFragment {
             com.newsblur.view.ReaderMotion.visibility(binding.emptyView, empty ? View.VISIBLE : View.INVISIBLE);
             storyThawCompleted(lastUnreadIndex);
             scrollToAddedNewStory();
-            slideInGapStreamFirstPage();
             submittedGrid.post(this::updateNewStoriesRowOnScreen);
             ensureSufficientStories();
             updateLoadingIndicators();
             updateBottomNextFeedControl();
             ItemsList activity = (ItemsList) getActivity();
             if (activity != null) activity.refreshStoryStatusIndicators();
-        }, pinnedStoryHashes, gapAfterStoryHash);
+        }, pinnedStoryHashes);
         gridState = null;
     }
 
@@ -1305,11 +1219,6 @@ public class ItemSetFragment extends NbFragment {
     private void ensureSufficientStories() {
         // StoryViewAdapter.kt may have committed an intermediate snapshot while a fresher one is queued.
         if (adapter.isUpdatingStories()) return;
-        // While a gap stream fills the gap, only the gap row asks for its next page; the old paging can't continue.
-        if (syncServiceState.gapStreamLastPage(getFeedSet()) != null) {
-            loadGapPageInReach();
-            return;
-        }
         // don't ask the list for how many rows it actually has - it may still be thawing from the cursor
         int totalCount = adapter.getRawStoryCount();
         int visibleCount = layoutManager.getChildCount();

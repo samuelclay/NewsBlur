@@ -24,6 +24,20 @@ internal object NewStoryRules {
         }
 
     /**
+     * What a tap past the cap shows: the [count] newest-dated stories of everything waiting (the oldest-dated, for an
+     * oldest-first list), in the list's order, as if the list loaded right then. [waiting] maps each story to its
+     * date in seconds, so a story announced again is still one story.
+     */
+    fun pickForTap(
+        waiting: Map<String, Long>,
+        count: Int,
+        newestFirst: Boolean,
+    ): List<String> {
+        val byDate = compareBy<Map.Entry<String, Long>> { it.value }.thenBy { it.key }
+        return waiting.entries.sortedWith(if (newestFirst) byDate.reversed() else byDate).take(count).map { it.key }
+    }
+
+    /**
      * Newest-first lists show the pill at the top. Oldest-first lists only show it once their last page
      * has loaded: until then pagination brings the new stories in at the end on its own.
      */

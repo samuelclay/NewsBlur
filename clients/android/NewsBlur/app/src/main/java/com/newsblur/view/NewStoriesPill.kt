@@ -27,8 +27,9 @@ import kotlinx.coroutines.withContext
 /**
  * The "N new stories" pill over ItemSetFragment.java's list. RealtimeUpdates.kt fetches stories that
  * arrive for the open list; a tap adds them to the reading session and ItemSetFragment.java scrolls to
- * them. Nothing moves under the reader's finger until then. Past RealtimeUpdates.NEW_STORIES_CAP, a tap
- * instead reloads the list's newest page and fills the gap below it ([onFillGap]).
+ * them. Nothing moves under the reader's finger until then. Past RealtimeUpdates.NEW_STORIES_CAP, a tap on a
+ * newest-first list instead shows only the newest of them and pages the rest of the list again
+ * ([onReplacedWithNewest]).
  *
  * The pill slides out from under the toolbar it sits against, and steps aside five seconds after the reader
  * first scrolls away from it (PillScrollAway.kt).
@@ -41,7 +42,8 @@ class NewStoriesPill(
     private val dbHelper: BlurDatabaseHelper,
     private val feedSet: () -> FeedSet?,
     private val onStoriesAdded: (List<String>, Placement) -> Unit,
-    private val onFillGap: (Placement) -> Unit,
+    // Past the cap on a newest-first list: the list now holds only these, its newest stories.
+    private val onReplacedWithNewest: (List<String>) -> Unit,
     // ItemSetFragment.java shows an "N new stories" row at the list's edge while this hides; 0 removes it.
     private val onInlineRowChanged: (Int, Placement) -> Unit,
 ) {
@@ -262,14 +264,18 @@ class NewStoriesPill(
         scrollAway.reset()
         pill.removeCallbacks(returnCheck)
         pill.removeCallbacks(hideCheck)
-        when (val action = realtimeUpdates.takeNewStories(fs).tapAction) {
-            RealtimeUpdates.NewStories.TapAction.None -> Unit
-            is RealtimeUpdates.NewStories.TapAction.FillGap -> onFillGap(action.placement)
-            is RealtimeUpdates.NewStories.TapAction.Insert ->
-                fragment.viewLifecycleOwner.lifecycleScope.launch {
-                    withContext(Dispatchers.IO) { dbHelper.addStoriesToReadingSession(action.storyHashes) }
-                    onStoriesAdded(action.storyHashes, action.placement)
+        fragment.viewLifecycleOwner.lifecycleScope.launch {
+            when (val result = withContext(Dispatchers.IO) { realtimeUpdates.takeNewStoriesForTap(fs) }) {
+                RealtimeUpdates.TapResult.None -> Unit
+                is RealtimeUpdates.TapResult.Insert -> {
+                    withContext(Dispatchers.IO) { dbHelper.addStoriesToReadingSession(result.storyHashes) }
+                    onStoriesAdded(result.storyHashes, result.placement)
                 }
+                is RealtimeUpdates.TapResult.Replace -> {
+                    withContext(Dispatchers.IO) { realtimeUpdates.showOnly(fs, result.storyHashes) }
+                    onReplacedWithNewest(result.storyHashes)
+                }
+            }
         }
     }
 

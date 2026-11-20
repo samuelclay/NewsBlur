@@ -109,24 +109,11 @@ interface SyncServiceState {
     ): Boolean
 
     /**
-     * NewStoriesPill.kt held more stories than it shows: page the open list from its first page again, as
-     * opening it does, without clearing the stories already listed. The server rebuilds its paging snapshot
-     * on a first page, so every later page for this list comes from this stream. ItemSetFragment.java shows
-     * the gap between the stream's latest page and the stories listed before it.
+     * NewStoriesPill.kt replaced the open list with its newest stories: page the list from its first page again, as
+     * opening it does, without clearing those stories. The reading session lists each story once, so later pages
+     * skip them.
      */
-    fun restartPagingKeepingStories(fs: FeedSet)
-
-    /** The story hashes of the gap stream's latest page for [fs], empty before its first; null with no stream. */
-    fun gapStreamLastPage(fs: FeedSet?): List<String>?
-
-    /** SyncService.kt records each page the gap stream fetched. */
-    fun recordGapStreamPage(
-        fs: FeedSet,
-        storyHashes: List<String>,
-    )
-
-    /** ItemSetFragment.java saw the stream reach the end of the list: paging carries on as usual from here. */
-    fun closeGapStream(fs: FeedSet)
+    fun restartPaging(fs: FeedSet)
 
     /**
      * Resets any internal temp vars or queues. Called when switching accounts.
@@ -217,9 +204,6 @@ class DefaultSyncServiceState
 
         private val _exhaustedFeeds = mutableSetOf<FeedSet>()
 
-        // SyncServiceState.kt's gap stream: the list it pages and its latest page's story hashes.
-        @Volatile
-        private var gapStream: Pair<FeedSet, List<String>>? = null
         private val _feedPagesSeen = mutableMapOf<FeedSet, Int>()
         private val _feedStoriesSeen = mutableMapOf<FeedSet, Int>()
         private val _recountCandidates = mutableSetOf<FeedSet>()
@@ -265,8 +249,6 @@ class DefaultSyncServiceState
 
         override fun resetFetchState(fs: FeedSet?) {
             synchronized(pendingFeedMutex) {
-                // Opening a list, reloading or changing filters ends any gap stream, as it ends any paging.
-                gapStream = null
                 synchronized(resetFeedMutex) {
                     tryFeedRefresh = null
                     sessionGeneration.incrementAndGet()
@@ -379,39 +361,18 @@ class DefaultSyncServiceState
             return true
         }
 
-        override fun restartPagingKeepingStories(fs: FeedSet) {
+        override fun restartPaging(fs: FeedSet) {
             synchronized(pendingFeedMutex) {
-                // A page of the old paging still in flight would land in the new stream's place; drop it.
+                // A page of the old paging still in flight would land in the new paging's place; drop it.
                 sessionGeneration.incrementAndGet()
                 _exhaustedFeeds.remove(fs)
                 _feedPagesSeen[fs] = 0
                 _feedStoriesSeen[fs] = 0
-                gapStream = fs to emptyList()
-                pendingFeed = fs
-                pendingFeedTarget = 1
-            }
-        }
-
-        override fun gapStreamLastPage(fs: FeedSet?): List<String>? = gapStream?.takeIf { it.first == fs }?.second
-
-        override fun recordGapStreamPage(
-            fs: FeedSet,
-            storyHashes: List<String>,
-        ) {
-            synchronized(pendingFeedMutex) {
-                if (gapStream?.first == fs) gapStream = fs to storyHashes
-            }
-        }
-
-        override fun closeGapStream(fs: FeedSet) {
-            synchronized(pendingFeedMutex) {
-                if (gapStream?.first == fs) gapStream = null
             }
         }
 
         override fun clearState() {
             synchronized(pendingFeedMutex) {
-                gapStream = null
                 tryFeedRefresh = null
                 sessionGeneration.incrementAndGet()
                 pendingFeed = null
@@ -476,7 +437,6 @@ class DefaultSyncServiceState
         override fun resetReadingSession(dbHelper: BlurDatabaseHelper) {
             Log.d(SyncServiceState::class.simpleName, "requesting reading session reset")
             synchronized(pendingFeedMutex) {
-                gapStream = null
                 tryFeedRefresh = null
                 sessionGeneration.incrementAndGet()
                 pendingFeed = null
