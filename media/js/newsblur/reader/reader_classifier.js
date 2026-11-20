@@ -85,11 +85,13 @@ NEWSBLUR.ClassifierConstants = {
     // reader_classifier.js: The test result under an AI filter's input, plus how the
     // filter was understood ("sports" for "Hide anything about sports") when that
     // differs from what was typed, so the reader can tell whether the wording works.
+    // The description is model output, so it is set with .text(): $.make's string argument
+    // goes through .html().
     make_ai_test_result: function (matched, matched_text, unmatched_text, prompt_text, description) {
         var badge_class = matched ? 'NB-image-filter-status-match' : 'NB-image-filter-status-neutral';
-        var $result = [$.make('span', { className: 'NB-image-filter-status-badge ' + badge_class }, matched ? matched_text : unmatched_text)];
+        var $result = [$.make('span', { className: 'NB-image-filter-status-badge ' + badge_class }).text(matched ? matched_text : unmatched_text)];
         if (description && $.trim(description).toLowerCase() !== $.trim(prompt_text).toLowerCase()) {
-            $result.push($.make('span', { className: 'NB-ai-filter-understood-as' },
+            $result.push($.make('span', { className: 'NB-ai-filter-understood-as' }).text(
                 interpolate(gettext('Understood as: %(description)s'), { description: description }, true)));
         }
         return $result;
