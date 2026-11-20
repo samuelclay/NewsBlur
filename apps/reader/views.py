@@ -167,14 +167,6 @@ ALLOWED_SUBDOMAINS = [
 RIVER_SLOWDOWN_USERS = []
 
 
-def get_subdomain(request):
-    host = request.META.get("HTTP_HOST")
-    if host and host.count(".") >= 2:
-        return host.split(".")[0]
-    else:
-        return None
-
-
 def int_or_default(value, default):
     """
     Parse an integer request parameter, falling back to the default when it doesn't parse.
@@ -342,9 +334,9 @@ def filter_stories_by_classifier(stories, classifier_type, classifier_value):
 @ensure_csrf_cookie
 @render_to("reader/dashboard.xhtml")
 def index(request, **kwargs):
-    subdomain = get_subdomain(request)
+    subdomain = request.subdomain
     if request.method == "GET" and subdomain and subdomain not in ALLOWED_SUBDOMAINS:
-        username = request.subdomain or subdomain
+        username = subdomain
         if "." in username:
             username = username.split(".")[0]
         user = User.objects.filter(username=username)
