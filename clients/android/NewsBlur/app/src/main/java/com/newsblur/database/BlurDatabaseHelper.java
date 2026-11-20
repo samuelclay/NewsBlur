@@ -78,6 +78,16 @@ public class BlurDatabaseHelper {
     // their dates, until the reading session restarts and they fall back into date order.
     private final Set<String> pinnedSessionStoryHashes = new LinkedHashSet<>();
 
+    // BlurDatabaseHelper.java bumps this when the reading session is cleared, moves to another list (a switch or a
+    // reload) or the account's tables are dropped, never while a page of the same session loads, so a delayed
+    // NewStoriesPill.kt tap can't change another session.
+    private final java.util.concurrent.atomic.AtomicLong readingSessionVersion = new java.util.concurrent.atomic.AtomicLong();
+
+    /** The reading session's version; check it under RW_MUTEX, which every session change takes. */
+    public long getReadingSessionVersion() {
+        return readingSessionVersion.get();
+    }
+
     public BlurDatabaseHelper(Context context) {
         com.newsblur.util.Log.d(this.getClass().getName(), "new DB conn requested");
         synchronized (RW_MUTEX) {
@@ -226,6 +236,7 @@ public class BlurDatabaseHelper {
     public void dropAndRecreateTables() {
         com.newsblur.util.Log.i(this.getClass().getName(), "dropping and recreating all tables . . .");
         synchronized (RW_MUTEX) {
+            readingSessionVersion.incrementAndGet();
             resetCustomIcons();
             dbWrapper.dropAndRecreateTables();
         }
@@ -618,6 +629,7 @@ public class BlurDatabaseHelper {
     public void prepareOrderedReadingSession(@NonNull FeedSet fs, @NonNull List<String> storyHashes) {
         unpinSessionStories();
         synchronized (RW_MUTEX) {
+            readingSessionVersion.incrementAndGet();
             dbRW.beginTransaction();
             try {
                 dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);
@@ -1553,6 +1565,7 @@ public class BlurDatabaseHelper {
     public void clearStorySession() {
         com.newsblur.util.Log.i(this, "reading session reset");
         synchronized (RW_MUTEX) {
+            readingSessionVersion.incrementAndGet();
             dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);
         }
         unpinSessionStories();
@@ -1670,6 +1683,9 @@ public class BlurDatabaseHelper {
     }
 
     public void setSessionFeedSet(@Nullable FeedSet fs) {
+        synchronized (RW_MUTEX) {
+            readingSessionVersion.incrementAndGet();
+        }
         if (fs == null) {
             synchronized (RW_MUTEX) {
                 dbRW.delete(DatabaseConstants.SYNC_METADATA_TABLE, DatabaseConstants.SYNC_METADATA_KEY + " = ?", new String[]{DatabaseConstants.SYNC_METADATA_KEY_SESSION_FEED_SET});

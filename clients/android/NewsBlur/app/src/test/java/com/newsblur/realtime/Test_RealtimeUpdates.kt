@@ -1,6 +1,11 @@
 package com.newsblur.realtime
 
+import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
+import android.text.TextUtils
+import com.newsblur.database.BlurDatabase
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.database.DatabaseConstants
 import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.network.FeedApi
@@ -11,17 +16,23 @@ import com.newsblur.network.domain.UnreadCountResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.realtime.RealtimeUpdates.NewStories
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
+import com.newsblur.service.DefaultSyncServiceState
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedSet
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.StateFilter
 import com.newsblur.util.StoryOrder
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
+import io.mockk.unmockkConstructor
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,7 +83,10 @@ class Test_RealtimeUpdates {
         coEvery { feedApi.getFeedUnreadCounts(any()) } returns UnreadCountResponse()
     }
 
-    private fun TestScope.realtime(): RealtimeUpdates {
+    private fun TestScope.realtime(
+        dbHelper: BlurDatabaseHelper = db,
+        state: SyncServiceState = syncState,
+    ): RealtimeUpdates {
         val clock = { EPOCH + currentTime }
         every { prefs.getLastSyncTime() } answers { clock() }
         coEvery { feedApi.getFeedUnreadCounts(any()) } answers {
@@ -82,10 +96,10 @@ class Test_RealtimeUpdates {
         return RealtimeUpdates(
             socketClient = socket,
             prefsRepo = prefs,
-            dbHelper = db,
+            dbHelper = dbHelper,
             feedApi = feedApi,
             storyApi = storyApi,
-            syncServiceState = syncState,
+            syncServiceState = state,
             scope = backgroundScope,
             clock = clock,
             random = random,
@@ -511,21 +525,82 @@ class Test_RealtimeUpdates {
     // On a tablet the story list switches feeds in place, and a reload restarts the same feed's session; a tap whose
     // fetch outlasts either must not replace or add to the new session's stories.
     @Test
-    fun test_a_tap_held_across_a_list_switch_never_changes_the_new_session() =
+    fun test_a_tap_held_across_a_list_switch_or_reload_never_changes_the_new_session() =
         runTest {
-            every { syncState.pendingFeedMutex } returns Any()
-            every { syncState.readingSessionGeneration } returns 5L
-            val realtime = realtime()
-            val session = realtime.readingSession()
+            withSessionDatabase { helper, sqlite ->
+                val state = DefaultSyncServiceState()
+                val realtime = realtime(dbHelper = helper, state = state)
+                val first = FeedSet.singleFeed("1")
+                val second = FeedSet.singleFeed("2")
+                openList(helper, first)
+                val beforeSwitch = realtime.readingSession()
 
-            every { syncState.readingSessionGeneration } returns 6L
-            assertFalse(realtime.showOnly(FeedSet.singleFeed("1"), listOf("1:new"), session))
-            assertFalse(realtime.addToOpenList(listOf("1:new"), session))
+                openList(helper, second)
+                assertFalse(realtime.showOnly(first, listOf("1:new"), beforeSwitch))
+                assertFalse(realtime.addToOpenList(listOf("1:new"), beforeSwitch))
 
-            verify(exactly = 0) { db.prepareOrderedReadingSession(any(), any()) }
-            verify(exactly = 0) { syncState.restartPaging(any()) }
-            verify(exactly = 0) { db.addStoriesToReadingSession(any()) }
+                val beforeReload = realtime.readingSession()
+                // ItemsList.java's restartReadingSession
+                state.resetFetchState(second)
+                state.resetReadingSession(helper)
+                assertFalse(realtime.showOnly(second, listOf("2:new"), beforeReload))
+                assertFalse(realtime.addToOpenList(listOf("2:new"), beforeReload))
+
+                verify(exactly = 0) { sqlite.insert(DatabaseConstants.READING_SESSION_TABLE, any(), any()) }
+                assertEquals(emptySet<String>(), helper.pinnedSessionStoryHashes)
+            }
         }
+
+    // A page loop starting or finishing during the tap's fetch moves SyncServiceState.kt's pendingFeed (feed, then
+    // null, then feed again). That's still the same session, so the tapped stories land.
+    @Test
+    fun test_a_tap_held_while_the_open_list_pages_still_lands() =
+        runTest {
+            withSessionDatabase { helper, sqlite ->
+                val state = DefaultSyncServiceState()
+                val realtime = realtime(dbHelper = helper, state = state)
+                val feed = FeedSet.singleFeed("1")
+                openList(helper, feed)
+                state.pendingFeed = feed
+                val tap = realtime.readingSession()
+
+                state.pendingFeed = null
+                state.pendingFeed = feed
+                assertTrue(realtime.addToOpenList(listOf("1:new1"), tap))
+                assertEquals(setOf("1:new1"), helper.pinnedSessionStoryHashes)
+
+                val tapPastCap = realtime.readingSession()
+                state.pendingFeed = null
+                assertTrue(realtime.showOnly(feed, listOf("1:new2", "1:new1"), tapPastCap))
+                verify(exactly = 3) { sqlite.insert(DatabaseConstants.READING_SESSION_TABLE, any(), any()) }
+            }
+        }
+
+    // FeedUtils.kt's new reading session for a list it wasn't showing.
+    private fun openList(
+        helper: BlurDatabaseHelper,
+        fs: FeedSet,
+    ) {
+        helper.clearStorySession()
+        helper.sessionFeedSet = fs
+    }
+
+    // A real BlurDatabaseHelper.java over a stand-in SQLite, so the reading session changes the way the app changes it.
+    private inline fun <T> withSessionDatabase(block: (BlurDatabaseHelper, SQLiteDatabase) -> T): T {
+        val sqlite = mockk<SQLiteDatabase>(relaxed = true)
+        mockkConstructor(BlurDatabase::class, ContentValues::class)
+        mockkStatic(TextUtils::class)
+        try {
+            every { anyConstructed<BlurDatabase>().ro } returns sqlite
+            every { anyConstructed<BlurDatabase>().rw } returns sqlite
+            every { anyConstructed<ContentValues>().put(any<String>(), any<String>()) } just Runs
+            every { TextUtils.isEmpty(any()) } answers { firstArg<CharSequence?>().isNullOrEmpty() }
+            return block(BlurDatabaseHelper(mockk(relaxed = true)), sqlite)
+        } finally {
+            unmockkConstructor(BlurDatabase::class, ContentValues::class)
+            unmockkStatic(TextUtils::class)
+        }
+    }
 
     @Test
     fun test_oldest_first_pill_waits_for_the_last_page() =

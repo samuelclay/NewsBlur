@@ -625,17 +625,21 @@ class RealtimeUpdates internal constructor(
      * The open list's reading session when NewStoriesPill.kt was tapped. A tap's fetch can outlast the list: on a
      * tablet the same story list switches feeds, and a reload restarts the same feed's session.
      */
-    fun readingSession(): Long = syncServiceState.readingSessionGeneration
+    fun readingSession(): Long = dbHelper.getReadingSessionVersion()
 
-    // Under the lock list switches and reloads take to start a new session, so the session can't change mid-write.
+    // Paging the same session leaves the version alone, so a page loading during the tap's fetch never drops its
+    // stories. The paging lock keeps a page from landing mid-write, and the database lock, which every session change
+    // takes, keeps a switch or reload out. Same order as SyncService.kt's page commits: paging lock, then database.
     private inline fun inReadingSession(
         session: Long,
         write: () -> Unit,
     ): Boolean =
         synchronized(syncServiceState.pendingFeedMutex) {
-            if (syncServiceState.readingSessionGeneration != session) return@synchronized false
-            write()
-            true
+            synchronized(BlurDatabaseHelper.RW_MUTEX) {
+                if (dbHelper.getReadingSessionVersion() != session) return false
+                write()
+                true
+            }
         }
 
     /**
