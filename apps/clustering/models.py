@@ -215,6 +215,15 @@ def resolve_feed_id(feed_id, original_feed_map):
     return feed_id
 
 
+def category_article_key(story, normalized_title):
+    """The same publisher article must have an explicit GUID, article link and headline."""
+    guid = story.get("id")
+    link = story.get("story_permalink") or ""
+    if isinstance(guid, str) and guid and link.startswith(("https://", "http://")) and normalized_title:
+        return guid, link, normalized_title
+    return None
+
+
 def find_title_clusters(stories, original_feed_map=None, feed_title_map=None):
     """Group stories by title similarity across different feeds.
 
@@ -223,8 +232,8 @@ def find_title_clusters(stories, original_feed_map=None, feed_title_map=None):
     2. Significant-word overlap with Jaccard similarity >= threshold (catches
        rephrased headlines about the same event)
 
-    Skips pairs that share the same GUID hash (duplicate/branched feed copies)
-    or resolve to the same original feed via branch_from_feed.
+    Independent feeds can carry the same publisher article. Group such copies on their
+    full GUID, permalink and normalized headline. Exclude branches from this match.
 
     Args:
         stories: list of dicts with at minimum 'story_hash', 'story_title', 'story_feed_id'
@@ -237,15 +246,20 @@ def find_title_clusters(stories, original_feed_map=None, feed_title_map=None):
     """
     # Tier 1: Exact normalized title match
     title_groups = {}
+    article_groups = {}
+    parent = {}
     for s in stories:
         title = s.get("story_title") or ""
         norm = normalize_title(title)
+        feed_id = s["story_feed_id"]
+        if resolve_feed_id(feed_id, original_feed_map) == feed_id:
+            key = category_article_key(s, norm)
+            if key:
+                article_groups.setdefault(key, {})[feed_id] = s["story_hash"]
         if not norm or len(norm) < TITLE_MIN_LENGTH:
             continue
         title_groups.setdefault(norm, []).append(s)
-
-    # clustering/models.py: Union-find for merging exact + fuzzy matches
-    parent = {}
+        parent[s["story_hash"]] = s["story_hash"]
 
     def find(x):
         while parent[x] != x:
@@ -260,11 +274,15 @@ def find_title_clusters(stories, original_feed_map=None, feed_title_map=None):
 
     story_by_hash = {s["story_hash"]: s for s in stories}
 
-    # Add all stories with valid titles to union-find
-    for s in stories:
-        norm = normalize_title(s.get("story_title") or "")
-        if norm and len(norm) >= TITLE_MIN_LENGTH:
-            parent[s["story_hash"]] = s["story_hash"]
+    # models.py: A publisher may syndicate one article through multiple independent category feeds.
+    for copies in article_groups.values():
+        if len(copies) < 2:
+            continue
+        members = list(copies.values())
+        for h in members:
+            parent.setdefault(h, h)  # Even an exact article with a short headline is unambiguous.
+        for h in members[1:]:
+            union(members[0], h)
 
     # Union exact matches: GUID-dedup the group first so we compare all
     # genuinely different stories, not just pairs anchored on group[0].
@@ -355,22 +373,10 @@ def find_title_clusters(stories, original_feed_map=None, feed_title_map=None):
         root = find(h)
         groups.setdefault(root, []).append(h)
 
-    # Only return clusters with 2+ GUID-unique stories from different resolved feeds.
-    # Keep ALL members (including GUID duplicates) so every story_hash gets an sCL:
-    # key in Redis — otherwise the dropped copy can't resolve its cluster.
+    # clustering/models.py: Every union above requires a match across distinct source feeds.
     clusters = {}
     for root, members in groups.items():
         if len(members) < 2:
-            continue
-        # Validate using GUID-unique members: need 2+ unique stories from 2+ feeds
-        guid_to_feed = {}
-        for h in members:
-            guid = story_guid_hash(h)
-            if guid not in guid_to_feed:
-                guid_to_feed[guid] = resolve_feed_id(story_by_hash[h]["story_feed_id"], original_feed_map)
-        if len(guid_to_feed) < 2:
-            continue
-        if len(set(guid_to_feed.values())) < 2:
             continue
         members.sort(key=lambda h: story_by_hash[h].get("story_date") or 0)
         cluster_id = members[0]
@@ -646,9 +652,8 @@ def merge_clusters(
     Returns:
         dict of {cluster_id: [story_hash, ...]}
     """
-    all_hashes = set()
-    for members in title_clusters.values():
-        all_hashes.update(members)
+    title_members = {h for members in title_clusters.values() if len(members) >= 2 for h in members}
+    all_hashes = set(title_members)
     for members in semantic_clusters.values():
         all_hashes.update(members)
 
@@ -727,9 +732,9 @@ def merge_clusters(
                 guid = story_guid_hash(h)
                 if guid not in guid_to_feed and story_feed_map.get(h):
                     guid_to_feed[guid] = resolve_feed_id(story_feed_map[h], original_feed_map)
-            if len(guid_to_feed) < 2:
-                continue
-            if len(set(guid_to_feed.values())) < 2:
+            # models.py: A title cluster already proved its members came from independent feeds,
+            # including copies of one publisher article that all share a GUID.
+            if title_members.isdisjoint(members) and len(set(guid_to_feed.values())) < 2:
                 continue
             clusters[root] = members[:CLUSTER_MAX_SIZE]
         return clusters
@@ -745,6 +750,7 @@ def store_clusters_to_redis(
     key_prefix=CLUSTER_KEY_PREFIX_RELATED,
     zkey_prefix=CLUSTER_ZKEY_PREFIX_RELATED,
     member_tiers=None,
+    article_keys=None,
 ):
     """Write cluster memberships to Redis.
 
@@ -808,9 +814,12 @@ def store_clusters_to_redis(
 
             # Build title-word sets for existing cluster members (for merge validation)
             existing_title_words = []
+            existing_articles = set()
             if story_title_map and existing_members:
                 for em in existing_members:
                     em_str = em.decode() if isinstance(em, bytes) else em
+                    if article_keys and article_keys.get(em_str):
+                        existing_articles.add(article_keys[em_str])
                     em_title = story_title_map.get(em_str, "")
                     if em_title:
                         existing_title_words.append(title_significant_words(em_title))
@@ -834,7 +843,9 @@ def store_clusters_to_redis(
                             has_overlap = any(
                                 len(new_words & ew) >= FUZZY_MIN_INTERSECTION for ew in existing_title_words
                             )
-                            if not has_overlap:
+                            # models.py: A copy of an existing article can have a two-word headline.
+                            same_article = article_keys and article_keys.get(story_hash) in existing_articles
+                            if not (has_overlap or same_article):
                                 skipped_validation += 1
                                 continue
 
@@ -905,6 +916,23 @@ def get_cluster_members(cluster_id, mode=CLUSTER_TIER_RELATED):
         cluster_id = cluster_id.decode()
     members = r.zrange("%s:%s" % (zkey_prefix, cluster_id), 0, -1)
     return [m.decode() if isinstance(m, bytes) else m for m in members]
+
+
+def visible_copies_match(members, page_stories, other_stories, feeds_by_id):
+    # models.py: A cached single-GUID group can also be a stale group of branched feeds.
+    # Check the visible copies using metadata already fetched for the reader.
+    article_keys = set()
+    source_ids = set()
+    for h in members:
+        story = page_stories.get(h) or other_stories.get(h)
+        if not story:
+            continue
+        feed = feeds_by_id.get(story["story_feed_id"])
+        if not feed or feed.branch_from_feed_id:
+            return False
+        source_ids.add(feed.pk)
+        article_keys.add(category_article_key(story, normalize_title(story.get("story_title") or "")))
+    return len(source_ids) >= 2 and len(article_keys) == 1 and None not in article_keys
 
 
 def apply_clustering_to_stories(
@@ -1066,6 +1094,8 @@ def apply_clustering_to_stories(
             "story_hash",
             "story_feed_id",
             "story_title",
+            "story_permalink",
+            "story_guid",
             "story_date",
             "story_author_name",
             "story_tags",
@@ -1083,6 +1113,8 @@ def apply_clustering_to_stories(
                     "story_hash": story.story_hash,
                     "story_feed_id": story.story_feed_id,
                     "story_title": story.story_title or "",
+                    "story_permalink": story.story_permalink,
+                    "id": story.story_guid,
                     "story_date": story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else "",
                     "story_timestamp": str(int(story.story_date.timestamp())) if story.story_date else "",
                     "feed_title": user_titles.get(story.story_feed_id, feed.feed_title) if feed else "",
@@ -1159,10 +1191,12 @@ def apply_clustering_to_stories(
 
     for cid, page_group in cluster_page_stories.items():
         all_members = cluster_all_members.get(cid, [])
-        # Need 2+ GUID-unique members (clusters may include GUID duplicates)
-        unique_guids = set(story_guid_hash(h) for h in all_members)
-        if len(unique_guids) < 2:
-            continue
+        if len({story_guid_hash(h) for h in all_members}) < 2:
+            if not visible_copies_match(all_members, page_stories_by_hash, off_page_metadata, feeds_by_id):
+                continue
+            page_group = [s for s in page_group if s["story_hash"] in all_members]
+            if not page_group:
+                continue
 
         # The representative is the highest-scoring story on this page
         page_group.sort(key=lambda s: s.get("score", 0), reverse=True)
@@ -1351,11 +1385,11 @@ def attach_cluster_data_to_stories(stories, user, cluster_mode=CLUSTER_TIER_RELA
 
     # Collect member hashes that are NOT in the input stories and belong
     # to feeds the user subscribes to
-    input_hashes = set(story_hashes)
+    input_stories = {s["story_hash"]: s for s in stories}
     external_hashes = set()
     for cid, members in cluster_all_members.items():
         for h in members:
-            if h not in input_hashes:
+            if h not in input_stories:
                 member_feed_id = int(h.split(":", 1)[0]) if ":" in h else None
                 if member_feed_id and member_feed_id in user_feed_ids:
                     external_hashes.add(h)
@@ -1370,6 +1404,8 @@ def attach_cluster_data_to_stories(stories, user, cluster_mode=CLUSTER_TIER_RELA
             "story_hash",
             "story_feed_id",
             "story_title",
+            "story_permalink",
+            "story_guid",
             "story_date",
             "story_author_name",
             "story_tags",
@@ -1396,6 +1432,8 @@ def attach_cluster_data_to_stories(stories, user, cluster_mode=CLUSTER_TIER_RELA
                     "story_hash": story.story_hash,
                     "story_feed_id": story.story_feed_id,
                     "story_title": story.story_title or "",
+                    "story_permalink": story.story_permalink,
+                    "id": story.story_guid,
                     "story_date": (story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else ""),
                     "story_timestamp": (str(int(story.story_date.timestamp())) if story.story_date else ""),
                     "feed_title": user_titles.get(story.story_feed_id, feed.feed_title) if feed else "",
@@ -1418,10 +1456,11 @@ def attach_cluster_data_to_stories(stories, user, cluster_mode=CLUSTER_TIER_RELA
         if not cid:
             continue
         all_members = cluster_all_members.get(cid, [])
-        # Need 2+ GUID-unique members for a valid cluster
-        unique_guids = set(story_guid_hash(h) for h in all_members)
-        if len(unique_guids) < 2:
-            continue
+        if len({story_guid_hash(h) for h in all_members}) < 2:
+            if story["story_hash"] not in all_members or not visible_copies_match(
+                all_members, input_stories, external_metadata, feeds_by_id
+            ):
+                continue
 
         rep_title = story.get("story_title", "") or ""
         rep_feed_id = story.get("story_feed_id")
@@ -1431,7 +1470,7 @@ def attach_cluster_data_to_stories(stories, user, cluster_mode=CLUSTER_TIER_RELA
         for member_hash in all_members:
             if member_hash == story["story_hash"]:
                 continue
-            if member_hash in input_hashes:
+            if member_hash in input_stories:
                 # Skip other curated stories — they appear independently in the briefing
                 continue
             if member_hash in external_metadata:
