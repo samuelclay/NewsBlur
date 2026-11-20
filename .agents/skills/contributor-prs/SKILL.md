@@ -23,8 +23,12 @@ Sam has already answered these, so don't ask again: commits on top after merging
 ## Step 0: Build the queue and read live state
 
 ```bash
-gh pr list --state all --search "created:>=<YYYY-MM-DD> -author:samuelclay" --limit 300 \
-  --json number,title,state,author,isCrossRepository,maintainerCanModify,mergedAt,headRefName
+# Every open outside PR, whatever its age. A date window here once hid a PR opened a day before the cutoff.
+gh pr list --state open --search "-author:samuelclay" --limit 300 \
+  --json number,title,author,createdAt,isCrossRepository,maintainerCanModify,headRefName
+# Closed and merged ones since the last run, for the closed-by-author case below.
+gh pr list --state closed --search "closed:>=<YYYY-MM-DD> -author:samuelclay" --limit 300 \
+  --json number,title,author,state,mergedAt,closedAt
 ```
 
 - **Merged, or closed as superseded or junk:** nothing to do. Say why in one line.
