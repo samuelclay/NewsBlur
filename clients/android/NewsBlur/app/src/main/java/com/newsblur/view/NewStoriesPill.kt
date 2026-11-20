@@ -264,16 +264,21 @@ class NewStoriesPill(
         scrollAway.reset()
         pill.removeCallbacks(returnCheck)
         pill.removeCallbacks(hideCheck)
+        // NewStoriesPill.kt's fetch can outlast this list (a tablet switches feeds in place, a reload restarts it);
+        // the stories only go into the session they were tapped for.
+        val session = realtimeUpdates.readingSession()
         fragment.viewLifecycleOwner.lifecycleScope.launch {
             when (val result = withContext(Dispatchers.IO) { realtimeUpdates.takeNewStoriesForTap(fs) }) {
                 RealtimeUpdates.TapResult.None -> Unit
                 is RealtimeUpdates.TapResult.Insert -> {
-                    withContext(Dispatchers.IO) { dbHelper.addStoriesToReadingSession(result.storyHashes) }
-                    onStoriesAdded(result.storyHashes, result.placement)
+                    if (withContext(Dispatchers.IO) { realtimeUpdates.addToOpenList(result.storyHashes, session) }) {
+                        onStoriesAdded(result.storyHashes, result.placement)
+                    }
                 }
                 is RealtimeUpdates.TapResult.Replace -> {
-                    withContext(Dispatchers.IO) { realtimeUpdates.showOnly(fs, result.storyHashes) }
-                    onReplacedWithNewest(result.storyHashes)
+                    if (withContext(Dispatchers.IO) { realtimeUpdates.showOnly(fs, result.storyHashes, session) }) {
+                        onReplacedWithNewest(result.storyHashes)
+                    }
                 }
             }
         }

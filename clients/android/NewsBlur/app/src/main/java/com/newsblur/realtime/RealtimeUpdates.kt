@@ -136,6 +136,10 @@ class RealtimeUpdates internal constructor(
     // [lock] from the main thread.
     private val accountLock = Any()
     private var accountGeneration = 0L
+
+    // From stopForAccountChange until PrefsRepo.kt has wiped the previous account (accountChangeComplete), the
+    // username and feeds still belong to it, so nothing subscribes.
+    private var accountChanging = false
     private var foreground = false
     private var subscribedFeedIds: Set<String> = emptySet()
     private var lastSubscription: List<String> = emptyList()
@@ -207,11 +211,14 @@ class RealtimeUpdates internal constructor(
     }
 
     /**
-     * PrefsRepo.kt calls this on logout and before a login-as, so no event reaches the next account.
-     * The app stays in the foreground through a login, so listen for the next account's first feed list.
+     * PrefsRepo.kt calls this on logout and before a login-as, so no event reaches the next account. Nothing
+     * subscribes again until [accountChangeComplete]: until then the username and feeds are still the old account's.
      */
     fun stopForAccountChange() {
-        synchronized(accountLock) { accountGeneration++ }
+        synchronized(accountLock) {
+            accountGeneration++
+            accountChanging = true
+        }
         stopConnection()
         synchronized(lock) {
             subscribedFeedIds = emptySet()
@@ -222,8 +229,16 @@ class RealtimeUpdates internal constructor(
             starredJob?.cancel()
             reloadJob?.cancel()
             clearNewStoriesLocked()
-            if (foreground) startLocked()
         }
+    }
+
+    /**
+     * PrefsRepo.kt wiped the previous account. The app stays in the foreground through a login, so listen for the
+     * next account's first feed list.
+     */
+    fun accountChangeComplete() {
+        synchronized(accountLock) { accountChanging = false }
+        synchronized(lock) { if (foreground) startLocked() }
     }
 
     private fun stopConnection() {
@@ -245,6 +260,8 @@ class RealtimeUpdates internal constructor(
     }
 
     internal suspend fun refreshSubscription() {
+        val account = currentAccount()
+        if (synchronized(accountLock) { accountChanging }) return
         val username = prefsRepo.getUserName() ?: return
         if (!prefsRepo.hasCookie()) return
         val active = dbHelper.getAllActiveFeeds()
@@ -256,7 +273,12 @@ class RealtimeUpdates internal constructor(
             if (feeds != lastSubscription) Log.i(this, "realtime subscribing to ${feeds.size} feeds")
             lastSubscription = feeds
         }
-        socketClient.connect(username, feeds)
+        // RealtimeUpdates.kt drops a subscription read under an account that has since signed out: connecting with
+        // it would deliver the previous account's activity.
+        synchronized(accountLock) {
+            if (account != accountGeneration || accountChanging) return
+            socketClient.connect(username, feeds)
+        }
     }
 
     internal fun onLiveChanged(live: Boolean) {
@@ -579,13 +601,42 @@ class RealtimeUpdates internal constructor(
     fun showOnly(
         fs: FeedSet,
         hashes: List<String>,
-    ) {
+        session: Long,
+    ): Boolean {
         val account = currentAccount()
+        var shown = false
         writeForAccount(account) {
-            dbHelper.prepareOrderedReadingSession(fs, hashes)
-            syncServiceState.restartPaging(fs)
+            shown =
+                inReadingSession(session) {
+                    dbHelper.prepareOrderedReadingSession(fs, hashes)
+                    syncServiceState.restartPaging(fs)
+                }
         }
+        return shown
     }
+
+    /** A tap up to the cap: adds [hashes] to the open list, unless it was switched or reloaded since [session]. */
+    fun addToOpenList(
+        hashes: List<String>,
+        session: Long,
+    ): Boolean = inReadingSession(session) { dbHelper.addStoriesToReadingSession(hashes) }
+
+    /**
+     * The open list's reading session when NewStoriesPill.kt was tapped. A tap's fetch can outlast the list: on a
+     * tablet the same story list switches feeds, and a reload restarts the same feed's session.
+     */
+    fun readingSession(): Long = syncServiceState.readingSessionGeneration
+
+    // Under the lock list switches and reloads take to start a new session, so the session can't change mid-write.
+    private inline fun inReadingSession(
+        session: Long,
+        write: () -> Unit,
+    ): Boolean =
+        synchronized(syncServiceState.pendingFeedMutex) {
+            if (syncServiceState.readingSessionGeneration != session) return@synchronized false
+            write()
+            true
+        }
 
     /**
      * Fetches [hashes] in one request and stores them, returning those the open list shows: its feeds, its read and

@@ -236,6 +236,8 @@ class PrefsRepo(
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
+        // Only now may realtime subscribe again: nothing of the previous account is left to subscribe with.
+        RealtimeUpdates.from(context).accountChangeComplete()
 
         // disable widget
         disableWidgetUpdate(context)
@@ -270,6 +272,7 @@ class PrefsRepo(
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
+        RealtimeUpdates.from(context).accountChangeComplete()
     }
 
     /**

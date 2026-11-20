@@ -25,6 +25,7 @@ import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.currentTime
@@ -422,7 +423,7 @@ class Test_RealtimeUpdates {
             assertEquals(listOf((1..5).map { "1:new$it" }), requests)
             assertEquals(NewStories.NONE, realtime.newStories.value)
 
-            realtime.showOnly(feed, newest)
+            assertTrue(realtime.showOnly(feed, newest, realtime.readingSession()))
             verify { db.prepareOrderedReadingSession(feed, newest) }
             verify { syncState.restartPaging(feed) }
         }
@@ -451,6 +452,79 @@ class Test_RealtimeUpdates {
             assertEquals(NewStories.Placement.BOTTOM, result.placement)
             assertEquals(20, result.storyHashes.size)
             assertEquals(3, realtime.newStories.value.count)
+        }
+
+    // PrefsRepo.logout() stops realtime before it clears the credentials and the database. A subscription task that
+    // already read the old account's feeds, or one started in that window, must not reconnect it: events would show
+    // the signed-out account's activity.
+    @Test
+    fun test_logout_in_the_foreground_never_reconnects_the_signed_out_account() =
+        runTest {
+            val connects = mutableListOf<String>()
+            every { socket.subscribed } returns MutableStateFlow(false)
+            every { socket.connect(any(), any()) } answers { connects += firstArg<String>() }
+            every { prefs.getUserName() } returns "old"
+            every { prefs.hasCookie() } returns true
+            every { db.getAllActiveFeeds() } returns setOf("1")
+            every { db.getAllSocialFeeds() } returns emptyList()
+            val realtime = realtime()
+            realtime.onAppForeground()
+            runCurrent()
+            assertEquals(listOf("old"), connects)
+            connects.clear()
+
+            // Logout lands while a subscription task holds the old account's feeds, before it connects.
+            every { db.getAllSocialFeeds() } answers {
+                realtime.stopForAccountChange()
+                emptyList()
+            }
+            realtime.refreshSubscription()
+            every { db.getAllSocialFeeds() } returns emptyList()
+            settle()
+
+            assertEquals(emptyList<String>(), connects)
+        }
+
+    // Once PrefsRepo.kt has wiped the previous account, the next one's feed list connects as usual.
+    @Test
+    fun test_the_next_account_connects_once_the_previous_one_is_wiped() =
+        runTest {
+            val connects = mutableListOf<String>()
+            every { socket.subscribed } returns MutableStateFlow(false)
+            every { socket.connect(any(), any()) } answers { connects += firstArg<String>() }
+            every { prefs.hasCookie() } returns true
+            every { db.getAllActiveFeeds() } returns setOf("1")
+            every { db.getAllSocialFeeds() } returns emptyList()
+            every { prefs.getUserName() } returns "old"
+            val realtime = realtime()
+            realtime.onAppForeground()
+            runCurrent()
+            realtime.stopForAccountChange()
+
+            every { prefs.getUserName() } returns "next"
+            realtime.accountChangeComplete()
+            settle()
+
+            assertEquals(listOf("old", "next"), connects)
+        }
+
+    // On a tablet the story list switches feeds in place, and a reload restarts the same feed's session; a tap whose
+    // fetch outlasts either must not replace or add to the new session's stories.
+    @Test
+    fun test_a_tap_held_across_a_list_switch_never_changes_the_new_session() =
+        runTest {
+            every { syncState.pendingFeedMutex } returns Any()
+            every { syncState.readingSessionGeneration } returns 5L
+            val realtime = realtime()
+            val session = realtime.readingSession()
+
+            every { syncState.readingSessionGeneration } returns 6L
+            assertFalse(realtime.showOnly(FeedSet.singleFeed("1"), listOf("1:new"), session))
+            assertFalse(realtime.addToOpenList(listOf("1:new"), session))
+
+            verify(exactly = 0) { db.prepareOrderedReadingSession(any(), any()) }
+            verify(exactly = 0) { syncState.restartPaging(any()) }
+            verify(exactly = 0) { db.addStoriesToReadingSession(any()) }
         }
 
     @Test
