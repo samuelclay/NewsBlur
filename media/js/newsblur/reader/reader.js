@@ -8096,22 +8096,27 @@
             }, this), _.bind(function () {
                 // reader.js: the fetch failed, so the stories wait for another click rather than disappearing.
                 if (!still_open()) return;
+                this.requeue_realtime_new_stories(list, state, waiting);
                 var next = this.realtime_new_stories;
-                // reader.js: reads on other devices since the click are newer than the ones from before it.
-                _.defaults(next.read_elsewhere, state.read_elsewhere);
-                var unread_only = list.unread_only;
-                _.each(state.buffered, function (attributes, story_hash) {
-                    if (_.has(next.read_elsewhere, story_hash)) attributes.read_status = next.read_elsewhere[story_hash] ? 1 : 0;
-                    if (unread_only && attributes.read_status) return;
-                    next.buffered[story_hash] = attributes;
-                });
-                _.each(state.overflow, function (timestamp, story_hash) {
-                    if (unread_only && next.read_elsewhere[story_hash]) return;
-                    next.overflow[story_hash] = timestamp;
-                });
                 next.user_profiles = next.user_profiles.concat(state.user_profiles);
                 this.show_realtime_new_stories_pill();
             }, this), { 'ajax_group': 'rapid', 'request_type': 'GET' });
+        },
+
+        // reader.js: Stories go back to wait for another click. Reads on other devices since the click are newer
+        // than the ones from before it, and a story read since then leaves an unread-only list's count.
+        requeue_realtime_new_stories: function (list, state, waiting) {
+            var next = this.realtime_new_stories;
+            _.defaults(next.read_elsewhere, state.read_elsewhere);
+            _.each(waiting, function (entry) {
+                var read = next.read_elsewhere[entry.story_hash];
+                if (entry.attributes && _.has(next.read_elsewhere, entry.story_hash)) {
+                    entry.attributes.read_status = read ? 1 : 0;
+                }
+                if (list.unread_only && (entry.attributes ? entry.attributes.read_status : read)) return;
+                if (entry.attributes) next.buffered[entry.story_hash] = entry.attributes;
+                else next.overflow[entry.story_hash] = entry.timestamp;
+            });
         },
 
         // reader.js: A newest-first list starts over from the newest waiting stories, and pages from page 1 below them.
@@ -8149,13 +8154,9 @@
                     return story.story_title_view && story.story_title_view.el;
                 }));
             }, { root: this.$s.$body.hasClass('NB-mobile-page-scroll') ? null : this.$s.$story_titles[0], from_bottom: true });
-            var next = this.realtime_new_stories;
-            _.each(waiting, function (entry) {
-                if (shown[entry.story_hash] || collection.get_by_story_hash(entry.story_hash)) return;
-                if (entry.attributes) next.buffered[entry.story_hash] = entry.attributes;
-                else next.overflow[entry.story_hash] = entry.timestamp;
-            });
-            next.read_elsewhere = state.read_elsewhere;
+            this.requeue_realtime_new_stories(list, state, _.reject(waiting, function (entry) {
+                return shown[entry.story_hash] || collection.get_by_story_hash(entry.story_hash);
+            }));
             this.show_realtime_new_stories_pill();
             var first = stories.length && collection.get_by_story_hash(_.min(stories, function (attributes) {
                 return parseInt(attributes.story_timestamp, 10);
