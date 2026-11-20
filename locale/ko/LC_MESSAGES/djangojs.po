@@ -3066,12 +3066,6 @@ msgstr "무료 + 구독 · Mac, iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "무료 + 구독 · iPhone, iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "무료 베타 · Mac, iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "무료 베타 · iPhone, iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "무료 · Android, iPhone, iPad &amp; Mac"
 

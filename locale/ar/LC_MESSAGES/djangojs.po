@@ -3520,12 +3520,6 @@ msgstr "مجاني + اشتراك · Mac وiPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "مجاني + اشتراك · iPhone وiPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "نسخة تجريبية مجانية · Mac وiPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "نسخة تجريبية مجانية · iPhone وiPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "مجاني · Android وiPhone وiPad &amp; Mac"
 

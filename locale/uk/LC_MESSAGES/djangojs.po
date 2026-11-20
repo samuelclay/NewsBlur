@@ -3284,12 +3284,6 @@ msgstr "Безкоштовно + підписка · Mac, iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "Безкоштовно + підписка · iPhone, iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "Безплатна бета-версія · Mac, iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "Безкоштовна бета-версія · iPhone, iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "Безкоштовно · Android, iPhone, iPad &amp; Mac"
 
