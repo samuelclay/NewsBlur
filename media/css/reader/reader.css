@@ -4239,15 +4239,6 @@ body.NB-reduce-motion .NB-new-stories-indicator {
     animation: end-line-animation 1.7s ease infinite;
 }
 
-/* reader.css: the gap story_titles_view.js place_realtime_gap keeps while the new stories pill's stories page in,
-   pulsing like the bar a page shows at the end of the list while it loads. */
-.NB-realtime-gap {
-    height: 8px;
-    border-top: 1px solid #dbdbda;
-    border-bottom: 1px solid #E1E6E0;
-    grid-column: 1 / -1;
-}
-
 @keyframes end-line-animation {
     0% {
         background-color: #E1EBFF

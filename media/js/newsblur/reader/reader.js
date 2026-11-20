@@ -115,7 +115,7 @@
                 // apps/reader/views.py load_river_stories__redis reads at most 100 story hashes.
                 REALTIME_NEW_STORY_MAX_HASHES: 100,
                 // reader.js fetches at most this many waiting stories; past it the pill only counts what is
-                // announced, and clicking it pages the list in afresh (page_in_realtime_new_stories). The iOS and
+                // announced, and clicking it shows the newest of them (show_newest_realtime_new_stories). The iOS and
                 // Android apps use the same cap.
                 REALTIME_NEW_STORY_CAP: 20,
                 // new_stories_indicator_view.js hides the pill this long after the reader first scrolls away from it,
@@ -1637,8 +1637,6 @@
 
             // reader.js: stories waiting for the pill belong to the list being left.
             this.clear_realtime_new_stories();
-            // reader.js: opening a list ends the fresh paging the new stories pill started.
-            this.model.stories.realtime_gap = null;
 
             // Flush read time for the current story before resetting
             if (NEWSBLUR.ReadTimeTracker && this.active_story) {
@@ -4499,9 +4497,7 @@
 
             this.flags['opening_feed'] = true;
             this.counts['page'] += 1;
-            if (this.model.stories.realtime_gap) {
-                // reader.js: the gap story_titles_view.js keeps for the new stories pill shows this page loading.
-            } else if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
+            if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
                 NEWSBLUR.app.story_list.show_loading(options);
             } else {
                 NEWSBLUR.app.story_titles.show_loading(options);
@@ -7872,7 +7868,8 @@
                 key: key || null,
                 pending: [],
                 buffered: {},
-                // Announced stories past REALTIME_NEW_STORY_CAP, counted but never fetched.
+                // Announced stories past REALTIME_NEW_STORY_CAP, counted but not fetched until the pill is
+                // clicked: story hash to story timestamp, so the click can pick the newest.
                 overflow: {},
                 // Reads and unreads on other devices of announced stories not yet fetched: river_stories?h= answers
                 // with a placeholder read state, so these settle it when the fetch lands.
@@ -7914,7 +7911,7 @@
             // cap the pill only counts the announcements.
             if (state.read_elsewhere[story_hash] && list.unread_only) return;
             if (this.realtime_visible_new_story_count() + state.pending.length >= this.constants.REALTIME_NEW_STORY_CAP) {
-                state.overflow[story_hash] = true;
+                state.overflow[story_hash] = timestamp;
                 this.show_realtime_new_stories_pill();
                 return;
             }
@@ -8030,19 +8027,61 @@
             }, this), 500);
         },
 
-        // reader.js: The pill was clicked with more stories waiting than REALTIME_NEW_STORY_CAP. The list keeps
-        // what it has and pages in afresh from page 1 (the server rebuilds its paging snapshot for page 1, so every
-        // later page comes from this fresh paging too). merge_realtime_gap_page puts each page's new stories at a
-        // cursor: the newest slide in at the top, and story_titles_view.js keeps a loading gap between them and the
-        // stories listed before until the pages reach those stories. iOS and Android page in the same way.
-        page_in_realtime_new_stories: function (list, announced_feed_ids) {
+        // reader.js: The pill was clicked with more stories waiting than REALTIME_NEW_STORY_CAP. It shows the 20
+        // newest-dated waiting stories as if the list had just opened: it fetches the ones it only counted, replaces
+        // the list with them and lets go of everything else, and the list pages in afresh below them as the reader
+        // scrolls (a page bringing one of them again merges into it rather than listing it twice). An oldest-first
+        // list instead gains its 20 oldest waiting stories at its end and keeps the rest waiting. The iOS and
+        // Android apps do the same.
+        show_newest_realtime_new_stories: function (list, state, announced_feed_ids) {
             if (this.flags['opening_feed']) {
                 // reader.js: a page of the old paging is still loading; start once it lands.
                 return _.delay(_.bind(function () {
                     var current = this.realtime_new_story_list();
-                    if (current && current.key == list.key) this.page_in_realtime_new_stories(current, announced_feed_ids);
+                    if (current && current.key == list.key) this.show_newest_realtime_new_stories(current, state, announced_feed_ids);
                 }, this), 250);
             }
+            var waiting = _.map(state.buffered, function (attributes, story_hash) {
+                return { story_hash: story_hash, timestamp: parseInt(attributes.story_timestamp, 10), attributes: attributes };
+            }).concat(_.map(state.overflow, function (timestamp, story_hash) {
+                return { story_hash: story_hash, timestamp: timestamp };
+            }));
+            waiting = _.sortBy(waiting, function (entry) { return entry.timestamp; });
+            if (!list.oldest_first) waiting.reverse();
+            var chosen = waiting.slice(0, this.constants.REALTIME_NEW_STORY_CAP);
+            var missing = _.pluck(_.reject(chosen, function (entry) { return entry.attributes; }), 'story_hash');
+            var show = _.bind(function (fetched) {
+                var current = this.realtime_new_story_list();
+                if (!current || current.key != list.key) return;
+                var score = Math.max(this.get_unread_view_score(), 0);
+                var stories = _.compact(_.map(chosen, function (entry) {
+                    var attributes = entry.attributes || fetched[entry.story_hash];
+                    if (!attributes || !list.feed_ids[String(attributes.story_feed_id)]) return;
+                    if (_.has(state.read_elsewhere, entry.story_hash)) {
+                        attributes.read_status = state.read_elsewhere[entry.story_hash] ? 1 : 0;
+                    }
+                    if (list.unread_only && attributes.read_status) return;
+                    if (new NEWSBLUR.Models.Story(attributes).score() < score) return;
+                    return attributes;
+                }));
+                var known_profiles = this.model.user_profiles;
+                known_profiles.add(_.reject(state.user_profiles, function (profile) {
+                    return known_profiles.get(profile.id);
+                }));
+                if (list.oldest_first) return this.append_oldest_realtime_new_stories(list, state, stories, waiting);
+                this.restart_list_with_realtime_new_stories(list, stories, announced_feed_ids);
+            }, this);
+            if (!missing.length) return show({});
+            this.model.make_request('/reader/river_stories', { h: missing, include_hidden: true }, _.bind(function (data) {
+                var fetched = {};
+                _.each(data && data.stories, function (attributes) { fetched[attributes.story_hash] = attributes; });
+                if (data && data.user_profiles) state.user_profiles = state.user_profiles.concat(data.user_profiles);
+                show(fetched);
+            }, this), $.noop, { 'ajax_group': 'rapid', 'request_type': 'GET' });
+        },
+
+        // reader.js: A newest-first list starts over from the newest waiting stories, and pages from page 1 below them.
+        restart_list_with_realtime_new_stories: function (list, stories, announced_feed_ids) {
             if (this.flags['river_view'] && this.active_folder &&
                 typeof this.active_folder.feeds_with_unreads === 'function') {
                 // reader.js: a folder pages the feeds that had unread stories when it opened; a feed whose first
@@ -8053,70 +8092,47 @@
                     return parseInt(feed_id, 10);
                 }).concat(announced_feed_ids || []));
             }
-            var stories = this.model.stories;
-            if (!list.oldest_first) this.$s.$story_titles.stop().scrollTop(0);
-            stories.realtime_gap = {
-                cursor: list.oldest_first ? stories.length : 0,
-                oldest_first: list.oldest_first,
-                started: false,
-                inserted_any: false,
-                met: false
-            };
-            stories.no_more_stories = false;
+            this.hold_story_scroll_for_new_stories();
+            this.$s.$story_titles.stop().scrollTop(0);
+            var collection = this.model.stories;
+            collection.no_more_stories = false;
+            collection.page_fill_outs = 0;
             this.counts['page'] = 0;
-            NEWSBLUR.app.story_titles.place_realtime_gap();
-            this.load_page_of_feed_stories({ scroll_to_loadbar: false });
+            collection.reset(_.sortBy(stories, function (attributes) {
+                return -parseInt(attributes.story_timestamp, 10);
+            }), { added: stories.length });
+            // reader.js: a short list asks for page 1 straight away, as an opened list does.
+            _.defer(function () { NEWSBLUR.app.story_titles.fill_out(); });
         },
 
-        // reader.js: assetmodel.js load_feed_precallback hands over each page of the fresh paging. A story already
-        // listed moves the cursor past it; a new one goes in at the cursor. Once the pages reach the stories listed
-        // before (a listed story at or below the cursor, after at least one new story), the gap has met them:
-        // story_titles_view.js drops the loading gap and pages at the bottom again, while the cursor keeps
-        // stepping over the stories already listed. The fresh paging ends when the cursor reaches the end of the
-        // list (for an oldest-first list, once new stories join its end) or the pages run out.
-        merge_realtime_gap_page: function (page) {
-            var stories = this.model.stories;
-            var gap = stories.realtime_gap;
-            var first_page = !gap.started;
-            gap.started = true;
-            var inserted = [];
-            var merge = function () {
-                _.each(page, function (attributes) {
-                    var listed = stories.get_by_story_hash(attributes.story_hash);
-                    if (listed) {
-                        var index = stories.indexOf(listed);
-                        if (index >= gap.cursor && gap.inserted_any) gap.met = true;
-                        gap.cursor = Math.max(gap.cursor, index + 1);
-                        return;
-                    }
-                    stories.add(attributes, { at: gap.cursor, silent: true });
-                    inserted.push(stories.at(gap.cursor));
-                    gap.cursor += 1;
-                    gap.inserted_any = true;
-                });
-                if (inserted.length) stories.trigger('add', { added: inserted.length, inserted: inserted });
-                return _.compact(_.map(inserted, function (story) {
+        // reader.js: An oldest-first list gains its oldest waiting stories at its end; the rest keep waiting.
+        append_oldest_realtime_new_stories: function (list, state, stories, waiting) {
+            var shown = {};
+            _.each(waiting.slice(0, this.constants.REALTIME_NEW_STORY_CAP), function (entry) { shown[entry.story_hash] = true; });
+            var collection = this.model.stories;
+            NEWSBLUR.motion.arrive(NEWSBLUR.app.story_titles.el, function () {
+                return _.compact(_.map(collection.insert_realtime_stories(stories, true), function (story) {
                     return story.story_title_view && story.story_title_view.el;
                 }));
-            };
-            if (first_page) {
-                // reader.js: the first page slides in like the pill's stories (common/motion.js arrive).
-                this.hold_story_scroll_for_new_stories();
-                NEWSBLUR.motion.arrive(NEWSBLUR.app.story_titles.el, merge, {
-                    root: this.$s.$body.hasClass('NB-mobile-page-scroll') ? null : this.$s.$story_titles[0],
-                    from_bottom: gap.oldest_first
-                });
-            } else {
-                merge();
-            }
-            var reached_end = gap.cursor >= stories.length && (inserted.length || !gap.oldest_first);
-            if (!page.length || reached_end) stories.realtime_gap = null;
-            NEWSBLUR.app.story_titles.place_realtime_gap();
-            if (!stories.realtime_gap || !inserted.length) {
-                // reader.js: a page of stories already listed goes straight on to the next one, if the gap (or, once
-                // it has met the old stories, the end of the list) is in reach, as does the paging that takes over
-                // when the fresh paging ends.
-                _.defer(function () { NEWSBLUR.app.story_titles.scroll(); });
+            }, { root: this.$s.$body.hasClass('NB-mobile-page-scroll') ? null : this.$s.$story_titles[0], from_bottom: true });
+            var next = this.realtime_new_stories;
+            _.each(waiting, function (entry) {
+                if (shown[entry.story_hash] || collection.get_by_story_hash(entry.story_hash)) return;
+                if (entry.attributes) next.buffered[entry.story_hash] = entry.attributes;
+                else next.overflow[entry.story_hash] = entry.timestamp;
+            });
+            next.read_elsewhere = state.read_elsewhere;
+            this.show_realtime_new_stories_pill();
+            var first = stories.length && collection.get_by_story_hash(_.min(stories, function (attributes) {
+                return parseInt(attributes.story_timestamp, 10);
+            }).story_hash);
+            if (first && first.story_title_view) {
+                var $story_titles = this.$s.$story_titles;
+                var container_top = $story_titles[0].getBoundingClientRect().top;
+                var target = $story_titles.scrollTop() + first.story_title_view.el.getBoundingClientRect().top -
+                    container_top - 40;
+                $story_titles.stop().animate({ scrollTop: Math.max(0, target) },
+                    this.$s.$body.hasClass('NB-reduce-motion') ? 0 : 250);
             }
         },
 
@@ -8132,7 +8148,7 @@
                 function (story_hash) { return parseInt(story_hash.split(':')[0], 10); }));
             this.clear_realtime_new_stories(list && list.key);
             if (!list || list.key != state.key) return;
-            if (overflowing) return this.page_in_realtime_new_stories(list, announced_feed_ids);
+            if (overflowing) return this.show_newest_realtime_new_stories(list, state, announced_feed_ids);
             if (!stories.length) return;
 
             var known_profiles = this.model.user_profiles;

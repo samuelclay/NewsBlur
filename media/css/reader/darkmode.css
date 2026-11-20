@@ -2464,12 +2464,6 @@ border-bottom-color: #303739;
     background: #263445;
 }
 
-.NB-dark .NB-realtime-gap {
-    border-top-color: #303739;
-    border-bottom-color: #111111;
-    animation: dark-end-line-animation 1.7s ease infinite;
-}
-
 .NB-dark .NB-feed-fetching-indicator {
     color: #808080;
 }
