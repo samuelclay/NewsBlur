@@ -2074,6 +2074,9 @@ msgstr "聚焦"
 msgid "Focus/hide with color indicators"
 msgstr "使用颜色指示来聚焦/隐藏"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "文件夹已移动，但部分训练规则可能仍指向原来的位置。"
+
 msgid "Folder title and photo required"
 msgstr "必须填写文件夹标题并上传照片"
 

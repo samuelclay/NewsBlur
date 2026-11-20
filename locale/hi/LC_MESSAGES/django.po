@@ -2245,6 +2245,9 @@ msgstr "फ़ोकस"
 msgid "Focus/hide with color indicators"
 msgstr "रंग संकेतों से फ़ोकस करें/छिपाएँ"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "फ़ोल्डर को ले जाया गया है, लेकिन प्रशिक्षण के कुछ नियम अब भी उसकी पुरानी जगह का उपयोग कर सकते हैं।"
+
 msgid "Folder title and photo required"
 msgstr "फ़ोल्डर का शीर्षक और फ़ोटो आवश्यक हैं"
 

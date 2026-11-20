@@ -555,7 +555,9 @@ class Test_Reader(TransactionTestCase):
                 {"folder_name": "Reading", "to_folder": "Archive"},
             )
 
-        self.assertEqual(json.decode(response.content)["code"], 1)
+        body = json.decode(response.content)
+        self.assertEqual(body["code"], 1)
+        self.assertIn("training", body["message"])
         folders.refresh_from_db()
         self.assertEqual(json.decode(folders.folders), [{"Archive": [{"Reading": [1]}]}])
 

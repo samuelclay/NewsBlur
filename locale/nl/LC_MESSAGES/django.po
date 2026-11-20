@@ -2250,6 +2250,9 @@ msgstr "Focus"
 msgid "Focus/hide with color indicators"
 msgstr "Uitlichten/verbergen met kleuraanduidingen"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "De map is verplaatst, maar sommige trainingsregels verwijzen mogelijk nog naar de oude locatie."
+
 msgid "Folder title and photo required"
 msgstr "Maptitel en foto zijn verplicht"
 

@@ -2077,6 +2077,9 @@ msgstr "焦點"
 msgid "Focus/hide with color indicators"
 msgstr "以顏色指示焦點／隱藏"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "資料夾已移動，但部分訓練規則可能仍指向原本的位置。"
+
 msgid "Folder title and photo required"
 msgstr "必須提供資料夾標題和照片"
 

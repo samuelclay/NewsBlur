@@ -2251,6 +2251,9 @@ msgstr "Foco"
 msgid "Focus/hide with color indicators"
 msgstr "Colocar em foco/ocultar com indicadores de cor"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "A pasta foi movida, mas algumas regras de treinamento ainda podem usar o local anterior."
+
 msgid "Folder title and photo required"
 msgstr "Título e foto da pasta obrigatórios"
 

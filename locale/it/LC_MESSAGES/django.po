@@ -2267,6 +2267,11 @@ msgstr "In evidenza"
 msgid "Focus/hide with color indicators"
 msgstr "Metti in evidenza/nascondi con indicatori colorati"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"La cartella è stata spostata, ma alcune regole di addestramento potrebbero ancora usare la posizione "
+"precedente."
+
 msgid "Folder title and photo required"
 msgstr "Sono necessari il titolo e la foto della cartella"
 

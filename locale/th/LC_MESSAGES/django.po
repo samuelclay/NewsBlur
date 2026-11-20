@@ -2200,6 +2200,9 @@ msgstr "โฟกัส"
 msgid "Focus/hide with color indicators"
 msgstr "เน้น/ซ่อนด้วยตัวบ่งชี้สี"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "ย้ายโฟลเดอร์แล้ว แต่กฎการฝึกบางข้ออาจยังอ้างอิงตำแหน่งเดิม"
+
 msgid "Folder title and photo required"
 msgstr "ต้องระบุชื่อและรูปภาพของโฟลเดอร์"
 

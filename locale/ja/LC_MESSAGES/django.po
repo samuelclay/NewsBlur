@@ -2064,6 +2064,9 @@ msgstr "フォーカス"
 msgid "Focus/hide with color indicators"
 msgstr "色のインジケーターでフォーカス／非表示"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "フォルダーを移動しましたが、一部の学習ルールは移動前の場所を参照している可能性があります。"
+
 msgid "Folder title and photo required"
 msgstr "フォルダー名と写真が必要です"
 

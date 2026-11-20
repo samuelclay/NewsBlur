@@ -2251,6 +2251,9 @@ msgstr "Fokus"
 msgid "Focus/hide with color indicators"
 msgstr "Sorot/sembunyikan dengan indikator warna"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "Folder telah dipindahkan, tetapi beberapa aturan pelatihan mungkin masih menggunakan lokasi sebelumnya."
+
 msgid "Folder title and photo required"
 msgstr "Judul dan foto folder wajib diisi"
 

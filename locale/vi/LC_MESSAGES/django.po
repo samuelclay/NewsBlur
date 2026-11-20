@@ -2225,6 +2225,9 @@ msgstr "Tập trung"
 msgid "Focus/hide with color indicators"
 msgstr "Làm nổi bật/ẩn bằng chỉ báo màu"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "Thư mục đã được di chuyển, nhưng một số quy tắc huấn luyện có thể vẫn tham chiếu đến vị trí cũ."
+
 msgid "Folder title and photo required"
 msgstr "Cần có tiêu đề và ảnh cho thư mục"
 

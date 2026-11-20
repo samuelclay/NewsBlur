@@ -2289,6 +2289,11 @@ msgstr "Prioritaires"
 msgid "Focus/hide with color indicators"
 msgstr "Mettre en évidence/masquer avec des indicateurs de couleur"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Le dossier a été déplacé, mais certaines règles d’entraînement peuvent encore utiliser son ancien "
+"emplacement."
+
 msgid "Folder title and photo required"
 msgstr "Le titre du dossier et la photo sont requis"
 

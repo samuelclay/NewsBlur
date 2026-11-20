@@ -2257,6 +2257,11 @@ msgstr "Enfoque"
 msgid "Focus/hide with color indicators"
 msgstr "Enfocar/ocultar con indicadores de color"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Se ha movido la carpeta, pero es posible que algunas reglas de entrenamiento sigan usando su ubicación "
+"anterior."
+
 msgid "Folder title and photo required"
 msgstr "Se requieren el título y la foto de la carpeta"
 

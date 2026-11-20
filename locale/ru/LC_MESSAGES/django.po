@@ -2291,6 +2291,9 @@ msgstr "Фокус"
 msgid "Focus/hide with color indicators"
 msgstr "Выделение/скрытие с помощью цветовых индикаторов"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "Папка перемещена, но некоторые правила обучения могут по-прежнему ссылаться на её прежнее расположение."
+
 msgid "Folder title and photo required"
 msgstr "Необходимо указать название папки и добавить фото"
 

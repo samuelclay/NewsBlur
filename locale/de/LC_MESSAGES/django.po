@@ -2270,6 +2270,11 @@ msgstr "Fokus"
 msgid "Focus/hide with color indicators"
 msgstr "Mit Farbanzeigen hervorheben/ausblenden"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Der Ordner wurde verschoben. Einige Trainingsregeln verweisen möglicherweise noch auf seinen alten "
+"Speicherort."
+
 msgid "Folder title and photo required"
 msgstr "Ordnername und Foto erforderlich"
 

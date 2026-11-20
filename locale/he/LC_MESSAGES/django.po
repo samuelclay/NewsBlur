@@ -2194,6 +2194,9 @@ msgstr "מיקוד"
 msgid "Focus/hide with color indicators"
 msgstr "מיקוד/הסתרה באמצעות מחווני צבע"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "התיקייה הועברה, אך ייתכן שחלק מכללי האימון עדיין מתייחסים למיקום הקודם שלה."
+
 msgid "Folder title and photo required"
 msgstr "נדרשים כותרת ותמונה לתיקייה"
 

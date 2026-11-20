@@ -2303,6 +2303,9 @@ msgstr "التركيز"
 msgid "Focus/hide with color indicators"
 msgstr "التركيز/الإخفاء باستخدام مؤشرات الألوان"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "نُقل المجلد، لكن بعض قواعد التدريب قد تظل مرتبطة بموقعه السابق."
+
 msgid "Folder title and photo required"
 msgstr "يلزم عنوان المجلد وصورته"
 

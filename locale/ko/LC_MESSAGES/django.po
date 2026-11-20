@@ -2110,6 +2110,9 @@ msgstr "집중"
 msgid "Focus/hide with color indicators"
 msgstr "색상 표시로 집중하거나 숨기기"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "폴더를 이동했지만 일부 학습 규칙은 여전히 이전 위치를 참조할 수 있습니다."
+
 msgid "Folder title and photo required"
 msgstr "폴더 제목과 사진이 필요합니다"
 

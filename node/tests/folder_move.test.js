@@ -50,7 +50,9 @@ test('a rejected folder move reports the reason, keeps the picker open and permi
     const rejected_request = request;
     app.reader.manage_menu_move_folder('Saved', {});
     assert.notEqual(request, rejected_request);
-    request.success({ code: 1, folders: [{ Archive: [{ Saved: [7] }] }] });
+    const warning = 'Folder moved, but some training rules may still use its old location.';
+    request.success({ code: 1, folders: [{ Archive: [{ Saved: [7] }] }], message: warning });
+    assert.deepEqual(messages, ['The destination changed.', warning]);
     assert.deepEqual(reader_ui, ['reset', 'closed picker', 'closed menu']);
     assert.equal(app.reader.flags.reloading_feeds, false);
 });

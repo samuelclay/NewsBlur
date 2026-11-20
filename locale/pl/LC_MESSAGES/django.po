@@ -2293,6 +2293,11 @@ msgstr "Wyróżnione"
 msgid "Focus/hide with color indicators"
 msgstr "Wyróżnianie/ukrywanie za pomocą kolorowych wskaźników"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Folder został przeniesiony, ale niektóre reguły trenowania mogą nadal odwoływać się do jego poprzedniej "
+"lokalizacji."
+
 msgid "Folder title and photo required"
 msgstr "Wymagany tytuł folderu i zdjęcie"
 

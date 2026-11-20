@@ -4443,6 +4443,7 @@ def move_folder_to_folder(request):
         except InvalidFolderPath as exc:
             return dict(code=-1, message=str(exc), folders=json.decode(user_sub_folders.folders))
 
+        response = dict(code=1, folders=json.decode(user_sub_folders.folders))
         if moved:
             old_path, new_path = moved
             try:
@@ -4450,6 +4451,9 @@ def move_folder_to_folder(request):
                     request.user.pk, " - ".join(old_path), " - ".join(new_path)
                 )
             except (OperationError, PyMongoError):
+                response["message"] = gettext(
+                    "Folder moved, but some training rules may still use its old location."
+                )
                 logging.getlogger().exception(
                     "Could not move folder classifiers for user %s", request.user.pk
                 )
@@ -4458,7 +4462,7 @@ def move_folder_to_folder(request):
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(request.user.username, "reload:feeds")
 
-    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+    return response
 
 
 @required_params("feeds_by_folder", "to_folder")

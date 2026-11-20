@@ -2241,6 +2241,9 @@ msgstr "Odak"
 msgid "Focus/hide with color indicators"
 msgstr "Renk göstergeleriyle öne çıkarma/gizleme"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "Klasör taşındı ancak bazı eğitim kuralları hâlâ eski konumunu kullanıyor olabilir."
+
 msgid "Folder title and photo required"
 msgstr "Klasör başlığı ve fotoğraf gerekli"
 
