@@ -61,11 +61,8 @@ public class NewsblurWebview extends WebView {
         getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         getSettings().setDomStorageEnabled(true);
         getSettings().setSupportZoom(true);
-        // Reading WebView is loaded with the https appassets virtual host
-        // (READING_BASE_URL = https://appassets.androidplatform.net/assets/)
-        // and serves all bundled resources through
-        // WebViewAssetLoader.shouldInterceptRequest. It never loads a file://
-        // URL, so setAllowFileAccess(true) is not load-bearing here.
+        // NewsblurWebview.java: stories load from the https appassets host through WebViewAssetLoader, and the
+        // file:///android_res fonts in Font.java stay reachable with file access off.
         getSettings().setAllowFileAccess(false);
 
         // Remove default web search and share to accommodate the custom contextual menu
