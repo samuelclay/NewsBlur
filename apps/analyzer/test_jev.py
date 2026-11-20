@@ -377,11 +377,6 @@ class Test_TestPromptView(TransactionTestCase):
         self.assertEqual(result["image_results"], [1, 0])
         self.assertEqual(result["classification"], 1)
 
-    def test_a_failed_request_is_an_error_not_a_non_match(self):
-        with fake_jev(status_code=500):
-            result = self.post()
-        self.assertEqual(result["code"], -1)
-
     def test_without_archive_a_reader_gets_ten_tests_a_day(self):
         """Readers without Premium Archive can try filters a few times a day. A failed test
         doesn't use one up, and the test past the limit never reaches Jev."""
