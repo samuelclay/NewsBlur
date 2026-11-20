@@ -8068,11 +8068,13 @@
                     return _.delay(show, 250, fetched);
                 }
                 var score = Math.max(this.get_unread_view_score(), 0);
+                // reader.js: reads on other devices during the fetch land in the new state, and are newer.
+                var read_elsewhere = _.defaults({}, this.realtime_new_stories.read_elsewhere, state.read_elsewhere);
                 var stories = _.compact(_.map(chosen, function (entry) {
                     var attributes = entry.attributes || fetched[entry.story_hash];
                     if (!attributes || !list.feed_ids[String(attributes.story_feed_id)]) return;
-                    if (_.has(state.read_elsewhere, entry.story_hash)) {
-                        attributes.read_status = state.read_elsewhere[entry.story_hash] ? 1 : 0;
+                    if (_.has(read_elsewhere, entry.story_hash)) {
+                        attributes.read_status = read_elsewhere[entry.story_hash] ? 1 : 0;
                     }
                     if (list.unread_only && attributes.read_status) return;
                     if (new NEWSBLUR.Models.Story(attributes).score() < score) return;
@@ -8095,9 +8097,18 @@
                 // reader.js: the fetch failed, so the stories wait for another click rather than disappearing.
                 if (!still_open()) return;
                 var next = this.realtime_new_stories;
-                _.extend(next.buffered, state.buffered);
-                _.extend(next.overflow, state.overflow);
-                _.extend(next.read_elsewhere, state.read_elsewhere);
+                // reader.js: reads on other devices since the click are newer than the ones from before it.
+                _.defaults(next.read_elsewhere, state.read_elsewhere);
+                var unread_only = list.unread_only;
+                _.each(state.buffered, function (attributes, story_hash) {
+                    if (_.has(next.read_elsewhere, story_hash)) attributes.read_status = next.read_elsewhere[story_hash] ? 1 : 0;
+                    if (unread_only && attributes.read_status) return;
+                    next.buffered[story_hash] = attributes;
+                });
+                _.each(state.overflow, function (timestamp, story_hash) {
+                    if (unread_only && next.read_elsewhere[story_hash]) return;
+                    next.overflow[story_hash] = timestamp;
+                });
                 next.user_profiles = next.user_profiles.concat(state.user_profiles);
                 this.show_realtime_new_stories_pill();
             }, this), { 'ajax_group': 'rapid', 'request_type': 'GET' });
