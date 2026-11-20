@@ -157,10 +157,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s と %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s / 記事"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s バイト"
@@ -184,11 +180,6 @@ msgstr[0] "%(count)s件の分類器が削除されます"
 msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s件のコメント"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s件のコンテンツフィルター"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -241,11 +232,6 @@ msgid_plural "%(count)s hours ago"
 msgstr[0] "%(count)s時間前"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s個の画像フィルター"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s件の「いいね」"
@@ -289,18 +275,6 @@ msgstr[0] "%(count)s 件のニュースレター"
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s / %(limit)sサイト"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "すべてのサイトで%(count)s（%(stories)s）"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "フォルダーの%(count)s（%(stories)s）"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "このサイトの%(count)s（%(stories)s）"
 
 #, python-format
 msgid "%(count)s open"
@@ -386,11 +360,6 @@ msgstr[0] "月あたり%(count)s件の記事"
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s件の記事が削除されます"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "月あたり %(count)s 件"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -536,10 +505,6 @@ msgstr[0] "%(start)s～%(end)s時間"
 msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s～%(end)s分"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -889,19 +854,10 @@ msgstr "(GMT-11:00) ミッドウェー島、サモア"
 msgid "(no title)"
 msgstr "（タイトルなし）"
 
-msgid "(upcoming)"
-msgstr "（予定）"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ ほか%(value_1)sサイト"
-
-msgid "/day"
-msgstr "/日"
-
-msgid "/mo"
-msgstr "/月"
 
 msgid "/month"
 msgstr "/月"
@@ -994,8 +950,8 @@ msgid "AI Model"
 msgstr "AIモデル"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "AIフィルターは保存されていますが、%(billing_link)sまで適用されません。"
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "AIフィルターは保存されますが、%(tier_link)sでのみ実行されます。"
 
 msgid "AI finds the stories"
 msgstr "AIが記事を見つけます"
@@ -3525,9 +3481,6 @@ msgstr "このウィンドウ内"
 msgid "Include read"
 msgstr "既読を含める"
 
-msgid "Increase or remove your limit"
-msgstr "上限を引き上げるか、解除する"
-
 msgid "Independent"
 msgstr "独立系"
 
@@ -3840,12 +3793,6 @@ msgstr "NewsBlurを管理"
 msgid "Manage Training"
 msgstr "学習を管理"
 
-msgid "Manage billing and limits"
-msgstr "請求と利用上限を管理"
-
-msgid "Manage billing on Stripe"
-msgstr "Stripeで請求を管理"
-
 msgid "Manage email settings"
 msgstr "メール設定を管理"
 
@@ -4034,12 +3981,6 @@ msgstr "月"
 msgid "Monday"
 msgstr "月曜日"
 
-msgid "Monthly spending limit"
-msgstr "月間支出上限"
-
-msgid "Monthly spending limit reached. "
-msgstr "月間利用上限に達しました。 "
-
 msgid "Months Earned"
 msgstr "獲得した月数"
 
@@ -4155,15 +4096,6 @@ msgstr "自然言語画像分類器"
 
 msgid "Natural Language Text Classifier"
 msgstr "自然言語テキスト分類器"
-
-msgid "Natural language classifier billing"
-msgstr "自然言語分類の請求"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "自然言語分類器は次の請求サイクルまで一時停止されています。 "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "自然言語分類器は、このインスタンスのAPIキーを使用しています。"
 
 msgid "Natural language text and image classifiers"
 msgstr "自然言語テキスト・画像分類器"
@@ -4359,9 +4291,6 @@ msgstr "画像なし"
 msgid "No items added yet."
 msgstr "まだアイテムは追加されていません。"
 
-msgid "No limit"
-msgstr "上限なし"
-
 msgid "No match"
 msgstr "一致なし"
 
@@ -4473,12 +4402,6 @@ msgstr "このページに記事のパターンは見つかりませんでした
 
 msgid "No trending sites available"
 msgstr "トレンドサイトはありません"
-
-msgid "No usage billing invoices yet."
-msgstr "利用料金の請求書はまだありません。"
-
-msgid "No usage billing set up."
-msgstr "従量課金が設定されていません。"
 
 msgid "No valid merge groups to apply"
 msgstr "適用できる有効な統合グループがありません"
@@ -4792,9 +4715,6 @@ msgstr "オプション3："
 
 msgid "Option 4:"
 msgstr "オプション4："
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "任意。上限に達すると分類器は一時停止し、次の請求サイクルに再開します。"
 
 msgid "Options"
 msgstr "オプション"
@@ -5872,17 +5792,11 @@ msgstr "サーバーエラー"
 msgid "Server error: %(status)s"
 msgstr "サーバーエラー：%(status)s"
 
-msgid "Set up billing"
-msgstr "お支払いを設定"
-
 msgid "Set up newsletters"
 msgstr "ニュースレターを設定"
 
 msgid "Set up notifications"
 msgstr "通知を設定"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "自然言語によるコンテンツフィルターと画像フィルターを利用するには、使用量ベースの課金を設定してください。"
 
 msgid "Set up your blurblog"
 msgstr "Blurblogを設定"
@@ -6212,9 +6126,6 @@ msgstr "特別フォルダー"
 
 msgid "Speed"
 msgstr "速度"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "利用上限に達しました。次のサイクルまで分類器は一時停止されます。"
 
 msgid "Split"
 msgstr "分割"
@@ -7204,6 +7115,10 @@ msgstr "このサイトのミュートを解除"
 msgid "Uncategorized"
 msgstr "未分類"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "次のように理解しました：%(description)s"
+
 msgid "Unfavorited"
 msgstr "お気に入り解除"
 
@@ -7278,9 +7193,6 @@ msgstr "無題"
 
 msgid "Up Next"
 msgstr "次に再生"
-
-msgid "Upcoming charge: "
-msgstr "次回の請求額："
 
 msgid "Update History"
 msgstr "更新履歴"
@@ -7390,12 +7302,6 @@ msgstr "アップロードに失敗しました。もう一度お試しくださ
 
 msgid "Uploaded!"
 msgstr "アップロードしました！"
-
-msgid "Usage billing history"
-msgstr "利用料金の請求履歴"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "自然言語分類器では使用量に応じた課金が有効です。"
 
 #, python-format
 msgid "Use %(language)s"
@@ -8135,9 +8041,6 @@ msgstr "修理する権利"
 
 msgid "separate multiple addresses with commas"
 msgstr "複数のアドレスはカンマで区切ってください"
-
-msgid "set up usage-based billing"
-msgstr "使用量に応じた請求を設定"
 
 msgid "show hidden stories"
 msgstr "非表示の記事を表示"

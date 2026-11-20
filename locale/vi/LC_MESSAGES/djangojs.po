@@ -157,10 +157,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s và %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/bài viết"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s byte"
@@ -184,11 +180,6 @@ msgstr[0] "%(count)s bộ phân loại sẽ bị xóa"
 msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s bình luận"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s bộ lọc nội dung"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -241,11 +232,6 @@ msgid_plural "%(count)s hours ago"
 msgstr[0] "%(count)s giờ trước"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s bộ lọc hình ảnh"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s lượt thích"
@@ -289,18 +275,6 @@ msgstr[0] "%(count)s bản tin"
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s trên tổng số %(limit)s trang web"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s trên tất cả trang web (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s trong thư mục (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s trên trang web này (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -386,11 +360,6 @@ msgstr[0] "%(count)s bài viết mỗi tháng"
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s bài viết sẽ bị xóa"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s bài viết/tháng"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -538,10 +507,6 @@ msgstr[0] "%(start)s đến %(end)s giờ"
 msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s đến %(end)s phút"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -891,19 +856,10 @@ msgstr "(GMT-11:00) Đảo Midway, Samoa"
 msgid "(no title)"
 msgstr "(không có tiêu đề)"
 
-msgid "(upcoming)"
-msgstr "(sắp tới)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s trang web khác"
-
-msgid "/day"
-msgstr "/ngày"
-
-msgid "/mo"
-msgstr "/tháng"
 
 msgid "/month"
 msgstr "/tháng"
@@ -998,8 +954,8 @@ msgid "AI Model"
 msgstr "Mô hình AI"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "Các bộ lọc AI đã được lưu nhưng sẽ không chạy cho đến khi bạn %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "Bộ lọc AI được lưu nhưng chỉ chạy trên %(tier_link)s."
 
 msgid "AI finds the stories"
 msgstr "AI tìm các bài viết"
@@ -3578,9 +3534,6 @@ msgstr "Trong cửa sổ này"
 msgid "Include read"
 msgstr "Gồm cả bài đã đọc"
 
-msgid "Increase or remove your limit"
-msgstr "Tăng hoặc bỏ giới hạn của bạn"
-
 msgid "Independent"
 msgstr "Độc lập"
 
@@ -3897,12 +3850,6 @@ msgstr "Quản lý NewsBlur"
 msgid "Manage Training"
 msgstr "Quản lý huấn luyện"
 
-msgid "Manage billing and limits"
-msgstr "Quản lý thanh toán và giới hạn"
-
-msgid "Manage billing on Stripe"
-msgstr "Quản lý thanh toán trên Stripe"
-
 msgid "Manage email settings"
 msgstr "Quản lý cài đặt email"
 
@@ -4095,12 +4042,6 @@ msgstr "T2"
 msgid "Monday"
 msgstr "Thứ Hai"
 
-msgid "Monthly spending limit"
-msgstr "Giới hạn chi tiêu hàng tháng"
-
-msgid "Monthly spending limit reached. "
-msgstr "Đã đạt giới hạn chi tiêu hàng tháng. "
-
 msgid "Months Earned"
 msgstr "Số tháng nhận được"
 
@@ -4216,15 +4157,6 @@ msgstr "Bộ phân loại hình ảnh bằng ngôn ngữ tự nhiên"
 
 msgid "Natural Language Text Classifier"
 msgstr "Bộ phân loại văn bản ngôn ngữ tự nhiên"
-
-msgid "Natural language classifier billing"
-msgstr "Thanh toán bộ phân loại ngôn ngữ tự nhiên"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "Bộ phân loại ngôn ngữ tự nhiên đã tạm dừng cho đến chu kỳ thanh toán tiếp theo. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "Các bộ phân loại ngôn ngữ tự nhiên đang sử dụng khóa API của phiên bản bạn."
 
 msgid "Natural language text and image classifiers"
 msgstr "Bộ phân loại văn bản ngôn ngữ tự nhiên và hình ảnh"
@@ -4424,9 +4356,6 @@ msgstr "Không có ảnh"
 msgid "No items added yet."
 msgstr "Chưa có mục nào được thêm."
 
-msgid "No limit"
-msgstr "Không giới hạn"
-
 msgid "No match"
 msgstr "Không khớp"
 
@@ -4538,12 +4467,6 @@ msgstr "Không tìm thấy mẫu bài viết nào trên trang này."
 
 msgid "No trending sites available"
 msgstr "Không có trang thịnh hành nào"
-
-msgid "No usage billing invoices yet."
-msgstr "Chưa có hóa đơn thanh toán theo mức sử dụng."
-
-msgid "No usage billing set up."
-msgstr "Chưa thiết lập tính phí theo mức sử dụng."
 
 msgid "No valid merge groups to apply"
 msgstr "Không có nhóm hợp nhất hợp lệ nào để áp dụng"
@@ -4865,9 +4788,6 @@ msgstr "Lựa chọn 3:"
 
 msgid "Option 4:"
 msgstr "Lựa chọn 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "Không bắt buộc. Bộ phân loại sẽ tạm dừng khi đạt giới hạn và tiếp tục vào chu kỳ thanh toán tiếp theo."
 
 msgid "Options"
 msgstr "Tùy chọn"
@@ -5959,17 +5879,11 @@ msgstr "Lỗi máy chủ"
 msgid "Server error: %(status)s"
 msgstr "Lỗi máy chủ: %(status)s"
 
-msgid "Set up billing"
-msgstr "Thiết lập thanh toán"
-
 msgid "Set up newsletters"
 msgstr "Thiết lập bản tin"
 
 msgid "Set up notifications"
 msgstr "Thiết lập thông báo"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "Thiết lập thanh toán theo mức sử dụng để dùng bộ lọc nội dung bằng ngôn ngữ tự nhiên và bộ lọc hình ảnh."
 
 msgid "Set up your blurblog"
 msgstr "Thiết lập blurblog của bạn"
@@ -6303,9 +6217,6 @@ msgstr "Thư mục đặc biệt"
 
 msgid "Speed"
 msgstr "Tốc độ"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Đã đạt giới hạn chi tiêu. Các bộ phân loại sẽ tạm dừng cho đến chu kỳ tiếp theo."
 
 msgid "Split"
 msgstr "Tách"
@@ -7327,6 +7238,10 @@ msgstr "Bỏ tắt tiếng trang này"
 msgid "Uncategorized"
 msgstr "Chưa phân loại"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "Được hiểu là: %(description)s"
+
 msgid "Unfavorited"
 msgstr "Đã bỏ yêu thích"
 
@@ -7401,9 +7316,6 @@ msgstr "Chưa có tiêu đề"
 
 msgid "Up Next"
 msgstr "Tiếp theo"
-
-msgid "Upcoming charge: "
-msgstr "Khoản phí sắp tới: "
 
 msgid "Update History"
 msgstr "Lịch sử cập nhật"
@@ -7515,12 +7427,6 @@ msgstr "Tải lên thất bại. Vui lòng thử lại."
 
 msgid "Uploaded!"
 msgstr "Đã tải lên!"
-
-msgid "Usage billing history"
-msgstr "Lịch sử thanh toán theo mức sử dụng"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "Tính phí theo mức sử dụng được bật cho các bộ phân loại ngôn ngữ tự nhiên."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8286,9 +8192,6 @@ msgstr "quyền sửa chữa"
 
 msgid "separate multiple addresses with commas"
 msgstr "phân cách nhiều địa chỉ bằng dấu phẩy"
-
-msgid "set up usage-based billing"
-msgstr "thiết lập thanh toán theo mức sử dụng"
 
 msgid "show hidden stories"
 msgstr "hiển thị bài viết đã ẩn"

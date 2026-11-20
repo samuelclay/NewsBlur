@@ -161,10 +161,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s dan %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/artikel"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s byte"
@@ -193,12 +189,6 @@ msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s komentar"
 msgstr[1] "%(count)s komentar"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s filter konten"
-msgstr[1] "%(count)s filter konten"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -261,12 +251,6 @@ msgstr[0] "%(count)s jam yang lalu"
 msgstr[1] "%(count)s jam yang lalu"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s filter gambar"
-msgstr[1] "%(count)s filter gambar"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s suka"
@@ -319,18 +303,6 @@ msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s dari %(limit)s situs"
 msgstr[1] "%(count)s dari %(limit)s situs"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s di semua situs (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s di folder (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s di situs ini (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -433,12 +405,6 @@ msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s artikel akan dihapus"
 msgstr[1] "%(count)s artikel akan dihapus"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s artikel/bln"
-msgstr[1] "%(count)s artikel/bln"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -605,10 +571,6 @@ msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s hingga %(end)s menit"
 msgstr[1] "%(start)s hingga %(end)s menit"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -959,20 +921,11 @@ msgstr "(GMT-11:00) Pulau Midway, Samoa"
 msgid "(no title)"
 msgstr "(tanpa judul)"
 
-msgid "(upcoming)"
-msgstr "(akan datang)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s situs lainnya"
 msgstr[1] "+ %(value_1)s situs lainnya"
-
-msgid "/day"
-msgstr "/hari"
-
-msgid "/mo"
-msgstr "/bln"
 
 msgid "/month"
 msgstr "/bulan"
@@ -1068,8 +1021,8 @@ msgid "AI Model"
 msgstr "Model AI"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "Filter AI disimpan, tetapi tidak akan dijalankan sampai Anda %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "Filter AI disimpan, tetapi hanya dijalankan di %(tier_link)s."
 
 msgid "AI finds the stories"
 msgstr "AI menemukan artikel"
@@ -3672,9 +3625,6 @@ msgstr "Di jendela ini"
 msgid "Include read"
 msgstr "Sertakan yang sudah dibaca"
 
-msgid "Increase or remove your limit"
-msgstr "Tingkatkan atau hapus batas Anda"
-
 msgid "Independent"
 msgstr "Independen"
 
@@ -3991,12 +3941,6 @@ msgstr "Kelola NewsBlur"
 msgid "Manage Training"
 msgstr "Kelola Pelatihan"
 
-msgid "Manage billing and limits"
-msgstr "Kelola tagihan dan batas"
-
-msgid "Manage billing on Stripe"
-msgstr "Kelola penagihan di Stripe"
-
 msgid "Manage email settings"
 msgstr "Kelola pengaturan email"
 
@@ -4195,12 +4139,6 @@ msgstr "Sen"
 msgid "Monday"
 msgstr "Senin"
 
-msgid "Monthly spending limit"
-msgstr "Batas pengeluaran bulanan"
-
-msgid "Monthly spending limit reached. "
-msgstr "Batas pengeluaran bulanan tercapai. "
-
 msgid "Months Earned"
 msgstr "Bulan yang Diperoleh"
 
@@ -4318,15 +4256,6 @@ msgstr "Pengklasifikasi Gambar Bahasa Alami"
 
 msgid "Natural Language Text Classifier"
 msgstr "Pengklasifikasi Teks Bahasa Alami"
-
-msgid "Natural language classifier billing"
-msgstr "Penagihan pengklasifikasi bahasa alami"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "Pengklasifikasi bahasa alami dijeda hingga siklus penagihan berikutnya. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "Pengklasifikasi bahasa alami menggunakan kunci API instans Anda."
 
 msgid "Natural language text and image classifiers"
 msgstr "Pengklasifikasi teks dan gambar berbasis bahasa alami"
@@ -4524,9 +4453,6 @@ msgstr "Tanpa gambar"
 msgid "No items added yet."
 msgstr "Belum ada item yang ditambahkan."
 
-msgid "No limit"
-msgstr "Tanpa batas"
-
 msgid "No match"
 msgstr "Tidak ada yang cocok"
 
@@ -4639,12 +4565,6 @@ msgstr "Tidak ditemukan pola artikel di halaman ini."
 
 msgid "No trending sites available"
 msgstr "Tidak ada situs yang sedang tren"
-
-msgid "No usage billing invoices yet."
-msgstr "Belum ada faktur penagihan penggunaan."
-
-msgid "No usage billing set up."
-msgstr "Penagihan berdasarkan penggunaan belum disiapkan."
 
 msgid "No valid merge groups to apply"
 msgstr "Tidak ada grup penggabungan valid untuk diterapkan"
@@ -4977,9 +4897,6 @@ msgstr "Opsi 3:"
 
 msgid "Option 4:"
 msgstr "Opsi 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "Opsional. Pengklasifikasi dijeda saat batas tercapai dan dilanjutkan pada siklus penagihan berikutnya."
 
 msgid "Options"
 msgstr "Opsi"
@@ -6080,17 +5997,11 @@ msgstr "Kesalahan server"
 msgid "Server error: %(status)s"
 msgstr "Kesalahan server: %(status)s"
 
-msgid "Set up billing"
-msgstr "Siapkan penagihan"
-
 msgid "Set up newsletters"
 msgstr "Siapkan newsletter"
 
 msgid "Set up notifications"
 msgstr "Atur notifikasi"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "Siapkan penagihan berdasarkan penggunaan untuk memakai filter konten dan gambar dengan bahasa alami."
 
 msgid "Set up your blurblog"
 msgstr "Siapkan blurblog Anda"
@@ -6427,9 +6338,6 @@ msgstr "Folder Khusus"
 
 msgid "Speed"
 msgstr "Kecepatan"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Batas pengeluaran tercapai. Pengklasifikasi dijeda hingga siklus berikutnya."
 
 msgid "Split"
 msgstr "Pisah"
@@ -7467,6 +7375,10 @@ msgstr "Batal bisukan situs ini"
 msgid "Uncategorized"
 msgstr "Tanpa kategori"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "Dipahami sebagai: %(description)s"
+
 msgid "Unfavorited"
 msgstr "Dihapus dari favorit"
 
@@ -7541,9 +7453,6 @@ msgstr "Tanpa judul"
 
 msgid "Up Next"
 msgstr "Berikutnya"
-
-msgid "Upcoming charge: "
-msgstr "Tagihan berikutnya: "
 
 msgid "Update History"
 msgstr "Perbarui Riwayat"
@@ -7659,12 +7568,6 @@ msgstr "Gagal mengunggah. Silakan coba lagi."
 
 msgid "Uploaded!"
 msgstr "Berhasil diunggah!"
-
-msgid "Usage billing history"
-msgstr "Riwayat tagihan penggunaan"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "Penagihan berdasarkan penggunaan diaktifkan untuk pengklasifikasi bahasa alami."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8432,9 +8335,6 @@ msgstr "hak untuk memperbaiki"
 
 msgid "separate multiple addresses with commas"
 msgstr "pisahkan beberapa alamat dengan koma"
-
-msgid "set up usage-based billing"
-msgstr "siapkan penagihan berdasarkan penggunaan"
 
 msgid "show hidden stories"
 msgstr "tampilkan artikel tersembunyi"

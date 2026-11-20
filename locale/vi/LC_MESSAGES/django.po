@@ -603,6 +603,9 @@ msgstr "Tính năng AI"
 msgid "AI built into every story"
 msgstr "AI được tích hợp trong mọi bài viết"
 
+msgid "AI filters aren't available on this server"
+msgstr "Bộ lọc AI không khả dụng trên máy chủ này"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "Bộ lọc hình ảnh AI"
@@ -1528,9 +1531,6 @@ msgstr "Không thể lưu bài viết, không tìm thấy"
 msgid "Could not unsave story, not found"
 msgstr "Không thể bỏ lưu bài viết, không tìm thấy bài viết"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Không thể kết nối với Stripe. Vui lòng thử lại."
-
 msgid "Couldn't save the position"
 msgstr "Không thể lưu vị trí"
 
@@ -1672,6 +1672,14 @@ msgstr "Mặc định"
 
 msgid "Delete"
 msgstr "Xóa"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"Mô tả bằng ngôn ngữ tự nhiên nội dung cần tập trung hoặc ẩn trong văn bản hay hình ảnh của bài viết. Bộ "
+"phân loại ngôn ngữ tự nhiên chấm điểm bài viết giống như trình huấn luyện trí tuệ, không giới hạn số lần sử"
+" dụng."
 
 msgid "Description"
 msgstr "Mô tả"
@@ -3018,9 +3026,6 @@ msgstr "URL không hợp lệ"
 msgid "Invalid URL."
 msgstr "URL không hợp lệ."
 
-msgid "Invalid amount"
-msgstr "Số tiền không hợp lệ"
-
 msgid "Invalid classifier_type"
 msgstr "classifier_type không hợp lệ"
 
@@ -3178,12 +3183,6 @@ msgstr "Giấy phép"
 msgctxt "theme"
 msgid "Light"
 msgstr "Sáng"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "Giới hạn không thể vượt quá 10.000 USD"
-
-msgid "Limit must be a positive amount"
-msgstr "Giới hạn phải là một giá trị dương"
 
 msgid "Limited"
 msgstr "Giới hạn"
@@ -4197,9 +4196,6 @@ msgstr "Không có hệ thống huấn luyện"
 msgid "No uncategorized archives found"
 msgstr "Không tìm thấy mục lưu trữ nào chưa phân loại"
 
-msgid "No usage billing set up."
-msgstr "Chưa thiết lập thanh toán theo mức sử dụng."
-
 msgid "No user has that email address."
 msgstr "Không có người dùng nào có địa chỉ email đó."
 
@@ -4436,9 +4432,6 @@ msgstr "Vui lòng nhập truy vấn tìm kiếm từ khóa."
 
 msgid "Please enter in an email address."
 msgstr "Vui lòng nhập địa chỉ email."
-
-msgid "Please log in to NewsBlur again."
-msgstr "Vui lòng đăng nhập lại vào NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Vui lòng đăng nhập để tiếp tục."
@@ -6382,15 +6375,6 @@ msgstr "Nâng cấp lên gói đăng ký cao cấp để gửi hơn một bài v
 msgid "Upgrade to premium archive"
 msgstr "Nâng cấp lên Premium Archive"
 
-msgid "Usage billing not enabled"
-msgstr "Tính phí theo mức sử dụng chưa được bật"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "Cần tính phí theo mức sử dụng cho bộ phân loại AI"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "Hiện không thể thanh toán theo mức sử dụng."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Sử dụng"
@@ -6765,13 +6749,6 @@ msgstr "Hoạt động ở mọi nơi"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "Hoạt động với hồ sơ mạng xã hội, trang tuyển dụng, trang sản phẩm và nhiều nội dung khác"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"Viết câu lệnh bằng ngôn ngữ tự nhiên để lọc bài viết theo nội dung hoặc hình ảnh. Bộ phân loại ngôn ngữ tự "
-"nhiên chấm điểm bài viết như công cụ huấn luyện trí tuệ, với mức phí dựa trên mức sử dụng."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "

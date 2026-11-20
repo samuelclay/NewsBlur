@@ -157,10 +157,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s และ %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/บทความ"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s ไบต์"
@@ -184,11 +180,6 @@ msgstr[0] "ตัวจำแนกประเภท %(count)s รายกา�
 msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s ความคิดเห็น"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "ตัวกรองเนื้อหา %(count)s รายการ"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -241,11 +232,6 @@ msgid_plural "%(count)s hours ago"
 msgstr[0] "%(count)s ชั่วโมงที่แล้ว"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "ตัวกรองรูปภาพ %(count)s รายการ"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "ชอบ %(count)s ครั้ง"
@@ -289,18 +275,6 @@ msgstr[0] "จดหมายข่าว %(count)s ฉบับ"
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s จาก %(limit)s เว็บไซต์"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s ในเว็บไซต์ทั้งหมด (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s ในโฟลเดอร์ (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s บนเว็บไซต์นี้ (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -386,11 +360,6 @@ msgstr[0] "%(count)s บทความต่อเดือน"
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "จะลบบทความ %(count)s รายการ"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s บทความ/เดือน"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -536,10 +505,6 @@ msgstr[0] "%(start)s ถึง %(end)s ชั่วโมง"
 msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s ถึง %(end)s นาที"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -889,19 +854,10 @@ msgstr "(GMT-11:00) เกาะมิดเวย์, ซามัว"
 msgid "(no title)"
 msgstr "(ไม่มีชื่อเรื่อง)"
 
-msgid "(upcoming)"
-msgstr "(รอบถัดไป)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ อีก %(value_1)s เว็บไซต์"
-
-msgid "/day"
-msgstr "/วัน"
-
-msgid "/mo"
-msgstr "/เดือน"
 
 msgid "/month"
 msgstr "/เดือน"
@@ -996,8 +952,8 @@ msgid "AI Model"
 msgstr "โมเดล AI"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "บันทึกตัวกรอง AI แล้ว แต่จะยังไม่ทำงานจนกว่าคุณจะ %(billing_link)s"
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "ตัวกรอง AI บันทึกแล้ว แต่จะทำงานเฉพาะบน %(tier_link)s เท่านั้น"
 
 msgid "AI finds the stories"
 msgstr "AI ค้นหาบทความให้"
@@ -3559,9 +3515,6 @@ msgstr "ในหน้าต่างนี้"
 msgid "Include read"
 msgstr "รวมที่อ่านแล้ว"
 
-msgid "Increase or remove your limit"
-msgstr "เพิ่มหรือลบขีดจำกัดของคุณ"
-
 msgid "Independent"
 msgstr "อิสระ"
 
@@ -3876,12 +3829,6 @@ msgstr "จัดการ NewsBlur"
 msgid "Manage Training"
 msgstr "จัดการการฝึก"
 
-msgid "Manage billing and limits"
-msgstr "จัดการการเรียกเก็บเงินและขีดจำกัด"
-
-msgid "Manage billing on Stripe"
-msgstr "จัดการการเรียกเก็บเงินบน Stripe"
-
 msgid "Manage email settings"
 msgstr "จัดการการตั้งค่าอีเมล"
 
@@ -4072,12 +4019,6 @@ msgstr "จ."
 msgid "Monday"
 msgstr "วันจันทร์"
 
-msgid "Monthly spending limit"
-msgstr "วงเงินใช้จ่ายรายเดือน"
-
-msgid "Monthly spending limit reached. "
-msgstr "ถึงขีดจำกัดการใช้จ่ายรายเดือนแล้ว "
-
 msgid "Months Earned"
 msgstr "เดือนที่ได้รับ"
 
@@ -4193,15 +4134,6 @@ msgstr "ตัวจำแนกรูปภาพด้วยภาษาธร
 
 msgid "Natural Language Text Classifier"
 msgstr "ตัวจัดประเภทข้อความด้วยภาษาธรรมชาติ"
-
-msgid "Natural language classifier billing"
-msgstr "การเรียกเก็บเงินสำหรับตัวจำแนกภาษาธรรมชาติ"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "ตัวจำแนกภาษาธรรมชาติหยุดทำงานชั่วคราวจนถึงรอบบิลถัดไป "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "ตัวแยกประเภทภาษาธรรมชาติกำลังใช้คีย์ API ของอินสแตนซ์คุณ"
 
 msgid "Natural language text and image classifiers"
 msgstr "ตัวจำแนกข้อความและรูปภาพด้วยภาษาธรรมชาติ"
@@ -4399,9 +4331,6 @@ msgstr "ไม่มีรูปภาพ"
 msgid "No items added yet."
 msgstr "ยังไม่มีการเพิ่มรายการ"
 
-msgid "No limit"
-msgstr "ไม่จำกัด"
-
 msgid "No match"
 msgstr "ไม่พบรายการที่ตรงกัน"
 
@@ -4513,12 +4442,6 @@ msgstr "ไม่พบรูปแบบบทความในหน้าน
 
 msgid "No trending sites available"
 msgstr "ไม่มีเว็บไซต์ที่กำลังเป็นกระแส"
-
-msgid "No usage billing invoices yet."
-msgstr "ยังไม่มีใบแจ้งหนี้ค่าบริการตามการใช้งาน"
-
-msgid "No usage billing set up."
-msgstr "ยังไม่ได้ตั้งค่าการเรียกเก็บเงินตามการใช้งาน"
 
 msgid "No valid merge groups to apply"
 msgstr "ไม่มีกลุ่มผสานที่ถูกต้องให้ใช้"
@@ -4834,9 +4757,6 @@ msgstr "ตัวเลือก 3:"
 
 msgid "Option 4:"
 msgstr "ตัวเลือก 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "ไม่บังคับ ตัวจำแนกจะหยุดชั่วคราวเมื่อถึงขีดจำกัด และกลับมาทำงานในรอบบิลถัดไป"
 
 msgid "Options"
 msgstr "ตัวเลือก"
@@ -5924,17 +5844,11 @@ msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์
 msgid "Server error: %(status)s"
 msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์: %(status)s"
 
-msgid "Set up billing"
-msgstr "ตั้งค่าการเรียกเก็บเงิน"
-
 msgid "Set up newsletters"
 msgstr "ตั้งค่าจดหมายข่าว"
 
 msgid "Set up notifications"
 msgstr "ตั้งค่าการแจ้งเตือน"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "ตั้งค่าการเรียกเก็บเงินตามการใช้งานเพื่อใช้ตัวกรองเนื้อหาและรูปภาพด้วยภาษาธรรมชาติ"
 
 msgid "Set up your blurblog"
 msgstr "ตั้งค่า blurblog ของคุณ"
@@ -6264,9 +6178,6 @@ msgstr "โฟลเดอร์พิเศษ"
 
 msgid "Speed"
 msgstr "ความเร็ว"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "ถึงขีดจำกัดการใช้งานแล้ว ระบบหยุดตัวจำแนกชั่วคราวจนกว่าจะถึงรอบถัดไป"
 
 msgid "Split"
 msgstr "แยก"
@@ -7278,6 +7189,10 @@ msgstr "เลิกปิดเสียงเว็บไซต์นี้"
 msgid "Uncategorized"
 msgstr "ไม่มีหมวดหมู่"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "เข้าใจว่า: %(description)s"
+
 msgid "Unfavorited"
 msgstr "เลิกถูกใจแล้ว"
 
@@ -7352,9 +7267,6 @@ msgstr "ไม่มีชื่อ"
 
 msgid "Up Next"
 msgstr "ถัดไป"
-
-msgid "Upcoming charge: "
-msgstr "ยอดเรียกเก็บครั้งถัดไป: "
 
 msgid "Update History"
 msgstr "ประวัติการอัปเดต"
@@ -7464,12 +7376,6 @@ msgstr "อัปโหลดไม่สำเร็จ โปรดลอง�
 
 msgid "Uploaded!"
 msgstr "อัปโหลดแล้ว!"
-
-msgid "Usage billing history"
-msgstr "ประวัติการเรียกเก็บเงินตามการใช้งาน"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "เปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนกภาษาธรรมชาติแล้ว"
 
 #, python-format
 msgid "Use %(language)s"
@@ -8217,9 +8123,6 @@ msgstr "สิทธิในการซ่อม"
 
 msgid "separate multiple addresses with commas"
 msgstr "คั่นที่อยู่อีเมลหลายรายการด้วยเครื่องหมายจุลภาค"
-
-msgid "set up usage-based billing"
-msgstr "ตั้งค่าการเรียกเก็บเงินตามการใช้งาน"
 
 msgid "show hidden stories"
 msgstr "แสดงบทความที่ซ่อนอยู่"

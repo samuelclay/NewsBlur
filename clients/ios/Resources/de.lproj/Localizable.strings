@@ -13,9 +13,6 @@
 "%1$@ of %2$@ of listening left this week" = "Diese Woche sind noch %1$@ von %2$@ Hörzeit übrig";
 "%1$@ of %2$@ sites indexed" = "%1$@ von %2$@ Websites indexiert";
 "%1$@ of %2$@ story previews used today" = "Heute verwendete Artikelvorschauen: %1$@ von %2$@";
-"%1$@ on all sites (%2$@)" = "%1$@ auf allen Websites (%2$@)";
-"%1$@ on folder (%2$@)" = "%1$@ im Ordner (%2$@)";
-"%1$@ on this site (%2$@)" = "%1$@ für diese Website (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ hat %2$@ erneut geteilt.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ hat %2$@ erneut geteilt:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ hat %2$@ geantwortet: \n \n%3$@";
@@ -23,13 +20,11 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ hat auf deine Antwort zu %2$@ geantwortet:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ hat %2$@ geteilt.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ hat %2$@ geteilt:\n \n%3$@";
-"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ Widget-Websites";
 "%@ ago" = "vor %@";
 "%@ categories to choose from" = "%@ Kategorien zur Auswahl";
 "%@ comments" = "%@ Kommentare";
-"%@ content filters" = "%@ Inhaltsfilter";
 "%@ could not be added." = "%@ konnte nicht hinzugefügt werden.";
 "%@ days" = "%@ Tage";
 "%@ feed" = "Feed von %@";
@@ -41,7 +36,6 @@
 "%@ focused stories" = "%@ Fokus-Artikel";
 "%@ folder" = "Ordner %@";
 "%@ free story previews left today" = "Heute noch %@ kostenlose Artikelvorschauen";
-"%@ image filters" = "%@ Bildfilter";
 "%@ is now following you." = "%@ folgt dir jetzt.";
 "%@ left in this preview" = "In dieser Vorschau noch %@";
 "%@ left this week" = "Diese Woche noch %@ übrig";
@@ -54,23 +48,17 @@
 "%@ sources" = "%@ Quellen";
 "%@ stories" = "%@ Artikel";
 "%@ stories left" = "Noch %@ Artikel";
-"%@ stories/mo" = "%@ Artikel/Monat";
 "%@ stories/month" = "%@ Artikel/Monat";
 "%@ subscribers" = "%@ Abonnenten";
 "%@ unread stories" = "%@ ungelesene Artikel";
 "%@ voice previews left" = "Noch %@ Sprachvorschauen übrig";
-"%@/story" = "%@/Artikel";
 "%@×" = "%@×";
 "%ldd ago" = "vor %ld Tg.";
 "%ldh ago" = "vor %ld Std.";
 "%ldm ago" = "vor %ld Min.";
 "%ldw ago" = "vor %ld Wo.";
-"(upcoming)" = "(anstehend)";
 "+ %@ more sites" = "+ %@ weitere Websites";
 "..." = "…";
-"/day" = "/Tag";
-"/mo" = "/Monat";
-"/month" = "/Monat";
 "1 Widget Site" = "1 Widget-Website";
 "1,000 stories" = "1.000 Artikel";
 "10 stories" = "10 Artikel";
@@ -93,7 +81,7 @@
 "< 90/month" = "< 90/Monat";
 "A clearer, closer sound" = "Ein klarerer, unmittelbarer Klang";
 "A personal news reader bringing\npeople together to talk about the world." = "Ein persönlicher Newsreader, der Menschen zusammenbringt,\num über die Welt zu sprechen.";
-"AI filters are saved but won't run until you %@." = "KI-Filter sind gespeichert, werden aber erst ausgeführt, wenn du %@.";
+"AI filters are saved but only run on Premium Archive." = "KI-Filter werden gespeichert, aber nur auf Premium Archive ausgeführt.";
 "AI finds the stories" = "Die KI findet die Artikel";
 "ALL" = "ALLE";
 "ALL NOTIFICATIONS" = "ALLE BENACHRICHTIGUNGEN";
@@ -264,10 +252,7 @@
 "Could not completely clear the cache. Please try again." = "Der Cache konnte nicht vollständig geleert werden. Bitte versuche es erneut.";
 "Could not save your language. Please try again." = "Deine Sprache konnte nicht gespeichert werden. Bitte versuche es erneut.";
 "Couldn't check story" = "Artikel konnte nicht überprüft werden";
-"Couldn't load usage billing history." = "Der Abrechnungsverlauf konnte nicht geladen werden.";
-"Couldn't open billing. Please try again." = "Abrechnung konnte nicht geöffnet werden. Bitte versuche es erneut.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur konnte nicht erreicht werden. Überprüfe deine Verbindung und versuche es erneut.";
-"Couldn't save your spending limit. Please try again." = "Dein Ausgabenlimit konnte nicht gespeichert werden. Bitte versuche es erneut.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Das vollständige Bild konnte nicht geladen werden. Du kannst versuchen, es in deinem Browser zu öffnen.";
 "Counting is difficult..." = "Zählen ist schwierig ...";
 "Create a feed from any web page" = "Feed von einer beliebigen Webseite erstellen";
@@ -496,7 +481,6 @@
 "Include already-read stories" = "Bereits gelesene Artikel einschließen";
 "Include in bundle" = "Ins Paket aufnehmen";
 "Included in bundle" = "Im Paket enthalten";
-"Increase or remove your limit" = "Erhöhe oder entferne dein Limit";
 "Infrequent Site Stories" = "Artikel selten aktiver Websites";
 "Infrequent Stories" = "Artikel selten aktiver Websites";
 "Infrequent stories per month" = "Grenze für selten aktive Websites";
@@ -506,7 +490,6 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Anstatt dem Dunkel-/Hellmodus des Systems zu folgen, werden die Designs automatisch an die Bildschirmhelligkeit angepasst. Nützlich, um das Design an die Umgebungsbeleuchtung anzupassen.";
 "Interactions" = "Interaktionen";
 "Invalid: %@" = "Ungültig: %@";
-"Invoice" = "Rechnung";
 "Keep fades, without movement." = "Überblendungen beibehalten, ohne Bewegung.";
 "Keeps the dark icon no matter how your device is set." = "Behält das dunkle Symbol unabhängig von den Geräteeinstellungen bei.";
 "Keeps the light icon no matter how your device is set." = "Behält das helle Symbol bei, unabhängig von den Geräteeinstellungen.";
@@ -570,8 +553,6 @@
 "Manage" = "Verwalten";
 "Manage Account on the Web" = "Konto im Web verwalten";
 "Manage Subscription" = "Abonnement verwalten";
-"Manage billing and limits" = "Abrechnung und Limits verwalten";
-"Manage billing on Stripe" = "Abrechnung bei Stripe verwalten";
 "Manage this folder…" = "Diesen Ordner verwalten …";
 "Manage this site…" = "Diese Website verwalten…";
 "Manual scroll" = "Manuelles Scrollen";
@@ -623,8 +604,6 @@
 "Medium [theme]" = "Grau";
 "Model" = "Modell";
 "Monday" = "Montag";
-"Monthly spending limit" = "Monatliches Ausgabenlimit";
-"Monthly spending limit reached. " = "Monatliches Ausgabenlimit erreicht. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Mehr Artikel benötigen mehr Speicherplatz, haben ansonsten aber keine spürbaren Auswirkungen auf die Leistung.";
 "More voices" = "Weitere Stimmen";
 "Morning" = "Morgen";
@@ -666,10 +645,6 @@
 "Natural Language Image Classifier" = "Bildklassifikator für natürliche Sprache";
 "Natural Language Text Classifier" = "Textklassifikator für natürliche Sprache";
 "Natural [listen delivery]" = "Natürlich";
-"Natural language classifier billing" = "Abrechnung für Klassifikatoren für natürliche Sprache";
-"Natural language classifiers are paused until next billing cycle. " = "Klassifikatoren für natürliche Sprache sind bis zum nächsten Abrechnungszeitraum pausiert. ";
-"Natural language classifiers are using your instance's API keys." = "Klassifikatoren in natürlicher Sprache verwenden die API-Schlüssel deiner Instanz.";
-"Natural language filters aren't active on this account." = "Auf diesem Konto sind keine Filter in natürlicher Sprache aktiv.";
 "Natural language text and image classifiers" = "Klassifikatoren für natürliche Sprache und Bilder";
 "Nested" = "Verschachtelt";
 "Never" = "Nie";
@@ -703,7 +678,6 @@
 "No feeds to show yet. Try another interest or search all sites." = "Noch keine Feeds vorhanden. Wähle ein anderes Interesse oder durchsuche alle Websites.";
 "No friends to suggest." = "Keine Freunde zum Vorschlagen.";
 "No interests or sites found. Try another search." = "Keine Interessen oder Websites gefunden. Versuche es mit einer anderen Suche.";
-"No limit" = "Kein Limit";
 "No longer saved" = "Nicht mehr gespeichert";
 "No match" = "Keine Übereinstimmung";
 "No match in story" = "Keine Übereinstimmung im Artikel";
@@ -716,8 +690,6 @@
 "No stories yet" = "Noch keine Artikel";
 "No story selected" = "Kein Artikel ausgewählt";
 "No unread stories" = "Keine ungelesenen Artikel";
-"No usage billing invoices yet." = "Noch keine Rechnungen für die nutzungsbasierte Abrechnung.";
-"No usage billing set up." = "Keine nutzungsbasierte Abrechnung eingerichtet.";
 "No voices match these filters" = "Keine Stimme entspricht diesen Filtern";
 "None" = "Keine";
 "Normal" = "Normal";
@@ -765,7 +737,6 @@
 "Open the next site/folder" = "Nächste Website / nächsten Ordner öffnen";
 "Opening site…" = "Website wird geöffnet…";
 "Opens Now Playing" = "Öffnet „Jetzt läuft“";
-"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Optional. Klassifikatoren werden bei Erreichen des Limits pausiert und im nächsten Abrechnungszeitraum fortgesetzt.";
 "Options" = "Optionen";
 "Ordered" = "Sortiert";
 "Organize Sites" = "Websites organisieren";
@@ -918,7 +889,6 @@
 "Saved on %@" = "Gespeichert am %@";
 "Saving Daily Briefing settings…" = "Einstellungen des Tagesbriefings werden gespeichert…";
 "Saving search..." = "Suche wird gespeichert …";
-"Saving..." = "Wird gespeichert …";
 "Schedule" = "Zeitplan";
 "Scroll horizontally" = "Horizontal scrollen";
 "Scroll to Comments" = "Zu den Kommentaren scrollen";
@@ -951,8 +921,6 @@
 "Server URL" = "Server-URL";
 "Set an exact speed under Voice" = "Lege unter „Stimme“ eine genaue Geschwindigkeit fest";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Richte das Tagesbriefing ein, um eine Zusammenfassung der Artikel zu erstellen, die dir am wichtigsten sind.";
-"Set up billing" = "Abrechnung einrichten";
-"Set up usage-based billing to use natural language content and image filters." = "Richte eine nutzungsbasierte Abrechnung ein, um Filter für Inhalte in natürlicher Sprache und Bilder zu verwenden.";
 "Settings" = "Einstellungen";
 "Share" = "Teilen";
 "Share This Story" = "Diesen Artikel teilen";
@@ -1027,7 +995,6 @@
 "Spacing" = "Abstand";
 "Speaker boost" = "Stimmverstärkung";
 "Speed" = "Geschwindigkeit";
-"Spending limit reached. Classifiers paused until next cycle." = "Ausgabenlimit erreicht. Klassifikatoren bis zum nächsten Abrechnungszeitraum pausiert.";
 "Stability" = "Stabilität";
 "Stability, similarity and style" = "Stabilität, Ähnlichkeit und Stil";
 "Stale — last story %@" = "Veraltet — letzter Artikel %@";
@@ -1221,7 +1188,6 @@
 "Unsaved" = "Nicht gespeichert";
 "Untitled story" = "Artikel ohne Titel";
 "Up Next" = "Als Nächstes";
-"Upcoming charge: " = "Anstehende Abbuchung: ";
 "Updated %@ days ago" = "Vor %@ Tagen aktualisiert";
 "Updated %@ months ago" = "Vor %@ Monaten aktualisiert";
 "Updated %@ weeks ago" = "Vor %@ Wochen aktualisiert";
@@ -1235,9 +1201,6 @@
 "Upgrade to Premium" = "Auf Premium upgraden";
 "Upgrade to Premium Archive" = "Auf Premium Archive upgraden";
 "Upgrade to Premium Pro" = "Auf Premium Pro upgraden";
-"Usage Billing" = "Nutzungsbasierte Abrechnung";
-"Usage billing history" = "Abrechnungsverlauf nach Nutzung";
-"Usage-based billing is enabled for natural language classifiers." = "Nutzungsbasierte Abrechnung ist für Klassifikatoren in natürlicher Sprache aktiviert.";
 "Use %@" = "%@ verwenden";
 "Use a custom server" = "Benutzerdefinierten Server verwenden";
 "Use another sign-in method" = "Andere Anmeldemethode verwenden";
@@ -1317,7 +1280,6 @@
 "no story" = "kein Artikel";
 "or" = "oder";
 "premium subscribers" = "Premium-Abonnenten";
-"set up usage-based billing" = "nutzungsbasierte Abrechnung einrichten";
 "your account" = "dein Konto";
 "‹ Feeds" = "‹ Feeds";
 "✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ von %1$@ Bildern entsprechen diesem Filter";

@@ -584,6 +584,9 @@ msgstr "AI機能"
 msgid "AI built into every story"
 msgstr "すべての記事にAIを"
 
+msgid "AI filters aren't available on this server"
+msgstr "このサーバーではAIフィルターを利用できません"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "AI画像フィルター"
@@ -1417,9 +1420,6 @@ msgstr "記事を保存できませんでした。見つかりません。"
 msgid "Could not unsave story, not found"
 msgstr "記事を保存解除できませんでした。見つかりません。"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Stripeに接続できませんでした。もう一度お試しください。"
-
 msgid "Couldn't save the position"
 msgstr "位置を保存できませんでした"
 
@@ -1559,6 +1559,11 @@ msgstr "デフォルト"
 
 msgid "Delete"
 msgstr "削除"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr "記事のテキストや画像について、フォーカスする内容や非表示にする内容を自然な言葉で説明できます。自然言語分類器は、使用回数の制限なく、インテリジェンストレーナーと同様に記事を評価します。"
 
 msgid "Description"
 msgstr "説明"
@@ -2780,9 +2785,6 @@ msgstr "無効なURL"
 msgid "Invalid URL."
 msgstr "無効なURLです。"
 
-msgid "Invalid amount"
-msgstr "金額が無効です"
-
 msgid "Invalid classifier_type"
 msgstr "無効なclassifier_type"
 
@@ -2934,12 +2936,6 @@ msgstr "ライセンス"
 msgctxt "theme"
 msgid "Light"
 msgstr "ライト"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "上限は$10,000以下にしてください"
-
-msgid "Limit must be a positive amount"
-msgstr "上限には正の値を指定してください"
 
 msgid "Limited"
 msgstr "制限あり"
@@ -3791,9 +3787,6 @@ msgstr "学習システムなし"
 msgid "No uncategorized archives found"
 msgstr "未分類のアーカイブは見つかりませんでした"
 
-msgid "No usage billing set up."
-msgstr "従量課金は設定されていません。"
-
 msgid "No user has that email address."
 msgstr "そのメールアドレスのユーザーはいません。"
 
@@ -4022,9 +4015,6 @@ msgstr "キーワード検索のクエリを入力してください。"
 
 msgid "Please enter in an email address."
 msgstr "メールアドレスを入力してください。"
-
-msgid "Please log in to NewsBlur again."
-msgstr "もう一度NewsBlurにログインしてください。"
 
 msgid "Please login to continue."
 msgstr "続行するにはログインしてください。"
@@ -5835,15 +5825,6 @@ msgstr "1日に2件以上の記事をメールで送信するには、プレミ�
 msgid "Upgrade to premium archive"
 msgstr "プレミアムアーカイブにアップグレード"
 
-msgid "Usage billing not enabled"
-msgstr "従量課金は有効になっていません"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "AI分類器の利用には従量課金の設定が必要です"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "従量課金は現在ご利用いただけません。"
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "使用方法"
@@ -6185,11 +6166,6 @@ msgstr "どこでも使えます"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "ソーシャルメディアのプロフィール、求人サイト、商品ページなどで利用できます"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr "自然言語のプロンプトを作成して、内容や画像で記事をフィルタリングできます。自然言語分類器は、インテリジェンストレーナーと同様に記事をスコアリングし、利用量に応じて課金されます。"
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "

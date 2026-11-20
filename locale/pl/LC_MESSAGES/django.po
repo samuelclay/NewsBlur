@@ -658,6 +658,9 @@ msgstr "Funkcje AI"
 msgid "AI built into every story"
 msgstr "Sztuczna inteligencja w każdym artykule"
 
+msgid "AI filters aren't available on this server"
+msgstr "Filtry AI nie są dostępne na tym serwerze"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "Filtr obrazów AI"
@@ -1593,9 +1596,6 @@ msgstr "Nie udało się zapisać artykułu — nie znaleziono go"
 msgid "Could not unsave story, not found"
 msgstr "Nie udało się cofnąć zapisania artykułu — nie znaleziono go"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Nie udało się połączyć ze Stripe. Spróbuj ponownie."
-
 msgid "Couldn't save the position"
 msgstr "Nie udało się zapisać pozycji"
 
@@ -1740,6 +1740,13 @@ msgstr "Domyślne"
 
 msgid "Delete"
 msgstr "Usuń"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"Opisz prostym językiem, co wyróżniać lub ukrywać w tekście artykułu albo na jego obrazach. Klasyfikatory "
+"języka naturalnego oceniają artykuły tak jak Trener inteligencji, bez limitów użycia."
 
 msgid "Description"
 msgstr "Opis"
@@ -3107,9 +3114,6 @@ msgstr "Nieprawidłowy adres URL"
 msgid "Invalid URL."
 msgstr "Nieprawidłowy adres URL."
 
-msgid "Invalid amount"
-msgstr "Nieprawidłowa kwota"
-
 msgid "Invalid classifier_type"
 msgstr "Nieprawidłowy classifier_type"
 
@@ -3278,12 +3282,6 @@ msgstr "Licencja"
 msgctxt "theme"
 msgid "Light"
 msgstr "Jasny"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "Limit nie może przekraczać 10 000 USD"
-
-msgid "Limit must be a positive amount"
-msgstr "Limit musi być dodatnią wartością"
 
 msgid "Limited"
 msgstr "Ograniczone"
@@ -4319,9 +4317,6 @@ msgstr "Brak systemu trenowania"
 msgid "No uncategorized archives found"
 msgstr "Nie znaleziono archiwów bez kategorii"
 
-msgid "No usage billing set up."
-msgstr "Nie skonfigurowano rozliczeń według użycia."
-
 msgid "No user has that email address."
 msgstr "Żaden użytkownik nie ma tego adresu e-mail."
 
@@ -4562,9 +4557,6 @@ msgstr "Wpisz zapytanie wyszukiwania słów kluczowych."
 
 msgid "Please enter in an email address."
 msgstr "Wpisz adres e-mail."
-
-msgid "Please log in to NewsBlur again."
-msgstr "Zaloguj się ponownie do NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Zaloguj się, aby kontynuować."
@@ -6535,15 +6527,6 @@ msgstr "Przejdź na subskrypcję Premium, aby wysyłać e-mailem więcej niż je
 msgid "Upgrade to premium archive"
 msgstr "Przejdź na Premium Archive"
 
-msgid "Usage billing not enabled"
-msgstr "Rozliczanie użycia nie jest włączone"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "Klasyfikatory AI wymagają rozliczania według użycia"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "Rozliczenia według użycia są teraz niedostępne."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Użycie"
@@ -6920,13 +6903,6 @@ msgstr "Działa wszędzie"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "Działa z profilami w mediach społecznościowych, serwisami z ofertami pracy, stronami produktów i nie tylko"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"Twórz polecenia w języku naturalnym, aby filtrować artykuły według treści lub obrazów. Klasyfikatory języka"
-" naturalnego oceniają artykuły tak jak trener inteligencji; opłaty są naliczane na podstawie użycia."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "

@@ -157,10 +157,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s 및 %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "스토리당 %(cost)s"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s바이트"
@@ -184,11 +180,6 @@ msgstr[0] "분류기 %(count)s개가 삭제됩니다"
 msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "댓글 %(count)s개"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "콘텐츠 필터 %(count)s개"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -241,11 +232,6 @@ msgid_plural "%(count)s hours ago"
 msgstr[0] "%(count)s시간 전"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s개의 이미지 필터"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "좋아요 %(count)s개"
@@ -289,18 +275,6 @@ msgstr[0] "뉴스레터 %(count)s개"
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "전체 %(limit)s개 사이트 중 %(count)s개"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "모든 사이트에서 %(count)s (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "폴더의 %(count)s (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "이 사이트의 %(count)s (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -386,11 +360,6 @@ msgstr[0] "월간 스토리 %(count)s개"
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s개의 스토리가 삭제됩니다"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "월 %(count)s개 스토리"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -536,10 +505,6 @@ msgstr[0] "%(start)s~%(end)s시간"
 msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s~%(end)s분"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -889,19 +854,10 @@ msgstr "(GMT-11:00) 미드웨이섬, 사모아"
 msgid "(no title)"
 msgstr "(제목 없음)"
 
-msgid "(upcoming)"
-msgstr "(예정)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s개 사이트 더 보기"
-
-msgid "/day"
-msgstr "/일"
-
-msgid "/mo"
-msgstr "/월"
 
 msgid "/month"
 msgstr "/월"
@@ -994,8 +950,8 @@ msgid "AI Model"
 msgstr "AI 모델"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "AI 필터가 저장되었지만 %(billing_link)s 전까지 실행되지 않습니다."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "AI 필터는 저장되지만 %(tier_link)s에서만 실행됩니다."
 
 msgid "AI finds the stories"
 msgstr "AI가 스토리를 찾아줍니다"
@@ -3533,9 +3489,6 @@ msgstr "이 창에서"
 msgid "Include read"
 msgstr "읽은 항목 포함"
 
-msgid "Increase or remove your limit"
-msgstr "한도를 늘리거나 없애세요"
-
 msgid "Independent"
 msgstr "독립"
 
@@ -3848,12 +3801,6 @@ msgstr "NewsBlur 관리"
 msgid "Manage Training"
 msgstr "학습 관리"
 
-msgid "Manage billing and limits"
-msgstr "결제 및 한도 관리"
-
-msgid "Manage billing on Stripe"
-msgstr "Stripe에서 결제 관리"
-
 msgid "Manage email settings"
 msgstr "이메일 설정 관리"
 
@@ -4042,12 +3989,6 @@ msgstr "월"
 msgid "Monday"
 msgstr "월요일"
 
-msgid "Monthly spending limit"
-msgstr "월간 지출 한도"
-
-msgid "Monthly spending limit reached. "
-msgstr "월간 지출 한도에 도달했습니다. "
-
 msgid "Months Earned"
 msgstr "적립한 개월 수"
 
@@ -4163,15 +4104,6 @@ msgstr "자연어 이미지 분류기"
 
 msgid "Natural Language Text Classifier"
 msgstr "자연어 텍스트 분류기"
-
-msgid "Natural language classifier billing"
-msgstr "자연어 분류기 요금"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "자연어 분류기는 다음 결제 주기까지 일시 중지됩니다. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "자연어 분류기는 인스턴스의 API 키를 사용하고 있습니다."
 
 msgid "Natural language text and image classifiers"
 msgstr "자연어 텍스트 및 이미지 분류기"
@@ -4367,9 +4299,6 @@ msgstr "이미지 없음"
 msgid "No items added yet."
 msgstr "아직 추가된 항목이 없습니다."
 
-msgid "No limit"
-msgstr "제한 없음"
-
 msgid "No match"
 msgstr "일치하는 항목 없음"
 
@@ -4481,12 +4410,6 @@ msgstr "이 페이지에서 스토리 패턴을 찾을 수 없습니다."
 
 msgid "No trending sites available"
 msgstr "현재 인기 급상승 사이트가 없습니다"
-
-msgid "No usage billing invoices yet."
-msgstr "아직 사용량 청구서가 없습니다."
-
-msgid "No usage billing set up."
-msgstr "사용량 청구가 설정되지 않았습니다."
 
 msgid "No valid merge groups to apply"
 msgstr "적용할 수 있는 유효한 병합 그룹이 없습니다"
@@ -4800,9 +4723,6 @@ msgstr "옵션 3:"
 
 msgid "Option 4:"
 msgstr "옵션 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "선택 사항입니다. 한도에 도달하면 분류기가 일시 중지되고 다음 결제 주기에 다시 시작됩니다."
 
 msgid "Options"
 msgstr "옵션"
@@ -5880,17 +5800,11 @@ msgstr "서버 오류"
 msgid "Server error: %(status)s"
 msgstr "서버 오류: %(status)s"
 
-msgid "Set up billing"
-msgstr "결제 설정"
-
 msgid "Set up newsletters"
 msgstr "뉴스레터 설정"
 
 msgid "Set up notifications"
 msgstr "알림 설정"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "자연어 콘텐츠 및 이미지 필터를 사용하려면 사용량 기반 결제를 설정하세요."
 
 msgid "Set up your blurblog"
 msgstr "Blurblog 설정하기"
@@ -6220,9 +6134,6 @@ msgstr "특수 폴더"
 
 msgid "Speed"
 msgstr "속도"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "사용 한도에 도달했습니다. 다음 주기까지 분류기가 일시 중지됩니다."
 
 msgid "Split"
 msgstr "분할"
@@ -7214,6 +7125,10 @@ msgstr "이 사이트 음소거 해제"
 msgid "Uncategorized"
 msgstr "분류되지 않음"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "다음과 같이 이해했습니다: %(description)s"
+
 msgid "Unfavorited"
 msgstr "즐겨찾기 해제됨"
 
@@ -7288,9 +7203,6 @@ msgstr "제목 없음"
 
 msgid "Up Next"
 msgstr "다음 재생"
-
-msgid "Upcoming charge: "
-msgstr "예정된 청구 금액: "
 
 msgid "Update History"
 msgstr "업데이트 기록"
@@ -7400,12 +7312,6 @@ msgstr "업로드하지 못했습니다. 다시 시도해 주세요."
 
 msgid "Uploaded!"
 msgstr "업로드 완료!"
-
-msgid "Usage billing history"
-msgstr "사용 요금 청구 내역"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "자연어 분류기에 사용량 기반 요금제가 활성화되어 있습니다."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8145,9 +8051,6 @@ msgstr "수리할 권리"
 
 msgid "separate multiple addresses with commas"
 msgstr "주소가 여러 개라면 쉼표로 구분하세요"
-
-msgid "set up usage-based billing"
-msgstr "사용량 기반 결제 설정"
 
 msgid "show hidden stories"
 msgstr "숨긴 스토리 표시"

@@ -13,9 +13,6 @@
 "%1$@ of %2$@ of listening left this week" = "Bu hafta dinleme sürenizin %1$@ / %2$@ kadarı kaldı";
 "%1$@ of %2$@ sites indexed" = "%2$@ siteden %1$@ tanesi dizine eklendi";
 "%1$@ of %2$@ story previews used today" = "Bugün kullanılan haber önizlemelerinin %1$@ / %2$@ kadarı";
-"%1$@ on all sites (%2$@)" = "Tüm sitelerde %1$@ (%2$@)";
-"%1$@ on folder (%2$@)" = "Klasörde %1$@ (%2$@)";
-"%1$@ on this site (%2$@)" = "%1$@ bu sitede (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@, %2$@ haberini yeniden paylaştı.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@, %2$@ haberini yeniden paylaştı:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@, %2$@ kişisine yanıt verdi: \n \n%3$@";
@@ -23,13 +20,11 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@, %2$@ üzerindeki yanıtınıza yanıt verdi:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@, %2$@ haberini paylaştı.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@, %2$@ haberini paylaştı:\n \n%3$@";
-"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ Widget Siteleri";
 "%@ ago" = "%@ önce";
 "%@ categories to choose from" = "Aralarından seçim yapabileceğiniz %@ kategori";
 "%@ comments" = "%@ yorum";
-"%@ content filters" = "%@ içerik filtresi";
 "%@ could not be added." = "%@ akış eklenemedi.";
 "%@ days" = "%@ gün";
 "%@ feed" = "%@ akışı";
@@ -41,7 +36,6 @@
 "%@ focused stories" = "%@ odaklanılan haber";
 "%@ folder" = "%@ klasörü";
 "%@ free story previews left today" = "Bugün %@ ücretsiz haber önizlemesi hakkınız kaldı";
-"%@ image filters" = "%@ görsel filtresi";
 "%@ is now following you." = "%@ artık sizi takip ediyor.";
 "%@ left in this preview" = "Bu önizlemede %@ kaldı";
 "%@ left this week" = "Bu hafta %@ kaldı";
@@ -54,23 +48,17 @@
 "%@ sources" = "%@ kaynak";
 "%@ stories" = "%@ haber";
 "%@ stories left" = "%@ haber kaldı";
-"%@ stories/mo" = "Ayda %@ haber";
 "%@ stories/month" = "Ayda %@ haber";
 "%@ subscribers" = "%@ abone";
 "%@ unread stories" = "%@ okunmamış haber";
 "%@ voice previews left" = "%@ ses önizlemesi kaldı";
-"%@/story" = "%@/haber";
 "%@×" = "%@×";
 "%ldd ago" = "%ld gün önce";
 "%ldh ago" = "%ld saat önce";
 "%ldm ago" = "%ld dk önce";
 "%ldw ago" = "%ld hafta önce";
-"(upcoming)" = "(yaklaşan)";
 "+ %@ more sites" = "+ %@ site daha";
 "..." = "...";
-"/day" = "/gün";
-"/mo" = "/ay";
-"/month" = "/ay";
 "1 Widget Site" = "1 Widget sitesi";
 "1,000 stories" = "1.000 haber";
 "10 stories" = "10 haber";
@@ -93,7 +81,7 @@
 "< 90/month" = "< 90/ay";
 "A clearer, closer sound" = "Daha net ve yakından gelen bir ses";
 "A personal news reader bringing\npeople together to talk about the world." = "İnsanları dünya hakkında konuşmak için bir araya getiren\nkişisel haber okuyucusu.";
-"AI filters are saved but won't run until you %@." = "Yapay zekâ filtreleri kaydedildi, ancak siz %@ olana kadar çalışmayacak.";
+"AI filters are saved but only run on Premium Archive." = "Yapay zekâ filtreleri kaydedilir ancak yalnızca Premium Archive'da çalışır.";
 "AI finds the stories" = "Haberleri yapay zekâ bulur";
 "ALL" = "TÜMÜ";
 "ALL NOTIFICATIONS" = "TÜM BİLDİRİMLER";
@@ -264,10 +252,7 @@
 "Could not completely clear the cache. Please try again." = "Önbellek tamamen temizlenemedi. Lütfen yeniden deneyin.";
 "Could not save your language. Please try again." = "Diliniz kaydedilemedi. Lütfen tekrar deneyin.";
 "Couldn't check story" = "Haber kontrol edilemedi";
-"Couldn't load usage billing history." = "Kullanım faturalandırma geçmişi yüklenemedi.";
-"Couldn't open billing. Please try again." = "Faturalandırma açılamadı. Lütfen tekrar deneyin.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur adresine ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.";
-"Couldn't save your spending limit. Please try again." = "Harcama sınırınız kaydedilemedi. Lütfen tekrar deneyin.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Görselin tamamı yüklenemedi. Tarayıcınızda açmayı deneyebilirsiniz.";
 "Counting is difficult..." = "Saymak zor iş...";
 "Create a feed from any web page" = "Herhangi bir web sayfasından akış oluşturun";
@@ -496,7 +481,6 @@
 "Include already-read stories" = "Okunmuş haberleri dahil et";
 "Include in bundle" = "Pakete dahil et";
 "Included in bundle" = "Pakete dâhil";
-"Increase or remove your limit" = "Sınırınızı artırın veya kaldırın";
 "Infrequent Site Stories" = "Seyrek Güncellenen Sitelerin Haberleri";
 "Infrequent Stories" = "Seyrek Haberler";
 "Infrequent stories per month" = "Seyrek haber eşiği (aylık)";
@@ -506,7 +490,6 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Sisteminizin koyu/açık modunu izlemek yerine temaları ekran parlaklığına göre otomatik değiştirin. Ortam ışığına göre tema değiştirmek için kullanışlıdır.";
 "Interactions" = "Etkileşimler";
 "Invalid: %@" = "Geçersiz: %@";
-"Invoice" = "Fatura";
 "Keep fades, without movement." = "Solma geçişlerini koru, hareketi kaldır.";
 "Keeps the dark icon no matter how your device is set." = "Cihazınızın ayarı ne olursa olsun koyu simgeyi kullanır.";
 "Keeps the light icon no matter how your device is set." = "Cihazınız nasıl ayarlanmış olursa olsun açık renkli simgeyi kullanır.";
@@ -570,8 +553,6 @@
 "Manage" = "Yönet";
 "Manage Account on the Web" = "Hesabınızı web'de yönetin";
 "Manage Subscription" = "Aboneliği Yönet";
-"Manage billing and limits" = "Faturalandırmayı ve sınırları yönetin";
-"Manage billing on Stripe" = "Faturalandırmayı Stripe'ta yönetin";
 "Manage this folder…" = "Bu klasörü yönet…";
 "Manage this site…" = "Bu siteyi yönet…";
 "Manual scroll" = "Elle kaydırma";
@@ -623,8 +604,6 @@
 "Medium [theme]" = "Gri";
 "Model" = "Model";
 "Monday" = "Pazartesi";
-"Monthly spending limit" = "Aylık harcama sınırı";
-"Monthly spending limit reached. " = "Aylık harcama sınırına ulaşıldı. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Daha fazla haber daha çok disk alanı kaplar; bunun dışında performansı fark edilir biçimde etkilemez.";
 "More voices" = "Daha fazla ses";
 "Morning" = "Sabah";
@@ -666,10 +645,6 @@
 "Natural Language Image Classifier" = "Doğal Dil Görsel Sınıflandırıcısı";
 "Natural Language Text Classifier" = "Doğal Dil Metin Sınıflandırıcısı";
 "Natural [listen delivery]" = "Doğal";
-"Natural language classifier billing" = "Doğal dil sınıflandırıcısı faturalandırması";
-"Natural language classifiers are paused until next billing cycle. " = "Doğal dil sınıflandırıcıları bir sonraki faturalandırma dönemine kadar duraklatıldı. ";
-"Natural language classifiers are using your instance's API keys." = "Doğal dil sınıflandırıcıları, sunucunuzun API anahtarlarını kullanıyor.";
-"Natural language filters aren't active on this account." = "Bu hesapta doğal dil filtreleri etkin değil.";
 "Natural language text and image classifiers" = "Doğal dil metin ve görsel sınıflandırıcıları";
 "Nested" = "İç içe";
 "Never" = "Asla";
@@ -703,7 +678,6 @@
 "No feeds to show yet. Try another interest or search all sites." = "Henüz gösterilecek akış yok. Başka bir ilgi alanı deneyin veya tüm sitelerde arayın.";
 "No friends to suggest." = "Önerilecek arkadaş yok.";
 "No interests or sites found. Try another search." = "İlgi alanı veya site bulunamadı. Başka bir arama deneyin.";
-"No limit" = "Sınır yok";
 "No longer saved" = "Artık kaydedilmiyor";
 "No match" = "Eşleşme yok";
 "No match in story" = "Haberde eşleşme yok";
@@ -716,8 +690,6 @@
 "No stories yet" = "Henüz haber yok";
 "No story selected" = "Hiçbir haber seçilmedi";
 "No unread stories" = "Okunmamış haber yok";
-"No usage billing invoices yet." = "Henüz kullanım faturalandırması faturası yok.";
-"No usage billing set up." = "Kullanıma dayalı faturalandırma ayarlanmamış.";
 "No voices match these filters" = "Bu filtrelere uyan ses yok";
 "None" = "Hiçbiri";
 "Normal" = "Normal";
@@ -765,7 +737,6 @@
 "Open the next site/folder" = "Sonraki siteyi/klasörü aç";
 "Opening site…" = "Site açılıyor…";
 "Opens Now Playing" = "Şu An Çalıyor ekranını açar";
-"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "İsteğe bağlı. Sınıra ulaşıldığında sınıflandırıcılar duraklatılır ve sonraki faturalandırma döneminde yeniden çalışmaya başlar.";
 "Options" = "Seçenekler";
 "Ordered" = "Sıralı";
 "Organize Sites" = "Siteleri düzenle";
@@ -918,7 +889,6 @@
 "Saved on %@" = "%@ tarihinde kaydedildi";
 "Saving Daily Briefing settings…" = "Günlük Özet ayarları kaydediliyor…";
 "Saving search..." = "Arama kaydediliyor...";
-"Saving..." = "Kaydediliyor...";
 "Schedule" = "Zamanla";
 "Scroll horizontally" = "Yatay kaydır";
 "Scroll to Comments" = "Yorumlara kaydır";
@@ -951,8 +921,6 @@
 "Server URL" = "Sunucu URL'si";
 "Set an exact speed under Voice" = "Ses bölümünden tam bir hız ayarlayın";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Sizin için en önemli haberlerin özetini oluşturmak üzere Günlük Özeti ayarlayın.";
-"Set up billing" = "Faturalandırmayı ayarla";
-"Set up usage-based billing to use natural language content and image filters." = "Doğal dil ve görsel filtrelerini kullanmak için kullandıkça öde faturalandırmasını ayarlayın.";
 "Settings" = "Ayarlar";
 "Share" = "Paylaş";
 "Share This Story" = "Bu Haberi Paylaş";
@@ -1027,7 +995,6 @@
 "Spacing" = "Boşluk";
 "Speaker boost" = "Konuşmacı güçlendirme";
 "Speed" = "Hız";
-"Spending limit reached. Classifiers paused until next cycle." = "Harcama sınırına ulaşıldı. Sınıflandırıcılar sonraki döneme kadar duraklatıldı.";
 "Stability" = "Kararlılık";
 "Stability, similarity and style" = "Kararlılık, benzerlik ve stil";
 "Stale — last story %@" = "Eski — son haber %@";
@@ -1221,7 +1188,6 @@
 "Unsaved" = "Kaydedilenlerden kaldırıldı";
 "Untitled story" = "Başlıksız haber";
 "Up Next" = "Sıradaki";
-"Upcoming charge: " = "Yaklaşan ücret: ";
 "Updated %@ days ago" = "%@ gün önce güncellendi";
 "Updated %@ months ago" = "%@ ay önce güncellendi";
 "Updated %@ weeks ago" = "%@ hafta önce güncellendi";
@@ -1235,9 +1201,6 @@
 "Upgrade to Premium" = "Premium'a yükselt";
 "Upgrade to Premium Archive" = "Premium Archive'a yükselt";
 "Upgrade to Premium Pro" = "Premium Pro'ya yükselt";
-"Usage Billing" = "Kullanım Faturalandırması";
-"Usage billing history" = "Kullanım faturalandırma geçmişi";
-"Usage-based billing is enabled for natural language classifiers." = "Doğal dil sınıflandırıcıları için kullanıma dayalı faturalandırma etkin.";
 "Use %@" = "%@ kullan";
 "Use a custom server" = "Özel sunucu kullan";
 "Use another sign-in method" = "Başka bir giriş yöntemi kullan";
@@ -1317,7 +1280,6 @@
 "no story" = "haber yok";
 "or" = "veya";
 "premium subscribers" = "premium aboneler";
-"set up usage-based billing" = "Kullanıma dayalı faturalandırmayı ayarlayın";
 "your account" = "hesabınız";
 "‹ Feeds" = "‹ Akışlar";
 "✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ / %1$@ görsel bu filtreyle eşleşiyor";

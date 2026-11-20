@@ -723,6 +723,9 @@ msgstr "ميزات الذكاء الاصطناعي"
 msgid "AI built into every story"
 msgstr "ذكاء اصطناعي مدمج في كل قصة"
 
+msgid "AI filters aren't available on this server"
+msgstr "فلاتر الذكاء الاصطناعي غير متاحة على هذا الخادم"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "مرشح الصور بالذكاء الاصطناعي"
@@ -1627,9 +1630,6 @@ msgstr "تعذّر حفظ القصة، لم يتم العثور عليها"
 msgid "Could not unsave story, not found"
 msgstr "تعذّر إلغاء حفظ القصة؛ لم يتم العثور عليها"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "تعذّر الاتصال بـ Stripe. يُرجى المحاولة مجددًا."
-
 msgid "Couldn't save the position"
 msgstr "تعذّر حفظ الموضع"
 
@@ -1771,6 +1771,13 @@ msgstr "افتراضي"
 
 msgid "Delete"
 msgstr "حذف"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"صِف بلغة واضحة ما تريد التركيز عليه أو إخفاءه في نص القصة أو صورها. تقيّم المصنّفات اللغوية الطبيعية القصص "
+"تمامًا مثل مدرّب الذكاء، من دون حدود للاستخدام."
 
 msgid "Description"
 msgstr "الوصف"
@@ -3089,9 +3096,6 @@ msgstr "عنوان URL غير صالح"
 msgid "Invalid URL."
 msgstr "عنوان URL غير صالح."
 
-msgid "Invalid amount"
-msgstr "المبلغ غير صالح"
-
 msgid "Invalid classifier_type"
 msgstr "قيمة classifier_type غير صالحة"
 
@@ -3276,12 +3280,6 @@ msgstr "الترخيص"
 msgctxt "theme"
 msgid "Light"
 msgstr "فاتح"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "لا يمكن أن يتجاوز الحد 10,000 دولار"
-
-msgid "Limit must be a positive amount"
-msgstr "يجب أن يكون الحد مبلغًا موجبًا"
 
 msgid "Limited"
 msgstr "محدود"
@@ -4274,9 +4272,6 @@ msgstr "لا يوجد نظام تدريب"
 msgid "No uncategorized archives found"
 msgstr "لم يُعثر على أرشيفات غير مصنفة"
 
-msgid "No usage billing set up."
-msgstr "لم تُعدّ الفوترة حسب الاستخدام."
-
 msgid "No user has that email address."
 msgstr "لا يوجد مستخدم بهذا البريد الإلكتروني."
 
@@ -4509,9 +4504,6 @@ msgstr "يُرجى إدخال عبارة بحث بالكلمات المفتاح�
 
 msgid "Please enter in an email address."
 msgstr "يُرجى إدخال عنوان بريد إلكتروني."
-
-msgid "Please log in to NewsBlur again."
-msgstr "يُرجى تسجيل الدخول إلى NewsBlur مجددًا."
 
 msgid "Please login to continue."
 msgstr "يرجى تسجيل الدخول للمتابعة."
@@ -6460,15 +6452,6 @@ msgstr "رقِّ اشتراكك إلى Premium لإرسال أكثر من قصة
 msgid "Upgrade to premium archive"
 msgstr "الترقية إلى Premium Archive"
 
-msgid "Usage billing not enabled"
-msgstr "الفوترة حسب الاستخدام غير مفعّلة"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "يلزم تفعيل الفوترة حسب الاستخدام لمصنّفات الذكاء الاصطناعي"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "الفوترة حسب الاستخدام غير متاحة حاليًا."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "استخدم"
@@ -6824,13 +6807,6 @@ msgstr "يعمل في كل مكان"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "يعمل مع ملفات تعريف مواقع التواصل الاجتماعي ولوحات الوظائف وصفحات المنتجات وغيرها"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"اكتب تعليمات بلغة طبيعية لتصفية القصص حسب محتواها أو صورها. تقيّم المصنفات باللغة الطبيعية القصص مثل مدرّب "
-"الذكاء، مع فوترة حسب الاستخدام."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "

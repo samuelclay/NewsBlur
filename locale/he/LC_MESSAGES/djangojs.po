@@ -161,10 +161,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s ו־%(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/כתבה"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s בייט"
@@ -193,12 +189,6 @@ msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s תגובה"
 msgstr[1] "%(count)s תגובות"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s מסנן תוכן"
-msgstr[1] "%(count)s מסנני תוכן"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -261,12 +251,6 @@ msgstr[0] "לפני %(count)s שעה"
 msgstr[1] "לפני %(count)s שעות"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s מסנן תמונות"
-msgstr[1] "%(count)s מסנני תמונות"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s סימון אהבתי"
@@ -319,18 +303,6 @@ msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s אתר מתוך %(limit)s"
 msgstr[1] "%(count)s מתוך %(limit)s אתרים"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s בכל האתרים (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s בתיקייה (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s באתר הזה (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -433,12 +405,6 @@ msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s כתבה תימחק"
 msgstr[1] "%(count)s כתבות יימחקו"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s כתבה/חודש"
-msgstr[1] "%(count)s כתבות לחודש"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -601,10 +567,6 @@ msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s עד %(end)s דקה"
 msgstr[1] "%(start)s עד %(end)s דקות"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -955,20 +917,11 @@ msgstr "(GMT-11:00) האי מידוויי, סמואה"
 msgid "(no title)"
 msgstr "(ללא כותרת)"
 
-msgid "(upcoming)"
-msgstr "(בקרוב)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ עוד %(value_1)s אתר"
 msgstr[1] "+ עוד %(value_1)s אתרים"
-
-msgid "/day"
-msgstr "ליום"
-
-msgid "/mo"
-msgstr "/חודש"
 
 msgid "/month"
 msgstr "לחודש"
@@ -1064,8 +1017,8 @@ msgid "AI Model"
 msgstr "מודל בינה מלאכותית"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "מסנני AI נשמרו, אך לא יפעלו עד %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "מסנני בינה מלאכותית נשמרים, אך פועלים רק ב־%(tier_link)s."
 
 msgid "AI finds the stories"
 msgstr "AI מאתר את הכתבות"
@@ -3645,9 +3598,6 @@ msgstr "בחלון הזה"
 msgid "Include read"
 msgstr "לכלול פריטים שנקראו"
 
-msgid "Increase or remove your limit"
-msgstr "להגדיל או להסיר את המגבלה שלך"
-
 msgid "Independent"
 msgstr "עצמאי"
 
@@ -3964,12 +3914,6 @@ msgstr "ניהול NewsBlur"
 msgid "Manage Training"
 msgstr "ניהול אימון"
 
-msgid "Manage billing and limits"
-msgstr "ניהול חיוב ומגבלות"
-
-msgid "Manage billing on Stripe"
-msgstr "נהל את החיוב ב-Stripe"
-
 msgid "Manage email settings"
 msgstr "ניהול הגדרות דוא״ל"
 
@@ -4166,12 +4110,6 @@ msgstr "ב׳"
 msgid "Monday"
 msgstr "יום שני"
 
-msgid "Monthly spending limit"
-msgstr "מגבלת הוצאות חודשית"
-
-msgid "Monthly spending limit reached. "
-msgstr "הגעת למגבלת ההוצאה החודשית. "
-
 msgid "Months Earned"
 msgstr "חודשי חברות שנצברו"
 
@@ -4289,15 +4227,6 @@ msgstr "מסווג תמונות בשפה טבעית"
 
 msgid "Natural Language Text Classifier"
 msgstr "מסווג טקסט בשפה טבעית"
-
-msgid "Natural language classifier billing"
-msgstr "חיוב על מסווג שפה טבעית"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "המסווגים בשפה טבעית מושהים עד למחזור החיוב הבא. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "מסווגי שפה טבעית משתמשים במפתחות ה־API של המופע שלך."
 
 msgid "Natural language text and image classifiers"
 msgstr "מסווגי טקסט ותמונות בשפה טבעית"
@@ -4495,9 +4424,6 @@ msgstr "אין תמונה"
 msgid "No items added yet."
 msgstr "עדיין לא נוספו פריטים."
 
-msgid "No limit"
-msgstr "ללא הגבלה"
-
 msgid "No match"
 msgstr "אין התאמה"
 
@@ -4610,12 +4536,6 @@ msgstr "לא נמצאו דפוסי כתבות בעמוד הזה."
 
 msgid "No trending sites available"
 msgstr "אין כרגע אתרים במגמת עלייה"
-
-msgid "No usage billing invoices yet."
-msgstr "עדיין אין חשבוניות חיוב לפי שימוש."
-
-msgid "No usage billing set up."
-msgstr "לא הוגדר חיוב לפי שימוש."
 
 msgid "No valid merge groups to apply"
 msgstr "אין קבוצות מיזוג תקינות להחלה"
@@ -4938,9 +4858,6 @@ msgstr "אפשרות 3:"
 
 msgid "Option 4:"
 msgstr "אפשרות 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "אופציונלי. המסווגים נעצרים כשמגיעים למכסה ומתחדשים במחזור החיוב הבא."
 
 msgid "Options"
 msgstr "אפשרויות"
@@ -6037,17 +5954,11 @@ msgstr "שגיאת שרת"
 msgid "Server error: %(status)s"
 msgstr "שגיאת שרת: %(status)s"
 
-msgid "Set up billing"
-msgstr "הגדרת חיוב"
-
 msgid "Set up newsletters"
 msgstr "הגדרת ניוזלטרים"
 
 msgid "Set up notifications"
 msgstr "הגדרת התראות"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "הגדירו חיוב לפי שימוש כדי להשתמש במסנני תוכן ותמונות בשפה טבעית."
 
 msgid "Set up your blurblog"
 msgstr "הגדרת הבלוג שלכם"
@@ -6378,9 +6289,6 @@ msgstr "תיקיות מיוחדות"
 
 msgid "Speed"
 msgstr "מהירות"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "הגעת למגבלת ההוצאות. המסווגים הושהו עד למחזור הבא."
 
 msgid "Split"
 msgstr "פיצול"
@@ -7393,6 +7301,10 @@ msgstr "בטל השתקה של האתר הזה"
 msgid "Uncategorized"
 msgstr "ללא קטגוריה"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "הובן כך: %(description)s"
+
 msgid "Unfavorited"
 msgstr "הוסר מהמועדפים"
 
@@ -7467,9 +7379,6 @@ msgstr "ללא כותרת"
 
 msgid "Up Next"
 msgstr "הבא בתור"
-
-msgid "Upcoming charge: "
-msgstr "החיוב הבא: "
 
 msgid "Update History"
 msgstr "היסטוריית עדכונים"
@@ -7583,12 +7492,6 @@ msgstr "ההעלאה נכשלה. נא לנסות שוב."
 
 msgid "Uploaded!"
 msgstr "הועלה!"
-
-msgid "Usage billing history"
-msgstr "היסטוריית חיובים לפי שימוש"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "חיוב לפי שימוש מופעל עבור מסווגי שפה טבעית."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8342,9 +8245,6 @@ msgstr "הזכות לתקן"
 
 msgid "separate multiple addresses with commas"
 msgstr "יש להפריד בין כתובות מרובות באמצעות פסיקים"
-
-msgid "set up usage-based billing"
-msgstr "הגדרת חיוב לפי שימוש"
 
 msgid "show hidden stories"
 msgstr "הצגת כתבות מוסתרות"

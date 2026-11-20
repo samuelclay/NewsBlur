@@ -163,10 +163,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s e %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/articolo"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s byte"
@@ -195,12 +191,6 @@ msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s commento"
 msgstr[1] "%(count)s commenti"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s filtro dei contenuti"
-msgstr[1] "%(count)s filtri dei contenuti"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -263,12 +253,6 @@ msgstr[0] "%(count)s ora fa"
 msgstr[1] "%(count)s ore fa"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s filtro immagini"
-msgstr[1] "%(count)s filtri immagini"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s mi piace"
@@ -321,18 +305,6 @@ msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s di %(limit)s sito"
 msgstr[1] "%(count)s di %(limit)s siti"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s su tutti i siti (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s nella cartella (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s su questo sito (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -435,12 +407,6 @@ msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s articolo verrà eliminato"
 msgstr[1] "%(count)s articoli verranno eliminati"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s articolo/mese"
-msgstr[1] "%(count)s articoli/mese"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -603,10 +569,6 @@ msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "Da %(start)s a %(end)s minuto"
 msgstr[1] "Da %(start)s a %(end)s minuti"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -957,20 +919,11 @@ msgstr "(GMT-11:00) Isola di Midway, Samoa"
 msgid "(no title)"
 msgstr "(senza titolo)"
 
-msgid "(upcoming)"
-msgstr "(in arrivo)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s altro sito"
 msgstr[1] "+ %(value_1)s altri siti"
-
-msgid "/day"
-msgstr "/giorno"
-
-msgid "/mo"
-msgstr "/mese"
 
 msgid "/month"
 msgstr "/mese"
@@ -1068,8 +1021,8 @@ msgid "AI Model"
 msgstr "Modello di IA"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "I filtri IA sono salvati, ma non verranno applicati finché non %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "I filtri AI vengono salvati, ma vengono eseguiti solo su %(tier_link)s."
 
 msgid "AI finds the stories"
 msgstr "L'IA trova gli articoli"
@@ -3674,9 +3627,6 @@ msgstr "In questa finestra"
 msgid "Include read"
 msgstr "Includi letti"
 
-msgid "Increase or remove your limit"
-msgstr "Aumenta o rimuovi il limite"
-
 msgid "Independent"
 msgstr "Indipendente"
 
@@ -3993,12 +3943,6 @@ msgstr "Gestisci NewsBlur"
 msgid "Manage Training"
 msgstr "Gestisci addestramento"
 
-msgid "Manage billing and limits"
-msgstr "Gestisci fatturazione e limiti"
-
-msgid "Manage billing on Stripe"
-msgstr "Gestisci la fatturazione su Stripe"
-
 msgid "Manage email settings"
 msgstr "Gestisci le impostazioni email"
 
@@ -4197,12 +4141,6 @@ msgstr "Lun"
 msgid "Monday"
 msgstr "Lunedì"
 
-msgid "Monthly spending limit"
-msgstr "Limite di spesa mensile"
-
-msgid "Monthly spending limit reached. "
-msgstr "Limite di spesa mensile raggiunto. "
-
 msgid "Months Earned"
 msgstr "Mesi guadagnati"
 
@@ -4320,15 +4258,6 @@ msgstr "Classificatore di immagini in linguaggio naturale"
 
 msgid "Natural Language Text Classifier"
 msgstr "Classificatore di testo in linguaggio naturale"
-
-msgid "Natural language classifier billing"
-msgstr "Fatturazione del classificatore in linguaggio naturale"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "I classificatori in linguaggio naturale sono in pausa fino al prossimo ciclo di fatturazione. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "I classificatori in linguaggio naturale utilizzano le chiavi API della tua istanza."
 
 msgid "Natural language text and image classifiers"
 msgstr "Classificatori di testo e immagini in linguaggio naturale"
@@ -4528,9 +4457,6 @@ msgstr "Nessuna immagine"
 msgid "No items added yet."
 msgstr "Non è ancora stato aggiunto alcun elemento."
 
-msgid "No limit"
-msgstr "Nessun limite"
-
 msgid "No match"
 msgstr "Nessuna corrispondenza"
 
@@ -4643,12 +4569,6 @@ msgstr "Nessuno schema di articoli trovato in questa pagina."
 
 msgid "No trending sites available"
 msgstr "Nessun sito di tendenza disponibile"
-
-msgid "No usage billing invoices yet."
-msgstr "Non ci sono ancora fatture per l'utilizzo."
-
-msgid "No usage billing set up."
-msgstr "Nessuna fatturazione a consumo configurata."
 
 msgid "No valid merge groups to apply"
 msgstr "Nessun gruppo di unione valido da applicare"
@@ -4979,11 +4899,6 @@ msgstr "Opzione 3:"
 
 msgid "Option 4:"
 msgstr "Opzione 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr ""
-"Facoltativo. I classificatori vengono sospesi al raggiungimento del limite e riprendono nel ciclo di "
-"fatturazione successivo."
 
 msgid "Options"
 msgstr "Opzioni"
@@ -6094,17 +6009,11 @@ msgstr "Errore del server"
 msgid "Server error: %(status)s"
 msgstr "Errore del server: %(status)s"
 
-msgid "Set up billing"
-msgstr "Configura la fatturazione"
-
 msgid "Set up newsletters"
 msgstr "Configura le newsletter"
 
 msgid "Set up notifications"
 msgstr "Configura le notifiche"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "Configura la fatturazione a consumo per usare filtri dei contenuti e delle immagini in linguaggio naturale."
 
 msgid "Set up your blurblog"
 msgstr "Configura il tuo blurblog"
@@ -6443,9 +6352,6 @@ msgstr "Cartelle speciali"
 
 msgid "Speed"
 msgstr "Velocità"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Limite di spesa raggiunto. I classificatori sono in pausa fino al prossimo ciclo."
 
 msgid "Split"
 msgstr "Dividi"
@@ -7481,6 +7387,10 @@ msgstr "Riattiva questo sito"
 msgid "Uncategorized"
 msgstr "Senza categoria"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "Interpretato come: %(description)s"
+
 msgid "Unfavorited"
 msgstr "Rimosso dai preferiti"
 
@@ -7555,9 +7465,6 @@ msgstr "Senza titolo"
 
 msgid "Up Next"
 msgstr "A seguire"
-
-msgid "Upcoming charge: "
-msgstr "Prossimo addebito: "
 
 msgid "Update History"
 msgstr "Cronologia degli aggiornamenti"
@@ -7673,12 +7580,6 @@ msgstr "Caricamento non riuscito. Riprova."
 
 msgid "Uploaded!"
 msgstr "Caricato!"
-
-msgid "Usage billing history"
-msgstr "Cronologia di fatturazione dell’utilizzo"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "La fatturazione a consumo è attiva per i classificatori del linguaggio naturale."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8446,9 +8347,6 @@ msgstr "diritto alla riparazione"
 
 msgid "separate multiple addresses with commas"
 msgstr "separa gli indirizzi con virgole"
-
-msgid "set up usage-based billing"
-msgstr "configurare la fatturazione basata sull'utilizzo"
 
 msgid "show hidden stories"
 msgstr "mostra articoli nascosti"

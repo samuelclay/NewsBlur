@@ -13,9 +13,6 @@
 "%1$@ of %2$@ of listening left this week" = "На этой неделе осталось %1$@ из %2$@ прослушивания";
 "%1$@ of %2$@ sites indexed" = "Проиндексировано %1$@ из %2$@ сайтов";
 "%1$@ of %2$@ story previews used today" = "Сегодня использовано %1$@ из %2$@ предпрослушиваний статей";
-"%1$@ on all sites (%2$@)" = "%1$@ на всех сайтах (%2$@)";
-"%1$@ on folder (%2$@)" = "%1$@ в папке (%2$@)";
-"%1$@ on this site (%2$@)" = "%1$@ на этом сайте (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ повторно делится статьёй %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ повторно делится статьёй %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ отвечает пользователю %2$@: \n \n%3$@";
@@ -23,13 +20,11 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ отвечает на ваш ответ к статье %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ делится статьёй %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ делится статьёй %2$@:\n \n%3$@";
-"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ сайтов с виджетами";
 "%@ ago" = "%@ назад";
 "%@ categories to choose from" = "категорий на выбор: %@";
 "%@ comments" = "%@ комментариев";
-"%@ content filters" = "%@ фильтров содержимого";
 "%@ could not be added." = "Не удалось добавить лент: %@.";
 "%@ days" = "%@ дней";
 "%@ feed" = "Лента %@";
@@ -41,7 +36,6 @@
 "%@ focused stories" = "%@ публикаций с фокусом";
 "%@ folder" = "Папка %@";
 "%@ free story previews left today" = "Сегодня осталось бесплатных предпросмотров статей: %@";
-"%@ image filters" = "Фильтры изображений: %@";
 "%@ is now following you." = "%@ теперь следит за вашими обновлениями.";
 "%@ left in this preview" = "В этой демоверсии осталось %@";
 "%@ left this week" = "На этой неделе осталось %@";
@@ -54,23 +48,17 @@
 "%@ sources" = "%@ источников";
 "%@ stories" = "%@ статей";
 "%@ stories left" = "Осталось %@ публикаций";
-"%@ stories/mo" = "%@ статей/мес.";
 "%@ stories/month" = "%@ статей в месяц";
 "%@ subscribers" = "Подписчиков: %@";
 "%@ unread stories" = "%@ непрочитанных статей";
 "%@ voice previews left" = "Осталось голосовых предпрослушиваний: %@";
-"%@/story" = "%@/статья";
 "%@×" = "%@×";
 "%ldd ago" = "%ld дн. назад";
 "%ldh ago" = "%ld ч. назад";
 "%ldm ago" = "%ld мин. назад";
 "%ldw ago" = "%ld нед. назад";
-"(upcoming)" = "(предстоящий)";
 "+ %@ more sites" = "+ ещё %@ сайтов";
 "..." = "…";
-"/day" = "/день";
-"/mo" = "/мес.";
-"/month" = "/мес.";
 "1 Widget Site" = "1 сайт виджета";
 "1,000 stories" = "1 000 статей";
 "10 stories" = "10 статей";
@@ -93,7 +81,7 @@
 "< 90/month" = "< 90 в месяц";
 "A clearer, closer sound" = "Более чистый и близкий звук";
 "A personal news reader bringing\npeople together to talk about the world." = "Персональная программа для чтения новостей, которая объединяет людей,\nчтобы обсуждать происходящее в мире.";
-"AI filters are saved but won't run until you %@." = "Фильтры ИИ сохранены, но не будут работать, пока вы не %@.";
+"AI filters are saved but only run on Premium Archive." = "Фильтры ИИ сохранены, но работают только на Premium Archive.";
 "AI finds the stories" = "ИИ находит статьи";
 "ALL" = "ВСЁ";
 "ALL NOTIFICATIONS" = "ВСЕ УВЕДОМЛЕНИЯ";
@@ -264,10 +252,7 @@
 "Could not completely clear the cache. Please try again." = "Не удалось полностью очистить кэш. Повторите попытку.";
 "Could not save your language. Please try again." = "Не удалось сохранить язык. Попробуйте ещё раз.";
 "Couldn't check story" = "Не удалось проверить статью";
-"Couldn't load usage billing history." = "Не удалось загрузить историю оплаты по факту использования.";
-"Couldn't open billing. Please try again." = "Не удалось открыть раздел оплаты. Попробуйте ещё раз.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Не удалось подключиться к NewsBlur. Проверьте подключение и повторите попытку.";
-"Couldn't save your spending limit. Please try again." = "Не удалось сохранить лимит расходов. Попробуйте ещё раз.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Не удалось загрузить изображение полностью. Попробуйте открыть его в браузере.";
 "Counting is difficult..." = "Считать непросто...";
 "Create a feed from any web page" = "Создать ленту из любой веб-страницы";
@@ -496,7 +481,6 @@
 "Include already-read stories" = "Включать уже прочитанные статьи";
 "Include in bundle" = "Добавить в подборку";
 "Included in bundle" = "Включено в подборку";
-"Increase or remove your limit" = "Увеличьте лимит или снимите ограничение";
 "Infrequent Site Stories" = "Статьи с редко обновляемых сайтов";
 "Infrequent Stories" = "Редко обновляемые сайты";
 "Infrequent stories per month" = "Порог редко обновляемых сайтов";
@@ -506,7 +490,6 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Вместо системной тёмной или светлой темы автоматически переключать оформление в зависимости от яркости экрана. Полезно для подстройки темы под окружающее освещение.";
 "Interactions" = "Взаимодействия";
 "Invalid: %@" = "Недопустимо: %@";
-"Invoice" = "Счёт";
 "Keep fades, without movement." = "Сохранить плавное появление и исчезновение без движения.";
 "Keeps the dark icon no matter how your device is set." = "Тёмный значок будет отображаться независимо от настроек устройства.";
 "Keeps the light icon no matter how your device is set." = "Всегда использует светлый значок независимо от настроек устройства.";
@@ -570,8 +553,6 @@
 "Manage" = "Управление";
 "Manage Account on the Web" = "Управление аккаунтом в веб-версии";
 "Manage Subscription" = "Управление подпиской";
-"Manage billing and limits" = "Управлять оплатой и лимитами";
-"Manage billing on Stripe" = "Управлять оплатой в Stripe";
 "Manage this folder…" = "Управление этой папкой…";
 "Manage this site…" = "Управление сайтом…";
 "Manual scroll" = "Прокрутка вручную";
@@ -623,8 +604,6 @@
 "Medium [theme]" = "Серая";
 "Model" = "Модель";
 "Monday" = "Понедельник";
-"Monthly spending limit" = "Месячный лимит расходов";
-"Monthly spending limit reached. " = "Достигнут месячный лимит расходов. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Чем больше статей, тем больше места на диске, но заметно на производительности это не сказывается.";
 "More voices" = "Другие голоса";
 "Morning" = "Утро";
@@ -666,10 +645,6 @@
 "Natural Language Image Classifier" = "Классификатор изображений на естественном языке";
 "Natural Language Text Classifier" = "Классификатор текста на естественном языке";
 "Natural [listen delivery]" = "Естественный";
-"Natural language classifier billing" = "Оплата классификатора на естественном языке";
-"Natural language classifiers are paused until next billing cycle. " = "Классификаторы на естественном языке приостановлены до следующего расчётного периода. ";
-"Natural language classifiers are using your instance's API keys." = "Классификаторы естественного языка используют ключи API вашего экземпляра.";
-"Natural language filters aren't active on this account." = "Фильтры на естественном языке не активны в этом аккаунте.";
 "Natural language text and image classifiers" = "Классификаторы текста на естественном языке и изображений";
 "Nested" = "Вложенный";
 "Never" = "Никогда";
@@ -703,7 +678,6 @@
 "No feeds to show yet. Try another interest or search all sites." = "Пока нет лент для отображения. Выберите другой интерес или выполните поиск по всем сайтам.";
 "No friends to suggest." = "Некого предложить в друзья.";
 "No interests or sites found. Try another search." = "Интересы или сайты не найдены. Попробуйте другой запрос.";
-"No limit" = "Без ограничений";
 "No longer saved" = "Удалено из сохранённых";
 "No match" = "Нет совпадений";
 "No match in story" = "Совпадений в статье нет";
@@ -716,8 +690,6 @@
 "No stories yet" = "Пока нет статей";
 "No story selected" = "Статья не выбрана";
 "No unread stories" = "Нет непрочитанных статей";
-"No usage billing invoices yet." = "Счета за использование пока не выставлялись.";
-"No usage billing set up." = "Оплата по факту использования не настроена.";
 "No voices match these filters" = "Нет голосов, подходящих под эти фильтры";
 "None" = "Нет";
 "Normal" = "Обычный";
@@ -765,7 +737,6 @@
 "Open the next site/folder" = "Открыть следующий сайт/папку";
 "Opening site…" = "Открытие сайта…";
 "Opens Now Playing" = "Открывает экран «Сейчас играет»";
-"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Необязательно. При достижении лимита работа классификаторов приостанавливается и возобновляется в следующем расчётном периоде.";
 "Options" = "Параметры";
 "Ordered" = "Упорядоченные";
 "Organize Sites" = "Упорядочить сайты";
@@ -918,7 +889,6 @@
 "Saved on %@" = "Сохранено %@";
 "Saving Daily Briefing settings…" = "Сохранение настроек ежедневной сводки…";
 "Saving search..." = "Сохранение поиска…";
-"Saving..." = "Сохранение…";
 "Schedule" = "Расписание";
 "Scroll horizontally" = "Прокручивать по горизонтали";
 "Scroll to Comments" = "Прокрутить до комментариев";
@@ -951,8 +921,6 @@
 "Server URL" = "URL сервера";
 "Set an exact speed under Voice" = "Задайте точную скорость в разделе «Голос»";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Настройте ежедневную сводку, чтобы получать обзор самых важных для вас статей.";
-"Set up billing" = "Настроить оплату";
-"Set up usage-based billing to use natural language content and image filters." = "Настройте оплату по факту использования, чтобы пользоваться фильтрами содержимого и изображений на естественном языке.";
 "Settings" = "Настройки";
 "Share" = "Поделиться";
 "Share This Story" = "Поделиться этой статьёй";
@@ -1027,7 +995,6 @@
 "Spacing" = "Интервалы";
 "Speaker boost" = "Усиление голоса";
 "Speed" = "Скорость";
-"Spending limit reached. Classifiers paused until next cycle." = "Лимит расходов исчерпан. Работа классификаторов приостановлена до следующего расчётного периода.";
 "Stability" = "Стабильность";
 "Stability, similarity and style" = "Стабильность, сходство и стиль";
 "Stale — last story %@" = "Неактивен — последняя публикация %@";
@@ -1221,7 +1188,6 @@
 "Unsaved" = "Удалено из сохранённых";
 "Untitled story" = "Статья без названия";
 "Up Next" = "Далее";
-"Upcoming charge: " = "Предстоящий платёж: ";
 "Updated %@ days ago" = "Обновлено %@ дней назад";
 "Updated %@ months ago" = "Обновлено %@ месяцев назад";
 "Updated %@ weeks ago" = "Обновлено %@ недель назад";
@@ -1235,9 +1201,6 @@
 "Upgrade to Premium" = "Перейти на Premium";
 "Upgrade to Premium Archive" = "Перейти на Premium Archive";
 "Upgrade to Premium Pro" = "Перейти на Premium Pro";
-"Usage Billing" = "Оплата по факту использования";
-"Usage billing history" = "История оплаты по факту использования";
-"Usage-based billing is enabled for natural language classifiers." = "Для классификаторов естественного языка включена оплата по факту использования.";
 "Use %@" = "Использовать язык: %@";
 "Use a custom server" = "Использовать пользовательский сервер";
 "Use another sign-in method" = "Использовать другой способ входа";
@@ -1317,7 +1280,6 @@
 "no story" = "нет статей";
 "or" = "или";
 "premium subscribers" = "подписчики Premium";
-"set up usage-based billing" = "Настроить оплату по факту использования";
 "your account" = "ваш аккаунт";
 "‹ Feeds" = "‹ Ленты";
 "✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ из %1$@ изображений соответствуют этому фильтру";

@@ -161,10 +161,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s और %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/लेख"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s बाइट"
@@ -193,12 +189,6 @@ msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s टिप्पणी"
 msgstr[1] "%(count)s टिप्पणियाँ"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s सामग्री फ़िल्टर"
-msgstr[1] "%(count)s सामग्री फ़िल्टर"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -261,12 +251,6 @@ msgstr[0] "%(count)s घंटे पहले"
 msgstr[1] "%(count)s घंटे पहले"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s छवि फ़िल्टर"
-msgstr[1] "%(count)s छवि फ़िल्टर"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s पसंद"
@@ -319,18 +303,6 @@ msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s / %(limit)s साइट"
 msgstr[1] "%(limit)s में से %(count)s साइटें"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "सभी साइटों पर %(count)s (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "फ़ोल्डर पर %(count)s (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "इस साइट पर %(count)s (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -433,12 +405,6 @@ msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s लेख हटाया जाएगा"
 msgstr[1] "%(count)s लेख हटाए जाएँगे"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s लेख/माह"
-msgstr[1] "%(count)s लेख/माह"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -601,10 +567,6 @@ msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s से %(end)s मिनट"
 msgstr[1] "%(start)s से %(end)s मिनट"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -955,20 +917,11 @@ msgstr "(GMT-11:00) मिडवे द्वीप, समोआ"
 msgid "(no title)"
 msgstr "(कोई शीर्षक नहीं)"
 
-msgid "(upcoming)"
-msgstr "(आगामी)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s और साइट"
 msgstr[1] "+ %(value_1)s और साइटें"
-
-msgid "/day"
-msgstr "/दिन"
-
-msgid "/mo"
-msgstr "/माह"
 
 msgid "/month"
 msgstr "/माह"
@@ -1064,8 +1017,8 @@ msgid "AI Model"
 msgstr "AI मॉडल"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "AI फ़िल्टर सहेज लिए गए हैं, लेकिन वे तभी चलेंगे जब आप %(billing_link)s।"
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "AI फ़िल्टर सहेजे जाते हैं, लेकिन केवल %(tier_link)s पर चलते हैं।"
 
 msgid "AI finds the stories"
 msgstr "AI लेख ढूँढ़ता है"
@@ -3657,9 +3610,6 @@ msgstr "इस विंडो में"
 msgid "Include read"
 msgstr "पढ़ी हुई सामग्री शामिल करें"
 
-msgid "Increase or remove your limit"
-msgstr "अपनी सीमा बढ़ाएँ या हटाएँ"
-
 msgid "Independent"
 msgstr "स्वतंत्र"
 
@@ -3976,12 +3926,6 @@ msgstr "NewsBlur प्रबंधित करें"
 msgid "Manage Training"
 msgstr "प्रशिक्षण प्रबंधित करें"
 
-msgid "Manage billing and limits"
-msgstr "बिलिंग और सीमाएँ प्रबंधित करें"
-
-msgid "Manage billing on Stripe"
-msgstr "Stripe पर बिलिंग प्रबंधित करें"
-
 msgid "Manage email settings"
 msgstr "ईमेल सेटिंग प्रबंधित करें"
 
@@ -4180,12 +4124,6 @@ msgstr "सोम"
 msgid "Monday"
 msgstr "सोमवार"
 
-msgid "Monthly spending limit"
-msgstr "मासिक खर्च सीमा"
-
-msgid "Monthly spending limit reached. "
-msgstr "मासिक खर्च सीमा पूरी हो गई। "
-
 msgid "Months Earned"
 msgstr "अर्जित महीने"
 
@@ -4303,15 +4241,6 @@ msgstr "प्राकृतिक भाषा छवि क्लासिफ
 
 msgid "Natural Language Text Classifier"
 msgstr "प्राकृतिक भाषा टेक्स्ट क्लासिफ़ायर"
-
-msgid "Natural language classifier billing"
-msgstr "प्राकृतिक भाषा क्लासिफ़ायर बिलिंग"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "प्राकृतिक भाषा क्लासिफ़ायर अगले बिलिंग चक्र तक रुके हुए हैं। "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "प्राकृतिक भाषा क्लासिफ़ायर आपके इंस्टेंस की API कुंजियों का उपयोग कर रहे हैं।"
 
 msgid "Natural language text and image classifiers"
 msgstr "प्राकृतिक भाषा के टेक्स्ट और छवि क्लासिफ़ायर"
@@ -4509,9 +4438,6 @@ msgstr "कोई छवि नहीं"
 msgid "No items added yet."
 msgstr "अभी तक कोई आइटम नहीं जोड़ा गया है।"
 
-msgid "No limit"
-msgstr "कोई सीमा नहीं"
-
 msgid "No match"
 msgstr "कोई मेल नहीं"
 
@@ -4624,12 +4550,6 @@ msgstr "इस पेज पर कोई लेख पैटर्न नही
 
 msgid "No trending sites available"
 msgstr "कोई ट्रेंडिंग साइट उपलब्ध नहीं है"
-
-msgid "No usage billing invoices yet."
-msgstr "अभी तक उपयोग बिलिंग का कोई इनवॉइस नहीं है।"
-
-msgid "No usage billing set up."
-msgstr "उपयोग बिलिंग सेट अप नहीं है।"
 
 msgid "No valid merge groups to apply"
 msgstr "लागू करने के लिए कोई मान्य मर्ज समूह नहीं"
@@ -4958,9 +4878,6 @@ msgstr "विकल्प 3:"
 
 msgid "Option 4:"
 msgstr "विकल्प 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "वैकल्पिक। सीमा पूरी होने पर क्लासिफ़ायर रुक जाते हैं और अगले बिलिंग चक्र में फिर शुरू होते हैं।"
 
 msgid "Options"
 msgstr "विकल्प"
@@ -6061,17 +5978,11 @@ msgstr "सर्वर त्रुटि"
 msgid "Server error: %(status)s"
 msgstr "सर्वर त्रुटि: %(status)s"
 
-msgid "Set up billing"
-msgstr "बिलिंग सेट अप करें"
-
 msgid "Set up newsletters"
 msgstr "न्यूज़लेटर्स सेट अप करें"
 
 msgid "Set up notifications"
 msgstr "सूचनाएँ सेट अप करें"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "प्राकृतिक भाषा की सामग्री और छवि फ़िल्टर इस्तेमाल करने के लिए उपयोग-आधारित बिलिंग सेट अप करें।"
 
 msgid "Set up your blurblog"
 msgstr "अपना blurblog सेट अप करें"
@@ -6406,9 +6317,6 @@ msgstr "विशेष फ़ोल्डर"
 
 msgid "Speed"
 msgstr "गति"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "खर्च की सीमा पूरी हो गई। अगले चक्र तक क्लासिफ़ायर रोक दिए गए हैं।"
 
 msgid "Split"
 msgstr "विभाजित करें"
@@ -7437,6 +7345,10 @@ msgstr "इस साइट को अनम्यूट करें"
 msgid "Uncategorized"
 msgstr "बिना श्रेणी"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "इसका अर्थ समझा गया: %(description)s"
+
 msgid "Unfavorited"
 msgstr "पसंदीदा से हटाया"
 
@@ -7511,9 +7423,6 @@ msgstr "शीर्षकहीन"
 
 msgid "Up Next"
 msgstr "आगे"
-
-msgid "Upcoming charge: "
-msgstr "आगामी शुल्क: "
 
 msgid "Update History"
 msgstr "अपडेट इतिहास"
@@ -7627,12 +7536,6 @@ msgstr "अपलोड विफल हुआ। कृपया फिर स�
 
 msgid "Uploaded!"
 msgstr "अपलोड हो गया!"
-
-msgid "Usage billing history"
-msgstr "उपयोग बिलिंग इतिहास"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "प्राकृतिक भाषा क्लासिफ़ायर के लिए उपयोग-आधारित बिलिंग सक्षम है।"
 
 #, python-format
 msgid "Use %(language)s"
@@ -8398,9 +8301,6 @@ msgstr "मरम्मत का अधिकार"
 
 msgid "separate multiple addresses with commas"
 msgstr "कई पते अल्पविराम से अलग करें"
-
-msgid "set up usage-based billing"
-msgstr "उपयोग-आधारित बिलिंग सेट अप करें"
 
 msgid "show hidden stories"
 msgstr "छिपे हुए लेख दिखाएँ"

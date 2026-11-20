@@ -13,9 +13,6 @@
 "%1$@ of %2$@ of listening left this week" = "本周还剩 %1$@，共 %2$@ 收听时长";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 个网站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@ / %2$@ 次文章试听";
-"%1$@ on all sites (%2$@)" = "%1$@（所有网站，%2$@）";
-"%1$@ on folder (%2$@)" = "%1$@，文件夹（%2$@）";
-"%1$@ on this site (%2$@)" = "%1$@，在此网站（%2$@）";
 "%1$@ re-shared %2$@." = "%1$@ 重新分享了 %2$@。";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ 重新分享了 %2$@：\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ 回复了 %2$@：\n \n%3$@";
@@ -23,13 +20,11 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ 回复了你在 %2$@ 上的回复：\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ 分享了 %2$@。";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ 分享了 %2$@：\n \n%3$@";
-"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@，%2$@";
 "%@ Widget Sites" = "%@ 小组件网站";
 "%@ ago" = "%@前";
 "%@ categories to choose from" = "有 %@ 个类别可供选择";
 "%@ comments" = "%@ 条评论";
-"%@ content filters" = "%@ 个内容过滤器";
 "%@ could not be added." = "%@ 个订阅源无法添加。";
 "%@ days" = "%@ 天";
 "%@ feed" = "%@ 订阅源";
@@ -41,7 +36,6 @@
 "%@ focused stories" = "%@ 篇聚焦文章";
 "%@ folder" = "%@ 文件夹";
 "%@ free story previews left today" = "今天还剩 %@ 次免费文章试听";
-"%@ image filters" = "%@ 个图片筛选器";
 "%@ is now following you." = "%@ 开始关注你了。";
 "%@ left in this preview" = "此预览还剩 %@";
 "%@ left this week" = "本周还剩 %@";
@@ -54,23 +48,17 @@
 "%@ sources" = "%@ 个来源";
 "%@ stories" = "%@ 篇文章";
 "%@ stories left" = "还剩 %@ 篇文章";
-"%@ stories/mo" = "每月 %@ 篇文章";
 "%@ stories/month" = "每月 %@ 篇文章";
 "%@ subscribers" = "%@ 位订阅者";
 "%@ unread stories" = "%@ 篇未读文章";
 "%@ voice previews left" = "剩余 %@ 次语音试听";
-"%@/story" = "%@/篇文章";
 "%@×" = "%@×";
 "%ldd ago" = "%ld 天前";
 "%ldh ago" = "%ld 小时前";
 "%ldm ago" = "%ld 分钟前";
 "%ldw ago" = "%ld 周前";
-"(upcoming)" = "（即将推出）";
 "+ %@ more sites" = "+ 另外 %@ 个网站";
 "..." = "…";
-"/day" = "/天";
-"/mo" = "/月";
-"/month" = "/月";
 "1 Widget Site" = "1 个小组件网站";
 "1,000 stories" = "1,000 篇文章";
 "10 stories" = "10 篇文章";
@@ -93,7 +81,7 @@
 "< 90/month" = "每月少于 90 篇";
 "A clearer, closer sound" = "声音更清晰、更贴近";
 "A personal news reader bringing\npeople together to talk about the world." = "一款个人新闻阅读器，让人们\n相聚畅谈世界。";
-"AI filters are saved but won't run until you %@." = "AI 筛选器已保存，但要等到你 %@ 后才会运行。";
+"AI filters are saved but only run on Premium Archive." = "AI 筛选器已保存，但仅在高级归档版上运行。";
 "AI finds the stories" = "AI 帮你找到文章";
 "ALL" = "全部";
 "ALL NOTIFICATIONS" = "所有通知";
@@ -264,10 +252,7 @@
 "Could not completely clear the cache. Please try again." = "无法完全清除缓存。请重试。";
 "Could not save your language. Please try again." = "无法保存你的语言设置，请重试。";
 "Couldn't check story" = "无法检查文章";
-"Couldn't load usage billing history." = "无法加载按用量计费记录。";
-"Couldn't open billing. Please try again." = "无法打开账单页面。请重试。";
 "Couldn't reach NewsBlur. Check your connection and try again." = "无法连接到 NewsBlur。请检查网络连接后重试。";
-"Couldn't save your spending limit. Please try again." = "无法保存你的消费限额。请重试。";
 "Couldn’t load the full image. You can try opening it in your browser." = "无法加载完整图片。你可以尝试在浏览器中打开。";
 "Counting is difficult..." = "计数很难……";
 "Create a feed from any web page" = "从任意网页创建订阅源";
@@ -496,7 +481,6 @@
 "Include already-read stories" = "包含已读文章";
 "Include in bundle" = "加入合集";
 "Included in bundle" = "已加入合集";
-"Increase or remove your limit" = "提高或移除你的限额";
 "Infrequent Site Stories" = "低频网站文章";
 "Infrequent Stories" = "低频更新的文章";
 "Infrequent stories per month" = "低频网站的每月文章数上限";
@@ -506,7 +490,6 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "不跟随系统的深色/浅色模式，而是根据屏幕亮度自动切换主题。适合根据环境光线切换主题。";
 "Interactions" = "互动";
 "Invalid: %@" = "无效：%@";
-"Invoice" = "发票";
 "Keep fades, without movement." = "保留淡入淡出，取消移动效果。";
 "Keeps the dark icon no matter how your device is set." = "无论设备设置如何，图标始终保持深色。";
 "Keeps the light icon no matter how your device is set." = "无论设备如何设置，始终显示浅色图标。";
@@ -570,8 +553,6 @@
 "Manage" = "管理";
 "Manage Account on the Web" = "在网页上管理账户";
 "Manage Subscription" = "管理订阅";
-"Manage billing and limits" = "管理账单和限额";
-"Manage billing on Stripe" = "在 Stripe 管理账单";
 "Manage this folder…" = "管理此文件夹…";
 "Manage this site…" = "管理此网站…";
 "Manual scroll" = "手动滚动";
@@ -623,8 +604,6 @@
 "Medium [theme]" = "灰色";
 "Model" = "模型";
 "Monday" = "星期一";
-"Monthly spending limit" = "每月支出上限";
-"Monthly spending limit reached. " = "已达到每月支出上限。";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "保存更多文章会占用更多磁盘空间，但除此之外不会对性能产生明显影响。";
 "More voices" = "更多语音";
 "Morning" = "早上";
@@ -666,10 +645,6 @@
 "Natural Language Image Classifier" = "自然语言图像分类器";
 "Natural Language Text Classifier" = "自然语言文本分类器";
 "Natural [listen delivery]" = "自然";
-"Natural language classifier billing" = "自然语言分类器计费";
-"Natural language classifiers are paused until next billing cycle. " = "自然语言分类器已暂停使用，直至下一个计费周期。";
-"Natural language classifiers are using your instance's API keys." = "自然语言分类器正在使用你的实例 API 密钥。";
-"Natural language filters aren't active on this account." = "此账户未启用自然语言筛选器。";
 "Natural language text and image classifiers" = "自然语言文本和图像分类器";
 "Nested" = "嵌套";
 "Never" = "从不";
@@ -703,7 +678,6 @@
 "No feeds to show yet. Try another interest or search all sites." = "暂无订阅源可显示。请尝试其他兴趣，或搜索所有网站。";
 "No friends to suggest." = "没有可推荐的好友。";
 "No interests or sites found. Try another search." = "未找到兴趣或网站。请尝试其他搜索词。";
-"No limit" = "无上限";
 "No longer saved" = "已取消保存";
 "No match" = "不匹配";
 "No match in story" = "文章中没有匹配项";
@@ -716,8 +690,6 @@
 "No stories yet" = "暂无文章";
 "No story selected" = "未选择文章";
 "No unread stories" = "没有未读文章";
-"No usage billing invoices yet." = "暂无用量账单。";
-"No usage billing set up." = "尚未设置按用量计费。";
 "No voices match these filters" = "没有语音符合这些筛选条件";
 "None" = "无";
 "Normal" = "普通";
@@ -765,7 +737,6 @@
 "Open the next site/folder" = "打开下一个网站/文件夹";
 "Opening site…" = "正在打开网站…";
 "Opens Now Playing" = "打开“正在播放”";
-"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "可选。达到限额后，分类器会暂停，并于下一个计费周期恢复。";
 "Options" = "选项";
 "Ordered" = "排序";
 "Organize Sites" = "整理网站";
@@ -918,7 +889,6 @@
 "Saved on %@" = "保存于 %@";
 "Saving Daily Briefing settings…" = "正在保存每日简报设置…";
 "Saving search..." = "正在保存搜索…";
-"Saving..." = "正在保存…";
 "Schedule" = "安排";
 "Scroll horizontally" = "横向滚动";
 "Scroll to Comments" = "滚动到评论";
@@ -951,8 +921,6 @@
 "Server URL" = "服务器 URL";
 "Set an exact speed under Voice" = "在“语音”下设置精确速度";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "设置每日简报，为你汇总最重要的文章。";
-"Set up billing" = "设置账单";
-"Set up usage-based billing to use natural language content and image filters." = "设置按用量计费，即可使用自然语言内容和图片筛选器。";
 "Settings" = "设置";
 "Share" = "分享";
 "Share This Story" = "分享此文章";
@@ -1027,7 +995,6 @@
 "Spacing" = "间距";
 "Speaker boost" = "扬声器增强";
 "Speed" = "速度";
-"Spending limit reached. Classifiers paused until next cycle." = "已达到消费限额。分类器已暂停，将于下一个周期恢复。";
 "Stability" = "稳定性";
 "Stability, similarity and style" = "稳定性、相似度和风格";
 "Stale — last story %@" = "已过时 — 最后一篇文章发布于 %@";
@@ -1221,7 +1188,6 @@
 "Unsaved" = "未保存";
 "Untitled story" = "无标题文章";
 "Up Next" = "接下来";
-"Upcoming charge: " = "即将扣款：";
 "Updated %@ days ago" = "更新于 %@ 天前";
 "Updated %@ months ago" = "更新于 %@ 个月前";
 "Updated %@ weeks ago" = "更新于 %@ 周前";
@@ -1235,9 +1201,6 @@
 "Upgrade to Premium" = "升级到高级版";
 "Upgrade to Premium Archive" = "升级到高级归档版";
 "Upgrade to Premium Pro" = "升级到高级专业版";
-"Usage Billing" = "按用量计费";
-"Usage billing history" = "按用量计费记录";
-"Usage-based billing is enabled for natural language classifiers." = "自然语言分类器已启用按用量计费。";
 "Use %@" = "使用 %@";
 "Use a custom server" = "使用自定义服务器";
 "Use another sign-in method" = "使用其他登录方式";
@@ -1317,7 +1280,6 @@
 "no story" = "无文章";
 "or" = "或";
 "premium subscribers" = "高级订阅用户";
-"set up usage-based billing" = "设置按用量计费";
 "your account" = "你的账户";
 "‹ Feeds" = "‹ 订阅源";
 "✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ 张图片中有 %1$@ 张与此筛选条件匹配";

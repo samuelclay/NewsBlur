@@ -585,6 +585,9 @@ msgstr "AI 기능"
 msgid "AI built into every story"
 msgstr "모든 스토리에 내장된 AI"
 
+msgid "AI filters aren't available on this server"
+msgstr "이 서버에서는 AI 필터를 사용할 수 없습니다."
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "AI 이미지 필터"
@@ -1448,9 +1451,6 @@ msgstr "스토리를 찾을 수 없어 저장할 수 없습니다"
 msgid "Could not unsave story, not found"
 msgstr "스토리를 저장 취소할 수 없습니다. 스토리를 찾을 수 없습니다."
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Stripe에 연결할 수 없습니다. 다시 시도하세요."
-
 msgid "Couldn't save the position"
 msgstr "위치를 저장하지 못했습니다"
 
@@ -1592,6 +1592,11 @@ msgstr "기본값"
 
 msgid "Delete"
 msgstr "삭제"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr "스토리의 텍스트나 이미지에서 무엇을 강조하거나 숨길지 일상적인 표현으로 설명하세요. 자연어 분류기는 사용 제한 없이 인텔리전스 트레이너처럼 스토리에 점수를 매깁니다."
 
 msgid "Description"
 msgstr "설명"
@@ -2851,9 +2856,6 @@ msgstr "잘못된 URL"
 msgid "Invalid URL."
 msgstr "잘못된 URL입니다."
 
-msgid "Invalid amount"
-msgstr "금액이 올바르지 않습니다"
-
 msgid "Invalid classifier_type"
 msgstr "잘못된 classifier_type"
 
@@ -3005,12 +3007,6 @@ msgstr "라이선스"
 msgctxt "theme"
 msgid "Light"
 msgstr "밝게"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "한도는 $10,000를 초과할 수 없습니다"
-
-msgid "Limit must be a positive amount"
-msgstr "제한값은 양수여야 합니다"
 
 msgid "Limited"
 msgstr "제한됨"
@@ -3929,9 +3925,6 @@ msgstr "학습 시스템 없음"
 msgid "No uncategorized archives found"
 msgstr "분류되지 않은 아카이브가 없습니다"
 
-msgid "No usage billing set up."
-msgstr "사용량 결제가 설정되지 않았습니다."
-
 msgid "No user has that email address."
 msgstr "해당 이메일 주소를 사용하는 사용자가 없습니다."
 
@@ -4164,9 +4157,6 @@ msgstr "키워드 검색어를 입력해 주세요."
 
 msgid "Please enter in an email address."
 msgstr "이메일 주소를 입력해 주세요."
-
-msgid "Please log in to NewsBlur again."
-msgstr "NewsBlur에 다시 로그인하세요."
 
 msgid "Please login to continue."
 msgstr "계속하려면 로그인해 주세요."
@@ -6014,15 +6004,6 @@ msgstr "이메일로 하루에 스토리를 한 개 넘게 보내려면 프리�
 msgid "Upgrade to premium archive"
 msgstr "프리미엄 아카이브로 업그레이드"
 
-msgid "Usage billing not enabled"
-msgstr "사용량 결제가 활성화되지 않았습니다"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "AI 분류기에는 사용량 기반 결제가 필요합니다"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "현재 사용량 기반 결제를 이용할 수 없습니다."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "사용"
@@ -6367,11 +6348,6 @@ msgstr "어디서나 사용 가능"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "소셜 미디어 프로필, 구인 게시판, 제품 페이지 등에서 사용할 수 있습니다"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr "자연어 프롬프트를 작성해 콘텐츠나 이미지로 스토리를 필터링하세요. 자연어 분류기는 인텔리전스 트레이너와 마찬가지로 스토리에 점수를 매기며, 사용량에 따라 요금이 부과됩니다."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
