@@ -495,9 +495,8 @@ class Test_Reader(TransactionTestCase):
         self.client.force_login(user)
         folders = UserSubscriptionFolders.objects.get(user=user)
         tree = [
-            {"News": [{"Queue": [{"Saved": [1]}]}]},
-            {"Work": [{"Queue": [{"Saved": [6]}]}]},
-            {"Done": []},
+            {"News": [{"Queue": [{"Saved": [1]}]}, {"Done": []}]},
+            {"Work": [{"Queue": [{"Saved": [6]}]}, {"Done": []}]},
         ]
         folders.folders = json.encode(tree)
         folders.save()
@@ -514,15 +513,51 @@ class Test_Reader(TransactionTestCase):
             {
                 "folder_name": "Saved",
                 "in_folder_path": json.encode(["Work", "Queue"]),
-                "to_folder_path": json.encode(["Done"]),
+                "to_folder_path": json.encode(["News", "Done"]),
             },
         )
         self.assertEqual(json.decode(response.content)["code"], 1)
         folders.refresh_from_db()
         self.assertEqual(
             json.decode(folders.folders),
-            [{"News": [{"Queue": [{"Saved": [1]}]}]}, {"Work": [{"Queue": []}]}, {"Done": [{"Saved": [6]}]}],
+            [
+                {"News": [{"Queue": [{"Saved": [1]}]}, {"Done": [{"Saved": [6]}]}]},
+                {"Work": [{"Queue": []}, {"Done": []}]},
+            ],
         )
+
+    def test_overlapping_folder_move_waits_for_classifier_update(self):
+        from contextlib import closing
+
+        from django.db import connection
+        from psycopg2.errors import LockNotAvailable
+        from pymongo.errors import OperationFailure
+
+        user = User.objects.get(username="conesus")
+        self.client.force_login(user)
+        folders = UserSubscriptionFolders.objects.get(user=user)
+        folders.folders = json.encode([{"Reading": [1]}, {"Archive": []}])
+        folders.save()
+
+        def fail_classifier_write(*args):
+            # A second move uses the same row lock in views.py. NOWAIT makes the overlap deterministic.
+            with closing(connection.get_new_connection(connection.get_connection_params())) as competing:
+                with competing.cursor() as cursor, self.assertRaises(LockNotAvailable):
+                    cursor.execute(
+                        f"SELECT 1 FROM {folders._meta.db_table} WHERE id = %s FOR UPDATE NOWAIT",
+                        [folders.pk],
+                    )
+            raise OperationFailure("classifier store is unavailable")
+
+        with patch("apps.reader.views._update_classifiers_for_folder_path_change", fail_classifier_write):
+            response = self.client.post(
+                reverse("move-folder-to-folder"),
+                {"folder_name": "Reading", "to_folder": "Archive"},
+            )
+
+        self.assertEqual(json.decode(response.content)["code"], 1)
+        folders.refresh_from_db()
+        self.assertEqual(json.decode(folders.folders), [{"Archive": [{"Reading": [1]}]}])
 
     def test_move_folder_updates_classifiers(self):
         """Moving a folder to a new parent should update folder-scoped classifier paths."""

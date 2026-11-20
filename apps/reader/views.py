@@ -52,6 +52,7 @@ from django.utils.translation import gettext, gettext_lazy, ngettext
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 from mongoengine.queryset import NotUniqueError, OperationError
+from pymongo.errors import PyMongoError
 
 from apps.analyzer.models import (
     MClassifierAuthor,
@@ -4442,11 +4443,18 @@ def move_folder_to_folder(request):
         except InvalidFolderPath as exc:
             return dict(code=-1, message=str(exc), folders=json.decode(user_sub_folders.folders))
 
+        if moved:
+            old_path, new_path = moved
+            try:
+                _update_classifiers_for_folder_path_change(
+                    request.user.pk, " - ".join(old_path), " - ".join(new_path)
+                )
+            except (OperationError, PyMongoError):
+                logging.getlogger().exception(
+                    "Could not move folder classifiers for user %s", request.user.pk
+                )
+
     if moved:
-        old_path, new_path = moved
-        _update_classifiers_for_folder_path_change(
-            request.user.pk, " - ".join(old_path), " - ".join(new_path)
-        )
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(request.user.username, "reload:feeds")
 
