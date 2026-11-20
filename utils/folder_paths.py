@@ -48,6 +48,22 @@ def resolve_folder_path(folders, path):
     return children
 
 
+def iter_folder_paths(folders, parent=()):
+    for item in folders:
+        if isinstance(item, dict):
+            for name, children in item.items():
+                path = (*parent, name)
+                yield path
+                yield from iter_folder_paths(children, path)
+
+
+def unique_folder_path(paths):
+    matches = list(paths)
+    if len(matches) != 1:
+        raise InvalidFolderPath("That folder has changed. Refresh your feeds and choose it again.")
+    return list(matches[0])
+
+
 def folder_path_errors(view):
     # views.py applies this inside json_view so invalid/stale paths become normal API errors.
     @wraps(view)
