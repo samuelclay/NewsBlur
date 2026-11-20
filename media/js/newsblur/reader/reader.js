@@ -6871,13 +6871,22 @@
                 return this.hide_confirm_move_menu_item();
             }
 
-            var moved = folder_view.model.move_to_folder(to_folder, { view: folder_view });
-            this.hide_confirm_move_menu_item(moved);
-            if (moved) {
-                _.delay(_.bind(function () {
-                    this.hide_manage_menu('folder', $folder, true);
-                }, this), 500);
-            }
+            if (picker.moving) return;
+            var self = this;
+            picker.moving = folder_view.model.move_to_folder(to_folder, {
+                success: function () {
+                    picker.moving = false;
+                    if (self.folder_picker !== picker || !self.flags['showing_confirm_input_on_manage_menu']) return;
+                    self.hide_confirm_move_menu_item(true);
+                    _.delay(function () {
+                        if (self.folder_picker === picker) self.hide_manage_menu('folder', $folder, true);
+                    }, 500);
+                },
+                error: function (response) {
+                    picker.moving = false;
+                    window.alert(response.message || gettext('An error occurred. Please try again.'));
+                }
+            });
         },
 
         hide_confirm_move_menu_item: function (moved) {

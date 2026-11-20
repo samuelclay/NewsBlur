@@ -87,13 +87,13 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
 
     move_to_folder: function (to_folder, options) {
         options = options || {};
-        var view = options.view || this.get_view();
+        var in_folder_path = _.compact(this.collection.parent_folder_names()).reverse();
         var in_folder = this.collection.options.title;
         var folder_title = this.get('folder_title');
         if (in_folder == to_folder) return false;
 
         NEWSBLUR.reader.flags['reloading_feeds'] = true;
-        NEWSBLUR.assets.move_folder_to_folder(folder_title, in_folder, to_folder, function () {
+        NEWSBLUR.assets.move_folder_to_folder(folder_title, in_folder_path, to_folder, function () {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             _.delay(function () {
                 NEWSBLUR.reader.$s.$feed_list.css('opacity', 1).animate({ 'opacity': 0 }, {
@@ -103,6 +103,10 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
                     }
                 });
             }, 250);
+            if (options.success) options.success();
+        }, function (response) {
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
+            if (options.error) options.error(response);
         });
 
         return true;
