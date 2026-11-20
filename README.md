@@ -113,6 +113,7 @@ To customize your NewsBlur installation, create `newsblur_web/local_settings.py`
 - `AUTO_ENABLE_NEW_USERS` - Auto-activate new accounts (default: `True`)
 - `ENFORCE_SIGNUP_CAPTCHA` - Require captcha on signup (default: `False`)
 - `OPENAI_API_KEY` - AI features and Discover for related stories
+- `ASK_AI_MODELS` / `BRIEFING_MODELS` - Run Ask AI, Daily Briefing and Web Feed on your own model (Ollama, vLLM, OpenRouter, or any OpenAI-compatible server) with `"provider": "openai_compatible"` and a `base_url`; see the example in `docker_local_settings.py`
 - `DAYS_OF_UNREAD` - Story retention for premium users in days (default: `30`)
 - `DAYS_OF_UNREAD_FREE` - Story retention for free users in days (default: `14`)
 - `HOMEPAGE_USERNAME` - Username shown on homepage to unauthenticated users (default: `"popular"`)
