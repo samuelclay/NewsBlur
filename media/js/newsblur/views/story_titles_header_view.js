@@ -29,6 +29,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         // }
     },
 
+    // story_titles_header_view.js: folder and river names get dir="auto" so a name in another
+    // script keeps its punctuation and truncates at its own end (see reader_rtl.css).
     render: function (options) {
         var $view;
         this.options = _.extend({}, this.options, options);
@@ -43,17 +45,18 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
                             <div class="NB-icon"></div>\
-                            <%= NEWSBLUR.assets.view_setting("starred", "order") %>\
+                            <%- setting_label(NEWSBLUR.assets.view_setting("starred", "order")) %>\
                         </span>\
                     </div>\
                     <div class="NB-folder-icon">\
                         <img class="feed_favicon" src="<%= $.favicon("starred") %>">\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="folder_title_text" dir="auto"><%= folder_title %></span>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.feed_title()
+                folder_title: NEWSBLUR.reader.feed_title(),
+                setting_label: this.setting_label
             }));
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
@@ -66,17 +69,18 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
                             <div class="NB-icon"></div>\
-                            <%= NEWSBLUR.assets.view_setting("read", "order") %>\
+                            <%- setting_label(NEWSBLUR.assets.view_setting("read", "order")) %>\
                         </span>\
                     </div>\
                     <div class="NB-folder-icon">\
                         <img class="feed_favicon" src="<%= $.favicon("read") %>">\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <div class="folder_title_text"><%= folder_title %></div>\
+                    <div class="folder_title_text" dir="auto"><%= folder_title %></div>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.feed_title()
+                folder_title: NEWSBLUR.reader.feed_title(),
+                setting_label: this.setting_label
             }));
         } else if (this.showing_fake_folder) {
             $view = $(_.template('\
@@ -99,46 +103,53 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                                   var end_date = NEWSBLUR.reader.flags.date_filter_end;\
                                   if (start_date && end_date) { %>\
                                     <% if (start_date === end_date) { %>\
-                                    Stories on <%= start_date %>\
+                                    <%- interpolate(gettext("Stories on %(date)s"), {date: start_date}, true) %>\
                                     <% } else { %>\
-                                    Stories from <%= start_date %> to <%= end_date %>\
+                                    <%- interpolate(gettext("Stories from %(start_date)s to %(end_date)s"), {start_date: start_date, end_date: end_date}, true) %>\
                                     <% } %>\
                                     &middot;\
                                 <% } else if (start_date) { %>\
-                                  Stories newer than <%= start_date %>\
+                                  <%- interpolate(gettext("Stories newer than %(date)s"), {date: start_date}, true) %>\
                                   &middot;\
                                 <% } else if (end_date) { %>\
-                                  Stories older than <%= end_date %>\
+                                  <%- interpolate(gettext("Stories older than %(date)s"), {date: end_date}, true) %>\
                                   &middot;\
                                 <% } %>\
-                                <%= folder_id ? NEWSBLUR.assets.view_setting(folder_id, "read_filter") : "unread" %>\
-                                &middot;\
-                                <%= folder_id ? NEWSBLUR.assets.view_setting(folder_id, "order") : "newest" %>\
+                                <%- setting_label(read_filter) %>\
+                                <span class="NB-feedbar-options-order">&middot;\
+                                <%- setting_label(folder_id ? NEWSBLUR.assets.view_setting(folder_id, "order") : "newest") %></span>\
                                 <% if (infrequent_stories) { %>\
                                     &middot;\
-                                    &lt; <%= infrequent_freq %> stories/month\
+                                    <%- interpolate(ngettext("< %(count)s story/month", "< %(count)s stories/month", infrequent_freq), {count: infrequent_freq}, true) %>\
                                 <% } %>\
                             </span>\
                         </div>\
                     <% } %>\
                     <div class="NB-story-title-indicator">\
                         <div class="NB-story-title-indicator-count"></div>\
-                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                        <span class="NB-story-title-indicator-text"><%- gettext("show hidden stories") %></span>\
                     </div>\
                     <div class="NB-folder-icon">\
                         <%= $.favicon_html(folder_id) %>\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="folder_title_text" dir="auto"><%= folder_title %></span>\
                 </div>\
             ', {
                 folder_title: NEWSBLUR.reader.feed_title(),
                 folder_id: NEWSBLUR.reader.active_feed,
+                read_filter: NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+                    NEWSBLUR.reader.active_feed ?
+                        NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "read_filter") :
+                        "unread",
+                    NEWSBLUR.reader.flags['classifier_filter']
+                ),
                 all_stories: NEWSBLUR.reader.active_feed == "river:" || NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_stories: NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_freq: NEWSBLUR.assets.preference('infrequent_stories_per_month'),
                 show_options: !NEWSBLUR.reader.active_folder.get('fake') ||
-                    NEWSBLUR.reader.active_folder.get('show_options')
+                    NEWSBLUR.reader.active_folder.get('show_options'),
+                setting_label: this.setting_label
             }));
             this.search_view = new NEWSBLUR.Views.FeedSearchView({
                 feedbar_view: this
@@ -166,24 +177,25 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="folder_title_text" dir="auto"><%= folder_title %></span>\
                     <% if (show_settings) { %>\
-                    <span class="NB-briefing-preferences-icon" title="Briefing Preferences">\
+                    <span class="NB-briefing-preferences-icon" title="<%- gettext("Briefing Preferences") %>">\
                         <div class="NB-icon"></div>\
-                        Briefing Settings\
+                        <%- gettext("Briefing Settings") %>\
                     </span>\
                     <% } %>\
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
                             <div class="NB-icon"></div>\
-                            <%= NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "order") %>\
+                            <%- setting_label(NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "order")) %>\
                         </span>\
                     </div>\
                 </div>\
             ', {
-                folder_title: 'Daily Briefing',
+                folder_title: gettext('Daily Briefing'),
                 MEDIA_URL: NEWSBLUR.Globals.MEDIA_URL,
-                show_settings: show_settings
+                show_settings: show_settings,
+                setting_label: this.setting_label
             }));
         } else if (NEWSBLUR.reader.flags['briefing_admin_view']) {
             $view = $(_.template('\
@@ -191,10 +203,10 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="NB-folder-icon">\
                         <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
                     </div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="folder_title_text" dir="auto"><%= folder_title %></span>\
                 </div>\
             ', {
-                folder_title: 'Briefing Admin',
+                folder_title: gettext('Briefing Admin'),
                 MEDIA_URL: NEWSBLUR.Globals.MEDIA_URL
             }));
         } else {
@@ -207,12 +219,33 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         }
 
         this.$el.html($view);
+        NEWSBLUR.motion.feedbar_parts(this.$el.closest('.NB-feedbar')[0]);
+        // story_titles_header_view.js preserves visible identity on rebuilds while a different feed can enter.
+        var identity_selector = '.feed_favicon, .feed_title, .folder_title_text';
+        this.$el.find(identity_selector).toArray().forEach(function (node, index) {
+            node.setAttribute('data-motion-key', 'header:' + NEWSBLUR.reader.active_feed + ':' + index);
+        });
+        NEWSBLUR.motion.watch_parts(this.$el[0], identity_selector);
 
         if (NEWSBLUR.reader.flags.searching) {
             this.focus_search();
         }
+        // views/mobile_layout_view.js: the phone nav bar's mark read follows this header's controls.
+        if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.update_titles_actions();
 
         return this;
+    },
+
+    // story_titles_header_view.js: Display label for read_filter/order view setting identifiers,
+    // which stay untranslated because they are stored preferences and sent to the server.
+    setting_label: function (value) {
+        var labels = {
+            all: gettext("All"),
+            unread: gettext("Unread"),
+            newest: gettext("Newest"),
+            oldest: gettext("Oldest")
+        };
+        return labels[value] || value;
     },
 
     remove: function () {
@@ -266,11 +299,13 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         var hidden_stories = unread_hidden_stories || !!NEWSBLUR.assets.stories.hidden().length;
         if (!hidden_stories) {
             $indicator.hide();
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.fit_pills();
             return;
         }
 
         if (is_feed_load) {
             $indicator.css({ 'display': 'block', 'opacity': 0 });
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.fit_pills();
             _.delay(function () {
                 $indicator.animate({ 'opacity': 1 }, { 'duration': 1000, 'easing': 'easeOutCubic' });
             }, 500);
@@ -310,7 +345,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             $indicator.removeClass('unread_threshold_positive')
                 .removeClass('unread_threshold_negative');
             $indicator.addClass('unread_threshold_neutral');
-            $(".NB-story-title-indicator-text", $indicator).text("show hidden stories");
+            $(".NB-story-title-indicator-text", $indicator).text(gettext("show hidden stories"));
         } else if (NEWSBLUR.reader.flags['unread_threshold_temporarily'] != 'negative') {
             NEWSBLUR.reader.flags['unread_threshold_temporarily'] = 'negative';
             NEWSBLUR.reader.show_story_titles_above_intelligence_level({
@@ -322,7 +357,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 .removeClass('unread_threshold_neutral');
             $indicator.addClass('unread_threshold_negative');
             // $indicator.animate({'opacity': 0}, {'duration': 500}).css('display', 'none');
-            $(".NB-story-title-indicator-text", $indicator).text("hide hidden stories");
+            $(".NB-story-title-indicator-text", $indicator).text(gettext("hide hidden stories"));
         } else {
             NEWSBLUR.reader.flags['unread_threshold_temporarily'] = null;
             NEWSBLUR.reader.show_story_titles_above_intelligence_level({
@@ -334,7 +369,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 .removeClass('unread_threshold_neutral')
                 .removeClass('unread_threshold_negative');
             $indicator.addClass('unread_threshold_' + unread_view_name);
-            $(".NB-story-title-indicator-text", $indicator).text("show hidden stories");
+            $(".NB-story-title-indicator-text", $indicator).text(gettext("show hidden stories"));
         }
     },
 

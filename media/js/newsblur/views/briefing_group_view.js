@@ -37,15 +37,21 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         var date_label = this.format_date(briefing_date);
         // briefing_group_view.js: Prepend slot name (Morning/Afternoon/Evening) when available
         if (slot) {
-            var slot_label = slot.charAt(0).toUpperCase() + slot.slice(1);
-            date_label = slot_label + ' \u2014 ' + date_label;
+            // briefing_group_view.js maps slot identifiers to display labels; the identifiers stay untranslated.
+            var slot_labels = {
+                morning: gettext('Morning'),
+                afternoon: gettext('Afternoon'),
+                evening: gettext('Evening')
+            };
+            var slot_label = slot_labels[slot] || (slot.charAt(0).toUpperCase() + slot.slice(1));
+            date_label = interpolate(gettext('%(slot)s \u2014 %(date)s'), {slot: slot_label, date: date_label}, true);
         }
 
         return $.make('div', { className: 'NB-briefing-group-header' }, [
             $.make('div', { className: 'NB-briefing-group-collapse-icon' }),
             $.make('div', { className: 'NB-briefing-group-date' }, date_label),
             $.make('div', { className: 'NB-briefing-group-count' }, [
-                $.make('span', story_count + (story_count === 1 ? ' story' : ' stories'))
+                $.make('span', interpolate(ngettext("%(count)s story", "%(count)s stories", story_count), {count: story_count}, true))
             ])
         ]);
     },
@@ -93,21 +99,6 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
 
             $container.append(story_view.el);
         }, this);
-
-        // briefing_group_view.js: Show preview upsell for free users
-        if (briefing.is_preview) {
-            var $upsell = $.make('div', { className: 'NB-briefing-upsell' }, [
-                $.make('a', { href: '#', className: 'NB-briefing-upsell-link' }, [
-                    $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
-                    $.make('span', { className: 'NB-briefing-upsell-text' }, 'Get daily briefings with all your top stories')
-                ])
-            ]);
-            $upsell.on('click', '.NB-briefing-upsell-link', function (e) {
-                e.preventDefault();
-                NEWSBLUR.reader.open_premium_upgrade_modal();
-            });
-            $container.append($upsell);
-        }
 
         return $container;
     },
@@ -157,14 +148,15 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         var yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
 
-        var date_str = date.toLocaleDateString(undefined, {
+        // briefing_group_view.js formats in the interface language, not the browser's, with Latin digits.
+        var date_str = date.toLocaleDateString((document.documentElement.lang || 'en') + '-u-nu-latn', {
             month: 'long', day: 'numeric', year: 'numeric'
         });
 
         if (date.toDateString() === today.toDateString()) {
-            return 'Today, ' + date_str;
+            return interpolate(gettext('Today, %(date)s'), {date: date_str}, true);
         } else if (date.toDateString() === yesterday.toDateString()) {
-            return 'Yesterday, ' + date_str;
+            return interpolate(gettext('Yesterday, %(date)s'), {date: date_str}, true);
         }
 
         return date.toLocaleDateString(undefined, {

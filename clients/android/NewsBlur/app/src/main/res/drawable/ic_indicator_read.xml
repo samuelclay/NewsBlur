@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="150"
+    android:viewportHeight="150">
+    <!-- ic_indicator_read.xml uses the iOS indicator-read.svg circle, sized to ic_indicator_unread.xml. -->
+    <group
+        android:scaleX="0.6912"
+        android:scaleY="0.6912"
+        android:translateX="24.26"
+        android:translateY="22.06">
+        <path
+            android:fillColor="#95968E"
+            android:pathData="M75,150C116.734859,150 150,116.164748 150,75C150,33.265141 116.164748,0 75,0C33.835252,0 0,33.835252 0,75C0,116.734859 33.267344,150 75,150ZM75,11.028971C110.685404,11.028971 138.970588,39.314155 138.970588,74.999559C138.970588,110.684964 110.685404,138.970148 75,138.970148C39.314596,138.970148 11.029412,110.684964 11.029412,74.999559C11.029412,39.314155 39.314596,11.028971 75,11.028971Z" />
+    </group>
+</vector>

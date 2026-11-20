@@ -10,6 +10,16 @@ from google.genai import errors as genai_errors
 from google.genai import types as genai_types
 
 from utils import log as logging
+from utils.llm_models import (
+    ANTHROPIC_CHAT_MODEL,
+    ANTHROPIC_CHAT_MODEL_DISPLAY,
+    GOOGLE_MODEL,
+    GOOGLE_MODEL_DISPLAY,
+    OPENAI_MODEL,
+    OPENAI_MODEL_DISPLAY,
+    XAI_MODEL,
+    XAI_MODEL_DISPLAY,
+)
 
 
 def _is_placeholder(key):
@@ -20,7 +30,8 @@ def _is_placeholder(key):
 class LLMProvider(ABC):
     """Abstract base class for LLM providers."""
 
-    def __init__(self):
+    def __init__(self, model_config: Optional[dict] = None):
+        self.model_config = model_config or {}
         # Track usage from the last API call
         self._last_input_tokens = 0
         self._last_output_tokens = 0
@@ -38,7 +49,13 @@ class LLMProvider(ABC):
         pass
 
     @abstractmethod
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         """Generate a complete (non-streaming) response from the LLM.
 
         Returns the full response text. Updates self._last_input_tokens
@@ -102,17 +119,28 @@ class AnthropicProvider(LLMProvider):
                 self._last_input_tokens = final_message.usage.input_tokens
                 self._last_output_tokens = final_message.usage.output_tokens
 
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
         system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
         user_messages = [m for m in messages if m["role"] != "system"]
 
-        response = client.messages.create(
-            model=model_id,
-            max_tokens=max_tokens,
-            system=system_msg,
-            messages=user_messages,
-        )
+        kwargs = {
+            "model": model_id,
+            "max_tokens": max_tokens,
+            "system": system_msg,
+            "messages": user_messages,
+        }
+        if thinking_config:
+            kwargs["thinking"] = thinking_config["thinking"]
+            kwargs["max_tokens"] = thinking_config.get("max_tokens", max_tokens)
+
+        response = client.messages.create(**kwargs)
 
         if response.usage:
             self._last_input_tokens = response.usage.input_tokens
@@ -145,18 +173,33 @@ class OpenAIProvider(LLMProvider):
         key = getattr(settings, "OPENAI_API_KEY", None)
         return bool(key) and key.startswith("sk-") and not _is_placeholder(key)
 
+    def _client(self):
+        return openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+
+    def _token_limit(self, max_tokens: int) -> dict:
+        # providers.py: OpenAI reasoning models (gpt-5-*) include internal reasoning
+        # tokens in max_completion_tokens, so we need a much higher limit to leave
+        # room for actual content output after reasoning.
+        return {"max_completion_tokens": max(max_tokens * 5, 16384)}
+
+    def _merged_extra_body(self, thinking_config: Optional[dict] = None) -> dict:
+        if thinking_config and "reasoning_effort" in thinking_config:
+            return {"reasoning_effort": thinking_config["reasoning_effort"]}
+        return {}
+
     def stream_response(
         self, messages: list, model_id: str, thinking_config: Optional[dict] = None
     ) -> Generator[str, None, None]:
-        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        client = self._client()
         kwargs = {
             "model": model_id,
             "messages": messages,
             "stream": True,
             "stream_options": {"include_usage": True},
         }
-        if thinking_config and "reasoning_effort" in thinking_config:
-            kwargs["extra_body"] = {"reasoning_effort": thinking_config["reasoning_effort"]}
+        extra_body = self._merged_extra_body(thinking_config)
+        if extra_body:
+            kwargs["extra_body"] = extra_body
 
         response = client.chat.completions.create(**kwargs)
 
@@ -168,17 +211,24 @@ class OpenAIProvider(LLMProvider):
             if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
-        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        # providers.py: OpenAI reasoning models (gpt-5-*) include internal reasoning
-        # tokens in max_completion_tokens, so we need a much higher limit to leave
-        # room for actual content output after reasoning.
-        effective_max = max(max_tokens * 5, 16384)
-        response = client.chat.completions.create(
-            model=model_id,
-            messages=messages,
-            max_completion_tokens=effective_max,
-        )
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
+        client = self._client()
+        kwargs = {
+            "model": model_id,
+            "messages": messages,
+            **self._token_limit(max_tokens),
+        }
+        extra_body = self._merged_extra_body(thinking_config)
+        if extra_body:
+            kwargs["extra_body"] = extra_body
+
+        response = client.chat.completions.create(**kwargs)
 
         if response.usage:
             self._last_input_tokens = response.usage.prompt_tokens
@@ -203,8 +253,61 @@ class OpenAIProvider(LLMProvider):
         return f"OpenAI API error: {str(error)}"
 
 
+class OpenAICompatibleProvider(OpenAIProvider):
+    """A server that speaks OpenAI's Chat Completions API, such as Ollama, vLLM, llama.cpp,
+    LM Studio or OpenRouter. Each ASK_AI_MODELS or BRIEFING_MODELS entry with
+    "provider": "openai_compatible" names its server with "base_url" and, when the server
+    checks one, its key with "api_key". apps/ask_ai/providers.py
+
+    Optional "extra_body" adds request fields to both streaming and non-streaming
+    calls, for example {"top_k": 40}. Explicit thinking_config.reasoning_effort
+    overrides the same field in extra_body; other fields pass through unchanged.
+
+    Non-streaming calls accept "max_tokens_parameter" (default "max_tokens") and
+    "max_tokens_multiplier" (default 1) to name and scale the caller's token limit.
+    Most local & hosted providers include reasoning in the token budget; the
+    multiplier works around this (see "OpenAIProvider._token_limit()").
+    """
+
+    # providers.py: The OpenAI SDK won't build a client without a key, and servers without
+    # authentication ignore it. Never fall back to OPENAI_API_KEY, which would hand the
+    # hosted key to a server it wasn't issued for.
+    UNAUTHENTICATED_API_KEY = "unused"
+
+    def is_configured(self) -> bool:
+        return bool(self.model_config.get("base_url"))
+
+    def _client(self):
+        return openai.OpenAI(
+            base_url=self.model_config["base_url"],
+            api_key=self.model_config.get("api_key") or self.UNAUTHENTICATED_API_KEY,
+        )
+
+    def format_error(self, error: Exception) -> str:
+        # providers.py: OpenAIProvider's messages point at OPENAI_API_KEY, which this server never sees.
+        name = self.model_config.get("vendor_display") or "OpenAI-compatible"
+        if isinstance(error, openai.APITimeoutError):
+            return f"{name} API timeout"
+        status_code = getattr(error, "status_code", None)
+        if status_code in (401, 403):
+            return f"{name} rejected the API key. Please check this model's api_key setting."
+        if status_code == 429:
+            return f"{name} API rate limit exceeded. Please try again later."
+        return f"{name} API error: {str(error)}"
+
+    def _token_limit(self, max_tokens: int) -> dict:
+        parameter = self.model_config.get("max_tokens_parameter", "max_tokens")
+        multiplier = self.model_config.get("max_tokens_multiplier", 1)
+        return {parameter: int(max_tokens * multiplier)}
+
+    def _merged_extra_body(self, thinking_config: Optional[dict] = None) -> dict:
+        extra_body = dict(self.model_config.get("extra_body") or {})
+        extra_body.update(super()._merged_extra_body(thinking_config))
+        return extra_body
+
+
 class XAIProvider(LLMProvider):
-    """xAI/Grok provider implementation (OpenAI-compatible API)."""
+    """SpaceXSI (formerly xAI) Grok provider implementation (OpenAI-compatible API)."""
 
     def is_configured(self) -> bool:
         key = getattr(settings, "XAI_GROK_API_KEY", None)
@@ -232,7 +335,13 @@ class XAIProvider(LLMProvider):
             if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         client = openai.OpenAI(
             api_key=settings.XAI_GROK_API_KEY,
             base_url="https://api.x.ai/v1",
@@ -257,15 +366,15 @@ class XAIProvider(LLMProvider):
 
     def format_error(self, error: Exception) -> str:
         if isinstance(error, openai.APITimeoutError):
-            return "xAI API timeout"
+            return "SpaceXSI API timeout"
         if isinstance(error, openai.APIStatusError):
             if error.status_code == 401:
-                return "xAI API key is invalid. Please check your XAI_GROK_API_KEY setting."
+                return "SpaceXSI API key is invalid. Please check your XAI_GROK_API_KEY setting."
             if error.status_code == 403:
-                return "xAI API access denied. Your API key may be invalid or lack permissions. Please check your XAI_GROK_API_KEY setting."
+                return "SpaceXSI API access denied. The account may be out of credits, or your API key may be invalid or lack permissions. Please check your XAI_GROK_API_KEY setting."
             if error.status_code == 429:
-                return "xAI API rate limit exceeded. Please try again later."
-        return f"xAI API error: {str(error)}"
+                return "SpaceXSI API rate limit exceeded. Please try again later."
+        return f"SpaceXSI API error: {str(error)}"
 
 
 class GeminiProvider(LLMProvider):
@@ -315,7 +424,13 @@ class GeminiProvider(LLMProvider):
             self._last_input_tokens = getattr(usage, "prompt_token_count", 0) or 0
             self._last_output_tokens = getattr(usage, "candidates_token_count", 0) or 0
 
-    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+    def generate(
+        self,
+        messages: list,
+        model_id: str,
+        max_tokens: int = 4096,
+        thinking_config: Optional[dict] = None,
+    ) -> str:
         client = genai.Client(api_key=settings.GOOGLE_GEMINI_API_KEY)
 
         system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
@@ -323,6 +438,10 @@ class GeminiProvider(LLMProvider):
         if system_msg:
             config_kwargs["system_instruction"] = system_msg
         config_kwargs["max_output_tokens"] = max_tokens
+        if thinking_config:
+            config_kwargs["thinking_config"] = genai_types.ThinkingConfig(
+                thinking_budget=thinking_config.get("thinking_budget", -1)
+            )
         config = genai_types.GenerateContentConfig(**config_kwargs)
 
         contents = []
@@ -363,34 +482,67 @@ LLM_EXCEPTIONS = (
     genai_errors.APIError,
 )
 
+
+def is_refused_llm_error(error):
+    """
+    Did the provider refuse to serve the account: a bad key, no credits left, a spending
+    limit, or a rate limit? Retrying the same provider won't help, but another one can.
+    SpaceXSI (formerly xAI) answers 403 once its credits run out. apps/ask_ai/providers.py
+    """
+    status_code = getattr(error, "status_code", None)
+    if status_code is None:
+        # providers.py: google-genai reports the HTTP status as `code` instead
+        status_code = getattr(error, "code", None)
+    return status_code in (401, 402, 403, 429)
+
+
 # Provider classes by vendor slug, used for settings override resolution
 PROVIDER_CLASSES = {
     "anthropic": AnthropicProvider,
     "openai": OpenAIProvider,
+    "openai_compatible": OpenAICompatibleProvider,
     "google": GeminiProvider,
     "xai": XAIProvider,
 }
 
+# providers.py: Optional per-model settings copied from ASK_AI_MODELS and BRIEFING_MODELS.
+# Everything from base_url on is read only by OpenAICompatibleProvider. get_models_for_frontend
+# and get_briefing_models_for_frontend leave them out, so they never reach a browser.
+OPTIONAL_MODEL_SETTINGS = (
+    "thinking_config",
+    "thinking_model_id",
+    "base_url",
+    "api_key",
+    "extra_body",
+    "max_tokens_parameter",
+    "max_tokens_multiplier",
+)
+
+
 # Model registry: single source of truth for all model configuration.
-# Each entry contains everything needed by both backend and frontend.
-# To add/update a model, only change this dict — frontend dropdowns are populated from it.
+# Registry keys are stable vendor slugs so model upgrades never rename keys —
+# to upgrade a model, only change the IDs/display names in utils/llm_models.py.
+# Frontend dropdowns are populated from this dict.
 _DEFAULT_MODELS = {
-    "opus": {
+    "anthropic": {
         "provider_class": AnthropicProvider,
-        "model_id": "claude-opus-4-6",
-        "display_name": "Claude Opus 4.6",
+        "model_id": ANTHROPIC_CHAT_MODEL,
+        "display_name": ANTHROPIC_CHAT_MODEL_DISPLAY,
         "vendor": "anthropic",
         "vendor_display": "Anthropic",
         "order": 1,
+        # Claude 5 models reject the old {"type": "enabled", "budget_tokens": N}
+        # shape with a 400 — adaptive is the only on-mode, with depth controlled
+        # by output_config.effort (defaults to "high" when omitted).
         "thinking_config": {
-            "thinking": {"type": "enabled", "budget_tokens": 10000},
+            "thinking": {"type": "adaptive"},
             "max_tokens": 16384,
         },
     },
-    "gpt-5.2": {
+    "openai": {
         "provider_class": OpenAIProvider,
-        "model_id": "gpt-5.2",
-        "display_name": "GPT 5.2",
+        "model_id": OPENAI_MODEL,
+        "display_name": OPENAI_MODEL_DISPLAY,
         "vendor": "openai",
         "vendor_display": "OpenAI",
         "order": 2,
@@ -398,10 +550,10 @@ _DEFAULT_MODELS = {
             "reasoning_effort": "high",
         },
     },
-    "gemini-3": {
+    "google": {
         "provider_class": GeminiProvider,
-        "model_id": "gemini-3-pro-preview",
-        "display_name": "Gemini 3 Pro",
+        "model_id": GOOGLE_MODEL,
+        "display_name": GOOGLE_MODEL_DISPLAY,
         "vendor": "google",
         "vendor_display": "Google",
         "order": 3,
@@ -409,16 +561,51 @@ _DEFAULT_MODELS = {
             "thinking_budget": -1,
         },
     },
-    "grok-4.1": {
+    "xai": {
         "provider_class": XAIProvider,
-        "model_id": "grok-4-1-fast-non-reasoning",
-        "display_name": "Grok 4.1 Fast",
+        "model_id": XAI_MODEL,
+        "display_name": XAI_MODEL_DISPLAY,
         "vendor": "xai",
-        "vendor_display": "xAI",
+        "vendor_display": "SpaceXSI",
         "order": 4,
-        "thinking_model_id": "grok-4-1-fast-reasoning",
     },
 }
+
+# Legacy registry keys from before keys became vendor slugs (Aug 2026). Old
+# mobile clients and stored user preferences still send these — resolve them
+# instead of falling back to the default model. Never reuse these as new keys.
+MODEL_ALIASES = {
+    # Legacy Ask AI keys
+    "opus": "anthropic",
+    "gpt-5.2": "openai",
+    "gemini-3": "google",
+    "grok-4.1": "xai",
+    # Legacy briefing keys
+    # providers.py: "haiku" users picked the cheap Anthropic tier back when the
+    # briefing's Claude option was Haiku. The "anthropic" registry entry is now
+    # Sonnet-class (chat tier), so route them to the cheap default (Luna)
+    # instead of silently upgrading them to a ~20x more expensive model.
+    "haiku": "openai",
+    "gpt-5-mini": "openai",
+    "gemini-flash-lite": "google",
+    "grok-4.1-fast": "xai",
+}
+
+
+def _resolve_key(model_name, registry):
+    """Resolve a model key against a registry, mapping legacy keys via MODEL_ALIASES."""
+    if model_name in registry:
+        return model_name
+    return MODEL_ALIASES.get(model_name, model_name)
+
+
+def _valid_registry_default(model_name, registry, fallback="openai"):
+    model_name = _resolve_key(model_name, registry)
+    if model_name in registry:
+        return model_name
+    if fallback in registry:
+        return fallback
+    return next(iter(registry))
 
 
 def _load_models():
@@ -427,7 +614,7 @@ def _load_models():
     Self-hosters can define ASK_AI_MODELS in settings as a dict of model configs:
         ASK_AI_MODELS = {
             "my-model": {
-                "provider": "openai",  # one of: anthropic, openai, google, xai
+                "provider": "openai",  # one of: anthropic, openai, google, xai, openai_compatible
                 "model_id": "gpt-4o-mini",
                 "display_name": "GPT-4o Mini",
                 "order": 1,
@@ -452,25 +639,34 @@ def _load_models():
             "vendor_display": cfg.get("vendor_display", provider_slug.title()),
             "order": cfg.get("order", 99),
         }
-        if "thinking_config" in cfg:
-            entry["thinking_config"] = cfg["thinking_config"]
-        if "thinking_model_id" in cfg:
-            entry["thinking_model_id"] = cfg["thinking_model_id"]
+        for name in OPTIONAL_MODEL_SETTINGS:
+            if name in cfg:
+                entry[name] = cfg[name]
         models[key] = entry
     return models if models else _DEFAULT_MODELS
 
 
 MODELS = _load_models()
 VALID_MODELS = list(MODELS.keys())
-DEFAULT_MODEL = getattr(settings, "ASK_AI_MODEL", "opus")
+DEFAULT_MODEL = _valid_registry_default(
+    getattr(settings, "ASK_AI_MODEL", "anthropic"), MODELS, fallback="anthropic"
+)
 
 # MODEL_VENDORS includes both current and historical models for metrics tracking.
 # When retiring a model, remove it from MODELS above but keep it here.
 MODEL_VENDORS = {
     **{key: m["vendor"] for key, m in MODELS.items()},
     # Historical models (kept for metrics)
+    "opus": "anthropic",
+    "haiku": "anthropic",
+    "gpt-5.2": "openai",
+    "gpt-5-mini": "openai",
     "gpt-5.1": "openai",
     "gpt-4.1": "openai",
+    "gemini-3": "google",
+    "gemini-flash-lite": "google",
+    "grok-4.1": "xai",
+    "grok-4.1-fast": "xai",
     "grok-4": "xai",
 }
 
@@ -478,7 +674,8 @@ MODEL_VENDORS = {
 def get_models_for_frontend() -> list:
     """Get model list for frontend JavaScript consumption.
 
-    Returns a sorted list of dicts with key, display_name, vendor, vendor_display.
+    Returns a sorted list of dicts with key, display_name, vendor, vendor_display and is_default,
+    which marks the ASK_AI_MODEL a user starts on before choosing one.
     Passed to the frontend via the template tag pipeline as NEWSBLUR.Globals.ask_ai_models.
     """
     return sorted(
@@ -488,6 +685,7 @@ def get_models_for_frontend() -> list:
                 "display_name": m["display_name"],
                 "vendor": m["vendor"],
                 "vendor_display": m["vendor_display"],
+                "is_default": key == DEFAULT_MODEL,
             }
             for key, m in MODELS.items()
         ],
@@ -502,6 +700,7 @@ def get_provider(model_name: str, thinking: bool = False) -> tuple[LLMProvider, 
     Returns:
         Tuple of (provider_instance, model_id, thinking_config)
     """
+    model_name = _resolve_key(model_name, MODELS)
     if model_name not in MODELS:
         model_name = DEFAULT_MODEL
 
@@ -512,42 +711,46 @@ def get_provider(model_name: str, thinking: bool = False) -> tuple[LLMProvider, 
     else:
         model_id = model["model_id"]
         thinking_config = None
-    return model["provider_class"](), model_id, thinking_config
+    return model["provider_class"](model), model_id, thinking_config
 
 
-# Briefing model registry: cheap models optimized for daily briefing generation.
-# Separate from the Ask AI models (which use flagship models).
+# Briefing model registry: keys are the same stable vendor slugs as the Ask AI
+# registry. Anthropic uses the chat tier (Sonnet-class) from utils/llm_models.py
+# to match Ask AI; the other vendors stay on their cheap models.
 _DEFAULT_BRIEFING_MODELS = {
-    "haiku": {
+    "anthropic": {
         "provider_class": AnthropicProvider,
-        "model_id": "claude-haiku-4-5",
-        "display_name": "Claude Haiku",
+        "model_id": ANTHROPIC_CHAT_MODEL,
+        "display_name": ANTHROPIC_CHAT_MODEL_DISPLAY,
         "vendor": "anthropic",
         "vendor_display": "Anthropic",
         "order": 1,
     },
-    "gpt-5-mini": {
+    "openai": {
         "provider_class": OpenAIProvider,
-        "model_id": "gpt-5-mini",
-        "display_name": "GPT 5 Mini",
+        "model_id": OPENAI_MODEL,
+        "display_name": OPENAI_MODEL_DISPLAY,
         "vendor": "openai",
         "vendor_display": "OpenAI",
         "order": 2,
+        "thinking_config": {
+            "reasoning_effort": "medium",
+        },
     },
-    "gemini-flash-lite": {
+    "google": {
         "provider_class": GeminiProvider,
-        "model_id": "gemini-2.5-flash-lite",
-        "display_name": "Gemini Flash Lite",
+        "model_id": GOOGLE_MODEL,
+        "display_name": GOOGLE_MODEL_DISPLAY,
         "vendor": "google",
         "vendor_display": "Google",
         "order": 3,
     },
-    "grok-4.1-fast": {
+    "xai": {
         "provider_class": XAIProvider,
-        "model_id": "grok-4-1-fast-non-reasoning",
-        "display_name": "Grok 4.1 Fast",
+        "model_id": XAI_MODEL,
+        "display_name": XAI_MODEL_DISPLAY,
         "vendor": "xai",
-        "vendor_display": "xAI",
+        "vendor_display": "SpaceXSI",
         "order": 4,
     },
 }
@@ -576,7 +779,7 @@ def _load_briefing_models():
         provider_class = PROVIDER_CLASSES.get(provider_slug)
         if not provider_class:
             continue
-        models[key] = {
+        entry = {
             "provider_class": provider_class,
             "model_id": cfg["model_id"],
             "display_name": cfg.get("display_name", key),
@@ -584,12 +787,34 @@ def _load_briefing_models():
             "vendor_display": cfg.get("vendor_display", provider_slug.title()),
             "order": cfg.get("order", 99),
         }
+        for name in OPTIONAL_MODEL_SETTINGS:
+            if name in cfg:
+                entry[name] = cfg[name]
+        models[key] = entry
     return models if models else _DEFAULT_BRIEFING_MODELS
 
 
 BRIEFING_MODELS = _load_briefing_models()
 VALID_BRIEFING_MODELS = list(BRIEFING_MODELS.keys())
-DEFAULT_BRIEFING_MODEL = getattr(settings, "BRIEFING_MODEL", "haiku")
+
+
+DEFAULT_BRIEFING_MODEL = _valid_registry_default(
+    getattr(settings, "BRIEFING_MODEL", "openai"), BRIEFING_MODELS
+)
+DEFAULT_WEBFEED_MODEL = _valid_registry_default(getattr(settings, "WEBFEED_MODEL", "openai"), BRIEFING_MODELS)
+
+
+def resolve_briefing_model_key(model_name: Optional[str]) -> Optional[str]:
+    """Resolve a stored/POSTed briefing model key to a current registry key.
+
+    Maps legacy keys via MODEL_ALIASES (e.g. "haiku" -> "openai", the cheap
+    tier its users originally chose; "gpt-5-mini" -> "openai"). Returns None
+    when the key isn't recognized so callers can fall back to the server default.
+    """
+    if not model_name:
+        return None
+    model_name = _resolve_key(model_name, BRIEFING_MODELS)
+    return model_name if model_name in BRIEFING_MODELS else None
 
 
 def get_briefing_models_for_frontend() -> list:
@@ -611,9 +836,15 @@ def get_briefing_models_for_frontend() -> list:
     )
 
 
+def get_briefing_model_config(model_name: Optional[str]) -> tuple[str, dict]:
+    """Return the resolved briefing model key and config, falling back to the server default."""
+    model_name = resolve_briefing_model_key(model_name) or DEFAULT_BRIEFING_MODEL
+    if model_name not in BRIEFING_MODELS:
+        model_name = _valid_registry_default(model_name, BRIEFING_MODELS)
+    return model_name, BRIEFING_MODELS[model_name]
+
+
 def get_briefing_provider(model_name: str) -> tuple[LLMProvider, str]:
     """Get a provider instance and model ID for the given briefing model name."""
-    if not model_name or model_name not in BRIEFING_MODELS:
-        model_name = DEFAULT_BRIEFING_MODEL
-    model = BRIEFING_MODELS[model_name]
-    return model["provider_class"](), model["model_id"]
+    _, model = get_briefing_model_config(model_name)
+    return model["provider_class"](model), model["model_id"]

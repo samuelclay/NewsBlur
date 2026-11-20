@@ -1,0 +1,63 @@
+<en-US>
+Fixes an issue on tablets where marking a feed as read could send NewsBlur to the background. Both the bottom button and the feed menu now keep the app open so you can continue reading.
+</en-US>
+<es-ES>
+Corrige un problema en tabletas por el que marcar un feed como leído podía enviar NewsBlur a segundo plano. Tanto el botón inferior como el menú del feed mantienen ahora la app abierta para que puedas seguir leyendo.
+</es-ES>
+<fr-FR>
+Corrige un problème sur les tablettes où marquer un flux comme lu pouvait faire passer NewsBlur en arrière-plan. Le bouton du bas et le menu du flux gardent désormais l’application ouverte pour que vous puissiez continuer à lire.
+</fr-FR>
+<de-DE>
+Behebt ein Problem auf Tablets, bei dem das Markieren eines Feeds als gelesen NewsBlur in den Hintergrund verschieben konnte. Sowohl die untere Schaltfläche als auch das Feed-Menü lassen die App jetzt geöffnet, damit du weiterlesen kannst.
+</de-DE>
+<pt-BR>
+Corrige um problema em tablets em que marcar um feed como lido podia enviar o NewsBlur para segundo plano. Tanto o botão inferior quanto o menu do feed agora mantêm o app aberto para você continuar lendo.
+</pt-BR>
+<it-IT>
+Risolve un problema sui tablet per cui segnare un feed come letto poteva mandare NewsBlur in background. Sia il pulsante in basso sia il menu del feed ora mantengono l’app aperta, così puoi continuare a leggere.
+</it-IT>
+<nl-NL>
+Verhelpt een probleem op tablets waarbij het markeren van een feed als gelezen NewsBlur naar de achtergrond kon sturen. Zowel de knop onderaan als het feedmenu houdt de app nu open, zodat je kunt blijven lezen.
+</nl-NL>
+<pl-PL>
+Naprawiono problem na tabletach, przez który oznaczenie kanału jako przeczytanego mogło przenieść NewsBlur do tła. Zarówno dolny przycisk, jak i menu kanału pozostawiają teraz aplikację otwartą, aby można było dalej czytać.
+</pl-PL>
+<tr-TR>
+Tabletlerde bir akışı okundu olarak işaretlemenin NewsBlur’u arka plana gönderebildiği sorun düzeltildi. Hem alttaki düğme hem de akış menüsü artık uygulamayı açık tutuyor, böylece okumaya devam edebilirsiniz.
+</tr-TR>
+<ru-RU>
+Исправлена проблема на планшетах, из-за которой отметка ленты как прочитанной могла отправить NewsBlur в фоновый режим. Теперь и нижняя кнопка, и меню ленты оставляют приложение открытым, чтобы вы могли продолжить чтение.
+</ru-RU>
+<uk>
+Виправлено проблему на планшетах, через яку позначення стрічки як прочитаної могло перевести NewsBlur у фоновий режим. Тепер і нижня кнопка, і меню стрічки залишають застосунок відкритим, щоб ви могли продовжити читання.
+</uk>
+<ar>
+يصلح مشكلة على الأجهزة اللوحية كان فيها وضع علامة مقروء على خلاصة ينقل NewsBlur إلى الخلفية. يبقي كل من الزر السفلي وقائمة الخلاصة التطبيق مفتوحًا الآن لتتمكن من متابعة القراءة.
+</ar>
+<iw-IL>
+תוקנה בעיה בטאבלטים שבה סימון פיד כנקרא היה עלול להעביר את NewsBlur לרקע. גם הכפתור התחתון וגם תפריט הפיד משאירים כעת את האפליקציה פתוחה, כדי שאפשר יהיה להמשיך לקרוא.
+</iw-IL>
+<hi-IN>
+टैबलेट पर उस समस्या को ठीक किया गया है जिसमें किसी फ़ीड को पढ़ा हुआ चिह्नित करने पर NewsBlur बैकग्राउंड में जा सकता था। अब नीचे का बटन और फ़ीड मेन्यू दोनों ऐप को खुला रखते हैं ताकि आप पढ़ना जारी रख सकें।
+</hi-IN>
+<id>
+Memperbaiki masalah di tablet saat menandai feed sebagai sudah dibaca dapat membuat NewsBlur masuk ke latar belakang. Kini tombol bawah dan menu feed sama-sama menjaga aplikasi tetap terbuka agar Anda bisa melanjutkan membaca.
+</id>
+<vi>
+Sửa lỗi trên máy tính bảng khiến NewsBlur có thể chuyển xuống nền khi đánh dấu một nguồn cấp là đã đọc. Giờ đây, cả nút ở dưới cùng và menu nguồn cấp đều giữ ứng dụng mở để bạn tiếp tục đọc.
+</vi>
+<th>
+แก้ปัญหาบนแท็บเล็ตที่การทำเครื่องหมายฟีดว่าอ่านแล้วอาจทำให้ NewsBlur ย้ายไปอยู่เบื้องหลัง ตอนนี้ทั้งปุ่มด้านล่างและเมนูฟีดจะคงแอปไว้บนหน้าจอเพื่อให้อ่านต่อได้
+</th>
+<ja-JP>
+タブレットでフィードを既読にするとNewsBlurがバックグラウンドに移動することがある問題を修正しました。下部のボタンとフィードメニューのどちらから操作しても、アプリを開いたまま読み続けられるようになりました。
+</ja-JP>
+<ko-KR>
+태블릿에서 피드를 읽음으로 표시할 때 NewsBlur가 백그라운드로 이동할 수 있는 문제를 수정했습니다. 이제 하단 버튼과 피드 메뉴 모두 앱을 열린 상태로 유지하므로 계속 읽을 수 있습니다.
+</ko-KR>
+<zh-CN>
+修复了在平板电脑上将订阅源标记为已读时，NewsBlur 可能切换到后台的问题。现在，无论使用底部按钮还是订阅源菜单，应用都会保持打开，让你继续阅读。
+</zh-CN>
+<zh-TW>
+修正了在平板電腦上將訂閱來源標記為已讀時，NewsBlur 可能切換到背景的問題。現在，無論使用底部按鈕或訂閱來源選單，應用程式都會保持開啟，讓你繼續閱讀。
+</zh-TW>

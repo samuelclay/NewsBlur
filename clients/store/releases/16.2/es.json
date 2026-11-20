@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Consulta qué filtros de contenido e imágenes con IA coinciden con un artículo y gestiona tus filtros en el entrenador. «Ocultar» prevalece ahora sobre las coincidencias de los filtros de IA.\n\nReproduce podcasts en el reproductor Escuchar de NewsBlur, con controles para saltar, AirPlay y una cola que combina podcasts con artículos leídos en voz alta. Retoma la reproducción donde la dejaste en cualquiera de tus dispositivos.\n\nEscuchar ahora puede reproducir la voz por encima de la música de otras apps. Activa Reproducir sobre otro audio en Ahora suena, elige si quieres bajar la música mientras habla la voz y ajusta el equilibrio entre Música y Voz."
+  },
+  "android": {
+    "release_notes": "Consulta las coincidencias de los filtros de IA y gestiona tus filtros en el entrenador rediseñado. «Ocultar» prevalece sobre las coincidencias de los filtros de IA. Reproduce podcasts en Escuchar con controles para saltar, una cola que combina podcasts y artículos y la posición de reproducción sincronizada entre dispositivos. Escuchar puede reproducir la voz por encima de la música de otras apps, con la opción de bajar la música y ajustar el equilibrio entre Música y Voz."
+  },
+  "macos": {
+    "whats_new": "Consulta qué filtros de contenido e imágenes con IA coinciden con un artículo y gestiona tus filtros en el entrenador. «Ocultar» prevalece ahora sobre las coincidencias de los filtros de IA.\n\nReproduce podcasts en el reproductor Escuchar de NewsBlur, con controles para saltar, AirPlay y una cola que combina podcasts con artículos leídos en voz alta. Retoma la reproducción donde la dejaste en cualquiera de tus dispositivos."
+  }
+}

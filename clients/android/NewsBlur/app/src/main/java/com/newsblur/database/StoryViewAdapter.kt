@@ -2,17 +2,13 @@
 
 package com.newsblur.database
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Parcelable
 import android.os.SystemClock
 import android.text.TextUtils
+import android.text.SpannedString
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
-import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -22,22 +18,30 @@ import android.view.View.OnCreateContextMenuListener
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewConfiguration
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.view.doOnLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.newsblur.BuildConfig
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.design.StoryRowPalette
+import com.newsblur.delegate.StoryMenuPopover
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.util.AppConstants
+import com.newsblur.util.BidiText
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.ReturnedStoryScrollDecider
 import com.newsblur.fragment.StoryIntelTrainerFragment
@@ -52,6 +56,7 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StoryClusterBadgeViewBinder
 import com.newsblur.util.StoryRowThumbnailVerticalMode
+import com.newsblur.util.StoryRowTypography
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.StoryClusterNavigationDecision
@@ -67,16 +72,13 @@ import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.UIUtils
 import com.newsblur.util.storyRowLayout
 import com.newsblur.view.StoryThumbnailView
+import com.newsblur.viewModel.LatestStoryLoadRunner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -93,6 +95,11 @@ class StoryViewAdapter(
     listener: OnStoryClickListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val footerViews = mutableListOf<View>()
+    private val motionSeen = mutableSetOf<String>()
+    private val motionRect = android.graphics.Rect()
+    private var motionAwaitingFeedCommit = false
+    private var motionHasScrolled = false
+    private var motionScrollListener: RecyclerView.OnScrollListener? = null
     private var lastStoryOpenElapsedRealtime = 0L
 
     private val stories = mutableListOf<Story>()
@@ -101,7 +108,15 @@ class StoryViewAdapter(
 
     private var oldScrollState: Parcelable? = null
     private var pendingScrollStoryHash: String? = null
+    private var smoothPendingStoryScroll = false
+    var isFollowingReadingStory = false
+        private set
     private var pendingHighlightStoryHash: String? = null
+    private var returnPresentationReady = true
+    private var returnHighlight: ReturnedStoryHighlight? = null
+    private var returnObserver: ViewTreeObserver? = null
+    private var returnPreDrawListener: ViewTreeObserver.OnPreDrawListener? = null
+    private var returnFocusListener: ViewTreeObserver.OnWindowFocusChangeListener? = null
     private val userId: String?
 
     private val iconLoader: ImageLoader
@@ -114,18 +129,28 @@ class StoryViewAdapter(
     private var ignoreIntel = false
     private var singleFeed = false
     private var textSize: Float
+    private val storyMediumTypeface by lazy { ResourcesCompat.getFont(context, R.font.whitney_ssm_medium_bas) }
+    private val storyBookTypeface by lazy { ResourcesCompat.getFont(context, R.font.whitney_ssm_book_bas) }
     private var thumbnailStyle: ThumbnailStyle
     private var spacingStyle: SpacingStyle
-    private val storyOrder: StoryOrder
+    private lateinit var storyOrder: StoryOrder
     private val prefsRepo: PrefsRepo
     private var activeFeedIds: Set<String>? = null
     private val clusterThumbnailUrls = mutableMapOf<String, String?>()
+    private val titleCache = StoryTitleCache { SpannedString(UIUtils.fromHtml(it)) }
+    private val useHardwareRowLayers: Boolean
 
-    @Volatile
     private var lastLoadId: Long = -1L
+    private var committedLoadId: Long = -1L
+    private var diffGeneration = 0L
+    private var diffFeedSet: FeedSet? = FeedSet.fromCompactSerial(fs.toCompactSerial())
+    private val adapterScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val diffDispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
+    private var diffRunner: LatestStoryLoadRunner<StorySubmission, StoryDifference>? = null
+    private var latestSubmission: StorySubmission? = null
 
-    private val adapterScope = CoroutineScope(SupervisorJob() + Dispatchers.Default.limitedParallelism(1))
-    private var diffJob: Job? = null
+    val isUpdatingStories: Boolean
+        get() = lastLoadId != committedLoadId
 
     init {
         this.fs = fs
@@ -135,7 +160,24 @@ class StoryViewAdapter(
         this.feedUtils = feedUtils
         this.listener = listener
         this.prefsRepo = prefsRepo
+        useHardwareRowLayers = !BuildConfig.DEBUG || prefsRepo.getBoolean("debug_story_row_hardware_layers", true)
 
+        applyFeedSetFlags(fs)
+
+        textSize = prefsRepo.getListTextSize()
+        userId = prefsRepo.getUserDetails().id
+        thumbnailStyle = prefsRepo.getThumbnailStyle()
+        spacingStyle = prefsRepo.getSpacingStyle()
+
+        setHasStableIds(true)
+    }
+
+    // StoryViewAdapter.kt: how rows show read state, intelligence and feed names depends on the
+    // feed set, so a list that switches feed sets in place (ItemsList.switchStoryList) redoes it.
+    private fun applyFeedSetFlags(fs: FeedSet) {
+        ignoreReadStatus = false
+        ignoreIntel = false
+        singleFeed = false
         if (fs.isGlobalShared) {
             ignoreReadStatus = false
             ignoreIntel = true
@@ -152,6 +194,11 @@ class StoryViewAdapter(
             singleFeed = false
         }
         if (fs.isInfrequent) {
+            ignoreReadStatus = false
+            ignoreIntel = false
+            singleFeed = false
+        }
+        if (fs.isTrending) {
             ignoreReadStatus = false
             ignoreIntel = false
             singleFeed = false
@@ -186,18 +233,54 @@ class StoryViewAdapter(
             ignoreIntel = true
             singleFeed = false
         }
-
-        textSize = prefsRepo.getListTextSize()
-        userId = prefsRepo.getUserDetails().id
-        thumbnailStyle = prefsRepo.getThumbnailStyle()
-        spacingStyle = prefsRepo.getSpacingStyle()
         storyOrder = prefsRepo.getStoryOrder(fs)
-
-        setHasStableIds(true)
     }
 
     fun updateFeedSet(fs: FeedSet?) {
+        if (fs != diffFeedSet) {
+            motionSeen.clear()
+            motionHasScrolled = false
+            // StoryViewAdapter.kt must not count the previous feed's rows while the new diff is pending.
+            motionAwaitingFeedCommit = true
+            invalidateStoryDiffs()
+            oldScrollState = null
+            pendingScrollStoryHash = null
+            smoothPendingStoryScroll = false
+            isFollowingReadingStory = false
+            pendingHighlightStoryHash = null
+            returnHighlight?.cancel()
+            returnHighlight = null
+            diffFeedSet = fs?.let { FeedSet.fromCompactSerial(it.toCompactSerial()) }
+            fs?.let(::applyFeedSetFlags)
+        }
         this.fs = fs
+    }
+
+    private fun invalidateStoryDiffs() {
+        diffGeneration++
+        diffRunner?.invalidate()
+        latestSubmission = null
+        lastLoadId = -1L
+        committedLoadId = -1L
+    }
+
+    @Synchronized
+    fun clearStoriesNow() {
+        invalidateStoryDiffs()
+        oldScrollState = null
+        pendingScrollStoryHash = null
+        smoothPendingStoryScroll = false
+        isFollowingReadingStory = false
+        pendingHighlightStoryHash = null
+        returnHighlight?.cancel()
+        returnHighlight = null
+        activeFeedIds = null
+        clusterThumbnailUrls.clear()
+        titleCache.clear()
+        stories.clear()
+        displayItems.clear()
+        storyDisplayPositions.clear()
+        notifyDataSetChanged()
     }
 
     fun setStyle(listStyle: StoryListStyle) {
@@ -245,91 +328,116 @@ class StoryViewAdapter(
         return displayItems.getOrNull(position)?.stableId ?: 0L
     }
 
+    @JvmOverloads
     fun submitStories(
         stories: List<Story>,
         loadId: Long,
         rv: RecyclerView,
         oldScrollState: Parcelable?,
         skipBackFillingStories: Boolean,
+        onCommitted: Runnable? = null,
     ) {
         lastLoadId = loadId
-        activeFeedIds = null
-        clusterThumbnailUrls.clear()
-
+        // StoryViewAdapter.kt keeps explicit restoration even when its batch is superseded in the queue.
         oldScrollState?.let { this.oldScrollState = it }
+        val runner = diffRunner ?: newDiffRunner().also { diffRunner = it }
+        val submission = StorySubmission(stories, loadId, rv, skipBackFillingStories, diffGeneration, onCommitted)
+        latestSubmission = submission
+        runner.submit(submission)
+    }
 
-        diffJob?.cancel()
-        diffJob =
-            adapterScope.launch {
-                val filtered = applySkipBackfill(incoming = stories, skip = skipBackFillingStories)
-                val newDisplayItems = buildDisplayItems(filtered)
+    private fun newDiffRunner() =
+        LatestStoryLoadRunner(
+            scope = adapterScope,
+            queryDispatcher = diffDispatcher,
+            load = ::calculateStoryDiff,
+            cancel = {},
+            publish = ::commitStoryDiff,
+            sameQuery = { first, second -> first.generation == second.generation && first.grid === second.grid },
+            onError = { error -> Log.e(this, "error diffing: ${error.message}", error) },
+        )
 
-                val diff =
-                    try {
-                        DiffUtil.calculateDiff(DisplayItemDiffer(newDisplayItems), false)
-                    } catch (e: Exception) {
-                        Log.e(this@StoryViewAdapter, "error diffing: ${e.message}", e)
-                        return@launch
-                    }
+    private fun calculateStoryDiff(submission: StorySubmission): StoryDifference {
+        val startedAt = if (BuildConfig.DEBUG) SystemClock.elapsedRealtime() else 0L
+        if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "start id=${submission.loadId} rows=${submission.stories.size}")
+        activeFeedIds = null
+        val filtered = applySkipBackfill(submission.stories, submission.skipBackfill)
+        val newItems = buildDisplayItems(filtered)
+        val oldItems = synchronized(this) { displayItems.toList() }
+        val diff = DiffUtil.calculateDiff(DisplayItemDiffer(oldItems, newItems), false)
+        if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "end id=${submission.loadId} rows=${newItems.size} elapsedMs=${SystemClock.elapsedRealtime() - startedAt}")
+        return StoryDifference(submission, filtered, newItems, diff)
+    }
 
-                if (loadId != lastLoadId) return@launch
-
-                withContext(Dispatchers.Main) {
-                    if (loadId != lastLoadId) return@withContext
-                    val scrollState = rv.layoutManager?.onSaveInstanceState()
-                    synchronized(this@StoryViewAdapter) {
-                        this@StoryViewAdapter.stories.clear()
-                        this@StoryViewAdapter.stories.addAll(filtered)
-                        this@StoryViewAdapter.displayItems.clear()
-                        this@StoryViewAdapter.displayItems.addAll(newDisplayItems)
-                        rebuildStoryDisplayPositions()
-                        diff.dispatchUpdatesTo(this@StoryViewAdapter)
-                        val lm = rv.layoutManager
-                        if (lm != null) {
-                            val pendingHash = pendingScrollStoryHash
-                            if (pendingHash != null) {
-                                pendingScrollStoryHash = null
-                                val pos = getDisplayPositionForStoryHash(pendingHash)
-                                if (pos >= 0) {
-                                    lm.onRestoreInstanceState(scrollState)
-                                    val llm = lm as? LinearLayoutManager
-                                    val first = llm?.findFirstVisibleItemPosition() ?: -1
-                                    val last = llm?.findLastVisibleItemPosition() ?: -1
-                                    if (ReturnedStoryScrollDecider.shouldScrollToReturnedStory(pos, first, last)) {
-                                        val topOffset = (rv.height * 0.15f).toInt()
-                                        llm?.scrollToPositionWithOffset(pos, topOffset)
-                                    }
-                                } else {
-                                    lm.onRestoreInstanceState(scrollState)
-                                }
-                            } else if (oldScrollState != null) {
-                                lm.onRestoreInstanceState(oldScrollState)
-                                this@StoryViewAdapter.oldScrollState = null
-                            } else {
-                                lm.onRestoreInstanceState(scrollState)
-                            }
-                        }
-                        val highlightHash = pendingHighlightStoryHash
-                        if (highlightHash != null) {
-                            pendingHighlightStoryHash = null
-                            val highlightPos = getDisplayPositionForStoryHash(highlightHash)
-                            if (highlightPos >= 0) {
-                                animateReturnHighlight(rv, highlightPos)
-                            }
-                        }
-                    }
+    private fun commitStoryDiff(result: StoryDifference) {
+        val submission = result.submission
+        val rv = submission.grid
+        if (submission.generation != diffGeneration || rv.adapter !== this) return
+        synchronized(this) {
+            val replacingEmptyList = stories.isEmpty() && result.stories.isNotEmpty()
+            val startAtFirstStory = replacingEmptyList && oldScrollState == null && pendingScrollStoryHash == null
+            clusterThumbnailUrls.clear()
+            stories.clear()
+            stories.addAll(result.stories)
+            displayItems.clear()
+            displayItems.addAll(result.items)
+            rebuildStoryDisplayPositions()
+            committedLoadId = submission.loadId
+            motionAwaitingFeedCommit = false
+            result.diff.dispatchUpdatesTo(this)
+            val lm = rv.layoutManager
+            if (startAtFirstStory) {
+                // StoryViewAdapter.kt initially contains only the footer. Preserving that anchor would
+                // scroll past every inserted story, leaving the viewport on a blank full-height footer.
+                if (lm is LinearLayoutManager) lm.scrollToPositionWithOffset(0, 0) else lm?.scrollToPosition(0)
+            }
+            if (lm != null && !isUpdatingStories && stories.isNotEmpty()) {
+                // StoryViewAdapter.kt restores only requested navigation/configuration state.
+                // Wait for the newest snapshot so a partial one cannot consume its saved position.
+                // DiffUtil preserves the visible anchor during ordinary read/sync updates.
+                oldScrollState?.let {
+                    lm.onRestoreInstanceState(it)
+                    oldScrollState = null
                 }
             }
+            applyPendingStoryReturn(rv, replacingEmptyList)
+            // StoryViewAdapter.kt needs a presentation frame even when an unchanged diff and held
+            // highlight produce no view updates after the return's first frame waited for this load.
+            if (pendingHighlightStoryHash != null) rv.invalidate()
+        }
+        if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "commit id=${submission.loadId} rows=${result.items.size} pending=$isUpdatingStories")
+        if (latestSubmission === submission) latestSubmission = null
+        submission.onCommitted?.run()
     }
+
+    internal data class StorySubmission(
+        val stories: List<Story>,
+        val loadId: Long,
+        val grid: RecyclerView,
+        val skipBackfill: Boolean,
+        val generation: Long,
+        val onCommitted: Runnable?,
+    )
+
+    internal data class StoryDifference(
+        val submission: StorySubmission,
+        val stories: List<Story>,
+        val items: List<DisplayItem>,
+        val diff: DiffUtil.DiffResult,
+    )
 
     private fun buildDisplayItems(stories: List<Story>): List<DisplayItem> {
         val showClusterRows = listStyle == StoryListStyle.LIST && StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo)
         val subscribedFeedIds = if (showClusterRows) subscribedFeedIds() else emptySet()
         val isArchiveUser = isArchiveUser()
         val clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo)
+        // StoryViewAdapter.kt must diff the same preview rows that RecyclerView can display.
+        // Capping only itemCount sends inserts for hidden stories and corrupts RecyclerView's positions.
+        val visibleStories =
+            if (fs?.let { UIUtils.needsSubscriptionAccess(it, prefsRepo) } == true) stories.take(3) else stories
 
         return buildList {
-            stories.forEachIndexed { storyIndex, story ->
+            visibleStories.forEachIndexed { storyIndex, story ->
                 add(DisplayItem.StoryRow(story, storyIndex))
 
                 if (!showClusterRows || story.isBriefingSummary) return@forEachIndexed
@@ -340,6 +448,7 @@ class StoryViewAdapter(
                     isPremiumArchive = isArchiveUser,
                     clusterMode = clusterMode,
                 ).forEach { clusterStory ->
+                    // StoryViewAdapter.kt displays the child's reconciled state, including explicit unread actions.
                     add(DisplayItem.ClusterRow(clusterStory, storyIndex, story.storyHash))
                 }
             }
@@ -368,25 +477,36 @@ class StoryViewAdapter(
         }
     }
 
-    private inner class DisplayItemDiffer(
+    internal class DisplayItemDiffer(
+        private val oldDisplayItems: List<DisplayItem>,
         private val newDisplayItems: List<DisplayItem>,
     ) : DiffUtil.Callback() {
         override fun areContentsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int,
-        ): Boolean = newDisplayItems[newItemPosition].contentMatches(displayItems[oldItemPosition])
+        ): Boolean = newDisplayItems[newItemPosition].contentMatches(oldDisplayItems[oldItemPosition])
 
         override fun areItemsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int,
         ): Boolean =
-            newDisplayItems[newItemPosition].stableId == displayItems[oldItemPosition].stableId &&
-                newDisplayItems[newItemPosition]::class == displayItems[oldItemPosition]::class
+            newDisplayItems[newItemPosition].stableId == oldDisplayItems[oldItemPosition].stableId &&
+                newDisplayItems[newItemPosition]::class == oldDisplayItems[oldItemPosition]::class
 
         override fun getNewListSize(): Int = newDisplayItems.size
 
-        override fun getOldListSize(): Int = displayItems.size
+        override fun getOldListSize(): Int = oldDisplayItems.size
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            val before = oldDisplayItems[oldItemPosition]
+            val after = newDisplayItems[newItemPosition]
+            return if (before.read != after.read && after.presentationMatches(before)) ReadStatePayload else null
+        }
     }
+
+    /** StoryViewAdapter.kt's stories in list order, for Listen's Up Next (ListenManager.kt). */
+    @Synchronized
+    fun storiesSnapshot(): List<Story> = stories.toList()
 
     @Synchronized
     fun getStory(position: Int): Story? =
@@ -418,6 +538,7 @@ class StoryViewAdapter(
 
     fun setPendingScrollStoryHash(storyHash: String?) {
         pendingScrollStoryHash = storyHash
+        smoothPendingStoryScroll = false
     }
 
     fun setPendingHighlightStoryHash(storyHash: String?) {
@@ -440,27 +561,195 @@ class StoryViewAdapter(
             else -> 0xFFF4F4F4.toInt()
         }
 
-    private fun animateReturnHighlight(rv: RecyclerView, position: Int) {
-        rv.post {
-            val vh = rv.findViewHolderForAdapterPosition(position) ?: return@post
-            val story = (vh as? StoryViewHolder)?.story
-            val highlightColor = highlightColorForTheme()
-            val defaultColor = defaultColorForTheme()
-            val animator = ValueAnimator.ofObject(ArgbEvaluator(), highlightColor, defaultColor)
-            animator.duration = 1000
-            animator.addUpdateListener { anim ->
-                vh.itemView.background = ColorDrawable(anim.animatedValue as Int)
-            }
-            animator.addListener(object : android.animation.AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: android.animation.Animator) {
-                    if (story != null) {
-                        vh.itemView.setBackgroundResource(backgroundResourceFor(story))
-                    }
+    @JvmOverloads
+    fun requestStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean = true) {
+        queueStoryReturn(storyHash, rv, presentationReady, false)
+    }
+
+    fun followReadingStory(storyHash: String?, rv: RecyclerView) {
+        if (storyHash.isNullOrBlank()) return
+        // StoryViewAdapter.kt cancels the previous swipe's target even when the new row is already visible.
+        rv.stopScroll()
+        queueStoryReturn(storyHash, rv, false, true)
+    }
+
+    fun onStoryListScrollStateChanged(newState: Int) {
+        if (newState != RecyclerView.SCROLL_STATE_SETTLING) isFollowingReadingStory = false
+    }
+
+    private fun queueStoryReturn(storyHash: String?, rv: RecyclerView, presentationReady: Boolean, smoothScroll: Boolean) {
+        if (storyHash.isNullOrBlank()) return
+        isFollowingReadingStory = false
+        if (pendingHighlightStoryHash != storyHash && returnHighlight?.storyHash != storyHash) {
+            returnHighlight?.cancel()
+            returnHighlight = null
+        }
+        pendingScrollStoryHash = storyHash
+        smoothPendingStoryScroll = smoothScroll
+        pendingHighlightStoryHash = storyHash
+        returnPresentationReady = presentationReady
+        applyPendingStoryReturn(rv)
+        rv.invalidate()
+    }
+
+    @JvmOverloads
+    fun applyPendingStoryReturn(rv: RecyclerView, replacingEmptyList: Boolean = false, presentationFrame: Boolean = false) {
+        if (isUpdatingStories || stories.isEmpty() || rv.adapter !== this) return
+        val lm = rv.layoutManager ?: return
+        pendingScrollStoryHash?.let { hash ->
+            val position = getDisplayPositionForStoryHash(hash)
+            if (position >= 0) {
+                val llm = lm as? LinearLayoutManager
+                val first = llm?.findFirstVisibleItemPosition() ?: -1
+                val last = llm?.findLastVisibleItemPosition() ?: -1
+                val hasVisibleAnchor = first >= 0 && last >= first
+                val row = if (smoothPendingStoryScroll) lm.findViewByPosition(position) else null
+                val shouldScroll = if (smoothPendingStoryScroll && hasVisibleAnchor) {
+                    row == null || lm.getDecoratedTop(row) < rv.paddingTop ||
+                        lm.getDecoratedBottom(row) > rv.height - rv.paddingBottom
+                } else ReturnedStoryScrollDecider.shouldScrollToReturnedStory(position, first, last)
+                if (replacingEmptyList || shouldScroll) {
+                    // StoryViewAdapter.kt animates live reading only after a list has a visible anchor.
+                    if (smoothPendingStoryScroll && !replacingEmptyList && hasVisibleAnchor) {
+                        // StoryViewAdapter.kt keeps the fling-stop exemption until the animation ends, not just until it starts.
+                        isFollowingReadingStory = true
+                        // StoryViewAdapter.kt counts visual rows, including variable-span tiles, before keeping a preceding row.
+                        val grid = lm as? GridLayoutManager
+                        fun rowIndex(item: Int) = grid?.spanSizeLookup?.getSpanGroupIndex(item, grid.spanCount) ?: item
+                        var target = position
+                        if (rowIndex(last) - rowIndex(first) + 1 > 4) {
+                            val precedingRow = (rowIndex(position) - 1).coerceAtLeast(0)
+                            while (target > 0 && rowIndex(target - 1) >= precedingRow) target--
+                        }
+                        lm.startSmoothScroll(object : LinearSmoothScroller(rv.context) {
+                            override fun getVerticalSnapPreference() = SNAP_TO_START
+                        }.apply { targetPosition = target })
+                    } else if (llm != null) llm.scrollToPositionWithOffset(position, (rv.height * 0.15f).toInt())
+                    else lm.scrollToPosition(position)
                 }
-            })
-            animator.start()
+                // StoryViewAdapter.kt retains the identity until its page exists in a committed batch.
+                pendingScrollStoryHash = null
+                smoothPendingStoryScroll = false
+            }
+        }
+        val hash = pendingHighlightStoryHash ?: return
+        if (pendingScrollStoryHash != null || rv.isComputingLayout || rv.isLayoutRequested) return
+        val position = getDisplayPositionForStoryHash(hash)
+        if (position < 0) return
+        val holder = rv.findViewHolderForAdapterPosition(position) ?: return
+        if (boundStoryHash(holder) != hash || !holder.itemView.isLaidOut) return
+        holdReturnHighlight(holder, hash)
+        // StoryViewAdapter.kt starts time only after Reader's exit completed and this window can be seen.
+        if (!presentationFrame || !returnPresentationReady || !rv.hasWindowFocus() || !rv.isShown) return
+        pendingHighlightStoryHash = null
+        animateReturnHighlight(rv, position)
+    }
+
+    private fun boundStoryHash(holder: RecyclerView.ViewHolder): String? = when (holder) {
+        is StoryViewHolder -> holder.story?.storyHash
+        is ClusterRowViewHolder -> holder.clusterStory?.storyHash
+        else -> null
+    }
+
+    private fun holdReturnHighlight(holder: RecyclerView.ViewHolder, hash: String) {
+        if (returnHighlight?.view === holder.itemView && returnHighlight?.storyHash == hash && returnHighlight?.isFinished == false) return
+        returnHighlight?.cancel()
+        returnHighlight = ReturnedStoryHighlight(
+            holder.itemView, hash, { boundStoryHash(holder) }, highlightColorForTheme(), defaultColorForTheme(),
+        ).also { it.hold() }
+    }
+
+    private fun openHighlightedStory(holder: RecyclerView.ViewHolder, feedSet: FeedSet?, hash: String) {
+        // StoryViewAdapter.kt is also used by Daily Briefing, which has no story-list return lifecycle.
+        if (fs?.isDailyBriefing == true) {
+            listener.onStoryClicked(feedSet, hash)
+            return
+        }
+        // StoryViewAdapter.kt holds the tap through launch; only the existing reader-return path starts its fade.
+        pendingScrollStoryHash = null
+        smoothPendingStoryScroll = false
+        pendingHighlightStoryHash = null
+        returnPresentationReady = false
+        returnHighlight?.cancel()
+        returnHighlight = null
+        holdReturnHighlight(holder, hash)
+        try {
+            listener.onStoryClicked(feedSet, hash)
+        } catch (exception: RuntimeException) {
+            cancelReturnHighlight(holder)
+            throw exception
         }
     }
+
+    private fun animateReturnHighlight(rv: RecyclerView, position: Int) {
+        val holder = rv.findViewHolderForAdapterPosition(position) ?: return
+        val hash = boundStoryHash(holder) ?: return
+        if (returnHighlight?.view === holder.itemView && returnHighlight?.storyHash == hash) returnHighlight?.fade()
+    }
+
+    private fun cancelReturnHighlight(holder: RecyclerView.ViewHolder) {
+        if (returnHighlight?.view !== holder.itemView) return
+        returnHighlight?.cancel()
+        returnHighlight = null
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        fun finishOpeningEntrances() {
+            if (motionHasScrolled) return
+            motionHasScrolled = true
+            // StoryViewAdapter.kt makes the opening cascade solid as soon as the reader starts scrolling.
+            for (index in 0 until recyclerView.childCount) {
+                val row = recyclerView.getChildAt(index)
+                val holder = recyclerView.getChildViewHolder(row)
+                if (holder is StoryViewHolder || holder is ClusterRowViewHolder) row.clearAnimation()
+            }
+        }
+        motionScrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(view: RecyclerView, newState: Int) {
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) finishOpeningEntrances()
+            }
+
+            override fun onScrolled(view: RecyclerView, dx: Int, dy: Int) {
+                if (dx != 0 || dy != 0) finishOpeningEntrances()
+            }
+        }.also(recyclerView::addOnScrollListener)
+        returnObserver = recyclerView.viewTreeObserver
+        returnPreDrawListener = ViewTreeObserver.OnPreDrawListener {
+            if (pendingScrollStoryHash != null || pendingHighlightStoryHash != null) applyPendingStoryReturn(recyclerView, presentationFrame = true)
+            if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) finishOpeningEntrances()
+            // StoryViewAdapter.kt checks actual visibility, so prefetched rows keep their first entrance.
+            val entrances = mutableListOf<StoryEntrance>()
+            for (index in 0 until recyclerView.childCount) {
+                if (motionAwaitingFeedCommit) break
+                val row = recyclerView.getChildAt(index)
+                val holder = recyclerView.getChildViewHolder(row)
+                val key = when (holder) {
+                    is StoryViewHolder -> holder.story?.storyHash
+                    is ClusterRowViewHolder -> holder.clusterStory?.storyHash
+                    else -> null
+                } ?: continue
+                if (key !in motionSeen && recyclerView.getChildAdapterPosition(row) != RecyclerView.NO_POSITION &&
+                    com.newsblur.view.ReaderMotion.canEnter(row) && row.getGlobalVisibleRect(motionRect)) {
+                    if (motionHasScrolled) motionSeen.add(key)
+                    else entrances.add(StoryEntrance(row, key, motionRect.top, motionRect.left))
+                }
+            }
+            val visible = entrances.distinctBy { it.key }.sortedWith(compareBy({ it.top }, { it.left }))
+            val step = if (visible.size > 1) minOf(35.0, 175.0 / (visible.size - 1)) else 0.0
+            visible.forEachIndexed { index, entrance ->
+                if (com.newsblur.view.ReaderMotion.enter(entrance.row, (index * step).toLong(), 16f)) {
+                    motionSeen.add(entrance.key)
+                }
+            }
+            true
+        }.also { returnObserver?.addOnPreDrawListener(it) }
+        returnFocusListener = ViewTreeObserver.OnWindowFocusChangeListener { focused ->
+            if (focused) recyclerView.invalidate()
+        }.also { returnObserver?.addOnWindowFocusChangeListener(it) }
+    }
+
+    private data class StoryEntrance(val row: View, val key: String, val top: Int, val left: Int)
 
     fun setTextSize(textSize: Float) {
         this.textSize = textSize
@@ -470,19 +759,17 @@ class StoryViewAdapter(
         viewGroup: ViewGroup,
         viewType: Int,
     ): RecyclerView.ViewHolder {
-        // NB: the non-temporary calls to setLayerType() dramatically speed up list movement, but
-        // are only safe because we perform fairly advanced delta updates. if any changes to invalidation
-        // logic are made, check the list with hardare layer profiling to ensure we aren't over-invalidating
+        // StoryViewAdapter.kt retains the existing layer choice; debug builds allow a profiling A/B.
         if (viewType == VIEW_TYPE_STORY_TILE) {
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_tile, viewGroup, false)
-            v.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            if (useHardwareRowLayers) v.setLayerType(View.LAYER_TYPE_HARDWARE, null)
             return StoryTileViewHolder(v)
         } else if (viewType == VIEW_TYPE_CLUSTER_ROW) {
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_cluster_row, viewGroup, false)
             return ClusterRowViewHolder(v)
         } else if (viewType == VIEW_TYPE_STORY_ROW) {
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_row, viewGroup, false)
-            v.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            if (useHardwareRowLayers) v.setLayerType(View.LAYER_TYPE_HARDWARE, null)
             return StoryRowViewHolder(v)
         } else {
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_footer_tile, viewGroup, false)
@@ -492,8 +779,21 @@ class StoryViewAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        diffJob?.cancel()
-        adapterScope.cancel()
+        motionScrollListener?.let(recyclerView::removeOnScrollListener)
+        motionScrollListener = null
+        isFollowingReadingStory = false
+        recyclerView.viewTreeObserver.takeIf { it.isAlive }?.let { observer ->
+            returnPreDrawListener?.let(observer::removeOnPreDrawListener)
+            returnFocusListener?.let(observer::removeOnWindowFocusChangeListener)
+        }
+        returnObserver = null
+        returnPreDrawListener = null
+        returnFocusListener = null
+        returnHighlight?.cancel()
+        returnHighlight = null
+        invalidateStoryDiffs()
+        diffRunner?.close()
+        diffRunner = null
     }
 
     open inner class StoryViewHolder(
@@ -517,17 +817,68 @@ class StoryViewAdapter(
         val sharedView: View = view.findViewById(R.id.story_item_shared_icon)
 
         var story: Story? = null
+        private var storyMenu: PopupWindow? = null
+
+        fun dismissStoryMenu() {
+            storyMenu?.dismiss()
+            storyMenu = null
+        }
+
         var thumbLoader: PhotoToLoad? = null
         var lastThumbUrl: String? = null
+        var lastThumbView: ImageView? = null
+        internal val readStateAnimator = StoryReadStateAnimator()
         var gestureR2L: Boolean = false
         var gestureL2R: Boolean = false
         var gestureDebounce: Boolean = false
 
-        private val gestureDetector = GestureDetector(context, StoryViewGestureDetector(this))
+        private val rowSwipe =
+            com.newsblur.view.RowSwipeGesture(
+                itemView,
+                action = { right ->
+                    if (!prefsRepo.isStorySwipesEnabled() ||
+                        (
+                            right &&
+                                context is ItemsList &&
+                                prefsRepo.getLeftToRightGestureAction() == GestureAction.GEST_ACTION_BACK
+                        )
+                    ) {
+                        null
+                    } else {
+                        story?.let { target ->
+                            com.newsblur.util.GestureSwipeAction.resolve(
+                                swipeAction(right),
+                                isRead = target.read,
+                                isSaved = target.starred,
+                            )
+                        }
+                    }
+                },
+                perform = { performGesture(it.action) },
+                claim = { gestureDebounce = true },
+                colors = {
+                    com.newsblur.util.GestureThemeStyle
+                        .palette(prefsRepo.getResolvedTheme(context))
+                },
+            )
+        private var gestureStoryHash: String? = null
+        private var edgeGesture = false
+
+        fun cancelRowSwipe() = rowSwipe.cancel()
+
+        private fun swipeAction(right: Boolean) =
+            if (right) prefsRepo.getLeftToRightGestureAction() else prefsRepo.getRightToLeftGestureAction()
 
         init {
             view.setOnClickListener(this)
             view.setOnCreateContextMenuListener(this)
+            view.setOnLongClickListener {
+                rowSwipe.cancel()
+                gestureDebounce = false
+                performGesture(prefsRepo.getStoryLongPressAction())
+                true
+            }
+
             view.setOnTouchListener(this)
         }
 
@@ -539,10 +890,11 @@ class StoryViewAdapter(
                 return
             }
             if (gestureL2R || gestureR2L) return
+            val hash = story?.storyHash?.takeIf { it.isNotBlank() } ?: return
             val now = SystemClock.elapsedRealtime()
             if (now - lastStoryOpenElapsedRealtime < ViewConfiguration.getDoubleTapTimeout().toLong()) return
             lastStoryOpenElapsedRealtime = now
-            listener.onStoryClicked(fs, story?.storyHash)
+            openHighlightedStory(this, fs, hash)
         }
 
         override fun onCreateContextMenu(
@@ -612,6 +964,7 @@ class StoryViewAdapter(
                     feedUtils.getFeed(story!!.feedId),
                     folderName,
                     null,
+                    null,
                 )
                 return true
             } else {
@@ -630,40 +983,77 @@ class StoryViewAdapter(
             v: View,
             event: MotionEvent,
         ): Boolean {
-            // detector looks for ongoing gestures and sets our flags
-            val result = gestureDetector.onTouchEvent(event)
-            // iff a gesture possibly completed, see if any were found
-            if (event.actionMasked == MotionEvent.ACTION_UP) {
-                flushGesture()
-            } else if (event.actionMasked == MotionEvent.ACTION_CANCEL) {
-                // RecyclerViews may take event ownership to detect scrolling and never send an ACTION_UP
-                // to children.  valid gestures end in a CANCEL more often than not
-                flushGesture()
+            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                gestureDebounce = false
+                gestureStoryHash = story?.storyHash
+                val pane = itemView.parent as? View
+                val paneOrigin = IntArray(2)
+                pane?.getLocationOnScreen(paneOrigin)
+                // The back swipe owns the start edge, which is the right edge in right-to-left layouts.
+                val fromStartEdge =
+                    if (UIUtils.towardEndSign(context) < 0f) {
+                        paneOrigin[0] + (pane?.width ?: 0) - event.rawX
+                    } else {
+                        event.rawX - paneOrigin[0]
+                    }
+                edgeGesture = context is ItemsList && fromStartEdge < UIUtils.dp2px(context, 24)
             }
-            return result
+            if (edgeGesture || gestureStoryHash != story?.storyHash) {
+                rowSwipe.cancel()
+                return false
+            }
+            return rowSwipe.onTouch(event)
         }
 
-        private fun flushGesture() {
-            // by default, do nothing
-            var action: GestureAction? = GestureAction.GEST_ACTION_NONE
-            if (gestureL2R) {
-                action = prefsRepo.getLeftToRightGestureAction()
-                gestureL2R = false
-            }
-            if (gestureR2L) {
-                action = prefsRepo.getRightToLeftGestureAction()
-                gestureR2L = false
-            }
+        private fun performGesture(action: GestureAction) {
+            val target = story ?: return
             when (action) {
                 GestureAction.GEST_ACTION_BACK -> (context as? ItemsList)?.completeInteractiveStoryListSwipe()
                 GestureAction.GEST_ACTION_TOGGLE_READ -> toggleStoryReadState()
-                GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(story!!, context)
-                GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
-                GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
-                GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(story!!, false, context, emptyList(), emptyList())
-                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
-                GestureAction.GEST_ACTION_NONE -> {}
-                else -> {}
+                GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(target, context)
+                GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(target, context)
+                GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(target, true, context, emptyList(), emptyList())
+                GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(target, false, context, emptyList(), emptyList())
+                GestureAction.GEST_ACTION_TOGGLE_SAVE -> feedUtils.setStorySaved(target, !target.starred, context, emptyList(), emptyList())
+                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, target.feedId)
+                GestureAction.GEST_ACTION_SHARE -> feedUtils.sendStoryUrl(target, context)
+                GestureAction.GEST_ACTION_MENU -> {
+                    gestureDebounce = false
+                    dismissStoryMenu()
+                    storyMenu = StoryMenuPopover.show(
+                        context,
+                        itemView.findViewById<View>(R.id.story_item_title) ?: itemView,
+                        itemView,
+                        fs ?: return,
+                        target,
+                        fs?.let { prefsRepo.getStoryOrder(it) } ?: StoryOrder.NEWEST,
+                        prefsRepo.getResolvedTheme(context),
+                    ) { item ->
+                        if (story?.storyHash == target.storyHash) onMenuItemClick(item) else false
+                    }
+                }
+                GestureAction.GEST_ACTION_TRAIN ->
+                    if (target.feedId != "0") {
+                        StoryIntelTrainerFragment
+                            .newInstance(
+                                target,
+                                fs,
+                            ).show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
+                    }
+                GestureAction.GEST_ACTION_LISTEN ->
+                    // StoryViewAdapter.kt queues the list as shown, so Listen continues with the next unread story.
+                    com.newsblur.listen.ListenManager
+                        .from(context)
+                        .listen(target, storiesSnapshot())
+                GestureAction.GEST_ACTION_ASK_AI -> {
+                    val tag = com.newsblur.askai.AskAiBottomSheetFragment.TAG
+                    if (context.supportFragmentManager.findFragmentByTag(tag) == null) {
+                        com.newsblur.askai.AskAiBottomSheetFragment
+                            .newInstance(target.storyHash, UIUtils.fromHtml(target.title).toString())
+                            .show(context.supportFragmentManager, tag)
+                    }
+                }
+                else -> Unit
             }
         }
 
@@ -686,6 +1076,7 @@ class StoryViewAdapter(
     ) : StoryViewHolder(view) {
         var storyAuthor: TextView = view.findViewById(R.id.story_item_author)
         var storySnippet: TextView = view.findViewById(R.id.story_item_content)
+        val storyMetadata: View = view.findViewById(R.id.story_item_metadata)
     }
 
     inner class ClusterRowViewHolder(
@@ -705,6 +1096,7 @@ class StoryViewAdapter(
 
         var clusterStory: Story.ClusterStory? = null
         var previewLoader: PhotoToLoad? = null
+        internal val readStateAnimator = StoryReadStateAnimator()
 
         init {
             view.setOnClickListener(this)
@@ -728,13 +1120,13 @@ class StoryViewAdapter(
                     )
             ) {
                 is StoryClusterNavigationTarget.DirectReading -> {
-                    listener.onStoryClicked(target.feedSet, target.storyHash)
+                    openHighlightedStory(this, target.feedSet, target.storyHash)
                 }
 
                 is StoryClusterNavigationTarget.FeedListReading -> {
                     val feed = feedUtils.getFeed(feedId)
                     if (feed == null) {
-                        listener.onStoryClicked(target.feedSet, target.storyHash)
+                        openHighlightedStory(this, target.feedSet, target.storyHash)
                         return
                     }
                     feedUtils.currentFolderName =
@@ -754,7 +1146,39 @@ class StoryViewAdapter(
     override fun onBindViewHolder(
         viewHolder: RecyclerView.ViewHolder,
         position: Int,
+        payloads: MutableList<Any>,
     ) {
+        if (payloads.isNotEmpty() && payloads.all { it === ReadStatePayload }) {
+            when (val item = displayItems.getOrNull(position)) {
+                is DisplayItem.StoryRow -> if (viewHolder is StoryViewHolder && viewHolder.story?.storyHash == item.story.storyHash) {
+                    viewHolder.story = item.story
+                    bindReadState(viewHolder, item.story, animated = true)
+                    return
+                }
+                is DisplayItem.ClusterRow -> if (viewHolder is ClusterRowViewHolder && viewHolder.clusterStory?.storyHash == item.clusterStory.storyHash) {
+                    viewHolder.clusterStory = item.clusterStory
+                    bindClusterReadState(viewHolder, item.clusterStory, animated = true)
+                    return
+                }
+                null -> Unit
+            }
+        }
+        onBindViewHolder(viewHolder, position)
+    }
+
+    override fun onBindViewHolder(
+        viewHolder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
+        val incomingHash = when (val item = displayItems.getOrNull(position)) {
+            is DisplayItem.StoryRow -> item.story.storyHash
+            is DisplayItem.ClusterRow -> item.clusterStory.storyHash
+            else -> null
+        }
+        val retainedHighlight = returnHighlight?.takeIf {
+            it.view === viewHolder.itemView && it.storyHash == incomingHash && !it.isFinished
+        }
+        if (retainedHighlight != null) retainedHighlight.beforeRebind() else cancelReturnHighlight(viewHolder)
         if (position >= storyCount || position < 0) {
             val vh = viewHolder as FooterViewHolder
             vh.innerView.removeAllViews()
@@ -775,6 +1199,11 @@ class StoryViewAdapter(
             is DisplayItem.StoryRow -> {
                 val story = item.story
                 val storyHolder = viewHolder as StoryViewHolder
+                if (storyHolder.story?.storyHash != story.storyHash) {
+                    storyHolder.itemView.clearAnimation()
+                    storyHolder.dismissStoryMenu()
+                    storyHolder.cancelRowSwipe()
+                }
                 storyHolder.story = story
                 bindCommon(storyHolder, story)
 
@@ -783,11 +1212,13 @@ class StoryViewAdapter(
                 } else {
                     bindTile(storyHolder as StoryTileViewHolder, story)
                 }
+                bindReadState(storyHolder, story, animated = false)
             }
             is DisplayItem.ClusterRow -> {
                 bindClusterRow(viewHolder as ClusterRowViewHolder, item)
             }
         }
+        retainedHighlight?.afterRebind()
     }
 
     /**
@@ -797,9 +1228,7 @@ class StoryViewAdapter(
         vh: StoryViewHolder,
         story: Story,
     ) {
-        val isRead = !ignoreReadStatus && story.read
-        val theme = prefsRepo.getResolvedTheme(context)
-
+        vh.readStateAnimator.cancel()
         vh.itemView.setBackgroundResource(backgroundResourceFor(story))
         vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
         vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY))
@@ -817,7 +1246,7 @@ class StoryViewAdapter(
             vh.intelDot.setImageResource(android.R.color.transparent)
         }
 
-        vh.storyTitleView.text = UIUtils.fromHtml(story.title)
+        vh.storyTitleView.text = titleCache.get(story.title)
         vh.storyDate.text = StoryUtils.formatShortDate(context, story.timestamp)
 
         // lists with mixed feeds get added info, but single feeds do not
@@ -825,7 +1254,7 @@ class StoryViewAdapter(
             // Check for custom feed icon
             val customFeedIcon: CustomIcon? = BlurDatabaseHelper.getFeedIcon(story.feedId)
             if (customFeedIcon != null) {
-                val iconSize = UIUtils.dp2px(context, 18)
+                val iconSize = UIUtils.dp2px(context, 16)
                 val iconBitmap = CustomIconRenderer.renderIcon(context, customFeedIcon, iconSize)
                 if (iconBitmap != null) {
                     vh.feedIconView.setImageBitmap(iconBitmap)
@@ -836,7 +1265,6 @@ class StoryViewAdapter(
                 iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView)
             }
             vh.feedTitleView.text = story.extern_feedTitle
-            vh.feedTitleView.setTextColor(StoryRowPalette.feedTitleArgb(theme, isRead))
             vh.feedIconView.visibility = View.VISIBLE
             vh.feedTitleView.visibility = View.VISIBLE
         } else {
@@ -864,53 +1292,52 @@ class StoryViewAdapter(
         }
 
         // dynamic text sizing
-        vh.feedTitleView.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_FEED_TITLE
-        vh.storyTitleView.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_TITLE
-        vh.storyDate.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR
+        val typography = StoryRowTypography.forScale(textSize)
+        vh.feedTitleView.textSize = typography.feedSp
+        vh.storyTitleView.textSize = typography.titleSp
+        vh.storyDate.textSize = typography.metadataSp
+        vh.storyTitleView.typeface = storyMediumTypeface
+        vh.storyDate.typeface = storyMediumTypeface
 
         // dynamic spacing
         val verticalTitlePadding = spacingStyle.getStoryTitleVerticalPadding(context)
-        val rightTitlePadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
-        vh.storyTitleView.setPadding(
-            vh.storyTitleView.paddingLeft,
+        val endTitlePadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
+        vh.storyTitleView.setPaddingRelative(
+            vh.storyTitleView.paddingStart,
             verticalTitlePadding,
-            rightTitlePadding,
+            endTitlePadding,
             verticalTitlePadding,
         )
 
-        // read/unread fading
-        if (!isRead) {
-            vh.leftBarOne.background.alpha = 255
-            vh.leftBarTwo.background.alpha = 255
-            vh.intelDot.imageAlpha = 255
-            vh.thumbViewLeft?.let { it.imageAlpha = 255 }
-            vh.thumbViewRight?.let { it.imageAlpha = 255 }
-            vh.thumbTileView?.let { it.imageAlpha = 255 }
-            vh.feedIconView.imageAlpha = 255
-            vh.feedTitleView.alpha = 1.0f
-            vh.storyTitleView.alpha = 1.0f
-            vh.storyDate.alpha = 1.0f
-        } else {
-            vh.leftBarOne.background.alpha = READ_STORY_ALPHA_B255
-            vh.leftBarTwo.background.alpha = READ_STORY_ALPHA_B255
-            vh.intelDot.imageAlpha = READ_STORY_ALPHA_B255
-            vh.thumbViewLeft?.let { it.imageAlpha = READ_STORY_ALPHA_B255 }
-            vh.thumbViewRight?.let { it.imageAlpha = READ_STORY_ALPHA_B255 }
-            vh.thumbTileView?.let { it.imageAlpha = READ_STORY_ALPHA_B255 }
-            vh.feedIconView.imageAlpha = READ_STORY_ALPHA_B255
-            vh.feedTitleView.alpha = 1.0f
-            vh.storyTitleView.alpha = READ_STORY_ALPHA
-            vh.storyDate.alpha = READ_STORY_ALPHA
+    }
+
+    private fun bindReadState(vh: StoryViewHolder, story: Story, animated: Boolean) {
+        val isRead = !ignoreReadStatus && story.read
+        val theme = prefsRepo.getResolvedTheme(context)
+        val feedColor = StoryRowPalette.feedTitleArgb(theme, isRead)
+        val headingColor = StoryRowPalette.storyTitleArgb(theme, isRead)
+        val metadataColor = StoryRowPalette.metadataArgb(theme, isRead)
+        vh.feedTitleView.typeface = if (isRead) storyBookTypeface else storyMediumTypeface
+        val textColors = mutableListOf(vh.feedTitleView to feedColor, vh.storyTitleView to headingColor, vh.storyDate to metadataColor)
+        if (vh is StoryRowViewHolder) {
+            textColors += vh.storyAuthor to metadataColor
+            textColors += vh.storySnippet to metadataColor
         }
+        textColors.forEach { it.first.alpha = 1f }
+        val imageAlpha = if (isRead) READ_STORY_ALPHA_B255 else 255
+        val images = listOfNotNull(vh.intelDot, vh.feedIconView, vh.thumbViewLeft, vh.thumbViewRight, vh.thumbTileView)
+        vh.readStateAnimator.update(
+            textColors = textColors,
+            imageAlphas = images.map { it to imageAlpha },
+            drawableAlphas = listOfNotNull(vh.leftBarOne.background, vh.leftBarTwo.background).map { it to imageAlpha },
+            animated = animated,
+        )
     }
 
     private fun bindTile(
         vh: StoryTileViewHolder,
         story: Story,
     ) {
-        vh.thumbLoader?.cancel = true
-        vh.thumbLoader = null
-
         // when first created, tiles' views tend to not yet have their dimensions calculated, but
         // upon being recycled they will often have a known size, which lets us give a max size to
         // the image loader, which in turn can massively optimise loading.  the image loader will
@@ -919,10 +1346,17 @@ class StoryViewAdapter(
         if (!thumbnailStyle.isOff() && vh.thumbTileView != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
             val thumbSizeGuess = vh.thumbTileView.measuredHeight
-            vh.thumbTileView.setImageBitmap(null)
-            vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbTileView, thumbSizeGuess, true)
-            vh.lastThumbUrl = story.thumbnailUrl
+            bindThumbnail(vh, vh.thumbTileView, story.thumbnailUrl, thumbSizeGuess)
         }
+    }
+
+    private fun bindThumbnail(vh: StoryViewHolder, target: ImageView, url: String?, size: Int) {
+        if (vh.lastThumbView === target && vh.lastThumbUrl == url && vh.thumbLoader?.cancel == false) return
+        vh.thumbLoader?.cancel = true
+        target.setImageBitmap(null)
+        vh.thumbLoader = thumbnailLoader.displayImage(url, target, size, true)
+        vh.lastThumbView = target
+        vh.lastThumbUrl = url
     }
 
     private fun bindRow(
@@ -931,9 +1365,6 @@ class StoryViewAdapter(
     ) {
         val storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle()
         val showRightThumbnail = thumbnailStyle.isRight() && !TextUtils.isEmpty(story.thumbnailUrl)
-
-        vh.thumbLoader?.cancel = true
-        vh.thumbLoader = null
 
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
             vh.storyTitleView.maxLines = 3
@@ -958,61 +1389,67 @@ class StoryViewAdapter(
         if (TextUtils.isEmpty(story.authors)) {
             vh.storyAuthor.text = ""
         } else {
-            vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, story.authors)
+            // StoryViewAdapter.kt isolates the author so the bullet stays between the date and the author in either direction.
+            vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, BidiText.isolate(story.authors))
         }
 
-        vh.storyAuthor.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR
-        vh.storySnippet.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
+        val typography = StoryRowTypography.forScale(textSize)
+        vh.storyAuthor.textSize = typography.metadataSp
+        vh.storySnippet.textSize = typography.previewSp
+        vh.storyAuthor.typeface = storyMediumTypeface
+        vh.storySnippet.typeface = storyBookTypeface
 
-        val contentRightPadding =
+        val contentEndPadding =
             spacingStyle.getStoryContentRightPadding(
                 context,
                 if (showRightThumbnail) thumbnailStyle else ThumbnailStyle.OFF,
             )
         val titleVerticalPadding = spacingStyle.getStoryTitleVerticalPadding(context)
-        vh.storyTitleView.setPadding(
-            vh.storyTitleView.paddingLeft,
+        vh.storyTitleView.setPaddingRelative(
+            vh.storyTitleView.paddingStart,
             titleVerticalPadding,
-            contentRightPadding,
+            contentEndPadding,
             titleVerticalPadding,
         )
         val contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context)
-        vh.storySnippet.setPadding(
-            vh.storySnippet.paddingLeft,
+        vh.storySnippet.setPaddingRelative(
+            vh.storySnippet.paddingStart,
             vh.storySnippet.paddingTop,
-            contentRightPadding,
+            contentEndPadding,
             contentVerticalPadding,
         )
+        vh.storyMetadata.setPaddingRelative(0, 0, contentEndPadding, 0)
 
         val verticalContainerMargin = spacingStyle.getStoryContainerMargin(context)
         val feedIconLp = vh.feedIconView.layoutParams as RelativeLayout.LayoutParams
-        feedIconLp.setMargins(feedIconLp.leftMargin, verticalContainerMargin, feedIconLp.rightMargin, feedIconLp.bottomMargin)
+        feedIconLp.topMargin = verticalContainerMargin
         val feedTitleLp = vh.feedTitleView.layoutParams as RelativeLayout.LayoutParams
-        feedTitleLp.setMargins(feedTitleLp.leftMargin, verticalContainerMargin, feedTitleLp.rightMargin, feedTitleLp.bottomMargin)
-        val storyDateLp = vh.storyDate.layoutParams as RelativeLayout.LayoutParams
-        storyDateLp.setMargins(storyDateLp.leftMargin, storyDateLp.topMargin, storyDateLp.rightMargin, verticalContainerMargin)
+        feedTitleLp.topMargin = verticalContainerMargin
+        val metadataLp = vh.storyMetadata.layoutParams as RelativeLayout.LayoutParams
+        metadataLp.bottomMargin = verticalContainerMargin
 
         if (!thumbnailStyle.isOff() && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
             if (thumbnailStyle.isLeft()) {
                 val thumbSizeGuess = vh.thumbViewLeft.measuredHeight
-                vh.thumbViewLeft.setImageBitmap(null)
-                vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, thumbSizeGuess, true)
+                bindThumbnail(vh, vh.thumbViewLeft, story.thumbnailUrl, thumbSizeGuess)
                 vh.thumbViewRight.visibility = View.GONE
                 vh.thumbViewLeft.visibility = View.VISIBLE
             } else if (thumbnailStyle.isRight()) {
                 val thumbSizeGuess = vh.thumbViewRight.measuredHeight
-                vh.thumbViewRight.setImageBitmap(null)
                 vh.thumbViewLeft.visibility = View.GONE
                 if (showRightThumbnail) {
-                    vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true)
+                    bindThumbnail(vh, vh.thumbViewRight, story.thumbnailUrl, thumbSizeGuess)
                     vh.thumbViewRight.visibility = View.VISIBLE
                 } else {
+                    vh.thumbLoader?.cancel = true
+                    vh.lastThumbView = null
                     vh.thumbViewRight.visibility = View.GONE
                 }
             }
-            vh.lastThumbUrl = story.thumbnailUrl
         } else if (vh.thumbViewRight != null && vh.thumbViewLeft != null) {
+            vh.thumbLoader?.cancel = true
+            vh.lastThumbView = null
             // if in row mode and thumbnail is disabled or missing, don't just hide but collapse
             vh.thumbViewRight.visibility = View.GONE
             vh.thumbViewLeft.visibility = View.GONE
@@ -1072,9 +1509,9 @@ class StoryViewAdapter(
                         targetThumbView.setExpandedLayout(
                             layout.widthPx,
                             initialHeight,
-                            layout.leftMarginPx,
+                            layout.startMarginPx,
                             layout.topMarginPx,
-                            layout.rightMarginPx,
+                            layout.endMarginPx,
                             layout.bottomMarginPx,
                         )
                         vh.itemView.doOnLayout { itemView ->
@@ -1091,9 +1528,9 @@ class StoryViewAdapter(
                             targetThumbView.setExpandedLayout(
                                 layout.widthPx,
                                 targetHeight,
-                                layout.leftMarginPx,
+                                layout.startMarginPx,
                                 layout.topMarginPx,
-                                layout.rightMarginPx,
+                                layout.endMarginPx,
                                 layout.bottomMarginPx,
                             )
                             // RecyclerView suppresses requestLayout() during its layout pass,
@@ -1122,22 +1559,15 @@ class StoryViewAdapter(
                     thumbView?.setExpandedLayout(
                         layout.widthPx,
                         0,
-                        layout.leftMarginPx,
+                        layout.startMarginPx,
                         layout.topMarginPx,
-                        layout.rightMarginPx,
+                        layout.endMarginPx,
                         layout.bottomMarginPx,
                     )
                 }
             }
         }
 
-        if (this.ignoreReadStatus || !story.read) {
-            vh.storyAuthor.alpha = 1.0f
-            vh.storySnippet.alpha = 1.0f
-        } else {
-            vh.storyAuthor.alpha = READ_STORY_ALPHA
-            vh.storySnippet.alpha = READ_STORY_ALPHA
-        }
     }
 
     class FooterViewHolder(
@@ -1147,11 +1577,18 @@ class StoryViewAdapter(
     }
 
     override fun onViewRecycled(viewHolder: RecyclerView.ViewHolder) {
+        viewHolder.itemView.clearAnimation()
+        cancelReturnHighlight(viewHolder)
         if (viewHolder is StoryViewHolder) {
+            viewHolder.dismissStoryMenu()
             if (viewHolder.thumbLoader != null) viewHolder.thumbLoader?.cancel = true
+            viewHolder.lastThumbView = null
+            viewHolder.readStateAnimator.cancel()
+            viewHolder.cancelRowSwipe()
         }
         if (viewHolder is ClusterRowViewHolder) {
             viewHolder.previewLoader?.cancel = true
+            viewHolder.readStateAnimator.cancel()
         }
         if (viewHolder is FooterViewHolder) {
             viewHolder.innerView.removeAllViews()
@@ -1163,7 +1600,9 @@ class StoryViewAdapter(
         item: DisplayItem.ClusterRow,
     ) {
         val clusterStory = item.clusterStory
+        if (vh.clusterStory?.storyHash != clusterStory.storyHash) vh.itemView.clearAnimation()
         vh.clusterStory = clusterStory
+        vh.readStateAnimator.cancel()
 
         val theme = prefsRepo.getResolvedTheme(context)
         val palette = StoryClusterThemeStyle.palette(theme)
@@ -1199,23 +1638,40 @@ class StoryViewAdapter(
                 height = UIUtils.dp2px(context, sentimentSize)
             }
 
-        vh.title.text = UIUtils.fromHtml(clusterStory.title ?: "")
-        vh.date.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
+        vh.title.text = titleCache.get(clusterStory.title)
+        vh.date.text = StoryUtils.formatRelativeShortDate(context, clusterStory.timestamp)
         vh.title.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
         vh.date.textSize = textSize * 10f
-        vh.title.setTextColor(if (isRead) palette.readTitleColor else palette.titleColor)
-        vh.date.setTextColor(if (isRead) palette.readMetaColor else palette.metaColor)
-        StoryClusterBadgeViewBinder.bind(vh.badge, context, clusterStory.clusterTier, palette, isRead)
+        StoryClusterBadgeViewBinder.bind(vh.badge, context, clusterStory.clusterTier, palette, false)
 
         bindFeedIcon(feed, vh.feedIcon, 16)
         bindClusterPreview(vh, clusterStory.thumbnailUrl ?: clusterThumbnailUrl(clusterStory.storyHash), isRead)
 
-        vh.outerBar.alpha = if (isRead) CLUSTER_READ_BAR_ALPHA else 1.0f
-        vh.innerBar.alpha = if (isRead) CLUSTER_READ_BAR_ALPHA else 1.0f
-        vh.sentiment.imageAlpha = if (isRead) CLUSTER_READ_SENTIMENT_ALPHA_B255 else 255
-        vh.feedIcon.imageAlpha = if (isRead) CLUSTER_READ_FEED_ICON_ALPHA_B255 else 255
         vh.title.alpha = 1.0f
         vh.date.alpha = 1.0f
+        bindClusterReadState(vh, clusterStory, animated = false)
+    }
+
+    private fun bindClusterReadState(vh: ClusterRowViewHolder, story: Story.ClusterStory, animated: Boolean) {
+        val palette = StoryClusterThemeStyle.palette(prefsRepo.getResolvedTheme(context))
+        val isRead = story.read
+        vh.readStateAnimator.update(
+            textColors = listOf(
+                vh.title to if (isRead) palette.readTitleColor else palette.titleColor,
+                vh.date to if (isRead) palette.readMetaColor else palette.metaColor,
+            ),
+            imageAlphas = listOf(
+                vh.sentiment to if (isRead) CLUSTER_READ_SENTIMENT_ALPHA_B255 else 255,
+                vh.feedIcon to if (isRead) CLUSTER_READ_FEED_ICON_ALPHA_B255 else 255,
+                vh.preview to if (isRead) CLUSTER_READ_PREVIEW_ALPHA_B255 else 255,
+            ),
+            viewAlphas = listOf(
+                vh.outerBar to if (isRead) CLUSTER_READ_BAR_ALPHA else 1f,
+                vh.innerBar to if (isRead) CLUSTER_READ_BAR_ALPHA else 1f,
+                vh.badge to if (isRead) 0.4f else 1f,
+            ),
+            animated = animated,
+        )
     }
 
     private fun bindClusterPreview(
@@ -1307,32 +1763,7 @@ class StoryViewAdapter(
 
     private fun isArchiveUser(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
 
-    private fun visibleDisplayItemCount(): Int {
-        if (fs == null || !UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
-            return displayItems.size
-        }
-
-        val visibleStories = min(3.0, stories.size.toDouble()).toInt()
-        if (visibleStories <= 0) {
-            return 0
-        }
-
-        var seenStories = 0
-        displayItems.forEachIndexed { index, item ->
-            if (item is DisplayItem.StoryRow) {
-                seenStories++
-                if (seenStories == visibleStories) {
-                    var end = index + 1
-                    while (end < displayItems.size && displayItems[end] is DisplayItem.ClusterRow) {
-                        end++
-                    }
-                    return end
-                }
-            }
-        }
-
-        return displayItems.size
-    }
+    private fun visibleDisplayItemCount(): Int = displayItems.size
 
     private fun rebuildStoryDisplayPositions() {
         storyDisplayPositions.clear()
@@ -1350,53 +1781,16 @@ class StoryViewAdapter(
         rebuildStoryDisplayPositions()
     }
 
-    internal inner class StoryViewGestureDetector(
-        private val vh: StoryViewHolder,
-    ) : SimpleOnGestureListener() {
-        override fun onScroll(
-            e1: MotionEvent?,
-            e2: MotionEvent,
-            distanceX: Float,
-            distanceY: Float,
-        ): Boolean {
-            val displayWidthPx = UIUtils.getDisplayWidthPx(context)
-            val edgeWithNavGesturesPaddingPx = UIUtils.dp2px(context, 40).toFloat()
-            val rightEdgeNavGesturePaddingPx = displayWidthPx - edgeWithNavGesturesPaddingPx
-            if (e1 != null &&
-                shouldHandleLeftToRightStoryGesture() &&
-                e1.x > edgeWithNavGesturesPaddingPx &&
-                // the gesture should not start too close to the left edge and
-                e2.x - e1.x > 50f &&
-                // move horizontally to the right and
-                abs(distanceY.toDouble()) < 25f
-            ) { // have minimal vertical travel, so we don't capture scrolling gestures
-                vh.gestureL2R = true
-                vh.gestureDebounce = true
-                return true
-            }
-            if (e1 != null &&
-                e1.x < rightEdgeNavGesturePaddingPx &&
-                // the gesture should not start too close to the right edge and
-                e1.x - e2.x > 50f &&
-                // move horizontally to the left and
-                abs(distanceY.toDouble()) < 25f
-            ) { // have minimal vertical travel, so we don't capture scrolling gestures
-                vh.gestureR2L = true
-                vh.gestureDebounce = true
-                return true
-            }
-            return false
-        }
-
-        private fun shouldHandleLeftToRightStoryGesture(): Boolean {
-            if (context !is ItemsList) return true
-            return prefsRepo.getLeftToRightGestureAction() != GestureAction.GEST_ACTION_BACK
-        }
-    }
-
     fun notifyAllItemsChanged() {
+        // StoryViewAdapter.kt must not apply a diff calculated against the row shape this replaces.
+        // Keep the latest pending data so an initial layout/preference change cannot drop its first batch.
+        val pending = latestSubmission
+        invalidateStoryDiffs()
         rebuildDisplayItemsFromCurrentStories()
         notifyDataSetChanged()
+        pending?.let {
+            submitStories(it.stories, it.loadId, it.grid, null, it.skipBackfill, it.onCommitted)
+        }
     }
 
     private fun backgroundResourceFor(story: Story): Int {
@@ -1427,19 +1821,23 @@ class StoryViewAdapter(
         )
     }
 
-    private sealed interface DisplayItem {
+    internal sealed interface DisplayItem {
         val stableId: Long
+        val read: Boolean
 
-        fun contentMatches(other: DisplayItem): Boolean
+        fun contentMatches(other: DisplayItem): Boolean = read == other.read && presentationMatches(other)
+        fun presentationMatches(other: DisplayItem): Boolean
 
         data class StoryRow(
             val story: Story,
             val storyIndex: Int,
         ) : DisplayItem {
             override val stableId: Long = story.storyHash.hashCode().toLong()
+            override val read = story.read
+            private val content = StoryRowContent(story)
 
-            override fun contentMatches(other: DisplayItem): Boolean =
-                other is StoryRow && story.isChanged(other.story)
+            override fun presentationMatches(other: DisplayItem): Boolean =
+                other is StoryRow && content == other.content
         }
 
         data class ClusterRow(
@@ -1448,11 +1846,15 @@ class StoryViewAdapter(
             val parentStoryHash: String,
         ) : DisplayItem {
             override val stableId: Long = "$parentStoryHash:${clusterStory.storyHash}".hashCode().toLong()
+            override val read = clusterStory.read
+            private val content = ClusterRowContent(clusterStory)
 
-            override fun contentMatches(other: DisplayItem): Boolean =
-                other is ClusterRow && clusterStory == other.clusterStory
+            override fun presentationMatches(other: DisplayItem): Boolean =
+                other is ClusterRow && content == other.content
         }
     }
+
+    private object ReadStatePayload
 
     companion object {
         const val VIEW_TYPE_STORY_TILE: Int = 1
@@ -1460,9 +1862,6 @@ class StoryViewAdapter(
         const val VIEW_TYPE_FOOTER: Int = 3
         const val VIEW_TYPE_CLUSTER_ROW: Int = 4
 
-        private const val DEFAULT_TEXT_SIZE_STORY_FEED_TITLE = 13f
-        private const val DEFAULT_TEXT_SIZE_STORY_TITLE = 14f
-        private const val DEFAULT_TEXT_SIZE_STORY_DATE_OR_AUTHOR = 12f
         private const val DEFAULT_TEXT_SIZE_STORY_SNIP = 13f
 
         private const val READ_STORY_ALPHA = 0.35f

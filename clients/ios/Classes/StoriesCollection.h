@@ -63,6 +63,7 @@
 @property (nonatomic, readonly) BOOL isDashboardOrFromDashboardStory;
 @property (nonatomic, readonly) BOOL isEverything;
 @property (nonatomic, readonly) BOOL isInfrequent;
+@property (nonatomic, readonly) BOOL isTrending;
 @property (nonatomic, readonly) BOOL isRiverOrSocial;
 @property (nonatomic, readonly) BOOL isCustomFolder;
 @property (nonatomic, readonly) BOOL isCustomFolderOrFeed;
@@ -72,6 +73,9 @@
 @property (nonatomic, readonly) NSString *activeFeedIdStr;
 @property (nonatomic, readonly) NSString *activeOrder;
 @property (nonatomic, readonly) NSString *activeReadFilter;
+@property (nonatomic, copy) NSString *readFilterOverride;
+@property (nonatomic, copy) NSString *notificationStoryHash;
+@property (nonatomic, copy) NSDictionary *notificationStory;
 @property (nonatomic, readonly) NSString *activeStoryTitlesPosition;
 @property (nonatomic, readonly) NSString *activeStoryView;
 @property (nonatomic, readonly) NSString *orderKey;

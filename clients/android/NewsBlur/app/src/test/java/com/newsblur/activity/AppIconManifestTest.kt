@@ -1,5 +1,8 @@
 package com.newsblur.activity
 
+import com.newsblur.BuildConfig
+import com.newsblur.util.AppIconAppearanceMode
+import com.newsblur.util.AppIconFlavor
 import com.newsblur.util.AppIconManager
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -11,46 +14,88 @@ import javax.xml.parsers.DocumentBuilderFactory
 class AppIconManifestTest {
     @Test
     fun appIconLauncherAliases_matchCatalog() {
-        val manifest = parseManifest()
-        val aliases = manifest.getElementsByTagName("activity-alias")
         val launcherAliases = mutableMapOf<String, Element>()
 
-        for (index in 0 until aliases.length) {
-            val alias = aliases.item(index) as? Element ?: continue
-            if (alias.hasMainLauncherIntent()) {
-                launcherAliases[alias.getAttribute("android:name")] = alias
+        val manifests = mutableListOf(parseManifest())
+        if (BuildConfig.BUILD_TYPE == "alpha") {
+            manifests += parseXml("app/src/alpha/AndroidManifest.xml")
+        }
+        for (manifest in manifests) {
+            val aliases = manifest.getElementsByTagName("activity-alias")
+            for (index in 0 until aliases.length) {
+                val alias = aliases.item(index) as? Element ?: continue
+                if (alias.hasMainLauncherIntent()) {
+                    launcherAliases[alias.getAttribute("android:name")] = alias
+                }
             }
         }
 
-        assertEquals(AppIconManager.flavors.size, launcherAliases.size)
+        assertEquals(AppIconManager.flavors.size * AppIconAppearanceMode.entries.size, launcherAliases.size)
 
-        AppIconManager.flavors.forEachIndexed { index, flavor ->
-            val alias = launcherAliases[flavor.aliasSuffix]
-            assertNotNull("Missing launcher alias for ${flavor.id}", alias)
-            alias!!
-            assertEquals(".activity.InitActivity", alias.getAttribute("android:targetActivity"))
-            assertEquals("@mipmap/app_icon_${flavor.id.replace("-", "_")}", alias.getAttribute("android:icon"))
-            assertEquals(if (index == 0) "true" else "false", alias.getAttribute("android:enabled"))
+        AppIconManager.flavors.forEach { flavor ->
+            AppIconAppearanceMode.entries.forEach { mode ->
+                val aliasName = flavor.aliasSuffix + mode.componentSuffix
+                val alias = launcherAliases[aliasName]
+                assertNotNull("Missing launcher alias for ${flavor.id} $mode", alias)
+                alias!!
+                assertEquals(".activity.InitActivity", alias.getAttribute("android:targetActivity"))
+                assertEquals("@mipmap/app_icon_${resourceName(flavor, mode)}", alias.getAttribute("android:icon"))
+                val enabled = alias.getAttribute("android:enabled").replace(
+                    "\${defaultLauncherEnabled}",
+                    (BuildConfig.BUILD_TYPE != "alpha").toString(),
+                )
+                assertEquals(expectedEnabled(flavor, mode), enabled)
+                assertEquals("@string/app_name", alias.getAttribute("android:label"))
+            }
         }
     }
 
     @Test
     fun appIconAdaptiveIcons_useInsetForegrounds() {
         AppIconManager.flavors.forEach { flavor ->
-            val resourceName = flavor.id.replace("-", "_")
-            val adaptiveIcon = parseXml("app/src/main/res/mipmap-anydpi/app_icon_$resourceName.xml")
-            val foreground = adaptiveIcon.getElementsByTagName("foreground").item(0) as Element
-            val background = adaptiveIcon.getElementsByTagName("background").item(0) as Element
+            AppIconAppearanceMode.entries.forEach { mode ->
+                val resourceName = resourceName(flavor, mode)
+                val adaptiveIcon = parseXml("app/src/main/res/mipmap-anydpi/app_icon_$resourceName.xml")
+                val foreground = adaptiveIcon.getElementsByTagName("foreground").item(0) as Element
+                val background = adaptiveIcon.getElementsByTagName("background").item(0) as Element
 
-            assertEquals("@android:color/transparent", background.getAttribute("android:drawable"))
-            assertEquals("@drawable/app_icon_${resourceName}_foreground", foreground.getAttribute("android:drawable"))
+                val isAlpha = flavor.id == "alpha"
+                val foregroundName = if (isAlpha) "alpha" else resourceName
+                val backgroundRes = if (isAlpha) "@color/app_icon_alpha_background" else "@android:color/transparent"
+                assertEquals(backgroundRes, background.getAttribute("android:drawable"))
+                assertEquals("@drawable/app_icon_${foregroundName}_foreground", foreground.getAttribute("android:drawable"))
 
-            val foregroundDrawable = parseXml("app/src/main/res/drawable/app_icon_${resourceName}_foreground.xml")
-            assertEquals("inset", foregroundDrawable.tagName)
-            assertEquals("8dp", foregroundDrawable.getAttribute("android:inset"))
-            assertEquals("@drawable/app_icon_$resourceName", foregroundDrawable.getAttribute("android:drawable"))
+                val foregroundDrawable = parseXml("app/src/main/res/drawable/app_icon_${foregroundName}_foreground.xml")
+                assertEquals("inset", foregroundDrawable.tagName)
+                assertEquals(if (isAlpha) "18dp" else "8dp", foregroundDrawable.getAttribute("android:inset"))
+                assertEquals("@drawable/app_icon_$foregroundName", foregroundDrawable.getAttribute("android:drawable"))
+            }
         }
     }
+
+    private fun resourceName(
+        flavor: AppIconFlavor,
+        mode: AppIconAppearanceMode,
+    ): String {
+        val flavorResourceName = flavor.id.replace("-", "_")
+        val modeSuffix =
+            when (mode) {
+                AppIconAppearanceMode.AUTO -> ""
+                AppIconAppearanceMode.LIGHT -> "_light"
+                AppIconAppearanceMode.DARK -> "_dark"
+            }
+        return "$flavorResourceName$modeSuffix"
+    }
+
+    private fun expectedEnabled(
+        flavor: AppIconFlavor,
+        mode: AppIconAppearanceMode,
+    ): String =
+        if (flavor == AppIconManager.defaultFlavor && mode == AppIconAppearanceMode.AUTO) {
+            "true"
+        } else {
+            "false"
+        }
 
     private fun parseManifest(): Element {
         val manifestFile =

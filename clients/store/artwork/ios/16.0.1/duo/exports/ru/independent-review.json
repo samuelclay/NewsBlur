@@ -1,0 +1,30 @@
+{
+  "language": "ru",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:10:02Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Russian headlines fit as complete words, Cyrillic glyphs and labels are legible.",
+    "Russian navigation/search/source/filter/date controls visible; no missing food photographs or article content."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-ru-duo-inner-2853x2007-01.png",
+      "sha256": "14e7adab14bf31970c493df3efcba3f23e33977ef64de31da800573721a99200"
+    },
+    {
+      "filename": "newsblur-16.0.1-ru-duo-inner-2853x2007-02.png",
+      "sha256": "7ed2b4bcbc655a2452b29ac093ee7ae64f84bb071849cc6af6ee8464919da689"
+    },
+    {
+      "filename": "newsblur-16.0.1-ru-duo-inner-2853x2007-03.png",
+      "sha256": "5da2c9e139b06f4d2ef26a6a1eb8d81df014213e1aa1c690b73e567eb2a420cf"
+    },
+    {
+      "filename": "newsblur-16.0.1-ru-duo-inner-2853x2007-04.png",
+      "sha256": "25ef1e0c7f86ca17f5fa56429d8c2cf3807116995f9f499b0b788d828a628915"
+    }
+  ],
+  "contact_sha256": "98afeb754b4e76a8d5b2591146ededd48a57f5e11612039908c2efa3e4941527"
+}

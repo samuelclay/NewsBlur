@@ -2,11 +2,13 @@ package com.newsblur.activity
 
 import android.content.ComponentCallbacks2
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
@@ -15,30 +17,46 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
+import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.snackbar.Snackbar
+import com.newsblur.BuildConfig
 import com.newsblur.R
 import com.newsblur.database.ReadingAdapter
 import com.newsblur.databinding.ActivityReadingBinding
+import com.newsblur.design.ListenPalette
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Story
+import com.newsblur.listen.ListenEvent
+import com.newsblur.listen.ListenPhase
+import com.newsblur.listen.ListenUiState
 import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingItemFragment.Companion.VERTICAL_SCROLL_DISTANCE_DP
 import com.newsblur.fragment.ReadingPagerFragment
 import com.newsblur.keyboard.KeyboardEvent
 import com.newsblur.keyboard.KeyboardListener
 import com.newsblur.keyboard.KeyboardManager
+import com.newsblur.preference.ListenPreferences
 import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
 import com.newsblur.service.NbSyncManager.UPDATE_STATUS
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
@@ -53,20 +71,30 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PendingTransitionUtils
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadTimeTracker
+import com.newsblur.util.ReaderTargetLoader
 import com.newsblur.util.StateFilter
+import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryOrder
+import com.newsblur.util.StorySplitView
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
 import com.newsblur.util.VolumeKeyNavigation
+import com.newsblur.util.WebViewPrewarm
 import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
+import com.newsblur.view.readerUsesSystemBackGesture
 import com.newsblur.viewModel.ReadingViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -98,6 +126,12 @@ internal data class ReadingConfigChangeRestore(
     val story: Story? = null,
 )
 
+internal data class ReadingPagerTargetRestoreState(
+    val storyHash: String?,
+    val restoredCurrentStory: Story?,
+    val isRestoringState: Boolean,
+)
+
 internal enum class ReaderWebViewReleaseScope {
     NONE,
     BACKGROUND_ONLY,
@@ -110,7 +144,7 @@ internal fun readerWebViewReleaseScopeForTrim(
 ): ReaderWebViewReleaseScope =
     when {
         isChangingConfigurations -> ReaderWebViewReleaseScope.NONE
-        level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> ReaderWebViewReleaseScope.ALL
+        level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE -> ReaderWebViewReleaseScope.ALL
         level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> ReaderWebViewReleaseScope.BACKGROUND_ONLY
         else -> ReaderWebViewReleaseScope.NONE
     }
@@ -135,13 +169,22 @@ internal fun createReadingConfigChangeRestore(
     scrollPosRel: Float?,
     recentlyMarkedReadStory: Story? = null,
 ): ReadingConfigChangeRestore? {
-    val story = recentlyMarkedReadStory ?: visibleStory ?: pagerStory
+    val story = visibleStory?.let { visible ->
+        recentlyMarkedReadStory?.takeIf { it.storyHash == visible.storyHash } ?: visible
+    } ?: recentlyMarkedReadStory ?: pagerStory
     return createReadingConfigChangeRestore(
         storyHash = story?.storyHash ?: fallbackStoryHash,
         scrollPosRel = scrollPosRel,
         story = story,
     )
 }
+
+internal fun readingStateAfterPagerTargetFound(restoredCurrentStory: Story?): ReadingPagerTargetRestoreState =
+    ReadingPagerTargetRestoreState(
+        storyHash = null,
+        restoredCurrentStory = restoredCurrentStory,
+        isRestoringState = false,
+    )
 
 internal fun mergeRestoredStoryIntoStories(
     stories: List<Story>,
@@ -182,14 +225,33 @@ private fun shouldInsertRestoredStoryBefore(
     }
 }
 
+/**
+ * Reading.kt works in story positions. ReadingAdapter.kt mirrors ViewPager's pages in right-to-left
+ * layouts (ReadingPageOrder.kt), so the pager's current item is always read and set through it.
+ */
+private val ViewPager.currentStoryPosition: Int
+    get() = (adapter as? ReadingAdapter)?.storyPositionForPage(currentItem) ?: currentItem
+
+private fun ViewPager.showStoryPosition(
+    position: Int,
+    smoothScroll: Boolean,
+) {
+    setCurrentItem((adapter as? ReadingAdapter)?.pageForStoryPosition(position) ?: position, smoothScroll)
+}
+
 @AndroidEntryPoint
 abstract class Reading :
     NbActivity(),
-    OnPageChangeListener,
     ScrollChangeListener,
     KeyboardListener {
     @Inject
     lateinit var feedUtils: FeedUtils
+
+    @Inject
+    lateinit var readerTargetLoader: ReaderTargetLoader
+
+    @Inject
+    lateinit var listenPreferences: ListenPreferences
 
     @Inject
     @IconLoader
@@ -201,11 +263,27 @@ abstract class Reading :
     // Activities navigate to a particular story by hash.
     // We can find it once we have the cursor.
     private var storyHash: String? = null
+    private var targetStoryLoad: Job? = null
 
     private var pager: ViewPager? = null
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
+
+    // A reader opening in a tablet split's reader pane starts under a plain cover in the pane's
+    // background color. The system slides this window up into the pane, which nothing here can turn
+    // off, and a plain surface shows no motion. The cover fades away once that slide is over and
+    // the first story has painted.
+    private var fadeInSplitReader = false
+    private var splitReaderEntered = false
+    private var splitReaderStoryPainted = false
+    private var splitReaderCover: View? = null
+
+    // Parked by a feed switch in the story list beside it (park): showing the empty pane's look and
+    // leaving the old feed alone until the next story tapped replaces this reader.
+    private var parked = false
+    private var placeholderLook: View? = null
     private var unreadSearchActive = false
+    private var navigationIntentGeneration = 0L
     private var restoredStoryScrollPosRel = 0f
     private var pendingConfigChangeRestore: ReadingConfigChangeRestore? = null
     private var restoredCurrentStory: Story? = null
@@ -213,6 +291,7 @@ abstract class Reading :
 
     // mark story as read behavior
     private var markStoryReadJob: Job? = null
+    private var pendingDwellStory: Story? = null
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
     private val readTimeTracker = ReadTimeTracker()
     private var readTimeTickJob: Job? = null
@@ -220,9 +299,6 @@ abstract class Reading :
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
     private var activeUnreadSnackbar: com.google.android.material.snackbar.Snackbar? = null
-    private var overlayRangeTopPx = 0f
-    private var overlayRangeBotPx = 0f
-    private var lastVScrollPos = 0
 
     // enabling multi window mode from recent apps on the device
     // creates a different activity lifecycle compared to a device rotation
@@ -240,6 +316,8 @@ abstract class Reading :
     private lateinit var binding: ActivityReadingBinding
     private lateinit var readingViewModel: ReadingViewModel
     private lateinit var traverseBar: ReadingTraverseBar
+    private var endControls: ReaderEndControls? = null
+    private var overlaysSuppressed = false
 
     private var lastBatchFirstUnreadIndex: Int = -1
     private var storyCounts: Int? = null
@@ -247,6 +325,20 @@ abstract class Reading :
     private var suppressNextExitTransition = false
     private var allowImmediateFinish = false
     private var predictiveBackInProgress = false
+    private var waitingForPreparedEntrance = false
+    private var waitingForInitialArticle = false
+    private var preparedEntranceTimeout: Runnable? = null
+    private var preparedEntranceLoading: Snackbar? = null
+    private var preparedEntranceStartedAt = 0L
+    private var preparedPageNavigation: PreparedReaderNavigation? = null
+    private var readerPageSnapshot: ReaderPageSnapshot? = null
+    private var preparedPageStartedAt = 0L
+    private var readerIsPaused = true
+    private var toolbarVisibleFraction = 1f
+    private var traversalRevealFraction = 0f
+    private var pagerDragStartItem: Int? = null
+    private var preparedVisibleStory: Story? = null
+    private var preparedVisibleScrollPosition: Float? = null
 
     // Guard against marking stories read during activity recreation (e.g., rotation).
     // When the activity is recreated, ViewPager state restoration can fire onPageSelected
@@ -260,11 +352,32 @@ abstract class Reading :
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
-        PendingTransitionUtils.overrideEnterTransition(this)
+        // Reading.kt's prepared entrance slides the reader over its story list, which is
+        // already visible beside the reader in a tablet split (StorySplitView.kt).
+        waitingForPreparedEntrance = savedInstanceBundle == null && !isTaskRoot && !StorySplitView.isInSplit(this)
+        waitingForInitialArticle = waitingForPreparedEntrance
+        fadeInSplitReader = savedInstanceBundle == null && StorySplitView.isInSplit(this)
+        // A rotation recreates a parked reader (park), which stays parked.
+        parked = savedInstanceBundle?.getBoolean(BUNDLE_PARKED, false) == true
+        if (parked) stopLoading = true
+        if (waitingForPreparedEntrance) {
+            PendingTransitionUtils.overrideNoEnterTransition(this)
+        } else {
+            PendingTransitionUtils.overrideEnterTransition(this)
+        }
         window.setBackgroundDrawableResource(android.R.color.transparent)
         readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
+        if (waitingForPreparedEntrance) {
+            // Reading.kt enters with the native title; ReadingItemFragment.kt fades in the article separately.
+            preparedEntranceStartedAt = SystemClock.uptimeMillis()
+            prepareReaderSurface(binding.root)
+            binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+            val timeout = Runnable { showPreparedEntranceLoading() }
+            preparedEntranceTimeout = timeout
+            interactiveBackSurface().postDelayed(timeout, 1000L)
+        }
 
         try {
             fs = intent.getSerializableExtra(EXTRA_FEEDSET) as FeedSet?
@@ -313,20 +426,39 @@ abstract class Reading :
                 "loadNext=${prefsRepo.loadNextOnMarkRead()} fs=${feedSetDebug()}",
         )
 
+        toolbarVisibleFraction = if (savedInstanceBundle?.getBoolean(EXTRA_TOOLBAR_HIDDEN)
+            ?: intent.getBooleanExtra(EXTRA_TOOLBAR_HIDDEN, false)) 0f else 1f
         setupViews()
+        StorySplitView.trackSplit(this) {
+            updateReaderFullscreenButton()
+            if (!parked && StorySplitView.isInSplit(this)) {
+                ItemsList.peekReadingLaunchParent(taskId)?.followReadingStory(currentReadingStory()?.storyHash)
+            }
+        }
         setupListeners()
         setupObservers()
         setupOnBackPressed()
+        if (parked) fadeToPlaceholder(0L)
+        if (fadeInSplitReader) {
+            splitReaderCover = addPlaceholderLook(withLogo = false)
+            // onEnterAnimationComplete can come late behind a busy main thread, so the slide also
+            // counts as over a moment after this window's first frame.
+            binding.root.doOnPreDraw { binding.root.postDelayed({ onSplitReaderEntered() }, SPLIT_READER_SLIDE_MS) }
+            // A story that never paints (offline, a failed load) still shows its page.
+            binding.root.postDelayed({ revealSplitReader() }, SPLIT_READER_FADE_TIMEOUT_MS)
+        }
         loadActiveStories(true)
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
+        savedInstanceState.putBoolean(BUNDLE_PARKED, parked)
+        savedInstanceState.putBoolean(EXTRA_TOOLBAR_HIDDEN, toolbarVisibleFraction == 0f)
         val activeStory = activeReadingStory()
         val pagerStory = pagerReadingStory()
         logReaderRestore(
             "onSave storyHash=$storyHash active=${storyDebug(activeStory)} pager=${storyDebug(pagerStory)} " +
-                "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1}",
+                "pagerIndex=${pager?.currentStoryPosition ?: -1} count=${readingAdapter?.count ?: -1}",
         )
         val currentStoryForSave = currentReadingStory()
         if (storyHash != null) {
@@ -338,8 +470,7 @@ abstract class Reading :
         if (startingUnreadCount != 0) {
             savedInstanceState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount)
         }
-        readingFragment
-            ?.currentScrollPosRel()
+        (preparedVisibleScrollPosition ?: readingFragment?.currentScrollPosRel())
             ?.takeIf { it > 0f }
             ?.let { savedInstanceState.putFloat(BUNDLE_CURRENT_SCROLL_POS_REL, it) }
         currentStoryForSave
@@ -349,6 +480,14 @@ abstract class Reading :
 
     override fun onResume() {
         super.onResume()
+        readerIsPaused = false
+        latestReaderRef = WeakReference(this)
+        // A parked reader leaves the reading session, which now belongs to another feed, alone.
+        if (parked) return
+        // Reading.kt reapplies preferences after returning from Settings, preserving video suppression.
+        endControls?.update()
+        updateToolbarListenButton()
+        setOverlayAlpha(toolbarVisibleFraction)
         if (syncServiceState.isHousekeepingRunning()) finish()
         // this view shows stories, it is not safe to perform cleanup
         stopLoading = false
@@ -359,9 +498,30 @@ abstract class Reading :
         keyboardManager.addListener(this)
         resumeCurrentStoryReadTimeTracking()
         updateBackSwipeGestureExclusion()
+        preparedPageNavigation?.resume()
+        if (waitingForPreparedEntrance || preparedPageNavigation?.isPreparing == true) schedulePreparedLoading()
+        if (waitingForPreparedEntrance) {
+            pager?.currentStoryPosition?.let { readingAdapter?.getStory(it)?.storyHash }?.let(::onReaderPageNativeReady)
+        }
+        pager?.currentStoryPosition?.let { position ->
+            if (readingAdapter?.getExistingItem(position)?.isArticleVisible() == true) {
+                readingAdapter?.getStory(position)?.storyHash?.let(::onReaderArticleVisible)
+            }
+        }
+        resumeStoryDwell()
     }
 
     override fun onPause() {
+        cancelStoryDwell()
+        cancelUnreadSearch()
+        readerIsPaused = true
+        if (isFinishing) {
+            preparedPageNavigation?.cancel(releaseSnapshot = false)
+            readerPageSnapshot?.freezeForExit()
+        } else {
+            preparedPageNavigation?.pause()
+        }
+        clearPreparedLoading()
         if (!isFinishing) {
             resetInteractiveReaderBackSwipe(cancelAnimation = true)
         }
@@ -377,14 +537,37 @@ abstract class Reading :
 
     override fun onStop() {
         if (!isChangingConfigurations) {
-            readingAdapter?.releaseBackgroundWebViews(currentReadingStory()?.storyHash)
+            val activeHash = if (preparedPageNavigation?.isActive == true) {
+                pagerReadingStory()?.storyHash
+            } else {
+                currentReadingStory()?.storyHash
+            }
+            readingAdapter?.releaseBackgroundWebViews(activeHash)
         }
         super.onStop()
     }
 
+    override fun onDestroy() {
+        if (::traverseBar.isInitialized) traverseBar.close()
+        endControls?.close()
+        endControls = null
+        if (latestReaderRef.get() === this) latestReaderRef.clear()
+        cancelStoryDwell(clearStory = true)
+        preparedPageNavigation?.cancel()
+        readerPageSnapshot = null
+        clearPreparedLoading()
+        super.onDestroy()
+    }
+
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        when (readerWebViewReleaseScopeForTrim(level, isChangingConfigurations)) {
+        val releaseScope = readerWebViewReleaseScopeForTrim(level, isChangingConfigurations)
+        logReaderRestore(
+            "onTrimMemory level=$level scope=$releaseScope changing=$isChangingConfigurations " +
+                "active=${storyDebug(activeReadingStory())} pager=${storyDebug(pagerReadingStory())} " +
+                "pagerIndex=${pager?.currentStoryPosition ?: -1} count=${readingAdapter?.count ?: -1}",
+        )
+        when (releaseScope) {
             ReaderWebViewReleaseScope.BACKGROUND_ONLY ->
                 readingAdapter?.releaseBackgroundWebViews(currentReadingStory()?.storyHash)
 
@@ -404,6 +587,13 @@ abstract class Reading :
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
+        // TabletPaneDivider.kt changes only bounds; keep the current WebView and scroll position.
+        if (StorySplitView.isResizingPanes(this)) {
+            super.onConfigurationChanged(newConfig)
+            updateReaderFullscreenButton()
+            return
+        }
+        cancelStoryDwell(clearStory = true)
         pendingConfigChangeRestore = captureReadingConfigChangeRestore()
         logReaderRestore(
             "onConfigurationChanged captured=${restoreDebug(pendingConfigChangeRestore)} " +
@@ -418,18 +608,63 @@ abstract class Reading :
         }
 
         super.onConfigurationChanged(newConfig)
+        // StorySplitView.kt may keep the same expanded pair while the window gets narrower.
+        updateReaderFullscreenButton()
         restoreReadingAfterConfigurationChange()
     }
 
+    private fun updateReaderFullscreenButton() {
+        val button = binding.includeToolbar.toolbarFullscreenButton
+        button.visibility = if (!parked && StorySplitView.canToggleReaderFullscreen(this)) View.VISIBLE else View.GONE
+        val fullscreen = StorySplitView.isReaderFullscreen(this)
+        button.setImageResource(if (fullscreen) R.drawable.ic_reader_fullscreen_exit else R.drawable.ic_reader_fullscreen)
+        button.contentDescription = getString(if (fullscreen) R.string.reader_exit_fullscreen else R.string.reader_enter_fullscreen)
+        button.tooltipText = button.contentDescription
+    }
+
     private fun setupViews() {
-        // this value is expensive to compute but doesn't change during a single runtime
-        overlayRangeTopPx = UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP).toFloat()
-        overlayRangeBotPx = UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP).toFloat()
+        // Reading.kt uses native nested scrolling so the page follows the toolbar without WebView relayout.
+        val appBar = binding.includeToolbar.root
+        // Reading.kt establishes a scroll range before the initial hidden state is laid out.
+        // UIUtils.java supplies feed metadata asynchronously and must not own these flags.
+        binding.includeToolbar.toolbar.apply {
+            layoutParams = (layoutParams as AppBarLayout.LayoutParams).apply {
+                scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+            }
+        }
+        appBar.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { bar, offset ->
+                val visibleFraction = 1f - (-offset.toFloat() / bar.totalScrollRange.coerceAtLeast(1))
+                toolbarVisibleFraction = visibleFraction.coerceIn(0f, 1f)
+                setOverlayAlpha(toolbarVisibleFraction)
+            },
+        )
+        ((appBar.layoutParams as CoordinatorLayout.LayoutParams).behavior as? com.newsblur.view.ReaderToolbarBehavior)
+            ?.onReaderScroll = ::onReaderScroll
+
+        if (toolbarVisibleFraction == 0f) appBar.setExpanded(false, false)
 
         findViewById<View>(R.id.toolbar_settings_button)?.setOnClickListener { openStorySettingsMenu(it) }
+        binding.includeToolbar.toolbarFullscreenButton.setOnClickListener {
+            if (StorySplitView.setReaderFullscreen(this, !prefsRepo.isReaderFullscreenEnabled())) {
+                updateReaderFullscreenButton()
+            }
+        }
+        updateReaderFullscreenButton()
+        // The toolbar's Listen action does what the story's own Listen button does (ReadingItemFragment.kt).
+        binding.includeToolbar.toolbarListenButton.setOnClickListener { readingFragment?.listenToStory() }
+        updateToolbarListenButton()
 
         traverseBar = ReadingTraverseBar(this, binding, prefsRepo.getSelectedTheme())
         traverseBar.setup()
+        endControls = ReaderEndControls(
+            binding.contentBottomOverlay,
+            { if (parked) null else readingFragment?.traversalControlsSlot() },
+            { setOverlayAlpha(toolbarVisibleFraction) },
+        )
+        endControls?.start()
 
         ViewUtils.setViewElevation(binding.readingOverlayLeftGroup, OVERLAY_ELEVATION_DP)
         ViewUtils.setViewElevation(binding.readingOverlayRightGroup, OVERLAY_ELEVATION_DP)
@@ -462,8 +697,13 @@ abstract class Reading :
         )
     }
 
-    private fun currentReadingStory(): Story? =
-        recentlyMarkedReadStory ?: activeReadingStory() ?: pagerReadingStory()
+    private fun currentReadingStory(): Story? {
+        val visibleStory = preparedVisibleStory ?: activeReadingStory()
+        // Reading.kt keeps a manual read's updated state only for the article that is actually still visible.
+        return visibleStory?.let { visible ->
+            recentlyMarkedReadStory?.takeIf { it.storyHash == visible.storyHash } ?: visible
+        } ?: recentlyMarkedReadStory ?: pagerReadingStory()
+    }
 
     private fun activeReadingStory(): Story? = readingAdapter?.getActiveStory()
 
@@ -471,7 +711,7 @@ abstract class Reading :
         if (pager == null || readingAdapter == null) {
             null
         } else {
-            readingAdapter!!.getStory(pager!!.currentItem)
+            readingAdapter!!.getStory(pager!!.currentStoryPosition)
         }
 
     private fun restoreReadingAfterConfigurationChange() {
@@ -488,10 +728,10 @@ abstract class Reading :
             val restorePosition = adapter.findHash(restore.storyHash)
             logReaderRestore(
                 "restore post restore=${restoreDebug(restore)} position=$restorePosition " +
-                    "pagerIndex=${pager.currentItem} count=${adapter.count}",
+                    "pagerIndex=${pager.currentStoryPosition} count=${adapter.count}",
             )
             if (restorePosition >= 0) {
-                pager.setCurrentItem(restorePosition, false)
+                pager.showStoryPosition(restorePosition, false)
                 onPageSelected(restorePosition)
                 loadActiveStories()
             } else if (restore.story != null) {
@@ -520,6 +760,93 @@ abstract class Reading :
         readingViewModel.activeStories.observe(this) {
             setStoryData(it)
         }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listenManager.events.collect(::followListenAdvance)
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // ListenUiState changes on every 200ms tick; the toolbar's Listen action only changes on these values.
+                listenManager.state
+                    .map(::toolbarListenLook)
+                    .distinctUntilChanged()
+                    .collect(::applyToolbarListenLook)
+            }
+        }
+    }
+
+    /** Reading.kt's stories in order, so Listen can continue with the next unread one when a story finishes. */
+    fun listenQueue(): List<Story> = readingAdapter?.storiesSnapshot().orEmpty()
+
+    /**
+     * Whether Listen should continue down this list as sorted rather than to its next unread story: Saved Stories
+     * and Read Stories hold only read stories, so skipping reads would leave nothing to continue to
+     * (ListenAutoContinue.kt).
+     */
+    fun listenFollowsListOrder(): Boolean = fs?.let { it.isAllSaved || it.isSingleSavedTag || it.isAllRead } == true
+
+    /** The feed or folder this reader shows, for Now Playing's "Then from …" (ListenNowPlayingSheet.kt). */
+    fun listenQueueName(): String? =
+        findViewById<android.widget.TextView>(R.id.toolbar_text)
+            ?.text
+            ?.toString()
+            ?.takeIf { it.isNotBlank() }
+
+    /** When Listen auto-continues from the story on screen, the reader turns to the next one with it. */
+    private fun followListenAdvance(event: ListenEvent) {
+        if (event !is ListenEvent.Advanced) return
+        if (currentReadingStory()?.storyHash != event.fromStoryHash) return
+        val position = readingAdapter?.findHash(event.to.storyHash) ?: -1
+        if (position >= 0) navigateToStory(position)
+    }
+
+    /**
+     * What the toolbar's Listen action shows for the story on screen, like the story's own button
+     * (ReadingItemFragment.kt's listenButtonLook): Pause while it plays, Play while it's loaded and paused, and
+     * headphones otherwise. Hidden when the Listen story button is turned off in Settings (StoryButtons.kt).
+     */
+    private data class ToolbarListenLook(
+        val visible: Boolean,
+        @param:DrawableRes val icon: Int,
+        @param:StringRes val description: Int,
+        val active: Boolean,
+    )
+
+    private fun toolbarListenLook(state: ListenUiState): ToolbarListenLook {
+        val hash = currentReadingStory()?.storyHash
+        val isThisStory = state.isStory(hash)
+        val loaded = isThisStory && (state.phase == ListenPhase.READY || state.isLoading)
+        val visible = !parked && listenPreferences.isStoryButtonVisible(StoryButton.LISTEN)
+        return when {
+            isThisStory && state.showsPause -> ToolbarListenLook(visible, R.drawable.ic_listen_pause, R.string.listen_pause, active = true)
+            loaded -> ToolbarListenLook(visible, R.drawable.ic_listen_play, R.string.listen_resume, active = true)
+            else -> ToolbarListenLook(visible, R.drawable.ic_listen, R.string.listen_story_button, active = false)
+        }
+    }
+
+    /** Recomputes the toolbar's Listen action when the story on screen changes, or Settings may have. */
+    private fun updateToolbarListenButton() = applyToolbarListenLook(toolbarListenLook(listenManager.state.value))
+
+    private fun applyToolbarListenLook(look: ToolbarListenLook) {
+        val button = binding.includeToolbar.toolbarListenButton
+        button.visibility = if (look.visible) View.VISIBLE else View.GONE
+        button.setImageResource(look.icon)
+        button.contentDescription = getString(look.description)
+        button.tooltipText = button.contentDescription
+        // The icon's own grey matches the toolbar's other actions; the Listen accent marks the story that's loaded.
+        button.imageTintList =
+            if (look.active) ColorStateList.valueOf(ListenPalette.accentArgb(prefsRepo.getResolvedTheme(this))) else null
+    }
+
+    override fun listenMiniPlayerAnchor(): View? = binding.contentBottomOverlay
+
+    override fun showsListenMiniPlayer(): Boolean = true
+
+    override fun onListenMiniPlayerInsetChanged(insetPx: Int) {
+        // EdgeToEdgeUtil.kt's reader footer reads this, so a story's last buttons scroll clear of the mini player.
+        window.decorView.setTag(R.id.listen_mini_player_inset, insetPx)
+        window.decorView.invalidate()
     }
 
     /**
@@ -531,9 +858,10 @@ abstract class Reading :
             object : OnBackPressedCallback(enabled = true) {
                 override fun handleOnBackStarted(backEvent: BackEventCompat) {
                     predictiveBackInProgress =
+                        !parked &&
                         supportsPredictiveReaderBack() &&
                         isInteractiveReaderBackEnabled() &&
-                        backEvent.swipeEdge == BackEventCompat.EDGE_LEFT
+                        backEvent.swipeEdge == readerBackSwipeEdge()
                     if (predictiveBackInProgress) {
                         beginInteractiveReaderBackSwipe()
                     }
@@ -552,13 +880,19 @@ abstract class Reading :
 
                 override fun handleOnBackPressed() {
                     predictiveBackInProgress = false
-                    finish()
+                    // A parked reader stands in for the empty pane, so Back does what the empty
+                    // pane's does (ReadingPlaceholder.kt): slide the feed list over.
+                    val storyList = if (parked) ItemsList.peekReadingLaunchParent(taskId)?.takeIf { !it.isFinishing } else null
+                    if (storyList != null) storyList.backToFeedList() else finish()
                 }
             },
         )
     }
 
     override fun shouldUseTranslucentTheme(): Boolean = true
+
+    // Reading.kt lets two fingers switch the theme over the story and its original page, as iOS does (ThemeSwipeGesture.kt).
+    override fun hostsThemeSwipe(): Boolean = true
 
     private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
         fs?.let {
@@ -573,8 +907,18 @@ abstract class Reading :
         }
     }
 
-    private fun setStoryData(batch: ReadingViewModel.StoryBatch) {
-        if (!dbHelper.isFeedSetReady(fs)) {
+    private fun setStoryData(incomingBatch: ReadingViewModel.StoryBatch) {
+        if (parked) return
+        val sessionReady = dbHelper.isFeedSetReady(fs)
+        // Reading.kt may have an exact target before its feed session is ready; never mix in another session's rows.
+        val batch = if (sessionReady) incomingBatch else incomingBatch.copy(stories = emptyList(), classifiers = emptyMap(), indexOfLastUnread = -1)
+        val requestedHash = storyHash
+        if (requestedHash != null && requestedHash != FIND_FIRST_UNREAD &&
+            restoredCurrentStory?.storyHash != requestedHash && batch.stories.none { it.storyHash == requestedHash }
+        ) {
+            loadMissingStoryTarget(requestedHash)
+        }
+        if (!sessionReady && restoredCurrentStory == null) {
             com.newsblur.util.Log
                 .i(this.javaClass.name, "stale load")
             // the system can and will re-use activities, so during the initial mismatch of
@@ -622,7 +966,7 @@ abstract class Reading :
                 "target=$storyHash targetInRaw=${storyHash?.let { target -> batch.stories.any { it.storyHash == target } }} " +
                 "restored=${storyDebug(restoredCurrentStory)} recent=${storyDebug(recentlyMarkedReadStory)} " +
                 "active=${storyDebug(activeStory)} " +
-                "pager=${storyDebug(pagerStory)} pagerIndex=${pager?.currentItem ?: -1} " +
+                "pager=${storyDebug(pagerStory)} pagerIndex=${pager?.currentStoryPosition ?: -1} " +
                 "first=[${storiesDebug(stories)}]",
         )
         com.newsblur.util.Log
@@ -675,19 +1019,380 @@ abstract class Reading :
                 "firstUnread=$lastBatchFirstUnreadIndex count=${readingAdapter?.count ?: -1}",
         )
         if (position >= 0) {
-            pager!!.setCurrentItem(position, false)
+            pager!!.showStoryPosition(position, false)
             onPageSelected(position)
-            isRestoringState = false
-            restoredCurrentStory = null
+            val restoreState = readingStateAfterPagerTargetFound(restoredCurrentStory)
+            isRestoringState = restoreState.isRestoringState
+            restoredCurrentStory = restoreState.restoredCurrentStory
             // now that the pager is getting the right story, make it visible
             pager!!.visibility = View.VISIBLE
             binding.readingEmptyViewText.visibility = View.INVISIBLE
-            storyHash = null
+            storyHash = restoreState.storyHash
+            readingAdapter?.getStory(position)?.storyHash?.let(::onReaderPageNativeReady)
+            if (readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true) {
+                readingAdapter?.getStory(position)?.storyHash?.let(::onReaderPageVisualReady)
+            }
             return
         }
 
-        // if the story wasn't found, try to get more stories into the cursor
-        checkStoryCount(readingAdapter!!.count + 1)
+        if (storyHash == FIND_FIRST_UNREAD) {
+            checkStoryCount(readingAdapter!!.count + 1)
+        } else {
+            storyHash?.let(::loadMissingStoryTarget)
+        }
+    }
+
+    private fun loadMissingStoryTarget(hash: String) {
+        if (targetStoryLoad != null || isFinishing || isDestroyed) return
+        // Reading.kt resolves old cluster children directly instead of paging through their entire feed.
+        // NetworkClientImpl.kt can block during retries, so the visible deadline runs independently on the main thread.
+        val deadline = lifecycleScope.launch {
+            delay(20_000L)
+            if (storyHash == hash && targetStoryLoad?.isActive == true) {
+                targetStoryLoad?.cancel()
+                failStoryTargetLoad()
+            }
+        }
+        targetStoryLoad = lifecycleScope.launch {
+            val target = try {
+                withContext(Dispatchers.IO) { readerTargetLoader.load(hash) }
+            } finally {
+                deadline.cancel()
+            }
+            if (storyHash != hash || isFinishing || isDestroyed) return@launch
+            if (target == null) {
+                failStoryTargetLoad()
+            } else {
+                restoredCurrentStory = target
+                setStoryData(ReadingViewModel.StoryBatch(emptyList(), -1, 0, emptyMap()))
+                loadActiveStories()
+            }
+        }
+    }
+
+    private fun failStoryTargetLoad() {
+        if (isFinishing || isDestroyed) return
+        clearPreparedLoading()
+        android.widget.Toast.makeText(this, R.string.story_navigation_failed, android.widget.Toast.LENGTH_LONG).show()
+        finish()
+    }
+
+    fun onReaderPageVisualReady(readyStoryHash: String) {
+        WebViewPrewarm.release()
+        val activeHash = pager?.currentStoryPosition?.let { readingAdapter?.getStory(it)?.storyHash }
+        if (fadeInSplitReader && activeHash == readyStoryHash) {
+            binding.content.doOnPreDraw {
+                splitReaderStoryPainted = true
+                if (splitReaderEntered) revealSplitReader()
+            }
+        }
+        if (preparedPageNavigation?.isPreparing == true && activeHash == readyStoryHash) {
+            binding.content.doOnPreDraw {
+                val position = pager?.currentStoryPosition
+                if (!isFinishing && !isDestroyed && position != null &&
+                    readingAdapter?.getStory(position)?.storyHash == readyStoryHash &&
+                    readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true
+                ) {
+                    preparedPageNavigation?.ready(readyStoryHash)
+                }
+            }
+            binding.content.invalidate()
+        }
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                "NB.Reader",
+                "visual_ready active=${activeHash == readyStoryHash} waiting=$waitingForPreparedEntrance elapsed=${SystemClock.uptimeMillis() - preparedEntranceStartedAt}",
+            )
+        }
+    }
+
+    /**
+     * ItemsList.java is switching to another feed with this reader beside it, so the reader fades to
+     * the empty reader pane's look (ReadingPlaceholder.kt) alongside the feed list's slide, then
+     * stays parked that way (park).
+     */
+    fun fadeToPlaceholder(durationMs: Long) {
+        if (isFinishing || isDestroyed || placeholderLook != null) return
+        val placeholder = addPlaceholderLook() ?: return
+        placeholder.alpha = 0f
+        placeholderLook = placeholder
+        placeholder
+            .animate()
+            .alpha(1f)
+            .setDuration(durationMs)
+            .start()
+    }
+
+    // ReadingPlaceholder.kt's look laid over this reader, catching taps meant for the story beneath.
+    // Without its logo it is only the pane's background.
+    private fun addPlaceholderLook(withLogo: Boolean = true): View? {
+        val content = findViewById<ViewGroup>(android.R.id.content) ?: return null
+        val placeholder = ReadingPlaceholder.inflatePane(layoutInflater, content)
+        if (!withLogo) (placeholder as? ViewGroup)?.removeAllViews()
+        placeholder.isClickable = true
+        content.addView(placeholder, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        // This reader draws under the status bar and ReadingPlaceholder.kt doesn't, so the look
+        // starts below the status bar too, keeping its logo exactly where the real pane's is. A
+        // reader that just opened gets its insets after this, so the margin follows them.
+        ViewCompat.setOnApplyWindowInsetsListener(placeholder) { view, insets ->
+            val statusBarTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            val params = view.layoutParams as ViewGroup.MarginLayoutParams
+            if (params.topMargin != statusBarTop) {
+                params.topMargin = statusBarTop
+                view.layoutParams = params
+            }
+            insets
+        }
+        ViewCompat.requestApplyInsets(placeholder)
+        return placeholder
+    }
+
+    /**
+     * ItemsList.java parks this reader when the list beside it switches to another feed. The
+     * reading session now belongs to that feed, so this reader stops loading, reading, and marking
+     * stories, and keeps the empty pane's look until the next story tapped replaces it. Closing it
+     * instead would bring back ReadingPlaceholder.kt, whose pane the system slides up from below.
+     */
+    fun park() {
+        if (parked) return
+        parked = true
+        updateReaderFullscreenButton()
+        stopLoading = true
+        cancelStoryDwell(clearStory = true)
+        cancelUnreadSearch()
+        flushAndStopReadTimeTracking()
+        keyboardManager.removeListener()
+    }
+
+    override fun onEnterAnimationComplete() {
+        super.onEnterAnimationComplete()
+        onSplitReaderEntered()
+    }
+
+    private fun onSplitReaderEntered() {
+        splitReaderEntered = true
+        if (splitReaderStoryPainted) revealSplitReader()
+    }
+
+    private fun revealSplitReader() {
+        if (!fadeInSplitReader) return
+        fadeInSplitReader = false
+        val cover = splitReaderCover ?: return
+        splitReaderCover = null
+        cover
+            .animate()
+            .alpha(0f)
+            .setDuration(SPLIT_READER_FADE_MS)
+            .withEndAction { (cover.parent as? ViewGroup)?.removeView(cover) }
+            .start()
+    }
+
+    /**
+     * ItemsList.java hands this reader a story tapped in the list beside it in a tablet split,
+     * so the reader pages over to it, sideways like a swipe, instead of a new reader replacing
+     * this one. Returns false when the story can't be shown in place (another feed set, or a
+     * story this reader hasn't loaded), and the list opens a new reader instead.
+     */
+    fun showStoryFromStoryList(
+        feedSet: FeedSet,
+        hash: String,
+    ): Boolean {
+        if (parked || isFinishing || isDestroyed || stopLoading || feedSet != fs) return false
+        val adapter = readingAdapter ?: return false
+        if (pager == null) return false
+        val position = adapter.findHash(hash)
+        if (position < 0) return false
+        cancelUnreadSearch()
+        clearCurrentStoryPins()
+        if (position != requestedReadingPosition()) navigateToStory(position)
+        return true
+    }
+
+    fun onReaderPageNativeReady(readyStoryHash: String) {
+        val activeHash = pager?.currentStoryPosition?.let { readingAdapter?.getStory(it)?.storyHash }
+        if (!shouldRevealPreparedReader(waitingForPreparedEntrance, storyHash, activeHash, readyStoryHash, readerIsPaused)) return
+        // Reading.kt validates identity again after layout because the pager can change targets in this interval.
+        interactiveBackSurface().doOnPreDraw {
+            val position = pager?.currentStoryPosition
+            if (position != null && readingAdapter?.getStory(position)?.storyHash == readyStoryHash) {
+                revealPreparedEntrance("native_ready")
+            }
+        }
+    }
+
+    fun onReaderArticleVisible(visibleStoryHash: String) {
+        if (readerIsPaused || isFinishing || isDestroyed || storyHash != null) return
+        val position = pager?.currentStoryPosition ?: return
+        if (readingAdapter?.getStory(position)?.storyHash != visibleStoryHash) return
+        if (!waitingForInitialArticle) return
+        waitingForInitialArticle = false
+        if (!waitingForPreparedEntrance) {
+            resumeStoryDwell()
+            resumeCurrentStoryReadTimeTracking()
+        }
+    }
+
+    private fun revealPreparedEntrance(reason: String) {
+        if (reason != "native_ready" || !waitingForPreparedEntrance || readerIsPaused || isFinishing || isDestroyed || storyHash != null) return
+        val activePosition = pager?.currentStoryPosition ?: return
+        val activeHash = readingAdapter?.getStory(activePosition)?.storyHash ?: return
+        val fragment = readingAdapter?.getExistingItem(activePosition) ?: return
+        if (!fragment.isNativeHeaderReady(activeHash)) return
+        if (fragment.isArticleVisible()) waitingForInitialArticle = false
+        waitingForPreparedEntrance = false
+        resumeStoryDwell()
+        resumeCurrentStoryReadTimeTracking()
+        val surface = interactiveBackSurface()
+        preparedEntranceTimeout?.let(surface::removeCallbacks)
+        preparedEntranceTimeout = null
+        preparedEntranceLoading?.dismiss()
+        preparedEntranceLoading = null
+        if (BuildConfig.DEBUG) {
+            Log.d("NB.Reader", "entrance reason=$reason elapsed=${SystemClock.uptimeMillis() - preparedEntranceStartedAt}")
+        }
+        surface.translationX = surface.width.toFloat() * UIUtils.towardEndSign(this)
+        binding.root.alpha = 1f
+        binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+        surface
+            .animate()
+            .translationX(0f)
+            .setDuration(READING_BACK_SWIPE_SETTLE_DURATION_MS)
+            .setInterpolator(READING_BACK_SWIPE_INTERPOLATOR)
+            .start()
+    }
+
+    private fun showPreparedEntranceLoading() {
+        if ((!waitingForPreparedEntrance && preparedPageNavigation?.isPreparing != true) ||
+            isFinishing || isDestroyed || preparedEntranceLoading != null
+        ) return
+        // Reading.kt keeps this affordance outside its hidden root, so the titles remain visible and Cancel works.
+        preparedEntranceLoading = Snackbar.make(interactiveBackSurface(), R.string.loading, Snackbar.LENGTH_INDEFINITE)
+            .setAction(android.R.string.cancel) { finish() }
+            .setActionTextColor(traverseBar.palette.tintColor)
+            .setTextColor(traverseBar.palette.tintColor)
+            .setBackgroundTint(traverseBar.palette.groupBackgroundColor)
+            .also { it.show() }
+    }
+
+    private fun clearPreparedLoading() {
+        preparedEntranceTimeout?.let(interactiveBackSurface()::removeCallbacks)
+        preparedEntranceTimeout = null
+        preparedEntranceLoading?.dismiss()
+        preparedEntranceLoading = null
+    }
+
+    private fun schedulePreparedLoading() {
+        clearPreparedLoading()
+        val timeout = Runnable { showPreparedEntranceLoading() }
+        preparedEntranceTimeout = timeout
+        interactiveBackSurface().postDelayed(timeout, 1000L)
+    }
+
+    override fun isThemeTransitionReady(): Boolean {
+        val position = pager?.currentStoryPosition ?: return false
+        return readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true
+    }
+
+    private fun navigateToStory(position: Int, isHistoryBack: Boolean = false) {
+        cancelUnreadSearch()
+        val activePager = pager ?: return
+        val adapter = readingAdapter ?: return
+        val destination = adapter.getStory(position) ?: return
+        val sourcePosition = activePager.currentStoryPosition
+        val source = adapter.getStory(sourcePosition) ?: return
+        val navigation = preparedPageNavigation ?: return
+        if (!navigation.isActive) preparedPageStartedAt = SystemClock.uptimeMillis()
+        if (BuildConfig.DEBUG) {
+            Log.d("NB.Reader", "page_request distance=${position - sourcePosition} active=${navigation.isActive}")
+        }
+        if (!navigation.isActive && abs(position - sourcePosition) <= 1 &&
+            adapter.getExistingItem(position)?.isReadyForDisplay() == true
+        ) {
+            if (isHistoryBack) trimHistoryToStory(destination.storyHash)
+            activePager.showStoryPosition(position, true)
+            return
+        }
+        navigation.request(
+            ReaderPageTarget(source.storyHash, sourcePosition),
+            ReaderPageTarget(destination.storyHash, position, isHistoryBack),
+        )
+        if (navigation.isPreparing) {
+            traverseBar.updatePreviousEnabled(true)
+            updateOverlayText()
+        }
+    }
+
+    private fun trimHistoryToStory(targetHash: String) {
+        synchronized(pageHistory) {
+            val targetIndex = pageHistory.indexOfLast { it.storyHash == targetHash }
+            if (targetIndex >= 0) {
+                pageHistory.subList(targetIndex + 1, pageHistory.size).clear()
+            }
+        }
+    }
+
+    private fun commitPreparedPage(target: ReaderPageTarget) {
+        val position = readingAdapter?.findHash(target.storyHash) ?: -1
+        if (position < 0) return
+        if (target.isHistoryBack) trimHistoryToStory(target.storyHash)
+        onPageSelected(position)
+    }
+
+    private fun setupPreparedPageNavigation(pager: ViewPager) {
+        val snapshot = ReaderPageSnapshot(this, binding, pager)
+        readerPageSnapshot = snapshot
+        preparedPageNavigation = PreparedReaderNavigation(
+            capture = { completion ->
+                preparedVisibleStory = pagerReadingStory()
+                preparedVisibleScrollPosition = readingFragment?.currentScrollPosRel()
+                schedulePreparedLoading()
+                snapshot.capture { success ->
+                    if (BuildConfig.DEBUG) {
+                        Log.d("NB.Reader", "page_capture success=$success elapsed=${SystemClock.uptimeMillis() - preparedPageStartedAt}")
+                    }
+                    completion(success)
+                }
+            },
+            prepare = { target ->
+                if (BuildConfig.DEBUG) {
+                    Log.d("NB.Reader", "page_prepare elapsed=${SystemClock.uptimeMillis() - preparedPageStartedAt}")
+                }
+                val position = readingAdapter?.findHash(target.storyHash) ?: -1
+                if (position >= 0) {
+                    pager.showStoryPosition(position, false)
+                    if (readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true) {
+                        onReaderPageVisualReady(target.storyHash)
+                    }
+                }
+            },
+            commit = { target ->
+                clearPreparedLoading()
+                preparedVisibleStory = null
+                preparedVisibleScrollPosition = null
+                if (BuildConfig.DEBUG) {
+                    Log.d("NB.Reader", "page_reveal elapsed=${SystemClock.uptimeMillis() - preparedPageStartedAt}")
+                }
+                commitPreparedPage(target)
+                updateOverlayText()
+            },
+            animate = snapshot::animate,
+            release = {
+                clearPreparedLoading()
+                preparedVisibleStory = null
+                preparedVisibleScrollPosition = null
+                snapshot.release()
+                if (!isFinishing && !isDestroyed) {
+                    traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+                    updateOverlayText()
+                }
+            },
+            captureFailed = {
+                Snackbar.make(binding.root, R.string.story_navigation_failed, Snackbar.LENGTH_LONG)
+                    .setTextColor(traverseBar.palette.tintColor)
+                    .setBackgroundTint(traverseBar.palette.groupBackgroundColor)
+                    .show()
+            },
+        )
     }
 
     /*
@@ -702,6 +1407,24 @@ abstract class Reading :
         childFragmentManager: FragmentManager,
     ) {
         this.pager = pager
+        pager.addOnPageChangeListener(
+            object : OnPageChangeListener {
+                override fun onPageScrollStateChanged(state: Int) = this@Reading.onPageScrollStateChanged(state)
+
+                override fun onPageScrolled(
+                    page: Int,
+                    pageOffset: Float,
+                    pageOffsetPixels: Int,
+                ) = Unit
+
+                override fun onPageSelected(page: Int) {
+                    // ReadingAdapter.kt drops a mirrored pager's repeat of the current story after more stories load.
+                    val adapter = pager.adapter as? ReadingAdapter
+                    val position = if (adapter == null) page else adapter.storySelectionForPage(page) ?: return
+                    this@Reading.onPageSelected(position)
+                }
+            },
+        )
 
         // since it might start on the wrong story, create the pager as invisible
         pager.visibility = View.INVISIBLE
@@ -719,13 +1442,14 @@ abstract class Reading :
         var sourceUserId: String? = null
         if (fs!!.singleSocialFeed != null) sourceUserId = fs!!.singleSocialFeed.key
         readingAdapter = ReadingAdapter(childFragmentManager, sourceUserId, showFeedMetadata, this)
+        setupPreparedPageNavigation(pager)
 
         pager.adapter = readingAdapter
 
         // if the first story in the list was "viewed" before the page change listener was set,
         // the calback was probably missed
         if (storyHash == null) {
-            onPageSelected(pager.currentItem)
+            onPageSelected(pager.currentStoryPosition)
         }
 
         updateOverlayNav()
@@ -753,6 +1477,7 @@ abstract class Reading :
         }
 
     override fun handleUpdate(updateType: Int) {
+        if (parked) return
         if (updateType and UPDATE_REBUILD != 0) {
             finish()
         }
@@ -775,7 +1500,7 @@ abstract class Reading :
         }
 
         // update the current fragment
-        val currentPosition = pager?.currentItem ?: return
+        val currentPosition = pager?.currentStoryPosition ?: return
         val currentFragment = readingAdapter?.getExistingItem(currentPosition)
         currentFragment?.handleUpdate(updateType)
 
@@ -788,51 +1513,49 @@ abstract class Reading :
         nextFragment?.let { if (it.shouldReceiveUpdateText(updateType)) it.handleUpdate(updateType) }
     }
 
-    // interface OnPageChangeListener
-    override fun onPageScrollStateChanged(arg0: Int) {
+    // Pager callbacks from offerPager, already translated from ViewPager's pages into story positions.
+    fun onPageScrollStateChanged(arg0: Int) {
         if (arg0 == ViewPager.SCROLL_STATE_DRAGGING) {
-            clearRecentlyMarkedReadStory()
+            pagerDragStartItem = pager?.currentItem
+            cancelUnreadSearch()
+            clearCurrentStoryPins()
+        } else if (arg0 == ViewPager.SCROLL_STATE_IDLE) {
+            val startItem = pagerDragStartItem
+            pagerDragStartItem = null
+            if (startItem != null && startItem == pager?.currentItem) revealTraversalControls()
         }
     }
 
-    override fun onPageScrolled(
-        arg0: Int,
-        arg1: Float,
-        arg2: Int,
-    ) {
-    }
-
-    override fun onPageSelected(position: Int) {
+    fun onPageSelected(position: Int) {
+        if (parked || preparedPageNavigation?.isPreparing == true) return
+        pagerDragStartItem = null
+        if (traversalRevealFraction > 0f) {
+            traversalRevealFraction = 0f
+            setOverlayAlpha(toolbarVisibleFraction)
+        }
+        cancelStoryDwell(clearStory = true)
         val isRestoringSelection = isRestoringState
-        lifecycleScope.executeAsyncTask(
-            doInBackground = {
-                readingAdapter?.let { readingAdapter ->
-                    val story = readingAdapter.getStory(position)
-                    if (story != null) {
-                        logReaderRestore(
-                            "onPageSelected position=$position story=${storyDebug(story)} " +
-                                "restoring=$isRestoringSelection current=${pager?.currentItem ?: -1} count=${readingAdapter.count}",
-                        )
-                        beginReadTimeTracking(story.storyHash)
-                        synchronized(pageHistory) {
-                            // if the history is just starting out or the last entry in it isn't this page, add this page
-                            if (pageHistory.size < 1 || story != pageHistory[pageHistory.size - 1]) {
-                                pageHistory.add(story)
-                            }
-                        }
-
-                        // Don't mark stories read during activity recreation (e.g., rotation).
-                        // The user is still on the same story, not navigating to a new one.
-                        if (!isRestoringSelection) {
-                            triggerMarkStoryReadBehavior(story)
-                        }
-                    }
-                    checkStoryCount(position)
-                    updateOverlayText()
-                    enableOverlays()
+        val story = readingAdapter?.getStory(position)
+        if (story != null) {
+            // Reading.kt updates navigation immediately; already-read pages may never send another read-state update.
+            synchronized(pageHistory) {
+                if (pageHistory.lastOrNull() != story) {
+                    pageHistory.add(story)
                 }
-            },
-        )
+            }
+            traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+            beginReadTimeTracking(story.storyHash)
+            // In a tablet split (StorySplitView.kt) the story list stays visible, so move its
+            // highlight to the story being read instead of waiting for the reader to close.
+            if (StorySplitView.isInSplit(this)) {
+                ItemsList.peekReadingLaunchParent(taskId)?.followReadingStory(story.storyHash)
+            }
+            // Reading.kt schedules dwell synchronously with selection; old IO callbacks cannot replace its timer.
+            if (!isRestoringSelection) triggerMarkStoryReadBehavior(story)
+        }
+        checkStoryCount(position)
+        updateOverlayText()
+        updateToolbarListenButton()
     }
 
     // interface ScrollChangeListener
@@ -843,29 +1566,6 @@ abstract class Reading :
         currentHeight: Int,
     ) {
         readTimeTracker.recordActivity()
-
-        // only update overlay alpha every few pixels. modern screens are so dense that it
-        // is way overkill to do it on every pixel
-        if (abs(lastVScrollPos - vPos) < 2) return
-        lastVScrollPos = vPos
-
-        val scrollMax = currentHeight - binding.root.measuredHeight
-        val posFromBot = scrollMax - vPos
-
-        var newAlpha = 0.0f
-        if (vPos < overlayRangeTopPx && posFromBot < overlayRangeBotPx) {
-            // if we have a super-tiny scroll window such that we never leave either top or bottom,
-            // just leave us at full alpha.
-            newAlpha = 1.0f
-        } else if (vPos < overlayRangeTopPx) {
-            val delta = overlayRangeTopPx - vPos.toFloat()
-            newAlpha = delta / overlayRangeTopPx
-        } else if (posFromBot < overlayRangeBotPx) {
-            val delta = overlayRangeBotPx - posFromBot.toFloat()
-            newAlpha = delta / overlayRangeBotPx
-        }
-
-        setOverlayAlpha(newAlpha)
     }
 
     private fun setOverlayAlpha(a: Float) {
@@ -883,19 +1583,56 @@ abstract class Reading :
             binding.readingOverlaySend.visibility = if (overflowExtras) View.GONE else View.VISIBLE
             binding.readingOverlayLeftSeparator.visibility = if (overflowExtras) View.GONE else View.VISIBLE
 
-            UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlayRightGroup, a, true)
+            val alpha = when {
+                overlaysSuppressed -> 0f
+                prefsRepo.isReaderControlsAlwaysVisible() || endControls?.isAtArticleEnd == true -> 1f
+                else -> maxOf(a, traversalRevealFraction)
+            }
+            binding.readingOverlayLeftGroup.animate().cancel()
+            binding.readingOverlayRightGroup.animate().cancel()
+            UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, alpha, true)
+            UIUtils.setViewAlpha(binding.readingOverlayRightGroup, alpha, true)
         }
     }
 
-    /**
-     * Make visible and update the overlay UI.
-     */
-    fun enableOverlays() {
-        setOverlayAlpha(1.0f)
+    fun onStoryBlankTap(fragment: ReadingItemFragment) {
+        if (fragment === readingFragment) revealTraversalControls()
     }
 
+    private fun revealTraversalControls() {
+        if (parked || overlaysSuppressed || preparedPageNavigation?.isPreparing == true) return
+        val groups = listOf(binding.readingOverlayLeftGroup, binding.readingOverlayRightGroup)
+        val previousAlphas = groups.map { it.alpha }
+        traversalRevealFraction = 1f
+        setOverlayAlpha(toolbarVisibleFraction)
+        groups.forEachIndexed { index, group ->
+            group.alpha = previousAlphas[index]
+            group.animate().alpha(1f).setDuration(150L).start()
+        }
+    }
+
+    // Reading.kt receives nested scroll intent even when the toolbar is already fully hidden.
+    internal fun onReaderScroll(delta: Int) {
+        if (delta <= 0 || traversalRevealFraction == 0f) return
+        val fadeDistance = UIUtils.dp2px(this, 80).coerceAtLeast(1)
+        traversalRevealFraction = (traversalRevealFraction - delta.toFloat() / fadeDistance).coerceAtLeast(0f)
+        setOverlayAlpha(toolbarVisibleFraction)
+    }
+
+    /**
+     * Restore controls after fullscreen video without changing the reader's scroll state.
+     */
+    fun enableOverlays() {
+        runOnUiThread {
+            overlaysSuppressed = false
+            setOverlayAlpha(toolbarVisibleFraction)
+        }
+    }
+
+    fun isToolbarHidden(): Boolean = toolbarVisibleFraction == 0f
+
     fun disableOverlays() {
+        overlaysSuppressed = true
         setOverlayAlpha(0.0f)
     }
 
@@ -907,7 +1644,7 @@ abstract class Reading :
         if (currentUnreadCount > startingUnreadCount) {
             startingUnreadCount = currentUnreadCount
         }
-        traverseBar.updatePreviousEnabled(getLastReadPosition(false) != -1)
+        traverseBar.updatePreviousEnabled(preparedPageNavigation?.isPreparing == true || getLastReadPosition(false) != -1)
         traverseBar.updateNextShowDone(currentUnreadCount <= 0)
 
         if (startingUnreadCount == 0) {
@@ -928,6 +1665,13 @@ abstract class Reading :
     private fun updateOverlayText() {
         runOnUiThread(
             Runnable {
+                val enabled = preparedPageNavigation?.isPreparing != true
+                binding.readingOverlayText.isEnabled = enabled
+                binding.readingOverlayText.alpha = if (enabled) 1f else 0.4f
+                traverseBar.updateSendEnabled(enabled)
+                binding.readingOverlayProgressTapArea.isEnabled = enabled
+                findViewById<View>(R.id.toolbar_settings_button)?.isEnabled = enabled
+                if (!enabled) return@Runnable
                 val item = readingFragment ?: return@Runnable
                 val inTextView = item.selectedViewMode != DefaultFeedView.STORY
                 traverseBar.updateTextInTextView(inTextView, enabled = true)
@@ -1002,7 +1746,7 @@ abstract class Reading :
      * Click handler for the righthand overlay nav button.
      */
     private fun overlayRightClick() {
-        val readingLaunchParent = ItemsList.peekReadingLaunchParent()
+        val readingLaunchParent = ItemsList.peekReadingLaunchParent(taskId)
         when (
             resolveOverlayRightAction(
                 unreadCount = unreadCount,
@@ -1025,10 +1769,7 @@ abstract class Reading :
 
             OverlayRightAction.FINISH_READING -> finish()
 
-            OverlayRightAction.NEXT_UNREAD ->
-                lifecycleScope.executeAsyncTask(
-                    doInBackground = { nextUnread() },
-                )
+            OverlayRightAction.NEXT_UNREAD -> nextUnread()
         }
     }
 
@@ -1036,80 +1777,78 @@ abstract class Reading :
      * Search our set of stories for the next unread one.
      */
     private fun nextUnread() {
-        clearRecentlyMarkedReadStory()
+        // Reading.kt records taps on main before dispatching work, so a slow Next cannot undo a newer Previous.
+        cancelUnreadSearch()
+        val intentGeneration = navigationIntentGeneration
+        clearCurrentStoryPins()
         unreadSearchActive = true
 
         // if we somehow got tapped before construction or are running during destruction, stop and
         // let either finish. search will happen when the cursor is pushed.
-        if (pager == null || readingAdapter == null) return
+        val adapter = readingAdapter ?: return
+        if (pager == null || stopLoading || isFinishing || isDestroyed) return
+        val currentIndex = requestedReadingPosition()
+        // Reading.kt only retries on a new batch after this search actually needs more stories.
+        unreadSearchActive = false
+        lifecycleScope.executeAsyncTask(
+            doInBackground = { findNextUnreadHash(adapter, currentIndex) },
+            onPostExecute = { targetHash ->
+                if (intentGeneration != navigationIntentGeneration || stopLoading || isFinishing || isDestroyed) {
+                    if (BuildConfig.DEBUG) Log.d("NB.Reader", "page_search_discarded")
+                    return@executeAsyncTask
+                }
+                // Reading.kt resolves by hash again: a sync batch may have reordered the adapter during the search.
+                val position = targetHash?.let { readingAdapter?.findHash(it) } ?: -1
+                if (position >= 0) {
+                    navigateToStory(position)
+                } else if (unreadCount > 0) {
+                    unreadSearchActive = true
+                    checkStoryCount((readingAdapter?.count ?: 0) + 1)
+                }
+            },
+        )
+    }
 
-        var unreadFound = false
-        // start searching just after the current story
-        val currentIndex = pager!!.currentItem
-        var candidate = currentIndex + 1
-        unreadSearch@ while (!unreadFound) {
-            // if we've reached the end of the list, start searching backward from the current story
-            if (candidate >= readingAdapter!!.count) {
-                candidate = currentIndex - 1
-            }
-            // if we have looked all the way back to the first story, there aren't any left
-            if (candidate < 0) {
-                break@unreadSearch
-            }
-            val story = readingAdapter!!.getStory(candidate)
-            if (stopLoading) {
-                // this activity was ended before we finished. just stop.
-                unreadSearchActive = false
-                return
-            }
-            // iterate through the stories in our cursor until we find an unread one
-            if (story != null) {
-                unreadFound =
-                    if (story.read) {
-                        if (candidate > currentIndex) {
-                            // if we are still searching past the current story, search forward
-                            candidate++
-                        } else {
-                            // if we hit the end and re-started before the current story, search backward
-                            candidate--
-                        }
-                        continue@unreadSearch
-                    } else {
-                        true
-                    }
-            }
-            // if we didn't continue or break, the cursor probably changed out from under us, so stop.
-            break@unreadSearch
+    private fun findNextUnreadHash(adapter: ReadingAdapter, currentIndex: Int): String? {
+        for (candidate in currentIndex + 1 until adapter.count) {
+            val story = adapter.getStory(candidate) ?: return null
+            if (!story.read) return story.storyHash
         }
+        for (candidate in currentIndex - 1 downTo 0) {
+            val story = adapter.getStory(candidate) ?: return null
+            if (!story.read) return story.storyHash
+        }
+        return null
+    }
 
-        if (unreadFound) {
-            // jump to the story we found
-            val page = candidate
-            runOnUiThread { pager!!.setCurrentItem(page, true) }
-            // disable the search flag, as we are done
-            unreadSearchActive = false
-        } else {
-            // We didn't find a story, so we should trigger a check to see if the API can load any more.
-            // First, though, double check that there are even any left, as there may have been a delay
-            // between marking an earlier one and double-checking counts.
-            if (unreadCount <= 0) {
-                unreadSearchActive = false
-            } else {
-                // trigger a check to see if there are any more to search before proceeding. By leaving the
-                // unreadSearchActive flag high, this method will be called again when a new cursor is loaded
-                checkStoryCount(readingAdapter!!.count + 1)
-            }
-        }
+    private fun cancelUnreadSearch() {
+        navigationIntentGeneration++
+        unreadSearchActive = false
     }
 
     /**
      * Click handler for the lefthand overlay nav button.
      */
     private fun overlayLeftClick() {
-        val targetPosition = getLastReadPosition(true)
+        cancelUnreadSearch()
+        if (preparedPageNavigation?.isPreparing == true) {
+            val target = preparedPageNavigation?.requestedTarget ?: return
+            val backHash = if (target.isHistoryBack) {
+                synchronized(pageHistory) {
+                    val index = pageHistory.indexOfLast { it.storyHash == target.storyHash }
+                    pageHistory.getOrNull(index - 1)?.storyHash
+                }
+            } else {
+                preparedPageNavigation?.outgoingTarget?.storyHash
+            }
+            val position = backHash?.let { readingAdapter?.findHash(it) } ?: -1
+            if (position >= 0) navigateToStory(position, isHistoryBack = target.isHistoryBack)
+            return
+        }
+        val targetPosition = getLastReadPosition(false)
         if (targetPosition != -1) {
-            clearRecentlyMarkedReadStory()
-            pager!!.setCurrentItem(targetPosition, true)
+            clearCurrentStoryPins()
+            navigateToStory(targetPosition, isHistoryBack = true)
         } else {
             Log.e(this.javaClass.name, "reading history contained item not found in cursor.")
         }
@@ -1142,6 +1881,7 @@ abstract class Reading :
      * Click handler for the progress indicator on the righthand overlay nav button.
      */
     private fun overlayProgressCountClick() {
+        if (preparedPageNavigation?.isPreparing == true) return
         showUnreadSnackbar()
     }
 
@@ -1164,8 +1904,8 @@ abstract class Reading :
             )
         snackbar.anchorView = binding.contentBottomOverlay
         val snackView = snackbar.view
-        val params = snackView.layoutParams as FrameLayout.LayoutParams
-        params.width = FrameLayout.LayoutParams.WRAP_CONTENT
+        val params = snackView.layoutParams as CoordinatorLayout.LayoutParams
+        params.width = ViewGroup.LayoutParams.WRAP_CONTENT
         params.gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
         snackView.layoutParams = params
         snackView.background =
@@ -1200,16 +1940,19 @@ abstract class Reading :
     }
 
     private fun overlaySendClick() {
+        if (preparedPageNavigation?.isPreparing == true) return
         if (readingAdapter == null || pager == null) return
         feedUtils.sendStoryUrl(currentReadingStory(), this)
     }
 
     private fun overlayTextClick() {
+        if (preparedPageNavigation?.isPreparing == true) return
         val item = readingFragment ?: return
         item.switchSelectedViewMode()
     }
 
     private fun openStorySettingsMenu(anchor: View) {
+        if (preparedPageNavigation?.isPreparing == true) return
         readingFragment?.showStoryContextMenu(anchor)
     }
 
@@ -1218,16 +1961,19 @@ abstract class Reading :
             if (readingAdapter == null || pager == null) {
                 null
             } else {
-                readingAdapter!!.getActiveItem() ?: readingAdapter!!.getExistingItem(pager!!.currentItem)
+                readingAdapter!!.getActiveItem() ?: readingAdapter!!.getExistingItem(pager!!.currentStoryPosition)
             }
 
+    /** A story switched its own view (Listen showing the full article), so the Text button follows it. */
+    fun refreshViewModeControls() = updateOverlayText()
+
     fun viewModeChanged() {
-        var frag = readingAdapter!!.getExistingItem(pager!!.currentItem)
+        var frag = readingAdapter!!.getExistingItem(pager!!.currentStoryPosition)
         frag?.viewModeChanged()
         // fragments to the left or the right may have already preloaded content and need to also switch
-        frag = readingAdapter!!.getExistingItem(pager!!.currentItem - 1)
+        frag = readingAdapter!!.getExistingItem(pager!!.currentStoryPosition - 1)
         frag?.viewModeChanged()
-        frag = readingAdapter!!.getExistingItem(pager!!.currentItem + 1)
+        frag = readingAdapter!!.getExistingItem(pager!!.currentStoryPosition + 1)
         frag?.viewModeChanged()
         updateOverlayText()
     }
@@ -1274,12 +2020,13 @@ abstract class Reading :
     }
 
     private fun nextStory() {
+        cancelUnreadSearch()
         if (pager == null) return
-        clearRecentlyMarkedReadStory()
-        val nextPosition = pager!!.currentItem + 1
+        clearCurrentStoryPins()
+        val nextPosition = requestedReadingPosition() + 1
         if (nextPosition < readingAdapter!!.count) {
             try {
-                pager!!.currentItem = nextPosition
+                navigateToStory(nextPosition)
             } catch (_: Exception) {
                 // Just in case cursor changes.
             }
@@ -1287,17 +2034,22 @@ abstract class Reading :
     }
 
     private fun previousStory() {
+        cancelUnreadSearch()
         if (pager == null) return
-        clearRecentlyMarkedReadStory()
-        val nextPosition = pager!!.currentItem - 1
+        clearCurrentStoryPins()
+        val nextPosition = requestedReadingPosition() - 1
         if (nextPosition >= 0) {
             try {
-                pager!!.currentItem = nextPosition
+                navigateToStory(nextPosition)
             } catch (e: Exception) {
                 // Just in case cursor changes.
             }
         }
     }
+
+    private fun requestedReadingPosition(): Int =
+        preparedPageNavigation?.requestedTarget?.let { readingAdapter?.findHash(it.storyHash) }
+            ?.takeIf { it >= 0 } ?: pager?.currentStoryPosition ?: 0
 
     override fun onKeyUp(
         keyCode: Int,
@@ -1319,42 +2071,56 @@ abstract class Reading :
     }
 
     private fun triggerMarkStoryReadBehavior(story: Story) {
-        markStoryReadJob?.cancel()
+        cancelStoryDwell()
+        pendingDwellStory = story
         if (story.read) {
             logReaderRestore("markBehavior skipped alreadyRead ${storyDebug(story)}")
             return
         }
+        if (readerIsPaused || waitingForPreparedEntrance || waitingForInitialArticle || isRestoringState || isFinishing || isDestroyed) return
 
         val delayMillis = markStoryReadBehavior.getDelayMillis()
         logReaderRestore("markBehavior story=${storyDebug(story)} delayMs=$delayMillis")
         if (delayMillis >= 0) {
-            markStoryReadJob =
-                createMarkStoryReadJob(story, delayMillis).also {
-                    it.start()
-                }
+            markStoryReadJob = createMarkStoryReadJob(story, delayMillis)
+            markStoryReadJob?.start()
         }
+    }
+
+    private fun cancelStoryDwell(clearStory: Boolean = false) {
+        markStoryReadJob?.cancel()
+        markStoryReadJob = null
+        if (clearStory) pendingDwellStory = null
+    }
+
+    private fun resumeStoryDwell() {
+        val story = pendingDwellStory ?: return
+        if (currentReadingStory()?.storyHash == story.storyHash) triggerMarkStoryReadBehavior(story)
     }
 
     private fun createMarkStoryReadJob(
         story: Story,
         delayMillis: Long,
     ): Job =
-        lifecycleScope.launch(Dispatchers.Default) {
-            if (isActive) delay(delayMillis)
-            if (isActive) markStoryAsRead(story)
+        lifecycleScope.launch(start = CoroutineStart.LAZY) {
+            delay(delayMillis)
+            if (isActive && !readerIsPaused && !waitingForPreparedEntrance && !waitingForInitialArticle && !isRestoringState &&
+                !isFinishing && !isDestroyed && pendingDwellStory?.storyHash == story.storyHash
+            ) markStoryAsRead(story)
         }
 
     fun markStoryAsRead(story: Story) {
         logReaderRestore("markStoryAsRead story=${storyDebug(story)} loadNext=${prefsRepo.loadNextOnMarkRead()}")
-        recentlyMarkedReadStory =
-            story.copyForBundle().apply {
-                read = true
-            }
+        if (pendingDwellStory?.storyHash == story.storyHash || currentReadingStory()?.storyHash == story.storyHash) {
+            recentlyMarkedReadStory = story.copyForBundle().apply { read = true }
+            cancelStoryDwell(clearStory = true)
+        }
         val readTimesJson = readTimeTracker.drainReadTimesForMarkedStory(story.storyHash)
         feedUtils.syncStoryAsRead(story, this, readTimesJson)
     }
 
-    private fun clearRecentlyMarkedReadStory() {
+    private fun clearCurrentStoryPins() {
+        restoredCurrentStory = null
         recentlyMarkedReadStory = null
     }
 
@@ -1371,6 +2137,9 @@ abstract class Reading :
     }
 
     override fun onKeyboardEvent(event: KeyboardEvent) {
+        if (preparedPageNavigation?.isPreparing == true &&
+            event != KeyboardEvent.NextStory && event != KeyboardEvent.PreviousStory && event != KeyboardEvent.NextUnreadStory
+        ) return
         when (event) {
             KeyboardEvent.NextStory -> nextStory()
             KeyboardEvent.PreviousStory -> previousStory()
@@ -1398,20 +2167,31 @@ abstract class Reading :
      * passes back the last read item position from the pager
      */
     override fun finish() {
+        cancelStoryDwell(clearStory = true)
+        cancelUnreadSearch()
         if (!allowImmediateFinish && shouldAnimateReaderBackFinish()) {
             completeInteractiveReaderBackSwipe()
             return
         }
+        // In a tablet split the story list already follows this reader (onPageSelected), and
+        // another story replacing this one finishes it too, so skip the return bookkeeping that
+        // would scroll the list back to this story.
+        val isInSplit = StorySplitView.isInSplit(this)
+        if (!isInSplit) prepareStoryListForReturn()
         flushAndStopReadTimeTracking()
         setResult(
             RESULT_OK,
             Intent().apply {
-                pager?.currentItem?.let { position ->
+                putExtra(EXTRA_TOOLBAR_HIDDEN, toolbarVisibleFraction == 0f)
+                pager?.currentStoryPosition?.let { pagerPosition ->
+                    val visibleStory = currentReadingStory()
+                    val position = visibleStory?.storyHash?.let { readingAdapter?.findHash(it) }
+                        ?.takeIf { it >= 0 } ?: pagerPosition
                     com.newsblur.util.Log
                         .d(this@Reading.javaClass.name, "Finish reading at position $position")
                     putExtra(LAST_READING_POS, position)
-                    (currentReadingStory() ?: readingAdapter?.getStory(position))?.storyHash?.let { storyHash ->
-                        putExtra(LAST_READING_STORY_HASH, storyHash)
+                    (visibleStory ?: readingAdapter?.getStory(position))?.storyHash?.let { storyHash ->
+                        if (!isInSplit) putExtra(LAST_READING_STORY_HASH, storyHash)
                     }
                 }
             },
@@ -1425,7 +2205,7 @@ abstract class Reading :
     }
 
     private fun beginReadTimeTracking(storyHash: String?) {
-        if (storyHash.isNullOrBlank()) return
+        if (storyHash.isNullOrBlank() || waitingForPreparedEntrance || waitingForInitialArticle) return
 
         val previousStoryHash = readTimeTracker.currentStoryHash
         if (previousStoryHash != null && previousStoryHash != storyHash) {
@@ -1437,12 +2217,7 @@ abstract class Reading :
     }
 
     private fun resumeCurrentStoryReadTimeTracking() {
-        val currentStory =
-            if (pager == null || readingAdapter == null) {
-                null
-            } else {
-                readingAdapter!!.getStory(pager!!.currentItem)
-            }
+        val currentStory = currentReadingStory()
         beginReadTimeTracking(currentStory?.storyHash)
     }
 
@@ -1473,12 +2248,27 @@ abstract class Reading :
 
     private fun shouldAnimateReaderBackFinish(): Boolean = isInteractiveReaderBackEnabled() && !isFinishing
 
-    private fun isInteractiveReaderBackEnabled(): Boolean = this::binding.isInitialized && !isTaskRoot
+    // StorySplitView.kt keeps paired readers opaque even when expanded, so they cannot reveal
+    // the story list underneath with Reading.kt's phone swipe animation.
+    private fun isInteractiveReaderBackEnabled(): Boolean =
+        this::binding.isInitialized && !isTaskRoot && !StorySplitView.isInSplit(this) &&
+            !StorySplitView.isPairedReader(this)
 
-    private fun supportsPredictiveReaderBack(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    private fun supportsPredictiveReaderBack(): Boolean {
+        val gestureInsets = ViewCompat.getRootWindowInsets(binding.root)?.getInsets(WindowInsetsCompat.Type.systemGestures())
+        val hasSystemBackGesture = gestureInsets != null && (gestureInsets.left > 0 || gestureInsets.right > 0)
+        return readerUsesSystemBackGesture(Build.VERSION.SDK_INT, hasSystemBackGesture)
+    }
 
     private fun beginInteractiveReaderBackSwipe() {
+        prepareStoryListForReturn()
         interactiveBackSurface().animate().cancel()
+    }
+
+    private fun prepareStoryListForReturn() {
+        currentReadingStory()?.storyHash?.let { storyHash ->
+            ItemsList.peekReadingLaunchParent(taskId)?.prepareReturnToStory(storyHash)
+        }
     }
 
     private fun updateInteractiveReaderBackSwipe(offsetPx: Float) {
@@ -1488,21 +2278,38 @@ abstract class Reading :
         if (width > 0) {
             clampedOffset = clampedOffset.coerceAtMost(width.toFloat())
         }
-        surface.translationX = clampedOffset
+        // The offset counts toward the end edge, so the reader slides left in right-to-left layouts.
+        surface.translationX = clampedOffset * UIUtils.towardEndSign(this)
     }
+
+    // Reading.kt follows the system back swipe from the start edge, the right edge in Arabic and Hebrew.
+    private fun readerBackSwipeEdge(): Int = if (UIUtils.towardEndSign(this) < 0f) BackEventCompat.EDGE_RIGHT else BackEventCompat.EDGE_LEFT
 
     private fun cancelInteractiveReaderBackSwipe() {
         animateInteractiveReaderBackSwipe(0f, finishWhenComplete = false)
     }
 
     private fun completeInteractiveReaderBackSwipe() {
+        prepareStoryListForReturn()
+        cancelStoryDwell(clearStory = true)
+        cancelUnreadSearch()
         val surface = interactiveBackSurface()
-        val targetTranslation =
+        preparedPageNavigation?.cancel(releaseSnapshot = false)
+        readerPageSnapshot?.freezeForExit()
+        // Reading.kt must disarm pending entrances before the committed Back animation starts.
+        waitingForPreparedEntrance = false
+        waitingForInitialArticle = false
+        preparedEntranceTimeout?.let(surface::removeCallbacks)
+        preparedEntranceTimeout = null
+        preparedEntranceLoading?.dismiss()
+        preparedEntranceLoading = null
+        val slideDistance =
             if (surface.width > 0) {
                 surface.width.toFloat()
             } else {
                 resources.displayMetrics.widthPixels.toFloat()
             }
+        val targetTranslation = slideDistance * UIUtils.towardEndSign(this)
         animateInteractiveReaderBackSwipe(targetTranslation, finishWhenComplete = true)
     }
 
@@ -1574,7 +2381,7 @@ abstract class Reading :
         logReaderRestore(
             "mismatch phase=$phase active=${storyDebug(activeStory)} pager=${storyDebug(pagerStory)} " +
                 "storyHash=$storyHash restored=${storyDebug(restoredCurrentStory)} " +
-                "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1} " +
+                "pagerIndex=${pager?.currentStoryPosition ?: -1} count=${readingAdapter?.count ?: -1} " +
                 "mark=$markStoryReadBehavior loadNext=${prefsRepo.loadNextOnMarkRead()} fs=${feedSetDebug()}",
         )
     }
@@ -1599,6 +2406,7 @@ abstract class Reading :
                 feedSet.isAllRead -> "read"
                 feedSet.isGlobalShared -> "global-shared"
                 feedSet.isInfrequent -> "infrequent"
+                feedSet.isTrending -> "trending:${feedSet.trendingType}"
                 feedSet.isDailyBriefing -> "daily-briefing"
                 else -> feedSet.toCompactSerial().take(80)
             }
@@ -1632,7 +2440,8 @@ abstract class Reading :
 
                 MotionEvent.ACTION_MOVE -> {
                     trackMovement(event)
-                    val deltaX = event.rawX - downRawX
+                    // deltaX counts toward the end edge, so the swipe mirrors in right-to-left layouts.
+                    val deltaX = (event.rawX - downRawX) * UIUtils.towardEndSign(this@Reading)
                     val deltaY = event.rawY - downRawY
                     if (!isDragging &&
                         deltaX > touchSlopPx &&
@@ -1649,12 +2458,17 @@ abstract class Reading :
 
                 MotionEvent.ACTION_UP -> {
                     if (isDragging) {
-                        val totalDeltaX = (event.rawX - downRawX).coerceAtLeast(0f)
+                        val totalDeltaX = ((event.rawX - downRawX) * UIUtils.towardEndSign(this@Reading)).coerceAtLeast(0f)
                         val shouldComplete =
                             totalDeltaX >= view.rootView.width * READING_BACK_SWIPE_TRIGGER_RATIO ||
                                 getXVelocity() > minimumFlingVelocityPx * 4f
                         if (shouldComplete) {
-                            completeInteractiveReaderBackSwipe()
+                            if (prefsRepo.getReaderGesture("reader_left_edge", "back") == "previous") {
+                                resetInteractiveReaderBackSwipe(cancelAnimation = true)
+                                previousStory()
+                            } else {
+                                completeInteractiveReaderBackSwipe()
+                            }
                         } else {
                             cancelInteractiveReaderBackSwipe()
                         }
@@ -1680,7 +2494,7 @@ abstract class Reading :
         private fun getXVelocity(): Float {
             val tracker = velocityTracker ?: return 0f
             tracker.computeCurrentVelocity(1000)
-            return tracker.xVelocity
+            return tracker.xVelocity * UIUtils.towardEndSign(this@Reading)
         }
 
         private fun trackMovement(event: MotionEvent) {
@@ -1706,15 +2520,22 @@ abstract class Reading :
         const val EXTRA_FEEDSET = "feed_set"
         const val EXTRA_STORY_HASH = "story_hash"
         const val EXTRA_STORY = "story"
+        const val EXTRA_TOOLBAR_HIDDEN = "reader_toolbar_hidden"
         private const val BUNDLE_STARTING_UNREAD = "starting_unread"
         private const val BUNDLE_CURRENT_SCROLL_POS_REL = "current_scroll_pos_rel"
         private const val BUNDLE_CURRENT_STORY = "current_story"
+        private const val BUNDLE_PARKED = "parked"
 
         /** special value for starting story hash that jumps to the first unread.  */
         const val FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD"
         private const val OVERLAY_ELEVATION_DP = 1.5f
-        private const val OVERLAY_RANGE_TOP_DP = 40
-        private const val OVERLAY_RANGE_BOT_DP = 60
+
+        // Reading.kt's fade for a reader opening in a tablet split, as the iPad fades its first story.
+        private const val SPLIT_READER_FADE_MS = 140L
+        private const val SPLIT_READER_FADE_TIMEOUT_MS = 1_500L
+
+        // How long the system's slide of a new reader pane into place takes, give or take.
+        private const val SPLIT_READER_SLIDE_MS = 350L
 
         /** The minimum screen width (in DP) needed to show all the overlay controls.  */
         private const val OVERLAY_MIN_WIDTH_DP = 355
@@ -1725,5 +2546,26 @@ abstract class Reading :
         private const val READING_BACK_SWIPE_DIRECTION_RATIO = 1.2f
         private const val READING_BACK_SWIPE_SETTLE_DURATION_MS = 180L
         private val READING_BACK_SWIPE_INTERPOLATOR = DecelerateInterpolator()
+
+        // The most recently resumed reader. It outlives the story list beside it in a tablet split
+        // across rotation, so ItemsList.java asks here rather than keeping its own reference.
+        private var latestReaderRef = WeakReference<Reading>(null)
+
+        /** ItemsList.java waits for this task's reader to close before restoring feeds beside titles. */
+        @JvmStatic
+        fun peekReader(taskId: Int): Reading? =
+            latestReaderRef.get()?.takeIf { !it.isFinishing && !it.isDestroyed && it.taskId == taskId }
+
+        /**
+         * The reader showing in the reader pane of a tablet split in [taskId] (StorySplitView.kt),
+         * if any, never one in another NewsBlur window. Split state is checked on each call
+         * because a reader can enter or leave a split without being resumed again, such as when a
+         * foldable opens with a story on screen.
+         */
+        @JvmStatic
+        fun peekSplitReader(taskId: Int): Reading? =
+            latestReaderRef.get()?.takeIf { reader ->
+                !reader.isFinishing && !reader.isDestroyed && reader.taskId == taskId && StorySplitView.isInSplit(reader)
+            }
     }
 }

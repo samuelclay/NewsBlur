@@ -1,4 +1,6 @@
+{% load i18n %}
 {% load utils_tags social_tags %}
+{# social_story.xhtml: dir="auto" on titles, feed names and story content lets mixed scripts read correctly in LTR and RTL. #}
 
 <div class="NB-shared-story NB-mark {% if story.saved %}NB-story-saved{% endif %} {% if story.shared_by_user %}NB-story-shared{% endif %}" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}" data-guid="{{ story.guid_hash }}" {% if story.user_comments %}data-user-comments="{{ story.user_comments }}"{% endif %}>
     <div class="NB-divider"></div>
@@ -9,9 +11,9 @@
             <div class="NB-story-header-wrapper">
                 <div class="NB-story-header">
                     <h2 class="NB-story-title">
-                        <a href="{{ story.story_permalink }}" class="NB-story-title-link">{{ story.story_title|safe }}</a> 
+                        <a href="{{ story.story_permalink }}" class="NB-story-title-link" dir="auto">{{ story.story_title|safe }}</a> 
                         {% if story.story_authors %}
-                            <span class="NB-story-author">by {{ story.story_authors }}</span>
+                            <span class="NB-story-author">{% blocktrans with authors=story.story_authors %}by {{ authors }}{% endblocktrans %}</span>
                         {% endif %}
 
                         <div class="NB-story-metadata">
@@ -19,7 +21,7 @@
                                 <a href="{{ story.blurblog_permalink }}">
                                     {{ story.shared_date|date:"l F j<\s\u\p>S</\s\u\p>, Y"|safe }}
                                     <span class="NB-story-date-break"></span>
-                                    <small>at</small>
+                                    <small>{% trans "at" context "between a date and a time" %}</small>
                                     {{ story.shared_date|date:"g:i A"|safe }}
                                 </a>
                             </span>
@@ -42,7 +44,7 @@
                         <img src="{{ story.feed.favicon_url }}" />
                     </div>
                     <div class="NB-feed-title">
-                        <a href="{{ story.feed.feed_link }}">{{ story.feed.feed_title }}</a>
+                        <a href="{{ story.feed.feed_link }}" dir="auto">{{ story.feed.feed_title }}</a>
                     </div>
                 {% endif %}
             </div>
@@ -54,13 +56,13 @@
             </div>    
 
             <div class="NB-story-content-wrapper">
-                <div class="NB-story-content">
+                <div class="NB-story-content" dir="auto">
                     {{ story.story_content|safe }}
                 </div>
                 <div class="NB-story-content-expander">
                     <div class="NB-story-content-expander-inner">
                         <div class="NB-story-cutoff"></div>
-                        <div class="NB-story-content-expander-text">Read the whole story</div>
+                        <div class="NB-story-content-expander-text">{% trans "Read the whole story" %}</div>
                         <div class="NB-story-content-expander-pages"></div>
                     </div>
                 </div>
@@ -80,7 +82,7 @@
     {#     {% if not user.is_authenticated %} #}
     {#         <div class="NB-sideoption NB-feed-story-login"> #}
     {#             <div class="NB-sideoption-icon">&nbsp;</div> #}
-    {#             <div class="NB-sideoption-title">Login to share</div> #}
+    {#             <div class="NB-sideoption-title">{% trans "Login to share" %}</div> #}
     {#         </div> #}
     {#     {% endif %} #}
     {# </div> #}

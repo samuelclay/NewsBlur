@@ -15,7 +15,7 @@ class AskAIViewModel: ObservableObject {
     // MARK: - Published Properties
 
     @Published var conversation: AskAIConversation
-    @Published var selectedModel: AskAIProvider = .opus
+    @Published var selectedModel: AskAIProvider = .anthropic
     @Published var selectedSummarizeType: AskAIQuestionType = .bullets
     @Published var customQuestion: String = ""
     @Published var isRecording: Bool = false
@@ -46,9 +46,8 @@ class AskAIViewModel: ObservableObject {
 
         self.conversation = AskAIConversation(storyHash: storyHash, storyTitle: storyTitle)
 
-        // Load saved model preference
-        if let savedModel = UserDefaults.standard.string(forKey: "askAIModel"),
-           let model = AskAIProvider(rawValue: savedModel) {
+        // Load saved model preference (maps legacy keys like "opus" to vendor keys)
+        if let model = AskAIProvider.fromSavedValue(UserDefaults.standard.string(forKey: "askAIModel")) {
             self.selectedModel = model
         }
 

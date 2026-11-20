@@ -4,6 +4,7 @@ import json
 from pprint import pprint
 
 from django.conf import settings
+from django.core.exceptions import RequestDataTooBig
 from django.http import Http404, HttpResponse
 
 from apps.newsletters.models import EmailNewsletter
@@ -131,13 +132,20 @@ def newsletter_receive(request):
     This is a private API used for the newsletter app.
     apps/newsletters/views.py:47
     """
-    params = request.POST
+    try:
+        params = request.POST
+    except RequestDataTooBig:
+        return HttpResponse("Payload Too Large", status=413)
     provider = "mailgun"
 
     # If POST is empty, try parsing JSON body (ImprovMX)
     if not params or not len(params.keys()):
         try:
-            body_data = json.loads(request.body)
+            body = request.body
+        except RequestDataTooBig:
+            return HttpResponse("Payload Too Large", status=413)
+        try:
+            body_data = json.loads(body)
             # Check if it looks like ImprovMX format
             # ImprovMX sends: from (dict), envelope, headers, subject, html/text
             if "from" in body_data and isinstance(body_data.get("from"), dict) and "envelope" in body_data:
@@ -145,10 +153,10 @@ def newsletter_receive(request):
                 provider = "improvmx"
                 logging.debug(" ---> Email newsletter from ImprovMX (normalized)")
             else:
-                logging.debug(" ***> Email newsletter unknown format. Body: %s" % request.body)
+                logging.debug(" ***> Email newsletter unknown format. Body: %s" % body)
                 raise Http404
         except (json.JSONDecodeError, ValueError) as e:
-            logging.debug(" ***> Email newsletter blank/invalid body: %s, error: %s" % (request.body, e))
+            logging.debug(" ***> Email newsletter blank/invalid body: %s, error: %s" % (body, e))
             raise Http404
     else:
         # Convert QueryDict to regular dict for mutability
@@ -177,11 +185,29 @@ def newsletter_receive(request):
     return response
 
 
+def newsletter_story_after_a_merge(story_hash):
+    """The story behind a newsletter permalink whose feed has since been merged into another
+    (restore_merged_feed folding a re-added newsletter feed into the restored one, say). The
+    hash carries the feed id, DuplicateFeed says which feed took that id's place, and the
+    story lives under the survivor's id with the same guid hash. apps/newsletters/views.py"""
+    feed_id, _, guid_hash = story_hash.partition(":")
+    if not feed_id.isdigit() or not guid_hash:
+        return None
+    survivor = Feed.get_by_id(int(feed_id))
+    if not survivor or survivor.pk == int(feed_id):
+        return None
+    return MStory.objects(story_hash="%s:%s" % (survivor.pk, guid_hash)).first()
+
+
 def newsletter_story(request, story_hash):
     try:
         story = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:
-        raise Http404
+        # A link mailed before the feed was merged still opens (see apps/rss_feeds/models.py
+        # move_one_story for the stored permalink itself).
+        story = newsletter_story_after_a_merge(story_hash)
+        if story is None:
+            raise Http404
 
     story = Feed.format_story(story)
     return HttpResponse(story["story_content"], content_type="text/html; charset=utf-8")

@@ -10,31 +10,60 @@ import UIKit
 
 /// Split view delegate.
 class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
+    private weak var collapsingDetailController: DetailViewController?
+    private var compactRestorationGeneration: UInt?
     
     func splitViewController(_ svc: UISplitViewController, topColumnForCollapsingToProposedTopColumn proposedTopColumn: UISplitViewController.Column) -> UISplitViewController.Column {
-        guard let detailNavController = svc.viewController(for: .secondary) as? UINavigationController,
+        guard let detailNavController = (svc as? SplitViewController)?.readerNavigationController,
               let detailController = detailNavController.viewControllers[0] as? DetailViewController else {
             return .primary
         }
 
+        let hasFeed = detailController.isFeedShown
+        let hasStory = detailController.hasVisibleStoryForSidebarLayout || detailController.isStoryShown
         let topColumn = SplitCollapseColumnDecision.topColumn(
-            hasFeed: detailController.isFeedShown,
-            hasStory: detailController.hasVisibleStoryForSidebarLayout || detailController.isStoryShown,
+            hasFeed: hasFeed,
+            hasStory: hasStory,
             proposedTopColumn: splitCollapseTopColumn(for: proposedTopColumn)
         )
         
+        collapsingDetailController?.cancelCompactNavigationRestoration()
+        collapsingDetailController = detailController
+        compactRestorationGeneration = detailController.beginCompactNavigationRestoration(showFeed: hasFeed, showStory: hasStory)
         detailController.collapseToSingleColumn()
         
         return uiSplitViewColumn(for: topColumn)
     }
+
+    func splitViewControllerDidCollapse(_ svc: UISplitViewController) {
+        guard let detail = collapsingDetailController, let generation = compactRestorationGeneration else { return }
+        detail.completeCompactNavigationRestoration(generation: generation, split: svc)
+    }
     
     func splitViewController(_ svc: UISplitViewController, displayModeForExpandingToProposedDisplayMode proposedDisplayMode: UISplitViewController.DisplayMode) -> UISplitViewController.DisplayMode {
-        guard let detailNavController = svc.viewController(for: .secondary) as? UINavigationController,
+        collapsingDetailController?.cancelCompactNavigationRestoration()
+        collapsingDetailController = nil
+        compactRestorationGeneration = nil
+        guard let detailNavController = (svc as? SplitViewController)?.readerNavigationController,
               let detailController = detailNavController.viewControllers[0] as? DetailViewController else {
             return proposedDisplayMode
         }
         
+        let feeds = detailController.appDelegate.feedsViewController
+        let wasShowingFeeds = feeds != nil && detailController.appDelegate.feedsNavigationController?.topViewController === feeds
         detailController.expandToTwoColumns()
+        if detailController.isDuoFullscreenReader {
+            return detailController.fullscreenSidebarPresentation == .fullscreen ? .secondaryOnly : .oneOverSecondary
+        }
+
+        if detailController.isPhone, detailController.storyTitlesOnLeft, !detailController.isDiscoverSitesVisible {
+            // SplitViewDelegate.swift preserves the compact source screen before expansion reparents its navigation stack.
+            if wasShowingFeeds {
+                return detailController.behavior == .overlay ? .oneOverSecondary : .oneBesideSecondary
+            }
+            // SplitViewDelegate.swift must not restore a pre-fold three-column proposal while the phone reader is visible.
+            return .secondaryOnly
+        }
         
         return proposedDisplayMode
     }

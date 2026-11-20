@@ -8,10 +8,10 @@
         android:id="@+id/row_everything_icon"
         android:layout_width="19dp"
         android:layout_height="19dp"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/ic_all_shares" />
 
@@ -19,10 +19,10 @@
         android:id="@+id/row_folder_indicator"
         android:layout_width="26dp"
         android:layout_height="22dp"
-        android:paddingLeft="6dp"
-        android:paddingRight="8dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="8dp"
         android:layout_marginEnd="4dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_arrow_up" />
 
@@ -30,19 +30,19 @@
         android:id="@+id/row_foldersums"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/row_folder_indicator"
+        android:layout_toStartOf="@id/row_folder_indicator"
         android:layout_centerVertical="true"
-        android:layout_marginRight="2dp" >
+        android:layout_marginEnd="2dp" >
 
         <TextView
             android:id="@+id/row_foldersumneu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
+            android:layout_marginEnd="3dp"
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
+            android:paddingStart="3dp"
+            android:paddingEnd="3dp"
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
@@ -53,11 +53,11 @@
             android:id="@+id/row_foldersumpos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="3dp"
+            android:layout_marginEnd="3dp"
             android:background="@drawable/positive_count_rect"
             android:gravity="center"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
+            android:paddingStart="3dp"
+            android:paddingEnd="3dp"
             android:shadowColor="@color/positive_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
@@ -70,8 +70,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/row_foldersums"
-        android:layout_toRightOf="@id/row_everything_icon"
+        android:layout_toStartOf="@id/row_foldersums"
+        android:layout_toEndOf="@id/row_everything_icon"
         android:text="@string/all_shared_stories_title"
         android:letterSpacing="@dimen/extra_letter_spacing" />
 

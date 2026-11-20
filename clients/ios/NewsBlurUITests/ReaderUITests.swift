@@ -1,11 +1,1318 @@
 import XCTest
+import UIKit
 
 final class ReaderUITests: XCTestCase {
     private var app: XCUIApplication!
 
+    func test_liveAlphaNarrowAutoSidebarPreservesStoryWidth() throws {
+        try requireLiveSession()
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launchArguments = ["-split_behavior", "auto"]
+        app.launch()
+        let story = app.webViews.firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 20))
+        let feeds = app.tables["feeds-list"].firstMatch
+        if feeds.isHittable {
+            try XCTUnwrap(app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable })).tap()
+        }
+        let originalWidth = story.frame.width
+        attachScreenshot(named: "claypad-auto-reader-before-sidebar")
+        try XCTUnwrap(app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable })).tap()
+        XCTAssertTrue(feeds.waitForExistence(timeout: 5))
+        XCTAssertEqual(story.frame.width, originalWidth, accuracy: 2)
+        attachScreenshot(named: "claypad-auto-reader-with-overlay")
+        let feed = try XCTUnwrap(feeds.cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first(where: { $0.isHittable }))
+        feed.tap()
+        XCTAssertFalse(feeds.isHittable)
+        attachScreenshot(named: "claypad-auto-reader-after-feed-selection")
+    }
+
+    func test_iPadAutoSidebarKeepsStoryWidthAndHidesAfterFeedSelection() throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("iPad reader layout") }
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-split_behavior", "auto", "-newsblur-ui-test-animations"]
+        launch(on: "reader-story-swift-1")
+        let story = app.webViews.firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 15))
+        let feeds = app.tables["feeds-list"].firstMatch
+        let sidebar = app.buttons["Sidebar"].firstMatch
+        if feeds.isHittable { sidebar.tap() }
+        let originalWidth = story.frame.width
+        attachScreenshot(named: "ipad-auto-story-before-sidebar")
+        sidebar.tap()
+        XCTAssertTrue(feeds.waitForExistence(timeout: 5))
+        attachScreenshot(named: "ipad-auto-story-with-sidebar")
+        XCTAssertEqual(story.frame.width, originalWidth, accuracy: 2, "Opening the feed overlay must preserve the article width.")
+        feedCell("910001").tap()
+        XCTAssertFalse(feeds.isHittable, "Selecting a feed must dismiss the temporary overlay.")
+        app.terminate()
+    }
+
+    func test_iPadSyncStatusDoesNotCoverSidebarButton() throws {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("iPad header layout") }
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-newsblur-ui-test-sync-status", "-newsblur-ui-test-theme", "sepia"]
+        launch(on: "reader")
+        let feeds = app.tables["feeds-list"].firstMatch
+        let sidebar = app.buttons["Sidebar"].firstMatch
+        if !feeds.isHittable, sidebar.exists { sidebar.tap() }
+        let status = app.staticTexts["feed-list-sync-status"].firstMatch
+        XCTAssertTrue(status.waitForExistence(timeout: 15))
+        attachScreenshot(named: "ipad-sync-status-header")
+        // ReaderUITests.swift checks the overlay's button, not the obscured reader button behind it.
+        let visibleSidebar = try XCTUnwrap(app.buttons.matching(identifier: "Sidebar").allElementsBoundByIndex.first(where: { $0.isHittable }))
+        XCTAssertFalse(status.frame.intersects(visibleSidebar.frame), "Sync status must not run underneath the hide-sidebar control.")
+        visibleSidebar.tap()
+        XCTAssertFalse(feeds.isHittable)
+        app.terminate()
+    }
+
+    func test_feedContextDialogDestinationsStayOpen() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
+        #else
+        let cases: [(String, () -> XCUIElement)] = [
+            ("Train intelligence…", { self.app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'What do you'")).firstMatch }),
+            ("Notifications", { self.app.staticTexts["SITE NOTIFICATIONS"].firstMatch }),
+            ("Statistics", { self.app.webViews.firstMatch }),
+            ("Related sites", { self.app.buttons["Close Related Sites"].firstMatch }),
+            ("Mark as read…", { self.app.staticTexts["Mark site as read"].firstMatch }),
+            ("Rename site…", { self.app.alerts["Rename Arc News"] }),
+            ("Delete site…", { self.app.alerts["Delete Arc News?"] })
+        ]
+        for (title, destination) in cases {
+            app.launchArguments = ["-long_press_feed_title", "show_actions", "-newsblur-ui-test-animations"]
+            launch(on: "reader")
+            let feed = feedCell("910001")
+            XCTAssertTrue(feed.waitForExistence(timeout: 15))
+            feed.press(forDuration: 1.2)
+            let action = app.buttons[title].firstMatch
+            XCTAssertTrue(action.waitForExistence(timeout: 5), title)
+            action.tap()
+            verifyDialogPersists(destination(), named: "feed-" + title)
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_feedSettingsDialogDestinationsStayOpen() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
+        #else
+        let cases: [(String, () -> XCUIElement)] = [
+            ("Preferences", { self.app.staticTexts["Preferences"].firstMatch }),
+            ("Mute Sites", { self.app.navigationBars.matching(NSPredicate(format: "identifier BEGINSWITH 'Mute'")).firstMatch }),
+            ("Organize Sites", { self.app.navigationBars["Organize Sites"] }),
+            ("Widget Sites", { self.app.navigationBars.matching(NSPredicate(format: "identifier CONTAINS 'Widget'")).firstMatch }),
+            ("Notifications", { self.app.staticTexts["ALL NOTIFICATIONS"].firstMatch }),
+            ("Find Friends", { self.app.searchFields["Search by email or username"].firstMatch })
+        ]
+        for (title, destination) in cases {
+            app.launchArguments = ["-newsblur-ui-test-animations"]
+            launch(on: "reader")
+            let settings = app.buttons["feed-list-settings"]
+            XCTAssertTrue(settings.waitForExistence(timeout: 15))
+            settings.tap()
+            let menu = app.tables["grouped-action-menu"].firstMatch
+            XCTAssertTrue(menu.waitForExistence(timeout: 5))
+            let action = menu.staticTexts[title].firstMatch
+            if !action.isHittable { menu.swipeUp() }
+            XCTAssertTrue(action.isHittable, title)
+            action.tap()
+            XCTAssertTrue(menu.waitForNonExistence(timeout: 5), "The settings menu should finish closing before its destination opens")
+            verifyDialogPersists(destination(), named: "settings-" + title)
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_storyContextDialogDestinationsStayOpen() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
+        #else
+        let cases: [(String, () -> XCUIElement)] = [
+            ("Train intelligence…", { self.app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'What do you'")).firstMatch }),
+            ("Share link…", { self.app.otherElements["ActivityListView"].firstMatch }),
+            ("Share story…", { self.app.otherElements["ActivityListView"].firstMatch }),
+            ("Share on NewsBlur…", { self.app.staticTexts["Share this story"].firstMatch }),
+            ("Ask AI…", { self.app.staticTexts["Summarize"].firstMatch })
+        ]
+        for (title, destination) in cases {
+            app.launchArguments = ["-long_press_story_title", "show_actions", "-show_ask_ai", "YES", "-newsblur-ui-test-animations"]
+            launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
+            XCTAssertTrue(waitForFixtureStoryTitles())
+            app.cells["story-row-ui-story-swift-1"].firstMatch.press(forDuration: 1.2)
+            let action = app.buttons[title].firstMatch
+            XCTAssertTrue(action.waitForExistence(timeout: 5), title)
+            action.tap()
+            verifyDialogPersists(destination(), named: "story-" + title)
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_readerSettingsDialogDestinationsStayOpen() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Dialog matrix uses isolated simulator fixtures")
+        #else
+        let cases: [(String, () -> XCUIElement)] = [
+            ("Train this story", { self.app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'What do you'")).firstMatch }),
+            ("Send to...", { self.app.otherElements["ActivityListView"].firstMatch }),
+            ("Share on NewsBlur…", { self.app.staticTexts["Share this story"].firstMatch }),
+            ("Ask AI", { self.app.staticTexts["Summarize"].firstMatch })
+        ]
+        for (title, destination) in cases {
+            app.launchArguments = ["-show_ask_ai", "YES", "-newsblur-ui-test-animations"]
+            launch(on: "reader-story-swift-1")
+            let settings = app.buttons["Story settings"]
+            XCTAssertTrue(settings.waitForExistence(timeout: 15))
+            settings.tap()
+            let action = app.staticTexts[title].firstMatch
+            XCTAssertTrue(action.waitForExistence(timeout: 5), title)
+            action.tap()
+            verifyDialogPersists(destination(), named: "reader-" + title)
+            app.terminate()
+        }
+        #endif
+    }
+
+    private func verifyDialogPersists(_ destination: XCUIElement, named name: String) {
+        XCTAssertTrue(destination.waitForExistence(timeout: 10), name)
+        attachScreenshot(named: name + "-opened")
+        // ReaderUITests.swift observes the transition window without submitting any dialog action.
+        let vanished = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in !destination.exists }, object: nil)
+        vanished.isInverted = true
+        XCTAssertEqual(XCTWaiter.wait(for: [vanished], timeout: 2), .completed, name)
+        attachScreenshot(named: name + "-settled")
+    }
+
+    func test_groupedSettingsMenusAcrossThemesAndLandscape() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Settings use isolated simulator fixtures")
+        #else
+        for theme in ["light", "sepia", "medium", "dark"] {
+            app.launchArguments = ["-newsblur-ui-test-theme", theme]
+            launch(on: "reader")
+            let settings = app.buttons["feed-list-settings"]
+            XCTAssertTrue(settings.waitForExistence(timeout: 15))
+            settings.tap()
+            let menu = app.tables["grouped-action-menu"]
+            XCTAssertTrue(menu.waitForExistence(timeout: 5))
+            XCTAssertTrue(menu.staticTexts["Preferences"].exists)
+            attachScreenshot(named: "settings-groups-\(theme)")
+            menu.swipeUp()
+            XCTAssertTrue(menu.segmentedControls.firstMatch.exists)
+            attachScreenshot(named: "settings-appearance-\(theme)")
+            XCUIDevice.shared.orientation = .landscapeLeft
+            XCTAssertTrue(menu.waitForExistence(timeout: 5))
+            menu.swipeDown()
+            attachScreenshot(named: "settings-landscape-\(theme)")
+            XCUIDevice.shared.orientation = .portrait
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_groupedStoryListAndReaderSettings() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Story settings use isolated simulator fixtures")
+        #else
+        app.launchArguments = ["-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").waitForExistence(timeout: 10),
+                      "ReaderUITests.swift requires the selected fixture feed, not the empty iPad story list")
+        app.buttons["Settings"].firstMatch.tap()
+        XCTAssertTrue(app.tables["grouped-action-menu"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "story-list-settings-grouped")
+        app.terminate()
+        app.launchArguments = ["-newsblur-ui-test-theme", "sepia"]
+        launch(on: "reader-story-swift-1")
+        let selectedStory = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND value == %@", "ui-story-swift-1"),
+            object: currentStoryProbe())
+        XCTAssertEqual(XCTWaiter.wait(for: [selectedStory], timeout: 15), .completed,
+                       "ReaderUITests.swift waits for the requested article before opening its settings")
+        let settings = app.buttons["Story settings"]
+        let enabledSettings = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND enabled == true AND hittable == true"),
+            object: settings)
+        XCTAssertEqual(XCTWaiter.wait(for: [enabledSettings], timeout: 5), .completed)
+        settings.tap()
+        XCTAssertTrue(app.staticTexts["Share on NewsBlur…"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "reader-settings-grouped")
+        #endif
+    }
+
+    func test_imageLongPressShowsHoverTextAndActions() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image long press uses isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        articleImage.press(forDuration: 1.2)
+        attachScreenshot(named: "image-long-press")
+        XCTAssertTrue(app.buttons["Close image"].waitForExistence(timeout: 5))
+        let hoverText = app.staticTexts["The mountain looks smaller from the summit. This is the hover text, not the image description."]
+        XCTAssertTrue(hoverText.waitForExistence(timeout: 5))
+        XCTAssertLessThanOrEqual(hoverText.frame.maxY, app.images["fullscreen-story-image"].frame.minY)
+        for title in ["Copy Image", "Save Image", "Share Image…"] {
+            XCTAssertTrue(app.buttons[title].waitForExistence(timeout: 5), title)
+            XCTAssertTrue(app.buttons[title].isEnabled, title)
+        }
+        app.buttons["Copy Image"].tap()
+        XCTAssertTrue(app.staticTexts["Image copied"].waitForExistence(timeout: 5))
+        app.buttons["Close image"].tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForNonExistence(timeout: 5))
+        articleImage.tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForExistence(timeout: 5))
+        XCTAssertFalse(hoverText.exists)
+        app.images["fullscreen-story-image"].press(forDuration: 1.2)
+        XCTAssertTrue(hoverText.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Copy Image"].exists)
+        attachScreenshot(named: "preview-long-press-hover-and-actions")
+        app.buttons["Share Image…"].tap()
+        XCTAssertTrue(app.otherElements["ActivityListView"].firstMatch.waitForExistence(timeout: 5))
+        attachScreenshot(named: "image-disclosure-share-sheet")
+        #endif
+    }
+
+    func test_storyImageViewerZoomMenuAndReturn() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image viewer uses isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        attachScreenshot(named: "image-viewer-before")
+        articleImage.tap()
+        let close = app.buttons["Close image"]
+        XCTAssertTrue(close.waitForExistence(timeout: 8))
+        let image = app.images["fullscreen-story-image"]
+        XCTAssertTrue(image.waitForExistence(timeout: 5))
+        let zoom = app.scrollViews["story-image-zoom"]
+        let statusBar = XCUIApplication(bundleIdentifier: "com.apple.springboard").statusBars.firstMatch
+        XCTAssertEqual(zoom.frame.width, app.frame.width, accuracy: 2)
+        XCTAssertGreaterThanOrEqual(zoom.frame.minY, statusBar.frame.maxY)
+        XCTAssertLessThan(zoom.frame.height, app.frame.height)
+        XCTAssertLessThanOrEqual(zoom.frame.maxY, app.frame.maxY)
+        attachScreenshot(named: "image-viewer-fitted")
+        image.doubleTap()
+        expectation(for: NSPredicate(format: "value == 'Zoomed'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        image.doubleTap()
+        expectation(for: NSPredicate(format: "value == 'Fitted'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        app.buttons["Image actions"].tap()
+        let copy = app.buttons["Copy Image"]
+        XCTAssertTrue(copy.waitForExistence(timeout: 5))
+        XCTAssertTrue(copy.isEnabled)
+        XCTAssertTrue(app.buttons["Save Image"].exists)
+        XCTAssertTrue(app.buttons["Open Image in Browser"].exists)
+        XCTAssertTrue(app.buttons["Open Link"].exists)
+        attachScreenshot(named: "image-viewer-actions")
+        copy.tap()
+        XCTAssertTrue(app.staticTexts["Image copied"].waitForExistence(timeout: 5))
+        XCUIDevice.shared.orientation = .landscapeLeft
+        expectation(for: NSPredicate { _, _ in zoom.frame.width > zoom.frame.height }, evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        attachScreenshot(named: "image-viewer-landscape")
+        image.swipeRight()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 5))
+        XCUIDevice.shared.orientation = .portrait
+        articleImage.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        close.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        attachScreenshot(named: "image-viewer-returned")
+        #endif
+    }
+
+    func test_slowArticleImageScrollDoesNotOpenViewerThenSingleTapDoes() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image scroll regression uses isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        let initialY = articleImage.frame.minY
+        let close = app.buttons["Close image"]
+        attachScreenshot(named: "image-scroll-before")
+        // ReaderUITests.swift exercises slow, short drags ending on the photo rather than a separate text area.
+        for distance: CGFloat in [12, 24, 48] {
+            let previousY = articleImage.frame.minY
+            let start = articleImage.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
+            start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: -distance)),
+                        withVelocity: XCUIGestureVelocity(rawValue: 40), thenHoldForDuration: 0)
+            XCTAssertFalse(close.waitForExistence(timeout: 1), "A slow upward drag must only scroll the article")
+            XCTAssertLessThan(articleImage.frame.minY, previousY, "Each gesture must move the article, not count as tap jitter")
+        }
+        XCTAssertLessThan(articleImage.frame.minY, initialY, "The gestures must actually scroll the article")
+        attachScreenshot(named: "image-scroll-stays-in-reader")
+        articleImage.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5), "A stationary single tap must still open the image")
+        attachScreenshot(named: "image-scroll-single-tap-opens")
+        close.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        #endif
+    }
+
+    func test_articleImageDoubleTapAndPinchDoNotOpenViewer() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image tap regression uses isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-double_tap_story", "nothing"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        articleImage.doubleTap()
+        XCTAssertFalse(app.buttons["Close image"].waitForExistence(timeout: 1),
+                       "Only a single tap should open an article photo")
+        articleImage.pinch(withScale: 1.5, velocity: 1)
+        XCTAssertFalse(app.buttons["Close image"].waitForExistence(timeout: 1),
+                       "Pinching the article must not open the photo viewer")
+        attachScreenshot(named: "image-double-tap-stays-in-reader")
+        articleImage.tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForExistence(timeout: 5))
+        app.buttons["Close image"].tap()
+        #endif
+    }
+
+    func test_storyImageKeepsStatusBarAndReaderGeometry() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image viewer uses isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        let statusBar = XCUIApplication(bundleIdentifier: "com.apple.springboard").statusBars.firstMatch
+        attachScreenshot(named: "reader-status-bar-before-image")
+        XCTAssertTrue(statusBar.exists)
+        let originalStatusFrame = statusBar.frame
+        let originalReaderFrame = app.webViews.firstMatch.frame
+        articleImage.tap()
+        let close = app.buttons["Close image"]
+        XCTAssertTrue(close.waitForExistence(timeout: 8))
+        attachScreenshot(named: "image-viewer-status-bar")
+        XCTAssertTrue(statusBar.exists, "Opening an image must not hide the status bar or resize the reader")
+        XCTAssertEqual(statusBar.frame, originalStatusFrame)
+        let zoom = app.scrollViews["story-image-zoom"]
+        XCTAssertGreaterThanOrEqual(zoom.frame.minY, originalStatusFrame.maxY,
+                                  "The image viewport must stay below the status bar, including while zooming")
+        close.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        XCTAssertEqual(statusBar.frame, originalStatusFrame)
+        XCTAssertEqual(app.webViews.firstMatch.frame, originalReaderFrame)
+        #endif
+    }
+
+    func test_storyImageSingleTapFitsThenDismissesWithoutStealingDoubleTap() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Image viewer uses isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-animations", "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-story-swift-1")
+        let articleImage = app.webViews.images["Image viewer landscape fixture"].firstMatch
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 20))
+        articleImage.tap()
+        let close = app.buttons["Close image"]
+        XCTAssertTrue(close.waitForExistence(timeout: 8))
+        let image = app.images["fullscreen-story-image"]
+        let zoom = app.scrollViews["story-image-zoom"]
+        image.doubleTap()
+        expectation(for: NSPredicate(format: "value == 'Zoomed'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        image.swipeLeft()
+        XCTAssertTrue(close.exists, "Dragging while zoomed pans rather than dismissing")
+        XCTAssertEqual(zoom.value as? String, "Zoomed")
+        image.tap()
+        expectation(for: NSPredicate(format: "value == 'Fitted'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        XCTAssertTrue(close.exists, "The first single tap zooms out before another tap dismisses")
+        attachScreenshot(named: "image-viewer-single-tap-fitted")
+        image.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(articleImage.waitForExistence(timeout: 5))
+        articleImage.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        image.swipeRight()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        attachScreenshot(named: "image-viewer-single-tap-returned")
+        #endif
+    }
+
+    func test_smallStoryImageAndSaveToPhotos() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Photos writes only a disposable simulator fixture")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments += ["-newsblur-ui-test-images", "-newsblur-ui-test-theme", "sepia"]
+        launch(on: "reader-story-swift-1")
+        let small = app.webViews.images["Small image fixture"].firstMatch
+        XCTAssertTrue(small.waitForExistence(timeout: 20))
+        small.tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForExistence(timeout: 5))
+        let image = app.images["fullscreen-story-image"]
+        XCTAssertEqual(image.frame.width, 120, accuracy: 1)
+        XCTAssertEqual(image.frame.height, 80, accuracy: 1)
+        image.doubleTap()
+        let zoom = app.scrollViews["story-image-zoom"]
+        expectation(for: NSPredicate(format: "value == 'Zoomed'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        XCTAssertGreaterThan(image.frame.width, 120)
+        image.doubleTap()
+        expectation(for: NSPredicate(format: "value == 'Fitted'"), evaluatedWith: zoom)
+        waitForExpectations(timeout: 5)
+        image.press(forDuration: 1.2)
+        XCTAssertFalse(app.scrollViews["image-hover-disclosure"].exists, "An image without a title must not show its alt description as hover text")
+        XCTAssertTrue(app.buttons["Save Image"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Open Link"].exists)
+        XCTAssertFalse(app.buttons["Open Image in Browser"].exists)
+        app.buttons["Save Image"].tap()
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let permission = springboard.alerts.firstMatch
+        if permission.waitForExistence(timeout: 3) {
+            let allow = permission.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'Allow' AND NOT label CONTAINS[c] 'Don'" )).firstMatch
+            XCTAssertTrue(allow.exists)
+            allow.tap()
+        }
+        XCTAssertTrue(app.staticTexts["Image saved to Photos"].waitForExistence(timeout: 8))
+        attachScreenshot(named: "small-image-saved")
+        app.scrollViews["story-image-zoom"].swipeUp()
+        XCTAssertTrue(app.buttons["Close image"].waitForNonExistence(timeout: 5))
+        #endif
+    }
+
+    func test_liveAlphaImageViewer() throws {
+        try requireLiveSession()
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        attachScreenshot(named: "claypad-image-viewer-initial")
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 20))
+        let feed = app.tables["feeds-list"].cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first { $0.isHittable }
+        try XCTUnwrap(feed).tap()
+        let rows = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-"))
+        XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 20))
+        var opened = false
+        for row in rows.allElementsBoundByIndex.prefix(5) where row.isHittable {
+            row.tap()
+            let imageReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                self.app.webViews.images.allElementsBoundByIndex.contains { $0.isHittable && $0.frame.width > 100 && $0.frame.height > 60 }
+            }, object: nil)
+            if XCTWaiter.wait(for: [imageReady], timeout: 8) == .completed,
+               let image = app.webViews.images.allElementsBoundByIndex.first(where: { $0.isHittable && $0.frame.width > 100 && $0.frame.height > 60 }) {
+                image.tap()
+                opened = app.buttons["Close image"].waitForExistence(timeout: 5)
+                if opened { break }
+            }
+        }
+        XCTAssertTrue(opened, "A story image must open over every iPad column")
+        let viewer = app.scrollViews["story-image-zoom"]
+        XCTAssertEqual(viewer.frame.width, app.frame.width, accuracy: 2)
+        XCTAssertEqual(viewer.frame.height, app.frame.height, accuracy: 2)
+        attachScreenshot(named: "claypad-fullscreen-image")
+        app.buttons["Image actions"].tap()
+        XCTAssertTrue(app.buttons["Save Image"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "claypad-image-actions")
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9)).tap()
+        app.buttons["Close image"].tap()
+        XCTAssertTrue(app.buttons["Close image"].waitForNonExistence(timeout: 5))
+        attachScreenshot(named: "claypad-image-returned")
+    }
+
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+    }
+
+    func test_liveAlphaIPadPortraitEdgeRevealsFeeds() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        XCUIDevice.shared.orientation = .portrait
+        attachScreenshot(named: "claypad-before-edge-reproduction")
+        let feeds = app.tables["feeds-list"].firstMatch
+        if !feeds.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(feeds.waitForExistence(timeout: 15))
+        let feed = feeds.cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first { $0.isHittable }
+        try XCTUnwrap(feed).tap()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15))
+        attachScreenshot(named: "claypad-titles-before-edge")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        let start = origin.withOffset(CGVector(dx: 1, dy: app.frame.height * 0.45))
+        let end = origin.withOffset(CGVector(dx: 280, dy: app.frame.height * 0.45))
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+        attachScreenshot(named: "claypad-titles-after-edge")
+        let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+        XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                       "Dragging from the left screen edge must reveal the feeds sidebar")
+        #endif
+    }
+
+    func test_liveAlphaInitialPortraitEdgeRevealsFeeds() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15))
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertFalse(feeds.isHittable, "This checks launch directly into story titles, without opening the sidebar first")
+        attachScreenshot(named: "claypad-initial-titles-before-first-edge")
+        let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+        let edgeY = app.windows.firstMatch.frame.height * 0.45
+        origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 280, dy: edgeY)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        attachScreenshot(named: "claypad-initial-titles-after-first-edge")
+        let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+        XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                       "The first edge drag on launch must reveal feeds without opening the sidebar first")
+        #endif
+    }
+
+    func test_liveAlphaColdRowEdgeFlick() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15))
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertFalse(feeds.isHittable)
+        attachScreenshot(named: "claypad-cold-row-before-edge-flick")
+        let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+        let edgeY = app.windows.firstMatch.frame.height * 0.45
+        var openedOnAttempt = 0
+        for attempt in 1...3 {
+            origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.001,
+                thenDragTo: origin.withOffset(CGVector(dx: 160, dy: edgeY)),
+                withVelocity: .fast, thenHoldForDuration: 0)
+            attachScreenshot(named: "claypad-cold-row-edge-flick-\(attempt)")
+            if feeds.isHittable { openedOnAttempt = attempt; break }
+        }
+        XCTAssertEqual(openedOnAttempt, 1, "A natural first edge flick beside a story row must reveal feeds")
+        #endif
+    }
+
+    func test_liveAlphaCookingBundleQuality() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad and live catalog")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        let settings = app.buttons["feed-list-settings"]
+        if !settings.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        let search = app.textFields["Search interests and sites"]
+        XCTAssertTrue(search.waitForExistence(timeout: 15))
+        search.tap()
+        search.typeText("cooking")
+        let cooking = app.buttons["onboarding.interest.food & cooking"]
+        XCTAssertTrue(cooking.waitForExistence(timeout: 15))
+        let icons = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '5 sources'"), object: cooking)
+        XCTAssertEqual(XCTWaiter.wait(for: [icons], timeout: 90), .completed,
+                       "Cooking must have five validated, distinct feed icons.")
+        attachScreenshot(named: "claypad-cooking-five-icons")
+        cooking.tap()
+        let add = app.buttons["onboarding.addBundle"]
+        XCTAssertTrue(add.waitForExistence(timeout: 20))
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            (Int(add.label.split(separator: " ").dropFirst().first ?? "0") ?? 0) >= 5
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 30), .completed)
+        let count = Int(add.label.split(separator: " ").dropFirst().first ?? "0") ?? 0
+        XCTAssertGreaterThanOrEqual(count, 5)
+        XCTAssertTrue(add.label.contains("“Cooking & Food” folder"), "The action should name the title-cased destination folder.")
+        XCTAssertFalse(app.staticTexts["Make this bundle yours."].exists)
+        XCTAssertFalse(app.staticTexts.matching(identifier: "No stories yet").allElementsBoundByIndex.contains { $0.isHittable },
+                       "The visible bundle must contain real story previews; unrelated search results behind it are outside the bundle.")
+        attachScreenshot(named: "claypad-cooking-validated-bundle")
+        let card = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'discover-bundle-feed-'")).firstMatch
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        card.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.07)).tap()
+        XCTAssertEqual(card.value as? String, "Not included in bundle")
+        attachScreenshot(named: "claypad-cooking-excluded")
+        card.coordinate(withNormalizedOffset: CGVector(dx: 0.4, dy: 0.4)).tap()
+        XCTAssertEqual(card.value as? String, "Included in bundle")
+        attachScreenshot(named: "claypad-cooking-reincluded")
+        #endif
+    }
+
+    func test_liveAlphaEconomicsShowsFeedsProgressively() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad and live discovery results")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        let settings = app.buttons["feed-list-settings"]
+        if !settings.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        let search = app.textFields["Search interests and sites"]
+        XCTAssertTrue(search.waitForExistence(timeout: 15))
+        search.tap()
+        search.typeText("economics")
+        let category = app.buttons["onboarding.interest.economics"]
+        XCTAssertTrue(category.waitForExistence(timeout: 10))
+        let icons = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '5 sources'"), object: category)
+        XCTAssertEqual(XCTWaiter.wait(for: [icons], timeout: 15), .completed)
+        let start = Date()
+        category.tap()
+        let add = app.buttons["onboarding.addBundle"]
+        XCTAssertTrue(add.waitForExistence(timeout: 10), "Completed sources should become selectable without waiting for the slowest source.")
+        let elapsed = Date().timeIntervalSince(start)
+        print("ClayPad Economics first selectable feeds: \(elapsed) seconds")
+        XCTAssertFalse(add.label.hasPrefix("Add 0"))
+        if add.label.hasPrefix("Add ") {
+            XCTAssertTrue(add.isEnabled)
+            XCTAssertTrue(add.label.contains("“Economics” folder"))
+        }
+        XCTAssertFalse(app.staticTexts["Loading your feeds…"].isHittable)
+        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Adding ' AND label ENDSWITH ' in the background…'")).firstMatch.exists)
+        attachScreenshot(named: "claypad-economics-first-selectable-feeds")
+        app.buttons["Done"].tap()
+        app.buttons["Close import and discovery"].tap()
+        #endif
+    }
+
+    func test_liveAlphaCategoryIconsLoadTogether() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad and live favicon endpoint")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        let settings = app.buttons["feed-list-settings"]
+        if !settings.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        let interests = ["all", "agriculture", "anime & manga", "architecture", "arts & culture", "automotive"]
+            .map { "onboarding.interest." + $0 }
+        for attempt in 1...2 {
+            settings.tap()
+            let action = app.tables["grouped-action-menu"].staticTexts["Import or upload sites"]
+            XCTAssertTrue(action.waitForExistence(timeout: 5))
+            let started = Date()
+            action.tap()
+            let loaded = app.buttons.matching(NSPredicate(format: "identifier IN %@ AND value == '5 sources'", interests))
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in loaded.count == interests.count }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed,
+                           "The first six category cards should load together, without waiting on story previews.")
+            let elapsed = Date().timeIntervalSince(started)
+            XCTAssertLessThan(elapsed, 10, "Fresh icons must not sit behind per-category story requests.")
+            print("ClayPad fresh category icons, opening \(attempt): \(elapsed) seconds")
+            attachScreenshot(named: "claypad-fresh-icons-opening-\(attempt)")
+            app.buttons["Close import and discovery"].tap()
+            XCTAssertTrue(settings.waitForExistence(timeout: 5))
+        }
+        #endif
+    }
+
+    func test_liveAlphaImportLayout() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires the signed-in ClayPad")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        let settings = app.buttons["feed-list-settings"]
+        if !settings.isHittable { app.buttons["Sidebar"].firstMatch.tap() }
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        XCTAssertTrue(app.textFields["Search interests and sites"].waitForExistence(timeout: 15))
+        let architecture = app.buttons["onboarding.interest.architecture"]
+        XCTAssertTrue(architecture.waitForExistence(timeout: 30))
+        let presentation = app.otherElements["onboarding-presentation"]
+        XCTAssertEqual(presentation.textFields.count, 1)
+        XCTAssertLessThan(presentation.frame.width, app.frame.width)
+        XCTAssertLessThan(presentation.frame.height, app.frame.height)
+        let sources = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '5 sources'"),
+                                                object: app.buttons["onboarding.interest.all"])
+        XCTAssertEqual(XCTWaiter.wait(for: [sources], timeout: 45), .completed)
+        let close = app.buttons["Close import and discovery"]
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        let top = presentation.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02))
+        top.press(forDuration: 0.1, thenDragTo: presentation.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7)))
+        XCTAssertTrue(close.isHittable, "Pulling down must not dismiss setup.")
+        XCTAssertTrue(app.staticTexts["50 categories to choose from"].exists)
+        attachScreenshot(named: "claypad-import-sheet")
+        close.tap()
+        XCTAssertTrue(close.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(settings.isHittable, "Closing import early must return to the existing reader.")
+        attachScreenshot(named: "claypad-import-closed")
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        #endif
+    }
+
+    func test_iPadPortraitFirstEdgeRevealsFeeds() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Uses isolated reader fixtures")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        for behavior in ["auto", "displace"] {
+            app.launchArguments = ["-split_behavior", behavior, "-story_title_swipe_right", "back",
+                                   "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+            launch(on: "reader-feed-swift")
+            XCTAssertTrue(waitForFixtureStoryTitles())
+            let feeds = app.tables["feeds-list"].firstMatch
+            XCTAssertFalse(feeds.isHittable)
+            attachScreenshot(named: "ipad-before-first-edge-\(behavior)")
+            let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+            let edgeY = storyRow("ui-story-swift-1").frame.midY - app.windows.firstMatch.frame.minY
+            origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: 280, dy: edgeY)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+            attachScreenshot(named: "ipad-after-first-edge-\(behavior)")
+            let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+            XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                           "The first edge drag after launch must reveal feeds without a warm-up gesture")
+            app.terminate()
+        }
+        #endif
+    }
+
+    func test_iPadFirstEdgeAfterClosingImportRevealsFeeds() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Uses isolated reader fixtures")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-split_behavior", "auto", "-story_title_swipe_right", "back",
+                               "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+        launch(on: "reader")
+        let settings = app.buttons["feed-list-settings"]
+        XCTAssertTrue(settings.waitForExistence(timeout: 15))
+        settings.tap()
+        app.tables["grouped-action-menu"].staticTexts["Import or upload sites"].tap()
+        XCTAssertTrue(app.buttons["Import OPML"].waitForExistence(timeout: 10))
+        app.buttons["Continue"].tap()
+        app.buttons["Start reading"].tap()
+        XCTAssertTrue(app.buttons["Start reading"].waitForNonExistence(timeout: 5))
+        let feed = feedCell("910001")
+        XCTAssertTrue(feed.waitForExistence(timeout: 10))
+        feed.tap()
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertFalse(feeds.isHittable)
+        attachScreenshot(named: "ipad-after-import-before-first-edge")
+        let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+        let edgeY = app.windows.firstMatch.frame.height * 0.45
+        origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 280, dy: edgeY)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        attachScreenshot(named: "ipad-after-import-first-edge")
+        let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+        XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                       "The first edge drag after closing import must reveal feeds")
+        app.terminate()
+        #endif
+    }
+
+    func test_iPadPortraitEdgeRevealsFeeds() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Uses isolated reader fixtures")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        for behavior in ["auto", "displace"] {
+            for action in ["back", "save"] {
+                app.launchArguments = ["-split_behavior", behavior, "-story_title_swipe_right", action,
+                                       "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+                launch(on: "reader-feed-swift")
+                XCTAssertTrue(waitForFixtureStoryTitles())
+                attachScreenshot(named: "ipad-titles-before-edge-\(behavior)-\(action)")
+                let feeds = app.tables["feeds-list"].firstMatch
+                XCTAssertFalse(feeds.isHittable, "The feed sidebar must start hidden")
+                let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+                // ReaderUITests.swift uses the app window's content edge; titlebar drags belong to iPadOS window management.
+                let edgeY = storyRow("ui-story-swift-1").frame.midY - app.windows.firstMatch.frame.minY
+                let start = origin.withOffset(CGVector(dx: 1, dy: edgeY))
+                start.press(forDuration: 0.05, thenDragTo: origin.withOffset(CGVector(dx: 35, dy: edgeY)),
+                            withVelocity: .slow, thenHoldForDuration: 0.3)
+                XCTAssertFalse(feeds.isHittable, "A short edge drag must cancel")
+                if action == "save" {
+                    let row = storyRow("ui-story-swift-1")
+                    row.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5)).press(forDuration: 0.05,
+                        thenDragTo: row.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)),
+                        withVelocity: .slow, thenHoldForDuration: 0)
+                    let saved = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value ENDSWITH %@", ", Saved"),
+                                                          object: storyRow("ui-story-swift-1"))
+                    XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 3), .completed,
+                                   "Screen-edge recognition must preserve the configured row action")
+                    XCTAssertFalse(feeds.isHittable)
+                }
+                let end = origin.withOffset(CGVector(dx: 280, dy: edgeY))
+                start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+                attachScreenshot(named: "ipad-titles-after-edge-\(behavior)-\(action)")
+                let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+                XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                               "Dragging from the screen edge must reveal the feeds sidebar")
+                app.terminate()
+            }
+        }
+        #endif
+    }
+
+    func test_iPadRowBackSurvivesCancelledEdge() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Uses isolated reader fixtures")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires iPad") }
+        XCUIDevice.shared.orientation = .portrait
+        app.launchArguments = ["-split_behavior", "auto", "-story_title_swipe_right", "back",
+                               "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let feeds = app.tables["feeds-list"].firstMatch
+        let row = storyRow("ui-story-swift-1")
+        let origin = app.windows.firstMatch.coordinate(withNormalizedOffset: .zero)
+        let edgeY = row.frame.midY - app.windows.firstMatch.frame.minY
+        origin.withOffset(CGVector(dx: 1, dy: edgeY)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 35, dy: edgeY)),
+            withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertFalse(feeds.isHittable)
+        row.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5)).press(forDuration: 0.05,
+            thenDragTo: row.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        let revealed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: feeds)
+        XCTAssertEqual(XCTWaiter.wait(for: [revealed], timeout: 5), .completed,
+                       "The full-row Back action must remain interactive after a cancelled edge drag")
+        attachScreenshot(named: "ipad-row-back-after-cancelled-edge")
+        #endif
+    }
+
+    func test_feedFolderAndSpecialRowContextMenus() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Context menus use isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-long_press_feed_title", "show_actions"]
+        launch(on: "reader")
+        let feed = feedCell("910001")
+        XCTAssertTrue(feed.waitForExistence(timeout: 15))
+        feed.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Rename site…"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Statistics"].exists)
+        XCTAssertTrue(app.buttons["Delete site…"].exists)
+        attachScreenshot(named: "feed-context-menu")
+        app.buttons["Rename site…"].tap()
+        XCTAssertTrue(app.alerts["Rename Arc News"].waitForExistence(timeout: 5))
+        app.alerts.buttons["Cancel"].tap()
+        XCTAssertTrue(feed.isHittable, "Opening a menu must not navigate away from feeds")
+
+        let folder = folderButton(named: "Tech")
+        folder.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Rename folder…"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Mark as read…"].exists)
+        XCTAssertFalse(app.buttons["Mute site"].exists)
+        attachScreenshot(named: "folder-context-menu")
+        app.buttons["Rename folder…"].tap()
+        XCTAssertTrue(app.alerts["Rename Tech"].waitForExistence(timeout: 5))
+        app.alerts.buttons["Cancel"].tap()
+
+        let all = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "All Site Stories")).firstMatch
+        XCTAssertTrue(all.exists)
+        all.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Mark as read…"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Delete folder…"].exists)
+        attachScreenshot(named: "all-stories-context-menu")
+        #endif
+    }
+
+    func test_markOlderFromFourthStoryRefreshesFeedAndFolderCounts() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Bulk read uses isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-newsblur-ui-test-bulk-read", "-long_press_story_title", "show_actions",
+                                "-default_feed_read_filter", "all", "-910002:read_filter", "all",
+                                "-default_mark_read_filter", "manually"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
+        let fourth = storyRow("ui-bulk-3")
+        XCTAssertTrue(fourth.waitForExistence(timeout: 15))
+        XCTAssertTrue((storyRow("ui-bulk-0").value as? String)?.hasPrefix("Read") == true)
+        attachScreenshot(named: "bulk-read-before-fourth-story")
+        fourth.press(forDuration: 1.2)
+        let older = app.buttons["Mark older as read"]
+        XCTAssertTrue(older.waitForExistence(timeout: 5))
+        older.tap()
+        let fourthRead = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            (fourth.value as? String)?.hasPrefix("Read") == true
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [fourthRead], timeout: 15), .completed)
+        XCTAssertTrue((storyRow("ui-bulk-1").value as? String)?.hasPrefix("Unread") == true)
+        XCTAssertTrue((storyRow("ui-bulk-2").value as? String)?.hasPrefix("Unread") == true)
+        attachScreenshot(named: "bulk-read-after-only-second-and-third-unread")
+        XCTAssertTrue(ensureFeedsListVisible())
+        let feed = feedCell("910002")
+        let counts = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            feed.label == "Swift Weekly feed, 2 unread stories"
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [counts], timeout: 10), .completed)
+        attachScreenshot(named: "bulk-read-feed-and-folder-counts")
+        let folder = folderButton(named: "Swift")
+        let disclosure = CGVector(dx: app.tables["feeds-list"].frame.maxX - 18, dy: folder.frame.midY)
+        app.coordinate(withNormalizedOffset: .zero).withOffset(disclosure).tap()
+        let folderCount = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            folder.label.contains("collapsed, 5 unread stories")
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [folderCount], timeout: 5), .completed)
+        attachScreenshot(named: "bulk-read-collapsed-folder-count")
+        #endif
+    }
+
+    func test_storyContextMenuClassic() throws { try checkStoryContextMenu(style: "standard", theme: "light") }
+    func test_storyContextMenuCards() throws { try checkStoryContextMenu(style: "experimental", theme: "medium") }
+
+    func test_storyMenuInLandscapeOpensFeedFromFolder() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Context menus use isolated simulator fixtures")
+        #else
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        app.launchArguments += ["-long_press_story_title", "show_actions", "-newsblur-ui-test-theme", "dark"]
+        launch(on: "reader-folder-tech", storyTitlesStyle: "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let story = app.cells.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-")).firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 10))
+        story.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Mark as read"].waitForExistence(timeout: 5))
+        let menu = app.collectionViews.firstMatch
+        XCTAssertTrue(menu.waitForExistence(timeout: 5))
+        let openFeed = app.buttons["Open feed"]
+        // ReaderUITests.swift scrolls the native menu's virtualized actions in compact landscape height.
+        for _ in 0..<3 where !openFeed.isHittable {
+            menu.swipeUp()
+        }
+        XCTAssertTrue(openFeed.isHittable)
+        attachScreenshot(named: "story-context-menu-landscape-dark")
+        openFeed.tap()
+        XCTAssertTrue(app.navigationBars.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Swift Weekly")).firstMatch.waitForExistence(timeout: 10))
+        #endif
+    }
+
+    func test_storyCustomLongPressStillSavesDirectly() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Context menus use isolated simulator fixtures")
+        #else
+        for style in ["standard", "experimental"] {
+            app = XCUIApplication()
+            app.launchArguments = ["-long_press_story_title", "save_story"]
+            launch(on: "reader-feed-swift", storyTitlesStyle: style)
+            XCTAssertTrue(waitForFixtureStoryTitles())
+            let story = app.descendants(matching: .any)["story-row-ui-story-swift-1"].firstMatch
+            XCTAssertTrue(story.waitForExistence(timeout: 10))
+            story.coordinate(withNormalizedOffset: CGVector(dx: 0.4, dy: 0.4)).press(forDuration: 1.2)
+            let saved = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                (story.value as? String)?.contains("Saved") == true
+            }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 5), .completed)
+            XCTAssertFalse(app.buttons["Share link…"].exists)
+        }
+        #endif
+    }
+
+    func test_liveAlphaFeedTrainerStaysOpen() throws {
+        try requireLiveSession()
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launchArguments = ["-long_press_feed_title", "show_actions"]
+        app.launch()
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20))
+        attachScreenshot(named: "feed-trainer-before-opening")
+        let target = try XCTUnwrap(feeds.cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first { $0.isHittable })
+        target.press(forDuration: 1.2)
+        let train = app.buttons["Train intelligence…"].firstMatch
+        XCTAssertTrue(train.waitForExistence(timeout: 5))
+        attachScreenshot(named: "feed-trainer-menu")
+        train.tap()
+        let trainer = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "What do you")).firstMatch
+        XCTAssertTrue(trainer.waitForExistence(timeout: 8))
+        attachScreenshot(named: "feed-trainer-presented")
+        let vanished = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in !trainer.exists }, object: nil)
+        vanished.isInverted = true
+        XCTAssertEqual(XCTWaiter.wait(for: [vanished], timeout: 3), .completed,
+                       "Feed navigation must not dismiss the trainer immediately after it opens")
+        attachScreenshot(named: "feed-trainer-settled")
+    }
+
+    func test_liveAlphaRowContextMenus() throws {
+        try requireLiveSession()
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launchArguments = ["-long_press_feed_title", "show_actions", "-long_press_story_title", "show_actions"]
+        app.launch()
+        attachScreenshot(named: "claypad-before-context-menus")
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20))
+        let feed = feeds.cells.matching(NSPredicate(format: "identifier MATCHES %@", "feed-row-[0-9]+")).allElementsBoundByIndex.first { $0.isHittable }
+        let target = try XCTUnwrap(feed)
+        target.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Rename site…"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "claypad-feed-context-menu")
+        app.buttons["Rename site…"].tap()
+        XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 5))
+        app.alerts.buttons["Cancel"].tap()
+        target.tap()
+        let story = app.cells.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-")).firstMatch
+        let card = app.otherElements.matching(NSPredicate(format: "identifier BEGINSWITH %@", "story-row-")).firstMatch
+        let loaded = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in story.exists || card.exists }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 20), .completed)
+        let row = story.exists ? story : card
+        row.coordinate(withNormalizedOffset: CGVector(dx: 0.4, dy: 0.4)).press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Share link…"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Train intelligence…"].exists)
+        attachScreenshot(named: "claypad-story-context-menu")
+        // ReaderUITests.swift dismisses through the header without executing a story action on the live account.
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.55, dy: 0.04)).tap()
+    }
+
+    private func checkStoryContextMenu(style: String, theme: String) throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Context menus use isolated simulator fixtures")
+        #else
+        app.launchArguments += ["-newsblur-ui-test-default-story-menu", "-show_ask_ai", "YES", "-newsblur-ui-test-theme", theme]
+        launch(on: "reader-feed-swift", storyTitlesStyle: style)
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let story = style == "standard" ? app.cells["story-row-ui-story-swift-1"].firstMatch : app.staticTexts["Swift Fixture Story One"].firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 10))
+        story.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Save story"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Mark as read"].exists)
+        XCTAssertTrue(app.buttons["Share link…"].exists)
+        XCTAssertTrue(app.buttons["Share story…"].exists)
+        XCTAssertTrue(app.buttons["Share on NewsBlur…"].exists)
+        XCTAssertTrue(app.buttons["Train intelligence…"].exists)
+        XCTAssertTrue(app.buttons["Ask AI…"].exists)
+        XCTAssertFalse(app.buttons["Open feed"].exists, "The current feed does not need an Open feed action")
+        attachScreenshot(named: "story-context-menu-\(style)-\(theme)")
+        app.buttons["Save story"].tap()
+        XCTAssertTrue(story.waitForExistence(timeout: 5))
+        story.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Unsave story"].waitForExistence(timeout: 5))
+        app.buttons["Unsave story"].tap()
+        #endif
+    }
+
+    func test_splitFooterSearchAndMenusAcrossRotation() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Footer fixture runs only on the simulator")
+        #else
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(storyRow("ui-story-swift-1").waitForExistence(timeout: 15),
+                      "ReaderUITests.swift requires loaded fixture stories before exercising the footer")
+        for orientation in [UIDeviceOrientation.portrait, .landscapeLeft, .portrait] {
+            XCUIDevice.shared.orientation = orientation
+            let search = app.buttons["Search stories"].firstMatch
+            XCTAssertTrue(search.waitForExistence(timeout: 10))
+            attachScreenshot(named: "split-footer-\(orientation.rawValue)")
+            search.tap()
+            XCTAssertTrue(app.textFields.firstMatch.waitForExistence(timeout: 5))
+            attachScreenshot(named: "split-footer-search-\(orientation.rawValue)")
+            let close = app.buttons["Close search"].firstMatch
+            XCTAssertTrue(close.waitForExistence(timeout: 5))
+            close.tap()
+            let options = app.buttons["Mark Read options"].firstMatch
+            options.tap()
+            attachScreenshot(named: "split-footer-mark-read-\(orientation.rawValue)")
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.2)).tap()
+            XCTAssertTrue(search.isHittable)
+        }
+        #endif
+    }
+
+    func test_relatedSitesCanBeClosedInLandscape() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Fixture discovery test runs only on the simulator")
+        #else
+        launch(on: "reader-feed-swift")
+        defer { XCUIDevice.shared.orientation = .portrait }
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let button = app.buttons["Related Sites"].firstMatch
+        XCTAssertTrue(button.waitForExistence(timeout: 10))
+        button.tap()
+        XCTAssertTrue(app.staticTexts["Related sites"].firstMatch.waitForExistence(timeout: 5))
+        attachScreenshot(named: "related-sites-landscape")
+        let close = app.buttons["Close Related Sites"].firstMatch
+        XCTAssertTrue(close.waitForExistence(timeout: 3), "Landscape must offer an explicit dismissal control")
+        let dialog = app.otherElements["related-sites-dialog"].firstMatch
+        XCTAssertTrue(dialog.exists)
+        XCTAssertLessThan(dialog.frame.width, app.frame.width - 100)
+        close.tap()
+        XCTAssertTrue(button.waitForExistence(timeout: 5))
+        XCTAssertFalse(close.exists)
+        button.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: 0.45)).tap()
+        XCTAssertFalse(close.exists, "Tapping outside the popover must dismiss it")
+        XCUIDevice.shared.orientation = .portrait
+        button.tap()
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let rotatedSheetReady = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            app.frame.width > app.frame.height && close.isHittable
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [rotatedSheetReady], timeout: 10), .completed,
+                       "An already-open portrait sheet must remain dismissible after rotation")
+        attachScreenshot(named: "related-sites-portrait-sheet-rotated")
+        close.tap()
+        XCTAssertFalse(close.exists)
+        #endif
+    }
+
+    func test_landscapeHeadersUseCompactHeight() throws {
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
+        #if targetEnvironment(simulator)
+        launch(on: "reader")
+        #else
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        #endif
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20))
+        attachScreenshot(named: "rotation-feed-portrait")
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let landscapeSettled = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            let bar = app.navigationBars.firstMatch.frame
+            return app.frame.width > app.frame.height && bar.width > 500 && bar.height < 80
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [landscapeSettled], timeout: 10), .completed)
+        attachScreenshot(named: "rotation-feed-landscape")
+        let feedHeader = app.navigationBars.firstMatch.frame
+        #if targetEnvironment(simulator)
+        let row = feedCell("910001")
+        #else
+        let row = feeds.cells.matching(NSPredicate(format: "label BEGINSWITH %@", "SiliconANGLE feed,")).firstMatch
+        #endif
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        row.tap()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15))
+        attachScreenshot(named: "rotation-stories-landscape")
+        let storyHeader = app.navigationBars.firstMatch.frame
+        XCTAssertTrue(stories.cells.firstMatch.waitForExistence(timeout: 10))
+        stories.cells.firstMatch.tap()
+        XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 15))
+        attachScreenshot(named: "rotation-reader-landscape-before-scrolling")
+        let geometry = XCTAttachment(string: "feed=\(feedHeader) stories=\(storyHeader)\n\(app.debugDescription)")
+        geometry.name = "landscape-header-geometry"
+        geometry.lifetime = .keepAlways
+        add(geometry)
+        XCTAssertLessThanOrEqual(feedHeader.maxY, 44.5)
+        XCTAssertLessThanOrEqual(storyHeader.maxY, 44.5)
+        for expectedList in [stories, feeds] {
+            // ReaderUITests.swift starts at the actual screen edge; a percentage becomes 9.6pt in landscape and can miss UIKit's edge recognizer.
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.45))
+                .withOffset(CGVector(dx: 2, dy: 0))
+            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.45))
+            start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+            XCTAssertTrue(expectedList.waitForExistence(timeout: 5))
+            XCTAssertTrue(expectedList.isHittable)
+        }
+        attachScreenshot(named: "landscape-after-swipe-back")
+        XCUIDevice.shared.orientation = .portrait
+        let portraitSettled = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            app.frame.height > app.frame.width && app.navigationBars.firstMatch.frame.height >= 50
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [portraitSettled], timeout: 10), .completed)
+        attachScreenshot(named: "portrait-header-restored")
+    }
+
+    func test_liveAlphaLandscapeFooterAndSearch() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires NB Alpha on the physical iPhone")
+        #else
+        // ReaderUITests.swift checks rotation against the signed-in account without resetting preferences.
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launch()
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20))
+        let row = feeds.cells.matching(NSPredicate(format: "label BEGINSWITH %@", "SiliconANGLE feed,")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        row.tap()
+        XCTAssertTrue(app.tables["story-titles-list"].firstMatch.waitForExistence(timeout: 15))
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let search = app.buttons["SEARCH"].firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertGreaterThan(app.frame.width, app.frame.height)
+        attachScreenshot(named: "live-alpha-centered-landscape-footer")
+        search.tap()
+        let field = app.textFields["Search stories"].firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5), app.debugDescription)
+        XCTAssertLessThan(field.frame.width, app.frame.width - 100)
+        attachScreenshot(named: "live-alpha-matching-landscape-search")
+        #endif
+    }
+
+    func test_liveAlphaCompletedSwipeBackKeepsIntelligenceLabels() throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("Requires NB Alpha on the physical iPhone")
+        #else
+        // ReaderUITests.swift launches the real signed-in account without fixture or preference-reset arguments.
+        app = XCUIApplication(bundleIdentifier: "com.newsblur.NB-Alpha")
+        app.launchArguments = ["-newsblur-toolbar-transition-probe"]
+        app.launch()
+        let feeds = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feeds.waitForExistence(timeout: 20), app.debugDescription)
+        let row = feeds.cells.matching(NSPredicate(format: "label BEGINSWITH %@", "SiliconANGLE feed,")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 10), app.debugDescription)
+        row.tap()
+        let stories = app.tables["story-titles-list"].firstMatch
+        XCTAssertTrue(stories.waitForExistence(timeout: 15), app.debugDescription)
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.45))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.45))
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+        let toolbar = app.toolbars["feed-list-toolbar"]
+        XCTAssertTrue(toolbar.waitForExistence(timeout: 10))
+        let trace = try XCTUnwrap(toolbar.value as? String)
+        let data = try XCTUnwrap(trace.data(using: .utf8))
+        let samples = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [[String: Double]])
+        XCTAssertFalse(samples.isEmpty, "Must observe the actual interactive transition")
+        let attachment = XCTAttachment(string: trace)
+        attachment.name = "interactive-back-toolbar-geometry"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        let viewportWidth = app.frame.width
+        for sample in samples {
+            XCTAssertEqual(sample["unread"] ?? 0, 68, accuracy: 0.5, "Labels changed during native swipe Back: \(trace)")
+            XCTAssertEqual(sample["toolbar"] ?? 0, viewportWidth, accuracy: 0.5,
+                           "Toolbar width changed during native swipe Back: \(trace)")
+        }
+        attachScreenshot(named: "live-alpha-after-interactive-back")
+        #endif
     }
 
     func test_readerLaunchShowsFixtureFoldersAndFeeds() {
@@ -21,15 +1328,495 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(reveal(feedCell("910003"), in: feedsList))
     }
 
+    func test_sharingKeepsTheStoryInTheFocusedList() {
+        app.launchArguments += ["-newsblur-ui-test-share-focus"]
+        launch(on: "reader-story-swift-1")
+        let shareLink = app.webViews.links["Share"].firstMatch
+        XCTAssertTrue(shareLink.waitForExistence(timeout: 15), app.debugDescription)
+        if !shareLink.isHittable { app.webViews.firstMatch.swipeUp() }
+        shareLink.tap()
+        let submit = app.buttons["Share"].firstMatch
+        XCTAssertTrue(submit.waitForExistence(timeout: 5), app.debugDescription)
+        submit.tap()
+        XCTAssertTrue(app.webViews.links["Shared"].firstMatch.waitForExistence(timeout: 10), app.debugDescription)
+        attachScreenshot(named: "shared-story-still-in-reader")
+        app.webViews.firstMatch.swipeDown()
+        let back = app.buttons.containing(.staticText, identifier: "Swift Weekly").firstMatch
+        XCTAssertTrue(back.waitForExistence(timeout: 5), app.debugDescription)
+        back.tap()
+        let sharedRow = app.tables["story-titles-list"].cells["story-row-ui-story-swift-1"]
+        XCTAssertTrue(sharedRow.waitForExistence(timeout: 5))
+        XCTAssertTrue(sharedRow.isHittable)
+        attachScreenshot(named: "shared-story-remains-in-focus")
+    }
+
+    func test_focusedRiverLoadsFollowingPagesWithoutScrolling() {
+        app.launchArguments += ["-newsblur-ui-test-focused-pagination"]
+        launch(on: "reader-folder-tech", storyTitlesStyle: "standard")
+        let table = app.tables["story-titles-list"]
+        XCTAssertTrue(table.waitForExistence(timeout: 10))
+        XCTAssertTrue(table.cells["story-row-ui-focus-3-0"].waitForExistence(timeout: 15), app.debugDescription)
+        XCTAssertTrue(table.cells["story-row-ui-focus-1-0"].exists)
+        XCTAssertTrue(table.cells["story-row-ui-focus-2-0"].exists)
+        XCTAssertFalse(table.cells["story-row-ui-focus-1-1"].exists)
+        attachScreenshot(named: "focus-pages-load-without-scrolling")
+    }
+
+    func test_feedToolbarKeepsPrimaryControlsVisibleAndOrdered() {
+        launch(on: "reader")
+        let toolbar = app.toolbars["feed-list-toolbar"]
+        let addButton = app.buttons["feed-list-add"]
+        let settings = app.buttons["feed-list-settings"]
+        let filter = app.segmentedControls["feed-list-intelligence"]
+        XCTAssertTrue(filter.waitForExistence(timeout: 10))
+        let feedsList = app.tables["feeds-list"].firstMatch
+        let outerInset: CGFloat
+        if #available(iOS 27.0, *) {
+            outerInset = 0
+        } else {
+            outerInset = 8
+        }
+        XCTAssertEqual(toolbar.frame.minX - feedsList.frame.minX, outerInset, accuracy: 1)
+        XCTAssertEqual(feedsList.frame.maxX - toolbar.frame.maxX, outerInset, accuracy: 1)
+        XCTAssertTrue(addButton.isHittable)
+        XCTAssertTrue(settings.isHittable)
+        XCTAssertEqual(filter.buttons.count, 4)
+        for button in filter.buttons.allElementsBoundByIndex {
+            XCTAssertTrue(button.isHittable, "Every intelligence filter must remain directly available")
+        }
+        XCTAssertLessThanOrEqual(addButton.frame.maxX, filter.frame.minX)
+        XCTAssertLessThanOrEqual(filter.frame.maxX, settings.frame.minX)
+        XCTAssertLessThan(addButton.frame.minX - toolbar.frame.minX, 30)
+        XCTAssertLessThan(toolbar.frame.maxX - settings.frame.maxX, 30)
+        attachScreenshot(named: "feed-toolbar-primary-controls")
+        addButton.tap()
+        XCTAssertTrue(app.textFields["add-site-url-field"].waitForExistence(timeout: 5))
+    }
+
+    func test_readerScenarioWaitsForDelayedFeedFixture() {
+        app.launchArguments = ["-newsblur-ui-test-feed-delay", "3"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").waitForExistence(timeout: 5))
+        attachScreenshot(named: "delayed-feed-fixture-requested-story-list")
+    }
+
+    func test_fixtureStoryMutationsDoNotSurviveRelaunch() {
+        for experimental in [false, true] {
+            launchSwipes(experimental: experimental, right: "save", left: "read")
+            assertFirstStoryState("Unread, Unsaved")
+            swipeFirstStory(right: true)
+            assertFirstStoryState("Unread, Saved")
+            swipeFirstStory(right: false)
+            assertFirstStoryState("Read, Saved")
+            attachScreenshot(named: "fixture-before-relaunch-\(experimental)")
+
+            app.terminate()
+            launchSwipes(experimental: experimental, right: "save", left: "read")
+            assertFirstStoryState("Unread, Unsaved")
+            attachScreenshot(named: "fixture-after-relaunch-\(experimental)")
+        }
+    }
+
+    func test_gesturePreferencesCollapseIndependentlyAndKeepSelections() {
+        app.launchArguments = ["-newsblur-ui-test-reset-gestures", "-newsblur-ui-test-animations"]
+        launch(on: "preferences")
+        let scroll = app.scrollViews.firstMatch
+        XCTAssertTrue(scroll.waitForExistence(timeout: 5))
+        func show(_ element: XCUIElement) {
+            for _ in 0..<18 {
+                if element.isHittable && element.frame.minY > 120 && element.frame.maxY < 750 { return }
+                let origin = app.coordinate(withNormalizedOffset: .zero)
+                let up = !element.exists || element.frame.midY > app.frame.midY
+                origin.withOffset(CGVector(dx: 185, dy: up ? 720 : 260)).press(forDuration: 0.05,
+                    thenDragTo: origin.withOffset(CGVector(dx: 185, dy: up ? 370 : 610)),
+                    withVelocity: .slow, thenHoldForDuration: 0.2)
+            }
+            XCTAssertTrue(element.isHittable)
+        }
+        let feedToggle = app.switches["enable_feed_swipes"]
+        let storyToggle = app.switches["enable_story_swipes"]
+        let feedLeft = app.buttons["feed_title_swipe_left"]
+        let storyLeft = app.buttons["story_title_swipe_left"]
+        let storyRight = app.buttons["story_title_swipe_right"]
+        show(storyRight)
+        XCTAssertTrue(storyLeft.label.contains("Read / unread"))
+        XCTAssertTrue(storyRight.label.contains("Back to feeds"))
+        XCTAssertTrue(app.buttons["long_press_story_title"].label.contains("Share"))
+        storyRight.tap()
+        app.buttons["Save / unsave"].tap()
+        show(feedToggle)
+        feedToggle.tap()
+        XCTAssertFalse(feedLeft.exists)
+        XCTAssertFalse(app.buttons["feed_title_swipe_right"].exists)
+        XCTAssertTrue(storyRight.exists)
+        XCTAssertTrue(app.buttons["long_press_feed_title"].exists)
+        show(storyToggle)
+        storyToggle.tap()
+        XCTAssertFalse(storyRight.exists)
+        XCTAssertFalse(app.buttons["story_title_swipe_left"].exists)
+        XCTAssertTrue(app.buttons["long_press_story_title"].exists)
+        attachScreenshot(named: "gesture-groups-swipes-off")
+        storyToggle.tap()
+        XCTAssertTrue(storyRight.waitForExistence(timeout: 3))
+        XCTAssertTrue(storyRight.label.contains("Save / unsave"))
+        XCTAssertFalse(feedLeft.exists)
+        show(feedToggle)
+        feedToggle.tap()
+        XCTAssertTrue(feedLeft.waitForExistence(timeout: 3))
+        attachScreenshot(named: "gesture-groups-swipes-on")
+    }
+
+    func test_reduceMotionPreferencePersistsAcrossRelaunch() {
+        // ReaderUITests.swift protects the actual switch binding and persistence, beyond ReaderMotion's animation policy.
+        if UIDevice.current.userInterfaceIdiom == .pad { XCUIDevice.shared.orientation = .landscapeLeft }
+        app.launchArguments = ["-newsblur-ui-test-animations"]
+        func showToggle() -> XCUIElement {
+            launch(on: "preferences")
+            let toggle = app.switches["reduce_motion"]
+            let scroll = app.scrollViews.firstMatch
+            XCTAssertTrue(scroll.waitForExistence(timeout: 10))
+            for _ in 0..<16 {
+                if toggle.isHittable { return toggle }
+                scroll.swipeUp(velocity: .slow)
+            }
+            XCTAssertTrue(toggle.isHittable)
+            return toggle
+        }
+        let toggle = showToggle()
+        let original = toggle.value as? String
+        attachScreenshot(named: "reduce-motion-original")
+        toggle.tap()
+        let changed = toggle.value as? String
+        XCTAssertNotEqual(changed, original)
+        attachScreenshot(named: "reduce-motion-toggled")
+        app.terminate()
+        let restored = showToggle()
+        XCTAssertEqual(restored.value as? String, changed)
+        attachScreenshot(named: "reduce-motion-after-relaunch")
+        restored.tap()
+        XCTAssertEqual(restored.value as? String, original)
+    }
+
+    func test_feedSwipeDirectionsWorkWithStorySwipesDisabled() {
+        for right in [false, true] {
+            app = XCUIApplication()
+            app.launchArguments = ["-enable_feed_swipes", "YES", "-enable_story_swipes", "NO",
+                                   "-feed_title_swipe_left", right ? "notifications" : "read",
+                                   "-feed_title_swipe_right", right ? "read" : "notifications",
+                                   "-show_feeds_after_being_read", "YES", "-newsblur-ui-test-animations"]
+            launch(on: "reader")
+            let row = feedCell("910002")
+            guard let frame = waitForStableVisibleFrame(of: row) else { return }
+            XCTAssertTrue(row.label.contains("4 unread stories"))
+            let origin = app.coordinate(withNormalizedOffset: .zero)
+            origin.withOffset(CGVector(dx: right ? 80 : 330, dy: frame.midY)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: right ? 260 : 150, dy: frame.midY)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+            expectation(for: NSPredicate(format: "label == %@", "Swift Weekly feed"), evaluatedWith: row)
+            waitForExpectations(timeout: 5)
+        }
+    }
+
+    func test_disabledFeedSwipesLeaveStorySwipesEnabled() {
+        app.launchArguments = ["-enable_feed_swipes", "NO", "-enable_story_swipes", "YES",
+                               "-story_title_swipe_right", "save", "-story_title_swipe_left", "read",
+                               "-newsblur-ui-test-animations"]
+        launch(on: "reader", storyTitlesStyle: "standard")
+        let row = feedCell("910002")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        for right in [false, true] {
+            guard let frame = waitForStableVisibleFrame(of: row) else { return }
+            origin.withOffset(CGVector(dx: right ? 80 : 330, dy: frame.midY)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: right ? 260 : 150, dy: frame.midY)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+            XCTAssertTrue(row.label.contains("4 unread stories"))
+        }
+        guard let frame = waitForStableVisibleFrame(of: row) else { return }
+        origin.withOffset(CGVector(dx: frame.midX, dy: frame.midY)).tap()
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        swipeFirstStory(right: true)
+        assertFirstStoryState("Unread, Saved")
+    }
+
+    func test_disabledStorySwipesKeepEdgeBack() { verifyDisabledStorySwipes(experimental: false) }
+    func test_experimentalDisabledStorySwipesKeepEdgeBack() { verifyDisabledStorySwipes(experimental: true) }
+
+    private func verifyDisabledStorySwipes(experimental: Bool) {
+        app.launchArguments = ["-enable_feed_swipes", "YES", "-enable_story_swipes", "NO",
+                               "-story_title_swipe_right", "back", "-story_title_swipe_left", "save",
+                               "-newsblur-ui-test-animations"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: 80, dy: 195)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 350, dy: 195)), withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(isVisibleOnScreen(fixtureStorySurface()))
+        swipeFirstStory(right: false)
+        XCTAssertTrue(isVisibleOnScreen(fixtureStorySurface()))
+        origin.withOffset(CGVector(dx: 2, dy: 300)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 350, dy: 300)), withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
+    }
+
+    func test_classicTitlesKeepEdgeSwipeBack() {
+        verifyStoryListSwipeBack(classic: true, experimental: false)
+    }
+
+    func test_classicExperimentalTitlesKeepEdgeSwipeBack() {
+        verifyStoryListSwipeBack(classic: true, experimental: true)
+    }
+
+    func test_currentTitlesKeepFullScreenSwipeBack() {
+        verifyStoryListSwipeBack(classic: false, experimental: false)
+    }
+
+    func test_currentExperimentalTitlesKeepFullScreenSwipeBack() {
+        verifyStoryListSwipeBack(classic: false, experimental: true)
+    }
+
+    func test_defaultStorySwipesToggleReadAndReturnToFeeds() {
+        verifyDefaultStorySwipes(experimental: false)
+    }
+
+    func test_defaultExperimentalStorySwipesToggleReadAndReturnToFeeds() {
+        verifyDefaultStorySwipes(experimental: true)
+    }
+
+    private func verifyDefaultStorySwipes(experimental: Bool) {
+        app.launchArguments = ["-newsblur-ui-test-reset-gestures", "-newsblur-ui-test-animations",
+                               "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let initialState = storyRow("ui-story-swift-1").value as? String ?? ""
+        XCTAssertTrue(initialState.hasPrefix("Read,") || initialState.hasPrefix("Unread,"))
+        let toggledState = initialState.replacingOccurrences(of: initialState.hasPrefix("Read,") ? "Read," : "Unread,",
+                                                             with: initialState.hasPrefix("Read,") ? "Unread," : "Read,")
+        swipeFirstStory(right: false)
+        assertFirstStoryState(toggledState)
+        attachScreenshot(named: experimental ? "default-experimental-left-read" : "default-left-read")
+        swipeFirstStory(right: false)
+        assertFirstStoryState(initialState)
+
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: 80, dy: 195)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: 350, dy: 195)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
+    }
+
+    func test_classicStoryActionsAreReversible() {
+        verifyClassicActions(experimental: false)
+    }
+
+    func test_classicExperimentalStoryActionsAreReversible() {
+        verifyClassicActions(experimental: true)
+    }
+
+    func test_reversedStorySwipeActions() {
+        verifyClassicActions(experimental: false, reversed: true)
+    }
+
+    func test_reversedExperimentalStorySwipeActions() {
+        verifyClassicActions(experimental: true, reversed: true)
+    }
+
+    func test_saveSwipeWithLeftMenu() { verifySwipeMenu(experimental: false, rightMenu: false) }
+    func test_experimentalSaveSwipeWithLeftMenu() { verifySwipeMenu(experimental: true, rightMenu: false) }
+    func test_rightMenuWithReadSwipe() { verifySwipeMenu(experimental: false, rightMenu: true) }
+    func test_experimentalRightMenuWithReadSwipe() { verifySwipeMenu(experimental: true, rightMenu: true) }
+    func test_experimentalSwipeMenuIconsStayCompact() {
+        launchSwipes(experimental: true, right: "menu", left: "read")
+        swipeFirstStory(right: true)
+        XCTAssertTrue(app.buttons["Save"].firstMatch.waitForExistence(timeout: 3))
+        attachScreenshot(named: "experimental-swipe-menu-icon-sizes")
+        let hierarchy = XCTAttachment(string: app.debugDescription)
+        hierarchy.lifetime = .keepAlways
+        add(hierarchy)
+        for name in ["indicator-unread", "saved-stories", "email"] {
+            let icon = app.images[name].firstMatch
+            XCTAssertTrue(icon.exists, "Missing swipe icon \(name)")
+            XCTAssertGreaterThan(icon.frame.width, 0)
+            XCTAssertLessThanOrEqual(icon.frame.width, 18)
+            XCTAssertLessThanOrEqual(icon.frame.height, 18)
+        }
+    }
+    func test_shareSwipes() { verifyShareSwipes(experimental: false) }
+    func test_experimentalShareSwipes() { verifyShareSwipes(experimental: true) }
+    func test_leftSwipeBack() { verifyConfiguredBack(experimental: false, leftBack: true) }
+    func test_experimentalLeftSwipeBack() { verifyConfiguredBack(experimental: true, leftBack: true) }
+    func test_rightSwipeBackWithLeftAction() { verifyConfiguredBack(experimental: false, leftBack: false) }
+    func test_experimentalRightSwipeBackWithLeftAction() { verifyConfiguredBack(experimental: true, leftBack: false) }
+
+    private func launchSwipes(experimental: Bool, right: String, left: String) {
+        app = XCUIApplication()
+        app.launchArguments = ["-story_title_swipe_right", right, "-story_title_swipe_left", left,
+                               "-enable_story_swipes", "YES", "-newsblur-ui-test-animations",
+                               "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+    }
+
+    private func swipeFirstStory(right: Bool) {
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: right ? 80 : 330, dy: 195)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: right ? 230 : 180, dy: 195)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+    }
+
+    private func assertFirstStoryState(_ value: String) {
+        expectation(for: NSPredicate(format: "value == %@", value), evaluatedWith: storyRow("ui-story-swift-1"))
+        waitForExpectations(timeout: 3)
+    }
+
+    private func verifySwipeMenu(experimental: Bool, rightMenu: Bool) {
+        launchSwipes(experimental: experimental, right: rightMenu ? "menu" : "save", left: rightMenu ? "read" : "menu")
+        if !rightMenu {
+            swipeFirstStory(right: true)
+            assertFirstStoryState("Unread, Saved")
+        }
+        swipeFirstStory(right: rightMenu)
+        let save = app.buttons[rightMenu ? "Save" : "Unsave"].firstMatch
+        XCTAssertTrue(save.waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["Share"].firstMatch.exists)
+        XCTAssertTrue(app.buttons["Mark Read"].firstMatch.exists)
+        save.tap()
+        assertFirstStoryState(rightMenu ? "Unread, Saved" : "Unread, Unsaved")
+        XCTAssertTrue(isVisibleOnScreen(fixtureStorySurface()))
+    }
+
+    private func verifyShareSwipes(experimental: Bool) {
+        for right in [true, false] {
+            launchSwipes(experimental: experimental, right: right ? "share" : "back", left: right ? "menu" : "share")
+            swipeFirstStory(right: right)
+            // ReaderUITests.swift accepts the system share sheet's activity cell accessibility type.
+            XCTAssertTrue(app.descendants(matching: .any)["Copy Link"].firstMatch.waitForExistence(timeout: 8), app.debugDescription)
+            attachScreenshot(named: right ? "swipe-right-share" : "swipe-left-share")
+        }
+    }
+
+    private func verifyConfiguredBack(experimental: Bool, leftBack: Bool) {
+        launchSwipes(experimental: experimental, right: leftBack ? "save" : "back", left: leftBack ? "back" : "save")
+        attachScreenshot(named: "configured-back-before")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        origin.withOffset(CGVector(dx: leftBack ? 330 : 80, dy: 195)).press(forDuration: 0.05,
+            thenDragTo: origin.withOffset(CGVector(dx: leftBack ? 100 : 350, dy: 195)),
+            withVelocity: .slow, thenHoldForDuration: 0)
+        attachScreenshot(named: "configured-back-after")
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
+    }
+
+    private func verifyClassicActions(experimental: Bool, reversed: Bool = false) {
+        app.launchArguments += ["-story_title_swipe_right", reversed ? "read" : "save",
+                                "-story_title_swipe_left", reversed ? "save" : "read", "-newsblur-ui-test-animations",
+                                "-enable_story_swipes", "YES",
+                                "-default_feed_read_filter", "all", "-910002:read_filter", "all"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let row = storyRow("ui-story-swift-1")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        func swipe(_ from: CGFloat, _ to: CGFloat) {
+            origin.withOffset(CGVector(dx: from, dy: 195)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: to, dy: 195)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+        }
+        func assertState(_ value: String) {
+            let predicate = NSPredicate(format: "value == %@", value)
+            expectation(for: predicate, evaluatedWith: row)
+            waitForExpectations(timeout: 3)
+        }
+        func saveSwipe() { swipe(reversed ? 330 : 80, reversed ? 180 : 230) }
+        func readSwipe() { swipe(reversed ? 80 : 330, reversed ? 230 : 180) }
+        assertState("Unread, Unsaved")
+        let rowFrame = row.frame
+        func rowImageData() -> Data {
+            let image = app.screenshot().image
+            let scale = CGFloat(image.cgImage!.width) / app.frame.width
+            let crop = rowFrame.applying(CGAffineTransform(scaleX: scale, y: scale)).integral
+            return UIImage(cgImage: image.cgImage!.cropping(to: crop)!).pngData()!
+        }
+        let initialRowImage = experimental ? rowImageData() : nil
+        saveSwipe()
+        assertState("Unread, Saved")
+        attachScreenshot(named: experimental ? "experimental-classic-saved" : "classic-saved")
+        if let initialRowImage {
+            XCTAssertNotEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires a visible saved indicator")
+        }
+        saveSwipe()
+        assertState("Unread, Unsaved")
+        if let initialRowImage {
+            XCTAssertEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires the saved indicator to disappear")
+        }
+        readSwipe()
+        assertState("Read, Unsaved")
+        attachScreenshot(named: experimental ? "experimental-classic-read" : "classic-read")
+        if let initialRowImage {
+            XCTAssertNotEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires visible read-state dimming")
+        }
+        readSwipe()
+        assertState("Unread, Unsaved")
+        if let initialRowImage {
+            XCTAssertEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires unread appearance to return")
+        }
+        swipe(80, 115)
+        assertState("Unread, Unsaved")
+        XCTAssertTrue(isVisibleOnScreen(fixtureStorySurface()))
+        tapElementCenter(row)
+        let currentStory = currentStoryProbe()
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+    }
+
+    private func verifyStoryListSwipeBack(classic: Bool, experimental: Bool) {
+        app.launchArguments += ["-story_title_swipe_right", classic ? "save" : "back",
+                                "-story_title_swipe_left", classic ? "read" : "menu",
+                                "-enable_story_swipes", "YES", "-newsblur-ui-test-animations"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: experimental ? "experimental" : "standard")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        attachScreenshot(named: classic ? "classic-before-edge-back" : "current-before-swipe-back")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        let start = origin.withOffset(CGVector(dx: classic ? 2 : 85, dy: 300))
+        let end = origin.withOffset(CGVector(dx: 350, dy: 300))
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0)
+        XCTAssertTrue(app.tables["feeds-list"].firstMatch.waitForExistence(timeout: 5))
+        attachScreenshot(named: classic ? "classic-after-edge-back" : "current-after-swipe-back")
+    }
+
+    func test_goodReadsAppearsAtBottomAndLoadsTrendingStories() {
+        launch(on: "reader-good-reads")
+
+        let feedsList = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
+
+        let goodReadsFolder = folderButton(named: "Good Reads")
+        XCTAssertTrue(reveal(goodReadsFolder, in: feedsList))
+        attachScreenshot(named: "good-reads-feed-list")
+        tapElementCenter(goodReadsFolder)
+
+        let storyList = app.tables["story-titles-list"]
+        XCTAssertTrue(storyList.waitForExistence(timeout: 10))
+        XCTAssertTrue(storyRow("ui-story-good-reads-1").waitForExistence(timeout: 10))
+    }
+
     func test_selectingFolderLoadsRiverStories() {
         launch(on: "reader")
 
         let feedsList = app.tables["feeds-list"].firstMatch
         XCTAssertTrue(feedsList.waitForExistence(timeout: 10))
 
-        let cultureFolder = folderButton(named: "Culture")
-        XCTAssertTrue(reveal(cultureFolder, in: feedsList))
-        tapElementCenter(cultureFolder)
+        // FolderTitleView.m's button can also appear in a hidden table accessibility copy.
+        let cultureFolders = app.buttons.matching(identifier: "folder-header-culture")
+        var cultureFolder: XCUIElement?
+        let hittableFolder = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            cultureFolder = cultureFolders.allElementsBoundByIndex.first { $0.isHittable }
+            return cultureFolder != nil
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter().wait(for: [hittableFolder], timeout: 10), .completed,
+                       "Culture folder has no hittable accessibility match")
+        guard let cultureFolder else { return }
+        guard let folderFrame = waitForStableVisibleFrame(of: cultureFolder) else { return }
+        app.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: folderFrame.midX, dy: folderFrame.midY)).tap()
 
         let storyList = app.tables["story-titles-list"]
         XCTAssertTrue(storyList.waitForExistence(timeout: 10))
@@ -41,6 +1828,24 @@ final class ReaderUITests: XCTestCase {
         let currentStory = currentStoryProbe()
         XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
         XCTAssertEqual(currentStory.label, "Design Notes Keeps Another Folder Alive")
+    }
+
+    func test_readerOpensBeforeDelayedArticleThenRevealsContent() {
+        app.launchArguments += ["-newsblur-ui-test-delayed-story-ready", "-newsblur-ui-test-animations",
+                                "-newsblur-ui-test-theme", "medium"]
+        launch(on: "reader-feed-swift")
+        let storyList = fixtureStorySurface()
+        XCTAssertTrue(storyList.waitForExistence(timeout: 10))
+        attachScreenshot(named: "reader-before-opening")
+        tapElementCenter(storyCells(in: storyList).element(boundBy: 0))
+
+        XCTAssertTrue(currentStoryProbe().waitForExistence(timeout: 2), "Reader controls must not wait for article readiness")
+        XCTAssertEqual(currentStoryProbe().label, "Swift Fixture Story One")
+        XCTAssertFalse(app.webViews.firstMatch.isHittable, "Unfinished article must remain hidden")
+        attachScreenshot(named: "reader-open-while-article-prepares")
+        expectation(for: NSPredicate(format: "hittable == YES"), evaluatedWith: app.webViews.firstMatch)
+        waitForExpectations(timeout: 10)
+        attachScreenshot(named: "reader-after-article-fades-in")
     }
 
     func test_selectingFeedLoadsStoriesAndOpeningStoryShowsDetail() {
@@ -58,14 +1863,222 @@ final class ReaderUITests: XCTestCase {
         XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
     }
 
+    func test_iPadKeyboardDownOpensFirstStoryFromStoryList() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Keyboard regression uses isolated simulator stories")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires the iPad split reader") }
+        app.launchArguments += ["-newsblur-ui-test-theme", "sepia", "-feed_opening", "list"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").waitForExistence(timeout: 15))
+        XCTAssertEqual(currentStoryProbe().label, "No story selected", "The list-only preference must leave the reader empty before the first key")
+        attachScreenshot(named: "ipad-keyboard-before-first-story")
+        // ReaderUITests.swift sends actual hardware-key events while the feed selection still owns focus.
+        app.typeKey(XCUIKeyboardKey.downArrow.rawValue, modifierFlags: [])
+        let openedFirstStory = waitForLabel("Swift Fixture Story One", on: currentStoryProbe())
+        if !openedFirstStory {
+            print("KEYBOARD_FIRST_STORY_FAILURE \(app.debugDescription)")
+            let screenshotPath = NSTemporaryDirectory() + "newsblur-keyboard-first-story-failure.png"
+            try app.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: screenshotPath))
+            print("KEYBOARD_FIRST_STORY_SCREENSHOT \(screenshotPath)")
+        }
+        XCTAssertTrue(openedFirstStory)
+        attachScreenshot(named: "ipad-keyboard-first-story")
+        #endif
+    }
+
+    func test_iPadKeyboardArrowsNavigateStoriesAndSSavesAndUnsaves() throws {
+        #if !targetEnvironment(simulator)
+        throw XCTSkip("Keyboard regression uses isolated simulator stories")
+        #else
+        guard UIDevice.current.userInterfaceIdiom == .pad else { throw XCTSkip("Requires the iPad split reader") }
+        app.launchArguments += ["-newsblur-ui-test-theme", "sepia"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").waitForExistence(timeout: 15))
+        tapElementCenter(storyRow("ui-story-swift-1"))
+        expectation(for: NSPredicate(format: "label == %@", "Swift Fixture Story One"), evaluatedWith: currentStoryProbe())
+        waitForExpectations(timeout: 10)
+        app.typeKey(XCUIKeyboardKey.downArrow.rawValue, modifierFlags: [])
+        expectation(for: NSPredicate(format: "label == %@", "Swift Fixture Story Two"), evaluatedWith: currentStoryProbe())
+        waitForExpectations(timeout: 10)
+        app.typeKey(XCUIKeyboardKey.upArrow.rawValue, modifierFlags: [])
+        expectation(for: NSPredicate(format: "label == %@", "Swift Fixture Story One"), evaluatedWith: currentStoryProbe())
+        waitForExpectations(timeout: 10)
+        app.typeKey("s", modifierFlags: [])
+        assertFirstStoryState("Read, Saved")
+        attachScreenshot(named: "ipad-keyboard-s-saved")
+        app.typeKey("s", modifierFlags: [])
+        assertFirstStoryState("Read, Unsaved")
+        attachScreenshot(named: "ipad-keyboard-s-unsaved")
+        #endif
+    }
+
+    func test_rotatingFromStoryDetailKeepsStoryVisibleWhenReturningToPortrait() {
+        let originalOrientation = XCUIDevice.shared.orientation
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = originalOrientation }
+        launch(on: "reader-feed-swift")
+
+        let storyList = fixtureStorySurface()
+        XCTAssertTrue(storyList.waitForExistence(timeout: 10))
+
+        let firstStory = storyCells(in: storyList).element(boundBy: 0)
+        XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
+        tapElementCenter(firstStory)
+
+        let currentStory = currentStoryProbe()
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+        XCTAssertTrue(isVisibleOnScreen(currentStory), "Story should be visible before rotation: \(debugVisibility(currentStory))")
+        XCTAssertTrue(waitForRenderedFixtureArticle(orientation: .portrait))
+        attachScreenshot(named: "portrait-story")
+
+        XCUIDevice.shared.orientation = .landscapeLeft
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+        XCTAssertTrue(waitForRenderedFixtureArticle(orientation: .landscapeLeft))
+        attachScreenshot(named: "landscape-story")
+
+        XCUIDevice.shared.orientation = .portrait
+
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+        XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+        XCTAssertTrue(isVisibleOnScreen(currentStory), "Story should stay visible after returning to portrait: \(debugVisibility(currentStory))")
+        XCTAssertTrue(waitForRenderedFixtureArticle(orientation: .portrait))
+        attachScreenshot(named: "portrait-after-rotate")
+    }
+
+    private func waitForRenderedFixtureArticle(orientation: UIDeviceOrientation) -> Bool {
+        // ReaderUITests.swift scopes readiness to the rendered WKWebView, since the native model probe remains present while an article is blank.
+        let titlePredicate = NSPredicate(format: "label == %@", "Swift Fixture Story One")
+        let bodyPredicate = NSPredicate(format: "label BEGINSWITH %@",
+                                        "The first Swift story should open in the detail reader.")
+        var previousFrames: [CGRect]?
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            let appFrame = app.frame
+            guard XCUIDevice.shared.orientation == orientation,
+                  (appFrame.width > appFrame.height) == orientation.isLandscape,
+                  let web = app.webViews.allElementsBoundByIndex.first(where: { $0.isHittable }) else {
+                previousFrames = nil
+                return false
+            }
+            let title = web.descendants(matching: .any).matching(titlePredicate).firstMatch
+            let body = web.staticTexts.matching(bodyPredicate).firstMatch
+            guard title.exists, body.exists, title.isHittable, body.isHittable else {
+                previousFrames = nil
+                return false
+            }
+            let webFrame = web.frame
+            let titleFrame = title.frame
+            let bodyFrame = body.frame
+            let visibleWebFrame = appFrame.intersection(webFrame)
+            guard !visibleWebFrame.isEmpty, !titleFrame.isEmpty, !bodyFrame.isEmpty,
+                  visibleWebFrame.contains(titleFrame), visibleWebFrame.intersects(bodyFrame) else {
+                previousFrames = nil
+                return false
+            }
+            let frames = [appFrame, webFrame, titleFrame, bodyFrame]
+            defer { previousFrames = frames }
+            return previousFrames == frames
+        }, object: nil)
+        let completed = XCTWaiter.wait(for: [ready], timeout: 10) == .completed
+        if !completed {
+            attachScreenshot(named: "article-not-rendered-after-rotation-\(orientation.rawValue)")
+            let diagnostic = XCTAttachment(string: "expectedOrientation=\(orientation.rawValue) actualOrientation=\(XCUIDevice.shared.orientation.rawValue) appFrame=\(app.frame)\n\(app.debugDescription)")
+            diagnostic.name = "article-rotation-readiness"
+            diagnostic.lifetime = .keepAlways
+            add(diagnostic)
+        }
+        return completed
+    }
+
+    func test_conventionalPhoneReaderKeepsOneReadablePaneAcrossRotation() throws {
+        guard UIDevice.current.userInterfaceIdiom == .phone else {
+            throw XCTSkip("Conventional phone navigation is checked on an iPhone simulator")
+        }
+        XCUIDevice.shared.orientation = .portrait
+        defer { XCUIDevice.shared.orientation = .portrait }
+        app.launchArguments += ["-newsblur-ui-test-animations"]
+        launch(on: "reader-feed-swift")
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let row = storyRow("ui-story-swift-1")
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        tapElementCenter(row)
+        let currentStory = currentStoryProbe()
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+
+        for orientation in [UIDeviceOrientation.portrait, .landscapeLeft, .portrait] {
+            XCUIDevice.shared.orientation = orientation
+            let expectedLandscape = orientation == .landscapeLeft
+            let rotation = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+                (app.frame.width > app.frame.height) == expectedLandscape
+            }, object: nil)
+            let rotationResult = XCTWaiter.wait(for: [rotation], timeout: 10)
+            let web = app.webViews.firstMatch
+            attachScreenshot(named: "conventional-phone-reader-width-\(orientation.rawValue)")
+            let webFrame = web.exists ? String(describing: web.frame) : "unavailable"
+            let geometry = XCTAttachment(string: "expectedOrientation=\(orientation.rawValue) actualOrientation=\(XCUIDevice.shared.orientation.rawValue) rotationResult=\(rotationResult.rawValue) app=\(app.frame) web=\(webFrame)\n\(app.debugDescription)")
+            geometry.name = "conventional-phone-reader-geometry"
+            geometry.lifetime = .keepAlways
+            add(geometry)
+
+            XCTAssertEqual(rotationResult, .completed)
+            XCTAssertTrue(waitForRenderedFixtureArticle(orientation: orientation))
+            XCTAssertEqual(currentStory.label, "Swift Fixture Story One")
+            XCTAssertTrue(isVisibleOnScreen(currentStory))
+            // ReaderUITests.swift permits the phone's protected horizontal edges, while rejecting a reader squeezed beside either list.
+            XCTAssertGreaterThanOrEqual(web.frame.width, app.frame.width * 0.8,
+                                        "A conventional phone must retain a readable single reader pane after rotation")
+            XCTAssertFalse(app.tables["feeds-list"].firstMatch.isHittable,
+                           "The feed list must remain below the reader in compact navigation")
+            XCTAssertFalse(fixtureStorySurface().isHittable,
+                           "Story titles must remain below the reader in compact navigation")
+        }
+
+        let storyBack = app.buttons.containing(.staticText, identifier: "Swift Weekly").firstMatch
+        XCTAssertTrue(storyBack.waitForExistence(timeout: 5))
+        XCTAssertTrue(storyBack.isHittable)
+        storyBack.tap()
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        XCTAssertTrue(storyRow("ui-story-swift-1").isHittable)
+        attachScreenshot(named: "conventional-phone-after-back-to-stories")
+
+        let feedsBack = app.navigationBars.buttons.firstMatch
+        XCTAssertTrue(feedsBack.waitForExistence(timeout: 5))
+        XCTAssertTrue(feedsBack.isHittable)
+        feedsBack.tap()
+        let feedsList = app.tables["feeds-list"].firstMatch
+        XCTAssertTrue(feedsList.waitForExistence(timeout: 5))
+        XCTAssertTrue(feedsList.isHittable)
+        attachScreenshot(named: "conventional-phone-after-back-to-feeds")
+
+        let feed = feedCell("910002")
+        XCTAssertTrue(reveal(feed, in: feedsList))
+        tapElementCenter(feed)
+        XCTAssertTrue(waitForFixtureStoryTitles())
+        let reopenedRow = storyRow("ui-story-swift-1")
+        XCTAssertTrue(reopenedRow.waitForExistence(timeout: 10))
+        tapElementCenter(reopenedRow)
+        XCTAssertTrue(waitForRenderedFixtureArticle(orientation: .portrait))
+        XCTAssertEqual(currentStoryProbe().label, "Swift Fixture Story One")
+        attachScreenshot(named: "conventional-phone-reopened-story")
+    }
+
     func test_selectingFeedShowsExpectedFixtureStoryRows() {
         launch(on: "reader-feed-swift")
 
         let storyList = fixtureStorySurface()
         XCTAssertTrue(storyList.waitForExistence(timeout: 10))
-        XCTAssertTrue(reveal(storyTitle("Swift Fixture Story One"), in: storyList))
-        XCTAssertTrue(reveal(storyTitle("Swift Fixture Story Two"), in: storyList))
-        XCTAssertTrue(reveal(storyTitle("Swift Fixture Story Three"), in: storyList))
+        // FeedDetailTableCell.m exposes the drawn title in the cell's combined accessibility label.
+        for (hash, title) in [("ui-story-swift-1", "Swift Fixture Story One"),
+                              ("ui-story-swift-2", "Swift Fixture Story Two"),
+                              ("ui-story-swift-3", "Swift Fixture Story Three")] {
+            let row = storyCell(hash)
+            XCTAssertTrue(reveal(row, in: storyList))
+            XCTAssertTrue(row.label.contains("\"\(title)\""))
+        }
     }
 
     func test_experimentalTitlesShowClusterRows() {
@@ -77,38 +2090,62 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_experimentalTitlesSupportSwipeActionsAndReadToggling() {
-        launch(on: "reader-feed-swift", storyTitlesStyle: "experimental")
-
-        XCTAssertTrue(waitForFixtureStoryTitles())
-        let storyList = fixtureStorySurface()
+        launchSwipes(experimental: true, right: "back", left: "menu")
 
         let firstStory = storyRow("ui-story-swift-1")
         XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
+        let rowFrame = firstStory.frame
+        func rowImageData() -> Data {
+            let image = app.screenshot().image
+            let scale = CGFloat(image.cgImage!.width) / app.frame.width
+            let crop = rowFrame.applying(CGAffineTransform(scaleX: scale, y: scale)).integral
+            return UIImage(cgImage: image.cgImage!.cropping(to: crop)!).pngData()!
+        }
+        let initialRowImage = rowImageData()
 
         swipeElementLeft(firstStory)
 
-        let markReadButton = app.buttons["Mark Read"].firstMatch
-        XCTAssertTrue(markReadButton.waitForExistence(timeout: 2))
+        let readAction = app.buttons.matching(NSPredicate(format: "label IN %@", ["Mark Read", "Mark Unread"])).firstMatch
+        XCTAssertTrue(readAction.waitForExistence(timeout: 2))
+        let initialActionTitle = readAction.label
+        let oppositeActionTitle = initialActionTitle == "Mark Read" ? "Mark Unread" : "Mark Read"
         XCTAssertTrue(app.buttons["Save"].firstMatch.waitForExistence(timeout: 2))
         XCTAssertTrue(app.buttons["Share"].firstMatch.waitForExistence(timeout: 2))
 
-        markReadButton.tap()
+        readAction.tap()
 
+        // ReaderUITests.swift verifies read-state changes on the row retained by the All filter.
         let updatedStory = storyRow("ui-story-swift-1")
-        XCTAssertFalse(updatedStory.waitForExistence(timeout: 2))
+        XCTAssertTrue(updatedStory.waitForExistence(timeout: 2))
+        attachScreenshot(named: "experimental-menu-after-read-action")
+        let updatedRowImage = rowImageData()
+        swipeElementLeft(updatedStory)
+
+        let oppositeAction = app.buttons[oppositeActionTitle].firstMatch
+        XCTAssertTrue(oppositeAction.waitForExistence(timeout: 2))
+        XCTAssertFalse(app.buttons[initialActionTitle].firstMatch.exists)
+        XCTAssertNotEqual(updatedRowImage, initialRowImage, "ReaderUITests.swift requires visible read-state changes before reopening the menu")
+        attachScreenshot(named: "experimental-menu-toggled")
+        oppositeAction.tap()
+
+        let restoredStory = storyRow("ui-story-swift-1")
+        XCTAssertTrue(restoredStory.waitForExistence(timeout: 2))
+        XCTAssertEqual(rowImageData(), initialRowImage, "ReaderUITests.swift requires the original appearance after reversing the read action")
+        swipeElementLeft(restoredStory)
+        XCTAssertTrue(app.buttons[initialActionTitle].firstMatch.waitForExistence(timeout: 2))
+        XCTAssertFalse(oppositeAction.exists)
+        attachScreenshot(named: "experimental-menu-restored")
     }
 
     func test_experimentalTitlesKeepSwipeActionsScopedToOneRow() {
-        launch(on: "reader-feed-swift", storyTitlesStyle: "experimental")
-
-        XCTAssertTrue(waitForFixtureStoryTitles())
+        launchSwipes(experimental: true, right: "back", left: "menu")
 
         let firstStory = storyRow("ui-story-swift-1")
         let secondStory = storyRow("ui-story-swift-2")
         XCTAssertTrue(firstStory.waitForExistence(timeout: 10))
         XCTAssertTrue(secondStory.waitForExistence(timeout: 10))
 
-        let markReadButtons = app.buttons.matching(NSPredicate(format: "label == %@", "Mark Read"))
+        let markReadButtons = app.buttons.matching(NSPredicate(format: "label IN %@", ["Mark Read", "Mark Unread"]))
         let saveButtons = app.buttons.matching(NSPredicate(format: "label == %@", "Save"))
         let shareButtons = app.buttons.matching(NSPredicate(format: "label == %@", "Share"))
 
@@ -127,6 +2164,39 @@ final class ReaderUITests: XCTestCase {
         XCTAssertEqual(markReadButtons.count, 1)
         XCTAssertEqual(saveButtons.count, 1)
         XCTAssertEqual(shareButtons.count, 1)
+    }
+
+    func test_gridCardsAllowRepeatedVerticalScrollingThroughPages() {
+        app.launchArguments += ["-newsblur-ui-test-bulk-read", "-newsblur-ui-test-animations",
+                                "-story_titles_position", "titles_in_grid",
+                                "-910002:story_titles_position", "titles_in_grid", "-grid_columns", "1", "-grid_height", "medium",
+                                "-enable_story_swipes", "YES", "-story_title_swipe_right", "back",
+                                "-story_title_swipe_left", "read", "-long_press_story_title", "show_actions",
+                                "-default_feed_read_filter", "all", "-910002:read_filter", "all",
+                                "-default_mark_read_filter", "manually"]
+        launch(on: "reader-feed-swift", storyTitlesStyle: "standard")
+        let scroll = app.scrollViews["story-titles-scroll"].firstMatch
+        XCTAssertTrue(scroll.waitForExistence(timeout: 20))
+        XCTAssertTrue(storyRow("ui-bulk-0").waitForExistence(timeout: 20))
+        XCTAssertEqual(storyRow("ui-bulk-1").frame.minY - storyRow("ui-bulk-0").frame.minY,
+                       420, accuracy: 1, "Exercise 400-point grid cards with 20-point spacing")
+        attachScreenshot(named: "grid-before-vertical-scroll")
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        for swipe in 0..<16 {
+            let visible = (0..<40).lazy.map { self.storyRow("ui-bulk-\($0)") }
+                .first { $0.exists && $0.frame.minY > 200 && $0.frame.minY < 650 }
+            guard let visible else { return XCTFail("No visible grid card before swipe \(swipe)") }
+            let before = visible.frame.minY
+            // ReaderUITests.swift starts inside a card, where its horizontal action gesture competes with scrolling.
+            origin.withOffset(CGVector(dx: 190, dy: 620)).press(forDuration: 0.05,
+                thenDragTo: origin.withOffset(CGVector(dx: 192, dy: 240)),
+                withVelocity: .slow, thenHoldForDuration: 0)
+            XCTAssertLessThan(visible.frame.minY, before - 100, "Grid swallowed vertical swipe \(swipe)")
+            XCTAssertTrue(scroll.isHittable, "Vertical scrolling must not open a story or navigate back")
+        }
+        attachScreenshot(named: "grid-after-paginated-scroll")
+        XCTAssertTrue((12..<40).contains { storyRow("ui-bulk-\($0)").isHittable },
+                      "Scrolling must reach stories beyond the first page")
     }
 
     func test_experimentalTitlesTappingStoryOpensDetail() {
@@ -165,7 +2235,73 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(waitForLabel("Swift Fixture Story Four", on: currentStory, timeout: 30))
     }
 
+    func test_traverseButtonsReappearAfterBlankTapPeekAndUpwardScroll() {
+        app.launchArguments += ["-newsblur-ui-test-animations", "-scroll_stories_horizontally", "YES"]
+        launch(on: "reader-story-swift-1")
+        let story = app.webViews.firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 10))
+
+        dragUp(on: story, distance: 200)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 < 0.01 })
+        attachScreenshot(named: "traversal-hidden-after-downward-scroll")
+        story.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 > 0.99 })
+        attachScreenshot(named: "traversal-revealed-by-blank-tap")
+
+        dragUp(on: story, distance: 150)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 < 0.01 })
+        let start = story.coordinate(withNormalizedOffset: CGVector(dx: 0.65, dy: 0.5))
+        let peek = start.withOffset(CGVector(dx: -40, dy: 0))
+        start.press(forDuration: 0.2, thenDragTo: peek,
+                    withVelocity: XCUIGestureVelocity(rawValue: 40), thenHoldForDuration: 0.5)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 > 0.99 })
+        XCTAssertTrue(waitForLabel("Swift Fixture Story One", on: currentStoryProbe()))
+        attachScreenshot(named: "traversal-revealed-by-cancelled-peek")
+
+        dragUp(on: story, distance: 150)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 < 0.01 })
+        let upward = start.withOffset(CGVector(dx: 0, dy: 140))
+        start.press(forDuration: 0.2, thenDragTo: upward,
+                    withVelocity: XCUIGestureVelocity(rawValue: 100), thenHoldForDuration: 0.5)
+        XCTAssertTrue(waitForTraverseFadeAlpha { $0 > 0.99 })
+        attachScreenshot(named: "traversal-revealed-by-upward-scroll")
+    }
+
+    func test_traverseButtonsFadeRelativeAfterNextWithHiddenToolbar() {
+        launch(on: "reader-story-swift-1")
+
+        let currentStory = currentStoryProbe()
+        XCTAssertTrue(currentStory.waitForExistence(timeout: 10))
+
+        let nextButton = app.buttons["story-traverse-next-button"]
+        XCTAssertTrue(nextButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(waitForTraverseFadeAlpha({ $0 >= 0.99 }), "Traverse controls should start fully visible")
+
+        let storyContent = app.webViews.firstMatch
+        XCTAssertTrue(storyContent.waitForExistence(timeout: 10))
+
+        dragUp(on: storyContent, distance: 52)
+        XCTAssertTrue(
+            waitForTraverseFadeAlpha({ $0 > 0.05 && $0 < 0.95 }),
+            "Initial scroll should partially fade traversal controls without hiding them immediately; alpha=\(traverseFadeAlpha() ?? -1)"
+        )
+
+        tapElementCenter(nextButton)
+        XCTAssertTrue(waitForLabel("Swift Fixture Story Two", on: currentStory))
+        XCTAssertTrue(
+            waitForTraverseFadeAlpha({ $0 >= 0.99 }),
+            "Next story should reset traversal fade even while the toolbar remains hidden; alpha=\(traverseFadeAlpha() ?? -1)"
+        )
+
+        dragUp(on: storyContent, distance: 20)
+        XCTAssertTrue(
+            waitForTraverseFadeAlpha({ $0 > 0.20 && $0 < 1.0 }),
+            "First scroll on the next story should fade traversal controls relative to the new story; alpha=\(traverseFadeAlpha() ?? -1)"
+        )
+    }
+
     func test_profileCurrentStoryTitlesScroll() throws {
+        try requireLiveSession()
 #if compiler(>=6.2)
         guard #available(iOS 26.0, *) else {
             throw XCTSkip("XCTHitchMetric requires iOS 26.0 or newer")
@@ -188,21 +2324,24 @@ final class ReaderUITests: XCTestCase {
 #endif
     }
 
-    func test_openLiveAllSiteStories() {
+    func test_openLiveAllSiteStories() throws {
+        try requireLiveSession()
         app.activate()
         XCTAssertTrue(ensureFeedsListVisible())
         XCTAssertTrue(openLiveFolder(named: "All Site Stories"))
         XCTAssertTrue(waitForLiveStoryTitles())
     }
 
-    func test_openLiveCodeFolder() {
+    func test_openLiveCodeFolder() throws {
+        try requireLiveSession()
         app.activate()
         XCTAssertTrue(ensureFeedsListVisible())
         XCTAssertTrue(openLiveFolder(named: "Code"))
         XCTAssertTrue(waitForLiveStoryTitles())
     }
 
-    func test_openLiveEngadgetFeed() {
+    func test_openLiveEngadgetFeed() throws {
+        try requireLiveSession()
         app.activate()
         XCTAssertTrue(ensureFeedsListVisible())
         XCTAssertTrue(openLiveFeed(named: "Engadget"))
@@ -210,6 +2349,7 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_profileLiveCurrentExperimentalScroll() throws {
+        try requireLiveSession()
 #if compiler(>=6.2)
         guard #available(iOS 26.0, *) else {
             throw XCTSkip("XCTHitchMetric requires iOS 26.0 or newer")
@@ -233,6 +2373,16 @@ final class ReaderUITests: XCTestCase {
 #endif
     }
 
+    // ReaderUITests.swift runs manual navigation/profiling individually against a prepared signed-in simulator.
+    // Open the desired story list before profiling, then run from clients/ios:
+    // TEST_RUNNER_NEWSBLUR_LIVE_UI_TESTS=1 xcodebuild test -project NewsBlur.xcodeproj -scheme NewsBlur \
+    //   -destination "id=$IOS_SIM_UDID" -only-testing:NewsBlurUITests/ReaderUITests/test_profileCurrentStoryTitlesScroll
+    private func requireLiveSession() throws {
+        guard ProcessInfo.processInfo.environment["NEWSBLUR_LIVE_UI_TESTS"] == "1" else {
+            throw XCTSkip("Manual test requires a prepared signed-in simulator. Run individually with TEST_RUNNER_NEWSBLUR_LIVE_UI_TESTS=1.")
+        }
+    }
+
     private func folderButton(named title: String) -> XCUIElement {
         let predicate = NSPredicate(format: "label BEGINSWITH %@", "\(title) folder")
         return app.buttons.matching(predicate).firstMatch
@@ -240,6 +2390,39 @@ final class ReaderUITests: XCTestCase {
 
     private func feedCell(_ feedID: String) -> XCUIElement {
         app.tables["feeds-list"].cells.matching(identifier: "feed-row-\(feedID)").firstMatch
+    }
+
+    private func waitForStableVisibleFrame(of element: XCUIElement, timeout: TimeInterval = 10,
+                                          file: StaticString = #filePath, line: UInt = #line) -> CGRect? {
+        // ReaderUITests.swift uses coordinates here: isHittable can fail while table geometry is updating.
+        var previousFrame: CGRect?
+        var visibleFrame: CGRect?
+        let predicate = NSPredicate { _, _ in
+            guard element.exists else {
+                previousFrame = nil
+                return false
+            }
+            let frame = element.frame
+            guard !frame.isEmpty, frame.minX.isFinite, frame.minY.isFinite,
+                  frame.maxX.isFinite, frame.maxY.isFinite, self.app.frame.contains(frame) else {
+                previousFrame = nil
+                return false
+            }
+            defer { previousFrame = frame }
+            guard previousFrame == frame else { return false }
+            visibleFrame = frame
+            return true
+        }
+        // ReaderUITests.swift captures the element above; passing it again makes XCTest spend the wait dumping its hierarchy.
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: nil)
+        let completed = XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
+        if !completed {
+            attachScreenshot(named: "feed-element-did-not-settle")
+            let frame = element.exists ? String(describing: element.frame) : "unavailable"
+            XCTFail("Element never settled: exists=\(element.exists) " +
+                    "frame=\(frame) appFrame=\(app.frame)", file: file, line: line)
+        }
+        return completed ? visibleFrame : nil
     }
 
     private func storyCell(_ storyHash: String) -> XCUIElement {
@@ -265,6 +2448,51 @@ final class ReaderUITests: XCTestCase {
 
     private func currentStoryProbe() -> XCUIElement {
         app.staticTexts["story-current-story"].firstMatch
+    }
+
+    private func traverseFadeProbe() -> XCUIElement {
+        app.staticTexts["story-traverse-fade-state"].firstMatch
+    }
+
+    private func traverseFadeAlpha(from element: XCUIElement? = nil) -> Double? {
+        let fadeElement = element ?? traverseFadeProbe()
+        guard let value = fadeElement.value as? String else {
+            return nil
+        }
+
+        return value.split(separator: " ")
+            .first { $0.hasPrefix("alpha=") }
+            .flatMap { Double($0.dropFirst("alpha=".count)) }
+    }
+
+    private func waitForTraverseFadeAlpha(_ isExpectedAlpha: @escaping (Double) -> Bool, timeout: TimeInterval = 5) -> Bool {
+        let fadeProbe = traverseFadeProbe()
+        guard fadeProbe.waitForExistence(timeout: timeout) else {
+            return false
+        }
+
+        let predicate = NSPredicate { object, _ in
+            guard let element = object as? XCUIElement,
+                  let alpha = self.traverseFadeAlpha(from: element) else {
+                return false
+            }
+
+            return isExpectedAlpha(alpha)
+        }
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: fadeProbe)
+        return XCTWaiter().wait(for: [expectation], timeout: timeout) == .completed
+    }
+
+    private func isVisibleOnScreen(_ element: XCUIElement) -> Bool {
+        guard element.exists, !element.frame.isEmpty else {
+            return false
+        }
+
+        return app.frame.intersects(element.frame)
+    }
+
+    private func debugVisibility(_ element: XCUIElement) -> String {
+        "exists=\(element.exists) frame=\(element.frame) appFrame=\(app.frame)"
     }
 
     private func liveFeedCell(named title: String) -> XCUIElement {
@@ -445,6 +2673,13 @@ final class ReaderUITests: XCTestCase {
         coordinate.tap()
     }
 
+    private func attachScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
     private func swipeElementLeft(_ element: XCUIElement, distance: CGFloat = 180) {
         XCTAssertTrue(element.exists)
 
@@ -456,7 +2691,26 @@ final class ReaderUITests: XCTestCase {
         let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
             .withOffset(CGVector(dx: max(frame.minX + 12, frame.maxX - distance), dy: frame.midY))
 
-        start.press(forDuration: 0.05, thenDragTo: end)
+        // FeedDetailCardView.swift uses predicted travel to distinguish opening a menu from a full-swipe action.
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
+    }
+
+    private func dragUp(on element: XCUIElement, distance: CGFloat) {
+        XCTAssertTrue(element.exists)
+
+        let frame = element.frame
+        XCTAssertFalse(frame.isEmpty)
+
+        let startY = min(frame.midY + distance / 2, frame.maxY - 20)
+        let endY = max(frame.midY - distance / 2, frame.minY + 20)
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+            .withOffset(CGVector(dx: frame.midX, dy: startY))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+            .withOffset(CGVector(dx: frame.midX, dy: endY))
+
+        // ReaderUITests.swift measures partial fade from a short drag without release momentum.
+        start.press(forDuration: 0.2, thenDragTo: end,
+                    withVelocity: XCUIGestureVelocity(rawValue: 40), thenHoldForDuration: 0.5)
     }
 
     private func launch(on screen: String, storyTitlesStyle: String? = nil) {

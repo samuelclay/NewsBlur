@@ -2,9 +2,9 @@
 
 MUserFeedNotification configures which feeds trigger push notifications and
 at what frequency. MUserClassifierNotification configures which individual
-classifiers (title, author, tag, text, url) trigger push notifications.
-MUserNotificationTokens stores iOS APNS and Android push tokens for delivering
-notifications.
+classifiers (title, author, tag, text, url, and Natural Language AI prompts)
+trigger push notifications. MUserNotificationTokens stores iOS APNS and Android
+push tokens for delivering notifications.
 """
 
 import datetime
@@ -23,6 +23,8 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils.text import format_lazy
+from django.utils.translation import pgettext_lazy
 from pyapns_client import (
     APNSClient,
     APNSDeviceException,
@@ -37,6 +39,7 @@ from pyapns_client import (
 from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
+    MClassifierPrompt,
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
@@ -45,11 +48,24 @@ from apps.analyzer.models import (
 from apps.reader.models import UserSubscription
 
 # from django.utils.html import strip_tags
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import Feed, MStory, renew_merge_feeds_locks
 from utils import log as logging
 from utils import mongoengine_fields
+from utils.languages import account_translation
 from utils.story_functions import truncate_chars
 from utils.view_functions import is_true
+
+# notifications/models.py names the classifier behind a notification email in the recipient's language, since
+# the email renders after the match is described.
+CLASSIFIER_MATCH_LABELS = {
+    "title": pgettext_lazy("notification email classifier match", "Title"),
+    "author": pgettext_lazy("notification email classifier match", "Author"),
+    "tag": pgettext_lazy("notification email classifier match", "Tag"),
+    "text": pgettext_lazy("notification email classifier match", "Text"),
+    "url": pgettext_lazy("notification email classifier match", "URL"),
+    "prompt": pgettext_lazy("notification email classifier match", "AI text filter"),
+    "image_prompt": pgettext_lazy("notification email classifier match", "AI image filter"),
+}
 
 
 class NotificationFrequency(enum.Enum):
@@ -174,6 +190,7 @@ class MUserFeedNotification(mongo.Document):
                 % (count, duplicate_feed_id, original_feed_id)
             )
             for notification in duplicate_notifications:
+                renew_merge_feeds_locks()
                 # Check if user already has notifications for the original feed
                 try:
                     existing = cls.objects.get(user_id=notification.user_id, feed_id=original_feed_id)
@@ -537,8 +554,9 @@ class MUserFeedNotification(mongo.Document):
         }
         from_address = "notifications@newsblur.com"
         to_address = "%s <%s>" % (usersub.user.username, usersub.user.email)
-        text = render_to_string("mail/email_story_notification.txt", params)
-        html = render_to_string("mail/email_story_notification.xhtml", params)
+        with account_translation(usersub.user.profile):
+            text = render_to_string("mail/email_story_notification.txt", params)
+            html = render_to_string("mail/email_story_notification.xhtml", params)
         if feed.is_daily_briefing:
             subject = story["story_title"]
         else:
@@ -607,15 +625,18 @@ class MUserFeedNotification(mongo.Document):
 
 
 class MUserClassifierNotification(mongo.Document):
-    """A user's notification settings for a specific classifier (title, author, tag, text, url).
+    """A user's notification settings for a specific classifier.
 
-    When a new story matches this classifier, a notification is sent via the
-    selected channels. Premium Archive only. Coexists with per-feed notifications
-    and deduplicates per story+channel via Redis keys.
+    Covers the classic classifiers (title, author, tag, text, url) and the
+    Natural Language AI prompt classifiers (prompt = text classifier,
+    image_prompt = image classifier), where classifier_value holds the prompt
+    text. When a new story matches this classifier, a notification is sent via
+    the selected channels. Premium Archive only. Coexists with per-feed
+    notifications and deduplicates per story+channel via Redis keys.
     """
 
     user_id = mongo.IntField()
-    classifier_type = mongo.StringField()  # title, author, tag, text, url
+    classifier_type = mongo.StringField()  # title, author, tag, text, url, prompt, image_prompt
     classifier_value = mongo.StringField(max_length=2048)
     scope = mongo.StringField(default="feed")  # feed, folder, global
     feed_id = mongo.IntField(default=0)  # non-zero for feed-scoped classifiers
@@ -796,24 +817,73 @@ class MUserClassifierNotification(mongo.Document):
     # Classifier matching
     # ------------------------------------------------------------------
 
-    def matches_story(self, story, story_feed_id, folder_feed_ids=None):
+    def applies_to_feed(self, story_feed_id, folder_feed_ids=None):
+        """Whether this notification's scope covers the given feed.
+
+        Args:
+            story_feed_id: The feed_id to test against this notification's scope.
+            folder_feed_ids: Dict of {folder_name: set(feed_ids)} for folder scope.
+        """
+        if self.scope == "feed":
+            return self.feed_id == story_feed_id
+        if self.scope == "folder":
+            if not folder_feed_ids:
+                return False
+            return story_feed_id in folder_feed_ids.get(self.folder_name, set())
+        # scope == "global" always applies
+        return True
+
+    def resolve_prompt_classifier(self):
+        """Resolve the focus MClassifierPrompt this prompt notification refers to.
+
+        Prompt notifications store the prompt text in classifier_value. Only
+        focus prompts can be notified on (notifying about a story that matches a
+        hide prompt is contradictory), so hidden prompts never resolve.
+        Returns the matching MClassifierPrompt, or None.
+        """
+        if self.classifier_type not in ("prompt", "image_prompt"):
+            return None
+
+        query = {
+            "user_id": self.user_id,
+            "prompt": self.classifier_value,
+            "include_images": self.classifier_type == "image_prompt",
+            "classifier_type": "focus",
+        }
+        if self.scope == "feed":
+            query["feed_id"] = self.feed_id
+            query["folder_id"] = ""
+        elif self.scope == "folder":
+            query["feed_id"] = 0
+            query["folder_id"] = self.folder_name
+        else:  # global
+            query["feed_id"] = 0
+            query["folder_id"] = ""
+
+        return MClassifierPrompt.objects(**query).first()
+
+    def matches_story(self, story, story_feed_id, folder_feed_ids=None, prompt_scores=None):
         """Check if this classifier notification matches a story.
 
         Args:
             story: Story dict with standard fields
             story_feed_id: The feed_id of the story
             folder_feed_ids: Dict of {folder_name: set(feed_ids)} for scope resolution
+            prompt_scores: Dict of {notification.pk: {story_hash: ai_score}} with
+                cached AI prompt-classifier scores, used to match prompt and
+                image_prompt notifications.
         """
         # Check scope applicability
-        if self.scope == "feed" and self.feed_id != story_feed_id:
+        if not self.applies_to_feed(story_feed_id, folder_feed_ids):
             return False
-        if self.scope == "folder":
-            if not folder_feed_ids:
+
+        # Natural Language AI classifiers match via cached LLM scores rather
+        # than text. A focus prompt matches when the AI scored the story a 1.
+        if self.classifier_type in ("prompt", "image_prompt"):
+            if not prompt_scores:
                 return False
-            feeds_in_folder = folder_feed_ids.get(self.folder_name, set())
-            if story_feed_id not in feeds_in_folder:
-                return False
-        # scope == "global" always applies
+            notif_scores = prompt_scores.get(self.pk) or {}
+            return notif_scores.get(story.get("story_hash")) == 1
 
         # Check classifier value match
         if self.is_regex:
@@ -940,6 +1010,41 @@ class MUserClassifierNotification(mongo.Document):
             except UserSubscription.DoesNotExist:
                 continue
 
+            # Warm AI prompt-classifier score caches and resolve per-notification
+            # scores for any Natural Language (prompt/image_prompt) notifications.
+            # Only consider prompt notifications whose scope covers this feed —
+            # a folder-scoped notification is collected for every feed the user
+            # subscribes to, and warming it elsewhere would run billable AI
+            # scoring for feeds it can never notify on.
+            prompt_scores = {}
+            prompt_notifs = [
+                notif
+                for notif in user_notifs
+                if notif.classifier_type in ("prompt", "image_prompt")
+                and notif.applies_to_feed(feed_id, folder_feed_ids)
+            ]
+            if prompt_notifs:
+                story_hashes = [story["story_hash"] for story in stories]
+                try:
+                    # classify_stories is cache-aware: cheap cache reads when the
+                    # feed fetch already classified these stories, real AI work
+                    # only if that step was skipped or raced ahead of this task.
+                    # It skips folder prompts whose folder doesn't hold this feed.
+                    MClassifierPrompt.classify_stories(
+                        user_id, stories, feed_ids=[feed_id], folder_feed_ids=folder_feed_ids
+                    )
+                    for notif in prompt_notifs:
+                        prompt = notif.resolve_prompt_classifier()
+                        if not prompt or not prompt.applies_to_feed(feed_id, folder_feed_ids):
+                            continue
+                        prompt_scores[notif.pk] = MClassifierPrompt.get_cached_scores(
+                            user_id, str(prompt.id), feed_id, story_hashes
+                        )
+                except Exception:
+                    logging.debug(
+                        "   ---> [%-30s] ~FRError scoring prompt notifications for user %s" % (feed, user_id)
+                    )
+
             # Track per-classifier send counts: cap at 3 stories per classifier per update
             classifier_send_counts = {notif.pk: 0 for notif in user_notifs}
 
@@ -951,7 +1056,7 @@ class MUserClassifierNotification(mongo.Document):
                 for notif in user_notifs:
                     if classifier_send_counts[notif.pk] >= 3:
                         continue
-                    if notif.matches_story(story, feed_id, folder_feed_ids):
+                    if notif.matches_story(story, feed_id, folder_feed_ids, prompt_scores=prompt_scores):
                         matched.append(notif)
 
                 if not matched:
@@ -984,13 +1089,19 @@ class MUserClassifierNotification(mongo.Document):
                 # Build match description for notification body
                 match_parts = []
                 for notif in matched:
-                    match_parts.append("%s: %s" % (notif.classifier_type, notif.classifier_value))
-                match_desc = ", ".join(match_parts)
+                    label = CLASSIFIER_MATCH_LABELS.get(notif.classifier_type, notif.classifier_type)
+                    if notif.classifier_type in ("prompt", "image_prompt"):
+                        value = truncate_chars(notif.classifier_value, 80)
+                    else:
+                        value = notif.classifier_value
+                    match_parts.append(format_lazy("{}: {}", label, value))
+                # Lazy, so send_email's template writes the labels in the recipient's language.
+                match_desc = format_lazy(", ".join(["{}"] * len(match_parts)), *match_parts)
 
                 logging.user(
                     user,
                     "~FCSending classifier notification: %s/%s (matched: %s)"
-                    % (story["story_title"][:40], story_hash, match_desc[:60]),
+                    % (story["story_title"][:40], story_hash, str(match_desc)[:60]),
                 )
 
                 # Send notifications using a temporary MUserFeedNotification-like sender

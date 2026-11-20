@@ -1,0 +1,23 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Apple SD Gothic Neo,46,&H00252C27,&H00252C27,&H00EBEDEF,&H00EBEDEF,0,0,0,0,100,100,0,0,1,0,0,8,120,120,35,1
+Style: Disclosure,Apple SD Gothic Neo,30,&H005D7168,&H005D7168,&H00EBEDEF,&H00EBEDEF,0,0,0,0,100,100,0,0,1,0,0,2,130,130,28,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:03.50,Title,,0,0,0,,즐겨 찾는 정보 출처를 위한 공간.
+Dialogue: 0,0:00:03.50,0:00:07.00,Title,,0,0,0,,매일 읽는 콘텐츠를 한곳에.
+Dialogue: 0,0:00:07.00,0:00:10.50,Title,,0,0,0,,좋은 글을 여유롭게 읽으세요.
+Dialogue: 0,0:00:10.50,0:00:14.00,Title,,0,0,0,,좋은 글은 저장해 두고 나중에 읽으세요.
+Dialogue: 0,0:00:14.00,0:00:17.50,Title,,0,0,0,,즐겨 찾는 정보 출처를 위한 공간.
+Dialogue: 0,0:00:17.50,0:00:21.00,Title,,0,0,0,,매일 읽는 콘텐츠를 한곳에.
+Dialogue: 0,0:00:21.00,0:00:24.50,Title,,0,0,0,,좋은 글을 여유롭게 읽으세요.
+Dialogue: 0,0:00:24.50,0:00:28.00,Title,,0,0,0,,좋은 글은 저장해 두고 나중에 읽으세요.
+Dialogue: 1,0:00:21.00,0:00:28.00,Disclosure,,0,0,0,,NewsBlur 계정이 필요합니다. 일부 기능은 유료 구독이 필요합니다.

@@ -6,6 +6,17 @@ ANDROID_SDK_ROOT ?= $(if $(ANDROID_HOME),$(ANDROID_HOME),$(HOME)/Library/Android
 ANDROID_EMULATOR := $(ANDROID_SDK_ROOT)/emulator/emulator
 ANDROID_AVD ?= NewsBlur_API_36
 ANDROID_APP_PACKAGE ?= com.newsblur
+ANDROID_PROJECT ?= clients/android/NewsBlur
+ANDROID_GRADLE_ARGS ?= --console=plain
+ANDROID_JAVA_HOME ?=
+
+# iOS simulator build/install/launch (see ios-simulator target)
+IOS_PROJECT ?= clients/ios/NewsBlur.xcodeproj
+IOS_SCHEME ?= NewsBlur
+IOS_CONFIGURATION ?= Debug
+IOS_SIMULATOR_DEVICE ?= iPhone 17
+IOS_BUNDLE_ID ?= com.newsblur.NewsBlur
+IOS_DERIVED_DATA ?= clients/ios/build/DerivedData
 
 # Color function matching NewsBlur's logging system (utils/log.py)
 # Usage: @$(call log, "~FBBlue text ~FRRed text~ST")
@@ -36,7 +47,7 @@ define log
 		-e "s/~ST/$${ESC}[0m/g"
 endef
 
-.PHONY: node api android-emulator
+.PHONY: node api android-emulator ios-simulator
 
 # Default target - smart setup that checks if first-time install or update
 .DEFAULT_GOAL := default
@@ -52,15 +63,22 @@ default:
 		HTTPS_PORT=$$((8443 + $$PORT_OFFSET)); \
 		URL="https://localhost:$$HTTPS_PORT"; \
 	fi; \
+	if ! command -v docker >/dev/null 2>&1; then \
+		$(call log,~SB~FRdocker is not on your PATH.~SN Install Docker Desktop or open a new terminal so its PATH entry loads.~ST); \
+		exit 1; \
+	elif ! docker info >/dev/null 2>&1; then \
+		$(call log,~SB~FRThe Docker daemon is not running.~SN Start Docker Desktop and run make again.~ST); \
+		exit 1; \
+	fi; \
 	if [ -d ".git" ] && ([ ! -d "docker/volumes/postgres" ] || [ ! -d "docker/volumes/db_mongo" ]); then \
 		$(call log,~FYFirst-time setup detected. Running full installation...~ST); \
-		$(MAKE) rebuild; \
+		$(MAKE) rebuild || exit 1; \
 	elif [ -z "$$(docker ps -q -f name=$$CONTAINER_NAME)" ]; then \
 		$(call log,~FYContainers not running. Starting NewsBlur...~ST); \
-		$(MAKE) nb-fast; \
+		$(MAKE) nb-fast || exit 1; \
 	else \
 		$(call log,~FGNewsBlur is already running. Applying any new migrations...~ST); \
-		docker exec -t $$CONTAINER_NAME ./manage.py migrate; \
+		docker exec -t $$CONTAINER_NAME ./manage.py migrate || exit 1; \
 	fi; \
 	echo ""; \
 	$(call log,~SB~FG✓ NewsBlur is ready! Visit ~FC~SB$$URL~ST); \
@@ -69,6 +87,10 @@ default:
 android-emulator:
 	@if [ ! -x "$(ANDROID_EMULATOR)" ]; then \
 		echo "Android emulator binary not found at $(ANDROID_EMULATOR)"; \
+		exit 1; \
+	fi; \
+	if [ ! -x "$(ANDROID_PROJECT)/gradlew" ]; then \
+		echo "Android Gradle wrapper not found at $(ANDROID_PROJECT)/gradlew"; \
 		exit 1; \
 	fi; \
 	AVD_DIR="$${ANDROID_AVD_HOME:-$${ANDROID_SDK_HOME:-$$HOME/.android}/avd}"; \
@@ -118,15 +140,77 @@ android-emulator:
 		echo "Android emulator $$SERIAL did not finish booting."; \
 		exit 1; \
 	fi; \
+	JAVA_HOME_FOR_GRADLE="$(ANDROID_JAVA_HOME)"; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ] && [ -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]; then \
+		JAVA_HOME_FOR_GRADLE="/Applications/Android Studio.app/Contents/jbr/Contents/Home"; \
+	fi; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ] && [ -n "$$JAVA_HOME" ]; then \
+		JAVA_HOME_FOR_GRADLE="$$JAVA_HOME"; \
+	fi; \
+	if [ -z "$$JAVA_HOME_FOR_GRADLE" ]; then \
+		echo "Set ANDROID_JAVA_HOME or JAVA_HOME to a JDK before running Android Gradle."; \
+		exit 1; \
+	fi; \
+	echo "Building and installing latest debug app on $$SERIAL..."; \
+	(cd "$(ANDROID_PROJECT)" && ANDROID_SERIAL="$$SERIAL" JAVA_HOME="$$JAVA_HOME_FOR_GRADLE" ./gradlew $(ANDROID_GRADLE_ARGS) :app:installDebug) || exit 1; \
 	echo "Restarting $(ANDROID_APP_PACKAGE) on $$SERIAL..."; \
 	adb -s "$$SERIAL" shell am force-stop "$(ANDROID_APP_PACKAGE)"; \
 	adb -s "$$SERIAL" shell monkey -p "$(ANDROID_APP_PACKAGE)" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; \
 	echo "Launched $(ANDROID_APP_PACKAGE) on $$SERIAL."
 
+# Build, install, and launch the iOS app on an iPhone 17 simulator.
+# Override the device with: make ios-simulator IOS_SIMULATOR_DEVICE="iPhone 17 Pro"
+ios-simulator:
+	@if ! command -v xcodebuild >/dev/null 2>&1; then \
+		echo "xcodebuild not found. Install Xcode, then run 'sudo xcode-select -s /Applications/Xcode.app/Contents/Developer'."; \
+		exit 1; \
+	fi; \
+	DEVICE="$(IOS_SIMULATOR_DEVICE)"; \
+	UDID=$$(xcrun simctl list devices available | grep -E "^ *$$DEVICE \(" | head -n 1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}'); \
+	if [ -z "$$UDID" ]; then \
+		echo "No available simulator named '$$DEVICE'. Run 'xcrun simctl list devices available' to see options."; \
+		exit 1; \
+	fi; \
+	echo "Using simulator $$DEVICE ($$UDID)"; \
+	echo "Booting simulator (if not already booted)..."; \
+	xcrun simctl bootstatus "$$UDID" -b; \
+	open -a Simulator --args -CurrentDeviceUDID "$$UDID"; \
+	echo "Building $(IOS_SCHEME) ($(IOS_CONFIGURATION)) for $$DEVICE..."; \
+	xcodebuild \
+		-project "$(IOS_PROJECT)" \
+		-scheme "$(IOS_SCHEME)" \
+		-configuration "$(IOS_CONFIGURATION)" \
+		-sdk iphonesimulator \
+		-destination "platform=iOS Simulator,id=$$UDID" \
+		-derivedDataPath "$(IOS_DERIVED_DATA)" \
+		build || exit 1; \
+	APP="$(IOS_DERIVED_DATA)/Build/Products/$(IOS_CONFIGURATION)-iphonesimulator/$(IOS_SCHEME).app"; \
+	if [ ! -d "$$APP" ]; then \
+		echo "Built app not found at $$APP"; \
+		exit 1; \
+	fi; \
+	echo "Installing $$APP on $$UDID..."; \
+	xcrun simctl install "$$UDID" "$$APP" || exit 1; \
+	echo "Restarting $(IOS_BUNDLE_ID) on $$UDID..."; \
+	xcrun simctl terminate "$$UDID" "$(IOS_BUNDLE_ID)" >/dev/null 2>&1 || true; \
+	xcrun simctl launch "$$UDID" "$(IOS_BUNDLE_ID)" || exit 1; \
+	echo "Launched $(IOS_BUNDLE_ID) on $$DEVICE."
+
 rebuild: pull bounce migrate bootstrap collectstatic
 nb-fast: pull bounce-fast migrate bootstrap collectstatic
 nbfast: nb-fast
 nb: nbfast
+
+# Store artwork and performance recordings live in S3, not git (utils/repo_assets.py).
+REPO_ASSETS := docker run --rm -v $(CURDIR):/srv/newsblur -w /srv/newsblur -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY $(if $(wildcard /srv/secrets-newsblur/keys/aws.s3.token),-v /srv/secrets-newsblur/keys:/srv/secrets-newsblur/keys:ro) newsblur/newsblur_python3 python utils/repo_assets.py
+assets-pull:
+	$(REPO_ASSETS) pull
+assets-push:
+	$(REPO_ASSETS) push
+assets-status:
+	$(REPO_ASSETS) status
+assets-verify:
+	$(REPO_ASSETS) verify
 
 metrics:
 	docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
@@ -139,7 +223,7 @@ collectstatic:
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 bounce:
 	docker compose down
-	@[[ -d config/certificates ]] && $(call log,~SB~FG✓ keys exist~ST) || make keys
+	@$(MAKE) --no-print-directory keys
 	docker compose up -d --build --remove-orphans
 
 bounce-fast:
@@ -305,8 +389,27 @@ tlnb-slow:
 	/srv/newsblur/utils/tlnb.py app | awk '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if (match($$0, /\[[0-9]+\.[0-9]*s/)) {t=substr($$0, RSTART+1, RLENGTH-2); if (t+0 >= 1.0) print line}}'
 tlnb-samuel:
 	$(MAKE) tlnb-user USER=samuel
+# tlnb-user: tails production logs for a single user across all app servers.
+# Besides the colored terminal stream, it mirrors an ANSI-stripped copy into
+# logs/tlnb-<USER>.log (truncated fresh each run). Another Claude/Codex can run
+# `tail -f logs/tlnb-<USER>.log` to watch that user's live server activity.
 tlnb-user:
-	/srv/newsblur/utils/tlnb.py --command "{ cat /srv/newsblur/logs/newsblur.log.1 /srv/newsblur/logs/newsblur.log 2>/dev/null | awk '{orig=\$$0; gsub(/\033\[[0-9;]*m/,\"\"); if (/\[$(USER)\^]/) print orig}' | tail -100; echo '--- Now tailing live logs ---'; tail -f /srv/newsblur/logs/newsblur.log; }" --path "" | awk -v user="$(USER)" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if ($$0 ~ "\\[" user "\\^]" || /--- Now tailing live logs ---/) print line}'
+	@mkdir -p logs
+	@: > logs/tlnb-$(USER).log
+	@echo "==> Mirroring live logs for user '$(USER)' to logs/tlnb-$(USER).log (ANSI-stripped, fresh each run)."
+	@echo "==> Hand this to another agent to watch the server:  tail -f logs/tlnb-$(USER).log"
+	/srv/newsblur/utils/tlnb.py --command "{ cat /srv/newsblur/logs/newsblur.log.1 /srv/newsblur/logs/newsblur.log 2>/dev/null | awk '{orig=\$$0; gsub(/\033\[[0-9;]*m/,\"\"); if (/\[$(USER)\^]/) print orig}' | tail -100; echo '--- Now tailing live logs ---'; tail -f /srv/newsblur/logs/newsblur.log; }" --path "" | awk -v user="$(USER)" -v logfile="logs/tlnb-$(USER).log" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); if ($$0 ~ "\\[" user "\\^]" || /--- Now tailing live logs ---/) {print line; print $$0 >> logfile; fflush(logfile)}}'
+# tlnb-staging: full firehose of the staging server's newsblur.log (every request
+# plus full DB transactions, useful for debugging). Besides the colored terminal
+# stream, it mirrors an ANSI-stripped copy into logs/tlnb-staging.log (truncated
+# fresh each run). Another Claude/Codex can run `tail -f logs/tlnb-staging.log`
+# to watch staging while debugging.
+tlnb-staging:
+	@mkdir -p logs
+	@: > logs/tlnb-staging.log
+	@echo "==> Mirroring staging logs to logs/tlnb-staging.log (ANSI-stripped, fresh each run)."
+	@echo "==> Hand this to another agent to watch staging:  tail -f logs/tlnb-staging.log"
+	/srv/newsblur/utils/tlnb.py staging | awk -v logfile="logs/tlnb-staging.log" '{line=$$0; gsub(/\033\[[0-9;]*m/,""); print line; print $$0 >> logfile; fflush(logfile)}'
 mongo:
 	docker exec -it newsblur_db_mongo mongo --port 29019
 mongo-repair:
@@ -333,12 +436,13 @@ down:
 	docker compose -f docker-compose.yml -f docker-compose.metrics.yml down
 stop: down
 nbdown: down
+# Makefile: local previews skip hosted fonts and leave production _site output intact.
 jekyll:
 	-pkill -f "jekyll serve" 2>/dev/null; sleep 0.5
-	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --config _config.yml
+	cd blog && JEKYLL_ENV=development bundle exec jekyll serve --config _config.yml --destination /tmp/newsblur-blog-preview
 jekyll_drafts:
 	-pkill -f "jekyll serve" 2>/dev/null; sleep 0.5
-	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --incremental --config _config.yml
+	cd blog && JEKYLL_ENV=development bundle exec jekyll serve --drafts --incremental --config _config.yml --destination /tmp/newsblur-blog-preview
 lint:
 	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' --skip-glob '.claude/*' .
 	docker exec -t newsblur_web black --line-length 110 --exclude '\.worktree/.*|.*/archive/.*|\.claude/.*' .
@@ -488,6 +592,9 @@ deploy_task:
 	ansible-playbook ansible/deploy.yml -l task
 task: deploy_task
 celery: deploy_task
+# Makefile: deploy, celery and staging already migrate first (ansible/playbooks/deploy_migrate.yml); this runs only that step.
+deploy_migrate:
+	ansible-playbook ansible/deploy.yml -l app --tags migrate
 deploy_www:
 	ansible-playbook ansible/deploy.yml -l haproxy
 www: deploy_www
@@ -503,6 +610,10 @@ staging: deploy_staging
 deploy_blog:
 	ansible-playbook ansible/deploy.yml -l blogs
 blog: deploy_blog
+# Makefile: regenerate the committed blog/_site. The fonts, analytics and comments in
+# blog/_includes/head.html and disqus_comments.html only render when JEKYLL_ENV=production.
+blog-build:
+	cd blog && bundle install --quiet && JEKYLL_ENV=production bundle exec jekyll build
 deploy_staging_static: staging_static
 staging_static:
 	ansible-playbook ansible/deploy.yml -l staging --tags static
@@ -606,9 +717,19 @@ grafana-dashboards:
 # Backup drive: WD 12TB at /media/newsblur-backup (ext4, label=newsblur-backup)
 #   UUID: ef981d62-7a0b-4858-9ee9-38db68f1e46f, mounted on-demand (not at boot — prevents 24/7 spinning)
 # Scripts/keys persist in /config/scripts/ (/root/.ssh/ is ephemeral, don't use it)
-# Python venv at /config/scripts/venv (boto3 for S3 downloads)
-# Cron job in SSH add-on: nightly 6am, mounts drive, runs backup, unmounts+deauthorizes USB
-# Installed by /config/scripts/setup_cron.sh (runs on add-on startup via init_commands)
+# Python venv at /config/scripts/venv (boto3 for S3 downloads); setup_cron.sh rebuilds it
+#   whenever an add-on update ships a new Python (3.12 -> 3.14 orphaned it in 2026)
+# Cron job in SSH add-on: nightly 6am, run_offsite_backup.sh mounts the drive, runs
+#   offsite_pull.sh, then unmounts and deauthorizes USB. Nothing may keep a file open on
+#   the drive at unmount time: until Oct 2026 the cron line logged onto the drive, every
+#   umount failed, and the lazy-unmount fallback cut power under the live filesystem.
+# Installed by /config/scripts/setup_cron.sh, which MUST run on add-on startup via the
+#   add-on's init_commands option: the crontab and crond live inside the add-on container
+#   and vanish on every add-on auto-update or reboot. init_commands was never set and
+#   backups silently stopped Apr-Sep 2026. setup_cron.sh now sets it via the Supervisor API.
+# Dead man's switch: offsite_pull.sh uploads offsite_backup/{started,completed}.json to the
+#   S3 backup bucket; utils/monitor_offsite_backup.py (daily cron on htask-work-1, see
+#   ansible/roles/celery_task) emails if they go stale, so a dead cron here gets noticed.
 # HAOS gotchas:
 #   - SSH add-on runs in a container, not on the host
 #   - For host-level ops (mount, fdisk): docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -- <cmd>
@@ -619,6 +740,11 @@ grafana-dashboards:
 #   ssh root@192.168.1.27 "tail -50 /media/newsblur-backup/backup.log"
 #   ssh root@192.168.1.27 "du -sh /media/newsblur-backup/*"
 #   ssh root@192.168.1.27 "df -h /media/newsblur-backup"
+#   ssh root@192.168.1.27 "crontab -l; pgrep -x crond"   (empty crontab = init_commands not run)
+#   ssh root@192.168.1.27 "tail -20 /config/scripts/offsite_backup_runs.log"   (mount/unmount per run, off the drive)
+#   The backup.log/backup_run.log paths above only exist with the drive mounted; without it
+#   /media/newsblur-backup is an empty directory on HA's eMMC. Mount it first with
+#   ssh root@192.168.1.27 /config/scripts/mount_backup_drive.sh (or use make offsite-backup-status).
 HA_HOST := root@192.168.1.27
 HA_SCRIPTS := /config/scripts
 
@@ -627,6 +753,8 @@ offsite-backup-install:
 	ssh $(HA_HOST) "mkdir -p $(HA_SCRIPTS)"
 	cat utils/backups/offsite_pull.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_pull.sh"
 	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/offsite_pull.sh"
+	cat utils/backups/run_offsite_backup.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/run_offsite_backup.sh"
+	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/run_offsite_backup.sh"
 	cat utils/backups/offsite_status.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_status.py"
 	cat utils/backups/offsite_verify.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_verify.py"
 	cat utils/backups/mount_backup_drive.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/mount_backup_drive.sh"
@@ -649,14 +777,23 @@ offsite-backup-install:
 	ssh $(HA_HOST) "$(HA_SCRIPTS)/setup_cron.sh"
 	@$(call log,~FG---> Off-site backup installed. Cron runs nightly at 6am.~ST)
 
+# Pass MONGO=1 to force a full MongoDB dump on a day other than the weekly
+# MONGO_BACKUP_DAY in offsite_pull.sh (takes 12+ hours, so run it detached):
+#   make offsite-backup MONGO=1
 offsite-backup:
 	@$(call log,~FB---> Running off-site backup pull~ST)
-	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh"
+	ssh $(HA_HOST) "$(HA_SCRIPTS)/run_offsite_backup.sh $(if $(MONGO),--force-mongo)"
 
+# The pgrep patterns are bracketed ('[o]ffsite_pull.sh') so they don't match the
+# remote shell running this very command, which also contains the script names.
+# Without the bracket, pgrep -f always matched itself, the status always said
+# "backup in progress", and the drive was never unmounted after a status check.
+# A failed mount stops here: reading the bare mount point on HA's eMMC reported
+# "last backup March 31" in Oct 2026 while the nightly backups were fine.
 offsite-backup-status:
-	@ssh $(HA_HOST) "$(HA_SCRIPTS)/mount_backup_drive.sh > /dev/null && (echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py); if pgrep -f offsite_pull.sh > /dev/null 2>&1; then echo '  (drive left mounted — backup in progress)'; else $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null; fi"
+	@ssh $(HA_HOST) "if ! $(HA_SCRIPTS)/mount_backup_drive.sh > /dev/null; then echo 'Backup drive did not mount, so there is no status to show'; $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null; exit 1; fi; echo '=== Backup runs ==='; tail -6 $(HA_SCRIPTS)/offsite_backup_runs.log 2>/dev/null; echo; echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py; if pgrep -f '[r]un_offsite_backup.sh|[o]ffsite_pull.sh' > /dev/null 2>&1; then echo '  (drive left mounted — backup in progress)'; else $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null; fi"
 
 offsite-backup-uninstall:
 	@$(call log,~FY---> Removing off-site backup from HA box~ST)
-	ssh $(HA_HOST) "rm -f $(HA_SCRIPTS)/offsite_pull.sh $(HA_SCRIPTS)/docker.key"
+	ssh $(HA_HOST) "rm -f $(HA_SCRIPTS)/offsite_pull.sh $(HA_SCRIPTS)/run_offsite_backup.sh $(HA_SCRIPTS)/docker.key"
 	@$(call log,~FG---> Removed. Don't forget to remove shell_command + automation from HA config.~ST)

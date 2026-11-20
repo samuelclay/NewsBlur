@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Controllare Ascolta è più facile. Avvia l’ascolto dalla barra di lettura e prosegui con il pulsante Articolo successivo del mini player.\n\nLa riproduzione automatica ora segue l’ordine scelto in Articoli salvati e Articoli letti, anche dal meno recente. Prosegue verso il basso nell’elenco senza tornare agli articoli precedenti.\n\nAscolta legge il titolo una sola volta quando viene ripetuto all’inizio dell’articolo.\n\nIl tempo di ascolto ora è settimanale: 1 ora con Premium Archive e 10 ore con Premium Pro, rinnovate ogni domenica. Impostazioni e In riproduzione mostrano il tempo rimasto in ore e minuti."
+  },
+  "macos": {
+    "whats_new": "Controllare Ascolta è più facile. Prosegui con il pulsante Articolo successivo del mini player.\n\nLa riproduzione automatica ora segue l’ordine scelto in Articoli salvati e Articoli letti, anche dal meno recente. Prosegue verso il basso nell’elenco senza tornare agli articoli precedenti.\n\nAscolta legge il titolo una sola volta quando viene ripetuto all’inizio dell’articolo.\n\nIl tempo di ascolto ora è settimanale: 1 ora con Premium Archive e 10 ore con Premium Pro, rinnovate ogni domenica. Impostazioni e In riproduzione mostrano il tempo rimasto in ore e minuti."
+  },
+  "android": {
+    "release_notes": "Novità di Ascolta: avvia dalla barra di lettura e prosegui con Articolo successivo nel mini player. La riproduzione automatica segue l’ordine di Articoli salvati e Articoli letti, scorrendo l’elenco. I titoli ripetuti vengono letti una volta. Ascolto settimanale: 1 ora con Premium Archive, 10 con Premium Pro, rinnovate la domenica. Impostazioni mostra ore e minuti rimasti."
+  }
+}

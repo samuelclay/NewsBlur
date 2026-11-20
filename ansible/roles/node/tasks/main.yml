@@ -188,17 +188,20 @@
     - reload consul
   when: item.target_host in inventory_hostname and disable_consul_services_ie_staging is not defined
 
-- name: Add sanity checkers cronjob for disk usage
+- name: Remove legacy disk usage checkers
   become: yes
-  cron:
-    name: disk_usage_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/disk_usage_sanity_checker
-    job: >-
-      docker pull newsblur/newsblur_python3:latest;
-      docker run --rm -it
-      OUTPUT=$(eval sudo df / | head -n 2 |  tail -1);
-      -v /srv/newsblur:/srv/newsblur
-      --network=newsblurnet
-      --hostname {{ ansible_hostname }} 
-      newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/cron.hourly/disk_usage_sanity_checker
+    - /etc/cron.d/disk_usage_sanity_checker
+
+# Original pages are now deleted by the feed fetcher once nobody has opened them in a month
+# (Feed.expire_original_page in apps/rss_feeds/models.py), so the nightly sweep is retired.
+- name: Remove original page cache cleanup cronjob
+  become: yes
+  file:
+    path: /etc/cron.d/original_page_cache_cleanup
+    state: absent
+  when: '"node-page" in inventory_hostname'

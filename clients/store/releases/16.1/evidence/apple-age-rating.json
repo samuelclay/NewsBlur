@@ -1,0 +1,106 @@
+[
+  {
+    "id": "e57edeed-c2b5-42c5-b88f-894355a6cc76",
+    "attributes": {
+      "appStoreState": "READY_FOR_SALE",
+      "state": "READY_FOR_DISTRIBUTION",
+      "appStoreAgeRating": "FOUR_PLUS",
+      "australiaAgeRating": null,
+      "brazilAgeRating": "L",
+      "brazilAgeRatingV2": "SELF_RATED_L",
+      "franceAgeRating": null,
+      "koreaAgeRating": null
+    },
+    "rating": {
+      "type": "ageRatingDeclarations",
+      "id": "e57edeed-c2b5-42c5-b88f-894355a6cc76",
+      "attributes": {
+        "advertising": false,
+        "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+        "contests": "NONE",
+        "gambling": false,
+        "gamblingSimulated": "NONE",
+        "gunsOrOtherWeapons": "NONE",
+        "healthOrWellnessTopics": false,
+        "kidsAgeBand": null,
+        "lootBox": false,
+        "medicalOrTreatmentInformation": "NONE",
+        "messagingAndChat": false,
+        "parentalControls": false,
+        "profanityOrCrudeHumor": "NONE",
+        "ageAssurance": false,
+        "sexualContentGraphicAndNudity": "NONE",
+        "sexualContentOrNudity": "NONE",
+        "socialMedia": null,
+        "socialMediaAgeRestricted": null,
+        "horrorOrFearThemes": "NONE",
+        "matureOrSuggestiveThemes": "NONE",
+        "unrestrictedWebAccess": false,
+        "userGeneratedContent": false,
+        "violenceCartoonOrFantasy": "NONE",
+        "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+        "violenceRealistic": "NONE",
+        "ageRatingOverride": "NONE",
+        "ageRatingOverrideV2": "NONE",
+        "koreaAgeRatingOverride": "NONE",
+        "gracRatingClassificationNumber": null,
+        "developerAgeRatingInfoUrl": null
+      },
+      "links": {
+        "self": "https://api.appstoreconnect.apple.com/v1/ageRatingDeclarations/e57edeed-c2b5-42c5-b88f-894355a6cc76"
+      }
+    }
+  },
+  {
+    "id": "3f9304aa-d5eb-4f08-8888-dc370c20aef3",
+    "attributes": {
+      "appStoreState": "PREPARE_FOR_SUBMISSION",
+      "state": "PREPARE_FOR_SUBMISSION",
+      "appStoreAgeRating": "FOUR_PLUS",
+      "australiaAgeRating": null,
+      "brazilAgeRating": "L",
+      "brazilAgeRatingV2": "SELF_RATED_L",
+      "franceAgeRating": null,
+      "koreaAgeRating": null
+    },
+    "rating": {
+      "type": "ageRatingDeclarations",
+      "id": "3f9304aa-d5eb-4f08-8888-dc370c20aef3",
+      "attributes": {
+        "advertising": false,
+        "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+        "contests": "NONE",
+        "gambling": false,
+        "gamblingSimulated": "NONE",
+        "gunsOrOtherWeapons": "NONE",
+        "healthOrWellnessTopics": false,
+        "kidsAgeBand": null,
+        "lootBox": false,
+        "medicalOrTreatmentInformation": "NONE",
+        "messagingAndChat": true,
+        "parentalControls": false,
+        "profanityOrCrudeHumor": "NONE",
+        "ageAssurance": false,
+        "sexualContentGraphicAndNudity": "NONE",
+        "sexualContentOrNudity": "NONE",
+        "socialMedia": true,
+        "socialMediaAgeRestricted": false,
+        "horrorOrFearThemes": "NONE",
+        "matureOrSuggestiveThemes": "NONE",
+        "unrestrictedWebAccess": false,
+        "userGeneratedContent": true,
+        "violenceCartoonOrFantasy": "NONE",
+        "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+        "violenceRealistic": "NONE",
+        "ageRatingOverride": "NONE",
+        "ageRatingOverrideV2": "NONE",
+        "koreaAgeRatingOverride": "NONE",
+        "gracRatingClassificationNumber": null,
+        "developerAgeRatingInfoUrl": null
+      },
+      "links": {
+        "self": "https://api.appstoreconnect.apple.com/v1/ageRatingDeclarations/3f9304aa-d5eb-4f08-8888-dc370c20aef3"
+      }
+    }
+  }
+]

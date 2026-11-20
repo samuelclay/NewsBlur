@@ -1,7 +1,23 @@
 """Story action tools - mark read, save, share."""
 
+import time
+
 from newsblur_mcp.client import NewsBlurClient
 from newsblur_mcp.server import get_client, mcp
+
+
+def _feed_unread_count(feeds: dict, feed_ids: list[int]) -> int:
+    unread_count = 0
+    for feed_id in feed_ids:
+        feed = feeds.get(str(feed_id), {})
+        unread_count += feed.get("nt", 0) + feed.get("ps", 0) + feed.get("ng", 0)
+    return unread_count
+
+
+def _cutoff_timestamp(older_than_days: int | None) -> int | None:
+    if not older_than_days:
+        return None
+    return int(time.time()) - (older_than_days * 24 * 60 * 60)
 
 
 async def _mark_stories_read(
@@ -12,27 +28,50 @@ async def _mark_stories_read(
     older_than_days: int | None = None,
 ) -> dict:
     """Mark one or more stories as read."""
+    marked_count = None
     if story_hashes:
         resp = await client.post(
             "/reader/mark_story_hashes_as_read",
             data={"story_hash": story_hashes},
         )
+        marked_count = len(resp.get("story_hashes", story_hashes))
     elif feed_id:
         data = {"feed_id": feed_id}
-        if older_than_days:
-            data["days"] = older_than_days
+        cutoff_timestamp = _cutoff_timestamp(older_than_days)
+        if cutoff_timestamp:
+            data["cutoff_timestamp"] = cutoff_timestamp
+        else:
+            feeds_resp = await client.get_feeds()
+            marked_count = _feed_unread_count(feeds_resp.get("feeds", {}), [feed_id])
         resp = await client.post("/reader/mark_feed_as_read", data=data)
     elif folder:
         data = {}
-        if folder != "all":
-            data["folder_name"] = folder
-        if older_than_days:
-            data["days"] = older_than_days
-        resp = await client.post("/reader/mark_all_as_read", data=data)
+        if folder == "all":
+            feeds_resp = await client.get_feeds()
+            feed_ids = [int(feed_id) for feed_id in feeds_resp.get("feeds", {})]
+            if not older_than_days:
+                marked_count = _feed_unread_count(feeds_resp.get("feeds", {}), feed_ids)
+            else:
+                data["days"] = older_than_days
+            resp = await client.post("/reader/mark_all_as_read", data=data)
+        else:
+            feeds_resp = await client.get_feeds()
+            flat_folders = feeds_resp.get("flat_folders", {})
+            feed_ids = flat_folders.get(folder, [])
+            if not feed_ids:
+                return {"error": f"Folder '{folder}' not found or empty"}
+
+            data = {"feed_id": feed_ids}
+            cutoff_timestamp = _cutoff_timestamp(older_than_days)
+            if cutoff_timestamp:
+                data["cutoff_timestamp"] = cutoff_timestamp
+            else:
+                marked_count = _feed_unread_count(feeds_resp.get("feeds", {}), feed_ids)
+            resp = await client.post("/reader/mark_feed_as_read", data=data)
     else:
         return {"error": "Provide story_hashes, feed_id, or folder to mark as read."}
 
-    return {"code": resp.get("code"), "message": "Stories marked as read"}
+    return {"code": resp.get("code"), "message": "Stories marked as read", "marked_count": marked_count}
 
 
 @mcp.tool()

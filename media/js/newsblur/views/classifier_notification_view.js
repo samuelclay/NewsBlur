@@ -23,25 +23,25 @@ NEWSBLUR.Views.ClassifierNotificationView = Backbone.View.extend({
             $.make('div', { className: 'NB-classifier-notification-controls' }, [
                 $.make('ul', { className: 'segmented-control NB-classifier-notification-types' }, [
                     $.make('li', {
-                        className: 'NB-classifier-notification-option NB-classifier-notification-email' + (is_email ? ' NB-active' : ''),
+                        className: 'NB-classifier-notification-option NB-classifier-notification-email NB-notification-channel-option' + (is_email ? ' NB-active' : ''),
                         role: 'button'
-                    }, 'Email'),
+                    }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('email', gettext('Email'))),
                     $.make('li', {
-                        className: 'NB-classifier-notification-option NB-classifier-notification-web' + (is_web ? ' NB-active' : ''),
+                        className: 'NB-classifier-notification-option NB-classifier-notification-web NB-notification-channel-option' + (is_web ? ' NB-active' : ''),
                         role: 'button'
-                    }, 'Web'),
+                    }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('web', gettext('Web'))),
                     $.make('li', {
-                        className: 'NB-classifier-notification-option NB-classifier-notification-ios' + (is_ios ? ' NB-active' : ''),
+                        className: 'NB-classifier-notification-option NB-classifier-notification-ios NB-notification-channel-option' + (is_ios ? ' NB-active' : ''),
                         role: 'button'
-                    }, 'iOS'),
+                    }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('ios', 'iOS')),
                     $.make('li', {
-                        className: 'NB-classifier-notification-option NB-classifier-notification-android' + (is_android ? ' NB-active' : ''),
+                        className: 'NB-classifier-notification-option NB-classifier-notification-android NB-notification-channel-option' + (is_android ? ' NB-active' : ''),
                         role: 'button'
-                    }, 'Android')
+                    }, NEWSBLUR.Views.ClassifierNotificationPopover.make_channel_content('android', 'Android'))
                 ])
             ]),
             $.make('div', { className: 'NB-classifier-notification-pill' }, [
-                $.make('span', { className: 'NB-classifier-type-badge' }, notif.classifier_type.toUpperCase()),
+                $.make('span', { className: 'NB-classifier-type-badge' }, this.classifier_type_label(notif.classifier_type).toUpperCase()),
                 (notif.is_regex && $.make('span', { className: 'NB-classifier-type-badge NB-classifier-regex-badge' }, 'REGEX')),
                 $.make('span', { className: 'NB-classifier-notification-value' }, notif.classifier_value)
             ])
@@ -51,6 +51,21 @@ NEWSBLUR.Views.ClassifierNotificationView = Backbone.View.extend({
         this.setElement($el);
 
         return this;
+    },
+
+    // classifier_notification_view.js: Display label for the classifier_type identifier,
+    // which stays untranslated because it is stored and sent to the server.
+    classifier_type_label: function (classifier_type) {
+        var labels = {
+            title: gettext("Title"),
+            author: gettext("Author"),
+            tag: gettext("Tag"),
+            text: gettext("Text"),
+            url: gettext("URL"),
+            prompt: gettext("Prompt"),
+            image_prompt: gettext("Image prompt")
+        };
+        return labels[classifier_type] || classifier_type;
     },
 
     toggle_email: function () { this.toggle_type('email'); },

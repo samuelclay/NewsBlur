@@ -1,0 +1,528 @@
+- progressbar
+- generic: Loading Google Play Console
+- banner:
+  - link "Google Play Console logo":
+    - /url: /console/u/1/developers/6280481402178293168/home
+    - button "Google Play Console logo"
+  - button "Unread notifications Open notification center":
+    - img: notifications_unread
+    - generic: Unread notifications
+  - button "Switch developer accounts":
+    - img: more_vert
+- navigation:
+  - list:
+    - listitem "Home":
+      - button "Home":
+        - img: home
+    - listitem "Manage account":
+      - button "Manage account":
+        - img: badge
+    - 'listitem "NewsBlur: RSS News Reader"':
+      - 'button "NewsBlur: RSS News Reader"':
+        - img: play_prism
+    - listitem "Dashboard":
+      - button "Dashboard":
+        - img: dashboard
+    - listitem "Statistics":
+      - button "Statistics":
+        - img: bar_chart
+    - listitem "Publishing overview":
+      - button "Publishing overview":
+        - img: overview
+    - listitem "Protected with Play":
+      - button "Protected with Play":
+        - img: shield
+    - listitem "Test and release":
+      - button "Test and release":
+        - img: rocket_launch
+    - listitem "Monitor and improve":
+      - button "Monitor and improve":
+        - img: vital_signs
+    - listitem "Grow users":
+      - button "Grow users":
+        - img: finance_mode
+    - listitem "Monetize with Play":
+      - button "Monetize with Play":
+        - img: sell
+- heading "Publishing overview" [level=1]
+- text: See an overview of the changes made to your app, and control when changes are sent for review or published.
+- button "Show more details about Publishing overview": Show more
+- button "Managed publishing off":
+  - img: sync_disabled
+  - generic: Managed publishing off
+  - img: arrow_drop_down
+- img: history
+- generic: Last published on October 19, 2026
+- link "Submission activity":
+  - /url: /console/u/1/developers/6280481402178293168/app/4972990522498280751/publishing/submission-activity
+  - generic: Submission activity
+  - img: arrow_right_alt
+- heading "Changes in review" [level=2]
+- button "More information about \"Changes in review\"":
+  - img: help
+- button "Remove changes": Remove changes
+- 'button "Hide content: Changes in review" [expanded]':
+  - generic: Hide
+  - img: expand_less
+- heading "Running quick checks for commonly found issues" [level=4]
+- meter "Running quick checks for commonly found issues"
+- paragraph:
+  - text: These checks help to find certain policy and app quality issues, so you can fix them before review. Changes will be sent for review as soon as checks complete successfully.
+  - link "Go to the Help center to learn more about the automated checks we run to detect issues before you send your changes for review":
+    - /url: https://support.google.com/googleplay/android-developer/answer/14807773
+    - text: Learn more
+- paragraph: Up to 10 minutes remaining
+- grid "Changes":
+  - row "Item changed Description":
+    - columnheader "Item changed"
+    - columnheader "Description"
+    - cell
+  - row "Production":
+    - img: rocket_launch
+    - gridcell "Production"
+  - row "16.0.5 Start full rollout":
+    - gridcell "16.0.5":
+      - generic: 16.0.5
+    - gridcell "Start full rollout":
+      - generic: Start full rollout
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Store listings":
+    - img: play_prism
+    - gridcell "Store listings"
+  - row "English (United States) – en-US Default store listing Change short description to 'Follow your favorite sites. Read, save, and share stories wherever you are.'":
+    - gridcell "English (United States) – en-US Default store listing":
+      - generic: English (United States) – en-US
+      - generic: Default store listing
+    - gridcell "Change short description to 'Follow your favorite sites. Read, save, and share stories wherever you are.'":
+      - generic: Change short description to 'Follow your favorite sites. Read, save, and share stories wherever you are.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "English (United States) – en-US Default store listing Change full description":
+    - gridcell "English (United States) – en-US Default store listing":
+      - generic: English (United States) – en-US
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Arabic – ar Default store listing Change short description to 'تابع مواقعك المفضلة. اقرأ القصص واحفظها وشاركها أينما كنت.'":
+    - gridcell "Arabic – ar Default store listing":
+      - generic: Arabic – ar
+      - generic: Default store listing
+    - gridcell "Change short description to 'تابع مواقعك المفضلة. اقرأ القصص واحفظها وشاركها أينما كنت.'":
+      - generic: Change short description to 'تابع مواقعك المفضلة. اقرأ القصص واحفظها وشاركها أينما كنت.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Arabic – ar Default store listing Change full description":
+    - gridcell "Arabic – ar Default store listing":
+      - generic: Arabic – ar
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Chinese (Simplified) – zh-CN Default store listing Change short description to '关注你喜欢的网站，随时随地阅读、保存和分享文章。'":
+    - gridcell "Chinese (Simplified) – zh-CN Default store listing":
+      - generic: Chinese (Simplified) – zh-CN
+      - generic: Default store listing
+    - gridcell "Change short description to '关注你喜欢的网站，随时随地阅读、保存和分享文章。'":
+      - generic: Change short description to '关注你喜欢的网站，随时随地阅读、保存和分享文章。'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Chinese (Simplified) – zh-CN Default store listing Change full description":
+    - gridcell "Chinese (Simplified) – zh-CN Default store listing":
+      - generic: Chinese (Simplified) – zh-CN
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Chinese (Traditional) – zh-TW Default store listing Change short description to '追蹤你喜愛的網站，隨時隨地閱讀、儲存和分享文章。'":
+    - gridcell "Chinese (Traditional) – zh-TW Default store listing":
+      - generic: Chinese (Traditional) – zh-TW
+      - generic: Default store listing
+    - gridcell "Change short description to '追蹤你喜愛的網站，隨時隨地閱讀、儲存和分享文章。'":
+      - generic: Change short description to '追蹤你喜愛的網站，隨時隨地閱讀、儲存和分享文章。'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Chinese (Traditional) – zh-TW Default store listing Change full description":
+    - gridcell "Chinese (Traditional) – zh-TW Default store listing":
+      - generic: Chinese (Traditional) – zh-TW
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Dutch – nl-NL Default store listing Change short description to 'Volg je favoriete sites. Lees, bewaar en deel artikelen waar je ook bent.'":
+    - gridcell "Dutch – nl-NL Default store listing":
+      - generic: Dutch – nl-NL
+      - generic: Default store listing
+    - gridcell "Change short description to 'Volg je favoriete sites. Lees, bewaar en deel artikelen waar je ook bent.'":
+      - generic: Change short description to 'Volg je favoriete sites. Lees, bewaar en deel artikelen waar je ook bent.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Dutch – nl-NL Default store listing Change full description":
+    - gridcell "Dutch – nl-NL Default store listing":
+      - generic: Dutch – nl-NL
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "French (France) – fr-FR Default store listing Change short description to 'Suivez vos sites favoris. Lisez, enregistrez et partagez où que vous soyez.'":
+    - gridcell "French (France) – fr-FR Default store listing":
+      - generic: French (France) – fr-FR
+      - generic: Default store listing
+    - gridcell "Change short description to 'Suivez vos sites favoris. Lisez, enregistrez et partagez où que vous soyez.'":
+      - generic: Change short description to 'Suivez vos sites favoris. Lisez, enregistrez et partagez où que vous soyez.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "French (France) – fr-FR Default store listing Change full description":
+    - gridcell "French (France) – fr-FR Default store listing":
+      - generic: French (France) – fr-FR
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "German – de-DE Default store listing Change short description to 'Folge deinen Lieblingswebsites. Lies, speichere und teile Artikel unterwegs.'":
+    - gridcell "German – de-DE Default store listing":
+      - generic: German – de-DE
+      - generic: Default store listing
+    - gridcell "Change short description to 'Folge deinen Lieblingswebsites. Lies, speichere und teile Artikel unterwegs.'":
+      - generic: Change short description to 'Folge deinen Lieblingswebsites. Lies, speichere und teile Artikel unterwegs.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "German – de-DE Default store listing Change full description":
+    - gridcell "German – de-DE Default store listing":
+      - generic: German – de-DE
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Hebrew – iw-IL Default store listing Change short description to 'עקבו אחר האתרים האהובים. קראו, שמרו ושתפו כתבות מכל מקום.'":
+    - gridcell "Hebrew – iw-IL Default store listing":
+      - generic: Hebrew – iw-IL
+      - generic: Default store listing
+    - gridcell "Change short description to 'עקבו אחר האתרים האהובים. קראו, שמרו ושתפו כתבות מכל מקום.'":
+      - generic: Change short description to 'עקבו אחר האתרים האהובים. קראו, שמרו ושתפו כתבות מכל מקום.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Hebrew – iw-IL Default store listing Change full description":
+    - gridcell "Hebrew – iw-IL Default store listing":
+      - generic: Hebrew – iw-IL
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Hindi – hi-IN Default store listing Change short description to 'पसंदीदा साइटें फ़ॉलो करें। कहीं भी लेख पढ़ें, सहेजें और साझा करें।'":
+    - gridcell "Hindi – hi-IN Default store listing":
+      - generic: Hindi – hi-IN
+      - generic: Default store listing
+    - gridcell "Change short description to 'पसंदीदा साइटें फ़ॉलो करें। कहीं भी लेख पढ़ें, सहेजें और साझा करें।'":
+      - generic: Change short description to 'पसंदीदा साइटें फ़ॉलो करें। कहीं भी लेख पढ़ें, सहेजें और साझा करें।'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Hindi – hi-IN Default store listing Change full description":
+    - gridcell "Hindi – hi-IN Default store listing":
+      - generic: Hindi – hi-IN
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Indonesian – id Default store listing Change short description to 'Ikuti situs favorit. Baca, simpan, dan bagikan artikel di mana saja.'":
+    - gridcell "Indonesian – id Default store listing":
+      - generic: Indonesian – id
+      - generic: Default store listing
+    - gridcell "Change short description to 'Ikuti situs favorit. Baca, simpan, dan bagikan artikel di mana saja.'":
+      - generic: Change short description to 'Ikuti situs favorit. Baca, simpan, dan bagikan artikel di mana saja.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Indonesian – id Default store listing Change full description":
+    - gridcell "Indonesian – id Default store listing":
+      - generic: Indonesian – id
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Italian – it-IT Default store listing Change short description to 'Segui i tuoi siti preferiti. Leggi, salva e condividi articoli ovunque tu sia.'":
+    - gridcell "Italian – it-IT Default store listing":
+      - generic: Italian – it-IT
+      - generic: Default store listing
+    - gridcell "Change short description to 'Segui i tuoi siti preferiti. Leggi, salva e condividi articoli ovunque tu sia.'":
+      - generic: Change short description to 'Segui i tuoi siti preferiti. Leggi, salva e condividi articoli ovunque tu sia.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Italian – it-IT Default store listing Change full description":
+    - gridcell "Italian – it-IT Default store listing":
+      - generic: Italian – it-IT
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Japanese – ja-JP Default store listing Change short description to 'お気に入りのサイトをフォロー。どこにいても記事を読んで、保存、共有できます。'":
+    - gridcell "Japanese – ja-JP Default store listing":
+      - generic: Japanese – ja-JP
+      - generic: Default store listing
+    - gridcell "Change short description to 'お気に入りのサイトをフォロー。どこにいても記事を読んで、保存、共有できます。'":
+      - generic: Change short description to 'お気に入りのサイトをフォロー。どこにいても記事を読んで、保存、共有できます。'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Japanese – ja-JP Default store listing Change full description":
+    - gridcell "Japanese – ja-JP Default store listing":
+      - generic: Japanese – ja-JP
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Korean – ko-KR Default store listing Change short description to '좋아하는 사이트를 팔로우하세요. 어디서든 스토리를 읽고, 저장하고, 공유하세요.'":
+    - gridcell "Korean – ko-KR Default store listing":
+      - generic: Korean – ko-KR
+      - generic: Default store listing
+    - gridcell "Change short description to '좋아하는 사이트를 팔로우하세요. 어디서든 스토리를 읽고, 저장하고, 공유하세요.'":
+      - generic: Change short description to '좋아하는 사이트를 팔로우하세요. 어디서든 스토리를 읽고, 저장하고, 공유하세요.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Korean – ko-KR Default store listing Change full description":
+    - gridcell "Korean – ko-KR Default store listing":
+      - generic: Korean – ko-KR
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Polish – pl-PL Default store listing Change short description to 'Śledź ulubione witryny. Czytaj, zapisuj i udostępniaj artykuły, gdzie chcesz.'":
+    - gridcell "Polish – pl-PL Default store listing":
+      - generic: Polish – pl-PL
+      - generic: Default store listing
+    - gridcell "Change short description to 'Śledź ulubione witryny. Czytaj, zapisuj i udostępniaj artykuły, gdzie chcesz.'":
+      - generic: Change short description to 'Śledź ulubione witryny. Czytaj, zapisuj i udostępniaj artykuły, gdzie chcesz.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Polish – pl-PL Default store listing Change full description":
+    - gridcell "Polish – pl-PL Default store listing":
+      - generic: Polish – pl-PL
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Portuguese (Brazil) – pt-BR Default store listing Change short description to 'Siga seus sites favoritos. Leia, salve e compartilhe artigos onde estiver.'":
+    - gridcell "Portuguese (Brazil) – pt-BR Default store listing":
+      - generic: Portuguese (Brazil) – pt-BR
+      - generic: Default store listing
+    - gridcell "Change short description to 'Siga seus sites favoritos. Leia, salve e compartilhe artigos onde estiver.'":
+      - generic: Change short description to 'Siga seus sites favoritos. Leia, salve e compartilhe artigos onde estiver.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Portuguese (Brazil) – pt-BR Default store listing Change full description":
+    - gridcell "Portuguese (Brazil) – pt-BR Default store listing":
+      - generic: Portuguese (Brazil) – pt-BR
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Russian – ru-RU Default store listing Change short description to 'Следите за любимыми сайтами. Читайте, сохраняйте и делитесь статьями где угодно.'":
+    - gridcell "Russian – ru-RU Default store listing":
+      - generic: Russian – ru-RU
+      - generic: Default store listing
+    - gridcell "Change short description to 'Следите за любимыми сайтами. Читайте, сохраняйте и делитесь статьями где угодно.'":
+      - generic: Change short description to 'Следите за любимыми сайтами. Читайте, сохраняйте и делитесь статьями где угодно.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Russian – ru-RU Default store listing Change full description":
+    - gridcell "Russian – ru-RU Default store listing":
+      - generic: Russian – ru-RU
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Spanish (Spain) – es-ES Default store listing Change short description to 'Sigue tus sitios favoritos. Lee, guarda y comparte artículos estés donde estés.'":
+    - gridcell "Spanish (Spain) – es-ES Default store listing":
+      - generic: Spanish (Spain) – es-ES
+      - generic: Default store listing
+    - gridcell "Change short description to 'Sigue tus sitios favoritos. Lee, guarda y comparte artículos estés donde estés.'":
+      - generic: Change short description to 'Sigue tus sitios favoritos. Lee, guarda y comparte artículos estés donde estés.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Spanish (Spain) – es-ES Default store listing Change full description":
+    - gridcell "Spanish (Spain) – es-ES Default store listing":
+      - generic: Spanish (Spain) – es-ES
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Thai – th Default store listing Change short description to 'ติดตามเว็บไซต์โปรด อ่าน บันทึก และแชร์บทความได้ทุกที่'":
+    - gridcell "Thai – th Default store listing":
+      - generic: Thai – th
+      - generic: Default store listing
+    - gridcell "Change short description to 'ติดตามเว็บไซต์โปรด อ่าน บันทึก และแชร์บทความได้ทุกที่'":
+      - generic: Change short description to 'ติดตามเว็บไซต์โปรด อ่าน บันทึก และแชร์บทความได้ทุกที่'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Thai – th Default store listing Change full description":
+    - gridcell "Thai – th Default store listing":
+      - generic: Thai – th
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Turkish – tr-TR Default store listing Change short description to 'Favori sitelerinizi takip edin. Her yerde haber okuyun, kaydedin ve paylaşın.'":
+    - gridcell "Turkish – tr-TR Default store listing":
+      - generic: Turkish – tr-TR
+      - generic: Default store listing
+    - gridcell "Change short description to 'Favori sitelerinizi takip edin. Her yerde haber okuyun, kaydedin ve paylaşın.'":
+      - generic: Change short description to 'Favori sitelerinizi takip edin. Her yerde haber okuyun, kaydedin ve paylaşın.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Turkish – tr-TR Default store listing Change full description":
+    - gridcell "Turkish – tr-TR Default store listing":
+      - generic: Turkish – tr-TR
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Ukrainian – uk Default store listing Change short description to 'Стежте за улюбленими сайтами. Читайте, зберігайте й діліться статтями будь-де.'":
+    - gridcell "Ukrainian – uk Default store listing":
+      - generic: Ukrainian – uk
+      - generic: Default store listing
+    - gridcell "Change short description to 'Стежте за улюбленими сайтами. Читайте, зберігайте й діліться статтями будь-де.'":
+      - generic: Change short description to 'Стежте за улюбленими сайтами. Читайте, зберігайте й діліться статтями будь-де.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Ukrainian – uk Default store listing Change full description":
+    - gridcell "Ukrainian – uk Default store listing":
+      - generic: Ukrainian – uk
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Vietnamese – vi Default store listing Change short description to 'Theo dõi trang web yêu thích. Đọc, lưu và chia sẻ bài viết ở bất cứ đâu.'":
+    - gridcell "Vietnamese – vi Default store listing":
+      - generic: Vietnamese – vi
+      - generic: Default store listing
+    - gridcell "Change short description to 'Theo dõi trang web yêu thích. Đọc, lưu và chia sẻ bài viết ở bất cứ đâu.'":
+      - generic: Change short description to 'Theo dõi trang web yêu thích. Đọc, lưu và chia sẻ bài viết ở bất cứ đâu.'
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+  - row "Vietnamese – vi Default store listing Change full description":
+    - gridcell "Vietnamese – vi Default store listing":
+      - generic: Vietnamese – vi
+      - generic: Default store listing
+    - gridcell "Change full description":
+      - generic: Change full description
+    - gridcell:
+      - listbox "More actions":
+        - button "More actions":
+          - img: more_vert
+- link "Product updates":
+  - /url: https://play.google.com/console/about/whats-new/
+- link "Status dashboard":
+  - /url: https://status.play.google.com/
+- link "Help":
+  - /url: /console/u/1/developers/6280481402178293168/help-and-support?app=4972990522498280751
+- generic: © 2026 Google
+- link "Privacy":
+  - /url: https://www.google.com/policies/privacy/
+- link "Developer Distribution Agreement":
+  - /url: https://play.google.com/about/developer-distribution-agreement.html
+- link "Terms of Service":
+  - /url: https://play.google.com/about/console/terms-of-service/
+- status

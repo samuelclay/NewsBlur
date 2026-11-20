@@ -52,8 +52,7 @@ services:
 
   imageproxy:
     container_name: newsblur_imageproxy
-    # image: ghcr.io/willnorris/imageproxy:latest # Enable if you don't need arm64 and want the original imageproxy
-    image: yusukeito/imageproxy:v0.11.2 # Enable if you want arm64
+    image: ghcr.io/willnorris/imageproxy:latest
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
@@ -123,16 +122,29 @@ services:
   #     - ./docker/volumes/redis_prod:/data
   #   command: redis-server /etc/redis/redis.conf --port 6579
 
+  # Docker creates a missing bind mount directory as root, and Elasticsearch runs as uid 1000.
+  # Docker Desktop ignores that ownership but Linux enforces it, so hand the data dir to uid 1000 first.
+  newsblur_db_elasticsearch_permissions:
+    container_name: newsblur_db_elasticsearch_permissions
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.6
+    user: root
+    entrypoint: ["chown", "-R", "1000:0", "/usr/share/elasticsearch/data"]
+    restart: "no"
+    volumes:
+      - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+
   newsblur_db_elasticsearch:
     container_name: newsblur_db_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.6
+    depends_on:
+      newsblur_db_elasticsearch_permissions:
+        condition: service_completed_successfully
     mem_limit: 2g
     mem_reservation: 512m
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:UseSVE=0"
-      - "CLI_JAVA_OPTS=-XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
       - bootstrap.memory_lock=false
@@ -197,6 +209,8 @@ services:
   haproxy:
     container_name: newsblur_haproxy
     image: haproxy:latest
+    # docker/haproxy/local.d holds machine-only backends; haproxy loads every *.cfg in it
+    command: haproxy -f /usr/local/etc/haproxy/haproxy.cfg -f /srv/newsblur/docker/haproxy/local.d
     restart: unless-stopped
     depends_on:
       - nginx

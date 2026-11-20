@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-11-10T01:03:22.900Z",
+  "platforms": [
+    {
+      "platform": "IOS",
+      "locales": 21,
+      "fields": [
+        "whatsNew",
+        "promotionalText",
+        "description",
+        "keywords"
+      ],
+      "mismatches": []
+    },
+    {
+      "platform": "MAC_OS",
+      "locales": 21,
+      "fields": [
+        "whatsNew",
+        "promotionalText",
+        "description",
+        "keywords"
+      ],
+      "mismatches": []
+    }
+  ]
+}

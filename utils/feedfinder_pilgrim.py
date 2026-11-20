@@ -54,9 +54,10 @@ import urllib.request
 import urllib.robotparser
 from io import StringIO
 
-import requests
 import sgmllib
 from lxml import etree
+
+from utils.url_safety import safe_requests_get
 
 # XML-RPC support allows feedfinder to query Syndic8 for possible matches.
 # Python 2.3 now comes with this module by default, otherwise you can download it
@@ -117,9 +118,9 @@ class URLGatekeeper:
         if check and not self.can_fetch(url):
             return ""
         try:
-            r = requests.get(url, headers=dict(self.urlopener.addheaders))
+            r = safe_requests_get(url, headers=dict(self.urlopener.addheaders))
             if r.status_code in [403, 204, 202] or not r.text.strip():
-                r = requests.get(url, headers={"User-Agent": None})
+                r = safe_requests_get(url, headers={"User-Agent": None})
             return r.text
         except:
             return ""

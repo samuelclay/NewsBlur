@@ -13,6 +13,7 @@ from urllib.parse import quote_plus, urlparse
 import requests
 from django.conf import settings
 from django.db.models import Count, Q
+from django.utils.translation import gettext
 
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
@@ -88,6 +89,43 @@ def _compute_trending_scores(popular_feeds_list):
     return scores, has_signal
 
 
+# Staleness windows for the Add Site / Discover "Updated" filter.
+# Keys match the add_site_staleness preference values set in
+# media/js/newsblur/views/add_site_style_popover.js.
+STALENESS_DAYS = {
+    "month": 31,
+    "year": 365,
+    "5years": 1825,
+}
+
+
+def _staleness_cutoff(request):
+    """Return a datetime cutoff for the requested 'staleness' window, or None for 'any time'."""
+    staleness = (request.GET.get("staleness") or request.POST.get("staleness") or "").strip()
+    days = STALENESS_DAYS.get(staleness)
+    if not days:
+        return None
+    return datetime.datetime.now() - datetime.timedelta(days=days)
+
+
+def _subscribed_feed_ids(request):
+    """
+    Return the set of feed_ids the user already subscribes to when the
+    'exclude_subscribed' flag is set, or None when the filter is off.
+    Used to hide already-subscribed feeds from the Add Site / Discover results.
+    """
+    flag = (
+        (request.GET.get("exclude_subscribed") or request.POST.get("exclude_subscribed") or "")
+        .strip()
+        .lower()
+    )
+    if flag not in ("true", "1", "yes"):
+        return None
+    if not request.user.is_authenticated:
+        return None
+    return set(UserSubscription.objects.filter(user=request.user).values_list("feed_id", flat=True))
+
+
 IGNORE_AUTOCOMPLETE = [
     "facebook.com/feeds/notifications.php",
     "inbox",
@@ -104,7 +142,7 @@ def search_feed(request):
     address = request.GET.get("address")
     offset = int(request.GET.get("offset", 0))
     if not address:
-        return dict(code=-1, message="Please provide a URL/address.")
+        return dict(code=-1, message=gettext("Please provide a URL/address."))
 
     logging.user(request.user, "~FBFinding feed (search_feed): %s" % address)
     ip = request.META.get("HTTP_X_FORWARDED_FOR", None) or request.META["REMOTE_ADDR"]
@@ -114,7 +152,96 @@ def search_feed(request):
     if feed:
         return feed.canonical()
     else:
-        return dict(code=-1, message="No feed found matching that XML or website address.")
+        return dict(code=-1, message=gettext("No feed found matching that XML or website address."))
+
+
+FEED_URL_HOST = re.compile(r"^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$", re.IGNORECASE)
+
+
+def _parse_feed_url_term(term):
+    """Return (hostname, rest) when the term looks like a feed URL, else None.
+
+    The rest is everything after the hostname (port, path and query) without a trailing slash,
+    so the caller can rebuild the address under any scheme or host. Accepts http(s):// in any
+    case, feed://, feed:https://, scheme-relative //host/path and a bare host/path. A bare term
+    needs a path, so a name like "node.js" stays a name search.
+    """
+    term = re.sub(r"^feed:(?=//|https?:)", "", term.strip(), flags=re.IGNORECASE)
+    if re.search(r"\s", term):
+        return None
+    explicit = re.match(r"(?:https?:)?//", term, re.IGNORECASE)
+    if explicit:
+        rest = term[explicit.end() :]
+    elif "://" in term or "/" not in term:
+        return None
+    else:
+        rest = term
+    try:
+        parts = urlparse("//" + rest)
+        hostname, port = parts.hostname, parts.port
+    except ValueError:
+        return None
+    if not hostname or not (explicit or FEED_URL_HOST.match(hostname)):
+        return None
+    rest = (f":{port}" if port else "") + parts.path + (f"?{parts.query}" if parts.query else "")
+    return hostname, rest.rstrip("/")
+
+
+def _strip_www(hostname):
+    return hostname[4:] if hostname.startswith("www.") else hostname
+
+
+def _site_host(url):
+    """Return the hostname of a URL without a leading www., or "" when it has none."""
+    try:
+        return _strip_www(urlparse(url).hostname or "")
+    except ValueError:
+        return ""
+
+
+def _on_site(url, site_host):
+    """True when the URL's host is site_host or one of its subdomains, ignoring a leading www."""
+    hostname = _site_host(url)
+    return hostname == site_host or hostname.endswith("." + site_host)
+
+
+def _feed_ids_for_url_term(hostname, rest, limit=20):
+    """Return (exact_feed_ids, feed_ids) for a feed URL term.
+
+    The feeds at that address come first, matched under either scheme, with or without www. and
+    a trailing slash. Then come the feeds on the same site: text search hits for the host whose
+    address or link is on that host or one of its subdomains, so a site's home page URL still
+    finds a feed served from feeds.example.com or FeedBurner.
+    """
+    site_host = _strip_www(hostname)
+    if not site_host:
+        return [], []
+    hosts = {hostname, site_host, f"www.{site_host}"}
+    addresses = [
+        f"{scheme}://{host}{rest}{slash}"
+        for scheme in ("https", "http")
+        for host in hosts
+        for slash in ("", "/")
+    ]
+    exact_feed_ids = list(
+        Feed.objects.filter(feed_address__in=addresses)
+        .order_by("-num_subscribers")
+        .values_list("pk", flat=True)[:limit]
+    )
+    # Only the text half of the search can match a hostname, so skip the semantic embedding.
+    search_ids = Feed.autocomplete(site_host, limit=limit, semantic=False)
+    urls_by_pk = {
+        pk: [url for url in (feed_address, feed_link) if url]
+        for pk, feed_address, feed_link in Feed.objects.filter(pk__in=search_ids).values_list(
+            "pk", "feed_address", "feed_link"
+        )
+    }
+    site_feed_ids = [
+        pk
+        for pk in search_ids
+        if pk not in exact_feed_ids and any(_on_site(url, site_host) for url in urls_by_pk.get(pk, []))
+    ]
+    return exact_feed_ids, (exact_feed_ids + site_feed_ids)[:limit]
 
 
 @json.json_view
@@ -126,9 +253,19 @@ def feed_autocomplete(request):
     include_stories = request.GET.get("include_stories", "false").lower() == "true"
 
     if not query:
-        return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
+        return dict(code=-1, message=gettext("Specify a search 'term'."), feeds=[], term=query)
 
-    if "." in query:
+    # A feed URL is answered by address, then by site, before any word matching.
+    url_term = _parse_feed_url_term(query)
+    exact_feed_ids = []
+    feed_ids = []
+    if url_term:
+        exact_feed_ids, feed_ids = _feed_ids_for_url_term(*url_term)
+        if not feed_ids:
+            # Nothing matches the address or its site: search the URL's words like any other term.
+            url_term = None
+
+    if "." in query and not url_term:
         try:
             parts = urlparse(query)
             if not parts.hostname and not query.startswith("http"):
@@ -140,9 +277,8 @@ def feed_autocomplete(request):
         except Exception:
             logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
 
-    query_params = query.split(" ")
+    query_params = [] if url_term else query.split(" ")
     tries_left = 5
-    feed_ids = []
     while len(query_params) and tries_left:
         tries_left -= 1
         # Use higher limit (20) to include semantic matches alongside exact matches
@@ -153,7 +289,7 @@ def feed_autocomplete(request):
             query_params = query_params[:-1]
 
     # Fallback to database search if Elasticsearch returns no results
-    if not feed_ids:
+    if not feed_ids and not url_term:
         from django.db.models import Q
 
         search_query = query.split()[0] if query.split() else query
@@ -170,6 +306,14 @@ def feed_autocomplete(request):
     feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
     feeds = [feed for feed in feeds if all([x not in feed.feed_address for x in IGNORE_AUTOCOMPLETE])]
 
+    # Add Site / Discover filters: drop stale and already-subscribed feeds when requested.
+    staleness_cutoff = _staleness_cutoff(request)
+    if staleness_cutoff:
+        feeds = [f for f in feeds if f.last_story_date and f.last_story_date >= staleness_cutoff]
+    subscribed_ids = _subscribed_feed_ids(request)
+    if subscribed_ids:
+        feeds = [f for f in feeds if f.pk not in subscribed_ids]
+
     if autocomplete_format == "autocomplete":
         feeds = [
             {
@@ -184,7 +328,7 @@ def feed_autocomplete(request):
         ]
     else:
         feeds = [feed.canonical(full=True) for feed in feeds]
-    feeds = sorted(feeds, key=lambda f: -1 * f["num_subscribers"])
+    feeds = sorted(feeds, key=lambda f: (f["id"] not in exact_feed_ids, -1 * f["num_subscribers"]))
 
     feed_ids = [f["id"] for f in feeds]
     feed_icons = dict((icon.feed_id, icon) for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids))
@@ -208,10 +352,11 @@ def feed_autocomplete(request):
 
     logging.user(
         request,
-        "~FGAdd Search: ~SB%s ~SN(%s matches)"
+        "~FGAdd Search: ~SB%s ~SN(%s matches%s)"
         % (
             query,
             len(feeds),
+            ", by url" if url_term else "",
         ),
     )
 
@@ -243,7 +388,7 @@ def discover_feeds(request, feed_id=None):
         similar_feeds = Feed.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
         similar_feed_ids = [result["_source"]["feed_id"] for result in similar_feeds]
     else:
-        return {"code": -1, "message": "Missing feed_ids.", "discover_feeds": None, "failed": True}
+        return {"code": -1, "message": gettext("Missing feed_ids."), "discover_feeds": None, "failed": True}
 
     feeds = Feed.objects.filter(pk__in=similar_feed_ids)
     discover_feeds = defaultdict(dict)
@@ -266,7 +411,7 @@ def discover_stories(request, story_hash):
     offset = (page - 1) * limit
     story, _ = MStory.find_story(story_hash=story_hash)
     if not story:
-        return {"code": -1, "message": "Story not found.", "discover_stories": None, "failed": True}
+        return {"code": -1, "message": gettext("Story not found."), "discover_stories": None, "failed": True}
 
     user_search = MUserSearch.get_user(request.user.pk)
     user_search.touch_discover_date()
@@ -481,16 +626,27 @@ def trending_sites(request):
 
     one_year_ago = datetime.datetime.now() - datetime.timedelta(days=365)
 
+    # Add Site / Discover filters. Trending is inherently capped at one year of
+    # freshness, so a tighter "Updated" window narrows it further while a looser
+    # one has no extra effect.
+    staleness_cutoff = _staleness_cutoff(request)
+    effective_cutoff = one_year_ago
+    if staleness_cutoff and staleness_cutoff > one_year_ago:
+        effective_cutoff = staleness_cutoff
+    subscribed_ids = _subscribed_feed_ids(request)
+
     get_trending = TRENDING_CATEGORIES[category]
-    trending_feed_ids, score_map, has_more, use_fallback = get_trending(days, limit, offset, one_year_ago)
+    trending_feed_ids, score_map, has_more, use_fallback = get_trending(days, limit, offset, effective_cutoff)
 
     if not trending_feed_ids:
         return {"trending_feeds": {}, "has_more": False}
 
     # Build response with feed details and stories, excluding stale and branched feeds
     feeds = Feed.objects.filter(
-        pk__in=trending_feed_ids, last_story_date__gte=one_year_ago, branch_from_feed__isnull=True
+        pk__in=trending_feed_ids, last_story_date__gte=effective_cutoff, branch_from_feed__isnull=True
     )
+    if subscribed_ids:
+        feeds = feeds.exclude(pk__in=subscribed_ids)
     feeds_dict = {feed.pk: feed for feed in feeds}
 
     trending_feeds = {}
@@ -522,7 +678,7 @@ def youtube_search(request):
     max_results = min(int(request.GET.get("limit", 10)), 25)
 
     if not query:
-        return {"code": -1, "message": "Please provide a search query.", "results": []}
+        return {"code": -1, "message": gettext("Please provide a search query."), "results": []}
 
     # sp=EgIQAg%3D%3D filters to channel results only
     search_url = f"https://www.youtube.com/results?search_query={quote_plus(query)}&sp=EgIQAg%3D%3D"
@@ -537,19 +693,19 @@ def youtube_search(request):
         html = response.text
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRYouTube search error: %s" % str(e))
-        return {"code": -1, "message": "YouTube search request failed.", "results": []}
+        return {"code": -1, "message": gettext("YouTube search request failed."), "results": []}
 
     # Extract ytInitialData JSON from the page
     match = re.search(r"var ytInitialData = ({.*?});", html)
     if not match:
         logging.user(request, "~FRYouTube search: could not parse results page")
-        return {"code": -1, "message": "Could not parse YouTube results.", "results": []}
+        return {"code": -1, "message": gettext("Could not parse YouTube results."), "results": []}
 
     try:
         data = stdlib_json.loads(match.group(1))
     except (stdlib_json.JSONDecodeError, ValueError):
         logging.user(request, "~FRYouTube search: invalid JSON in results page")
-        return {"code": -1, "message": "Could not parse YouTube results.", "results": []}
+        return {"code": -1, "message": gettext("Could not parse YouTube results."), "results": []}
 
     # Navigate to the search result items
     contents = (
@@ -623,7 +779,7 @@ def reddit_search(request):
     limit = min(int(request.GET.get("limit", 15)), 25)
 
     if not query:
-        return {"code": -1, "message": "Please provide a search query.", "results": []}
+        return {"code": -1, "message": gettext("Please provide a search query."), "results": []}
 
     # Reddit's public JSON API for subreddit search
     api_url = "https://www.reddit.com/subreddits/search.json"
@@ -642,7 +798,7 @@ def reddit_search(request):
         data = response.json()
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRReddit search error: %s" % str(e))
-        return {"code": -1, "message": "Reddit API request failed.", "results": []}
+        return {"code": -1, "message": gettext("Reddit API request failed."), "results": []}
 
     results = []
     for child in data.get("data", {}).get("children", []):
@@ -701,7 +857,7 @@ def reddit_popular(request):
         data = response.json()
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRReddit popular error: %s" % str(e))
-        return {"code": -1, "message": "Reddit API request failed.", "results": []}
+        return {"code": -1, "message": gettext("Reddit API request failed."), "results": []}
 
     results = []
     for child in data.get("data", {}).get("children", []):
@@ -744,7 +900,7 @@ def newsletter_convert(request):
     url = request.GET.get("url", "").strip()
 
     if not url:
-        return {"code": -1, "message": "Please provide a newsletter URL.", "feed_url": None}
+        return {"code": -1, "message": gettext("Please provide a newsletter URL."), "feed_url": None}
 
     # Normalize URL
     if not url.startswith(("http://", "https://")):
@@ -834,7 +990,7 @@ def newsletter_convert(request):
             platform = "generic"
 
     if not feed_url:
-        return {"code": -1, "message": "Could not determine RSS feed URL.", "feed_url": None}
+        return {"code": -1, "message": gettext("Could not determine RSS feed URL."), "feed_url": None}
 
     logging.user(request, "~FBNewsletter convert: %s -> %s (%s)" % (url, feed_url, platform))
     return {
@@ -856,7 +1012,7 @@ def podcast_search(request):
     limit = min(int(request.GET.get("limit", 20)), 50)
 
     if not query:
-        return {"code": -1, "message": "Query is required", "results": []}
+        return {"code": -1, "message": gettext("Query is required"), "results": []}
 
     # iTunes Search API (free, no auth required)
     api_url = "https://itunes.apple.com/search"
@@ -897,7 +1053,19 @@ def podcast_search(request):
 
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRPodcast search error: %s" % str(e))
-        return {"code": -1, "message": "Failed to search podcasts", "results": []}
+        return {"code": -1, "message": gettext("Failed to search podcasts"), "results": []}
+
+
+@json.json_view
+def google_news_categories(request):
+    """Return Google News categories, subcategories, and topics for the discovery UI."""
+    from apps.discover.constants import GOOGLE_NEWS_CATEGORIES, GOOGLE_NEWS_TOPICS
+
+    return {
+        "code": 1,
+        "categories": GOOGLE_NEWS_CATEGORIES,
+        "topics": GOOGLE_NEWS_TOPICS,
+    }
 
 
 @json.json_view
@@ -935,7 +1103,7 @@ def google_news_feed(request):
         feed_url = f"https://news.google.com/rss/search?q={encoded_query}&hl={language}&gl={region}&ceid={region}:{language}"
         title = f"Google News - {query}"
     else:
-        return {"code": -1, "message": "Search query or topic is required", "feed_url": None}
+        return {"code": -1, "message": gettext("Search query or topic is required"), "feed_url": None}
 
     logging.user(request, "~FBGoogle News feed built: %s" % feed_url)
     return {
@@ -1033,8 +1201,15 @@ def popular_channels(request):
     if channel_type in ("podcasts", "all"):
         urls.extend(POPULAR_PODCAST_URLS)
 
-    # Fetch feeds that exist in database
-    feeds = Feed.objects.filter(feed_address__in=urls)[:limit]
+    # Fetch feeds that exist in database, honoring the Add Site / Discover filters
+    feeds_qs = Feed.objects.filter(feed_address__in=urls)
+    staleness_cutoff = _staleness_cutoff(request)
+    if staleness_cutoff:
+        feeds_qs = feeds_qs.filter(last_story_date__gte=staleness_cutoff)
+    subscribed_ids = _subscribed_feed_ids(request)
+    if subscribed_ids:
+        feeds_qs = feeds_qs.exclude(pk__in=subscribed_ids)
+    feeds = feeds_qs[:limit]
 
     # Build response with feed details and stories
     channels = {}
@@ -1065,13 +1240,26 @@ def popular_feeds(request):
     include_stories = request.GET.get("include_stories", "false").lower() == "true"
 
     if not feed_type:
-        return {"code": -1, "message": "Feed type is required", "feeds": []}
+        return {"code": -1, "message": gettext("Feed type is required"), "feeds": []}
+
+    # Add Site / Discover filters: staleness ("Updated" control) and exclude_subscribed
+    # ("Show" control). Applied to every PopularFeed queryset below so result rows and
+    # category/platform counts stay consistent.
+    staleness_cutoff = _staleness_cutoff(request)
+    subscribed_ids = _subscribed_feed_ids(request)
+
+    def _apply_discover_filters(pf_qs):
+        if staleness_cutoff:
+            pf_qs = pf_qs.filter(feed__last_story_date__gte=staleness_cutoff)
+        if subscribed_ids:
+            pf_qs = pf_qs.exclude(feed_id__in=subscribed_ids)
+        return pf_qs
 
     # Query PopularFeed records — type=all returns a mix of all feed types
     base_filter = dict(is_active=True)
     if feed_type != "all":
         base_filter["feed_type"] = feed_type
-    qs = PopularFeed.objects.filter(**base_filter)
+    qs = _apply_discover_filters(PopularFeed.objects.filter(**base_filter))
 
     if category and category != "all":
         # Try exact match first, then fall back to normalized match
@@ -1142,7 +1330,9 @@ def popular_feeds(request):
                 if semantic_feed_ids:
                     # Find PopularFeed entries linked to semantically matching feeds,
                     # respecting the same category/subcategory filters as the text search
-                    linked_qs = PopularFeed.objects.filter(is_active=True, feed_id__in=semantic_feed_ids)
+                    linked_qs = _apply_discover_filters(
+                        PopularFeed.objects.filter(is_active=True, feed_id__in=semantic_feed_ids)
+                    )
                     if feed_type != "all":
                         linked_qs = linked_qs.filter(feed_type=feed_type)
                     if category and category != "all":
@@ -1165,18 +1355,21 @@ def popular_feeds(request):
                         )
                         unlinked_ids = [fid for fid in semantic_feed_ids if fid not in linked_feed_ids]
                         if unlinked_ids:
-                            extra_semantic_feeds = list(
-                                Feed.objects.filter(
-                                    pk__in=unlinked_ids,
-                                    feed_address__icontains=url_patterns[feed_type],
-                                )
+                            extra_feeds_qs = Feed.objects.filter(
+                                pk__in=unlinked_ids,
+                                feed_address__icontains=url_patterns[feed_type],
                             )
+                            if staleness_cutoff:
+                                extra_feeds_qs = extra_feeds_qs.filter(last_story_date__gte=staleness_cutoff)
+                            if subscribed_ids:
+                                extra_feeds_qs = extra_feeds_qs.exclude(pk__in=subscribed_ids)
+                            extra_semantic_feeds = list(extra_feeds_qs)
             except Exception as e:
                 logging.debug(f" ***> ~FRSemantic search failed for popular_feeds: {e}")
 
     # Build grouped category structure with feed counts:
     # [{name, feed_count, subcategories: [{name, feed_count}, ...]}, ...]
-    cat_qs = PopularFeed.objects.filter(**base_filter)
+    cat_qs = _apply_discover_filters(PopularFeed.objects.filter(**base_filter))
     if platform and platform != "all":
         cat_qs = cat_qs.filter(platform=platform)
 
@@ -1222,7 +1415,7 @@ def popular_feeds(request):
     categories = list(cat_qs.values_list("category", flat=True).distinct().order_by("category"))
 
     # Platform counts (unfiltered by platform so pills always show totals)
-    platform_base_qs = PopularFeed.objects.filter(**base_filter).order_by()
+    platform_base_qs = _apply_discover_filters(PopularFeed.objects.filter(**base_filter)).order_by()
     platform_counts = dict(
         platform_base_qs.values("platform").annotate(count=Count("id")).values_list("platform", "count")
     )
@@ -1390,7 +1583,7 @@ def link_popular_feed(request):
     feed_url = request.GET.get("feed_url") or request.POST.get("feed_url")
 
     if not popular_feed_id and not feed_url:
-        return {"code": -1, "message": "Missing popular feed id or feed url"}
+        return {"code": -1, "message": gettext("Missing popular feed id or feed url")}
 
     # Try PopularFeed lookup first
     pf = None
@@ -1432,4 +1625,4 @@ def link_popular_feed(request):
         logging.user(request, "~FCCreated feed from URL ~SB%s~SN → feed ~SB%s" % (feed_url, feed.pk))
         return {"code": 1, "feed_id": feed.pk}
 
-    return {"code": -1, "message": "Popular feed not found"}
+    return {"code": -1, "message": gettext("Popular feed not found")}

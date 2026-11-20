@@ -1,0 +1,101 @@
+{
+  "checked_at": "2026-10-16T22:41:30.520Z",
+  "method": "Native AX readback after full main-version reload and explicit locale selection",
+  "readbacks": [
+    {
+      "locale": "German",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Dutch",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Italian",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Spanish (Spain)",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Portuguese (Brazil)",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Polish",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Turkish",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Russian",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Ukrainian",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Hebrew",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Hindi",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Indonesian",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Vietnamese",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Thai",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Japanese",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Korean",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Arabic",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Chinese (Simplified)",
+      "Header": 1,
+      "Search Results": 1
+    },
+    {
+      "locale": "Chinese (Traditional)",
+      "Header": 1,
+      "Search Results": 1
+    }
+  ]
+}

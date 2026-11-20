@@ -15,15 +15,20 @@ class AskAIThemeObserver: ObservableObject {
     @Published var themeVersion: Int = 0
 
     private var observers: [NSObjectProtocol] = []
+    private var effectiveTheme = ThemeManager.shared?.effectiveTheme ?? ThemeStyleLight
 
     init() {
-        // Observe UserDefaults changes for theme-related keys
+        // AskAIView.swift preserves editor identity when unrelated app preferences change.
         let observer = NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.themeVersion += 1
+            guard let self else { return }
+            let effectiveTheme = ThemeManager.shared?.effectiveTheme ?? ThemeStyleLight
+            guard effectiveTheme != self.effectiveTheme else { return }
+            self.effectiveTheme = effectiveTheme
+            self.themeVersion += 1
         }
         observers.append(observer)
     }
@@ -134,17 +139,19 @@ struct AskAIView: View {
     // MARK: - Question Selector View
 
     private var questionSelectorView: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Summarize Section
-                summarizeSection
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Summarize Section
+                    summarizeSection
 
-                // Understand Section
-                understandSection
-
-                // Custom Question Section
-                customQuestionSection
+                    // Understand Section
+                    understandSection
+                }
             }
+
+            // AskAIView.swift keeps the entire composer visible when a tablet keyboard shrinks the popover.
+            customQuestionSection
         }
         .padding(.top, 12)
         .background(NewsBlurColors.background)
@@ -159,7 +166,7 @@ struct AskAIView: View {
                     .foregroundColor(NewsBlurColors.textSecondary)
                     .frame(width: 18, height: 18)
 
-                Text("Summarize")
+                Text(NBLocalization.text("Summarize"))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(NewsBlurColors.textPrimary)
 
@@ -181,8 +188,8 @@ struct AskAIView: View {
                         )
                 }
                 .buttonStyle(.plain)
-                .help("Dismiss")
-                .accessibilityLabel("Dismiss")
+                .help(NBLocalization.text("Dismiss"))
+                .accessibilityLabel(NBLocalization.text("Dismiss"))
 #endif
             }
             .padding(.horizontal, 12)
@@ -268,7 +275,7 @@ struct AskAIView: View {
                     .foregroundColor(NewsBlurColors.textSecondary)
                     .frame(width: 18, height: 18)
 
-                Text("Understand")
+                Text(NBLocalization.text("Understand"))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(NewsBlurColors.textPrimary)
 
@@ -331,7 +338,7 @@ struct AskAIView: View {
                 .disabled(viewModel.isTranscribing)
 
                 // Text input
-                TextField("Ask a question...", text: $viewModel.customQuestion)
+                TextField(NBLocalization.text("Ask a question..."), text: $viewModel.customQuestion)
                     .font(.system(size: 13))
                     .foregroundColor(NewsBlurColors.textPrimary)
                     .padding(.horizontal, 12)
@@ -361,7 +368,7 @@ struct AskAIView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: NewsBlurColors.accent))
                         .scaleEffect(0.8)
-                    Text(viewModel.isRecording ? "Recording..." : "Transcribing...")
+                    Text(viewModel.isRecording ? NBLocalization.text("Recording...") : NBLocalization.text("Transcribing..."))
                         .font(.system(size: 12))
                         .foregroundColor(NewsBlurColors.textSecondary)
                 }
@@ -410,7 +417,7 @@ struct AskAIView: View {
                     viewModel.sendQuestion(.custom)
                 }
             }) {
-                Text("Ask")
+                Text(NBLocalization.text("Ask"))
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
@@ -614,7 +621,7 @@ struct AskAIView: View {
                     HStack {
                         Image(systemName: "star.fill")
                             .font(.system(size: 12))
-                        Text("Upgrade to Premium Archive")
+                        Text(NBLocalization.text("Upgrade to Premium Archive"))
                             .font(.system(size: 13, weight: .medium))
                     }
                     .foregroundColor(.white)
@@ -653,7 +660,7 @@ struct AskAIView: View {
                     HStack {
                         Image(systemName: "star.fill")
                             .font(.system(size: 12))
-                        Text("Upgrade to Premium Archive")
+                        Text(NBLocalization.text("Upgrade to Premium Archive"))
                             .font(.system(size: 13, weight: .medium))
                     }
                     .foregroundColor(.white)
@@ -703,7 +710,7 @@ struct AskAIView: View {
                 }
 
                 // Text input
-                TextField("Follow up...", text: $viewModel.customQuestion)
+                TextField(NBLocalization.text("Follow up..."), text: $viewModel.customQuestion)
                     .font(.system(size: 13))
                     .foregroundColor(NewsBlurColors.textPrimary)
                     .padding(.horizontal, 12)
@@ -756,7 +763,7 @@ struct AskAIView: View {
                     Button(action: {
                         viewModel.reaskWithModel(viewModel.selectedModel)
                     }) {
-                        Text("Re-ask")
+                        Text(NBLocalization.text("Re-ask"))
                             .font(.system(size: 13))
                             .foregroundColor(NewsBlurColors.textPrimary)
                             .padding(.horizontal, 12)
@@ -772,7 +779,7 @@ struct AskAIView: View {
                     Button(action: {
                         viewModel.sendFollowUp()
                     }) {
-                        Text("Send")
+                        Text(NBLocalization.text("Send"))
                             .font(.system(size: 13, weight: .medium))
                             .foregroundColor(.white)
                             .padding(.horizontal, 12)

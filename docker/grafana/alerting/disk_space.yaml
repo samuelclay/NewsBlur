@@ -56,7 +56,7 @@ groups:
                     type: last
                   type: query
         noDataState: NoData
-        execErrState: Alerting
+        execErrState: KeepLast
         for: 5m
         annotations:
           summary: "Disk space critically high on {{ $labels.instance }}"

@@ -1,5 +1,6 @@
 import html as html_mod
 import re
+import time
 import zlib
 
 from django.conf import settings
@@ -8,6 +9,58 @@ from django.utils.encoding import smart_str
 from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
+from utils.story_functions import create_imageproxy_signed_url
+
+# summary.py: A briefing is generated once a day per user, so a single dropped
+# connection or 5xx from the LLM costs that user the whole day's briefing. Retry
+# transient failures a couple of times before giving up. Backoff is linear, so the
+# three attempts add at most 4 + 8 = 12 seconds inside the celery task.
+BRIEFING_RETRY_ATTEMPTS = 3
+BRIEFING_RETRY_BACKOFF_SECONDS = 4
+
+
+def is_transient_llm_error(error):
+    """
+    Is this LLM error worth retrying?
+
+    Connection drops and timeouts carry no status code and are always transient.
+    Status errors are only retried for 5xx (including Anthropic's 529 overloaded),
+    since a 4xx means a bad key, a bad request, or a rate limit that a retry seconds
+    later won't fix. apps/briefing/summary.py
+    """
+    status_code = getattr(error, "status_code", None)
+    if status_code is None:
+        # summary.py: google-genai reports the HTTP status as `code` instead
+        status_code = getattr(error, "code", None)
+    if not isinstance(status_code, int):
+        return True
+
+    return status_code >= 500
+
+
+def _generate_with_retries(provider, messages, model_id, max_tokens, thinking_config, user_id):
+    """Generate the summary, retrying transient LLM failures so a momentary outage doesn't cost
+    the user their briefing for the day. The final failure is raised. apps/briefing/summary.py"""
+    from apps.ask_ai.providers import LLM_EXCEPTIONS
+
+    for attempt in range(BRIEFING_RETRY_ATTEMPTS):
+        try:
+            return provider.generate(
+                messages,
+                model_id,
+                max_tokens=max_tokens,
+                thinking_config=thinking_config,
+            )
+        except LLM_EXCEPTIONS as e:
+            last_attempt = attempt == BRIEFING_RETRY_ATTEMPTS - 1
+            if last_attempt or not is_transient_llm_error(e):
+                raise
+            backoff = BRIEFING_RETRY_BACKOFF_SECONDS * (attempt + 1)
+            logging.debug(
+                " ---> Briefing summary retrying for user %s in %ss (attempt %s of %s): %s"
+                % (user_id, backoff, attempt + 1, BRIEFING_RETRY_ATTEMPTS, str(e))
+            )
+            time.sleep(backoff)
 
 
 def normalize_section_key(key):
@@ -115,6 +168,31 @@ SECTION_PROMPTS = {
         "Check the CLUSTER annotation for pre-identified groupings. "
         "Write a brief editorial description of each story's significance. "
         "Do NOT list individual sources or feed names — source links will be added automatically."
+    ),
+    # summary.py: Global sections — stories from site-wide curated rivers, not the
+    # reader's own subscriptions. Selected in scoring.py:select_global_section_stories.
+    "widely_read": (
+        '"Widely Read on NewsBlur" — CATEGORY: widely_read. '
+        "Stories the wider NewsBlur community is spending real reading time with right now. "
+        "These come from across all of NewsBlur, not the reader's subscriptions. "
+        "Do not confuse with widely_covered — only include stories whose CATEGORY is widely_read."
+    ),
+    "long_reads": (
+        '"Long Reads on NewsBlur" — CATEGORY: long_reads. '
+        "In-depth articles that NewsBlur readers across the site gave sustained attention to. "
+        "These come from across all of NewsBlur, not the reader's subscriptions. "
+        "Do not confuse with long_read (the reader's own long articles) — only include stories "
+        "whose CATEGORY is long_reads."
+    ),
+    "good_reads": (
+        '"Good Reads on NewsBlur" — CATEGORY: good_reads. '
+        "Stories NewsBlur readers finished and then saved, shared, or trained up, often from "
+        "smaller sites. These come from across all of NewsBlur, not the reader's subscriptions."
+    ),
+    "global_shared": (
+        '"Global Shared Stories" — CATEGORY: global_shared. '
+        "Stories shared by NewsBlur users across the whole site, curated hourly. "
+        "These come from across all of NewsBlur, not the reader's subscriptions."
     ),
 }
 
@@ -329,26 +407,33 @@ def generate_briefing_summary(
 
     try:
         from apps.ask_ai.providers import (
-            BRIEFING_MODELS,
             DEFAULT_BRIEFING_MODEL,
             LLM_EXCEPTIONS,
+            get_briefing_model_config,
             get_briefing_provider,
+            is_refused_llm_error,
         )
 
-        model_name = model if model and model in BRIEFING_MODELS else DEFAULT_BRIEFING_MODEL
+        model_name, model_config = get_briefing_model_config(model)
         provider, model_id = get_briefing_provider(model_name)
+        thinking_config = model_config.get("thinking_config")
 
         # summary.py: Fall back to default if the chosen provider's API key isn't configured
         if not provider.is_configured():
             if model_name != DEFAULT_BRIEFING_MODEL:
-                provider, model_id = get_briefing_provider(DEFAULT_BRIEFING_MODEL)
-                model_name = DEFAULT_BRIEFING_MODEL
+                model_name, model_config = get_briefing_model_config(DEFAULT_BRIEFING_MODEL)
+                provider, model_id = get_briefing_provider(model_name)
+                thinking_config = model_config.get("thinking_config")
             if not provider.is_configured():
                 logging.error(" ---> Briefing summary failed for user %s: no API key configured" % user_id)
                 return None
 
         system_prompt = _build_system_prompt(
-            summary_length, summary_style, sections, custom_section_prompts, section_order
+            summary_length,
+            summary_style,
+            sections,
+            custom_section_prompts,
+            section_order,
         )
         # summary.py: Scale max_tokens based on story/section count to avoid truncation
         num_sections = sum(1 for v in (sections or {}).values() if v)
@@ -359,7 +444,33 @@ def generate_briefing_summary(
             {"role": "user", "content": user_prompt},
         ]
 
-        summary_html = provider.generate(messages, model_id, max_tokens=max_tokens)
+        # summary.py: The final failure falls through to the LLM_EXCEPTIONS handler below.
+        try:
+            summary_html = _generate_with_retries(
+                provider, messages, model_id, max_tokens, thinking_config, user_id
+            )
+        except LLM_EXCEPTIONS as e:
+            # summary.py: SpaceXSI (formerly xAI) refuses outright once its account runs out of
+            # credits or hits its spending limit. Users who picked Grok get their briefing from
+            # the default model instead of none at all.
+            if (
+                model_config.get("vendor") != "xai"
+                or model_name == DEFAULT_BRIEFING_MODEL
+                or not is_refused_llm_error(e)
+            ):
+                raise
+            logging.info(
+                " ---> Briefing summary for user %s refused by SpaceXSI, using %s instead: %s"
+                % (user_id, DEFAULT_BRIEFING_MODEL, str(e))
+            )
+            model_name, model_config = get_briefing_model_config(DEFAULT_BRIEFING_MODEL)
+            provider, model_id = get_briefing_provider(model_name)
+            thinking_config = model_config.get("thinking_config")
+            if not provider.is_configured():
+                raise
+            summary_html = _generate_with_retries(
+                provider, messages, model_id, max_tokens, thinking_config, user_id
+            )
 
         summary_html = summary_html.strip()
         if summary_html.startswith("```"):
@@ -368,7 +479,6 @@ def generate_briefing_summary(
             summary_html = summary_html.strip()
 
         input_tokens, output_tokens = provider.get_last_usage()
-        model_config = BRIEFING_MODELS.get(model_name, {})
         vendor = model_config.get("vendor", "unknown")
         LLMCostTracker.record_usage(
             provider=vendor,
@@ -472,12 +582,47 @@ BRIEFING_SECTION_ICONS = {
     "classifier_match": "train.svg",
     "follow_up": "boomerang.svg",
     "widely_covered": "growth-rocket-gray.svg",
+    # summary.py: Global sections use the same icons as their sidebar rivers
+    # (see $.favicon in media/js/vendor/jquery.newsblur.js)
+    "widely_read": "blaze.svg",
+    "long_reads": "moon.svg",
+    "good_reads": "star.svg",
+    "global_shared": "global-shares.svg",
     "custom_1": "prompt.svg",
     "custom_2": "prompt.svg",
     "custom_3": "prompt.svg",
     "custom_4": "prompt.svg",
     "custom_5": "prompt.svg",
 }
+
+# summary.py: Story thumbnails float to the right of each story's summary text, about
+# three lines of text tall. The imageproxy serves a 2x square crop so they stay sharp
+# on retina screens without sending full-size images to every inbox.
+BRIEFING_THUMBNAIL_SIZE = 80
+
+
+def _briefing_thumbnail_url(image_url):
+    """
+    Sign a square imageproxy crop for a briefing story thumbnail.
+
+    Returns None for images that can't be proxied (data: URIs, relative paths),
+    since email clients won't load them. apps/briefing/summary.py
+    """
+    if not image_url or not image_url.startswith(("http://", "https://")):
+        return None
+
+    # summary.py: Local dev serves the imageproxy from a relative path, but email
+    # clients need an absolute URL.
+    images_url = settings.IMAGES_URL
+    if images_url.startswith("/"):
+        images_url = settings.NEWSBLUR_URL + images_url
+
+    return create_imageproxy_signed_url(
+        images_url,
+        settings.IMAGES_SECRET_KEY,
+        image_url,
+        BRIEFING_THUMBNAIL_SIZE * 2,
+    )
 
 
 def embed_briefing_icons(summary_html, scored_stories):
@@ -552,6 +697,15 @@ def embed_briefing_icons(summary_html, scored_stories):
         for story_hash, story in stories_by_hash.items()
         if story.story_permalink
     }
+
+    # Build story_hash -> thumbnail URL mapping from each story's lead image
+    thumbnail_map = {}
+    for story_hash, story in stories_by_hash.items():
+        if not story.image_urls:
+            continue
+        thumbnail_url = _briefing_thumbnail_url(story.image_urls[0])
+        if thumbnail_url:
+            thumbnail_map[story_hash] = thumbnail_url
 
     # --- Phase 2: Style wrapper div ---
 
@@ -670,6 +824,44 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 5b: Wrap favicon + text in table layout for email alignment ---
 
+    # summary.py: The thumbnail floats right inside the text cell. A table cell contains
+    # its floats, so a short one-line story still reserves the thumbnail's full height.
+    # align="right" is the float that Outlook understands, float:right is for everyone else.
+    thumbnail_img_style = (
+        "float:right;display:block;width:%(size)spx;height:%(size)spx;"
+        "max-width:%(size)spx;margin:4px 0 4px 14px;border:0;border-radius:8px;"
+        "object-fit:cover;" % {"size": BRIEFING_THUMBNAIL_SIZE}
+    )
+
+    def _story_thumbnail_html(story_hash):
+        thumbnail_url = thumbnail_map.get(story_hash)
+        if not thumbnail_url:
+            return ""
+        href = "%s/briefing?story=%s" % (settings.NEWSBLUR_URL, story_hash)
+        return (
+            '<a href="%s" class="NB-briefing-story-thumbnail" data-thumbnail-story-hash="%s" '
+            'style="text-decoration:none;border:0;">'
+            '<img src="%s" class="NB-briefing-story-thumbnail-image" align="right" '
+            'width="%s" height="%s" alt="" style="%s"></a>'
+        ) % (
+            href,
+            story_hash,
+            html_mod.escape(thumbnail_url, quote=True),
+            BRIEFING_THUMBNAIL_SIZE,
+            BRIEFING_THUMBNAIL_SIZE,
+            thumbnail_img_style,
+        )
+
+    def _row_thumbnail_html(row_tag, row_content):
+        # summary.py: Widely covered source lines stay compact, their topic paragraph
+        # above already shows the lead story's thumbnail.
+        if "NB-briefing-cluster-source" in row_tag:
+            return ""
+        story_hash_match = re.search(r'data-story-hash="([^"]+)"', row_content)
+        if not story_hash_match:
+            return ""
+        return _story_thumbnail_html(story_hash_match.group(1))
+
     def _tablify_li(match):
         li_tag = match.group(1)
         content = match.group(2)
@@ -682,12 +874,13 @@ def embed_briefing_icons(summary_html, scored_stories):
             return match.group(0)
         favicon_img = favicon_match.group(1)
         rest = favicon_match.group(2)
+        thumbnail = _row_thumbnail_html(li_tag, rest)
         return (
             '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
             "<tr>"
             '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
-            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s</td>'
-            "</tr></table></li>" % (li_tag, favicon_img, rest)
+            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s%s</td>'
+            "</tr></table></li>" % (li_tag, favicon_img, thumbnail, rest)
         )
 
     summary_html = re.sub(
@@ -702,25 +895,38 @@ def embed_briefing_icons(summary_html, scored_stories):
     def _tablify_p(match):
         p_tag = match.group(1)
         content = match.group(2)
+        # summary.py: Convert <p> to <div> because <table> cannot nest inside <p>.
+        # Browsers auto-close <p> before block elements, causing a blank <p> that
+        # offsets the favicon and breaks font inheritance.
+        div_tag = re.sub(r"^<p\b", "<div", p_tag)
         favicon_match = re.match(
             r"(\s*<img[^>]*NB-briefing-inline-favicon[^>]*>)\s*(.*)",
             content,
             re.DOTALL,
         )
         if not favicon_match:
-            return match.group(0)
+            # summary.py: Widely covered topic paragraphs have no favicon or story link
+            # (see inject_widely_covered_clusters), but still get the lead story's
+            # thumbnail. The single-cell table contains the float the same way.
+            topic_match = re.search(r'data-topic-story-hash="([^"]+)"', content)
+            thumbnail = _story_thumbnail_html(topic_match.group(1)) if topic_match else ""
+            if not thumbnail:
+                return match.group(0)
+            return (
+                '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
+                "<tr>"
+                '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s%s</td>'
+                "</tr></table></div>" % (div_tag, thumbnail, content)
+            )
         favicon_img = favicon_match.group(1)
         rest = favicon_match.group(2)
-        # summary.py: Convert <p> to <div> because <table> cannot nest inside <p>.
-        # Browsers auto-close <p> before block elements, causing a blank <p> that
-        # offsets the favicon and breaks font inheritance.
-        div_tag = re.sub(r"^<p\b", "<div", p_tag)
+        thumbnail = _row_thumbnail_html(p_tag, rest)
         return (
             '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
             "<tr>"
             '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
-            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s</td>'
-            "</tr></table></div>" % (div_tag, favicon_img, rest)
+            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s%s</td>'
+            "</tr></table></div>" % (div_tag, favicon_img, thumbnail, rest)
         )
 
     summary_html = re.sub(
@@ -916,6 +1122,16 @@ def _strip_duplicate_story_links(html, hashes_to_strip):
             return match.group("title")
         return match.group(0)
 
+    # summary.py: Drop the duplicate story's thumbnail too, so the stripped row doesn't
+    # keep a clickable image for a story that now lives in another section.
+    def _remove_thumbnail(match):
+        if match.group("hash") in hashes_to_strip:
+            return ""
+        return match.group(0)
+
+    thumbnail_pattern = r'<a\s[^>]*data-thumbnail-story-hash="(?P<hash>[^"]+)"[^>]*>.*?</a>'
+    html = re.sub(thumbnail_pattern, _remove_thumbnail, html, flags=re.DOTALL)
+
     pattern = (
         r"(?:<img\s[^>]*NB-briefing-inline-favicon[^>]*>\s*)?"
         r'<a\s[^>]*data-story-hash="(?P<hash>[^"]+)"[^>]*>(?P<title>.*?)</a>'
@@ -1045,7 +1261,9 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
         story_hash = match.group(1)
         link_title = match.group(2)
         full_link = match.group(0)
-        bold_title = "<strong>%s</strong>" % link_title
+        # summary.py: Keep the lead story's hash on the topic headline so
+        # embed_briefing_icons() can show its thumbnail beside the topic paragraph.
+        bold_title = '<strong data-topic-story-hash="%s">%s</strong>' % (story_hash, link_title)
         members = story_cluster_map.get(story_hash)
 
         if not members:
@@ -1069,8 +1287,11 @@ def inject_widely_covered_clusters(summary_html, scored_stories, user_id):
             if not m_story:
                 continue
             m_title = m_story.story_title or "Untitled"
+            # summary.py: NB-briefing-cluster-source keeps source lines compact by
+            # skipping their thumbnails in embed_briefing_icons().
             member_lines.append(
-                '<p><a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
+                '<p class="NB-briefing-cluster-source">'
+                '<a class="NB-briefing-story-link" data-story-hash="%s">%s</a></p>'
                 % (m_hash, html_mod.escape(m_title))
             )
             if m_hash not in scored_hashes:

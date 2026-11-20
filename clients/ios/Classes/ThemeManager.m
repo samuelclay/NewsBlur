@@ -44,6 +44,7 @@ NSString * const ThemeStyleDark = @"dark";
 @property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) BOOL justToggledViaGesture;
 @property (nonatomic) BOOL isAutoDark;
+@property (nonatomic, copy) NSString *lastAppliedTheme;
 
 @end
 
@@ -251,6 +252,11 @@ NSString * const ThemeStyleDark = @"dark";
     CGFloat blue = ((rgbValue & 0xFF)) / 255.0;
     
     return [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+}
+
+- (UIColor *)storyListBackgroundColor {
+    // ThemeManager.m keeps loading, uncovered row backs and settled story artwork on one surface.
+    return [self colorFromLightRGB:0xF4F4F4 sepiaRGB:0xF3E2CB mediumRGB:0x4F4F4F darkRGB:0x000000];
 }
 
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue darkRGB:(NSUInteger)darkRGBValue {
@@ -483,6 +489,11 @@ NSString * const ThemeStyleDark = @"dark";
 
     // Set window background color for status bar area (match toolbar colors)
     self.appDelegate.window.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+#if TARGET_OS_MACCATALYST
+    // ThemeManager.m leaves the shared desktop material visible behind the sidebar and frame.
+    self.appDelegate.window.backgroundColor = UIColor.clearColor;
+    self.appDelegate.window.opaque = NO;
+#endif
 
     // Override the system interface style so UIKit-managed views (split view column
     // backgrounds, navigation controller views, etc.) match the app's theme even when
@@ -508,6 +519,10 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateTheme {
+    NSString *nextTheme = self.effectiveTheme;
+    BOOL animateChange = self.lastAppliedTheme && ![self.lastAppliedTheme isEqualToString:nextTheme];
+    self.lastAppliedTheme = nextTheme;
+    UIView *themeSnapshot = animateChange ? [ReaderMotion beginThemeTransition:self.appDelegate.window] : nil;
     // Keep the dark & light themes in sync, so toggling uses the most recent themes for each
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSString *theme = self.theme;
@@ -534,6 +549,7 @@ NSString * const ThemeStyleDark = @"dark";
     [appDelegate.originalStoryViewController updateTheme];
     
     [self updatePreferencesTheme];
+    if (themeSnapshot) [ReaderMotion finishThemeTransition:themeSnapshot];
 }
 
 - (void)updatePreferencesTheme {

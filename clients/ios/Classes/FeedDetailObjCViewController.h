@@ -15,6 +15,7 @@
 
 @class MCSwipeTableViewCell;
 @class StoryTitlesHeaderBar;
+@class StoryFirstPageLoad;
 
 @interface FeedDetailObjCViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
@@ -48,6 +49,9 @@
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
+
+- (void)updateStoryTitleSwipePreference;
+- (void)updateDuoFullscreenSidebarGestures;
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic) NSIndexPath *swipingIndexPath;
@@ -63,6 +67,8 @@
 @property (nonatomic, readonly) NSTimeInterval markReadAfterInterval;
 @property (nonatomic, readonly) BOOL isMarkReadManually;
 @property (nonatomic, readonly) BOOL isLegacyTable;
+
+- (BOOL)canPullToNextUnreadList;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
@@ -88,10 +94,17 @@
 - (void)reloadWithSizing;
 - (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
+- (StoryFirstPageLoad *)prepareCachedFirstPage;
+- (void)beginExplicitFeedSelection;
+- (BOOL)isCurrentFirstPageLoad:(StoryFirstPageLoad *)load;
+- (BOOL)hasRetainedFirstPageStory;
+- (NSInteger)consumeRetainedFirstPageStoryInDirection:(NSInteger)direction;
+- (void)resetStoryImageSources;
 - (void)reloadStories;
 - (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode;
 - (void)fetchNextPage:(void(^)(void))callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback;
+- (void)finishedLoadingFeed:(NSDictionary *)results feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId;
 - (void)loadOfflineStories;
 - (void)fetchRiver;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback;
@@ -107,6 +120,9 @@
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scroll;
+- (void)scrollViewDidEndDragging:(UIScrollView *)scroll willDecelerate:(BOOL)decelerate;
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scroll;
 - (void)changeIntelligence:(NSInteger)newLevel;
 - (NSDictionary *)getStoryAtLocation:(NSInteger)storyLocation;
 - (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath;
@@ -135,12 +151,14 @@
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
 - (IBAction)instafetchFeed;
+- (void)finishRefresh;
 - (void)changeActiveStoryTitleCellLayout;
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 - (void)loadFaviconsFromActiveFeed;
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
 - (void)cancelMarkStoryReadTimer;
 - (BOOL)markStoryReadIfNeeded:(NSDictionary *)story isScrolling:(BOOL)isScrolling;
+- (void)prepareStorySelectionAtLocation:(NSInteger)location;
 - (void)finishMarkAsSaved:(NSDictionary *)params;
 - (void)failedMarkAsSaved:(NSDictionary *)params;
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;

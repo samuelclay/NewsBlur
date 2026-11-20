@@ -152,7 +152,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                                 className: 'segmented-control-item NB-sideoption-discover-control-item',
                                 'data-selected-feed': 'feed:' + this.model.get("story_feed_id")
                             }, [
-                                $.make('a', { href: '#' }, 'This site')
+                                $.make('a', { href: '#' }, gettext('This site'))
                             ]),
                             // Folder options
                             _.map(NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')).in_folders(), function (folder) {
@@ -169,13 +169,13 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                                 className: 'segmented-control-item NB-sideoption-discover-control-item',
                                 'data-selected-feed': 'all'
                             }, [
-                                $.make('a', { href: '#' }, 'All sites')
+                                $.make('a', { href: '#' }, gettext('All sites'))
                             ]),
                             $.make('li', {
                                 className: 'segmented-control-item NB-sideoption-discover-control-item',
                                 'data-selected-feed': 'global'
                             }, [
-                                $.make('a', { href: '#' }, 'Global')
+                                $.make('a', { href: '#' }, gettext('Global'))
                             ])
                         ])
                     ]),
@@ -184,7 +184,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                         !NEWSBLUR.Globals.is_premium ?
                             this.render_premium_only_message() :
                             !this.discover_stories.length ?
-                                $.make('div', { className: 'NB-discover-empty' }, 'No similar stories found') :
+                                $.make('div', { className: 'NB-discover-empty' }, gettext('No similar stories found')) :
                                 (function () {
                                     var $story_titles = $.make('div', {
                                         className: 'NB-story-titles NB-discover-story-titles'
@@ -205,23 +205,21 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                     (this.discover_stories.length && !this.is_loading && $.make('div', { className: 'NB-discover-load-more-container' }, [
                         this.has_more_results ?
                             $.make('div', { className: 'NB-discover-load-more NB-modal-submit-button NB-modal-submit-green' }, [
-                                $.make('div', { className: 'NB-discover-load-more-text' }, 'Show more related stories')
+                                $.make('div', { className: 'NB-discover-load-more-text' }, gettext('Show more related stories'))
                             ]) :
                             (this.page > 1 ? $.make('div', { className: 'NB-end-line' }, [
                                 $.make('div', { className: 'NB-fleuron' })
                             ]) : '')
                     ])),
+                    // discover_stories_view.js: Compact archive callout instead of a second
+                    // heavyweight green button under "Show more related stories".
                     (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive &&
-                        $.make('div', { className: 'NB-discover-empty' }, [
-                            this.render_discover_indexed_non_premium_message(),
-                            $.make('br'),
-                            'All related stories are available to Premium Archive subscribers.',
-                            $.make('div', {
-                                className: 'NB-discover-upgrade NB-modal-submit-button NB-modal-submit-green',
-                            }, [
-                                'Upgrade to Premium Archive'
-                            ])
-                        ])
+                        NEWSBLUR.utils.make_archive_callout(
+                            interpolate(gettext('%(message)s Upgrade to see related stories from your entire archive.'), {
+                                message: this.render_discover_indexed_non_premium_message()
+                            }, true),
+                            { highlight_feature: 'discover' }
+                        )
                     )
                 ])
             ])
@@ -269,9 +267,9 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
         if (is_this_site) {
             if (!feed_discover_indexed) {
-                return 'This site has not yet been indexed for related stories.';
+                return gettext('This site has not yet been indexed for related stories.');
             } else {
-                return 'Only recent stories shown from this site are available.';
+                return gettext('Only recent stories shown from this site are available.');
             }
         } else if (is_folder) {
             var folder_title = view_setting.split(':')[1];
@@ -283,34 +281,35 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                 return sum + (feed.get('discover_indexed') ? 1 : 0);
             }, 0);
             if (discover_indexed_count == 0) {
-                return 'No stories from ' + folder_title + ' have yet been indexed for related stories.';
+                // discover_stories_view.js escapes the folder title because the archive callout renders HTML.
+                return interpolate(gettext('No stories from %(folder)s have yet been indexed for related stories.'), {folder: _.escape(folder_title)}, true);
             } else if (discover_indexed_count < feed_count) {
-                return 'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.';
+                return interpolate(ngettext('Only recent stories shown from %(indexed)s of %(count)s site.', 'Only recent stories shown from %(indexed)s of %(count)s sites.', feed_count), {indexed: discover_indexed_count, count: feed_count}, true);
             } else {
-                return 'Only recent stories shown from ' + feed_count + ' sites.';
+                return interpolate(ngettext('Only recent stories shown from %(count)s site.', 'Only recent stories shown from %(count)s sites.', feed_count), {count: feed_count}, true);
             }
         } else if (is_all) {
             if (discover_indexed_count == 0) {
-                return 'No stories from your ' + feed_count + ' sites have yet been indexed for related stories.';
+                return interpolate(ngettext('No stories from your %(count)s site have yet been indexed for related stories.', 'No stories from your %(count)s sites have yet been indexed for related stories.', feed_count), {count: feed_count}, true);
             } else if (discover_indexed_count < feed_count) {
-                return 'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.';
+                return interpolate(ngettext('Only recent stories shown from %(indexed)s of %(count)s site.', 'Only recent stories shown from %(indexed)s of %(count)s sites.', feed_count), {indexed: discover_indexed_count, count: feed_count}, true);
             } else {
-                return 'Only recent stories shown from ' + feed_count + ' sites.';
+                return interpolate(ngettext('Only recent stories shown from %(count)s site.', 'Only recent stories shown from %(count)s sites.', feed_count), {count: feed_count}, true);
             }
         } else if (is_global) {
-            return 'Only ' + discover_indexed_count + ' of ' + feed_count + ' of your sites have been indexed for related stories.';
+            return interpolate(ngettext('Only %(indexed)s of your %(count)s site has been indexed for related stories.', 'Only %(indexed)s of %(count)s of your sites have been indexed for related stories.', feed_count), {indexed: discover_indexed_count, count: feed_count}, true);
         }
 
-        return 'Only recent stories shown from ' + feed_count + ' sites.';
+        return interpolate(ngettext('Only recent stories shown from %(count)s site.', 'Only recent stories shown from %(count)s sites.', feed_count), {count: feed_count}, true);
     },
 
     render_premium_only_message: function () {
         return $.make('div', { className: 'NB-discover-empty' }, [
-            'Related stories are only available for premium subscribers.',
+            gettext('Related stories are only available for premium subscribers.'),
             $.make('div', {
                 className: 'NB-discover-upgrade NB-modal-submit-button NB-modal-submit-green',
             }, [
-                'Upgrade to Premium'
+                gettext('Upgrade to Premium')
             ])
         ]);
     },
@@ -364,6 +363,8 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     position_discover_view: function () {
         var $discover = this.$('.NB-story-content-discover-wrapper');
+        // A phone's sheet holds it while it is open (mobile_layout_view.js Sideoption sheets).
+        if ($discover.closest('.NB-mobile-sideoption-sheet').length) return;
         if (NEWSBLUR.reader.flags.narrow_content) {
             // Move to below the sideoptions
             this.$('.NB-feed-story-sideoptions-container').append($discover);
@@ -380,6 +381,8 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     resize: function (options) {
         options = options || {};
+        // discover_stories_view.js may finish fetching after dismissal; resizing must not reopen the panel.
+        if (!this.is_open && !options.close) return;
         var $sideoption_container = this.$('.NB-feed-story-sideoptions-container');
         var $discover_wrapper = this.$('.NB-story-content-discover-wrapper');
         var $discover_content = this.$('.NB-sideoption-discover');
@@ -387,6 +390,15 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         var $story_comments = this.$('.NB-feed-story-comments');
         var $sideoption = this.$('.NB-feed-story-discover');
         var $tag_input = this.$('.NB-sideoption-discover-tag');
+
+        // discover_stories_view.js: on a phone the related stories slide up as a sheet instead
+        // of opening in the story (mobile_layout_view.js Sideoption sheets).
+        if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.sideoption_sheet(this, $discover_wrapper, {
+            close: options.close,
+            dismiss: _.bind(this.toggle_feed_story_discover_dialog, this, { close: true })
+        })) {
+            options.immediate = true;
+        }
 
         var new_sideoptions_height = $sideoption_container.height() - $discover_wrapper.height() + 200;
 
@@ -444,7 +456,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     show_premium_upgrade_modal: function (e) {
         e.preventDefault();
-        NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+        NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: 'discover' });
     },
 
     show_error: function () {
@@ -452,9 +464,9 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         this.$('.NB-discover-error').remove();
 
         var $error = $.make('div', { className: 'NB-discover-error NB-discover-empty' }, [
-            $.make('div', 'Failed to load stories'),
+            $.make('div', gettext('Failed to load stories')),
             $.make('div', { className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green' }, [
-                'Try again'
+                gettext('Try again')
             ])
         ]);
 

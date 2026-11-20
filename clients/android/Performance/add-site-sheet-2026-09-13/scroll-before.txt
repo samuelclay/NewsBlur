@@ -1,0 +1,2 @@
+FAIL: downward gesture did not scroll the results back up
+Header before=[119, 976, 311, 1037], after=[119, 976, 311, 1037]

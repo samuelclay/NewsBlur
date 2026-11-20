@@ -1,7 +1,7 @@
-{{ from_name }} shares "{{ story.story_title }}" from {{ feed.feed_title }}{% if comments %}:
+{% load i18n %}{% if comments %}{% blocktrans with story_title=story.story_title feed_title=feed.feed_title %}{{ from_name }} shares "{{ story_title }}" from {{ feed_title }}:{% endblocktrans %}
 
 {{ comments }}
-{% else %}.{% endif %}
+{% else %}{% blocktrans with story_title=story.story_title feed_title=feed.feed_title %}{{ from_name }} shares "{{ story_title }}" from {{ feed_title }}.{% endblocktrans %}{% endif %}
 
 ---------------------------------------------------------------------------
 
@@ -13,4 +13,4 @@
 
 ---------------------------------------------------------------------------
 
-Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world.
+{% trans "Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the world." %}

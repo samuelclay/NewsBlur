@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- ic_briefing_cutout.xml is ic_briefing.xml with the text lines cut out of the page instead of drawn in a second color, so it still reads as a briefing when tinted one color (SubscriptionActivity.kt tints its feature icons). -->
+    <path
+        android:fillColor="#95968E"
+        android:fillType="evenOdd"
+        android:pathData="M5,3h14a2,2 0 0 1 2,2v14a2,2 0 0 1 -2,2H5a2,2 0 0 1 -2,-2V5a2,2 0 0 1 2,-2zM7,7h10v1.8H7zM7,10.4h10v1.8H7zM7,13.8h10v1.8H7zM7,17.2h7.2v1.8H7z" />
+</vector>

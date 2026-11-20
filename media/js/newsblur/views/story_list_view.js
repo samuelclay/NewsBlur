@@ -5,7 +5,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     events: {
         "click .NB-feed-story-premium-only a": function (e) {
             e.preventDefault();
-            NEWSBLUR.reader.open_premium_upgrade_modal();
+            // story_list_view.js: The notice link's data-feature names the tier
+            // line to highlight (river, saved-tags, or search).
+            NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: $(e.currentTarget).data('feature') });
         }
     },
 
@@ -126,6 +128,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.end_loading();
     },
 
+    depart: function () {
+        // story_list_view.js: reader.js reset_feed fades the open stories out before it scrolls this pane
+        // to the top and empties it. Layout switches call clear() without fading.
+        NEWSBLUR.motion.depart(this.el, { snapshot_layout: true });
+    },
+
     clear: function () {
         _.invoke(this.stories, 'destroy');
         this.$el.empty();
@@ -157,7 +165,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
             $.make('div', { className: 'NB-world' }),
-            'Select a story to read'
+            gettext('Select a story to read')
         ]);
 
         this.$el.append($empty);
@@ -181,14 +189,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             hidden_stories = false;
         }
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
-            'No stories to read',
+            gettext('No stories to read'),
             $.make('div', { className: 'NB-world' }),
-            (hidden_stories && $.make('div', { className: 'NB-story-list-empty-subtitle' }, [
-                'There ',
-                Inflector.pluralize('is', hidden_stories),
-                ' ',
-                Inflector.pluralize('hidden story', hidden_stories, true)
-            ]))
+            (hidden_stories && $.make('div', { className: 'NB-story-list-empty-subtitle' },
+                interpolate(ngettext('There is %(count)s hidden story', 'There are %(count)s hidden stories', hidden_stories),
+                    { count: Inflector.commas(hidden_stories) }, true)
+            ))
         ]);
 
         this.$el.append($empty);
@@ -209,7 +215,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
             options.immediate = true;
         }
-        if (!NEWSBLUR.assets.preference('animations')) options.immediate = true;
+        if (!NEWSBLUR.motion.duration(1)) options.immediate = true;
         if (options.scroll_to_comments) {
             $story = $('.NB-feed-story-comments', $story);
         }
@@ -289,7 +295,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             // console.log(["endbar height full/split", endbar_height, empty_space, pane_height, last_story_offset, last_story_height]);
         }
 
-        this.$('.NB-end-line').remove();
+        NEWSBLUR.motion.remove(this.$('.NB-end-line'));
         if (NEWSBLUR.assets.preference('feed_view_single_story')) {
             var last_story = NEWSBLUR.assets.stories.last();
             if (last_story && !last_story.get('selected')) return;
@@ -347,6 +353,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
         $feed_scroll.append($endline);
+        NEWSBLUR.motion.enter($endline[0], 0, 10);
     },
 
     check_premium_river: function () {
@@ -370,36 +377,37 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
     end_loading: function () {
         var $endbar = NEWSBLUR.reader.$s.$feed_scroll.find('.NB-end-line');
-        $endbar.remove();
+        NEWSBLUR.motion.remove($endbar);
 
         if (this.collection.no_more_stories) {
             this.show_no_more_stories();
         }
     },
 
+    // story_list_view.js: Each premium notice is one complete translated sentence whose
+    // %(link_start)s/%(link_end)s markers wrap the upgrade link.
+    make_premium_only_text: function (message, feature) {
+        var link_start = '<a href="#" class="NB-splash-link"' +
+            (feature ? ' data-feature="' + feature + '"' : '') + '>';
+        var $text = $.make('div', { className: 'NB-feed-story-premium-only-text' });
+        $text.html(interpolate(_.escape(message), { link_start: link_start, link_end: '</a>' }, true));
+        return $text;
+    },
+
     append_river_premium_only_notification: function () {
-        var message = [
-            'The full River of News is a ',
-            $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
-            '.'
-        ];
+        var message = gettext('The full River of News is a %(link_start)spremium feature%(link_end)s.');
+        var feature = 'river';
         if (NEWSBLUR.reader.flags['starred_view']) {
-            message = [
-                'Reading saved stories by tag is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
-                '.'
-            ];
+            message = gettext('Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s.');
+            feature = 'saved-tags';
         }
         if (NEWSBLUR.reader.active_feed == "read") {
-            message = [
-                'This read stories list is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
-                '.'
-            ];
+            message = gettext('This read stories list is a %(link_start)spremium feature%(link_end)s.');
+            feature = null;
         }
 
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
-            $.make('div', { className: 'NB-feed-story-premium-only-text' }, message)
+            this.make_premium_only_text(message, feature)
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         if (_.contains(['full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
@@ -413,11 +421,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
     append_search_premium_only_notification: function () {
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
-            $.make('div', { className: 'NB-feed-story-premium-only-text' }, [
-                'Search is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
-                '.'
-            ])
+            this.make_premium_only_text(gettext('Search is a %(link_start)spremium feature%(link_end)s.'), 'search')
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         this.$(".NB-end-line").append($notice);

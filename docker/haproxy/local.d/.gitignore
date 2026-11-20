@@ -1,0 +1,5 @@
+# Machine-only haproxy config for the docker-compose stack, never committed.
+# docker-compose.yml loads every *.cfg here after docker/haproxy/haproxy.docker-compose.cfg,
+# which routes each host in hosts.map ("<host> <backend>") to the backend it names.
+*
+!.gitignore

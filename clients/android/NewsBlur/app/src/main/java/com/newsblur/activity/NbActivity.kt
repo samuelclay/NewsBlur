@@ -1,13 +1,19 @@
 package com.newsblur.activity
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.listen.ListenManager
+import com.newsblur.listen.ListenMiniPlayerHost
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSync
 import com.newsblur.service.NbSyncManager
@@ -17,7 +23,10 @@ import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.StorySplitView
+import com.newsblur.util.ThemeAppearance
 import com.newsblur.util.UIUtils
+import com.newsblur.view.ThemeSwipeGesture
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +36,7 @@ import javax.inject.Inject
  * login state and tracking of sync/update broadcasts.
  */
 @AndroidEntryPoint
-open class NbActivity : AppCompatActivity() {
+open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
@@ -37,14 +46,51 @@ open class NbActivity : AppCompatActivity() {
     @Inject
     lateinit var syncServiceState: SyncServiceState
 
+    @Inject
+    lateinit var listenManager: ListenManager
+
+    private var listenMiniPlayerHost: ListenMiniPlayerHost? = null
+
     private var uniqueLoginKey: String? = null
-    private var lastTheme: ThemeValue? = null
+    // NbActivity.kt compares the stored theme and the one on screen, since in Auto a Light or Dark appearance
+    // choice changes the colors without changing the stored theme.
+    private var lastTheme: Pair<ThemeValue, ThemeValue>? = null
+    private var themePreferences: SharedPreferences? = null
+    private var themeTransitionToken: String? = null
+    private val themeSwipe by lazy { ThemeSwipeGesture(this, prefsRepo) }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        if (showsListenMiniPlayer() && !isFinishing) {
+            listenMiniPlayerHost =
+                ListenMiniPlayerHost(
+                    activity = this,
+                    listenManager = listenManager,
+                    prefsRepo = prefsRepo,
+                    anchor = ::listenMiniPlayerAnchor,
+                    onInsetChanged = ::onListenMiniPlayerInsetChanged,
+                ).also { it.attach() }
+        }
+        if (com.newsblur.view.ThemeTransition.reveal(this, themeTransitionToken) { isThemeTransitionReady() }) {
+            themeTransitionToken = null
+            return
+        }
+        // NbActivity.kt gives settings, account, discovery and other screens the same first-presentation motion.
+        if (this is Main || this is ItemsList || this is Reading) return
+        val content = findViewById<android.view.ViewGroup>(android.R.id.content)
+        content.doOnPreDraw {
+            com.newsblur.view.ReaderMotion.cascade((0 until content.childCount).map { content.getChildAt(it) })
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // A foldable that started folded gets its split rules once any window opens up wide.
+        StorySplitView.installIfWideEnough(this)
         applyTheme(readStartupTheme(), shouldUseTranslucentTheme())
         super.onCreate(savedInstanceState)
+        themeTransitionToken = savedInstanceState?.getString("themeTransitionToken")
         Log.d(this, "onCreate")
-        lastTheme = prefsRepo.getSelectedTheme()
+        lastTheme = shownTheme()
 
         // in rare cases of process interruption or DB corruption, an activity can launch without valid
         // login creds.  redirect the user back to the loging workflow.
@@ -64,6 +110,10 @@ open class NbActivity : AppCompatActivity() {
 
         finishIfNotLoggedIn()
 
+        startSyncObservers()
+    }
+
+    internal fun startSyncObservers() {
         lifecycleScope.launch {
             // Translucent reading/list transitions can leave activities underneath in STARTED,
             // which causes hidden screens to react to sync updates and fight over the reading session.
@@ -73,27 +123,96 @@ open class NbActivity : AppCompatActivity() {
                 }
             }
         }
+        if (shouldObserveSyncStatusWhileStarted()) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    // NbActivity.kt refreshes a returning banner even if the non-replaying flow missed idle while stopped.
+                    handleVisibleSyncStatus()
+                    NbSyncManager.state.collect { update ->
+                        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
+                            update is NBSync.Update && update.type and NbSyncManager.UPDATE_STATUS != 0) {
+                            handleVisibleSyncStatus()
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    protected open fun shouldObserveSyncStatusWhileStarted(): Boolean = false
+
+    protected open fun handleVisibleSyncStatus() = Unit
 
     override fun onResume() {
         Log.d(this, "onResume" + UIUtils.getMemoryUsageDebug(this))
         super.onResume()
         finishIfNotLoggedIn()
+        listenMiniPlayerHost?.setShownInThisPane(showsListenMiniPlayerInThisPane())
 
-        // is is possible that another activity changed the theme while we were on the backstack
-        val currentSelectedTheme = prefsRepo.getSelectedTheme()
-        if (lastTheme != currentSelectedTheme) {
-            lastTheme = currentSelectedTheme
+        startObservingThemeChanges()
+    }
+
+    private fun startObservingThemeChanges() {
+        if (themePreferences == null) {
+            themePreferences = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE).also {
+                it.registerOnSharedPreferenceChangeListener(this)
+            }
+        }
+        refreshThemeIfChanged()
+    }
+
+    private fun stopObservingThemeChanges() {
+        val preferences = themePreferences
+        themePreferences = null
+        preferences?.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        // NbActivity.kt observes each resumed pane, including peers that never leave the foreground.
+        if (themePreferences != null && key in ThemeAppearance.preferenceKeys) refreshThemeIfChanged()
+    }
+
+    private fun shownTheme() = prefsRepo.getSelectedTheme() to prefsRepo.getResolvedTheme(this)
+
+    private fun refreshThemeIfChanged() {
+        if (isFinishing || isDestroyed) return
+        val currentTheme = shownTheme()
+        if (lastTheme != currentTheme) {
+            lastTheme = currentTheme
+            themeTransitionToken = com.newsblur.view.ThemeTransition.capture(this)
             UIUtils.restartActivity(this)
         }
     }
 
     override fun onPause() {
         Log.d(this.javaClass.name, "onPause")
+        stopObservingThemeChanges()
         super.onPause()
     }
 
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (!hostsThemeSwipe()) return super.dispatchTouchEvent(event)
+        return themeSwipe.dispatch(event) { super.dispatchTouchEvent(it) }
+    }
+
+    /** NbActivity.kt lets two fingers swipe the theme (ThemeSwipeGesture.kt) on the screens iOS offers it. */
+    protected open fun hostsThemeSwipe(): Boolean = false
+
     protected open fun shouldUseTranslucentTheme(): Boolean = false
+
+    protected open fun isThemeTransitionReady(): Boolean = true
+
+    /** NbActivity.kt floats Listen's mini player (ListenMiniPlayerHost.kt) on the main screens that opt in. */
+    protected open fun showsListenMiniPlayer(): Boolean = false
+
+    /** The bottom toolbar the mini player sits above, or null to sit above the navigation bar. */
+    protected open fun listenMiniPlayerAnchor(): View? = null
+
+    /** In a tablet split only one pane shows the mini player, so neighbors can decline it here. */
+    protected open fun showsListenMiniPlayerInThisPane(): Boolean = true
+
+    /** How much of the screen bottom the mini player covers, for screens that pad their lists to match. */
+    protected open fun onListenMiniPlayerInsetChanged(insetPx: Int) = Unit
 
     private fun readStartupTheme(): ThemeValue {
         val prefs = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
@@ -116,6 +235,7 @@ open class NbActivity : AppCompatActivity() {
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         Log.d(this, "onSave")
         savedInstanceState.putString(UNIQUE_LOGIN_KEY, uniqueLoginKey)
+        savedInstanceState.putString("themeTransitionToken", themeTransitionToken)
         super.onSaveInstanceState(savedInstanceState)
     }
 

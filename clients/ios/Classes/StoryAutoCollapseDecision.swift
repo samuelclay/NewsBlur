@@ -8,6 +8,15 @@
 import CoreGraphics
 import Foundation
 
+#if SWIFT_PACKAGE
+// StoryAutoCollapseDecision.swift is also built by clients/ios/Package.swift for its unit tests, without the app's
+// NBLocalization.swift (which needs the app delegate), so the package build reads the English badge text.
+private enum NBLocalization {
+    static var resolvedLanguage: String { "en" }
+    static func text(_ source: String) -> String { source }
+}
+#endif
+
 public enum StoryAutoCollapseBehavior: String {
     case auto
     case tile
@@ -55,6 +64,18 @@ public enum StoryAutoCollapseBehavior: String {
 }
 
 @objcMembers public final class StorySplitBehaviorDecision: NSObject {
+    public class func shouldShowStoryTitlesBesideTiledFeeds(
+        isPhone: Bool,
+        isCompact: Bool,
+        isDoubleColumn: Bool,
+        isDiscoverSitesVisible: Bool,
+        storyTitlesOnLeft: Bool,
+        displayMode: StorySplitPreferredDisplayMode
+    ) -> Bool {
+        isPhone && !isCompact && isDoubleColumn && !isDiscoverSitesVisible &&
+            storyTitlesOnLeft && displayMode == .oneBesideSecondary
+    }
+
     public class func preferredBehavior(
         for behaviorValue: String?,
         width: CGFloat,
@@ -125,7 +146,12 @@ public enum StoryAutoCollapseBehavior: String {
             return requestedBehavior
         }
 
-        if isMac && width < 1100 {
+        // StoryAutoCollapseDecision.swift keeps the Mac's three panes until the reader explicitly chooses fewer columns.
+        if isMac { return .tile }
+
+        // StoryAutoCollapseDecision.swift reserves narrow windows for the title and article panes.
+        // Revealing Feeds temporarily overlays those panes instead of squeezing in a third column.
+        if width < 1100 {
             return .overlay
         } else if width > height {
             return .tile
@@ -604,14 +630,10 @@ public enum DailyBriefingSectionLayoutDecision {
     public class func shouldAnimateSelection(
         isPhoneOrCompact: Bool,
         usesNativeFullscreenSidebar: Bool,
-        presentation: FullscreenSidebarPresentation
+        presentation: FullscreenSidebarPresentation,
+        isMac: Bool
     ) -> Bool {
-        guard !isPhoneOrCompact else {
-            return true
-        }
-
-        let _ = usesNativeFullscreenSidebar
-        return presentation == .fullscreen
+        true
     }
 }
 
@@ -776,9 +798,17 @@ public enum StoryScrollReadDecision {
         normalizedClusterTier(from: value)
     }
 
+    // StoryAutoCollapseDecision.swift translates the badge shown on cluster rows, cards and the story detail.
     @objc(clusterTierLabelForValue:)
     public class func clusterTierLabel(forValue value: Any?) -> String {
-        normalizedClusterTier(from: value) == "title" ? "Match" : "Related"
+        normalizedClusterTier(from: value) == "title" ? NBLocalization.text("Match") : NBLocalization.text("Related")
+    }
+
+    // StoryAutoCollapseDecision.swift capitalizes the badge with the interface language's casing rules, so Turkish
+    // keeps its dotted capital I.
+    @objc(clusterTierBadgeTextForValue:)
+    public class func clusterTierBadgeText(forValue value: Any?) -> String {
+        clusterTierLabel(forValue: value).uppercased(with: Locale(identifier: NBLocalization.resolvedLanguage))
     }
 
     @objc(visibleClusterStories:subscribedFeedIds:isPremiumArchive:)
@@ -934,6 +964,35 @@ public enum StoryScrollReadDecision {
 @objcMembers public final class StoryPageRefreshDecision: NSObject {
     public class func shouldBeginRefresh(isRefreshInProgress: Bool) -> Bool {
         !isRefreshInProgress
+    }
+}
+
+@objcMembers public final class StoryTraverseFadeDecision: NSObject {
+    public class func accumulator(
+        currentAccumulator: CGFloat,
+        deltaY: CGFloat,
+        fadeDistance: CGFloat,
+        isUserScroll: Bool
+    ) -> CGFloat {
+        let clampedCurrent = max(0, min(fadeDistance, currentAccumulator))
+
+        guard isUserScroll else {
+            return clampedCurrent
+        }
+
+        return max(0, min(fadeDistance, clampedCurrent + deltaY))
+    }
+
+    public class func alpha(
+        accumulator: CGFloat,
+        fadeDistance: CGFloat
+    ) -> CGFloat {
+        guard fadeDistance > 0 else {
+            return 1
+        }
+
+        let clampedAccumulator = max(0, min(fadeDistance, accumulator))
+        return 1 - (clampedAccumulator / fadeDistance)
     }
 }
 

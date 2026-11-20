@@ -1,0 +1,43 @@
+{
+  "locale": "de",
+  "devices": {
+    "iphone": {
+      "source_ui_locale": "de",
+      "source_sha256": "ec903f4bbf6c3dfe4c1521cfc7b859734c04598042ebe66f0f1fd0b917ca0fd2",
+      "source_intervals_reviewed": true,
+      "starts": [
+        7,
+        21,
+        40,
+        49
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native German UI. Source intervals exclude initial thumbnail loading and include the actual article scroll near seconds 44–46. The last interval shows navigation into the verified Saved Stories collection."
+    },
+    "ipad": {
+      "source_ui_locale": "de",
+      "source_sha256": "33aa1f2d2776182c60d543c22a6221bf5503f6cb82c8f67f29d88cd0c932da15",
+      "source_intervals_reviewed": true,
+      "starts": [
+        5,
+        23,
+        44,
+        55.6
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native German iPad UI. Includes actual fullscreen article scrolling and brief native navigation into Saved Stories, ending on the settled collection before the later article-selection animation."
+    }
+  },
+  "status": "encoded_playback_review_passed",
+  "remaining": "Store placement and submission are tracked separately by the release coordinator; each encoded device passed normal-speed playback. Unencoded devices remain pending."
+}

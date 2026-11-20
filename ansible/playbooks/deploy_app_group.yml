@@ -72,11 +72,25 @@
     - never
     - static
 
+# deploy_app_group.yml: ansible-core 2.22's git module, fetching a shallow checkout that sits on a detached
+# commit, reads refs/remotes/origin/HEAD and fails with "'NoneType' object has no attribute 'startswith'" if
+# it's missing. A normal clone has that ref; staging's single-refspec checkout doesn't, so give it one.
+# Only staging sets git_depth (ansible/group_vars/staging.yml). This doesn't choose the deployed branch.
+- name: Give shallow checkouts the origin/HEAD ref the git module expects
+  command: git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/{{ git_branch }}
+  args:
+    chdir: /srv/newsblur
+  changed_when: false
+  when: git_depth is defined
+
 - name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/
-    version: "{{ git_branch }}"
+    version: "{{ deploy_commit | default(git_branch) }}"
+    # Staging stays shallow (ansible/group_vars/staging.yml); other servers fetch normally.
+    depth: "{{ git_depth | default(omit) }}"
+    refspec: "{{ git_refspec | default(omit) }}"
   register: pulled
 
 - include_tasks: ../roles/web/tasks/container.yml
@@ -91,17 +105,6 @@
   retries: 10
   delay: 5
   until: result.status == 200
-
-- name: Run database migrations
-  run_once: true
-  command: docker exec -t newsblur_web python manage.py migrate --noinput
-  register: migration_result
-
-- name: Show migration output
-  run_once: true
-  debug:
-    msg: "{{ migration_result.stdout_lines }}"
-  when: migration_result.stdout_lines | length > 0
 
 - name: Re-enable servers in HAProxy (Group {{ group_name }})
   delegate_to: "{{ haproxy_host }}"

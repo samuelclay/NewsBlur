@@ -11,13 +11,37 @@ Options:
 
 Actions:
     list                  - List available simulators with UDIDs
+    create:<name>,<type>,<runtime> - Create an explicitly authorized isolated simulator
+    boot                  - Boot the specified simulator if it is not already booted
+    shutdown              - Shut down the specified simulator, preserving its data
+    reconnect             - Reconnect this simulator's idb companion using the current environment
+    restart               - Restart the specified simulator, preserving its data
     tap:<x>,<y>           - Tap at coordinates
+    tap:<x>,<y>,<seconds> - Long press at coordinates for the given duration
+    text:<text>          - Type into the focused field
+    key:<code>           - Send a hardware key code (40 is Return)
     sleep:<seconds>       - Wait for specified seconds
     swipe:<x1>,<y1>,<x2>,<y2> - Swipe from point to point
+    swipe:<x1>,<y1>,<x2>,<y2>,<seconds> - Swipe with an explicit duration
+    rotate:<orientation>  - Set PORTRAIT, LANDSCAPE_LEFT, or LANDSCAPE_RIGHT
+    capture:<directory>   - Record video, CPU samples, and optional app measurements
+    coldcapture:<directory> - Record an app restart, preserving its data and login
+    checkpoint:<name>     - Timestamp a navigation/load event in the current capture
+    fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
+    pagerfuzz:<seed>,<count>[,forward] - Consecutive swipes over one HID connection; forward advances steadily
+    scrollcatch           - Verify a held reverse drag in the reader-story-swift-1 iPhone UI fixture
+    describe              - Print simulator accessibility elements
+    waittext:<text>        - Wait up to 90 seconds for accessibility content
+    waitphoto:<x>,<y>,<w>,<h> - Wait for a photo in a normalized screenshot region
+    crashes               - Show recent app exception messages from the simulator
+    logs                  - Show recent NewsBlur logs from the simulator
+    push:<payload.apns>    - Deliver a local notification payload to the selected app
     screenshot:<path>     - Take screenshot and save to path
     launch                - Launch the NewsBlur app
     terminate             - Terminate the NewsBlur app
     install               - Install the app from DerivedData
+    restoreprefs:<path>   - Restore app preferences from a plist after fixture testing
+    backupprefs:<path>    - Save app preferences before fixture testing
 
 Examples:
     python3 run_ios.py list
@@ -27,15 +51,25 @@ Environment:
     IOS_SIM_UDID     - Simulator UDID (alternative to --udid flag)
     IOS_BUNDLE_ID    - App bundle identifier (defaults to NewsBlur)
     IOS_APP_PATH     - Path to the built .app for install
+    IOS_SIM_DISPLAY  - Optional simulator screen ID/name for screenshots and video (Duo has two displays)
+    IOS_LAUNCH_ARGUMENTS - Optional shell-quoted launch arguments (for UI test fixtures)
+    IOS_IDB_PYTHON   - Python interpreter for idb gesture replays
+    IOS_USE_XCTRACE  - Also record an Instruments trace when set to 1
+    IOS_SAMPLE_SECONDS - Maximum CPU profile duration (defaults to 600)
 """
 
 import os
+import json
+import random
 import re
 import shlex
+import shutil
 import site
+import signal
 import subprocess
 import sys
 import time
+import tempfile
 
 # Configuration
 UDID = os.environ.get("IOS_SIM_UDID", "")
@@ -44,6 +78,11 @@ APP_PATH = os.environ.get(
     "IOS_APP_PATH",
     "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NewsBlur.app",
 )
+
+# run_ios.py keeps measurement tools alive across a sequence of UI actions.
+CAPTURES = []
+CAPTURE_DIRECTORIES = []
+
 
 def prepend_to_path(path):
     """Prepend a directory to PATH if it exists and is not already present."""
@@ -98,11 +137,50 @@ def do_list():
     print("   or: IOS_SIM_UDID=<UDID> python3 run_ios.py <actions...>")
 
 
+def do_boot():
+    """Boot the explicitly selected simulator without creating a new device."""
+    devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "--json"]))
+    selected = next(
+        (device for group in devices["devices"].values() for device in group if device["udid"] == UDID),
+        None,
+    )
+    if selected is None:
+        sys.exit(f"run_ios.py: no simulator with UDID {UDID}")
+    if selected["state"] != "Booted":
+        subprocess.run(["xcrun", "simctl", "boot", UDID], check=True)
+    subprocess.run(["xcrun", "simctl", "bootstatus", UDID, "-b"], check=True)
+
+
+def do_shutdown():
+    """run_ios.py shuts down only the selected simulator without erasing its data."""
+    devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "--json"]))
+    selected = next(
+        (device for group in devices["devices"].values() for device in group if device["udid"] == UDID),
+        None,
+    )
+    if selected is None:
+        sys.exit(f"run_ios.py: no simulator with UDID {UDID}")
+    if selected["state"] != "Shutdown":
+        subprocess.run(["xcrun", "simctl", "shutdown", UDID], check=True)
+
+
+def do_restart():
+    """run_ios.py restarts only the selected simulator without erasing its data."""
+    do_shutdown()
+    do_boot()
+
+
 def do_tap(coords):
-    """Tap at x,y coordinates."""
-    x, y = coords.split(",")
-    print(f"  Tap: ({x}, {y})")
-    run_cmd(f"idb ui tap --udid {UDID} {x} {y}")
+    """run_ios.py supports ordinary taps and deliberate image long presses."""
+    parts = coords.split(",")
+    if len(parts) not in (2, 3):
+        raise ValueError("tap requires x,y[,duration]")
+    x, y = parts[:2]
+    command = ["idb", "ui", "tap", "--udid", UDID, x, y]
+    if len(parts) == 3:
+        command += ["--duration", str(float(parts[2]))]
+    print(f"  Tap: ({x}, {y})" + (f" for {parts[2]}s" if len(parts) == 3 else ""))
+    subprocess.run(command, check=True)
 
 
 def do_sleep(seconds):
@@ -115,31 +193,345 @@ def do_sleep(seconds):
 def do_swipe(coords):
     """Swipe from x1,y1 to x2,y2."""
     parts = coords.split(",")
-    if len(parts) != 4:
-        print(f"  Error: swipe requires 4 coordinates (x1,y1,x2,y2)")
-        return
-    x1, y1, x2, y2 = parts
+    if len(parts) not in (4, 5):
+        raise ValueError("swipe requires x1,y1,x2,y2[,duration]")
+    x1, y1, x2, y2 = parts[:4]
+    duration = float(parts[4]) if len(parts) == 5 else 0.3
     print(f"  Swipe: ({x1},{y1}) -> ({x2},{y2})")
-    run_cmd(f"idb ui swipe --udid {UDID} {x1} {y1} {x2} {y2}")
+    subprocess.run(["idb", "ui", "swipe", "--udid", UDID, x1, y1, x2, y2,
+                    "--duration", str(duration)], check=True)
+
+
+def do_wait_text(text):
+    """run_ios.py waits for actual accessibility state, not a guessed animation delay."""
+    deadline = time.monotonic() + 90
+    while time.monotonic() < deadline:
+        output = subprocess.check_output(
+            ["idb", "ui", "describe-all", "--udid", UDID, "--json"], text=True
+        )
+        if text in output:
+            print(f"  Ready accessibility: {text}", flush=True)
+            return
+        time.sleep(2)
+    raise RuntimeError(f"Accessibility content did not appear: {text}")
+
+
+def do_wait_photo(region):
+    """run_ios.py rejects blank frames by inspecting real captured pixels."""
+    coordinates = region.split(",")
+    if len(coordinates) != 4:
+        raise ValueError("waitphoto requires normalized x,y,width,height")
+    source = os.path.join(os.path.dirname(__file__), "ScreenshotReadiness.swift")
+    executable = os.path.join(tempfile.gettempdir(), "newsblur-screenshot-readiness")
+    if not os.path.exists(executable) or os.path.getmtime(source) > os.path.getmtime(executable):
+        subprocess.run(["xcrun", "swiftc", source, "-o", executable], check=True)
+    deadline = time.monotonic() + 90
+    with tempfile.TemporaryDirectory(prefix="newsblur-frame-") as directory:
+        path = os.path.join(directory, "frame.png")
+        while time.monotonic() < deadline:
+            do_screenshot(path)
+            fraction = float(subprocess.check_output([executable, path, *coordinates], text=True))
+            if fraction > 0.20:
+                print(f"  Ready photo: {fraction:.3f} colored pixels", flush=True)
+                return
+            time.sleep(2)
+    raise RuntimeError(f"Photo did not render in screenshot region {region}")
+
+
+def do_capture(path, cold=False):
+    """Record video and CPU samples until run_ios.py finishes its actions."""
+    os.makedirs(path, exist_ok=True)
+    if cold:
+        do_terminate()
+    video_log = open(os.path.join(path, "video.log"), "w")
+    video_command = ["xcrun", "simctl", "io", UDID, "recordVideo", "--codec=h264"]
+    if display := os.environ.get("IOS_SIM_DISPLAY"):
+        # run_ios.py records the same Duo display selected for screenshots.
+        video_command.extend(["--display", display])
+    video_command.append(os.path.join(path, "scroll.mp4"))
+    video = subprocess.Popen(
+        video_command,
+        stdout=video_log, stderr=subprocess.STDOUT
+    )
+    CAPTURES.append((video, video_log))
+    time.sleep(1)
+    launch_requested_at = time.time()
+    launch_output = subprocess.check_output(
+        ["xcrun", "simctl", "launch", UDID, BUNDLE_ID], text=True
+    )
+    pid = str(int(launch_output.rsplit(":", 1)[1].strip()))
+    sample_cpu = os.environ.get("IOS_CAPTURE_CPU", "1") != "0"
+    commands = [
+        ("profile", ["sample", pid, os.environ.get("IOS_SAMPLE_SECONDS", "600"), "1",
+                     "-file", os.path.join(path, "cpu.txt")]),
+    ] if sample_cpu else []
+    if os.environ.get("IOS_USE_XCTRACE") == "1":
+        commands.append(("instruments", ["xcrun", "xctrace", "record", "--template", "Time Profiler",
+                                        "--device", UDID, "--attach", pid, "--no-prompt",
+                                        "--output", os.path.join(path, "cpu.trace")]))
+    for name, command in commands:
+        log = open(os.path.join(path, name + ".log"), "w")
+        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT)
+        CAPTURES.append((process, log))
+    time.sleep(4)
+    for process, _ in CAPTURES:
+        if process.poll() is not None:
+            raise RuntimeError("Capture failed to start; inspect capture logs")
+    metadata = {"udid": UDID, "bundle_id": BUNDLE_ID, "pid": pid,
+                "started_at": launch_requested_at if cold else time.time(),
+                "cold_launch": cold, "launch_requested_at": launch_requested_at,
+                "cpu_sampling": sample_cpu}
+    with open(os.path.join(path, "session.json"), "w") as file:
+        json.dump(metadata, file, indent=2)
+    CAPTURE_DIRECTORIES.append(path)
+
+
+def do_fuzz(arguments):
+    """Replay bounded vertical gestures; never tap read-state controls."""
+    seed, count = map(int, arguments.split(","))
+    rng = random.Random(seed)
+    for index in range(count):
+        # run_ios.py uses safe content coordinates on the portrait iPhone 17e.
+        x = rng.randint(135, 260)
+        low, high = rng.randint(600, 720), rng.randint(220, 300)
+        start, end = (high, low) if index % 4 == 3 else (low, high)
+        duration = rng.choice([0.12, 0.18, 0.3, 0.6])
+        print(json.dumps({"seed": seed, "gesture": index, "x": x,
+                          "start_y": start, "end_y": end, "duration": duration}), flush=True)
+        do_swipe(f"{x},{start},{x},{end},{duration}")
+        time.sleep(0.25)
+
+
+def do_pager_fuzz(arguments):
+    """run_ios.py sends consecutive finger gestures without per-command process delays."""
+    parts = arguments.split(",")
+    seed, count = map(int, parts[:2])
+    forward_only = len(parts) == 3 and parts[2] == "forward"
+    if len(parts) != 2 and not forward_only:
+        raise ValueError("pagerfuzz requires seed,count[,forward]")
+    if not 1 <= count <= 200:
+        raise ValueError("pagerfuzz count must be between 1 and 200")
+    rng = random.Random(seed)
+    gestures = []
+    for index in range(count):
+        start, end = ((60, 345) if not forward_only and index % 4 == 3 else (345, 60))
+        gesture = {"start": [start, 450], "end": [end, 450 + rng.choice([-60, 0, 60])],
+                   "duration": rng.choice([0.10, 0.15, 0.25]), "delay": 0.025}
+        if forward_only:
+            gesture.update(end=[60, 450], duration=0.25, delay=0.25)
+        elif index % 7 == 6:
+            gesture.update(start=[195, 650], end=[195, 250])
+        gesture["interrupt"] = not forward_only and index % 5 == 4
+        gestures.append(gesture)
+    sequence = {"seed": seed, "gestures": gestures}
+    for directory in CAPTURE_DIRECTORIES:
+        with open(os.path.join(directory, "gestures.json"), "w") as file:
+            json.dump(sequence, file, indent=2)
+    print(f"  Rapid paging: seed={seed}, gestures={count}, forward={forward_only}", flush=True)
+    script = """
+import asyncio, json, logging, shutil, sys
+from idb.grpc.management import ClientManager
+from idb.common.hid import swipe_to_events
+from idb.common.types import HIDDelay
+async def main():
+    events = []
+    for gesture in json.loads(sys.argv[2]):
+        events.extend(swipe_to_events(tuple(gesture['start']), tuple(gesture['end']), gesture['duration']))
+        events.append(HIDDelay(duration=gesture['delay']))
+        if gesture['interrupt']:
+            events.extend(swipe_to_events((195, 450), (225, 450), duration=0.08))
+    manager = ClientManager(logger=logging.getLogger('pagerfuzz'), companion_path=shutil.which('idb_companion'))
+    async with manager.from_udid(udid=sys.argv[1]) as client:
+        await client.send_events(events)
+asyncio.run(main())
+"""
+    interpreter = os.environ.get("IOS_IDB_PYTHON", shutil.which("python3.11") or sys.executable)
+    subprocess.run([interpreter, "-c", script, UDID, json.dumps(gestures)], check=True)
+
+
+def do_scroll_catch():
+    """Run the gesture replay in the Python environment that supplies idb's HID client."""
+    interpreter = os.environ.get("IOS_IDB_PYTHON")
+    if interpreter:
+        command = [interpreter]
+    else:
+        idb = shutil.which("idb")
+        if not idb:
+            sys.exit("scrollcatch needs idb on PATH or IOS_IDB_PYTHON set to its Python interpreter")
+        with open(idb, "rb") as entrypoint:
+            command = shlex.split(entrypoint.readline().decode().strip().removeprefix("#!"))
+        if not any("python" in arg for arg in command):
+            sys.exit("Set IOS_IDB_PYTHON to the Python interpreter that supplies the idb client")
+    worker = """
+import asyncio, sys
+from run_ios import replay_scroll_catch
+asyncio.run(replay_scroll_catch(sys.argv[1]))
+"""
+    result = subprocess.run([*command, "-c", worker, UDID], cwd=os.path.dirname(os.path.abspath(__file__)))
+    if result.returncode:
+        sys.exit(result.returncode)
+
+
+async def replay_scroll_catch(udid):
+    import asyncio
+    import logging
+    from idb.common import types
+    from idb.common.types import HIDDelay, HIDDirection, HIDPress, HIDTouch, Point
+    from idb.grpc.management import ClientManager
+
+    async def fixture_offset(client):
+        # run_ios.py reads CoreSimulator's tree even if an XCTest session has left the default AX bridge empty.
+        if hasattr(types, "AccessibilityInfoOptions"):
+            backend = getattr(types.AccessibilityBackend, "AX_CORESIMULATOR", None)
+            options = types.AccessibilityInfoOptions(backend=backend)
+        else:
+            options = False  # Older idb clients take a nested boolean.
+        snapshot = await client.accessibility_info(None, options)
+        values = {e.get("AXUniqueId"): e.get("AXValue") for e in json.loads(snapshot.json)}
+        if values.get("story-current-story") != "ui-story-swift-1":
+            sys.exit("Open the reader-story-swift-1 UI fixture before running scrollcatch")
+        state = dict(field.split("=") for field in (values.get("story-traverse-fade-state") or "").split())
+        if "offset" not in state:
+            sys.exit("The installed NewsBlur build does not expose the article offset in the UI fixture")
+        return float(state["offset"])
+
+    def stroke(y, segments):
+        # Each segment is a duration and a vertical distance in points. A zero distance holds the finger down.
+        def touch(direction):
+            return HIDPress(action=HIDTouch(Point(235, y)), direction=direction)
+
+        events = [touch(HIDDirection.DOWN)]
+        for duration, distance in segments:
+            steps = max(1, round(duration * 60)) if distance else 1
+            for _ in range(steps):
+                events.append(HIDDelay(duration=duration / steps))
+                y += distance / steps
+                if distance:
+                    events.append(touch(HIDDirection.DOWN))
+        events.append(touch(HIDDirection.UP))
+        return events
+
+    manager = ClientManager(logger=logging.getLogger("scrollcatch"), companion_path=shutil.which("idb_companion"))
+    async with manager.from_udid(udid=udid) as client:
+        await fixture_offset(client)
+        # run_ios.py reenacts the SE sequence: scroll, brake with a small adjustment, then make a short flick.
+        scroll = stroke(410, [(0.20, -65), (0.34, -52)])
+        brake = stroke(400, [(0.16, -27), (0.07, 0), (0.14, 24), (0.11, -22), (0.06, 0)])
+        flick = stroke(398, [(0.028, 0), (0.07, -38), (0.01, 0)])
+        await client.send_events(scroll + [HIDDelay(duration=1.19)] + brake + [HIDDelay(duration=0.39)] + flick)
+        lift = time.monotonic()
+        await asyncio.sleep(0.85)
+        coasting = await fixture_offset(client)
+        await asyncio.sleep(max(0, lift + 1.53 - time.monotonic()))
+        before = await fixture_offset(client)
+        if before <= coasting:
+            sys.exit(f"The article did not coast toward the catch: {coasting:.1f} -> {before:.1f}")
+        remaining = lift + 1.70 - time.monotonic()
+        if remaining < 0:
+            sys.exit("The accessibility snapshot took too long to catch the flick in flight")
+        await asyncio.sleep(remaining)
+        drag = stroke(375, [(0.20, 0), (0.45, 150), (0.20, 0)])
+        try:
+            await client.send_events(drag[:-1])
+            after = await fixture_offset(client)
+        finally:
+            await client.send_events(drag[-1:])
+        if before - after < 90:
+            sys.exit(f"Held reverse drag failed to move the article back: {before:.1f} -> {after:.1f}")
+        print(f"  Held reverse drag moved the article back {before - after:.1f} points")
+
+
+def do_checkpoint(name):
+    """Record a named timestamp for matching navigation with app measurements."""
+    event = {"checkpoint": name, "at": time.time()}
+    for path in CAPTURE_DIRECTORIES:
+        with open(os.path.join(path, "checkpoints.jsonl"), "a") as file:
+            file.write(json.dumps(event) + "\n")
+    print(json.dumps(event), flush=True)
+
+
+def stop_captures():
+    ended_at = time.time()
+    for process, _ in CAPTURES:
+        if process.poll() is None:
+            process.send_signal(signal.SIGINT)
+    for process, log in CAPTURES:
+        try:
+            process.wait(timeout=60)
+        except subprocess.TimeoutExpired:
+            process.terminate()
+            process.wait(timeout=10)
+        finally:
+            log.close()
+    CAPTURES.clear()
+    for path in CAPTURE_DIRECTORIES:
+        metadata_path = os.path.join(path, "session.json")
+        with open(metadata_path) as file:
+            metadata = json.load(file)
+        metadata["ended_at"] = ended_at
+        with open(metadata_path, "w") as file:
+            json.dump(metadata, file, indent=2)
+        container = subprocess.check_output(
+            ["xcrun", "simctl", "get_app_container", UDID, BUNDLE_ID, "data"], text=True
+        ).strip()
+        measurements = os.path.join(container, "Documents", "scroll-performance.jsonl")
+        if os.path.exists(measurements):
+            shutil.copy2(measurements, os.path.join(path, "measurements.jsonl"))
+    CAPTURE_DIRECTORIES.clear()
 
 
 def do_screenshot(path):
     """Take screenshot and save to path."""
     print(f"  Screenshot: {path}")
-    run_cmd(f"xcrun simctl io {UDID} screenshot {path}")
+    # run_ios.py lets Duo captures select the active inner or outer display explicitly.
+    command = ["xcrun", "simctl", "io", UDID, "screenshot"]
+    display = os.environ.get("IOS_SIM_DISPLAY")
+    if display:
+        command.append(f"--display={display}")
+    subprocess.run(command + [path], check=True)
 
 
 def do_launch():
     """Launch the NewsBlur app."""
     print("  Launching NewsBlur...")
-    result = run_cmd(f"xcrun simctl launch {UDID} {BUNDLE_ID}")
-    print(f"  {result}")
+    arguments = shlex.split(os.environ.get("IOS_LAUNCH_ARGUMENTS", ""))
+    result = subprocess.run(["xcrun", "simctl", "launch", UDID, BUNDLE_ID, *arguments],
+                            check=True, capture_output=True, text=True)
+    print(f"  {result.stdout.strip()}")
 
 
 def do_terminate():
     """Terminate the NewsBlur app."""
     print("  Terminating NewsBlur...")
     run_cmd(f"xcrun simctl terminate {UDID} {BUNDLE_ID} 2>/dev/null")
+
+
+def do_restore_preferences(path):
+    """run_ios.py restores the selected simulator app's preferences without changing its account data."""
+    import plistlib
+    with open(path, "rb") as file:
+        preferences = plistlib.load(file)
+    if not isinstance(preferences, dict):
+        raise ValueError("App preferences must be a plist dictionary")
+    do_terminate()
+    container = subprocess.check_output(
+        ["xcrun", "simctl", "get_app_container", UDID, BUNDLE_ID, "data"], text=True
+    ).strip()
+    domain = os.path.join(container, "Library", "Preferences", BUNDLE_ID)
+    subprocess.run(["xcrun", "simctl", "spawn", UDID, "defaults", "import", domain,
+                    os.path.abspath(path)], check=True)
+    print("  Restored app preferences")
+
+
+def do_backup_preferences(path):
+    """run_ios.py pairs fixture preference backups with restoreprefs without copying account data."""
+    container = subprocess.check_output(
+        ["xcrun", "simctl", "get_app_container", UDID, BUNDLE_ID, "data"], text=True
+    ).strip()
+    domain = os.path.join(container, "Library", "Preferences", BUNDLE_ID)
+    subprocess.run(["xcrun", "simctl", "spawn", UDID, "defaults", "export", domain,
+                    os.path.abspath(path)], check=True)
+    print("  Saved app preferences")
 
 
 def do_install():
@@ -160,12 +552,58 @@ def parse_and_execute(action):
         cmd = action
         arg = None
 
-    if cmd == "tap":
+    if cmd == "boot":
+        do_boot()
+    elif cmd == "shutdown":
+        do_shutdown()
+    elif cmd == "reconnect":
+        # run_ios.py refreshes only this target's connection after a toolchain change.
+        subprocess.run(["idb", "disconnect", UDID], check=True)
+        subprocess.run(["idb", "connect", UDID], check=True)
+    elif cmd == "tap":
         do_tap(arg)
+    elif cmd == "restart":
+        do_restart()
+    elif cmd == "text":
+        subprocess.run(["idb", "ui", "text", "--udid", UDID, arg], check=True)
+    elif cmd == "key":
+        subprocess.run(["idb", "ui", "key", "--udid", UDID, str(int(arg))], check=True)
     elif cmd == "sleep":
         do_sleep(arg)
     elif cmd == "swipe":
         do_swipe(arg)
+    elif cmd == "rotate":
+        orientation = arg.upper()
+        if orientation not in {"PORTRAIT", "PORTRAIT_UPSIDE_DOWN", "LANDSCAPE_LEFT", "LANDSCAPE_RIGHT"}:
+            raise ValueError("Unsupported simulator orientation")
+        subprocess.run(["idb", "ui", "rotate", "--udid", UDID, orientation], check=True)
+    elif cmd == "capture":
+        do_capture(arg)
+    elif cmd == "coldcapture":
+        do_capture(arg, cold=True)
+    elif cmd == "checkpoint":
+        do_checkpoint(arg)
+    elif cmd == "fuzz":
+        do_fuzz(arg)
+    elif cmd == "pagerfuzz":
+        do_pager_fuzz(arg)
+    elif cmd == "scrollcatch":
+        do_scroll_catch()
+    elif cmd == "describe":
+        subprocess.run(["idb", "ui", "describe-all", "--udid", UDID, "--json"], check=True)
+    elif cmd == "waittext":
+        do_wait_text(arg)
+    elif cmd == "waitphoto":
+        do_wait_photo(arg)
+    elif cmd == "push":
+        subprocess.run(["xcrun", "simctl", "push", UDID, BUNDLE_ID, arg], check=True)
+    elif cmd == "logs":
+        subprocess.run(["xcrun", "simctl", "spawn", UDID, "log", "show", "--last", "10m",
+                        "--style", "compact", "--predicate", 'process == "NB Alpha" OR process == "NewsBlur"'], check=True)
+    elif cmd == "crashes":
+        predicate = '(process == "NB Alpha" OR process == "NewsBlur") AND (eventMessage CONTAINS "unrecognized selector" OR eventMessage CONTAINS "uncaught exception")'
+        subprocess.run(["xcrun", "simctl", "spawn", UDID, "log", "show", "--last", "10m",
+                        "--style", "compact", "--predicate", predicate], check=True)
     elif cmd == "screenshot":
         do_screenshot(arg)
     elif cmd == "launch":
@@ -174,6 +612,10 @@ def parse_and_execute(action):
         do_terminate()
     elif cmd == "install":
         do_install()
+    elif cmd == "restoreprefs":
+        do_restore_preferences(arg)
+    elif cmd == "backupprefs":
+        do_backup_preferences(arg)
     elif cmd == "list":
         do_list()
     else:
@@ -203,9 +645,13 @@ def main():
         print(__doc__)
         sys.exit(1)
 
-    # "list" doesn't require a UDID
+    # run_ios.py allows inventory and explicitly requested device creation without a UDID.
     if actions == ["list"]:
         do_list()
+        return
+    if len(actions) == 1 and actions[0].startswith("create:"):
+        name, device_type, runtime = actions[0].split(":", 1)[1].split(",", 2)
+        subprocess.run(["xcrun", "simctl", "create", name, device_type, runtime], check=True)
         return
 
     # All other actions require a UDID
@@ -218,8 +664,11 @@ def main():
     print(f"iOS Simulator Control (UDID: {UDID})")
     print("=" * 60)
 
-    for action in actions:
-        parse_and_execute(action)
+    try:
+        for action in actions:
+            parse_and_execute(action)
+    finally:
+        stop_captures()
 
     print("=" * 60)
     print("Done!")

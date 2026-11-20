@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/>
+  <link rel="alternate" type="application/rss+xml" 
+  title="The NewsBlur Blog RSS feed" 
+  href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites | The NewsBlur Blog</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at." />
+<meta property="og:description" content="I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at." />
+<link rel="canonical" href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/" />
+<meta property="og:url" content="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/" />
+<meta property="og:site_name" content="The NewsBlur Blog" />
+<meta property="og:image" content="https://blog.newsblur.com/assets/ios-15-story-list.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-10-03T00:00:00-04:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://blog.newsblur.com/assets/ios-15-story-list.png" />
+<meta property="twitter:title" content="NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-10-03T00:00:00-04:00","datePublished":"2026-10-03T00:00:00-04:00","description":"I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.","headline":"NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites","image":"https://blog.newsblur.com/assets/ios-15-story-list.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" href="/assets/mobile-release.css">
+  <script src="/assets/mobile-release.js" defer></script>
+  
+  
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /></head>
+<body>
+    <script>(function(){var t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';if(t==='dark')document.body.classList.add('NB-dark');document.body.classList.add('at-top-init')})()</script>
+
+    <canvas id="blog-canvas" class="blog-header-canvas"></canvas><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">
+      <div class="site-title-image">
+        <img src="/assets/newsblur_logo_512.png">
+      </div>
+      <div class="site-title-text">The NewsBlur Blog</div>
+    </a>
+
+    <div class="NB-theme-toggle" title="Toggle theme">
+      <svg class="NB-theme-toggle-sun" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <button class="NB-theme-toggle-track" aria-label="Toggle dark mode" type="button">
+        <span class="NB-theme-toggle-thumb"></span>
+      </button>
+      <svg class="NB-theme-toggle-moon" viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </div><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="https://www.newsblur.com">Visit NewsBlur ➤</a></div>
+      </nav></div>
+</header>
+<header class="site-subheader" role="banner">
+
+  <div class="wrapper">
+    <div class="top">
+      NewsBlur is a personal news reader that brings people together to talk about the world.
+    </div>
+    <div class="bottom">
+      A new sound of an old instrument.
+    </div>
+  </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+  </header>
+
+  <div class="post-header-sticky">
+    <p class="post-meta">
+      <time class="dt-published" datetime="2026-10-03T00:00:00-04:00" itemprop="datePublished">Oct 3, 2026
+      </time></p>
+    <h1 class="post-title p-name" itemprop="name headline">NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites</h1>
+  </div>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.</p>
+
+<h3 id="faster-story-lists">Faster story lists</h3>
+
+<p>Loading the next page of a folder used to reload the entire list. Now new stories are added in place. Favicons, thumbnails, and story text get prepared in the background ahead of time instead of while you’re scrolling. Opening a feed shows its cached stories immediately while fresh ones load, and articles appear fully laid out instead of flashing blank first.</p>
+
+<p>Opening All Site Stories went from 1.1s to 0.2s. A single feed went from 0.7s to 0.2s. Loading another page into a list of 5,000 stories went from 0.7s to 0.02s.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-story-list.webp" aria-label="iPhone story list with the floating glass toolbar at the bottom">
+        <source src="/assets/ios-15-reader.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-story-list.webp" alt="iPhone story list with the floating glass toolbar at the bottom" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="a-glass-toolbar">A glass toolbar</h3>
+
+<p>The story list toolbar is now a floating glass bar at the bottom of the screen on iPhone and iPad, and your stories scroll right behind it. Related Sites, story order, and search are on the left. Add and Mark as read are on the right. If you’d rather keep it at the top, you can move it back in Preferences. In the reader, the controls hide as you scroll down and come back when you scroll up.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-reader.webp" aria-label="Scrolling an article on iPhone as its floating controls hide and return">
+        <source src="/assets/ios-15-article-scroll.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-reader.webp" alt="Scrolling an article on iPhone as its floating controls hide and return" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="images">Images</h3>
+
+<p>Tap an image in a story and it opens full screen, zooming out from its spot in the article. Pinch or double tap to zoom, drag to look around, and swipe to go back. On iPad the viewer covers all three columns, and you land right back where you were in the story.</p>
+
+<p>Long press an image to see its hover text above it, which is where comics like xkcd hide the punchline. Copy Image, Save Image, and Share Image are right there with it.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-image-viewer.webp" aria-label="An article image opening in the iPhone image viewer and returning to the article">
+        <source src="/assets/ios-15-image-viewer.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-image-viewer.webp" alt="An article image opening in the iPhone image viewer and returning to the article" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="add--discover-sites">Add + Discover Sites</h3>
+
+<p>The + button opens a Quick Add sheet. Paste an address or search for a site, pick a folder, and add it. Below that are shortcuts into every discovery source: Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News. You can swipe between them like pages. It’s the same <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites</a> catalog from the web, rebuilt natively for iOS.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-add-site.webp" aria-label="The iPhone Add Site sheet with an address field and discovery source shortcuts">
+        <source src="/assets/ios-15-add-site.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-add-site.webp" alt="The iPhone Add Site sheet with an address field and discovery source shortcuts" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<p>Each site shows its latest stories with an image and a short excerpt, along with how recently it published. Tap a story to read it, or tap <strong>Try</strong> to browse the site without subscribing. When you come back, you’re in the same spot with that story highlighted. On iPad, Try keeps all three columns, so you can browse a new site and read its stories side by side. Related Sites uses the same cards.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-discover.webp" aria-label="Opening a story from iPhone discovery results and returning to its highlighted preview">
+        <source src="/assets/ios-15-discover.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-discover.webp" alt="Opening a story from iPhone discovery results and returning to its highlighted preview" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="offline-storage-that-cleans-up-after-itself">Offline storage that cleans up after itself</h3>
+
+<p>A reader on the forum noticed NewsBlur using 4.2 GB on their iPhone with no unread stories. Digging in turned up three bugs in the offline cache. Cleanup skipped pruning whenever you were all caught up, it never cleared cached article text, and it compacted the database before deleting anything, so no space ever came back.</p>
+
+<p>All three are fixed. Cleanup now keeps storage within your Stories to store limit, and <strong>Delete offline stories</strong> in Preferences actually gives you the space back. Your subscriptions and any pending read or save changes are kept.</p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<ul>
+  <li>Long press any feed, folder, or story for a native menu.</li>
+  <li>Mark newer as read and Mark older as read update your unread counts right away, even inside collapsed folders and while offline.</li>
+  <li>Feed and story gestures each have their own settings.</li>
+  <li>The Mac app gets the new discovery screen, image viewer, menus, and offline cleanup too.</li>
+  <li>Tapping a notification opens the story instead of sometimes getting stuck.</li>
+  <li>Reading positions are restored correctly.</li>
+</ul>
+
+<p>NewsBlur 15 is available on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. The <a href="/2026/10/03/newsblur-15-for-android/">Android release</a> got a lot of the same work. If you have feedback, I’d love to hear it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+  </div><a class="u-url" href="/2026/10/03/newsblur-15-for-ios/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">The NewsBlur Blog</h2>
+
+    <div class="footer-col-wrapper">
+      
+
+      <div class="footer-col footer-col-1"><ul class="social-media-list"><li><a href="https://github.com/samuelclay"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">samuelclay</span></a></li><li><a href="https://www.twitter.com/newsblur"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">newsblur</span></a></li><li><a href="mailto:blog@newsblur.com?subject=Hello from the NewsBlur blog"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#email"></use></svg> <span class="username">blog@newsblur.com</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>NewsBlur is a personal news reader that brings people together to talk about the world.<br />
+A new sound of an old instrument.<br />
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+<script src="/assets/blog_background.js"></script>
+    <script>
+    (function() {
+      // Theme management
+      function system_theme() {
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      }
+
+      var current_theme = system_theme();
+
+      function apply(theme) {
+        current_theme = theme;
+        var isDark = (theme === 'dark');
+        if (isDark) {
+          document.body.classList.add('NB-dark');
+        } else {
+          document.body.classList.remove('NB-dark');
+        }
+        if (window.BlogBackground) {
+          BlogBackground.setTheme(isDark);
+        }
+      }
+
+      apply(current_theme);
+
+      // Toggle click
+      var toggle = document.querySelector('.NB-theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply(current_theme === 'dark' ? 'light' : 'dark');
+        });
+      }
+
+      // System theme changes
+      if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        try {
+          mq.addEventListener('change', function() { apply(system_theme()); });
+        } catch (e1) {
+          try { mq.addListener(function() { apply(system_theme()); }); } catch (e2) {}
+        }
+      }
+
+      // WebGL background - size canvas to cover header + subheader
+      var canvas = document.getElementById('blog-canvas');
+      var header = document.querySelector('.site-header');
+      var subheader = document.querySelector('.site-subheader');
+
+      function size_canvas() {
+        if (!canvas || !header || !subheader) return;
+        var h = header.offsetHeight + subheader.offsetHeight;
+        canvas.style.height = h + 'px';
+      }
+
+      if (canvas && window.BlogBackground) {
+        size_canvas();
+        var ok = BlogBackground.init(canvas);
+        if (ok) {
+          BlogBackground.setThemeImmediate(current_theme === 'dark');
+          BlogBackground.start();
+        }
+        window.addEventListener('resize', size_canvas);
+      }
+
+      // Swap header background: transparent at top, solid when scrolled past subheader
+      if (header && subheader) {
+        document.body.classList.remove('at-top-init');
+        header.classList.add('at-top');
+
+        window.addEventListener('scroll', function() {
+          if (window.scrollY > subheader.offsetHeight) {
+            header.classList.remove('at-top');
+          } else {
+            header.classList.add('at-top');
+          }
+        }, { passive: true });
+      }
+    })();
+    </script>
+
+  </body>
+
+</html>

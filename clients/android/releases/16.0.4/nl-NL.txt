@@ -1,0 +1,3 @@
+Verhelpt crashes bij het openen van NewsBlur, bekijken van ongelezen aantallen, bevestigen van leesacties en herstellen van de lezer. Database-upgrades bewaren gecachte artikelen en offline acties in de wachtrij.
+
+Met bediening voor volledig scherm op tablets, onthouden paneelbreedtes, 21 interfacetalen en bediening voor het volgende artikel op een vaste plek.

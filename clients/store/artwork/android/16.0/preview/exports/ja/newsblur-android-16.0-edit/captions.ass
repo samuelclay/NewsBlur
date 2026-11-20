@@ -1,0 +1,23 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Hiragino Sans,46,&H00252C27,&H00252C27,&H00EBEDEF,&H00EBEDEF,0,0,0,0,100,100,0,0,1,0,0,8,120,120,35,1
+Style: Disclosure,Hiragino Sans,30,&H005D7168,&H005D7168,&H00EBEDEF,&H00EBEDEF,0,0,0,0,100,100,0,0,1,0,0,2,130,130,28,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:03.50,Title,,0,0,0,,お気に入りの情報源が集まる場所。
+Dialogue: 0,0:00:03.50,0:00:07.00,Title,,0,0,0,,毎日の読みものを、ひとつの場所に。
+Dialogue: 0,0:00:07.00,0:00:10.50,Title,,0,0,0,,くつろぎながら、じっくり読む。
+Dialogue: 0,0:00:10.50,0:00:14.00,Title,,0,0,0,,気になる記事を、あとで読むために保存。
+Dialogue: 0,0:00:14.00,0:00:17.50,Title,,0,0,0,,お気に入りの情報源が集まる場所。
+Dialogue: 0,0:00:17.50,0:00:21.00,Title,,0,0,0,,毎日の読みものを、ひとつの場所に。
+Dialogue: 0,0:00:21.00,0:00:24.50,Title,,0,0,0,,くつろぎながら、じっくり読む。
+Dialogue: 0,0:00:24.50,0:00:28.00,Title,,0,0,0,,気になる記事を、あとで読むために保存。
+Dialogue: 1,0:00:21.00,0:00:28.00,Disclosure,,0,0,0,,NewsBlurアカウントが必要です。一部の機能には有料サブスクリプションが必要です。

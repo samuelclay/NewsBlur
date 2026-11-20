@@ -1,0 +1,62 @@
+{
+  "checked_at": "2026-10-25T04:32:48.352Z",
+  "play": {
+    "versionName": "16.0.4",
+    "versionCode": 296,
+    "track": "production",
+    "rolloutPercentage": 100,
+    "countries": 175,
+    "verification": "Live authenticated Play Console UI",
+    "url": "https://play.google.com/console/u/1/developers/6280481402178293168/app/4972990522498280751/tracks/production"
+  },
+  "fdroid_public": {
+    "url": "https://f-droid.org/api/v1/packages/com.newsblur",
+    "packageName": "com.newsblur",
+    "suggestedVersionCode": 290,
+    "packages": [
+      {
+        "versionName": "15.0.5",
+        "versionCode": 290
+      },
+      {
+        "versionName": "15.0.4",
+        "versionCode": 289
+      },
+      {
+        "versionName": "15.0.3",
+        "versionCode": 288
+      }
+    ]
+  },
+  "fdroid_merge": {
+    "url": "https://gitlab.com/fdroid/fdroiddata/-/merge_requests/52997",
+    "state": "merged",
+    "merged_at": "2026-10-19T15:43:59.706Z",
+    "sha": "df42b073125ce4bffdc1bd1dc4d5560f26ecd5b0",
+    "pipeline": "https://gitlab.com/fdroid/fdroiddata/-/pipelines/2963923247",
+    "pipeline_status": "success"
+  },
+  "fdroid_official_build": {
+    "url": "https://monitor.f-droid.org/builds/log/com.newsblur/296",
+    "completed_at": "2026-10-24T14:07:31.110Z",
+    "source": "1b32c5b65bdf577402c055d34246691d53e534d9",
+    "result": "Successfully built com.newsblur:296",
+    "successfulBuildIds": [
+      [
+        "com.newsblur",
+        296
+      ]
+    ]
+  },
+  "fdroid_publish": {
+    "url": "https://f-droid.org/repo/status/publish.json",
+    "last_completed_at": "2026-10-22T16:24:57.304Z"
+  },
+  "fdroid_index": {
+    "url": "https://f-droid.org/repo/status/update.json",
+    "last_completed_at": "2026-10-22T19:58:33.687Z"
+  },
+  "apk_url": "https://f-droid.org/repo/com.newsblur_296.apk",
+  "apk_http_status": 404,
+  "blocker": "Official signing and repository publication remain with F-Droid. Authenticated account has no project or group access to fdroid/fdroiddata. No new source or recipe failure found."
+}

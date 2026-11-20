@@ -62,8 +62,10 @@ static UIFont *indicatorFont = nil;
 
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
-    paragraphStyle.alignment = NSTextAlignmentLeft;
-    [self.siteTitle drawInRect:CGRectMake(leftMargin + 20, 6, rect.size.width - 20, 21)
+    // SiteCell.m draws from the left edge and mirrors the title and favicon for Arabic and Hebrew (NBLocalization.swift).
+    paragraphStyle.alignment = self.nb_leadingTextAlignment;
+    paragraphStyle.baseWritingDirection = self.nb_interfaceWritingDirection;
+    [self.siteTitle drawInRect:[self nb_directionalRect:CGRectMake(leftMargin + 20, 6, rect.size.width - 20, 21) within:r]
                 withAttributes:@{NSFontAttributeName: font,
                                  NSForegroundColorAttributeName: textColor,
                                  NSParagraphStyleAttributeName: paragraphStyle}];
@@ -89,7 +91,7 @@ static UIFont *indicatorFont = nil;
         self.siteFavicon = [self imageByApplyingAlpha:self.siteFavicon withAlpha:0.25];
     } 
     
-    [self.siteFavicon drawInRect:CGRectMake(leftMargin, 5.0, 16.0, 16.0)];
+    [self.siteFavicon drawInRect:[self nb_directionalRect:CGRectMake(leftMargin, 5.0, 16.0, 16.0) within:r]];
 }
 
 - (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha {

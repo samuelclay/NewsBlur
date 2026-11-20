@@ -147,7 +147,7 @@ private extension UIViewController {
 
             if !hasEscape {
                 let cmd = UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: [], action: #selector(nb_dismissFromOverlayTap))
-                cmd.discoverabilityTitle = "Close"
+                cmd.discoverabilityTitle = NBLocalization.text("Close")
                 if #available(iOS 15.0, *) {
                     cmd.wantsPriorityOverSystemBehavior = true
                 }
@@ -156,7 +156,7 @@ private extension UIViewController {
 
             if !hasCmdDot {
                 let cmd = UIKeyCommand(input: ".", modifierFlags: [.command], action: #selector(nb_dismissFromOverlayTap))
-                cmd.discoverabilityTitle = "Close"
+                cmd.discoverabilityTitle = NBLocalization.text("Close")
                 if #available(iOS 15.0, *) {
                     cmd.wantsPriorityOverSystemBehavior = true
                 }

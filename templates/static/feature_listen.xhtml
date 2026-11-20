@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load utils_tags %}
+{% block bodyclass %}NB-static NB-static-features NB-static-feature-listen{% endblock %}
+{% block title %}{% trans "Listen - NewsBlur" %}{% endblock %}
+{% block nav_title %}{% trans "Listen" %}{% endblock %}
+{% block head %}
+    <meta name="description" content="Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Follow along as each paragraph is highlighted, queue stories in Up Next, and pick a voice for each of 21 languages.">
+    <meta property="og:title" content="Listen - NewsBlur">
+    <meta property="og:description" content="Have any story read aloud on the web, iPhone, iPad, Mac, and Android.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.newsblur.com{{ request.path }}">
+    <meta property="og:image" content="https://www.newsblur.com/media/img/features/listen.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@newsblur">
+    <meta name="twitter:title" content="Listen - NewsBlur">
+    <meta name="twitter:description" content="Have any story read aloud on the web, iPhone, iPad, Mac, and Android.">
+    <meta name="twitter:image" content="https://www.newsblur.com/media/img/features/listen.jpg">
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-feature-detail-container">
+
+    <div class="NB-feature-detail-hero">
+        <div class="NB-feature-section-badge NB-feature-badge-archive">{% trans "Archive" %}</div>
+        <h1 class="NB-feature-detail-title">{% trans "Listen" %}</h1>
+        <p class="NB-feature-detail-subtitle">{% trans "Have any story read aloud on the web, iPhone, iPad, Mac, and Android." %}</p>
+    </div>
+
+    <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-single">
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/listen.jpg" alt="{% trans 'Listen playing on a MacBook, an iPad, an iPhone, and an Android phone' %}">
+            <div class="NB-feature-detail-caption">{% trans "Listen on the web, iPad, iPhone, and Android" %}</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-screenshots">
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/listen-follow-along.jpg" alt="{% trans 'Paragraphs highlighted as they are read on an iPad, an iPhone, and an Android phone' %}">
+            <div class="NB-feature-detail-caption">{% trans "Each paragraph is highlighted as it's read" %}</div>
+        </div>
+        <div class="NB-feature-detail-screenshot">
+            <img src="{{ MEDIA_URL }}img/features/listen-languages.jpg" alt="{% trans 'The default Listen voice for each of NewsBlur’s 21 languages' %}">
+            <div class="NB-feature-detail-caption">{% trans "A voice for each of NewsBlur's 21 languages" %}</div>
+        </div>
+    </div>
+
+    <div class="NB-feature-detail-how">
+        <h2>{% trans "How it works" %}</h2>
+        <ol class="NB-feature-detail-steps">
+            <li class="NB-feature-detail-step">{% trans "Open any story and press Listen" %}</li>
+            <li class="NB-feature-detail-step">{% trans "Follow along as each paragraph is highlighted, and tap any paragraph to jump to it" %}</li>
+            <li class="NB-feature-detail-step">{% trans "Press + to add stories to Up Next, then keep going with your next unread stories" %}</li>
+            <li class="NB-feature-detail-step">{% trans "Pick a voice for each language and set the delivery and speed" %}</li>
+            <li class="NB-feature-detail-step">{% trans "Keep listening with the screen off, from the lock screen or your phone's media controls" %}</li>
+        </ol>
+    </div>
+
+    <div class="NB-feature-detail-faq">
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">{% trans "Where does Listen work?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "On the web and in the iPhone, iPad, Mac, and Android apps. Up Next is saved to your account, so stories you queue on one device are waiting on the others." %}</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">{% trans "Which languages and voices are available?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Listen works out each story's language and reads it with your voice for that language. Each of NewsBlur's 21 languages has ten recommended voices from ElevenLabs, and you can search the rest of the ElevenLabs voice library." %}</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">{% trans "What if a feed only publishes a summary?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Listen fetches the full article from the site and reads that instead. Images, captions, code, and tables are skipped." %}</p>
+        </div>
+        <div class="NB-feature-detail-faq-item">
+            <h3 class="NB-feature-detail-faq-q">{% trans "What plan do I need?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second preview of a few stories a day." %}</p>
+        </div>
+    </div>
+
+    {% include "static/_feature_crosslinks.xhtml" %}
+
+</div>
+
+{% endblock content %}
+{% block footer %}
+    {% render_footer "features" %}
+{% endblock footer %}

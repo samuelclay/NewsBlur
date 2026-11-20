@@ -1,9 +1,10 @@
 NEWSBLUR.AssetModel = Backbone.Router.extend({
 
+    // assetmodel.js translates the generic actions; service names stay as their brands.
     third_party_sharing_services: {
-        "copyurl": "Copy URL",
-        "copytext": "Copy Text",
-        "print": "Print",
+        "copyurl": gettext("Copy URL"),
+        "copytext": gettext("Copy Text"),
+        "print": gettext("Print"),
         "facebook": "Facebook",
         "twitter": "X / Twitter",
         "reddit": "Reddit",
@@ -200,6 +201,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         this.ajax[options['ajax_group']].add(_.extend(ajax_options, options));
 
+    },
+
+    // assetmodel.js: reader.js reset_feed calls this as a feed or folder opens. Every page after a feed's
+    // first, and every page of a river, starred or read list, loads one at a time in the feed_page group,
+    // whose 'clear' queue only drops requests that haven't started. Aborting the one in flight too means
+    // its stories never join the new list (make_request ignores aborts) and the new first page starts now.
+    cancel_story_pages: function () {
+        this.ajax['feed_page'].clear(true);
     },
 
     theme: function () {
@@ -484,7 +493,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'new_tag_name': new_tag_name
             }, callback, error_callback);
         } else {
-            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+            if ($.isFunction(callback)) callback({ code: -1, message: gettext('Not authenticated') });
         }
     },
 
@@ -494,7 +503,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'tag_name': tag_name
             }, callback, error_callback);
         } else {
-            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+            if ($.isFunction(callback)) callback({ code: -1, message: gettext('Not authenticated') });
         }
     },
 
@@ -664,11 +673,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.user_profiles.add(profiles);
     },
 
-    load_feeds: function (callback, error_callback) {
+    // assetmodel.js: views/feed_list_view.js asks with from_cache on page load, which draws the
+    // feed list from the copy kept by common/feed_list_cache.js before the server answers. When
+    // the server's list draws the same (feed_list_cache.js structure_signature), its data merges
+    // in without redrawing, and the unread counts arrive from refresh_feeds, which the cached
+    // draw already started. A different list redraws as before.
+    load_feeds: function (callback, error_callback, options) {
         var self = this;
+        options = options || {};
+        var cache = NEWSBLUR.feed_list_cache;
+        var user_id = NEWSBLUR.Globals.is_authenticated && NEWSBLUR.Globals.user_id;
+        var cached = options.from_cache && cache && cache.read(user_id);
+
+        // The selected feed, taken before a response's feeds (each parsed as unselected) merge in.
         var selected = this.feeds.selected();
 
-        var pre_callback = function (feeds, subscriptions) {
+        var apply_subscriptions = function (subscriptions) {
             self.flags['favicons_fetching'] = self.feeds.any(function (feed) { return feed.get('favicons_fetching'); });
 
             self.folders.reset(_.compact(subscriptions.folders), { parse: true });
@@ -698,14 +718,121 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.flags['has_chosen_feeds'] = self.feeds.has_chosen_feeds();
 
             self.feeds.trigger('reset');
+        };
 
+        // The server's list draws the same as the cached one, so only the models catch up, and a
+        // row whose own data changed (a feed now fetched, a new favicon) redraws itself. Unread
+        // counts and the selected feed stay as they are: refresh_feeds may already have brought
+        // newer counts, and parsing either collection would mark every feed unselected. The saved
+        // and search sections redraw on their own, cheaply.
+        var merge_subscriptions = function (subscriptions) {
+            self.feeds.set(cache.without_counts(subscriptions.feeds), { remove: false });
+            self.social_feeds.set(cache.without_counts(subscriptions.social_feeds), { remove: false });
+            self.starred_count = subscriptions.starred_count;
+            self.starred_feeds.reset(subscriptions.starred_counts, { parse: true });
+            self.searches_feeds.reset(subscriptions.saved_searches, { parse: true });
+            self.user_profile.set(subscriptions.social_profile);
+            self.social_services = subscriptions.social_services;
+            self.folder_auto_mark_read = subscriptions.folder_auto_mark_read || {};
+            self.playback_state = subscriptions.playback_state || null;
+            self.flags['has_chosen_feeds'] = self.feeds.has_chosen_feeds();
+            NEWSBLUR.reader.update_starred_count();
+        };
+
+        var loaded = function (subscriptions) {
+            self.feed_list_subscriptions = subscriptions;
+            self.feed_list_saved_counts = null;
+            if (cache) {
+                cache.clear(user_id);
+                self.feed_list_uncacheable = !cache.write(user_id, subscriptions);
+            }
+            if (!cached) {
+                apply_subscriptions(subscriptions);
+            } else if (cache.structure_signature(cached) === cache.structure_signature(subscriptions)) {
+                merge_subscriptions(subscriptions);
+            } else {
+                // The list changed since it was cached, so it redraws once the way it always has,
+                // without repeating what the cached draw already did on page load.
+                selected = self.feeds.selected();
+                self.feeds.set(self.feeds.parse(subscriptions), { silent: true });
+                self.flags['feed_list_refreshed_from_cache'] = true;
+                try {
+                    apply_subscriptions(subscriptions);
+                } finally {
+                    self.flags['feed_list_refreshed_from_cache'] = false;
+                }
+            }
+            self.feeds.trigger('loaded_from_server');
             callback && callback();
         };
 
-        this.feeds.fetch({
-            success: pre_callback,
-            error: error_callback
+        if (!cached) {
+            this.feeds.fetch({
+                success: function (feeds, subscriptions) {
+                    loaded(subscriptions);
+                },
+                error: error_callback
+            });
+            return;
+        }
+
+        // views/feed_list_view.js asks while reader.js init is still running, before the reader
+        // binds its own feed list handlers (the intelligence filter, dashboard rivers), so the
+        // cached list draws once init returns, as a server's answer always has.
+        _.defer(function () {
+            self.feed_list_subscriptions = cached;
+            self.feeds.set(cached, { parse: true, silent: true });
+            self.flags['feed_list_from_cache'] = true;
+            try {
+                apply_subscriptions(cached);
+            } finally {
+                self.flags['feed_list_from_cache'] = false;
+            }
         });
+        // Requested directly rather than with feeds.fetch, which would merge the server's stored
+        // counts over newer ones, and alongside refresh_feeds rather than queued ahead of it.
+        // A failed refresh leaves the cached list up instead of the feed list's load error and
+        // tries again a little later. Its first failure triggers refresh_failed, so reader.js
+        // restores the Listen player, which waits for this answer, from its own request.
+        var retry_delays = [5000, 30000];
+        var refresh_failed = false;
+        var request_feeds = function () {
+            self.make_request('/reader/feeds', { 'v': 2, 'update_counts': false }, loaded, function (error) {
+                NEWSBLUR.log(['Feed list refresh failed, keeping the cached list', error]);
+                if (!refresh_failed) {
+                    refresh_failed = true;
+                    self.feeds.trigger('refresh_failed');
+                }
+                var delay = retry_delays.shift();
+                if (delay) _.delay(request_feeds, delay);
+            }, {
+                request_type: 'GET',
+                ajax_group: 'rapid',
+                timeout: 60000
+            });
+        };
+        request_feeds();
+    },
+
+    // assetmodel.js: writes the unread counts on screen into the cached feed list as the page
+    // hides, so the next page load starts from them (common/feed_list_cache.js). Hiding happens
+    // on every tab switch, and twice as a tab closes, so the list is only written again once a
+    // count has changed, and never again once storage has refused it for its size.
+    save_feed_list_counts: function () {
+        var cache = NEWSBLUR.feed_list_cache;
+        var user_id = NEWSBLUR.Globals.is_authenticated && NEWSBLUR.Globals.user_id;
+        if (!cache || !user_id || !this.feed_list_subscriptions || this.feed_list_uncacheable) return;
+        var counts = {};
+        var add_counts = function (feed) {
+            counts[feed.id] = { ps: feed.get('ps'), nt: feed.get('nt'), ng: feed.get('ng') };
+        };
+        this.feeds.each(add_counts);
+        this.social_feeds.each(add_counts);
+        var signature = JSON.stringify(counts);
+        if (signature === this.feed_list_saved_counts) return;
+        this.feed_list_subscriptions = cache.with_counts(this.feed_list_subscriptions, counts);
+        this.feed_list_uncacheable = !cache.write(user_id, this.feed_list_subscriptions);
+        this.feed_list_saved_counts = signature;
     },
 
     load_feed_favicons: function (callback, loaded_once, load_all) {
@@ -749,15 +876,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var feed = this.feeds.get(feed_id);
 
         if (feed_id && feed) {
+            // media/js/newsblur/common/assetmodel.js — classifier_filter flag is
+            // read by apps/reader/views.py:load_single_feed the same way the
+            // river endpoint handles it.
+            var cf = NEWSBLUR.reader.flags['classifier_filter'];
             this.make_request('/reader/feed/' + feed_id,
                 {
                     page: page,
                     feed_address: feed.get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
-                    read_filter: this.view_setting(feed_id, 'read_filter'),
+                    read_filter: NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+                        this.view_setting(feed_id, 'read_filter'),
+                        cf
+                    ),
                     date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
                     date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
                     query: NEWSBLUR.reader.flags.search,
+                    classifier_filter_type: cf ? cf.type : null,
+                    classifier_filter_value: cf ? cf.value : null,
+                    classifier_filter_scope: cf ? cf.scope : null,
                     include_hidden: true
                 }, pre_callback,
                 error_callback,
@@ -930,6 +1067,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     fetch_river_stories: function (feed_id, feeds, page, options, callback, error_callback, first_load) {
         var self = this;
+        // media/js/newsblur/common/assetmodel.js — classifier_filter params come
+        // from NEWSBLUR.reader.flags.classifier_filter (see reader.js:open_classifier_filter).
+        // When set, the backend (apps/reader/views.py:load_river_stories__redis)
+        // short-circuits the normal read-filter aggregation and returns only
+        // stories matching the chosen classifier value.
+        var cf = NEWSBLUR.reader.flags['classifier_filter'];
         options = $.extend({
             feeds: feeds,
             page: page,
@@ -938,9 +1081,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
             date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
             query: NEWSBLUR.reader.flags.search,
+            classifier_filter_type: cf ? cf.type : null,
+            classifier_filter_value: cf ? cf.value : null,
+            classifier_filter_scope: cf ? cf.scope : null,
+            classifier_filter_source_story: cf ? cf.story_hash : null,
             include_hidden: true,
             infrequent: false
         }, options);
+        options.read_filter = NEWSBLUR.classifier_filter_utils.read_filter_for_matching_view(
+            options.read_filter,
+            cf
+        );
 
         var pre_callback = function (data) {
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
@@ -964,7 +1115,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     fetch_briefing_stories: function (page, callback, error_callback) {
-        this.make_request('/briefing/stories', { page: page || 1 }, callback, error_callback, {
+        var self = this;
+        // assetmodel.js: Load the shared-story profiles before rendering so
+        // ProfileThumb.create() can resolve briefing sharers/commenters into avatars.
+        var pre_callback = function (data) {
+            if (data.user_profiles) {
+                self.add_user_profiles(data.user_profiles);
+            }
+            callback(data);
+        };
+        this.make_request('/briefing/stories', { page: page || 1 }, pre_callback, error_callback, {
             'ajax_group': 'feed',
             'request_type': 'GET'
         });
@@ -1511,12 +1671,29 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return user;
     },
 
-    save_classifier: function (data, callback) {
+    save_classifier: function (data, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/classifier/save', data, callback);
+            this.make_request('/classifier/save', data, callback, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
         }
+    },
+
+    // Optimistically update the per-feed classifier cache for a single
+    // value so recalculate_story_scores can see the change without a full
+    // refetch. score === 0 (or null/undefined) clears the value. Returns
+    // false when there's nothing cached for the feed.
+    update_cached_classifier_score: function (feed_id, classifier_type, value, score) {
+        var cache = this.classifiers[feed_id];
+        if (!cache) return false;
+        var bucket_key = classifier_type + 's';
+        cache[bucket_key] = cache[bucket_key] || {};
+        if (!score) {
+            delete cache[bucket_key][value];
+        } else {
+            cache[bucket_key][value] = score;
+        }
+        return true;
     },
 
     get_ai_classifier_usage: function (data, callback) {
@@ -1593,7 +1770,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'url': url,
             'in_folder': in_folder || ''
         }, callback, function () {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this site. Please try a different URL.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : gettext('There was a problem trying to add this site. Please try a different URL.') });
         });
     },
 
@@ -1678,7 +1855,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'folder': folder,
             'auto_active': options.auto_active
         }, callback, function (data) {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this site. Please try a different URL.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : data.message || 'There was a problem trying to add this site. Please try a different URL.' });
         });
     },
 
@@ -1687,7 +1864,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'folder': folder,
             'parent_folder': parent_folder
         }, callback, function (data) {
-            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this folder.' });
+            callback({ 'message': NEWSBLUR.Globals.is_anonymous ? gettext('Please create an account. Not much to do without an account.') : data.message || 'There was a problem trying to add this folder.' });
         });
     },
 
@@ -1797,12 +1974,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             var view_setting = feed && feed[s] || default_setting;
             // if (view_setting == "magazine") view_setting = "list";
+            // assetmodel.js: phones only have list and grid layouts (common/mobile_utils.js).
+            if (setting == 'layout' && NEWSBLUR.reader && NEWSBLUR.reader.flags.mobile) {
+                view_setting = NEWSBLUR.mobile_utils.mobile_story_layout(view_setting);
+            }
             return view_setting;
         }
 
         var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id + '']) || {};
         if (_.isString(view_settings)) {
             view_settings = { 'view': view_settings };
+        }
+        // assetmodel.js: a phone writes back the list or grid layout it shows whenever a feed
+        // opens. Skip that write when the stored desktop layout already reads as that layout,
+        // so a split feed stays split on desktop.
+        if (setting.hasOwnProperty('layout') && NEWSBLUR.reader && NEWSBLUR.reader.flags.mobile) {
+            var stored_layout = view_settings['l'] || NEWSBLUR.Preferences['story_layout'];
+            if (!NEWSBLUR.mobile_utils.should_save_mobile_layout(stored_layout, setting['layout'])) {
+                setting = _.omit(setting, 'layout');
+            }
         }
         var params = { 'feed_id': feed_id + '' };
         _.each([
@@ -1825,6 +2015,31 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/profile/set_view_setting', params, callback, null);
             return true;
         }
+    },
+
+    // assetmodel.js: the phone's layout menu (views/mobile_layout_popover.js) picks list, page or
+    // grid (common/mobile_utils.js phone_layout). view_setting's write path skips layouts that
+    // render the same list, which keeps the reader from turning a split feed into a list, so a
+    // pick saves here instead, as the desktop layout that reads as it.
+    phone_layout: function (feed_id) {
+        var feed = NEWSBLUR.Preferences.view_settings[feed_id + ''];
+        var stored_layout = feed && feed['l'] || NEWSBLUR.Preferences['story_layout'];
+        return NEWSBLUR.mobile_utils.phone_layout(stored_layout);
+    },
+
+    save_phone_layout: function (feed_id, phone_layout) {
+        if (this.phone_layout(feed_id) === phone_layout) return;
+        var layout = NEWSBLUR.mobile_utils.PHONE_LAYOUT_SAVES[phone_layout];
+        var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id + '']) || {};
+        if (_.isString(view_settings)) {
+            view_settings = { 'view': view_settings };
+        }
+        view_settings['l'] = layout;
+        NEWSBLUR.Preferences.view_settings[feed_id + ''] = view_settings;
+        this.make_request('/profile/set_view_setting', {
+            'feed_id': feed_id + '',
+            'feed_layout_setting': layout
+        }, null, null);
     },
 
     clear_view_settings: function (view_setting_type, callback) {
@@ -2142,7 +2357,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/reader/send_story_email', data, callback, error_callback, { 'timeout': 6000 });
         } else {
-            callback({ 'code': -1, 'message': 'You must be logged in to send a story over email.' });
+            callback({ 'code': -1, 'message': gettext('You must be logged in to send a story over email.') });
         }
     },
 
@@ -2600,8 +2815,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
                 if (classifier_score <= -2 || (intelligence.title > -2 && intelligence.title <= 0)) {
-                    // Standard substring matching
-                    if (story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
+                    // media/js/newsblur/common/assetmodel.js: Match title classifiers at word starts,
+                    // while allowing trained stems to continue through the end of a word.
+                    if (NEWSBLUR.title_classifier_utils.find_match_position(
+                        story.get('story_title', ''), classifier_title
+                    ) != -1) {
                         intelligence.title = classifier_score;
                     }
                 }
@@ -2724,6 +2942,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     // = Media Playback  =
     // ===================
 
+    // assetmodel.js: The shared media player state, re-read so items queued on another device
+    // (a phone's Up Next) show up here.
+    fetch_playback_state: function (callback, error_callback) {
+        this.make_request('/media_player/playback_state', {}, _.bind(function (response) {
+            if (response && _.has(response, 'playback_state')) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback, { request_type: 'GET', ajax_group: 'rapid', retry: false });
+    },
+
     save_playback_state: function (state_data, callback, error_callback) {
         this.make_request('/media_player/save_playback_state', state_data, _.bind(function (response) {
             if (response.playback_state) {
@@ -2809,6 +3038,54 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             callback && callback(response);
         }, this), error_callback);
+    },
+
+    // ==========
+    // = Listen =
+    // ==========
+
+    // assetmodel.js: Listen (apps/listen) requests go through the unqueued 'rapid' group so a
+    // segment request never waits behind mark-as-read or other queued calls, and they don't
+    // auto-retry: listen_engine.js decides when a retry is safe.
+    listen_request: function (url, data, callback, error_callback, options) {
+        this.make_request(url, data, callback, error_callback, _.extend({
+            ajax_group: 'rapid',
+            retry: false,
+            timeout: 30000
+        }, options));
+    },
+
+    listen_manifest: function (params, callback, error_callback) {
+        this.listen_request('/listen/manifest', params, callback, error_callback, { timeout: 60000 });
+    },
+
+    listen_segment: function (manifest_id, index, callback, error_callback) {
+        this.listen_request('/listen/segment', {
+            manifest_id: manifest_id,
+            index: index
+        }, callback, error_callback, { timeout: 60000 });
+    },
+
+    listen_voice_preview: function (params, callback, error_callback) {
+        this.listen_request('/listen/preview', params, callback, error_callback, { timeout: 60000 });
+    },
+
+    listen_voices: function (language, callback, error_callback) {
+        var params = language ? { language: language } : {};
+        this.listen_request('/listen/voices', params, callback, error_callback, { request_type: 'GET' });
+    },
+
+    listen_library: function (params, callback, error_callback) {
+        this.listen_request('/listen/library', params, callback, error_callback, { request_type: 'GET' });
+    },
+
+    listen_usage: function (callback, error_callback) {
+        this.listen_request('/listen/usage', {}, callback, error_callback, { request_type: 'GET' });
+    },
+
+    // assetmodel.js: Listening analytics (listen_engine.js send_progress); never shown to anyone.
+    listen_progress: function (params, callback, error_callback) {
+        this.listen_request('/listen/progress', params, callback, error_callback, { timeout: 15000 });
     }
 
 });

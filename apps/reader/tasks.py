@@ -3,6 +3,7 @@
 import datetime
 import time
 
+import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 
@@ -10,6 +11,34 @@ from apps.reader.models import UserSubscription
 from apps.social.models import MSocialSubscription
 from newsblur_web.celeryapp import app
 from utils import log as logging
+
+
+@app.task(name="maintain-feed-subscriptions")
+def MaintainFeedSubscriptions(user_id, changed, feed_ids):
+    # apps/reader/tasks.py keeps search, Redis, and subscriber maintenance outside the batch HTTP request.
+    from apps.rss_feeds.models import Feed
+    from apps.search.models import MUserSearch
+    from apps.social.models import MActivity
+    from apps.statistics.rtrending_subscriptions import RTrendingSubscription
+
+    user = User.objects.filter(pk=user_id).first()
+    if user is None:
+        return
+    feeds = Feed.objects.in_bulk(feed_id for feed_id, _ in changed)
+    for feed_id, created in changed:
+        feed = feeds.get(feed_id)
+        if feed is None:
+            continue
+        if created:
+            MActivity.new_feed_subscription(user_id=user_id, feed_id=feed.pk, feed_title=feed.title)
+            RTrendingSubscription.add_subscription(feed_id=feed.pk)
+        feed.setup_feed_for_premium_subscribers(
+            allow_skip_resync=user.profile.is_archive and feed.active_premium_subscribers != 0
+        )
+        if feed.archive_count:
+            feed.schedule_fetch_archive_feed()
+    MUserSearch.schedule_index_feeds_for_search(feed_ids, user_id)
+    redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL).publish(user.username, "reload:feeds")
 
 
 @app.task(name="freshen-homepage")

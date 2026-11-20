@@ -9,8 +9,8 @@
         android:id="@+id/fragment_intelligence_statebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
         android:gravity="center"
         android:orientation="horizontal" />
 

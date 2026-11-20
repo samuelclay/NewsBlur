@@ -1,0 +1,246 @@
+--------- beginning of main
+10-17 14:47:15.700  8331  8331 D NBPaneDrag: 1530643105 down event=1530643073 lag=32 x=825.0 y=450.0 width=1920.0 ratio=0.44281924 feeds=true rightEdge=true
+10-17 14:47:15.710  8331  8331 D NBPaneDrag: 1530643116 move event=1530643107 lag=9 history=0 x=827.5498 localX=25.549805 ratio=0.44414726 posted=false
+10-17 14:47:15.711  8331  8331 D NBPaneDrag: 1530643117 frame dragging=true ratio=0.44414726 width=48 attached=true
+10-17 14:47:15.712  8331  8331 D NBPaneDrag: 1530643117 resize:start feeds=true ratio=0.44414726 finished=false
+10-17 14:47:15.712  8331  8331 D NBPaneDrag: 1530643118 resize:prefs elapsed=1
+10-17 14:47:15.718  8331  8331 D NBPaneDrag: 1530643124 calc:story_list_feeds ratio=0.5558528 widthDp=1280.0 direction=0
+10-17 14:47:15.792  8331  8331 D NBPaneDrag: 1530643198 resize:end elapsed=81
+10-17 14:47:15.821  8331  8331 D NBPaneDrag: 1530643226 split:AllStoriesItemsList bounds=Rect(850, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5552668, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:15.821  8331  8331 D NBPaneDrag: 1530643226 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:15.823  8331  8331 D NBPaneDrag: 1530643229 split:FeedListDrawer bounds=Rect(0, 0 - 850, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5552668, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:15.823  8331  8331 D NBPaneDrag: 1530643229 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.4447332
+10-17 14:47:15.828  8331  8331 D NBPaneDrag: 1530643234 move event=1530643202 lag=32 history=0 x=834.6748 localX=32.674805 ratio=0.44785818 posted=false
+10-17 14:47:15.828  8331  8331 D NBPaneDrag: 1530643234 frame dragging=true ratio=0.44785818 width=48 attached=true
+10-17 14:47:15.828  8331  8331 D NBPaneDrag: 1530643234 resize:start feeds=true ratio=0.44785818 finished=false
+10-17 14:47:15.829  8331  8331 D NBPaneDrag: 1530643234 resize:prefs elapsed=0
+10-17 14:47:15.830  8331  8331 D NBPaneDrag: 1530643236 calc:story_list_feeds ratio=0.5521418 widthDp=1280.0 direction=0
+10-17 14:47:16.025  8331  8331 D NBPaneDrag: 1530643431 split:AllStoriesItemsList bounds=Rect(859, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5521418, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.025  8331  8331 D NBPaneDrag: 1530643431 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:16.031  8331  8331 D NBPaneDrag: 1530643436 split:FeedListDrawer bounds=Rect(0, 0 - 859, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5521418, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.031  8331  8331 D NBPaneDrag: 1530643437 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.44785818
+10-17 14:47:16.038  8331  8331 D NBPaneDrag: 1530643443 move event=1530643234 lag=209 history=0 x=837.0752 localX=26.075195 ratio=0.4491084 posted=false
+10-17 14:47:16.038  8331  8331 D NBPaneDrag: 1530643444 frame dragging=true ratio=0.4491084 width=48 attached=true
+10-17 14:47:16.038  8331  8331 D NBPaneDrag: 1530643444 resize:start feeds=true ratio=0.4491084 finished=false
+10-17 14:47:16.038  8331  8331 D NBPaneDrag: 1530643444 resize:prefs elapsed=0
+10-17 14:47:16.041  8331  8331 D NBPaneDrag: 1530643446 calc:story_list_feeds ratio=0.55089164 widthDp=1280.0 direction=0
+10-17 14:47:16.055  8331  8331 D NBPaneDrag: 1530643460 resize:end elapsed=16
+10-17 14:47:16.212  8331  8331 D NBPaneDrag: 1530643618 split:AllStoriesItemsList bounds=Rect(862, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.55089164, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.213  8331  8331 D NBPaneDrag: 1530643618 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:16.215  8331  8331 D NBPaneDrag: 1530643620 split:FeedListDrawer bounds=Rect(0, 0 - 862, 1200) attributes=[SplitAttributes:{splitType=ratio:0.55089164, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.215  8331  8331 D NBPaneDrag: 1530643620 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.4491084
+10-17 14:47:16.219  8331  8331 D NBPaneDrag: 1530643625 move event=1530643444 lag=181 history=0 x=852.8252 localX=38.825195 ratio=0.45731154 posted=false
+10-17 14:47:16.219  8331  8331 D NBPaneDrag: 1530643625 frame dragging=true ratio=0.45731154 width=48 attached=true
+10-17 14:47:16.219  8331  8331 D NBPaneDrag: 1530643625 resize:start feeds=true ratio=0.45731154 finished=false
+10-17 14:47:16.220  8331  8331 D NBPaneDrag: 1530643625 resize:prefs elapsed=0
+10-17 14:47:16.222  8331  8331 D NBPaneDrag: 1530643627 calc:story_list_feeds ratio=0.5426885 widthDp=1280.0 direction=0
+10-17 14:47:16.232  8331  8331 D NBPaneDrag: 1530643638 resize:end elapsed=13
+10-17 14:47:16.381  8331  8331 D NBPaneDrag: 1530643787 split:AllStoriesItemsList bounds=Rect(878, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5426885, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.381  8331  8331 D NBPaneDrag: 1530643787 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:16.383  8331  8331 D NBPaneDrag: 1530643789 split:FeedListDrawer bounds=Rect(0, 0 - 878, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5426885, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.383  8331  8331 D NBPaneDrag: 1530643789 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.45731154
+10-17 14:47:16.388  8331  8331 D NBPaneDrag: 1530643794 move event=1530643625 lag=169 history=0 x=866.4004 localX=36.40039 ratio=0.46438193 posted=false
+10-17 14:47:16.388  8331  8331 D NBPaneDrag: 1530643794 frame dragging=true ratio=0.46438193 width=48 attached=true
+10-17 14:47:16.389  8331  8331 D NBPaneDrag: 1530643794 resize:start feeds=true ratio=0.46438193 finished=false
+10-17 14:47:16.389  8331  8331 D NBPaneDrag: 1530643794 resize:prefs elapsed=0
+10-17 14:47:16.391  8331  8331 D NBPaneDrag: 1530643796 calc:story_list_feeds ratio=0.53561807 widthDp=1280.0 direction=0
+10-17 14:47:16.401  8331  8331 D NBPaneDrag: 1530643807 resize:end elapsed=13
+10-17 14:47:16.552  8331  8331 D NBPaneDrag: 1530643958 split:AllStoriesItemsList bounds=Rect(891, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.53561807, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.552  8331  8331 D NBPaneDrag: 1530643958 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:16.555  8331  8331 D NBPaneDrag: 1530643960 split:FeedListDrawer bounds=Rect(0, 0 - 891, 1200) attributes=[SplitAttributes:{splitType=ratio:0.53561807, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.555  8331  8331 D NBPaneDrag: 1530643960 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.46438193
+10-17 14:47:16.559  8331  8331 D NBPaneDrag: 1530643965 move event=1530643794 lag=171 history=0 x=879.0752 localX=36.075195 ratio=0.47098342 posted=false
+10-17 14:47:16.559  8331  8331 D NBPaneDrag: 1530643965 frame dragging=true ratio=0.47098342 width=48 attached=true
+10-17 14:47:16.559  8331  8331 D NBPaneDrag: 1530643965 resize:start feeds=true ratio=0.47098342 finished=false
+10-17 14:47:16.560  8331  8331 D NBPaneDrag: 1530643965 resize:prefs elapsed=0
+10-17 14:47:16.564  8331  8331 D NBPaneDrag: 1530643970 calc:story_list_feeds ratio=0.5290166 widthDp=1280.0 direction=0
+10-17 14:47:16.578  8331  8331 D NBPaneDrag: 1530643983 resize:end elapsed=18
+10-17 14:47:16.732  8331  8331 D NBPaneDrag: 1530644138 split:AllStoriesItemsList bounds=Rect(904, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5290166, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.733  8331  8331 D NBPaneDrag: 1530644138 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:16.735  8331  8331 D NBPaneDrag: 1530644140 split:FeedListDrawer bounds=Rect(0, 0 - 904, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5290166, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.735  8331  8331 D NBPaneDrag: 1530644140 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.47098342
+10-17 14:47:16.740  8331  8331 D NBPaneDrag: 1530644145 move event=1530643965 lag=180 history=0 x=891.9004 localX=35.90039 ratio=0.4776632 posted=false
+10-17 14:47:16.740  8331  8331 D NBPaneDrag: 1530644146 frame dragging=true ratio=0.4776632 width=48 attached=true
+10-17 14:47:16.740  8331  8331 D NBPaneDrag: 1530644146 resize:start feeds=true ratio=0.4776632 finished=false
+10-17 14:47:16.740  8331  8331 D NBPaneDrag: 1530644146 resize:prefs elapsed=0
+10-17 14:47:16.747  8331  8331 D NBPaneDrag: 1530644153 calc:story_list_feeds ratio=0.52233684 widthDp=1280.0 direction=0
+10-17 14:47:16.761  8331  8331 D NBPaneDrag: 1530644167 resize:end elapsed=21
+10-17 14:47:16.926  8331  8331 D NBPaneDrag: 1530644331 split:AllStoriesItemsList bounds=Rect(917, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.52233684, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.926  8331  8331 D NBPaneDrag: 1530644332 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:16.932  8331  8331 D NBPaneDrag: 1530644338 split:FeedListDrawer bounds=Rect(0, 0 - 917, 1200) attributes=[SplitAttributes:{splitType=ratio:0.52233684, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:16.932  8331  8331 D NBPaneDrag: 1530644338 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.4776632
+10-17 14:47:16.937  8331  8331 D NBPaneDrag: 1530644343 move event=1530644146 lag=197 history=0 x=905.4746 localX=36.47461 ratio=0.4847331 posted=false
+10-17 14:47:16.938  8331  8331 D NBPaneDrag: 1530644343 frame dragging=true ratio=0.4847331 width=48 attached=true
+10-17 14:47:16.938  8331  8331 D NBPaneDrag: 1530644343 resize:start feeds=true ratio=0.4847331 finished=false
+10-17 14:47:16.938  8331  8331 D NBPaneDrag: 1530644344 resize:prefs elapsed=1
+10-17 14:47:16.940  8331  8331 D NBPaneDrag: 1530644346 calc:story_list_feeds ratio=0.5152669 widthDp=1280.0 direction=0
+10-17 14:47:16.953  8331  8331 D NBPaneDrag: 1530644358 resize:end elapsed=15
+10-17 14:47:17.094  8331  8331 D NBPaneDrag: 1530644499 split:AllStoriesItemsList bounds=Rect(930, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5152669, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.094  8331  8331 D NBPaneDrag: 1530644499 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:17.100  8331  8331 D NBPaneDrag: 1530644505 split:FeedListDrawer bounds=Rect(0, 0 - 930, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5152669, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.100  8331  8331 D NBPaneDrag: 1530644506 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.4847331
+10-17 14:47:17.105  8331  8331 D NBPaneDrag: 1530644510 move event=1530644343 lag=167 history=0 x=920.25 localX=38.25 ratio=0.4924286 posted=false
+10-17 14:47:17.105  8331  8331 D NBPaneDrag: 1530644510 frame dragging=true ratio=0.4924286 width=48 attached=true
+10-17 14:47:17.105  8331  8331 D NBPaneDrag: 1530644511 resize:start feeds=true ratio=0.4924286 finished=false
+10-17 14:47:17.105  8331  8331 D NBPaneDrag: 1530644511 resize:prefs elapsed=1
+10-17 14:47:17.107  8331  8331 D NBPaneDrag: 1530644513 calc:story_list_feeds ratio=0.5075714 widthDp=1280.0 direction=0
+10-17 14:47:17.120  8331  8331 D NBPaneDrag: 1530644526 resize:end elapsed=16
+10-17 14:47:17.265  8331  8331 D NBPaneDrag: 1530644671 split:AllStoriesItemsList bounds=Rect(945, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5075714, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.265  8331  8331 D NBPaneDrag: 1530644671 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:17.267  8331  8331 D NBPaneDrag: 1530644673 split:FeedListDrawer bounds=Rect(0, 0 - 945, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5075714, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.267  8331  8331 D NBPaneDrag: 1530644673 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.4924286
+10-17 14:47:17.284  8331  8331 D NBPaneDrag: 1530644690 move event=1530644511 lag=178 history=0 x=932.8496 localX=35.84961 ratio=0.4989909 posted=false
+10-17 14:47:17.284  8331  8331 D NBPaneDrag: 1530644690 frame dragging=true ratio=0.4989909 width=48 attached=true
+10-17 14:47:17.284  8331  8331 D NBPaneDrag: 1530644690 resize:start feeds=true ratio=0.4989909 finished=false
+10-17 14:47:17.285  8331  8331 D NBPaneDrag: 1530644690 resize:prefs elapsed=0
+10-17 14:47:17.287  8331  8331 D NBPaneDrag: 1530644692 calc:story_list_feeds ratio=0.5010091 widthDp=1280.0 direction=0
+10-17 14:47:17.300  8331  8331 D NBPaneDrag: 1530644706 resize:end elapsed=16
+10-17 14:47:17.446  8331  8331 D NBPaneDrag: 1530644852 split:AllStoriesItemsList bounds=Rect(958, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5010091, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.447  8331  8331 D NBPaneDrag: 1530644852 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:17.448  8331  8331 D NBPaneDrag: 1530644854 split:FeedListDrawer bounds=Rect(0, 0 - 958, 1200) attributes=[SplitAttributes:{splitType=ratio:0.5010091, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.449  8331  8331 D NBPaneDrag: 1530644854 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.4989909
+10-17 14:47:17.453  8331  8331 D NBPaneDrag: 1530644859 move event=1530644690 lag=169 history=0 x=946.2754 localX=36.27539 ratio=0.5059835 posted=false
+10-17 14:47:17.454  8331  8331 D NBPaneDrag: 1530644859 frame dragging=true ratio=0.5059835 width=48 attached=true
+10-17 14:47:17.454  8331  8331 D NBPaneDrag: 1530644859 resize:start feeds=true ratio=0.5059835 finished=false
+10-17 14:47:17.454  8331  8331 D NBPaneDrag: 1530644859 resize:prefs elapsed=0
+10-17 14:47:17.456  8331  8331 D NBPaneDrag: 1530644862 calc:story_list_feeds ratio=0.49401653 widthDp=1280.0 direction=0
+10-17 14:47:17.464  8331  8331 D NBPaneDrag: 1530644869 resize:end elapsed=10
+10-17 14:47:17.608  8331  8331 D NBPaneDrag: 1530645014 split:AllStoriesItemsList bounds=Rect(971, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.49401653, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.608  8331  8331 D NBPaneDrag: 1530645014 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:17.613  8331  8331 D NBPaneDrag: 1530645019 split:FeedListDrawer bounds=Rect(0, 0 - 971, 1200) attributes=[SplitAttributes:{splitType=ratio:0.49401653, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.613  8331  8331 D NBPaneDrag: 1530645019 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.5059835
+10-17 14:47:17.618  8331  8331 D NBPaneDrag: 1530645023 move event=1530644859 lag=164 history=0 x=958.9502 localX=35.950195 ratio=0.512585 posted=false
+10-17 14:47:17.618  8331  8331 D NBPaneDrag: 1530645023 frame dragging=true ratio=0.512585 width=48 attached=true
+10-17 14:47:17.618  8331  8331 D NBPaneDrag: 1530645024 resize:start feeds=true ratio=0.512585 finished=false
+10-17 14:47:17.618  8331  8331 D NBPaneDrag: 1530645024 resize:prefs elapsed=1
+10-17 14:47:17.620  8331  8331 D NBPaneDrag: 1530645026 calc:story_list_feeds ratio=0.48741502 widthDp=1280.0 direction=0
+10-17 14:47:17.635  8331  8331 D NBPaneDrag: 1530645040 resize:end elapsed=17
+10-17 14:47:17.778  8331  8331 D NBPaneDrag: 1530645184 split:AllStoriesItemsList bounds=Rect(984, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.48741502, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.778  8331  8331 D NBPaneDrag: 1530645184 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:17.783  8331  8331 D NBPaneDrag: 1530645189 split:FeedListDrawer bounds=Rect(0, 0 - 984, 1200) attributes=[SplitAttributes:{splitType=ratio:0.48741502, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.783  8331  8331 D NBPaneDrag: 1530645189 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.512585
+10-17 14:47:17.788  8331  8331 D NBPaneDrag: 1530645193 move event=1530645024 lag=169 history=0 x=971.3252 localX=35.325195 ratio=0.5190303 posted=false
+10-17 14:47:17.788  8331  8331 D NBPaneDrag: 1530645194 frame dragging=true ratio=0.5190303 width=48 attached=true
+10-17 14:47:17.788  8331  8331 D NBPaneDrag: 1530645194 resize:start feeds=true ratio=0.5190303 finished=false
+10-17 14:47:17.788  8331  8331 D NBPaneDrag: 1530645194 resize:prefs elapsed=0
+10-17 14:47:17.791  8331  8331 D NBPaneDrag: 1530645196 calc:story_list_feeds ratio=0.48096973 widthDp=1280.0 direction=0
+10-17 14:47:17.835  8331  8331 D NBPaneDrag: 1530645240 resize:end elapsed=46
+10-17 14:47:17.985  8331  8331 D NBPaneDrag: 1530645391 split:AllStoriesItemsList bounds=Rect(996, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.48096973, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.986  8331  8331 D NBPaneDrag: 1530645391 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:17.987  8331  8331 D NBPaneDrag: 1530645393 split:FeedListDrawer bounds=Rect(0, 0 - 996, 1200) attributes=[SplitAttributes:{splitType=ratio:0.48096973, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:17.987  8331  8331 D NBPaneDrag: 1530645393 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.5190303
+10-17 14:47:17.992  8331  8331 D NBPaneDrag: 1530645397 move event=1530645194 lag=203 history=0 x=984.0752 localX=191.21191 ratio=0.5256709 posted=false
+10-17 14:47:17.992  8331  8331 D NBPaneDrag: 1530645397 frame dragging=true ratio=0.5256709 width=48 attached=true
+10-17 14:47:17.992  8331  8331 D NBPaneDrag: 1530645398 resize:start feeds=true ratio=0.5256709 finished=false
+10-17 14:47:17.992  8331  8331 D NBPaneDrag: 1530645398 resize:prefs elapsed=0
+10-17 14:47:17.996  8331  8331 D NBPaneDrag: 1530645401 calc:story_list_feeds ratio=0.4743291 widthDp=1280.0 direction=0
+10-17 14:47:18.010  8331  8331 D NBPaneDrag: 1530645415 resize:end elapsed=17
+10-17 14:47:18.159  8331  8331 D NBPaneDrag: 1530645564 split:AllStoriesItemsList bounds=Rect(1009, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.4743291, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.159  8331  8331 D NBPaneDrag: 1530645564 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:18.164  8331  8331 D NBPaneDrag: 1530645569 split:FeedListDrawer bounds=Rect(0, 0 - 1009, 1200) attributes=[SplitAttributes:{splitType=ratio:0.4743291, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.164  8331  8331 D NBPaneDrag: 1530645569 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.5256709
+10-17 14:47:18.167  8331  8331 D NBPaneDrag: 1530645573 move event=1530645398 lag=175 history=0 x=999.375 localX=51.5625 ratio=0.53363955 posted=false
+10-17 14:47:18.167  8331  8331 D NBPaneDrag: 1530645573 frame dragging=true ratio=0.53363955 width=48 attached=true
+10-17 14:47:18.167  8331  8331 D NBPaneDrag: 1530645573 resize:start feeds=true ratio=0.53363955 finished=false
+10-17 14:47:18.168  8331  8331 D NBPaneDrag: 1530645573 resize:prefs elapsed=0
+10-17 14:47:18.170  8331  8331 D NBPaneDrag: 1530645575 calc:story_list_feeds ratio=0.46636045 widthDp=1280.0 direction=0
+10-17 14:47:18.184  8331  8331 D NBPaneDrag: 1530645589 resize:end elapsed=16
+10-17 14:47:18.336  8331  8331 D NBPaneDrag: 1530645741 split:AllStoriesItemsList bounds=Rect(1024, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.46636045, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.336  8331  8331 D NBPaneDrag: 1530645742 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:18.339  8331  8331 D NBPaneDrag: 1530645744 split:FeedListDrawer bounds=Rect(0, 0 - 1024, 1200) attributes=[SplitAttributes:{splitType=ratio:0.46636045, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.339  8331  8331 D NBPaneDrag: 1530645745 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.53363955
+10-17 14:47:18.345  8331  8331 D NBPaneDrag: 1530645750 move event=1530645573 lag=177 history=0 x=1012.5 localX=38.304688 ratio=0.5404755 posted=false
+10-17 14:47:18.345  8331  8331 D NBPaneDrag: 1530645751 frame dragging=true ratio=0.5404755 width=48 attached=true
+10-17 14:47:18.345  8331  8331 D NBPaneDrag: 1530645751 resize:start feeds=true ratio=0.5404755 finished=false
+10-17 14:47:18.345  8331  8331 D NBPaneDrag: 1530645751 resize:prefs elapsed=0
+10-17 14:47:18.348  8331  8331 D NBPaneDrag: 1530645753 calc:story_list_feeds ratio=0.4595245 widthDp=1280.0 direction=0
+10-17 14:47:18.360  8331  8331 D NBPaneDrag: 1530645765 resize:end elapsed=14
+10-17 14:47:18.504  8331  8331 D NBPaneDrag: 1530645909 split:AllStoriesItemsList bounds=Rect(1037, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.4595245, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.504  8331  8331 D NBPaneDrag: 1530645910 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:18.506  8331  8331 D NBPaneDrag: 1530645911 split:FeedListDrawer bounds=Rect(0, 0 - 1037, 1200) attributes=[SplitAttributes:{splitType=ratio:0.4595245, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.506  8331  8331 D NBPaneDrag: 1530645912 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.5404755
+10-17 14:47:18.511  8331  8331 D NBPaneDrag: 1530645916 move event=1530645751 lag=165 history=0 x=1025.8496 localX=36.84961 ratio=0.5474284 posted=false
+10-17 14:47:18.511  8331  8331 D NBPaneDrag: 1530645917 frame dragging=true ratio=0.5474284 width=48 attached=true
+10-17 14:47:18.511  8331  8331 D NBPaneDrag: 1530645917 resize:start feeds=true ratio=0.5474284 finished=false
+10-17 14:47:18.512  8331  8331 D NBPaneDrag: 1530645917 resize:prefs elapsed=0
+10-17 14:47:18.514  8331  8331 D NBPaneDrag: 1530645919 calc:story_list_feeds ratio=0.45257157 widthDp=1280.0 direction=0
+10-17 14:47:18.527  8331  8331 D NBPaneDrag: 1530645933 resize:end elapsed=16
+10-17 14:47:18.673  8331  8331 D NBPaneDrag: 1530646079 split:AllStoriesItemsList bounds=Rect(1051, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.45257157, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.674  8331  8331 D NBPaneDrag: 1530646079 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:18.679  8331  8331 D NBPaneDrag: 1530646084 split:FeedListDrawer bounds=Rect(0, 0 - 1051, 1200) attributes=[SplitAttributes:{splitType=ratio:0.45257157, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.679  8331  8331 D NBPaneDrag: 1530646084 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.5474284
+10-17 14:47:18.686  8331  8331 D NBPaneDrag: 1530646091 move event=1530645917 lag=174 history=0 x=1038.2998 localX=35.299805 ratio=0.5539129 posted=false
+10-17 14:47:18.686  8331  8331 D NBPaneDrag: 1530646092 frame dragging=true ratio=0.5539129 width=48 attached=true
+10-17 14:47:18.686  8331  8331 D NBPaneDrag: 1530646092 resize:start feeds=true ratio=0.5539129 finished=false
+10-17 14:47:18.687  8331  8331 D NBPaneDrag: 1530646092 resize:prefs elapsed=0
+10-17 14:47:18.688  8331  8331 D NBPaneDrag: 1530646094 calc:story_list_feeds ratio=0.44608712 widthDp=1280.0 direction=0
+10-17 14:47:18.703  8331  8331 D NBPaneDrag: 1530646109 resize:end elapsed=17
+10-17 14:47:18.845  8331  8331 D NBPaneDrag: 1530646250 split:AllStoriesItemsList bounds=Rect(1063, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.44608712, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.845  8331  8331 D NBPaneDrag: 1530646251 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:18.849  8331  8331 D NBPaneDrag: 1530646254 split:FeedListDrawer bounds=Rect(0, 0 - 1063, 1200) attributes=[SplitAttributes:{splitType=ratio:0.44608712, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:18.849  8331  8331 D NBPaneDrag: 1530646255 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.5539129
+10-17 14:47:18.854  8331  8331 D NBPaneDrag: 1530646260 move event=1530646092 lag=168 history=0 x=1051.4248 localX=36.424805 ratio=0.5607488 posted=false
+10-17 14:47:18.854  8331  8331 D NBPaneDrag: 1530646260 frame dragging=true ratio=0.5607488 width=48 attached=true
+10-17 14:47:18.855  8331  8331 D NBPaneDrag: 1530646260 resize:start feeds=true ratio=0.5607488 finished=false
+10-17 14:47:18.855  8331  8331 D NBPaneDrag: 1530646260 resize:prefs elapsed=0
+10-17 14:47:18.857  8331  8331 D NBPaneDrag: 1530646263 calc:story_list_feeds ratio=0.43925118 widthDp=1280.0 direction=0
+10-17 14:47:18.871  8331  8331 D NBPaneDrag: 1530646277 resize:end elapsed=17
+10-17 14:47:19.019  8331  8331 D NBPaneDrag: 1530646425 split:AllStoriesItemsList bounds=Rect(1076, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.43925118, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.019  8331  8331 D NBPaneDrag: 1530646425 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:19.021  8331  8331 D NBPaneDrag: 1530646427 split:FeedListDrawer bounds=Rect(0, 0 - 1076, 1200) attributes=[SplitAttributes:{splitType=ratio:0.43925118, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.021  8331  8331 D NBPaneDrag: 1530646427 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.5607488
+10-17 14:47:19.026  8331  8331 D NBPaneDrag: 1530646431 move event=1530646260 lag=171 history=0 x=1064.0254 localX=36.02539 ratio=0.56731164 posted=false
+10-17 14:47:19.026  8331  8331 D NBPaneDrag: 1530646432 frame dragging=true ratio=0.56731164 width=48 attached=true
+10-17 14:47:19.026  8331  8331 D NBPaneDrag: 1530646432 resize:start feeds=true ratio=0.56731164 finished=false
+10-17 14:47:19.027  8331  8331 D NBPaneDrag: 1530646432 resize:prefs elapsed=0
+10-17 14:47:19.030  8331  8331 D NBPaneDrag: 1530646436 calc:story_list_feeds ratio=0.43268836 widthDp=1280.0 direction=0
+10-17 14:47:19.045  8331  8331 D NBPaneDrag: 1530646451 resize:end elapsed=19
+10-17 14:47:19.189  8331  8331 D NBPaneDrag: 1530646595 split:AllStoriesItemsList bounds=Rect(1089, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.43268836, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.189  8331  8331 D NBPaneDrag: 1530646595 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:19.196  8331  8331 D NBPaneDrag: 1530646601 split:FeedListDrawer bounds=Rect(0, 0 - 1089, 1200) attributes=[SplitAttributes:{splitType=ratio:0.43268836, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.196  8331  8331 D NBPaneDrag: 1530646602 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.56731164
+10-17 14:47:19.201  8331  8331 D NBPaneDrag: 1530646606 move event=1530646432 lag=174 history=0 x=1076.9248 localX=35.924805 ratio=0.57403004 posted=false
+10-17 14:47:19.201  8331  8331 D NBPaneDrag: 1530646606 frame dragging=true ratio=0.57403004 width=48 attached=true
+10-17 14:47:19.201  8331  8331 D NBPaneDrag: 1530646606 resize:start feeds=true ratio=0.57403004 finished=false
+10-17 14:47:19.201  8331  8331 D NBPaneDrag: 1530646607 resize:prefs elapsed=1
+10-17 14:47:19.203  8331  8331 D NBPaneDrag: 1530646609 calc:story_list_feeds ratio=0.42596996 widthDp=1280.0 direction=0
+10-17 14:47:19.217  8331  8331 D NBPaneDrag: 1530646623 resize:end elapsed=17
+10-17 14:47:19.355  8331  8331 D NBPaneDrag: 1530646760 split:AllStoriesItemsList bounds=Rect(1102, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.42596996, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.355  8331  8331 D NBPaneDrag: 1530646760 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:19.357  8331  8331 D NBPaneDrag: 1530646762 split:FeedListDrawer bounds=Rect(0, 0 - 1102, 1200) attributes=[SplitAttributes:{splitType=ratio:0.42596996, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.357  8331  8331 D NBPaneDrag: 1530646762 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.57403004
+10-17 14:47:19.365  8331  8331 D NBPaneDrag: 1530646771 move event=1530646607 lag=164 history=0 x=1090.0498 localX=36.049805 ratio=0.580866 posted=false
+10-17 14:47:19.366  8331  8331 D NBPaneDrag: 1530646771 frame dragging=true ratio=0.580866 width=48 attached=true
+10-17 14:47:19.366  8331  8331 D NBPaneDrag: 1530646771 resize:start feeds=true ratio=0.580866 finished=false
+10-17 14:47:19.366  8331  8331 D NBPaneDrag: 1530646771 resize:prefs elapsed=0
+10-17 14:47:19.368  8331  8331 D NBPaneDrag: 1530646773 calc:story_list_feeds ratio=0.41913402 widthDp=1280.0 direction=0
+10-17 14:47:19.381  8331  8331 D NBPaneDrag: 1530646786 resize:end elapsed=15
+10-17 14:47:19.523  8331  8331 D NBPaneDrag: 1530646928 split:AllStoriesItemsList bounds=Rect(1115, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.41913402, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.523  8331  8331 D NBPaneDrag: 1530646928 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:19.528  8331  8331 D NBPaneDrag: 1530646933 split:FeedListDrawer bounds=Rect(0, 0 - 1115, 1200) attributes=[SplitAttributes:{splitType=ratio:0.41913402, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.528  8331  8331 D NBPaneDrag: 1530646934 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.580866
+10-17 14:47:19.533  8331  8331 D NBPaneDrag: 1530646938 move event=1530646771 lag=167 history=0 x=1102.3496 localX=35.34961 ratio=0.58727217 posted=false
+10-17 14:47:19.533  8331  8331 D NBPaneDrag: 1530646939 frame dragging=true ratio=0.58727217 width=48 attached=true
+10-17 14:47:19.533  8331  8331 D NBPaneDrag: 1530646939 resize:start feeds=true ratio=0.58727217 finished=false
+10-17 14:47:19.533  8331  8331 D NBPaneDrag: 1530646939 resize:prefs elapsed=0
+10-17 14:47:19.535  8331  8331 D NBPaneDrag: 1530646941 calc:story_list_feeds ratio=0.41272783 widthDp=1280.0 direction=0
+10-17 14:47:19.549  8331  8331 D NBPaneDrag: 1530646955 resize:end elapsed=16
+10-17 14:47:19.692  8331  8331 D NBPaneDrag: 1530647098 split:AllStoriesItemsList bounds=Rect(1127, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.41272783, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.692  8331  8331 D NBPaneDrag: 1530647098 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:19.699  8331  8331 D NBPaneDrag: 1530647104 split:FeedListDrawer bounds=Rect(0, 0 - 1127, 1200) attributes=[SplitAttributes:{splitType=ratio:0.41272783, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.699  8331  8331 D NBPaneDrag: 1530647104 divider:FeedListDrawer dragging=true posted=false width=48 ratio=0.58727217
+10-17 14:47:19.705  8331  8331 D NBPaneDrag: 1530647111 move event=1530646939 lag=172 history=0 x=1114.9502 localX=35.950195 ratio=0.593835 posted=false
+10-17 14:47:19.706  8331  8331 D NBPaneDrag: 1530647111 frame dragging=true ratio=0.593835 width=48 attached=true
+10-17 14:47:19.706  8331  8331 D NBPaneDrag: 1530647111 resize:start feeds=true ratio=0.593835 finished=false
+10-17 14:47:19.706  8331  8331 D NBPaneDrag: 1530647112 resize:prefs elapsed=1
+10-17 14:47:19.709  8331  8331 D NBPaneDrag: 1530647115 calc:story_list_feeds ratio=0.406165 widthDp=1280.0 direction=0
+10-17 14:47:19.727  8331  8331 D NBPaneDrag: 1530647132 resize:end elapsed=21
+10-17 14:47:19.894  8331  8331 D NBPaneDrag: 1530647300 up action=1 event=1530647111 lag=189 x=1125.0 ratio=0.59906924
+10-17 14:47:19.894  8331  8331 D NBPaneDrag: 1530647300 resize:start feeds=true ratio=0.59906924 finished=true
+10-17 14:47:19.894  8331  8331 D NBPaneDrag: 1530647300 resize:prefs elapsed=0
+10-17 14:47:19.902  8331  8331 D NBPaneDrag: 1530647308 calc:story_list_feeds ratio=0.40093076 widthDp=1280.0 direction=0
+10-17 14:47:19.950  8331  8331 D NBPaneDrag: 1530647356 resize:end elapsed=56
+10-17 14:47:19.955  8331  8331 D NBPaneDrag: 1530647360 split:AllStoriesItemsList bounds=Rect(1140, 0 - 1920, 1200) attributes=[SplitAttributes:{splitType=ratio:0.40093076, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.955  8331  8331 D NBPaneDrag: 1530647361 divider:AllStoriesItemsList dragging=false posted=false width=0 ratio=0.0
+10-17 14:47:19.959  8331  8331 D NBPaneDrag: 1530647365 split:FeedListDrawer bounds=Rect(0, 0 - 1140, 1200) attributes=[SplitAttributes:{splitType=ratio:0.40093076, layoutDir=RIGHT_TO_LEFT, animationParams=EmbeddingAnimationParams:{animationBackground=DefaultBackground, openAnimation=DEFAULT, closeAnimation=DEFAULT, changeAnimation=DEFAULT }, dividerAttributes=NO_DIVIDER }]
+10-17 14:47:19.959  8331  8331 D NBPaneDrag: 1530647365 divider:FeedListDrawer dragging=false posted=false width=48 ratio=0.59906924

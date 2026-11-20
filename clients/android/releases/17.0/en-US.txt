@@ -1,0 +1,1 @@
+NewsBlur 17 brings lively, ordered animations to feeds, folders, story titles, and articles, plus fast transitions between All, Unread, Focus, and Saved. Turn on Reduce motion in Preferences > Appearance to remove movement while keeping fades. It's off by default. Discovery tags have more room on phones, and tablet dialogs work better when rotating the screen.

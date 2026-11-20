@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 mang đến trải nghiệm đọc sinh động hơn. Nguồn cấp, tiêu đề thư mục, tiêu đề bài viết và các phần nội dung lần lượt xuất hiện theo thứ tự trên màn hình. Chuyển nhanh, mượt mà giữa Tất cả, Chưa đọc, Tập trung và Đã lưu.\n\nMuốn ít chuyển động hơn? Công tắc Giảm chuyển động mới trong Tùy chọn > Giao diện bỏ hiệu ứng trượt và phóng to, thu nhỏ nhưng vẫn giữ hiệu ứng hiện dần và mờ dần nhẹ nhàng. Tùy chọn này mặc định tắt.\n\nBản phát hành này cũng giúp tải bài viết mượt hơn trong giao diện Xám, dành thêm chỗ cho thẻ khám phá trên iPhone và cải thiện hộp thoại cùng các nút điều khiển trên iPhone và iPad."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 mang đến trải nghiệm đọc sinh động hơn. Nguồn cấp, tiêu đề thư mục, tiêu đề bài viết và các phần nội dung lần lượt xuất hiện theo thứ tự trên màn hình. Chuyển nhanh, mượt mà giữa Tất cả, Chưa đọc, Tập trung và Đã lưu.\n\nMuốn ít chuyển động hơn? Công tắc Giảm chuyển động mới trong Tùy chọn > Giao diện bỏ hiệu ứng trượt và phóng to, thu nhỏ nhưng vẫn giữ hiệu ứng hiện dần và mờ dần nhẹ nhàng. Tùy chọn này mặc định tắt.\n\nBản phát hành này cũng tinh chỉnh khung đọc trên Mac, cải thiện các nút điều khiển khám phá và làm mượt chuyển cảnh giữa các bài viết."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17 thêm hiệu ứng tuần tự sinh động cho nguồn cấp, thư mục, tiêu đề và nội dung bài viết, cùng chuyển cảnh nhanh giữa Tất cả, Chưa đọc, Tập trung và Đã lưu. Bật Giảm chuyển động trong Tùy chọn > Giao diện để bỏ chuyển động mà giữ hiệu ứng hiện dần và mờ dần. Mặc định tắt. Thẻ khám phá có thêm chỗ trên điện thoại; hộp thoại trên máy tính bảng hoạt động tốt hơn khi xoay màn hình."
+  }
+}

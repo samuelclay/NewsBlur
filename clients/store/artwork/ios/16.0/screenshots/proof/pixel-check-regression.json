@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-10-16T22:43:56Z",
+  "known_failure": {
+    "render": "proof/incomplete-browser-paint.png",
+    "render_sha256": "53e8c81c1ae58b2c396ec4515eb4357d216121ae8ead69bd4054960002530349",
+    "native_git_reference": "fe8650ac9:clients/store/artwork/ios/16.0/screenshots/captures/ipad-stories.png",
+    "native_sha256": "415847949a8e59afc3c1b2a4f2262cb95363f67548df5b61528b6c9139ba2c96",
+    "result": "rejected",
+    "mean_absolute_rgb_error": 57.2817,
+    "largest_tile_error": 128.4388
+  },
+  "known_good": {
+    "exports_checked": 19,
+    "sets": [
+      "en/1320x2868 panels 1–4",
+      "en/1206x2622 panels 1–4",
+      "fr/1320x2868 panels 1–4",
+      "fr/1206x2622 panels 1–4",
+      "en/2064x2752 panels 2–4"
+    ],
+    "result": "all passed",
+    "maximum_mean_error": 3.9571,
+    "maximum_tile_error": 8.3698
+  },
+  "limits": {
+    "mean": 12,
+    "tile": 25
+  },
+  "scope": "Offline pixel validation only; new browser paint/readiness recovery remains pending a working extension."
+}

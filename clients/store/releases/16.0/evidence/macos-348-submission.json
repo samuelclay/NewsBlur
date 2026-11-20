@@ -1,0 +1,79 @@
+{
+  "version": "16.0",
+  "build": "348",
+  "platform": "macOS",
+  "source_commit": "af6bf230472a0cdbba1a8b50f3ddf10bf0a64a58",
+  "source_state": "Unstaged working tree; user requested no commit",
+  "patch_sha256": "a642fd3d48be5afe5d73dd585ec9b35e949543ceb5683df5babb0be7b387e5e4",
+  "untracked_source_files": {
+    "clients/ios/Tests/WidgetTimelineTests/WidgetBuildConfigurationTests.swift": "1259cd606f9c8539b378047b4e363269a5438cb5eba5450cf195eebc6f4cbf31",
+    "clients/ios/Tests/WidgetTimelineTests/WidgetSourceTests.swift": "c11b03a15b0654bd65c20bdb26701cf7a542d5a9e522b96022fadcd528d8fd8b",
+    "clients/ios/Tests/WidgetTimelineTests/WidgetStoryPaginationTests.swift": "91b17ad4726e9569826d60bc18e8dd8f5dc209ee19c1c1dc48435af90ff9ab8b",
+    "clients/ios/Tests/WidgetTimelineTests/WidgetTimelineTests.swift": "b058dbb5ed655af27a6fe51af3f8c2b3c7cd8048d83394bede9e5188ee49dd56",
+    "clients/ios/Widget Extension/WidgetConfiguration.swift": "20f82bfc5da564b0dc6412082c3c969f2b432f2cbc277f86fb27c5340eeffbdb",
+    "clients/ios/Widget Extension/WidgetSource.swift": "2580a97662a9f5e30e4f7774314a8f7a25dd1b8f7106e67314ff61bb61349617",
+    "clients/ios/Widget Extension/WidgetStoryPagination.swift": "1401f489660d10017b71ce27b1ed1926060012a17be528561d7d1b264ed0eacb",
+    "clients/ios/Widget Extension/WidgetTimeline.swift": "9c7ed360f98ad20cde6bf224c7a21d6c1dc0a0b7423c3a377be924164f01bc8f"
+  },
+  "toolchain": "Xcode 27.0 (27A266a)",
+  "archive": "/tmp/NewsBlur-Mac-16.0-348.xcarchive",
+  "upload": "Succeeded",
+  "previous_submission": "1029b9a1-edd5-41f5-929d-74199d447b3a",
+  "previous_submission_action": "Canceled at user request to replace build 344",
+  "automatic_release": true,
+  "processing": "Complete; selectable in Add Build",
+  "build_id": "5c23b688-30de-420a-9c5d-ed7f7e6248c4",
+  "attachment": "Mac 16.0 build 348 saved",
+  "store_localizations": {
+    "languages": [
+      "en",
+      "es",
+      "fr",
+      "de",
+      "pt-BR",
+      "it",
+      "nl",
+      "pl",
+      "tr",
+      "ru",
+      "uk",
+      "ar",
+      "he",
+      "hi",
+      "id",
+      "vi",
+      "th",
+      "ja",
+      "ko",
+      "zh-Hans",
+      "zh-Hant"
+    ],
+    "fields": [
+      "promotionalText",
+      "description",
+      "whatsNew",
+      "keywords",
+      "supportUrl",
+      "marketingUrl"
+    ],
+    "verification": "Every locale reselected after full page reload and compared exactly with canonical text; all 21 passed between 2026-10-21T22:56:54Z and 2026-10-21T22:58:22Z",
+    "unsupported": []
+  },
+  "shared_products": "No subscription, group, price, offer, billing, or entitlement configuration changed. Existing canonical translations reviewed; retained shared iOS listing fields.",
+  "submission_id": "0c3c3b9c-dc2e-491b-baa1-74b8d9526766",
+  "submission_url": "https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/0c3c3b9c-dc2e-491b-baa1-74b8d9526766",
+  "submitted_at": "2026-10-21T16:00:00-07:00",
+  "state": "WAITING_FOR_REVIEW",
+  "items": [
+    {
+      "platform": "macOS",
+      "version": "16.0",
+      "build": "348",
+      "state": "WAITING_FOR_REVIEW"
+    }
+  ],
+  "app_executable_sha256": "8b0630f1221d6053802530ed74d2f981563f64dbce6c4798d16d9fd56660f381",
+  "publicly_available": false,
+  "subsequent_source_commit": "ab6ea41d70974bf53eb0ef1fd50d13b67fa6886d",
+  "subsequent_commit_note": "Committed after App Store submission at the user's later request; submitted app source was verified unchanged against its recorded patch and file hashes."
+}

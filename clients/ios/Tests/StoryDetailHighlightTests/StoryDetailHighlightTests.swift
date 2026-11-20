@@ -167,6 +167,7 @@ final class StoryDetailHighlightTests: XCTestCase {
             }
 
             var document = {
+                addEventListener: function() {},
                 getElementById: function(id) {
                     if (id === "NB-story") {
                         return container;
@@ -185,6 +186,7 @@ final class StoryDetailHighlightTests: XCTestCase {
                 sampleText: true,
                 location: "",
                 pageYOffset: 0,
+                addEventListener: function() {},
                 console: { log: function() {} }
             };
             var console = window.console;

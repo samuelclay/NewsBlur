@@ -1,0 +1,55 @@
+{
+  "checked_at": "2026-10-17 16:20:49 UTC",
+  "device": "R8YW810E3FF",
+  "capture": {
+    "package": "com.newsblur.storecapture",
+    "version_name": "16.0",
+    "version_code": 292,
+    "installed_at": "2026-10-17 08:36:37",
+    "sha256": "c83bda28e7620228325033a5b781a2bbf395ccff72dd2efe0cf89d5ed6f3d2ef",
+    "local_artifact": "clients/android/NewsBlur/app/build/outputs/apk/storecapture/app-storecapture.apk",
+    "installed_equals_local_artifact": true
+  },
+  "alpha": {
+    "package": "com.newsblur.alpha",
+    "version_name": "15.1",
+    "version_code": 291,
+    "installed_at": "2026-10-14 11:13:32",
+    "apk_sha256": "ae0f88df94c3d6d709eda48b3fbe714aa7476d5ae7677c5000d3f6ca6ff759c9",
+    "installed_dex_story_split_ratio": 0.4,
+    "installed_dex_feed_drawer_ratio": 0.4
+  },
+  "display": {
+    "physical_size": "1200x1920",
+    "density": 240,
+    "size_override": null,
+    "density_override": null,
+    "orientation": "landscape locked for capture"
+  },
+  "runtime": {
+    "alpha_screen": "All Site Stories and ReadingPlaceholder",
+    "resize_handle_visible": false,
+    "boundary_drag": {
+      "from": [
+        768,
+        600
+      ],
+      "to": [
+        1050,
+        600
+      ],
+      "duration_ms": 800,
+      "width_changed": false
+    },
+    "account_safety": "Dismissed language chooser with Back. Opened list only, no unread article opened and no account language changed. Background normal app synchronization was allowed by Alpha."
+  },
+  "evidence": {
+    "private_alpha_screenshots": "Kept in /tmp only; no private feed content committed",
+    "source_files": [
+      "clients/android/NewsBlur/app/src/main/java/com/newsblur/util/StorySplitView.kt",
+      "clients/android/NewsBlur/app/src/main/java/com/newsblur/activity/FeedListDrawer.kt"
+    ],
+    "dex_evidence": "apkanalyzer decompiled the installed Alpha APK: STORY_LIST_SPLIT_RATIO=0.4f and fixed drawer width calculations. No divider or resize handle implementation in these classes."
+  },
+  "conclusion": "Capture APK is the freshly built 16.0 artifact. Current Android source and installed Alpha both use fixed pane widths. The user-reported resize controls have not been reproduced; capture is paused for reconciliation."
+}

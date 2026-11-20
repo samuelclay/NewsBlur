@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Cartelle, ricerca e tag per articoli salvati"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Archivio permanente e 1 ora di ascolto a settimana"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Feed aggiornati spesso e 10 ore di ascolto a settimana"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "Abbonamenti NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "Abbonamento NewsBlur Premium",
+        "description": "Leggi le cartelle in un solo elenco, cerca nei tuoi feed, organizza gli articoli salvati con i tag e approfitta di aggiornamenti dei feed più rapidi.",
+        "benefits": [
+          "Leggi le cartelle in un solo elenco",
+          "Cerca in tutti i feed",
+          "Aggiungi tag agli articoli salvati",
+          "Aggiornamenti dei feed più frequenti"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "Abbonamento NewsBlur Premium Archive",
+        "description": "Tutte le funzioni Premium, archivio permanente con ricerca e 1 ora di ascolto a settimana. Lascia gli articoli non letti quanto vuoi. Il tempo di ascolto si rinnova la domenica.",
+        "benefits": [
+          "Tutto ciò che offre Premium",
+          "Articoli non letti senza limiti di tempo",
+          "Archivio permanente con ricerca",
+          "1 ora di ascolto a settimana"
+        ]
+      }
+    }
+  }
+}

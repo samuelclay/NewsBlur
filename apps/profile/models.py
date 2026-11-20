@@ -28,6 +28,7 @@ from django.db.models.signals import post_save
 from django.db.utils import DatabaseError
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.translation import gettext, ngettext
 from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import invalid_ipn_received, valid_ipn_received
 from zebra.signals import (
@@ -42,13 +43,17 @@ from zebra.signals import (
 
 from apps.ask_ai.usage import AskAIUsageTracker
 from apps.feed_import.models import OPMLExporter
+from apps.listen.models import MListenDaily
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import chunks
+from utils.languages import in_account_language, localized_number
 from utils.user_functions import generate_secret_token
+from vendor.paypalapi.exceptions import PayPalAPIResponseError
+from vendor.paypalapi.interface import PayPalInterface
 from vendor.timezones.fields import TimeZoneField
 
 
@@ -66,6 +71,9 @@ class Profile(models.Model):
     premium_expire = models.DateTimeField(blank=True, null=True)
     send_emails = models.BooleanField(default=True)
     preferences = models.TextField(default="{}")
+    # models.py keeps acquisition language immutable; current device language can change independently.
+    signup_language = models.CharField(max_length=16, null=True, blank=True)
+    last_read_language = models.CharField(max_length=16, null=True, blank=True)
     view_settings = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
     feed_pane_size = models.IntegerField(default=282)
@@ -78,6 +86,9 @@ class Profile(models.Model):
     has_trained_intelligence = models.BooleanField(default=False, null=True, blank=True)
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
+    # The language this account's devices last asked for, kept by apps/profile/language.py so emails reach
+    # Automatic users in it (utils/languages.py:account_language).
+    last_seen_language = models.CharField(max_length=16, blank=True, null=True)
     dashboard_date = models.DateTimeField(default=datetime.datetime.now)
     timezone = TimeZoneField(default="America/New_York")
     secret_token = models.CharField(max_length=12, blank=True, null=True)
@@ -99,6 +110,36 @@ class Profile(models.Model):
         null=True,
         help_text="Optional monthly spending limit in USD for AI classifiers",
     )
+
+    # How much premium time one payment buys. NewsBlur bills annually for Premium and
+    # Premium Archive and monthly for Premium Pro, so these are the only two periods.
+    # The monthly figure runs a day long on purpose: expirations are compared against
+    # the clock constantly, and 31 keeps a monthly subscriber covered through the gap
+    # between two charges instead of lapsing for a day each month.
+    MONTHLY_PERIOD_DAYS = 31
+    ANNUAL_PERIOD_DAYS = 365
+    # Gaps shorter than this read as a monthly cadence. Set well above 31 so a skipped
+    # or retried charge doesn't misread a monthly subscriber as annual, and well below
+    # 365 so an annual subscriber never reads as monthly.
+    MONTHLY_GAP_CEILING_DAYS = 180
+    # Every price NewsBlur has billed annually: $12 and $24 grandfathered, $36 Premium,
+    # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly is the sole
+    # price absent here, which is what makes a charge at any of these mean a full year.
+    ANNUAL_PRICES = {12, 24, 36, 99, 299}
+    # A same-identifier store receipt arriving within this window is a duplicate
+    # submission (relaunch, restore, race); beyond it, it's the next auto-renewal.
+    # Old iOS clients (pre-14.4) send Apple's original_transaction_id, which is
+    # identical for every renewal of a subscription, so an identifier match can't
+    # be rejected forever — that silently expired paying subscribers whose yearly
+    # renewals were dropped as duplicates (apps/profile/models.py, forum #13799).
+    # 292 (80% of a year) and 24 (80% of a month) leave slack for renewals that
+    # register early or rows that were recorded late.
+    ANNUAL_RENEWAL_WINDOW_DAYS = 292
+    MONTHLY_RENEWAL_WINDOW_DAYS = 24
+    # Placeholder identifiers old iOS clients send when StoreKit gave them no
+    # transaction id. They carry no uniqueness, so only the 3-day recent-payment
+    # check can dedupe them.
+    STORE_PLACEHOLDER_IDENTIFIERS = ("missing", "in-progress")
 
     @property
     def is_self_hosted_ai(self):
@@ -130,6 +171,10 @@ class Profile(models.Model):
 
         current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
         limit = float(self.usage_billing_limit) if self.usage_billing_limit else None
+        if current_spend is None:
+            # Analytics is down, so spend is unknown. Fail closed rather than
+            # let usage billing run uncapped.
+            return (None, limit, limit is not None)
         is_reached = limit is not None and current_spend >= limit
         return (current_spend, limit, is_reached)
 
@@ -156,6 +201,10 @@ class Profile(models.Model):
         from apps.monitor.models import MLLMCost
 
         current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
+        if current_spend is None:
+            # Analytics is down, so spend is unknown. Fail closed, and don't
+            # cache the guess: the next call should retry once analytics is back.
+            return True
         is_reached = current_spend >= float(self.usage_billing_limit)
         r.setex(cache_key, 300, "1" if is_reached else "0")
         return is_reached
@@ -183,6 +232,27 @@ class Profile(models.Model):
             if settings.DEBUG:
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
         return price
+
+    @staticmethod
+    def is_usage_billing_subscription(subscription):
+        """True for the AI classifier metered sub that setup_usage_billing creates (apps/profile/views.py).
+
+        It shares the Stripe customer with the yearly tier sub, so switching, canceling, and
+        reactivating the tier sub must all skip it (apps/profile/models.py).
+        """
+        usage_price_ids = set(
+            filter(
+                None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION]
+            )
+        )
+        if not usage_price_ids:
+            return False
+        items = subscription.get("items")
+        for item in items["data"] if items else []:
+            price = item.get("price")
+            if price and price.get("id") in usage_price_ids:
+                return True
+        return False
 
     @classmethod
     def plan_to_paypal_plan_id(cls, plan):
@@ -346,6 +416,13 @@ class Profile(models.Model):
             "has_found_friends": self.has_found_friends,
             "has_trained_intelligence": self.has_trained_intelligence,
             "dashboard_date": self.dashboard_date,
+            # models.py: AI classifier billing state for the iOS and Android apps, which read
+            # user_profile from /reader/feeds. The web gets the same values from
+            # templates/base.html NEWSBLUR.Globals.
+            "is_usage_billing": bool(self.is_usage_billing),
+            "is_self_hosted_ai": self.is_self_hosted_ai,
+            "can_use_ai_classifiers": self.can_use_ai_classifiers,
+            "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
         }
 
     def save(self, *args, **kwargs):
@@ -479,7 +556,8 @@ class Profile(models.Model):
         cancellation_succeeded = False
         try:
             if not fast:
-                self.cancel_premium(force=True)
+                # A deleted account has nothing left to classify, so usage billing stops too.
+                self.cancel_premium(force=True, include_usage_billing=True)
                 cancellation_succeeded = True
         except Exception as e:
             logging.user(
@@ -623,7 +701,7 @@ class Profile(models.Model):
         return True
 
     def activate_premium(self, never_expire=False):
-        from apps.profile.tasks import EmailNewPremium, EmailStaffPremiumUpgrade
+        from apps.profile.tasks import EmailNewPremium
 
         logging.user(
             self.user,
@@ -659,10 +737,8 @@ class Profile(models.Model):
             logging.user(self.user, "~FMClearing trial status - converting to paid premium")
 
         EmailNewPremium.delay(user_id=self.user.pk)
-        staff_previous_tier = "trial" if was_trial else ("premium" if self.is_premium else "free")
-        EmailStaffPremiumUpgrade.delay(
-            user_id=self.user.pk, tier="premium", previous_tier=staff_previous_tier
-        )
+        # No staff upgrade email for plain Premium — staff only watch Premium
+        # Archive and Premium Pro upgrades (see activate_archive/activate_pro).
 
         subs = UserSubscription.objects.filter(user=self.user)
 
@@ -1057,29 +1133,55 @@ class Profile(models.Model):
     def paypal_change_billing_details_url(self):
         return "https://paypal.com"
 
-    def switch_stripe_subscription(self, plan):
+    def switch_stripe_subscription(self, plan, proration_behavior="always_invoice"):
+        # proration_behavior defaults to "always_invoice" for the user-facing upgrade flow
+        # (the user actively changed tier and expects to pay the difference now). The
+        # grandfathered pricing migration passes "none" so the new price simply applies at
+        # the existing next renewal with no immediate charge (apps/profile/models.py).
         stripe_customer = self.stripe_customer()
         if not stripe_customer:
             return
 
         stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
         existing_subscription = None
+        existing_plan = None
         for subscription in stripe_subscriptions:
-            if subscription.plan.active:
+            # Skip the AI classifier usage billing sub. Its monthly metered items can't take a
+            # yearly tier price, and with no tier sub left the view falls back to a new checkout
+            # (apps/profile/views.py).
+            if Profile.is_usage_billing_subscription(subscription):
+                continue
+            plan_obj = subscription.plan
+            if not plan_obj:
+                # Newer subscriptions may not have a top-level plan; fall back to the
+                # first item's plan, mirroring setup_premium_history (apps/profile/models.py).
+                items = subscription.get("items")
+                if items and items.data:
+                    plan_obj = items.data[0].plan
+            if plan_obj and plan_obj.active:
                 existing_subscription = subscription
+                existing_plan = plan_obj
                 break
         if not existing_subscription:
             return
+
+        target_price = Profile.plan_to_stripe_price(plan)
+        # Idempotent: if already on the target price, do nothing (safe to re-run).
+        if existing_plan and existing_plan.id == target_price:
+            logging.user(
+                self.user, f"~FBStripe subscription already on ~SB{target_price}~SN, skipping switch"
+            )
+            return True
 
         try:
             stripe.Subscription.modify(
                 existing_subscription.id,
                 cancel_at_period_end=False,
-                proration_behavior="always_invoice",
+                proration_behavior=proration_behavior,
                 items=[
                     {
                         "id": existing_subscription["items"]["data"][0].id,
-                        "price": Profile.plan_to_stripe_price(plan),
+                        "price": target_price,
                     }
                 ],
             )
@@ -1147,6 +1249,78 @@ class Profile(models.Model):
 
         logging.user(self.user, f"~FRFailed to switch paypal subscription: ~FC{paypal_subscription}")
 
+    def paypal_price_change_approval_url(self, plan):
+        """Return a one-click PayPal approval URL to move the user's EXISTING subscription to
+        the given plan's price (e.g. the $36 premium plan). PayPal requires the subscriber to
+        approve any price increase, so we use the revise endpoint, which keeps the same
+        subscription id (so existing dedup/webhook plumbing stays coherent). Returns None on
+        failure (apps/profile/models.py).
+
+        This only works for subscriptions created through the REST Subscriptions API, which carry a
+        plan_id. Subscribers who signed up before that (Website Payments Standard subscribe buttons,
+        ids like I-CTEJRJP477HW created in 2014) have no plan for revise to move them toward, and
+        every route to repricing them is closed: GET on the subscription succeeds and reports ACTIVE,
+        but POST .../revise answers 404 INVALID_RESOURCE_ID on that same id, and the Classic API
+        refuses them outright with error 11592, "Subscription Profiles not supported by Recurring
+        Payment APIs." They can only be cancelled and won back on a fresh subscription, which is what
+        run_premium_pricing_migration does. Anything created today is plan-based and revisable, so a
+        future price change can offer these subscribers an approval link instead."""
+        self.retrieve_paypal_ids()
+        if not self.paypal_sub_id:
+            logging.user(self.user, "~FRNo PayPal subscription to revise for price change")
+            return None
+        paypal_api = self.paypal_api()
+        if not paypal_api:
+            return None
+
+        paypal_return = reverse("paypal-return")
+        application_context = {
+            "shipping_preference": "NO_SHIPPING",
+            "user_action": "SUBSCRIBE_NOW",
+        }
+        if settings.DEBUG:
+            application_context["return_url"] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
+        else:
+            application_context["return_url"] = f"https://{Site.objects.get_current().domain}{paypal_return}"
+
+        try:
+            revision = paypal_api.post(
+                f"/v1/billing/subscriptions/{self.paypal_sub_id}/revise",
+                {
+                    "plan_id": Profile.plan_to_paypal_plan_id(plan),
+                    "application_context": application_context,
+                },
+            )
+        except paypalrestsdk.exceptions.ConnectionError as e:
+            # Covers 404 (not found), 422 (subscription not active / not revisable), 5xx, etc.
+            # A non-revisable sub just means we can't offer this user the approval link; skip them.
+            logging.user(self.user, f"~FRPayPal revise failed: {self.paypal_sub_id} {plan}: {e}")
+            return None
+
+        if not revision:
+            return None
+        for link in revision.get("links", []):
+            if link["rel"] == "approve":
+                return link["href"]
+
+        logging.user(self.user, f"~FRNo approve link in PayPal revise response: {revision}")
+        return None
+
+    def paypal_subscription_detail(self):
+        """Return the live PayPal subscription dict for the primary sub (status, plan_id, and
+        billing_info.next_billing_time), or None. Used by the pricing migration to tell whether a
+        price-change revise was approved and when the next charge is due (apps/profile/models.py)."""
+        if not self.paypal_sub_id:
+            return None
+        paypal_api = self.paypal_api()
+        if not paypal_api:
+            return None
+        try:
+            return paypal_api.get(f"/v1/billing/subscriptions/{self.paypal_sub_id}")
+        except paypalrestsdk.exceptions.ConnectionError as e:
+            logging.user(self.user, f"~FRCouldn't fetch paypal subscription {self.paypal_sub_id}: {e}")
+            return None
+
     def store_paypal_sub_id(self, paypal_sub_id, skip_save_primary=False):
         if not paypal_sub_id:
             logging.user(self.user, "~FBPaypal sub id not found, ignoring")
@@ -1189,6 +1363,111 @@ class Profile(models.Model):
         )
         logging.user(self.user, f"~FBGoogle Play purchase token ~SBadded~SN: product={product_id}")
 
+    @classmethod
+    def billing_period_days(cls, payment_dates):
+        """How many days of premium a single payment buys, inferred from how far apart the
+        user's own recent payments fall. Cadence carries this rather than the amount because a
+        prorated tier switch bills an odd figure (Premium Pro's $29/month invoiced at $8.39 once
+        an unused annual credit is applied), so no amount-to-plan table gets every payment right.
+        The median gap absorbs the one odd interval left by a mid-cycle switch, so a subscriber
+        who moved from annual to monthly still reads as monthly (apps/profile/models.py)."""
+        if len(payment_dates) < 2:
+            return cls.ANNUAL_PERIOD_DAYS
+
+        ordered = sorted(payment_dates)
+        gaps = sorted(
+            (later - earlier).days
+            for earlier, later in zip(ordered, ordered[1:])
+            if (later - earlier).days > 0
+        )
+        if not gaps:
+            return cls.ANNUAL_PERIOD_DAYS
+
+        median_gap = gaps[len(gaps) // 2]
+        return (
+            cls.MONTHLY_PERIOD_DAYS if median_gap < cls.MONTHLY_GAP_CEILING_DAYS else cls.ANNUAL_PERIOD_DAYS
+        )
+
+    @classmethod
+    def premium_expire_from_payments(cls, payments):
+        """The premium_expire implied by the payments in the trailing year, as
+        (expiration, free_lifetime_premium, recent_payment_count). Returns a null expiration
+        when nothing recent was paid.
+
+        Each payment buys one billing period, not a flat year: NewsBlur sells annual Premium
+        and Premium Archive alongside a monthly $29 Premium Pro, and charging a monthly
+        subscriber a year of access per charge is what pushed expirations out to 2033.
+
+        Two readings are taken and the longer wins, because the failure that actually hurts is
+        cutting off someone who has paid. Cadence covers the steady case, but it lags for a year
+        after a subscriber moves monthly-to-annual: the old monthly gaps still dominate the
+        median, so cadence alone would expire them weeks after they bought a full year. A charge
+        at one of the annual price points is unambiguous on its own, so it independently holds
+        the account open for a year from the day it landed (apps/profile/models.py)."""
+        last_year = datetime.datetime.now() - datetime.timedelta(days=364)
+        recent_payment_dates = []
+        latest_annual_payment_date = None
+        free_lifetime_premium = False
+        verified_apple_expiration = None
+        verified_apple_count = 0
+        payments = list(payments)
+        verified_apple_periods = {}
+        for payment in payments:
+            if payment.apple_original_transaction_id and payment.apple_expires_date and not payment.refunded:
+                key = (payment.payment_provider, payment.apple_original_transaction_id)
+                verified_apple_periods[key] = max(
+                    verified_apple_periods.get(key, payment.apple_expires_date), payment.apple_expires_date
+                )
+
+        for payment in payments:
+            # Don't use free gift premiums in calculation for expiration
+            if payment.payment_amount == 0:
+                free_lifetime_premium = True
+                continue
+            # Skip refund records (negative amounts) and refunded payments so
+            # a charge that was later refunded doesn't continue to extend the
+            # user's premium expiration.
+            if payment.payment_amount < 0 or payment.refunded:
+                continue
+            # Signed Apple periods from apps/profile/apple_subscriptions.py are
+            # exact; do not turn monthly renewals into inferred extra days.
+            if payment.apple_expires_date:
+                if payment.apple_expires_date > datetime.datetime.now():
+                    verified_apple_expiration = max(
+                        verified_apple_expiration or payment.apple_expires_date,
+                        payment.apple_expires_date,
+                    )
+                    verified_apple_count += 1
+                continue
+            # Older original-ID receipts in apps/profile/models.py belong to the
+            # same signed subscription period, not another inferred entitlement.
+            covered_until = verified_apple_periods.get((payment.payment_provider, payment.payment_identifier))
+            if covered_until and payment.payment_date < covered_until:
+                continue
+            # Only update expiration if payment in the last year
+            if payment.payment_date > last_year:
+                recent_payment_dates.append(payment.payment_date)
+                if payment.payment_amount in cls.ANNUAL_PRICES and (
+                    not latest_annual_payment_date or payment.payment_date > latest_annual_payment_date
+                ):
+                    latest_annual_payment_date = payment.payment_date
+
+        if not recent_payment_dates:
+            return verified_apple_expiration, free_lifetime_premium, verified_apple_count
+
+        period_days = cls.billing_period_days(recent_payment_dates)
+        expiration = min(recent_payment_dates) + datetime.timedelta(
+            days=period_days * len(recent_payment_dates)
+        )
+        if latest_annual_payment_date:
+            expiration = max(
+                expiration,
+                latest_annual_payment_date + datetime.timedelta(days=cls.ANNUAL_PERIOD_DAYS),
+            )
+        if verified_apple_expiration:
+            expiration = max(expiration, verified_apple_expiration)
+        return expiration, free_lifetime_premium, len(recent_payment_dates) + verified_apple_count
+
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         # Deduplicate payments: keep only one per provider per identifier, then per day.
         # Refund rows are never deduped — a charge and its same-day refund are distinct
@@ -1202,29 +1481,50 @@ class Profile(models.Model):
             "android-subscription",
         ]:
             deleted_count = 0
-            # First pass: dedup by payment_identifier (same receipt sent on different days)
-            seen_identifiers = set()
+            # First pass: dedup by payment_identifier (same receipt re-sent). Store
+            # providers reuse identifiers legitimately: old iOS clients send Apple's
+            # original_transaction_id for every renewal, so a same-identifier row a
+            # billing period after the kept one is the next renewal and must survive.
+            # PayPal/Stripe identifiers are unique per charge, so any reuse there is
+            # a duplicate regardless of age.
+            if provider in ("paypal", "stripe"):
+                renewal_window = None
+            elif provider == "ios-pro-subscription":
+                renewal_window = datetime.timedelta(days=self.MONTHLY_RENEWAL_WINDOW_DAYS)
+            else:
+                renewal_window = datetime.timedelta(days=self.ANNUAL_RENEWAL_WINDOW_DAYS)
+            last_kept_identifier_payments = {}
             for payment in list(
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(payment_identifier__isnull=True)
-                .exclude(payment_identifier__in=["missing", "in-progress"])
+                .exclude(payment_identifier__in=list(self.STORE_PLACEHOLDER_IDENTIFIERS))
                 .exclude(refunded=True)
                 .order_by("payment_date")
             ):
-                if payment.payment_identifier in seen_identifiers:
-                    payment.delete()
+                last_kept = last_kept_identifier_payments.get(payment.payment_identifier)
+                if last_kept and (
+                    renewal_window is None or payment.payment_date - last_kept.payment_date < renewal_window
+                ):
+                    # Prefer signed dates from apps/profile/apple_subscriptions.py
+                    # over a legacy client receipt for the same transaction.
+                    if payment.apple_expires_date and not last_kept.apple_expires_date:
+                        last_kept.delete()
+                        last_kept_identifier_payments[payment.payment_identifier] = payment
+                    else:
+                        payment.delete()
                     deleted_count += 1
                 else:
-                    seen_identifiers.add(payment.payment_identifier)
+                    last_kept_identifier_payments[payment.payment_identifier] = payment
             # Second pass: dedup by date (race condition duplicates on same day)
             seen_dates = set()
-            for payment in list(
+            for payment in sorted(
                 PaymentHistory.objects.filter(user=self.user, payment_provider=provider)
                 .exclude(refunded=True)
-                .order_by("payment_date")
+                .order_by("payment_date"),
+                key=lambda payment: (payment.apple_expires_date is None, payment.payment_date),
             ):
                 payment_day = payment.payment_date.date()
-                if payment_day in seen_dates:
+                if payment_day in seen_dates and not payment.apple_expires_date:
                     payment.delete()
                     deleted_count += 1
                 else:
@@ -1435,32 +1735,15 @@ class Profile(models.Model):
 
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
-        last_year = datetime.datetime.now() - datetime.timedelta(days=364)
-        recent_payments_count = 0
-        oldest_recent_payment_date = None
-        free_lifetime_premium = False
-        for payment in payment_history:
-            # Don't use free gift premiums in calculation for expiration
-            if payment.payment_amount == 0:
-                logging.user(self.user, "~BY~SN~FWFree lifetime premium")
-                free_lifetime_premium = True
-                continue
-            # Skip refund records (negative amounts) and refunded payments so
-            # a charge that was later refunded doesn't continue to extend the
-            # user's premium expiration.
-            if payment.payment_amount < 0 or payment.refunded:
-                continue
+        (
+            new_premium_expire,
+            free_lifetime_premium,
+            recent_payments_count,
+        ) = Profile.premium_expire_from_payments(payment_history)
+        if free_lifetime_premium:
+            logging.user(self.user, "~BY~SN~FWFree lifetime premium")
 
-            # Only update exiration if payment in the last year
-            if payment.payment_date > last_year:
-                recent_payments_count += 1
-                if not oldest_recent_payment_date or payment.payment_date < oldest_recent_payment_date:
-                    oldest_recent_payment_date = payment.payment_date
-
-        if oldest_recent_payment_date:
-            new_premium_expire = oldest_recent_payment_date + datetime.timedelta(
-                days=365 * recent_payments_count
-            )
+        if new_premium_expire:
             # Only move premium expire forward, never earlier. Also set expiration if not premium.
             if (
                 force_expiration
@@ -1468,7 +1751,10 @@ class Profile(models.Model):
                 or (self.premium_expire and new_premium_expire > self.premium_expire)
             ):
                 self.premium_expire = new_premium_expire
-                self.save()
+                # Only the field that changed: payment webhooks run this concurrently, and a
+                # whole-row save from a profile loaded before another webhook's tier change
+                # writes the old tier back (apps/profile/models.py activate_archive).
+                self.save(update_fields=["premium_expire"])
 
         if self.premium_renewal != premium_renewal or self.active_provider != active_provider:
             active_sub_id = self.stripe_id
@@ -1481,7 +1767,7 @@ class Profile(models.Model):
             )
             self.premium_renewal = premium_renewal
             self.active_provider = active_provider
-            self.save()
+            self.save(update_fields=["premium_renewal", "active_provider"])
 
         logging.user(
             self.user,
@@ -1489,11 +1775,12 @@ class Profile(models.Model):
             % (total_paypal_payments, total_stripe_payments, len(payment_history), self.premium_expire),
         )
 
+        has_current_paid_period = self.premium_expire and self.premium_expire > datetime.datetime.now()
+        has_recent_paid_payment = recent_payments_count > 0
         if (
             set_premium_expire
-            and not self.is_premium
-            and self.premium_expire
-            and self.premium_expire > datetime.datetime.now()
+            and has_current_paid_period
+            and (not self.is_premium or (self.is_premium_trial and has_recent_paid_payment))
         ):
             self.activate_premium()
 
@@ -1811,6 +2098,23 @@ class Profile(models.Model):
             stripe.Refund.create(charge=stripe_payments[0].id)
             self.cancel_premium_stripe()
             refunded = stripe_payments[0].amount / 100
+            # Flag the original charge's history row as refunded so it stops
+            # extending premium_expire in setup_premium_history (which only skips
+            # rows where refunded=True). The refund itself is recorded as a
+            # separate negative row below. apps/profile/models.py
+            original_payment = (
+                PaymentHistory.objects.filter(
+                    user=self.user,
+                    payment_provider="stripe",
+                    payment_amount__gt=0,
+                )
+                .exclude(refunded=True)
+                .order_by("-payment_date")
+                .first()
+            )
+            if original_payment:
+                original_payment.refunded = True
+                original_payment.save()
 
         PaymentHistory.objects.create(
             user=self.user,
@@ -2005,9 +2309,116 @@ class Profile(models.Model):
             )
         return refunded
 
-    def cancel_premium(self, force=False):
+    def refund_prorated_store_payment_for_provider_switch(self):
+        """Refund the unused portion of an App Store / Google Play subscription
+        when a user upgrades or switches to a Stripe subscription.
+
+        Apple and Google App Store charges can't be refunded through the Stripe
+        API, and the stores won't refund them on our behalf. So when a store
+        subscriber starts a Stripe subscription (e.g. upgrading Premium ->
+        Archive on the website), we credit the unused days of their store
+        payment back as a partial refund against the new Stripe charge. This
+        mirrors refund_prorated_paypal_for_provider_switch, which does the same
+        for a PayPal -> Stripe switch.
+
+        Returns the refunded dollar amount, or None if no refund was possible.
+        """
+        # All paid App Store / Google Play subscription providers (apps/profile/models.py)
+        store_providers = [
+            "android-subscription",
+            "android-archive",
+            "android-pro",
+            "ios-subscription",
+            "ios-archive-subscription",
+            "ios-pro-subscription",
+        ]
+        last_store_payment = (
+            PaymentHistory.objects.filter(
+                user=self.user,
+                payment_provider__in=store_providers,
+                payment_amount__gt=0,
+            )
+            .exclude(refunded=True)
+            .order_by("-payment_date")
+            .first()
+        )
+        if not last_store_payment:
+            logging.user(self.user, "~FBNo App Store payment to prorate for provider switch")
+            return None
+
+        payment_date = last_store_payment.payment_date
+        if payment_date.tzinfo:
+            payment_date = payment_date.replace(tzinfo=None)
+        days_since = (datetime.datetime.now() - payment_date).days
+        if days_since >= 365:
+            logging.user(
+                self.user,
+                "~FRApp Store payment too old to prorate: ~SB%s days ago" % days_since,
+            )
+            return None
+        days_left = 365 - days_since
+
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            logging.user(self.user, "~FRNo Stripe customer to refund prorated App Store payment against")
+            return None
+        try:
+            stripe_payments = stripe.Charge.list(customer=stripe_customer.id, limit=1).data
+        except stripe.error.InvalidRequestError as e:
+            logging.user(
+                self.user, "~FRFailed to retrieve Stripe charges for prorated App Store refund: ~SB%s" % e
+            )
+            return None
+        if not stripe_payments:
+            logging.user(self.user, "~FRNo Stripe charge to refund prorated App Store payment against")
+            return None
+
+        latest_charge = stripe_payments[0]
+        # If anything was already refunded on this charge (a retried webhook or
+        # a manual refund), don't refund again.
+        if latest_charge.amount_refunded:
+            logging.user(self.user, "~FRLatest Stripe charge already partially refunded, skipping proration")
+            return None
+
+        # Prorated unused value of the store payment, capped at the new Stripe
+        # charge so we never refund more than the user just paid.
+        store_amount_cents = int(last_store_payment.payment_amount) * 100
+        refund_amount_cents = int(round((days_left / 365) * store_amount_cents))
+        refund_amount_cents = min(refund_amount_cents, latest_charge.amount)
+        if refund_amount_cents <= 0:
+            logging.user(self.user, "~FRProrated App Store refund amount is zero or negative")
+            return None
+
+        try:
+            refund = stripe.Refund.create(charge=latest_charge.id, amount=refund_amount_cents)
+        except stripe.error.InvalidRequestError as e:
+            logging.user(self.user, "~FRFailed to issue prorated App Store refund: ~SB%s" % e)
+            return None
+
+        refund_dollars = refund_amount_cents / 100.0
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=-int(round(refund_dollars)),
+            payment_provider="stripe",
+            payment_identifier=refund.id,
+            refunded=True,
+        )
+        logging.user(
+            self.user,
+            "~FRProrated App Store refund for provider switch: $%.2f (of $%s %s, %s days left)"
+            % (
+                refund_dollars,
+                last_store_payment.payment_amount,
+                last_store_payment.payment_provider,
+                days_left,
+            ),
+        )
+        return refund_dollars
+
+    def cancel_premium(self, force=False, include_usage_billing=False):
         paypal_cancel = self.cancel_premium_paypal(force=force)
-        stripe_cancel = self.cancel_premium_stripe(force=force)
+        stripe_cancel = self.cancel_premium_stripe(force=force, include_usage_billing=include_usage_billing)
         self.setup_premium_history()  # Sure, webhooks will force new history, but they take forever
         return stripe_cancel or paypal_cancel
 
@@ -2034,7 +2445,9 @@ class Profile(models.Model):
             try:
                 paypal_subscription = paypal_api.get(f"/v1/billing/subscriptions/{paypal_id}")
             except paypalrestsdk.ResourceNotFound:
-                logging.user(self.user, f"~FRCouldn't find paypal payments: {paypal_id}")
+                logging.user(self.user, f"~FRCouldn't find REST paypal subscription: {paypal_id}")
+                if self.cancel_premium_paypal_classic(paypal_id, today=today):
+                    return paypal_id
                 continue
             if paypal_subscription["status"] not in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]:
                 logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % paypal_id)
@@ -2054,7 +2467,46 @@ class Profile(models.Model):
 
         return True
 
-    def cancel_premium_stripe(self, force=False):
+    def paypal_classic_api(self):
+        username = getattr(settings, "PAYPAL_API_USERNAME", None)
+        password = getattr(settings, "PAYPAL_API_PASSWORD", None)
+        signature = getattr(settings, "PAYPAL_API_SIGNATURE", None)
+        if not (username and password and signature):
+            logging.user(self.user, "~FRCouldn't load classic PayPal API credentials")
+            return None
+
+        environment = "SANDBOX" if getattr(settings, "PAYPAL_TEST", False) or settings.DEBUG else "PRODUCTION"
+        return PayPalInterface(
+            API_ENVIRONMENT=environment,
+            API_USERNAME=username,
+            API_PASSWORD=password,
+            API_SIGNATURE=signature,
+        )
+
+    def cancel_premium_paypal_classic(self, paypal_id, today=None):
+        paypal_api = self.paypal_classic_api()
+        if not paypal_api:
+            return False
+
+        today = today or datetime.datetime.now().strftime("%B %d, %Y")
+        try:
+            paypal_api.manage_recurring_payments_profile_status(
+                paypal_id,
+                "Cancel",
+                note=f"Cancelled on {today}",
+            )
+        except PayPalAPIResponseError as e:
+            logging.user(
+                self.user,
+                "~FRCouldn't cancel classic PayPal subscription %s: %s %s"
+                % (paypal_id, e.error_code, e.message),
+            )
+            return False
+
+        logging.user(self.user, "~FRCanceling classic Paypal subscription: %s" % paypal_id)
+        return True
+
+    def cancel_premium_stripe(self, force=False, include_usage_billing=False):
         if not self.stripe_id:
             if force:
                 self.retrieve_stripe_ids()
@@ -2068,6 +2520,15 @@ class Profile(models.Model):
             try:
                 subscriptions = stripe.Subscription.list(customer=stripe_customer)
                 for subscription in subscriptions.data:
+                    # Switching to PayPal, refunding, or canceling renewal only stops the tier sub.
+                    # The AI classifier usage billing sub keeps running unless the account is
+                    # being deleted (apps/profile/models.py delete_user).
+                    if not include_usage_billing and Profile.is_usage_billing_subscription(subscription):
+                        logging.user(
+                            self.user,
+                            "~FBNot canceling Stripe usage billing subscription: %s" % subscription["id"],
+                        )
+                        continue
                     stripe.Subscription.modify(subscription["id"], cancel_at_period_end=True)
                     logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription["id"])
             except stripe.error.InvalidRequestError:
@@ -2130,14 +2591,16 @@ class Profile(models.Model):
         if not stripe_customer:
             return None
 
-        # Check if there's already an active subscription
+        # Check if there's already an active subscription. The AI classifier usage billing sub
+        # can be active alongside it but isn't a tier sub, so it doesn't count (apps/profile/models.py).
         existing_subs = stripe.Subscription.list(customer=stripe_customer.id, status="active")
-        if existing_subs.data:
+        tier_subs = [sub for sub in existing_subs.data if not Profile.is_usage_billing_subscription(sub)]
+        if tier_subs:
             logging.user(
                 self.user,
-                "~FBStripe subscription already active: ~SB%s" % existing_subs.data[0].id,
+                "~FBStripe subscription already active: ~SB%s" % tier_subs[0].id,
             )
-            return existing_subs.data[0].id
+            return tier_subs[0].id
 
         # Ensure default payment method is set
         payment_methods = stripe.PaymentMethod.list(customer=stripe_customer.id, type="card")
@@ -2223,7 +2686,9 @@ class Profile(models.Model):
 
         if not self.paypal_sub_id:
             self.paypal_sub_id = ipns[0].subscr_id
-            self.save()
+            # Only the field that changed, for the same concurrent webhook reason as
+            # setup_premium_history (apps/profile/models.py).
+            self.save(update_fields=["paypal_sub_id"])
 
         paypal_ids = set()
         for ipn in ipns:
@@ -2282,31 +2747,62 @@ class Profile(models.Model):
             )
             return api
 
+    def _duplicate_store_receipt_reason(self, payment_provider, payment_identifier, renewal_window_days):
+        """Why this store receipt should not create a payment, or None when it should.
+
+        Store clients re-submit the same identifier in two situations that only time
+        can tell apart: within days it's a duplicate (relaunch, restore, race); a
+        billing period later it's the subscription's next auto-renewal. Old iOS
+        clients re-send Apple's original_transaction_id for every renewal — or a
+        placeholder when StoreKit gave them nothing — so a matching identifier only
+        counts as a duplicate inside the renewal window (apps/profile/models.py).
+        """
+        now = datetime.datetime.now()
+        real_identifier = payment_identifier and payment_identifier not in self.STORE_PLACEHOLDER_IDENTIFIERS
+        if real_identifier:
+            # A signed actual transaction is unique forever; an original ID is
+            # already covered while its verified period is still active.
+            verified_txn = PaymentHistory.objects.filter(
+                Q(payment_identifier=payment_identifier)
+                | Q(apple_original_transaction_id=payment_identifier, apple_expires_date__gt=now),
+                user=self.user,
+                payment_provider=payment_provider,
+                apple_expires_date__isnull=False,
+            ).exists()
+            if verified_txn:
+                return "verified txn"
+            same_txn = PaymentHistory.objects.filter(
+                Q(payment_identifier=payment_identifier)
+                | Q(apple_original_transaction_id=payment_identifier),
+                user=self.user,
+                payment_provider=payment_provider,
+                payment_date__gte=now - datetime.timedelta(days=renewal_window_days),
+            ).exists()
+            if same_txn:
+                return "same txn"
+
+        recently_paid = PaymentHistory.objects.filter(
+            user=self.user,
+            payment_provider=payment_provider,
+            payment_date__gte=now - datetime.timedelta(days=3),
+        ).exists()
+        if recently_paid:
+            return "recent"
+
+        return None
+
     def activate_ios_premium(self, transaction_identifier=None, amount=36):
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
-            if transaction_identifier:
-                if PaymentHistory.objects.filter(
-                    user=self.user,
-                    payment_identifier=transaction_identifier,
-                    payment_provider="ios-subscription",
-                ).exists():
-                    logging.user(
-                        self.user,
-                        "~FG~BBAlready paid iOS premium subscription (same txn): $%s~FW"
-                        % transaction_identifier,
-                    )
-                    return False
-
-            if PaymentHistory.objects.filter(
-                user=self.user,
-                payment_provider="ios-subscription",
-                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-            ).exists():
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                "ios-subscription", transaction_identifier, self.ANNUAL_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid iOS premium subscription (recent): $%s~FW" % transaction_identifier,
+                    "~FG~BBAlready paid iOS premium subscription (%s): $%s~FW"
+                    % (duplicate_reason, transaction_identifier),
                 )
                 return False
 
@@ -2330,27 +2826,14 @@ class Profile(models.Model):
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
-            if transaction_identifier:
-                if PaymentHistory.objects.filter(
-                    user=self.user,
-                    payment_identifier=transaction_identifier,
-                    payment_provider="ios-archive-subscription",
-                ).exists():
-                    logging.user(
-                        self.user,
-                        "~FG~BBAlready paid iOS archive subscription (same txn): $%s~FW"
-                        % transaction_identifier,
-                    )
-                    return False
-
-            if PaymentHistory.objects.filter(
-                user=self.user,
-                payment_provider="ios-archive-subscription",
-                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-            ).exists():
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                "ios-archive-subscription", transaction_identifier, self.ANNUAL_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid iOS archive subscription (recent): $%s~FW" % transaction_identifier,
+                    "~FG~BBAlready paid iOS archive subscription (%s): $%s~FW"
+                    % (duplicate_reason, transaction_identifier),
                 )
                 return False
 
@@ -2372,26 +2855,15 @@ class Profile(models.Model):
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
-            if transaction_identifier:
-                if PaymentHistory.objects.filter(
-                    user=self.user,
-                    payment_identifier=transaction_identifier,
-                    payment_provider="ios-pro-subscription",
-                ).exists():
-                    logging.user(
-                        self.user,
-                        "~FG~BBAlready paid iOS pro subscription (same txn): $%s~FW" % transaction_identifier,
-                    )
-                    return False
-
-            if PaymentHistory.objects.filter(
-                user=self.user,
-                payment_provider="ios-pro-subscription",
-                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-            ).exists():
+            # iOS Premium Pro bills monthly, so its renewal window is the short one.
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                "ios-pro-subscription", transaction_identifier, self.MONTHLY_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid iOS pro subscription (recent): $%s~FW" % transaction_identifier,
+                    "~FG~BBAlready paid iOS pro subscription (%s): $%s~FW"
+                    % (duplicate_reason, transaction_identifier),
                 )
                 return False
 
@@ -2423,26 +2895,14 @@ class Profile(models.Model):
         with transaction.atomic():
             Profile.objects.select_for_update().filter(user=self.user).first()
 
-            if order_id:
-                if PaymentHistory.objects.filter(
-                    user=self.user,
-                    payment_identifier=order_id,
-                    payment_provider=payment_provider,
-                ).exists():
-                    logging.user(
-                        self.user,
-                        "~FG~BBAlready paid Android premium subscription (same txn): $%s~FW" % payment_amount,
-                    )
-                    return False
-
-            if PaymentHistory.objects.filter(
-                user=self.user,
-                payment_provider=payment_provider,
-                payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
-            ).exists():
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                payment_provider, order_id, self.ANNUAL_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
                 logging.user(
                     self.user,
-                    "~FG~BBAlready paid Android premium subscription (recent): $%s~FW" % payment_amount,
+                    "~FG~BBAlready paid Android premium subscription (%s): $%s~FW"
+                    % (duplicate_reason, payment_amount),
                 )
                 return False
 
@@ -2664,6 +3124,7 @@ class Profile(models.Model):
                         pipeline.zrem(pro_key, user.pk)
                 pipeline.execute()
 
+    @in_account_language
     def send_new_user_email(self):
         if not self.user.email or not self.send_emails:
             return
@@ -2671,18 +3132,20 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_account.txt", locals())
         html = render_to_string("mail/email_new_account.xhtml", locals())
-        subject = "Welcome to NewsBlur, %s" % (self.user.username)
+        subject = gettext("Welcome to NewsBlur, %(username)s") % {"username": self.user.username}
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
 
+    @in_account_language
     def send_opml_export_email(self, reason=None, force=False):
         if not self.user.email:
             return
@@ -2706,13 +3169,14 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_opml_export.txt", params)
         html = render_to_string("mail/email_opml_export.xhtml", params)
-        subject = "Backup OPML file of your NewsBlur sites"
+        subject = gettext("Backup OPML file of your NewsBlur sites")
         filename = "NewsBlur Subscriptions - %s.xml" % datetime.datetime.now().strftime("%Y-%m-%d")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.attach(filename, opml, "text/xml")
@@ -2724,6 +3188,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending OPML backup email to: %s" % self.user.email)
 
+    @in_account_language
     def send_first_share_to_blurblog_email(self, force=False):
         from apps.social.models import MSharedStory, MSocialProfile
 
@@ -2748,18 +3213,20 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_first_share_to_blurblog.txt", params)
         html = render_to_string("mail/email_first_share_to_blurblog.xhtml", params)
-        subject = "Your shared stories on NewsBlur are available on your Blurblog"
+        subject = gettext("Your shared stories on NewsBlur are available on your Blurblog")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending first share to blurblog email to: %s" % self.user.email)
 
+    @in_account_language
     def send_new_premium_email(self, force=False):
         if not self.user.email or not self.send_emails:
             return
@@ -2776,18 +3243,20 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_premium.txt", locals())
         html = render_to_string("mail/email_new_premium.xhtml", locals())
-        subject = "Thank you for subscribing to NewsBlur Premium!"
+        subject = gettext("Thank you for subscribing to NewsBlur Premium!")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
 
+    @in_account_language
     def send_new_premium_archive_email(self, total_story_count, pre_archive_count, force=False):
         if not self.user.email:
             return
@@ -2810,14 +3279,23 @@ class Profile(models.Model):
         text = render_to_string("mail/email_new_premium_archive.txt", locals())
         html = render_to_string("mail/email_new_premium_archive.xhtml", locals())
         if total_story_count > pre_archive_count:
-            subject = f"NewsBlur archive backfill is complete: from {pre_archive_count:,} to {total_story_count:,} stories"
+            subject = ngettext(
+                "NewsBlur archive backfill is complete: from %(before)s to %(after)s story",
+                "NewsBlur archive backfill is complete: from %(before)s to %(after)s stories",
+                total_story_count,
+            ) % {"before": localized_number(pre_archive_count), "after": localized_number(total_story_count)}
         else:
-            subject = f"NewsBlur archive backfill is complete: {total_story_count:,} stories"
+            subject = ngettext(
+                "NewsBlur archive backfill is complete: %(count)s story",
+                "NewsBlur archive backfill is complete: %(count)s stories",
+                total_story_count,
+            ) % {"count": localized_number(total_story_count)}
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -2828,6 +3306,7 @@ class Profile(models.Model):
             % (self.user.email, pre_archive_count, total_story_count),
         )
 
+    @in_account_language
     def send_new_premium_pro_email(self, force=False):
         if not self.user.email or not self.send_emails:
             return
@@ -2844,12 +3323,13 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_premium_pro.txt", locals())
         html = render_to_string("mail/email_new_premium_pro.xhtml", locals())
-        subject = "Thanks for subscribing to NewsBlur Premium Pro!"
+        subject = gettext("Thanks for subscribing to NewsBlur Premium Pro!")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -2888,6 +3368,10 @@ class Profile(models.Model):
         stories_read = RUserStory.read_story_count(user.pk)
         starred_count = MStarredStory.objects.filter(user_id=user.pk).count()
         shared_count = MSharedStory.objects.filter(user_id=user.pk).count()
+
+        # Listen stats (apps/listen/models.py): wall-clock minutes spent hearing stories read aloud
+        listen_minutes_week = MListenDaily.minutes_listened(user.pk, days=7)
+        listen_minutes_total = MListenDaily.minutes_listened(user.pk)
 
         # Social stats
         following_count = 0
@@ -2954,6 +3438,8 @@ class Profile(models.Model):
             "active_feed_count": active_feed_count,
             "feed_opens": feed_opens,
             "stories_read": stories_read,
+            "listen_minutes_week": listen_minutes_week,
+            "listen_minutes_total": listen_minutes_total,
             "starred_count": starred_count,
             "shared_count": shared_count,
             "following_count": following_count,
@@ -2987,6 +3473,67 @@ class Profile(models.Model):
             "~BB~FM~SBSending staff premium upgrade email: %s (%s)" % (transition_label, self.user.email),
         )
 
+    def send_staff_pricing_would_cancel_email(self, old_amount=None, next_billing=None):
+        """Shadow-mode staff notification for the pricing migration. Instead of actually cancelling a
+        non-approving PayPal subscriber, email staff that we WOULD have cancelled them, with their
+        full payment history, so we can verify targeting and volume before enabling real
+        cancellations. Models on send_staff_premium_upgrade_email (apps/profile/models.py)."""
+        user = self.user
+        if old_amount is None:
+            old_amount = self.latest_premium_payment_amount()
+
+        date_joined_naive = (
+            user.date_joined.replace(tzinfo=None) if user.date_joined.tzinfo else user.date_joined
+        )
+        account_age_days = (datetime.datetime.now() - date_joined_naive).days
+
+        # Full payment history is the key thing to eyeball before we ever cancel anyone.
+        payments = list(PaymentHistory.objects.filter(user=user).order_by("-payment_date"))
+        payment_count = len(payments)
+        total_paid = sum(p.payment_amount for p in payments if not p.refunded)
+        first_payment_date = payments[-1].payment_date if payments else None
+
+        data = {
+            "user": user,
+            "email": user.email,
+            "old_amount": old_amount,
+            "new_amount": 36,
+            "account_age_days": account_age_days,
+            "date_joined": user.date_joined,
+            "last_seen": self.last_seen_on,
+            "paypal_sub_id": self.paypal_sub_id,
+            "premium_expire": self.premium_expire,
+            "premium_renewal": self.premium_renewal,
+            "next_billing": next_billing,
+            "payment_count": payment_count,
+            "total_paid": total_paid,
+            "first_payment_date": first_payment_date,
+            "payments": payments,
+        }
+        text = render_to_string("mail/email_staff_pricing_would_cancel.txt", data)
+        html = render_to_string("mail/email_staff_pricing_would_cancel.xhtml", data)
+        subject = "[Staff] WOULD CANCEL PayPal: %s ($%s/yr, %s payment%s, $%s paid)" % (
+            user.username,
+            old_amount,
+            payment_count,
+            "s" if payment_count != 1 else "",
+            total_paid,
+        )
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.SERVER_EMAIL,
+            to=["%s <%s>" % (name, email) for name, email in settings.ADMINS],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        logging.user(
+            self.user,
+            "~BB~FM~SBSending staff WOULD-CANCEL email: %s ($%s/yr)" % (user.username, old_amount),
+        )
+
+    @in_account_language
     def send_forgot_password_email(self, email=None):
         if not self.user.email and not email:
             print("Please provide an email address.")
@@ -2999,18 +3546,20 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_forgot_password.txt", locals())
         html = render_to_string("mail/email_forgot_password.xhtml", locals())
-        subject = "Forgot your password on NewsBlur?"
+        subject = gettext("Forgot your password on NewsBlur?")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
 
+    @in_account_language
     def send_new_user_queue_email(self, force=False):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3028,18 +3577,20 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_user_queue.txt", locals())
         html = render_to_string("mail/email_new_user_queue.xhtml", locals())
-        subject = "Your free account is now ready to go on NewsBlur"
+        subject = gettext("Your free account is now ready to go on NewsBlur")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending email for new user queue: %s" % self.user.email)
 
+    @in_account_language
     def send_upload_opml_finished_email(self, feed_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3048,18 +3599,20 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_upload_opml_finished.txt", locals())
         html = render_to_string("mail/email_upload_opml_finished.xhtml", locals())
-        subject = "Your OPML upload is complete. Get going with NewsBlur!"
+        subject = gettext("Your OPML upload is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
 
+    @in_account_language
     def send_import_reader_finished_email(self, feed_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3068,18 +3621,20 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_import_reader_finished.txt", locals())
         html = render_to_string("mail/email_import_reader_finished.xhtml", locals())
-        subject = "Your Google Reader import is complete. Get going with NewsBlur!"
+        subject = gettext("Your Google Reader import is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending email for Google Reader import: %s" % self.user.email)
 
+    @in_account_language
     def send_import_reader_starred_finished_email(self, feed_count, starred_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3088,12 +3643,13 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_import_reader_starred_finished.txt", locals())
         html = render_to_string("mail/email_import_reader_starred_finished.xhtml", locals())
-        subject = "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+        subject = gettext("Your Google Reader starred stories import is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3137,6 +3693,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3181,6 +3738,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3225,6 +3783,7 @@ class Profile(models.Model):
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3250,6 +3809,7 @@ class Profile(models.Model):
                 logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
                 return True
 
+    @in_account_language
     def send_premium_expire_grace_period_email(self, force=False):
         if not self.user.email:
             logging.user(
@@ -3267,15 +3827,20 @@ class Profile(models.Model):
         delta = datetime.datetime.now() - self.last_seen_on
         months_ago = round(delta.days / 30)
         user = self.user
-        data = dict(user=user, months_ago=months_ago)
+        data = dict(
+            user=user,
+            months_ago=months_ago,
+            pricing_cancellation=self.pricing_migration_paypal_cancellation(),
+        )
         text = render_to_string("mail/email_premium_expire_grace.txt", data)
         html = render_to_string("mail/email_premium_expire_grace.xhtml", data)
-        subject = "Your premium account on NewsBlur has one more month!"
+        subject = gettext("Your premium account on NewsBlur has one more month!")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3287,6 +3852,7 @@ class Profile(models.Model):
             % (months_ago, self.user.email),
         )
 
+    @in_account_language
     def send_premium_expire_email(self, force=False):
         if not self.user.email:
             logging.user(self.user, "~FM~SB~FRNot~FM sending premium expire for user: %s" % (self.user))
@@ -3302,15 +3868,20 @@ class Profile(models.Model):
         delta = datetime.datetime.now() - self.last_seen_on
         months_ago = round(delta.days / 30)
         user = self.user
-        data = dict(user=user, months_ago=months_ago)
+        data = dict(
+            user=user,
+            months_ago=months_ago,
+            pricing_cancellation=self.pricing_migration_paypal_cancellation(),
+        )
         text = render_to_string("mail/email_premium_expire.txt", data)
         html = render_to_string("mail/email_premium_expire.xhtml", data)
-        subject = "Your premium account on NewsBlur has expired"
+        subject = gettext("Your premium account on NewsBlur has expired")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3321,6 +3892,7 @@ class Profile(models.Model):
             "~BB~FM~SBSending premium expire email for user: %s months, %s" % (months_ago, self.user.email),
         )
 
+    @in_account_language
     def send_premium_trial_welcome_email(self, force=False):
         """Send welcome email for new premium trial users."""
         if not self.user.email or not self.send_emails:
@@ -3340,18 +3912,20 @@ class Profile(models.Model):
         data = dict(user=user, days_remaining=days_remaining)
         text = render_to_string("mail/email_premium_trial_welcome.txt", data)
         html = render_to_string("mail/email_premium_trial_welcome.xhtml", data)
-        subject = "Welcome to NewsBlur! Your 30-day premium trial has started"
+        subject = gettext("Welcome to NewsBlur! Your 30-day premium trial has started")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending trial welcome email: %s" % self.user.email)
 
+    @in_account_language
     def send_premium_trial_expire_email(self, force=False):
         """Send email when premium trial expires."""
         if not self.user.email:
@@ -3371,12 +3945,13 @@ class Profile(models.Model):
         data = dict(user=user)
         text = render_to_string("mail/email_premium_trial_expire.txt", data)
         html = render_to_string("mail/email_premium_trial_expire.xhtml", data)
-        subject = "Your 30-day NewsBlur premium trial has ended"
+        subject = gettext("Your 30-day NewsBlur premium trial has ended")
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3384,6 +3959,7 @@ class Profile(models.Model):
         MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
         logging.user(self.user, "~BB~FM~SBSending trial expire email for: %s" % self.user.email)
 
+    @in_account_language
     def send_premium_renewal_notice_email(self, force=False):
         if not self.user.email:
             logging.user(
@@ -3404,15 +3980,16 @@ class Profile(models.Model):
                 )
                 return
 
+        # Plan names reuse the pricing pages' translations (templates/static/pricing_*.xhtml).
         if self.is_pro:
-            tier_name = "Premium Pro"
-            amount = "$29/month"
+            tier_name = gettext("Premium Pro")
+            amount = gettext("$29/month")
         elif self.is_archive:
-            tier_name = "Premium Archive"
-            amount = "$99/year"
+            tier_name = gettext("Premium Archive")
+            amount = gettext("$99/year")
         else:
-            tier_name = "Premium"
-            amount = "$36/year"
+            tier_name = gettext("Premium")
+            amount = gettext("$36/year")
 
         user = self.user
         renewal_date = self.premium_expire
@@ -3426,12 +4003,13 @@ class Profile(models.Model):
         )
         text = render_to_string("mail/email_premium_renewal_notice.txt", data)
         html = render_to_string("mail/email_premium_renewal_notice.xhtml", data)
-        subject = "Your %s subscription renews soon" % tier_name
+        subject = gettext("Your %(tier_name)s subscription renews soon") % {"tier_name": tier_name}
         msg = EmailMultiAlternatives(
             subject,
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=["%s <%s>" % (user, user.email)],
+            headers=self.email_unsubscribe_headers(),
         )
         msg.attach_alternative(html, "text/html")
         msg.send()
@@ -3442,10 +4020,483 @@ class Profile(models.Model):
             "~BB~FM~SBSending renewal notice email for %s: %s" % (tier_name, self.user.email),
         )
 
+    def latest_premium_payment_amount(self):
+        """Most recent real (non-refunded, positive) payment amount, or None. Used to identify
+        grandfathered $12/$24 subscribers (apps/profile/models.py)."""
+        payment = (
+            PaymentHistory.objects.filter(user=self.user, payment_amount__gt=0)
+            .exclude(refunded=True)
+            .order_by("-payment_date")
+            .first()
+        )
+        return payment.payment_amount if payment else None
+
+    @in_account_language
+    def send_premium_pricing_upgrade_email(
+        self,
+        old_amount=None,
+        renewal_date=None,
+        approval_url=None,
+        variant=None,
+        force=False,
+        preview=False,
+        paypal_cancelled=False,
+    ):
+        """Email a grandfathered premium subscriber before their renewal moves to $36. Stripe
+        users get the "automatic" variant; PayPal users get the "approve the new rate" variant
+        with a one-click approval link when PayPal provides one. Legacy PayPal subscriptions that
+        cannot be revised use the same PayPal template with cancellation/resubscribe copy. In
+        preview mode, both variants are sent (with sample data) and nothing is recorded, so it is
+        safe to show to a test user."""
+        if not self.user.email:
+            logging.user(
+                self.user, "~FM~SB~FRNot~FM sending pricing upgrade email (no email): %s" % self.user
+            )
+            return
+
+        if old_amount is None:
+            old_amount = self.latest_premium_payment_amount()
+        if renewal_date is None:
+            renewal_date = self.premium_expire or (datetime.datetime.now() + datetime.timedelta(days=2))
+
+        if preview:
+            variants = ["stripe", "paypal"]
+        else:
+            if not variant:
+                variant = "paypal" if self.active_provider == "paypal" else "stripe"
+            variants = [variant]
+            if (
+                not force
+                and MSentEmail.objects.filter(
+                    receiver_user_id=self.user.pk, email_type="premium_pricing_upgrade"
+                ).count()
+            ):
+                logging.user(self.user, "~FMNot sending pricing upgrade email, already sent.")
+                return
+
+        user = self.user
+        for v in variants:
+            v_approval_url = approval_url
+            if v == "paypal" and not v_approval_url:
+                if preview:
+                    v_approval_url = "https://www.paypal.com/"
+                elif not paypal_cancelled:
+                    logging.user(self.user, "~FRNo PayPal approval URL for pricing upgrade email, skipping")
+                    continue
+            resubscribe_url = "https://newsblur.com/?next=premium"
+            data = dict(
+                user=user,
+                old_amount=old_amount,
+                new_amount=36,
+                renewal_date=renewal_date,
+                approval_url=v_approval_url,
+                paypal_cancelled=paypal_cancelled,
+                resubscribe_url=resubscribe_url,
+            )
+            text = render_to_string("mail/email_premium_pricing_upgrade_%s.txt" % v, data)
+            html = render_to_string("mail/email_premium_pricing_upgrade_%s.xhtml" % v, data)
+            subject = gettext("After years at the old price, NewsBlur Premium is moving to $36/year")
+            if preview:
+                subject = "[%s preview] %s" % (v, subject)
+            msg = EmailMultiAlternatives(
+                subject,
+                text,
+                from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+                to=["%s <%s>" % (user, user.email)],
+                headers=self.email_unsubscribe_headers(),
+            )
+            msg.attach_alternative(html, "text/html")
+            msg.send()
+            logging.user(
+                self.user, "~BB~FM~SBSending premium pricing upgrade email (%s): %s" % (v, user.email)
+            )
+
+        if not preview:
+            MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_pricing_upgrade")
+
+    def pricing_migration_paypal_cancellation(self):
+        """The PremiumPricingMigration row when the pricing migration cancelled this subscriber's
+        grandfathered PayPal subscription and nothing has been paid since, so the grace and expired
+        emails can say why Premium is ending. A subscriber who misses the one pricing email
+        otherwise sees a 13 year subscription lapse with no explanation. Rows the subscriber
+        cancelled themselves have no paypal_canceled_date (apps/profile/models.py)."""
+        row = PremiumPricingMigration.objects.filter(
+            user=self.user, status="cancelled", paypal_canceled_date__isnull=False
+        ).first()
+        if not row:
+            return None
+        if PaymentHistory.objects.filter(user=self.user, payment_date__gt=row.paypal_canceled_date).exists():
+            return None
+        return row
+
+    def is_dormant_for_paypal_cancel(self, now=None):
+        """True when this subscriber has been inactive long enough that force-cancelling their
+        PayPal subscription would almost certainly not lead to a resubscribe. Grandfathered payers
+        who have not logged in for PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS resubscribed at
+        ~0% in the first cohort, so cancelling them only converts a silent renewal into $0. A
+        missing last_seen_on counts as dormant. A falsy threshold (0/None) disables the guard so
+        everyone is cancelled regardless of activity (apps/profile/models.py)."""
+        max_dormant_days = getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_MAX_DORMANT_DAYS", 30)
+        if not max_dormant_days:
+            return False
+        if not self.last_seen_on:
+            return True
+        if now is None:
+            now = datetime.datetime.now()
+        return self.last_seen_on < now - datetime.timedelta(days=max_dormant_days)
+
+    @staticmethod
+    def _acquire_pricing_lock(name):
+        """Acquire a short-lived redis lock so only one beat scheduler runs a pricing-migration
+        task at a time (all three htask-work hosts run their own celery beat). Returns the held
+        lock (release it when done), the string "skip" if another runner already holds it, or None
+        if redis is unavailable (caller proceeds without locking rather than never running). The
+        30-minute timeout releases the lock automatically if a run crashes (apps/profile/models.py)."""
+        try:
+            r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+            lock = r.lock(name, timeout=60 * 30)
+            if lock.acquire(blocking=False):
+                return lock
+            return "skip"
+        except Exception as e:
+            logging.debug(" ---> Pricing migration lock unavailable (%s); proceeding without it" % e)
+            return None
+
+    @classmethod
+    def run_premium_pricing_migration(cls, dry_run=False, limit=None, only_username=None):
+        """Nightly campaign: move grandfathered $12/$24 premium subscribers to the $36 rate as
+        they approach renewal. Stripe subscriptions are switched silently (new price applies at
+        the existing next renewal, no charge now); PayPal subscriptions get an approval-link
+        email. Idempotent via the PremiumPricingMigration tracking row. dry_run/limit/only_username
+        exist so this can be exercised from the Django shell for testing (apps/profile/tasks.py)."""
+        lock = None
+        if not dry_run:
+            lock = cls._acquire_pricing_lock("lock:premium_pricing_migration")
+            if lock == "skip":
+                logging.debug(" ---> Premium pricing migration already running elsewhere; skipping")
+                return 0
+        now = datetime.datetime.now()
+        window_start = now + datetime.timedelta(hours=48)
+        window_end = now + datetime.timedelta(hours=72)
+        one_year_ago = now - datetime.timedelta(days=365)
+
+        profiles = (
+            cls.objects.filter(is_premium=True, is_archive=False, is_pro=False, premium_renewal=True)
+            .exclude(is_premium_trial=True)
+            .select_related("user")
+        )
+        if only_username:
+            profiles = profiles.filter(user__username=only_username)
+        else:
+            profiles = profiles.filter(
+                premium_expire__gte=window_start,
+                premium_expire__lt=window_end,
+                last_seen_on__gte=one_year_ago,
+            )
+
+        processed = 0
+        try:
+            for profile in profiles:
+                if limit and processed >= limit:
+                    break
+
+                # Isolate each user: a failure on one (e.g. a PayPal sub that can't be revised)
+                # must never abort the whole batch.
+                try:
+                    old_amount = profile.latest_premium_payment_amount()
+                    if old_amount not in (12, 24):
+                        continue
+
+                    provider = profile.active_provider
+                    if provider not in ("stripe", "paypal"):
+                        logging.user(profile.user, "~FBSkipping pricing migration (provider=%s)" % provider)
+                        continue
+
+                    existing = PremiumPricingMigration.objects.filter(user=profile.user).first()
+                    if existing and existing.status != "pending":
+                        continue
+                    if MSentEmail.objects.filter(
+                        receiver_user_id=profile.user.pk, email_type="premium_pricing_upgrade"
+                    ).count():
+                        continue
+
+                    if dry_run:
+                        logging.user(
+                            profile.user,
+                            "~FC[dry-run] Would migrate %s ($%s/%s) renewing %s"
+                            % (profile.user.username, old_amount, provider, profile.premium_expire),
+                        )
+                        processed += 1
+                        continue
+
+                    row, _ = PremiumPricingMigration.objects.get_or_create(
+                        user=profile.user, defaults=dict(provider=provider, old_amount=old_amount)
+                    )
+                    row.provider = provider
+                    row.old_amount = old_amount
+                    row.renewal_date_at_send = profile.premium_expire
+
+                    approval_url = None
+                    paypal_cancelled = False
+                    if provider == "stripe":
+                        switched = profile.switch_stripe_subscription("premium", proration_behavior="none")
+                        if not switched:
+                            logging.user(profile.user, "~FRStripe price switch failed; not emailing")
+                            continue
+                        row.price_switched_date = now
+                    else:  # paypal
+                        approval_url = profile.paypal_price_change_approval_url("premium")
+                        if not approval_url:
+                            if not getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
+                                # Shadow mode: leave their subscription alone, but never drop them
+                                # without a trace. Recording would_cancel hands the row to
+                                # reconcile_premium_pricing_migration, which rechecks it nightly and
+                                # acts once cancelling is switched on. Leaving it "pending" here is
+                                # what stranded 74 subscribers on the grandfathered rate for a whole
+                                # renewal cycle in June 2026: no email, no staff notification, and
+                                # nothing to look at until the dashboard started counting them.
+                                logging.user(
+                                    profile.user,
+                                    "~FRPayPal approval URL failed and cancelling is off; marking would_cancel",
+                                )
+                                profile.send_staff_pricing_would_cancel_email(
+                                    old_amount=old_amount, next_billing=profile.premium_expire
+                                )
+                                row.would_cancel_date = now
+                                row.status = "would_cancel"
+                                row.save()
+                                continue
+                            if profile.is_dormant_for_paypal_cancel(now=now):
+                                logging.user(
+                                    profile.user,
+                                    "~FBSkipping PayPal cancel (dormant, last seen %s); leaving grandfathered"
+                                    % profile.last_seen_on,
+                                )
+                                row.status = "skipped_dormant"
+                                row.save()
+                                continue
+                            cancelled_paypal_sub_id = profile.cancel_premium_paypal()
+                            if not isinstance(cancelled_paypal_sub_id, str):
+                                logging.user(profile.user, "~FRPayPal cancellation failed; not emailing")
+                                continue
+                            profile.premium_renewal = False
+                            profile.save(update_fields=["premium_renewal"])
+                            row.paypal_canceled_date = now
+                            paypal_cancelled = True
+
+                    profile.send_premium_pricing_upgrade_email(
+                        old_amount=old_amount,
+                        renewal_date=profile.premium_expire,
+                        approval_url=approval_url,
+                        variant=provider,
+                        paypal_cancelled=paypal_cancelled,
+                    )
+                    row.email_sent_date = now
+                    row.status = "cancelled" if paypal_cancelled else "emailed"
+                    row.save()
+                    processed += 1
+                except Exception as e:
+                    logging.user(
+                        profile.user,
+                        "~FRPricing migration error for %s, skipping: %s" % (profile.user.username, e),
+                    )
+                    continue
+
+            logging.debug(
+                " ---> Premium pricing migration processed %s users%s"
+                % (processed, " (dry-run)" if dry_run else "")
+            )
+            return processed
+        finally:
+            if lock and lock != "skip":
+                try:
+                    lock.release()
+                except Exception:
+                    pass
+
+    @staticmethod
+    def _parse_paypal_next_billing(detail):
+        """Parse PayPal billing_info.next_billing_time (ISO 8601, UTC) into a naive-UTC datetime,
+        or None (apps/profile/models.py)."""
+        billing_info = (detail or {}).get("billing_info") or {}
+        nb = billing_info.get("next_billing_time")
+        if not nb:
+            return None
+        try:
+            import dateutil.parser
+
+            parsed = dateutil.parser.parse(nb)
+        except (ValueError, TypeError):
+            return None
+        if parsed.tzinfo is not None:
+            parsed = parsed.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+        return parsed
+
+    @classmethod
+    def reconcile_premium_pricing_migration(cls, paypal_cancel_window_hours=30):
+        """Nightly reconciliation of the pricing migration. For each emailed row: mark it upgraded
+        when a $36+ charge lands after the email; for PayPal non-approvers, suspend the old
+        grandfathered subscription only once its next charge is imminent (so they keep the most time
+        to approve the $36 rate and are never billed again at the old rate); otherwise mark cancelled
+        when auto-renew is off. Records resubscribes for cancelled users so we can judge the PayPal
+        experiment. Runs daily, so the cancel window is sized a little above the daily interval to
+        guarantee we cancel before PayPal's next_billing_time without acting too early."""
+        lock = cls._acquire_pricing_lock("lock:premium_pricing_reconcile")
+        if lock == "skip":
+            logging.debug(" ---> Premium pricing reconciliation already running elsewhere; skipping")
+            return 0
+        now = datetime.datetime.now()
+        now_utc = datetime.datetime.utcnow()
+        target_paypal_plan = Profile.plan_to_paypal_plan_id("premium")
+
+        rows = list(
+            PremiumPricingMigration.objects.filter(status__in=["emailed", "would_cancel"]).select_related(
+                "user"
+            )
+        )
+        for row in rows:
+            # Isolate each row so one failure (PayPal API, email render) can't abort reconciliation.
+            try:
+                profile = row.user.profile
+
+                # A would_cancel row can reach here without an email ever going out (PayPal gave us
+                # no approval link while cancelling was switched off), so fall back to when the row
+                # was opened. Passing None here would filter on payment_date__gt=None and drop the
+                # row out of reconciliation for good.
+                charged_since = row.email_sent_date or row.created_date
+                upgraded = (
+                    PaymentHistory.objects.filter(
+                        user=row.user, payment_amount__gte=36, payment_date__gt=charged_since
+                    )
+                    .exclude(refunded=True)
+                    .exists()
+                )
+                if upgraded:
+                    row.status = "upgraded"
+                    if not row.price_switched_date:
+                        row.price_switched_date = now
+                    row.save()
+                    continue
+
+                # PayPal non-approvers: cancel the old grandfathered subscription, but only right
+                # before its next charge, so they keep the most time to approve the $36 rate and are
+                # never billed again at the old rate. Approval is detected from the live plan_id.
+                if row.provider == "paypal":
+                    detail = profile.paypal_subscription_detail()
+                    if detail is not None:
+                        status = detail.get("status")
+                        plan_id = detail.get("plan_id")
+                        if plan_id == target_paypal_plan:
+                            # Approved the new rate; leave emailed until the $36 charge lands above.
+                            continue
+                        if status not in ("ACTIVE", "APPROVED", "APPROVAL_PENDING"):
+                            # Subscriber already cancelled/suspended it themselves.
+                            row.status = "cancelled"
+                            row.save()
+                            continue
+                        next_billing = cls._parse_paypal_next_billing(detail)
+                        if next_billing is not None and next_billing <= now_utc + datetime.timedelta(
+                            hours=paypal_cancel_window_hours
+                        ):
+                            row_changed = False
+                            if getattr(settings, "PREMIUM_PRICING_PAYPAL_CANCEL_ENABLED", False):
+                                if profile.is_dormant_for_paypal_cancel(now=now):
+                                    # Dormant non-approver: never resubscribes, so cancelling only
+                                    # forfeits their grandfathered payment. Leave the old sub to
+                                    # renew at the old rate and mark the row skipped_dormant so it
+                                    # leaves the reconcile working set instead of being retried
+                                    # nightly. (A later $36 approval by a dormant user is vanishingly
+                                    # rare and would simply not be re-counted as an upgrade.)
+                                    logging.user(
+                                        row.user,
+                                        "~FBSkipping PayPal cancel on reconcile (dormant, last seen %s); leaving grandfathered"
+                                        % profile.last_seen_on,
+                                    )
+                                    row.status = "skipped_dormant"
+                                    row.save()
+                                    continue
+                                profile.cancel_premium_paypal()
+                                row.paypal_canceled_date = now
+                                row.status = "cancelled"
+                                row_changed = True
+                            elif row.status != "would_cancel":
+                                # Shadow mode (default): never touch PayPal. Email staff that we
+                                # WOULD have cancelled this user, with their full payment history, so
+                                # we can verify targeting before enabling real cancellations. Their
+                                # old subscription renews untouched at the grandfathered rate.
+                                profile.send_staff_pricing_would_cancel_email(
+                                    old_amount=row.old_amount, next_billing=next_billing
+                                )
+                                row.would_cancel_date = now
+                                row.status = "would_cancel"
+                                row_changed = True
+                            if row_changed:
+                                row.save()
+                            continue
+                        # Not approved, but the charge isn't imminent yet: wait for a later run.
+                        continue
+
+                # General cancellation: auto-renew off, or well past renewal with no $36 charge.
+                if not profile.premium_renewal:
+                    row.status = "cancelled"
+                    row.save()
+                    continue
+                if row.renewal_date_at_send and now > row.renewal_date_at_send + datetime.timedelta(days=33):
+                    row.status = "cancelled"
+                    row.save()
+                    continue
+            except Exception as e:
+                logging.user(row.user, "~FRReconcile error for %s, skipping: %s" % (row.user.username, e))
+                continue
+
+        cancelled = PremiumPricingMigration.objects.filter(
+            status="cancelled", resubscribed_date__isnull=True
+        ).select_related("user")
+        for row in cancelled:
+            since = row.paypal_canceled_date or row.email_sent_date
+            # >= 29 (not 36) so a pro-monthly resubscribe ($29/mo on iOS) still counts; the old
+            # grandfathered rates were $12/$24, so 29 cleanly excludes a stale grandfathered charge.
+            resub = PaymentHistory.objects.filter(user=row.user, payment_amount__gte=29).exclude(
+                refunded=True
+            )
+            if since:
+                resub = resub.filter(payment_date__gt=since)
+            resub = resub.order_by("payment_date").first()
+            if resub:
+                row.resubscribed_date = resub.payment_date
+                row.resubscribed_provider = resub.payment_provider
+                row.resubscribed_amount = resub.payment_amount
+                row.save()
+
+        if lock and lock != "skip":
+            try:
+                lock.release()
+            except Exception:
+                pass
+        return len(rows)
+
     def autologin_url(self, next=None):
         return reverse("autologin", kwargs={"username": self.user.username, "secret": self.secret_token}) + (
             "?" + next + "=1" if next else ""
         )
+
+    def email_optout_url(self):
+        """Tokened two-click unsubscribe link used in email footers. Auto-logs in the
+        user, then unsubscribes on a button press (apps/profile/views.py email_optout_token)."""
+        return reverse(
+            "profile-email-optout-token",
+            kwargs={"username": self.user.username, "secret": self.secret_token},
+        )
+
+    def email_unsubscribe_headers(self):
+        """RFC 8058 one-click unsubscribe headers so mail clients can offer their own
+        unsubscribe button. Providers POST to the tokened unsubscribe URL, which
+        unsubscribes immediately (apps/profile/views.py email_optout_token)."""
+        domain = Site.objects.get_current().domain
+        return {
+            "List-Unsubscribe": "<https://%s%s>" % (domain, self.email_optout_url()),
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        }
 
     @classmethod
     def doublecheck_paypal_payments(cls, days=14):
@@ -3498,7 +4549,8 @@ def create_profile(sender, instance, created, **kwargs):
             is_premium_trial=True,
             premium_expire=now + datetime.timedelta(days=30),
         )
-        EmailNewPremiumTrial.delay(user_id=instance.pk)
+        # models.py also creates profiles inside apps/api/social_auth.py's signup transaction.
+        transaction.on_commit(lambda: EmailNewPremiumTrial.delay(user_id=instance.pk))
         logging.user(
             instance,
             "~BY~SK~FW~SBNEW USER WITH PREMIUM TRIAL! Expires %s~SN" % profile.premium_expire,
@@ -3786,8 +4838,18 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
     if profile:
         logging.user(profile.user, "~BC~SB~FBStripe checkout subscription signup")
         profile.retrieve_stripe_ids()
+        # A first-time Stripe customer has no stripe_id until this handler stores it.
+        # Stripe fires customer.subscription.created, charge.succeeded and
+        # customer.subscription.updated a few seconds *before* checkout.session.completed,
+        # and those handlers look the profile up by stripe_id, so for a new customer they
+        # can't find it and bail. Sync from Stripe here so the paid tier is activated no
+        # matter which webhook lands first. (apps/profile/models.py)
+        profile.setup_premium_history()
     else:
-        logging.user(profile.user, "~BR~SB~FRCouldn't find Stripe user: ~FW%s" % full_json)
+        logging.debug(
+            " ---> Couldn't find Stripe user for checkout: user_id=%s stripe_id=%s"
+            % (newsblur_user_id, stripe_id)
+        )
         return {"code": -1, "message": "User doesn't exist."}
 
 
@@ -3807,9 +4869,15 @@ def stripe_signup(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
-        # Prorate refund on old PayPal subscription before activating new tier
+        # Prorate refund on old subscription before activating new tier
         if profile.paypal_sub_id and profile.active_provider == "paypal":
             profile.refund_prorated_paypal_for_provider_switch()
+        else:
+            # An App Store / Google Play subscriber upgrading or switching to
+            # Stripe can't have their store charge refunded through Stripe, so
+            # credit the unused days back against this new Stripe charge. No-ops
+            # when there's no recent store payment (e.g. a plain free signup).
+            profile.refund_prorated_store_payment_for_provider_switch()
         if plan_id == Profile.plan_to_stripe_price("premium"):
             profile.activate_premium()
             MReferral.award_credit(profile.user.pk, 36, "premium")
@@ -3822,6 +4890,12 @@ def stripe_signup(sender, full_json, **kwargs):
         profile.cancel_premium_paypal()
         profile.retrieve_stripe_ids()
     except Profile.DoesNotExist:
+        # New customers land here when this webhook beats checkout.session.completed,
+        # which is what stores the stripe_id. The checkout handler syncs the tier itself.
+        logging.debug(
+            " ---> Stripe subscription created for unknown stripe_id=%s (plan %s), "
+            "deferring to checkout.session.completed" % (stripe_id, plan_id)
+        )
         return {"code": -1, "message": "User doesn't exist."}
 
 
@@ -3872,6 +4946,10 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
         else:
             profile.setup_premium_history()
     except Profile.DoesNotExist:
+        logging.debug(
+            " ---> Stripe subscription updated for unknown stripe_id=%s (plan %s), "
+            "deferring to checkout.session.completed" % (stripe_id, plan_id)
+        )
         return {"code": -1, "message": "User doesn't exist."}
 
 
@@ -3885,6 +4963,10 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
         logging.user(profile.user, "~BC~SB~FBStripe subscription payment")
         profile.setup_premium_history()
     except Profile.DoesNotExist:
+        logging.debug(
+            " ---> Stripe charge for unknown stripe_id=%s, deferring to checkout.session.completed"
+            % stripe_id
+        )
         return {"code": -1, "message": "User doesn't exist."}
 
 
@@ -3984,6 +5066,16 @@ def change_password(user, old_password, new_password, only_check=False):
         return 1
 
 
+class SocialIdentity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="social_identities")
+    provider = models.CharField(max_length=16)
+    subject = models.CharField(max_length=255)
+    email = models.EmailField()
+
+    class Meta:
+        unique_together = (("provider", "subject"),)
+
+
 def blank_authenticate(username, password=""):
     try:
         user = User.objects.get(username__iexact=username)
@@ -3992,6 +5084,10 @@ def blank_authenticate(username, password=""):
 
     if user.password == "!":
         return user
+
+    # apps/api/social_auth.py creates provider-only accounts with unusable passwords.
+    if not user.has_usable_password():
+        return None
 
     algorithm, salt, hash = user.password.split("$", 2)
     encoded_blank = hashlib.sha1((salt + password).encode(encoding="utf-8")).hexdigest()
@@ -4091,12 +5187,201 @@ class MSentEmail(mongo.Document):
         )
 
 
+class PremiumPricingMigration(models.Model):
+    """Tracks the campaign that moves grandfathered $12/$24 premium subscribers to $36. One row
+    per user, created when they are emailed ~48h before renewal. `provider` lets the dashboard
+    split outcomes by Stripe vs PayPal; `resubscribed_*` records whether a cancelled (esp. PayPal)
+    user comes back, which tells us whether the PayPal cancel-non-approvers tactic is worth keeping
+    (apps/profile/models.py)."""
+
+    user = models.OneToOneField(User, related_name="pricing_migration", on_delete=models.CASCADE)
+    provider = models.CharField(max_length=24)  # "stripe" | "paypal"
+    old_amount = models.IntegerField()  # 12 or 24
+    new_amount = models.IntegerField(default=36)
+    renewal_date_at_send = models.DateTimeField(blank=True, null=True)
+    email_sent_date = models.DateTimeField(blank=True, null=True)
+    price_switched_date = models.DateTimeField(blank=True, null=True)  # Stripe: at send; PayPal: on approval
+    paypal_canceled_date = models.DateTimeField(blank=True, null=True)  # set when we cancel a non-approver
+    would_cancel_date = models.DateTimeField(
+        blank=True, null=True
+    )  # shadow mode: staff notified, not canceled
+    resubscribed_date = models.DateTimeField(blank=True, null=True)  # later paid sub via any provider
+    resubscribed_provider = models.CharField(max_length=24, blank=True, null=True)
+    resubscribed_amount = models.IntegerField(blank=True, null=True)  # tier inferred from amount/provider
+    # pending|emailed|upgraded|cancelled|would_cancel|skipped_dormant
+    # (would_cancel = shadow mode, staff notified only; skipped_dormant = PayPal payer left on the
+    # old plan because they were too inactive to be worth force-cancelling -- see
+    # Profile.is_dormant_for_paypal_cancel)
+    status = models.CharField(max_length=16, default="pending")
+    status_changed_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    # Origin providers for the resubscribe switch breakdown: a grandfathered sub is only ever billed
+    # via Stripe or PayPal, though it can resubscribe on any provider
+    # (apps/monitor/views/newsblur_users.py).
+    SWITCH_ORIGINS = ["paypal", "stripe"]
+
+    # The only plan we can see in a resubscribe that isn't already billed yearly. Premium ($36),
+    # archive ($99) and yearly pro ($299) charges are annual figures as-is, so this is the one
+    # amount that has to be multiplied out to compare against a yearly grandfathered rate
+    # (apps/profile/models.py annualized_resubscribe_amount).
+    PRO_MONTHLY_AMOUNT = 29
+
+    class Meta:
+        indexes = [models.Index(fields=["status"]), models.Index(fields=["provider"])]
+
+    def __str__(self):
+        return "%s: $%s -> $%s (%s, %s)" % (
+            self.user.username,
+            self.old_amount,
+            self.new_amount,
+            self.provider,
+            self.status,
+        )
+
+    @staticmethod
+    def resub_provider_bucket(provider):
+        """Map a resubscribe's PaymentHistory.payment_provider to a destination bucket
+        (paypal/stripe/ios/android), or None if it isn't a recognized paid subscription provider
+        (apps/profile/models.py)."""
+        provider = provider or ""
+        if provider == "paypal":
+            return "paypal"
+        if provider == "stripe":
+            return "stripe"
+        if provider.startswith("ios"):
+            return "ios"
+        if provider.startswith("android"):
+            return "android"
+        return None
+
+    @staticmethod
+    def resub_tier_bucket(provider, amount):
+        """Map a resubscribe (provider + amount) to premium/archive/pro. Mobile providers encode the
+        tier in their name (e.g. ios-pro-subscription, android-archive); Stripe/PayPal only tell us
+        the amount, so the tier falls out of the price: $36 premium, $99 archive, $299/yr or $29/mo
+        pro (apps/profile/models.py)."""
+        provider = provider or ""
+        amount = amount or 0
+        if "pro" in provider or amount >= 299 or amount == 29:
+            return "pro"
+        if "archive" in provider or amount == 99:
+            return "archive"
+        return "premium"
+
+    @classmethod
+    def resubscribed_switches(cls):
+        """Origin-provider -> destination-provider x tier counts for cancelled subscribers who came
+        back with a fresh paid subscription, keyed '<origin>_to_<dest>_<tier>' (e.g.
+        'paypal_to_stripe_premium'). Only switches that actually happened are returned -- zero-count
+        combos are omitted -- so the dashboard shows real moves instead of a wall of zeros. A
+        resubscribe keeps the row's status="cancelled" (it never becomes an upgrade), so this is the
+        only place the cancel-then-return outcome is broken down
+        (apps/monitor/views/newsblur_users.py)."""
+        switches = {}
+        rows = cls.objects.filter(status="cancelled", resubscribed_date__isnull=False).only(
+            "provider", "resubscribed_provider", "resubscribed_amount"
+        )
+        for row in rows:
+            origin = row.provider if row.provider in cls.SWITCH_ORIGINS else None
+            dest = cls.resub_provider_bucket(row.resubscribed_provider)
+            if not origin or not dest:
+                continue
+            tier = cls.resub_tier_bucket(row.resubscribed_provider, row.resubscribed_amount)
+            key = "%s_to_%s_%s" % (origin, dest, tier)
+            switches[key] = switches.get(key, 0) + 1
+        return switches
+
+    @classmethod
+    def resubscribe_funnel(cls):
+        """Per-origin cancel-then-return funnel: of the subscribers we cancelled (PayPal
+        non-approvers are forcibly cancelled), how many have come back on a fresh paid sub vs are
+        still gone. Keyed 'resubscribed_<origin>' and 'not_resubscribed_<origin>', so the dashboard
+        can chart the resubscribe rate against the forced cancellations -- the total cancelled per
+        origin is already exposed as premium_pricing_cancellations_<origin>
+        (apps/monitor/views/newsblur_users.py)."""
+        funnel = {}
+        for origin in cls.SWITCH_ORIGINS:
+            cancelled = cls.objects.filter(status="cancelled", provider=origin)
+            total = cancelled.count()
+            resubscribed = cancelled.filter(resubscribed_date__isnull=False).count()
+            funnel["resubscribed_%s" % origin] = resubscribed
+            funnel["not_resubscribed_%s" % origin] = total - resubscribed
+        return funnel
+
+    @classmethod
+    def annualized_resubscribe_amount(cls, provider, amount):
+        """Yearly run rate of a resubscribe. Every plan that can show up here already bills yearly
+        ($36 premium, $99 archive, $299 pro) except the $29/month pro plan, which has to be
+        multiplied out before it can be compared against the yearly grandfathered rate it replaced
+        (apps/profile/models.py revenue_delta)."""
+        amount = amount or 0
+        if cls.resub_tier_bucket(provider, amount) == "pro" and amount == cls.PRO_MONTHLY_AMOUNT:
+            return amount * 12
+        return amount
+
+    @classmethod
+    def revenue_delta(cls):
+        """Yearly dollar impact of the whole migration, measured against what these subscribers were
+        paying before it started -- the bottom line for whether forcing grandfathered subscribers off
+        $12/$24 was worth doing.
+
+        An upgraded subscriber earns (new rate - old rate). A cancelled subscriber who came back
+        earns (their new tier's yearly rate - old rate), which is why the ones who return on archive
+        are worth six times a plain premium return. A cancelled subscriber who never came back costs
+        their entire old rate, because that is revenue we used to collect and no longer do.
+
+        Rows still in flight are worth $0: 'pending' and 'emailed' subscribers haven't been charged
+        the new price yet, and 'skipped_dormant' subscribers were deliberately left alone and keep
+        paying exactly what they always did.
+
+        Returns 'revenue_gain', 'revenue_loss' (both positive) and 'revenue_net', plus a
+        'revenue_net_<origin>' per origin provider so Stripe's near-total success can be told apart
+        from PayPal's losses (apps/monitor/views/newsblur_users.py)."""
+        gain = 0
+        loss = 0
+        per_origin = dict((origin, 0) for origin in cls.SWITCH_ORIGINS)
+        rows = cls.objects.filter(status__in=["upgraded", "cancelled"]).only(
+            "provider",
+            "old_amount",
+            "new_amount",
+            "status",
+            "resubscribed_provider",
+            "resubscribed_amount",
+            "resubscribed_date",
+        )
+        for row in rows:
+            old_amount = row.old_amount or 0
+            if row.status == "upgraded":
+                delta = (row.new_amount or 0) - old_amount
+            elif row.resubscribed_date:
+                delta = (
+                    cls.annualized_resubscribe_amount(row.resubscribed_provider, row.resubscribed_amount)
+                    - old_amount
+                )
+            else:
+                delta = -old_amount
+            if delta < 0:
+                loss += -delta
+            else:
+                gain += delta
+            if row.provider in per_origin:
+                per_origin[row.provider] += delta
+
+        revenue = {"revenue_gain": gain, "revenue_loss": loss, "revenue_net": gain - loss}
+        for origin, delta in per_origin.items():
+            revenue["revenue_net_%s" % origin] = delta
+        return revenue
+
+
 class PaymentHistory(models.Model):
     user = models.ForeignKey(User, related_name="payments", on_delete=models.CASCADE)
     payment_date = models.DateTimeField()
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=32)
     payment_identifier = models.CharField(max_length=100, null=True)
+    apple_original_transaction_id = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    apple_expires_date = models.DateTimeField(blank=True, null=True)
     refunded = models.BooleanField(blank=True, null=True)
 
     def __str__(self):

@@ -1,5 +1,5 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/gray96" android:state_checkable="true" android:state_checked="true" android:state_enabled="true" />
+    <item android:color="@color/segmented_control_selected_text_dark" android:state_checkable="true" android:state_checked="true" android:state_enabled="true" />
     <item android:color="@color/gray65" android:state_checkable="true" android:state_checked="false" android:state_enabled="true" />
     <item android:color="@color/gray65" android:state_enabled="true" />
     <item android:color="@color/gray65" />

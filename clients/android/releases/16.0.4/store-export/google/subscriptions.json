@@ -1,0 +1,474 @@
+[
+  {
+    "productId": "nb.premium.36",
+    "listings": [
+      {
+        "languageCode": "en-US",
+        "title": "NewsBlur Premium Subscription",
+        "description": "Read folders as one list, search feeds, organize saved stories with tags, and receive faster feed updates.",
+        "benefits": [
+          "Read folders in one story list",
+          "Search across feeds",
+          "Tag your saved stories",
+          "Faster feed updates"
+        ]
+      },
+      {
+        "languageCode": "es-ES",
+        "title": "Suscripción a NewsBlur Premium",
+        "description": "Lee carpetas en una sola lista, busca en los feeds, organiza artículos guardados con etiquetas y recibe actualizaciones de feeds más rápidas.",
+        "benefits": [
+          "Lee carpetas en una lista de artículos",
+          "Busca en todos tus feeds",
+          "Etiqueta tus artículos guardados",
+          "Actualizaciones de feeds más frecuentes"
+        ]
+      },
+      {
+        "languageCode": "fr-FR",
+        "title": "Abonnement NewsBlur Premium",
+        "description": "Lisez vos dossiers dans une seule liste, recherchez dans les flux, organisez les articles enregistrés avec des tags et recevez les mises à jour des flux plus vite.",
+        "benefits": [
+          "Lisez un dossier dans une seule liste",
+          "Recherchez dans tous vos flux",
+          "Tags sur vos articles enregistrés",
+          "Mises à jour des flux plus fréquentes"
+        ]
+      },
+      {
+        "languageCode": "de-DE",
+        "title": "NewsBlur Premium-Abonnement",
+        "description": "Lies Ordner in einer Liste, durchsuche Feeds, ordne gespeicherte Artikel mit Tags und erhalte schnellere Feed-Aktualisierungen.",
+        "benefits": [
+          "Ordner in einer Artikelliste lesen",
+          "Feeds übergreifend durchsuchen",
+          "Gespeicherte Artikel mit Tags ordnen",
+          "Häufigere Feed-Aktualisierungen"
+        ]
+      },
+      {
+        "languageCode": "pt-BR",
+        "title": "Assinatura do NewsBlur Premium",
+        "description": "Leia pastas em uma só lista, pesquise nos feeds, organize artigos salvos com tags e receba atualizações de feeds mais rápidas.",
+        "benefits": [
+          "Leia pastas em uma lista de artigos",
+          "Pesquise em todos os feeds",
+          "Adicione tags aos artigos salvos",
+          "Atualizações de feeds mais frequentes"
+        ]
+      },
+      {
+        "languageCode": "it-IT",
+        "title": "Abbonamento NewsBlur Premium",
+        "description": "Leggi le cartelle in un solo elenco, cerca nei feed, organizza gli articoli salvati con i tag e ricevi aggiornamenti dei feed più rapidi.",
+        "benefits": [
+          "Leggi le cartelle in un solo elenco",
+          "Cerca in tutti i feed",
+          "Aggiungi tag agli articoli salvati",
+          "Aggiornamenti dei feed più frequenti"
+        ]
+      },
+      {
+        "languageCode": "nl-NL",
+        "title": "NewsBlur Premium-abonnement",
+        "description": "Lees mappen in één lijst, doorzoek feeds, orden opgeslagen artikelen met tags en ontvang snellere feedupdates.",
+        "benefits": [
+          "Lees mappen in één artikellijst",
+          "Doorzoek al je feeds",
+          "Tag je opgeslagen artikelen",
+          "Vaker feedupdates"
+        ]
+      },
+      {
+        "languageCode": "pl-PL",
+        "title": "Subskrypcja NewsBlur Premium",
+        "description": "Czytaj foldery na jednej liście, przeszukuj kanały, porządkuj zapisane artykuły za pomocą tagów i szybciej otrzymuj aktualizacje kanałów.",
+        "benefits": [
+          "Czytaj foldery na jednej liście",
+          "Przeszukuj wszystkie kanały",
+          "Dodawaj tagi do zapisanych artykułów",
+          "Częstsze aktualizacje kanałów"
+        ]
+      },
+      {
+        "languageCode": "tr-TR",
+        "title": "NewsBlur Premium Aboneliği",
+        "description": "Klasörleri tek listede okuyun, akışlarda arayın, kaydedilen haberleri etiketlerle düzenleyin ve akış güncellemelerini daha hızlı alın.",
+        "benefits": [
+          "Klasörleri tek haber listesinde okuyun",
+          "Akışlar arasında arama yapın",
+          "Kaydettiğiniz haberleri etiketleyin",
+          "Daha hızlı akış güncellemeleri"
+        ]
+      },
+      {
+        "languageCode": "ru-RU",
+        "title": "Подписка NewsBlur Premium",
+        "description": "Читайте папки одним списком, ищите в лентах, упорядочивайте сохранённые статьи с помощью тегов и быстрее получайте обновления лент.",
+        "benefits": [
+          "Читайте папки в одном списке статей",
+          "Поиск по всем лентам",
+          "Теги для сохранённых статей",
+          "Более частое обновление лент"
+        ]
+      },
+      {
+        "languageCode": "uk",
+        "title": "Підписка NewsBlur Premium",
+        "description": "Читайте папки одним списком, шукайте у стрічках, упорядковуйте збережені статті за тегами й швидше отримуйте оновлення стрічок.",
+        "benefits": [
+          "Читайте папки в одному списку статей",
+          "Пошук у всіх стрічках",
+          "Теги для збережених статей",
+          "Частіше оновлення стрічок"
+        ]
+      },
+      {
+        "languageCode": "ar",
+        "title": "اشتراك NewsBlur Premium",
+        "description": "اقرأ المجلدات في قائمة واحدة، وابحث في الخلاصات، ونظّم القصص المحفوظة بالوسوم، واحصل على تحديثات أسرع للخلاصات.",
+        "benefits": [
+          "اقرأ المجلدات في قائمة قصص واحدة",
+          "ابحث في جميع الخلاصات",
+          "أضف وسومًا إلى القصص المحفوظة",
+          "تحديثات أسرع للخلاصات"
+        ]
+      },
+      {
+        "languageCode": "iw-IL",
+        "title": "מינוי NewsBlur Premium",
+        "description": "קראו תיקיות ברשימה אחת, חפשו בפידים, ארגנו כתבות שמורות בעזרת תגיות וקבלו עדכוני פידים מהירים יותר.",
+        "benefits": [
+          "קריאת תיקיות ברשימת כתבות אחת",
+          "חיפוש בכל הפידים",
+          "תגיות לכתבות שמורות",
+          "עדכוני פידים מהירים יותר"
+        ]
+      },
+      {
+        "languageCode": "hi-IN",
+        "title": "NewsBlur Premium सदस्यता",
+        "description": "फ़ोल्डर एक सूची में पढ़ें, फ़ीड में खोजें, सहेजे गए लेखों को टैग से व्यवस्थित करें और फ़ीड अपडेट जल्दी पाएँ।",
+        "benefits": [
+          "फ़ोल्डर एक ही लेख सूची में पढ़ें",
+          "सभी फ़ीड में खोजें",
+          "सहेजे गए लेखों पर टैग लगाएँ",
+          "ज़्यादा तेज़ फ़ीड अपडेट"
+        ]
+      },
+      {
+        "languageCode": "id",
+        "title": "Langganan NewsBlur Premium",
+        "description": "Baca isi folder dalam satu daftar, cari di feed, atur artikel tersimpan dengan tag, dan dapatkan pembaruan feed lebih cepat.",
+        "benefits": [
+          "Baca folder dalam satu daftar artikel",
+          "Cari di seluruh feed",
+          "Beri tag pada artikel tersimpan",
+          "Pembaruan feed lebih cepat"
+        ]
+      },
+      {
+        "languageCode": "vi",
+        "title": "Đăng ký NewsBlur Premium",
+        "description": "Đọc thư mục trong một danh sách, tìm kiếm nguồn cấp, sắp xếp bài viết đã lưu bằng thẻ và nhận cập nhật nguồn cấp nhanh hơn.",
+        "benefits": [
+          "Đọc thư mục trong một danh sách bài viết",
+          "Tìm kiếm trên các nguồn cấp",
+          "Gắn thẻ bài viết đã lưu",
+          "Cập nhật nguồn cấp nhanh hơn"
+        ]
+      },
+      {
+        "languageCode": "th",
+        "title": "การสมัครสมาชิก NewsBlur Premium",
+        "description": "อ่านโฟลเดอร์ในรายการเดียว ค้นหาในฟีด จัดระเบียบบทความที่บันทึกไว้ด้วยแท็ก และรับการอัปเดตฟีดที่เร็วขึ้น",
+        "benefits": [
+          "อ่านโฟลเดอร์ในรายการบทความเดียว",
+          "ค้นหาในทุกฟีด",
+          "แท็กบทความที่บันทึกไว้",
+          "อัปเดตฟีดเร็วขึ้น"
+        ]
+      },
+      {
+        "languageCode": "ja-JP",
+        "title": "NewsBlur Premiumのサブスクリプション",
+        "description": "フォルダー内の記事を1つの一覧で読み、フィードを検索し、保存した記事をタグで整理できます。フィードもより速く更新されます。",
+        "benefits": [
+          "フォルダー内の記事を1つの一覧で読む",
+          "複数のフィードを横断検索",
+          "保存した記事にタグを付ける",
+          "フィードをより速く更新"
+        ]
+      },
+      {
+        "languageCode": "ko-KR",
+        "title": "NewsBlur Premium 구독",
+        "description": "폴더를 하나의 목록으로 읽고, 피드를 검색하고, 저장한 스토리를 태그로 정리하세요. 피드도 더 빠르게 업데이트됩니다.",
+        "benefits": [
+          "폴더를 하나의 스토리 목록으로 읽기",
+          "여러 피드에서 검색",
+          "저장한 스토리에 태그 지정",
+          "더 빠른 피드 업데이트"
+        ]
+      },
+      {
+        "languageCode": "zh-CN",
+        "title": "NewsBlur Premium 订阅",
+        "description": "在同一列表中阅读文件夹内的文章、搜索订阅源、用标签整理已保存的文章，并享受更快的订阅源更新。",
+        "benefits": [
+          "在同一列表中阅读文件夹内的文章",
+          "跨订阅源搜索",
+          "为已保存的文章添加标签",
+          "更快的订阅源更新"
+        ]
+      },
+      {
+        "languageCode": "zh-TW",
+        "title": "NewsBlur Premium 訂閱",
+        "description": "在同一清單中閱讀資料夾內的文章、搜尋訂閱來源、用標籤整理已儲存的文章，並享有更快的訂閱來源更新。",
+        "benefits": [
+          "在同一清單中閱讀資料夾內的文章",
+          "跨訂閱來源搜尋",
+          "為已儲存的文章加上標籤",
+          "更快的訂閱來源更新"
+        ]
+      }
+    ]
+  },
+  {
+    "productId": "nb.premium.archive.99",
+    "listings": [
+      {
+        "languageCode": "en-US",
+        "title": "NewsBlur Premium Archive Subscription",
+        "description": "Get everything in Premium, plus a permanent, searchable archive of every story. Keep stories unread for as long as you want.",
+        "benefits": [
+          "Everything in Premium",
+          "Keep stories unread forever",
+          "Archive every story permanently",
+          "Search your complete story archive"
+        ]
+      },
+      {
+        "languageCode": "es-ES",
+        "title": "Suscripción a NewsBlur Premium Archive",
+        "description": "Todo lo de Premium, más un archivo permanente de cada artículo con búsqueda. Mantén los artículos sin leer tanto tiempo como quieras.",
+        "benefits": [
+          "Todo lo de Premium",
+          "Deja artículos sin leer para siempre",
+          "Archiva cada artículo para siempre",
+          "Busca en todo tu archivo de artículos"
+        ]
+      },
+      {
+        "languageCode": "fr-FR",
+        "title": "Abonnement NewsBlur Premium Archive",
+        "description": "Tout Premium, plus une archive permanente de chaque article avec recherche. Gardez les articles non lus aussi longtemps que vous le souhaitez.",
+        "benefits": [
+          "Tout Premium",
+          "Gardez vos articles non lus indéfiniment",
+          "Archivez chaque article pour toujours",
+          "Recherchez dans toutes vos archives"
+        ]
+      },
+      {
+        "languageCode": "de-DE",
+        "title": "NewsBlur Premium Archive-Abonnement",
+        "description": "Alles aus Premium plus ein dauerhaftes, durchsuchbares Archiv jedes Artikels. Lass Artikel so lange ungelesen, wie du möchtest.",
+        "benefits": [
+          "Alles aus Premium",
+          "Artikel für immer ungelesen lassen",
+          "Jeden Artikel dauerhaft archivieren",
+          "Das gesamte Artikelarchiv durchsuchen"
+        ]
+      },
+      {
+        "languageCode": "pt-BR",
+        "title": "Assinatura do NewsBlur Premium Archive",
+        "description": "Tudo do Premium, mais um arquivo permanente e pesquisável de cada artigo. Mantenha artigos não lidos pelo tempo que quiser.",
+        "benefits": [
+          "Tudo do Premium",
+          "Mantenha artigos não lidos para sempre",
+          "Arquive cada artigo para sempre",
+          "Pesquise em todo o arquivo de artigos"
+        ]
+      },
+      {
+        "languageCode": "it-IT",
+        "title": "Abbonamento NewsBlur Premium Archive",
+        "description": "Tutto ciò che offre Premium, più un archivio permanente e ricercabile di ogni articolo. Lascia gli articoli non letti per tutto il tempo che vuoi.",
+        "benefits": [
+          "Tutto ciò che offre Premium",
+          "Lascia gli articoli non letti per sempre",
+          "Archivia ogni articolo per sempre",
+          "Cerca in tutto il tuo archivio"
+        ]
+      },
+      {
+        "languageCode": "nl-NL",
+        "title": "NewsBlur Premium Archive-abonnement",
+        "description": "Alles van Premium, plus een blijvend, doorzoekbaar archief van elk artikel. Laat artikelen zo lang ongelezen als je wilt.",
+        "benefits": [
+          "Alles van Premium",
+          "Bewaar artikelen onbeperkt ongelezen",
+          "Archiveer elk artikel blijvend",
+          "Doorzoek je volledige artikelarchief"
+        ]
+      },
+      {
+        "languageCode": "pl-PL",
+        "title": "Subskrypcja NewsBlur Premium Archive",
+        "description": "Wszystko z Premium oraz trwałe archiwum każdego artykułu z wyszukiwaniem. Zachowuj artykuły jako nieprzeczytane tak długo, jak chcesz.",
+        "benefits": [
+          "Wszystko z Premium",
+          "Nieprzeczytane artykuły bez limitu czasu",
+          "Archiwizuj każdy artykuł na zawsze",
+          "Przeszukuj całe archiwum artykułów"
+        ]
+      },
+      {
+        "languageCode": "tr-TR",
+        "title": "NewsBlur Premium Archive Aboneliği",
+        "description": "Premium’daki her şeye ek olarak her haber için kalıcı, aranabilir arşiv. Haberleri istediğiniz kadar uzun süre okunmamış tutun.",
+        "benefits": [
+          "Premium’daki her şey",
+          "Haberleri süresiz okunmamış tutun",
+          "Her haberi kalıcı olarak arşivleyin",
+          "Tüm haber arşivinizde arama yapın"
+        ]
+      },
+      {
+        "languageCode": "ru-RU",
+        "title": "Подписка NewsBlur Premium Archive",
+        "description": "Все возможности Premium и постоянный архив каждой статьи с поиском. Оставляйте статьи непрочитанными сколько угодно.",
+        "benefits": [
+          "Все возможности Premium",
+          "Храните статьи непрочитанными бессрочно",
+          "Постоянное хранение всех статей",
+          "Поиск по всему архиву статей"
+        ]
+      },
+      {
+        "languageCode": "uk",
+        "title": "Підписка NewsBlur Premium Archive",
+        "description": "Усі можливості Premium і постійний архів кожної статті з пошуком. Залишайте статті непрочитаними скільки завгодно.",
+        "benefits": [
+          "Усі можливості Premium",
+          "Залишайте статті непрочитаними назавжди",
+          "Постійне зберігання всіх статей",
+          "Пошук у всьому архіві статей"
+        ]
+      },
+      {
+        "languageCode": "ar",
+        "title": "اشتراك NewsBlur Premium Archive",
+        "description": "احصل على كل ميزات Premium، بالإضافة إلى أرشيف دائم لكل قصة يمكنك البحث فيه. احتفظ بالقصص غير مقروءة للمدة التي تريدها.",
+        "benefits": [
+          "كل ميزات Premium",
+          "احتفظ بالقصص غير مقروءة بلا حد زمني",
+          "أرشف كل قصة بشكل دائم",
+          "ابحث في أرشيف قصصك الكامل"
+        ]
+      },
+      {
+        "languageCode": "iw-IL",
+        "title": "מינוי NewsBlur Premium Archive",
+        "description": "כל מה שכלול ב־Premium, בתוספת ארכיון קבוע וניתן לחיפוש של כל כתבה. אפשר להשאיר כתבות שלא נקראו לכל פרק זמן רצוי.",
+        "benefits": [
+          "כל מה שכלול ב־Premium",
+          "כתבות שלא נקראו ללא הגבלת זמן",
+          "שמירת כל כתבה בארכיון לצמיתות",
+          "חיפוש בארכיון הכתבות המלא"
+        ]
+      },
+      {
+        "languageCode": "hi-IN",
+        "title": "NewsBlur Premium Archive सदस्यता",
+        "description": "Premium की सभी सुविधाओं के साथ हर लेख का स्थायी, खोजने योग्य संग्रह पाएँ। लेखों को जितने समय चाहें, अपठित रखें।",
+        "benefits": [
+          "Premium की सभी सुविधाएँ",
+          "लेख हमेशा अपठित रख सकते हैं",
+          "हर लेख स्थायी रूप से संग्रहित करें",
+          "लेखों के पूरे संग्रह में खोजें"
+        ]
+      },
+      {
+        "languageCode": "id",
+        "title": "Langganan NewsBlur Premium Archive",
+        "description": "Dapatkan semua fitur Premium, plus arsip permanen yang dapat dicari untuk setiap artikel. Biarkan artikel berstatus belum dibaca selama yang Anda inginkan.",
+        "benefits": [
+          "Semua fitur Premium",
+          "Artikel belum dibaca tanpa batas waktu",
+          "Arsipkan setiap artikel secara permanen",
+          "Cari di seluruh arsip artikel Anda"
+        ]
+      },
+      {
+        "languageCode": "vi",
+        "title": "Đăng ký NewsBlur Premium Archive",
+        "description": "Nhận mọi tính năng của Premium, cùng kho lưu trữ vĩnh viễn có thể tìm kiếm cho mọi bài viết. Giữ bài viết chưa đọc bao lâu tùy thích.",
+        "benefits": [
+          "Mọi tính năng của Premium",
+          "Giữ bài viết chưa đọc mãi mãi",
+          "Lưu trữ vĩnh viễn mọi bài viết",
+          "Tìm kiếm toàn bộ kho bài viết"
+        ]
+      },
+      {
+        "languageCode": "th",
+        "title": "การสมัครสมาชิก NewsBlur Premium Archive",
+        "description": "รับทุกอย่างใน Premium พร้อมคลังถาวรที่ค้นหาได้สำหรับทุกบทความ เก็บบทความเป็นยังไม่อ่านได้นานเท่าที่ต้องการ",
+        "benefits": [
+          "ทุกอย่างใน Premium",
+          "คงสถานะยังไม่อ่านได้ตลอดไป",
+          "จัดเก็บทุกบทความอย่างถาวร",
+          "ค้นหาในคลังบทความทั้งหมด"
+        ]
+      },
+      {
+        "languageCode": "ja-JP",
+        "title": "NewsBlur Premium Archiveのサブスクリプション",
+        "description": "Premiumの全機能に加え、すべての記事を検索できる永久アーカイブが利用できます。記事を好きなだけ未読のまま残せます。",
+        "benefits": [
+          "Premiumのすべての機能",
+          "記事をいつまでも未読のまま残せる",
+          "すべての記事を永久にアーカイブ",
+          "記事アーカイブ全体を検索"
+        ]
+      },
+      {
+        "languageCode": "ko-KR",
+        "title": "NewsBlur Premium Archive 구독",
+        "description": "Premium의 모든 기능과 함께 모든 스토리를 영구 보관하고 검색할 수 있습니다. 스토리를 원하는 만큼 읽지 않은 상태로 유지하세요.",
+        "benefits": [
+          "Premium의 모든 기능",
+          "스토리를 영원히 읽지 않은 상태로 유지",
+          "모든 스토리 영구 보관",
+          "전체 스토리 보관함 검색"
+        ]
+      },
+      {
+        "languageCode": "zh-CN",
+        "title": "NewsBlur Premium Archive 订阅",
+        "description": "包含 Premium 的全部功能，还可永久归档并搜索每篇文章。文章想保持未读状态多久都可以。",
+        "benefits": [
+          "Premium 的全部功能",
+          "文章可永远保持未读状态",
+          "永久归档每篇文章",
+          "搜索完整的文章归档"
+        ]
+      },
+      {
+        "languageCode": "zh-TW",
+        "title": "NewsBlur Premium Archive 訂閱",
+        "description": "包含 Premium 的所有功能，還可永久封存並搜尋每篇文章。文章想保持未讀狀態多久都可以。",
+        "benefits": [
+          "Premium 的所有功能",
+          "文章可永遠保持未讀狀態",
+          "永久封存每篇文章",
+          "搜尋完整的文章封存庫"
+        ]
+      }
+    ]
+  }
+]

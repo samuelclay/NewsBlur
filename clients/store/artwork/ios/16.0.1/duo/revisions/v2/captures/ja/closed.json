@@ -1,0 +1,15 @@
+{
+  "locale": "ja",
+  "scene": "closed",
+  "udid": "D570C816-B762-48E2-AC94-C592153A896D",
+  "display": "1",
+  "arguments": "-newsblur-ui-testing -newsblur-marketing-cooking -newsblur-marketing-assets /Users/sclay/projects/newsblur/clients/ios/MarketingCooking -newsblur-ui-test-screen reader-folder-tech -newsblur-ui-test-story-titles-style standard -newsblur-ui-test-theme light -ApplePersistenceIgnoreState YES -newsblur_language ja -duo_fullscreen_reader.Alex NO",
+  "dimensions": [
+    1398,
+    2034
+  ],
+  "capture": "duo-closed.png",
+  "sha256": "5587b4f7ae4dc3de5788f00db47117cba7517698a302c5d7b269b10abea7dc73",
+  "captured_at": "2026-10-26T15:06:46Z",
+  "visual_review": "required"
+}

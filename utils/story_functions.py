@@ -23,8 +23,10 @@ import dateutil
 import feedparser
 import lxml.etree
 import lxml.html
+from django.utils import formats, translation
 from django.utils.dateformat import DateFormat
 from django.utils.html import strip_tags as strip_tags_django
+from django.utils.translation import gettext, ngettext
 from lxml.etree import ParserError, SerialisationError, XMLSyntaxError
 from lxml.html.clean import Cleaner
 from lxml.html.diff import fixup_ins_del_tags, htmldiff_tokens, tokenize
@@ -38,6 +40,7 @@ COMMENTS_RE = re.compile("\<!--.*?--\>")
 _IMG_SRC_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\']', re.IGNORECASE)
 _CDN_PROXY_HOSTS = {"i0.wp.com", "i1.wp.com", "i2.wp.com", "i3.wp.com"}
 _SIZE_PREFIX_RE = re.compile(r"^[lsm]-")
+_IMAGE_MEDIA_EXTENSIONS = (".avif", ".gif", ".jpeg", ".jpg", ".png", ".webp")
 
 
 def _normalize_image_url_for_dedup(url):
@@ -99,6 +102,18 @@ def _image_url_matches_content(media_url, story_content):
     return False
 
 
+def _media_url_looks_like_image(media_url):
+    if not media_url:
+        return False
+
+    try:
+        path = urllib.parse.urlparse(media_url).path
+    except Exception:
+        path = media_url
+
+    return urllib.parse.unquote(path).lower().endswith(_IMAGE_MEDIA_EXTENSIONS)
+
+
 def midnight_today(now=None):
     if not now:
         now = datetime.datetime.now()
@@ -115,17 +130,34 @@ def beginning_of_this_month():
     return datetime.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
+def uses_english_dates():
+    """utils/story_functions.py keeps NewsBlur's English date style; other languages use Django's locale formats."""
+    return (translation.get_language() or "en").startswith("en")
+
+
+def localized_date(date, english_format):
+    if uses_english_dates():
+        return date.strftime(english_format)
+    return formats.date_format(date, "DATE_FORMAT", use_l10n=True)
+
+
 def format_story_link_date__short(date, now=None):
     if not now:
         now = datetime.datetime.now()
     date = date.replace(tzinfo=None)
     midnight = midnight_today(now)
+    english = uses_english_dates()
+    time = (
+        date.strftime("%I:%M%p").lstrip("0").lower() if english else formats.time_format(date, use_l10n=True)
+    )
     if date >= midnight:
-        return date.strftime("%I:%M%p").lstrip("0").lower()
+        return time
     elif date >= midnight_yesterday(midnight):
-        return "Yesterday, " + date.strftime("%I:%M%p").lstrip("0").lower()
-    else:
-        return date.strftime("%d %b %Y, ") + date.strftime("%I:%M%p").lstrip("0").lower()
+        return gettext("Yesterday, %(time)s") % {"time": time}
+    if english:
+        return "%s, %s" % (date.strftime("%d %b %Y"), time)
+    day = formats.date_format(date, "SHORT_DATE_FORMAT", use_l10n=True)
+    return gettext("%(date)s, %(time)s") % {"date": day, "time": time}
 
 
 def format_story_link_date__long(date, now=None):
@@ -133,35 +165,43 @@ def format_story_link_date__long(date, now=None):
         now = datetime.datetime.now()
     date = date.replace(tzinfo=None)
     midnight = midnight_today(now)
-    parsed_date = DateFormat(date)
 
+    if uses_english_dates():
+        parsed_date = DateFormat(date)
+        if date >= midnight:
+            return "Today, " + parsed_date.format("F jS ") + date.strftime("%I:%M%p").lstrip("0").lower()
+        elif date >= midnight_yesterday(midnight):
+            return "Yesterday, " + parsed_date.format("F jS g:ia").replace(".", "")
+        elif date >= beginning_of_this_month():
+            return parsed_date.format("l, F jS g:ia").replace(".", "")
+        else:
+            return parsed_date.format("l, F jS, Y g:ia").replace(".", "")
+
+    # utils/story_functions.py uses the full DATE_FORMAT because some locales' month-day format
+    # has the wrong grammatical case (Russian "2 Октябрь" instead of "2 октября").
+    values = {
+        "date": formats.date_format(date, "DATE_FORMAT", use_l10n=True),
+        "time": formats.time_format(date, use_l10n=True),
+        "weekday": formats.date_format(date, "l", use_l10n=True),
+    }
     if date >= midnight:
-        return "Today, " + parsed_date.format("F jS ") + date.strftime("%I:%M%p").lstrip("0").lower()
+        return gettext("Today, %(date)s %(time)s") % values
     elif date >= midnight_yesterday(midnight):
-        return "Yesterday, " + parsed_date.format("F jS g:ia").replace(".", "")
-    elif date >= beginning_of_this_month():
-        return parsed_date.format("l, F jS g:ia").replace(".", "")
-    else:
-        return parsed_date.format("l, F jS, Y g:ia").replace(".", "")
+        return gettext("Yesterday, %(date)s %(time)s") % values
+    return gettext("%(weekday)s, %(date)s %(time)s") % values
 
 
 def relative_date(d):
     diff = datetime.datetime.utcnow() - d
     s = diff.seconds
-    if diff.days == 1:
-        return "1 day ago"
-    elif diff.days > 1:
-        return "{} days ago".format(diff.days)
+    if diff.days >= 1:
+        return ngettext("%(count)d day ago", "%(count)d days ago", diff.days) % {"count": diff.days}
     elif s < 60:
-        return "just now"
-    elif s < 120:
-        return "1 minute ago"
+        return gettext("just now")
     elif s < 3600:
-        return "{} minutes ago".format(s // 60)
-    elif s < 7200:
-        return "1 hour ago"
+        return ngettext("%(count)d minute ago", "%(count)d minutes ago", s // 60) % {"count": s // 60}
     else:
-        return "{} hours ago".format(s // 3600)
+        return ngettext("%(count)d hour ago", "%(count)d hours ago", s // 3600) % {"count": s // 3600}
 
 
 def _extract_date_tuples(date):
@@ -175,10 +215,20 @@ def _extract_date_tuples(date):
 
 
 def extract_story_date(entry):
+    published = entry.get("published")
+    if isinstance(published, datetime.datetime):
+        # Already extracted by an earlier pass over this entry (a retried archive page);
+        # parsing it as a string would fail over to now and lose the real date.
+        return published
     # Do not switch to published_parsed or every story will be dated the fetch time
     publish_date = entry.get("g_parsed") or entry.get("updated_parsed")
     if publish_date:
-        publish_date = datetime.datetime(*publish_date[:6])
+        try:
+            publish_date = datetime.datetime(*publish_date[:6])
+        except (ValueError, TypeError, OverflowError):
+            # Garbage feed dates (year 0, month 13) can't build a datetime, so fall
+            # through to the published string below and then to now().
+            publish_date = None
 
     if not publish_date and entry.get("published"):
         try:
@@ -209,6 +259,8 @@ EMBEDDABLE_IFRAME_DOMAINS = [
     "open.spotify.com",
     "bandcamp.com",
 ]
+FACEBOOK_EMBED_HOSTS = {"facebook.com", "www.facebook.com", "m.facebook.com"}
+FACEBOOK_EMBED_PATHS = {"/plugins/post.php", "/plugins/video.php"}
 
 
 def strip_non_embeddable_iframes(content):
@@ -228,10 +280,13 @@ def strip_non_embeddable_iframes(content):
             return ""
         src = src_match.group(1)
         try:
-            domain = urllib.parse.urlparse(src).hostname or ""
+            parsed = urllib.parse.urlparse(src)
         except Exception:
             return ""
+        domain = parsed.hostname or ""
         if any(domain == d or domain.endswith("." + d) for d in EMBEDDABLE_IFRAME_DOMAINS):
+            return iframe_html
+        if domain in FACEBOOK_EMBED_HOSTS and parsed.path in FACEBOOK_EMBED_PATHS:
             return iframe_html
         return ""
 
@@ -286,9 +341,14 @@ def pre_process_story(entry, encoding):
             pass
 
     # Add each media enclosure as a Download link
-    for media_content in chain(entry.get("media_content", [])[:15], entry.get("links", [])[:15]):
+    for media_content, is_media_content in chain(
+        ((media, True) for media in entry.get("media_content", [])[:15]),
+        ((link, False) for link in entry.get("links", [])[:15]),
+    ):
         media_url = media_content.get("url", media_content.get("href", ""))
         media_type = media_content.get("type", media_content.get("medium", ""))
+        if not media_type and is_media_content and _media_url_looks_like_image(media_url):
+            media_type = "image"
         if media_url and media_type and media_url not in entry["story_content"]:
             media_type_name = media_type.split("/")[0]
             if "audio" in media_type and media_url:

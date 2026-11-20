@@ -1,0 +1,25 @@
+{
+  "locale": "pl",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "pl",
+      "source_sha256": "8ed25f568eb4f6c17eefb64c4aeb75efa4155ff5cff9b3e44aaf11177fbbbcca",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        34,
+        45.2
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Matching native iPad interface. Full-size source frame at 18 seconds confirms normal readable split-reader text, without clipping. Includes actual fullscreen article scrolling and brief native navigation into Saved Stories, ending before the later article-selection animation. Final export inspection found the previous 45.8-second start ended mid-animation; moved Saved start to 45.2 seconds so the ending precedes article selection."
+    }
+  },
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
+}

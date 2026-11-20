@@ -22,6 +22,14 @@ struct CardView: View {
 
     @State private var swipeDragOffset: CGFloat = 0
     @State private var settledSwipeOffset: CGFloat = 0
+    @AppStorage("story_title_swipe_right") private var rightSwipe = "back"
+    @AppStorage("story_title_swipe_left") private var leftSwipe = "read"
+    @AppStorage("enable_story_swipes") private var swipeActionsEnabled = true
+    @AppStorage("long_press_story_title") private var longPressAction = "show_actions"
+
+    private var rightAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(rightSwipe, fallback: .back) }
+    private var leftAction: StoryTitleSwipeAction { StoryTitleSwipePreference.action(leftSwipe, fallback: .read) }
+    private var usesCustomSwipes: Bool { rightAction != .back || leftAction != .menu }
     
     var body: some View {
         ZStack {
@@ -31,6 +39,23 @@ struct CardView: View {
                     .onTapGesture {
                         feedDetailInteraction.tapped(story: story, in: dash)
                     }
+            } else if usesCustomSwipes && swipeActionsEnabled {
+                StoryTitleSwipeView(cache: cache, storyID: story.id,
+                                      rightAction: rightAction, leftAction: leftAction,
+                                      isSaved: story.isSaved, isRead: story.isRead,
+                                      canMarkRead: story.isReadAvailable,
+                                      perform: performSwipeAction,
+                                      open: { feedDetailInteraction.tapped(story: story, in: dash) }) {
+                    standardCardBody.background(nonGridRowBackgroundColor)
+                        // FeedDetailCardView.swift rebinds nested observers when StoryCache replaces a same-ID model.
+                        .id(ObjectIdentifier(story))
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityValue(String(format: NBLocalization.text("%1$@, %2$@"),
+                                           story.isRead ? NBLocalization.text("Read") : NBLocalization.text("Unread"),
+                                           story.isSaved ? NBLocalization.text("Saved") : NBLocalization.text("Unsaved")))
+                .accessibilityAction(named: Text(story.isSaved ? NBLocalization.text("Unsave") : NBLocalization.text("Save")), toggleSavedState)
+                .accessibilityAction(named: Text(story.isRead ? NBLocalization.text("Mark Unread") : NBLocalization.text("Mark Read")), toggleReadState)
             } else if cache.isNonGridStoryTitlesLayout {
                 swipeableStandardCardBody
             } else {
@@ -41,12 +66,13 @@ struct CardView: View {
                     }
             }
         }
-        .if(!story.isClusterStory && !cache.isNonGridStoryTitlesLayout) { view in
+        .modifier(ReaderEntrance(session: cache.motionSession, key: story.hash))
+        .if(!story.isClusterStory && !cache.isNonGridStoryTitlesLayout && !usesCustomSwipes && swipeActionsEnabled) { view in
             view.swipeActions(edge: .trailing, allowsFullSwipe: true) {
                 Button {
                     toggleReadState()
                 } label: {
-                    Label(story.isRead ? "Mark Unread" : "Mark Read",
+                    Label(story.isRead ? NBLocalization.text("Mark Unread") : NBLocalization.text("Mark Read"),
                           image: story.isRead ? "indicator-unread" : "indicator-read")
                 }
                 .tint(Color.themed([story.isRead ? 0xD4A020 : 0x4CAF50,
@@ -57,7 +83,7 @@ struct CardView: View {
                 Button {
                     toggleSavedState()
                 } label: {
-                    Label(story.isSaved ? "Unsave" : "Save", image: "saved-stories")
+                    Label(story.isSaved ? NBLocalization.text("Unsave") : NBLocalization.text("Save"), image: "saved-stories")
                 }
                 .tint(Color.themed([story.isSaved ? 0x00838F : 0x26C6DA,
                                     story.isSaved ? 0x007A86 : 0x1FB5C8,
@@ -67,60 +93,21 @@ struct CardView: View {
                 Button {
                     shareStory()
                 } label: {
-                    Label("Share", image: "email")
+                    Label(NBLocalization.text("Share"), image: "email")
                 }
                 .tint(Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]))
             }
         }
-        .if(!story.isClusterStory) { view in
+        .if(!story.isClusterStory && (longPressAction == "show_actions" || cache.appDelegate.isMac)) { view in
             view.contextMenu {
-                if !cache.isDashboard {
-                    Button {
-                        cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
-                        cache.appDelegate.feedDetailViewController.reload()
-                    } label: {
-                        Label(story.isRead ? "Mark as unread" : "Mark as read", image: "mark-read")
-                    }
-
-                    Button {
-                        cache.appDelegate.activeStory = story.dictionary
-                        cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
-                        cache.appDelegate.feedDetailViewController.reload()
-                    } label: {
-                        Label("Mark newer stories read", image: "mark-read")
-                    }
-
-                    Button {
-                        cache.appDelegate.activeStory = story.dictionary
-                        cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
-                        cache.appDelegate.feedDetailViewController.reload()
-                    } label: {
-                        Label("Mark older stories read", image: "mark-read")
-                    }
-
-                    Divider()
-
-                    Button {
-                        cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
-                        cache.appDelegate.feedDetailViewController.reload()
-                    } label: {
-                        Label(story.isSaved ? "Unsave this story" : "Save this story", image: "saved-stories")
-                    }
-                }
-
-                Button {
-                    cache.appDelegate.activeStory = story.dictionary
-                    cache.appDelegate.showSend(to: cache.appDelegate.feedDetailViewController, sender: cache.appDelegate.feedDetailViewController.view)
-                } label: {
-                    Label("Send this story to…", image: "email")
-                }
-
-                Button {
-                    cache.appDelegate.activeStory = story.dictionary
-                    cache.appDelegate.openTrainStory(cache.appDelegate.feedDetailViewController.view)
-                } label: {
-                    Label("Train this story", image: "train")
-                }
+                RowMenuContent(groups: RowActionMenus.story(story, controller: cache.appDelegate.feedDetailViewController,
+                                                            source: cache.appDelegate.feedDetailViewController.view,
+                                                            dashboard: cache.isDashboard))
+            }
+        }
+        .if(!story.isClusterStory && longPressAction != "show_actions" && !cache.appDelegate.isMac) { view in
+            view.onLongPressGesture {
+                RowActionMenus.performStoryShortcut(story, controller: cache.appDelegate.feedDetailViewController)
             }
         }
         .accessibilityIdentifier(storyAccessibilityIdentifier)
@@ -185,10 +172,11 @@ struct CardView: View {
             }
 
             standardCardBody
+                // FeedDetailCardView.swift rebinds nested observers when a menu action replaces the Story model.
+                .id(ObjectIdentifier(story))
                 .background(nonGridRowBackgroundColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .offset(x: swipeOffset)
-                .allowsHitTesting(!isSwipeRowOpen)
                 .contentShape(Rectangle())
                 .onTapGesture {
                     if isSwipeRowOpen {
@@ -197,6 +185,8 @@ struct CardView: View {
                         feedDetailInteraction.tapped(story: story, in: dash)
                     }
                 }
+                // FeedDetailCardView.swift disables the tap gesture with its content so exposed action buttons receive taps.
+                .allowsHitTesting(!isSwipeRowOpen)
         }
         .clipped()
         .onChange(of: cache.openSwipeStoryID) { newValue in
@@ -323,7 +313,7 @@ struct CardView: View {
     }
 
     var clusterBadgeText: String {
-        StoryClusterDisplayDecision.clusterTierLabel(forValue: story.clusterTier).uppercased()
+        StoryClusterDisplayDecision.clusterTierBadgeText(forValue: story.clusterTier)
     }
 
     var clusterListBackgroundColor: Color {
@@ -400,7 +390,7 @@ struct CardView: View {
 
     private var swipeActionButtons: some View {
         HStack(spacing: 0) {
-            swipeActionButton(title: story.isRead ? "Mark Unread" : "Mark Read",
+            swipeActionButton(title: story.isRead ? NBLocalization.text("Mark Unread") : NBLocalization.text("Mark Read"),
                               imageName: story.isRead ? "indicator-unread" : "indicator-read",
                               tint: Color.themed([story.isRead ? 0xD4A020 : 0x4CAF50,
                                                   story.isRead ? 0xC89628 : 0x4A9648,
@@ -408,7 +398,7 @@ struct CardView: View {
                                                   story.isRead ? 0xA67C00 : 0x1B5E20]),
                               action: toggleReadState)
 
-            swipeActionButton(title: story.isSaved ? "Unsave" : "Save",
+            swipeActionButton(title: story.isSaved ? NBLocalization.text("Unsave") : NBLocalization.text("Save"),
                               imageName: "saved-stories",
                               tint: Color.themed([story.isSaved ? 0x00838F : 0x26C6DA,
                                                   story.isSaved ? 0x007A86 : 0x1FB5C8,
@@ -416,7 +406,7 @@ struct CardView: View {
                                                   story.isSaved ? 0x004A52 : 0x0B8FA0]),
                               action: toggleSavedState)
 
-            swipeActionButton(title: "Share",
+            swipeActionButton(title: NBLocalization.text("Share"),
                               imageName: "email",
                               tint: Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]),
                               action: shareStory)
@@ -454,6 +444,7 @@ struct CardView: View {
     }
 
     private func shouldTrackSwipe(for value: DragGesture.Value) -> Bool {
+        guard swipeActionsEnabled else { return false }
         let horizontal = value.translation.width
         let vertical = value.translation.height
 
@@ -522,6 +513,16 @@ struct CardView: View {
 
     private func clampedSwipeOffset(_ candidate: CGFloat) -> CGFloat {
         min(0, max(-maxSwipeOffset, candidate))
+    }
+
+    private func performSwipeAction(_ action: StoryTitleSwipeAction) {
+        switch action {
+        case .read: toggleReadState()
+        case .save: toggleSavedState()
+        case .share: shareStory()
+        case .back: cache.appDelegate.showFeedsList(animated: true)
+        case .menu: break
+        }
     }
 
     private func toggleReadState() {
