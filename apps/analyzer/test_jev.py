@@ -3,6 +3,7 @@
 import base64
 import datetime
 import io
+import socket
 import uuid
 from contextlib import contextmanager
 from unittest.mock import MagicMock, patch
@@ -240,8 +241,8 @@ class Test_JevPromptClassification(TransactionTestCase):
         self.assertEqual(self.cached(image_prompt), {self.stories[1]["story_hash"]: 0})
 
     def test_a_failed_request_leaves_its_stories_uncached(self):
-        """A transient failure must not be cached as "not a match", which would stick for
-        the full TTL. The next fetch retries the stories instead."""
+        """A transient failure must not be cached as a "not a match" Jev never gave, which
+        would stick for the full TTL."""
         prompt = self.add_prompt("sports", "hidden")
         with fake_jev(status_code=503) as api:
             result = MClassifierPrompt.classify_stories(self.user.pk, self.stories)
@@ -307,6 +308,13 @@ class Test_JevImages(TransactionTestCase):
                 self.assertEqual(jev.fetch_image(url), (None, False))
         safe_request.assert_not_called()
         plain_get.assert_not_called()
+
+    def test_a_dns_hiccup_is_worth_another_try(self):
+        """utils/url_safety.py wraps every resolver failure as an unsafe URL. A resolver that
+        couldn't answer right now isn't a refused address, so the story isn't a non-match."""
+        hiccup = socket.gaierror(socket.EAI_AGAIN, "Temporary failure in name resolution")
+        with patch("utils.url_safety.socket.getaddrinfo", side_effect=hiccup):
+            self.assertEqual(jev.fetch_image("https://images.example.com/photo.jpg"), (None, True))
 
     def test_icons_banners_and_junk_are_skipped(self):
         self.assertIsNone(self.fetch(png_bytes(32, 32)), "A tracking pixel or icon isn't a picture")

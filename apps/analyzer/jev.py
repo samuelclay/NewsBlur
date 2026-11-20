@@ -22,6 +22,7 @@ import hashlib
 import io
 import math
 import re
+import socket
 import time
 from concurrent.futures import ThreadPoolExecutor
 from html import unescape
@@ -188,7 +189,7 @@ def _decide(state, questions, feature, user_id, metadata):
 
     Retries once on a rate limit, a server error or a dropped connection. Any other
     failure, including a response missing an answer, returns None so the caller leaves
-    those stories unscored and the next fetch retries them.
+    those stories unscored rather than cached as a non-match they never got.
     """
     payload = {
         "model": JEV_MODEL,
@@ -304,7 +305,7 @@ def fetch_image(url, timeout=10):
     and internal addresses at every redirect.
 
     Returns (part, retry). part is None when there's no usable image. retry is True when
-    the download failed in a way the next fetch may not (a timeout, a dropped connection,
+    the download failed in a way another try may not (a timeout, a dropped connection,
     a server error), rather than an image that will never be usable.
     """
     if not url or not url.startswith(("http://", "https://")):
@@ -326,6 +327,9 @@ def fetch_image(url, timeout=10):
                 return None, False
             chunks.append(chunk)
     except UnsafeUrlError as e:
+        if isinstance(e.__cause__, socket.gaierror) and e.__cause__.errno == socket.EAI_AGAIN:
+            # jev.py: A resolver that couldn't answer right now says nothing about the address.
+            return None, True
         logging.debug("~BR~FKRefusing image %s: %s" % (url, e))
         return None, False
     except requests.RequestException as e:
@@ -380,8 +384,8 @@ def _classify_images(filters, stories, user_id):
     stories_with_images = []
     for story, urls in urls_by_story:
         if any(fetched[url][1] for url in urls):
-            # jev.py: An image that may download next time leaves the story unscored, so
-            # the next fetch retries it instead of caching a non-match for the full TTL.
+            # jev.py: An image that may download on another try leaves the story uncached
+            # rather than cached as a non-match it never got.
             continue
         parts = [fetched[url][0] for url in urls if fetched[url][0]]
         if parts:

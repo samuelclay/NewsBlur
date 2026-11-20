@@ -1175,9 +1175,10 @@ class MClassifierPrompt(mongo.Document):
             new_results = jev.classify_stories(uncached_prompts, uncached_stories, user_id=user_id)
 
             for prompt_id, missing in uncached.items():
-                # A story Jev didn't answer, because its request failed, stays uncached so
-                # the next fetch retries it. Caching a neutral score would stick for the
-                # full TTL and quietly turn one failure into a permanent "not a match".
+                # A story Jev didn't answer, because its request failed, stays uncached
+                # rather than cached as a "not a match" it never got. Only stories new to
+                # a fetch are classified, so the notification pass for that same update
+                # (apps/notifications/models.py) is the one other ask.
                 scores = {sh: score for sh, score in new_results.get(prompt_id, {}).items() if sh in missing}
                 if len(scores) < len(missing):
                     logging.debug(
