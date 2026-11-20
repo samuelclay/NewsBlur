@@ -86,6 +86,7 @@ def png_bytes(width, height, mode="RGB"):
 
 def image_response(data):
     response = MagicMock()
+    response.status_code = 200
     response.headers = {"Content-Length": str(len(data))}
     response.iter_content.return_value = [data]
     response.raise_for_status.return_value = None
@@ -209,7 +210,7 @@ class Test_JevPromptClassification(TransactionTestCase):
         image_prompt = self.add_prompt("photos of food", "focus", include_images=True)
         self.stories[0]["image_urls"] = ["https://example.com/plate.jpg"]
         with fake_jev(probability=0.9) as api, patch(
-            "apps.analyzer.jev.fetch_image", return_value=IMAGE_PART
+            "apps.analyzer.jev.fetch_image", return_value=(IMAGE_PART, False)
         ):
             MClassifierPrompt.classify_stories(self.user.pk, self.stories)
 
@@ -225,6 +226,18 @@ class Test_JevPromptClassification(TransactionTestCase):
             self.cached(image_prompt),
             {self.stories[0]["story_hash"]: 1, self.stories[1]["story_hash"]: 0},
         )
+
+    def test_an_image_download_that_may_work_later_is_retried(self):
+        """A timeout or server error downloading a story's image isn't the story having no
+        image. Caching it as a non-match would stick for the full TTL."""
+        image_prompt = self.add_prompt("photos of food", "focus", include_images=True)
+        self.stories[0]["image_urls"] = ["https://example.com/plate.jpg"]
+        with fake_jev(probability=0.9) as api, patch(
+            "apps.analyzer.jev.fetch_image", return_value=(None, True)
+        ):
+            MClassifierPrompt.classify_stories(self.user.pk, self.stories)
+        self.assertEqual(api.requests, [])
+        self.assertEqual(self.cached(image_prompt), {self.stories[1]["story_hash"]: 0})
 
     def test_a_failed_request_leaves_its_stories_uncached(self):
         """A transient failure must not be cached as "not a match", which would stick for
@@ -262,8 +275,9 @@ class Test_JevImages(TransactionTestCase):
     256 to 1,568 pixels per side or under 78,400 pixels, so every image is fitted first."""
 
     def fetch(self, data):
-        with patch("apps.analyzer.jev.requests.get", return_value=image_response(data)):
-            part = jev.fetch_image("https://example.com/image.png")
+        with patch("apps.analyzer.jev.safe_requests_get", return_value=image_response(data)):
+            part, retry = jev.fetch_image("https://example.com/image.png")
+        self.assertFalse(retry)
         if part is None:
             return None
         encoded = part["image_url"]["url"].split(",", 1)[1]
@@ -282,6 +296,17 @@ class Test_JevImages(TransactionTestCase):
 
     def test_transparent_images_become_jpeg(self):
         self.assert_jev_accepts(self.fetch(png_bytes(600, 400, mode="RGBA")))
+
+    def test_private_addresses_are_never_requested(self):
+        """Image URLs come from feed content, so one pointing at the metadata service or an
+        internal host must not be fetched from a web or task server."""
+        with patch("utils.url_safety.requests.request") as safe_request, patch(
+            "apps.analyzer.jev.requests.get"
+        ) as plain_get:
+            for url in ("http://169.254.169.254/latest/meta-data/", "http://127.0.0.1:8000/image.png"):
+                self.assertEqual(jev.fetch_image(url), (None, False))
+        safe_request.assert_not_called()
+        plain_get.assert_not_called()
 
     def test_icons_banners_and_junk_are_skipped(self):
         self.assertIsNone(self.fetch(png_bytes(32, 32)), "A tracking pixel or icon isn't a picture")
@@ -368,7 +393,7 @@ class Test_TestPromptView(TransactionTestCase):
             return 0.9 if "story s0" in instructions else 0.05
 
         def fetch(url):
-            return IMAGE_PART if url.endswith("a.jpg") else None
+            return (IMAGE_PART, False) if url.endswith("a.jpg") else (None, False)
 
         with fake_jev(probability=by_image), patch("apps.analyzer.jev.fetch_image", side_effect=fetch):
             result = self.post(prompt="baseball players", include_images="true")
@@ -391,6 +416,22 @@ class Test_TestPromptView(TransactionTestCase):
         self.assertEqual(refused["code"], -1)
         self.assertTrue(refused["test_limit_reached"])
         self.assertEqual(len(api.requests), requests_before)
+
+    def test_simultaneous_tests_cant_share_the_last_slot(self):
+        """Two tests that start together with one test left can't both run, so a reader can't
+        get past the daily limit by firing tests in parallel."""
+        self.redis.set(_test_prompt_count_key(self.user), TEST_PROMPT_DAILY_LIMIT - 1)
+        overlapping = []
+
+        def start_another_test_meanwhile(instructions):
+            if not overlapping:
+                overlapping.append(self.post())
+            return 0.9
+
+        with fake_jev(probability=start_another_test_meanwhile):
+            first = self.post()
+        self.assertEqual(first["code"], 0)
+        self.assertTrue(overlapping[0]["test_limit_reached"])
 
     def test_premium_archive_tests_arent_capped(self):
         self.user.profile.is_archive = True

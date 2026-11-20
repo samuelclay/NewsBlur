@@ -35,6 +35,7 @@ from PIL import Image, ImageOps
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
 from utils.llm_models import ANTHROPIC_MODEL, JEV_MODEL
+from utils.url_safety import UnsafeUrlError, safe_requests_get
 
 DECISIONS_URL = "https://openrouter.ai/api/alpha/decisions"
 
@@ -67,6 +68,8 @@ DESCRIPTION_CACHE_PREFIX = "AICD"
 DESCRIPTION_CACHE_TTL = 90 * 24 * 60 * 60
 
 REQUEST_TIMEOUT = (3, 20)
+# Describing a filter can't hold a fetch worker or a web request for long.
+DESCRIBE_TIMEOUT = 10
 
 
 def is_configured():
@@ -141,7 +144,9 @@ def describe_filter(prompt_text, classifier_type="focus", include_images=False, 
         },
     }
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = anthropic.Anthropic(
+            api_key=settings.ANTHROPIC_API_KEY, timeout=DESCRIBE_TIMEOUT, max_retries=1
+        )
         response = client.messages.create(
             model=ANTHROPIC_MODEL,
             max_tokens=200,
@@ -291,33 +296,45 @@ def _prepare_image(data):
 
 
 def fetch_image(url, timeout=10):
-    """Download a story image and return it as a Jev image part, or None.
+    """Download a story image as a Jev image part.
 
     Images are downloaded here rather than passed by URL: Jev only reads inline images,
-    and story images may sit behind NewsBlur's signed imageproxy.
+    and story images may sit behind NewsBlur's signed imageproxy. Image URLs come from
+    feed content, so the download goes through safe_requests_get, which refuses private
+    and internal addresses at every redirect.
+
+    Returns (part, retry). part is None when there's no usable image. retry is True when
+    the download failed in a way the next fetch may not (a timeout, a dropped connection,
+    a server error), rather than an image that will never be usable.
     """
     if not url or not url.startswith(("http://", "https://")):
-        return None
+        return None, False
     try:
-        response = requests.get(url, timeout=timeout, stream=True)
-        response.raise_for_status()
+        response = safe_requests_get(url, timeout=timeout, stream=True)
+        if response.status_code == 429 or response.status_code >= 500:
+            return None, True
+        if response.status_code != 200:
+            return None, False
         content_length = response.headers.get("Content-Length")
         if content_length and content_length.isdigit() and int(content_length) > MAX_IMAGE_BYTES:
-            return None
+            return None, False
         chunks = []
         size = 0
         for chunk in response.iter_content(64 * 1024):
             size += len(chunk)
             if size > MAX_IMAGE_BYTES:
-                return None
+                return None, False
             chunks.append(chunk)
+    except UnsafeUrlError as e:
+        logging.debug("~BR~FKRefusing image %s: %s" % (url, e))
+        return None, False
     except requests.RequestException as e:
         logging.debug("~BR~FKCouldn't fetch image %s: %s" % (url, e))
-        return None
+        return None, True
     encoded = _prepare_image(b"".join(chunks))
     if not encoded:
-        return None
-    return {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64," + encoded}}
+        return None, False
+    return {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64," + encoded}}, False
 
 
 def _chunks(items, size):
@@ -358,11 +375,15 @@ def _classify_images(filters, stories, user_id):
     urls_by_story = [(story, (story.get("image_urls") or [])[:MAX_IMAGES_PER_STORY]) for story in stories]
     all_urls = list({url for _, urls in urls_by_story for url in urls})
     with ThreadPoolExecutor(max_workers=IMAGE_FETCH_WORKERS) as executor:
-        parts_by_url = dict(zip(all_urls, executor.map(fetch_image, all_urls)))
+        fetched = dict(zip(all_urls, executor.map(fetch_image, all_urls)))
 
     stories_with_images = []
     for story, urls in urls_by_story:
-        parts = [parts_by_url[url] for url in urls if parts_by_url.get(url)]
+        if any(fetched[url][1] for url in urls):
+            # jev.py: An image that may download next time leaves the story unscored, so
+            # the next fetch retries it instead of caching a non-match for the full TTL.
+            continue
+        parts = [fetched[url][0] for url in urls if fetched[url][0]]
         if parts:
             stories_with_images.append((story, parts))
         else:
