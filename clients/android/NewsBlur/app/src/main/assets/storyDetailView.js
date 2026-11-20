@@ -38,12 +38,17 @@ function NB_open_story_image(image, show_actions) {
         !image.closest('.NB-story') || hasProtectedImageClass(image) ||
         image.closest('.NB-twitter-rss-author,.NB-twitter-rss-retweet') ||
         !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
-    var link = image.closest('a[href]');
-    if (link && !show_actions) return false;
     var src = image.currentSrc || image.src;
     if (!/^(https?:|data:image\/)/i.test(src)) return false;
+    var original_src = image.getAttribute('data-nb-original-src');
+    var link = image.closest('a[href]');
+    if (link && !show_actions) {
+        var links_to_photo = link.href === src || link.href === image.src || link.href === original_src ||
+            /\.(?:jpe?g|png|gif|webp|avif|svg|bmp|ico)$/i.test(link.pathname);
+        if (!links_to_photo) return false;
+    }
     var browser_src = /^https:\/\/appassets\.androidplatform\.net\/images\//i.test(src) ?
-        image.getAttribute('data-nb-original-src') : src;
+        original_src : src;
     var token = image.getAttribute('data-nb-viewer-token');
     if (!token) {
         token = String(++NB_story_image_sequence);
