@@ -23,6 +23,8 @@ data class StoryImageSource(
     val linkUrl: String? = null,
     // ReadingItemFragment.kt preserves this when replacing a remote photo with its offline copy.
     val originalUrl: String? = null,
+    // storyDetailView.js supplies the inline thumbnail when a linked photo is a different image.
+    val thumbnailUrl: String? = null,
 ) {
     val browserUrl: String?
         get() = (if (cachedFileName(url) != null) originalUrl else url)?.takeIf {
@@ -62,6 +64,7 @@ data class StoryImageSource(
                     showActions = body["showActions"]?.takeUnless { it.isJsonNull }?.asBoolean == true,
                     linkUrl = body["link"]?.takeUnless { it.isJsonNull }?.asString?.takeIf(::isWebLink),
                     originalUrl = body["browserSrc"]?.takeUnless { it.isJsonNull }?.asString,
+                    thumbnailUrl = body["thumbnailSrc"]?.takeUnless { it.isJsonNull }?.asString?.takeIf(::isAllowedUrl),
                 ).takeIf { source ->
                     source.token.matches(Regex("[0-9]{1,12}")) &&
                         isAllowedUrl(source.url) &&
