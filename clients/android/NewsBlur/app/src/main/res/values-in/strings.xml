@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">Artikel Fokus</string>
     <string name="story_title_mark_story_read">Tandai artikel telah dibaca…</string>
     <string name="story_title_list_font_size">Ukuran font judul feed dan artikel</string>
+    <string name="listen_voice_rotation">Rotasi suara</string>
+    <string name="listen_selected_voice">Suara yang dipilih</string>
+    <string name="listen_rotation_order">Satu suara per artikel, sesuai urutan ini.</string>
+    <string name="listen_use_voice">Gunakan suara</string>
+    <string name="listen_use_only_voice">Gunakan hanya suara ini</string>
+    <string name="listen_rotation_selected">Dipilih</string>
+    <string name="listen_find_voice">Temukan %1$s dalam daftar suara</string>
+    <string name="listen_add_rotation_voice">Tambahkan %1$s ke rotasi</string>
+    <string name="listen_remove_rotation_voice">Hapus %1$s dari rotasi</string>
     <string name="language_title">Bahasa</string>
     <string name="settings_cat_general">Umum</string>
     <string name="settings_cat_appearance">Tampilan</string>

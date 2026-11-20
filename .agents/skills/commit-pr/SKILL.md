@@ -86,6 +86,8 @@ git push                                             # after that
 
 If the branch is behind `main`, rebase (`git pull --rebase origin main`), never merge. Never force-push a PR branch unless Sam explicitly asks.
 
+A contributor's fork PR pushes differently: see "Contributor PRs from forks" below.
+
 ### 4. Create or update the PR
 
 ```bash
@@ -105,7 +107,16 @@ Draft keeps early CI churn out of the review queue; section 5.5 promotes it in t
 
 **PR exists:** the push already updated it. Edit the body only if the scope changed (`gh pr edit <n> --body ...`).
 
-Write the body for a reviewer walking in cold: what changed and why, what to check, exact test commands with before and after output, deploy notes (`make deploy`, `make celery`, or both; migrations; Celery restart).
+Write the body for a reviewer walking in cold: what changed and why, what to check, exact test commands with before and after output, deploy notes (migrations; Celery restart; and the targets below).
+
+Pick the deploy targets from the files in the diff, not from habit:
+
+| The diff touches | Deploy note |
+|---|---|
+| Python or templates served by web | `make deploy` |
+| Anything under `media/js` or `media/css` | `make deploy_static` in place of `make deploy`. It is a full web deploy that also builds and uploads the assets; `make deploy` never ships JS or CSS |
+| Code a Celery task runs (tasks, models and helpers they call, the feed fetcher) | `make celery`, in addition to the web target |
+| Only `clients/ios` or `clients/android` | None; it ships in the next store build |
 
 Read `git log --no-merges origin/main..HEAD` first: when a later commit reversed an earlier one, the body describes the final state. Then sort every fact into one of three piles before writing:
 
@@ -210,14 +221,35 @@ After any follow-up push, repeat the review-task check for the new head, wait on
 
 **Final verification, mandatory, immediately before ending the turn:** re-run the thread query and `gh pr checks` against the current head and confirm the Goal holds. If not, keep working or report the blocker explicitly.
 
+## Contributor PRs from forks
+
+Sections 3, 5 and 6 assume a branch in `samuelclay/NewsBlur`. A PR from someone's fork differs in five places. The `contributor-prs` skill covers the work around them (reproducing, interviewing Sam, the comment to the contributor).
+
+- **Checkout and update.** `gh pr checkout <N> -b pr-<N>` in a worktree. Bring the branch up to date with `git merge origin/main`, never a rebase: the push has to stay a fast-forward of their branch. Their commits stay and yours go on top.
+- **Push with an explicit refspec**, then confirm it landed:
+  ```bash
+  git push git@github.com:<owner>/NewsBlur.git HEAD:refs/heads/<their branch>
+  git ls-remote git@github.com:<owner>/NewsBlur.git <their branch>
+  ```
+  Sam's machines set `push.default=matching`, so a bare `git push` from that checkout also tries to push local `main` to the fork, and GitHub rejects the whole push.
+- **Body.** A maintainer can edit a fork PR's description, and `gh pr edit <N> --body-file <file> --attach <png>` uploads images there too. Keep the contributor's text and append below it.
+- **CI needs approval.** Each new head's workflow runs can sit at `action_required` and `gh pr checks` then lists nothing. Read the pushed head first and confirm the PR changes nothing under `.github/` (`gh pr view <N> --json files`). Every workflow here triggers on `pull_request`, so fork code runs without secrets. Then approve each run:
+  ```bash
+  gh run list --commit <full 40-character sha> --json databaseId,name,conclusion
+  gh api -X POST repos/samuelclay/NewsBlur/actions/runs/<id>/approve
+  ```
+  A shortened SHA makes `gh run list --commit` return nothing. A subagent reports the run IDs and waits; the lead approves.
+- **No bot review.** Claude PR Review and Codex PR Review fail during setup on a fork PR because they get no secrets ("Could not fetch an OIDC token", "Error reading server info"). They post no threads, so section 6 has nothing to clear and zero unresolved threads proves nothing. Read the whole diff yourself and say in the report that no bot reviewed it.
+
 ## When Sam says merge
 
 Only when Sam says so in that session; the skill never merges on its own. The repo uses merge commits, not squashes.
 
 1. Order: workflow and bot PRs first, then the rest oldest first. Check whether Sam already merged one (`gh pr view N --json state,mergedBy`); a commit pushed to a branch after its PR merged is not on `main` and needs its own PR.
-2. `gh pr merge N --merge`. When GitHub answers that the merge commit cannot be created, bring the branch up to date in its worktree with `git merge origin/main` (a merge, not a rebase: the branch has been reviewed as it is), resolve, run the touched app's suite (the full `apps` suite when models or the fetcher changed), push, then merge.
+2. `gh pr merge N --merge --match-head-commit <full sha of the head you reviewed>`, so a commit pushed after the review can't ride in. GitHub reports `mergeable: UNKNOWN` for a few seconds after every merge into `main`; query again before merging the next PR. When GitHub answers that the merge commit cannot be created, bring the branch up to date in its worktree with `git merge origin/main` (a merge, not a rebase: the branch has been reviewed as it is), resolve, run the touched app's suite (the full `apps` suite when models or the fetcher changed), push, then merge.
 3. Two PRs that both inserted test classes at the same spot conflict in the test file only, with git interleaving the classes: keep our side of every hunk, re-insert `main`'s new top-level classes whole, and check the merged file's class set is the union of both parents and that a class edited on both sides ends up as `main`'s superset.
-4. After the last merge: stop the worktree stacks, and tell Sam what is merged but not deployed and which post-deploy steps (migrations, data scripts) the forum replies assume.
+4. After the last merge: stop the worktree stacks, and tell Sam what is merged but not deployed, which targets deploy it (the table in section 4, taken across every merged PR), and which post-deploy steps (migrations, data scripts) the forum replies assume.
+5. If Sam asks for the deploy as well: wait for Django Tests on the last merge commit on `main`. `make deploy_static` builds JS and CSS from the local `main` checkout, so bring it to that commit first with `git fetch origin main && git merge --ff-only origin/main` (`git pull` is set to rebase and refuses while any file is uncommitted) and confirm `git status --short media/` prints nothing. Run each target as `make <target> > <log> 2>&1 < /dev/null`, then read the PLAY RECAP for `unreachable=` or `failed=` above zero.
 
 ## Generic default body (when the caller supplies none)
 
@@ -237,7 +269,7 @@ Only when Sam says so in that session; the skill never merges on its own. The re
 
 ## Deploy notes
 
-<make deploy, make celery, or both; migrations; Celery restart>
+<make deploy, or make deploy_static when JS or CSS changed; make celery for task code; migrations; Celery restart>
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 

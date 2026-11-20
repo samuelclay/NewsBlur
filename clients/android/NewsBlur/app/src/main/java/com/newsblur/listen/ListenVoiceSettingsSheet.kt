@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ExpandLess
@@ -79,6 +80,9 @@ import kotlin.math.roundToInt
 data class ListenVoiceSettingsActions(
     val onLanguage: (String) -> Unit,
     val onSelectVoice: (ListenVoice) -> Unit,
+    val onAddVoice: (ListenVoice) -> Unit,
+    val onRemoveVoice: (String) -> Unit,
+    val onRevealVoice: (String) -> Unit,
     val onPreviewVoice: (ListenVoice) -> Unit,
     val onFilter: (String, String?) -> Unit,
     val onClearFilters: () -> Unit,
@@ -134,6 +138,8 @@ fun ListenVoiceSettingsSheet(
             )
             VoiceHeader(state = state, colors = colors, onLanguage = actions.onLanguage)
             Spacer(Modifier.height(12.dp))
+            SelectedVoices(state, colors, actions)
+            Spacer(Modifier.height(12.dp))
             SearchField(value = state.search, colors = colors, onChange = actions.onSearch)
             Spacer(Modifier.height(10.dp))
             FilterRow(state = state, colors = colors, onFilter = actions.onFilter)
@@ -154,6 +160,114 @@ fun ListenVoiceSettingsSheet(
                 modifier = Modifier.padding(top = 10.dp, start = 4.dp),
             )
             Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun SelectedVoices(
+    state: ListenVoiceSettingsUiState,
+    colors: ListenPalette.Colors,
+    actions: ListenVoiceSettingsActions,
+) {
+    val rotation = state.rotation
+    val multiple = rotation.size > 1
+    if (rotation.size == 1) {
+        val voice = rotation.first()
+        val name = state.voiceName(voice)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(colors.cardBackground)
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                stringResource(R.string.listen_selected_voice),
+                color = colors.textSecondary,
+                fontSize = 12.sp,
+                modifier = Modifier.weight(1f),
+            )
+            Box(
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(colors.chipBackground)
+                    .clickable(
+                        role = Role.Button,
+                        onClickLabel = stringResource(R.string.listen_find_voice, name),
+                    ) { actions.onRevealVoice(voice.voiceId) }
+                    .heightIn(min = 48.dp)
+                    .padding(horizontal = 10.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(name, color = colors.textPrimary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            }
+        }
+        return
+    }
+    if (rotation.isEmpty()) return
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (multiple) colors.accent.copy(alpha = 0.08f) else colors.cardBackground)
+            .padding(12.dp),
+    ) {
+        Text(
+            stringResource(if (multiple) R.string.listen_voice_rotation else R.string.listen_selected_voice),
+            color = if (multiple) colors.textPrimary else colors.textSecondary,
+            fontSize = if (multiple) 15.sp else 12.sp,
+            fontWeight = if (multiple) FontWeight.SemiBold else FontWeight.Normal,
+        )
+        if (multiple) {
+            Text(
+                stringResource(R.string.listen_rotation_order),
+                color = colors.textSecondary,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+        Row(Modifier.padding(top = 8.dp).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            rotation.forEachIndexed { index, voice ->
+                val name = state.voiceName(voice)
+                Row(
+                    Modifier.clip(RoundedCornerShape(8.dp)).background(colors.chipBackground),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Row(
+                        Modifier
+                            .clickable(role = Role.Button, onClickLabel = stringResource(R.string.listen_find_voice, name)) {
+                                actions.onRevealVoice(voice.voiceId)
+                            }.heightIn(min = 48.dp)
+                            .padding(start = 10.dp, end = if (multiple) 0.dp else 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (multiple) {
+                            Text(
+                                "${index + 1}",
+                                color = colors.textSecondary,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(end = 6.dp),
+                            )
+                        }
+                        Text(name, color = colors.textPrimary, fontSize = 14.sp)
+                    }
+                    if (multiple) {
+                        Box(
+                            Modifier.size(48.dp).clickable(role = Role.Button) { actions.onRemoveVoice(voice.voiceId) },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                Icons.Rounded.Close,
+                                stringResource(R.string.listen_remove_rotation_voice, name),
+                                tint = colors.textPrimary,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -403,6 +517,10 @@ private fun VoiceList(
     }
     // A new language, filter or search starts the list back at the top.
     LaunchedEffect(state.language, state.activeFilters, state.search) { listState.scrollToItem(0) }
+    LaunchedEffect(state.revealGeneration) {
+        val index = recommended.indexOfFirst { it.voiceId == state.revealVoiceId }
+        if (state.revealGeneration > 0 && index >= 0) listState.animateScrollToItem(index + 1)
+    }
     LaunchedEffect(nearEnd, state.library.hasMore, state.library.loading) {
         if (nearEnd && state.library.hasMore && !state.library.loading) actions.onLoadMore()
     }
@@ -493,7 +611,8 @@ private fun VoiceRow(
     colors: ListenPalette.Colors,
     actions: ListenVoiceSettingsActions,
 ) {
-    val selected = voice.voiceId == state.selectedVoiceId
+    val selected = state.rotation.any { it.voiceId == voice.voiceId }
+    val soleVoice = selected && state.rotation.size == 1
     Row(
         modifier =
             Modifier
@@ -501,7 +620,6 @@ private fun VoiceRow(
                 .padding(horizontal = 6.dp, vertical = 2.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(if (selected) colors.accent.copy(alpha = SELECTED_ROW_ALPHA) else colors.cardBackground)
-                .clickable(role = Role.RadioButton) { actions.onSelectVoice(voice) }
                 .padding(start = 8.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -516,7 +634,14 @@ private fun VoiceRow(
             }
         }
         Spacer(Modifier.width(6.dp))
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .clickable(enabled = !soleVoice, role = Role.Button) { actions.onSelectVoice(voice) }
+                    .heightIn(min = 48.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
             Text(
                 text =
                     buildAnnotatedString {
@@ -538,6 +663,18 @@ private fun VoiceRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+            Text(
+                stringResource(
+                    when {
+                        soleVoice -> R.string.listen_rotation_selected
+                        state.rotation.size > 1 -> R.string.listen_use_only_voice
+                        else -> R.string.listen_use_voice
+                    },
+                ),
+                color = if (soleVoice) colors.textSecondary else colors.accent,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(vertical = 6.dp),
+            )
         }
         PreviewButton(
             loading = state.previewLoadingVoiceId == voice.voiceId,
@@ -545,6 +682,19 @@ private fun VoiceRow(
             colors = colors,
             onClick = { actions.onPreviewVoice(voice) },
         )
+        Box(
+            Modifier.size(48.dp).clickable(enabled = !selected, role = Role.Button) {
+                actions.onAddVoice(voice)
+            },
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                if (selected) Icons.Rounded.Check else Icons.Rounded.Add,
+                stringResource(R.string.listen_add_rotation_voice, voice.name),
+                tint = if (selected) colors.textSecondary else colors.textPrimary,
+                modifier = Modifier.size(22.dp),
+            )
+        }
     }
 }
 

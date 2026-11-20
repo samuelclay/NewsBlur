@@ -103,6 +103,7 @@
 "Add" = "Añadir";
 "Add %1$@ feeds to “%2$@” folder" = "Añadir %1$@ feeds a la carpeta «%2$@»";
 "Add %@" = "Añadir %@";
+"Add %@ to rotation" = "Añadir %@ a la rotación";
 "Add + Discover Sites" = "Añadir + descubrir sitios";
 "Add Site" = "Añadir sitio";
 "Add Sites" = "Añadir sitios";
@@ -279,6 +280,7 @@
 "Custom Search Query" = "Consulta de búsqueda personalizada";
 "Custom [listen delivery]" = "Personalizado";
 "Custom feed title" = "Título personalizado del feed";
+"Custom server" = "Servidor personalizado";
 "Customize auto-read by site or folder" = "Personaliza la lectura automática por sitio o carpeta";
 "Daily" = "Diariamente";
 "Daily Briefing" = "Resumen diario";
@@ -347,6 +349,7 @@
 "Enabled" = "Activado";
 "Enter URL phrase..." = "Introduce una frase de URL...";
 "Enter a custom search query..." = "Introduce una consulta de búsqueda personalizada...";
+"Enter a valid custom server URL." = "Introduce una URL válida para el servidor personalizado.";
 "Enter a web page URL..." = "Introduce la URL de una página web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Introduce la URL de cualquier página web y NewsBlur usará IA para analizar su estructura, encontrar artículos y crear un feed RSS personalizado al que podrás suscribirte.";
 "Enter author phrase..." = "Introduce una frase del autor...";
@@ -390,6 +393,7 @@
 "Fetching text..." = "Obteniendo texto...";
 "Filter" = "Filtrar";
 "Filter stories by date range" = "Filtrar artículos por intervalo de fechas";
+"Find %@ in the voice list" = "Buscar %@ en la lista de voces";
 "Find Friends" = "Encontrar amigos";
 "Find in Feed" = "Buscar en el feed";
 "Find in Sites" = "Buscar en sitios";
@@ -519,6 +523,7 @@
 "Lavender Iris" = "Iris lavanda";
 "Layout" = "Diseño";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Déjalo en blanco para usar NewsBlur o introduce la URL de tu instalación autoalojada. Se aplicará la próxima vez que abras la aplicación.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Deja este campo en blanco para usar NewsBlur o introduce la URL de tu instalación alojada por tu cuenta. El cambio se aplica de inmediato al iniciar sesión y registrarte.";
 "Left" = "Izquierda";
 "Length & Style" = "Longitud y estilo";
 "Light" = "Claro";
@@ -740,6 +745,7 @@
 "On scroll or selection" = "Al desplazarse o seleccionar";
 "One" = "Uno";
 "One column" = "Una columna";
+"One voice per story, in this order." = "Una voz por artículo, en este orden.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Solo %1$@ de tus %2$@ sitios están indexados para el descubrimiento. Mejora tu plan para indexar todos tus sitios y recibir recomendaciones personalizadas.";
 "Only Title" = "Solo título";
 "Only on Selection" = "Solo al seleccionar";
@@ -860,6 +866,7 @@
 "Related sites" = "Sitios relacionados";
 "Reload Sites" = "Recargar sitios";
 "Reloading..." = "Recargando...";
+"Remove %@ from rotation" = "Quitar %@ de la rotación";
 "Remove This List" = "Eliminar esta lista";
 "Remove from Up Next" = "Quitar de A continuación";
 "Removed from Up Next" = "Quitado de A continuación";
@@ -877,6 +884,7 @@
 "Reply" = "Responder";
 "Reply to %@" = "Responder a %@";
 "Replying" = "Respondiendo";
+"Reset" = "Restablecer";
 "Resets %@" = "Se restablece %@";
 "Resize sidebar" = "Cambiar el tamaño de la barra lateral";
 "Restore" = "Restaurar";
@@ -931,6 +939,8 @@
 "Select a feed or folder" = "Selecciona un feed o una carpeta";
 "Select a feed variant" = "Selecciona una variante del feed";
 "Select feeds to add" = "Selecciona los feeds que quieras añadir";
+"Selected" = "Seleccionada";
+"Selected voice" = "Voz seleccionada";
 "Send" = "Enviar";
 "Send This Story To..." = "Enviar este artículo a...";
 "Send To…" = "Enviar a…";
@@ -1229,9 +1239,12 @@
 "Usage billing history" = "Historial de facturación del uso";
 "Usage-based billing is enabled for natural language classifiers." = "La facturación según el uso está activada para los clasificadores de lenguaje natural.";
 "Use %@" = "Usar %@";
+"Use a custom server" = "Usar un servidor personalizado";
 "Use another sign-in method" = "Usar otro método de inicio de sesión";
 "Use both" = "Usar ambos";
+"Use only this voice" = "Usar solo esta voz";
 "Use system size" = "Usar tamaño del sistema";
+"Use voice" = "Usar voz";
 "User info" = "Información del usuario";
 "Username" = "Nombre de usuario";
 "Username or Email" = "Nombre de usuario o correo electrónico";
@@ -1245,6 +1258,7 @@
 "View mode" = "Modo de vista";
 "Voice" = "Voz";
 "Voice and music balance" = "Balance entre voz y música";
+"Voice rotation" = "Rotación de voces";
 "Voice settings" = "Ajustes de voz";
 "Warm" = "Cálido";
 "Web" = "Web";

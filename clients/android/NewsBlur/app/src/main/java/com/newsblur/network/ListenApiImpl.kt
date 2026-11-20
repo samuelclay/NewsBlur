@@ -9,8 +9,8 @@ import com.newsblur.listen.ListenError
 import com.newsblur.listen.ListenLibraryResponse
 import com.newsblur.listen.ListenManifest
 import com.newsblur.listen.ListenPlaybackState
-import com.newsblur.listen.ListenPositionSync
 import com.newsblur.listen.ListenPlayedTime
+import com.newsblur.listen.ListenPositionSync
 import com.newsblur.listen.ListenProgressResponse
 import com.newsblur.listen.ListenQueueItem
 import com.newsblur.listen.ListenResult
@@ -83,12 +83,20 @@ class ListenApiImpl(
         storyHash: String,
         language: String?,
         voiceId: String?,
+        voiceChoices: Map<String, String>,
     ): ListenResult<ListenManifest> {
         val form =
             buildMap {
                 put(APIConstants.PARAMETER_STORY_HASH, storyHash)
                 if (!language.isNullOrBlank()) put("language", language)
                 if (!voiceId.isNullOrBlank()) put("voice_id", voiceId)
+                if (voiceChoices.isNotEmpty()) {
+                    put(
+                        "voice_choices",
+                        com.newsblur.preference.ListenPreferenceParser
+                            .encodeVoices(voiceChoices),
+                    )
+                }
             }
         return post(APIConstants.PATH_LISTEN_MANIFEST, form, ListenManifest::class.java) {
             ListenEnvelope(it.code, it.reason, it.message, it.usage)

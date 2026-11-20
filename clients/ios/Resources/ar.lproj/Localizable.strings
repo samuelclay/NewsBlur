@@ -103,6 +103,7 @@
 "Add" = "إضافة";
 "Add %1$@ feeds to “%2$@” folder" = "إضافة %1$@ من الخلاصات إلى مجلد «%2$@»";
 "Add %@" = "إضافة %@";
+"Add %@ to rotation" = "إضافة %@ إلى التناوب";
 "Add + Discover Sites" = "إضافة واكتشاف المواقع";
 "Add Site" = "إضافة موقع";
 "Add Sites" = "إضافة مواقع";
@@ -279,6 +280,7 @@
 "Custom Search Query" = "استعلام بحث مخصص";
 "Custom [listen delivery]" = "مخصص";
 "Custom feed title" = "عنوان خلاصة مخصّص";
+"Custom server" = "خادم مخصص";
 "Customize auto-read by site or folder" = "تخصيص وضع علامة «مقروءة» تلقائيًا حسب الموقع أو المجلد";
 "Daily" = "يوميًا";
 "Daily Briefing" = "الموجز اليومي";
@@ -347,6 +349,7 @@
 "Enabled" = "مفعّل";
 "Enter URL phrase..." = "أدخل عبارة URL...";
 "Enter a custom search query..." = "أدخل استعلام بحث مخصصًا...";
+"Enter a valid custom server URL." = "أدخل عنوان URL صالحًا لخادم مخصص.";
 "Enter a web page URL..." = "أدخل عنوان URL لصفحة ويب...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "أدخل عنوان URL لأي صفحة ويب، وسيستخدم NewsBlur الذكاء الاصطناعي لتحليل بنية الصفحة والعثور على القصص وإنشاء خلاصة RSS مخصصة يمكنك الاشتراك فيها.";
 "Enter author phrase..." = "أدخل عبارة المؤلف...";
@@ -390,6 +393,7 @@
 "Fetching text..." = "جارٍ جلب النص...";
 "Filter" = "تصفية";
 "Filter stories by date range" = "تصفية القصص حسب النطاق الزمني";
+"Find %@ in the voice list" = "العثور على %@ في قائمة الأصوات";
 "Find Friends" = "اعثر على أصدقاء";
 "Find in Feed" = "البحث في الخلاصة";
 "Find in Sites" = "البحث في المواقع";
@@ -519,6 +523,7 @@
 "Lavender Iris" = "السوسن الخزامي";
 "Layout" = "التخطيط";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "اتركه فارغًا لاستخدام NewsBlur، أو أدخل عنوان URL لتثبيتك المستضاف ذاتيًا. يسري التغيير عند فتح التطبيق في المرة القادمة.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "اترك هذا الحقل فارغًا لاستخدام NewsBlur، أو أدخل عنوان URL لتثبيتك المستضاف ذاتيًا. يسري ذلك فورًا على تسجيل الدخول وإنشاء الحساب.";
 "Left" = "يسار";
 "Length & Style" = "الطول والأسلوب";
 "Light" = "فاتح";
@@ -740,6 +745,7 @@
 "On scroll or selection" = "عند التمرير أو التحديد";
 "One" = "واحد";
 "One column" = "عمود واحد";
+"One voice per story, in this order." = "صوت واحد لكل مقالة، بهذا الترتيب.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "لم تتم فهرسة سوى %1$@ من أصل %2$@ من مواقعك لاكتشاف المحتوى. قم بالترقية لفهرسة جميع مواقعك والحصول على توصيات مخصصة.";
 "Only Title" = "العنوان فقط";
 "Only on Selection" = "عند التحديد فقط";
@@ -860,6 +866,7 @@
 "Related sites" = "مواقع ذات صلة";
 "Reload Sites" = "إعادة تحميل المواقع";
 "Reloading..." = "جارٍ إعادة التحميل...";
+"Remove %@ from rotation" = "إزالة %@ من التناوب";
 "Remove This List" = "إزالة هذه القائمة";
 "Remove from Up Next" = "إزالة من التالي";
 "Removed from Up Next" = "أُزيلت من التالي";
@@ -877,6 +884,7 @@
 "Reply" = "رد";
 "Reply to %@" = "الرد على %@";
 "Replying" = "جارٍ الرد";
+"Reset" = "إعادة تعيين";
 "Resets %@" = "يُعاد الضبط في %@";
 "Resize sidebar" = "تغيير حجم الشريط الجانبي";
 "Restore" = "استعادة";
@@ -931,6 +939,8 @@
 "Select a feed or folder" = "اختر خلاصة أو مجلدًا";
 "Select a feed variant" = "اختر إصدارًا من الخلاصة";
 "Select feeds to add" = "حدّد الخلاصات المطلوب إضافتها";
+"Selected" = "محدد";
+"Selected voice" = "الصوت المحدد";
 "Send" = "إرسال";
 "Send This Story To..." = "إرسال هذه القصة إلى...";
 "Send To…" = "إرسال إلى…";
@@ -1229,9 +1239,12 @@
 "Usage billing history" = "سجل فوترة الاستخدام";
 "Usage-based billing is enabled for natural language classifiers." = "الفوترة حسب الاستخدام مفعّلة للمصنّفات باللغة الطبيعية.";
 "Use %@" = "استخدم %@";
+"Use a custom server" = "استخدام خادم مخصص";
 "Use another sign-in method" = "استخدم طريقة أخرى لتسجيل الدخول";
 "Use both" = "استخدم كليهما";
+"Use only this voice" = "استخدام هذا الصوت فقط";
 "Use system size" = "استخدام حجم النظام";
+"Use voice" = "استخدام الصوت";
 "User info" = "معلومات المستخدم";
 "Username" = "اسم المستخدم";
 "Username or Email" = "اسم المستخدم أو البريد الإلكتروني";
@@ -1245,6 +1258,7 @@
 "View mode" = "وضع العرض";
 "Voice" = "الصوت";
 "Voice and music balance" = "التوازن بين الصوت والموسيقى";
+"Voice rotation" = "تناوب الأصوات";
 "Voice settings" = "إعدادات الصوت";
 "Warm" = "دافئ";
 "Web" = "الويب";

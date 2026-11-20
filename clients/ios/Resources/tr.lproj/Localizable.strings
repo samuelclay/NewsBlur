@@ -103,6 +103,7 @@
 "Add" = "Ekle";
 "Add %1$@ feeds to “%2$@” folder" = "“%2$@” klasörüne %1$@ akış ekle";
 "Add %@" = "%@ ekle";
+"Add %@ to rotation" = "%@ sesini döngüye ekle";
 "Add + Discover Sites" = "Site Ekle + Keşfet";
 "Add Site" = "Site Ekle";
 "Add Sites" = "Site ekle";
@@ -279,6 +280,7 @@
 "Custom Search Query" = "Özel arama sorgusu";
 "Custom [listen delivery]" = "Özel";
 "Custom feed title" = "Özel akış başlığı";
+"Custom server" = "Özel sunucu";
 "Customize auto-read by site or folder" = "Otomatik okuma ayarlarını siteye veya klasöre göre özelleştir";
 "Daily" = "Günlük";
 "Daily Briefing" = "Günlük Özet";
@@ -347,6 +349,7 @@
 "Enabled" = "Etkin";
 "Enter URL phrase..." = "URL ifadesi girin...";
 "Enter a custom search query..." = "Özel arama sorgusu girin...";
+"Enter a valid custom server URL." = "Geçerli bir özel sunucu URL’si girin.";
 "Enter a web page URL..." = "Bir web sayfası URL'si girin...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Herhangi bir web sayfasının URL'sini girin; NewsBlur sayfa yapısını yapay zekâyla analiz eder, haberleri bulur ve abone olabileceğiniz özel bir RSS akışı oluşturur.";
 "Enter author phrase..." = "Yazar ifadesini girin...";
@@ -390,6 +393,7 @@
 "Fetching text..." = "Metin alınıyor...";
 "Filter" = "Filtre";
 "Filter stories by date range" = "Haberleri tarih aralığına göre filtrele";
+"Find %@ in the voice list" = "Ses listesinde %@ sesini bul";
 "Find Friends" = "Arkadaş Bul";
 "Find in Feed" = "Akışta Bul";
 "Find in Sites" = "Sitelerde bul";
@@ -519,6 +523,7 @@
 "Lavender Iris" = "Lavanta Süseni";
 "Layout" = "Düzen";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlur'ı kullanmak için boş bırakın veya kendi barındırdığınız kurulumun URL'sini girin. Değişiklik, uygulama bir sonraki açıldığında geçerli olur.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "NewsBlur kullanmak için bu alanı boş bırakın veya kendi sunucunuzda barındırdığınız kurulumun URL’sini girin. Değişiklik, giriş ve kaydolma işlemlerinde hemen geçerli olur.";
 "Left" = "Sol";
 "Length & Style" = "Uzunluk ve Stil";
 "Light" = "Açık";
@@ -740,6 +745,7 @@
 "On scroll or selection" = "Kaydırınca veya seçince";
 "One" = "Bir";
 "One column" = "Bir sütun";
+"One voice per story, in this order." = "Bu sırayla, her yazı için bir ses.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Keşif için %2$@ sitenizin yalnızca %1$@ kadarı dizine eklendi. Tüm sitelerinizi dizine eklemek ve kişiselleştirilmiş öneriler almak için planınızı yükseltin.";
 "Only Title" = "Yalnızca başlık";
 "Only on Selection" = "Yalnızca seçilince";
@@ -860,6 +866,7 @@
 "Related sites" = "İlgili siteler";
 "Reload Sites" = "Siteleri yeniden yükle";
 "Reloading..." = "Yeniden yükleniyor...";
+"Remove %@ from rotation" = "%@ sesini döngüden çıkar";
 "Remove This List" = "Bu Listeyi Kaldır";
 "Remove from Up Next" = "Sıradan çıkar";
 "Removed from Up Next" = "Sıradan çıkarıldı";
@@ -877,6 +884,7 @@
 "Reply" = "Yanıtla";
 "Reply to %@" = "%@ kullanıcısına yanıt ver";
 "Replying" = "Yanıtlanıyor";
+"Reset" = "Sıfırla";
 "Resets %@" = "%@ sıfırlanıyor";
 "Resize sidebar" = "Kenar çubuğunu yeniden boyutlandır";
 "Restore" = "Geri yükle";
@@ -931,6 +939,8 @@
 "Select a feed or folder" = "Bir akış veya klasör seçin";
 "Select a feed variant" = "Bir akış sürümü seçin";
 "Select feeds to add" = "Eklenecek akışları seçin";
+"Selected" = "Seçili";
+"Selected voice" = "Seçili ses";
 "Send" = "Gönder";
 "Send This Story To..." = "Bu haberi şuraya gönder...";
 "Send To…" = "Şuraya gönder…";
@@ -1229,9 +1239,12 @@
 "Usage billing history" = "Kullanım faturalandırma geçmişi";
 "Usage-based billing is enabled for natural language classifiers." = "Doğal dil sınıflandırıcıları için kullanıma dayalı faturalandırma etkin.";
 "Use %@" = "%@ kullan";
+"Use a custom server" = "Özel sunucu kullan";
 "Use another sign-in method" = "Başka bir giriş yöntemi kullan";
 "Use both" = "İkisini de kullan";
+"Use only this voice" = "Yalnızca bu sesi kullan";
 "Use system size" = "Sistem boyutunu kullan";
+"Use voice" = "Sesi kullan";
 "User info" = "Kullanıcı bilgileri";
 "Username" = "Kullanıcı adı";
 "Username or Email" = "Kullanıcı adı veya e-posta";
@@ -1245,6 +1258,7 @@
 "View mode" = "Görünüm modu";
 "Voice" = "Ses";
 "Voice and music balance" = "Ses ve müzik dengesi";
+"Voice rotation" = "Ses döngüsü";
 "Voice settings" = "Ses ayarları";
 "Warm" = "Sıcak";
 "Web" = "Web";

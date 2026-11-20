@@ -2854,15 +2854,12 @@ class RUserStory:
 
             return story_hashes
         else:
-            # Original behavior without date filtering
+            # Original behavior without date filtering. lrange's stop index is inclusive, and
+            # the list is newest first, so oldest-first pages count back from its end.
             if order == "oldest":
-                count = r.llen(key)
-                if offset >= count:
-                    return []
-                offset = max(0, count - (offset + limit))
-                story_hashes = r.lrange(key, offset, offset + limit)
+                story_hashes = r.lrange(key, -(offset + limit), -(offset + 1))
             elif order == "newest":
-                story_hashes = r.lrange(key, offset, offset + limit)
+                story_hashes = r.lrange(key, offset, offset + limit - 1)
 
         return story_hashes
 

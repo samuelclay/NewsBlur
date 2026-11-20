@@ -103,6 +103,7 @@
 "Add" = "Додати";
 "Add %1$@ feeds to “%2$@” folder" = "Додати %1$@ стрічок до папки «%2$@»";
 "Add %@" = "Додати %@";
+"Add %@ to rotation" = "Додати %@ до чергування";
 "Add + Discover Sites" = "Додати + знайти сайти";
 "Add Site" = "Додати сайт";
 "Add Sites" = "Додати сайти";
@@ -279,6 +280,7 @@
 "Custom Search Query" = "Власний пошуковий запит";
 "Custom [listen delivery]" = "Власний";
 "Custom feed title" = "Власна назва стрічки";
+"Custom server" = "Власний сервер";
 "Customize auto-read by site or folder" = "Налаштувати автоматичне позначення прочитаним для сайтів або папок";
 "Daily" = "Щодня";
 "Daily Briefing" = "Щоденний огляд";
@@ -347,6 +349,7 @@
 "Enabled" = "Увімкнено";
 "Enter URL phrase..." = "Введіть фразу з URL…";
 "Enter a custom search query..." = "Введіть власний пошуковий запит...";
+"Enter a valid custom server URL." = "Введіть дійсний URL власного сервера.";
 "Enter a web page URL..." = "Введіть URL вебсторінки...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Введіть URL будь-якої вебсторінки, і NewsBlur за допомогою ШІ проаналізує її структуру, знайде статті та створить спеціальну RSS-стрічку, на яку можна підписатися.";
 "Enter author phrase..." = "Введіть фразу автора...";
@@ -390,6 +393,7 @@
 "Fetching text..." = "Завантаження тексту...";
 "Filter" = "Фільтр";
 "Filter stories by date range" = "Фільтрувати статті за діапазоном дат";
+"Find %@ in the voice list" = "Знайти %@ у списку голосів";
 "Find Friends" = "Знайти друзів";
 "Find in Feed" = "Знайти у стрічці";
 "Find in Sites" = "Пошук на сайтах";
@@ -519,6 +523,7 @@
 "Lavender Iris" = "Лавандовий ірис";
 "Layout" = "Макет";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Залиште поле порожнім, щоб використовувати NewsBlur, або введіть URL-адресу власного сервера. Зміни набудуть чинності під час наступного запуску застосунку.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Залиште це поле порожнім, щоб використовувати NewsBlur, або введіть URL вашої власної інсталяції. Зміни набудуть чинності негайно для входу та реєстрації.";
 "Left" = "Ліворуч";
 "Length & Style" = "Довжина й стиль";
 "Light" = "Світла";
@@ -740,6 +745,7 @@
 "On scroll or selection" = "Під час прокручування або вибору";
 "One" = "Один";
 "One column" = "Одна колонка";
+"One voice per story, in this order." = "Один голос на статтю, у цьому порядку.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Для пошуку проіндексовано лише %1$@ із %2$@ ваших сайтів. Перейдіть на вищий тариф, щоб проіндексувати всі сайти й отримувати персональні рекомендації.";
 "Only Title" = "Лише заголовок";
 "Only on Selection" = "Лише під час вибору";
@@ -860,6 +866,7 @@
 "Related sites" = "Пов’язані сайти";
 "Reload Sites" = "Перезавантажити сайти";
 "Reloading..." = "Перезавантаження...";
+"Remove %@ from rotation" = "Вилучити %@ із чергування";
 "Remove This List" = "Видалити цей список";
 "Remove from Up Next" = "Видалити з черги «Далі»";
 "Removed from Up Next" = "Видалено з черги «Далі»";
@@ -877,6 +884,7 @@
 "Reply" = "Відповісти";
 "Reply to %@" = "Відповісти %@";
 "Replying" = "Надсилання відповіді";
+"Reset" = "Скинути";
 "Resets %@" = "Скидання: %@";
 "Resize sidebar" = "Змінити розмір бічної панелі";
 "Restore" = "Відновити";
@@ -931,6 +939,8 @@
 "Select a feed or folder" = "Виберіть стрічку або папку";
 "Select a feed variant" = "Виберіть варіант стрічки";
 "Select feeds to add" = "Виберіть стрічки для додавання";
+"Selected" = "Вибрано";
+"Selected voice" = "Вибраний голос";
 "Send" = "Надіслати";
 "Send This Story To..." = "Надіслати цю статтю...";
 "Send To…" = "Надіслати…";
@@ -1229,9 +1239,12 @@
 "Usage billing history" = "Історія оплати за використання";
 "Usage-based billing is enabled for natural language classifiers." = "Для класифікаторів природної мови ввімкнено оплату за використання.";
 "Use %@" = "Використовувати мову: %@";
+"Use a custom server" = "Використовувати власний сервер";
 "Use another sign-in method" = "Скористатися іншим способом входу";
 "Use both" = "Використовувати обидва";
+"Use only this voice" = "Використовувати лише цей голос";
 "Use system size" = "Системний розмір";
+"Use voice" = "Вибрати голос";
 "User info" = "Інформація про користувача";
 "Username" = "Ім’я користувача";
 "Username or Email" = "Ім’я користувача або електронна пошта";
@@ -1245,6 +1258,7 @@
 "View mode" = "Режим перегляду";
 "Voice" = "Голос";
 "Voice and music balance" = "Баланс голосу та музики";
+"Voice rotation" = "Чергування голосів";
 "Voice settings" = "Налаштування голосу";
 "Warm" = "Теплий";
 "Web" = "Веб";

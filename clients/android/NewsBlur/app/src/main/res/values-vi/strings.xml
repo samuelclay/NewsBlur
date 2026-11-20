@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">Bài viết Tập trung</string>
     <string name="story_title_mark_story_read">Đánh dấu bài viết là đã đọc…</string>
     <string name="story_title_list_font_size">Cỡ chữ tiêu đề nguồn cấp và bài viết</string>
+    <string name="listen_voice_rotation">Luân phiên giọng đọc</string>
+    <string name="listen_selected_voice">Giọng đọc đã chọn</string>
+    <string name="listen_rotation_order">Mỗi bài viết một giọng đọc, theo thứ tự này.</string>
+    <string name="listen_use_voice">Dùng giọng đọc</string>
+    <string name="listen_use_only_voice">Chỉ dùng giọng đọc này</string>
+    <string name="listen_rotation_selected">Đã chọn</string>
+    <string name="listen_find_voice">Tìm %1$s trong danh sách giọng đọc</string>
+    <string name="listen_add_rotation_voice">Thêm %1$s vào vòng luân phiên</string>
+    <string name="listen_remove_rotation_voice">Xóa %1$s khỏi vòng luân phiên</string>
     <string name="language_title">Ngôn ngữ</string>
     <string name="settings_cat_general">Chung</string>
     <string name="settings_cat_appearance">Giao diện</string>

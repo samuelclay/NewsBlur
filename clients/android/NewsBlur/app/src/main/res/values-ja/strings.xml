@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">フォーカス記事</string>
     <string name="story_title_mark_story_read">記事を既読にする…</string>
     <string name="story_title_list_font_size">フィードと記事タイトルのフォントサイズ</string>
+    <string name="listen_voice_rotation">音声のローテーション</string>
+    <string name="listen_selected_voice">選択中の音声</string>
+    <string name="listen_rotation_order">この順番で、記事ごとに音声を切り替えます。</string>
+    <string name="listen_use_voice">この音声を使う</string>
+    <string name="listen_use_only_voice">この音声のみを使う</string>
+    <string name="listen_rotation_selected">選択中</string>
+    <string name="listen_find_voice">音声一覧で%1$sを探す</string>
+    <string name="listen_add_rotation_voice">ローテーションに%1$sを追加</string>
+    <string name="listen_remove_rotation_voice">ローテーションから%1$sを削除</string>
     <string name="language_title">言語</string>
     <string name="settings_cat_general">全般</string>
     <string name="settings_cat_appearance">外観</string>

@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">Focusartikelen</string>
     <string name="story_title_mark_story_read">Artikel als gelezen markeren…</string>
     <string name="story_title_list_font_size">Lettergrootte van feed- en artikeltitels</string>
+    <string name="listen_voice_rotation">Stemrotatie</string>
+    <string name="listen_selected_voice">Geselecteerde stem</string>
+    <string name="listen_rotation_order">Eén stem per artikel, in deze volgorde.</string>
+    <string name="listen_use_voice">Stem gebruiken</string>
+    <string name="listen_use_only_voice">Alleen deze stem gebruiken</string>
+    <string name="listen_rotation_selected">Geselecteerd</string>
+    <string name="listen_find_voice">%1$s zoeken in de stemmenlijst</string>
+    <string name="listen_add_rotation_voice">%1$s aan de rotatie toevoegen</string>
+    <string name="listen_remove_rotation_voice">%1$s uit de rotatie verwijderen</string>
     <string name="language_title">Taal</string>
     <string name="settings_cat_general">Algemeen</string>
     <string name="settings_cat_appearance">Weergave</string>

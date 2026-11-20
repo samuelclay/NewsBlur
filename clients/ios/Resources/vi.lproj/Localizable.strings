@@ -103,6 +103,7 @@
 "Add" = "Thêm";
 "Add %1$@ feeds to “%2$@” folder" = "Thêm %1$@ nguồn cấp dữ liệu vào thư mục “%2$@”";
 "Add %@" = "Thêm %@";
+"Add %@ to rotation" = "Thêm %@ vào vòng luân phiên";
 "Add + Discover Sites" = "Thêm + Khám phá trang web";
 "Add Site" = "Thêm trang web";
 "Add Sites" = "Thêm trang web";
@@ -279,6 +280,7 @@
 "Custom Search Query" = "Truy vấn tìm kiếm tùy chỉnh";
 "Custom [listen delivery]" = "Tùy chỉnh";
 "Custom feed title" = "Tiêu đề nguồn cấp tùy chỉnh";
+"Custom server" = "Máy chủ tùy chỉnh";
 "Customize auto-read by site or folder" = "Tùy chỉnh chế độ tự động đánh dấu đã đọc theo trang hoặc thư mục";
 "Daily" = "Hằng ngày";
 "Daily Briefing" = "Bản tin hằng ngày";
@@ -347,6 +349,7 @@
 "Enabled" = "Đã bật";
 "Enter URL phrase..." = "Nhập cụm URL…";
 "Enter a custom search query..." = "Nhập truy vấn tìm kiếm tùy chỉnh...";
+"Enter a valid custom server URL." = "Nhập URL máy chủ tùy chỉnh hợp lệ.";
 "Enter a web page URL..." = "Nhập URL trang web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Nhập URL của bất kỳ trang web nào, NewsBlur sẽ dùng AI phân tích cấu trúc trang, tìm bài viết và tạo một nguồn cấp RSS tùy chỉnh để bạn đăng ký.";
 "Enter author phrase..." = "Nhập cụm từ về tác giả...";
@@ -390,6 +393,7 @@
 "Fetching text..." = "Đang tải văn bản...";
 "Filter" = "Lọc";
 "Filter stories by date range" = "Lọc bài viết theo khoảng ngày";
+"Find %@ in the voice list" = "Tìm %@ trong danh sách giọng đọc";
 "Find Friends" = "Tìm bạn bè";
 "Find in Feed" = "Tìm trong nguồn cấp dữ liệu";
 "Find in Sites" = "Tìm trong các trang web";
@@ -519,6 +523,7 @@
 "Lavender Iris" = "Diên vĩ oải hương";
 "Layout" = "Bố cục";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Để trống để dùng NewsBlur hoặc nhập URL của bản cài đặt tự lưu trữ. Thay đổi có hiệu lực vào lần mở ứng dụng tiếp theo.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Để trống để dùng NewsBlur, hoặc nhập URL của bản cài đặt tự lưu trữ. Thay đổi có hiệu lực ngay khi đăng nhập và đăng ký.";
 "Left" = "Trái";
 "Length & Style" = "Độ dài & phong cách";
 "Light" = "Sáng";
@@ -740,6 +745,7 @@
 "On scroll or selection" = "Khi cuộn hoặc chọn";
 "One" = "Một";
 "One column" = "Một cột";
+"One voice per story, in this order." = "Mỗi bài viết một giọng đọc, theo thứ tự này.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Chỉ %1$@ trong số %2$@ trang web của bạn được lập chỉ mục để khám phá. Nâng cấp để lập chỉ mục tất cả trang web và nhận đề xuất được cá nhân hóa.";
 "Only Title" = "Chỉ tiêu đề";
 "Only on Selection" = "Chỉ khi chọn";
@@ -860,6 +866,7 @@
 "Related sites" = "Các trang web liên quan";
 "Reload Sites" = "Tải lại trang web";
 "Reloading..." = "Đang tải lại...";
+"Remove %@ from rotation" = "Xóa %@ khỏi vòng luân phiên";
 "Remove This List" = "Xóa danh sách này";
 "Remove from Up Next" = "Xóa khỏi danh sách phát tiếp theo";
 "Removed from Up Next" = "Đã xóa khỏi danh sách phát tiếp theo";
@@ -877,6 +884,7 @@
 "Reply" = "Trả lời";
 "Reply to %@" = "Trả lời %@";
 "Replying" = "Đang trả lời";
+"Reset" = "Đặt lại";
 "Resets %@" = "Đặt lại sau %@";
 "Resize sidebar" = "Đổi kích thước thanh bên";
 "Restore" = "Khôi phục";
@@ -931,6 +939,8 @@
 "Select a feed or folder" = "Chọn nguồn cấp hoặc thư mục";
 "Select a feed variant" = "Chọn phiên bản nguồn cấp";
 "Select feeds to add" = "Chọn nguồn cấp dữ liệu để thêm";
+"Selected" = "Đã chọn";
+"Selected voice" = "Giọng đọc đã chọn";
 "Send" = "Gửi";
 "Send This Story To..." = "Gửi bài viết này đến...";
 "Send To…" = "Gửi đến…";
@@ -1229,9 +1239,12 @@
 "Usage billing history" = "Lịch sử thanh toán theo mức sử dụng";
 "Usage-based billing is enabled for natural language classifiers." = "Thanh toán theo mức sử dụng đã được bật cho các bộ phân loại ngôn ngữ tự nhiên.";
 "Use %@" = "Dùng %@";
+"Use a custom server" = "Dùng máy chủ tùy chỉnh";
 "Use another sign-in method" = "Dùng phương thức đăng nhập khác";
 "Use both" = "Dùng cả hai";
+"Use only this voice" = "Chỉ dùng giọng đọc này";
 "Use system size" = "Dùng kích thước hệ thống";
+"Use voice" = "Dùng giọng đọc";
 "User info" = "Thông tin người dùng";
 "Username" = "Tên người dùng";
 "Username or Email" = "Tên người dùng hoặc email";
@@ -1245,6 +1258,7 @@
 "View mode" = "Chế độ xem";
 "Voice" = "Giọng đọc";
 "Voice and music balance" = "Cân bằng giọng nói và nhạc";
+"Voice rotation" = "Luân phiên giọng đọc";
 "Voice settings" = "Cài đặt giọng đọc";
 "Warm" = "Ấm";
 "Web" = "Web";

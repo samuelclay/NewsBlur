@@ -84,6 +84,153 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Nov 20, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/11/20/mobile-web-version-of-newsblur/">
+              A rewritten mobile web version of NewsBlur, and feeds that load instantly
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>NewsBlur has a mobile web version again. On a phone, newsblur.com used to give you the desktop reader squeezed onto a tiny screen. Now it works like the iOS and Android apps, with screens that slide over each other, swiping between stories, and going back the way you’d expect. The web reader also draws your feed list the moment the page loads, instead of waiting on the server.</p>
+
+<h3 id="the-mobile-web-version-of-newsblur">The mobile web version of NewsBlur</h3>
+
+<p>This isn’t the first time. Back in June 2011, I built a mobile web version of NewsBlur at newsblur.com/m/, using an early beta of jQuery Mobile. It was a separate site with its own code, and it was a pain to keep up. I last worked on it in early 2012.</p>
+
+<p>This one is a rewrite, and it isn’t a separate site. It’s the same reader you use on the desktop, laid out for a phone, and it does what phone browsers can now do natively, without a framework in the way. Screens slide over each other with plain CSS, every screen is a real entry in your browser’s history, and Safari’s own back swipe works the way it does on every other site. It’s much better.</p>
+
+<p>On anything 768 pixels wide or narrower, and on a phone held sideways, the web reader switches into its mobile version. Nothing to install, it’s just the website.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/web-phone-layout.webp" aria-label="NewsBlur&#39;s website in Safari on an iPhone: tapping the Cooking folder slides in its stories, tapping a story opens it, swiping moves to the next two stories, and the back button returns to the stories and then the feed list">
+        <source src="/assets/web-phone-layout.mp4" type="video/mp4" />
+        <img src="/assets/web-phone-layout.webp" alt="NewsBlur&#39;s website in Safari on an iPhone: tapping the Cooking folder slides in its stories, tapping a story opens it, swiping moves to the next two stories, and the back button returns to the stories and then the feed list" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<p>Your feed list is the home screen. Tap a folder or site and its stories slide in over it, tap a story and it slides in over those. To go back, tap the back button, swipe in from the left edge, or use your browser’s own back gesture. They all walk the same path.</p>
+
+<ul>
+  <li><strong>Stories.</strong> Swipe left and right to move between them. The top bar switches between Feed, Text, and Story views, and the toolbar has previous, next, save, share (with your phone’s share sheet), mark as read or unread, and <strong>Next unread</strong>, which carries on into the next site with unread stories without leaving the story screen.</li>
+  <li><strong>Layouts.</strong> Each site keeps the layout you chose on the desktop. Split and Full open each story on its own screen, List expands stories in place, and Grid and Magazine show big image cards. The layout button switches between them, and your choice carries back to the desktop.</li>
+  <li><strong>Menus.</strong> Long press a site, folder, or story for its menu, which slides up from the bottom. Share, Save, and Related Stories open the same way. Pull down on a list to refresh it.</li>
+  <li><strong>Dialogs.</strong> The trainer, preferences, Add + Discover, and every other dialog open as a full screen sheet with a close button.</li>
+  <li><strong>Listening.</strong> Listen and podcasts play in a small bar that floats above every screen. Tap it for the full player.</li>
+  <li><strong>Everything else.</strong> Light and dark themes both work, and in Arabic and Hebrew the screens slide in from the other side. Safari’s toolbar shrinks out of the way as you scroll.</li>
+</ul>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/web-phone-folder-sheet.webp" alt="Long pressing a folder on the phone website opens its menu as a sheet from the bottom of the screen, with Mark folder as read, Add a site to this folder, Folder settings, and more" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>The desktop reader is exactly as it was. Narrow a browser window past 768 pixels and it switches to the mobile version on the spot, with the same feed still open, and widening it switches back.</p>
+
+<h3 id="your-feeds-show-up-right-away">Your feeds show up right away</h3>
+
+<p>The web reader used to wait for the server to send your whole feed list before it drew anything. With a few hundred sites that can take several seconds, and the iOS and Android apps never made you wait like that. Now the web keeps a copy of your feed list in your browser and draws it the moment the page loads. You can open a feed while the server’s answer is still on its way. When it arrives, NewsBlur merges it in, and only redraws if something changed since last time, like a site you added on your phone.</p>
+
+<p>Here’s a reload of my own account, with 710 sites. Before, the feed list showed up after about six and a half seconds. Now it’s there in about seven tenths of a second.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--stage">
+  <div class="mobile-release-phone__device" style="aspect-ratio: 1600 / 760">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/web-feed-list-load.webp" aria-label="Two browser windows reloading NewsBlur. The old reader shows an empty feed list for six and a half seconds, while the new one draws all 710 sites in under a second and loads the dashboard rivers">
+        <source src="/assets/web-feed-list-load.mp4" type="video/mp4" />
+        <img src="/assets/web-feed-list-load.webp" alt="Two browser windows reloading NewsBlur. The old reader shows an empty feed list for six and a half seconds, while the new one draws all 710 sites in under a second and loads the dashboard rivers" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<p>The copy lives only in your browser and only for your account. It starts with the unread counts you last saw, and fresh counts load right behind it as they always have. Signing out clears it.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>The mobile web version and the faster feed list are live on the web now.</p>
+
+<p>If the mobile web version does something your phone’s apps wouldn’t, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Nov 19, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/11/19/podcasts-in-listen-and-listen-over-your-music/">
+              Three new features in Listen: podcasts, your music, and voice rotation
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>When a story has a podcast episode in it, the iPhone, iPad, Mac, and Android apps used to play it with the plain audio control built into the story. It had no skip buttons and no lock screen controls, and it started from the beginning every time you came back to it. Now episodes play in the same player as <a href="/2026/10/30/listen-to-your-stories/">Listen</a>, with everything that comes with it. Listen itself can now read over your music, and take turns between voices from one story to the next.</p>
+
+<h3 id="play-play-next-play-last">Play, Play Next, Play Last</h3>
+
+<p>Each episode in a story is now a card with three buttons. <strong>Play audio</strong> starts it right away, <strong>Play Next</strong> puts it at the top of Up Next, and <strong>Play Last</strong> puts it at the end.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-podcast-card.webp" alt="An audio card in a story on Android, with Play audio, Play Next, and Play Last buttons" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>The episode plays in the mini player above the bottom bar. Tap it to open Now Playing, with the scrubber, the skip buttons, speed, and Up Next. It keeps playing with the screen off, with controls on the lock screen, in Control Center and Android’s media controls, and on your headphones. iPhone and iPad have an AirPlay button, and Android shows its output picker. The skip buttons use the same intervals you set in the web’s player.</p>
+
+<!-- SCREENSHOT: iPhone Now Playing with a real podcast episode from one of my feeds, framed in the iPhone 17 bezel -->
+
+<p>Videos and YouTube embeds still play inside the story.</p>
+
+<h3 id="pick-up-where-you-left-off-on-any-device">Pick up where you left off, on any device</h3>
+
+<p>Your place in an episode is saved to your account every few seconds while it plays, and again whenever you pause, skip, or leave the app. Start an episode on your phone and the web picks it up at the same spot, or the other way around. Finished episodes move to History, and Up Next holds podcast episodes and Listen stories in one queue. Starting an episode stops a Listen story that’s playing, and the other way around.</p>
+
+<p>This turned up a bug on the server. When you came back to an episode, the web resumed from the last place you paused or started it, not from where you’d actually gotten to while it played. Every device, the web included, now resumes from the latest position.</p>
+
+<h3 id="listen-over-your-music">Listen over your music</h3>
+
+<p>Listen used to pause whatever else was playing. On iPhone, iPad, and Android it can now read your stories over music from another app, like Apple Music or Spotify. Open Now Playing and turn on <strong>Play over other audio</strong> in the new Music section.</p>
+
+<p><img src="/assets/listen-music-balance.webp" alt="The Music section of Listen's Now Playing on iPhone, with Play over other audio and Lower music while voice speaks turned on, and a slider between Music and Voice" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Lower music while voice speaks</strong> is on by default. It dips the music while a story is being read and brings it back up when you pause.</p>
+
+<p>The <strong>Music</strong> and <strong>Voice</strong> slider sets the balance between them. Neither iOS nor Android lets one app turn down another app’s music, so the slider works on the voice instead. Toward Music the voice gets quieter, and toward Voice it gets louder than it would normally play, with a limiter so it doesn’t distort.</p>
+
+<p>These settings stay on each device and don’t sync. The Music section folds away with the arrow in its header, and stays folded. Podcast episodes still pause your music like before. On the Mac, apps already play over each other, so there’s nothing to turn on.</p>
+
+<h3 id="a-different-voice-for-each-story">A different voice for each story</h3>
+
+<p>Listen can also take turns between voices, one per story. In the voice picker, the <strong>+</strong> next to a voice adds it to your rotation, and the list at the top shows the order. The first story gets the first voice, the next story gets the second, and so on. Each time you start listening, the rotation starts again from the top.</p>
+
+<p><img src="/assets/listen-voice-rotation.webp" alt="The Listen voice picker with Amelia and Jon in the voice rotation at the top, numbered 1 and 2, and a + beside each voice in the list below to add it" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The <strong>×</strong> on a voice takes it out of the rotation, and <strong>Use only this voice</strong> goes back to a single narrator. Click a name in the rotation to find that voice in the list. Each language has its own rotation, and your list syncs between the web and the apps.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Podcasts in Listen’s player and Listen over your music are in NewsBlur 16.2 and later for iPhone, iPad, and Mac on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a>, and for Android on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. Voice rotation is on the web now, and comes to the iPhone, iPad, Mac, and Android apps with their next updates. Listen itself is part of <a href="https://newsblur.com/?next=premium">Premium Archive and Premium Pro</a>.</p>
+
+<p>If an episode doesn’t play the way you’d expect, or the balance between your music and Listen needs more range, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Nov 5, 2026</span>
           <h3>
             <a class="post-link" href="/2026/11/05/type-a-classifier-into-the-trainer/">
@@ -711,222 +858,6 @@
 </ul>
 
 <p>NewsBlur 15 is available on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. The <a href="/2026/10/03/newsblur-15-for-android/">Android release</a> got a lot of the same work. If you have feedback, I’d love to hear it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Oct 3, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/10/03/newsblur-15-for-android/">
-              NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>I spent a lot of this release optimizing speed in the Android app. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at. Then I kept going.</p>
-
-<h3 id="its-faster">It’s faster</h3>
-
-<p>Most of the slowness came from the app doing more work than it needed to. Marking a story read rebuilt its entire row. Background syncs could pile up on top of each other. The feed list waited on the sync service before showing anything, and the reader waited for the article to finish rendering before it appeared at all.</p>
-
-<p>All of that is fixed. Janky frames while scrolling the feed list dropped from 32% to 15%, and from 14% to 7% in the story list. Opening a story you’ve read before went from 0.9s to 0.2s. Your feeds now load straight from the local cache, so they show up right away, even offline.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-story-list.webp" aria-label="Android story list with thumbnails and the floating toolbar at the bottom">
-        <source src="/assets/android-15-reader.mp4" type="video/mp4" />
-        <img src="/assets/android-15-story-list.webp" alt="Android story list with thumbnails and the floating toolbar at the bottom" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="controls-that-float">Controls that float</h3>
-
-<p>The story list controls now float at the bottom of the screen, so your stories scroll right behind them. Search, display options, and settings are all within reach of your thumb. If you’d rather have them at the top, there’s a setting for that in Preferences. In the reader, the controls tuck away as you scroll down and come back as soon as you scroll up.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-article-scroll.webp" aria-label="Scrolling a full article on Android as the floating reading controls hide and return">
-        <source src="/assets/android-15-article-scroll.mp4" type="video/mp4" />
-        <img src="/assets/android-15-article-scroll.webp" alt="Scrolling a full article on Android as the floating reading controls hide and return" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="built-for-tablets">Built for tablets</h3>
-
-<p>On a tablet or an unfolded foldable, NewsBlur now shows your story list and the story you’re reading side by side. Your feeds slide in over the top when you need them and slide back out when you pick one, and the list stays right where it is while the new stories fill in. Tap another story and the reader pages over to it, the same way it does when you swipe. It works in both portrait and landscape.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--tablet">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-tablet.webp" aria-label="A Galaxy Tab showing the story list beside the reader, with the feed list sliding over them">
-        <source src="/assets/android-15-tablet.mp4" type="video/mp4" />
-        <img src="/assets/android-15-tablet.webp" alt="A Galaxy Tab showing the story list beside the reader, with the feed list sliding over them" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="a-better-look-at-images">A better look at images</h3>
-
-<p>Tap any image in a story to open it full screen. Pinch or double tap to zoom, and swipe it away to go right back to the story.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-image-viewer.webp" aria-label="An article image open in the Android image viewer">
-        <source src="/assets/android-15-image-viewer.mp4" type="video/mp4" />
-        <img src="/assets/android-15-image-viewer.webp" alt="An article image open in the Android image viewer" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<p>Long press an image and you get the same viewer with a little more. The image’s hover text shows up above it, which is where comics like xkcd keep the punchline. Below it are Copy Image, Save Image, and Share Image. Saving keeps the original file, so a GIF stays animated, and it lands in your Pictures folder. If the image is a link, there’s an Open Link button too.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--tablet">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-image-actions.webp" aria-label="An xkcd comic in the Android image viewer with its hover text above it and Copy, Save, and Share Image beside it">
-        <source src="/assets/android-15-image-actions.mp4" type="video/mp4" />
-        <img src="/assets/android-15-image-actions.webp" alt="An xkcd comic in the Android image viewer with its hover text above it and Copy, Save, and Share Image beside it" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="find-your-next-favorite-site">Find your next favorite site</h3>
-
-<p>The + button opens a small Add Site sheet. Paste an address and pick a folder, or tap one of the shortcuts into discovery: Web Feed, Popular, Trending, YouTube, Reddit, Newsletters, Podcasts, and Google News. It’s the same <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites</a> catalog from the web, built right into the app. Web Feed can even turn a site without RSS into a feed.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-add-site.webp" aria-label="Android Add Site sheet with an address field, folder picker, and discovery shortcuts">
-        <source src="/assets/android-15-add-site.mp4" type="video/mp4" />
-        <img src="/assets/android-15-add-site.webp" alt="Android Add Site sheet with an address field, folder picker, and discovery shortcuts" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<p>Every site shows its latest stories with images and excerpts, along with how recently it published. Tap a story to read it, or tap <strong>Try</strong> to browse the whole site before you subscribe. When you come back, discovery is right where you left it. Related Sites uses the same cards, so you can explore outward from a site you already like.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/android-15-discover.webp" aria-label="Android discovery results showing recent stories, images, and subscription controls">
-        <source src="/assets/android-15-discover.mp4" type="video/mp4" />
-        <img src="/assets/android-15-discover.webp" alt="Android discovery results showing recent stories, images, and subscription controls" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="everything-else">Everything else</h3>
-
-<ul>
-  <li>Gestures are configurable. In Preferences you can choose what swiping left and right does on feeds and on stories, and what a long press does.</li>
-  <li>Long press a feed or a story for a grouped menu that includes Mark newer as read and Mark older as read.</li>
-  <li>Nested folders show up as an indented tree.</li>
-  <li>The Previous button no longer gets stuck disabled.</li>
-  <li>Jumping to the next folder no longer loops forever when nothing is unread.</li>
-</ul>
-
-<p>NewsBlur 15 for Android is available on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. The <a href="/2026/10/03/newsblur-15-for-ios/">iOS and Mac release</a> got a lot of the same work. If something doesn’t feel right, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Sep 15, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/09/15/matching-stories/">
-              Matching Stories: see every story behind a tag, author, or classifier
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>The Intelligence Trainer has always asked you to decide blind. You see a tag or an author on a story and you can train it up or down, but you can’t see what else that decision would touch. Is this author a regular on this site or a one-time guest? Does the “review” tag mean product reviews or book reviews? How many stories does “sponsored” actually hit? Until now the only way to find out was to train it and watch the scores change across the feed.</p>
-
-<p>Now every tag, author, and URL on a story has a small button next to it: <strong>View matching stories</strong>. Click it and the story list turns into a view of every story on that site that carries that exact value. Not just unread stories, read ones too, so you get the whole picture. It’s the fastest way I’ve found to answer “what else is like this?”</p>
-
-<h3 id="from-a-story">From a story</h3>
-
-<p>Open any story and look at the author and tags under the title. Each one now has a small stories icon beside it. Click it and the list filters down to every story that matches that one author or tag. The URL line gets the same button, so you can pull up every story that shares a path segment, which turns out to be a great way to find a series or a podcast on a site that doesn’t tag its posts.</p>
-
-<!-- SCREENSHOT: Story detail with the author and tag pills, hovering the author button shows the "View matching stories" tooltip -->
-<p><img src="/assets/matching-stories-pill.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The matching text is highlighted on every row of the filtered list. An author filter marks the author on each story, a title filter marks the words it matched, and a text filter marks the phrase in the preview.</p>
-
-<!-- SCREENSHOT: Author filter for Fred Dreier on Outside Online, with the banner at the top and the author highlighted on each row -->
-<p><img src="/assets/matching-stories-list.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>A URL filter is a little different, since the link isn’t normally part of the story list. When one is active, each row grows a URL line with the matched segment highlighted, so you can see exactly why the story is there.</p>
-
-<!-- SCREENSHOT: URL filter for "books-media" with the URL line and highlighted segment under the story title -->
-<p><img src="/assets/matching-stories-url.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The filter rides along in the URL, so reload, back and forward, and bookmarks all do what you’d expect. I have a few of these bookmarked now for authors I check in on every couple of weeks.</p>
-
-<h3 id="from-the-trainer">From the trainer</h3>
-
-<p>The same button lives in the Intelligence Trainer on every tag, author, title, URL, and text classifier you’ve saved. This is the part I’ve wanted for years. You trained “sponsored” as hidden a long time ago and have a nagging feeling it’s swallowing something it shouldn’t. Click the magnifying glass on that classifier, the trainer closes, and you’re looking at exactly the stories it hides. A <strong>Back to trainer</strong> link in the banner takes you back to where you were.</p>
-
-<p>Regex classifiers and natural language classifiers don’t get the button, since neither one matches a single exact value.</p>
-
-<!-- SCREENSHOT: Intelligence Trainer with the "View matching stories" magnifying glass on classifier rows, tooltip visible -->
-<p><img src="/assets/matching-stories-trainer.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="the-banner">The banner</h3>
-
-<p>At the top of every filtered list is a banner that names the filter and gives you three things to do with it.</p>
-
-<!-- SCREENSHOT: Close crop of the filter banner showing Tag · value, the Filter stories Site/Folder/All toggle, and the Train and Notify on controls -->
-<p><img src="/assets/matching-stories-banner.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p><strong>Filter stories</strong> widens the list from this site to the whole folder or to all of your sites. Site scope is available to everyone. Folder and All follow the same rule as folder and global classifiers, so they need Premium Archive. On Archive, a folder or all-sites tag filter runs against the story search index rather than a window of recent stories, so a tag that appears on a dozen stories spread across forty sites turns up all twelve.</p>
-
-<p><strong>Train</strong> is Like, Dislike, or Hide (the super dislike). It saves the same classifier the trainer would, and the list recomputes in place: the score flips on each row, the unread counts in the sidebar update, and stories you just trained down stay in the list so you can see what you did instead of watching rows vanish out from under you.</p>
-
-<p><strong>Notify on</strong> is Email, Web, iOS, and Android. These are the per-classifier notifications from earlier this year, now reachable from the same banner. You find a tag, confirm it matches what you think it matches, and turn on a notification for it without ever opening the trainer.</p>
-
-<!-- SCREENSHOT: Banner after clicking Like, with the story list showing green intelligence scores on the matched rows -->
-<p><img src="/assets/matching-stories-training.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>One detail worth knowing: the Filter stories toggle only changes what you’re looking at. Training and notifications still write to the classifier’s own scope. Browsing a tag across a folder doesn’t quietly turn a site classifier into a folder classifier.</p>
-
-<h3 id="a-few-ways-ive-been-using-it">A few ways I’ve been using it</h3>
-
-<ul>
-  <li><strong>Deciding whether to follow an author.</strong> A group blog has a new writer. Click the button beside their name, read three of their stories, then Like them from the banner.</li>
-  <li><strong>Auditing a hidden tag.</strong> Open the trainer, click the magnifying glass on a red tag, and check that it’s hiding what you meant it to hide.</li>
-  <li><strong>Pulling up a series.</strong> Click the button on the URL line of a story with <code class="language-plaintext highlighter-rouge">/podcast/</code> in the link and every episode on the site lines up.</li>
-  <li><strong>Setting up a notification with confidence.</strong> Widen a tag to a folder, see that it matches the right kind of story, and turn on the iOS notification right there.</li>
-</ul>
-
-<h3 id="availability">Availability</h3>
-
-<p>Matching Stories is available now on the web for everyone. Site scope, training, and highlighting work on every account. Folder and All scopes and the Notify on controls follow the existing rules for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro.</p>
-
-<p>If you find a tag or author that should match and doesn’t, or have an idea for where else this button belongs, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
       </li></ul>

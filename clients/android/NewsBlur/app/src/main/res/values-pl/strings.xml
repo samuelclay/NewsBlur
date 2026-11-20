@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">Wyróżnione artykuły</string>
     <string name="story_title_mark_story_read">Oznacz artykuł jako przeczytany…</string>
     <string name="story_title_list_font_size">Rozmiar czcionki tytułów kanałów i artykułów</string>
+    <string name="listen_voice_rotation">Rotacja głosów</string>
+    <string name="listen_selected_voice">Wybrany głos</string>
+    <string name="listen_rotation_order">Jeden głos na artykuł, w tej kolejności.</string>
+    <string name="listen_use_voice">Użyj głosu</string>
+    <string name="listen_use_only_voice">Używaj tylko tego głosu</string>
+    <string name="listen_rotation_selected">Wybrany</string>
+    <string name="listen_find_voice">Znajdź %1$s na liście głosów</string>
+    <string name="listen_add_rotation_voice">Dodaj %1$s do rotacji</string>
+    <string name="listen_remove_rotation_voice">Usuń %1$s z rotacji</string>
     <string name="language_title">Język</string>
     <string name="settings_cat_general">Ogólne</string>
     <string name="settings_cat_appearance">Wygląd</string>

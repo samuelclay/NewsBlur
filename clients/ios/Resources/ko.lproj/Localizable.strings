@@ -103,6 +103,7 @@
 "Add" = "추가";
 "Add %1$@ feeds to “%2$@” folder" = "“%2$@” 폴더에 피드 %1$@개 추가";
 "Add %@" = "%@ 추가";
+"Add %@ to rotation" = "순환 목록에 %@ 추가";
 "Add + Discover Sites" = "사이트 추가 + 탐색";
 "Add Site" = "사이트 추가";
 "Add Sites" = "사이트 추가";
@@ -279,6 +280,7 @@
 "Custom Search Query" = "맞춤 검색어";
 "Custom [listen delivery]" = "사용자 지정";
 "Custom feed title" = "맞춤 피드 제목";
+"Custom server" = "사용자 지정 서버";
 "Customize auto-read by site or folder" = "사이트 또는 폴더별 자동 읽음 설정";
 "Daily" = "매일";
 "Daily Briefing" = "데일리 브리핑";
@@ -347,6 +349,7 @@
 "Enabled" = "사용";
 "Enter URL phrase..." = "URL 문구 입력...";
 "Enter a custom search query..." = "맞춤 검색어 입력...";
+"Enter a valid custom server URL." = "유효한 사용자 지정 서버 URL을 입력하세요.";
 "Enter a web page URL..." = "웹페이지 URL 입력...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "웹페이지 URL을 입력하면 NewsBlur가 AI로 페이지 구조를 분석하고 스토리를 찾아 구독할 수 있는 맞춤 RSS 피드를 만들어 드립니다.";
 "Enter author phrase..." = "작성자 문구 입력...";
@@ -390,6 +393,7 @@
 "Fetching text..." = "텍스트 가져오는 중...";
 "Filter" = "필터";
 "Filter stories by date range" = "날짜 범위로 스토리 필터링";
+"Find %@ in the voice list" = "음성 목록에서 %@ 찾기";
 "Find Friends" = "친구 찾기";
 "Find in Feed" = "피드에서 찾기";
 "Find in Sites" = "사이트에서 찾기";
@@ -740,6 +744,7 @@
 "On scroll or selection" = "스크롤하거나 선택할 때";
 "One" = "1열";
 "One column" = "1열";
+"One voice per story, in this order." = "이 순서대로 기사마다 음성을 바꿉니다.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "사이트 %2$@개 중 %1$@개만 탐색을 위해 색인되었습니다. 업그레이드하여 모든 사이트를 색인하고 맞춤 추천을 받아보세요.";
 "Only Title" = "제목만";
 "Only on Selection" = "선택한 항목에서만";
@@ -860,6 +865,7 @@
 "Related sites" = "관련 사이트";
 "Reload Sites" = "사이트 새로고침";
 "Reloading..." = "새로고침 중...";
+"Remove %@ from rotation" = "순환 목록에서 %@ 삭제";
 "Remove This List" = "이 목록 삭제";
 "Remove from Up Next" = "다음 재생 목록에서 삭제";
 "Removed from Up Next" = "다음 재생 목록에서 삭제됨";
@@ -877,6 +883,7 @@
 "Reply" = "답글";
 "Reply to %@" = "%@에게 답글";
 "Replying" = "답글 게시 중";
+"Reset" = "초기화";
 "Resets %@" = "%@ 초기화";
 "Resize sidebar" = "사이드바 크기 조정";
 "Restore" = "복원";
@@ -931,6 +938,8 @@
 "Select a feed or folder" = "피드 또는 폴더 선택";
 "Select a feed variant" = "피드 변형 선택";
 "Select feeds to add" = "추가할 피드 선택";
+"Selected" = "선택됨";
+"Selected voice" = "선택한 음성";
 "Send" = "보내기";
 "Send This Story To..." = "이 스토리 보내기...";
 "Send To…" = "보내기…";
@@ -1229,9 +1238,12 @@
 "Usage billing history" = "사용량 기반 결제 내역";
 "Usage-based billing is enabled for natural language classifiers." = "자연어 분류기의 사용량 기반 결제가 활성화되어 있습니다.";
 "Use %@" = "%@ 사용";
+"Use a custom server" = "사용자 지정 서버 사용";
 "Use another sign-in method" = "다른 로그인 방법 사용";
 "Use both" = "둘 다 사용";
+"Use only this voice" = "이 음성만 사용";
 "Use system size" = "시스템 크기 사용";
+"Use voice" = "음성 사용";
 "User info" = "사용자 정보";
 "Username" = "사용자 이름";
 "Username or Email" = "사용자 이름 또는 이메일";
@@ -1245,6 +1257,7 @@
 "View mode" = "보기 모드";
 "Voice" = "음성";
 "Voice and music balance" = "음성과 음악의 균형";
+"Voice rotation" = "음성 순환";
 "Voice settings" = "음성 설정";
 "Warm" = "따뜻함";
 "Web" = "웹";

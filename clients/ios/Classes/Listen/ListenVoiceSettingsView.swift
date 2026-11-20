@@ -31,6 +31,7 @@ struct ListenVoiceSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 voiceHeader
+                selectedVoices
                 searchField
                 filterRow
                 voiceList
@@ -77,6 +78,70 @@ struct ListenVoiceSettingsView: View {
     }
 
     // MARK: - Voice header, search and filters
+
+    @ViewBuilder private var selectedVoices: some View {
+        let rotation = model.rotation
+        if rotation.count == 1, let voice = rotation.first {
+            HStack(spacing: 12) {
+                Text(NBLocalization.text("Selected voice"))
+                    .font(.system(size: 12))
+                    .foregroundColor(ListenColors.textSecondary)
+                Spacer(minLength: 0)
+                Button { model.reveal(voice) } label: {
+                    Text(verbatim: model.voiceName(voice))
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(ListenColors.textPrimary)
+                        .padding(.horizontal, 10)
+                        .frame(minHeight: 44)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(ListenColors.accent.opacity(0.12)))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(String(format: NBLocalization.text("Find %@ in the voice list"), model.voiceName(voice)))
+            }
+            .padding(8)
+            .background(RoundedRectangle(cornerRadius: 12).fill(ListenColors.card))
+        } else if rotation.count > 1 {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(NBLocalization.text("Voice rotation"))
+                    .font(.system(size: 15, weight: .semibold))
+                Text(NBLocalization.text("One voice per story, in this order."))
+                    .font(.system(size: 13))
+                    .foregroundColor(ListenColors.textSecondary)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(Array(rotation.enumerated()), id: \.element.id) { index, voice in
+                            HStack(spacing: 0) {
+                                Button { model.reveal(voice) } label: {
+                                    HStack(spacing: 6) {
+                                        Text(verbatim: String(index + 1))
+                                            .foregroundColor(ListenColors.textSecondary)
+                                        Text(verbatim: model.voiceName(voice))
+                                    }
+                                    .padding(.leading, 10)
+                                    .frame(minHeight: 44)
+                                }
+                                .accessibilityLabel(String(format: NBLocalization.text("Find %@ in the voice list"), model.voiceName(voice)))
+                                Button { model.remove(voice) } label: {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .frame(width: 44, height: 44)
+                                        .contentShape(Rectangle())
+                                }
+                                .accessibilityLabel(String(format: NBLocalization.text("Remove %@ from rotation"), model.voiceName(voice)))
+                            }
+                            .background(RoundedRectangle(cornerRadius: 8).fill(ListenColors.accent.opacity(0.12)))
+                        }
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            .foregroundColor(ListenColors.textPrimary)
+            .font(.system(size: 14))
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: 12).fill(ListenColors.accent.opacity(0.07)))
+        }
+    }
 
     private var voiceHeader: some View {
         HStack(alignment: .center, spacing: 12) {
@@ -220,7 +285,7 @@ struct ListenVoiceSettingsView: View {
     private var voiceList: some View {
         let recommended = model.recommended
         let more = model.moreVoices
-        let selected = model.selectedVoiceId
+        let selected = Set(model.rotation.map(\.id))
         return ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
@@ -240,7 +305,7 @@ struct ListenVoiceSettingsView: View {
                         if !recommended.isEmpty {
                             Section {
                                 ForEach(recommended) { voice in
-                                    voiceRow(voice, selected: voice.id == selected)
+                                    voiceRow(voice, selected: selected.contains(voice.id)).id(voice.id)
                                 }
                             } header: {
                                 listHeader(String(format: NBLocalization.text("Recommended for %@"), model.languageName),
@@ -251,7 +316,7 @@ struct ListenVoiceSettingsView: View {
                         if !more.isEmpty || model.isLoadingLibrary {
                             Section {
                                 ForEach(more) { voice in
-                                    voiceRow(voice, selected: voice.id == selected)
+                                    voiceRow(voice, selected: selected.contains(voice.id)).id(voice.id)
                                         .onAppear { model.loadMoreIfNeeded(after: voice) }
                                 }
                                 if model.isLoadingLibrary {
@@ -266,6 +331,13 @@ struct ListenVoiceSettingsView: View {
             }
             .onChange(of: model.listGeneration) { _, _ in
                 proxy.scrollTo(Self.listTop, anchor: .top)
+            }
+            .onChange(of: model.revealGeneration) { _, _ in
+                if let id = model.voiceToReveal {
+                    DispatchQueue.main.async {
+                        withAnimation(.easeInOut(duration: 0.2)) { proxy.scrollTo(id, anchor: .center) }
+                    }
+                }
             }
         }
         .frame(height: Self.listHeight)
@@ -296,9 +368,11 @@ struct ListenVoiceSettingsView: View {
 
     private func voiceRow(_ voice: ListenVoice, selected: Bool) -> some View {
         ListenVoiceRow(voice: voice, traits: model.traits(for: voice), isSelected: selected,
+                       isRotation: model.rotation.count > 1,
                        preview: model.preview,
                        onSelect: { model.select(voice) },
-                       onPreview: { model.togglePreview(voice) })
+                       onPreview: { model.togglePreview(voice) },
+                       onAdd: { model.add(voice) })
     }
 
     private var loadingRow: some View {
@@ -524,9 +598,11 @@ struct ListenVoiceRow: View {
     let voice: ListenVoice
     let traits: String
     let isSelected: Bool
+    let isRotation: Bool
     @ObservedObject var preview: ListenVoicePreviewPlayer
     let onSelect: () -> Void
     let onPreview: () -> Void
+    let onAdd: () -> Void
 
     var body: some View {
         HStack(spacing: 8) {
@@ -545,20 +621,35 @@ struct ListenVoiceRow: View {
                         .foregroundColor(ListenColors.textSecondary.opacity(0.85))
                         .lineLimit(1)
                 }
+                Button(action: onSelect) {
+                    Text(isSelected && !isRotation ? NBLocalization.text("Selected") :
+                         isRotation ? NBLocalization.text("Use only this voice") : NBLocalization.text("Use voice"))
+                        .font(.system(size: 12))
+                        .foregroundColor(isSelected && !isRotation ? ListenColors.textSecondary : ListenColors.accent)
+                        .padding(.vertical, 5)
+                }
+                .buttonStyle(.plain)
+                .disabled(isSelected && !isRotation)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             previewButton
+            Button(action: onAdd) {
+                Image(systemName: isSelected ? "checkmark" : "plus")
+                    .font(.system(size: 18))
+                    .foregroundColor(isSelected ? ListenColors.textSecondary : ListenColors.textPrimary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(isSelected)
+            .accessibilityLabel(String(format: NBLocalization.text("Add %@ to rotation"), voice.displayName))
         }
         .padding(.leading, 8)
         .padding(.trailing, 10)
         .padding(.vertical, 8)
         .background(isSelected ? ListenColors.accent.opacity(ListenColors.isDark ? 0.17 : 0.14) : Color.clear)
         .contentShape(Rectangle())
-        .onTapGesture(perform: onSelect)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : [.isButton])
-        .accessibilityAction(named: Text(isPlaying ? NBLocalization.text("Stop preview")
-                                                   : NBLocalization.text("Preview this voice")), onPreview)
+        .accessibilityElement(children: .contain)
     }
 
     private var isPlaying: Bool { preview.playingVoiceId == voice.id }

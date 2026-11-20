@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, call, patch
 import redis
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
@@ -51,6 +52,36 @@ class Test_ReaderPreferencesBootstrap(TestCase):
         serialized_preferences = json.decode('"' + preferences_match.group(1) + '"')
         preferences = json.decode(serialized_preferences)
         self.assertIs(preferences["briefing_enabled"], True)
+
+
+class Test_IndexSubdomain(TestCase):
+    """index() in apps/reader/views.py serves a blurblog only for a subdomain of the Site's domain."""
+
+    def set_site_domain(self, domain):
+        Site.objects.update_or_create(pk=settings.SITE_ID, defaults={"domain": domain, "name": domain})
+        self.addCleanup(Site.objects.clear_cache)
+
+    def test_self_hosted_apex_domain_serves_the_reader(self):
+        self.set_site_domain("newsblur.example.com")
+
+        response = self.client.get(reverse("index"), HTTP_HOST="newsblur.example.com")
+
+        self.assertEqual(response.status_code, 200, response.get("Location"))
+
+    def test_self_hosted_apex_domain_with_a_port_serves_the_reader(self):
+        self.set_site_domain("news.example.org:8443")
+
+        response = self.client.get(reverse("index"), HTTP_HOST="news.example.org:8443")
+
+        self.assertEqual(response.status_code, 200, response.get("Location"))
+
+    def test_user_subdomain_of_the_www_site_serves_that_blurblog(self):
+        self.set_site_domain("www.newsblur.com")
+        User.objects.create_user(username="samuel", password="password")
+
+        response = self.client.get(reverse("index"), HTTP_HOST="samuel.newsblur.com")
+
+        self.assertTemplateUsed(response, "social/social_page.xhtml")
 
 
 class Test_RenameStarredTag(TestCase):

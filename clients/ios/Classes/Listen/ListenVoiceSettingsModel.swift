@@ -48,6 +48,9 @@ final class ListenVoiceSettingsModel: ObservableObject {
     @Published private(set) var language: String
     @Published var delivery: ListenDeliverySettings
     @Published private(set) var selectedVoices: [String: String]
+    @Published private(set) var rotations = ListenPreferences.rotations
+    @Published private(set) var voiceToReveal: String?
+    @Published private(set) var revealGeneration = 0
     @Published private(set) var filters: [ListenVoiceFilter: String] = [:]
     @Published var search = ""
     @Published private(set) var libraryVoices: [ListenVoice] = []
@@ -62,8 +65,10 @@ final class ListenVoiceSettingsModel: ObservableObject {
     private var libraryGeneration = 0
     private var knownVoices: [String: ListenVoice] = [:]
     private var searchWork: DispatchWorkItem?
+    private var librarySearch = ""
     private var restartWork: DispatchWorkItem?
     private var previewChanges: AnyCancellable?
+    private var preferenceChanges: AnyCancellable?
 
     init() {
         language = Self.initialLanguage()
@@ -76,6 +81,12 @@ final class ListenVoiceSettingsModel: ObservableObject {
         previewChanges = preview.objectWillChange.sink { [weak self] _ in
             self?.objectWillChange.send()
         }
+        preferenceChanges = NotificationCenter.default.publisher(for: ListenPreferences.didChange)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.rotations = ListenPreferences.rotations
+                self?.selectedVoices = ListenPreferences.voices
+            }
     }
 
     /// The playing story's language, else the interface language when it's one of the 21, else English.
@@ -112,7 +123,23 @@ final class ListenVoiceSettingsModel: ObservableObject {
     }
 
     var selectedVoiceId: String? {
-        selectedVoices[language] ?? catalog?.selected[language] ?? catalog?.defaults[language]
+        rotations[language]?.first?.id ?? selectedVoices[language] ?? catalog?.selected[language] ?? catalog?.defaults[language]
+    }
+
+    var rotation: [ListenRotationVoice] {
+        if let voices = rotations[language], !voices.isEmpty { return voices }
+        guard let id = selectedVoiceId else { return [] }
+        return [ListenRotationVoice(id: id, name: knownVoices[id]?.displayName ?? id)]
+    }
+
+    func voiceName(_ voice: ListenRotationVoice) -> String {
+        knownVoices[voice.id]?.displayName ?? voice.name
+    }
+
+    func reveal(_ voice: ListenRotationVoice) {
+        if hasFilters { clearFilters() }
+        voiceToReveal = voice.id
+        revealGeneration += 1
     }
 
     func load() {
@@ -180,6 +207,7 @@ final class ListenVoiceSettingsModel: ObservableObject {
     }
 
     func clearFilters() {
+        searchWork?.cancel()
         filters = [:]
         search = ""
         reloadLibrary()
@@ -187,6 +215,9 @@ final class ListenVoiceSettingsModel: ObservableObject {
 
     func searchChanged() {
         searchWork?.cancel()
+        // ListenVoiceSettingsModel.swift: clearing search to reveal a chosen voice already reloaded the list.
+        // Don't schedule a second reload that would scroll it back to the top after the reveal.
+        guard search != librarySearch else { return }
         let work = DispatchWorkItem { [weak self] in self?.reloadLibrary() }
         searchWork = work
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
@@ -206,10 +237,11 @@ final class ListenVoiceSettingsModel: ObservableObject {
     /// The curated voices for this language, with a library voice the reader picked kept at the top.
     private var allRecommended: [ListenVoice] {
         var voices = catalog?.voices[language] ?? []
-        if let selected = selectedVoiceId, !voices.contains(where: { $0.id == selected }),
-           let voice = knownVoices[selected], voice.language.isEmpty || voice.language == language {
-            voices.insert(voice, at: 0)
+        let extra = rotation.compactMap { entry -> ListenVoice? in
+            guard !voices.contains(where: { $0.id == entry.id }) else { return nil }
+            return knownVoices[entry.id] ?? ListenVoice(json: entry.json)
         }
+        voices.insert(contentsOf: extra, at: 0)
         return voices
     }
 
@@ -228,6 +260,7 @@ final class ListenVoiceSettingsModel: ObservableObject {
     }
 
     private func reloadLibrary() {
+        librarySearch = search
         listGeneration += 1
         libraryGeneration += 1
         libraryPage = 0
@@ -283,15 +316,33 @@ final class ListenVoiceSettingsModel: ObservableObject {
 
     func select(_ voice: ListenVoice) {
         let language = self.language
-        guard selectedVoiceId != voice.id else { return }
+        guard rotation.count != 1 || selectedVoiceId != voice.id else { return }
         knownVoices[voice.id] = voice
         selectedVoices[language] = voice.id
-        ListenPreferences.setVoice(voice.id, forLanguage: language) { [weak self] _ in
+        rotations[language] = [ListenRotationVoice(id: voice.id, name: voice.displayName)]
+        ListenPreferences.setRotation(rotations[language]!, forLanguage: language) { [weak self] _ in
             let player = ListenPlayer.shared
             if player.isActive, player.language == language {
                 self?.scheduleRestart(voiceId: voice.id)
             }
         }
+    }
+
+    func add(_ voice: ListenVoice) {
+        guard !rotation.contains(where: { $0.id == voice.id }) else { return }
+        knownVoices[voice.id] = voice
+        saveRotation(rotation + [ListenRotationVoice(id: voice.id, name: voice.displayName)])
+    }
+
+    func remove(_ voice: ListenRotationVoice) {
+        guard rotation.count > 1 else { return }
+        saveRotation(rotation.filter { $0.id != voice.id })
+    }
+
+    private func saveRotation(_ voices: [ListenRotationVoice]) {
+        rotations[language] = voices
+        selectedVoices[language] = voices.first?.id
+        ListenPreferences.setRotation(voices, forLanguage: language)
     }
 
     func togglePreview(_ voice: ListenVoice) {

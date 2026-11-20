@@ -184,10 +184,24 @@ def listen_manifest(request):
         tracker.record_denied(reason, story_hash=story_hash)
         return _failure(reason, message, tracker)
 
+    # views.py: the web player sends its next voice for each language, since only the manifest
+    # knows the story's detected language. These session choices never change saved preferences.
+    preferences = dict(_preferences(request.user))
+    try:
+        choices = json.loads(request.POST.get("voice_choices") or "{}")
+    except (TypeError, ValueError):
+        choices = {}
+    if isinstance(choices, dict) and choices:
+        selected = voices.selected_voices(preferences)
+        selected.update(
+            {key: value for key, value in choices.items() if key in LANGUAGES and isinstance(value, str)}
+        )
+        preferences["listen_voices"] = json.dumps(selected)
+
     manifest = build_manifest(
         request.user,
         story,
-        _preferences(request.user),
+        preferences,
         tracker.is_archive_tier,
         request=request,
         language=request.POST.get("language"),

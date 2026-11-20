@@ -580,6 +580,48 @@ import SwiftUI
         }
     }
 
+    func test_customServerTakesEffectForTheNextLoginAndBlankRestoresNewsBlur() async throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let savedServer = UserDefaults.standard.string(forKey: "custom_domain")
+        addTeardownBlock { @MainActor in app.setCustomDomainPreference(savedServer) }
+        // OnboardingTests.swift clears the fixture override other tests leave on the shared app delegate.
+        app.setCustomDomainForTesting(nil)
+        app.setCustomDomainPreference(nil)
+        let newsblur = app.url
+        var hosts: [String] = []
+        network { request in
+            hosts.append(request.url?.host ?? "")
+            if request.url?.path == "/api/social/start" { return (200, ["state": "provider-state"]) }
+            if request.url?.path == "/api/social/complete" {
+                return (400, ["code": -1, "username_required": true, "ticket": "old-server-ticket"])
+            }
+            return (200, ["code": 1])
+        }
+        let model = OnboardingAccountModel { _, _ in }
+        _ = try await model.prepareSocial("google")
+        try await model.complete(ticket: "provider-ticket")
+        XCTAssertTrue(model.needsUsername)
+        let oldServerRequests = app.networkManager
+
+        XCTAssertTrue(model.setCustomServer("  reader.example.test/  "))
+
+        XCTAssertEqual(app.url, "https://reader.example.test")
+        XCTAssertFalse(app.networkManager === oldServerRequests, "Requests still bound for the old server must be cancelled")
+        XCTAssertFalse(model.needsUsername, "A ticket issued by the old server must not carry over")
+        model.signup = false
+        model.username = "reader"
+        model.password = "newsblur-password"
+        await submitAccount(model)
+        XCTAssertEqual(hosts.last, "reader.example.test", "Login must go to the server the reader just chose")
+
+        XCTAssertFalse(model.setCustomServer("https://"))
+        XCTAssertEqual(app.url, "https://reader.example.test", "An entry with no host must not switch servers")
+
+        XCTAssertTrue(model.setCustomServer(""))
+        XCTAssertEqual(app.url, newsblur)
+        XCTAssertEqual(model.customServer, "", "Apple and Google sign-in come back with NewsBlur's own server")
+    }
+
     private func submitAccount(_ model: OnboardingAccountModel) async {
         let finished = expectation(description: "Account submission finished")
         let observation = model.$busy.dropFirst().filter { !$0 }.prefix(1).sink { _ in finished.fulfill() }

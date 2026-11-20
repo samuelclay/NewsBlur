@@ -39,6 +39,15 @@
     <string name="gesture_focus_stories">집중 스토리</string>
     <string name="story_title_mark_story_read">스토리 읽음으로 표시…</string>
     <string name="story_title_list_font_size">피드 및 스토리 제목 글꼴 크기</string>
+    <string name="listen_voice_rotation">음성 순환</string>
+    <string name="listen_selected_voice">선택한 음성</string>
+    <string name="listen_rotation_order">이 순서대로 기사마다 음성을 바꿉니다.</string>
+    <string name="listen_use_voice">음성 사용</string>
+    <string name="listen_use_only_voice">이 음성만 사용</string>
+    <string name="listen_rotation_selected">선택됨</string>
+    <string name="listen_find_voice">음성 목록에서 %1$s 찾기</string>
+    <string name="listen_add_rotation_voice">순환 목록에 %1$s 추가</string>
+    <string name="listen_remove_rotation_voice">순환 목록에서 %1$s 삭제</string>
     <string name="language_title">언어</string>
     <string name="settings_cat_general">일반</string>
     <string name="settings_cat_appearance">모양</string>

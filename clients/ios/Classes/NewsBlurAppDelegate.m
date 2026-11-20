@@ -863,6 +863,29 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     return self.cachedURL;
 }
 
++ (NSString *)normalizedServerURLString:(NSString *)urlString {
+    return NBNormalizedServerURLString(urlString);
+}
+
+- (void)setCustomDomainPreference:(NSString *)urlString {
+    NSString *trimmedURLString = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *previousURL = self.url;
+
+    if (trimmedURLString.length) {
+        [defaults setObject:trimmedURLString forKey:@"custom_domain"];
+    } else {
+        [defaults removeObjectForKey:@"custom_domain"];
+    }
+
+    self.cachedURL = nil;
+    if (![self.url isEqualToString:previousURL]) {
+        // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
+        [ListenStoryBridge stopForAccountChange];
+        [self clearNetworkManager];
+    }
+}
+
 - (NSString *)host {
     NSURL *url = [NSURL URLWithString:self.url];
     if (url.host.length) {
@@ -1169,12 +1192,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                 if (!appDelegate) {
                     return;
                 }
-                NSString *previousURL = appDelegate.url;
-                appDelegate.cachedURL = nil;
-                if (![appDelegate.url isEqualToString:previousURL]) {
-                    // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
-                    [ListenStoryBridge stopForAccountChange];
-                    [appDelegate clearNetworkManager];
+                [appDelegate setCustomDomainPreference:[[NSUserDefaults standardUserDefaults] stringForKey:@"custom_domain"]];
+                if ([appDelegate.loginViewController isKindOfClass:[OnboardingAccountViewController class]]) {
+                    [(OnboardingAccountViewController *)appDelegate.loginViewController customServerDidChange];
                 }
             }];
         }

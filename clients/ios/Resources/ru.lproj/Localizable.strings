@@ -103,6 +103,7 @@
 "Add" = "Добавить";
 "Add %1$@ feeds to “%2$@” folder" = "Добавить ленты %1$@ в папку «%2$@»";
 "Add %@" = "Добавить %@";
+"Add %@ to rotation" = "Добавить %@ в чередование";
 "Add + Discover Sites" = "Добавить и найти сайты";
 "Add Site" = "Добавить сайт";
 "Add Sites" = "Добавить сайты";
@@ -279,6 +280,7 @@
 "Custom Search Query" = "Пользовательский поисковый запрос";
 "Custom [listen delivery]" = "Настраиваемый";
 "Custom feed title" = "Своё название ленты";
+"Custom server" = "Пользовательский сервер";
 "Customize auto-read by site or folder" = "Настроить автоматическую отметку прочитанного для сайта или папки";
 "Daily" = "Ежедневно";
 "Daily Briefing" = "Ежедневная сводка";
@@ -347,6 +349,7 @@
 "Enabled" = "Включено";
 "Enter URL phrase..." = "Введите часть URL…";
 "Enter a custom search query..." = "Введите собственный поисковый запрос...";
+"Enter a valid custom server URL." = "Введите действительный URL пользовательского сервера.";
 "Enter a web page URL..." = "Введите URL веб-страницы...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Укажите URL любой веб-страницы, и NewsBlur с помощью ИИ проанализирует её структуру, найдёт статьи и создаст персональную RSS-ленту, на которую можно подписаться.";
 "Enter author phrase..." = "Введите часть имени автора…";
@@ -390,6 +393,7 @@
 "Fetching text..." = "Загрузка текста...";
 "Filter" = "Фильтр";
 "Filter stories by date range" = "Фильтровать статьи по диапазону дат";
+"Find %@ in the voice list" = "Найти %@ в списке голосов";
 "Find Friends" = "Найти друзей";
 "Find in Feed" = "Найти в ленте";
 "Find in Sites" = "Найти на сайтах";
@@ -519,6 +523,7 @@
 "Lavender Iris" = "Лавандовый ирис";
 "Layout" = "Макет";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Оставьте поле пустым, чтобы использовать NewsBlur, или введите URL своего собственного сервера. Изменение вступит в силу при следующем запуске приложения.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Оставьте поле пустым, чтобы использовать NewsBlur, или введите URL своей самостоятельной установки. Изменение вступит в силу сразу при входе и регистрации.";
 "Left" = "Слева";
 "Length & Style" = "Длина и стиль";
 "Light" = "Светлая";
@@ -740,6 +745,7 @@
 "On scroll or selection" = "При прокрутке или выборе";
 "One" = "Один";
 "One column" = "Одна колонка";
+"One voice per story, in this order." = "Один голос на статью, в этом порядке.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Для поиска проиндексировано только %1$@ из %2$@ ваших сайтов. Перейдите на платный тариф, чтобы проиндексировать все сайты и получать персональные рекомендации.";
 "Only Title" = "Только заголовок";
 "Only on Selection" = "Только при выборе";
@@ -860,6 +866,7 @@
 "Related sites" = "Похожие сайты";
 "Reload Sites" = "Перезагрузить сайты";
 "Reloading..." = "Перезагрузка...";
+"Remove %@ from rotation" = "Убрать %@ из чередования";
 "Remove This List" = "Удалить этот список";
 "Remove from Up Next" = "Убрать из очереди «Далее»";
 "Removed from Up Next" = "Убрано из очереди «Далее»";
@@ -877,6 +884,7 @@
 "Reply" = "Ответить";
 "Reply to %@" = "Ответить %@";
 "Replying" = "Отправка ответа";
+"Reset" = "Сбросить";
 "Resets %@" = "Сброс через %@";
 "Resize sidebar" = "Изменить размер боковой панели";
 "Restore" = "Восстановить";
@@ -931,6 +939,8 @@
 "Select a feed or folder" = "Выберите ленту или папку";
 "Select a feed variant" = "Выберите вариант ленты";
 "Select feeds to add" = "Выберите ленты для добавления";
+"Selected" = "Выбран";
+"Selected voice" = "Выбранный голос";
 "Send" = "Отправить";
 "Send This Story To..." = "Отправить эту статью...";
 "Send To…" = "Отправить…";
@@ -1229,9 +1239,12 @@
 "Usage billing history" = "История оплаты по факту использования";
 "Usage-based billing is enabled for natural language classifiers." = "Для классификаторов естественного языка включена оплата по факту использования.";
 "Use %@" = "Использовать язык: %@";
+"Use a custom server" = "Использовать пользовательский сервер";
 "Use another sign-in method" = "Использовать другой способ входа";
 "Use both" = "Использовать оба варианта";
+"Use only this voice" = "Использовать только этот голос";
 "Use system size" = "Использовать системный размер";
+"Use voice" = "Выбрать голос";
 "User info" = "Информация о пользователе";
 "Username" = "Имя пользователя";
 "Username or Email" = "Имя пользователя или адрес электронной почты";
@@ -1245,6 +1258,7 @@
 "View mode" = "Режим просмотра";
 "Voice" = "Голос";
 "Voice and music balance" = "Баланс голоса и музыки";
+"Voice rotation" = "Чередование голосов";
 "Voice settings" = "Настройки голоса";
 "Warm" = "Тёплый";
 "Web" = "Веб";

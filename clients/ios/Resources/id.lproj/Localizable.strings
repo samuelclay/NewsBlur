@@ -103,6 +103,7 @@
 "Add" = "Tambahkan";
 "Add %1$@ feeds to “%2$@” folder" = "Tambahkan %1$@ feed ke folder “%2$@”";
 "Add %@" = "Tambahkan %@";
+"Add %@ to rotation" = "Tambahkan %@ ke rotasi";
 "Add + Discover Sites" = "Tambah + Temukan Situs";
 "Add Site" = "Tambahkan Situs";
 "Add Sites" = "Tambahkan Situs";
@@ -279,6 +280,7 @@
 "Custom Search Query" = "Kueri Pencarian Kustom";
 "Custom [listen delivery]" = "Kustom";
 "Custom feed title" = "Judul feed kustom";
+"Custom server" = "Server khusus";
 "Customize auto-read by site or folder" = "Sesuaikan tandai otomatis sebagai telah dibaca per situs atau folder";
 "Daily" = "Harian";
 "Daily Briefing" = "Ringkasan Harian";
@@ -347,6 +349,7 @@
 "Enabled" = "Diaktifkan";
 "Enter URL phrase..." = "Masukkan frasa URL...";
 "Enter a custom search query..." = "Masukkan kueri penelusuran khusus...";
+"Enter a valid custom server URL." = "Masukkan URL server khusus yang valid.";
 "Enter a web page URL..." = "Masukkan URL halaman web...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "Masukkan URL halaman web apa pun dan NewsBlur akan menggunakan AI untuk menganalisis struktur halaman, menemukan artikel, dan membuat feed RSS khusus yang dapat Anda langgani.";
 "Enter author phrase..." = "Masukkan frasa penulis...";
@@ -390,6 +393,7 @@
 "Fetching text..." = "Mengambil teks...";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter artikel berdasarkan rentang tanggal";
+"Find %@ in the voice list" = "Temukan %@ dalam daftar suara";
 "Find Friends" = "Cari Teman";
 "Find in Feed" = "Cari di Feed";
 "Find in Sites" = "Cari di Situs";
@@ -519,6 +523,7 @@
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Tata letak";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "Kosongkan untuk menggunakan NewsBlur, atau masukkan URL instalasi yang Anda kelola sendiri. Perubahan berlaku saat aplikasi dibuka berikutnya.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "Biarkan kosong untuk menggunakan NewsBlur, atau masukkan URL instalasi yang dihosting sendiri. Perubahan langsung berlaku untuk Masuk dan Daftar.";
 "Left" = "Kiri";
 "Length & Style" = "Panjang & Gaya";
 "Light" = "Terang";
@@ -740,6 +745,7 @@
 "On scroll or selection" = "Saat menggulir atau memilih";
 "One" = "Satu";
 "One column" = "Satu kolom";
+"One voice per story, in this order." = "Satu suara per artikel, sesuai urutan ini.";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Hanya %1$@ dari %2$@ situs Anda yang diindeks untuk penemuan. Tingkatkan paket untuk mengindeks semua situs Anda dan mendapatkan rekomendasi yang dipersonalisasi.";
 "Only Title" = "Hanya Judul";
 "Only on Selection" = "Hanya Saat Dipilih";
@@ -860,6 +866,7 @@
 "Related sites" = "Situs terkait";
 "Reload Sites" = "Muat Ulang Situs";
 "Reloading..." = "Memuat ulang...";
+"Remove %@ from rotation" = "Hapus %@ dari rotasi";
 "Remove This List" = "Hapus Daftar Ini";
 "Remove from Up Next" = "Hapus dari Berikutnya";
 "Removed from Up Next" = "Dihapus dari Berikutnya";
@@ -877,6 +884,7 @@
 "Reply" = "Balas";
 "Reply to %@" = "Balas kepada %@";
 "Replying" = "Membalas";
+"Reset" = "Atur ulang";
 "Resets %@" = "Direset %@";
 "Resize sidebar" = "Ubah ukuran bilah samping";
 "Restore" = "Pulihkan";
@@ -931,6 +939,8 @@
 "Select a feed or folder" = "Pilih feed atau folder";
 "Select a feed variant" = "Pilih varian feed";
 "Select feeds to add" = "Pilih feed untuk ditambahkan";
+"Selected" = "Dipilih";
+"Selected voice" = "Suara yang dipilih";
 "Send" = "Kirim";
 "Send This Story To..." = "Kirim Artikel Ini Ke...";
 "Send To…" = "Kirim ke…";
@@ -1229,9 +1239,12 @@
 "Usage billing history" = "Riwayat penagihan berdasarkan penggunaan";
 "Usage-based billing is enabled for natural language classifiers." = "Penagihan berdasarkan penggunaan diaktifkan untuk pengklasifikasi bahasa alami.";
 "Use %@" = "Gunakan %@";
+"Use a custom server" = "Gunakan server khusus";
 "Use another sign-in method" = "Gunakan metode masuk lain";
 "Use both" = "Gunakan keduanya";
+"Use only this voice" = "Gunakan hanya suara ini";
 "Use system size" = "Gunakan ukuran sistem";
+"Use voice" = "Gunakan suara";
 "User info" = "Info pengguna";
 "Username" = "Nama pengguna";
 "Username or Email" = "Nama pengguna atau email";
@@ -1245,6 +1258,7 @@
 "View mode" = "Mode tampilan";
 "Voice" = "Suara";
 "Voice and music balance" = "Keseimbangan suara dan musik";
+"Voice rotation" = "Rotasi suara";
 "Voice settings" = "Pengaturan suara";
 "Warm" = "Hangat";
 "Web" = "Web";
