@@ -180,7 +180,15 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
         batch = all_hashes_list[batch_start : batch_start + 100]
         for story in (
             MStory.objects(story_hash__in=batch)
-            .only("story_hash", "story_feed_id", "story_title", "story_date", "cluster_checked")
+            .only(
+                "story_hash",
+                "story_feed_id",
+                "story_title",
+                "story_date",
+                "story_permalink",
+                "story_guid",
+                "cluster_checked",
+            )
             .order_by()
         ):
             stories.append(
@@ -188,6 +196,8 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
                     "story_hash": story.story_hash,
                     "story_feed_id": story.story_feed_id,
                     "story_title": story.story_title or "",
+                    "story_permalink": story.story_permalink,
+                    "id": story.story_guid,
                     "story_date": time.mktime(story.story_date.timetuple()) if story.story_date else 0,
                     "cluster_checked": getattr(story, "cluster_checked", False),
                 }
