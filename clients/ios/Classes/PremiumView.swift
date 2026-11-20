@@ -120,7 +120,6 @@ struct PremiumView: View {
         PremiumFeature(title: NBLocalization.text("Custom RSS feeds for saved stories"), icon: "dot.radiowaves.up.forward", iconColor: .orange),
         PremiumFeature(title: NBLocalization.text("Text view conveniently extracts the story"), icon: "doc.text.fill", iconColor: .cyan),
         PremiumFeature(title: NBLocalization.text("Discover related stories and sites"), icon: "arrow.triangle.branch", iconColor: .teal),
-        PremiumFeature(title: NBLocalization.text("Natural language text and image classifiers"), icon: "pencil.line", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("You feed Lyric, NewsBlur's hungry hound, for 6 days"), icon: "fork.knife", iconColor: .brown)
     ]
 
@@ -130,6 +129,7 @@ struct PremiumView: View {
         PremiumFeature(title: NBLocalization.text("Web Feeds from any website, even without RSS"), icon: "web-feed-100", iconColor: .purple, isCustomImage: true),
         PremiumFeature(title: NBLocalization.text("Listen to 1 hour of stories read aloud a week"), icon: "headphones", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("Ask AI questions about stories"), icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
+        PremiumFeature(title: NBLocalization.text("Natural language text and image classifiers"), icon: "pencil.line", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("Apply training across a folder"), icon: "folder.fill", iconColor: .mint),
         PremiumFeature(title: NBLocalization.text("Apply training globally"), icon: "globe", iconColor: .indigo),
         PremiumFeature(title: NBLocalization.text("Daily briefing with your top stories and keywords"), icon: "briefing", iconColor: .orange, isCustomImage: true),
