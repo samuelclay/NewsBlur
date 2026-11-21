@@ -132,6 +132,20 @@ class RLLMCosts:
         # Register model name for fast lookup (avoids scan_iter on 150K+ keys)
         pipe.sadd(f"{cls.KEY_PREFIX}:known_models", model_safe)
 
+        # rllm_costs.py: AI filters are unlimited on Premium Archive, so each reader's
+        # filter usage is kept to spot the heaviest ones in Grafana.
+        if user_id and feature in cls.CLASSIFIER_FEATURES:
+            users_key = f"{cls.KEY_PREFIX}:{date_key}:classifier_users"
+            pipe.sadd(users_key, user_id)
+            pipe.expireat(users_key, expiry)
+            user_prefix = f"{cls.KEY_PREFIX}:{date_key}:classifier_user:{user_id}:{feature}"
+            pipe.incrby(f"{user_prefix}:tokens", total_tokens)
+            pipe.incrby(f"{user_prefix}:cost", cost_micro)
+            pipe.incr(f"{user_prefix}:requests")
+            pipe.expireat(f"{user_prefix}:tokens", expiry)
+            pipe.expireat(f"{user_prefix}:cost", expiry)
+            pipe.expireat(f"{user_prefix}:requests", expiry)
+
         pipe.execute()
 
     # Known dimensions for direct key lookups (avoid scan_iter)
@@ -160,6 +174,7 @@ class RLLMCosts:
         "global_shared",
         "listen",
     ]
+    CLASSIFIER_FEATURES = ["story_classification", "vision_classification"]
     METRICS = ["tokens", "cost", "requests"]
 
     @classmethod
@@ -455,6 +470,45 @@ class RLLMCosts:
             "weekly_users": len(weekly_users_set) if weekly_users_set else 0,
             "monthly_users": len(monthly_users_set) if monthly_users_set else 0,
         }
+
+    @classmethod
+    def get_classifier_user_stats(cls, days=30):
+        """Each reader's AI filter usage over the last `days` days.
+
+        Returns {user_id: {feature: {"tokens": N, "cost_usd": N, "requests": N}}}.
+        """
+        r = cls._get_redis()
+        today = datetime.date.today()
+        dates = [cls._date_key(today - datetime.timedelta(days=offset)) for offset in range(days)]
+        try:
+            user_ids = r.sunion(*[f"{cls.KEY_PREFIX}:{date_key}:classifier_users" for date_key in dates])
+        except redis.RedisError:
+            return {}
+        if not user_ids:
+            return {}
+
+        keys, key_metadata = [], []
+        for user_id in (int(u) for u in user_ids):
+            for date_key in dates:
+                for feature in cls.CLASSIFIER_FEATURES:
+                    for metric in cls.METRICS:
+                        keys.append(
+                            f"{cls.KEY_PREFIX}:{date_key}:classifier_user:{user_id}:{feature}:{metric}"
+                        )
+                        key_metadata.append((user_id, feature, metric))
+
+        user_stats = {}
+        for (user_id, feature, metric), value in zip(key_metadata, r.mget(keys)):
+            if value is None:
+                continue
+            stats = user_stats.setdefault(user_id, {}).setdefault(
+                feature, {"tokens": 0, "cost_usd": 0.0, "requests": 0}
+            )
+            if metric == "cost":
+                stats["cost_usd"] += int(value) / 1_000_000
+            else:
+                stats[metric] += int(value)
+        return user_stats
 
     @classmethod
     def get_unique_users_for_period(cls, days=1):

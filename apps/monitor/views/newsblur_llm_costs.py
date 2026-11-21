@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views import View
 
@@ -156,6 +157,28 @@ class LLMCosts(View):
             formatted_data[
                 f"{period}_unique_users"
             ] = f'{chart_name}{{metric="unique_users",period="{period}"}} {data[f"{period}_unique_users"]}'
+
+        # AI filter usage per reader over the Grafana default of 30 days, for the AI Filters
+        # row's table of the heaviest users.
+        classifier_user_stats = RLLMCosts.get_classifier_user_stats(days=30)
+        usernames = dict(
+            User.objects.filter(pk__in=list(classifier_user_stats.keys())).values_list("pk", "username")
+        )
+        for user_id, features in classifier_user_stats.items():
+            username = usernames.get(user_id, str(user_id))
+            text = features.get("story_classification", {})
+            image = features.get("vision_classification", {})
+            cost = text.get("cost_usd", 0.0) + image.get("cost_usd", 0.0)
+            label = f'classifier="user",username="{username}"'
+            formatted_data[
+                f"classifier_user_{user_id}_cost"
+            ] = f'{chart_name}{{metric="cost_usd",{label}}} {cost:.6f}'
+            formatted_data[
+                f"classifier_user_{user_id}_text_requests"
+            ] = f'{chart_name}{{metric="text_requests",{label}}} {text.get("requests", 0)}'
+            formatted_data[
+                f"classifier_user_{user_id}_image_requests"
+            ] = f'{chart_name}{{metric="image_requests",{label}}} {image.get("requests", 0)}'
 
         context = {
             "data": formatted_data,

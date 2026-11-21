@@ -13956,6 +13956,161 @@
    "type": "timeseries"
   },
   {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "Each reader's natural language filter cost and Jev requests over the last 30 days",
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "auto",
+      "cellOptions": {
+       "type": "auto"
+      },
+      "inspect": false
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Cost"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "currencyUSD"
+       },
+       {
+        "id": "decimals",
+        "value": 4
+       }
+      ]
+     }
+    ]
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 24,
+    "x": 0,
+    "y": 535
+   },
+   "id": 398,
+   "options": {
+    "cellHeight": "sm",
+    "footer": {
+     "countRows": false,
+     "fields": "",
+     "reducer": [
+      "sum"
+     ],
+     "show": true
+    },
+    "showHeader": true,
+    "sortBy": [
+     {
+      "desc": true,
+      "displayName": "Cost"
+     }
+    ]
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "llm_costs{metric=\"cost_usd\",classifier=\"user\"}",
+     "format": "table",
+     "instant": true,
+     "legendFormat": "",
+     "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "llm_costs{metric=\"text_requests\",classifier=\"user\"}",
+     "format": "table",
+     "instant": true,
+     "legendFormat": "",
+     "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "llm_costs{metric=\"image_requests\",classifier=\"user\"}",
+     "format": "table",
+     "instant": true,
+     "legendFormat": "",
+     "refId": "C"
+    }
+   ],
+   "title": "AI Filter Usage by User (30 days)",
+   "transformations": [
+    {
+     "id": "joinByField",
+     "options": {
+      "byField": "username",
+      "mode": "outer"
+     }
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "Time 1": true,
+       "Time 2": true,
+       "Time 3": true,
+       "__name__": true,
+       "__name__ 1": true,
+       "__name__ 2": true,
+       "__name__ 3": true,
+       "classifier": true,
+       "classifier 1": true,
+       "classifier 2": true,
+       "classifier 3": true,
+       "instance": true,
+       "instance 1": true,
+       "instance 2": true,
+       "instance 3": true,
+       "job": true,
+       "job 1": true,
+       "job 2": true,
+       "job 3": true,
+       "metric": true,
+       "metric 1": true,
+       "metric 2": true,
+       "metric 3": true
+      },
+      "indexByName": {},
+      "renameByName": {
+       "username": "User",
+       "Value #A": "Cost",
+       "Value #B": "Text requests",
+       "Value #C": "Image requests"
+      }
+     }
+    }
+   ],
+   "type": "table"
+  },
+  {
    "id": 361,
    "type": "row",
    "title": "Languages & Localization Revenue",
