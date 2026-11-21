@@ -100,7 +100,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
         if (options.added) {
             var collection = this.collection;
-            var added = this.collection.models.slice(-1 * options.added);
+            // story_list_view.js: stories.js insert_realtime_stories names the stories it placed inside the list;
+            // a page that loaded is the last stories in the collection.
+            var added = options.inserted || this.collection.models.slice(-1 * options.added);
             var stories = _.compact(_.map(added, function (story) {
                 if (story.story_view) return;
                 var view = new NEWSBLUR.Views.StoryDetailView({
@@ -114,11 +116,32 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 }
             }));
             if (!NEWSBLUR.assets.preference('feed_view_single_story')) {
-                this.$el.append(_.pluck(stories, 'el'));
+                if (options.inserted) {
+                    // story_list_view.js: placed last to first, so the story after each one is already in place.
+                    var placing = _.sortBy(stories, function (view) {
+                        return -collection.indexOf(view.model);
+                    });
+                    _.each(placing, function (view) {
+                        var next = collection.at(collection.indexOf(view.model) + 1);
+                        var next_el = next && next.story_view && next.story_view.el;
+                        if (next_el && next_el.parentNode) {
+                            next_el.parentNode.insertBefore(view.el, next_el);
+                        } else {
+                            this.$el.append(view.el);
+                        }
+                    }, this);
+                } else {
+                    this.$el.append(_.pluck(stories, 'el'));
+                }
                 _.invoke(stories, 'attach_handlers');
             }
 
             this.stories = this.stories.concat(stories);
+            if (options.inserted) {
+                this.stories = _.sortBy(this.stories, function (view) {
+                    return collection.indexOf(view.model);
+                });
+            }
             _.defer(this.check_feed_view_scrolled_to_bottom);
             this.show_correct_explainer();
         } else {

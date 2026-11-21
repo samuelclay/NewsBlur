@@ -155,6 +155,18 @@ class ClusterReadRepositoryTest {
         assertEquals(true, backend.overrides["2:child"])
     }
 
+    @Test fun test_remote_read_keeps_a_story_with_this_devices_own_unread_still_queued() {
+        backend.stories["2:queued"] = ClusterReadRepository.State("2", 0, false)
+        backend.stories["2:other"] = ClusterReadRepository.State("2", 1, false)
+        backend.pending.add("2:queued")
+
+        repository.applyRemote(listOf("2:queued", "2:other"), true)
+
+        assertFalse(backend.stories.getValue("2:queued").read)
+        assertTrue(backend.stories.getValue("2:other").read)
+        assertEquals(listOf("2:1:-1"), backend.countChanges)
+    }
+
     private fun child(hash: String, scoreValue: Int) = Story.ClusterStory().apply {
         storyHash = hash
         feedId = hash.substringBefore(':')

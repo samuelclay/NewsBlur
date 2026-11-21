@@ -664,6 +664,8 @@ people together to talk about the world.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Automatically mark stories as read when scrolled past</string>
     <string name="settings_story_clustering">Cluster related stories</string>
     <string name="settings_story_clustering_summary">Show duplicate stories from other feeds beneath a story title</string>
+    <string name="settings_show_new_stories">Show new stories as they arrive</string>
+    <string name="settings_show_new_stories_summary">Show an \"N new stories\" pill when stories arrive in the open site or folder</string>
     <string name="settings_cluster_matches">Cluster matches</string>
     <string name="settings_cluster_matches_summary">Choose whether clusters show only duplicate titles or also related stories</string>
     <string name="settings_story_clustering_save_failed">Couldn\'t save story clustering preference</string>
@@ -1753,4 +1755,9 @@ people together to talk about the world.</string>
     <string name="settings_listen_speed">Playback speed</string>
     <string name="archive_listen">Listen to 1 hour of stories read aloud a week</string>
     <string name="pro_listen">Listen to 10 hours of stories read aloud a week</string>
+    <!-- NewStoriesPill.kt: stories that arrived for the open story list while it was on screen. -->
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d new story</item>
+        <item quantity="other">%d new stories</item>
+    </plurals>
 </resources>

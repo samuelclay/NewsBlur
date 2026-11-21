@@ -109,6 +109,13 @@ interface SyncServiceState {
     ): Boolean
 
     /**
+     * NewStoriesPill.kt replaced the open list with its newest stories: page the list from its first page again, as
+     * opening it does, without clearing those stories. The reading session lists each story once, so later pages
+     * skip them.
+     */
+    fun restartPaging(fs: FeedSet)
+
+    /**
      * Resets any internal temp vars or queues. Called when switching accounts.
      */
     fun clearState()
@@ -196,6 +203,7 @@ class DefaultSyncServiceState
         override var authFails: Int = 0
 
         private val _exhaustedFeeds = mutableSetOf<FeedSet>()
+
         private val _feedPagesSeen = mutableMapOf<FeedSet, Int>()
         private val _feedStoriesSeen = mutableMapOf<FeedSet, Int>()
         private val _recountCandidates = mutableSetOf<FeedSet>()
@@ -351,6 +359,16 @@ class DefaultSyncServiceState
                 pendingFeedTarget = maxOf(desiredStoryCount, existingTarget)
             }
             return true
+        }
+
+        override fun restartPaging(fs: FeedSet) {
+            synchronized(pendingFeedMutex) {
+                // A page of the old paging still in flight would land in the new paging's place; drop it.
+                sessionGeneration.incrementAndGet()
+                _exhaustedFeeds.remove(fs)
+                _feedPagesSeen[fs] = 0
+                _feedStoriesSeen[fs] = 0
+            }
         }
 
         override fun clearState() {

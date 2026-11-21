@@ -131,6 +131,8 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.sqlite.jdbc)
+    // NewsBlurSocketClient.kt parses Socket.IO frames with org.json, which android.jar only stubs.
+    testImplementation(libs.org.json)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

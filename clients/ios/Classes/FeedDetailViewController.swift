@@ -240,6 +240,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
 
     override func resetFeedDetail() {
+        cancelNewestStories()
         if isViewLoaded { ReaderMotion.leave(storyTitlesTable) }
         ReaderMotion.session(self).reset()
         storyCache.motionSession.reset()
@@ -374,6 +375,25 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
 
     private var gridViewController: UIHostingController<FeedDetailGridView>?
+
+    /// The grid or card layout's scroll view, which NewStoriesPill.swift scrolls and watches: the outermost scroll
+    /// view that fills the layout, so a story's web view or a card's own scroller is never taken for the list.
+    var gridScrollView: UIScrollView? {
+        guard let root = gridViewController?.view else { return nil }
+        var pending: [UIView] = [root]
+        var firstFound: UIScrollView?
+        while !pending.isEmpty {
+            let candidate = pending.removeFirst()
+            if let scrollView = candidate as? UIScrollView {
+                if scrollView.bounds.width >= root.bounds.width * 0.8 &&
+                    scrollView.bounds.height >= root.bounds.height * 0.5 { return scrollView }
+                if firstFound == nil { firstFound = scrollView }
+                continue
+            }
+            pending.append(contentsOf: candidate.subviews)
+        }
+        return firstFound
+    }
     
     private var dashboardViewController: UIHostingController<FeedDetailDashboardView>?
 
@@ -640,6 +660,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         if let headerContainer = storyTitlesHeaderBar?.headerContainer {
             view.bringSubviewToFront(headerContainer)
         }
+        // NewStoriesPill.swift's pill floats over whichever layout is showing, including one added just now.
+        bringNewStoriesPillToFront()
     }
     
     var reloadWorkItem: DispatchWorkItem?

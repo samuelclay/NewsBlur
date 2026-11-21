@@ -72,6 +72,8 @@ class StoriesViewModel
                 return StoryBatch(request.feedSet, emptyList(), -1, request.loadId)
             }
             val context = currentCoroutineContext()
+            // StoryViewAdapter.kt measures the list's dates without the stories NewStoriesPill.kt pinned to its edge.
+            val pinnedStoryHashes = dbHelper.getPinnedSessionStoryHashes()
             return dbHelper.getActiveStoriesCursor(request.feedSet, request.cursorFilters, request.cancellationSignal).use { cursor ->
                 val stories = mutableListOf<Story>()
                 var indexOfLastUnread = -1
@@ -88,7 +90,7 @@ class StoriesViewModel
                 }
                 context.ensureActive()
                 traceLoad("end", request)
-                StoryBatch(request.feedSet, stories, indexOfLastUnread, request.loadId)
+                StoryBatch(request.feedSet, stories, indexOfLastUnread, request.loadId, pinnedStoryHashes)
             }
         }
 
@@ -118,5 +120,6 @@ class StoriesViewModel
             val stories: List<Story>,
             val indexOfLastUnread: Int,
             val loadId: Long,
+            val pinnedStoryHashes: Set<String> = emptySet(),
         )
     }

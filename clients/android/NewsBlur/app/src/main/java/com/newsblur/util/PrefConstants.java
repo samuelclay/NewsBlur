@@ -126,6 +126,8 @@ public class PrefConstants {
 
     public static final String THEME = "theme";
     public static final String REDUCE_MOTION = "reduce_motion";
+    // PrefConstants.java: whether RealtimeUpdates.kt offers stories that arrive in the open list (NewStoriesPill.kt).
+    public static final String SHOW_NEW_STORIES = "show_new_stories_pill";
     public static final String THEME_LIGHT_VARIANT = "theme_light_variant";
     public static final String THEME_DARK_VARIANT = "theme_dark_variant";
     public static final String THEME_GESTURE = "theme_gesture";

@@ -98,4 +98,25 @@ class Test_StoryPaginationDemand {
         assertTrue(state.requestMoreForFeed(feed, 40, 60))
         assertEquals(feed, state.pendingFeed)
     }
+
+    // A tap past the new stories cap replaces the list with its newest stories; scrolling down must page the list from
+    // its first page again, even after the old paging reached the end, and a page of the old paging still in flight
+    // must not land.
+    @Test
+    fun test_restarting_paging_pages_from_the_first_page_again() {
+        val state = DefaultSyncServiceState()
+        val feed = FeedSet.singleFeed("123")
+        state.lastFeedSet = feed
+        state.addFeedPagesSeen(feed, 7)
+        state.addFeedStoriesSeen(feed, 140)
+        state.addFeedSetExhausted(feed)
+        val oldGeneration = state.readingSessionGeneration
+
+        state.restartPaging(feed)
+
+        assertEquals(0, state.feedPagesSeen[feed])
+        assertFalse(state.isFeedSetExhausted(feed))
+        assertTrue(state.readingSessionGeneration != oldGeneration)
+        assertTrue("the next scroll asks for stories again", state.requestMoreForFeed(feed, 20, 20))
+    }
 }

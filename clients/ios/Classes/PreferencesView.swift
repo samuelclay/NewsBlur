@@ -602,6 +602,13 @@ class PreferencesViewModel: ObservableObject {
                             defaultValue: "related"
                         ),
                         subtitle: NBLocalization.text("Choose whether clusters show only duplicate titles or also related stories")
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Show new stories as they arrive"),
+                        icon: "arrow.up.circle",
+                        iconColor: .blue,
+                        type: .toggle(key: RealtimeNewStories.settingKey, defaultValue: true),
+                        subtitle: NBLocalization.text("Shows an \"N new stories\" pill when stories arrive in the open feed or folder.")
                     )
                 ]
             ),
@@ -1328,6 +1335,9 @@ class PreferencesViewModel: ObservableObject {
 
     func valueChanged(key: String, value: Any) {
         if key == "reduce_motion" { ReaderMotion.preferencesDidChange() }
+        if key == RealtimeNewStories.settingKey {
+            MainActor.assumeIsolated { RealtimeUpdates.shared.newStoriesSettingDidChange() }
+        }
         if key == "enable_feed_swipes" || key == "enable_story_swipes" {
             withAnimation(.easeInOut(duration: 0.2)) { updateHiddenKeys() }
         } else {
@@ -1722,7 +1732,7 @@ struct ToggleItemView: View {
                     Text(subtitle)
                         .font(.system(size: 12))
                         .foregroundColor(PreferencesColors.textSecondary)
-                        .lineLimit(2)
+                        .lineLimit(3)
                 }
 
                 if key == "story_clustering" {
