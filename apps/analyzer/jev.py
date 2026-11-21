@@ -40,10 +40,10 @@ from utils.url_safety import UnsafeUrlError, safe_requests_get
 
 DECISIONS_URL = "https://openrouter.ai/api/alpha/decisions"
 
-# jev.py: Measured against Claude Sonnet labels on 840 story and filter pairs (Nov 2026),
-# 0.6 gave the best agreement: precision 0.88 and recall 0.90, where Claude Haiku scored
-# 0.82 and 0.83 on the same pairs. Pick it again if JEV_MODEL changes, since
-# probabilities differ between model versions.
+# jev.py: On 42 readers' real text filters (651 stories, Claude Sonnet as referee, Nov 2026),
+# 0.6 scored F1 0.84 to Claude Haiku's 0.82, with 21 wrong matches per 1,000 stories to
+# Haiku's 32. Pick it again if JEV_MODEL changes, since probabilities differ between model
+# versions.
 MATCH_THRESHOLD = 0.6
 
 # A story costs about 200 tokens with 1,000 characters of text. Twenty stories keep a
@@ -355,9 +355,12 @@ def _classify_text(filters, stories, user_id):
         questions = {}
         for i in range(len(batch)):
             for j, (_, description) in enumerate(filters):
+                # jev.py: Readers often list several topics in one filter ("recipes, college
+                # sports and veganism"). Asked whether a story is "about this", Jev looks for
+                # all of them at once, so it's asked about "any of these".
                 questions["s%d_f%d" % (i, j)] = {
                     "type": "noul",
-                    "instructions": "Is story s%d about this: %s?" % (i, description),
+                    "instructions": "Is story s%d about any of these: %s?" % (i, description),
                 }
         probabilities = _decide(
             state,

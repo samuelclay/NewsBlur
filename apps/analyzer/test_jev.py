@@ -201,7 +201,7 @@ class Test_JevPromptClassification(TransactionTestCase):
             MClassifierPrompt.classify_stories(self.user.pk, self.stories)
         self.assertTrue(api.instructions)
         for instructions in api.instructions:
-            self.assertIn("about this: politics?", instructions)
+            self.assertIn("about any of these: politics?", instructions)
             self.assertNotIn("don't want", instructions)
 
     def test_image_filters_get_their_own_requests(self):
