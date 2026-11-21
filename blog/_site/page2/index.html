@@ -87,6 +87,124 @@
     <ul class="post-list"><li><div class="post-header-sticky">
           <span class="post-meta">Oct 3, 2026</span>
           <h3>
+            <a class="post-link" href="/2026/10/03/newsblur-15-for-ios/">
+              NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.</p>
+
+<h3 id="faster-story-lists">Faster story lists</h3>
+
+<p>Loading the next page of a folder used to reload the entire list. Now new stories are added in place. Favicons, thumbnails, and story text get prepared in the background ahead of time instead of while you’re scrolling. Opening a feed shows its cached stories immediately while fresh ones load, and articles appear fully laid out instead of flashing blank first.</p>
+
+<p>Opening All Site Stories went from 1.1s to 0.2s. A single feed went from 0.7s to 0.2s. Loading another page into a list of 5,000 stories went from 0.7s to 0.02s.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-story-list.webp" aria-label="iPhone story list with the floating glass toolbar at the bottom">
+        <source src="/assets/ios-15-reader.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-story-list.webp" alt="iPhone story list with the floating glass toolbar at the bottom" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="a-glass-toolbar">A glass toolbar</h3>
+
+<p>The story list toolbar is now a floating glass bar at the bottom of the screen on iPhone and iPad, and your stories scroll right behind it. Related Sites, story order, and search are on the left. Add and Mark as read are on the right. If you’d rather keep it at the top, you can move it back in Preferences. In the reader, the controls hide as you scroll down and come back when you scroll up.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-reader.webp" aria-label="Scrolling an article on iPhone as its floating controls hide and return">
+        <source src="/assets/ios-15-article-scroll.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-reader.webp" alt="Scrolling an article on iPhone as its floating controls hide and return" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="images">Images</h3>
+
+<p>Tap an image in a story and it opens full screen, zooming out from its spot in the article. Pinch or double tap to zoom, drag to look around, and swipe to go back. On iPad the viewer covers all three columns, and you land right back where you were in the story.</p>
+
+<p>Long press an image to see its hover text above it, which is where comics like xkcd hide the punchline. Copy Image, Save Image, and Share Image are right there with it.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-image-viewer.webp" aria-label="An article image opening in the iPhone image viewer and returning to the article">
+        <source src="/assets/ios-15-image-viewer.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-image-viewer.webp" alt="An article image opening in the iPhone image viewer and returning to the article" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="add--discover-sites">Add + Discover Sites</h3>
+
+<p>The + button opens a Quick Add sheet. Paste an address or search for a site, pick a folder, and add it. Below that are shortcuts into every discovery source: Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News. You can swipe between them like pages. It’s the same <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites</a> catalog from the web, rebuilt natively for iOS.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-add-site.webp" aria-label="The iPhone Add Site sheet with an address field and discovery source shortcuts">
+        <source src="/assets/ios-15-add-site.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-add-site.webp" alt="The iPhone Add Site sheet with an address field and discovery source shortcuts" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<p>Each site shows its latest stories with an image and a short excerpt, along with how recently it published. Tap a story to read it, or tap <strong>Try</strong> to browse the site without subscribing. When you come back, you’re in the same spot with that story highlighted. On iPad, Try keeps all three columns, so you can browse a new site and read its stories side by side. Related Sites uses the same cards.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-discover.webp" aria-label="Opening a story from iPhone discovery results and returning to its highlighted preview">
+        <source src="/assets/ios-15-discover.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-discover.webp" alt="Opening a story from iPhone discovery results and returning to its highlighted preview" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="offline-storage-that-cleans-up-after-itself">Offline storage that cleans up after itself</h3>
+
+<p>A reader on the forum noticed NewsBlur using 4.2 GB on their iPhone with no unread stories. Digging in turned up three bugs in the offline cache. Cleanup skipped pruning whenever you were all caught up, it never cleared cached article text, and it compacted the database before deleting anything, so no space ever came back.</p>
+
+<p>All three are fixed. Cleanup now keeps storage within your Stories to store limit, and <strong>Delete offline stories</strong> in Preferences actually gives you the space back. Your subscriptions and any pending read or save changes are kept.</p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<ul>
+  <li>Long press any feed, folder, or story for a native menu.</li>
+  <li>Mark newer as read and Mark older as read update your unread counts right away, even inside collapsed folders and while offline.</li>
+  <li>Feed and story gestures each have their own settings.</li>
+  <li>The Mac app gets the new discovery screen, image viewer, menus, and offline cleanup too.</li>
+  <li>Tapping a notification opens the story instead of sometimes getting stuck.</li>
+  <li>Reading positions are restored correctly.</li>
+</ul>
+
+<p>NewsBlur 15 is available on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. The <a href="/2026/10/03/newsblur-15-for-android/">Android release</a> got a lot of the same work. If you have feedback, I’d love to hear it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Oct 3, 2026</span>
+          <h3>
             <a class="post-link" href="/2026/10/03/newsblur-15-for-android/">
               NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites
             </a>
@@ -762,107 +880,6 @@ newsblur auth login
 <p>The CLI, AI skill, and MCP server are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. See the <a href="https://newsblur.com/features/mcp">MCP Server</a> and <a href="https://newsblur.com/features/cli">CLI Tool</a> feature pages for full documentation.</p>
 
 <p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Mar 30, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/03/30/newsblur-v14-for-android/">
-              NewsBlur v14 for Android: Redesigned reading experience, Ask AI, Discover, Daily Briefing, and more
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>A few weeks ago I shipped <a href="/2026/03/05/newsblur-v14-for-ios-and-mac/">NewsBlur v14 for iOS and Mac</a>, a major redesign of the Apple apps. Today, Android gets the same treatment. Every screen has been reworked: the feed list, the story list, the reading view, preferences, and menus. Along with the visual overhaul, several features that were previously web-only are now on Android: Ask AI, Discover Related Sites, and the Daily Briefing.</p>
-
-<p>Here’s what’s new.</p>
-
-<h3 id="ask-ai">Ask AI</h3>
-
-<p>Ask AI brings the same AI-powered Q&amp;A from the web and iOS to Android. Open any story, tap Ask AI, and ask questions about it. Summarize a long article, get background on a developing situation, or fact-check a claim. Pick your preferred AI model and keep the conversation going with follow-ups. The Ask AI sheet matches your current theme and slides up as a bottom sheet, consistent with the share and trainer dialogs.</p>
-
-<p><img src="/assets/android-14-ask-ai.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="discover-related-sites">Discover related sites</h3>
-
-<p>Discover Related Sites lets you find new feeds related to any feed you’re already subscribed to. Tap the Discover button in the story list header bar, browse what’s available, and preview a feed before subscribing. Duplicate feeds are filtered out so you only see new options.</p>
-
-<p><img src="/assets/android-14-discover.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="daily-briefing">Daily Briefing</h3>
-
-<p>The Daily Briefing generates a personalized summary of your news, organized into sections like Top Stories, Based on Your Interests, and Long Reads. It uses native Android story rows, so it feels like a regular feed rather than a bolted-on feature. Configure your briefing frequency, writing style, and sections from the briefing view in your sidebar.</p>
-
-<p><img src="/assets/android-14-daily-briefing.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="sepia-theme-and-refined-dark-themes">Sepia theme and refined dark themes</h3>
-
-<p>A new Sepia theme brings warmer tones for comfortable long reading sessions. The Dark theme has been lightened to match the iOS gray/medium palette, and the Black theme now uses true absolute black backgrounds for feed and story cells, making it ideal for OLED screens.</p>
-
-<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
-<img src="/assets/android-14-sepia.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/android-14-dark.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/android-14-black.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-</div>
-
-<h3 id="story-list-header-bar">Story list header bar</h3>
-
-<p>The top of the story list now has a header bar with quick access to Discover, search, display options, and settings. The display and settings controls are split into separate menus so you can change the view without wading through unrelated options.</p>
-
-<p><img src="/assets/android-14-header-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="redesigned-reading-experience">Redesigned reading experience</h3>
-
-<p>The reading view has been rethought from top to bottom. Story traversal buttons are lifted above the bottom edge for easier thumb access. A new traverse bar with refined icons shows your position and unread count. Story actions are hidden until the story finishes rendering, so you never tap a button before the content is ready. Opening a story from the list now animates smoothly into the reader, and swiping back uses an interactive gesture that tracks your finger.</p>
-
-<p><img src="/assets/android-14-reader.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="redesigned-preferences-and-menus">Redesigned preferences and menus</h3>
-
-<p>Preferences have been rebuilt as a modern settings screen with inline segments instead of separate dialog pickers. The feed list menu, reading menu, and folder menus have all been redesigned with cleaner styling and better organization. Menus now scale with your device font size, so they stay readable at any accessibility setting.</p>
-
-<p><img src="/assets/android-14-preferences.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="premium-archive-and-pro-subscriptions">Premium Archive and Pro subscriptions</h3>
-
-<p>You can now subscribe to Premium Archive and Premium Pro directly from the Android app. An upgrade banner appears in the story list when you’re on a lower tier, showing what you’d unlock by upgrading.</p>
-
-<h3 id="everything-else">Everything else</h3>
-
-<p>Beyond the headline features, this release includes a long list of improvements and fixes.</p>
-
-<h4 id="improvements">Improvements</h4>
-
-<ul>
-  <li>Interactive swipe-back gesture in both the story list and reading view with predictive back support on Android 14+.</li>
-  <li>Feed list aligned with iOS styling, with new collapse-all and expand-all toggles.</li>
-  <li>Story header pills with compact layout and title case formatting.</li>
-  <li>Active reading time tracking per story, synced to your account.</li>
-  <li>Full text and regex classifiers for the Intelligence Trainer.</li>
-  <li>Feed search field themed to match your current theme with autofill disabled.</li>
-  <li>Sync done pill delayed until feeds actually render, so you see the update happen.</li>
-  <li>Story thumbnails enlarged for small sizes and cropping fixed.</li>
-  <li>Status banners at the top of the story list for loading and error states.</li>
-  <li>Mute Sites redesigned with upgrade card and progress bar.</li>
-  <li>Custom folder and feed icon support.</li>
-</ul>
-
-<h4 id="fixes">Fixes</h4>
-
-<ul>
-  <li>Fixed TransactionTooLargeException crash in the reading pager.</li>
-  <li>Fixed database version mismatch crash on launch.</li>
-  <li>Fixed ItemListMenuPopup crash on small and split-screen displays.</li>
-  <li>Fixed login autofill and app switching losing input.</li>
-  <li>Fixed story row thumbnail cropping.</li>
-  <li>Fixed search pill text vanishing.</li>
-  <li>Fixed story list edge back gesture interference.</li>
-  <li>Brightened story feed titles for better readability.</li>
-</ul>
-
-<p>Coming up next: v14.2 will bring story clustering to Android, so duplicate stories across your feeds get grouped together automatically, just like on the web.</p>
-
-<p>NewsBlur v14 for Android is available now on the <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play Store</a>. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
       </li></ul>

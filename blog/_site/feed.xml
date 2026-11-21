@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-11-20T02:57:14-05:00</updated>
+  <updated>2026-11-21T14:18:27-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,49 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Reddit feeds are back on NewsBlur</title>
+    <link href="https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back/" rel="alternate" type="text/html" title="Reddit feeds are back on NewsBlur" />
+    <published>2026-11-21T14:18:05-05:00</published>
+    <updated>2026-11-21T14:18:05-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back/">
+      <![CDATA[<p>In the middle of October, Reddit started refusing NewsBlur’s requests for subreddit feeds, and by early November every Reddit feed in NewsBlur had stopped updating. It <a href="https://forum.newsblur.com/t/13890">came up on the forum</a> right away. Reddit is also retiring its RSS feeds.</p>
+
+<p>Since November 10, NewsBlur gets Reddit posts from <a href="https://redlisten.com">RedListen</a>, a service that serves Reddit’s own listings. Subreddit, user, multireddit, comment, and search feeds all update again, and you don’t need to change anything.</p>
+
+<h3 id="whats-different">What’s different</h3>
+
+<p>RedListen has a monthly limit on how many posts it returns, so NewsBlur reads Reddit a little differently than it used to:</p>
+
+<ul>
+  <li><strong>Subreddits are checked about once an hour,</strong> many at a time. Quiet subreddits get every post. The busiest ones get a share of their posts, and that share grows with the number of NewsBlur readers following them.</li>
+  <li><strong>Hot and Top feeds read the same as New.</strong></li>
+  <li><strong>Reddit’s front page, r/all, and r/popular aren’t available,</strong> and those feeds will say so.</li>
+  <li><strong>Comment thread and search feeds update at most twice a day,</strong> and less often while they’re quiet. Comment threads older than 30 days can’t be fetched anymore.</li>
+  <li><strong>Refreshing a Reddit feed yourself still fetches it right away,</strong> and so does adding a new one.</li>
+  <li><strong>Posts keep their formatting.</strong> Reddit sends post text as plain text with formatting marks, and NewsBlur turns it into paragraphs, links, emphasis, code, quotes, and lists. Images come through too.</li>
+  <li><strong>Personal Reddit RSS feeds,</strong> the ones with <code class="language-plaintext highlighter-rouge">?feed=</code> in the address, still come straight from Reddit for as long as Reddit serves them.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>It’s been live since November 10. It all happens on NewsBlur’s servers, so it works on the web and in every app without an update. If a subreddit isn’t coming through the way you’d expect, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[In the middle of October, Reddit started refusing NewsBlur’s requests for subreddit feeds, and by early November every Reddit feed in NewsBlur had stopped updating. It came up on the forum right away. Reddit is also retiring its RSS feeds.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">A rewritten mobile web version of NewsBlur, and feeds that load instantly</title>
@@ -2140,48 +2183,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Mute feeds for a set amount of time</title>
-    <link href="https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time/" rel="alternate" type="text/html" title="Mute feeds for a set amount of time" />
-    <published>2026-03-16T00:00:00-04:00</published>
-    <updated>2026-03-16T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time/">
-      <![CDATA[<p>Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed and it stays muted until you remember to unmute it. Usually you forget.</p>
-
-<p>Now you can mute a feed for a specific duration. Pick anywhere from 1 day to 1 year using the slider, or mute indefinitely the old-fashioned way. When the time’s up, NewsBlur automatically unmutes the feed the next time you load your feeds. No reminders to set, no manual cleanup.</p>
-
-<h3 id="two-ways-to-mute">Two ways to mute</h3>
-
-<p>Right-click any feed and choose “Mute this site.” Instead of muting immediately, a slider appears with two buttons: one to mute for a set duration, and one to mute indefinitely. Drag the slider to pick your duration, from 1 day all the way to 1 year with natural stops at 1 week, 2 weeks, 1 month, 3 months, and so on.</p>
-
-<p><img src="/assets/mute-feed-set-time-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The same controls are available in Site Settings. Open any feed’s settings and you’ll see a Mute section with a status message showing whether the feed is active, muted with a countdown, or muted indefinitely. The slider and buttons work the same way, and you can unmute at any time.</p>
-
-<p><img src="/assets/mute-feed-set-time-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>If a feed is on a timed mute, the right-click menu shows how much time is left next to the “Un-mute this site” option, so you always know when it’s coming back.</p>
-
-<h3 id="auto-unmute">Auto-unmute</h3>
-
-<p>When a timed mute expires, NewsBlur unmutes the feed automatically the next time you open NewsBlur or refresh your feeds. There’s nothing to configure and no background job to wait for. Free accounts respect the 64-feed limit, so if you’re at the cap, the feed stays muted until you have room.</p>
-
-<p>Timed muting is available now on the web for all NewsBlur users. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed...]]>
     </summary>
     
   </entry>
