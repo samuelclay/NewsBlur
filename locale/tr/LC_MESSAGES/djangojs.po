@@ -159,10 +159,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s ve %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/haber"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s bayt"
@@ -186,11 +182,6 @@ msgstr[0] "%(count)s sınıflandırıcı silinecek"
 msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s yorum"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s içerik filtresi"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -243,11 +234,6 @@ msgid_plural "%(count)s hours ago"
 msgstr[0] "%(count)s saat önce"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s görsel filtresi"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s beğeni"
@@ -291,18 +277,6 @@ msgstr[0] "%(count)s bülten"
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(limit)s siteden %(count)s tanesi"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "Tüm sitelerde %(count)s (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "Klasörde %(count)s (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "Bu sitede %(count)s (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -388,11 +362,6 @@ msgstr[0] "Ayda %(count)s haber"
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s haber silinecek"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "Ayda %(count)s haber"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -540,10 +509,6 @@ msgstr[0] "%(start)s ila %(end)s saat"
 msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s ila %(end)s dakika"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -893,19 +858,10 @@ msgstr "(GMT-11:00) Midway Adaları, Samoa"
 msgid "(no title)"
 msgstr "(başlık yok)"
 
-msgid "(upcoming)"
-msgstr "(yaklaşan)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s site daha"
-
-msgid "/day"
-msgstr "/gün"
-
-msgid "/mo"
-msgstr "/ay"
 
 msgid "/month"
 msgstr "/ay"
@@ -998,8 +954,8 @@ msgid "AI Model"
 msgstr "Yapay zekâ modeli"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "Yapay zekâ filtreleri kaydedildi ancak çalışmaları için %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "Yapay zekâ filtreleri kaydedilir ancak yalnızca %(tier_link)s üzerinde çalışır."
 
 msgid "AI finds the stories"
 msgstr "Haberleri yapay zekâ bulur"
@@ -3587,9 +3543,6 @@ msgstr "Bu pencerede"
 msgid "Include read"
 msgstr "Okunanları dahil et"
 
-msgid "Increase or remove your limit"
-msgstr "Sınırınızı artırın veya kaldırın"
-
 msgid "Independent"
 msgstr "Bağımsız"
 
@@ -3906,12 +3859,6 @@ msgstr "NewsBlur'ı yönet"
 msgid "Manage Training"
 msgstr "Eğitimi yönet"
 
-msgid "Manage billing and limits"
-msgstr "Faturalandırmayı ve limitleri yönet"
-
-msgid "Manage billing on Stripe"
-msgstr "Stripe'ta faturalandırmayı yönet"
-
 msgid "Manage email settings"
 msgstr "E-posta ayarlarını yönet"
 
@@ -4104,12 +4051,6 @@ msgstr "Pzt"
 msgid "Monday"
 msgstr "Pazartesi"
 
-msgid "Monthly spending limit"
-msgstr "Aylık harcama limiti"
-
-msgid "Monthly spending limit reached. "
-msgstr "Aylık harcama sınırına ulaşıldı. "
-
 msgid "Months Earned"
 msgstr "Kazanılan Aylar"
 
@@ -4225,15 +4166,6 @@ msgstr "Doğal Dil Görsel Sınıflandırıcısı"
 
 msgid "Natural Language Text Classifier"
 msgstr "Doğal Dil Metin Sınıflandırıcısı"
-
-msgid "Natural language classifier billing"
-msgstr "Doğal dil sınıflandırıcısı faturalandırması"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "Doğal dil sınıflandırıcıları bir sonraki fatura dönemine kadar duraklatıldı. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "Doğal dil sınıflandırıcıları, örneğinizin API anahtarlarını kullanıyor."
 
 msgid "Natural language text and image classifiers"
 msgstr "Doğal dil metin ve görsel sınıflandırıcıları"
@@ -4431,9 +4363,6 @@ msgstr "Görsel yok"
 msgid "No items added yet."
 msgstr "Henüz öğe eklenmedi."
 
-msgid "No limit"
-msgstr "Sınır yok"
-
 msgid "No match"
 msgstr "Eşleşme yok"
 
@@ -4545,12 +4474,6 @@ msgstr "Bu sayfada haber kalıbı bulunamadı."
 
 msgid "No trending sites available"
 msgstr "Şu anda popüler site yok"
-
-msgid "No usage billing invoices yet."
-msgstr "Henüz kullanım faturası yok."
-
-msgid "No usage billing set up."
-msgstr "Kullanım ücretlendirmesi ayarlanmamış."
 
 msgid "No valid merge groups to apply"
 msgstr "Uygulanacak geçerli birleştirme grubu yok"
@@ -4872,11 +4795,6 @@ msgstr "Seçenek 3:"
 
 msgid "Option 4:"
 msgstr "Seçenek 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr ""
-"İsteğe bağlı. Sınıflandırıcılar sınıra ulaşıldığında duraklatılır ve sonraki faturalandırma döneminde devam"
-" eder."
 
 msgid "Options"
 msgstr "Seçenekler"
@@ -5974,17 +5892,11 @@ msgstr "Sunucu hatası"
 msgid "Server error: %(status)s"
 msgstr "Sunucu hatası: %(status)s"
 
-msgid "Set up billing"
-msgstr "Faturalandırmayı ayarla"
-
 msgid "Set up newsletters"
 msgstr "Bültenleri ayarla"
 
 msgid "Set up notifications"
 msgstr "Bildirimleri ayarlayın"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "Doğal dil içerik ve görsel filtrelerini kullanmak için kullanıma dayalı faturalandırmayı ayarlayın."
 
 msgid "Set up your blurblog"
 msgstr "Blurblog'unuzu ayarlayın"
@@ -6318,9 +6230,6 @@ msgstr "Özel Klasörler"
 
 msgid "Speed"
 msgstr "Hız"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Harcama sınırına ulaşıldı. Sınıflandırıcılar bir sonraki döneme kadar duraklatıldı."
 
 msgid "Split"
 msgstr "Böl"
@@ -7345,6 +7254,10 @@ msgstr "Bu sitenin sesini aç"
 msgid "Uncategorized"
 msgstr "Kategorize edilmemiş"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "Şöyle anlaşıldı: %(description)s"
+
 msgid "Unfavorited"
 msgstr "Favorilerden çıkarıldı"
 
@@ -7419,9 +7332,6 @@ msgstr "Başlıksız"
 
 msgid "Up Next"
 msgstr "Sıradaki"
-
-msgid "Upcoming charge: "
-msgstr "Yaklaşan ödeme: "
 
 msgid "Update History"
 msgstr "Güncelleme Geçmişi"
@@ -7533,12 +7443,6 @@ msgstr "Yükleme başarısız. Lütfen tekrar deneyin."
 
 msgid "Uploaded!"
 msgstr "Yüklendi!"
-
-msgid "Usage billing history"
-msgstr "Kullanım faturalandırma geçmişi"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "Doğal dil sınıflandırıcıları için kullanıma dayalı faturalandırma etkin."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8300,9 +8204,6 @@ msgstr "tamir hakkı"
 
 msgid "separate multiple addresses with commas"
 msgstr "birden fazla adresi virgülle ayırın"
-
-msgid "set up usage-based billing"
-msgstr "kullanıma dayalı faturalandırmayı ayarlayın"
 
 msgid "show hidden stories"
 msgstr "gizli haberleri göster"

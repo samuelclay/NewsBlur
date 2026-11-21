@@ -166,10 +166,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s и %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s за статью"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s байт"
@@ -203,13 +199,6 @@ msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s комментарий"
 msgstr[1] "%(count)s комментария"
 msgstr[2] "%(count)s комментариев"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s фильтр содержимого"
-msgstr[1] "%(count)s фильтра содержимого"
-msgstr[2] "%(count)s фильтров содержимого"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -282,13 +271,6 @@ msgstr[1] "%(count)s часа назад"
 msgstr[2] "%(count)s часов назад"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s фильтр изображений"
-msgstr[1] "%(count)s фильтра изображений"
-msgstr[2] "%(count)s фильтров изображений"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s отметка «Нравится»"
@@ -350,18 +332,6 @@ msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s из %(limit)s сайтов"
 msgstr[1] "%(count)s из %(limit)s сайтов"
 msgstr[2] "%(count)s из %(limit)s сайтов"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s на всех сайтах (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s в папке (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s на этом сайте (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -481,13 +451,6 @@ msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "Будет удалена %(count)s статья"
 msgstr[1] "Будут удалены %(count)s статьи"
 msgstr[2] "Будет удалено %(count)s статей"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s статья/мес."
-msgstr[1] "%(count)s статьи/мес."
-msgstr[2] "%(count)s статей/мес."
 
 #, python-format
 msgid "%(count)s story/month"
@@ -673,10 +636,6 @@ msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "от %(start)s до %(end)s минуты"
 msgstr[1] "от %(start)s до %(end)s минут"
 msgstr[2] "от %(start)s до %(end)s минут"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -1028,21 +987,12 @@ msgstr "(GMT-11:00) остров Мидуэй, Самоа"
 msgid "(no title)"
 msgstr "(без названия)"
 
-msgid "(upcoming)"
-msgstr "(скоро)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ ещё %(value_1)s сайт"
 msgstr[1] "+ ещё %(value_1)s сайта"
 msgstr[2] "+ ещё %(value_1)s сайтов"
-
-msgid "/day"
-msgstr "/день"
-
-msgid "/mo"
-msgstr "/мес."
 
 msgid "/month"
 msgstr "/месяц"
@@ -1141,8 +1091,8 @@ msgid "AI Model"
 msgstr "Модель ИИ"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "Фильтры ИИ сохранены, но не будут работать, пока вы не %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "Фильтры ИИ сохранены, но работают только на %(tier_link)s."
 
 msgid "AI finds the stories"
 msgstr "ИИ находит статьи"
@@ -3767,9 +3717,6 @@ msgstr "В этом окне"
 msgid "Include read"
 msgstr "Включая прочитанные"
 
-msgid "Increase or remove your limit"
-msgstr "Увеличить или снять ограничение"
-
 msgid "Independent"
 msgstr "Независимый"
 
@@ -4086,12 +4033,6 @@ msgstr "Управление NewsBlur"
 msgid "Manage Training"
 msgstr "Управление обучением"
 
-msgid "Manage billing and limits"
-msgstr "Управление оплатой и лимитами"
-
-msgid "Manage billing on Stripe"
-msgstr "Управлять оплатой в Stripe"
-
 msgid "Manage email settings"
 msgstr "Управление настройками электронной почты"
 
@@ -4296,12 +4237,6 @@ msgstr "Пн"
 msgid "Monday"
 msgstr "Понедельник"
 
-msgid "Monthly spending limit"
-msgstr "Месячный лимит расходов"
-
-msgid "Monthly spending limit reached. "
-msgstr "Достигнут месячный лимит расходов. "
-
 msgid "Months Earned"
 msgstr "Заработано месяцев"
 
@@ -4421,15 +4356,6 @@ msgstr "Классификатор изображений на естестве�
 
 msgid "Natural Language Text Classifier"
 msgstr "Классификатор текста на естественном языке"
-
-msgid "Natural language classifier billing"
-msgstr "Оплата классификатора естественного языка"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "Классификаторы на естественном языке приостановлены до следующего платёжного цикла. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "Классификаторы естественного языка используют API-ключи вашего экземпляра."
 
 msgid "Natural language text and image classifiers"
 msgstr "Классификаторы текста и изображений на естественном языке"
@@ -4627,9 +4553,6 @@ msgstr "Нет изображения"
 msgid "No items added yet."
 msgstr "Пока ничего не добавлено."
 
-msgid "No limit"
-msgstr "Без ограничений"
-
 msgid "No match"
 msgstr "Совпадений нет"
 
@@ -4743,12 +4666,6 @@ msgstr "На этой странице не найдено шаблонов ст
 
 msgid "No trending sites available"
 msgstr "Нет доступных популярных сайтов"
-
-msgid "No usage billing invoices yet."
-msgstr "Счетов за использование пока нет."
-
-msgid "No usage billing set up."
-msgstr "Оплата по факту использования не настроена."
 
 msgid "No valid merge groups to apply"
 msgstr "Нет подходящих групп для объединения"
@@ -5084,11 +5001,6 @@ msgstr "Вариант 3:"
 
 msgid "Option 4:"
 msgstr "Вариант 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr ""
-"Необязательно. Классификаторы приостанавливаются при достижении лимита и возобновляются в следующем "
-"платёжном цикле."
 
 msgid "Options"
 msgstr "Параметры"
@@ -6204,19 +6116,11 @@ msgstr "Ошибка сервера"
 msgid "Server error: %(status)s"
 msgstr "Ошибка сервера: %(status)s"
 
-msgid "Set up billing"
-msgstr "Настроить оплату"
-
 msgid "Set up newsletters"
 msgstr "Настроить рассылки"
 
 msgid "Set up notifications"
 msgstr "Настроить уведомления"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr ""
-"Настройте оплату по мере использования, чтобы применять фильтры содержимого и изображений на естественном "
-"языке."
 
 msgid "Set up your blurblog"
 msgstr "Настроить свой Blurblog"
@@ -6554,9 +6458,6 @@ msgstr "Специальные папки"
 
 msgid "Speed"
 msgstr "Скорость"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Достигнут лимит расходов. Классификаторы приостановлены до следующего цикла."
 
 msgid "Split"
 msgstr "Разделить"
@@ -7600,6 +7501,10 @@ msgstr "Включить этот сайт"
 msgid "Uncategorized"
 msgstr "Без категории"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "Понято как: %(description)s"
+
 msgid "Unfavorited"
 msgstr "Удалено из избранного"
 
@@ -7674,9 +7579,6 @@ msgstr "Без названия"
 
 msgid "Up Next"
 msgstr "Далее"
-
-msgid "Upcoming charge: "
-msgstr "Предстоящее списание: "
 
 msgid "Update History"
 msgstr "История обновлений"
@@ -7794,12 +7696,6 @@ msgstr "Не удалось загрузить. Повторите попытк�
 
 msgid "Uploaded!"
 msgstr "Загружено!"
-
-msgid "Usage billing history"
-msgstr "История списаний за использование"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "Для классификаторов естественного языка включена оплата по факту использования."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8579,9 +8475,6 @@ msgstr "право на ремонт"
 
 msgid "separate multiple addresses with commas"
 msgstr "разделяйте несколько адресов запятыми"
-
-msgid "set up usage-based billing"
-msgstr "настроите оплату по факту использования"
 
 msgid "show hidden stories"
 msgstr "показывать скрытые статьи"

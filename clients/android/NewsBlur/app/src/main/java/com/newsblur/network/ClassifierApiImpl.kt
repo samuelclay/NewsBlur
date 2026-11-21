@@ -3,7 +3,6 @@ package com.newsblur.network
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.newsblur.domain.ValueMultimap
-import com.newsblur.network.domain.AiClassifierUsageResponse
 import com.newsblur.network.domain.PromptTestResponse
 
 class ClassifierApiImpl(
@@ -19,9 +18,9 @@ class ClassifierApiImpl(
                 put(APIConstants.PARAMETER_CLASSIFIER_TYPE, if (request.hidden) "hidden" else "focus")
                 put(APIConstants.PARAMETER_FEEDID, request.feedId ?: "0")
             }
-        // ClassifierApiImpl.kt: apps/analyzer/views.py test_prompt_classifier bills every run, and
-        // a timed out or 504'd run may still have finished and billed, so one tap is one request.
-        // The retrying post would send it up to three times.
+        // ClassifierApiImpl.kt: apps/analyzer/views.py test_prompt_classifier runs the classifier on
+        // every request, and a timed out or 504'd run may still have finished on the server, so one
+        // tap is one request. The retrying post would run it up to three times.
         val response =
             networkClient.postWithoutRetry(
                 APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_TEST_PROMPT),
@@ -29,12 +28,6 @@ class ClassifierApiImpl(
                 PROMPT_TEST_TIMEOUT_SECONDS,
             )
         return parse(response, PromptTestResponse())
-    }
-
-    override suspend fun getAiClassifierUsage(feedId: String?): AiClassifierUsageResponse {
-        val values = ValueMultimap().apply { put(APIConstants.PARAMETER_FEEDID, feedId ?: "0") }
-        val response = networkClient.get(APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_AI_USAGE), values)
-        return parse(response, AiClassifierUsageResponse())
     }
 
     // ClassifierApiImpl.kt: a failed or unreadable response becomes the fallback, whose code -1

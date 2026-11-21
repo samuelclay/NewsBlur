@@ -101,12 +101,6 @@ enum ClassifierFolderPath {
         return innermost.map(serverPath(fromNative:)) ?? ""
     }
 
-    /// The native folders a folder scope covers: the folder its server path names and every subfolder inside it.
-    static func nativeFolders(coveredBy serverPath: String, in nativePaths: [String]) -> [String] {
-        let roots = nativePaths.filter { isFolder($0) && self.serverPath(fromNative: $0) == serverPath }
-        return nativePaths.filter { path in roots.contains { path == $0 || path.hasPrefix($0 + nativeSeparator) } }
-    }
-
     /// A dictFolders entry's site ids, which arrive as numbers or strings.
     static func feedIds(in folder: Any?) -> [String] {
         (folder as? [Any] ?? []).map { "\($0)" }

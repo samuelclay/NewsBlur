@@ -53,47 +53,6 @@
             android:saveEnabled="false"
             android:textSize="13sp" />
 
-        <LinearLayout
-            android:id="@+id/ai_cost_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/ai_cost_amounts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:saveEnabled="false"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/ai_cost_breakdown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:saveEnabled="false"
-                android:textSize="12sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/ai_cost_billing_button"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginTop="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:letterSpacing="0"
-                android:paddingHorizontal="12dp"
-                android:saveEnabled="false"
-                android:textAllCaps="false"
-                android:textSize="12sp"
-                app:cornerRadius="6dp" />
-
-        </LinearLayout>
-
         <HorizontalScrollView
             android:id="@+id/ai_image_grid_scroll"
             android:layout_width="match_parent"

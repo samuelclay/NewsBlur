@@ -580,6 +580,9 @@ msgstr "AI 功能"
 msgid "AI built into every story"
 msgstr "每篇文章都内置 AI"
 
+msgid "AI filters aren't available on this server"
+msgstr "此服务器不提供 AI 筛选器"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "AI 图片筛选器"
@@ -1421,9 +1424,6 @@ msgstr "无法保存文章，未找到该文章"
 msgid "Could not unsave story, not found"
 msgstr "无法取消保存文章，未找到该文章"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "无法连接到 Stripe。请重试。"
-
 msgid "Couldn't save the position"
 msgstr "无法保存播放位置"
 
@@ -1563,6 +1563,11 @@ msgstr "默认"
 
 msgid "Delete"
 msgstr "删除"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr "用通俗语言描述你想聚焦或隐藏的内容，可以针对文章文本或图片。自然语言分类器会像智能训练器一样为文章评分，且不限制使用次数。"
 
 msgid "Description"
 msgstr "描述"
@@ -2792,9 +2797,6 @@ msgstr "URL 无效"
 msgid "Invalid URL."
 msgstr "URL 无效。"
 
-msgid "Invalid amount"
-msgstr "金额无效"
-
 msgid "Invalid classifier_type"
 msgstr "classifier_type 无效"
 
@@ -2946,12 +2948,6 @@ msgstr "许可证"
 msgctxt "theme"
 msgid "Light"
 msgstr "浅色"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "上限不能超过 $10,000"
-
-msgid "Limit must be a positive amount"
-msgstr "限制值必须为正数"
 
 msgid "Limited"
 msgstr "有限"
@@ -3840,9 +3836,6 @@ msgstr "无训练系统"
 msgid "No uncategorized archives found"
 msgstr "未找到未分类的归档"
 
-msgid "No usage billing set up."
-msgstr "尚未设置按用量计费。"
-
 msgid "No user has that email address."
 msgstr "没有使用该电子邮件地址的用户。"
 
@@ -4071,9 +4064,6 @@ msgstr "请输入关键词搜索查询。"
 
 msgid "Please enter in an email address."
 msgstr "请输入电子邮件地址。"
-
-msgid "Please log in to NewsBlur again."
-msgstr "请重新登录 NewsBlur。"
 
 msgid "Please login to continue."
 msgstr "请登录以继续。"
@@ -5888,15 +5878,6 @@ msgstr "升级到高级版订阅，即可每天通过电子邮件发送多于一
 msgid "Upgrade to premium archive"
 msgstr "升级到高级归档版"
 
-msgid "Usage billing not enabled"
-msgstr "用量计费未启用"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "AI 分类器需要按用量计费"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "目前无法使用按用量计费。"
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "使用"
@@ -6237,11 +6218,6 @@ msgstr "随处可用"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "支持社交媒体个人资料、招聘网站、产品页面等"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr "编写自然语言提示，根据文章内容或图片筛选文章。自然语言分类器会像智能训练器一样为文章评分，并按使用量计费。"
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
@@ -6716,6 +6692,15 @@ msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
 msgstr "你最近使用过 NewsBlur，所以你可能并不是想转为免费账户？也许只需要续订高级版账户。我们来帮你办理。"
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] "你已用完今天的 %(count)s 次免费 AI 筛选测试。额度会在午夜重置。高级归档版包含不限次数的测试，并会在每篇新文章上运行你的筛选器。"
 
 msgid "YouTube search request failed."
 msgstr "YouTube 搜索请求失败。"

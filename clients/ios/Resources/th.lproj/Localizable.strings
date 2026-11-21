@@ -13,9 +13,6 @@
 "%1$@ of %2$@ of listening left this week" = "สัปดาห์นี้เหลือเวลาฟัง %1$@ จาก %2$@";
 "%1$@ of %2$@ sites indexed" = "จัดทำดัชนีแล้ว %1$@ จาก %2$@ เว็บไซต์";
 "%1$@ of %2$@ story previews used today" = "ใช้ตัวอย่างบทความไปแล้ว %1$@ จาก %2$@ รายการในวันนี้";
-"%1$@ on all sites (%2$@)" = "%1$@ ในทุกเว็บไซต์ (%2$@)";
-"%1$@ on folder (%2$@)" = "%1$@ ในโฟลเดอร์ (%2$@)";
-"%1$@ on this site (%2$@)" = "%1$@ ในเว็บไซต์นี้ (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ แชร์ต่อ %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ แชร์ต่อ %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ ตอบกลับ %2$@: \n \n%3$@";
@@ -23,13 +20,11 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ ตอบกลับการตอบกลับของคุณเกี่ยวกับ %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ แชร์ %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ แชร์ %2$@:\n \n%3$@";
-"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "เว็บไซต์ในวิดเจ็ต %@ แห่ง";
 "%@ ago" = "%@ ที่แล้ว";
 "%@ categories to choose from" = "มีหมวดหมู่ให้เลือก %@ หมวด";
 "%@ comments" = "%@ ความคิดเห็น";
-"%@ content filters" = "ตัวกรองเนื้อหา %@ รายการ";
 "%@ could not be added." = "เพิ่มฟีด %@ รายการไม่ได้";
 "%@ days" = "%@ วัน";
 "%@ feed" = "ฟีด %@";
@@ -41,7 +36,6 @@
 "%@ focused stories" = "บทความโฟกัส %@ รายการ";
 "%@ folder" = "โฟลเดอร์ %@";
 "%@ free story previews left today" = "วันนี้ยังดูตัวอย่างบทความฟรีได้อีก %@ ครั้ง";
-"%@ image filters" = "ตัวกรองรูปภาพ %@ รายการ";
 "%@ is now following you." = "%@ กำลังติดตามคุณแล้ว";
 "%@ left in this preview" = "เหลือ %@ ในตัวอย่างนี้";
 "%@ left this week" = "เหลือ %@ ในสัปดาห์นี้";
@@ -54,23 +48,17 @@
 "%@ sources" = "แหล่งที่มา %@ แห่ง";
 "%@ stories" = "%@ เรื่อง";
 "%@ stories left" = "เหลือข่าว %@ รายการ";
-"%@ stories/mo" = "%@ บทความ/เดือน";
 "%@ stories/month" = "%@ เรื่อง/เดือน";
 "%@ subscribers" = "ผู้ติดตาม %@ คน";
 "%@ unread stories" = "ยังไม่อ่าน %@ เรื่อง";
 "%@ voice previews left" = "เหลือการลองฟังเสียง %@ ครั้ง";
-"%@/story" = "%@/บทความ";
 "%@×" = "%@×";
 "%ldd ago" = "%ld วันที่แล้ว";
 "%ldh ago" = "%ld ชั่วโมงที่แล้ว";
 "%ldm ago" = "%ld นาทีที่แล้ว";
 "%ldw ago" = "%ld สัปดาห์ที่แล้ว";
-"(upcoming)" = "(ที่กำลังจะมาถึง)";
 "+ %@ more sites" = "+ อีก %@ เว็บไซต์";
 "..." = "…";
-"/day" = "/วัน";
-"/mo" = "/เดือน";
-"/month" = "/เดือน";
 "1 Widget Site" = "เว็บไซต์สำหรับวิดเจ็ต 1 แห่ง";
 "1,000 stories" = "1,000 เรื่อง";
 "10 stories" = "10 เรื่อง";
@@ -93,7 +81,7 @@
 "< 90/month" = "< 90/เดือน";
 "A clearer, closer sound" = "เสียงชัดใสและใกล้ชิดยิ่งขึ้น";
 "A personal news reader bringing\npeople together to talk about the world." = "โปรแกรมอ่านข่าวส่วนตัวที่เชื่อมโยงผู้คน\nให้มาพูดคุยเกี่ยวกับโลกใบนี้";
-"AI filters are saved but won't run until you %@." = "บันทึกตัวกรอง AI แล้ว แต่จะยังไม่ทำงานจนกว่าคุณจะ %@";
+"AI filters are saved but only run on Premium Archive." = "ตัวกรอง AI บันทึกแล้ว แต่จะทำงานเฉพาะบน Premium Archive เท่านั้น";
 "AI finds the stories" = "AI ค้นหาบทความให้";
 "ALL" = "ทั้งหมด";
 "ALL NOTIFICATIONS" = "การแจ้งเตือนทั้งหมด";
@@ -264,10 +252,7 @@
 "Could not completely clear the cache. Please try again." = "ล้างแคชได้ไม่หมด โปรดลองอีกครั้ง";
 "Could not save your language. Please try again." = "บันทึกภาษาของคุณไม่ได้ โปรดลองอีกครั้ง";
 "Couldn't check story" = "ตรวจสอบบทความไม่ได้";
-"Couldn't load usage billing history." = "โหลดประวัติการเรียกเก็บเงินตามการใช้งานไม่ได้";
-"Couldn't open billing. Please try again." = "เปิดหน้าการเรียกเก็บเงินไม่ได้ โปรดลองอีกครั้ง";
 "Couldn't reach NewsBlur. Check your connection and try again." = "เชื่อมต่อ NewsBlur ไม่ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง";
-"Couldn't save your spending limit. Please try again." = "บันทึกขีดจำกัดการใช้จ่ายไม่ได้ โปรดลองอีกครั้ง";
 "Couldn’t load the full image. You can try opening it in your browser." = "โหลดรูปภาพฉบับเต็มไม่สำเร็จ คุณลองเปิดในเบราว์เซอร์ได้";
 "Counting is difficult..." = "การนับเป็นเรื่องยาก...";
 "Create a feed from any web page" = "สร้างฟีดจากหน้าเว็บใดก็ได้";
@@ -496,7 +481,6 @@
 "Include already-read stories" = "รวมบทความที่อ่านแล้ว";
 "Include in bundle" = "รวมไว้ในชุด";
 "Included in bundle" = "รวมอยู่ในชุด";
-"Increase or remove your limit" = "เพิ่มหรือยกเลิกขีดจำกัด";
 "Infrequent Site Stories" = "บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย";
 "Infrequent Stories" = "บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย";
 "Infrequent stories per month" = "บทความต่อเดือนของเว็บไซต์ที่อัปเดตไม่บ่อย";
@@ -506,7 +490,6 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "แทนที่จะใช้โหมดมืด/สว่างของระบบ ให้สลับธีมโดยอัตโนมัติตามระดับความสว่างของหน้าจอ เหมาะสำหรับการสลับธีมตามแสงโดยรอบ";
 "Interactions" = "การโต้ตอบ";
 "Invalid: %@" = "ไม่ถูกต้อง: %@";
-"Invoice" = "ใบแจ้งหนี้";
 "Keep fades, without movement." = "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว";
 "Keeps the dark icon no matter how your device is set." = "คงไอคอนสีเข้มไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keeps the light icon no matter how your device is set." = "คงไอคอนสว่างไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
@@ -570,8 +553,6 @@
 "Manage" = "จัดการ";
 "Manage Account on the Web" = "จัดการบัญชีบนเว็บ";
 "Manage Subscription" = "จัดการการสมัครสมาชิก";
-"Manage billing and limits" = "จัดการการเรียกเก็บเงินและขีดจำกัด";
-"Manage billing on Stripe" = "จัดการการเรียกเก็บเงินบน Stripe";
 "Manage this folder…" = "จัดการโฟลเดอร์นี้…";
 "Manage this site…" = "จัดการเว็บไซต์นี้…";
 "Manual scroll" = "เลื่อนด้วยตนเอง";
@@ -623,8 +604,6 @@
 "Medium [theme]" = "สีเทา";
 "Model" = "โมเดล";
 "Monday" = "วันจันทร์";
-"Monthly spending limit" = "วงเงินใช้จ่ายรายเดือน";
-"Monthly spending limit reached. " = "ถึงวงเงินใช้จ่ายรายเดือนแล้ว ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "บทความจำนวนมากขึ้นใช้พื้นที่ดิสก์มากขึ้น แต่ไม่มีผลต่อประสิทธิภาพอย่างเห็นได้ชัด";
 "More voices" = "เสียงเพิ่มเติม";
 "Morning" = "ช่วงเช้า";
@@ -666,10 +645,6 @@
 "Natural Language Image Classifier" = "ตัวจำแนกรูปภาพด้วยภาษาธรรมชาติ";
 "Natural Language Text Classifier" = "ตัวจำแนกข้อความด้วยภาษาธรรมชาติ";
 "Natural [listen delivery]" = "เป็นธรรมชาติ";
-"Natural language classifier billing" = "การเรียกเก็บเงินสำหรับตัวจำแนกภาษาธรรมชาติ";
-"Natural language classifiers are paused until next billing cycle. " = "ตัวจำแนกภาษาธรรมชาติถูกระงับจนถึงรอบการเรียกเก็บเงินถัดไป ";
-"Natural language classifiers are using your instance's API keys." = "ตัวจำแนกภาษาธรรมชาติใช้คีย์ API ของอินสแตนซ์นี้";
-"Natural language filters aren't active on this account." = "ตัวกรองภาษาธรรมชาติยังไม่เปิดใช้งานในบัญชีนี้";
 "Natural language text and image classifiers" = "ตัวจำแนกข้อความภาษาธรรมชาติและรูปภาพ";
 "Nested" = "ซ้อนกัน";
 "Never" = "ไม่เลย";
@@ -703,7 +678,6 @@
 "No feeds to show yet. Try another interest or search all sites." = "ยังไม่มีฟีดให้แสดง ลองเลือกความสนใจอื่นหรือค้นหาจากทุกเว็บไซต์";
 "No friends to suggest." = "ไม่มีเพื่อนให้แนะนำ";
 "No interests or sites found. Try another search." = "ไม่พบความสนใจหรือเว็บไซต์ ลองค้นหาอย่างอื่น";
-"No limit" = "ไม่จำกัด";
 "No longer saved" = "ไม่ได้บันทึกไว้อีกต่อไป";
 "No match" = "ไม่ตรงกัน";
 "No match in story" = "ไม่พบในบทความ";
@@ -716,8 +690,6 @@
 "No stories yet" = "ยังไม่มีบทความ";
 "No story selected" = "ยังไม่ได้เลือกบทความ";
 "No unread stories" = "ไม่มีบทความที่ยังไม่อ่าน";
-"No usage billing invoices yet." = "ยังไม่มีใบแจ้งหนี้การเรียกเก็บเงินตามการใช้งาน";
-"No usage billing set up." = "ยังไม่ได้ตั้งค่าการเรียกเก็บเงินตามการใช้งาน";
 "No voices match these filters" = "ไม่มีเสียงที่ตรงกับตัวกรองเหล่านี้";
 "None" = "ไม่มี";
 "Normal" = "ปกติ";
@@ -765,7 +737,6 @@
 "Open the next site/folder" = "เปิดเว็บไซต์/โฟลเดอร์ถัดไป";
 "Opening site…" = "กำลังเปิดเว็บไซต์…";
 "Opens Now Playing" = "เปิดหน้ากำลังเล่น";
-"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "ไม่บังคับ ตัวจำแนกจะหยุดทำงานเมื่อถึงขีดจำกัด และกลับมาทำงานอีกครั้งในรอบเรียกเก็บเงินถัดไป";
 "Options" = "ตัวเลือก";
 "Ordered" = "เรียงลำดับแล้ว";
 "Organize Sites" = "จัดระเบียบเว็บไซต์";
@@ -918,7 +889,6 @@
 "Saved on %@" = "บันทึกเมื่อ %@";
 "Saving Daily Briefing settings…" = "กำลังบันทึกการตั้งค่าสรุปข่าวประจำวัน…";
 "Saving search..." = "กำลังบันทึกการค้นหา...";
-"Saving..." = "กำลังบันทึก…";
 "Schedule" = "กำหนดเวลา";
 "Scroll horizontally" = "เลื่อนแนวนอน";
 "Scroll to Comments" = "เลื่อนไปยังความคิดเห็น";
@@ -951,8 +921,6 @@
 "Server URL" = "URL เซิร์ฟเวอร์";
 "Set an exact speed under Voice" = "ตั้งค่าความเร็วที่ต้องการได้ในส่วนเสียง";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "ตั้งค่าสรุปข่าวประจำวันเพื่อสร้างสรุปบทความที่สำคัญกับคุณมากที่สุด";
-"Set up billing" = "ตั้งค่าการเรียกเก็บเงิน";
-"Set up usage-based billing to use natural language content and image filters." = "ตั้งค่าการเรียกเก็บเงินตามการใช้งานเพื่อใช้ตัวกรองเนื้อหาและรูปภาพด้วยภาษาธรรมชาติ";
 "Settings" = "การตั้งค่า";
 "Share" = "แชร์";
 "Share This Story" = "แชร์บทความนี้";
@@ -1027,7 +995,6 @@
 "Spacing" = "ระยะห่าง";
 "Speaker boost" = "เพิ่มความดังเสียงพูด";
 "Speed" = "ความเร็ว";
-"Spending limit reached. Classifiers paused until next cycle." = "ถึงขีดจำกัดการใช้จ่ายแล้ว ตัวจำแนกหยุดทำงานชั่วคราวจนกว่าจะถึงรอบถัดไป";
 "Stability" = "ความเสถียร";
 "Stability, similarity and style" = "ความเสถียร ความคล้ายคลึง และสไตล์";
 "Stale — last story %@" = "ไม่มีการอัปเดต — บทความล่าสุดเมื่อ %@";
@@ -1221,7 +1188,6 @@
 "Unsaved" = "เลิกบันทึกแล้ว";
 "Untitled story" = "บทความไม่มีชื่อ";
 "Up Next" = "ถัดไป";
-"Upcoming charge: " = "ยอดเรียกเก็บครั้งถัดไป: ";
 "Updated %@ days ago" = "อัปเดตเมื่อ %@ วันก่อน";
 "Updated %@ months ago" = "อัปเดตเมื่อ %@ เดือนก่อน";
 "Updated %@ weeks ago" = "อัปเดตเมื่อ %@ สัปดาห์ก่อน";
@@ -1235,9 +1201,6 @@
 "Upgrade to Premium" = "อัปเกรดเป็น Premium";
 "Upgrade to Premium Archive" = "อัปเกรดเป็น Premium Archive";
 "Upgrade to Premium Pro" = "อัปเกรดเป็น Premium Pro";
-"Usage Billing" = "การเรียกเก็บเงินตามการใช้งาน";
-"Usage billing history" = "ประวัติการเรียกเก็บเงินตามการใช้งาน";
-"Usage-based billing is enabled for natural language classifiers." = "เปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนกภาษาธรรมชาติแล้ว";
 "Use %@" = "ใช้ %@";
 "Use a custom server" = "ใช้เซิร์ฟเวอร์กำหนดเอง";
 "Use another sign-in method" = "ใช้วิธีลงชื่อเข้าใช้อื่น";
@@ -1317,7 +1280,6 @@
 "no story" = "ไม่มีบทความ";
 "or" = "หรือ";
 "premium subscribers" = "สมาชิกพรีเมียม";
-"set up usage-based billing" = "ตั้งค่าการเรียกเก็บเงินตามการใช้งาน";
 "your account" = "บัญชีของคุณ";
 "‹ Feeds" = "‹ ฟีด";
 "✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ จาก %1$@ รูปภาพตรงกับตัวกรองนี้";

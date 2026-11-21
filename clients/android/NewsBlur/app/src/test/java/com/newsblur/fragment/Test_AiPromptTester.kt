@@ -2,7 +2,6 @@ package com.newsblur.fragment
 
 import com.newsblur.network.ClassifierApi
 import com.newsblur.network.PromptTestRequest
-import com.newsblur.network.domain.AiClassifierUsageResponse
 import com.newsblur.network.domain.PromptTestResponse
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -16,8 +15,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 // Test_AiPromptTester.kt: a trainer's prompt test result is only shown for the prompt text and
-// focus or hidden direction it was sent with, even when the draft changes while the slow,
-// billed apps/analyzer/views.py test_prompt request is still running.
+// focus or hidden direction it was sent with, even when the draft changes while the slow
+// apps/analyzer/views.py test_prompt request is still running.
 class Test_AiPromptTester {
     /** Holds every test response until the test releases it, like a slow AI request. */
     private class DelayedClassifierApi : ClassifierApi {
@@ -28,8 +27,6 @@ class Test_AiPromptTester {
             requests += request
             return response.await()
         }
-
-        override suspend fun getAiClassifierUsage(feedId: String?): AiClassifierUsageResponse = AiClassifierUsageResponse()
     }
 
     private val api = DelayedClassifierApi()

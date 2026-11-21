@@ -627,6 +627,9 @@ msgstr "Fitur AI"
 msgid "AI built into every story"
 msgstr "AI terintegrasi di setiap artikel"
 
+msgid "AI filters aren't available on this server"
+msgstr "Filter AI tidak tersedia di server ini"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "Filter gambar AI"
@@ -1553,9 +1556,6 @@ msgstr "Tidak dapat menyimpan artikel, tidak ditemukan"
 msgid "Could not unsave story, not found"
 msgstr "Tidak dapat membatalkan penyimpanan artikel, artikel tidak ditemukan"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Tidak dapat terhubung ke Stripe. Silakan coba lagi."
-
 msgid "Couldn't save the position"
 msgstr "Posisi tidak dapat disimpan"
 
@@ -1699,6 +1699,14 @@ msgstr "Default"
 
 msgid "Delete"
 msgstr "Hapus"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"Jelaskan dengan bahasa sederhana hal yang ingin difokuskan atau disembunyikan, pada teks atau gambar "
+"artikel. Pengklasifikasi bahasa alami memberi skor pada artikel seperti Pelatih Kecerdasan, tanpa batas "
+"penggunaan."
 
 msgid "Description"
 msgstr "Deskripsi"
@@ -3056,9 +3064,6 @@ msgstr "URL tidak valid"
 msgid "Invalid URL."
 msgstr "URL tidak valid."
 
-msgid "Invalid amount"
-msgstr "Jumlah tidak valid"
-
 msgid "Invalid classifier_type"
 msgstr "classifier_type tidak valid"
 
@@ -3221,12 +3226,6 @@ msgstr "Lisensi"
 msgctxt "theme"
 msgid "Light"
 msgstr "Terang"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "Batas tidak boleh melebihi $10,000"
-
-msgid "Limit must be a positive amount"
-msgstr "Batas harus berupa angka positif"
 
 msgid "Limited"
 msgstr "Terbatas"
@@ -4247,9 +4246,6 @@ msgstr "Tanpa sistem pelatihan"
 msgid "No uncategorized archives found"
 msgstr "Tidak ditemukan arsip tanpa kategori"
 
-msgid "No usage billing set up."
-msgstr "Penagihan berdasarkan penggunaan belum disiapkan."
-
 msgid "No user has that email address."
 msgstr "Tidak ada pengguna dengan alamat email tersebut."
 
@@ -4486,9 +4482,6 @@ msgstr "Masukkan kueri pencarian kata kunci."
 
 msgid "Please enter in an email address."
 msgstr "Masukkan alamat email."
-
-msgid "Please log in to NewsBlur again."
-msgstr "Silakan masuk kembali ke NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Silakan masuk untuk melanjutkan."
@@ -6451,15 +6444,6 @@ msgstr "Tingkatkan ke langganan premium untuk mengirim lebih dari satu artikel p
 msgid "Upgrade to premium archive"
 msgstr "Tingkatkan ke Premium Archive"
 
-msgid "Usage billing not enabled"
-msgstr "Penagihan berdasarkan pemakaian tidak diaktifkan"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "Penagihan penggunaan diperlukan untuk pengklasifikasi AI"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "Penagihan berdasarkan penggunaan tidak tersedia saat ini."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Penggunaan"
@@ -6829,13 +6813,6 @@ msgstr "Berfungsi di Mana Saja"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "Berfungsi dengan profil media sosial, papan lowongan kerja, halaman produk, dan lainnya"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"Tulis perintah dalam bahasa alami untuk memfilter artikel berdasarkan konten atau gambar. Pengklasifikasi "
-"bahasa alami memberi skor pada artikel seperti pelatih kecerdasan, dengan penagihan berdasarkan penggunaan."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
@@ -7392,6 +7369,20 @@ msgid ""
 msgstr ""
 "Anda baru-baru ini menggunakan NewsBlur, jadi mungkin Anda tidak bermaksud kembali ke akun gratis? Mungkin "
 "Anda hanya perlu memperpanjang akun premium Anda. Mari kami bantu melakukannya."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"Anda telah menggunakan %(count)s uji filter AI gratis hari ini. Kuotanya direset tengah malam. Premium "
+"Archive mencakup uji tanpa batas dan menjalankan filter Anda pada setiap artikel baru."
+msgstr[1] ""
+"Anda telah menggunakan %(count)s uji filter AI gratis hari ini. Kuotanya direset tengah malam. Premium "
+"Archive mencakup uji tanpa batas dan menjalankan filter Anda pada setiap artikel baru."
 
 msgid "YouTube search request failed."
 msgstr "Permintaan penelusuran YouTube gagal."

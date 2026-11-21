@@ -9,8 +9,8 @@
 import SwiftUI
 
 /// TrainerAIPromptSection.swift keeps the trainer's natural language classifier state: the prompt being written,
-/// prompt tests, cost estimates and the billing banners. TrainerViewController.swift owns one model so the state
-/// survives the TrainerView reload that follows every classifier save.
+/// prompt tests, and whether the account's saved filters score stories. TrainerViewController.swift owns one model
+/// so the state survives the TrainerView reload that follows every classifier save.
 @MainActor final class TrainerAIPromptModel: ObservableObject {
     enum TestState: Equatable {
         case idle
@@ -21,8 +21,6 @@ import SwiftUI
     @Published private(set) var drafts: [PromptClassifierKind: String] = [:]
     @Published private(set) var draftScores: [PromptClassifierKind: Int] = [:]
     @Published private(set) var tests: [PromptClassifierKind: TestState] = [:]
-    @Published private(set) var estimate: AIClassifierCostEstimate?
-    @Published private(set) var isLimitReached = false
     @Published var scopeOverrides: [String: ClassifierScope] = [:]
 
     /// The site or story being trained, and the account and server it's trained on. Drafts, test results and scope
@@ -35,41 +33,37 @@ import SwiftUI
     }
 
     private(set) var context: Context?
-    /// Moves on with every new context and every account change, so a usage fetch or prompt test answered for an
-    /// earlier one is dropped, even once the reader is back on the same site and story.
+    /// Moves on with every new context and every account change, so a prompt test answered for an earlier one is
+    /// dropped, even once the reader is back on the same site and story.
     private var contextGeneration = 0
-    /// The context generation a usage fetch is out for. Opening the trainer prepares it more than once, and those
-    /// calls share the fetch already out.
-    private var usageFetchGeneration: Int?
 
     let api: AIClassifierAPI
-    var billingStatus: () -> UsageBillingStatus
+    /// The signed in account's user_profile from /reader/feeds.
+    var userProfile: () -> [AnyHashable: Any]?
     /// The signed in account and the server it's on.
     var signedInAccount: () -> (username: String, host: String)
-    var storyVolumes: () -> AIClassifierStoryVolumes
     /// Saves through NewsBlurAppDelegate.m savePromptClassifier, like every other trainer classifier.
     var savePrompt: (_ prompt: String, _ kind: PromptClassifierKind, _ feedId: String, _ score: Int,
                      _ scope: ClassifierScope, _ folderName: String) -> Void
     var changeScope: (_ prompt: String, _ kind: PromptClassifierKind, _ feedId: String, _ score: Int,
                       _ oldScope: ClassifierScope, _ oldFolderName: String,
                       _ scope: ClassifierScope, _ folderName: String) -> Void
-    var openBilling: () -> Void
+    /// Opens PremiumView.swift scrolled to Premium Archive, through NewsBlurAppDelegate.m showPremiumDialogForArchive.
+    var openArchiveUpgrade: () -> Void
 
     /// apps/analyzer/views.py ignores prompts longer than this.
     static let maximumPromptLength = 500
 
     init(api: AIClassifierAPI? = nil,
-         billingStatus: (() -> UsageBillingStatus)? = nil,
-         storyVolumes: (() -> AIClassifierStoryVolumes)? = nil,
-         openBilling: (() -> Void)? = nil,
+         userProfile: (() -> [AnyHashable: Any]?)? = nil,
+         openArchiveUpgrade: (() -> Void)? = nil,
          signedInAccount: (() -> (username: String, host: String))? = nil) {
         self.api = api ?? AIClassifierAPI()
-        self.billingStatus = billingStatus ?? { UsageBillingStatus.current }
+        self.userProfile = userProfile ?? { NewsBlurAppDelegate.shared?.dictUserProfile as? [AnyHashable: Any] }
         self.signedInAccount = signedInAccount ?? {
             (NewsBlurAppDelegate.shared?.activeUsername ?? "", NewsBlurAppDelegate.shared?.url ?? "")
         }
-        self.storyVolumes = storyVolumes ?? { AIClassifierStoryVolumes.live(appDelegate: NewsBlurAppDelegate.shared) }
-        self.openBilling = openBilling ?? { NewsBlurAppDelegate.shared?.showUsageBillingDialog() }
+        self.openArchiveUpgrade = openArchiveUpgrade ?? { NewsBlurAppDelegate.shared?.showPremiumDialogForArchive() }
         savePrompt = { prompt, kind, feedId, score, scope, folderName in
             NewsBlurAppDelegate.shared?.savePromptClassifier(prompt, feedId: feedId, score: score,
                                                              includeImages: kind.includesImages,
@@ -84,8 +78,7 @@ import SwiftUI
 
     // MARK: Context
 
-    /// Clears drafts and results when the trainer opens for another site or story, or for another account, and loads
-    /// cost estimates again every time, so the cost row and limit banner never stay as an earlier visit left them.
+    /// Clears drafts and results when the trainer opens for another site or story, or for another account.
     func prepare(feedId: String?, storyHash: String?) {
         let account = signedInAccount()
         let context = Context(account: account.username, host: account.host, feedId: feedId ?? "",
@@ -93,7 +86,6 @@ import SwiftUI
         if context != self.context {
             start(context)
         }
-        fetchUsage(feedId: feedId)
     }
 
     /// TrainerViewController.swift clears the trainer when the reader signs in to another account.
@@ -104,27 +96,10 @@ import SwiftUI
     private func start(_ context: Context?) {
         self.context = context
         contextGeneration += 1
-        usageFetchGeneration = nil
         drafts = [:]
         draftScores = [:]
         tests = [:]
         scopeOverrides = [:]
-        estimate = nil
-        isLimitReached = false
-    }
-
-    private func fetchUsage(feedId: String?) {
-        // reader_classifier.js only asks for cost estimates when the reader can run AI classifiers.
-        guard billingStatus().canUseAIClassifiers, usageFetchGeneration != contextGeneration else { return }
-        let generation = contextGeneration
-        usageFetchGeneration = generation
-        api.fetchUsage(feedId: feedId) { [weak self] usage in
-            guard let self, self.contextGeneration == generation else { return }
-            self.usageFetchGeneration = nil
-            guard let usage else { return }
-            if let estimate = usage.estimate { self.estimate = estimate }
-            self.isLimitReached = usage.canUseAI && usage.isLimitReached
-        }
     }
 
     // MARK: Drafts
@@ -186,7 +161,7 @@ import SwiftUI
     }
 
     /// apps/analyzer/views.py saves a folder prompt without a folder name as feed_id=0 and an empty folder_id, which
-    /// is a global prompt that runs, and bills, on every site. So a site outside any folder can't scope to its folder.
+    /// is a global prompt that runs on every site. So a site outside any folder can't scope to its folder.
     static func hasDestination(_ scope: ClassifierScope, folderName: String) -> Bool {
         scope != .folder || !folderName.isEmpty
     }
@@ -230,7 +205,7 @@ import SwiftUI
         tests[kind] ?? .idle
     }
 
-    /// Runs one paid AI classification of the story against the draft prompt.
+    /// Runs one AI classification of the story against the draft prompt, on any account.
     func runTest(_ kind: PromptClassifierKind, storyHash: String?, feedId: String?) {
         let prompt = trimmedDraft(kind)
         guard !prompt.isEmpty, let storyHash, !storyHash.isEmpty, test(kind) != .testing else { return }
@@ -240,7 +215,6 @@ import SwiftUI
         api.testPrompt(prompt, kind: kind, storyHash: storyHash, feedId: feedId ?? "0",
                        classifierType: classifierType) { [weak self] result in
             guard let self, self.contextGeneration == generation else { return }
-            if let estimate = result.costEstimate { self.estimate = estimate }
             // A newer draft or a flipped focus/hide direction replaces the result, matching reader_classifier.js
             // clearing it on input, since the result answered a different filter.
             guard self.trimmedDraft(kind) == prompt, self.testClassifierType(kind) == classifierType else {
@@ -290,46 +264,19 @@ import SwiftUI
         return imageMatches[index]
     }
 
-    // MARK: Costs and banners
+    // MARK: Premium Archive
 
-    func sectionCost(_ kind: PromptClassifierKind, saved: [PromptClassifier], feedId: String?,
-                     currentFolderName: String) -> AIClassifierSectionCost? {
-        guard let estimate else { return nil }
-        let volumes = storyVolumes()
-        var filters = saved.filter { $0.score != 0 }.map { prompt -> AIClassifierCostFilter in
-            let scope = scope(for: prompt)
-            let stories = volumes.stories(scope: scope, folderName: folderName(for: prompt, currentFolderName: currentFolderName),
-                                          feedId: feedId)
-            return AIClassifierCostFilter(scope: scope, storiesPerMonth: stories)
-        }
-        // reader_classifier.js counts the live preview pill too, so the estimate moves while typing.
-        if !trimmedDraft(kind).isEmpty {
-            filters.append(AIClassifierCostFilter(scope: .feed, storiesPerMonth: volumes.stories(scope: .feed, folderName: "", feedId: feedId)))
-        }
-        return AIClassifierCostFormatter.sectionCost(kind: kind, costPerRun: estimate.costPerRun(for: kind),
-                                                     feedStoriesPerMonth: volumes.stories(scope: .feed, folderName: "", feedId: feedId),
-                                                     filters: filters)
+    /// apps/profile/models.py sets can_use_ai_classifiers for Premium Archive and Pro, the accounts whose AI filters
+    /// score stories. Every account can still write, save and test them.
+    var runsAIFilters: Bool {
+        AIClassifierValue.bool(userProfile()?["can_use_ai_classifiers"])
     }
 
-    /// reader_classifier.js reminds a reader with prompts that they won't run without usage billing.
-    func showsBillingBanner(_ kind: PromptClassifierKind, saved: [PromptClassifier]) -> Bool {
-        guard !isLimitReached, !billingStatus().canUseAIClassifiers else { return false }
+    /// Reminds a reader whose account doesn't run AI filters that the ones they saved or are writing won't score
+    /// stories until they upgrade to Premium Archive.
+    func showsArchiveBanner(_ kind: PromptClassifierKind, saved: [PromptClassifier]) -> Bool {
+        guard !runsAIFilters else { return false }
         return saved.contains { $0.score != 0 } || !trimmedDraft(kind).isEmpty
-    }
-
-    /// Whether the trainer offers billing at all. UsageBillingFeature.swift holds it out of this release, so readers
-    /// still see their cost estimates and why their filters aren't running, but no button or link to pay.
-    var offersBilling: Bool {
-        UsageBillingFeature.isEnabled
-    }
-
-    /// The cost row's billing button: managing an active plan, or setting one up. Self-hosted AI has none.
-    var billingButtonTitle: String? {
-        guard offersBilling else { return nil }
-        let status = billingStatus()
-        if status.isUsageBilling { return NBLocalization.text("Manage billing and limits") }
-        if status.isSelfHostedAI { return nil }
-        return NBLocalization.text("Set up billing")
     }
 }
 
@@ -357,10 +304,6 @@ struct TrainerAIPromptSection: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 8)
 
-            if let cost = model.sectionCost(kind, saved: savedPrompts, feedId: feed?.id, currentFolderName: currentFolderName) {
-                costRow(cost)
-            }
-
             if kind == .image, !imageURLs.isEmpty {
                 imageGrid
             }
@@ -381,10 +324,8 @@ struct TrainerAIPromptSection: View {
                 }
             }
 
-            if model.isLimitReached {
-                limitReachedBanner
-            } else if model.showsBillingBanner(kind, saved: savedPrompts) {
-                billingBanner
+            if model.showsArchiveBanner(kind, saved: savedPrompts) {
+                archiveBanner
             }
 
             Spacer().frame(height: 4)
@@ -419,48 +360,6 @@ struct TrainerAIPromptSection: View {
             : NBLocalization.text("e.g., \"AI and machine learning\" or \"local politics\"")
     }
 
-    // MARK: Cost row
-
-    func costRow(_ cost: AIClassifierSectionCost) -> some View {
-        HStack(alignment: .center, spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    (Text(cost.monthly).font(.system(size: 15, weight: .semibold))
-                        + Text(NBLocalization.text("/mo")).font(.system(size: 11)))
-                    Text("\u{00B7}").foregroundColor(TrainerAIPalette.secondaryText)
-                    (Text(cost.daily).font(.system(size: 13, weight: .medium))
-                        + Text(NBLocalization.text("/day")).font(.system(size: 10)))
-                }
-                .foregroundColor(TrainerAIPalette.text)
-                .fixedSize()
-
-                Text(cost.breakdown)
-                    .font(.system(size: 10))
-                    .foregroundColor(TrainerAIPalette.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer(minLength: 0)
-
-            if let title = model.billingButtonTitle {
-                Button(action: model.openBilling) {
-                    Text(title)
-                        .font(fontBuilder("WhitneySSm-Medium", 11))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(RoundedRectangle(cornerRadius: 6).fill(TrainerAIPalette.green))
-                        .fixedSize()
-                }
-                .buttonStyle(BorderlessButtonStyle())
-                .layoutPriority(1)
-            }
-        }
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: 8).fill(TrainerAIPalette.costBackground))
-    }
-
     // MARK: Images
 
     var imageGrid: some View {
@@ -479,7 +378,7 @@ struct TrainerAIPromptSection: View {
             if let image = phase.image {
                 image.resizable().scaledToFill()
             } else {
-                TrainerAIPalette.costBackground
+                TrainerAIPalette.subtleBackground
             }
         }
         .frame(width: 72, height: 72)
@@ -564,7 +463,7 @@ struct TrainerAIPromptSection: View {
             .foregroundColor(isError ? TrainerAIPalette.errorText : isMatch ? TrainerAIPalette.matchText : TrainerAIPalette.secondaryText)
             .padding(.horizontal, 8)
             .padding(.vertical, 3)
-            .background(Capsule().fill(isError ? TrainerAIPalette.errorBackground : isMatch ? TrainerAIPalette.matchBackground : TrainerAIPalette.costBackground))
+            .background(Capsule().fill(isError ? TrainerAIPalette.errorBackground : isMatch ? TrainerAIPalette.matchBackground : TrainerAIPalette.subtleBackground))
             .fixedSize(horizontal: false, vertical: true)
     }
 
@@ -606,81 +505,27 @@ struct TrainerAIPromptSection: View {
         .buttonStyle(BorderlessButtonStyle())
     }
 
-    // MARK: Banners
+    // MARK: Banner
 
-    /// Tells a reader with prompts that they won't run. While UsageBillingFeature.swift holds billing out of the
-    /// release, the banner says so and opens nothing.
-    @ViewBuilder
-    var billingBanner: some View {
-        let label = bannerLabel(billingBannerText, textColor: TrainerAIPalette.bannerText,
-                                background: TrainerAIPalette.bannerBackground)
-        if model.offersBilling {
-            Button(action: model.openBilling) { label }
-                .buttonStyle(BorderlessButtonStyle())
-                .accessibilityIdentifier("trainer-ai-billing-banner")
-        } else {
-            label.accessibilityIdentifier("trainer-ai-billing-banner")
-        }
-    }
-
-    /// "AI filters are saved but won't run until you set up usage-based billing." from reader_classifier.js,
-    /// translated whole with the link phrase placed wherever the language puts it. Without billing on offer, a
-    /// neutral line that names no purchase or website.
-    var billingBannerText: AttributedString {
-        guard model.offersBilling else {
-            var text = AttributedString(NBLocalization.text("Natural language filters aren't active on this account."))
-            text.font = .system(size: 12, weight: .bold)
-            return text
-        }
-        let marker = "\u{E002}"
-        var text = AttributedString(String(format: NBLocalization.text("AI filters are saved but won't run until you %@."), marker))
-        text.font = .system(size: 12, weight: .bold)
-        if let range = text.range(of: marker) {
-            var link = AttributedString(NBLocalization.text("set up usage-based billing"))
-            link.font = .system(size: 12, weight: .bold)
-            link.underlineStyle = .single
-            link.foregroundColor = TrainerAIPalette.bannerLink
-            text.replaceSubrange(range, with: link)
-        }
-        return text
-    }
-
-    @ViewBuilder
-    var limitReachedBanner: some View {
-        let label = bannerLabel(limitReachedText, textColor: TrainerAIPalette.limitText,
-                                background: TrainerAIPalette.limitBackground)
-        if model.offersBilling {
-            Button(action: model.openBilling) { label }
-                .buttonStyle(BorderlessButtonStyle())
-                .accessibilityIdentifier("trainer-ai-limit-banner")
-        } else {
-            label.accessibilityIdentifier("trainer-ai-limit-banner")
-        }
-    }
-
-    /// The limit statement, with a link to raise the limit only while billing is on offer.
-    var limitReachedText: AttributedString {
-        var text = AttributedString(NBLocalization.text("Monthly spending limit reached. "))
-        text.inlinePresentationIntent = .stronglyEmphasized
-        text += AttributedString(NBLocalization.text("Natural language classifiers are paused until next billing cycle. "))
-        if model.offersBilling {
-            var link = AttributedString(NBLocalization.text("Increase or remove your limit"))
-            link.underlineStyle = .single
-            link.foregroundColor = TrainerAIPalette.bannerLink
-            text += link
-        }
-        return text
-    }
-
-    func bannerLabel(_ text: AttributedString, textColor: Color, background: Color) -> some View {
-        Text(text)
-            .font(fontBuilder("WhitneySSm-Medium", 12))
-            .foregroundColor(textColor)
-            .multilineTextAlignment(.leading)
-            .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity, alignment: .leading)
+    /// Tells a reader whose account doesn't run AI filters that theirs are saved, and opens the Premium screen at
+    /// Premium Archive when tapped.
+    var archiveBanner: some View {
+        Button(action: model.openArchiveUpgrade) {
+            HStack(alignment: .center, spacing: 8) {
+                Text(NBLocalization.text("AI filters are saved but only run on Premium Archive."))
+                    .font(.system(size: 12, weight: .bold))
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "chevron.forward")
+                    .font(.system(size: 12, weight: .semibold))
+            }
+            .foregroundColor(TrainerAIPalette.bannerText)
             .padding(10)
-            .background(RoundedRectangle(cornerRadius: 8).fill(background))
+            .background(RoundedRectangle(cornerRadius: 8).fill(TrainerAIPalette.bannerBackground))
+        }
+        .buttonStyle(BorderlessButtonStyle())
+        .accessibilityIdentifier("trainer-ai-archive-banner")
     }
 }
 
@@ -825,14 +670,11 @@ enum TrainerAIPalette {
     static var divider: Color { Color.themed([0xBBBBBB, 0xB0A090, 0x777777, 0x777777]) }
     static var fieldBackground: Color { Color.themed([0xFFFFFF, 0xFFFBF5, 0x2C2C2E, 0x1C1C1E]) }
     static var fieldBorder: Color { Color.themed([0xC7C7CC, 0xD4C8B8, 0x555555, 0x444444]) }
-    static var costBackground: Color { Color.themed([0xF2F4EF, 0xF3E9DA, 0x2C2C2E, 0x1C1C1E]) }
+    static var subtleBackground: Color { Color.themed([0xF2F4EF, 0xF3E9DA, 0x2C2C2E, 0x1C1C1E]) }
     static var matchText: Color { Color.themed([0x2E7D32, 0x2E7D32, 0x9DE58D, 0x9DE58D]) }
     static var matchBackground: Color { Color.themed([0xE8F5E9, 0xE6EFD9, 0x29442B, 0x1F3A21]) }
     static var errorText: Color { Color.themed([0xC62828, 0xB0352B, 0xFFA3A5, 0xFFA3A5]) }
     static var errorBackground: Color { Color.themed([0xFFEBEE, 0xF8E1DA, 0x512D31, 0x3E2226]) }
     static var bannerText: Color { Color.themed([0x5D4A1F, 0x5D4A1F, 0xF0DDA8, 0xF0DDA8]) }
     static var bannerBackground: Color { Color.themed([0xFFF4D6, 0xF7E6C4, 0x4A3F22, 0x3A3119]) }
-    static var bannerLink: Color { Color.themed([0x2F6FB3, 0x8A5A1E, 0x8CC4FF, 0x8CC4FF]) }
-    static var limitText: Color { Color.themed([0x8A1F1F, 0x8A1F1F, 0xFFC2C2, 0xFFC2C2]) }
-    static var limitBackground: Color { Color.themed([0xFDE7E7, 0xF6DCD3, 0x4F2A2A, 0x3D2020]) }
 }

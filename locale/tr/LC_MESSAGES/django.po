@@ -609,6 +609,9 @@ msgstr "Yapay Zekâ Özellikleri"
 msgid "AI built into every story"
 msgstr "Her habere entegre yapay zekâ"
 
+msgid "AI filters aren't available on this server"
+msgstr "Yapay zekâ filtreleri bu sunucuda kullanılamıyor"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "Yapay zekâ görsel filtresi"
@@ -1541,9 +1544,6 @@ msgstr "Haber kaydedilemedi, bulunamadı"
 msgid "Could not unsave story, not found"
 msgstr "Haber kaydedilmişlerden çıkarılamadı; bulunamadı"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Stripe'a ulaşılamadı. Lütfen tekrar deneyin."
-
 msgid "Couldn't save the position"
 msgstr "Konum kaydedilemedi"
 
@@ -1687,6 +1687,13 @@ msgstr "Varsayılan"
 
 msgid "Delete"
 msgstr "Sil"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"Bir haberin metninde veya görsellerinde neye odaklanılacağını ya da nelerin gizleneceğini günlük dille "
+"açıklayın. Doğal dil sınıflandırıcıları, haberleri Zekâ Eğitmeni gibi puanlar ve kullanım sınırı yoktur."
 
 msgid "Description"
 msgstr "Açıklama"
@@ -3033,9 +3040,6 @@ msgstr "Geçersiz URL"
 msgid "Invalid URL."
 msgstr "Geçersiz URL."
 
-msgid "Invalid amount"
-msgstr "Geçersiz tutar"
-
 msgid "Invalid classifier_type"
 msgstr "Geçersiz classifier_type"
 
@@ -3192,12 +3196,6 @@ msgstr "Lisans"
 msgctxt "theme"
 msgid "Light"
 msgstr "Açık"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "Limit 10.000 $'ı aşamaz"
-
-msgid "Limit must be a positive amount"
-msgstr "Limit pozitif bir değer olmalıdır"
 
 msgid "Limited"
 msgstr "Sınırlı"
@@ -4215,9 +4213,6 @@ msgstr "Eğitim sistemi yok"
 msgid "No uncategorized archives found"
 msgstr "Kategorilendirilmemiş arşiv bulunamadı"
 
-msgid "No usage billing set up."
-msgstr "Kullanım faturalandırması ayarlanmamış."
-
 msgid "No user has that email address."
 msgstr "Bu e-posta adresine sahip bir kullanıcı yok."
 
@@ -4456,9 +4451,6 @@ msgstr "Lütfen bir anahtar kelime arama sorgusu girin."
 
 msgid "Please enter in an email address."
 msgstr "Lütfen bir e-posta adresi girin."
-
-msgid "Please log in to NewsBlur again."
-msgstr "Lütfen NewsBlur hesabınıza tekrar giriş yapın."
 
 msgid "Please login to continue."
 msgstr "Devam etmek için lütfen giriş yapın."
@@ -6411,15 +6403,6 @@ msgstr "E-posta yoluyla günde birden fazla haber göndermek için Premium abone
 msgid "Upgrade to premium archive"
 msgstr "Premium Archive'a yükselt"
 
-msgid "Usage billing not enabled"
-msgstr "Kullanım ücretlendirmesi etkin değil"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "Yapay zekâ sınıflandırıcıları için kullanıma dayalı faturalandırma gerekir"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "Kullanıma dayalı faturalandırma şu anda kullanılamıyor."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Kullanım"
@@ -6799,13 +6782,6 @@ msgstr "Her Yerde Çalışır"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "Sosyal medya profilleri, iş ilanı panoları, ürün sayfaları ve daha fazlasıyla çalışır"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"Haberleri içeriğe veya görsellere göre filtrelemek için doğal dilde istemler yazın. Doğal dil "
-"sınıflandırıcıları, kullanıma dayalı ücretlendirmeyle haberleri tıpkı Zekâ Eğitmeni gibi puanlar."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
@@ -7353,6 +7329,17 @@ msgid ""
 msgstr ""
 "Yakın zamanda NewsBlur'ı kullandınız; belki de ücretsiz hesaba geri dönmek istememiştiniz? Belki de "
 "yalnızca Premium hesabınızı yenilemeniz gerekiyor. Bunu yapmanıza yardımcı olalım."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"Bugünkü %(count)s ücretsiz yapay zekâ filtresi denemenizi kullandınız. Hak gece yarısı sıfırlanır. Premium "
+"Archive sınırsız deneme içerir ve filtrelerinizi her yeni haberde çalıştırır."
 
 msgid "YouTube search request failed."
 msgstr "YouTube arama isteği başarısız oldu."

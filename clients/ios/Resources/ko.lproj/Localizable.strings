@@ -13,9 +13,6 @@
 "%1$@ of %2$@ of listening left this week" = "이번 주 청취 가능 시간 %1$@ 중 %2$@ 남음";
 "%1$@ of %2$@ sites indexed" = "%1$@ / %2$@개 사이트 색인 완료";
 "%1$@ of %2$@ story previews used today" = "오늘 사용한 스토리 미리보기 %1$@/%2$@회";
-"%1$@ on all sites (%2$@)" = "모든 사이트에서 %1$@ (%2$@)";
-"%1$@ on folder (%2$@)" = "폴더에서 %1$@ (%2$@)";
-"%1$@ on this site (%2$@)" = "이 사이트의 %1$@ (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@님이 %2$@을(를) 다시 공유했습니다.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@님이 %2$@을(를) 다시 공유했습니다:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@님이 %2$@님에게 답글을 남겼습니다: \n \n%3$@";
@@ -23,13 +20,11 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@님이 %2$@에 남긴 회원님의 답글에 답했습니다:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@님이 %2$@을(를) 공유했습니다.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@님이 %2$@을(를) 공유했습니다:\n \n%3$@";
-"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ 위젯 사이트";
 "%@ ago" = "%@ 전";
 "%@ categories to choose from" = "선택 가능한 카테고리 %@개";
 "%@ comments" = "댓글 %@개";
-"%@ content filters" = "%@개 콘텐츠 필터";
 "%@ could not be added." = "피드 %@개를 추가하지 못했습니다.";
 "%@ days" = "%@일";
 "%@ feed" = "%@ 피드";
@@ -41,7 +36,6 @@
 "%@ focused stories" = "%@개의 집중 스토리";
 "%@ folder" = "%@ 폴더";
 "%@ free story previews left today" = "오늘 무료로 미리 들을 수 있는 스토리가 %@개 남았습니다";
-"%@ image filters" = "%@개 이미지 필터";
 "%@ is now following you." = "%@님이 회원님을 팔로우하기 시작했습니다.";
 "%@ left in this preview" = "미리 보기에서 %@ 남음";
 "%@ left this week" = "이번 주에 %@ 남음";
@@ -54,23 +48,17 @@
 "%@ sources" = "%@개 소스";
 "%@ stories" = "스토리 %@개";
 "%@ stories left" = "남은 스토리 %@개";
-"%@ stories/mo" = "%@개 스토리/월";
 "%@ stories/month" = "월 %@개 스토리";
 "%@ subscribers" = "구독자 %@명";
 "%@ unread stories" = "읽지 않은 스토리 %@개";
 "%@ voice previews left" = "음성 미리 듣기 %@회 남음";
-"%@/story" = "%@/스토리";
 "%@×" = "%@×";
 "%ldd ago" = "%ld일 전";
 "%ldh ago" = "%ld시간 전";
 "%ldm ago" = "%ld분 전";
 "%ldw ago" = "%ld주 전";
-"(upcoming)" = "(예정)";
 "+ %@ more sites" = "외 %@개 사이트";
 "..." = "…";
-"/day" = "/일";
-"/mo" = "/월";
-"/month" = "/월";
 "1 Widget Site" = "위젯 사이트 1개";
 "1,000 stories" = "스토리 1,000개";
 "10 stories" = "스토리 10개";
@@ -93,7 +81,7 @@
 "< 90/month" = "월 90개 미만";
 "A clearer, closer sound" = "더 선명하고 가까운 소리";
 "A personal news reader bringing\npeople together to talk about the world." = "사람들이 세상에 대해 이야기하도록\n이어 주는 개인 뉴스 리더입니다.";
-"AI filters are saved but won't run until you %@." = "AI 필터가 저장되었습니다. %@ 전까지는 실행되지 않습니다.";
+"AI filters are saved but only run on Premium Archive." = "AI 필터는 저장되지만 프리미엄 아카이브에서만 실행됩니다.";
 "AI finds the stories" = "AI가 스토리를 찾아냅니다";
 "ALL" = "전체";
 "ALL NOTIFICATIONS" = "모든 알림";
@@ -264,10 +252,7 @@
 "Could not completely clear the cache. Please try again." = "캐시를 완전히 비우지 못했습니다. 다시 시도해 주세요.";
 "Could not save your language. Please try again." = "언어를 저장하지 못했습니다. 다시 시도해 주세요.";
 "Couldn't check story" = "스토리를 확인할 수 없습니다";
-"Couldn't load usage billing history." = "사용량 기반 결제 내역을 불러오지 못했습니다.";
-"Couldn't open billing. Please try again." = "결제 정보를 열 수 없습니다. 다시 시도하세요.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur에 연결할 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.";
-"Couldn't save your spending limit. Please try again." = "지출 한도를 저장하지 못했습니다. 다시 시도하세요.";
 "Couldn’t load the full image. You can try opening it in your browser." = "전체 이미지를 불러올 수 없습니다. 브라우저에서 열어 보세요.";
 "Counting is difficult..." = "세는 건 어렵네요...";
 "Create a feed from any web page" = "웹페이지에서 피드 만들기";
@@ -496,7 +481,6 @@
 "Include already-read stories" = "읽은 스토리 포함";
 "Include in bundle" = "번들에 포함";
 "Included in bundle" = "번들에 포함됨";
-"Increase or remove your limit" = "한도를 늘리거나 삭제하세요";
 "Infrequent Site Stories" = "업데이트가 드문 사이트의 스토리";
 "Infrequent Stories" = "드물게 올라오는 스토리";
 "Infrequent stories per month" = "업데이트가 드문 사이트 기준(월 스토리 수)";
@@ -506,7 +490,6 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "시스템의 다크/라이트 모드를 따르는 대신, 화면 밝기에 따라 테마를 자동으로 전환합니다. 주변 조명에 맞춰 테마를 전환할 때 유용합니다.";
 "Interactions" = "상호작용";
 "Invalid: %@" = "유효하지 않음: %@";
-"Invoice" = "청구서";
 "Keep fades, without movement." = "움직임 없이 페이드 효과를 유지합니다.";
 "Keeps the dark icon no matter how your device is set." = "기기 설정과 관계없이 어두운 아이콘을 유지합니다.";
 "Keeps the light icon no matter how your device is set." = "기기 설정과 관계없이 밝은 아이콘을 유지합니다.";
@@ -569,8 +552,6 @@
 "Manage" = "관리";
 "Manage Account on the Web" = "웹에서 계정 관리";
 "Manage Subscription" = "구독 관리";
-"Manage billing and limits" = "결제 및 한도 관리";
-"Manage billing on Stripe" = "Stripe에서 결제 관리";
 "Manage this folder…" = "이 폴더 관리…";
 "Manage this site…" = "이 사이트 관리…";
 "Manual scroll" = "수동 스크롤";
@@ -622,8 +603,6 @@
 "Medium [theme]" = "미디엄";
 "Model" = "모델";
 "Monday" = "월요일";
-"Monthly spending limit" = "월간 지출 한도";
-"Monthly spending limit reached. " = "월간 지출 한도에 도달했습니다. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "스토리를 더 많이 저장하면 디스크 공간을 더 사용하지만, 그 외에는 성능에 눈에 띄는 영향이 없습니다.";
 "More voices" = "음성 더 보기";
 "Morning" = "아침";
@@ -665,10 +644,6 @@
 "Natural Language Image Classifier" = "자연어 이미지 분류기";
 "Natural Language Text Classifier" = "자연어 텍스트 분류기";
 "Natural [listen delivery]" = "자연스러움";
-"Natural language classifier billing" = "자연어 분류기 결제";
-"Natural language classifiers are paused until next billing cycle. " = "자연어 분류기는 다음 결제 주기까지 일시 중지됩니다. ";
-"Natural language classifiers are using your instance's API keys." = "자연어 분류기가 인스턴스의 API 키를 사용하고 있습니다.";
-"Natural language filters aren't active on this account." = "이 계정에서는 자연어 필터가 활성화되어 있지 않습니다.";
 "Natural language text and image classifiers" = "자연어 텍스트 및 이미지 분류기";
 "Nested" = "중첩";
 "Never" = "안 함";
@@ -702,7 +677,6 @@
 "No feeds to show yet. Try another interest or search all sites." = "표시할 피드가 아직 없습니다. 다른 관심사를 선택하거나 모든 사이트를 검색해 보세요.";
 "No friends to suggest." = "추천할 친구가 없습니다.";
 "No interests or sites found. Try another search." = "관심사나 사이트를 찾을 수 없습니다. 다른 검색어를 입력해 보세요.";
-"No limit" = "한도 없음";
 "No longer saved" = "더 이상 저장되지 않음";
 "No match" = "일치 항목 없음";
 "No match in story" = "스토리에 일치하는 항목이 없습니다";
@@ -715,8 +689,6 @@
 "No stories yet" = "아직 스토리가 없습니다";
 "No story selected" = "선택된 스토리가 없습니다";
 "No unread stories" = "읽지 않은 스토리가 없습니다";
-"No usage billing invoices yet." = "사용량 결제 청구서가 아직 없습니다.";
-"No usage billing set up." = "사용량 기반 결제가 설정되지 않았습니다.";
 "No voices match these filters" = "이 필터와 일치하는 음성이 없습니다";
 "None" = "없음";
 "Normal" = "보통";
@@ -764,7 +736,6 @@
 "Open the next site/folder" = "다음 사이트/폴더 열기";
 "Opening site…" = "사이트 여는 중…";
 "Opens Now Playing" = "‘현재 재생 중’ 열기";
-"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "선택 사항입니다. 한도에 도달하면 분류기가 일시 중지되고 다음 결제 주기에 다시 시작됩니다.";
 "Options" = "옵션";
 "Ordered" = "정렬됨";
 "Organize Sites" = "사이트 정리";
@@ -917,7 +888,6 @@
 "Saved on %@" = "%@에 저장됨";
 "Saving Daily Briefing settings…" = "데일리 브리핑 설정 저장 중…";
 "Saving search..." = "검색 저장 중...";
-"Saving..." = "저장 중...";
 "Schedule" = "일정";
 "Scroll horizontally" = "가로로 스크롤";
 "Scroll to Comments" = "댓글로 이동";
@@ -950,8 +920,6 @@
 "Server URL" = "서버 URL";
 "Set an exact speed under Voice" = "음성에서 정확한 속도를 설정하세요";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "가장 중요한 스토리를 요약하도록 데일리 브리핑을 설정하세요.";
-"Set up billing" = "결제 설정";
-"Set up usage-based billing to use natural language content and image filters." = "자연어 콘텐츠 및 이미지 필터를 사용하려면 사용량 기반 결제를 설정하세요.";
 "Settings" = "설정";
 "Share" = "공유";
 "Share This Story" = "이 스토리 공유";
@@ -1026,7 +994,6 @@
 "Spacing" = "간격";
 "Speaker boost" = "화자 음량 증폭";
 "Speed" = "속도";
-"Spending limit reached. Classifiers paused until next cycle." = "지출 한도에 도달했습니다. 분류기가 다음 주기까지 일시 중지되었습니다.";
 "Stability" = "안정성";
 "Stability, similarity and style" = "안정성, 유사성 및 스타일";
 "Stale — last story %@" = "오래됨 — 마지막 스토리 %@";
@@ -1220,7 +1187,6 @@
 "Unsaved" = "저장되지 않음";
 "Untitled story" = "제목 없는 스토리";
 "Up Next" = "다음 재생";
-"Upcoming charge: " = "예정된 청구 금액: ";
 "Updated %@ days ago" = "%@일 전에 업데이트됨";
 "Updated %@ months ago" = "%@개월 전에 업데이트됨";
 "Updated %@ weeks ago" = "%@주 전에 업데이트됨";
@@ -1234,9 +1200,6 @@
 "Upgrade to Premium" = "프리미엄으로 업그레이드";
 "Upgrade to Premium Archive" = "프리미엄 아카이브로 업그레이드";
 "Upgrade to Premium Pro" = "프리미엄 프로로 업그레이드";
-"Usage Billing" = "사용량 결제";
-"Usage billing history" = "사용량 기반 결제 내역";
-"Usage-based billing is enabled for natural language classifiers." = "자연어 분류기의 사용량 기반 결제가 활성화되어 있습니다.";
 "Use %@" = "%@ 사용";
 "Use a custom server" = "사용자 지정 서버 사용";
 "Use another sign-in method" = "다른 로그인 방법 사용";
@@ -1316,7 +1279,6 @@
 "no story" = "스토리 없음";
 "or" = "또는";
 "premium subscribers" = "프리미엄 구독자";
-"set up usage-based billing" = "사용량 기반 결제 설정";
 "your account" = "내 계정";
 "‹ Feeds" = "‹ 피드";
 "✓ %2$@ of %1$@ images match this filter" = "이미지 %1$@개 중 %2$@개가 이 필터와 일치합니다";

@@ -4,9 +4,6 @@ from django.views import View
 
 from apps.statistics.rllm_costs import RLLMCosts
 
-# Markup applied to raw LLM costs for usage-based billing revenue
-COST_MARKUP = 1.5
-
 
 class LLMCosts(View):
     def get(self, request):
@@ -25,17 +22,10 @@ class LLMCosts(View):
         daily_users = all_stats["daily_users"]
         weekly_users = all_stats["weekly_users"]
         monthly_users = all_stats["monthly_users"]
-        daily_billing_users = all_stats["daily_billing_users"]
-        weekly_billing_users = all_stats["weekly_billing_users"]
-        monthly_billing_users = all_stats["monthly_billing_users"]
-
-        # Per-user billing stats (aggregated over the Grafana time range, default 30 days)
-        billing_user_stats = RLLMCosts.get_billing_user_stats(days=30)
 
         # Define the dimensions we track (use centralized lists from RLLMCosts)
         providers = RLLMCosts.PROVIDERS
         features = RLLMCosts.FEATURES
-        classifier_features = RLLMCosts.CLASSIFIER_FEATURES
 
         data = {}
 
@@ -93,22 +83,6 @@ class LLMCosts(View):
         data["daily_unique_users"] = daily_users
         data["weekly_unique_users"] = weekly_users
         data["monthly_unique_users"] = monthly_users
-
-        # === Classifier Billing (usage-billing users only) ===
-        for period_name, stats in [
-            ("daily", daily_stats),
-            ("weekly", weekly_stats),
-            ("monthly", monthly_stats),
-        ]:
-            for feature in classifier_features:
-                s = get_stats(stats, f"billing:{feature}")
-                data[f"billing_{feature}_{period_name}_tokens"] = s["tokens"]
-                data[f"billing_{feature}_{period_name}_cost_usd"] = s["cost_usd"]
-                data[f"billing_{feature}_{period_name}_requests"] = s["requests"]
-
-        data["daily_billing_users"] = daily_billing_users
-        data["weekly_billing_users"] = weekly_billing_users
-        data["monthly_billing_users"] = monthly_billing_users
 
         # Format data for Prometheus
         chart_name = "llm_costs"
@@ -184,66 +158,27 @@ class LLMCosts(View):
                 f"{period}_unique_users"
             ] = f'{chart_name}{{metric="unique_users",period="{period}"}} {data[f"{period}_unique_users"]}'
 
-        # Classifier billing metrics (usage-billing users only)
-        for feature in classifier_features:
-            for period in ["daily", "weekly", "monthly"]:
-                tokens_key = f"billing_{feature}_{period}_tokens"
-                cost_key = f"billing_{feature}_{period}_cost_usd"
-                requests_key = f"billing_{feature}_{period}_requests"
-
-                formatted_data[
-                    f"billing_{tokens_key}"
-                ] = f'{chart_name}{{metric="tokens",billing="usage",feature="{feature}",period="{period}"}} {data[tokens_key]}'
-                formatted_data[
-                    f"billing_{cost_key}"
-                ] = f'{chart_name}{{metric="cost_usd",billing="usage",feature="{feature}",period="{period}"}} {data[cost_key]:.6f}'
-                formatted_data[
-                    f"billing_{requests_key}"
-                ] = f'{chart_name}{{metric="requests",billing="usage",feature="{feature}",period="{period}"}} {data[requests_key]}'
-
-        # Billing users
-        for period in ["daily", "weekly", "monthly"]:
+        # AI filter usage per reader over the Grafana default of 30 days, for the AI Filters
+        # row's table of the heaviest users.
+        classifier_user_stats = RLLMCosts.get_classifier_user_stats(days=30)
+        usernames = dict(
+            User.objects.filter(pk__in=list(classifier_user_stats.keys())).values_list("pk", "username")
+        )
+        for user_id, features in classifier_user_stats.items():
+            username = usernames.get(user_id, str(user_id))
+            text = features.get("story_classification", {})
+            image = features.get("vision_classification", {})
+            cost = text.get("cost_usd", 0.0) + image.get("cost_usd", 0.0)
+            label = f'classifier="user",username="{username}"'
             formatted_data[
-                f"{period}_billing_users"
-            ] = f'{chart_name}{{metric="billing_users",period="{period}"}} {data[f"{period}_billing_users"]}'
-
-        # Per-user billing breakdown (for Grafana table panel)
-        if billing_user_stats:
-            # Look up usernames in one query
-            user_ids = list(billing_user_stats.keys())
-            usernames = dict(User.objects.filter(pk__in=user_ids).values_list("pk", "username"))
-
-            for user_id, features in billing_user_stats.items():
-                username = usernames.get(user_id, str(user_id))
-                # Aggregate across text + vision features for this user
-                total_cost = 0.0
-                total_requests = 0
-                text_requests = 0
-                vision_requests = 0
-                for feature, stats in features.items():
-                    total_cost += stats["cost_usd"]
-                    total_requests += stats["requests"]
-                    if feature == "story_classification":
-                        text_requests = stats["requests"]
-                    elif feature == "vision_classification":
-                        vision_requests = stats["requests"]
-
-                revenue = total_cost * COST_MARKUP
-                formatted_data[
-                    f"billing_user_{user_id}_cost"
-                ] = f'{chart_name}{{metric="cost_usd",billing="user",username="{username}"}} {total_cost:.6f}'
-                formatted_data[
-                    f"billing_user_{user_id}_revenue"
-                ] = f'{chart_name}{{metric="revenue_usd",billing="user",username="{username}"}} {revenue:.6f}'
-                formatted_data[
-                    f"billing_user_{user_id}_text_requests"
-                ] = f'{chart_name}{{metric="text_requests",billing="user",username="{username}"}} {text_requests}'
-                formatted_data[
-                    f"billing_user_{user_id}_vision_requests"
-                ] = f'{chart_name}{{metric="vision_requests",billing="user",username="{username}"}} {vision_requests}'
-                formatted_data[
-                    f"billing_user_{user_id}_total_requests"
-                ] = f'{chart_name}{{metric="total_stories",billing="user",username="{username}"}} {total_requests}'
+                f"classifier_user_{user_id}_cost"
+            ] = f'{chart_name}{{metric="cost_usd",{label}}} {cost:.6f}'
+            formatted_data[
+                f"classifier_user_{user_id}_text_requests"
+            ] = f'{chart_name}{{metric="text_requests",{label}}} {text.get("requests", 0)}'
+            formatted_data[
+                f"classifier_user_{user_id}_image_requests"
+            ] = f'{chart_name}{{metric="image_requests",{label}}} {image.get("requests", 0)}'
 
         context = {
             "data": formatted_data,

@@ -35,7 +35,6 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.fetch_connected_accounts();
 
         this.fetch_payment_history();
-        this.fetch_usage_billing_history();
         this.render_dates();
         this.fetch_classifiers_count();
         this.handle_classifier_pill_change();
@@ -274,54 +273,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             gettext('Premium renewal')
                         ])
-                    ])),
-                    $.make('div', { className: 'NB-preference NB-preference-usage-billing' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-usage-billing-status' },
-                                NEWSBLUR.Globals.is_usage_billing
-                                    ? gettext('Usage-based billing is enabled for natural language classifiers.')
-                                    : (NEWSBLUR.Globals.is_self_hosted_ai
-                                        ? gettext('Natural language classifiers are using your instance\'s API keys.')
-                                        : gettext('Set up usage-based billing to use natural language content and image filters.'))
-                            ),
-                            (NEWSBLUR.Globals.can_use_ai_classifiers && $.make('div', { className: 'NB-usage-billing-current-spend-section' })),
-                            (NEWSBLUR.Globals.is_usage_billing
-                                ? $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-manage NB-modal-submit-button NB-modal-submit-green' }, gettext('Manage billing on Stripe'))
-                                : (!NEWSBLUR.Globals.is_self_hosted_ai && $.make('a', { href: '#', className: 'NB-block NB-account-usage-billing-setup NB-modal-submit-button NB-modal-submit-green' }, gettext('Set up billing')))
-                            ),
-                            (NEWSBLUR.Globals.can_use_ai_classifiers && $.make('div', { className: 'NB-usage-billing-limit-section' }, [
-                                $.make('div', { className: 'NB-usage-billing-limit-label' }, gettext('Monthly spending limit')),
-                                $.make('div', { className: 'NB-usage-billing-limit-input-row' }, [
-                                    $.make('span', { className: 'NB-usage-billing-limit-dollar' }, '$'),
-                                    $.make('input', {
-                                        type: 'number',
-                                        className: 'NB-usage-billing-limit-input',
-                                        placeholder: gettext('No limit'),
-                                        min: '1',
-                                        step: '1',
-                                        value: NEWSBLUR.Globals.usage_billing_limit || ''
-                                    }),
-                                    $.make('span', { className: 'NB-usage-billing-limit-per-month' }, gettext('/month'))
-                                ]),
-                                $.make('div', { className: 'NB-usage-billing-limit-help' },
-                                    gettext('Optional. Classifiers pause when the limit is reached and resume next billing cycle.')
-                                )
-                            ]))
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Natural language classifier billing')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-usage-billing-history' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('ul', { className: 'NB-account-usage-payments' }, [
-                                $.make('li', { className: 'NB-payments-loading' }, gettext('Loading...'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Usage billing history')
-                        ])
-                    ])
+                    ]))
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-emails' }, [
                     $.make('div', { className: 'NB-preferences-unsubscribed' }, [
@@ -901,15 +853,6 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             NEWSBLUR.Preferences.invoice_text = data.payload.invoice_text;
             NEWSBLUR.Preferences.send_emails = data.payload.send_emails;
             NEWSBLUR.Preferences.notify_before_renewal = data.payload.notify_before_renewal;
-            // reader_account.js waits for the account save because usage billing also writes the profile.
-            if (NEWSBLUR.Globals.can_use_ai_classifiers) {
-                var limit = $('.NB-usage-billing-limit-input', this.$modal).val();
-                this.model.save_usage_billing_limit(limit, function (data) {
-                    if (data.code === 1) {
-                        NEWSBLUR.Globals.usage_billing_limit = data.limit;
-                    }
-                });
-            }
             NEWSBLUR.Globals.username = data.payload.username;
             NEWSBLUR.Globals.email = data.payload.email;
             $('.NB-module-account-username').text(NEWSBLUR.Globals.username);
@@ -965,10 +908,6 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 }
             }
 
-            if (data.is_usage_billing !== undefined) {
-                NEWSBLUR.Globals.is_usage_billing = data.is_usage_billing;
-            }
-
             if (!data.payments || !data.payments.length) {
                 $history.append($.make('li', { className: 'NB-account-payment' }, [
                     $.make('i', gettext('No payments found.'))
@@ -1005,126 +944,6 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             $(window).resize();
         }, this));
     },
-
-    fetch_usage_billing_history: function () {
-        var self = this;
-        if (!NEWSBLUR.Globals.can_use_ai_classifiers) {
-            var $history = $('.NB-account-usage-payments', this.$modal).empty();
-            $history.append($.make('li', { className: 'NB-account-payment' }, [
-                $.make('i', gettext('No usage billing set up.'))
-            ]));
-            return;
-        }
-
-        this.model.fetch_usage_billing_history(_.bind(function (data) {
-            // Render current spend hero
-            var $spend_section = $('.NB-usage-billing-current-spend-section', this.$modal).empty();
-
-            var spend_amount = '$' + (data.current_cycle_spend || 0).toFixed(2);
-            var $hero = $.make('div', { className: 'NB-usage-billing-spend-hero' }, spend_amount);
-
-            var now = new Date();
-            var cycle_start = data.cycle_start ? new Date(data.cycle_start + 'T00:00:00') : new Date(now.getFullYear(), now.getMonth(), 1);
-            var cycle_end = data.cycle_end ? new Date(data.cycle_end + 'T00:00:00') : new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            var period_text = interpolate(gettext("%(start)s \u2013 %(end)s"), {
-                start: self.format_billing_date(cycle_start, { month: 'short', day: 'numeric' }),
-                end: self.format_billing_date(cycle_end, { month: 'short', day: 'numeric', year: 'numeric' })
-            }, true);
-            var $period = $.make('div', { className: 'NB-usage-billing-spend-period' }, period_text);
-
-            $spend_section.append($hero, $period);
-
-            // Progress bar if limit is set
-            if (data.usage_billing_limit) {
-                var pct = Math.min(100, (data.current_cycle_spend / data.usage_billing_limit) * 100);
-                var status_class = data.is_limit_reached ? 'NB-limit-reached' : (pct > 80 ? 'NB-limit-warning' : '');
-                $spend_section.append($.make('div', { className: 'NB-usage-billing-limit-bar ' + status_class }, [
-                    $.make('div', { className: 'NB-usage-billing-limit-bar-fill', style: 'width:' + pct + '%' }),
-                    $.make('span', { className: 'NB-usage-billing-limit-bar-text' },
-                        '$' + data.current_cycle_spend.toFixed(2) + ' / $' + data.usage_billing_limit.toFixed(2)
-                    )
-                ]));
-                if (data.is_limit_reached) {
-                    $spend_section.append($.make('div', { className: 'NB-usage-billing-limit-reached-note' },
-                        gettext('Spending limit reached. Classifiers paused until next cycle.')
-                    ));
-                }
-            }
-
-            // Upcoming charge preview
-            if (data.upcoming_invoice) {
-                $spend_section.append($.make('div', { className: 'NB-usage-billing-upcoming-charge' }, [
-                    $.make('span', { className: 'NB-usage-billing-upcoming-label' }, gettext('Upcoming charge: ')),
-                    $.make('span', { className: 'NB-usage-billing-upcoming-amount' }, '$' + data.upcoming_invoice.amount.toFixed(2))
-                ]));
-            }
-
-            // Update limit input value from server
-            $('.NB-usage-billing-limit-input', this.$modal).val(data.usage_billing_limit || '');
-
-            // Render usage billing history
-            var $history = $('.NB-account-usage-payments', this.$modal).empty();
-
-            var make_line_items = function (items) {
-                if (!items || !items.length) return null;
-                var $line_items = $.make('div', { className: 'NB-account-payment-line-items' });
-                _.each(items, function (item) {
-                    $line_items.append($.make('div', { className: 'NB-account-payment-line-item' }, [
-                        $.make('span', { className: 'NB-account-payment-line-item-desc' }, item.description),
-                        $.make('span', { className: 'NB-account-payment-line-item-qty' }, '\u00d7' + item.quantity),
-                        $.make('span', { className: 'NB-account-payment-line-item-amount' }, '$' + item.amount.toFixed(2))
-                    ]));
-                });
-                return $line_items;
-            };
-
-            if ((!data.invoices || !data.invoices.length) && !data.upcoming_invoice) {
-                $history.append($.make('li', { className: 'NB-account-payment' }, [
-                    $.make('i', gettext('No usage billing invoices yet.'))
-                ]));
-            } else {
-                if (data.upcoming_invoice) {
-                    var upcoming = data.upcoming_invoice;
-                    var upcoming_date = new Date(upcoming.date);
-                    $history.append($.make('li', { className: 'NB-account-payment NB-scheduled' }, [
-                        $.make('div', { className: 'NB-account-payment-date' }, self.format_billing_date(upcoming_date, { year: 'numeric', month: 'long', day: '2-digit' })),
-                        $.make('div', { className: 'NB-account-payment-amount' }, "$" + upcoming.amount.toFixed(2)),
-                        $.make('div', { className: 'NB-account-payment-provider' }, gettext('(upcoming)')),
-                        make_line_items(upcoming.line_items)
-                    ]));
-                }
-                _.each(data.invoices, function (invoice) {
-                    var date = new Date(invoice.date);
-                    var $invoice_link = null;
-
-                    if (invoice.hosted_invoice_url) {
-                        $invoice_link = $.make('a', {
-                            href: invoice.hosted_invoice_url,
-                            target: '_blank',
-                            className: 'NB-account-payment-invoice'
-                        }, [
-                            $.make('span', { className: 'NB-account-payment-invoice-icon' }),
-                            gettext('Invoice')
-                        ]);
-                    }
-
-                    $history.append($.make('li', { className: 'NB-account-payment' + (invoice.status === 'draft' ? ' NB-scheduled' : '') }, [
-                        $.make('div', { className: 'NB-account-payment-date' }, self.format_billing_date(date, { year: 'numeric', month: 'long', day: '2-digit' })),
-                        $.make('div', { className: 'NB-account-payment-amount' }, "$" + invoice.amount_paid.toFixed(2)),
-                        $.make('div', { className: 'NB-account-payment-provider' }, 'stripe'),
-                        $invoice_link,
-                        make_line_items(invoice.line_items)
-                    ]));
-                });
-            }
-
-            $(window).resize();
-        }, this));
-    },
-
-    // ===========
-    // = Actions =
-    // ===========
 
     handle_click: function (elem, e) {
         var self = this;
@@ -1185,21 +1004,6 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             e.preventDefault();
 
             self.delete_classifiers();
-        });
-        $.targetIs(e, { tagSelector: '.NB-account-usage-billing-setup' }, function ($t, $p) {
-            e.preventDefault();
-            if (NEWSBLUR.Globals.is_self_hosted_ai) return;
-            var $form = $('<form method="POST" action="/profile/setup_usage_billing/"></form>');
-            $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
-            $('body').append($form);
-            $form.submit();
-        });
-        $.targetIs(e, { tagSelector: '.NB-account-usage-billing-manage' }, function ($t, $p) {
-            e.preventDefault();
-            var $form = $('<form method="POST" action="/profile/manage_usage_billing/"></form>');
-            $form.append($('<input type="hidden" name="csrfmiddlewaretoken">').val($.cookie('csrftoken')));
-            $('body').append($form);
-            $form.submit();
         });
         $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function ($t, $p) {
             e.preventDefault();

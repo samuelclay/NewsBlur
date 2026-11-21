@@ -629,6 +629,9 @@ msgstr "AI-functies"
 msgid "AI built into every story"
 msgstr "AI ingebouwd in elk artikel"
 
+msgid "AI filters aren't available on this server"
+msgstr "AI-filters zijn niet beschikbaar op deze server"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "AI-afbeeldingsfilter"
@@ -1551,9 +1554,6 @@ msgstr "Kan artikel niet opslaan; niet gevonden"
 msgid "Could not unsave story, not found"
 msgstr "Kan artikel niet uit opgeslagen artikelen verwijderen: niet gevonden"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Er kon geen verbinding worden gemaakt met Stripe. Probeer het opnieuw."
-
 msgid "Couldn't save the position"
 msgstr "De positie kon niet worden opgeslagen"
 
@@ -1697,6 +1697,14 @@ msgstr "Standaard"
 
 msgid "Delete"
 msgstr "Verwijderen"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"Beschrijf in gewone taal waarop je wilt focussen of wat je wilt verbergen in de tekst of afbeeldingen van "
+"een artikel. Classifiers voor natuurlijke taal beoordelen artikelen net als de Intelligentietrainer, zonder"
+" gebruikslimieten."
 
 msgid "Description"
 msgstr "Beschrijving"
@@ -3053,9 +3061,6 @@ msgstr "Ongeldige URL"
 msgid "Invalid URL."
 msgstr "Ongeldige URL."
 
-msgid "Invalid amount"
-msgstr "Ongeldig bedrag"
-
 msgid "Invalid classifier_type"
 msgstr "Ongeldige classifier_type"
 
@@ -3216,12 +3221,6 @@ msgstr "Licentie"
 msgctxt "theme"
 msgid "Light"
 msgstr "Licht"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "De limiet mag niet hoger zijn dan $10.000"
-
-msgid "Limit must be a positive amount"
-msgstr "De limiet moet een positief getal zijn"
 
 msgid "Limited"
 msgstr "Beperkt"
@@ -4241,9 +4240,6 @@ msgstr "Geen trainingssysteem"
 msgid "No uncategorized archives found"
 msgstr "Geen niet-gecategoriseerde archieven gevonden"
 
-msgid "No usage billing set up."
-msgstr "Facturering op basis van gebruik is niet ingesteld."
-
 msgid "No user has that email address."
 msgstr "Er is geen gebruiker met dat e-mailadres."
 
@@ -4482,9 +4478,6 @@ msgstr "Voer een zoekopdracht op trefwoorden in."
 
 msgid "Please enter in an email address."
 msgstr "Voer een e-mailadres in."
-
-msgid "Please log in to NewsBlur again."
-msgstr "Log opnieuw in bij NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Log in om door te gaan."
@@ -6444,15 +6437,6 @@ msgstr "Upgrade naar een Premium-abonnement om meer dan één artikel per dag pe
 msgid "Upgrade to premium archive"
 msgstr "Upgrade naar Premium Archive"
 
-msgid "Usage billing not enabled"
-msgstr "Facturering op basis van gebruik is niet ingeschakeld"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "Facturering op basis van gebruik vereist voor AI-classifiers"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "Facturering op basis van gebruik is momenteel niet beschikbaar."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Gebruiken"
@@ -6820,14 +6804,6 @@ msgstr "Werkt overal"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "Werkt met socialemediaprofielen, vacaturebanken, productpagina's en meer"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"Schrijf prompts in natuurlijke taal om artikelen te filteren op inhoud of afbeeldingen. Classifiers in "
-"natuurlijke taal beoordelen artikelen net als de intelligentietrainer, met gebruiksafhankelijke "
-"facturering."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
@@ -7389,6 +7365,20 @@ msgid ""
 msgstr ""
 "Je bent onlangs op NewsBlur geweest, dus misschien was het niet je bedoeling om terug te gaan naar het "
 "gratis account. Misschien hoef je alleen je Premium-abonnement te verlengen. We helpen je daarbij."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"Je hebt de %(count)s gratis AI-filtertest van vandaag gebruikt. De test wordt om middernacht gereset. Met "
+"Premium Archive krijg je onbeperkt tests en worden je filters op elk nieuw artikel toegepast."
+msgstr[1] ""
+"Je hebt de %(count)s gratis AI-filtertests van vandaag gebruikt. Ze worden om middernacht gereset. Met "
+"Premium Archive krijg je onbeperkt tests en worden je filters op elk nieuw artikel toegepast."
 
 msgid "YouTube search request failed."
 msgstr "Zoekopdracht op YouTube is mislukt."

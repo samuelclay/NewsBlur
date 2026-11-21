@@ -178,10 +178,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s و%(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/قصة"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s بايت"
@@ -230,16 +226,6 @@ msgstr[2] "%(count)s تعليقان"
 msgstr[3] "%(count)s تعليقات"
 msgstr[4] "%(count)s تعليقًا"
 msgstr[5] "%(count)s تعليق"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s عوامل تصفية للمحتوى"
-msgstr[1] "%(count)s عامل تصفية للمحتوى"
-msgstr[2] "عاملَا تصفية للمحتوى (%(count)s)"
-msgstr[3] "%(count)s عوامل تصفية المحتوى"
-msgstr[4] "%(count)s عامل تصفية للمحتوى"
-msgstr[5] "%(count)s عامل تصفية للمحتوى"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -342,16 +328,6 @@ msgstr[4] "منذ %(count)s ساعة"
 msgstr[5] "منذ %(count)s ساعة"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s مرشح صور"
-msgstr[1] "%(count)s فلتر صور"
-msgstr[2] "%(count)s مرشحا صور"
-msgstr[3] "%(count)s مرشحات صور"
-msgstr[4] "%(count)s مرشح صور"
-msgstr[5] "%(count)s مرشح صور"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s إعجاب"
@@ -440,18 +416,6 @@ msgstr[2] "%(count)s موقعان من أصل %(limit)s"
 msgstr[3] "%(count)s مواقع من أصل %(limit)s"
 msgstr[4] "%(count)s موقعًا من أصل %(limit)s"
 msgstr[5] "%(count)s موقع من أصل %(limit)s"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s في جميع المواقع (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s في المجلد (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s على هذا الموقع (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -622,16 +586,6 @@ msgstr[2] "سيتم حذف %(count)s قصتين"
 msgstr[3] "سيتم حذف %(count)s قصص"
 msgstr[4] "سيتم حذف %(count)s قصة"
 msgstr[5] "سيتم حذف %(count)s قصة"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s قصة شهريًا"
-msgstr[1] "%(count)s قصة/شهر"
-msgstr[2] "%(count)s قصتان/شهر"
-msgstr[3] "%(count)s قصص/شهر"
-msgstr[4] "%(count)s قصة/شهر"
-msgstr[5] "%(count)s قصة/شهر"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -862,10 +816,6 @@ msgstr[2] "من %(start)s إلى %(end)s دقيقتين"
 msgstr[3] "من %(start)s إلى %(end)s دقائق"
 msgstr[4] "من %(start)s إلى %(end)s دقيقة"
 msgstr[5] "من %(start)s إلى %(end)s دقيقة"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -1220,9 +1170,6 @@ msgstr "(GMT-11:00) جزيرة ميدواي، ساموا"
 msgid "(no title)"
 msgstr "(بلا عنوان)"
 
-msgid "(upcoming)"
-msgstr "(قريبًا)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
@@ -1232,12 +1179,6 @@ msgstr[2] "+ %(value_1)s موقعان إضافيان"
 msgstr[3] "+ %(value_1)s مواقع إضافية"
 msgstr[4] "+ %(value_1)s موقعًا إضافيًا"
 msgstr[5] "+ %(value_1)s موقع إضافي"
-
-msgid "/day"
-msgstr "/يوم"
-
-msgid "/mo"
-msgstr "/شهر"
 
 msgid "/month"
 msgstr "/شهريًا"
@@ -1345,8 +1286,8 @@ msgid "AI Model"
 msgstr "نموذج الذكاء الاصطناعي"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "تم حفظ فلاتر الذكاء الاصطناعي، لكنها لن تعمل حتى %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "يتم حفظ فلاتر الذكاء الاصطناعي، لكنها لا تعمل إلا على %(tier_link)s."
 
 msgid "AI finds the stories"
 msgstr "يعثر الذكاء الاصطناعي على القصص"
@@ -3998,9 +3939,6 @@ msgstr "في هذه النافذة"
 msgid "Include read"
 msgstr "تضمين المقروء"
 
-msgid "Increase or remove your limit"
-msgstr "زِد الحد المسموح به أو أزِله"
-
 msgid "Independent"
 msgstr "مستقل"
 
@@ -4315,12 +4253,6 @@ msgstr "إدارة NewsBlur"
 msgid "Manage Training"
 msgstr "إدارة التدريب"
 
-msgid "Manage billing and limits"
-msgstr "إدارة الفوترة والحدود"
-
-msgid "Manage billing on Stripe"
-msgstr "إدارة الفوترة على Stripe"
-
 msgid "Manage email settings"
 msgstr "إدارة إعدادات البريد الإلكتروني"
 
@@ -4541,12 +4473,6 @@ msgstr "الاثنين"
 msgid "Monday"
 msgstr "الاثنين"
 
-msgid "Monthly spending limit"
-msgstr "حد الإنفاق الشهري"
-
-msgid "Monthly spending limit reached. "
-msgstr "تم بلوغ حد الإنفاق الشهري. "
-
 msgid "Months Earned"
 msgstr "الأشهر المكتسبة"
 
@@ -4672,15 +4598,6 @@ msgstr "مصنّف الصور باللغة الطبيعية"
 
 msgid "Natural Language Text Classifier"
 msgstr "مصنّف النصوص باللغة الطبيعية"
-
-msgid "Natural language classifier billing"
-msgstr "فوترة المصنّف باللغة الطبيعية"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "تم إيقاف مصنّفات اللغة الطبيعية مؤقتًا حتى دورة الفوترة التالية. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "تستخدم مصنّفات اللغة الطبيعية مفاتيح API الخاصة بنسختك."
 
 msgid "Natural language text and image classifiers"
 msgstr "مصنّفات النصوص والصور باللغة الطبيعية"
@@ -4878,9 +4795,6 @@ msgstr "بلا صورة"
 msgid "No items added yet."
 msgstr "لم تُضف أي عناصر بعد."
 
-msgid "No limit"
-msgstr "بلا حد"
-
 msgid "No match"
 msgstr "لا توجد نتائج مطابقة"
 
@@ -4997,12 +4911,6 @@ msgstr "لم يتم العثور على أنماط قصص في هذه الصفح
 
 msgid "No trending sites available"
 msgstr "لا تتوفر مواقع رائجة"
-
-msgid "No usage billing invoices yet."
-msgstr "لا توجد فواتير لاستخدام الخدمة بعد."
-
-msgid "No usage billing set up."
-msgstr "لم يتم إعداد فوترة الاستخدام."
 
 msgid "No valid merge groups to apply"
 msgstr "لا توجد مجموعات دمج صالحة للتطبيق"
@@ -5353,9 +5261,6 @@ msgstr "الخيار 3:"
 
 msgid "Option 4:"
 msgstr "الخيار 4:"
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "اختياري. تتوقف المصنّفات مؤقتًا عند بلوغ الحد، وتُستأنف في دورة الفوترة التالية."
 
 msgid "Options"
 msgstr "الخيارات"
@@ -6476,17 +6381,11 @@ msgstr "خطأ في الخادم"
 msgid "Server error: %(status)s"
 msgstr "خطأ في الخادم: %(status)s"
 
-msgid "Set up billing"
-msgstr "إعداد الفوترة"
-
 msgid "Set up newsletters"
 msgstr "إعداد النشرات الإخبارية"
 
 msgid "Set up notifications"
 msgstr "إعداد الإشعارات"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "أعدّ الفوترة حسب الاستخدام لاستخدام فلاتر المحتوى والصور باللغة الطبيعية."
 
 msgid "Set up your blurblog"
 msgstr "أعِدّ مدونة blurblog الخاصة بك"
@@ -6821,9 +6720,6 @@ msgstr "مجلدات خاصة"
 
 msgid "Speed"
 msgstr "السرعة"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "تم بلوغ حد الإنفاق. أُوقفت المصنّفات مؤقتًا حتى الدورة التالية."
 
 msgid "Split"
 msgstr "تقسيم"
@@ -7878,6 +7774,10 @@ msgstr "إلغاء كتم هذا الموقع"
 msgid "Uncategorized"
 msgstr "غير مصنّف"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "تم الفهم على النحو التالي: %(description)s"
+
 msgid "Unfavorited"
 msgstr "أُزيل من المفضلة"
 
@@ -7952,9 +7852,6 @@ msgstr "بلا عنوان"
 
 msgid "Up Next"
 msgstr "التالي"
-
-msgid "Upcoming charge: "
-msgstr "الرسوم القادمة: "
 
 msgid "Update History"
 msgstr "سجل التحديثات"
@@ -8084,12 +7981,6 @@ msgstr "فشل الرفع. يُرجى المحاولة مرة أخرى."
 
 msgid "Uploaded!"
 msgstr "تم الرفع!"
-
-msgid "Usage billing history"
-msgstr "سجل فواتير الاستخدام"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "الفوترة حسب الاستخدام مفعّلة لمصنّفات اللغة الطبيعية."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8877,9 +8768,6 @@ msgstr "الحق في الإصلاح"
 
 msgid "separate multiple addresses with commas"
 msgstr "افصل بين العناوين باستخدام الفواصل"
-
-msgid "set up usage-based billing"
-msgstr "إعداد الفوترة حسب الاستخدام"
 
 msgid "show hidden stories"
 msgstr "إظهار القصص المخفية"

@@ -620,6 +620,9 @@ msgstr "תכונות בינה מלאכותית"
 msgid "AI built into every story"
 msgstr "בינה מלאכותית בכל כתבה"
 
+msgid "AI filters aren't available on this server"
+msgstr "מסנני בינה מלאכותית אינם זמינים בשרת הזה"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "מסנן תמונות מבוסס AI"
@@ -1512,9 +1515,6 @@ msgstr "שמירת הכתבה נכשלה: הכתבה לא נמצאה"
 msgid "Could not unsave story, not found"
 msgstr "לא ניתן להסיר את הכתבה מהשמורים; היא לא נמצאה"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "החיבור ל־Stripe נכשל. נסו שוב."
-
 msgid "Couldn't save the position"
 msgstr "אי אפשר לשמור את המיקום"
 
@@ -1656,6 +1656,13 @@ msgstr "ברירת מחדל"
 
 msgid "Delete"
 msgstr "מחיקה"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"תארו בשפה פשוטה במה להתמקד או מה להסתיר, בטקסט של כתבה או בתמונות שלה. מסווגים בשפה טבעית מדרגים כתבות "
+"בדיוק כמו מאמן הבינה, ללא הגבלת שימוש."
 
 msgid "Description"
 msgstr "תיאור"
@@ -2959,9 +2966,6 @@ msgstr "כתובת URL לא תקינה"
 msgid "Invalid URL."
 msgstr "כתובת URL לא תקינה."
 
-msgid "Invalid amount"
-msgstr "סכום לא תקין"
-
 msgid "Invalid classifier_type"
 msgstr "classifier_type לא תקין"
 
@@ -3120,12 +3124,6 @@ msgstr "רישיון"
 msgctxt "theme"
 msgid "Light"
 msgstr "בהיר"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "הסכום המרבי לא יכול לעלות על $10,000"
-
-msgid "Limit must be a positive amount"
-msgstr "המגבלה חייבת להיות סכום חיובי"
 
 msgid "Limited"
 msgstr "מוגבל"
@@ -4095,9 +4093,6 @@ msgstr "ללא מערכת אימון"
 msgid "No uncategorized archives found"
 msgstr "לא נמצאו ארכיונים ללא קטגוריה"
 
-msgid "No usage billing set up."
-msgstr "לא הוגדר חיוב לפי שימוש."
-
 msgid "No user has that email address."
 msgstr "לא נמצא משתמש עם כתובת האימייל הזו."
 
@@ -4330,9 +4325,6 @@ msgstr "נא להזין שאילתת חיפוש לפי מילות מפתח."
 
 msgid "Please enter in an email address."
 msgstr "נא להזין כתובת אימייל."
-
-msgid "Please log in to NewsBlur again."
-msgstr "התחברו שוב אל NewsBlur."
 
 msgid "Please login to continue."
 msgstr "יש להתחבר כדי להמשיך."
@@ -6234,15 +6226,6 @@ msgstr "שדרגו למינוי Premium כדי לשלוח יותר מכתבה א
 msgid "Upgrade to premium archive"
 msgstr "שדרגו ל־Premium Archive"
 
-msgid "Usage billing not enabled"
-msgstr "חיוב לפי שימוש לא מופעל"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "נדרש חיוב לפי שימוש עבור מסווגי AI"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "חיוב לפי שימוש אינו זמין כרגע."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "השתמשו"
@@ -6597,13 +6580,6 @@ msgstr "עובד בכל מקום"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "עובד עם פרופילים ברשתות חברתיות, לוחות דרושים, דפי מוצרים ועוד"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"כתבו הנחיות בשפה טבעית כדי לסנן כתבות לפי תוכן או תמונות. מסווגים בשפה טבעית מדרגים כתבות בדומה לאימון "
-"החכם, עם חיוב לפי שימוש."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
@@ -7117,6 +7093,20 @@ msgid ""
 msgstr ""
 "לאחרונה השתמשת ב־NewsBlur, אז אולי לא התכוונת לעבור בחזרה לחשבון החינמי? אולי רק צריך לחדש את מינוי "
 "ה-Premium שלך. נעזור לך לעשות זאת."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"ניצלת את בדיקת המסנן החינמית של AI להיום: %(count)s. הספירה מתאפסת בחצות. Premium Archive כולל בדיקות ללא "
+"הגבלה ומפעיל את המסננים שלך על כל כתבה חדשה."
+msgstr[1] ""
+"ניצלת את בדיקות המסנן החינמיות של AI להיום: %(count)s. הספירה מתאפסת בחצות. Premium Archive כולל בדיקות ללא"
+" הגבלה ומפעיל את המסננים שלך על כל כתבה חדשה."
 
 msgid "YouTube search request failed."
 msgstr "בקשת החיפוש ב-YouTube נכשלה."

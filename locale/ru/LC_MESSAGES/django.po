@@ -661,6 +661,9 @@ msgstr "Функции ИИ"
 msgid "AI built into every story"
 msgstr "ИИ встроен в каждую статью"
 
+msgid "AI filters aren't available on this server"
+msgstr "Фильтры ИИ недоступны на этом сервере"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "Фильтр изображений на основе ИИ"
@@ -1584,9 +1587,6 @@ msgstr "Не удалось сохранить статью: она не най�
 msgid "Could not unsave story, not found"
 msgstr "Не удалось удалить статью из сохранённых: она не найдена"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Не удалось связаться со Stripe. Попробуйте ещё раз."
-
 msgid "Couldn't save the position"
 msgstr "Не удалось сохранить позицию"
 
@@ -1730,6 +1730,14 @@ msgstr "По умолчанию"
 
 msgid "Delete"
 msgstr "Удалить"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"Опишите простыми словами, на что следует обращать внимание или что скрывать в тексте статьи или на её "
+"изображениях. Классификаторы на естественном языке оценивают статьи так же, как Тренер интеллектуальной "
+"фильтрации, без ограничений на использование."
 
 msgid "Description"
 msgstr "Описание"
@@ -3101,9 +3109,6 @@ msgstr "Недопустимый URL"
 msgid "Invalid URL."
 msgstr "Недопустимый URL."
 
-msgid "Invalid amount"
-msgstr "Недопустимая сумма"
-
 msgid "Invalid classifier_type"
 msgstr "Недопустимый classifier_type"
 
@@ -3275,12 +3280,6 @@ msgstr "Лицензия"
 msgctxt "theme"
 msgid "Light"
 msgstr "Светлая"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "Лимит не может превышать 10 000 $"
-
-msgid "Limit must be a positive amount"
-msgstr "Лимит должен быть положительным числом"
 
 msgid "Limited"
 msgstr "Ограничено"
@@ -4310,9 +4309,6 @@ msgstr "Без системы обучения"
 msgid "No uncategorized archives found"
 msgstr "Архивов без категории не найдено"
 
-msgid "No usage billing set up."
-msgstr "Оплата по факту использования не настроена."
-
 msgid "No user has that email address."
 msgstr "Нет пользователя с таким адресом электронной почты."
 
@@ -4553,9 +4549,6 @@ msgstr "Введите поисковый запрос по ключевым с�
 
 msgid "Please enter in an email address."
 msgstr "Введите адрес электронной почты."
-
-msgid "Please log in to NewsBlur again."
-msgstr "Войдите в NewsBlur ещё раз."
 
 msgid "Please login to continue."
 msgstr "Войдите, чтобы продолжить."
@@ -6522,15 +6515,6 @@ msgstr "Перейдите на платную подписку, чтобы от
 msgid "Upgrade to premium archive"
 msgstr "Перейдите на Premium Archive"
 
-msgid "Usage billing not enabled"
-msgstr "Оплата по использованию не включена"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "Для классификаторов ИИ требуется оплата по факту использования"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "Оплата по факту использования сейчас недоступна."
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Использование"
@@ -6906,14 +6890,6 @@ msgstr "Работает везде"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "Работает с профилями в соцсетях, сайтами вакансий, страницами товаров и многим другим"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"Создавайте запросы на обычном языке, чтобы фильтровать статьи по содержанию или изображениям. "
-"Классификаторы на естественном языке оценивают статьи так же, как обучающий модуль интеллектуальных "
-"фильтров. Оплата зависит от использования."
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
@@ -7478,6 +7454,23 @@ msgid ""
 msgstr ""
 "Недавно вы пользовались NewsBlur, поэтому, возможно, не собирались переходить на бесплатный аккаунт. Может "
 "быть, вам нужно просто продлить подписку Premium. Давайте поможем это сделать."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"Сегодня вы использовали %(count)s бесплатный тест ИИ-фильтра. Лимит сбросится в полночь. Подписка Premium "
+"Archive включает неограниченное количество тестов и применяет ваши фильтры к каждой новой статье."
+msgstr[1] ""
+"Сегодня вы использовали %(count)s бесплатных теста ИИ-фильтра. Лимит сбросится в полночь. Подписка Premium "
+"Archive включает неограниченное количество тестов и применяет ваши фильтры к каждой новой статье."
+msgstr[2] ""
+"Сегодня вы использовали %(count)s бесплатных тестов ИИ-фильтра. Лимит сбросится в полночь. Подписка Premium"
+" Archive включает неограниченное количество тестов и применяет ваши фильтры к каждой новой статье."
 
 msgid "YouTube search request failed."
 msgstr "Не удалось выполнить поисковый запрос YouTube."

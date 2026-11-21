@@ -628,6 +628,9 @@ msgstr "AI सुविधाएँ"
 msgid "AI built into every story"
 msgstr "हर लेख में अंतर्निहित AI"
 
+msgid "AI filters aren't available on this server"
+msgstr "इस सर्वर पर AI फ़िल्टर उपलब्ध नहीं हैं।"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "AI छवि फ़िल्टर"
@@ -1550,9 +1553,6 @@ msgstr "लेख सहेजा नहीं जा सका, नहीं �
 msgid "Could not unsave story, not found"
 msgstr "लेख को सहेजे गए लेखों से हटाया नहीं जा सका; लेख नहीं मिला"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "Stripe से संपर्क नहीं हो सका। कृपया फिर से कोशिश करें।"
-
 msgid "Couldn't save the position"
 msgstr "स्थिति सहेजी नहीं जा सकी"
 
@@ -1696,6 +1696,14 @@ msgstr "डिफ़ॉल्ट"
 
 msgid "Delete"
 msgstr "हटाएँ"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"लेख के टेक्स्ट या उसकी छवियों के लिए, सरल भाषा में बताएँ कि किन चीज़ों पर ध्यान देना है या क्या छिपाना है। "
+"प्राकृतिक भाषा के क्लासिफ़ायर, इंटेलिजेंस ट्रेनर की तरह ही लेखों को स्कोर करते हैं और इनके उपयोग की कोई "
+"सीमा नहीं है।"
 
 msgid "Description"
 msgstr "विवरण"
@@ -3038,9 +3046,6 @@ msgstr "अमान्य URL"
 msgid "Invalid URL."
 msgstr "अमान्य URL।"
 
-msgid "Invalid amount"
-msgstr "अमान्य राशि"
-
 msgid "Invalid classifier_type"
 msgstr "classifier_type अमान्य है"
 
@@ -3201,12 +3206,6 @@ msgstr "लाइसेंस"
 msgctxt "theme"
 msgid "Light"
 msgstr "हल्का"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "सीमा $10,000 से अधिक नहीं हो सकती"
-
-msgid "Limit must be a positive amount"
-msgstr "सीमा धनात्मक होनी चाहिए"
 
 msgid "Limited"
 msgstr "सीमित"
@@ -4214,9 +4213,6 @@ msgstr "कोई प्रशिक्षण प्रणाली नहीं
 msgid "No uncategorized archives found"
 msgstr "कोई अवर्गीकृत संग्रह नहीं मिला"
 
-msgid "No usage billing set up."
-msgstr "उपयोग-आधारित बिलिंग सेट अप नहीं है।"
-
 msgid "No user has that email address."
 msgstr "इस ईमेल पते से कोई उपयोगकर्ता जुड़ा नहीं है।"
 
@@ -4455,9 +4451,6 @@ msgstr "कृपया कीवर्ड खोज क्वेरी दर�
 
 msgid "Please enter in an email address."
 msgstr "कृपया ईमेल पता दर्ज करें।"
-
-msgid "Please log in to NewsBlur again."
-msgstr "कृपया NewsBlur में फिर से लॉग इन करें।"
 
 msgid "Please login to continue."
 msgstr "जारी रखने के लिए कृपया लॉग इन करें।"
@@ -6406,15 +6399,6 @@ msgstr "ईमेल से हर दिन एक से ज़्यादा
 msgid "Upgrade to premium archive"
 msgstr "Premium Archive में अपग्रेड करें"
 
-msgid "Usage billing not enabled"
-msgstr "उपयोग बिलिंग सक्षम नहीं है"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "AI क्लासिफ़ायर के लिए उपयोग-आधारित बिलिंग आवश्यक है"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "उपयोग-आधारित बिलिंग अभी उपलब्ध नहीं है।"
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "उपयोग"
@@ -6783,14 +6767,6 @@ msgstr "हर जगह काम करता है"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "सोशल मीडिया प्रोफ़ाइल, जॉब बोर्ड, उत्पाद पेज और अन्य के साथ काम करता है"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"लेखों को उनकी सामग्री या छवियों के आधार पर फ़िल्टर करने के लिए सामान्य भाषा में प्रॉम्प्ट लिखें। सामान्य "
-"भाषा वाले क्लासिफ़ायर, इंटेलिजेंस ट्रेनर की तरह ही लेखों को स्कोर करते हैं; उपयोग के अनुसार बिलिंग लागू "
-"होती है।"
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
@@ -7335,6 +7311,20 @@ msgid ""
 msgstr ""
 "आप हाल ही में NewsBlur पर थे, इसलिए शायद आपका इरादा मुफ़्त खाते पर वापस जाने का नहीं था? शायद आपको बस अपनी "
 "प्रीमियम सदस्यता फिर से शुरू करनी है। आइए, इसमें आपकी मदद करें।"
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"आपने आज का %(count)s मुफ़्त AI फ़िल्टर परीक्षण इस्तेमाल कर लिया है। यह आधी रात को रीसेट हो जाता है। Premium"
+" Archive में असीमित परीक्षण शामिल हैं और यह आपके फ़िल्टर हर नए लेख पर चलाता है।"
+msgstr[1] ""
+"आपने आज के %(count)s मुफ़्त AI फ़िल्टर परीक्षण इस्तेमाल कर लिए हैं। ये आधी रात को रीसेट हो जाते हैं। "
+"Premium Archive में असीमित परीक्षण शामिल हैं और यह आपके फ़िल्टर हर नए लेख पर चलाता है।"
 
 msgid "YouTube search request failed."
 msgstr "YouTube खोज अनुरोध विफल रहा।"

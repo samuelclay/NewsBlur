@@ -13,9 +13,6 @@
 "%1$@ of %2$@ of listening left this week" = "Залишилося %1$@ із %2$@ прослуховування на цей тиждень";
 "%1$@ of %2$@ sites indexed" = "Проіндексовано сайтів: %1$@ із %2$@";
 "%1$@ of %2$@ story previews used today" = "Сьогодні використано попередніх прослуховувань статей: %1$@ із %2$@";
-"%1$@ on all sites (%2$@)" = "%1$@ на всіх сайтах (%2$@)";
-"%1$@ on folder (%2$@)" = "%1$@ у папці (%2$@)";
-"%1$@ on this site (%2$@)" = "%1$@ на цьому сайті (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ повторно поширює %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ повторно поширює %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ відповідає користувачу %2$@: \n \n%3$@";
@@ -23,13 +20,11 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ відповідає на вашу відповідь до %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ поширює %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ поширює %2$@:\n \n%3$@";
-"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ сайти віджетів";
 "%@ ago" = "%@ тому";
 "%@ categories to choose from" = "На вибір %@ категорій";
 "%@ comments" = "%@ коментарів";
-"%@ content filters" = "%@ фільтрів вмісту";
 "%@ could not be added." = "Не вдалося додати стрічок: %@.";
 "%@ days" = "%@ днів";
 "%@ feed" = "стрічка %@";
@@ -41,7 +36,6 @@
 "%@ focused stories" = "%@ вибраних статей";
 "%@ folder" = "Папка %@";
 "%@ free story previews left today" = "Сьогодні залишилося безкоштовних попередніх прослуховувань статей: %@";
-"%@ image filters" = "%@ фільтрів зображень";
 "%@ is now following you." = "Тепер %@ стежить за вами.";
 "%@ left in this preview" = "У попередньому прослуховуванні залишилося %@";
 "%@ left this week" = "Цього тижня залишилося %@";
@@ -54,23 +48,17 @@
 "%@ sources" = "%@ джерел";
 "%@ stories" = "%@ статей";
 "%@ stories left" = "Залишилося історій: %@";
-"%@ stories/mo" = "%@ статей на місяць";
 "%@ stories/month" = "%@ публікацій на місяць";
 "%@ subscribers" = "%@ підписників";
 "%@ unread stories" = "%@ непрочитаних статей";
 "%@ voice previews left" = "Залишилося голосових попередніх прослуховувань: %@";
-"%@/story" = "%@/статтю";
 "%@×" = "%@×";
 "%ldd ago" = "%ld дн. тому";
 "%ldh ago" = "%ld год тому";
 "%ldm ago" = "%ld хв тому";
 "%ldw ago" = "%ld тиж. тому";
-"(upcoming)" = "(незабаром)";
 "+ %@ more sites" = "+ ще %@ сайтів";
 "..." = "...";
-"/day" = "/день";
-"/mo" = "/міс.";
-"/month" = "/місяць";
 "1 Widget Site" = "1 сайт віджета";
 "1,000 stories" = "1 000 статей";
 "10 stories" = "10 статей";
@@ -93,7 +81,7 @@
 "< 90/month" = "< 90/місяць";
 "A clearer, closer sound" = "Чіткіший і об’ємніший звук";
 "A personal news reader bringing\npeople together to talk about the world." = "Персональна програма для читання новин, що об’єднує\nлюдей для обговорення подій у світі.";
-"AI filters are saved but won't run until you %@." = "Фільтри ШІ збережено, але вони не працюватимуть, доки ви не %@.";
+"AI filters are saved but only run on Premium Archive." = "Фільтри ШІ зберігаються, але працюють лише на Premium Archive.";
 "AI finds the stories" = "ШІ знаходить статті";
 "ALL" = "УСІ";
 "ALL NOTIFICATIONS" = "УСІ СПОВІЩЕННЯ";
@@ -264,10 +252,7 @@
 "Could not completely clear the cache. Please try again." = "Не вдалося повністю очистити кеш. Спробуйте ще раз.";
 "Could not save your language. Please try again." = "Не вдалося зберегти мову. Спробуйте ще раз.";
 "Couldn't check story" = "Не вдалося перевірити статтю";
-"Couldn't load usage billing history." = "Не вдалося завантажити історію оплати за використання.";
-"Couldn't open billing. Please try again." = "Не вдалося відкрити розділ оплати. Спробуйте ще раз.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Не вдалося зв’язатися з NewsBlur. Перевірте підключення та спробуйте ще раз.";
-"Couldn't save your spending limit. Please try again." = "Не вдалося зберегти ліміт витрат. Спробуйте ще раз.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Не вдалося завантажити зображення повністю. Спробуйте відкрити його у браузері.";
 "Counting is difficult..." = "Рахувати складно...";
 "Create a feed from any web page" = "Створити стрічку з будь-якої вебсторінки";
@@ -496,7 +481,6 @@
 "Include already-read stories" = "Включати вже прочитані статті";
 "Include in bundle" = "Додати до добірки";
 "Included in bundle" = "Входить до добірки";
-"Increase or remove your limit" = "Збільшити ліміт або прибрати його";
 "Infrequent Site Stories" = "Статті з нечасто оновлюваних сайтів";
 "Infrequent Stories" = "Нечасто оновлювані сайти";
 "Infrequent stories per month" = "Поріг нечасто оновлюваних сайтів";
@@ -506,7 +490,6 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Замість системного темного чи світлого режиму теми автоматично перемикаються залежно від яскравості екрана. Це зручно, щоб підлаштовувати тему до навколишнього освітлення.";
 "Interactions" = "Взаємодії";
 "Invalid: %@" = "Недійсне значення: %@";
-"Invoice" = "Рахунок";
 "Keep fades, without movement." = "Зберегти плавну появу та зникнення без руху.";
 "Keeps the dark icon no matter how your device is set." = "Завжди використовує темну іконку, незалежно від налаштувань пристрою.";
 "Keeps the light icon no matter how your device is set." = "Завжди використовує світлу іконку, незалежно від налаштувань вашого пристрою.";
@@ -570,8 +553,6 @@
 "Manage" = "Керувати";
 "Manage Account on the Web" = "Керування обліковим записом у вебверсії";
 "Manage Subscription" = "Керувати підпискою";
-"Manage billing and limits" = "Керувати оплатою та лімітами";
-"Manage billing on Stripe" = "Керувати оплатою в Stripe";
 "Manage this folder…" = "Керувати цією папкою…";
 "Manage this site…" = "Керувати цим сайтом…";
 "Manual scroll" = "Прокручування вручну";
@@ -623,8 +604,6 @@
 "Medium [theme]" = "Сіра";
 "Model" = "Модель";
 "Monday" = "Понеділок";
-"Monthly spending limit" = "Місячний ліміт витрат";
-"Monthly spending limit reached. " = "Місячний ліміт витрат вичерпано. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Більша кількість статей займає більше місця на диску, але майже не впливає на продуктивність.";
 "More voices" = "Інші голоси";
 "Morning" = "Ранок";
@@ -666,10 +645,6 @@
 "Natural Language Image Classifier" = "Класифікатор зображень природною мовою";
 "Natural Language Text Classifier" = "Текстовий класифікатор природною мовою";
 "Natural [listen delivery]" = "Природний";
-"Natural language classifier billing" = "Оплата за використання класифікатора природною мовою";
-"Natural language classifiers are paused until next billing cycle. " = "Класифікатори природною мовою призупинено до наступного платіжного циклу. ";
-"Natural language classifiers are using your instance's API keys." = "Класифікатори природної мови використовують ключі API вашого екземпляра.";
-"Natural language filters aren't active on this account." = "Фільтри природною мовою не активні для цього облікового запису.";
 "Natural language text and image classifiers" = "Класифікатори тексту й зображень на основі природної мови";
 "Nested" = "Вкладений";
 "Never" = "Ніколи";
@@ -703,7 +678,6 @@
 "No feeds to show yet. Try another interest or search all sites." = "Стрічок поки немає. Спробуйте вибрати інший інтерес або пошукати на всіх сайтах.";
 "No friends to suggest." = "Немає друзів, яких можна запропонувати.";
 "No interests or sites found. Try another search." = "Інтересів або сайтів не знайдено. Спробуйте інший пошуковий запит.";
-"No limit" = "Без обмежень";
 "No longer saved" = "Більше не збережено";
 "No match" = "Немає збігів";
 "No match in story" = "Збігів у статті немає";
@@ -716,8 +690,6 @@
 "No stories yet" = "Статей поки немає";
 "No story selected" = "Статтю не вибрано";
 "No unread stories" = "Немає непрочитаних статей";
-"No usage billing invoices yet." = "Рахунків за використання ще немає.";
-"No usage billing set up." = "Оплату за використання не налаштовано.";
 "No voices match these filters" = "Голосів, що відповідають цим фільтрам, немає";
 "None" = "Немає";
 "Normal" = "Звичайний";
@@ -765,7 +737,6 @@
 "Open the next site/folder" = "Відкрити наступний сайт/папку";
 "Opening site…" = "Відкриваємо сайт…";
 "Opens Now Playing" = "Відкриває екран «Зараз відтворюється»";
-"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Необов’язково. Класифікатори призупиняються після досягнення ліміту й відновлюють роботу в наступному платіжному циклі.";
 "Options" = "Параметри";
 "Ordered" = "Упорядковано";
 "Organize Sites" = "Упорядкувати сайти";
@@ -918,7 +889,6 @@
 "Saved on %@" = "Збережено %@";
 "Saving Daily Briefing settings…" = "Збереження налаштувань щоденного огляду…";
 "Saving search..." = "Збереження пошуку...";
-"Saving..." = "Збереження…";
 "Schedule" = "Розклад";
 "Scroll horizontally" = "Прокручувати горизонтально";
 "Scroll to Comments" = "Перейти до коментарів";
@@ -951,8 +921,6 @@
 "Server URL" = "URL-адреса сервера";
 "Set an exact speed under Voice" = "Задайте точну швидкість у розділі «Голос»";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Налаштуйте щоденний огляд, щоб створювати підсумок найважливіших для вас статей.";
-"Set up billing" = "Налаштувати оплату";
-"Set up usage-based billing to use natural language content and image filters." = "Налаштуйте оплату за використання, щоб користуватися фільтрами вмісту й зображень природною мовою.";
 "Settings" = "Налаштування";
 "Share" = "Поділитися";
 "Share This Story" = "Поділитися цією статтею";
@@ -1027,7 +995,6 @@
 "Spacing" = "Інтервали";
 "Speaker boost" = "Підсилення голосу";
 "Speed" = "Швидкість";
-"Spending limit reached. Classifiers paused until next cycle." = "Ліміт витрат досягнуто. Класифікатори призупинено до наступного циклу.";
 "Stability" = "Стабільність";
 "Stability, similarity and style" = "Стабільність, схожість і стиль";
 "Stale — last story %@" = "Неактивний — остання стаття %@";
@@ -1221,7 +1188,6 @@
 "Unsaved" = "Не збережено";
 "Untitled story" = "Стаття без назви";
 "Up Next" = "Далі";
-"Upcoming charge: " = "Наступне списання: ";
 "Updated %@ days ago" = "Оновлено %@ днів тому";
 "Updated %@ months ago" = "Оновлено %@ місяців тому";
 "Updated %@ weeks ago" = "Оновлено %@ тижнів тому";
@@ -1235,9 +1201,6 @@
 "Upgrade to Premium" = "Перейдіть на Premium";
 "Upgrade to Premium Archive" = "Перейдіть на Premium Archive";
 "Upgrade to Premium Pro" = "Перейти на Premium Pro";
-"Usage Billing" = "Оплата за використання";
-"Usage billing history" = "Історія оплати за використання";
-"Usage-based billing is enabled for natural language classifiers." = "Для класифікаторів природної мови ввімкнено оплату за використання.";
 "Use %@" = "Використовувати мову: %@";
 "Use a custom server" = "Використовувати власний сервер";
 "Use another sign-in method" = "Скористатися іншим способом входу";
@@ -1317,7 +1280,6 @@
 "no story" = "немає статті";
 "or" = "або";
 "premium subscribers" = "передплатники Premium";
-"set up usage-based billing" = "Налаштувати оплату за використання";
 "your account" = "ваш обліковий запис";
 "‹ Feeds" = "‹ Стрічки";
 "✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ із %1$@ зображень відповідають цьому фільтру";

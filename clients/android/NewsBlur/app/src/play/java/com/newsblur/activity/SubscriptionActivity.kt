@@ -1,8 +1,6 @@
 package com.newsblur.activity
 
-import android.content.Intent
 import android.content.res.ColorStateList
-import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
@@ -29,8 +27,6 @@ import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
-import com.newsblur.util.UsageBillingAction
-import com.newsblur.util.UsageBillingFeature
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.Currency
@@ -126,7 +122,6 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.premium_custom_rss, R.drawable.ic_rss, R.color.premium_feature_orange),
                     SubscriptionFeature(R.string.premium_text_view, R.drawable.ic_file_edit, R.color.premium_feature_cyan),
                     SubscriptionFeature(R.string.premium_discover_related, R.drawable.ic_world, R.color.premium_feature_teal),
-                    SubscriptionFeature(R.string.premium_natural_language_classifiers, R.drawable.ic_ai_text_filter, R.color.premium_feature_purple),
                     SubscriptionFeature(R.string.premium_shiloh, R.drawable.ic_dining, R.color.premium_feature_brown),
                 ),
             showDogImage = true,
@@ -147,6 +142,7 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.archive_web_feeds, R.drawable.ic_web_feed, R.color.premium_feature_purple),
                     SubscriptionFeature(R.string.archive_listen, R.drawable.ic_listen, R.color.premium_feature_cyan),
                     SubscriptionFeature(R.string.archive_ask_ai, android.R.drawable.ic_menu_help, R.color.premium_feature_ai),
+                    SubscriptionFeature(R.string.premium_natural_language_classifiers, R.drawable.ic_ai_text_filter, R.color.premium_feature_purple),
                     SubscriptionFeature(R.string.archive_train_folder, R.drawable.ic_folder, R.color.premium_feature_mint),
                     SubscriptionFeature(R.string.archive_train_globally, R.drawable.ic_world, R.color.premium_feature_indigo),
                     SubscriptionFeature(R.string.archive_daily_briefing, R.drawable.ic_briefing_cutout, R.color.premium_feature_orange),
@@ -252,38 +248,6 @@ class SubscriptionActivity : NbActivity() {
                 true
             }
         binding.textPolicies.text = UIUtils.fromHtml(getString(R.string.premium_policies))
-        setupUsageBillingCard()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        setupUsageBillingCard()
-    }
-
-    // SubscriptionActivity.kt: natural language classifier billing is usage based through Stripe,
-    // separate from the Play subscriptions above, so it gets its own screen. UsageBillingFeature.kt
-    // holds it for this release, and the card stays hidden.
-    private fun setupUsageBillingCard() {
-        binding.containerUsageBilling.isVisible = UsageBillingFeature.showsPremiumCard()
-        if (!binding.containerUsageBilling.isVisible) return
-        val billing = prefsRepo.getUsageBillingState()
-        binding.containerUsageBilling.setCardBackgroundColor(palette.cardBackground)
-        binding.containerUsageBilling.strokeColor = palette.border
-        binding.textUsageBillingTitle.setTextColor(palette.primaryText)
-        binding.textUsageBillingStatus.setTextColor(palette.secondaryText)
-        binding.textUsageBillingStatus.setText(
-            when {
-                billing.hasUsageBilling -> R.string.usage_billing_status_enabled
-                billing.isSelfHostedAi -> R.string.usage_billing_status_self_hosted
-                else -> R.string.usage_billing_status_off
-            },
-        )
-        binding.buttonUsageBilling.setText(
-            if (billing.action == UsageBillingAction.SET_UP) R.string.ai_billing_set_up else R.string.ai_billing_manage_limits,
-        )
-        binding.buttonUsageBilling.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.positive))
-        binding.buttonUsageBilling.setTextColor(ContextCompat.getColor(this, R.color.white))
-        binding.buttonUsageBilling.setOnClickListener { startActivity(Intent(this, UsageBillingActivity::class.java)) }
     }
 
     private fun setupBilling() {

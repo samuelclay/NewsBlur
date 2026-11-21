@@ -13,9 +13,6 @@
 "%1$@ of %2$@ of listening left this week" = "%1$@ of %2$@ of listening left this week";
 "%1$@ of %2$@ sites indexed" = "%1$@ of %2$@ sites indexed";
 "%1$@ of %2$@ story previews used today" = "%1$@ of %2$@ story previews used today";
-"%1$@ on all sites (%2$@)" = "%1$@ on all sites (%2$@)";
-"%1$@ on folder (%2$@)" = "%1$@ on folder (%2$@)";
-"%1$@ on this site (%2$@)" = "%1$@ on this site (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ re-shared %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ re-shared %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ replied to %2$@: \n \n%3$@";
@@ -23,13 +20,11 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ replied to your reply on %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ shared %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ shared %2$@:\n \n%3$@";
-"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ Widget Sites";
 "%@ ago" = "%@ ago";
 "%@ categories to choose from" = "%@ categories to choose from";
 "%@ comments" = "%@ comments";
-"%@ content filters" = "%@ content filters";
 "%@ could not be added." = "%@ could not be added.";
 "%@ days" = "%@ days";
 "%@ feed" = "%@ feed";
@@ -41,7 +36,6 @@
 "%@ focused stories" = "%@ focused stories";
 "%@ folder" = "%@ folder";
 "%@ free story previews left today" = "%@ free story previews left today";
-"%@ image filters" = "%@ image filters";
 "%@ is now following you." = "%@ is now following you.";
 "%@ left in this preview" = "%@ left in this preview";
 "%@ left this week" = "%@ left this week";
@@ -54,23 +48,17 @@
 "%@ sources" = "%@ sources";
 "%@ stories" = "%@ stories";
 "%@ stories left" = "%@ stories left";
-"%@ stories/mo" = "%@ stories/mo";
 "%@ stories/month" = "%@ stories/month";
 "%@ subscribers" = "%@ subscribers";
 "%@ unread stories" = "%@ unread stories";
 "%@ voice previews left" = "%@ voice previews left";
-"%@/story" = "%@/story";
 "%@×" = "%@×";
 "%ldd ago" = "%ldd ago";
 "%ldh ago" = "%ldh ago";
 "%ldm ago" = "%ldm ago";
 "%ldw ago" = "%ldw ago";
-"(upcoming)" = "(upcoming)";
 "+ %@ more sites" = "+ %@ more sites";
 "..." = "...";
-"/day" = "/day";
-"/mo" = "/mo";
-"/month" = "/month";
 "1 Widget Site" = "1 Widget Site";
 "1,000 stories" = "1,000 stories";
 "10 stories" = "10 stories";
@@ -93,7 +81,7 @@
 "< 90/month" = "< 90/month";
 "A clearer, closer sound" = "A clearer, closer sound";
 "A personal news reader bringing\npeople together to talk about the world." = "A personal news reader bringing\npeople together to talk about the world.";
-"AI filters are saved but won't run until you %@." = "AI filters are saved but won't run until you %@.";
+"AI filters are saved but only run on Premium Archive." = "AI filters are saved but only run on Premium Archive.";
 "AI finds the stories" = "AI finds the stories";
 "ALL" = "ALL";
 "ALL NOTIFICATIONS" = "ALL NOTIFICATIONS";
@@ -264,10 +252,7 @@
 "Could not completely clear the cache. Please try again." = "Could not completely clear the cache. Please try again.";
 "Could not save your language. Please try again." = "Could not save your language. Please try again.";
 "Couldn't check story" = "Couldn't check story";
-"Couldn't load usage billing history." = "Couldn't load usage billing history.";
-"Couldn't open billing. Please try again." = "Couldn't open billing. Please try again.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Couldn't reach NewsBlur. Check your connection and try again.";
-"Couldn't save your spending limit. Please try again." = "Couldn't save your spending limit. Please try again.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Couldn’t load the full image. You can try opening it in your browser.";
 "Counting is difficult..." = "Counting is difficult...";
 "Create a feed from any web page" = "Create a feed from any web page";
@@ -496,7 +481,6 @@
 "Include already-read stories" = "Include already-read stories";
 "Include in bundle" = "Include in bundle";
 "Included in bundle" = "Included in bundle";
-"Increase or remove your limit" = "Increase or remove your limit";
 "Infrequent Site Stories" = "Infrequent Site Stories";
 "Infrequent Stories" = "Infrequent Stories";
 "Infrequent stories per month" = "Infrequent stories per month";
@@ -506,7 +490,6 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting.";
 "Interactions" = "Interactions";
 "Invalid: %@" = "Invalid: %@";
-"Invoice" = "Invoice";
 "Keep fades, without movement." = "Keep fades, without movement.";
 "Keeps the dark icon no matter how your device is set." = "Keeps the dark icon no matter how your device is set.";
 "Keeps the light icon no matter how your device is set." = "Keeps the light icon no matter how your device is set.";
@@ -570,8 +553,6 @@
 "Manage" = "Manage";
 "Manage Account on the Web" = "Manage Account on the Web";
 "Manage Subscription" = "Manage Subscription";
-"Manage billing and limits" = "Manage billing and limits";
-"Manage billing on Stripe" = "Manage billing on Stripe";
 "Manage this folder…" = "Manage this folder…";
 "Manage this site…" = "Manage this site…";
 "Manual scroll" = "Manual scroll";
@@ -623,8 +604,6 @@
 "Medium [theme]" = "Medium";
 "Model" = "Model";
 "Monday" = "Monday";
-"Monthly spending limit" = "Monthly spending limit";
-"Monthly spending limit reached. " = "Monthly spending limit reached. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "More stories take more disk space, but otherwise have no noticeable effect on performance.";
 "More voices" = "More voices";
 "Morning" = "Morning";
@@ -666,10 +645,6 @@
 "Natural Language Image Classifier" = "Natural Language Image Classifier";
 "Natural Language Text Classifier" = "Natural Language Text Classifier";
 "Natural [listen delivery]" = "Natural";
-"Natural language classifier billing" = "Natural language classifier billing";
-"Natural language classifiers are paused until next billing cycle. " = "Natural language classifiers are paused until next billing cycle. ";
-"Natural language classifiers are using your instance's API keys." = "Natural language classifiers are using your instance's API keys.";
-"Natural language filters aren't active on this account." = "Natural language filters aren't active on this account.";
 "Natural language text and image classifiers" = "Natural language text and image classifiers";
 "Nested" = "Nested";
 "Never" = "Never";
@@ -703,7 +678,6 @@
 "No feeds to show yet. Try another interest or search all sites." = "No feeds to show yet. Try another interest or search all sites.";
 "No friends to suggest." = "No friends to suggest.";
 "No interests or sites found. Try another search." = "No interests or sites found. Try another search.";
-"No limit" = "No limit";
 "No longer saved" = "No longer saved";
 "No match" = "No match";
 "No match in story" = "No match in story";
@@ -716,8 +690,6 @@
 "No stories yet" = "No stories yet";
 "No story selected" = "No story selected";
 "No unread stories" = "No unread stories";
-"No usage billing invoices yet." = "No usage billing invoices yet.";
-"No usage billing set up." = "No usage billing set up.";
 "No voices match these filters" = "No voices match these filters";
 "None" = "None";
 "Normal" = "Normal";
@@ -765,7 +737,6 @@
 "Open the next site/folder" = "Open the next site/folder";
 "Opening site…" = "Opening site…";
 "Opens Now Playing" = "Opens Now Playing";
-"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Optional. Classifiers pause when the limit is reached and resume next billing cycle.";
 "Options" = "Options";
 "Ordered" = "Ordered";
 "Organize Sites" = "Organize Sites";
@@ -918,7 +889,6 @@
 "Saved on %@" = "Saved on %@";
 "Saving Daily Briefing settings…" = "Saving Daily Briefing settings…";
 "Saving search..." = "Saving search...";
-"Saving..." = "Saving...";
 "Schedule" = "Schedule";
 "Scroll horizontally" = "Scroll horizontally";
 "Scroll to Comments" = "Scroll to Comments";
@@ -951,8 +921,6 @@
 "Server URL" = "Server URL";
 "Set an exact speed under Voice" = "Set an exact speed under Voice";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Set up Daily Briefing to generate a summary of the stories that matter most to you.";
-"Set up billing" = "Set up billing";
-"Set up usage-based billing to use natural language content and image filters." = "Set up usage-based billing to use natural language content and image filters.";
 "Settings" = "Settings";
 "Share" = "Share";
 "Share This Story" = "Share This Story";
@@ -1027,7 +995,6 @@
 "Spacing" = "Spacing";
 "Speaker boost" = "Speaker boost";
 "Speed" = "Speed";
-"Spending limit reached. Classifiers paused until next cycle." = "Spending limit reached. Classifiers paused until next cycle.";
 "Stability" = "Stability";
 "Stability, similarity and style" = "Stability, similarity and style";
 "Stale — last story %@" = "Stale — last story %@";
@@ -1221,7 +1188,6 @@
 "Unsaved" = "Unsaved";
 "Untitled story" = "Untitled story";
 "Up Next" = "Up Next";
-"Upcoming charge: " = "Upcoming charge: ";
 "Updated %@ days ago" = "Updated %@ days ago";
 "Updated %@ months ago" = "Updated %@ months ago";
 "Updated %@ weeks ago" = "Updated %@ weeks ago";
@@ -1235,9 +1201,6 @@
 "Upgrade to Premium" = "Upgrade to Premium";
 "Upgrade to Premium Archive" = "Upgrade to Premium Archive";
 "Upgrade to Premium Pro" = "Upgrade to Premium Pro";
-"Usage Billing" = "Usage Billing";
-"Usage billing history" = "Usage billing history";
-"Usage-based billing is enabled for natural language classifiers." = "Usage-based billing is enabled for natural language classifiers.";
 "Use %@" = "Use %@";
 "Use a custom server" = "Use a custom server";
 "Use another sign-in method" = "Use another sign-in method";
@@ -1317,7 +1280,6 @@
 "no story" = "no story";
 "or" = "or";
 "premium subscribers" = "premium subscribers";
-"set up usage-based billing" = "set up usage-based billing";
 "your account" = "your account";
 "‹ Feeds" = "‹ Feeds";
 "✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ of %1$@ images match this filter";

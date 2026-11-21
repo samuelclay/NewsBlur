@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 # social_auth.py: The only app destinations NewsBlur redirects to, keyed by the platform the
-# app sends. Also used by apps/profile/views.py usage_billing_app_return after Stripe.
+# app sends.
 APP_SCHEMES = {
     "ios": "newsblur-auth",
     "android": "newsblur-auth-android",

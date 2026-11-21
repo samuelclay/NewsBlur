@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
-// Test_PromptTestSingleRequest.kt: apps/analyzer/views.py test_prompt_classifier bills every run,
-// so ClassifierApiImpl.kt sends one request per tap even when the run times out or its response
-// is lost, either of which can happen after the server already billed. A local socket server
-// counts the requests; nothing reaches NewsBlur.
+// Test_PromptTestSingleRequest.kt: apps/analyzer/views.py test_prompt_classifier runs the classifier
+// on every request, so ClassifierApiImpl.kt sends one request per tap even when the run times out or
+// its response is lost, either of which can happen after the server already ran it. A local socket
+// server counts the requests; nothing reaches NewsBlur.
 class Test_PromptTestSingleRequest {
     private val server = ServerSocket(0)
     private val requests = AtomicInteger()
@@ -98,7 +98,7 @@ class Test_PromptTestSingleRequest {
             val result = classifierApi(callTimeoutMillis = 500).testPrompt(request)
 
             assertFalse(result.isSuccess)
-            assertEquals("A timed out run may have billed, so it is never sent again", 1, requests.get())
+            assertEquals("A timed out run may have finished, so it is never sent again", 1, requests.get())
             assertEquals(
                 "Image tests get the two minutes config/gunicorn_conf.py allows",
                 listOf(ClassifierApiImpl.PROMPT_TEST_TIMEOUT_SECONDS.toInt() * 1000),

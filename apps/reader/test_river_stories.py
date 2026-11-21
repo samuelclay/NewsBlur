@@ -283,7 +283,7 @@ class Test_RiverStories(TransactionTestCase):
         """Widely Read and Long Reads should include story classifier scores."""
         self.client.login(username="conesus", password="test")
 
-        self.user.profile.is_usage_billing = True
+        self.user.profile.is_archive = True
         self.user.profile.save()
 
         feed_id = self.test_feeds[0]

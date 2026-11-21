@@ -23,7 +23,6 @@ from django.template.loader import render_to_string
 from apps.analyzer.tasks import EmailPopularityQuery
 from apps.rss_feeds.models import Feed
 from utils import log as logging
-from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
 from utils.story_functions import strip_tags
 
 # Regex timeout in seconds to prevent ReDoS attacks
@@ -885,7 +884,7 @@ class MClassifierPrompt(mongo.Document):
     folder_id = mongo.StringField(default="")  # Empty string means applies to feed level
     prompt = mongo.StringField()
     classifier_type = mongo.StringField(choices=["focus", "hidden"])
-    include_images = mongo.BooleanField(default=False)  # When True, send story images to VLM
+    include_images = mongo.BooleanField(default=False)  # When True, the filter judges story images
     creation_date = mongo.DateTimeField(default=datetime.datetime.now)
 
     meta = {
@@ -1007,8 +1006,10 @@ class MClassifierPrompt(mongo.Document):
         a user a candidate, and only the feed's active subscribers count, the same active
         filter count_unreads_for_subscribers in utils/feed_fetcher.py scores with, so a
         muted feed isn't classified either. Every user with a feed_id=0 prompt used to come
-        back for every feed, so each fetch anywhere on NewsBlur ran and billed their prompts
-        against feeds they don't subscribe to.
+        back for every feed, so each fetch anywhere on NewsBlur ran their prompts against
+        feeds they don't subscribe to. Anyone can save AI filters, but they only run on
+        Premium Archive (Premium Pro sets is_archive too), so other accounts aren't
+        candidates.
 
         Returns set of user_ids with applicable prompts, or empty set.
         """
@@ -1021,7 +1022,10 @@ class MClassifierPrompt(mongo.Document):
             return set()
         return set(
             UserSubscription.objects.filter(
-                feed_id=feed_id, active=True, user_id__in=candidate_user_ids
+                feed_id=feed_id,
+                active=True,
+                user_id__in=candidate_user_ids,
+                user__profile__is_archive=True,
             ).values_list("user_id", flat=True)
         )
 
@@ -1100,33 +1104,23 @@ class MClassifierPrompt(mongo.Document):
         if not stories:
             return {}
 
-        # Check if user has usage billing set up
+        # AI filters only run on Premium Archive and Premium Pro, with no usage limit.
         from apps.profile.models import Profile
 
         try:
             profile = Profile.objects.get(user_id=user_id)
-            if not profile.can_use_ai_classifiers:
-                return {}
-            if profile.is_usage_limit_reached:
-                logging.user(
-                    profile.user, "~BR~FRAI classifier spending limit reached, skipping classification"
-                )
-                return {}
         except Profile.DoesNotExist:
             return {}
-
-        # Ensure stories have story_id set (views use story_hash as the ID)
-        for story in stories:
-            if "story_id" not in story:
-                story["story_id"] = story["story_hash"]
+        if not profile.can_use_ai_classifiers:
+            return {}
 
         # Group stories by feed_id for efficient classification
         stories_by_feed = defaultdict(list)
         for story in stories:
             stories_by_feed[story["story_feed_id"]].append(story)
 
-        # Only the prompts that cover each feed run (and bill): the feed's own prompts,
-        # global prompts, and folder prompts whose folder holds the feed.
+        # Only the prompts that cover each feed run: the feed's own prompts, global
+        # prompts, and folder prompts whose folder holds the feed.
         if feed_ids is None:
             feed_ids = list(stories_by_feed.keys())
         prompts_by_feed = cls.get_prompts_by_feed(user_id, feed_ids, folder_feed_ids=folder_feed_ids)
@@ -1139,70 +1133,66 @@ class MClassifierPrompt(mongo.Document):
             if not feed_prompts:
                 continue
             ttl_seconds = cls._compute_feed_ttl(user_id, feed_id)
+            results = cls._run_classifiers(
+                feed_prompts, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
+            )
             for prompt in feed_prompts:
-                results = cls._run_classifier(
-                    prompt, feed_stories, user_id=user_id, feed_id=feed_id, ttl_seconds=ttl_seconds
-                )
-                cls._update_classifications(classifications, results, prompt.classifier_type)
+                cls._update_classifications(classifications, results[str(prompt.id)], prompt.classifier_type)
 
         return classifications
 
     @classmethod
-    def _run_classifier(cls, prompt, stories, user_id=None, feed_id=None, ttl_seconds=None):
-        """Route to text-only or vision classifier, with Redis caching.
+    def _run_classifiers(cls, prompts, stories, user_id=None, feed_id=None, ttl_seconds=None):
+        """Score one feed's stories against every prompt that covers it, with Redis caching.
 
-        For each story, checks the cache first. Only uncached stories
-        are sent to the LLM. New results are written back to cache.
+        models.py: Cached verdicts are read first. Every prompt with an uncached story then
+        goes to Jev together (apps/analyzer/jev.py), since one request answers every prompt
+        about every story for about the cost of reading the stories once. Only the verdicts
+        that were missing are written back.
+
+        Returns {prompt_id: {story_hash: score}} with a score for every story: 1 for a
+        focus match, -1 for a hidden match, 0 otherwise.
         """
-        prompt_id = str(prompt.id)
+        from apps.analyzer import jev
+
         story_hashes = [s["story_hash"] for s in stories]
-
-        # Check cache
         cached = {}
-        if user_id and feed_id:
-            cached = cls.get_cached_scores(user_id, prompt_id, feed_id, story_hashes)
+        uncached = {}
+        for prompt in prompts:
+            prompt_id = str(prompt.id)
+            cached[prompt_id] = {}
+            if user_id and feed_id:
+                cached[prompt_id] = cls.get_cached_scores(user_id, prompt_id, feed_id, story_hashes)
+            missing = [sh for sh in story_hashes if sh not in cached[prompt_id]]
+            if missing:
+                uncached[prompt_id] = set(missing)
 
-        # Find uncached stories
-        uncached_stories = [s for s in stories if s["story_hash"] not in cached]
-
-        # Classify uncached stories via LLM
         new_results = {}
-        if uncached_stories:
-            if prompt.include_images:
-                results = classify_stories_with_vision(prompt, uncached_stories, user_id=user_id)
-            else:
-                results = classify_stories_with_ai(prompt, uncached_stories, user_id=user_id)
+        if uncached:
+            uncached_prompts = [prompt for prompt in prompts if str(prompt.id) in uncached]
+            uncached_hashes = set().union(*uncached.values())
+            uncached_stories = [s for s in stories if s["story_hash"] in uncached_hashes]
+            new_results = jev.classify_stories(uncached_prompts, uncached_stories, user_id=user_id)
 
-            if results is None:
-                # The classifier failed outright (API error, unparseable tool call).
-                # Leave these stories uncached so the next fetch retries them. Caching
-                # a neutral score here would stick for the full TTL, so one transient
-                # failure would permanently mark a batch of stories as "not a match".
-                logging.debug(
-                    "~BR~FKAI classifier failed for ~SB%s~SN stories, leaving them uncached"
-                    % len(uncached_stories)
-                )
-            else:
-                new_results = results
-                # Write new results to cache keyed by story_hash
-                if user_id and feed_id and new_results:
-                    cache_scores = {}
-                    for s in uncached_stories:
-                        score = new_results.get(s["story_id"], 0)
-                        cache_scores[s["story_hash"]] = score
-                    cls.set_cached_scores(user_id, prompt_id, feed_id, cache_scores, ttl_seconds)
+            for prompt_id, missing in uncached.items():
+                # A story Jev didn't answer, because its request failed, stays uncached
+                # rather than cached as a "not a match" it never got. Only stories new to
+                # a fetch are classified, so the notification pass for that same update
+                # (apps/notifications/models.py) is the one other ask.
+                scores = {sh: score for sh, score in new_results.get(prompt_id, {}).items() if sh in missing}
+                if len(scores) < len(missing):
+                    logging.debug(
+                        "~BR~FKAI classifier left ~SB%s~SN stories unscored for prompt %s"
+                        % (len(missing) - len(scores), prompt_id)
+                    )
+                if user_id and feed_id and scores:
+                    cls.set_cached_scores(user_id, prompt_id, feed_id, scores, ttl_seconds)
 
-        # Merge cached + new results, keyed by story_hash
         all_results = {}
-        for s in stories:
-            sh = s["story_hash"]
-            if sh in cached:
-                all_results[sh] = cached[sh]
-            elif s["story_id"] in new_results:
-                all_results[sh] = new_results[s["story_id"]]
-            else:
-                all_results[sh] = 0
-
+        for prompt in prompts:
+            prompt_id = str(prompt.id)
+            fresh = new_results.get(prompt_id, {})
+            all_results[prompt_id] = {sh: cached[prompt_id].get(sh, fresh.get(sh, 0)) for sh in story_hashes}
         return all_results
 
     @classmethod

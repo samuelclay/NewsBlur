@@ -157,10 +157,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s 和 %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/篇文章"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s 字节"
@@ -184,11 +180,6 @@ msgstr[0] "将删除 %(count)s 个分类器"
 msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s 条评论"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s 个内容筛选器"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -241,11 +232,6 @@ msgid_plural "%(count)s hours ago"
 msgstr[0] "%(count)s 小时前"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s 个图片筛选器"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s 个赞"
@@ -289,18 +275,6 @@ msgstr[0] "%(count)s 份新闻简报"
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s/%(limit)s 个网站"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "所有网站上的 %(count)s（%(stories)s）"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "文件夹中的 %(count)s（%(stories)s）"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "此网站上的 %(count)s（%(stories)s）"
 
 #, python-format
 msgid "%(count)s open"
@@ -386,11 +360,6 @@ msgstr[0] "每月 %(count)s 篇文章"
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "将删除 %(count)s 篇文章"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "每月 %(count)s 篇文章"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -536,10 +505,6 @@ msgstr[0] "%(start)s 至 %(end)s 小时"
 msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s 至 %(end)s 分钟"
-
-#, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
 
 #, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
@@ -889,19 +854,10 @@ msgstr "(GMT-11:00) 中途岛、萨摩亚"
 msgid "(no title)"
 msgstr "（无标题）"
 
-msgid "(upcoming)"
-msgstr "（即将扣款）"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ 另外 %(value_1)s 个网站"
-
-msgid "/day"
-msgstr "/天"
-
-msgid "/mo"
-msgstr "/月"
 
 msgid "/month"
 msgstr "/月"
@@ -994,8 +950,8 @@ msgid "AI Model"
 msgstr "AI 模型"
 
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "AI 筛选器已保存，但需先 %(billing_link)s 才会运行。"
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "AI 筛选器已保存，但仅在 %(tier_link)s 上运行。"
 
 msgid "AI finds the stories"
 msgstr "AI 帮你发现文章"
@@ -3525,9 +3481,6 @@ msgstr "在此窗口中"
 msgid "Include read"
 msgstr "包含已读内容"
 
-msgid "Increase or remove your limit"
-msgstr "提高或取消你的限制"
-
 msgid "Independent"
 msgstr "独立"
 
@@ -3840,12 +3793,6 @@ msgstr "管理 NewsBlur"
 msgid "Manage Training"
 msgstr "管理训练"
 
-msgid "Manage billing and limits"
-msgstr "管理账单和限额"
-
-msgid "Manage billing on Stripe"
-msgstr "在 Stripe 管理账单"
-
 msgid "Manage email settings"
 msgstr "管理邮件设置"
 
@@ -4034,12 +3981,6 @@ msgstr "周一"
 msgid "Monday"
 msgstr "星期一"
 
-msgid "Monthly spending limit"
-msgstr "每月支出上限"
-
-msgid "Monthly spending limit reached. "
-msgstr "已达到每月支出限额。 "
-
 msgid "Months Earned"
 msgstr "已获得的月数"
 
@@ -4155,15 +4096,6 @@ msgstr "自然语言图像分类器"
 
 msgid "Natural Language Text Classifier"
 msgstr "自然语言文本分类器"
-
-msgid "Natural language classifier billing"
-msgstr "自然语言分类器计费"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "自然语言分类器已暂停，直到下一个计费周期。"
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "自然语言分类器正在使用你实例的 API 密钥。"
 
 msgid "Natural language text and image classifiers"
 msgstr "自然语言文本和图像分类器"
@@ -4359,9 +4291,6 @@ msgstr "无图片"
 msgid "No items added yet."
 msgstr "尚未添加任何项目。"
 
-msgid "No limit"
-msgstr "不限"
-
 msgid "No match"
 msgstr "未匹配"
 
@@ -4473,12 +4402,6 @@ msgstr "此页面上未找到文章模式。"
 
 msgid "No trending sites available"
 msgstr "没有可用的热门网站"
-
-msgid "No usage billing invoices yet."
-msgstr "暂无用量账单。"
-
-msgid "No usage billing set up."
-msgstr "尚未设置按用量计费。"
 
 msgid "No valid merge groups to apply"
 msgstr "没有可应用的有效合并组"
@@ -4792,9 +4715,6 @@ msgstr "选项 3："
 
 msgid "Option 4:"
 msgstr "选项 4："
-
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "可选。达到上限后，分类器将暂停，并在下一个计费周期恢复。"
 
 msgid "Options"
 msgstr "选项"
@@ -5872,17 +5792,11 @@ msgstr "服务器错误"
 msgid "Server error: %(status)s"
 msgstr "服务器错误：%(status)s"
 
-msgid "Set up billing"
-msgstr "设置账单"
-
 msgid "Set up newsletters"
 msgstr "设置电子邮件简报"
 
 msgid "Set up notifications"
 msgstr "设置通知"
-
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "设置按用量计费，以使用自然语言内容和图片筛选器。"
 
 msgid "Set up your blurblog"
 msgstr "设置你的 Blurblog"
@@ -6212,9 +6126,6 @@ msgstr "特殊文件夹"
 
 msgid "Speed"
 msgstr "速度"
-
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "已达到支出限额。分类器已暂停，直到下一个周期。"
 
 msgid "Split"
 msgstr "拆分"
@@ -7202,6 +7113,10 @@ msgstr "取消屏蔽此网站"
 msgid "Uncategorized"
 msgstr "未分类"
 
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "理解为：%(description)s"
+
 msgid "Unfavorited"
 msgstr "已取消点赞"
 
@@ -7276,9 +7191,6 @@ msgstr "无标题"
 
 msgid "Up Next"
 msgstr "接下来"
-
-msgid "Upcoming charge: "
-msgstr "即将扣款："
 
 msgid "Update History"
 msgstr "更新历史记录"
@@ -7388,12 +7300,6 @@ msgstr "上传失败。请重试。"
 
 msgid "Uploaded!"
 msgstr "已上传！"
-
-msgid "Usage billing history"
-msgstr "用量账单历史"
-
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "自然语言分类器已启用按使用量计费。"
 
 #, python-format
 msgid "Use %(language)s"
@@ -8133,9 +8039,6 @@ msgstr "维修权"
 
 msgid "separate multiple addresses with commas"
 msgstr "多个地址请用逗号分隔"
-
-msgid "set up usage-based billing"
-msgstr "设置按使用量计费"
 
 msgid "show hidden stories"
 msgstr "显示隐藏的文章"

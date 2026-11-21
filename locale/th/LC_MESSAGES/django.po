@@ -598,6 +598,9 @@ msgstr "ฟีเจอร์ AI"
 msgid "AI built into every story"
 msgstr "มี AI ในทุกบทความ"
 
+msgid "AI filters aren't available on this server"
+msgstr "ตัวกรอง AI ใช้งานไม่ได้บนเซิร์ฟเวอร์นี้"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "ตัวกรองรูปภาพ AI"
@@ -1509,9 +1512,6 @@ msgstr "บันทึกบทความไม่ได้ ไม่พบ�
 msgid "Could not unsave story, not found"
 msgstr "ยกเลิกการบันทึกบทความไม่ได้ ไม่พบบทความ"
 
-msgid "Couldn't reach Stripe. Please try again."
-msgstr "เชื่อมต่อ Stripe ไม่ได้ โปรดลองอีกครั้ง"
-
 msgid "Couldn't save the position"
 msgstr "บันทึกตำแหน่งไม่สำเร็จ"
 
@@ -1655,6 +1655,13 @@ msgstr "ค่าเริ่มต้น"
 
 msgid "Delete"
 msgstr "ลบ"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
+"classifiers score stories just like the intelligence trainer, with no usage limits."
+msgstr ""
+"อธิบายสิ่งที่ต้องการโฟกัสหรือซ่อนด้วยภาษาทั่วไป โดยอิงจากข้อความหรือรูปภาพของบทความ "
+"ตัวจำแนกภาษาธรรมชาติจะให้คะแนนบทความเช่นเดียวกับเครื่องมือฝึกระบบอัจฉริยะ โดยไม่มีข้อจำกัดการใช้งาน"
 
 msgid "Description"
 msgstr "คำอธิบาย"
@@ -2983,9 +2990,6 @@ msgstr "URL ไม่ถูกต้อง"
 msgid "Invalid URL."
 msgstr "URL ไม่ถูกต้อง"
 
-msgid "Invalid amount"
-msgstr "จำนวนไม่ถูกต้อง"
-
 msgid "Invalid classifier_type"
 msgstr "classifier_type ไม่ถูกต้อง"
 
@@ -3138,12 +3142,6 @@ msgstr "สัญญาอนุญาต"
 msgctxt "theme"
 msgid "Light"
 msgstr "สว่าง"
-
-msgid "Limit cannot exceed $10,000"
-msgstr "วงเงินต้องไม่เกิน $10,000"
-
-msgid "Limit must be a positive amount"
-msgstr "จำนวนจำกัดต้องเป็นค่าบวก"
 
 msgid "Limited"
 msgstr "จำกัด"
@@ -4136,9 +4134,6 @@ msgstr "ไม่มีระบบฝึก"
 msgid "No uncategorized archives found"
 msgstr "ไม่พบคลังที่ไม่มีหมวดหมู่"
 
-msgid "No usage billing set up."
-msgstr "ยังไม่ได้ตั้งค่าการเรียกเก็บเงินตามการใช้งาน"
-
 msgid "No user has that email address."
 msgstr "ไม่มีผู้ใช้ที่ใช้ที่อยู่อีเมลนี้"
 
@@ -4375,9 +4370,6 @@ msgstr "โปรดป้อนคำค้นหา"
 
 msgid "Please enter in an email address."
 msgstr "โปรดป้อนที่อยู่อีเมล"
-
-msgid "Please log in to NewsBlur again."
-msgstr "โปรดเข้าสู่ระบบ NewsBlur อีกครั้ง"
 
 msgid "Please login to continue."
 msgstr "โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ"
@@ -6285,15 +6277,6 @@ msgstr "อัปเกรดเป็นการสมัครสมาชิ
 msgid "Upgrade to premium archive"
 msgstr "อัปเกรดเป็น Premium Archive"
 
-msgid "Usage billing not enabled"
-msgstr "ยังไม่ได้เปิดใช้การเรียกเก็บเงินตามการใช้งาน"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "ต้องเปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนก AI"
-
-msgid "Usage-based billing isn't available right now."
-msgstr "ขณะนี้ยังไม่มีบริการเรียกเก็บเงินตามการใช้งาน"
-
 msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "ใช้"
@@ -6659,13 +6642,6 @@ msgstr "ใช้งานได้ทุกที่"
 
 msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "ใช้ได้กับโปรไฟล์โซเชียลมีเดีย กระดานประกาศงาน หน้าสินค้า และอื่นๆ"
-
-msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"เขียนพรอมต์ภาษาธรรมชาติเพื่อกรองบทความตามเนื้อหาหรือรูปภาพ "
-"ตัวจัดประเภทภาษาธรรมชาติจะให้คะแนนบทความเหมือนกับเครื่องมือฝึกระบบอัจฉริยะ โดยคิดค่าบริการตามการใช้งาน"
 
 msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
@@ -7183,6 +7159,17 @@ msgid ""
 msgstr ""
 "คุณเพิ่งใช้งาน NewsBlur เมื่อไม่นานมานี้ จึงอาจไม่ได้ตั้งใจเปลี่ยนกลับไปใช้บัญชีฟรีใช่ไหม "
 "บางทีคุณอาจแค่ต้องต่ออายุบัญชี Premium ให้เราช่วยคุณต่ออายุได้เลย"
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
+"unlimited tests and runs your filters on every new story."
+msgstr[0] ""
+"คุณใช้การทดสอบตัวกรอง AI ฟรีวันนี้ครบ %(count)s ครั้งแล้ว ระบบจะรีเซ็ตตอนเที่ยงคืน Premium Archive "
+"มีการทดสอบไม่จำกัด และใช้ตัวกรองของคุณกับบทความใหม่ทุกรายการ"
 
 msgid "YouTube search request failed."
 msgstr "คำขอค้นหา YouTube ล้มเหลว"
