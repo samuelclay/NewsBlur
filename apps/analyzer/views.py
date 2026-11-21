@@ -431,8 +431,8 @@ def save_prompt_classifier(request):
 
 # views.py: How many of a story's images "Test on this story" judges. Each one is downloaded
 # before Jev sees it, and the whole test has to finish inside one web request: five images
-# download in one round (jev.IMAGE_FETCH_WORKERS) and fit one Jev request
-# (jev.IMAGE_STORIES_PER_REQUEST).
+# download in one round (jev.IMAGE_FETCH_WORKERS) and go to Jev in one round of parallel
+# requests (jev.IMAGE_REQUEST_WORKERS).
 TEST_PROMPT_MAX_IMAGES = 5
 
 # views.py: Readers without Premium Archive can try AI filters this many times a day, to see

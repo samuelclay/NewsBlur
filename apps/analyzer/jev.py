@@ -52,8 +52,11 @@ TEXT_STORIES_PER_REQUEST = 20
 STORY_TEXT_CHARS = 1000
 
 # Every request with an image runs in TypeSafe's long-context mode, so image filters get
-# their own requests and never slow down or degrade the text ones.
-IMAGE_STORIES_PER_REQUEST = 5
+# their own requests and never slow down or degrade the text ones. Each story with images
+# gets its own request too: with five stories' images in one request, Jev mixed up which
+# image belonged to which story (on readers' real image filters, Nov 2026, F1 0.61 batched
+# against 0.71 one story per request). The requests run side by side.
+IMAGE_REQUEST_WORKERS = 5
 MAX_IMAGES_PER_STORY = 3
 MAX_IMAGE_BYTES = 8 * 1024 * 1024
 # Jev takes PNG or JPEG, 256 to 1,568 pixels per side and at least 78,400 pixels. 768
@@ -399,31 +402,34 @@ def _classify_images(filters, stories, user_id):
             for filter_key, _ in filters:
                 results.setdefault(filter_key, {})[story["story_hash"]] = 0.0
 
-    for batch in _chunks(stories_with_images, IMAGE_STORIES_PER_REQUEST):
-        state = {"stories": [{"id": "s%d" % i, "images": parts} for i, (_, parts) in enumerate(batch)]}
-        questions = {}
-        for i in range(len(batch)):
-            for j, (_, description) in enumerate(filters):
-                questions["s%d_f%d" % (i, j)] = {
-                    "type": "noul",
-                    "instructions": "Does an image in story s%d show this: %s?" % (i, description),
-                }
+    def decide_story(story_and_parts):
+        story, parts = story_and_parts
+        # jev.py: "fits this filter" rather than "shows this". Image filters are often about
+        # the kind of image ("photographs", "charts") as much as what it depicts, and asked
+        # whether an image shows photographs, Jev looked for a photo inside the picture.
+        questions = {
+            "f%d"
+            % j: {
+                "type": "noul",
+                "instructions": "Does an image in story s0 fit this filter: %s?" % description,
+            }
+            for j, (_, description) in enumerate(filters)
+        }
         probabilities = _decide(
-            state,
+            {"stories": [{"id": "s0", "images": parts}]},
             questions,
             feature="vision_classification",
             user_id=user_id,
-            metadata={
-                "story_count": len(batch),
-                "filter_count": len(filters),
-                "image_count": sum(len(parts) for _, parts in batch),
-            },
+            metadata={"story_count": 1, "filter_count": len(filters), "image_count": len(parts)},
         )
-        if probabilities is None:
-            continue
-        for i, (story, _) in enumerate(batch):
+        return story, probabilities
+
+    with ThreadPoolExecutor(max_workers=IMAGE_REQUEST_WORKERS) as executor:
+        for story, probabilities in executor.map(decide_story, stories_with_images):
+            if probabilities is None:
+                continue
             for j, (filter_key, _) in enumerate(filters):
-                results.setdefault(filter_key, {})[story["story_hash"]] = probabilities["s%d_f%d" % (i, j)]
+                results.setdefault(filter_key, {})[story["story_hash"]] = probabilities["f%d" % j]
     return results
 
 

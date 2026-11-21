@@ -228,6 +228,20 @@ class Test_JevPromptClassification(TransactionTestCase):
             {self.stories[0]["story_hash"]: 1, self.stories[1]["story_hash"]: 0},
         )
 
+    def test_stories_never_share_an_image_request(self):
+        """With several stories' images in one request, Jev mixed up which image belonged to
+        which story, so each story with images is asked about on its own."""
+        self.add_prompt("photos of food", "focus", include_images=True)
+        self.stories[0]["image_urls"] = ["https://example.com/plate.jpg"]
+        self.stories[1]["image_urls"] = ["https://example.com/bowl.jpg"]
+        with fake_jev(probability=0.9) as api, patch(
+            "apps.analyzer.jev.fetch_image", return_value=(IMAGE_PART, False)
+        ):
+            MClassifierPrompt.classify_stories(self.user.pk, self.stories)
+        self.assertEqual(len(api.requests), 2)
+        for request in api.requests:
+            self.assertEqual(len(request["state"]["stories"]), 1)
+
     def test_an_image_download_that_may_work_later_is_retried(self):
         """A timeout or server error downloading a story's image isn't the story having no
         image. Caching it as a non-match would stick for the full TTL."""
