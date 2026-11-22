@@ -11,19 +11,53 @@ later by /reader/add_url when someone subscribes, or by
 
 import datetime
 import html
+import time
+from urllib.parse import urljoin
 
 import feedparser
 import requests
-from django.utils.html import strip_tags
+from bs4 import BeautifulSoup
+from django.utils.html import escape, strip_tags
 
+from apps.describe.models import safe_http_url
 from apps.rss_feeds.models import DuplicateFeed, Feed
 from utils import feedfinder_forman, urlnorm
-from utils.feed_functions import timelimit
 from utils.url_safety import UnsafeUrlError, safe_requests_get, validate_public_url
 
 # apps/describe/web_preview.py: headlines kept per previewed site, and how much of a feed is parsed.
 PREVIEW_STORIES = 5
 MAX_FEED_BYTES = 2 * 1024 * 1024
+
+# apps/describe/web_preview.py: limits on reading one site. Every response, discovery's included, stops
+# at MAX_FEED_BYTES. Discovery starts no request after DISCOVERY_SECONDS and makes at most
+# DISCOVERY_REQUESTS of them (the page and the addresses it points to); the feed itself then gets
+# FEED_READ_SECONDS. A request whose server goes quiet gives up after REQUEST_TIMEOUT_SECONDS.
+DISCOVERY_SECONDS = 10
+DISCOVERY_REQUESTS = 10
+FEED_READ_SECONDS = 10
+REQUEST_TIMEOUT_SECONDS = 10
+READ_CHUNK_BYTES = 16 * 1024
+DISCOVERY_HEADERS = {"User-Agent": "NewsBlur Feed Finder"}
+
+# apps/describe/web_preview.py: the <link type> values and guessed paths utils/feedfinder_forman.py
+# find_feeds checks.
+FEED_LINK_TYPES = (
+    "application/rss+xml",
+    "text/xml",
+    "application/atom+xml",
+    "application/x.atom+xml",
+    "application/x-atom+xml",
+    "application/json",
+)
+GUESSED_FEED_PATHS = (
+    "atom.xml",
+    "index.atom",
+    "index.rdf",
+    "rss.xml",
+    "index.xml",
+    "index.rss",
+    "index.json",
+)
 
 
 def preview_site(url):
@@ -31,7 +65,8 @@ def preview_site(url):
 
     {"feed": Feed} when NewsBlur already has the feed. Otherwise
     {"feed": None, "feed_address", "feed_title", "feed_link", "tagline", "stories"}
-    read straight from the site, with nothing written to the database.
+    read straight from the site, with nothing written to the database. Text in
+    the snapshot is HTML-safe (see clean_text) and links are plain http(s).
     """
     url = urlnorm.normalize(url)
     if not url:
@@ -45,13 +80,12 @@ def preview_site(url):
     if feed:
         return {"feed": feed}
 
-    try:
-        addresses = find_feed_addresses(url)
-    except TimeoutError:
-        addresses = []
+    addresses = find_feed_addresses(url)
     if not addresses:
         return None
-    address = addresses[0]
+    address = safe_http_url(addresses[0])
+    if not address:
+        return None
 
     feed = existing_feed(address)
     if feed:
@@ -70,8 +104,8 @@ def preview_site(url):
     return {
         "feed": None,
         "feed_address": address,
-        "feed_title": clean_text(channel.get("title"), 255) or address,
-        "feed_link": channel.get("link") or url,
+        "feed_title": clean_text(channel.get("title"), 255) or escape(address),
+        "feed_link": safe_http_url(channel.get("link")) or safe_http_url(url),
         "tagline": clean_text(channel.get("subtitle"), 200),
         "stories": [
             {
@@ -87,24 +121,35 @@ def preview_site(url):
 
 
 def fetch_feed_body(address):
-    """The first MAX_FEED_BYTES of a feed, or None when it cannot be fetched.
+    """The first MAX_FEED_BYTES of a feed, or None when it cannot be fetched."""
+    return read_body(address, deadline=time.monotonic() + FEED_READ_SECONDS)
 
-    Streamed, so a huge or never-ending response is cut off at the limit
-    instead of being buffered whole into the worker's memory.
+
+def read_body(url, deadline, headers=None):
+    """The start of the response body at `url`, or None when it cannot be fetched or time is up.
+
+    Streamed, so a huge or never-ending response is cut off at MAX_FEED_BYTES
+    instead of being buffered whole into the worker's memory. Reading also stops
+    at `deadline` (a time.monotonic() value) with whatever has arrived.
     """
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        return None
     try:
-        response = safe_requests_get(address, timeout=10, stream=True)
+        response = safe_requests_get(
+            url, headers=headers, timeout=min(REQUEST_TIMEOUT_SECONDS, remaining), stream=True
+        )
     except (UnsafeUrlError, requests.RequestException):
         return None
     try:
         if response.status_code != 200:
             return None
-        body = b""
-        for chunk in response.iter_content(chunk_size=64 * 1024):
+        body = bytearray()
+        for chunk in response.iter_content(chunk_size=READ_CHUNK_BYTES):
             body += chunk
-            if len(body) >= MAX_FEED_BYTES:
+            if len(body) >= MAX_FEED_BYTES or time.monotonic() >= deadline:
                 break
-        return body[:MAX_FEED_BYTES]
+        return bytes(body[:MAX_FEED_BYTES])
     except requests.RequestException:
         return None
     finally:
@@ -112,9 +157,16 @@ def fetch_feed_body(address):
 
 
 def clean_text(value, limit):
-    """Plain text from a feed's own title or tagline. Tags are dropped: these strings reach
-    add_site_view.js, which inserts card text as HTML, and nothing has sanitized an unsaved feed."""
-    return " ".join(strip_tags(html.unescape(value or "")).split())[:limit]
+    """HTML-safe text from a feed's own title, tagline or headline.
+
+    Tags are dropped and what is left is HTML-escaped, the way NewsBlur keeps
+    feed and story titles: these strings reach add_site_view.js and
+    story_title_view.js, which insert card text as HTML, and nothing else has
+    sanitized an unsaved feed. Escaping matters even after strip_tags, which
+    leaves a tag with no closing ">" (such as "<img src=x onerror=...") as is.
+    The limit applies to the plain text, so an escaped entity is never cut in half.
+    """
+    return escape(" ".join(strip_tags(html.unescape(value or "")).split())[:limit])
 
 
 def existing_feed(address):
@@ -128,9 +180,73 @@ def existing_feed(address):
     return duplicate.feed if duplicate else None
 
 
-@timelimit(10)
 def find_feed_addresses(url):
-    return feedfinder_forman.find_feeds(url)
+    """The site's feed address as a one-item list, or [] when none turns up within the limits.
+
+    This follows utils/feedfinder_forman.py find_feeds (the page itself, then its
+    <link> tags, feed-like <a> links and common feed paths) but reads every
+    response through read_body, so none is held past MAX_FEED_BYTES and none
+    starts or keeps reading once DISCOVERY_SECONDS have passed. It runs in the
+    caller's thread, so when it returns nothing is still downloading. find_feeds
+    buffers whole responses, and under utils/feed_functions.py timelimit it kept
+    fetching in a daemon thread after the search had moved on.
+    """
+    deadline = time.monotonic() + DISCOVERY_SECONDS
+    finder = feedfinder_forman.FeedFinder()
+    url = feedfinder_forman.coerce_url(url)
+    page = read_text(url, deadline)
+    if page is None:
+        return []
+    if finder.is_feed_data(page):
+        return [url]
+    for candidate in feed_candidates(url, page, finder)[: DISCOVERY_REQUESTS - 1]:
+        text = read_text(candidate, deadline)
+        if text and finder.is_feed_data(text):
+            return [candidate]
+    return []
+
+
+def read_text(url, deadline):
+    body = read_body(url, deadline, headers=DISCOVERY_HEADERS)
+    if body is None:
+        return None
+    return body.decode("utf-8", errors="replace")
+
+
+def feed_candidates(url, page, finder):
+    """Addresses on `page` that may be the site's feed, in the order find_feeds checks them.
+
+    <link> tags first, then relative <a> links ending like a feed, then any feed-like
+    <a> link, then guessed paths. Within each group the likeliest address comes first.
+    """
+    try:
+        tree = BeautifulSoup(page, features="lxml")
+    except ValueError:
+        return []
+    links = [
+        urljoin(url, link.get("href", ""))
+        for link in tree.find_all("link")
+        if link.get("type") in FEED_LINK_TYPES
+    ]
+    local, remote = [], []
+    for anchor in tree.find_all("a"):
+        href = anchor.get("href")
+        if href is None:
+            continue
+        if "://" not in href and finder.is_feed_url(href):
+            local.append(urljoin(url, href))
+        if finder.is_feedlike_url(href):
+            remote.append(urljoin(url, href))
+    guesses = []
+    if not any(domain in url for domain in ("openrss", "feedburner")):
+        guesses = [urljoin(url, path) for path in GUESSED_FEED_PATHS]
+
+    candidates = []
+    for group in (links, local, remote, guesses):
+        for candidate in sorted(group, key=feedfinder_forman.url_feed_prob, reverse=True):
+            if candidate != url and candidate not in candidates:
+                candidates.append(candidate)
+    return candidates
 
 
 def entry_content(entry):

@@ -9,6 +9,7 @@ without re-running the pipeline in apps/describe/pipeline.py.
 import datetime
 import html
 import re
+from urllib.parse import urlparse
 
 import mongoengine as mongo
 from bson.objectid import ObjectId
@@ -32,7 +33,11 @@ STATUS_ERROR = "error"
 
 # apps/describe/models.py: plain text kept per story for the card's content preview (three lines at most).
 STORY_PREVIEW_CHARS = 300
-FIRST_IMAGE_RE = re.compile(r"<img[^>]+src=[\"']([^\"']+)[\"']", re.IGNORECASE)
+IMAGE_SRC_RE = re.compile(r"<img[^>]+src=[\"']([^\"']+)[\"']", re.IGNORECASE)
+# apps/describe/models.py: characters that end a quoted HTML attribute or CSS url() early, plus control
+# characters. story_title_view.js writes a story's image into style="...url('...')" and its permalink
+# into an href without escaping either, so a URL holding any of these is not kept.
+URL_BREAKOUT_RE = re.compile(r"[\"'()\\<>\s\x00-\x1f\x7f]")
 
 SOURCE_INDEX = "index"
 SOURCE_WEB = "web"
@@ -304,25 +309,61 @@ def story_snapshot(story):
     content is cut down to its first image and a short run of plain text.
     """
     content = story.get("story_content") or ""
-    images = [url for url in (story.get("image_urls") or []) if url][:1]
-    if not images:
-        first_image = FIRST_IMAGE_RE.search(content)
-        if first_image:
-            images = [first_image.group(1)]
+    image = first_safe_image(story.get("image_urls"), content)
     text = " ".join(html.unescape(strip_tags(content)).split())[:STORY_PREVIEW_CHARS]
     story_date = story.get("story_date")
     return {
         "story_title": story.get("story_title") or "",
-        "story_permalink": story.get("story_permalink") or "",
+        "story_permalink": safe_http_url(story.get("story_permalink")),
         "story_date": story_date.isoformat()
         if isinstance(story_date, datetime.datetime)
         else (story_date or None),
-        "image_urls": images,
+        "image_urls": [image] if image else [],
         "story_content": escape(text),
         "story_hash": story.get("story_hash") or "",
         "story_feed_id": story.get("story_feed_id"),
         "story_authors": story.get("story_authors") or "",
     }
+
+
+def first_safe_image(image_urls, content):
+    """The first of a story's image URLs that passes safe_http_url, else the first such <img> in its content.
+
+    A src read out of the content is still HTML, so its character references are decoded first, the way
+    a browser reads the attribute.
+    """
+    for url in image_urls or []:
+        url = safe_http_url(url)
+        if url:
+            return url
+    for match in IMAGE_SRC_RE.finditer(content):
+        url = safe_http_url(html.unescape(match.group(1)))
+        if url:
+            return url
+    return ""
+
+
+def safe_http_url(url):
+    """`url` when it is an absolute http(s) URL that can sit unescaped in a quoted attribute or CSS url().
+
+    Anything else comes back as "". A URL is dropped rather than percent-encoded: encoding a paren or
+    a backslash can change which resource it names, few real image or story URLs hold these characters,
+    and the cost of dropping one is a story row without a thumbnail or a link. The check also runs on
+    the URL as an HTML parser would decode it, because "&#39;" inside the style attribute becomes a
+    quote before CSS reads it.
+    """
+    if not isinstance(url, str):
+        return ""
+    url = url.strip()
+    if URL_BREAKOUT_RE.search(url) or URL_BREAKOUT_RE.search(html.unescape(url)):
+        return ""
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return ""
+    if parsed.scheme.lower() not in ("http", "https") or not parsed.netloc:
+        return ""
+    return url
 
 
 def make_result_row(feed, source, matched_query="", similarity=None, stories=None):

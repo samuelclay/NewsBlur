@@ -1,9 +1,12 @@
 """apps/describe/tests.py: Describe feed search with the LLM, embeddings, ES and web hunt mocked."""
 
 import datetime
+import ipaddress
 import re
+from types import SimpleNamespace
 from unittest.mock import patch
 
+import requests
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -18,6 +21,7 @@ from apps.describe.models import (
     MDescribeSearch,
     MDescribeUsage,
     hydrate_results,
+    make_unsaved_row,
     sort_results,
 )
 from apps.describe.pipeline import DescribeFeedSearch, parse_json, site_host
@@ -427,6 +431,45 @@ class Test_DescribePipeline(DescribeMongoTestCase):
         complete = self.events_of("complete")[0]
         self.assertEqual(complete["result_count"], 4)
         self.assertEqual(complete["order"][0], self.feeds[0].pk)
+
+    def test_story_links_and_images_that_could_break_out_of_the_card_are_dropped(self):
+        # story_title_view.js puts a story's first image inside style="...url('...')" and its permalink
+        # in an href, both unescaped, so a quote, a paren or a javascript: link would inject markup.
+        def hostile_stories(feed, limit=25, **kwargs):
+            return [
+                {
+                    "story_title": "Unsafe image first",
+                    "story_permalink": "javascript:alert(document.cookie)",
+                    "story_content": "",
+                    # Only character references, which the style attribute decodes into "'), url('".
+                    "image_urls": [
+                        f"{feed.feed_link}a.png&#39;&#41;,url&#40;&#39;https://evil.example.com/",
+                        f"{feed.feed_link}b.png",
+                    ],
+                    "story_hash": f"{feed.pk}:one",
+                    "story_feed_id": feed.pk,
+                },
+                {
+                    "story_title": "Unsafe image in the content",
+                    "story_permalink": f"{feed.feed_link}two",
+                    # Character references a browser decodes inside the style attribute before CSS reads it.
+                    "story_content": f'<img src="{feed.feed_link}c.png&#39;&#41;;background:url&#40;&#39;'
+                    '//evil.example.com/x"> text',
+                    "image_urls": [],
+                    "story_hash": f"{feed.pk}:two",
+                    "story_feed_id": feed.pk,
+                },
+            ]
+
+        with patch.object(Feed, "get_stories", hostile_stories):
+            self.run_pipeline()
+
+        self.search.reload()
+        first, second = self.search.results[0]["stories"][:2]
+        self.assertEqual(first["story_permalink"], "")
+        self.assertEqual(first["image_urls"], ["https://site1.example.com/b.png"])
+        self.assertEqual(second["story_permalink"], "https://site1.example.com/two")
+        self.assertEqual(second["image_urls"], [])
 
     def test_model_failures_fall_back_without_ending_the_search(self):
         with patch.object(self.pipeline, "call_model", return_value=None), patch.object(
@@ -839,6 +882,59 @@ class Test_DescribeWebPreview(TestCase):
         self.assertNotIn("<", preview["stories"][0]["story_title"])
         self.assertTrue(self.response.closed)
 
+    def card_row(self, content):
+        """The stored and hydrated row the pipeline would show for a site serving `content`."""
+        preview, fetch = self.preview(
+            "https://brandnew.example.com/", ["https://brandnew.example.com/feed.xml"], content=content
+        )
+        return hydrate_results([make_unsaved_row(-1, preview)])[0]
+
+    def test_text_from_a_found_site_reaches_the_card_html_safe(self):
+        # The reader inserts feed and story titles as HTML, and strip_tags leaves a tag with no closing
+        # ">" alone, so a found site's text has to arrive escaped, and escaped only once.
+        hostile = (
+            self.FEED_XML.replace(
+                b"<title>Brand New Blog</title>",
+                b"<title>Ben &amp; Jerry &lt;img src=x onerror=alert(document.cookie)//</title>",
+            )
+            .replace(
+                b"<description>Fresh writing</description>",
+                b"<description>Scoops &lt;svg onload=alert(1)//</description>",
+            )
+            .replace(b"<title>Hello world</title>", b"<title>Scoop &lt;img src=x onerror=alert(2)//</title>")
+        )
+        row = self.card_row(hostile)
+        self.assertEqual(
+            row["feed"]["feed_title"], "Ben &amp; Jerry &lt;img src=x onerror=alert(document.cookie)//"
+        )
+        self.assertEqual(row["feed"]["tagline"], "Scoops &lt;svg onload=alert(1)//")
+        self.assertEqual(row["stories"][0]["story_title"], "Scoop &lt;img src=x onerror=alert(2)//")
+
+    def test_links_and_images_from_a_found_site_must_be_plain_http(self):
+        hostile = (
+            self.FEED_XML.replace(
+                b"<link>https://brandnew.example.com/</link>", b"<link>javascript:alert(1)</link>"
+            )
+            .replace(
+                b"<link>https://brandnew.example.com/hello</link>",
+                b"<link>javascript:alert(document.cookie)</link>",
+            )
+            .replace(
+                b'url="https://brandnew.example.com/hello.jpg"',
+                b'url="https://brandnew.example.com/hello.jpg&apos;);background:url(&apos;https://evil.example.com/"',
+            )
+            .replace(
+                b"<description>Hello body</description>",
+                b'<description>&lt;img src="https://brandnew.example.com/b.jpg) url(//evil.example.com/x"&gt;'
+                b"</description>",
+            )
+        )
+        row = self.card_row(hostile)
+        self.assertEqual(row["feed"]["feed_link"], "https://brandnew.example.com/")
+        self.assertEqual(row["stories"][0]["story_permalink"], "")
+        self.assertEqual(row["stories"][0]["image_urls"], [])
+        self.assertEqual(row["stories"][1]["story_permalink"], "https://brandnew.example.com/second")
+
     def test_sites_without_a_readable_feed_are_skipped(self):
         self.assertIsNone(self.preview("https://nofeed.example.com/", [])[0])
         address = ["https://gone.example.com/feed.xml"]
@@ -846,6 +942,101 @@ class Test_DescribeWebPreview(TestCase):
         self.assertIsNone(
             self.preview("https://gone.example.com/", address, content=b"<html>not a feed</html>")[0]
         )
+
+
+class FakeBody:
+    """A response body requests streams in chunks. `filler` spaces follow `head` without being held in memory."""
+
+    def __init__(self, head, filler, web):
+        self.head = head
+        self.size = len(head) + filler
+        self.offset = 0
+        self.web = web
+
+    def read(self, amount):
+        amount = min(amount, self.size - self.offset)
+        chunk = self.head[self.offset : self.offset + amount].ljust(amount, b" ")
+        self.offset += amount
+        self.web.bytes_served += amount
+        self.web.clock += self.web.seconds_per_chunk
+        return chunk
+
+    def close(self):
+        pass
+
+
+class Test_DescribeFeedDiscovery(TestCase):
+    """apps/describe/web_preview.py finds a site's feed with every response capped and one deadline.
+
+    Only DNS and requests.request are faked, so utils/url_safety.py and discovery itself run for real.
+    Each request moves a fake clock forward by `seconds_per_request`, each chunk read by `seconds_per_chunk`.
+    """
+
+    def setUp(self):
+        self.pages = {}
+        self.started = []
+        self.bytes_served = 0
+        self.clock = 0.0
+        self.seconds_per_request = 0
+        self.seconds_per_chunk = 0
+
+    def serve(self, method, url, **kwargs):
+        self.started.append(self.clock)
+        self.clock += self.seconds_per_request
+        head, filler = self.pages.get(url, (None, 0))
+        response = requests.Response()
+        response.url = url
+        response.encoding = "utf-8"
+        response.status_code = 404 if head is None else 200
+        response.raw = FakeBody(head or b"", filler, self)
+        return response
+
+    def preview(self, url):
+        from apps.describe import web_preview
+
+        public_ip = {ipaddress.ip_address("93.184.216.34")}
+        with patch("utils.url_safety._resolve_hostname", return_value=public_ip), patch(
+            "requests.request", side_effect=self.serve
+        ), patch.object(web_preview, "time", SimpleNamespace(monotonic=lambda: self.clock)):
+            return web_preview.preview_site(url)
+
+    def test_a_page_that_links_its_feed_is_previewed_through_that_feed(self):
+        self.pages["https://brandnew.example.com/"] = (
+            b'<html><head><link rel="alternate" type="application/rss+xml" href="/feed.xml"></head>'
+            b"<body>Hello</body></html>",
+            0,
+        )
+        self.pages["https://brandnew.example.com/feed.xml"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://brandnew.example.com/")
+        self.assertEqual(preview["feed_address"], "https://brandnew.example.com/feed.xml")
+        self.assertEqual(preview["feed_title"], "Brand New Blog")
+
+    def test_a_huge_page_is_read_no_further_than_the_byte_limit(self):
+        from apps.describe import web_preview
+
+        self.pages["https://huge.example.com/"] = (b"<html><body>", 8 * 1024 * 1024)
+        self.assertIsNone(self.preview("https://huge.example.com/"))
+        self.assertLessEqual(self.bytes_served, web_preview.MAX_FEED_BYTES + 64 * 1024)
+
+    def test_discovery_starts_no_request_after_its_deadline(self):
+        from apps.describe import web_preview
+
+        links = "".join(f'<link type="application/rss+xml" href="/feed{index}.xml">' for index in range(12))
+        self.pages["https://slow.example.com/"] = (f"<html><head>{links}</head></html>".encode(), 0)
+        self.seconds_per_request = 4
+        self.assertIsNone(self.preview("https://slow.example.com/"))
+        self.assertLess(max(self.started), web_preview.DISCOVERY_SECONDS)
+        # The page and the candidates it had time for, not all twelve links and the guessed paths.
+        self.assertLess(len(self.started), 12)
+
+    def test_a_page_still_arriving_at_the_deadline_is_cut_off(self):
+        from apps.describe import web_preview
+
+        self.pages["https://trickle.example.com/"] = (b"<html><body>", 8 * 1024 * 1024)
+        self.seconds_per_chunk = 1
+        self.assertIsNone(self.preview("https://trickle.example.com/"))
+        self.assertLessEqual(self.clock, web_preview.DISCOVERY_SECONDS + self.seconds_per_chunk)
+        self.assertEqual(len(self.started), 1)
 
 
 class Test_DescribeStuckSearches(DescribeMongoTestCase):
