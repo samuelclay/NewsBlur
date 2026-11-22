@@ -672,6 +672,28 @@ msgid "%(topic)s Subreddits"
 msgstr "Сабреддіти: %(topic)s"
 
 #, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr ""
+"%(unbilled)s очікує на оплату: на початку наступного місяця, якщо сума становитиме щонайменше %(minimum)s, "
+"або одразу на суму %(immediate)s."
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "Використано кредитів ШІ: %(used)s; понад ліміт вашого плану %(included)s — %(over)s"
+msgstr[1] "Використано кредитів ШІ: %(used)s; понад ліміт вашого плану %(included)s — %(over)s"
+msgstr[2] "Використано кредитів ШІ: %(used)s; понад ліміт вашого плану %(included)s — %(over)s"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "Використано %(used)s із %(included)s кредиту ШІ"
+msgstr[1] "Використано %(used)s із %(included)s кредитів ШІ"
+msgstr[2] "Використано %(used)s із %(included)s кредитів ШІ"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s Назад"
 
@@ -1004,6 +1026,13 @@ msgstr "1 місяць"
 msgid "1 year"
 msgstr "1 рік"
 
+#, python-format
+msgid "1¢ per credit past your plan's, about %(cost)s this month."
+msgstr "1¢ за кредит понад ліміт вашого плану — цього місяця близько %(cost)s."
+
+msgid "1¢ per credit past your plan's."
+msgstr "1¢ за кожен кредит понад ліміт вашого плану."
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Доступно 28 інструментів для читання, дій, навчання та пошуку нового."
 
@@ -1021,6 +1050,12 @@ msgstr "3 рази на день"
 
 msgid "5 years"
 msgstr "5 років"
+
+msgid "50 AI credits a month for AI filters"
+msgstr "50 кредитів ШІ на місяць для фільтрів ШІ"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "500 кредитів ШІ на місяць для фільтрів ШІ"
 
 msgid "5× faster feed updates"
 msgstr "Оновлення стрічок у 5 разів швидше"
@@ -1063,6 +1098,9 @@ msgstr "Blurblog із поширеними статтями"
 msgid "A clearer, closer sound"
 msgstr "Чіткіше й ближче звучання"
 
+msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgstr "Кредит дорівнює 1¢ на послуги ШІ: приблизно 700 статей через текстовий фільтр або 100 через графічний."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Папка стрічок, які читаються як один потік"
 
@@ -1082,18 +1120,42 @@ msgstr "Одна вподобайка переважає будь-яку кіл�
 msgid "A story diff with additions and deletions"
 msgstr "Порівняння версій статті з додаваннями й вилученнями"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "Текстовий фільтр на цьому сайті використовує приблизно %(count)s кредит на місяць."
+msgstr[1] "Текстовий фільтр на цьому сайті використовує приблизно %(count)s кредити на місяць."
+msgstr[2] "Текстовий фільтр на цьому сайті використовує приблизно %(count)s кредитів на місяць."
+
+msgid "A text filter on this site uses less than a tenth of a credit a month."
+msgstr "Текстовий фільтр на цьому сайті використовує менш ніж десяту частину кредиту на місяць."
+
 msgid "AI Filter"
 msgstr "Фільтр ШІ"
 
 msgid "AI Model"
 msgstr "Модель ШІ"
 
+msgid "AI credits"
+msgstr "Кредити ШІ"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "Фільтри ШІ зберігаються, але працюють лише на %(tier_link)s."
 
+msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr ""
+"Фільтри ШІ збережено, але вони працюють лише з Premium. Підписка Premium включає 5 кредитів ШІ на місяць, "
+"Archive — 50, а Pro — 500."
+
+msgid "AI filters run without credits on this server."
+msgstr "На цьому сервері фільтри ШІ працюють без кредитів."
+
 msgid "AI finds the stories"
 msgstr "ШІ знаходить статті"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "Текстові та графічні фільтри ШІ, 5 кредитів ШІ на місяць"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Добірка найважливіших статей за допомогою ШІ"
@@ -1104,6 +1166,10 @@ msgstr "Аналіз статей на основі ШІ та персоналі
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "УСІ КАТЕГОРІЇ (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "За поточного темпу цього місяця — близько %(cost)s."
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Авжеж. Відкрийте тренер і видаліть будь-які позитивні чи негативні оцінки, щоб скинути його."
@@ -1360,6 +1426,16 @@ msgstr "Сталася помилка."
 msgid "An error occurred. Please try again."
 msgstr "Сталася помилка. Спробуйте ще раз."
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "Графічний фільтр на цьому сайті використовує приблизно %(count)s кредит на місяць."
+msgstr[1] "Графічний фільтр на цьому сайті використовує приблизно %(count)s кредити на місяць."
+msgstr[2] "Графічний фільтр на цьому сайті використовує приблизно %(count)s кредитів на місяць."
+
+msgid "An image filter on this site uses less than a tenth of a credit a month."
+msgstr "Графічний фільтр на цьому сайті використовує менш ніж десяту частину кредиту на місяць."
+
 msgid "Analysis timed out. Please try again."
 msgstr "Час очікування аналізу вичерпано. Спробуйте ще раз."
 
@@ -1514,6 +1590,21 @@ msgstr ""
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "Ставте запитання, отримуйте стислий виклад або просіть виділити головне"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "За такого темпу цього місяця буде використано близько %(count)s кредиту."
+msgstr[1] "За такого темпу цього місяця буде використано близько %(count)s кредитів."
+msgstr[2] "За такого темпу цього місяця буде використано близько %(count)s кредитів."
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "За такого темпу кредити закінчаться приблизно %(date)s."
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "За такого темпу витрати за місяць становитимуть приблизно %(cost)s."
 
 msgid "Audio"
 msgstr "Аудіо"
@@ -1844,6 +1935,9 @@ msgstr "Змінити платіжні дані"
 msgid "Change folders"
 msgstr "Змінити папки"
 
+msgid "Change limit"
+msgstr "Змінити ліміт"
+
 msgid "Change password"
 msgstr "Змінити пароль"
 
@@ -1858,6 +1952,9 @@ msgstr "Змінити дані кредитної картки"
 
 msgid "Change your profile above"
 msgstr "Змініть свій профіль вище"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "Оплата стягується наприкінці місяця, коли сума досягне $1. Менші суми переносяться на наступний місяць."
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "Зазирніть пізніше — популярні сайти додають користувачі NewsBlur."
@@ -2153,6 +2250,9 @@ msgstr "Не вдалося завантажити розділ поширени
 
 msgid "Couldn't load audio for this story."
 msgstr "Не вдалося завантажити аудіо для цієї статті."
+
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "Не вдалося вимкнути оплату за використання. Спробуйте ще раз."
 
 msgid "Counting is difficult"
 msgstr "Рахувати — складно"
@@ -3049,6 +3149,11 @@ msgstr "Фільтри не знайшли статей у %(context)s."
 msgid "Filters found no stories in this view."
 msgstr "Фільтри не знайшли жодної статті в цьому поданні."
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr ""
+"Фільтри призупиняться, коли оплата за використання досягне цього ліміту. Не заповнюйте поле, щоб не "
+"встановлювати ліміт."
+
 msgid "Finance"
 msgstr "Фінанси"
 
@@ -3619,6 +3724,9 @@ msgstr "IFTTT і Zapier"
 msgid "Identify key people and relationships"
 msgstr "Визначте ключових людей і їхні зв’язки"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "Якщо за місяць сума сягне $10, її буде стягнуто одразу."
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "Якщо RSS-стрічку не знайдено, NewsBlur запропонує створити вебстрічку"
 
@@ -3816,6 +3924,9 @@ msgstr "Лише заголовки, без коментарів"
 
 msgid "Keep fades, without movement."
 msgstr "Зберегти плавну появу та зникнення без руху."
+
+msgid "Keep filters running"
+msgstr "Продовжити роботу фільтрів"
 
 msgid "Keep others unread"
 msgstr "Залишити інші непрочитаними"
@@ -4233,6 +4344,9 @@ msgstr "Пн"
 msgid "Monday"
 msgstr "Понеділок"
 
+msgid "Monthly limit"
+msgstr "Місячний ліміт"
+
 msgid "Months Earned"
 msgstr "Зароблені місяці"
 
@@ -4352,9 +4466,6 @@ msgstr "Класифікатор зображень природною мово�
 
 msgid "Natural Language Text Classifier"
 msgstr "Класифікатор тексту природною мовою"
-
-msgid "Natural language text and image classifiers"
-msgstr "Класифікатори тексту й зображень на основі природної мови"
 
 msgid "Nature"
 msgstr "Природа"
@@ -4549,6 +4660,9 @@ msgstr "Немає зображення"
 msgid "No items added yet."
 msgstr "Ще нічого не додано."
 
+msgid "No limit"
+msgstr "Без обмежень"
+
 msgid "No match"
 msgstr "Збігів немає"
 
@@ -4662,6 +4776,9 @@ msgstr "На цій сторінці не знайдено шаблонів ст
 
 msgid "No trending sites available"
 msgstr "Немає популярних сайтів"
+
+msgid "No usage billing charges yet."
+msgstr "Поки що немає нарахувань за оплату за використання."
 
 msgid "No valid merge groups to apply"
 msgstr "Немає коректних груп об’єднання для застосування"
@@ -5053,6 +5170,14 @@ msgstr "Обробка..."
 msgid "Part of a story URL"
 msgstr "Частина URL статті"
 
+msgid "Past your credits, filters keep running at 1¢ per credit."
+msgstr "Після вичерпання кредитів фільтри продовжать працювати за ціною 1¢ за кредит."
+
+msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgstr ""
+"Після вичерпання кредитів вашого тарифу фільтри призупиняться до 1-го числа. Оплата за використання дає "
+"змогу продовжити їхню роботу за 1¢ за кредит."
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Вставте будь-яку URL-адресу, і NewsBlur створить стрічку зі сторінки, навіть без RSS."
 
@@ -5245,6 +5370,9 @@ msgstr "Деталі Premium"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Для преміум-шрифтів потрібен %(link_start)sпреміум-акаунт%(link_end)s"
+
+msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr "План Premium включає 5 кредитів ШІ на місяць, Archive — 50, а Pro — 500."
 
 msgid "Premium renewal"
 msgstr "Поновлення Premium"
@@ -5694,6 +5822,10 @@ msgid "Reset to original favicon"
 msgstr "Відновити оригінальну іконку сайту"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "Скидається %(date)s"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "Скидання %(day)s"
 
@@ -5817,6 +5949,9 @@ msgstr "Збережіть будь-яку статтю одним клацан�
 msgid "Save comments"
 msgstr "Зберегти коментарі"
 
+msgid "Save limit"
+msgstr "Зберегти ліміт"
+
 msgid "Save my profile"
 msgstr "Зберегти мій профіль"
 
@@ -5865,6 +6000,13 @@ msgstr "Збережені статті впорядковано за власн
 
 msgid "Saved!"
 msgstr "Збережено!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "Збережено. Фільтри призупиняться за %(limit)s на місяць."
+
+msgid "Saved. No monthly limit."
+msgstr "Збережено. Місячного ліміту немає."
 
 msgid "Saved:"
 msgstr "Збережено:"
@@ -6106,11 +6248,17 @@ msgstr "Помилка сервера"
 msgid "Server error: %(status)s"
 msgstr "Помилка сервера: %(status)s"
 
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "Установіть місячний ліміт або вимкніть оплату за використання будь-коли."
+
 msgid "Set up newsletters"
 msgstr "Налаштуйте інформаційні розсилки"
 
 msgid "Set up notifications"
 msgstr "Налаштувати сповіщення"
+
+msgid "Set up usage billing"
+msgstr "Налаштувати оплату за використання"
 
 msgid "Set up your blurblog"
 msgstr "Налаштуйте свій blurblog"
@@ -6711,6 +6859,9 @@ msgstr "Потокове з’єднання перервано. Відпові�
 msgid "Stripe Id:"
 msgstr "Ідентифікатор Stripe:"
 
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Stripe зберігає дані вашої картки. Оплата за використання ввімкнеться за мить."
+
 msgid "Style"
 msgstr "Стиль"
 
@@ -7153,6 +7304,16 @@ msgstr ""
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "Це відповідає всьому заголовку й лише цій конкретній статті. Натомість виберіть частину заголовка."
 
+msgid "This month"
+msgstr "Цього місяця"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "Кредит ШІ (%(count)s) на цей місяць використано."
+msgstr[1] "Кредити ШІ (%(count)s) на цей місяць використано."
+msgstr[2] "Кредитів ШІ (%(count)s) на цей місяць використано."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Список прочитаних статей — це %(link_start)sфункція Premium%(link_end)s."
@@ -7434,6 +7595,9 @@ msgstr "Вівторок"
 msgid "Turn off automatic briefing generation"
 msgstr "Вимкнути автоматичне створення оглядів"
 
+msgid "Turn off usage billing"
+msgstr "Вимкнути оплату за використання"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
@@ -7441,8 +7605,14 @@ msgstr[0] "Увімкніть, будь ласка, %(count)s сайт"
 msgstr[1] "Увімкніть, будь ласка, ці сайти (%(count)s)"
 msgstr[2] "Увімкніть, будь ласка, ці сайти (%(count)s)"
 
+msgid "Turn on usage billing"
+msgstr "Увімкнути оплату за використання"
+
 msgid "Turning any page into a feed"
 msgstr "Перетворення будь-якої сторінки на стрічку"
+
+msgid "Turning off..."
+msgstr "Вимкнення…"
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7565,8 +7735,14 @@ msgstr "Без назви"
 msgid "Up Next"
 msgstr "Далі"
 
+msgid "Upcoming"
+msgstr "Майбутні списання"
+
 msgid "Update History"
 msgstr "Історія оновлень"
+
+msgid "Update card on Stripe"
+msgstr "Оновити картку у Stripe"
 
 msgid "Updated"
 msgstr "Оновлено"
@@ -7683,6 +7859,25 @@ msgstr "Не вдалося завантажити. Спробуйте ще ра
 
 msgid "Uploaded!"
 msgstr "Завантажено!"
+
+msgid "Usage billing"
+msgstr "Оплата за використання"
+
+msgid "Usage billing charges"
+msgstr "Списання за використання"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgstr[0] ""
+"Оплата за використання увімкнена. Кредити понад ваш ліміт %(count)s коштують по 1¢ кожен. Наразі цього "
+"місяця: %(cost)s."
+msgstr[1] ""
+"Оплата за використання увімкнена. Кредити понад ваш ліміт %(count)s коштують по 1¢ кожен. Наразі цього "
+"місяця: %(cost)s."
+msgstr[2] ""
+"Оплата за використання увімкнена. Кредити понад ваш ліміт %(count)s коштують по 1¢ кожен. Наразі цього "
+"місяця: %(cost)s."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8157,6 +8352,9 @@ msgstr "Щоб відповісти на коментар, потрібно ув
 msgid "You need to be logged in to share a story."
 msgstr "Щоб поширити статтю, потрібно увійти."
 
+msgid "You only pay for credits past your plan's."
+msgstr "Ви платите лише за кредити понад ліміт вашого тарифу."
+
 msgid "You will be emailed within a minute or three."
 msgstr "Ви отримаєте листа за хвилину-дві."
 
@@ -8165,6 +8363,10 @@ msgstr "Ви побачите чимало тегів і авторів."
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "Перевищено ліміт запитів.<br> Спробуйте ще раз незабаром, але не надто скоро."
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "Ви майже досягли місячного ліміту %(limit)s."
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "Вам запропонують кілька варіантів шаблону статей на вибір."
@@ -8187,6 +8389,13 @@ msgstr "Вам подарували %(value_1)s із %(value_2)s!"
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
 msgstr "Ви досягли ліміту сайтів (%(value_1)s). Вимкніть деякі сайти або перейдіть на вищий план, щоб додати більше."
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "Цього місяця ви використали %(used)s із %(included)s кредиту ШІ."
+msgstr[1] "Цього місяця ви використали %(used)s із %(included)s кредитів ШІ."
+msgstr[2] "Цього місяця ви використали %(used)s із %(included)s кредитів ШІ."
+
 msgid "You:"
 msgstr "Ви:"
 
@@ -8203,6 +8412,14 @@ msgstr "Ваша підписка %(value_1)s включає все зазнач
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "Ваша підписка %(value_1)s активна"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "Ваші фільтри ШІ призупинені до %(date)s."
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "Ваші фільтри ШІ досягли місячного ліміту %(limit)s і призупинені до %(date)s."
 
 msgid "Your Archived Domains"
 msgstr "Ваші архівовані домени"

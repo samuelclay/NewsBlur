@@ -543,6 +543,22 @@ msgid "%(topic)s Subreddits"
 msgstr "%(topic)s 서브레딧"
 
 #, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr "%(unbilled)s은(는) 청구 대기 중입니다. 다음 달 초에 %(minimum)s 이상이면 청구되고, 그렇지 않으면 %(immediate)s에 즉시 청구됩니다."
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "%(used)s AI 크레딧을 사용했습니다. 요금제에 포함된 %(included)s보다 %(over)s 초과했습니다."
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "AI 크레딧 %(used)s개 중 %(included)s개 사용"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s 뒤로"
 
@@ -871,6 +887,13 @@ msgstr "1개월"
 msgid "1 year"
 msgstr "1년"
 
+#, python-format
+msgid "1¢ per credit past your plan's, about %(cost)s this month."
+msgstr "요금제 포함량을 초과한 크레딧당 1¢이며, 이번 달에는 약 %(cost)s입니다."
+
+msgid "1¢ per credit past your plan's."
+msgstr "요금제 초과 크레딧당 1¢"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "읽기, 작업, 학습, 탐색을 지원하는 도구 28개를 이용할 수 있습니다."
 
@@ -888,6 +911,12 @@ msgstr "하루 3회"
 
 msgid "5 years"
 msgstr "5년"
+
+msgid "50 AI credits a month for AI filters"
+msgstr "AI 필터용 월 50 AI 크레딧"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "AI 필터용 월 500 AI 크레딧"
 
 msgid "5× faster feed updates"
 msgstr "피드 업데이트 5배 빠르게"
@@ -924,6 +953,9 @@ msgstr "공유한 스토리를 모아 보는 Blurblog"
 msgid "A clearer, closer sound"
 msgstr "더 선명하고 가까운 소리"
 
+msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgstr "크레딧 1개는 AI 사용액 1¢에 해당하며, 텍스트 필터로 약 700개, 이미지 필터로 약 100개의 스토리를 처리할 수 있습니다."
+
 msgid "A folder of feeds read as one stream"
 msgstr "여러 피드를 하나의 스트림으로 모아 읽기"
 
@@ -943,18 +975,38 @@ msgstr "좋아요 하나는 싫어요 개수와 관계없이 우선 적용됩니
 msgid "A story diff with additions and deletions"
 msgstr "추가 및 삭제 내용이 표시되는 스토리 변경 비교"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "이 사이트의 텍스트 필터는 한 달에 크레딧 %(count)s개 정도를 사용합니다."
+
+msgid "A text filter on this site uses less than a tenth of a credit a month."
+msgstr "이 사이트의 텍스트 필터는 한 달에 크레딧 10분의 1 미만을 사용합니다."
+
 msgid "AI Filter"
 msgstr "AI 필터"
 
 msgid "AI Model"
 msgstr "AI 모델"
 
+msgid "AI credits"
+msgstr "AI 크레딧"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "AI 필터는 저장되지만 %(tier_link)s에서만 실행됩니다."
 
+msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr "AI 필터가 저장되었지만 프리미엄에서만 실행됩니다. 프리미엄에는 월 5개의 AI 크레딧, 아카이브에는 50개, 프로에는 500개가 포함됩니다."
+
+msgid "AI filters run without credits on this server."
+msgstr "이 서버에서는 AI 필터를 크레딧 없이 실행할 수 있습니다."
+
 msgid "AI finds the stories"
 msgstr "AI가 스토리를 찾아줍니다"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "월 5 AI 크레딧이 제공되는 AI 텍스트 및 이미지 필터"
 
 msgid "AI-curated summary of your top stories"
 msgstr "AI가 선별한 주요 스토리 요약"
@@ -965,6 +1017,10 @@ msgstr "뉴스 피드를 AI로 분석하고 나만을 위한 일일 요약을 �
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "전체 카테고리 (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "현재 속도로 사용하면 이번 달 약 %(cost)s입니다."
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "물론입니다. 트레이너를 열고 좋아요나 싫어요 표시를 삭제해 초기화하세요."
@@ -1201,6 +1257,14 @@ msgstr "오류가 발생했습니다."
 msgid "An error occurred. Please try again."
 msgstr "오류가 발생했습니다. 다시 시도해 주세요."
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "이 사이트의 이미지 필터는 한 달에 크레딧 %(count)s개 정도를 사용합니다."
+
+msgid "An image filter on this site uses less than a tenth of a credit a month."
+msgstr "이 사이트의 이미지 필터는 한 달에 크레딧 0.1개 미만을 사용합니다."
+
 msgid "Analysis timed out. Please try again."
 msgstr "분석 시간이 초과되었습니다. 다시 시도해 주세요."
 
@@ -1345,6 +1409,19 @@ msgstr "읽은 모든 내용에 관해 질문해 보세요. 탐색 기록을 검
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "질문하고, 요약을 받거나, 핵심 내용을 요청하세요"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "현재 속도라면 이번 달에 크레딧을 약 %(count)s개 사용하게 됩니다."
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "현재 속도라면 크레딧이 %(date)s쯤 소진됩니다."
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "현재 사용 속도라면 이번 달 요금은 약 %(cost)s입니다."
 
 msgid "Audio"
 msgstr "오디오"
@@ -1667,6 +1744,9 @@ msgstr "결제 정보 변경"
 msgid "Change folders"
 msgstr "폴더 변경"
 
+msgid "Change limit"
+msgstr "한도 변경"
+
 msgid "Change password"
 msgstr "비밀번호 변경"
 
@@ -1681,6 +1761,9 @@ msgstr "신용카드 변경"
 
 msgid "Change your profile above"
 msgstr "위에서 프로필 변경"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "월말에 금액이 1달러에 도달하면 청구됩니다. 그보다 적은 금액은 다음 달로 이월됩니다."
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "NewsBlur 사용자들이 추가하는 인기 사이트를 나중에 다시 확인하세요."
@@ -1970,6 +2053,9 @@ msgstr "FAQ를 불러오지 못했습니다. 다시 시도해 주세요."
 
 msgid "Couldn't load audio for this story."
 msgstr "이 스토리의 오디오를 불러오지 못했습니다."
+
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "사용량 과금을 끌 수 없습니다. 다시 시도하세요."
 
 msgid "Counting is difficult"
 msgstr "개수 세기는 어렵습니다"
@@ -2845,6 +2931,9 @@ msgstr "필터에 해당하는 스토리가 %(context)s에 없습니다."
 msgid "Filters found no stories in this view."
 msgstr "이 보기에서 필터에 해당하는 스토리가 없습니다."
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr "사용량 과금이 한도에 도달하면 필터가 일시 중지됩니다. 한도를 설정하지 않으려면 비워 두세요."
+
 msgid "Finance"
 msgstr "금융"
 
@@ -3403,6 +3492,9 @@ msgstr "IFTTT 및 Zapier"
 msgid "Identify key people and relationships"
 msgstr "주요 인물과 관계 파악"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "한 달 안에 $10에 도달하면 즉시 청구됩니다."
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "RSS 피드를 찾지 못하면 NewsBlur에서 웹 피드 생성을 제안합니다"
 
@@ -3590,6 +3682,9 @@ msgstr "의견 없이 헤드라인만"
 
 msgid "Keep fades, without movement."
 msgstr "움직임 없이 페이드 효과를 유지합니다."
+
+msgid "Keep filters running"
+msgstr "필터 계속 실행"
 
 msgid "Keep others unread"
 msgstr "나머지는 읽지 않은 상태로 유지"
@@ -3989,6 +4084,9 @@ msgstr "월"
 msgid "Monday"
 msgstr "월요일"
 
+msgid "Monthly limit"
+msgstr "월 한도"
+
 msgid "Months Earned"
 msgstr "적립한 개월 수"
 
@@ -4104,9 +4202,6 @@ msgstr "자연어 이미지 분류기"
 
 msgid "Natural Language Text Classifier"
 msgstr "자연어 텍스트 분류기"
-
-msgid "Natural language text and image classifiers"
-msgstr "자연어 텍스트 및 이미지 분류기"
 
 msgid "Nature"
 msgstr "자연"
@@ -4299,6 +4394,9 @@ msgstr "이미지 없음"
 msgid "No items added yet."
 msgstr "아직 추가된 항목이 없습니다."
 
+msgid "No limit"
+msgstr "제한 없음"
+
 msgid "No match"
 msgstr "일치하는 항목 없음"
 
@@ -4410,6 +4508,9 @@ msgstr "이 페이지에서 스토리 패턴을 찾을 수 없습니다."
 
 msgid "No trending sites available"
 msgstr "현재 인기 급상승 사이트가 없습니다"
+
+msgid "No usage billing charges yet."
+msgstr "아직 사용량 과금 요금이 없습니다."
 
 msgid "No valid merge groups to apply"
 msgstr "적용할 수 있는 유효한 병합 그룹이 없습니다"
@@ -4777,6 +4878,12 @@ msgstr "분석 중..."
 msgid "Part of a story URL"
 msgstr "스토리 URL의 일부"
 
+msgid "Past your credits, filters keep running at 1¢ per credit."
+msgstr "포함된 크레딧을 모두 사용한 후에도 필터는 크레딧당 1¢의 요금으로 계속 실행됩니다."
+
+msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgstr "요금제에 포함된 크레딧을 초과하면 필터가 매월 1일까지 일시 중지됩니다. 사용량 청구를 이용하면 크레딧당 1¢로 계속 실행할 수 있습니다."
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "URL을 붙여넣으면 RSS가 없어도 NewsBlur가 해당 페이지에서 피드를 만듭니다."
 
@@ -4967,6 +5074,9 @@ msgstr "프리미엄 상세 정보"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "프리미엄 글꼴을 사용하려면 %(link_start)s프리미엄 계정%(link_end)s이 필요합니다."
+
+msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr "프리미엄에는 월 5개의 AI 크레딧, 아카이브에는 50개, 프로에는 500개가 포함됩니다."
 
 msgid "Premium renewal"
 msgstr "프리미엄 갱신"
@@ -5400,6 +5510,10 @@ msgid "Reset to original favicon"
 msgstr "기본 파비콘으로 재설정"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "%(date)s에 초기화"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "%(day)s에 초기화됩니다"
 
@@ -5517,6 +5631,9 @@ msgstr "클릭 한 번이나 s 키로 스토리를 저장하세요"
 msgid "Save comments"
 msgstr "댓글 저장"
 
+msgid "Save limit"
+msgstr "한도 저장"
+
 msgid "Save my profile"
 msgstr "프로필 저장"
 
@@ -5563,6 +5680,13 @@ msgstr "맞춤 태그로 정리한 저장된 스토리"
 
 msgid "Saved!"
 msgstr "저장됨!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "저장했습니다. 필터는 월 %(limit)s에 일시 중지됩니다."
+
+msgid "Saved. No monthly limit."
+msgstr "저장되었습니다. 월간 한도 없음."
 
 msgid "Saved:"
 msgstr "저장됨:"
@@ -5800,11 +5924,17 @@ msgstr "서버 오류"
 msgid "Server error: %(status)s"
 msgstr "서버 오류: %(status)s"
 
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "월간 한도를 설정하거나 언제든지 사용량 과금을 끄세요."
+
 msgid "Set up newsletters"
 msgstr "뉴스레터 설정"
 
 msgid "Set up notifications"
 msgstr "알림 설정"
+
+msgid "Set up usage billing"
+msgstr "사용량 기반 결제 설정"
 
 msgid "Set up your blurblog"
 msgstr "Blurblog 설정하기"
@@ -6389,6 +6519,9 @@ msgstr "스트림이 중단되었습니다. 10초 동안 응답이 없습니다.
 msgid "Stripe Id:"
 msgstr "Stripe ID:"
 
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Stripe에 카드가 등록되었습니다. 잠시 후 사용량 과금이 시작됩니다."
+
 msgid "Style"
 msgstr "스타일"
 
@@ -6803,6 +6936,14 @@ msgstr "스토리 전체 텍스트와 일치하며 이 스토리와 정확히 �
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "제목 전체와 일치하므로 이 스토리만 정확히 일치합니다. 대신 제목의 일부를 선택하세요."
 
+msgid "This month"
+msgstr "이번 달"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "이번 달 AI 크레딧 %(count)s개를 사용했습니다."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "이 읽은 스토리 목록은 %(link_start)s프리미엄 기능%(link_end)s입니다."
@@ -7075,13 +7216,22 @@ msgstr "화요일"
 msgid "Turn off automatic briefing generation"
 msgstr "자동 브리핑 생성 끄기"
 
+msgid "Turn off usage billing"
+msgstr "사용량 과금 끄기"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "사이트 %(count)s개를 사용 설정해 주세요"
 
+msgid "Turn on usage billing"
+msgstr "사용량 청구 사용"
+
 msgid "Turning any page into a feed"
 msgstr "웹페이지를 피드로 변환"
+
+msgid "Turning off..."
+msgstr "끄는 중..."
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7204,8 +7354,14 @@ msgstr "제목 없음"
 msgid "Up Next"
 msgstr "다음 재생"
 
+msgid "Upcoming"
+msgstr "예정"
+
 msgid "Update History"
 msgstr "업데이트 기록"
+
+msgid "Update card on Stripe"
+msgstr "Stripe에서 카드 업데이트"
 
 msgid "Updated"
 msgstr "업데이트됨"
@@ -7312,6 +7468,17 @@ msgstr "업로드하지 못했습니다. 다시 시도해 주세요."
 
 msgid "Uploaded!"
 msgstr "업로드 완료!"
+
+msgid "Usage billing"
+msgstr "사용량 과금"
+
+msgid "Usage billing charges"
+msgstr "사용량 과금 요금"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgstr[0] "사용량 기반 결제가 켜져 있습니다. %(count)s개를 초과한 크레딧은 개당 1¢입니다. 이번 달 현재까지 %(cost)s입니다."
 
 #, python-format
 msgid "Use %(language)s"
@@ -7756,6 +7923,9 @@ msgstr "댓글에 답글을 달려면 로그인해야 합니다."
 msgid "You need to be logged in to share a story."
 msgstr "스토리를 공유하려면 로그인해야 합니다."
 
+msgid "You only pay for credits past your plan's."
+msgstr "요금제에 포함된 크레딧을 초과한 만큼만 결제하면 됩니다."
+
 msgid "You will be emailed within a minute or three."
 msgstr "1~3분 이내에 이메일을 보내드립니다."
 
@@ -7764,6 +7934,10 @@ msgstr "다양한 태그와 작성자가 표시됩니다."
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "요청이 제한되고 있습니다.<br> 잠시 후 다시 시도하세요. 너무 빨리 재시도하지 마세요."
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "월간 한도 %(limit)s에 가까워졌습니다."
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "선택할 수 있는 여러 스토리 패턴 옵션이 표시됩니다."
@@ -7784,6 +7958,11 @@ msgstr "%(value_2)s %(value_1)s을(를) 선물로 받았습니다!"
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
 msgstr "사이트 한도 %(value_1)s개에 도달했습니다. 사이트를 음소거하거나 계정을 업그레이드하면 더 추가할 수 있습니다."
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "이번 달에 AI 크레딧 %(used)s개 중 %(included)s개를 사용했습니다."
+
 msgid "You:"
 msgstr "나:"
 
@@ -7800,6 +7979,14 @@ msgstr "%(value_1)s 구독에는 위의 모든 항목이 포함됩니다"
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "%(value_1)s 구독이 활성 상태입니다"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "AI 필터가 %(date)s까지 일시 중지됩니다."
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "AI 필터의 월간 한도 %(limit)s에 도달하여 %(date)s까지 일시 중지됩니다."
 
 msgid "Your Archived Domains"
 msgstr "보관된 도메인"

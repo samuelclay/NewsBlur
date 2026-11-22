@@ -543,6 +543,22 @@ msgid "%(topic)s Subreddits"
 msgstr "%(topic)s Subreddit"
 
 #, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr "%(unbilled)s 尚待收費：若在下個月初已達 %(minimum)s，屆時收費；否則在達到 %(immediate)s 時立即收費。"
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "已使用 %(used)s 點 AI 點數，超出方案包含的 %(included)s 點 %(over)s"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "已使用 %(used)s 點 AI 點數，共 %(included)s 點"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s 返回"
 
@@ -871,6 +887,13 @@ msgstr "1 個月"
 msgid "1 year"
 msgstr "1 年"
 
+#, python-format
+msgid "1¢ per credit past your plan's, about %(cost)s this month."
+msgstr "超出方案包含點數後，每點收費 1¢，本月約為 %(cost)s。"
+
+msgid "1¢ per credit past your plan's."
+msgstr "超出方案額度後，每點 1 美分。"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "提供 28 種工具，涵蓋閱讀、操作、訓練和探索。"
 
@@ -888,6 +911,12 @@ msgstr "每日 3 次"
 
 msgid "5 years"
 msgstr "5 年"
+
+msgid "50 AI credits a month for AI filters"
+msgstr "AI 篩選器每月 50 點 AI 點數"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "AI 篩選器每月 500 點 AI 點數"
 
 msgid "5× faster feed updates"
 msgstr "訂閱來源更新速度快 5 倍"
@@ -924,6 +953,9 @@ msgstr "分享文章的 Blurblog"
 msgid "A clearer, closer sound"
 msgstr "更清晰、更貼近的音質"
 
+msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgstr "每點 AI 點數價值 1 美分：約可透過文字篩選器處理 700 篇文章，或透過圖片篩選器處理 100 篇。"
+
 msgid "A folder of feeds read as one stream"
 msgstr "將多個訂閱來源合併成單一串流閱讀的資料夾"
 
@@ -943,18 +975,38 @@ msgstr "一個「喜歡」就能勝過任意數量的「不喜歡」"
 msgid "A story diff with additions and deletions"
 msgstr "顯示新增與刪除內容的文章差異"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "此網站的文字篩選器每月約使用 %(count)s 點數。"
+
+msgid "A text filter on this site uses less than a tenth of a credit a month."
+msgstr "此網站的文字篩選器每月使用不到十分之一點。"
+
 msgid "AI Filter"
 msgstr "AI 篩選器"
 
 msgid "AI Model"
 msgstr "AI 模型"
 
+msgid "AI credits"
+msgstr "AI 點數"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "AI 篩選器已儲存，但只會在 %(tier_link)s 上執行。"
 
+msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr "AI 篩選器已儲存，但只有 Premium 會執行。Premium 每月含 5 點 AI 點數，Archive 含 50 點，Pro 含 500 點。"
+
+msgid "AI filters run without credits on this server."
+msgstr "在此伺服器上，AI 篩選器執行時不會使用點數。"
+
 msgid "AI finds the stories"
 msgstr "由 AI 找出文章"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "AI 文字與圖片篩選器，每月含 5 點 AI 點數"
 
 msgid "AI-curated summary of your top stories"
 msgstr "由 AI 精選的熱門文章摘要"
@@ -965,6 +1017,10 @@ msgstr "運用 AI 分析文章，並根據你的新聞訂閱來源提供個人�
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "所有分類（%(value_1)s）"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "依照目前的使用速度，本月約為 %(cost)s。"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "當然可以。開啟訓練器，移除任何讚或倒讚即可重設。"
@@ -1201,6 +1257,14 @@ msgstr "發生錯誤。"
 msgid "An error occurred. Please try again."
 msgstr "發生錯誤，請再試一次。"
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "此網站的圖片篩選器每月約使用 %(count)s 點數。"
+
+msgid "An image filter on this site uses less than a tenth of a credit a month."
+msgstr "此網站的圖片篩選器每月使用不到十分之一點數。"
+
 msgid "Analysis timed out. Please try again."
 msgstr "分析逾時。請再試一次。"
 
@@ -1345,6 +1409,19 @@ msgstr "詢問你讀過的所有內容。我可以搜尋你的瀏覽記錄，找
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "提出問題、取得摘要，或要求列出重點"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "依照目前的使用速度，本月約會用掉 %(count)s 點。"
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "依照目前的使用速度，你的點數大約會在 %(date)s 用完。"
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "依照目前的使用速度，本月費用約為 %(cost)s。"
 
 msgid "Audio"
 msgstr "音訊"
@@ -1667,6 +1744,9 @@ msgstr "變更帳單資料"
 msgid "Change folders"
 msgstr "變更資料夾"
 
+msgid "Change limit"
+msgstr "變更上限"
+
 msgid "Change password"
 msgstr "變更密碼"
 
@@ -1681,6 +1761,9 @@ msgstr "更換信用卡"
 
 msgid "Change your profile above"
 msgstr "在上方變更你的個人檔案"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "累積達到 $1 後，會在月底收費。較少的金額會延至下個月。"
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "稍後再回來查看 NewsBlur 使用者新增的熱門網站。"
@@ -1966,6 +2049,9 @@ msgstr "無法載入常見問題。請再試一次。"
 
 msgid "Couldn't load audio for this story."
 msgstr "無法載入這篇文章的音訊。"
+
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "無法關閉用量計費。請再試一次。"
 
 msgid "Counting is difficult"
 msgstr "計數很難"
@@ -2839,6 +2925,9 @@ msgstr "篩選器在 %(context)s 中找不到任何文章。"
 msgid "Filters found no stories in this view."
 msgstr "此檢視畫面中沒有文章符合篩選條件。"
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr "用量計費達到上限時，篩選器會暫停。留空表示不設上限。"
+
 msgid "Finance"
 msgstr "財經"
 
@@ -3397,6 +3486,9 @@ msgstr "IFTTT 與 Zapier"
 msgid "Identify key people and relationships"
 msgstr "辨識重要人物及其關係"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "若一個月內累積到 $10，便會立即收費。"
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "如果找不到 RSS 訂閱來源，NewsBlur 會提供建立網頁訂閱來源的選項"
 
@@ -3582,6 +3674,9 @@ msgstr "只有標題，沒有評論"
 
 msgid "Keep fades, without movement."
 msgstr "保留淡入淡出，取消移動效果。"
+
+msgid "Keep filters running"
+msgstr "讓篩選器繼續執行"
 
 msgid "Keep others unread"
 msgstr "保留其他文章為未讀"
@@ -3981,6 +4076,9 @@ msgstr "週一"
 msgid "Monday"
 msgstr "星期一"
 
+msgid "Monthly limit"
+msgstr "每月上限"
+
 msgid "Months Earned"
 msgstr "已獲得月數"
 
@@ -4096,9 +4194,6 @@ msgstr "自然語言圖片分類器"
 
 msgid "Natural Language Text Classifier"
 msgstr "自然語言文字分類器"
-
-msgid "Natural language text and image classifiers"
-msgstr "自然語言文字與圖片分類器"
 
 msgid "Nature"
 msgstr "自然"
@@ -4291,6 +4386,9 @@ msgstr "沒有圖片"
 msgid "No items added yet."
 msgstr "尚未新增任何項目。"
 
+msgid "No limit"
+msgstr "不限"
+
 msgid "No match"
 msgstr "沒有相符項目"
 
@@ -4402,6 +4500,9 @@ msgstr "此頁面上找不到任何文章模式。"
 
 msgid "No trending sites available"
 msgstr "目前沒有熱門網站"
+
+msgid "No usage billing charges yet."
+msgstr "目前沒有用量計費費用。"
 
 msgid "No valid merge groups to apply"
 msgstr "沒有可套用的有效合併群組"
@@ -4769,6 +4870,12 @@ msgstr "解析中…"
 msgid "Part of a story URL"
 msgstr "文章網址的一部分"
 
+msgid "Past your credits, filters keep running at 1¢ per credit."
+msgstr "超出方案點數後，篩選器會繼續執行，每點收費 1¢。"
+
+msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgstr "用完方案點數後，篩選器會暫停，直到每月 1 日。啟用用量計費後，篩選器會繼續執行，每點收費 1¢。"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "貼上任何網址，NewsBlur 就會從頁面建立訂閱來源，即使沒有 RSS 也可以。"
 
@@ -4959,6 +5066,9 @@ msgstr "Premium 詳情"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Premium 字型需要%(link_start)s進階帳戶%(link_end)s"
+
+msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr "Premium 每月含 5 點 AI 點數，Archive 含 50 點，Pro 含 500 點。"
 
 msgid "Premium renewal"
 msgstr "Premium 續訂"
@@ -5392,6 +5502,10 @@ msgid "Reset to original favicon"
 msgstr "還原為原始網站圖示"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "重設時間：%(date)s"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "於 %(day)s 重設"
 
@@ -5509,6 +5623,9 @@ msgstr "按一下或按 s 鍵即可儲存任何文章"
 msgid "Save comments"
 msgstr "儲存留言"
 
+msgid "Save limit"
+msgstr "儲存上限"
+
 msgid "Save my profile"
 msgstr "儲存我的個人檔案"
 
@@ -5555,6 +5672,13 @@ msgstr "以自訂標籤整理已儲存的文章"
 
 msgid "Saved!"
 msgstr "已儲存！"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "已儲存。篩選器會在每月用量達到 %(limit)s 時暫停。"
+
+msgid "Saved. No monthly limit."
+msgstr "已儲存。沒有每月上限。"
 
 msgid "Saved:"
 msgstr "已儲存："
@@ -5792,11 +5916,17 @@ msgstr "伺服器錯誤"
 msgid "Server error: %(status)s"
 msgstr "伺服器錯誤：%(status)s"
 
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "設定每月上限，或隨時關閉用量計費。"
+
 msgid "Set up newsletters"
 msgstr "設定電子報"
 
 msgid "Set up notifications"
 msgstr "設定通知"
+
+msgid "Set up usage billing"
+msgstr "設定用量計費"
 
 msgid "Set up your blurblog"
 msgstr "設定你的 Blurblog"
@@ -6381,6 +6511,9 @@ msgstr "串流中斷。10 秒內未收到回應。"
 msgid "Stripe Id:"
 msgstr "Stripe ID："
 
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Stripe 已取得你的卡片資料。用量計費即將啟用。"
+
 msgid "Style"
 msgstr "風格"
 
@@ -6793,6 +6926,14 @@ msgstr "這會比對文章的完整文字，因此只會比對這篇特定文章
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "這會比對完整標題，因此只會比對這篇完全相同的文章。請改選標題的一部分。"
 
+msgid "This month"
+msgstr "本月"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "本月的 %(count)s 點 AI 點數已用完。"
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "此已讀文章清單是%(link_start)s進階版功能%(link_end)s。"
@@ -7065,13 +7206,22 @@ msgstr "星期二"
 msgid "Turn off automatic briefing generation"
 msgstr "關閉自動產生簡報"
 
+msgid "Turn off usage billing"
+msgstr "關閉用量計費"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "請啟用這 %(count)s 個網站"
 
+msgid "Turn on usage billing"
+msgstr "開啟用量計費"
+
 msgid "Turning any page into a feed"
 msgstr "將任何頁面轉換為訂閱來源"
+
+msgid "Turning off..."
+msgstr "正在關閉…"
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7192,8 +7342,14 @@ msgstr "未命名"
 msgid "Up Next"
 msgstr "接下來"
 
+msgid "Upcoming"
+msgstr "即將推出"
+
 msgid "Update History"
 msgstr "更新記錄"
+
+msgid "Update card on Stripe"
+msgstr "在 Stripe 更新卡片"
 
 msgid "Updated"
 msgstr "更新時間"
@@ -7300,6 +7456,17 @@ msgstr "上傳失敗。請再試一次。"
 
 msgid "Uploaded!"
 msgstr "已上傳！"
+
+msgid "Usage billing"
+msgstr "用量計費"
+
+msgid "Usage billing charges"
+msgstr "用量計費費用"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgstr[0] "用量計費已開啟。超出方案包含的 %(count)s 點後，每點收費 1¢：本月目前為 %(cost)s。"
 
 #, python-format
 msgid "Use %(language)s"
@@ -7744,6 +7911,9 @@ msgstr "你必須登入才能回覆留言。"
 msgid "You need to be logged in to share a story."
 msgstr "你必須登入才能分享文章。"
 
+msgid "You only pay for credits past your plan's."
+msgstr "你只需為超出方案點數的部分付費。"
+
 msgid "You will be emailed within a minute or three."
 msgstr "你會在一至三分鐘內收到電子郵件。"
 
@@ -7752,6 +7922,10 @@ msgstr "你會看到一系列標籤和作者。"
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "你的請求頻率受到限制。<br> 請稍後再試，但別太快。"
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "你的用量快達到每月上限 %(limit)s 了。"
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "系統會提供多種文章模式選項供你選擇。"
@@ -7772,6 +7946,11 @@ msgstr "你獲贈了 %(value_1)s 的 %(value_2)s！"
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
 msgstr "你已達到 %(value_1)s 個網站的上限。請將部分網站設為靜音，或升級帳戶以新增更多網站。"
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "你本月已使用 %(used)s 點 AI 點數，共有 %(included)s 點。"
+
 msgid "You:"
 msgstr "你："
 
@@ -7788,6 +7967,14 @@ msgstr "你的 %(value_1)s 訂閱包含以上所有內容"
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "你的 %(value_1)s 訂閱已啟用"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "你的 AI 篩選器已暫停，直到 %(date)s。"
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "你的 AI 篩選器已達到每月上限 %(limit)s，目前已暫停，直到 %(date)s。"
 
 msgid "Your Archived Domains"
 msgstr "已封存的網域"

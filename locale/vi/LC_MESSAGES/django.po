@@ -373,6 +373,12 @@ msgstr "404 - NewsBlur không tìm thấy trang này"
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "Tải dữ liệu mỗi 5 phút, huấn luyện regex, 10.000 trang web"
 
+msgid "50 AI credits a month for AI filters"
+msgstr "50 tín dụng AI mỗi tháng cho bộ lọc AI"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "500 tín dụng AI mỗi tháng cho bộ lọc AI"
+
 msgid "64 sites"
 msgstr "64 trang web"
 
@@ -603,6 +609,9 @@ msgstr "Tính năng AI"
 msgid "AI built into every story"
 msgstr "AI được tích hợp trong mọi bài viết"
 
+msgid "AI credits"
+msgstr "Tín dụng AI"
+
 msgid "AI filters aren't available on this server"
 msgstr "Bộ lọc AI không khả dụng trên máy chủ này"
 
@@ -612,6 +621,9 @@ msgstr "Bộ lọc hình ảnh AI"
 
 msgid "AI skill"
 msgstr "Kỹ năng AI"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "Bộ lọc văn bản và hình ảnh AI, kèm 5 tín dụng AI mỗi tháng"
 
 msgctxt "notification email classifier match"
 msgid "AI text filter"
@@ -1016,6 +1028,34 @@ msgstr "Hỏi Trợ lý Lưu trữ AI"
 
 msgid "Ask the community or try NewsBlur for yourself."
 msgstr "Hãy hỏi cộng đồng hoặc tự mình dùng thử NewsBlur."
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(counter)s credit. With usage billing, every "
+"credit past your plan's costs 1 cent, which comes to about $%(forecast_overage)s this month. You can set a "
+"monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(counter)s credits. With usage billing, every"
+" credit past your plan's costs 1 cent, which comes to about $%(forecast_overage)s this month. You can set a"
+" monthly limit so it never costs more than you want."
+msgstr[0] ""
+"Với tốc độ chạy hiện tại, tháng này sẽ dùng khoảng %(counter)s tín dụng. Khi thanh toán theo mức sử dụng, "
+"mỗi tín dụng vượt quá mức của gói có giá 1 xu, tương đương khoảng $%(forecast_overage)s trong tháng này. "
+"Bạn có thể đặt giới hạn hàng tháng để chi phí không vượt quá mức mong muốn."
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(counter)s credit. With usage billing, every "
+"credit past your plan's costs 1 cent, which comes to about <b>$%(forecast_overage)s</b> this month. You can"
+" set a monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(counter)s credits. With usage billing, every"
+" credit past your plan's costs 1 cent, which comes to about <b>$%(forecast_overage)s</b> this month. You "
+"can set a monthly limit so it never costs more than you want."
+msgstr[0] ""
+"Với tốc độ hoạt động hiện tại, tháng này sẽ dùng khoảng %(counter)s tín dụng. Khi bật tính phí theo mức sử "
+"dụng, mỗi tín dụng vượt quá gói của bạn có giá 1 xu; tháng này tổng cộng sẽ vào khoảng "
+"<b>$%(forecast_overage)s</b>. Bạn có thể đặt giới hạn hàng tháng để chi phí không vượt quá mức mong muốn."
 
 msgid "Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically."
 msgstr "Xác thực sử dụng OAuth 2.0 &mdash; ứng dụng của bạn sẽ tự xử lý quy trình này."
@@ -1531,6 +1571,9 @@ msgstr "Không thể lưu bài viết, không tìm thấy"
 msgid "Could not unsave story, not found"
 msgstr "Không thể bỏ lưu bài viết, không tìm thấy bài viết"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Không thể kết nối với Stripe. Vui lòng thử lại."
+
 msgid "Couldn't save the position"
 msgstr "Không thể lưu vị trí"
 
@@ -1674,12 +1717,14 @@ msgid "Delete"
 msgstr "Xóa"
 
 msgid ""
-"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
-"classifiers score stories just like the intelligence trainer, with no usage limits."
+"Describe what to focus on or hide in plain language, for a story's text or its images. AI filters score "
+"stories just like the intelligence trainer. A credit covers about 700 stories through a text filter or 100 "
+"through an image filter, and usage billing keeps filters running past your credits at 1 cent each."
 msgstr ""
-"Mô tả bằng ngôn ngữ tự nhiên nội dung cần tập trung hoặc ẩn trong văn bản hay hình ảnh của bài viết. Bộ "
-"phân loại ngôn ngữ tự nhiên chấm điểm bài viết giống như trình huấn luyện trí tuệ, không giới hạn số lần sử"
-" dụng."
+"Mô tả bằng ngôn ngữ thông thường nội dung cần tập trung hoặc ẩn trong văn bản hay hình ảnh của bài viết. Bộ"
+" lọc AI chấm điểm bài viết giống như trình huấn luyện trí tuệ. Một tín dụng xử lý được khoảng 700 bài viết "
+"qua bộ lọc văn bản hoặc 100 bài viết qua bộ lọc hình ảnh; tính phí theo mức sử dụng giúp bộ lọc tiếp tục "
+"hoạt động khi bạn dùng hết tín dụng, với giá 1 xu mỗi tín dụng."
 
 msgid "Description"
 msgstr "Mô tả"
@@ -3026,6 +3071,9 @@ msgstr "URL không hợp lệ"
 msgid "Invalid URL."
 msgstr "URL không hợp lệ."
 
+msgid "Invalid amount"
+msgstr "Số tiền không hợp lệ"
+
 msgid "Invalid classifier_type"
 msgstr "classifier_type không hợp lệ"
 
@@ -3183,6 +3231,12 @@ msgstr "Giấy phép"
 msgctxt "theme"
 msgid "Light"
 msgstr "Sáng"
+
+msgid "Limit cannot exceed $10,000"
+msgstr "Giới hạn không thể vượt quá 10.000 USD"
+
+msgid "Limit must be a positive amount"
+msgstr "Giới hạn phải là một giá trị dương"
 
 msgid "Limited"
 msgstr "Giới hạn"
@@ -3544,9 +3598,6 @@ msgstr "Ứng dụng iOS và Android gốc"
 
 msgid "Native on Android"
 msgstr "Ứng dụng Android gốc"
-
-msgid "Natural language text and image classifiers"
-msgstr "Bộ phân loại văn bản và hình ảnh bằng ngôn ngữ tự nhiên"
 
 msgid "Navigate everything without touching the mouse"
 msgstr "Điều hướng mọi thứ mà không cần dùng chuột"
@@ -4196,6 +4247,9 @@ msgstr "Không có hệ thống huấn luyện"
 msgid "No uncategorized archives found"
 msgstr "Không tìm thấy mục lưu trữ nào chưa phân loại"
 
+msgid "No usage billing set up."
+msgstr "Chưa thiết lập thanh toán theo mức sử dụng."
+
 msgid "No user has that email address."
 msgstr "Không có người dùng nào có địa chỉ email đó."
 
@@ -4432,6 +4486,9 @@ msgstr "Vui lòng nhập truy vấn tìm kiếm từ khóa."
 
 msgid "Please enter in an email address."
 msgstr "Vui lòng nhập địa chỉ email."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Vui lòng đăng nhập lại vào NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Vui lòng đăng nhập để tiếp tục."
@@ -4716,6 +4773,9 @@ msgstr "Trình đọc RSS có khả năng huấn luyện thông minh"
 
 msgid "RSS/Atom only"
 msgstr "Chỉ RSS/Atom"
+
+msgid "Raise or remove the limit"
+msgstr "Tăng hoặc bỏ giới hạn"
 
 msgid "Re-analyzing page"
 msgstr "Đang phân tích lại trang"
@@ -5591,6 +5651,9 @@ msgstr ""
 "Bài viết được gửi ngay khi xuất bản kèm thông báo theo thời gian thực. Người dùng Pro được cập nhật tất cả "
 "nguồn cấp dữ liệu mỗi 5–15 phút để nhận tin nóng."
 
+msgid "Stories your filters already scored keep their scores, and the rest of your training keeps working."
+msgstr "Các bài viết mà bộ lọc đã chấm điểm vẫn giữ nguyên điểm số, và phần huấn luyện còn lại vẫn hoạt động."
+
 msgid "Story"
 msgstr "Bài viết"
 
@@ -6259,6 +6322,12 @@ msgstr "Dùng thử miễn phí"
 msgid "Try out NewsBlur"
 msgstr "Dùng thử NewsBlur"
 
+msgid "Turn on usage billing"
+msgstr "Bật tính phí theo mức sử dụng"
+
+msgid "Turn on usage billing:"
+msgstr "Bật tính phí theo mức sử dụng:"
+
 msgid ""
 "Two different philosophies: NewsBlur is a dedicated RSS reader with intelligence training. Readwise Reader "
 "combines RSS, read-later, and highlights in one app."
@@ -6374,6 +6443,9 @@ msgstr "Nâng cấp lên gói đăng ký cao cấp để gửi hơn một bài v
 
 msgid "Upgrade to premium archive"
 msgstr "Nâng cấp lên Premium Archive"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "Hiện không thể thanh toán theo mức sử dụng."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"
@@ -6957,6 +7029,9 @@ msgid "You can only send %(count)s story per day by email."
 msgid_plural "You can only send %(count)s stories per day by email."
 msgstr[0] "Bạn chỉ có thể gửi %(count)s bài viết mỗi ngày qua email."
 
+msgid "You can raise or remove the limit in your account:"
+msgstr "Bạn có thể tăng hoặc bỏ giới hạn trong tài khoản:"
+
 msgid "You can re-upload the attached file to NewsBlur and get all of your sites back."
 msgstr "Bạn có thể tải lại tệp đính kèm lên NewsBlur để khôi phục tất cả trang web của mình."
 
@@ -7298,15 +7373,25 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
-"unlimited tests and runs your filters on every new story."
+"You've used today's %(count)s free AI filter test. It resets at midnight, and your AI credits reset on the "
+"1st."
 msgid_plural ""
-"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
-"unlimited tests and runs your filters on every new story."
+"You've used today's %(count)s free AI filter tests. They reset at midnight, and your AI credits reset on "
+"the 1st."
 msgstr[0] ""
-"Bạn đã dùng hết lượt dùng thử bộ lọc AI miễn phí hôm nay (%(count)s). Lượt dùng thử sẽ được đặt lại vào lúc"
-" nửa đêm. Premium Archive bao gồm số lượt dùng thử không giới hạn và áp dụng bộ lọc của bạn cho mỗi bài "
-"viết mới."
+"Bạn đã dùng hết %(count)s lượt thử bộ lọc AI miễn phí hôm nay. Lượt thử được đặt lại vào nửa đêm, còn tín "
+"dụng AI được đặt lại vào ngày 1."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgstr[0] ""
+"Bạn đã dùng hết %(count)s lượt dùng thử bộ lọc AI miễn phí hôm nay. Lượt dùng thử được đặt lại lúc nửa đêm."
+" Premium bao gồm tín dụng AI hàng tháng để chạy bộ lọc trên mỗi bài viết mới."
 
 msgid "YouTube search request failed."
 msgstr "Yêu cầu tìm kiếm YouTube không thành công."
@@ -7338,6 +7423,50 @@ msgid "Your <b>30-day trial premium subscription</b> has started. You now have f
 msgstr ""
 "<b>Gói đăng ký Premium dùng thử 30 ngày</b> của bạn đã bắt đầu. Giờ đây, bạn có toàn quyền sử dụng tất cả "
 "tính năng Premium:"
+
+#, python-format
+msgid ""
+"Your AI filters reached the $%(monthly_limit)s monthly limit you set for usage billing, so they've stopped "
+"scoring new stories. They start again on %(date)s."
+msgstr ""
+"Bộ lọc AI của bạn đã đạt giới hạn hàng tháng $%(monthly_limit)s mà bạn đặt cho thanh toán theo mức sử dụng,"
+" nên đã ngừng chấm điểm các bài viết mới. Bộ lọc sẽ chạy lại vào %(date)s."
+
+#, python-format
+msgid ""
+"Your AI filters reached the <b>$%(monthly_limit)s</b> monthly limit you set for usage billing, so they've "
+"stopped scoring new stories. They start again on <b>%(date)s</b>."
+msgstr ""
+"Bộ lọc AI của bạn đã đạt giới hạn hàng tháng <b>$%(monthly_limit)s</b> mà bạn đặt cho thanh toán theo mức "
+"sử dụng, nên đã ngừng chấm điểm các bài viết mới. Bộ lọc sẽ chạy lại vào <b>%(date)s</b>."
+
+msgid "Your AI filters reached your monthly limit"
+msgstr "Bộ lọc AI của bạn đã đạt giới hạn hàng tháng"
+
+#, python-format
+msgid ""
+"Your AI filters used this month's %(counter)s AI credit, so they've stopped scoring new stories. They start"
+" again on %(date)s, when your credits reset."
+msgid_plural ""
+"Your AI filters used all %(counter)s of this month's AI credits, so they've stopped scoring new stories. "
+"They start again on %(date)s, when your credits reset."
+msgstr[0] ""
+"Bộ lọc AI của bạn đã dùng hết %(counter)s tín dụng AI trong tháng này nên đã ngừng chấm điểm bài viết mới. "
+"Bộ lọc sẽ hoạt động lại vào %(date)s, khi tín dụng được đặt lại."
+
+#, python-format
+msgid ""
+"Your AI filters used this month's <b>%(counter)s</b> AI credit, so they've stopped scoring new stories. "
+"They start again on <b>%(date)s</b>, when your credits reset."
+msgid_plural ""
+"Your AI filters used all <b>%(counter)s</b> of this month's AI credits, so they've stopped scoring new "
+"stories. They start again on <b>%(date)s</b>, when your credits reset."
+msgstr[0] ""
+"Bộ lọc AI của bạn đã dùng hết <b>%(counter)s</b> tín dụng AI của tháng này, nên đã ngừng chấm điểm các bài "
+"viết mới. Bộ lọc sẽ chạy lại vào <b>%(date)s</b>, khi tín dụng được đặt lại."
+
+msgid "Your AI filters used this month's credits"
+msgstr "Bộ lọc AI của bạn đã dùng hết tín dụng trong tháng này"
 
 msgid "Your Blurblog also has an RSS feed:"
 msgstr "Blurblog của bạn cũng có nguồn cấp RSS:"

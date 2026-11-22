@@ -609,6 +609,26 @@ msgid "%(topic)s Subreddits"
 msgstr "Subreddit %(topic)s"
 
 #, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr ""
+"%(unbilled)s menunggu untuk ditagihkan: pada awal bulan depan jika jumlahnya setidaknya %(minimum)s, atau "
+"langsung saat mencapai %(immediate)s."
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "%(used)s kredit AI digunakan, %(over)s melebihi jatah paket Anda sebesar %(included)s"
+msgstr[1] "%(used)s kredit AI digunakan, %(over)s melebihi jatah paket Anda sebesar %(included)s"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "%(used)s dari %(included)s kredit AI digunakan"
+msgstr[1] "%(used)s dari %(included)s kredit AI digunakan"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s Kembali"
 
@@ -939,6 +959,13 @@ msgstr "1 bulan"
 msgid "1 year"
 msgstr "1 tahun"
 
+#, python-format
+msgid "1¢ per credit past your plan's, about %(cost)s this month."
+msgstr "1¢ untuk setiap kredit yang melebihi jatah paket Anda, sekitar %(cost)s bulan ini."
+
+msgid "1¢ per credit past your plan's."
+msgstr "1¢ per kredit di luar jatah paket"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Tersedia 28 alat untuk membaca, melakukan tindakan, melatih, dan menemukan konten."
 
@@ -956,6 +983,12 @@ msgstr "3 kali sehari"
 
 msgid "5 years"
 msgstr "5 tahun"
+
+msgid "50 AI credits a month for AI filters"
+msgstr "50 kredit AI per bulan untuk filter AI"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "500 kredit AI per bulan untuk filter AI"
 
 msgid "5× faster feed updates"
 msgstr "Pembaruan feed 5× lebih cepat"
@@ -995,6 +1028,11 @@ msgstr "Blurblog berisi artikel yang dibagikan"
 msgid "A clearer, closer sound"
 msgstr "Suara yang lebih jernih dan dekat"
 
+msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgstr ""
+"Satu kredit bernilai 1¢ untuk AI: sekitar 700 artikel melalui filter teks atau 100 artikel melalui filter "
+"gambar."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Folder feed yang dibaca sebagai satu aliran"
 
@@ -1014,18 +1052,41 @@ msgstr "Satu suka mengalahkan jumlah tidak suka berapa pun"
 msgid "A story diff with additions and deletions"
 msgstr "Perbandingan artikel yang menampilkan penambahan dan penghapusan"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "Filter teks pada situs ini menggunakan sekitar %(count)s kredit per bulan."
+msgstr[1] "Filter teks pada situs ini menggunakan sekitar %(count)s kredit per bulan."
+
+msgid "A text filter on this site uses less than a tenth of a credit a month."
+msgstr "Filter teks pada situs ini menggunakan kurang dari sepersepuluh kredit per bulan."
+
 msgid "AI Filter"
 msgstr "Filter AI"
 
 msgid "AI Model"
 msgstr "Model AI"
 
+msgid "AI credits"
+msgstr "Kredit AI"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "Filter AI disimpan, tetapi hanya dijalankan di %(tier_link)s."
 
+msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr ""
+"Filter AI disimpan, tetapi hanya berjalan dengan Premium. Premium mencakup 5 kredit AI per bulan, Archive "
+"50, dan Pro 500."
+
+msgid "AI filters run without credits on this server."
+msgstr "Filter AI berjalan tanpa kredit di server ini."
+
 msgid "AI finds the stories"
 msgstr "AI menemukan artikel"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "Filter teks dan gambar AI, dengan 5 kredit AI per bulan"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Ringkasan pilihan AI dari artikel teratas Anda"
@@ -1036,6 +1097,10 @@ msgstr "Analisis artikel berbasis AI dan rangkuman harian yang dipersonalisasi d
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "SEMUA KATEGORI (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "Dengan laju penggunaan Anda, perkiraan bulan ini sekitar %(cost)s."
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Tentu. Buka pelatih, lalu hapus tanda suka atau tidak suka untuk mengatur ulang."
@@ -1285,6 +1350,15 @@ msgstr "Terjadi kesalahan."
 msgid "An error occurred. Please try again."
 msgstr "Terjadi kesalahan. Silakan coba lagi."
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "Filter gambar pada situs ini menggunakan sekitar %(count)s kredit per bulan."
+msgstr[1] "Filter gambar pada situs ini menggunakan sekitar %(count)s kredit per bulan."
+
+msgid "An image filter on this site uses less than a tenth of a credit a month."
+msgstr "Filter gambar pada situs ini menggunakan kurang dari sepersepuluh kredit per bulan."
+
 msgid "Analysis timed out. Please try again."
 msgstr "Analisis kehabisan waktu. Silakan coba lagi."
 
@@ -1436,6 +1510,20 @@ msgstr ""
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "Ajukan pertanyaan, dapatkan ringkasan, atau minta poin-poin penting"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "Dengan laju ini, Anda akan menggunakan sekitar %(count)s kredit bulan ini."
+msgstr[1] "Dengan laju ini, Anda akan menggunakan sekitar %(count)s kredit bulan ini."
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "Dengan laju ini, kredit Anda akan habis sekitar %(date)s."
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "Dengan laju penggunaan Anda, total bulan ini sekitar %(cost)s."
 
 msgid "Audio"
 msgstr "Audio"
@@ -1762,6 +1850,9 @@ msgstr "Ubah detail penagihan"
 msgid "Change folders"
 msgstr "Ubah folder"
 
+msgid "Change limit"
+msgstr "Ubah batas"
+
 msgid "Change password"
 msgstr "Ubah kata sandi"
 
@@ -1776,6 +1867,9 @@ msgstr "Ubah kartu kredit Anda"
 
 msgid "Change your profile above"
 msgstr "Ubah profil Anda di atas"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "Ditagihkan pada akhir bulan setelah mencapai $1. Jumlah yang lebih kecil menunggu hingga bulan berikutnya."
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "Nanti lihat lagi situs populer yang ditambahkan oleh pengguna NewsBlur."
@@ -2070,6 +2164,9 @@ msgstr "FAQ tidak dapat dimuat. Silakan coba lagi."
 
 msgid "Couldn't load audio for this story."
 msgstr "Audio untuk artikel ini tidak dapat dimuat."
+
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "Tidak dapat menonaktifkan penagihan berdasarkan penggunaan. Silakan coba lagi."
 
 msgid "Counting is difficult"
 msgstr "Menghitung itu sulit"
@@ -2966,6 +3063,9 @@ msgstr "Filter tidak menemukan artikel di %(context)s."
 msgid "Filters found no stories in this view."
 msgstr "Filter tidak menemukan artikel di tampilan ini."
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr "Filter dijeda saat penagihan berdasarkan penggunaan mencapai batas ini. Kosongkan untuk tanpa batas."
+
 msgid "Finance"
 msgstr "Keuangan"
 
@@ -3534,6 +3634,9 @@ msgstr "IFTTT & Zapier"
 msgid "Identify key people and relationships"
 msgstr "Identifikasi tokoh penting dan hubungan mereka"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "Jika mencapai $10 dalam sebulan, biayanya langsung ditagihkan."
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "Jika feed RSS tidak ditemukan, NewsBlur menawarkan untuk membuat Feed Web"
 
@@ -3728,6 +3831,9 @@ msgstr "Hanya judul, tanpa komentar"
 
 msgid "Keep fades, without movement."
 msgstr "Pertahankan efek pudar, tanpa gerakan."
+
+msgid "Keep filters running"
+msgstr "Biarkan filter tetap berjalan"
 
 msgid "Keep others unread"
 msgstr "Biarkan yang lain tetap belum dibaca"
@@ -4139,6 +4245,9 @@ msgstr "Sen"
 msgid "Monday"
 msgstr "Senin"
 
+msgid "Monthly limit"
+msgstr "Batas bulanan"
+
 msgid "Months Earned"
 msgstr "Bulan yang Diperoleh"
 
@@ -4256,9 +4365,6 @@ msgstr "Pengklasifikasi Gambar Bahasa Alami"
 
 msgid "Natural Language Text Classifier"
 msgstr "Pengklasifikasi Teks Bahasa Alami"
-
-msgid "Natural language text and image classifiers"
-msgstr "Pengklasifikasi teks dan gambar berbasis bahasa alami"
 
 msgid "Nature"
 msgstr "Alam"
@@ -4453,6 +4559,9 @@ msgstr "Tanpa gambar"
 msgid "No items added yet."
 msgstr "Belum ada item yang ditambahkan."
 
+msgid "No limit"
+msgstr "Tanpa batas"
+
 msgid "No match"
 msgstr "Tidak ada yang cocok"
 
@@ -4565,6 +4674,9 @@ msgstr "Tidak ditemukan pola artikel di halaman ini."
 
 msgid "No trending sites available"
 msgstr "Tidak ada situs yang sedang tren"
+
+msgid "No usage billing charges yet."
+msgstr "Belum ada tagihan berdasarkan pemakaian."
 
 msgid "No valid merge groups to apply"
 msgstr "Tidak ada grup penggabungan valid untuk diterapkan"
@@ -4951,6 +5063,14 @@ msgstr "Mengurai..."
 msgid "Part of a story URL"
 msgstr "Bagian dari URL artikel"
 
+msgid "Past your credits, filters keep running at 1¢ per credit."
+msgstr "Setelah kredit Anda habis, filter tetap berjalan dengan biaya 1¢ per kredit."
+
+msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgstr ""
+"Setelah kredit paket Anda habis, filter akan dijeda hingga tanggal 1. Penagihan berdasarkan penggunaan "
+"membuat filter tetap berjalan dengan biaya 1¢ per kredit."
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Tempel URL apa pun dan NewsBlur akan membuat feed dari halamannya, bahkan tanpa RSS."
 
@@ -5144,6 +5264,9 @@ msgstr "Detail Premium"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Font premium memerlukan %(link_start)sakun premium%(link_end)s"
+
+msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr "Premium mencakup 5 kredit AI per bulan, Archive 50, dan Pro 500."
 
 msgid "Premium renewal"
 msgstr "Perpanjangan Premium"
@@ -5587,6 +5710,10 @@ msgid "Reset to original favicon"
 msgstr "Kembalikan favicon asli"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "Direset %(date)s"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "Direset %(day)s"
 
@@ -5708,6 +5835,9 @@ msgstr "Simpan artikel dengan sekali klik atau tombol s"
 msgid "Save comments"
 msgstr "Simpan komentar"
 
+msgid "Save limit"
+msgstr "Simpan batas"
+
 msgid "Save my profile"
 msgstr "Simpan profil saya"
 
@@ -5756,6 +5886,13 @@ msgstr "Artikel tersimpan yang ditata dengan tag khusus"
 
 msgid "Saved!"
 msgstr "Tersimpan!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "Tersimpan. Filter dijeda pada %(limit)s per bulan."
+
+msgid "Saved. No monthly limit."
+msgstr "Tersimpan. Tanpa batas bulanan."
 
 msgid "Saved:"
 msgstr "Tersimpan:"
@@ -5997,11 +6134,17 @@ msgstr "Kesalahan server"
 msgid "Server error: %(status)s"
 msgstr "Kesalahan server: %(status)s"
 
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "Tetapkan batas bulanan, atau nonaktifkan penagihan berdasarkan pemakaian kapan saja."
+
 msgid "Set up newsletters"
 msgstr "Siapkan newsletter"
 
 msgid "Set up notifications"
 msgstr "Atur notifikasi"
+
+msgid "Set up usage billing"
+msgstr "Siapkan penagihan berdasarkan penggunaan"
 
 msgid "Set up your blurblog"
 msgstr "Siapkan blurblog Anda"
@@ -6597,6 +6740,9 @@ msgstr "Aliran terputus. Tidak ada respons selama 10 detik."
 msgid "Stripe Id:"
 msgstr "ID Stripe:"
 
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Stripe menyimpan kartu Anda. Penagihan berdasarkan penggunaan akan aktif sebentar lagi."
+
 msgid "Style"
 msgstr "Gaya"
 
@@ -7039,6 +7185,15 @@ msgstr ""
 "Ini cocok dengan seluruh judul dan hanya akan cocok dengan artikel yang persis sama. Pilih sebagian judul "
 "saja."
 
+msgid "This month"
+msgstr "Bulan ini"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "Kredit AI %(count)s bulan ini telah digunakan."
+msgstr[1] "Kredit AI %(count)s bulan ini telah digunakan."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Daftar artikel yang telah dibaca ini adalah %(link_start)sfitur premium%(link_end)s."
@@ -7323,14 +7478,23 @@ msgstr "Selasa"
 msgid "Turn off automatic briefing generation"
 msgstr "Nonaktifkan pembuatan ringkasan otomatis"
 
+msgid "Turn off usage billing"
+msgstr "Nonaktifkan penagihan berdasarkan penggunaan"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "Harap aktifkan %(count)s situs ini"
 msgstr[1] "Harap aktifkan %(count)s situs ini"
 
+msgid "Turn on usage billing"
+msgstr "Aktifkan penagihan berdasarkan penggunaan"
+
 msgid "Turning any page into a feed"
 msgstr "Mengubah halaman apa pun menjadi feed"
+
+msgid "Turning off..."
+msgstr "Menonaktifkan..."
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7454,8 +7618,14 @@ msgstr "Tanpa judul"
 msgid "Up Next"
 msgstr "Berikutnya"
 
+msgid "Upcoming"
+msgstr "Mendatang"
+
 msgid "Update History"
 msgstr "Perbarui Riwayat"
+
+msgid "Update card on Stripe"
+msgstr "Perbarui kartu di Stripe"
 
 msgid "Updated"
 msgstr "Diperbarui"
@@ -7568,6 +7738,22 @@ msgstr "Gagal mengunggah. Silakan coba lagi."
 
 msgid "Uploaded!"
 msgstr "Berhasil diunggah!"
+
+msgid "Usage billing"
+msgstr "Penagihan berdasarkan pemakaian"
+
+msgid "Usage billing charges"
+msgstr "Biaya penagihan berdasarkan penggunaan"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgstr[0] ""
+"Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi %(count)s Anda dikenai biaya 1¢ per kredit: "
+"sejauh ini %(cost)s bulan ini."
+msgstr[1] ""
+"Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi %(count)s Anda dikenai biaya 1¢ per kredit: "
+"sejauh ini %(cost)s bulan ini."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8035,6 +8221,9 @@ msgstr "Anda harus masuk untuk membalas komentar."
 msgid "You need to be logged in to share a story."
 msgstr "Anda harus masuk untuk membagikan artikel."
 
+msgid "You only pay for credits past your plan's."
+msgstr "Anda hanya membayar kredit yang melebihi jatah paket."
+
 msgid "You will be emailed within a minute or three."
 msgstr "Email akan dikirim kepada Anda dalam satu atau tiga menit."
 
@@ -8043,6 +8232,10 @@ msgstr "Anda akan melihat berbagai tag dan penulis."
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "Anda terkena pembatasan frekuensi.<br> Coba lagi sebentar lagi, tetapi jangan terlalu cepat."
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "Anda hampir mencapai batas bulanan %(limit)s."
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "Anda akan melihat beberapa opsi pola artikel untuk dipilih."
@@ -8067,6 +8260,12 @@ msgstr ""
 "Anda telah mencapai batas %(value_1)s situs. Bisukan beberapa situs atau tingkatkan akun Anda untuk "
 "menambahkan lebih banyak."
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "Anda telah menggunakan %(used)s dari %(included)s kredit AI bulan ini."
+msgstr[1] "Anda telah menggunakan %(used)s dari %(included)s kredit AI bulan ini."
+
 msgid "You:"
 msgstr "Anda:"
 
@@ -8083,6 +8282,14 @@ msgstr "Langganan %(value_1)s Anda mencakup semua yang tercantum di atas"
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "Langganan %(value_1)s Anda aktif"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "Filter AI Anda dijeda hingga %(date)s."
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "Filter AI Anda telah mencapai batas bulanan %(limit)s dan dijeda hingga %(date)s."
 
 msgid "Your Archived Domains"
 msgstr "Domain Arsip Anda"

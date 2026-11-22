@@ -854,6 +854,34 @@ msgid "%(topic)s Subreddits"
 msgstr "مجتمعات فرعية على Reddit: %(topic)s"
 
 #, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr ""
+"سيتم تحصيل %(unbilled)s في بداية الشهر المقبل إذا بلغ المبلغ %(minimum)s على الأقل، أو فورًا عند "
+"%(immediate)s."
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "استهلكت الفلاتر %(used)s من أرصدة الذكاء الاصطناعي، وتجاوزت %(over)s ما تتضمنه خطتك من %(included)s"
+msgstr[1] "استهلكت الفلاتر %(used)s من أرصدة الذكاء الاصطناعي، وتجاوزت %(over)s ما تتضمنه خطتك من %(included)s"
+msgstr[2] "استهلكت الفلاتر %(used)s من أرصدة الذكاء الاصطناعي، وتجاوزت %(over)s ما تتضمنه خطتك من %(included)s"
+msgstr[3] "استهلكت الفلاتر %(used)s من أرصدة الذكاء الاصطناعي، وتجاوزت %(over)s ما تتضمنه خطتك من %(included)s"
+msgstr[4] "استهلكت الفلاتر %(used)s من أرصدة الذكاء الاصطناعي، وتجاوزت %(over)s ما تتضمنه خطتك من %(included)s"
+msgstr[5] "استهلكت الفلاتر %(used)s من أرصدة الذكاء الاصطناعي، وتجاوزت %(over)s ما تتضمنه خطتك من %(included)s"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "استخدمت %(used)s من أصل %(included)s وحدة ذكاء اصطناعي"
+msgstr[1] "استخدمت %(used)s من أصل %(included)s وحدة ذكاء اصطناعي"
+msgstr[2] "استخدمت %(used)s من أصل %(included)s وحدتين من الذكاء الاصطناعي"
+msgstr[3] "استخدمت %(used)s من أصل %(included)s وحدات من الذكاء الاصطناعي"
+msgstr[4] "استخدمت %(used)s من أصل %(included)s وحدة من الذكاء الاصطناعي"
+msgstr[5] "استخدمت %(used)s من أصل %(included)s وحدة من الذكاء الاصطناعي"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s رجوع"
 
@@ -1192,6 +1220,13 @@ msgstr "شهر واحد"
 msgid "1 year"
 msgstr "سنة واحدة"
 
+#, python-format
+msgid "1¢ per credit past your plan's, about %(cost)s this month."
+msgstr "سنت واحد لكل رصيد يتجاوز ما تتضمنه خطتك، أي نحو %(cost)s هذا الشهر."
+
+msgid "1¢ per credit past your plan's."
+msgstr "1 سنت لكل رصيد يتجاوز خطتك."
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "تتوفر 28 أداة للقراءة والإجراءات والتدريب والاستكشاف."
 
@@ -1209,6 +1244,12 @@ msgstr "3 مرات يوميًا"
 
 msgid "5 years"
 msgstr "5 سنوات"
+
+msgid "50 AI credits a month for AI filters"
+msgstr "50 رصيدًا للذكاء الاصطناعي شهريًا لفلاتر الذكاء الاصطناعي"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "500 رصيد من الذكاء الاصطناعي شهريًا لمرشحات الذكاء الاصطناعي"
 
 msgid "5× faster feed updates"
 msgstr "تحديث الخلاصات أسرع بـ 5 مرات"
@@ -1260,6 +1301,9 @@ msgstr "مدونة Blurblog للقصص التي تشاركها"
 msgid "A clearer, closer sound"
 msgstr "صوت أوضح وأقرب"
 
+msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgstr "يعادل الرصيد 1¢ من استخدام الذكاء الاصطناعي: نحو 700 قصة عبر فلتر نصوص أو 100 قصة عبر فلتر صور."
+
 msgid "A folder of feeds read as one stream"
 msgstr "مجلد من الخلاصات يُقرأ كتدفّق واحد"
 
@@ -1279,18 +1323,45 @@ msgstr "إعجاب واحد يتغلب على أي عدد من حالات عدم
 msgid "A story diff with additions and deletions"
 msgstr "مقارنة تغييرات القصة مع الإضافات والحذف"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "يستهلك مرشح نصي على هذا الموقع نحو %(count)s من الرصيد شهريًا."
+msgstr[1] "يستهلك مرشح نصي على هذا الموقع نحو %(count)s من الرصيد شهريًا."
+msgstr[2] "يستهلك مرشح نصي على هذا الموقع نحو %(count)s من الرصيد شهريًا."
+msgstr[3] "يستهلك مرشح نصي على هذا الموقع نحو %(count)s من الرصيد شهريًا."
+msgstr[4] "يستهلك مرشح نصي على هذا الموقع نحو %(count)s من الرصيد شهريًا."
+msgstr[5] "يستهلك مرشح نصي على هذا الموقع نحو %(count)s من الرصيد شهريًا."
+
+msgid "A text filter on this site uses less than a tenth of a credit a month."
+msgstr "يستهلك فلتر النصوص على هذا الموقع أقل من عُشر رصيد شهريًا."
+
 msgid "AI Filter"
 msgstr "فلتر الذكاء الاصطناعي"
 
 msgid "AI Model"
 msgstr "نموذج الذكاء الاصطناعي"
 
+msgid "AI credits"
+msgstr "أرصدة الذكاء الاصطناعي"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "يتم حفظ فلاتر الذكاء الاصطناعي، لكنها لا تعمل إلا على %(tier_link)s."
 
+msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr ""
+"تُحفظ عوامل التصفية بالذكاء الاصطناعي، لكنها لا تعمل إلا مع Premium. يتضمن Premium رصيدًا من 5 وحدات ذكاء "
+"اصطناعي شهريًا، وArchive 50، وPro 500."
+
+msgid "AI filters run without credits on this server."
+msgstr "تعمل فلاتر الذكاء الاصطناعي على هذا الخادم دون استهلاك أرصدة."
+
 msgid "AI finds the stories"
 msgstr "يعثر الذكاء الاصطناعي على القصص"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "فلاتر نصوص وصور بالذكاء الاصطناعي، مع 5 أرصدة ذكاء اصطناعي شهريًا"
 
 msgid "AI-curated summary of your top stories"
 msgstr "ملخص لأهم قصصك منسّق بالذكاء الاصطناعي"
@@ -1301,6 +1372,10 @@ msgstr "تحليل للقصص مدعوم بالذكاء الاصطناعي وم�
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "جميع الفئات (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "التقدير لهذا الشهر بحسب وتيرتك: حوالي %(cost)s."
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "بالتأكيد. افتح أداة التدريب وأزل أي إشارة إعجاب أو عدم إعجاب لإعادة ضبطها."
@@ -1568,6 +1643,19 @@ msgstr "حدث خطأ."
 msgid "An error occurred. Please try again."
 msgstr "حدث خطأ. يرجى المحاولة مرة أخرى."
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "يستهلك فلتر الصور على هذا الموقع نحو %(count)s رصيد شهريًا."
+msgstr[1] "يستهلك فلتر الصور على هذا الموقع نحو %(count)s رصيدًا شهريًا."
+msgstr[2] "يستهلك فلتر الصور على هذا الموقع نحو %(count)s رصيدين شهريًا."
+msgstr[3] "يستهلك فلتر الصور على هذا الموقع نحو %(count)s أرصدة شهريًا."
+msgstr[4] "يستهلك فلتر الصور على هذا الموقع نحو %(count)s رصيدًا شهريًا."
+msgstr[5] "يستهلك فلتر الصور على هذا الموقع نحو %(count)s رصيد شهريًا."
+
+msgid "An image filter on this site uses less than a tenth of a credit a month."
+msgstr "يستهلك فلتر الصور أقل من عُشر رصيد شهريًا على هذا الموقع."
+
 msgid "Analysis timed out. Please try again."
 msgstr "انتهت مهلة التحليل. يُرجى المحاولة مرة أخرى."
 
@@ -1729,6 +1817,24 @@ msgstr "اطرح أسئلة حول كل ما قرأته. يمكنني البحث
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "اطرح أسئلة، واحصل على ملخصات، أو اطلب النقاط الرئيسية"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "وفقًا لهذا المعدل، ستستخدم نحو %(count)s من الأرصدة هذا الشهر."
+msgstr[1] "وفقًا لهذا المعدل، ستستخدم نحو %(count)s رصيدًا هذا الشهر."
+msgstr[2] "وفقًا لهذا المعدل، ستستخدم نحو %(count)s رصيدين هذا الشهر."
+msgstr[3] "وفقًا لهذا المعدل، ستستخدم نحو %(count)s أرصدة هذا الشهر."
+msgstr[4] "وفقًا لهذا المعدل، ستستخدم نحو %(count)s رصيدًا هذا الشهر."
+msgstr[5] "وفقًا لهذا المعدل، ستستخدم نحو %(count)s رصيد هذا الشهر."
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "وفقًا لهذا المعدل، ستنفد أرصدتك في نحو %(date)s."
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "وفقًا لمعدل استخدامك، ستبلغ التكلفة نحو %(cost)s لهذا الشهر."
 
 msgid "Audio"
 msgstr "صوت"
@@ -2063,6 +2169,9 @@ msgstr "تغيير تفاصيل الفوترة"
 msgid "Change folders"
 msgstr "تغيير المجلدات"
 
+msgid "Change limit"
+msgstr "تغيير الحد"
+
 msgid "Change password"
 msgstr "تغيير كلمة المرور"
 
@@ -2077,6 +2186,9 @@ msgstr "تغيير بطاقتك الائتمانية"
 
 msgid "Change your profile above"
 msgstr "غيّر ملفك الشخصي أعلاه"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "تُحصّل الرسوم في نهاية الشهر عند بلوغها $1. وتُرحّل المبالغ الأقل إلى شهر لاحق."
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "عُد لاحقًا للاطّلاع على المواقع الشائعة التي أضافها مستخدمو NewsBlur."
@@ -2381,6 +2493,9 @@ msgstr "تعذّر تحميل الأسئلة الشائعة. يُرجى المح
 
 msgid "Couldn't load audio for this story."
 msgstr "تعذّر تحميل الصوت لهذه القصة."
+
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "تعذّر إيقاف الفوترة حسب الاستخدام. يُرجى المحاولة مرة أخرى."
 
 msgid "Counting is difficult"
 msgstr "العد صعب"
@@ -3272,6 +3387,9 @@ msgstr "لم تعثر عوامل التصفية على أي قصص في %(contex
 msgid "Filters found no stories in this view."
 msgstr "لم تعثر الفلاتر على أي قصص في هذا العرض."
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr "تتوقف الفلاتر مؤقتًا عند بلوغ الفوترة حسب الاستخدام هذا الحد. اتركه فارغًا لإزالة الحد."
+
 msgid "Finance"
 msgstr "التمويل"
 
@@ -3846,6 +3964,9 @@ msgstr "IFTTT وZapier"
 msgid "Identify key people and relationships"
 msgstr "حدّد الأشخاص الرئيسيين والعلاقات بينهم"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "إذا بلغ المبلغ 10 دولارات خلال شهر، فسيتم تحصيله فورًا."
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "إذا لم يُعثر على خلاصة RSS، يعرض NewsBlur إنشاء خلاصة ويب"
 
@@ -4040,6 +4161,9 @@ msgstr "العناوين فقط، بلا تعليق"
 
 msgid "Keep fades, without movement."
 msgstr "الاحتفاظ بالتلاشي دون حركة."
+
+msgid "Keep filters running"
+msgstr "إبقاء الفلاتر قيد التشغيل"
 
 msgid "Keep others unread"
 msgstr "إبقاء القصص الأخرى غير مقروءة"
@@ -4473,6 +4597,9 @@ msgstr "الاثنين"
 msgid "Monday"
 msgstr "الاثنين"
 
+msgid "Monthly limit"
+msgstr "الحد الشهري"
+
 msgid "Months Earned"
 msgstr "الأشهر المكتسبة"
 
@@ -4598,9 +4725,6 @@ msgstr "مصنّف الصور باللغة الطبيعية"
 
 msgid "Natural Language Text Classifier"
 msgstr "مصنّف النصوص باللغة الطبيعية"
-
-msgid "Natural language text and image classifiers"
-msgstr "مصنّفات النصوص والصور باللغة الطبيعية"
 
 msgid "Nature"
 msgstr "الطبيعة"
@@ -4795,6 +4919,9 @@ msgstr "بلا صورة"
 msgid "No items added yet."
 msgstr "لم تُضف أي عناصر بعد."
 
+msgid "No limit"
+msgstr "بلا حد"
+
 msgid "No match"
 msgstr "لا توجد نتائج مطابقة"
 
@@ -4911,6 +5038,9 @@ msgstr "لم يتم العثور على أنماط قصص في هذه الصفح
 
 msgid "No trending sites available"
 msgstr "لا تتوفر مواقع رائجة"
+
+msgid "No usage billing charges yet."
+msgstr "لا توجد رسوم فوترة حسب الاستخدام حتى الآن."
 
 msgid "No valid merge groups to apply"
 msgstr "لا توجد مجموعات دمج صالحة للتطبيق"
@@ -5315,6 +5445,14 @@ msgstr "جارٍ التحليل..."
 msgid "Part of a story URL"
 msgstr "جزء من رابط القصة"
 
+msgid "Past your credits, filters keep running at 1¢ per credit."
+msgstr "بعد استهلاك رصيدك، تواصل عوامل التصفية العمل بتكلفة 1 سنت لكل وحدة."
+
+msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgstr ""
+"عند تجاوز أرصدة خطتك، تتوقف الفلاتر حتى اليوم الأول. وتُبقيها الفوترة حسب الاستخدام قيد التشغيل مقابل سنت "
+"واحد لكل رصيد."
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "الصق أي رابط، وسيُنشئ NewsBlur خلاصة من الصفحة حتى دون RSS."
 
@@ -5512,6 +5650,9 @@ msgstr "تفاصيل Premium"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "خطوط Premium تتطلب %(link_start)sحساب Premium%(link_end)s"
+
+msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr "يتضمن Premium رصيدًا من 5 وحدات ذكاء اصطناعي شهريًا، وArchive 50، وPro 500."
 
 msgid "Premium renewal"
 msgstr "تجديد اشتراك Premium"
@@ -5967,6 +6108,10 @@ msgid "Reset to original favicon"
 msgstr "إعادة ضبط الأيقونة المفضلة إلى الأصلية"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "تتم إعادة الضبط بعد %(date)s"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "يُعاد الضبط %(day)s"
 
@@ -6096,6 +6241,9 @@ msgstr "احفظ أي قصة بنقرة واحدة أو بالضغط على مف
 msgid "Save comments"
 msgstr "حفظ التعليقات"
 
+msgid "Save limit"
+msgstr "حد الإنفاق"
+
 msgid "Save my profile"
 msgstr "حفظ ملفي الشخصي"
 
@@ -6142,6 +6290,13 @@ msgstr "قصص محفوظة منظّمة باستخدام وسوم مخصصة"
 
 msgid "Saved!"
 msgstr "تم الحفظ!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "تم الحفظ. ستتوقف الفلاتر عند %(limit)s شهريًا."
+
+msgid "Saved. No monthly limit."
+msgstr "تم الحفظ. لا يوجد حد شهري."
 
 msgid "Saved:"
 msgstr "تم الحفظ:"
@@ -6381,11 +6536,17 @@ msgstr "خطأ في الخادم"
 msgid "Server error: %(status)s"
 msgstr "خطأ في الخادم: %(status)s"
 
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "حدّد حدًا شهريًا، أو أوقف الفوترة حسب الاستخدام في أي وقت."
+
 msgid "Set up newsletters"
 msgstr "إعداد النشرات الإخبارية"
 
 msgid "Set up notifications"
 msgstr "إعداد الإشعارات"
+
+msgid "Set up usage billing"
+msgstr "إعداد الفوترة حسب الاستخدام"
 
 msgid "Set up your blurblog"
 msgstr "أعِدّ مدونة blurblog الخاصة بك"
@@ -6995,6 +7156,9 @@ msgstr "انقطع الاتصال. لم نتلقَّ أي استجابة خلا�
 msgid "Stripe Id:"
 msgstr "معرّف Stripe:"
 
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "لدى Stripe بيانات بطاقتك. ستُفعّل الفوترة حسب الاستخدام بعد لحظات."
+
 msgid "Style"
 msgstr "النمط"
 
@@ -7436,6 +7600,19 @@ msgstr "هذا يطابق نص القصة بالكامل، ولن يطابق س�
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "يطابق هذا العنوان بالكامل، ولن يطابق سوى هذه القصة بعينها. اختر جزءًا من العنوان بدلًا من ذلك."
 
+msgid "This month"
+msgstr "هذا الشهر"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "استهلكت وحدات الذكاء الاصطناعي لهذا الشهر وعددها %(count)s."
+msgstr[1] "استهلكت وحدة الذكاء الاصطناعي لهذا الشهر وعددها %(count)s."
+msgstr[2] "استهلكت وحدتي الذكاء الاصطناعي لهذا الشهر وعددهما %(count)s."
+msgstr[3] "استهلكت %(count)s وحدات من الذكاء الاصطناعي لهذا الشهر."
+msgstr[4] "استهلكت %(count)s وحدة من الذكاء الاصطناعي لهذا الشهر."
+msgstr[5] "استهلكت %(count)s وحدة من الذكاء الاصطناعي لهذا الشهر."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "قائمة القصص المقروءة هذه من %(link_start)sميزات Premium%(link_end)s."
@@ -7719,6 +7896,9 @@ msgstr "الثلاثاء"
 msgid "Turn off automatic briefing generation"
 msgstr "إيقاف إنشاء الموجز تلقائيًا"
 
+msgid "Turn off usage billing"
+msgstr "إيقاف الفوترة حسب الاستخدام"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
@@ -7729,8 +7909,14 @@ msgstr[3] "يرجى تفعيل %(count)s مواقع"
 msgstr[4] "يرجى تفعيل %(count)s موقعًا"
 msgstr[5] "يرجى تفعيل %(count)s موقع"
 
+msgid "Turn on usage billing"
+msgstr "تفعيل الفوترة حسب الاستخدام"
+
 msgid "Turning any page into a feed"
 msgstr "تحويل أي صفحة إلى خلاصة"
+
+msgid "Turning off..."
+msgstr "جارٍ الإيقاف..."
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7853,8 +8039,14 @@ msgstr "بلا عنوان"
 msgid "Up Next"
 msgstr "التالي"
 
+msgid "Upcoming"
+msgstr "القادم"
+
 msgid "Update History"
 msgstr "سجل التحديثات"
+
+msgid "Update card on Stripe"
+msgstr "تحديث البطاقة على Stripe"
 
 msgid "Updated"
 msgstr "آخر تحديث"
@@ -7981,6 +8173,34 @@ msgstr "فشل الرفع. يُرجى المحاولة مرة أخرى."
 
 msgid "Uploaded!"
 msgstr "تم الرفع!"
+
+msgid "Usage billing"
+msgstr "الفوترة حسب الاستخدام"
+
+msgid "Usage billing charges"
+msgstr "رسوم الفوترة حسب الاستخدام"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgstr[0] ""
+"الفوترة حسب الاستخدام مفعّلة. تبلغ تكلفة كل وحدة تتجاوز رصيدك البالغ %(count)s وحدة 1 سنت: %(cost)s حتى "
+"الآن هذا الشهر."
+msgstr[1] ""
+"الفوترة حسب الاستخدام مفعّلة. تبلغ تكلفة كل وحدة تتجاوز رصيدك البالغ %(count)s وحدة 1 سنت: %(cost)s حتى "
+"الآن هذا الشهر."
+msgstr[2] ""
+"الفوترة حسب الاستخدام مفعّلة. تبلغ تكلفة كل وحدة تتجاوز رصيدك البالغ %(count)s وحدة 1 سنت: %(cost)s حتى "
+"الآن هذا الشهر."
+msgstr[3] ""
+"الفوترة حسب الاستخدام مفعّلة. تبلغ تكلفة كل وحدة تتجاوز رصيدك البالغ %(count)s وحدة 1 سنت: %(cost)s حتى "
+"الآن هذا الشهر."
+msgstr[4] ""
+"الفوترة حسب الاستخدام مفعّلة. تبلغ تكلفة كل وحدة تتجاوز رصيدك البالغ %(count)s وحدة 1 سنت: %(cost)s حتى "
+"الآن هذا الشهر."
+msgstr[5] ""
+"الفوترة حسب الاستخدام مفعّلة. تبلغ تكلفة كل وحدة تتجاوز رصيدك البالغ %(count)s وحدة 1 سنت: %(cost)s حتى "
+"الآن هذا الشهر."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8468,6 +8688,9 @@ msgstr "يجب تسجيل الدخول للرد على تعليق."
 msgid "You need to be logged in to share a story."
 msgstr "يجب تسجيل الدخول لمشاركة قصة."
 
+msgid "You only pay for credits past your plan's."
+msgstr "لن تدفع إلا مقابل الأرصدة التي تتجاوز ما تتضمنه باقتك."
+
 msgid "You will be emailed within a minute or three."
 msgstr "ستصلك رسالة بريد إلكتروني خلال دقيقة أو ثلاث."
 
@@ -8476,6 +8699,10 @@ msgstr "سترى مجموعة من الوسوم والكتّاب."
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "تم تقييد معدل طلباتك.<br> حاول مجددًا بعد قليل، ولكن ليس بسرعة كبيرة."
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "أنت على وشك بلوغ حدك الشهري البالغ %(limit)s."
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "ستظهر لك خيارات متعددة لأنماط القصص لتختار منها."
@@ -8496,6 +8723,16 @@ msgstr "لقد أُهديت %(value_1)s من اشتراك %(value_2)s!"
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
 msgstr "بلغت الحد الأقصى وهو %(value_1)s موقعًا. اكتم بعض المواقع أو رقِّ حسابك لإضافة المزيد."
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "استخدمت %(used)s من أصل %(included)s من أرصدة الذكاء الاصطناعي هذا الشهر."
+msgstr[1] "استخدمت %(used)s من أصل %(included)s رصيد الذكاء الاصطناعي هذا الشهر."
+msgstr[2] "استخدمت %(used)s من أصل %(included)s رصيدي الذكاء الاصطناعي هذا الشهر."
+msgstr[3] "استخدمت %(used)s من أصل %(included)s أرصدة الذكاء الاصطناعي هذا الشهر."
+msgstr[4] "استخدمت %(used)s من أصل %(included)s رصيدًا من أرصدة الذكاء الاصطناعي هذا الشهر."
+msgstr[5] "استخدمت %(used)s من أصل %(included)s رصيد من أرصدة الذكاء الاصطناعي هذا الشهر."
+
 msgid "You:"
 msgstr "أنت:"
 
@@ -8512,6 +8749,14 @@ msgstr "يشمل اشتراكك في %(value_1)s كل ما سبق"
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "اشتراكك في %(value_1)s نشط"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "عوامل التصفية بالذكاء الاصطناعي متوقفة مؤقتًا حتى %(date)s."
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "بلغت عوامل التصفية بالذكاء الاصطناعي %(limit)s حدك الشهري، وأُوقفت مؤقتًا حتى %(date)s."
 
 msgid "Your Archived Domains"
 msgstr "نطاقاتك المؤرشفة"

@@ -506,6 +506,7 @@
 "Lavender Iris" = "라벤더 아이리스";
 "Layout" = "레이아웃";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlur를 사용하려면 비워 두거나, 직접 호스팅하는 설치의 URL을 입력하세요. 앱을 다음에 열 때 적용됩니다.";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "비워 두면 NewsBlur을 사용하고, 자체 호스팅 설치의 URL을 입력하면 해당 URL을 사용합니다. 로그인과 가입에 즉시 적용됩니다.";
 "Left" = "왼쪽";
 "Length & Style" = "길이 및 스타일";
 "Light" = "라이트";

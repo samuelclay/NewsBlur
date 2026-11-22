@@ -418,6 +418,12 @@ msgstr "404 — NewsBlur не может найти эту страницу"
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "Получение данных каждые 5 минут, обучение с помощью регулярных выражений, 10 000 сайтов"
 
+msgid "50 AI credits a month for AI filters"
+msgstr "50 кредитов ИИ в месяц для ИИ-фильтров"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "500 кредитов ИИ в месяц для ИИ-фильтров"
+
 msgid "64 sites"
 msgstr "64 сайта"
 
@@ -661,6 +667,9 @@ msgstr "Функции ИИ"
 msgid "AI built into every story"
 msgstr "ИИ встроен в каждую статью"
 
+msgid "AI credits"
+msgstr "ИИ-кредиты"
+
 msgid "AI filters aren't available on this server"
 msgstr "Фильтры ИИ недоступны на этом сервере"
 
@@ -670,6 +679,9 @@ msgstr "Фильтр изображений на основе ИИ"
 
 msgid "AI skill"
 msgstr "Навык ИИ"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "ИИ-фильтры для текста и изображений, 5 кредитов ИИ в месяц"
 
 msgctxt "notification email classifier match"
 msgid "AI text filter"
@@ -1075,6 +1087,53 @@ msgstr "Спросить ИИ-помощника архива"
 
 msgid "Ask the community or try NewsBlur for yourself."
 msgstr "Спросите сообщество или попробуйте NewsBlur сами."
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(counter)s credit. With usage billing, every "
+"credit past your plan's costs 1 cent, which comes to about $%(forecast_overage)s this month. You can set a "
+"monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(counter)s credits. With usage billing, every"
+" credit past your plan's costs 1 cent, which comes to about $%(forecast_overage)s this month. You can set a"
+" monthly limit so it never costs more than you want."
+msgstr[0] ""
+"При нынешнем темпе в этом месяце будет использован примерно %(counter)s кредит. При оплате по использованию"
+" каждый кредит сверх лимита вашего плана стоит 1 цент — в этом месяце это составит около "
+"$%(forecast_overage)s. Вы можете установить месячный лимит, чтобы расходы не превышали желаемую сумму."
+msgstr[1] ""
+"При нынешнем темпе в этом месяце будет использовано примерно %(counter)s кредита. При оплате по "
+"использованию каждый кредит сверх лимита вашего плана стоит 1 цент — в этом месяце это составит около "
+"$%(forecast_overage)s. Вы можете установить месячный лимит, чтобы расходы не превышали желаемую сумму."
+msgstr[2] ""
+"При нынешнем темпе в этом месяце будет использовано примерно %(counter)s кредитов. При оплате по "
+"использованию каждый кредит сверх лимита вашего плана стоит 1 цент — в этом месяце это составит около "
+"$%(forecast_overage)s. Вы можете установить месячный лимит, чтобы расходы не превышали желаемую сумму."
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(counter)s credit. With usage billing, every "
+"credit past your plan's costs 1 cent, which comes to about <b>$%(forecast_overage)s</b> this month. You can"
+" set a monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(counter)s credits. With usage billing, every"
+" credit past your plan's costs 1 cent, which comes to about <b>$%(forecast_overage)s</b> this month. You "
+"can set a monthly limit so it never costs more than you want."
+msgstr[0] ""
+"При текущем темпе за этот месяц будет использован примерно %(counter)s кредит. При оплате по факту каждый "
+"кредит сверх включённых в ваш тариф стоит 1 цент — в этом месяце сумма составит примерно "
+"<b>$%(forecast_overage)s</b>. Вы можете установить месячный лимит, чтобы расходы не превышали желаемую "
+"сумму."
+msgstr[1] ""
+"При текущем темпе за этот месяц будет использовано примерно %(counter)s кредита. При оплате по факту каждый"
+" кредит сверх включённых в ваш тариф стоит 1 цент — в этом месяце сумма составит примерно "
+"<b>$%(forecast_overage)s</b>. Вы можете установить месячный лимит, чтобы расходы не превышали желаемую "
+"сумму."
+msgstr[2] ""
+"При текущем темпе за этот месяц будет использовано примерно %(counter)s кредитов. При оплате по факту "
+"каждый кредит сверх включённых в ваш тариф стоит 1 цент — в этом месяце сумма составит примерно "
+"<b>$%(forecast_overage)s</b>. Вы можете установить месячный лимит, чтобы расходы не превышали желаемую "
+"сумму."
 
 msgid "Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically."
 msgstr "Для аутентификации используется OAuth 2.0 &mdash; ваш клиент автоматически выполнит этот процесс."
@@ -1587,6 +1646,9 @@ msgstr "Не удалось сохранить статью: она не най�
 msgid "Could not unsave story, not found"
 msgstr "Не удалось удалить статью из сохранённых: она не найдена"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Не удалось связаться со Stripe. Попробуйте ещё раз."
+
 msgid "Couldn't save the position"
 msgstr "Не удалось сохранить позицию"
 
@@ -1732,12 +1794,14 @@ msgid "Delete"
 msgstr "Удалить"
 
 msgid ""
-"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
-"classifiers score stories just like the intelligence trainer, with no usage limits."
+"Describe what to focus on or hide in plain language, for a story's text or its images. AI filters score "
+"stories just like the intelligence trainer. A credit covers about 700 stories through a text filter or 100 "
+"through an image filter, and usage billing keeps filters running past your credits at 1 cent each."
 msgstr ""
-"Опишите простыми словами, на что следует обращать внимание или что скрывать в тексте статьи или на её "
-"изображениях. Классификаторы на естественном языке оценивают статьи так же, как Тренер интеллектуальной "
-"фильтрации, без ограничений на использование."
+"Опишите простым языком, на чём сосредоточиться или что скрыть в тексте статьи или на её изображениях. "
+"ИИ-фильтры оценивают статьи так же, как тренер интеллектуальной фильтрации. Одного кредита хватает примерно"
+" на 700 статей при фильтрации текста или на 100 статей при фильтрации изображений. При оплате по факту "
+"использования фильтры продолжат работать сверх лимита кредитов по цене 1 цент за статью."
 
 msgid "Description"
 msgstr "Описание"
@@ -3109,6 +3173,9 @@ msgstr "Недопустимый URL"
 msgid "Invalid URL."
 msgstr "Недопустимый URL."
 
+msgid "Invalid amount"
+msgstr "Недопустимая сумма"
+
 msgid "Invalid classifier_type"
 msgstr "Недопустимый classifier_type"
 
@@ -3280,6 +3347,12 @@ msgstr "Лицензия"
 msgctxt "theme"
 msgid "Light"
 msgstr "Светлая"
+
+msgid "Limit cannot exceed $10,000"
+msgstr "Лимит не может превышать 10 000 $"
+
+msgid "Limit must be a positive amount"
+msgstr "Лимит должен быть положительным числом"
 
 msgid "Limited"
 msgstr "Ограничено"
@@ -3638,9 +3711,6 @@ msgstr "Нативные приложения для iOS и Android"
 
 msgid "Native on Android"
 msgstr "Нативное приложение для Android"
-
-msgid "Natural language text and image classifiers"
-msgstr "Классификаторы текста и изображений на естественном языке"
 
 msgid "Navigate everything without touching the mouse"
 msgstr "Перемещайтесь по всему интерфейсу, не касаясь мыши"
@@ -4309,6 +4379,9 @@ msgstr "Без системы обучения"
 msgid "No uncategorized archives found"
 msgstr "Архивов без категории не найдено"
 
+msgid "No usage billing set up."
+msgstr "Оплата по факту использования не настроена."
+
 msgid "No user has that email address."
 msgstr "Нет пользователя с таким адресом электронной почты."
 
@@ -4549,6 +4622,9 @@ msgstr "Введите поисковый запрос по ключевым с�
 
 msgid "Please enter in an email address."
 msgstr "Введите адрес электронной почты."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Войдите в NewsBlur ещё раз."
 
 msgid "Please login to continue."
 msgstr "Войдите, чтобы продолжить."
@@ -4836,6 +4912,9 @@ msgstr "RSS-ридер с обучением на ваших предпочте�
 
 msgid "RSS/Atom only"
 msgstr "Только RSS/Atom"
+
+msgid "Raise or remove the limit"
+msgstr "Увеличить или снять ограничение"
 
 msgid "Re-analyzing page"
 msgstr "Повторный анализ страницы"
@@ -5720,6 +5799,9 @@ msgstr ""
 "Статьи поступают сразу после публикации с уведомлениями в реальном времени. Для пользователей Pro все ленты"
 " обновляются каждые 5–15 минут, чтобы вы не пропустили срочные новости."
 
+msgid "Stories your filters already scored keep their scores, and the rest of your training keeps working."
+msgstr "Оценки уже обработанных фильтрами статей сохранятся, а остальное обучение продолжится."
+
 msgid "Story"
 msgstr "Статья"
 
@@ -6393,6 +6475,12 @@ msgstr "Попробовать бесплатно"
 msgid "Try out NewsBlur"
 msgstr "Попробовать NewsBlur"
 
+msgid "Turn on usage billing"
+msgstr "Включить оплату по факту"
+
+msgid "Turn on usage billing:"
+msgstr "Включить оплату по факту:"
+
 msgid ""
 "Two different philosophies: NewsBlur is a dedicated RSS reader with intelligence training. Readwise Reader "
 "combines RSS, read-later, and highlights in one app."
@@ -6514,6 +6602,9 @@ msgstr "Перейдите на платную подписку, чтобы от
 
 msgid "Upgrade to premium archive"
 msgstr "Перейдите на Premium Archive"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "Оплата по факту использования сейчас недоступна."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"
@@ -7104,6 +7195,9 @@ msgstr[0] "В день можно отправить по электронной
 msgstr[1] "В день можно отправить по электронной почте только %(count)s статьи."
 msgstr[2] "В день можно отправить по электронной почте только %(count)s статей."
 
+msgid "You can raise or remove the limit in your account:"
+msgstr "Вы можете увеличить или снять ограничение в аккаунте:"
+
 msgid "You can re-upload the attached file to NewsBlur and get all of your sites back."
 msgstr "Вы можете снова загрузить приложенный файл в NewsBlur, и все ваши сайты восстановятся."
 
@@ -7457,20 +7551,37 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
-"unlimited tests and runs your filters on every new story."
+"You've used today's %(count)s free AI filter test. It resets at midnight, and your AI credits reset on the "
+"1st."
 msgid_plural ""
-"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
-"unlimited tests and runs your filters on every new story."
+"You've used today's %(count)s free AI filter tests. They reset at midnight, and your AI credits reset on "
+"the 1st."
 msgstr[0] ""
-"Сегодня вы использовали %(count)s бесплатный тест ИИ-фильтра. Лимит сбросится в полночь. Подписка Premium "
-"Archive включает неограниченное количество тестов и применяет ваши фильтры к каждой новой статье."
+"Вы использовали сегодняшнюю бесплатную проверку ИИ-фильтра (%(count)s). Лимит сбросится в полночь, а "
+"кредиты ИИ — первого числа."
 msgstr[1] ""
-"Сегодня вы использовали %(count)s бесплатных теста ИИ-фильтра. Лимит сбросится в полночь. Подписка Premium "
-"Archive включает неограниченное количество тестов и применяет ваши фильтры к каждой новой статье."
+"Вы использовали сегодняшние бесплатные проверки ИИ-фильтра (%(count)s). Лимит сбросится в полночь, а "
+"кредиты ИИ — первого числа."
 msgstr[2] ""
-"Сегодня вы использовали %(count)s бесплатных тестов ИИ-фильтра. Лимит сбросится в полночь. Подписка Premium"
-" Archive включает неограниченное количество тестов и применяет ваши фильтры к каждой новой статье."
+"Вы использовали сегодняшние бесплатные проверки ИИ-фильтра (%(count)s). Лимит сбросится в полночь, а "
+"кредиты ИИ — первого числа."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgstr[0] ""
+"Вы использовали сегодняшнюю бесплатную пробу ИИ-фильтра (%(count)s). Она обновится в полночь. В Premium "
+"включены ежемесячные кредиты ИИ, которые позволяют фильтрам обрабатывать каждую новую статью."
+msgstr[1] ""
+"Вы использовали сегодняшние бесплатные пробы ИИ-фильтра (%(count)s). Они обновятся в полночь. В Premium "
+"включены ежемесячные кредиты ИИ, которые позволяют фильтрам обрабатывать каждую новую статью."
+msgstr[2] ""
+"Вы использовали сегодняшние бесплатные пробы ИИ-фильтра (%(count)s). Они обновятся в полночь. В Premium "
+"включены ежемесячные кредиты ИИ, которые позволяют фильтрам обрабатывать каждую новую статью."
 
 msgid "YouTube search request failed."
 msgstr "Не удалось выполнить поисковый запрос YouTube."
@@ -7498,6 +7609,62 @@ msgstr "Ваша подписка <b>%(tier_name)s</b> будет продлен
 
 msgid "Your <b>30-day trial premium subscription</b> has started. You now have full access to all premium features:"
 msgstr "Для вас начался <b>30-дневный пробный период подписки Premium</b>. Теперь вам доступны все функции Premium:"
+
+#, python-format
+msgid ""
+"Your AI filters reached the $%(monthly_limit)s monthly limit you set for usage billing, so they've stopped "
+"scoring new stories. They start again on %(date)s."
+msgstr ""
+"Ваши ИИ-фильтры достигли установленного вами месячного лимита $%(monthly_limit)s для оплаты по "
+"использованию, поэтому обработка новых статей прекращена. Она возобновится %(date)s."
+
+#, python-format
+msgid ""
+"Your AI filters reached the <b>$%(monthly_limit)s</b> monthly limit you set for usage billing, so they've "
+"stopped scoring new stories. They start again on <b>%(date)s</b>."
+msgstr ""
+"Ваши ИИ-фильтры достигли установленного вами месячного лимита <b>$%(monthly_limit)s</b> для оплаты по "
+"использованию, поэтому обработка новых статей прекращена. Она возобновится <b>%(date)s</b>."
+
+msgid "Your AI filters reached your monthly limit"
+msgstr "Ваши ИИ-фильтры достигли месячного лимита"
+
+#, python-format
+msgid ""
+"Your AI filters used this month's %(counter)s AI credit, so they've stopped scoring new stories. They start"
+" again on %(date)s, when your credits reset."
+msgid_plural ""
+"Your AI filters used all %(counter)s of this month's AI credits, so they've stopped scoring new stories. "
+"They start again on %(date)s, when your credits reset."
+msgstr[0] ""
+"Ваши ИИ-фильтры использовали в этом месяце %(counter)s ИИ-кредит, поэтому перестали оценивать новые статьи."
+" Они снова начнут работать %(date)s, когда кредиты обновятся."
+msgstr[1] ""
+"Ваши ИИ-фильтры использовали все %(counter)s ИИ-кредита за этот месяц, поэтому перестали оценивать новые "
+"статьи. Они снова начнут работать %(date)s, когда кредиты обновятся."
+msgstr[2] ""
+"Ваши ИИ-фильтры использовали все %(counter)s ИИ-кредитов за этот месяц, поэтому перестали оценивать новые "
+"статьи. Они снова начнут работать %(date)s, когда кредиты обновятся."
+
+#, python-format
+msgid ""
+"Your AI filters used this month's <b>%(counter)s</b> AI credit, so they've stopped scoring new stories. "
+"They start again on <b>%(date)s</b>, when your credits reset."
+msgid_plural ""
+"Your AI filters used all <b>%(counter)s</b> of this month's AI credits, so they've stopped scoring new "
+"stories. They start again on <b>%(date)s</b>, when your credits reset."
+msgstr[0] ""
+"Ваши ИИ-фильтры использовали <b>%(counter)s</b> кредит ИИ за этот месяц, поэтому перестали оценивать новые "
+"статьи. Они возобновят работу <b>%(date)s</b>, когда кредиты обновятся."
+msgstr[1] ""
+"Ваши ИИ-фильтры использовали все <b>%(counter)s</b> кредита ИИ за этот месяц, поэтому перестали оценивать "
+"новые статьи. Они возобновят работу <b>%(date)s</b>, когда кредиты обновятся."
+msgstr[2] ""
+"Ваши ИИ-фильтры использовали все <b>%(counter)s</b> кредитов ИИ за этот месяц, поэтому перестали оценивать "
+"новые статьи. Они возобновят работу <b>%(date)s</b>, когда кредиты обновятся."
+
+msgid "Your AI filters used this month's credits"
+msgstr "Ваши ИИ-фильтры использовали кредиты за этот месяц"
 
 msgid "Your Blurblog also has an RSS feed:"
 msgstr "У вашего Blurblog также есть RSS-лента:"

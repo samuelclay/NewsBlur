@@ -543,6 +543,22 @@ msgid "%(topic)s Subreddits"
 msgstr "ซับเรดดิต %(topic)s"
 
 #, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr "%(unbilled)s รอเรียกเก็บเงินอยู่: ตอนต้นเดือนหน้าหากยอดถึง %(minimum)s หรือทันทีเมื่อถึง %(immediate)s"
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "ใช้เครดิต AI %(used)s เครดิต เกิน %(included)s เครดิตที่รวมในแพ็กเกจ %(over)s"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "ใช้เครดิต AI ไป %(used)s จาก %(included)s เครดิต"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s กลับ"
 
@@ -871,6 +887,13 @@ msgstr "1 เดือน"
 msgid "1 year"
 msgstr "1 ปี"
 
+#, python-format
+msgid "1¢ per credit past your plan's, about %(cost)s this month."
+msgstr "คิดเครดิตละ 1¢ เมื่อใช้เกินแพ็กเกจ เดือนนี้ประมาณ %(cost)s"
+
+msgid "1¢ per credit past your plan's."
+msgstr "เครดิตละ 1¢ เมื่อใช้เกินจำนวนในแผน"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "มีเครื่องมือ 28 รายการ ครอบคลุมการอ่าน การดำเนินการ การฝึกตัวกรอง และการค้นพบเนื้อหา"
 
@@ -888,6 +911,12 @@ msgstr "วันละ 3 ครั้ง"
 
 msgid "5 years"
 msgstr "5 ปี"
+
+msgid "50 AI credits a month for AI filters"
+msgstr "เครดิต AI 50 เครดิตต่อเดือนสำหรับตัวกรอง AI"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "เครดิต AI 500 เครดิตต่อเดือนสำหรับตัวกรอง AI"
 
 msgid "5× faster feed updates"
 msgstr "อัปเดตฟีดเร็วขึ้น 5 เท่า"
@@ -926,6 +955,11 @@ msgstr "Blurblog ของบทความที่แชร์"
 msgid "A clearer, closer sound"
 msgstr "เสียงชัดและใกล้ยิ่งขึ้น"
 
+msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgstr ""
+"เครดิตหนึ่งหน่วยมีมูลค่า 1¢ สำหรับ AI: ครอบคลุมบทความประมาณ 700 รายการผ่านตัวกรองข้อความ หรือ 100 "
+"รายการผ่านตัวกรองรูปภาพ"
+
 msgid "A folder of feeds read as one stream"
 msgstr "โฟลเดอร์ฟีดที่อ่านรวมเป็นสตรีมเดียว"
 
@@ -945,18 +979,40 @@ msgstr "การกดชอบเพียงครั้งเดียวม
 msgid "A story diff with additions and deletions"
 msgstr "เปรียบเทียบบทความโดยแสดงส่วนที่เพิ่มและลบ"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "ตัวกรองข้อความบนเว็บไซต์นี้ใช้เครดิตประมาณ %(count)s เครดิตต่อเดือน"
+
+msgid "A text filter on this site uses less than a tenth of a credit a month."
+msgstr "ตัวกรองข้อความบนเว็บไซต์นี้ใช้เครดิตไม่ถึงหนึ่งในสิบต่อเดือน"
+
 msgid "AI Filter"
 msgstr "ตัวกรอง AI"
 
 msgid "AI Model"
 msgstr "โมเดล AI"
 
+msgid "AI credits"
+msgstr "เครดิต AI"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "ตัวกรอง AI บันทึกแล้ว แต่จะทำงานเฉพาะบน %(tier_link)s เท่านั้น"
 
+msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr ""
+"บันทึกตัวกรอง AI แล้ว แต่จะทำงานได้เฉพาะใน Premium เท่านั้น Premium ให้เครดิต AI 5 เครดิตต่อเดือน, Archive "
+"ให้ 50 เครดิต และ Pro ให้ 500 เครดิต"
+
+msgid "AI filters run without credits on this server."
+msgstr "ตัวกรอง AI ทำงานบนเซิร์ฟเวอร์นี้โดยไม่ใช้เครดิต"
+
 msgid "AI finds the stories"
 msgstr "AI ค้นหาบทความให้"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "ตัวกรองข้อความและรูปภาพด้วย AI พร้อมเครดิต AI 5 เครดิตต่อเดือน"
 
 msgid "AI-curated summary of your top stories"
 msgstr "สรุปข่าวเด่นของคุณที่คัดสรรโดย AI"
@@ -967,6 +1023,10 @@ msgstr "วิเคราะห์บทความด้วย AI และ�
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "หมวดหมู่ทั้งหมด (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "คาดว่าจะใช้ประมาณ %(cost)s ในเดือนนี้ตามอัตราการใช้งานของคุณ"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "ได้แน่นอน เปิดเครื่องมือฝึก แล้วลบเครื่องหมายชอบหรือไม่ชอบเพื่อรีเซ็ต"
@@ -1211,6 +1271,14 @@ msgstr "เกิดข้อผิดพลาด"
 msgid "An error occurred. Please try again."
 msgstr "เกิดข้อผิดพลาด โปรดลองอีกครั้ง"
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "ตัวกรองรูปภาพบนเว็บไซต์นี้ใช้เครดิตประมาณ %(count)s เครดิตต่อเดือน"
+
+msgid "An image filter on this site uses less than a tenth of a credit a month."
+msgstr "ตัวกรองรูปภาพบนเว็บไซต์นี้ใช้เครดิตไม่ถึงหนึ่งในสิบหน่วยต่อเดือน"
+
 msgid "Analysis timed out. Please try again."
 msgstr "การวิเคราะห์หมดเวลา โปรดลองอีกครั้ง"
 
@@ -1357,6 +1425,19 @@ msgstr "ถามคำถามเกี่ยวกับทุกสิ่ง
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "ถามคำถาม รับสรุป หรือขอประเด็นสำคัญ"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "หากใช้งานในอัตรานี้ เดือนนี้จะใช้ประมาณ %(count)s เครดิต"
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "หากใช้งานในอัตรานี้ เครดิตของคุณจะหมดประมาณ %(date)s"
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "หากใช้งานในอัตรานี้ ค่าใช้จ่ายทั้งเดือนจะอยู่ที่ประมาณ %(cost)s"
 
 msgid "Audio"
 msgstr "เสียง"
@@ -1681,6 +1762,9 @@ msgstr "เปลี่ยนรายละเอียดการเรีย
 msgid "Change folders"
 msgstr "เปลี่ยนโฟลเดอร์"
 
+msgid "Change limit"
+msgstr "เปลี่ยนวงเงิน"
+
 msgid "Change password"
 msgstr "เปลี่ยนรหัสผ่าน"
 
@@ -1695,6 +1779,9 @@ msgstr "เปลี่ยนบัตรเครดิตของคุณ"
 
 msgid "Change your profile above"
 msgstr "เปลี่ยนโปรไฟล์ของคุณด้านบน"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "เรียกเก็บเมื่อสิ้นเดือนเมื่อยอดถึง $1 ยอดที่น้อยกว่านั้นจะรอเรียกเก็บในเดือนถัดไป"
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "กลับมาตรวจสอบภายหลังเพื่อดูเว็บไซต์ยอดนิยมที่ผู้ใช้ NewsBlur เพิ่ม"
@@ -1984,6 +2071,9 @@ msgstr "โหลดคำถามที่พบบ่อยไม่ได้
 
 msgid "Couldn't load audio for this story."
 msgstr "โหลดเสียงสำหรับบทความนี้ไม่สำเร็จ"
+
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "ปิดการเรียกเก็บเงินตามการใช้งานไม่สำเร็จ โปรดลองอีกครั้ง"
 
 msgid "Counting is difficult"
 msgstr "การนับเป็นเรื่องยาก"
@@ -2863,6 +2953,9 @@ msgstr "ตัวกรองไม่พบบทความใน %(context)s
 msgid "Filters found no stories in this view."
 msgstr "ตัวกรองไม่พบบทความในมุมมองนี้"
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr "ตัวกรองจะหยุดทำงานเมื่อค่าใช้จ่ายตามการใช้งานถึงขีดจำกัด เว้นว่างไว้หากไม่ต้องการกำหนดขีดจำกัด"
+
 msgid "Finance"
 msgstr "การเงิน"
 
@@ -3427,6 +3520,9 @@ msgstr "IFTTT และ Zapier"
 msgid "Identify key people and relationships"
 msgstr "ระบุบุคคลสำคัญและความสัมพันธ์"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "หากยอดถึง $10 ภายในหนึ่งเดือน ระบบจะเรียกเก็บทันที"
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "หากไม่พบฟีด RSS NewsBlur จะเสนอให้สร้างฟีดเว็บ"
 
@@ -3616,6 +3712,9 @@ msgstr "มีแค่พาดหัว ไม่มีความเห็�
 
 msgid "Keep fades, without movement."
 msgstr "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว"
+
+msgid "Keep filters running"
+msgstr "ให้ตัวกรองทำงานต่อ"
 
 msgid "Keep others unread"
 msgstr "คงสถานะยังไม่อ่านให้บทความอื่น"
@@ -4019,6 +4118,9 @@ msgstr "จ."
 msgid "Monday"
 msgstr "วันจันทร์"
 
+msgid "Monthly limit"
+msgstr "วงเงินรายเดือน"
+
 msgid "Months Earned"
 msgstr "เดือนที่ได้รับ"
 
@@ -4134,9 +4236,6 @@ msgstr "ตัวจำแนกรูปภาพด้วยภาษาธร
 
 msgid "Natural Language Text Classifier"
 msgstr "ตัวจัดประเภทข้อความด้วยภาษาธรรมชาติ"
-
-msgid "Natural language text and image classifiers"
-msgstr "ตัวจำแนกข้อความและรูปภาพด้วยภาษาธรรมชาติ"
 
 msgid "Nature"
 msgstr "ธรรมชาติ"
@@ -4331,6 +4430,9 @@ msgstr "ไม่มีรูปภาพ"
 msgid "No items added yet."
 msgstr "ยังไม่มีการเพิ่มรายการ"
 
+msgid "No limit"
+msgstr "ไม่จำกัด"
+
 msgid "No match"
 msgstr "ไม่พบรายการที่ตรงกัน"
 
@@ -4442,6 +4544,9 @@ msgstr "ไม่พบรูปแบบบทความในหน้าน
 
 msgid "No trending sites available"
 msgstr "ไม่มีเว็บไซต์ที่กำลังเป็นกระแส"
+
+msgid "No usage billing charges yet."
+msgstr "ยังไม่มีค่าใช้จ่ายจากการเรียกเก็บเงินตามการใช้งาน"
 
 msgid "No valid merge groups to apply"
 msgstr "ไม่มีกลุ่มผสานที่ถูกต้องให้ใช้"
@@ -4811,6 +4916,14 @@ msgstr "กำลังประมวลผล..."
 msgid "Part of a story URL"
 msgstr "ส่วนหนึ่งของ URL บทความ"
 
+msgid "Past your credits, filters keep running at 1¢ per credit."
+msgstr "เมื่อใช้เครดิตเกินแพ็กเกจ ตัวกรองจะทำงานต่อโดยคิดเครดิตละ 1¢"
+
+msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgstr ""
+"เมื่อใช้เครดิตเกินแพ็กเกจ ตัวกรองจะหยุดทำงานจนถึงวันที่ 1 การเรียกเก็บเงินตามการใช้งานจะช่วยให้ทำงานต่อ "
+"โดยคิดเครดิตละ 1¢"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "วาง URL ใดก็ได้ แล้ว NewsBlur จะสร้างฟีดจากหน้าเว็บ แม้ไม่มี RSS"
 
@@ -5001,6 +5114,9 @@ msgstr "รายละเอียด Premium"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "ฟอนต์พรีเมียมต้องใช้%(link_start)sบัญชีพรีเมียม%(link_end)s"
+
+msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgstr "Premium ให้เครดิต AI 5 เครดิตต่อเดือน, Archive ให้ 50 เครดิต และ Pro ให้ 500 เครดิต"
 
 msgid "Premium renewal"
 msgstr "การต่ออายุ Premium"
@@ -5438,6 +5554,10 @@ msgid "Reset to original favicon"
 msgstr "รีเซ็ตเป็นไอคอนเว็บไซต์เดิม"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "รีเซ็ต %(date)s"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "รีเซ็ต %(day)s"
 
@@ -5557,6 +5677,9 @@ msgstr "บันทึกบทความใดก็ได้ด้วยค
 msgid "Save comments"
 msgstr "บันทึกความคิดเห็น"
 
+msgid "Save limit"
+msgstr "บันทึกวงเงิน"
+
 msgid "Save my profile"
 msgstr "บันทึกโปรไฟล์ของฉัน"
 
@@ -5603,6 +5726,13 @@ msgstr "จัดระเบียบบทความที่บันทึ
 
 msgid "Saved!"
 msgstr "บันทึกแล้ว!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "บันทึกแล้ว ตัวกรองจะหยุดทำงานเมื่อถึง %(limit)s ต่อเดือน"
+
+msgid "Saved. No monthly limit."
+msgstr "บันทึกแล้ว ไม่มีขีดจำกัดรายเดือน"
 
 msgid "Saved:"
 msgstr "บันทึกแล้ว:"
@@ -5844,11 +5974,17 @@ msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์
 msgid "Server error: %(status)s"
 msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์: %(status)s"
 
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "ตั้งขีดจำกัดรายเดือน หรือปิดการเรียกเก็บเงินตามการใช้งานได้ทุกเมื่อ"
+
 msgid "Set up newsletters"
 msgstr "ตั้งค่าจดหมายข่าว"
 
 msgid "Set up notifications"
 msgstr "ตั้งค่าการแจ้งเตือน"
+
+msgid "Set up usage billing"
+msgstr "ตั้งค่าการเรียกเก็บเงินตามการใช้งาน"
 
 msgid "Set up your blurblog"
 msgstr "ตั้งค่า blurblog ของคุณ"
@@ -6433,6 +6569,9 @@ msgstr "การเชื่อมต่อสตรีมถูกขัดจ
 msgid "Stripe Id:"
 msgstr "รหัส Stripe:"
 
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Stripe มีข้อมูลบัตรของคุณแล้ว การเรียกเก็บเงินตามการใช้งานจะเริ่มในอีกสักครู่"
+
 msgid "Style"
 msgstr "สไตล์"
 
@@ -6861,6 +7000,14 @@ msgstr ""
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "ข้อความนี้ตรงกับชื่อเรื่องทั้งหมด และจะตรงกับบทความนี้เท่านั้น โปรดเลือกข้อความบางส่วนของชื่อเรื่องแทน"
 
+msgid "This month"
+msgstr "เดือนนี้"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "ใช้เครดิต AI %(count)s เครดิตของเดือนนี้แล้ว"
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "รายการบทความที่อ่านแล้วนี้เป็น%(link_start)sฟีเจอร์ Premium%(link_end)s"
@@ -7139,13 +7286,22 @@ msgstr "วันอังคาร"
 msgid "Turn off automatic briefing generation"
 msgstr "ปิดการสร้างสรุปข่าวอัตโนมัติ"
 
+msgid "Turn off usage billing"
+msgstr "ปิดการเรียกเก็บเงินตามการใช้งาน"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "โปรดเปิดใช้เว็บไซต์ %(count)s แห่งนี้"
 
+msgid "Turn on usage billing"
+msgstr "เปิดการเรียกเก็บเงินตามการใช้งาน"
+
 msgid "Turning any page into a feed"
 msgstr "เปลี่ยนหน้าเว็บใดๆ ให้เป็นฟีด"
+
+msgid "Turning off..."
+msgstr "กำลังปิด..."
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7268,8 +7424,14 @@ msgstr "ไม่มีชื่อ"
 msgid "Up Next"
 msgstr "ถัดไป"
 
+msgid "Upcoming"
+msgstr "กำลังจะมาถึง"
+
 msgid "Update History"
 msgstr "ประวัติการอัปเดต"
+
+msgid "Update card on Stripe"
+msgstr "อัปเดตบัตรใน Stripe"
 
 msgid "Updated"
 msgstr "อัปเดตล่าสุด"
@@ -7376,6 +7538,17 @@ msgstr "อัปโหลดไม่สำเร็จ โปรดลอง�
 
 msgid "Uploaded!"
 msgstr "อัปโหลดแล้ว!"
+
+msgid "Usage billing"
+msgstr "การเรียกเก็บเงินตามการใช้งาน"
+
+msgid "Usage billing charges"
+msgstr "ค่าใช้จ่ายจากการเรียกเก็บเงินตามการใช้งาน"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgstr[0] "เปิดการเรียกเก็บเงินตามการใช้งานแล้ว เครดิตที่เกิน %(count)s คิดเครดิตละ 1¢: เดือนนี้ใช้ไปแล้ว %(cost)s"
 
 #, python-format
 msgid "Use %(language)s"
@@ -7826,6 +7999,9 @@ msgstr "คุณต้องเข้าสู่ระบบก่อนจึ
 msgid "You need to be logged in to share a story."
 msgstr "คุณต้องเข้าสู่ระบบก่อนจึงจะแชร์บทความได้"
 
+msgid "You only pay for credits past your plan's."
+msgstr "คุณจ่ายเฉพาะเครดิตที่เกินจากแพ็กเกจเท่านั้น"
+
 msgid "You will be emailed within a minute or three."
 msgstr "คุณจะได้รับอีเมลภายในหนึ่งถึงสามนาที"
 
@@ -7834,6 +8010,10 @@ msgstr "คุณจะเห็นแท็กและผู้เขียน
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "คุณถูกจำกัดอัตราการใช้งาน<br> ลองอีกครั้งในอีกสักครู่ แต่อย่าเร็วเกินไป"
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "คุณใกล้ถึงวงเงินรายเดือน %(limit)s แล้ว"
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "มีรูปแบบบทความให้เลือกหลายแบบ"
@@ -7856,6 +8036,11 @@ msgstr "คุณได้รับ %(value_2)s เป็นเวลา %(value
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
 msgstr "คุณใช้เว็บไซต์ครบจำนวนจำกัดแล้ว (%(value_1)s) ปิดเสียงบางเว็บไซต์หรืออัปเกรดบัญชีเพื่อเพิ่มเว็บไซต์"
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "เดือนนี้คุณใช้เครดิต AI %(used)s จาก %(included)s เครดิตแล้ว"
+
 msgid "You:"
 msgstr "คุณ:"
 
@@ -7872,6 +8057,14 @@ msgstr "การสมัคร %(value_1)s ของคุณรวมทุ�
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "การสมัครสมาชิก %(value_1)s ของคุณใช้งานอยู่"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "ตัวกรอง AI ของคุณหยุดทำงานชั่วคราวจนถึง %(date)s"
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "ตัวกรอง AI ของคุณใช้เครดิตครบวงเงินรายเดือน %(limit)s แล้ว และหยุดทำงานชั่วคราวจนถึง %(date)s"
 
 msgid "Your Archived Domains"
 msgstr "โดเมนที่เก็บถาวรของคุณ"

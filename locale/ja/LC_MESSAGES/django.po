@@ -371,6 +371,12 @@ msgstr "404 - NewsBlur：ページが見つかりません"
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "5分ごとの取得、正規表現による学習、10,000サイト"
 
+msgid "50 AI credits a month for AI filters"
+msgstr "AIフィルター用のAIクレジットは月50件"
+
+msgid "500 AI credits a month for AI filters"
+msgstr "AIフィルター用の月500 AIクレジット"
+
 msgid "64 sites"
 msgstr "64サイト"
 
@@ -584,6 +590,9 @@ msgstr "AI機能"
 msgid "AI built into every story"
 msgstr "すべての記事にAIを"
 
+msgid "AI credits"
+msgstr "AIクレジット"
+
 msgid "AI filters aren't available on this server"
 msgstr "このサーバーではAIフィルターを利用できません"
 
@@ -593,6 +602,9 @@ msgstr "AI画像フィルター"
 
 msgid "AI skill"
 msgstr "AIスキル"
+
+msgid "AI text and image filters, with 5 AI credits a month"
+msgstr "AIテキスト・画像フィルター、月5 AIクレジット付き"
 
 msgctxt "notification email classifier match"
 msgid "AI text filter"
@@ -950,6 +962,28 @@ msgstr "アーカイブアシスタントAIに質問"
 
 msgid "Ask the community or try NewsBlur for yourself."
 msgstr "コミュニティに質問するか、NewsBlurをお試しください。"
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(counter)s credit. With usage billing, every "
+"credit past your plan's costs 1 cent, which comes to about $%(forecast_overage)s this month. You can set a "
+"monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(counter)s credits. With usage billing, every"
+" credit past your plan's costs 1 cent, which comes to about $%(forecast_overage)s this month. You can set a"
+" monthly limit so it never costs more than you want."
+msgstr[0] "現在の実行ペースでは、今月は約%(counter)sクレジットを使う見込みです。従量課金では、プランのクレジットを超えた分は1クレジットあたり1セントで、今月は約$%(forecast_overage)sになります。希望額を超えないよう、月間上限を設定できます。"
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(counter)s credit. With usage billing, every "
+"credit past your plan's costs 1 cent, which comes to about <b>$%(forecast_overage)s</b> this month. You can"
+" set a monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(counter)s credits. With usage billing, every"
+" credit past your plan's costs 1 cent, which comes to about <b>$%(forecast_overage)s</b> this month. You "
+"can set a monthly limit so it never costs more than you want."
+msgstr[0] "現在の使用ペースでは、今月は約%(counter)sクレジットを使用する見込みです。従量課金では、プランのクレジットを超えた分は1件1セントとなり、今月は約<b>$%(forecast_overage)s</b>の追加料金が見込まれます。月間上限を設定すれば、希望額を超えることはありません。"
 
 msgid "Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically."
 msgstr "認証にはOAuth 2.0を使用します&mdash;フローはクライアントが自動的に処理します。"
@@ -1420,6 +1454,9 @@ msgstr "記事を保存できませんでした。見つかりません。"
 msgid "Could not unsave story, not found"
 msgstr "記事を保存解除できませんでした。見つかりません。"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripeに接続できませんでした。もう一度お試しください。"
+
 msgid "Couldn't save the position"
 msgstr "位置を保存できませんでした"
 
@@ -1561,9 +1598,10 @@ msgid "Delete"
 msgstr "削除"
 
 msgid ""
-"Describe what to focus on or hide in plain language, for a story's text or its images. Natural language "
-"classifiers score stories just like the intelligence trainer, with no usage limits."
-msgstr "記事のテキストや画像について、フォーカスする内容や非表示にする内容を自然な言葉で説明できます。自然言語分類器は、使用回数の制限なく、インテリジェンストレーナーと同様に記事を評価します。"
+"Describe what to focus on or hide in plain language, for a story's text or its images. AI filters score "
+"stories just like the intelligence trainer. A credit covers about 700 stories through a text filter or 100 "
+"through an image filter, and usage billing keeps filters running past your credits at 1 cent each."
+msgstr "記事のテキストや画像について、フォーカスする内容や非表示にする内容を自然な言葉で説明してください。AIフィルターはインテリジェンストレーナーと同様に記事をスコア付けします。クレジット1件で、テキストフィルターなら約700件、画像フィルターなら約100件の記事を処理できます。従量課金を有効にすると、クレジットを使い切った後もフィルターが動作し、1件あたり1セントが課金されます。"
 
 msgid "Description"
 msgstr "説明"
@@ -2785,6 +2823,9 @@ msgstr "無効なURL"
 msgid "Invalid URL."
 msgstr "無効なURLです。"
 
+msgid "Invalid amount"
+msgstr "金額が無効です"
+
 msgid "Invalid classifier_type"
 msgstr "無効なclassifier_type"
 
@@ -2936,6 +2977,12 @@ msgstr "ライセンス"
 msgctxt "theme"
 msgid "Light"
 msgstr "ライト"
+
+msgid "Limit cannot exceed $10,000"
+msgstr "上限は$10,000以下にしてください"
+
+msgid "Limit must be a positive amount"
+msgstr "上限には正の値を指定してください"
 
 msgid "Limited"
 msgstr "制限あり"
@@ -3264,9 +3311,6 @@ msgstr "iOS・Androidネイティブアプリ"
 
 msgid "Native on Android"
 msgstr "Android版ネイティブアプリ"
-
-msgid "Natural language text and image classifiers"
-msgstr "自然言語テキスト・画像分類器"
 
 msgid "Navigate everything without touching the mouse"
 msgstr "マウスに触れずにすべてを操作"
@@ -3787,6 +3831,9 @@ msgstr "学習システムなし"
 msgid "No uncategorized archives found"
 msgstr "未分類のアーカイブは見つかりませんでした"
 
+msgid "No usage billing set up."
+msgstr "従量課金は設定されていません。"
+
 msgid "No user has that email address."
 msgstr "そのメールアドレスのユーザーはいません。"
 
@@ -4015,6 +4062,9 @@ msgstr "キーワード検索のクエリを入力してください。"
 
 msgid "Please enter in an email address."
 msgstr "メールアドレスを入力してください。"
+
+msgid "Please log in to NewsBlur again."
+msgstr "もう一度NewsBlurにログインしてください。"
 
 msgid "Please login to continue."
 msgstr "続行するにはログインしてください。"
@@ -4283,6 +4333,9 @@ msgstr "学習機能付きRSSリーダー"
 
 msgid "RSS/Atom only"
 msgstr "RSS/Atomのみ"
+
+msgid "Raise or remove the limit"
+msgstr "上限を引き上げる、または解除する"
 
 msgid "Re-analyzing page"
 msgstr "ページを再解析中"
@@ -5105,6 +5158,9 @@ msgid ""
 "minutes for breaking news."
 msgstr "記事の公開と同時にリアルタイム通知でお届けします。Proユーザーは、速報記事を逃さないよう、すべてのフィードを5〜15分ごとに取得できます。"
 
+msgid "Stories your filters already scored keep their scores, and the rest of your training keeps working."
+msgstr "フィルターがすでにスコアを付けた記事のスコアは維持され、学習内容も引き続き適用されます。"
+
 msgid "Story"
 msgstr "記事"
 
@@ -5720,6 +5776,12 @@ msgstr "無料で試す"
 msgid "Try out NewsBlur"
 msgstr "NewsBlurを試す"
 
+msgid "Turn on usage billing"
+msgstr "従量課金を有効にする"
+
+msgid "Turn on usage billing:"
+msgstr "従量課金を有効にする："
+
 msgid ""
 "Two different philosophies: NewsBlur is a dedicated RSS reader with intelligence training. Readwise Reader "
 "combines RSS, read-later, and highlights in one app."
@@ -5824,6 +5886,9 @@ msgstr "1日に2件以上の記事をメールで送信するには、プレミ�
 
 msgid "Upgrade to premium archive"
 msgstr "プレミアムアーカイブにアップグレード"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "従量課金は現在ご利用いただけません。"
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"
@@ -6341,6 +6406,9 @@ msgid "You can only send %(count)s story per day by email."
 msgid_plural "You can only send %(count)s stories per day by email."
 msgstr[0] "メールで送信できる記事は1日%(count)s件までです。"
 
+msgid "You can raise or remove the limit in your account:"
+msgstr "アカウントで上限を引き上げる、または解除できます。"
+
 msgid "You can re-upload the attached file to NewsBlur and get all of your sites back."
 msgstr "添付ファイルをNewsBlurに再アップロードすると、すべてのサイトを復元できます。"
 
@@ -6641,12 +6709,21 @@ msgstr "最近NewsBlurをご利用だったようですので、無料アカウ�
 
 #, python-format
 msgid ""
-"You've used today's %(count)s free AI filter test. It resets at midnight. Premium Archive includes "
-"unlimited tests and runs your filters on every new story."
+"You've used today's %(count)s free AI filter test. It resets at midnight, and your AI credits reset on the "
+"1st."
 msgid_plural ""
-"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium Archive includes "
-"unlimited tests and runs your filters on every new story."
-msgstr[0] "本日の無料AIフィルターテストを%(count)s回利用しました。午前0時にリセットされます。プレミアムアーカイブでは、テストを無制限に利用でき、新しい記事ごとにフィルターが実行されます。"
+"You've used today's %(count)s free AI filter tests. They reset at midnight, and your AI credits reset on "
+"the 1st."
+msgstr[0] "今日の無料AIフィルターテスト%(count)s回分を使い切りました。テスト回数は午前0時に、AIクレジットは1日にリセットされます。"
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgstr[0] "本日の無料AIフィルターテスト%(count)s回を使い切りました。午前0時にリセットされます。プレミアムには毎月AIクレジットが含まれ、新しい記事すべてにフィルターを実行できます。"
 
 msgid "YouTube search request failed."
 msgstr "YouTubeの検索リクエストに失敗しました。"
@@ -6674,6 +6751,42 @@ msgstr "<b>%(tier_name)s</b>のサブスクリプションは、<b>%(date)s</b>�
 
 msgid "Your <b>30-day trial premium subscription</b> has started. You now have full access to all premium features:"
 msgstr "<b>30日間のプレミアム無料トライアル</b>が始まりました。すべてのプレミアム機能をご利用いただけます："
+
+#, python-format
+msgid ""
+"Your AI filters reached the $%(monthly_limit)s monthly limit you set for usage billing, so they've stopped "
+"scoring new stories. They start again on %(date)s."
+msgstr "AIフィルターは、設定した従量課金の月間上限 $%(monthly_limit)s に達したため、新しい記事のスコア付けを停止しました。%(date)sに再開します。"
+
+#, python-format
+msgid ""
+"Your AI filters reached the <b>$%(monthly_limit)s</b> monthly limit you set for usage billing, so they've "
+"stopped scoring new stories. They start again on <b>%(date)s</b>."
+msgstr "AIフィルターは、設定した従量課金の月間上限<b>$%(monthly_limit)s</b>に達したため、新しい記事のスコア付けを停止しました。<b>%(date)s</b>に再開します。"
+
+msgid "Your AI filters reached your monthly limit"
+msgstr "AIフィルターが月間上限に達しました"
+
+#, python-format
+msgid ""
+"Your AI filters used this month's %(counter)s AI credit, so they've stopped scoring new stories. They start"
+" again on %(date)s, when your credits reset."
+msgid_plural ""
+"Your AI filters used all %(counter)s of this month's AI credits, so they've stopped scoring new stories. "
+"They start again on %(date)s, when your credits reset."
+msgstr[0] "AIフィルターが今月のAIクレジット%(counter)s件を使い切ったため、新しい記事のスコア付けを停止しました。クレジットがリセットされる%(date)sに再開します。"
+
+#, python-format
+msgid ""
+"Your AI filters used this month's <b>%(counter)s</b> AI credit, so they've stopped scoring new stories. "
+"They start again on <b>%(date)s</b>, when your credits reset."
+msgid_plural ""
+"Your AI filters used all <b>%(counter)s</b> of this month's AI credits, so they've stopped scoring new "
+"stories. They start again on <b>%(date)s</b>, when your credits reset."
+msgstr[0] "AIフィルターは今月のAIクレジット<b>%(counter)s</b>を使い切ったため、新しい記事のスコア付けを停止しました。クレジットがリセットされる<b>%(date)s</b>に再開します。"
+
+msgid "Your AI filters used this month's credits"
+msgstr "AIフィルターが今月のクレジットを使い切りました"
 
 msgid "Your Blurblog also has an RSS feed:"
 msgstr "BlurblogにはRSSフィードもあります："
