@@ -1179,7 +1179,8 @@ def stripe_checkout(request):
 
 
 # views.py: Usage billing lets AI filters keep running past the AI credits a reader's plan
-# includes each month, billed at cost, 1 cent per credit (apps/analyzer/ai_credits.py).
+# includes each month, charged at cost, 1 cent per credit, to a card the reader saves on
+# Stripe Checkout (apps/analyzer/ai_credits.py).
 # The iOS and Android apps post a platform to setup_usage_billing and manage_usage_billing
 # and get JSON with the Stripe URL back, since they open it in an in-app browser
 # (ASWebAuthenticationSession on iOS, a Custom Tab on Android) instead of following a
@@ -1237,30 +1238,30 @@ def setup_usage_billing(request):
             return _usage_billing_app_error(gettext("Usage-based billing isn't available right now."))
         return HttpResponseRedirect(reverse("index"))
 
-    # Guard against duplicate subscriptions. Meter events are customer-scoped, so a second
-    # active sub on the credit price would bill every overage credit twice. Send the reader
-    # to the billing portal instead of creating one.
-    if request.user.profile.stripe_id:
-        usage_price_ids = Profile.usage_billing_price_ids()
+    profile = request.user.profile
+    if ai_credits.has_usage_billing(profile):
+        logging.user(request, "~BR~FRUsage billing already on")
+        if app_platform:
+            return JsonResponse({"code": 0, "already_active": True})
+        return HttpResponseRedirect(
+            "https://%s%s?next=ai_credits&usage_billing=already_active" % (domain, reverse("index"))
+        )
+
+    # Checkout saves a card in setup mode; nothing is charged until there are AI credits past
+    # the plan's to charge (apps/analyzer/ai_credits.py charge_unbilled). Setup mode needs a
+    # customer to save the card to.
+    if not profile.stripe_id:
         try:
-            existing = stripe.Subscription.list(
-                customer=request.user.profile.stripe_id, status="active", limit=20
+            customer = stripe.Customer.create(
+                email=request.user.email, metadata={"newsblur_user_id": request.user.pk}
             )
-            for sub in existing.data:
-                for item in sub["items"].data:
-                    if item.price and item.price.id in usage_price_ids:
-                        logging.user(request, "~BR~FRUsage billing already active; redirecting to portal")
-                        if not request.user.profile.is_usage_billing:
-                            request.user.profile.is_usage_billing = True
-                            request.user.profile.save()
-                        if app_platform:
-                            return JsonResponse({"code": 0, "already_active": True})
-                        return HttpResponseRedirect(
-                            "https://%s%s?next=ai_credits&usage_billing=already_active"
-                            % (domain, reverse("index"))
-                        )
         except stripe.error.StripeError as e:
-            logging.user(request, f"~BR~FRStripe subscription list failed: {e}")
+            logging.user(request, f"~BR~FRStripe customer for usage billing failed: {e}")
+            if app_platform:
+                return _usage_billing_app_error(gettext("Couldn't reach Stripe. Please try again."))
+            return HttpResponseRedirect("https://%s%s?next=ai_credits" % (domain, reverse("index")))
+        profile.stripe_id = customer.id
+        profile.save()
 
     if app_platform:
         success_url = _usage_billing_app_return_url(domain, app_platform, "setup_complete")
@@ -1270,16 +1271,13 @@ def setup_usage_billing(request):
         cancel_url = "https://%s%s?next=ai_credits" % (domain, reverse("index"))
 
     session_dict = {
-        "line_items": [{"price": settings.STRIPE_PRICE_AI_CREDITS}],
-        "mode": "subscription",
+        "mode": "setup",
+        "currency": "usd",
+        "customer": profile.stripe_id,
         "metadata": {"newsblur_user_id": request.user.pk, "purpose": "usage_billing"},
         "success_url": success_url,
         "cancel_url": cancel_url,
     }
-    if request.user.profile.stripe_id:
-        session_dict["customer"] = request.user.profile.stripe_id
-    else:
-        session_dict["customer_email"] = request.user.email
 
     try:
         checkout_session = stripe.checkout.Session.create(**session_dict)
@@ -1329,6 +1327,22 @@ def manage_usage_billing(request):
     return HttpResponseRedirect(portal_session.url, status=303)
 
 
+@ajax_login_required
+@require_POST
+@json.json_view
+def cancel_usage_billing(request):
+    """Turn usage billing off. Credits already past the plan's are charged now if they come to
+    the $1 minimum, and filters pause once the plan's credits are used
+    (apps/analyzer/ai_credits.py)."""
+    profile = request.user.profile
+    if profile.is_usage_billing:
+        ai_credits.charge_unbilled(profile, ai_credits.MINIMUM_CHARGE_CREDITS)
+        profile.is_usage_billing = False
+        profile.save()
+        logging.user(request, "~BC~FBTurned off usage billing for AI credits")
+    return {"code": 0, "ai_credits": ai_credits.state(profile)}
+
+
 @require_GET
 def usage_billing_app_return(request):
     """views.py: Where Stripe sends the in-app browser after checkout or the billing
@@ -1346,9 +1360,13 @@ def usage_billing_app_return(request):
 
 
 def _usage_invoice_lines(invoice, usage_price_ids):
+    """The lines of an AI credits invoice (apps/analyzer/ai_credits.py charge_unbilled), or of an
+    invoice from the per-classification prices before credits."""
+    is_ai_credits = (invoice.metadata or {}).get("purpose") == ai_credits.INVOICE_PURPOSE
     lines = []
     for line in invoice.lines.data:
-        if line.price and line.price.id in usage_price_ids:
+        price_id = line.price.id if getattr(line, "price", None) else None
+        if is_ai_credits or price_id in usage_price_ids:
             lines.append(
                 {
                     "description": gettext("AI credits"),
@@ -1362,16 +1380,18 @@ def _usage_invoice_lines(invoice, usage_price_ids):
 @ajax_login_required
 @json.json_view
 def usage_billing_history(request):
-    """This month's AI credits (apps/analyzer/ai_credits.py state) and the reader's usage
-    billing invoices."""
+    """This month's AI credits (apps/analyzer/ai_credits.py state) and the reader's charges for
+    AI credits past their plan's."""
     profile = request.user.profile
     response = {
         "code": 0,
         "ai_credits": ai_credits.state(profile),
         "invoices": [],
+        # Charges come from invoices now, so there's no subscription invoice coming;
+        # ai_credits["unbilled_usd"] is what's waiting. Kept for app builds that read it.
         "upcoming_invoice": None,
     }
-    if not ai_credits.has_usage_billing(profile):
+    if not profile.stripe_id or not ai_credits.is_billing_available():
         return response
 
     stripe.api_key = settings.STRIPE_SECRET
@@ -1393,20 +1413,6 @@ def usage_billing_history(request):
                 )
     except stripe.error.StripeError as e:
         logging.user(request, f"~BR~FRStripe invoice list failed: {e}")
-
-    try:
-        upcoming = stripe.Invoice.upcoming(customer=profile.stripe_id)
-        upcoming_lines = _usage_invoice_lines(upcoming, usage_price_ids)
-        if upcoming_lines:
-            response["upcoming_invoice"] = {
-                "date": datetime.datetime.fromtimestamp(upcoming.period_end).strftime("%Y-%m-%d"),
-                "amount": sum(line["amount"] for line in upcoming_lines),
-                "status": "upcoming",
-                "line_items": upcoming_lines,
-            }
-    except stripe.error.StripeError:
-        # No upcoming invoice, as with a subscription that was just cancelled.
-        pass
 
     return response
 

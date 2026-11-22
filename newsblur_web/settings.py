@@ -501,10 +501,11 @@ STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
 ZEBRA_ENABLE_APP = True
 
-# Stripe metered billing for AI credits past a plan's monthly ones, 1 cent each
-# (apps/analyzer/ai_credits.py). Without it, AI credits aren't counted, as on a self-hosted
-# server. The two per-classification prices are the ones usage billing used before credits.
-STRIPE_PRICE_AI_CREDITS = ""
+# Usage billing for AI credits past a plan's monthly ones, charged at 1 cent each to the card
+# the reader saves on Stripe (apps/analyzer/ai_credits.py). Without it and without the two
+# per-classification prices usage billing used before credits, AI credits aren't counted,
+# as on a self-hosted server.
+AI_CREDITS_USAGE_BILLING = False
 STRIPE_PRICE_TEXT_CLASSIFICATION = ""
 STRIPE_PRICE_IMAGE_CLASSIFICATION = ""
 
@@ -738,6 +739,11 @@ CELERY_BEAT_SCHEDULE = {
     },
     "email-feed-limit-notifications": {
         "task": "email-feed-limit-notifications",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    "charge-monthly-ai-credit-overage": {
+        "task": "charge-monthly-ai-credit-overage",
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },

@@ -19,7 +19,7 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
 
 AI_CREDIT_SETTINGS = dict(
-    STRIPE_PRICE_AI_CREDITS="price_ai_credit",
+    AI_CREDITS_USAGE_BILLING=True,
     STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
     STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
 )
@@ -56,6 +56,42 @@ def at(when):
 
 NOV_10 = datetime.datetime(2026, 11, 10, 9, 0)
 DEC_1 = datetime.datetime(2026, 12, 1, 0, 5)
+DEC_10 = datetime.datetime(2026, 12, 10, 9, 0)
+JAN_1 = datetime.datetime(2027, 1, 1, 0, 5)
+FEB_1 = datetime.datetime(2027, 2, 1, 0, 5)
+
+
+class FakeStripeInvoices:
+    """Stands in for the Stripe invoice calls ai_credits.charge_unbilled makes. `charged` holds
+    the cents of every invoice paid; `fail_create` and `decline` fail the next one."""
+
+    def __init__(self):
+        self.charged = []
+        self.items = {}
+        self.fail_create = False
+        self.decline = False
+
+    @contextmanager
+    def installed(self):
+        with patch("stripe.Invoice.create", side_effect=self.create), patch(
+            "stripe.InvoiceItem.create", side_effect=self.create_item
+        ), patch("stripe.Invoice.finalize_invoice"), patch("stripe.Invoice.pay", side_effect=self.pay):
+            yield self
+
+    def create(self, **kwargs):
+        if self.fail_create:
+            self.fail_create = False
+            raise stripe.error.APIConnectionError("Stripe is down")
+        return stripe.Invoice.construct_from({"id": "in_%s" % uuid.uuid4().hex[:8]}, "sk_test")
+
+    def create_item(self, invoice=None, amount=None, **kwargs):
+        self.items[invoice] = amount
+
+    def pay(self, invoice_id):
+        if self.decline:
+            self.decline = False
+            raise stripe.error.CardError("Your card was declined.", None, "card_declined")
+        self.charged.append(self.items[invoice_id])
 
 
 class Test_AICredits(TransactionTestCase):
@@ -174,54 +210,100 @@ class Test_AICredits(TransactionTestCase):
         for email in mail.outbox:
             self.assertIn("?next=ai_credits", email.body)
 
-    @patch("stripe.billing.MeterEvent.create")
-    def test_usage_billing_keeps_filters_running_and_bills_whole_dollars(self, meter_event):
-        self.turn_on_usage_billing()
-        with at(NOV_10):
-            self.spend(5 + 99.5)
-            self.assertEqual(self.jev_requests_for_new_stories(), 1)
-            meter_event.assert_not_called()
-            self.spend(1)
-        meter_event.assert_called_once()
-        self.assertEqual(meter_event.call_args.kwargs["event_name"], ai_credits.METER_EVENT_NAME)
-        self.assertEqual(
-            meter_event.call_args.kwargs["payload"], {"stripe_customer_id": "cus_credits", "value": "100"}
+    def run_immediate_charges(self):
+        """Run the charge ai_credits queues at $10 of overage as it would run on Celery."""
+        from apps.profile.tasks import ChargeAICreditOverage
+
+        return patch(
+            "apps.profile.tasks.ChargeAICreditOverage.delay",
+            side_effect=lambda user_id, minimum: ChargeAICreditOverage(user_id, minimum),
         )
+
+    def test_usage_billing_keeps_filters_running_and_charges_after_the_month(self):
+        """Overage waits for the month to end, and only the first week of the next month charges
+        it, so a reader who turns usage billing on mid-month isn't charged early."""
+        self.turn_on_usage_billing()
+        with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
+            with at(NOV_10):
+                self.spend(5 + 150)
+                self.assertEqual(self.jev_requests_for_new_stories(), 1)
+                ai_credits.charge_last_month(self.profile())
+            self.assertEqual(invoices.charged, [])
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+                ai_credits.charge_last_month(self.profile())
+            self.assertEqual(invoices.charged, [150], "Charged once, 150 credits at 1 cent")
         self.emailed.assert_not_called()
 
-    @patch("stripe.billing.MeterEvent.create")
-    def test_overage_under_a_dollar_waits_for_a_later_month(self, meter_event):
+    def test_overage_under_a_dollar_waits_for_a_later_month(self):
         self.turn_on_usage_billing()
-        with at(NOV_10):
-            self.spend(5 + 60)
-        meter_event.assert_not_called()
-        with at(DEC_1):
-            self.spend(5 + 45)
-            self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 0.05)
-        self.assertEqual([c.kwargs["payload"]["value"] for c in meter_event.call_args_list], ["100"])
+        with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
+            with at(DEC_10):
+                self.spend(5 + 60)
+            with at(JAN_1):
+                ai_credits.charge_last_month(self.profile())
+                self.assertEqual(invoices.charged, [])
+                self.spend(5 + 45)
+                self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 1.05)
+            with at(FEB_1):
+                ai_credits.charge_last_month(self.profile())
+        self.assertEqual(invoices.charged, [105])
 
-    @patch("stripe.billing.MeterEvent.create")
-    def test_the_monthly_limit_pauses_filters_and_caps_the_bill(self, meter_event):
+    def test_ten_dollars_of_overage_is_charged_right_away(self):
+        self.turn_on_usage_billing()
+        with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
+            with at(NOV_10):
+                self.spend(5 + 999.5)
+                self.assertEqual(invoices.charged, [])
+                self.spend(1)
+                self.assertEqual(invoices.charged, [1000])
+                self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 0)
+                self.spend(150)
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+        self.assertEqual(invoices.charged, [1000, 150], "What came after is charged with the month")
+
+    def test_the_monthly_limit_pauses_filters_and_caps_the_bill(self):
         self.turn_on_usage_billing(limit="2.00")
-        with at(NOV_10):
-            self.spend(5 + 150)
-            self.assertEqual(self.jev_requests_for_new_stories(), 1)
-            self.spend(150)
-            self.assertEqual(self.jev_requests_for_new_stories(), 0)
-            self.assertEqual(ai_credits.state(self.profile())["pause_reason"], "limit")
-        billed = sum(int(c.kwargs["payload"]["value"]) for c in meter_event.call_args_list)
-        self.assertEqual(billed, 200)
+        with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
+            with at(NOV_10):
+                self.spend(5 + 150)
+                self.assertEqual(self.jev_requests_for_new_stories(), 1)
+                self.spend(150)
+                self.assertEqual(self.jev_requests_for_new_stories(), 0)
+                self.assertEqual(ai_credits.state(self.profile())["pause_reason"], "limit")
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+        self.assertEqual(invoices.charged, [200])
         self.assertEqual([c.args for c in self.emailed.call_args_list], [(self.user.pk, "limit")])
 
-    @patch("stripe.billing.MeterEvent.create")
-    def test_credits_stripe_didnt_take_are_reported_again(self, meter_event):
-        meter_event.side_effect = [stripe.error.APIConnectionError("Stripe is down"), None]
+    def test_credits_stripe_couldnt_invoice_are_charged_next_time(self):
         self.turn_on_usage_billing()
-        with at(NOV_10):
-            self.spend(5 + 100)
-            self.spend(0.01)
-        self.assertEqual([c.kwargs["payload"]["value"] for c in meter_event.call_args_list], ["100", "100"])
-        self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 0.0)
+        with FakeStripeInvoices().installed() as invoices:
+            invoices.fail_create = True
+            with at(NOV_10):
+                self.spend(5 + 120)
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+                self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 1.2)
+            with at(DEC_1 + datetime.timedelta(days=1)):
+                ai_credits.charge_last_month(self.profile())
+        self.assertEqual(invoices.charged, [120])
+
+    def test_a_declined_card_turns_usage_billing_off(self):
+        """The open invoice is Stripe's to retry, so the credits aren't charged again, and filters
+        stop running past the plan's credits."""
+        self.turn_on_usage_billing()
+        with FakeStripeInvoices().installed() as invoices:
+            invoices.decline = True
+            with at(NOV_10):
+                self.spend(5 + 120)
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+                self.assertFalse(self.profile().is_usage_billing)
+                self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 0)
+                self.spend(5.1)
+                self.assertEqual(self.jev_requests_for_new_stories(), 0)
 
     def test_the_forecast_follows_the_pace_since_filters_started(self):
         """Filters that started yesterday project from yesterday, not from a whole week."""
@@ -242,7 +324,7 @@ class Test_AICredits(TransactionTestCase):
         """A self-hosted NewsBlur pays Jev itself, so filters run for everyone."""
         free = self.make_user("creditselfhosted")
         with override_settings(
-            STRIPE_PRICE_AI_CREDITS="",
+            AI_CREDITS_USAGE_BILLING=False,
             STRIPE_PRICE_TEXT_CLASSIFICATION="",
             STRIPE_PRICE_IMAGE_CLASSIFICATION="",
         ), at(NOV_10):

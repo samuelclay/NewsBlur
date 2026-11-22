@@ -3,18 +3,18 @@
 ai_credits.py: A credit is one US cent of what AI filters cost NewsBlur to run: Jev's charge
 for every request (apps/analyzer/jev.py) and the one-time rewrite of each filter. Every plan
 includes credits each month, in the reader's own calendar month. Once they're used, filters
-pause until the 1st, unless the reader turned on usage billing. Usage billing bills what's
-past the included credits at cost, 1 cent per credit, to a metered Stripe subscription
+pause until the 1st, unless the reader turned on usage billing. Usage billing charges what's
+past the included credits at cost, 1 cent per credit, to the card the reader saved on Stripe
 (apps/profile/views.py setup_usage_billing), and pauses filters at the reader's monthly limit
 if they set one.
 
 Spending is counted in Redis in millionths of a dollar, as LLMCostTracker.record_usage
 (utils/llm_costs.py) records each request. Whole credits past the included ones add up as
-they're used and go to Stripe's meter a dollar at a time (MINIMUM_CHARGE_CREDITS). Stripe
-charges what the meter holds at the end of the subscription's month, so no charge is under
-$1, and what's under a dollar waits for later months until it reaches one. Overage that
-reaches $10 within a month is charged right away (BILLING_THRESHOLD_CENTS), so a runaway
-filter can't build up a large bill before the month ends.
+unbilled credits. At the start of each month (ChargeAICreditOverage in
+apps/profile/tasks.py) a Stripe invoice charges them, if they come to at least $1
+(MINIMUM_CHARGE_CREDITS); a smaller amount waits for a later month. Unbilled credits that
+reach $10 (IMMEDIATE_CHARGE_CREDITS) are charged right away, so a runaway filter can't build
+up a large bill before the month ends.
 """
 
 import calendar
@@ -54,30 +54,29 @@ WARNING_FRACTION = 0.8
 # so a filter added mid-month predicts from the days it has run, not from the whole month.
 PACE_DAYS = 7
 
-# ai_credits.py: The Stripe meter every overage credit is reported to. The metered price
-# STRIPE_PRICE_AI_CREDITS bills 1 cent for each one
-# (apps/profile/management/commands/create_ai_credit_price.py creates both).
-METER_EVENT_NAME = "nb_ai_credits"
-
-# ai_credits.py: Overage credits are reported to Stripe only once this many have built up,
-# so every charge is at least $1. The rest waits, across months if it has to.
+# ai_credits.py: A charge is never under $1. Smaller amounts wait, across months if they have to.
 MINIMUM_CHARGE_CREDITS = 100
 
-# ai_credits.py: The Stripe billing threshold on every usage billing subscription: once this
-# much overage builds up within a month, Stripe charges it immediately instead of at the
-# end of the month (apps/profile/models.py stripe_checkout_session_completed sets it).
-BILLING_THRESHOLD_CENTS = 1000
+# ai_credits.py: Unbilled credits are charged as soon as they reach $10, instead of at the end
+# of the month.
+IMMEDIATE_CHARGE_CREDITS = 1000
+
+# ai_credits.py: The days at the start of a month when last month's overage can be charged.
+MONTHLY_CHARGE_DAYS = 7
+
+# ai_credits.py: Marks the Stripe invoices usage billing creates, for the account dialog's list
+# of charges and the payment webhooks (apps/profile/models.py).
+INVOICE_PURPOSE = "ai_credits"
 
 KEY_PREFIX = "AICR"
 MONTH_KEY_TTL = 100 * 24 * 60 * 60
 DAY_KEY_TTL = (PACE_DAYS + 2) * 24 * 60 * 60
 UNBILLED_KEY_TTL = 400 * 24 * 60 * 60
 
-# ai_credits.py: In one step, so two workers finishing requests at the same moment can't
-# both bill the same credit: raises this month's count of overage credits (KEYS[1]) to the
-# number due, adds the new ones to the reader's unbilled credits (KEYS[2]), and takes out
-# and returns the whole dollars of unbilled credits that are ready to report.
-_RESERVE_OVERAGE_CREDITS = """
+# ai_credits.py: In one step, so two workers finishing requests at the same moment can't both
+# count the same credit: raises this month's count of overage credits (KEYS[1]) to the number
+# due, adds the new ones to the reader's unbilled credits (KEYS[2]), and returns those.
+_COUNT_OVERAGE_CREDITS = """
 local due = tonumber(ARGV[1])
 local counted = tonumber(redis.call('GET', KEYS[1]) or '0')
 if due > counted then
@@ -85,13 +84,18 @@ if due > counted then
     redis.call('INCRBY', KEYS[2], due - counted)
     redis.call('EXPIRE', KEYS[2], tonumber(ARGV[3]))
 end
-local unbilled = tonumber(redis.call('GET', KEYS[2]) or '0')
-local chunk = tonumber(ARGV[4])
-local ready = math.floor(unbilled / chunk) * chunk
-if ready > 0 then
-    redis.call('DECRBY', KEYS[2], ready)
+return tonumber(redis.call('GET', KEYS[2]) or '0')
+"""
+
+# ai_credits.py: Takes all of the reader's unbilled credits (KEYS[1]) to charge, if there are at
+# least ARGV[1], so two charges running at once can't both take them.
+_TAKE_UNBILLED_CREDITS = """
+local unbilled = tonumber(redis.call('GET', KEYS[1]) or '0')
+if unbilled < tonumber(ARGV[1]) then
+    return 0
 end
-return ready
+redis.call('SET', KEYS[1], 0, 'KEEPTTL')
+return unbilled
 """
 
 
@@ -104,18 +108,18 @@ def is_unlimited():
     pays for Jev directly. Credits there are never counted against anyone.
 
     ai_credits.py: A server that still only has the per-classification prices from before
-    credits counts them too, so a deploy that lands before STRIPE_PRICE_AI_CREDITS can't
-    leave filters running without a limit.
+    credits counts them too, so a deploy that lands before AI_CREDITS_USAGE_BILLING is set
+    can't leave filters running without a limit.
     """
     return not (
-        getattr(settings, "STRIPE_PRICE_AI_CREDITS", "")
+        getattr(settings, "AI_CREDITS_USAGE_BILLING", False)
         or getattr(settings, "STRIPE_PRICE_TEXT_CLASSIFICATION", "")
     )
 
 
 def is_billing_available():
     """Whether readers can turn on usage billing for credits past their plan's."""
-    return bool(getattr(settings, "STRIPE_PRICE_AI_CREDITS", ""))
+    return bool(getattr(settings, "AI_CREDITS_USAGE_BILLING", False))
 
 
 def monthly_credits(profile):
@@ -156,6 +160,14 @@ def _overage_key(user_id, month):
 
 def _unbilled_key(user_id):
     return "%s:%s:unbilled" % (KEY_PREFIX, user_id)
+
+
+def _charge_number_key(user_id):
+    return "%s:%s:charges" % (KEY_PREFIX, user_id)
+
+
+def _monthly_charge_key(user_id, month):
+    return "%s:%s:%s:charged" % (KEY_PREFIX, user_id, month)
 
 
 def _emailed_key(user_id, month, reason):
@@ -227,7 +239,7 @@ def spend(user_id, feature, cost_usd):
     previous_micro = used_micro - cost_micro
 
     if billing:
-        _report_overage(profile, month, used_micro, included_micro)
+        _count_overage(profile, month, used_micro, included_micro)
 
     reason = _pause_reason(profile, used_micro)
     if reason in ("credits", "limit") and _pause_reason(profile, previous_micro) is None:
@@ -237,11 +249,9 @@ def spend(user_id, feature, cost_usd):
             EmailAICreditsPaused.delay(user_id, reason)
 
 
-def _report_overage(profile, month, used_micro, included_micro):
-    """Count the whole credits past the included ones, and report them to Stripe once they add
-    up to MINIMUM_CHARGE_CREDITS."""
-    import stripe
-
+def _count_overage(profile, month, used_micro, included_micro):
+    """Add the whole credits past the included ones to the reader's unbilled credits, and charge
+    them right away once they reach IMMEDIATE_CHARGE_CREDITS."""
     over_micro = used_micro - included_micro
     limit_micro = _limit_microdollars(profile)
     if limit_micro is not None:
@@ -249,34 +259,106 @@ def _report_overage(profile, month, used_micro, included_micro):
     due = over_micro // MICRODOLLARS_PER_CREDIT
     if due <= 0:
         return
-    r = _redis()
-    unbilled_key = _unbilled_key(profile.user_id)
-    ready = int(
-        r.eval(
-            _RESERVE_OVERAGE_CREDITS,
+    unbilled = int(
+        _redis().eval(
+            _COUNT_OVERAGE_CREDITS,
             2,
             _overage_key(profile.user_id, month),
-            unbilled_key,
+            _unbilled_key(profile.user_id),
             due,
             MONTH_KEY_TTL,
             UNBILLED_KEY_TTL,
-            MINIMUM_CHARGE_CREDITS,
         )
     )
-    if not ready:
-        return
+    if unbilled >= IMMEDIATE_CHARGE_CREDITS:
+        from apps.profile.tasks import ChargeAICreditOverage
+
+        ChargeAICreditOverage.delay(profile.user_id, IMMEDIATE_CHARGE_CREDITS)
+
+
+def charge_unbilled(profile, minimum_credits=MINIMUM_CHARGE_CREDITS):
+    """Charge the reader's unbilled credits to their saved card with a Stripe invoice, if there
+    are at least minimum_credits. Returns the credits charged.
+
+    ai_credits.py: A declined card leaves the open invoice to Stripe's retries and turns usage
+    billing off, so filters pause once the plan's credits are used instead of running up more.
+    """
+    import stripe
+
+    if not profile.stripe_id:
+        return 0
+    r = _redis()
+    unbilled_key = _unbilled_key(profile.user_id)
+    credits = int(r.eval(_TAKE_UNBILLED_CREDITS, 1, unbilled_key, minimum_credits))
+    if not credits:
+        return 0
+    charge_number = r.incr(_charge_number_key(profile.user_id))
+    # The same charge can't be made twice, even when a request to Stripe is retried.
+    idempotency_key = "ai-credits-%s-%s" % (profile.user_id, charge_number)
+    description = "NewsBlur AI credits past your plan: %s credits at 1 cent" % credits
+    metadata = {"purpose": INVOICE_PURPOSE, "newsblur_user_id": profile.user_id, "credits": credits}
     stripe.api_key = settings.STRIPE_SECRET
     try:
-        stripe.billing.MeterEvent.create(
-            event_name=METER_EVENT_NAME,
-            # The same credits can't be billed twice, even if this report is retried.
-            identifier="%s:%s:%s" % (profile.user_id, month, due),
-            payload={"stripe_customer_id": profile.stripe_id, "value": str(ready)},
+        invoice = stripe.Invoice.create(
+            customer=profile.stripe_id,
+            collection_method="charge_automatically",
+            auto_advance=True,
+            pending_invoice_items_behavior="exclude",
+            description=description,
+            metadata=metadata,
+            idempotency_key=idempotency_key + "-invoice",
         )
+        stripe.InvoiceItem.create(
+            customer=profile.stripe_id,
+            invoice=invoice.id,
+            amount=int(round(credits * CREDIT_USD * 100)),
+            currency="usd",
+            description=description,
+            metadata=metadata,
+            idempotency_key=idempotency_key + "-item",
+        )
+        stripe.Invoice.finalize_invoice(invoice.id)
     except stripe.error.StripeError as e:
-        # Hand the credits back, so the next request reports them again.
-        r.incrby(unbilled_key, ready)
-        logging.error("~BR~FWCouldn't report %s AI credits to Stripe: %s" % (ready, e))
+        # Nothing was charged, so the credits go back to be charged next time.
+        r.incrby(unbilled_key, credits)
+        logging.error("~BR~FWCouldn't invoice %s AI credits: %s" % (credits, e))
+        return 0
+    try:
+        stripe.Invoice.pay(invoice.id)
+    except stripe.error.StripeError as e:
+        # The invoice stays open for Stripe to retry, so the credits are owed, not returned.
+        profile.is_usage_billing = False
+        profile.save()
+        # Stripe's invoice.payment_failed webhook tells staff (apps/profile/models.py).
+        logging.user(
+            profile.user, "~BR~FWAI credit charge of %s credits failed, usage billing off: %s" % (credits, e)
+        )
+        return 0
+    logging.user(profile.user, "~BC~SB~FBCharged %s AI credits past the plan" % credits)
+    return credits
+
+
+def charge_last_month(profile, local_now=None):
+    """At the start of a month, charge what's unbilled once for the month that just ended.
+
+    ai_credits.py: ChargeMonthlyAICreditOverage runs this daily for every reader with usage
+    billing. It only charges in the first week of the reader's month, so a reader who turns usage
+    billing on mid-month isn't charged until the month is over, and a day it misses is made up
+    the next day. The charge happens once a month.
+    """
+    local_now = local_now or _now_local(profile)
+    if local_now.day > MONTHLY_CHARGE_DAYS:
+        return 0
+    month = _month(local_now)
+    r = _redis()
+    charged_key = _monthly_charge_key(profile.user_id, month)
+    if not r.set(charged_key, 1, nx=True, ex=MONTH_KEY_TTL):
+        return 0
+    credits = charge_unbilled(profile, MINIMUM_CHARGE_CREDITS)
+    if int(r.get(_unbilled_key(profile.user_id)) or 0) >= MINIMUM_CHARGE_CREDITS:
+        # Stripe couldn't take the charge, so the next day's run tries again.
+        r.delete(charged_key)
+    return credits
 
 
 def _pace_microdollars_per_day(profile, local_now):
@@ -329,10 +411,12 @@ def state(profile):
     if limit_micro is not None:
         over_micro = min(over_micro, limit_micro)
     reason = _pause_reason(profile, used_micro)
-    # Near the end of the included credits, or of the monthly limit on usage billing.
-    is_warning = bool(included_micro) and used_micro >= included_micro * WARNING_FRACTION
-    if limit_micro and over_micro >= limit_micro * WARNING_FRACTION:
-        is_warning = True
+    # Near the end of the included credits, or, with usage billing, which the reader turned on
+    # to go past them, near the end of their monthly limit.
+    if billing:
+        is_warning = bool(limit_micro) and over_micro >= limit_micro * WARNING_FRACTION
+    else:
+        is_warning = bool(included_micro) and used_micro >= included_micro * WARNING_FRACTION
 
     forecast = None
     pace = 0 if unlimited else _pace_microdollars_per_day(profile, local_now)
@@ -364,9 +448,11 @@ def state(profile):
         "monthly_limit": float(profile.usage_billing_limit) if profile.usage_billing_limit else None,
         "overage_credits": over_micro // MICRODOLLARS_PER_CREDIT,
         "overage_usd": round((over_micro // MICRODOLLARS_PER_CREDIT) * CREDIT_USD, 2),
-        # Overage that waits to be charged until it reaches the $1 minimum charge.
+        # Overage waiting to be charged: at the start of next month once it's at least
+        # minimum_charge_usd, or right away once it reaches immediate_charge_usd.
         "unbilled_usd": round(unbilled * CREDIT_USD, 2) if billing else 0.0,
         "minimum_charge_usd": round(MINIMUM_CHARGE_CREDITS * CREDIT_USD, 2),
+        "immediate_charge_usd": round(IMMEDIATE_CHARGE_CREDITS * CREDIT_USD, 2),
         "is_paused": reason is not None,
         "pause_reason": reason,
         "is_warning": is_warning,

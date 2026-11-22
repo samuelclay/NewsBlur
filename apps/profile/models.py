@@ -37,7 +37,6 @@ from zebra.signals import (
     zebra_webhook_charge_succeeded,
     zebra_webhook_checkout_session_completed,
     zebra_webhook_customer_subscription_created,
-    zebra_webhook_customer_subscription_deleted,
     zebra_webhook_customer_subscription_updated,
     zebra_webhook_invoice_payment_failed,
     zebra_webhook_invoice_payment_succeeded,
@@ -163,6 +162,13 @@ class Profile(models.Model):
         )
 
     @property
+    def ai_credits_json(self):
+        """This month's AI credits for templates/base.html NEWSBLUR.Globals.ai_credits."""
+        from apps.analyzer import ai_credits
+
+        return json.encode(ai_credits.state(self))
+
+    @property
     def is_self_hosted_ai(self):
         """True on a server that runs Jev without Stripe billing, like a self-hosted NewsBlur,
         where AI credits are never counted (apps/analyzer/ai_credits.py is_unlimited)."""
@@ -196,25 +202,22 @@ class Profile(models.Model):
 
     @staticmethod
     def usage_billing_price_ids():
-        """The AI credit price, plus the per-classification prices usage billing used before
-        credits, which subscriptions keep until move_ai_billing_to_credits swaps them."""
+        """The per-classification metered prices usage billing used before AI credits, which
+        billed through a subscription. AI credits are charged with invoices instead
+        (apps/analyzer/ai_credits.py charge_unbilled), and move_ai_billing_to_credits ends
+        those subscriptions."""
         return set(
             filter(
-                None,
-                [
-                    getattr(settings, "STRIPE_PRICE_AI_CREDITS", ""),
-                    settings.STRIPE_PRICE_TEXT_CLASSIFICATION,
-                    settings.STRIPE_PRICE_IMAGE_CLASSIFICATION,
-                ],
+                None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION]
             )
         )
 
     @staticmethod
     def is_usage_billing_subscription(subscription):
-        """True for the AI filter metered sub that setup_usage_billing creates (apps/profile/views.py).
+        """True for a metered sub from usage billing before AI credits.
 
         It shares the Stripe customer with the yearly tier sub, so switching, canceling, and
-        reactivating the tier sub must all skip it (apps/profile/models.py).
+        reactivating the tier sub must all skip it while it lasts (apps/profile/models.py).
         """
         usage_price_ids = Profile.usage_billing_price_ids()
         if not usage_price_ids:
@@ -4760,32 +4763,31 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
 
     purpose = metadata.get("purpose", "")
     if purpose == "usage_billing":
-        # models.py: The reader turned on usage billing for AI credits past their plan's
-        # (apps/analyzer/ai_credits.py).
-        stripe_id = full_json["data"]["object"].get("customer")
-        subscription_id = full_json["data"]["object"].get("subscription")
+        # models.py: The reader saved a card for usage billing on AI credits past their plan's
+        # (apps/profile/views.py setup_usage_billing). It becomes the card their AI credit
+        # invoices charge (apps/analyzer/ai_credits.py charge_unbilled).
+        import stripe
+
+        session = full_json["data"]["object"]
+        stripe_id = session.get("customer")
         try:
             profile = User.objects.get(pk=int(newsblur_user_id)).profile
         except User.DoesNotExist:
             logging.debug(" ---> Couldn't find user for usage billing setup: %s" % newsblur_user_id)
             return
+        stripe.api_key = settings.STRIPE_SECRET
+        try:
+            setup_intent = stripe.SetupIntent.retrieve(session.get("setup_intent"))
+            stripe.Customer.modify(
+                stripe_id, invoice_settings={"default_payment_method": setup_intent.payment_method}
+            )
+        except stripe.error.StripeError as e:
+            logging.user(profile.user, "~BR~FRCouldn't save the usage billing card: %s" % e)
+            return
         if stripe_id and not profile.stripe_id:
             profile.stripe_id = stripe_id
         profile.is_usage_billing = True
         profile.save()
-        if subscription_id:
-            from apps.analyzer import ai_credits
-
-            try:
-                import stripe
-
-                stripe.api_key = settings.STRIPE_SECRET
-                stripe.Subscription.modify(
-                    subscription_id,
-                    billing_thresholds={"amount_gte": ai_credits.BILLING_THRESHOLD_CENTS},
-                )
-            except Exception as e:
-                logging.debug(" ---> Failed to set billing threshold: %s" % e)
         logging.user(profile.user, "~BC~SB~FBStripe usage billing setup complete")
         return
 
@@ -4998,36 +5000,19 @@ zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 zebra_webhook_charge_refunded.connect(stripe_payment_history_sync)
 
 
-def stripe_usage_billing_subscription_deleted(sender, full_json, **kwargs):
-    """Turn usage billing off when the reader cancels its subscription in the Stripe portal.
+def _is_ai_credits_invoice(invoice):
+    """models.py: Invoices apps/analyzer/ai_credits.py charge_unbilled creates."""
+    from apps.analyzer import ai_credits
 
-    models.py: Overage would otherwise keep being reported to a customer with no metered
-    price, so filters would run past the included AI credits for free
-    (apps/analyzer/ai_credits.py).
-    """
-    subscription = full_json["data"]["object"]
-    if not Profile.is_usage_billing_subscription(subscription):
-        return
-    stripe_customer_id = subscription.get("customer")
-    for profile in Profile.objects.filter(stripe_id=stripe_customer_id, is_usage_billing=True):
-        profile.is_usage_billing = False
-        profile.save()
-        logging.user(profile.user, "~BC~SB~FBStripe usage billing subscription cancelled")
-
-
-zebra_webhook_customer_subscription_deleted.connect(stripe_usage_billing_subscription_deleted)
+    return (invoice.get("metadata") or {}).get("purpose") == ai_credits.INVOICE_PURPOSE
 
 
 def stripe_usage_billing_invoice_paid(sender, full_json, **kwargs):
-    """Notify staff when a usage billing threshold invoice is auto-charged."""
+    """Notify staff when an AI credits invoice is charged."""
     from apps.profile.tasks import EmailStaffNotification
 
     invoice = full_json["data"]["object"]
-    billing_reason = invoice.get("billing_reason", "")
-
-    # Only handle invoices from the subscription's billing threshold
-    # (apps/analyzer/ai_credits.py BILLING_THRESHOLD_CENTS).
-    if billing_reason != "threshold":
+    if not _is_ai_credits_invoice(invoice):
         return
 
     stripe_customer_id = invoice.get("customer")
@@ -5040,27 +5025,26 @@ def stripe_usage_billing_invoice_paid(sender, full_json, **kwargs):
         username = profile.user.username
         logging.user(
             profile.user,
-            "~BC~SB~FBStripe usage billing threshold invoice paid: $%.2f" % amount_dollars,
+            "~BC~SB~FBStripe AI credits invoice paid: $%.2f" % amount_dollars,
         )
     except Profile.DoesNotExist:
         username = "unknown (stripe: %s)" % stripe_customer_id
 
     EmailStaffNotification.delay(
         event_type="usage_billing_threshold_charged",
-        subject="Usage billing auto-charge: %s charged $%.2f" % (username, amount_dollars),
-        body="User %s was auto-charged $%.2f for AI credits past their plan (threshold invoice).\n"
+        subject="AI credits charge: %s charged $%.2f" % (username, amount_dollars),
+        body="User %s was charged $%.2f for AI credits past their plan.\n"
         "Invoice: %s\nStripe customer: %s" % (username, amount_dollars, invoice_id, stripe_customer_id),
     )
 
 
 def stripe_usage_billing_invoice_failed(sender, full_json, **kwargs):
-    """Notify staff when a usage billing threshold invoice payment fails."""
+    """Notify staff when a retried AI credits invoice still can't be paid, and keep usage billing
+    off so filters stay within the plan's credits (apps/analyzer/ai_credits.py)."""
     from apps.profile.tasks import EmailStaffNotification
 
     invoice = full_json["data"]["object"]
-    billing_reason = invoice.get("billing_reason", "")
-
-    if billing_reason != "threshold":
+    if not _is_ai_credits_invoice(invoice):
         return
 
     stripe_customer_id = invoice.get("customer")
@@ -5071,17 +5055,20 @@ def stripe_usage_billing_invoice_failed(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_customer_id)
         username = profile.user.username
+        if profile.is_usage_billing:
+            profile.is_usage_billing = False
+            profile.save()
         logging.user(
             profile.user,
-            "~FC~SB~FRStripe usage billing threshold invoice FAILED: $%.2f" % amount_dollars,
+            "~FC~SB~FRStripe AI credits invoice FAILED: $%.2f" % amount_dollars,
         )
     except Profile.DoesNotExist:
         username = "unknown (stripe: %s)" % stripe_customer_id
 
     EmailStaffNotification.delay(
         event_type="usage_billing_threshold_failed",
-        subject="FAILED usage billing charge: %s $%.2f" % (username, amount_dollars),
-        body="User %s FAILED to pay $%.2f for AI credits past their plan (threshold invoice).\n"
+        subject="FAILED AI credits charge: %s $%.2f" % (username, amount_dollars),
+        body="User %s FAILED to pay $%.2f for AI credits past their plan, so usage billing is off.\n"
         "Invoice: %s\nStripe customer: %s\n\n"
         "Action needed: check if their payment method is valid."
         % (username, amount_dollars, invoice_id, stripe_customer_id),

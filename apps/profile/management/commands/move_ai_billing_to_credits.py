@@ -1,11 +1,13 @@
-"""Move usage billing subscriptions from the per-classification prices to AI credits.
+"""Move readers on the old per-classification usage billing to AI credits.
 
-move_ai_billing_to_credits.py: Before AI credits, usage billing charged $0.0015 for every
-story a text filter checked and $0.0075 for every image check, through two metered prices.
-This swaps each subscription that still has them for the 1 cent AI credit price
-(STRIPE_PRICE_AI_CREDITS) and the $10 billing threshold, keeping the subscription itself.
-apps/analyzer/ai_credits.py then reports overage past the plan's credits to it. Run it after
-the deploy that ships credits. Without --commit it only lists what it would change.
+move_ai_billing_to_credits.py: Before AI credits, usage billing charged $0.0015 for every story
+a text filter checked and $0.0075 for every image check, through a metered subscription. AI
+credits charge the card on file with invoices instead (apps/analyzer/ai_credits.py
+charge_unbilled). For each reader with usage billing, this makes the subscription's card the
+customer's card for invoices and ends the subscription when its current period does, so
+usage already counted at the old prices is billed as usual and nothing after it is. A reader
+without a card left on file has usage billing turned off. Run it after the deploy that ships
+credits. Without --commit it only lists what it would change.
 """
 
 import stripe
@@ -17,58 +19,57 @@ from apps.profile.models import Profile
 
 
 class Command(BaseCommand):
-    help = "Swap old per-classification usage billing prices for the AI credit price."
+    help = "End old per-classification usage billing subscriptions and keep their cards for AI credits."
 
     def add_arguments(self, parser):
         parser.add_argument("--commit", action="store_true", help="Change the subscriptions.")
 
     def handle(self, *args, **options):
         if not ai_credits.is_billing_available():
-            raise CommandError("STRIPE_PRICE_AI_CREDITS isn't set; run create_ai_credit_price first.")
+            raise CommandError("AI_CREDITS_USAGE_BILLING isn't on in settings.")
         stripe.api_key = settings.STRIPE_SECRET
-        old_price_ids = set(
-            filter(None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION])
-        )
         commit = options["commit"]
         moved = 0
 
-        for profile in Profile.objects.filter(is_usage_billing=True).exclude(stripe_id=None).exclude(stripe_id=""):
+        profiles = Profile.objects.filter(is_usage_billing=True).exclude(stripe_id=None).exclude(stripe_id="")
+        for profile in profiles:
+            username = profile.user.username
             try:
-                subscriptions = stripe.Subscription.list(customer=profile.stripe_id, status="active", limit=20)
+                customer = stripe.Customer.retrieve(profile.stripe_id)
+                subscriptions = stripe.Subscription.list(
+                    customer=profile.stripe_id, status="active", limit=20
+                )
             except stripe.error.StripeError as e:
-                self.stdout.write("%s: couldn't list subscriptions: %s" % (profile.user.username, e))
+                self.stdout.write("%s: couldn't read Stripe: %s" % (username, e))
                 continue
-            for subscription in subscriptions.data:
-                items = subscription["items"].data
-                old_items = [item for item in items if item.price and item.price.id in old_price_ids]
-                if not old_items:
-                    continue
-                has_credit_price = any(
-                    item.price and item.price.id == settings.STRIPE_PRICE_AI_CREDITS for item in items
+            card = (customer.get("invoice_settings") or {}).get("default_payment_method")
+            old_subscriptions = [s for s in subscriptions.data if Profile.is_usage_billing_subscription(s)]
+            for subscription in old_subscriptions:
+                card = card or subscription.get("default_payment_method")
+            self.stdout.write(
+                "%s %s: ending %s at period end, %s"
+                % (
+                    "Moving" if commit else "Would move",
+                    username,
+                    ", ".join(s.id for s in old_subscriptions) or "no old subscription",
+                    "keeping card %s" % card if card else "no card, turning usage billing off",
                 )
-                changes = [{"id": item.id, "deleted": True} for item in old_items]
-                if not has_credit_price:
-                    changes.append({"price": settings.STRIPE_PRICE_AI_CREDITS})
-                self.stdout.write(
-                    "%s %s: %s %s"
-                    % (
-                        "Moving" if commit else "Would move",
-                        profile.user.username,
-                        subscription.id,
-                        ", ".join(item.price.id for item in old_items),
+            )
+            if not commit:
+                continue
+            try:
+                if card:
+                    stripe.Customer.modify(
+                        profile.stripe_id, invoice_settings={"default_payment_method": card}
                     )
-                )
-                if not commit:
-                    continue
-                try:
-                    stripe.Subscription.modify(
-                        subscription.id,
-                        items=changes,
-                        proration_behavior="none",
-                        billing_thresholds={"amount_gte": ai_credits.BILLING_THRESHOLD_CENTS},
-                    )
-                    moved += 1
-                except stripe.error.StripeError as e:
-                    self.stdout.write("%s: couldn't move %s: %s" % (profile.user.username, subscription.id, e))
+                for subscription in old_subscriptions:
+                    stripe.Subscription.modify(subscription.id, cancel_at_period_end=True)
+            except stripe.error.StripeError as e:
+                self.stdout.write("%s: couldn't move: %s" % (username, e))
+                continue
+            if not card:
+                profile.is_usage_billing = False
+                profile.save()
+            moved += 1
 
-        self.stdout.write("Moved %s subscriptions" % moved if commit else "Dry run; pass --commit to move them")
+        self.stdout.write("Moved %s readers" % moved if commit else "Dry run; pass --commit to move them")
