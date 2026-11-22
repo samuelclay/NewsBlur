@@ -565,6 +565,8 @@ class Test_SetupPremiumHistoryStripe(TestCase):
         charges.append(self._charge("ch_premium", 3600, days_ago=40))
 
         def list_charges(limit=10, starting_after=None, **kwargs):
+            # Pages of 5 whatever's asked for, so the plan's payment is only on the third page.
+            limit = min(limit, 5)
             start = [charge.id for charge in charges].index(starting_after) + 1 if starting_after else 0
             return MagicMock(data=charges[start : start + limit], has_more=start + limit < len(charges))
 
@@ -573,6 +575,7 @@ class Test_SetupPremiumHistoryStripe(TestCase):
         self.profile.refund_latest_stripe_payment()
 
         self.assertEqual(mock_refund.call_args.kwargs["charge"], "ch_premium")
+        self.assertEqual(mock_charges.call_count, 3)
 
     @patch("stripe.Subscription.list")
     @patch("stripe.Charge.list")

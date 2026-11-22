@@ -374,6 +374,32 @@ class Test_AICredits(TransactionTestCase):
         self.assertEqual(len(invoices.cancelled), 1)
         self.assertEqual(invoices.charged, [120])
 
+    def test_two_charges_settling_one_invoice_give_its_credits_back_once(self):
+        """The immediate charge and the monthly one can settle the same pending invoice at
+        once. The second finds it already voided, and must not give its credits back again."""
+        self.turn_on_usage_billing()
+        with FakeStripeInvoices().installed() as invoices:
+            invoices.fail_item = True
+            invoices.fail_retrieve = 1
+            with at(NOV_10):
+                self.spend(5 + 120)
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+            self.assertEqual(ai_credits.unbilled_credits(self.profile()), 0)
+
+            cancel_invoice = ai_credits._cancel_invoice
+            overlapping = []
+
+            def settle_again_meanwhile(invoice_id):
+                if not overlapping:
+                    overlapping.append(True)
+                    ai_credits.settle_pending_invoices(self.profile())
+                return cancel_invoice(invoice_id)
+
+            with patch("apps.analyzer.ai_credits._cancel_invoice", side_effect=settle_again_meanwhile):
+                ai_credits.settle_pending_invoices(self.profile())
+        self.assertEqual(ai_credits.unbilled_credits(self.profile()), 120)
+
     def test_a_declined_card_turns_usage_billing_off(self):
         """The open invoice is Stripe's to retry, so the credits aren't charged again, and filters
         stop running past the plan's credits."""

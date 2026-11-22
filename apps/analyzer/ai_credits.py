@@ -199,6 +199,8 @@ def settle_pending_invoices(profile):
 
     ai_credits.py: A paid one keeps its credits charged. Anything else is deleted or voided, and
     its credits go back to be charged again. One Stripe still can't answer about stays pending.
+    Removing the pending entry is the claim on its credits, so two charges settling at once
+    can't both give them back.
     """
     import stripe
 
@@ -217,9 +219,8 @@ def settle_pending_invoices(profile):
             continue
         if paid:
             r.hdel(pending_key, invoice_id)
-        elif _cancel_invoice(invoice_id):
+        elif _cancel_invoice(invoice_id) and r.hdel(pending_key, invoice_id):
             _give_back(r, profile.user_id, json.loads(_text(taken_json)))
-            r.hdel(pending_key, invoice_id)
 
 
 def unbilled_credits(profile):
