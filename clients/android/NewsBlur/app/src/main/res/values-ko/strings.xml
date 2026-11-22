@@ -452,7 +452,12 @@
     <string name="premium_custom_rss">저장한 스토리용 맞춤 RSS 피드</string>
     <string name="premium_text_view">텍스트 보기에서 스토리 내용을 편리하게 추출합니다</string>
     <string name="premium_discover_related">관련 스토리와 사이트 찾아보기</string>
-    <string name="premium_natural_language_classifiers">자연어 텍스트 및 이미지 분류기</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="other">AI 텍스트 및 이미지 필터, 월 %1$s AI 크레딧 제공</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="other">AI 필터용 월간 AI 크레딧 %1$s개</item>
+    </plurals>
     <string name="premium_shiloh">NewsBlur의 배고픈 사냥개 Lyric에게 6일 동안 먹이를 줍니다</string>
     <string name="archive_everything_premium">물론 프리미엄 구독의 모든 기능 포함</string>
     <string name="archive_enable_sites">최대 4,096개 사이트 팔로우</string>
@@ -1251,13 +1256,11 @@
     <string name="ai_filter_content_label">콘텐츠 필터</string>
     <string name="ai_filter_image_label">이미지 필터</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">자연어 텍스트 분류기</string>
-    <string name="ai_image_classifier_header">자연어 이미지 분류기</string>
-    <string name="ai_text_classifier_explainer">주제를 설명하면 AI가 각 스토리를 프롬프트와 비교해 점수를 매기고, 일치하는 스토리를 강조하거나 숨깁니다.</string>
-    <string name="ai_image_classifier_explainer">찾을 내용을 설명하면 AI가 각 스토리의 이미지를 프롬프트와 비교해 분석합니다.</string>
+    <string name="ai_filters_title">AI 필터</string>
+    <string name="ai_filter_mode_text">텍스트</string>
+    <string name="ai_filter_mode_images">이미지</string>
     <string name="ai_text_prompt_hint">예: “AI와 머신러닝” 또는 “지역 정치”</string>
     <string name="ai_image_prompt_hint">예: “음식 사진” 또는 “차트와 그래프”</string>
-    <string name="ai_prompt_placeholder">강조하거나 숨길 내용을 설명하세요</string>
     <string name="ai_prompt_type_content">콘텐츠</string>
     <string name="ai_prompt_type_image">이미지</string>
     <string name="ai_prompt_focus">일치하는 스토리에 집중</string>
@@ -1279,65 +1282,89 @@
     <string name="ai_test_failed">테스트에 실패했습니다</string>
     <string name="ai_image_label_match">일치</string>
     <string name="ai_image_label_no_match">일치 항목 없음</string>
-    <string name="ai_cost_monthly">%1$s/월</string>
-    <string name="ai_cost_daily">%1$s/일</string>
-    <plurals name="ai_cost_stories_per_month">
-        <item quantity="other">%1$s개 스토리/월</item>
-    </plurals>
-    <plurals name="ai_cost_content_filters">
-        <item quantity="other">%1$d개 콘텐츠 필터</item>
-    </plurals>
-    <plurals name="ai_cost_image_filters">
-        <item quantity="other">%1$d개 이미지 필터</item>
-    </plurals>
-    <string name="ai_cost_per_story">%1$s/스토리</string>
-    <string name="ai_cost_scope_feed">이 사이트에서 %1$d (%2$s)</string>
-    <string name="ai_cost_scope_folder">폴더에서 %1$d (%2$s)</string>
-    <string name="ai_cost_scope_global">모든 사이트에서 %1$d (%2$s)</string>
-    <string name="ai_billing_manage_limits">결제 및 한도 관리</string>
-    <string name="ai_billing_set_up">결제 설정</string>
-    <string name="ai_billing_banner">AI 필터가 저장되었습니다. %1$s 전까지는 실행되지 않습니다.</string>
-    <string name="ai_billing_banner_link">사용량 기반 결제 설정</string>
-    <string name="ai_limit_reached_title">월간 지출 한도에 도달했습니다.</string>
-    <string name="ai_limit_reached_body">자연어 분류기가 다음 결제 주기까지 일시 중지되었습니다.</string>
-    <string name="ai_limit_reached_link">한도 늘리기 또는 삭제</string>
-    <string name="ai_filters_not_active">이 계정에서는 자연어 필터가 활성화되어 있지 않습니다.</string>
     <string name="ai_scope_feed">이 사이트만</string>
     <string name="ai_scope_folder">폴더의 모든 사이트</string>
     <string name="ai_scope_global">모든 사이트</string>
     <string name="ai_scope_folder_named">%1$s의 모든 사이트</string>
     <string name="ai_scope_requires_archive">프리미엄 아카이브 필요</string>
-    <string name="usage_billing_title">자연어 분류기 결제</string>
-    <string name="usage_billing_status_enabled">자연어 분류기의 사용량 기반 결제가 활성화되어 있습니다.</string>
-    <string name="usage_billing_status_self_hosted">자연어 분류기는 사용자의 인스턴스 API 키를 사용하고 있습니다.</string>
-    <string name="usage_billing_status_off">자연어 콘텐츠 및 이미지 필터를 사용하려면 사용량 기반 결제를 설정하세요.</string>
-    <string name="usage_billing_manage">Stripe에서 결제 관리</string>
-    <string name="usage_billing_period">%1$s – %2$s</string>
-    <string name="usage_billing_limit_progress">%1$s / %2$s</string>
-    <string name="usage_billing_limit_reached_note">지출 한도에 도달했습니다. 분류기는 다음 주기까지 일시 중지됩니다.</string>
-    <string name="usage_billing_upcoming_charge">예정된 청구 금액: %1$s</string>
-    <string name="usage_billing_limit_label">월간 지출 한도</string>
+    <string name="ai_credits_title">AI 크레딧</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="other">AI 크레딧 %2$s개 중 %1$s개 사용</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="other">AI 크레딧 %1$s개를 사용했으며, 요금제의 %3$s을(를) %2$s 초과했습니다</item>
+    </plurals>
+    <string name="ai_credits_resets">%1$s에 초기화</string>
+    <string name="ai_credits_free">AI 필터가 저장되었지만 프리미엄에서만 실행됩니다. 프리미엄에는 AI 크레딧 %1$s개, 아카이브 요금제에는 %2$s개, 프로 요금제에는 %3$s개가 매월 포함됩니다.</string>
+    <string name="ai_credits_upgrade">업그레이드</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="other">이 사이트의 텍스트 필터는 한 달에 크레딧 약 %1$s개를 사용합니다</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="other">이 사이트의 이미지 필터는 한 달에 크레딧 약 %1$s개를 사용합니다</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">이 사이트의 텍스트 필터는 한 달에 크레딧 1개 미만을 사용합니다</string>
+    <string name="ai_credits_image_estimate_under_one">이 사이트의 이미지 필터는 한 달에 크레딧 1개 미만을 사용합니다</string>
+    <string name="ai_credits_runs_out">현재 속도라면 크레딧이 %1$s쯤 소진됩니다.</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="other">AI 필터가 %1$s까지 일시 중지됩니다. 이번 달 AI 크레딧 %2$s개를 모두 사용했습니다.</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">AI 필터가 월 한도 %1$s에 도달해 %2$s까지 일시 중지되었습니다.</string>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="other">사용량 기준 결제가 켜져 있습니다. %1$s 초과 크레딧은 %2$s개당 1¢입니다. 이번 달 현재까지 %3$s입니다.</item>
+    </plurals>
+    <string name="ai_credits_billing_on_rate_no_plan">사용량 기준 결제가 켜져 있습니다. AI 크레딧은 %1$s개당 1¢입니다. 이번 달 현재까지 %2$s입니다.</string>
+    <string name="ai_credits_unbilled">%1$s은(는) 청구 대기 중입니다. %2$s 이상이면 다음 달 초에, %3$s이면 즉시 청구됩니다.</string>
+    <string name="ai_credits_keep_running">필터 계속 실행</string>
+    <string name="ai_credits_billing_rate">크레딧을 모두 사용한 후에도 필터는 %1$s 크레딧당 1¢의 요금으로 계속 실행됩니다.</string>
+    <string name="ai_credits_billing_forecast">현재 사용 속도 기준으로 이번 달 예상 금액은 %1$s입니다.</string>
+    <string name="ai_credits_turn_on_billing">사용량 과금 켜기</string>
+    <string name="ai_credits_turn_on_rate">요금제 포함량 초과분은 크레딧 %1$s개당 1¢이며, 이번 달에는 약 %2$s입니다.</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">요금제 크레딧 한도를 초과하면 %1$s 크레딧당 1¢</string>
+    <string name="ai_credits_or_wait">또는 %1$s까지 기다리기</string>
+    <string name="ai_credits_manage_billing">결제 관리</string>
+    <string name="ai_credits_change_limit">한도 변경</string>
+    <string name="ai_credits_open">AI 크레딧 보기</string>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="other">요금제에는 매월 AI 크레딧 %1$s개가 포함됩니다. 텍스트 필터로 스토리 하나를 처리하는 데 크레딧 약 1개가 들고, 이미지 필터는 스토리 하나당 약 10개가 듭니다. 크레딧은 매월 1일에 초기화되며, 사용하지 않은 크레딧은 이월되지 않습니다.</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="other">현재 속도라면 이번 달에 보유한 크레딧 %2$s 중 약 %1$s을(를) 사용합니다.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">이 서버에서는 AI 크레딧을 차감하지 않으므로 AI 필터가 항상 실행됩니다.</string>
+    <string name="ai_credits_load_failed">AI 크레딧을 불러오지 못했습니다. 아래로 당겨 다시 시도하세요.</string>
+    <string name="usage_billing_title">사용량 결제</string>
+    <string name="usage_billing_terms">매월 초에 결제 금액이 %1$s 이상이면 카드에 청구되고, %2$s에 도달하면 즉시 청구됩니다. 그보다 적은 금액은 다음 달로 이월됩니다.</string>
+    <string name="usage_billing_set_up">사용량 과금 설정</string>
+    <string name="usage_billing_manage">Stripe에서 카드 업데이트</string>
+    <string name="usage_billing_cancel">사용량 과금 끄기</string>
+    <string name="usage_billing_cancel_confirm">사용량 결제를 끄시겠습니까? 이미 요금제 크레딧을 초과한 사용량은 %1$s에 도달하면 지금 청구되며, 이번 달 크레딧을 모두 사용하면 AI 필터가 일시 중지됩니다.</string>
+    <string name="usage_billing_cancel_keep">계속 켜두기</string>
+    <string name="usage_billing_cancelled">사용량 과금이 꺼졌습니다.</string>
+    <string name="usage_billing_cancel_failed">사용량 과금을 끄지 못했습니다. 다시 시도하세요.</string>
+    <string name="usage_billing_limit_label">월간 한도</string>
     <string name="usage_billing_limit_hint">한도 없음</string>
-    <string name="usage_billing_limit_per_month">/월</string>
-    <string name="usage_billing_limit_help">선택 사항입니다. 한도에 도달하면 분류기가 일시 중지되고 다음 결제 주기에 다시 시작됩니다.</string>
+    <string name="usage_billing_limit_help">사용량 과금이 한도에 도달하면 필터가 일시 중지됩니다. 제한을 두지 않으려면 비워 두세요.</string>
     <string name="usage_billing_limit_save">한도 저장</string>
-    <string name="usage_billing_limit_saved">지출 한도를 저장했습니다</string>
-    <string name="usage_billing_limit_cleared">지출 한도를 삭제했습니다</string>
-    <string name="usage_billing_limit_failed">지출 한도를 저장하지 못했습니다. 다시 시도하세요.</string>
+    <string name="usage_billing_limit_saved">월간 한도를 저장했습니다</string>
+    <string name="usage_billing_limit_cleared">월간 한도 삭제됨</string>
+    <string name="usage_billing_limit_failed">월간 한도를 저장하지 못했습니다. 다시 시도하세요.</string>
     <string name="usage_billing_limit_invalid">한도를 달러로 입력하세요. 예: %1$s.</string>
+    <string name="usage_billing_limit_read_only">월간 한도: %1$s</string>
+    <string name="usage_billing_no_limit">월간 한도 없음</string>
     <string name="usage_billing_history_title">사용량 결제 내역</string>
-    <string name="usage_billing_none">사용량 기반 결제가 설정되지 않았습니다.</string>
     <string name="usage_billing_no_invoices">사용량 결제 청구서가 아직 없습니다.</string>
-    <string name="usage_billing_upcoming">(예정)</string>
+    <string name="usage_billing_upcoming">예정</string>
     <string name="usage_billing_invoice">청구서</string>
-    <string name="usage_billing_quantity">×%1$s</string>
-    <string name="usage_billing_load_failed">사용량 결제 정보를 불러오지 못했습니다. 아래로 당겨 다시 시도하세요.</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="other">%1$s 크레딧</item>
+    </plurals>
     <string name="usage_billing_stripe_failed">Stripe에 연결할 수 없습니다. 다시 시도하세요.</string>
-    <string name="usage_billing_already_active">사용량 기반 결제가 이미 설정되어 있습니다.</string>
-    <string name="usage_billing_activating">사용량 기반 결제를 활성화하고 있습니다. Stripe에서 결제 정보를 확인하면 몇 초 정도 걸립니다.</string>
+    <string name="usage_billing_already_active">사용량 결제가 이미 설정되어 있습니다.</string>
+    <string name="usage_billing_activating">사용량 과금을 설정하고 있습니다. Stripe에서 결제 정보를 확인하면 몇 초 안에 완료됩니다.</string>
     <string name="usage_billing_activating_slow">Stripe에서 아직 결제를 확인하고 있습니다. 잠시 후 아래로 당겨 다시 확인하세요.</string>
-    <string name="usage_billing_setup_complete">사용량 기반 결제가 설정되었습니다. 새 스토리부터 AI 필터가 실행됩니다.</string>
-    <string name="usage_billing_no_browser">결제를 설정하려면 웹 브라우저를 설치하세요.</string>
+    <string name="usage_billing_setup_complete">사용량 결제가 켜져 있습니다. AI 필터는 크레딧을 초과해도 계속 실행됩니다.</string>
+    <string name="usage_billing_no_browser">사용량 결제를 설정하려면 웹 브라우저를 설치하세요.</string>
     <string name="listen_story_button">듣기</string>
     <string name="listen_resume">재개</string>
     <string name="listen_pause">일시 정지</string>

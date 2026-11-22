@@ -8,8 +8,6 @@ from datetime import datetime
 
 import mongoengine as mongo
 
-from utils.analytics_degradation import skip_when_analytics_down
-
 
 class MLLMCost(mongo.Document):
     """
@@ -58,35 +56,6 @@ class MLLMCost(mongo.Document):
 
     def __str__(self):
         return f"LLMCost({self.feature}/{self.model}: ${self.cost_usd:.4f})"
-
-    @classmethod
-    @skip_when_analytics_down(default=None)
-    def get_current_cycle_spend(cls, user_id):
-        """Get total classifier spend for a user in the current billing month.
-
-        Returns:
-            float: Total cost in USD for current month's classifier usage, or
-                None when the analytics DB is unavailable and spend is unknown.
-                Callers treat unknown spend as over-limit so that an analytics
-                outage can't hand out unmetered AI usage.
-        """
-        now = datetime.utcnow()
-        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-
-        pipeline = [
-            {
-                "$match": {
-                    "user_id": user_id,
-                    "feature": {"$in": ["story_classification", "vision_classification"]},
-                    "timestamp": {"$gte": month_start},
-                }
-            },
-            {"$group": {"_id": None, "total_cost": {"$sum": "$cost_usd"}}},
-        ]
-        result = list(cls._get_collection().aggregate(pipeline))
-        if result:
-            return result[0]["total_cost"]
-        return 0.0
 
     @classmethod
     def get_cost_summary(cls, feature=None, provider=None, model=None, days=1):

@@ -16,5 +16,6 @@ data class PromptTestRequest(
 interface ClassifierApi {
     suspend fun testPrompt(request: PromptTestRequest): PromptTestResponse
 
+    /** This month's AI credits, and what AI filters on [feedId]'s site spend a month. */
     suspend fun getAiClassifierUsage(feedId: String?): AiClassifierUsageResponse
 }

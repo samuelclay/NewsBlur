@@ -1,5 +1,6 @@
 package com.newsblur.util
 
+import com.newsblur.network.domain.AiCredits
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -9,8 +10,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Locale
 
-// Test_UsageBilling.kt: the Stripe return link, the platform the server maps to that link, and
-// which billing action each account state offers.
+// Test_UsageBilling.kt: the Stripe return link, the platform the server maps to that link, which
+// usage billing button each account's credits offer, and the monthly limit field's round trip.
 class Test_UsageBilling {
     @Test
     fun test_alpha_builds_use_their_own_platform_and_scheme() {
@@ -41,25 +42,33 @@ class Test_UsageBilling {
     }
 
     @Test
-    fun test_billing_action_follows_the_web_branches() {
-        assertEquals(UsageBillingAction.SET_UP, UsageBillingState().action)
-        assertEquals(UsageBillingAction.MANAGE, UsageBillingState(isUsageBilling = true, canUseAiClassifiers = true).action)
-        assertEquals("Self-hosted AI has no billing buttons", UsageBillingAction.NONE, UsageBillingState(isSelfHostedAi = true, canUseAiClassifiers = true).action)
-        assertEquals(UsageBillingAction.MANAGE, UsageBillingState(isUsageBilling = true, isSelfHostedAi = true).action)
+    fun test_the_billing_button_follows_the_credits() {
+        assertEquals(UsageBillingAction.SET_UP, UsageBilling.action(AiCredits(included = 50, isBillingAvailable = true)))
+        assertEquals(UsageBillingAction.MANAGE, UsageBilling.action(AiCredits(included = 50, isBillingAvailable = true, isUsageBilling = true)))
         assertEquals(
-            "Being able to use AI without self-hosting means billing is set up",
-            UsageBillingAction.MANAGE,
-            UsageBillingState(canUseAiClassifiers = true).action,
+            "A server without the AI credit price offers no setup",
+            UsageBillingAction.NONE,
+            UsageBilling.action(AiCredits(included = 50, isBillingAvailable = false)),
         )
+        assertEquals(
+            "Usage billing that's on can still be managed while the server stops offering it",
+            UsageBillingAction.MANAGE,
+            UsageBilling.action(AiCredits(included = 50, isBillingAvailable = false, isUsageBilling = true)),
+        )
+        assertEquals(
+            "A self-hosted server counts no credits",
+            UsageBillingAction.NONE,
+            UsageBilling.action(AiCredits(isUnlimited = true, isBillingAvailable = true)),
+        )
+        assertEquals("Nothing synced yet", UsageBillingAction.NONE, UsageBilling.action(null))
     }
 
     @Test
-    fun test_costs_format_like_the_web_trainer() {
-        assertEquals("$0.00", UsageBilling.formatCost(0.0))
-        assertEquals("$0.0004", UsageBilling.formatCost(0.0004))
-        assertEquals("$0.032", UsageBilling.formatCost(0.032))
-        assertEquals("$1.25", UsageBilling.formatCost(1.25))
-        assertEquals("$12.50", UsageBilling.formatDollars(12.5))
+    fun test_usage_billing_amounts_are_dollars_in_every_language() {
+        assertEquals("$0.62", UsageBilling.formatDollars(0.62, Locale.US))
+        val german = UsageBilling.formatDollars(0.62, Locale.GERMANY)
+        assertTrue("A German reader is charged dollars, not euros: $german", "$" in german && "€" !in german)
+        assertTrue("with a German decimal comma: $german", "0,62" in german)
     }
 
     @Test
@@ -82,7 +91,8 @@ class Test_UsageBilling {
         runTest {
             var checks = 0
 
-            val active = UsageBilling.awaitActivation {
+            val active =
+                UsageBilling.awaitActivation {
                     checks++
                     false
                 }

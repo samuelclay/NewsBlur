@@ -1,15 +1,18 @@
 package com.newsblur.design
 
+import com.newsblur.util.AiCreditsMeterLevel
 import com.newsblur.util.PrefConstants.ThemeValue
 
 /**
- * Colors for the trainer's natural language classifier sections (fragment/AiClassifierSections.kt)
- * and the usage billing screen (activity/UsageBillingActivity.kt), one set per theme. The light
- * values follow media/css/reader/reader.css and the dark ones media/css/reader/darkmode.css.
- * A new theme only needs a new branch in colors().
+ * Colors for the trainer's natural language classifier sections (fragment/AiClassifierSections.kt),
+ * their AI credit meter and notices, the AI credits screen (activity/AiCreditsActivity.kt) and the
+ * Premium screen's AI credits card, one set per theme. The light values follow
+ * media/css/reader/reader.css and the dark ones media/css/reader/darkmode.css. A new theme only
+ * needs a new branch in colors().
  */
 object AiClassifierPalette {
     data class Colors(
+        // AiCreditsActivity.kt's screen and cards.
         val screenBackground: Int,
         val cardBackground: Int,
         val cardBorder: Int,
@@ -23,15 +26,27 @@ object AiClassifierPalette {
         val neutralBackground: Int,
         val neutralText: Int,
         val badgeBackground: Int,
-        val costBackground: Int,
-        val costBorder: Int,
-        val billingBannerBackground: Int,
-        val billingBannerBorder: Int,
-        val billingBannerText: Int,
-        val billingBannerLink: Int,
-        val limitBannerBackground: Int,
-        val limitBannerBorder: Int,
-        val limitBannerText: Int,
+        // A free account's notice that AI filters only run on a paid plan, leading to the upgrade screen.
+        val upgradeBackground: Int,
+        val upgradeBorder: Int,
+        val upgradeText: Int,
+        // Most of the month's credits are used.
+        val warningBackground: Int,
+        val warningBorder: Int,
+        val warningText: Int,
+        // Filters are paused until the 1st.
+        val pausedBackground: Int,
+        val pausedBorder: Int,
+        val pausedText: Int,
+        // Usage billing is on and filters run past the credits.
+        val billingBackground: Int,
+        val billingBorder: Int,
+        val billingText: Int,
+        // view/AiCreditsBarView.kt: the track, and the fill for each AiCreditsMeterLevel.
+        val meterTrack: Int,
+        val meterFill: Int,
+        val meterWarning: Int,
+        val meterPaused: Int,
         val matchBackground: Int,
         val matchText: Int,
         val matchBorder: Int,
@@ -43,13 +58,16 @@ object AiClassifierPalette {
         val errorBorder: Int,
         val scopeActive: Int,
         val scopeInactive: Int,
-        val progressTrack: Int,
-        val progressFill: Int,
-        val progressWarning: Int,
-        val progressLimit: Int,
         val accent: Int = 0xFF709E5D.toInt(),
         val accentText: Int = 0xFFFFFFFF.toInt(),
-    )
+    ) {
+        fun meterColor(level: AiCreditsMeterLevel): Int =
+            when (level) {
+                AiCreditsMeterLevel.NORMAL -> meterFill
+                AiCreditsMeterLevel.WARNING -> meterWarning
+                AiCreditsMeterLevel.PAUSED -> meterPaused
+            }
+    }
 
     private val light =
         Colors(
@@ -66,15 +84,22 @@ object AiClassifierPalette {
             neutralBackground = 0xFFEDEEEA.toInt(),
             neutralText = 0xFF707070.toInt(),
             badgeBackground = 0x1A000000,
-            costBackground = 0xFFF5F7F9.toInt(),
-            costBorder = 0xFFE2E5E9.toInt(),
-            billingBannerBackground = 0xFFFFF8E1.toInt(),
-            billingBannerBorder = 0xFFFFC107.toInt(),
-            billingBannerText = 0xFF6D5A00.toInt(),
-            billingBannerLink = 0xFF8A6D00.toInt(),
-            limitBannerBackground = 0xFFFFEBEE.toInt(),
-            limitBannerBorder = 0xFFEF9A9A.toInt(),
-            limitBannerText = 0xFFC62828.toInt(),
+            upgradeBackground = 0xFFF4EEFC.toInt(),
+            upgradeBorder = 0xFFD5C2F2.toInt(),
+            upgradeText = 0xFF4E3482.toInt(),
+            warningBackground = 0xFFFFF8E1.toInt(),
+            warningBorder = 0xFFFFC107.toInt(),
+            warningText = 0xFF6D5A00.toInt(),
+            pausedBackground = 0xFFFFEBEE.toInt(),
+            pausedBorder = 0xFFEF9A9A.toInt(),
+            pausedText = 0xFFB71C1C.toInt(),
+            billingBackground = 0xFFEEF3FA.toInt(),
+            billingBorder = 0xFFC9D8EE.toInt(),
+            billingText = 0xFF2F5A8F.toInt(),
+            meterTrack = 0xFFE6E8E3.toInt(),
+            meterFill = 0xFF709E5D.toInt(),
+            meterWarning = 0xFFE0A030.toInt(),
+            meterPaused = 0xFFC62828.toInt(),
             matchBackground = 0xFFE8F5E9.toInt(),
             matchText = 0xFF2E7D32.toInt(),
             matchBorder = 0xFFA5D6A7.toInt(),
@@ -86,10 +111,6 @@ object AiClassifierPalette {
             errorBorder = 0xFFFFCC80.toInt(),
             scopeActive = 0xFF4A7BC0.toInt(),
             scopeInactive = 0xFFB0B2AC.toInt(),
-            progressTrack = 0xFFE6E8E3.toInt(),
-            progressFill = 0xFF709E5D.toInt(),
-            progressWarning = 0xFFE0A030.toInt(),
-            progressLimit = 0xFFC62828.toInt(),
         )
 
     private val sepia =
@@ -102,10 +123,12 @@ object AiClassifierPalette {
             inputBackground = 0xFFFFFBF4.toInt(),
             neutralBackground = 0xFFEDE4D6.toInt(),
             neutralText = 0xFF7A6A5A.toInt(),
-            costBackground = 0xFFF3EBDF.toInt(),
-            costBorder = 0xFFDCCFBD.toInt(),
             scopeInactive = 0xFFB9AC9A.toInt(),
-            progressTrack = 0xFFE6DCCB.toInt(),
+            upgradeBackground = 0xFFF3EAF2.toInt(),
+            upgradeBorder = 0xFFD8C4D6.toInt(),
+            billingBackground = 0xFFEEEFEF.toInt(),
+            billingBorder = 0xFFCFD3D6.toInt(),
+            meterTrack = 0xFFE6DCCB.toInt(),
         )
 
     private val dark =
@@ -123,15 +146,23 @@ object AiClassifierPalette {
             neutralBackground = 0xFF3A3A3C.toInt(),
             neutralText = 0xFFB0B0B0.toInt(),
             badgeBackground = 0x26FFFFFF,
-            costBackground = 0xFF2A2C2E.toInt(),
-            costBorder = 0xFF3A3C3E.toInt(),
-            billingBannerBackground = 0xFF2A2510.toInt(),
-            billingBannerBorder = 0xFF6D5A00.toInt(),
-            billingBannerText = 0xFFE6C84A.toInt(),
-            billingBannerLink = 0xFFFFC107.toInt(),
-            limitBannerBackground = 0xFF2E1A1A.toInt(),
-            limitBannerBorder = 0xFF6D3A3A.toInt(),
-            limitBannerText = 0xFFEF9A9A.toInt(),
+            upgradeBackground = 0xFF2A2238.toInt(),
+            upgradeBorder = 0xFF4E3D6E.toInt(),
+            upgradeText = 0xFFD9C8F5.toInt(),
+            warningBackground = 0xFF2A2510.toInt(),
+            warningBorder = 0xFF6D5A00.toInt(),
+            warningText = 0xFFE6C84A.toInt(),
+            pausedBackground = 0xFF2E1A1A.toInt(),
+            pausedBorder = 0xFF6D3A3A.toInt(),
+            pausedText = 0xFFEF9A9A.toInt(),
+            billingBackground = 0xFF1A2433.toInt(),
+            billingBorder = 0xFF2E4366.toInt(),
+            billingText = 0xFFA9C4EC.toInt(),
+            // Lighter than the trainer's and the credits screen's cards, so the empty part of the meter shows.
+            meterTrack = 0xFF56565A.toInt(),
+            meterFill = 0xFF7ECE72.toInt(),
+            meterWarning = 0xFFE6A040.toInt(),
+            meterPaused = 0xFFEF5350.toInt(),
             matchBackground = 0xFF1A2E1A.toInt(),
             matchText = 0xFF66BB6A.toInt(),
             matchBorder = 0xFF2E7D32.toInt(),
@@ -143,10 +174,6 @@ object AiClassifierPalette {
             errorBorder = 0xFF7A5A2A.toInt(),
             scopeActive = 0xFF8FB4E8.toInt(),
             scopeInactive = 0xFF6A6A6E.toInt(),
-            progressTrack = 0xFF3A3A3C.toInt(),
-            progressFill = 0xFF7ECE72.toInt(),
-            progressWarning = 0xFFE6A040.toInt(),
-            progressLimit = 0xFFEF5350.toInt(),
         )
 
     private val black =
@@ -158,9 +185,13 @@ object AiClassifierPalette {
             textSecondary = 0xFFB0B0B0.toInt(),
             inputBackground = 0xFF222222.toInt(),
             neutralBackground = 0xFF262626.toInt(),
-            costBackground = 0xFF1C1C1C.toInt(),
-            costBorder = 0xFF333333.toInt(),
-            progressTrack = 0xFF2A2A2A.toInt(),
+            upgradeBackground = 0xFF1C1626.toInt(),
+            upgradeBorder = 0xFF3E3158.toInt(),
+            warningBackground = 0xFF1F1B0A.toInt(),
+            pausedBackground = 0xFF221313.toInt(),
+            billingBackground = 0xFF121A26.toInt(),
+            billingBorder = 0xFF26385A.toInt(),
+            meterTrack = 0xFF3A3A3C.toInt(),
         )
 
     @JvmStatic

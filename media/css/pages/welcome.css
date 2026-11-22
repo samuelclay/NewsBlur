@@ -1853,7 +1853,19 @@ a.NB-fgi img {
     /* teal */
 }
 
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-20 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/writing.svg');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
+}
+
 /* Pro tier bullets with vivid colors */
+.NB-pricing-tier-pro .NB-pricing-tier-features li.NB-7 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/writing.svg');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
+}
+
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-1 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/stack.svg');
     filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);

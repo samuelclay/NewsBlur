@@ -1,8 +1,11 @@
+import uuid
 from unittest.mock import patch
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
 
+from apps.statistics.rllm_costs import RLLMCosts
 from apps.statistics.rscrapingbee import RScrapingBee
 
 
@@ -83,6 +86,72 @@ class Test_ScrapingBeeMonitor(TestCase):
         self.assertNotIn('metric="credits_used"', body)
 
 
+class Test_LLMCostsMonitor(TestCase):
+    """The /monitor/llm-costs Prometheus endpoint in apps/monitor/views/newsblur_llm_costs.py."""
+
+    def setUp(self):
+        self.client = Client()
+        # tests.py: A prefix of its own keeps this test out of the shared dev LLM stats.
+        self.prefix = "LLMTEST%s" % uuid.uuid4().hex[:8]
+        prefix_patch = patch.object(RLLMCosts, "KEY_PREFIX", self.prefix)
+        prefix_patch.start()
+        self.addCleanup(prefix_patch.stop)
+        self.addCleanup(self._delete_keys)
+        # tests.py: Recording AI filter usage spends AI credits too, under keys of the test's own.
+        from apps.analyzer.test_ai_credits import isolate_ai_credits
+
+        isolate_ai_credits(self)
+        self.user = User.objects.create_user(
+            username="jevreader", password="x", email="jevreader@example.com"
+        )
+
+    def _delete_keys(self):
+        r = RLLMCosts._get_redis()
+        for key in r.scan_iter(match=self.prefix + ":*"):
+            r.delete(key)
+
+    def test_ai_filter_usage_is_exported_by_provider_and_reader(self):
+        """Grafana sees Jev's spend and which readers drive it, by user id: the endpoint is
+        scraped without a login, so it never carries usernames."""
+        from utils.llm_costs import LLMCostTracker
+        from utils.llm_models import JEV_MODEL
+
+        with patch("apps.monitor.models.MLLMCost.save"):
+            for feature, tokens in (("story_classification", 4000), ("vision_classification", 3000)):
+                LLMCostTracker.record_usage(
+                    provider="openrouter",
+                    model=JEV_MODEL,
+                    feature=feature,
+                    input_tokens=tokens,
+                    user_id=self.user.pk,
+                )
+
+        body = self.client.get("/monitor/llm-costs").content.decode("utf-8")
+
+        self.assertIn('llm_costs{metric="requests",provider="openrouter",period="daily"} 2', body)
+        label = 'classifier="user",user_id="%s"' % self.user.pk
+        self.assertIn('llm_costs{metric="cost_usd",%s} 0.000294' % label, body)
+        self.assertIn('llm_costs{metric="text_requests",%s} 1' % label, body)
+        self.assertIn('llm_costs{metric="image_requests",%s} 1' % label, body)
+        self.assertNotIn("jevreader", body)
+
+    def test_only_the_heaviest_readers_are_listed(self):
+        """The table lists the readers who cost the most, so a scrape doesn't grow with every
+        reader who has an AI filter."""
+        for user_id, cost in ((101, 0.002), (102, 0.009), (103, 0.004)):
+            RLLMCosts.record(
+                provider="openrouter",
+                model="typesafe/jev-1.14",
+                feature="story_classification",
+                input_tokens=1000,
+                output_tokens=0,
+                cost_usd=cost,
+                user_id=user_id,
+            )
+
+        self.assertEqual(list(RLLMCosts.get_classifier_user_stats(days=30, limit=2)), [102, 103])
+
+
 class Test_LLMCostPricing(TestCase):
     """Model prices in utils/llm_costs.py for the models named in utils/llm_models.py."""
 
@@ -97,6 +166,7 @@ class Test_LLMCostPricing(TestCase):
             llm_models.OPENAI_MODEL: "openai",
             llm_models.GOOGLE_MODEL: "google",
             llm_models.XAI_MODEL: "xai",
+            llm_models.JEV_MODEL: "openrouter",
         }
         for model, provider in current_models.items():
             self.assertIn(model, MODEL_PRICING, f"{model} has no price, so its usage records $0")

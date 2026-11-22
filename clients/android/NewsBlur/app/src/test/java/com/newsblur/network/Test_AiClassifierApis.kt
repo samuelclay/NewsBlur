@@ -2,6 +2,7 @@ package com.newsblur.network
 
 import com.google.gson.Gson
 import com.newsblur.domain.ValueMultimap
+import com.newsblur.network.domain.FeedFolderResponse
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -14,8 +15,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 // Test_AiClassifierApis.kt: ClassifierApiImpl.kt and UsageBillingApiImpl.kt send what
-// apps/analyzer/views.py and apps/profile/views.py expect and read their mocked responses.
-// No request here reaches a server; testing a prompt costs money in production.
+// apps/analyzer/views.py and apps/profile/views.py expect and read their mocked responses,
+// including the AI credits in /reader/feeds. No request here reaches a server.
 class Test_AiClassifierApis {
     private val networkClient = mockk<NetworkClient>()
     private val classifierApi = ClassifierApiImpl(Gson(), networkClient)
@@ -35,7 +36,7 @@ class Test_AiClassifierApis {
     @Test
     fun test_text_prompt_test_posts_prompt_and_reads_match() =
         runTest {
-            respond("""{"code": 0, "classification": 1, "cost_estimate": {"avg_cost_per_text": 0.0004, "avg_cost_per_image": 0.002}}""")
+            respond("""{"code": 0, "classification": 1, "description": "Apple news"}""")
 
             val result =
                 classifierApi.testPrompt(
@@ -51,13 +52,12 @@ class Test_AiClassifierApis {
             assertTrue(body, "feed_id=5719953" in body)
             assertTrue(result.isSuccess)
             assertTrue(result.matched)
-            assertEquals(0.0004, result.costEstimate!!.avgCostPerText, 0.0)
         }
 
     @Test
     fun test_image_prompt_test_reads_per_image_results() =
         runTest {
-            respond("""{"code": 0, "classification": 1, "image_results": [0, 1, 1], "cost_estimate": {}}""")
+            respond("""{"code": 0, "classification": 1, "image_results": [0, 1, 1]}""")
 
             val result = classifierApi.testPrompt(PromptTestRequest("Charts", "1:a", "1", includeImages = true, hidden = true))
 
@@ -73,10 +73,10 @@ class Test_AiClassifierApis {
     @Test
     fun test_prompt_test_errors_keep_the_server_message_or_fall_back() =
         runTest {
-            respond("""{"code": -1, "message": "Usage billing required for AI classifiers"}""")
+            respond("""{"code": -1, "message": "Story not found"}""")
             val refused = classifierApi.testPrompt(PromptTestRequest("x", "1:a", null, includeImages = false, hidden = false))
             assertFalse(refused.isSuccess)
-            assertEquals("Usage billing required for AI classifiers", refused.message)
+            assertEquals("Story not found", refused.message)
             assertTrue("A missing feed id is sent as 0", "feed_id=0" in form(bodies.last()))
 
             respond(null)
@@ -88,26 +88,55 @@ class Test_AiClassifierApis {
             assertFalse(classifierApi.testPrompt(PromptTestRequest("x", "1:a", null, includeImages = false, hidden = false)).isSuccess)
         }
 
+    // apps/analyzer/ai_credits.py state() for a Premium Archive reader running low.
+    private val creditsJson =
+        """{"included": 10000, "used": 8420, "remaining": 1580, "month": "2026-11", "resets_on": "2026-12-01",
+           "is_unlimited": false, "is_billing_available": true, "is_usage_billing": false, "monthly_limit": null,
+           "overage_credits": 0, "overage_usd": 0.0, "unbilled_usd": 0.0, "minimum_charge_usd": 1.0,
+           "immediate_charge_usd": 10.0, "is_paused": false, "pause_reason": null, "is_warning": true, "credit_usd": 0.00001,
+           "forecast": {"credits": 12100, "credits_per_day": 420, "runs_out_on": "2026-11-25", "overage_usd": 0.12}}"""
+
     @Test
-    fun test_ai_usage_reads_costs_and_limit() =
+    fun test_ai_usage_reads_the_credits_and_the_site_estimates() =
         runTest {
             respond(
-                """{"code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0003, "avg_cost_per_image": 0.0021,
-                   "current_cycle_spend": 4.5, "usage_billing_limit": 5.0, "is_limit_reached": false}""",
+                """{"code": 0, "can_use_ai": true, "ai_credits": $creditsJson, "stories_per_month": 300,
+                   "text_credits_per_month": 1400, "image_credits_per_month": 9800}""",
             )
 
             val usage = classifierApi.getAiClassifierUsage("42")
 
-            assertEquals(APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_AI_USAGE), urls.single())
+            assertEquals(APIConstants.buildUrl(APIConstants.PATH_AI_CLASSIFIER_USAGE), urls.single())
             assertEquals("feed_id=42", form(bodies.single()))
-            assertTrue(usage.canUseAi)
-            assertEquals(0.0021, usage.costEstimate.avgCostPerImage, 0.0)
-            assertEquals(5.0, usage.usageBillingLimit!!, 0.0)
-            assertFalse(usage.isLimitReached)
+            assertTrue(usage.isSuccess)
+            assertEquals(1400.0, usage.textCreditsPerMonth, 0.0)
+            assertEquals(9800.0, usage.imageCreditsPerMonth, 0.0)
+            val credits = usage.aiCredits!!
+            assertEquals(10000, credits.included)
+            assertTrue(credits.isWarning)
+            assertNull(credits.pauseReason)
+            assertEquals("2026-11-25", credits.forecast!!.runsOutOn)
+            assertEquals(0.12, credits.forecast!!.overageUsd, 0.0)
 
-            respond("""{"code": 0, "can_use_ai": false}""")
-            assertFalse(classifierApi.getAiClassifierUsage("42").canUseAi)
+            respond(null)
+            assertFalse("A failed request never reads as zero usage", classifierApi.getAiClassifierUsage(null).isSuccess)
+            assertEquals("The account-wide check sends no site", "feed_id=0", form(bodies.last()))
         }
+
+    @Test
+    fun test_reader_feeds_brings_the_credits_with_the_profile() {
+        fun profile(extra: String) =
+            FeedFolderResponse(
+                """{"authenticated": true, "folders": [], "feeds": [],
+                   "user_profile": {"is_premium": true, "premium_expire": 0, "is_archive": true $extra}}""",
+                Gson(),
+            )
+
+        val credits = profile(""", "ai_credits": $creditsJson""").aiCredits!!
+        assertEquals("2026-12-01", credits.resetsOn)
+        assertEquals(8420.0, credits.used, 0.0)
+        assertNull("A server from before credits sends none", profile("").aiCredits)
+    }
 
     @Test
     fun test_billing_setup_posts_platform_and_reads_stripe_url() =
@@ -143,14 +172,15 @@ class Test_AiClassifierApis {
         }
 
     @Test
-    fun test_billing_limit_save_sends_trimmed_limit_and_reads_result() =
+    fun test_billing_limit_save_sends_trimmed_limit_and_reads_the_new_credits() =
         runTest {
-            respond("""{"code": 1, "limit": 25.0}""")
+            respond("""{"code": 1, "limit": 25.0, "ai_credits": $creditsJson}""")
             val saved = billingApi.saveLimit(" 25 ")
             assertEquals(APIConstants.buildUrl(APIConstants.PATH_SAVE_USAGE_BILLING_LIMIT), urls.single())
             assertEquals("limit=25", form(bodies.single()))
             assertTrue(saved.isSaved)
             assertEquals(25.0, saved.limit!!, 0.0)
+            assertEquals(10000, saved.aiCredits!!.included)
 
             respond("""{"code": 1, "limit": null}""")
             val cleared = billingApi.saveLimit("")
@@ -165,31 +195,45 @@ class Test_AiClassifierApis {
         }
 
     @Test
-    fun test_billing_history_reads_spend_invoices_and_upcoming_charge() =
+    fun test_turning_billing_off_reads_the_credits_it_leaves() =
+        runTest {
+            respond("""{"code": 0, "ai_credits": $creditsJson}""")
+
+            val cancelled = billingApi.cancel()
+
+            assertEquals(APIConstants.buildUrl(APIConstants.PATH_CANCEL_USAGE_BILLING), urls.single())
+            assertTrue(cancelled.isSuccess)
+            assertFalse(cancelled.aiCredits!!.isUsageBilling)
+
+            respond(null)
+            assertFalse("A failed request leaves billing on screen as it was", billingApi.cancel().isSuccess)
+        }
+
+    @Test
+    fun test_billing_history_reads_the_credits_and_invoices() =
         runTest {
             respond(
                 """
-                {"invoices": [{"date": "2026-09-30", "amount": 3.1, "amount_paid": 3.1, "status": "paid",
+                {"code": 0, "ai_credits": ${creditsJson.replace("\"unbilled_usd\": 0.0", "\"unbilled_usd\": 0.37")},
+                 "invoices": [{"date": "2026-10-01", "amount": 3.1, "amount_paid": 3.1, "status": "paid",
                   "hosted_invoice_url": "https://invoice.stripe.com/i/1", "invoice_number": "NB-1",
-                  "line_items": [{"description": "Natural language text classifier", "quantity": 1200, "amount": 2.4}]}],
-                 "upcoming_invoice": {"date": "2026-10-31", "amount": 1.25, "status": "upcoming", "line_items": []},
-                 "current_cycle_spend": 1.25, "usage_billing_limit": null, "is_limit_reached": false,
-                 "cycle_start": "2026-10-01", "cycle_end": "2026-10-31"}
+                  "line_items": [{"description": "AI credits", "quantity": 310, "amount": 3.1}]}],
+                 "upcoming_invoice": null}
                 """.trimIndent(),
             )
 
             val history = billingApi.getHistory()!!
 
             assertEquals(APIConstants.buildUrl(APIConstants.PATH_USAGE_BILLING_HISTORY), urls.single())
-            assertEquals(1.25, history.currentCycleSpend!!, 0.0)
-            assertNull(history.usageBillingLimit)
-            assertEquals("2026-10-01", history.cycleStart)
-            assertEquals(1200L, history.invoices!!.single().lineItems!!.single().quantity)
+            assertEquals(0.37, history.aiCredits!!.unbilledUsd, 0.0)
+            assertEquals(310L, history.invoices!!.single().lineItems!!.single().quantity)
             assertEquals("https://invoice.stripe.com/i/1", history.invoices!!.single().hostedInvoiceUrl)
-            assertEquals(1.25, history.upcomingInvoice!!.amount, 0.0)
+            assertNull(history.upcomingInvoice)
 
             respond(null)
             assertNull(billingApi.getHistory())
+            respond("""{"code": -1}""")
+            assertNull("A refused request is a failure, not an empty history", billingApi.getHistory())
         }
 
     private fun form(values: ValueMultimap): String = Buffer().also { values.asFormEncodedRequestBody().writeTo(it) }.readUtf8()

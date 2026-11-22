@@ -1,0 +1,17 @@
+{% extends "mail/email_base.txt" %}
+
+{% load i18n utils_tags %}
+
+{% block body %}{% current_domain as domain %}{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}
+
+{% if reason == "limit" %}{% blocktrans with date=resets_on|language_date:"F j" %}Your AI filters reached the ${{ monthly_limit }} monthly limit you set for usage billing, so they've stopped scoring new stories. They start again on {{ date }}.{% endblocktrans %}
+
+{% trans "You can raise or remove the limit in your account:" %} https://{{ domain }}{{ user.profile.autologin_url }}?next=ai_credits{% else %}{% blocktrans with date=resets_on|language_date:"F j" included_text=included_display count counter=included %}Your AI filters used this month's {{ included_text }} AI credit, so they've stopped scoring new stories. They start again on {{ date }}, when your credits reset.{% plural %}Your AI filters used all {{ included_text }} of this month's AI credits, so they've stopped scoring new stories. They start again on {{ date }}, when your credits reset.{% endblocktrans %}
+
+{% blocktrans count counter=forecast_credits with credits_text=forecast_credits_display %}At the pace they've been running, this month would use about {{ credits_text }} credit. With usage billing, credits past your plan's cost 1 cent per 1,000, which comes to about ${{ forecast_overage }} this month. You can set a monthly limit so it never costs more than you want.{% plural %}At the pace they've been running, this month would use about {{ credits_text }} credits. With usage billing, credits past your plan's cost 1 cent per 1,000, which comes to about ${{ forecast_overage }} this month. You can set a monthly limit so it never costs more than you want.{% endblocktrans %}
+
+{% trans "Turn on usage billing:" %} https://{{ domain }}{{ user.profile.autologin_url }}?next=ai_credits{% endif %}
+
+{% trans "Stories your filters already scored keep their scores, and the rest of your training keeps working." %}{% endblock body %}
+
+{% block resources_header %}{% endblock resources_header %}

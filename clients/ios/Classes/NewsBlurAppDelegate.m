@@ -1110,14 +1110,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self.premiumViewController.view setNeedsLayout];
 }
 
-// NewsBlurAppDelegate.m opens natural language classifier billing (UsageBillingView.swift) from the settings menu,
-// the Premium screen and the trainer's billing banners, replacing whatever sheet or popover is showing. While
-// UsageBillingFeature.swift holds billing out of the release, nothing opens it, even a path that missed the switch.
-- (void)showUsageBillingDialog {
-    if (!UsageBillingFeature.isEnabled) return;
-    UIViewController *usageBilling = [UsageBillingViewController makePresentable];
+// NewsBlurAppDelegate.m opens the AI credits screen (AICreditsView.swift) from the settings menu and the trainer's AI
+// sections, replacing whatever sheet or popover is showing. startingSetup goes straight on to Stripe checkout for usage
+// billing, which AICreditsView.swift only does while UsageBillingFeature.swift lets the app open Stripe.
+- (void)showAICreditsDialogStartingSetup:(BOOL)startingSetup {
+    UIViewController *credits = [AICreditsViewController makePresentableWithStartingSetup:startingSetup];
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    [self.splitViewController presentViewController:usageBilling animated:YES completion:nil];
+    [self.splitViewController presentViewController:credits animated:YES completion:nil];
 }
 
 - (void)updateSplitBehavior:(BOOL)refresh {

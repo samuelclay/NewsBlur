@@ -17,6 +17,7 @@ Keys expire after 60 days.
 """
 
 import datetime
+import uuid
 
 import redis
 from django.conf import settings
@@ -55,7 +56,6 @@ class RLLMCosts:
         output_tokens,
         cost_usd,
         user_id=None,
-        is_billing_user=False,
     ):
         """
         Record an LLM API call in Redis.
@@ -68,7 +68,6 @@ class RLLMCosts:
             output_tokens: Number of output tokens
             cost_usd: Cost in USD (float)
             user_id: Optional user ID for tracking unique users
-            is_billing_user: Whether this user has usage-based billing enabled
         """
         r = cls._get_redis()
         date_key = cls._date_key()
@@ -134,39 +133,27 @@ class RLLMCosts:
         # Register model name for fast lookup (avoids scan_iter on 150K+ keys)
         pipe.sadd(f"{cls.KEY_PREFIX}:known_models", model_safe)
 
-        # Track billing-user classifier costs separately for revenue metrics
-        if is_billing_user and feature in cls.CLASSIFIER_FEATURES:
-            billing_prefix = f"{cls.KEY_PREFIX}:{date_key}:billing:{feature}"
-            pipe.incrby(f"{billing_prefix}:tokens", total_tokens)
-            pipe.incrby(f"{billing_prefix}:cost", cost_micro)
-            pipe.incr(f"{billing_prefix}:requests")
-            pipe.expireat(f"{billing_prefix}:tokens", expiry)
-            pipe.expireat(f"{billing_prefix}:cost", expiry)
-            pipe.expireat(f"{billing_prefix}:requests", expiry)
-            if user_id:
-                billing_users_key = f"{cls.KEY_PREFIX}:{date_key}:billing_users"
-                pipe.sadd(billing_users_key, user_id)
-                pipe.expireat(billing_users_key, expiry)
-
-                # Per-user breakdown for billing users
-                user_prefix = f"{cls.KEY_PREFIX}:{date_key}:billing_user:{user_id}:{feature}"
-                pipe.incrby(f"{user_prefix}:tokens", total_tokens)
-                pipe.incrby(f"{user_prefix}:cost", cost_micro)
-                pipe.incr(f"{user_prefix}:requests")
-                pipe.expireat(f"{user_prefix}:tokens", expiry)
-                pipe.expireat(f"{user_prefix}:cost", expiry)
-                pipe.expireat(f"{user_prefix}:requests", expiry)
+        # rllm_costs.py: Each reader's AI filter spending, in sorted sets by day, so Grafana
+        # can list the heaviest readers without reading a key per reader.
+        if user_id and feature in cls.CLASSIFIER_FEATURES:
+            cost_key = f"{cls.KEY_PREFIX}:{date_key}:classifier_users:cost"
+            requests_key = f"{cls.KEY_PREFIX}:{date_key}:classifier_users:{cls.CLASSIFIER_FEATURES[feature]}"
+            pipe.zincrby(cost_key, cost_micro, user_id)
+            pipe.zincrby(requests_key, 1, user_id)
+            pipe.expireat(cost_key, expiry)
+            pipe.expireat(requests_key, expiry)
 
         pipe.execute()
 
     # Known dimensions for direct key lookups (avoid scan_iter)
-    PROVIDERS = ["anthropic", "openai", "google", "xai", "elevenlabs"]
+    PROVIDERS = ["anthropic", "openai", "google", "xai", "elevenlabs", "openrouter"]
     FEATURES = [
         "archive_assistant",
         "ask_ai",
         "daily_briefing",
         "story_classification",
         "vision_classification",
+        "classifier_description",
         "transcription",
         "webfeed",
         "search_story_embedding",
@@ -184,7 +171,8 @@ class RLLMCosts:
         "global_shared",
         "listen",
     ]
-    CLASSIFIER_FEATURES = ["story_classification", "vision_classification"]
+    # rllm_costs.py: AI filter features, and the request count each one adds to.
+    CLASSIFIER_FEATURES = {"story_classification": "text_requests", "vision_classification": "image_requests"}
     METRICS = ["tokens", "cost", "requests"]
 
     @classmethod
@@ -394,20 +382,12 @@ class RLLMCosts:
                     all_keys.append(f"{prefix}:feature:{feature}:{metric}")
                     key_metadata.append((day_offset, f"feature:{feature}", metric))
 
-            # Billing-user classifier cost keys
-            for feature in cls.CLASSIFIER_FEATURES:
-                for metric in cls.METRICS:
-                    all_keys.append(f"{prefix}:billing:{feature}:{metric}")
-                    key_metadata.append((day_offset, f"billing:{feature}", metric))
-
         # Build user set keys for all 30 days
         user_keys = []
-        billing_user_keys = []
         for day_offset in range(30):
             date = today - datetime.timedelta(days=day_offset)
             date_key = cls._date_key(date)
             user_keys.append(f"{cls.KEY_PREFIX}:{date_key}:users")
-            billing_user_keys.append(f"{cls.KEY_PREFIX}:{date_key}:billing_users")
 
         # Pipeline: 1 MGET + known models set + user operations = 1 round-trip
         pipe = r.pipeline()
@@ -416,10 +396,6 @@ class RLLMCosts:
         pipe.scard(user_keys[0])
         pipe.sunion(*user_keys[:7])
         pipe.sunion(*user_keys[:30])
-        # Billing user counts
-        pipe.scard(billing_user_keys[0])
-        pipe.sunion(*billing_user_keys[:7])
-        pipe.sunion(*billing_user_keys[:30])
         results = pipe.execute()
 
         values = results[0]
@@ -427,9 +403,6 @@ class RLLMCosts:
         daily_users = results[2]
         weekly_users_set = results[3]
         monthly_users_set = results[4]
-        daily_billing_users = results[5]
-        weekly_billing_users_set = results[6]
-        monthly_billing_users_set = results[7]
 
         # Partition metrics into daily/weekly/monthly buckets
         daily = {}
@@ -494,75 +467,43 @@ class RLLMCosts:
             "daily_users": daily_users,
             "weekly_users": len(weekly_users_set) if weekly_users_set else 0,
             "monthly_users": len(monthly_users_set) if monthly_users_set else 0,
-            "daily_billing_users": daily_billing_users,
-            "weekly_billing_users": len(weekly_billing_users_set) if weekly_billing_users_set else 0,
-            "monthly_billing_users": len(monthly_billing_users_set) if monthly_billing_users_set else 0,
         }
 
     @classmethod
-    def get_billing_user_stats(cls, days=30):
-        """
-        Get per-user breakdown of classifier costs for billing users.
+    def get_classifier_user_stats(cls, days=30, limit=50):
+        """The `limit` readers whose AI filters cost the most over the last `days` days.
 
-        Returns dict of {user_id: {feature: {tokens, cost_usd, requests}}}
-        aggregated over the given number of days.
+        Returns {user_id: {"cost_usd": N, "text_requests": N, "image_requests": N}}.
         """
         r = cls._get_redis()
         today = datetime.date.today()
-
-        # First, collect all billing user IDs across the period
-        billing_user_keys = []
-        for day_offset in range(days):
-            date = today - datetime.timedelta(days=day_offset)
-            date_key = cls._date_key(date)
-            billing_user_keys.append(f"{cls.KEY_PREFIX}:{date_key}:billing_users")
-
+        dates = [cls._date_key(today - datetime.timedelta(days=offset)) for offset in range(days)]
+        totals_key = f"{cls.KEY_PREFIX}:classifier_users:totals:{uuid.uuid4().hex}"
+        metrics = ["cost"] + sorted(set(cls.CLASSIFIER_FEATURES.values()))
         try:
-            all_user_ids = r.sunion(*billing_user_keys)
-        except Exception:
+            pipe = r.pipeline()
+            for metric in metrics:
+                day_keys = [f"{cls.KEY_PREFIX}:{date_key}:classifier_users:{metric}" for date_key in dates]
+                pipe.zunionstore(f"{totals_key}:{metric}", day_keys)
+                pipe.expire(f"{totals_key}:{metric}", 60)
+            pipe.execute()
+            top = r.zrevrange(f"{totals_key}:cost", 0, limit - 1, withscores=True)
+            pipe = r.pipeline()
+            for user_id, _ in top:
+                for metric in metrics[1:]:
+                    pipe.zscore(f"{totals_key}:{metric}", user_id)
+            request_counts = pipe.execute()
+            r.delete(*[f"{totals_key}:{metric}" for metric in metrics])
+        except redis.RedisError:
             return {}
 
-        if not all_user_ids:
-            return {}
-
-        # For each user, fetch their per-feature stats across all days
-        all_keys = []
-        key_metadata = []  # (user_id, feature, metric)
-
-        for user_id_bytes in all_user_ids:
-            user_id = int(user_id_bytes)
-            for day_offset in range(days):
-                date = today - datetime.timedelta(days=day_offset)
-                date_key = cls._date_key(date)
-                for feature in cls.CLASSIFIER_FEATURES:
-                    for metric in cls.METRICS:
-                        all_keys.append(
-                            f"{cls.KEY_PREFIX}:{date_key}:billing_user:{user_id}:{feature}:{metric}"
-                        )
-                        key_metadata.append((user_id, feature, metric))
-
-        if not all_keys:
-            return {}
-
-        values = r.mget(all_keys)
-
-        # Aggregate per user
-        user_stats = {}
-        for i, value in enumerate(values):
-            if value is not None:
-                user_id, feature, metric = key_metadata[i]
-                if user_id not in user_stats:
-                    user_stats[user_id] = {}
-                if feature not in user_stats[user_id]:
-                    user_stats[user_id][feature] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
-
-                val = int(value)
-                if metric == "cost":
-                    user_stats[user_id][feature]["cost_usd"] += val / 1_000_000
-                else:
-                    user_stats[user_id][feature][metric] += val
-
-        return user_stats
+        stats = {}
+        counts = iter(request_counts)
+        for user_id, cost_micro in top:
+            stats[int(user_id)] = {"cost_usd": cost_micro / 1_000_000}
+            for metric in metrics[1:]:
+                stats[int(user_id)][metric] = int(next(counts) or 0)
+        return stats
 
     @classmethod
     def get_unique_users_for_period(cls, days=1):

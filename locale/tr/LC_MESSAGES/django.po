@@ -347,11 +347,17 @@ msgstr "1.024 site, tam metin arama, Haber Akışı, kaydedilmiş haber etiketle
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1.024 site, arama, metin görünümü, haber akışı"
 
+msgid "10,000 AI credits a month for AI filters"
+msgstr "Yapay zekâ filtreleri için ayda 10.000 yapay zekâ kredisi"
+
 msgid "100 feeds"
 msgstr "100 akış"
 
 msgid "100 sources, 3 feeds"
 msgstr "100 kaynak, 3 akış"
+
+msgid "100,000 AI credits a month for AI filters"
+msgstr "Yapay zekâ filtreleri için ayda 100.000 yapay zekâ kredisi"
 
 msgid "12 sites"
 msgstr "12 site"
@@ -609,12 +615,21 @@ msgstr "Yapay Zekâ Özellikleri"
 msgid "AI built into every story"
 msgstr "Her habere entegre yapay zekâ"
 
+msgid "AI credits"
+msgstr "Yapay zekâ kredileri"
+
+msgid "AI filters aren't available on this server"
+msgstr "Yapay zekâ filtreleri bu sunucuda kullanılamıyor"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "Yapay zekâ görsel filtresi"
 
 msgid "AI skill"
 msgstr "Yapay zekâ becerisi"
+
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Metin ve görsel yapay zekâ filtreleri, ayda 1.000 yapay zekâ kredisiyle"
 
 msgctxt "notification email classifier match"
 msgid "AI text filter"
@@ -1020,6 +1035,34 @@ msgstr "Arşiv Asistanına sor"
 
 msgid "Ask the community or try NewsBlur for yourself."
 msgstr "Topluluğa danışın veya NewsBlur'ı kendiniz deneyin."
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(credits_text)s credit. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about $%(forecast_overage)s this month. You "
+"can set a monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(credits_text)s credits. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about $%(forecast_overage)s this month. You "
+"can set a monthly limit so it never costs more than you want."
+msgstr[0] ""
+"Bu hızla devam ederlerse bu ay yaklaşık %(credits_text)s kredi kullanılır. Kullanım ücretlendirmesinde, "
+"planınızı aşan her 1.000 kredi 1 sente mal olur; bu ayki tutar yaklaşık $%(forecast_overage)s olur. "
+"İstediğinizden fazla ücret ödememek için aylık bir sınır belirleyebilirsiniz."
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(credits_text)s credit. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about <b>$%(forecast_overage)s</b> this "
+"month. You can set a monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(credits_text)s credits. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about <b>$%(forecast_overage)s</b> this "
+"month. You can set a monthly limit so it never costs more than you want."
+msgstr[0] ""
+"Bu hızla devam ederlerse bu ay yaklaşık %(credits_text)s kredi kullanılır. Kullanım ücretlendirmesinde, "
+"planınızı aşan her 1.000 kredi 1 sente mal olur; bu ayki tutar yaklaşık <b>$%(forecast_overage)s</b> olur. "
+"İstediğinizden fazla ücret ödememek için aylık bir sınır belirleyebilirsiniz."
 
 msgid "Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically."
 msgstr "Kimlik doğrulaması OAuth 2.0 kullanır &mdash; istemciniz bu akışı otomatik olarak yönetir."
@@ -1541,6 +1584,9 @@ msgstr "Haber kaydedilemedi, bulunamadı"
 msgid "Could not unsave story, not found"
 msgstr "Haber kaydedilmişlerden çıkarılamadı; bulunamadı"
 
+msgid "Couldn't reach Stripe to charge what's due. Please try again."
+msgstr "Ödenmesi gereken tutarı tahsil etmek için Stripe'a ulaşılamadı. Lütfen yeniden deneyin."
+
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Stripe'a ulaşılamadı. Lütfen tekrar deneyin."
 
@@ -1687,6 +1733,18 @@ msgstr "Varsayılan"
 
 msgid "Delete"
 msgstr "Sil"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. AI filters score "
+"stories just like the intelligence trainer. A credit is about one story through a text filter, and an image"
+" filter uses about 10 credits a story. Usage billing keeps filters running past your credits at 1 cent per "
+"1,000 credits."
+msgstr ""
+"Bir haberin metninde veya görsellerinde neye odaklanılacağını ya da nelerin gizleneceğini günlük bir dille "
+"açıklayın. Yapay zekâ filtreleri, haberleri Zekâ Eğitmeni gibi puanlar. Metin filtresiyle bir haberi "
+"işlemek yaklaşık bir kredi, görsel filtresiyle işlemekse haber başına yaklaşık 10 kredi kullanır. Kullanıma"
+" dayalı ücretlendirme, kredileriniz bittikten sonra da filtreleri her 1.000 kredi için 1 sent karşılığında "
+"çalıştırmaya devam eder."
 
 msgid "Description"
 msgstr "Açıklama"
@@ -3556,9 +3614,6 @@ msgstr "Yerel iOS ve Android Uygulamaları"
 msgid "Native on Android"
 msgstr "Android'de yerel uygulama"
 
-msgid "Natural language text and image classifiers"
-msgstr "Doğal dil metin ve görsel sınıflandırıcıları"
-
 msgid "Navigate everything without touching the mouse"
 msgstr "Fareye dokunmadan her yerde gezinin"
 
@@ -4747,6 +4802,9 @@ msgstr "Akıllı eğitim özellikli RSS okuyucu"
 msgid "RSS/Atom only"
 msgstr "Yalnızca RSS/Atom"
 
+msgid "Raise or remove the limit"
+msgstr "Sınırı yükseltin veya kaldırın"
+
 msgid "Re-analyzing page"
 msgstr "Sayfa yeniden analiz ediliyor"
 
@@ -5625,6 +5683,9 @@ msgstr ""
 "Haberler yayımlandıkça gerçek zamanlı bildirimlerle iletilir. Pro kullanıcılarının tüm akışları son dakika "
 "haberleri için her 5-15 dakikada bir alınır."
 
+msgid "Stories your filters already scored keep their scores, and the rest of your training keeps working."
+msgstr "Filtrelerinizin puanladığı haberlerin puanları korunur, eğitiminizin geri kalanı da çalışmaya devam eder."
+
 msgid "Story"
 msgstr "Haber"
 
@@ -6295,6 +6356,12 @@ msgstr "Ücretsiz deneyin"
 msgid "Try out NewsBlur"
 msgstr "NewsBlur'ı deneyin"
 
+msgid "Turn on usage billing"
+msgstr "Kullanıma dayalı faturalandırmayı etkinleştir"
+
+msgid "Turn on usage billing:"
+msgstr "Kullanıma dayalı faturalandırmayı etkinleştir:"
+
 msgid ""
 "Two different philosophies: NewsBlur is a dedicated RSS reader with intelligence training. Readwise Reader "
 "combines RSS, read-later, and highlights in one app."
@@ -6410,12 +6477,6 @@ msgstr "E-posta yoluyla günde birden fazla haber göndermek için Premium abone
 
 msgid "Upgrade to premium archive"
 msgstr "Premium Archive'a yükselt"
-
-msgid "Usage billing not enabled"
-msgstr "Kullanım ücretlendirmesi etkin değil"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "Yapay zekâ sınıflandırıcıları için kullanıma dayalı faturalandırma gerekir"
 
 msgid "Usage-based billing isn't available right now."
 msgstr "Kullanıma dayalı faturalandırma şu anda kullanılamıyor."
@@ -6801,13 +6862,6 @@ msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "Sosyal medya profilleri, iş ilanı panoları, ürün sayfaları ve daha fazlasıyla çalışır"
 
 msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"Haberleri içeriğe veya görsellere göre filtrelemek için doğal dilde istemler yazın. Doğal dil "
-"sınıflandırıcıları, kullanıma dayalı ücretlendirmeyle haberleri tıpkı Zekâ Eğitmeni gibi puanlar."
-
-msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
 "professionals."
 msgstr ""
@@ -7013,6 +7067,9 @@ msgstr "Bu bağlantıyı ziyaret ederek şifrenizi değiştirebilirsiniz:"
 msgid "You can only send %(count)s story per day by email."
 msgid_plural "You can only send %(count)s stories per day by email."
 msgstr[0] "E-posta yoluyla günde en fazla %(count)s haber gönderebilirsiniz."
+
+msgid "You can raise or remove the limit in your account:"
+msgstr "Hesabınızda sınırı yükseltebilir veya kaldırabilirsiniz:"
 
 msgid "You can re-upload the attached file to NewsBlur and get all of your sites back."
 msgstr "Ekli dosyayı NewsBlur'a yeniden yükleyerek tüm sitelerinizi geri alabilirsiniz."
@@ -7354,6 +7411,28 @@ msgstr ""
 "Yakın zamanda NewsBlur'ı kullandınız; belki de ücretsiz hesaba geri dönmek istememiştiniz? Belki de "
 "yalnızca Premium hesabınızı yenilemeniz gerekiyor. Bunu yapmanıza yardımcı olalım."
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight, and your AI credits reset on the "
+"1st."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight, and your AI credits reset on "
+"the 1st."
+msgstr[0] ""
+"Bugünün %(count)s ücretsiz yapay zekâ filtre testini kullandınız. Test gece yarısı sıfırlanır; yapay zekâ "
+"kredileriniz ise ayın 1'inde yenilenir."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgstr[0] ""
+"Bugün %(count)s ücretsiz yapay zekâ filtre denemesini kullandınız. Gece yarısı yenilenir. Premium, "
+"filtrelerinizi her yeni haberde çalıştıran aylık yapay zekâ kredileri içerir."
+
 msgid "YouTube search request failed."
 msgstr "YouTube arama isteği başarısız oldu."
 
@@ -7380,6 +7459,52 @@ msgstr "<b>%(tier_name)s</b> aboneliğiniz <b>%(date)s</b> tarihinde yenileniyor
 
 msgid "Your <b>30-day trial premium subscription</b> has started. You now have full access to all premium features:"
 msgstr "<b>30 günlük Premium deneme aboneliğiniz</b> başladı. Artık tüm premium özelliklere tam erişiminiz var:"
+
+#, python-format
+msgid ""
+"Your AI filters reached the $%(monthly_limit)s monthly limit you set for usage billing, so they've stopped "
+"scoring new stories. They start again on %(date)s."
+msgstr ""
+"Yapay zekâ filtreleriniz, kullanım ücretlendirmesi için belirlediğiniz aylık $%(monthly_limit)s sınırına "
+"ulaştı. Bu nedenle yeni haberleri puanlamayı durdurdular. %(date)s tarihinde yeniden çalışmaya "
+"başlayacaklar."
+
+#, python-format
+msgid ""
+"Your AI filters reached the <b>$%(monthly_limit)s</b> monthly limit you set for usage billing, so they've "
+"stopped scoring new stories. They start again on <b>%(date)s</b>."
+msgstr ""
+"Yapay zekâ filtreleriniz, kullanım ücretlendirmesi için belirlediğiniz aylık <b>$%(monthly_limit)s</b> "
+"sınırına ulaştı. Bu nedenle yeni haberleri puanlamayı durdurdular. <b>%(date)s</b> tarihinde yeniden "
+"çalışmaya başlayacaklar."
+
+msgid "Your AI filters reached your monthly limit"
+msgstr "Yapay zekâ filtreleriniz aylık sınırınıza ulaştı"
+
+#, python-format
+msgid ""
+"Your AI filters used this month's %(included_text)s AI credit, so they've stopped scoring new stories. They"
+" start again on %(date)s, when your credits reset."
+msgid_plural ""
+"Your AI filters used all %(included_text)s of this month's AI credits, so they've stopped scoring new "
+"stories. They start again on %(date)s, when your credits reset."
+msgstr[0] ""
+"Yapay zekâ filtreleriniz bu ayki %(included_text)s yapay zekâ kredisini kullandığından yeni haberleri "
+"puanlamayı durdurdu. Kredilerinizin yenileneceği %(date)s tarihinde yeniden çalışmaya başlayacak."
+
+#, python-format
+msgid ""
+"Your AI filters used this month's <b>%(included_text)s</b> AI credit, so they've stopped scoring new "
+"stories. They start again on <b>%(date)s</b>, when your credits reset."
+msgid_plural ""
+"Your AI filters used all <b>%(included_text)s</b> of this month's AI credits, so they've stopped scoring "
+"new stories. They start again on <b>%(date)s</b>, when your credits reset."
+msgstr[0] ""
+"Yapay zekâ filtreleriniz bu ayki <b>%(included_text)s</b> yapay zekâ kredisini kullandı; yeni haberleri "
+"puanlamayı durdurdu. Kredilerinizin yenileneceği <b>%(date)s</b> tarihinde yeniden çalışmaya başlayacak."
+
+msgid "Your AI filters used this month's credits"
+msgstr "Yapay zekâ filtreleriniz bu ayın kredilerini kullandı"
 
 msgid "Your Blurblog also has an RSS feed:"
 msgstr "Blurblog'unuzun ayrıca bir RSS akışı da var:"

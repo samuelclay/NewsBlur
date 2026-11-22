@@ -452,7 +452,12 @@
     <string name="premium_custom_rss">ฟีด RSS แบบกำหนดเองสำหรับบทความที่บันทึกไว้</string>
     <string name="premium_text_view">มุมมองข้อความช่วยดึงเนื้อหาบทความออกมาได้อย่างสะดวก</string>
     <string name="premium_discover_related">ค้นพบบทความและเว็บไซต์ที่เกี่ยวข้อง</string>
-    <string name="premium_natural_language_classifiers">ตัวจำแนกข้อความและรูปภาพด้วยภาษาธรรมชาติ</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="other">ตัวกรองข้อความและรูปภาพด้วย AI พร้อมเครดิต AI %1$s เครดิตต่อเดือน</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="other">%1$s เครดิต AI ต่อเดือนสำหรับตัวกรอง AI</item>
+    </plurals>
     <string name="premium_shiloh">คุณป้อนอาหารให้ Lyric สุนัขล่าเนื้อผู้หิวโหยของ NewsBlur เป็นเวลา 6 วัน</string>
     <string name="archive_everything_premium">แน่นอนว่าได้ทุกอย่างในแพ็กเกจพรีเมียม</string>
     <string name="archive_enable_sites">ติดตามเว็บไซต์ได้สูงสุด 4,096 แห่ง</string>
@@ -1251,13 +1256,11 @@
     <string name="ai_filter_content_label">ตัวกรองเนื้อหา</string>
     <string name="ai_filter_image_label">ตัวกรองรูปภาพ</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">ตัวจำแนกข้อความภาษาธรรมชาติ</string>
-    <string name="ai_image_classifier_header">ตัวจำแนกรูปภาพด้วยภาษาธรรมชาติ</string>
-    <string name="ai_text_classifier_explainer">อธิบายหัวข้อ แล้ว AI จะให้คะแนนแต่ละบทความตามคำสั่งของคุณ เพื่อโฟกัสหรือซ่อนรายการที่ตรงกัน</string>
-    <string name="ai_image_classifier_explainer">อธิบายสิ่งที่ต้องการค้นหา แล้ว AI จะวิเคราะห์รูปภาพในแต่ละบทความตามคำสั่งของคุณ</string>
+    <string name="ai_filters_title">ตัวกรอง AI</string>
+    <string name="ai_filter_mode_text">ข้อความ</string>
+    <string name="ai_filter_mode_images">รูปภาพ</string>
     <string name="ai_text_prompt_hint">เช่น “AI และแมชชีนเลิร์นนิง” หรือ “การเมืองท้องถิ่น”</string>
     <string name="ai_image_prompt_hint">เช่น “ภาพถ่ายอาหาร” หรือ “แผนภูมิและกราฟ”</string>
-    <string name="ai_prompt_placeholder">อธิบายสิ่งที่ต้องการโฟกัสหรือซ่อน</string>
     <string name="ai_prompt_type_content">เนื้อหา</string>
     <string name="ai_prompt_type_image">รูปภาพ</string>
     <string name="ai_prompt_focus">โฟกัสบทความที่ตรงกับ</string>
@@ -1279,65 +1282,89 @@
     <string name="ai_test_failed">การทดสอบล้มเหลว</string>
     <string name="ai_image_label_match">ตรงกัน</string>
     <string name="ai_image_label_no_match">ไม่ตรงกัน</string>
-    <string name="ai_cost_monthly">%1$s/เดือน</string>
-    <string name="ai_cost_daily">%1$s/วัน</string>
-    <plurals name="ai_cost_stories_per_month">
-        <item quantity="other">%1$s บทความ/เดือน</item>
-    </plurals>
-    <plurals name="ai_cost_content_filters">
-        <item quantity="other">%1$d ตัวกรองเนื้อหา</item>
-    </plurals>
-    <plurals name="ai_cost_image_filters">
-        <item quantity="other">%1$d ตัวกรองภาพ</item>
-    </plurals>
-    <string name="ai_cost_per_story">%1$s/บทความ</string>
-    <string name="ai_cost_scope_feed">%1$d ในเว็บไซต์นี้ (%2$s)</string>
-    <string name="ai_cost_scope_folder">%1$d ในโฟลเดอร์ (%2$s)</string>
-    <string name="ai_cost_scope_global">%1$d ในทุกเว็บไซต์ (%2$s)</string>
-    <string name="ai_billing_manage_limits">จัดการการเรียกเก็บเงินและขีดจำกัด</string>
-    <string name="ai_billing_set_up">ตั้งค่าการเรียกเก็บเงิน</string>
-    <string name="ai_billing_banner">บันทึกตัวกรอง AI แล้ว แต่จะยังไม่ทำงานจนกว่าคุณจะ %1$s</string>
-    <string name="ai_billing_banner_link">ตั้งค่าการเรียกเก็บเงินตามการใช้งาน</string>
-    <string name="ai_limit_reached_title">ถึงวงเงินใช้จ่ายรายเดือนแล้ว</string>
-    <string name="ai_limit_reached_body">ตัวจำแนกภาษาธรรมชาติหยุดทำงานชั่วคราวจนกว่าจะถึงรอบเรียกเก็บเงินถัดไป</string>
-    <string name="ai_limit_reached_link">เพิ่มหรือนำขีดจำกัดออก</string>
-    <string name="ai_filters_not_active">ตัวกรองภาษาธรรมชาติยังไม่เปิดใช้งานในบัญชีนี้</string>
     <string name="ai_scope_feed">เว็บไซต์นี้เท่านั้น</string>
     <string name="ai_scope_folder">ทุกเว็บไซต์ในโฟลเดอร์</string>
     <string name="ai_scope_global">เว็บไซต์ทั้งหมด</string>
     <string name="ai_scope_folder_named">ทุกเว็บไซต์ใน %1$s</string>
     <string name="ai_scope_requires_archive">ต้องใช้ Premium Archive</string>
-    <string name="usage_billing_title">การเรียกเก็บเงินสำหรับตัวจำแนกภาษาธรรมชาติ</string>
-    <string name="usage_billing_status_enabled">เปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนกภาษาธรรมชาติแล้ว</string>
-    <string name="usage_billing_status_self_hosted">ตัวจำแนกภาษาธรรมชาติใช้คีย์ API ของอินสแตนซ์ของคุณ</string>
-    <string name="usage_billing_status_off">ตั้งค่าการเรียกเก็บเงินตามการใช้งานเพื่อใช้ตัวกรองเนื้อหาและรูปภาพด้วยภาษาธรรมชาติ</string>
-    <string name="usage_billing_manage">จัดการการเรียกเก็บเงินบน Stripe</string>
-    <string name="usage_billing_period">%1$s – %2$s</string>
-    <string name="usage_billing_limit_progress">%1$s / %2$s</string>
-    <string name="usage_billing_limit_reached_note">ถึงวงเงินใช้จ่ายแล้ว ตัวจำแนกถูกระงับจนถึงรอบถัดไป</string>
-    <string name="usage_billing_upcoming_charge">ยอดเรียกเก็บครั้งถัดไป: %1$s</string>
-    <string name="usage_billing_limit_label">วงเงินใช้จ่ายรายเดือน</string>
+    <string name="ai_credits_title">เครดิต AI</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="other">ใช้เครดิต AI ไปแล้ว %1$s จาก %2$s</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="other">ใช้เครดิต AI ไปแล้ว %1$s เกิน %3$s ของแพ็กเกจ %2$s</item>
+    </plurals>
+    <string name="ai_credits_resets">รีเซ็ต %1$s</string>
+    <string name="ai_credits_free">บันทึกตัวกรอง AI แล้ว แต่จะทำงานได้เฉพาะบน Premium เท่านั้น Premium มีเครดิต AI %1$s เครดิตต่อเดือน, Archive %2$s และ Pro %3$s</string>
+    <string name="ai_credits_upgrade">อัปเกรด</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="other">ตัวกรองข้อความบนเว็บไซต์นี้ใช้ประมาณ %1$s เครดิตต่อเดือน</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="other">ตัวกรองรูปภาพบนเว็บไซต์นี้ใช้ประมาณ %1$s เครดิตต่อเดือน</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">ตัวกรองข้อความบนเว็บไซต์นี้ใช้ไม่ถึง 1 เครดิตต่อเดือน</string>
+    <string name="ai_credits_image_estimate_under_one">ตัวกรองรูปภาพบนเว็บไซต์นี้ใช้เครดิตไม่ถึง 1 เครดิตต่อเดือน</string>
+    <string name="ai_credits_runs_out">หากใช้อัตรานี้ เครดิตจะหมดประมาณ %1$s</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="other">ตัวกรอง AI หยุดชั่วคราวจนถึง %1$s ใช้เครดิต AI %2$s เครดิตของเดือนนี้หมดแล้ว</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">ตัวกรอง AI ใช้เครดิตถึงขีดจำกัดรายเดือนที่ %1$s แล้ว และหยุดชั่วคราวจนถึง %2$s</string>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="other">เปิดการเรียกเก็บเงินตามการใช้งานแล้ว เครดิตที่เกิน %1$s คิดราคา 1¢ ต่อ %2$s: เดือนนี้ใช้ไปแล้ว %3$s</item>
+    </plurals>
+    <string name="ai_credits_billing_on_rate_no_plan">เปิดการเรียกเก็บเงินตามการใช้งานแล้ว AI เครดิตมีค่าใช้จ่ายเครดิตละ 1¢ ต่อ %1$s: ใช้ไปแล้ว %2$s ในเดือนนี้</string>
+    <string name="ai_credits_unbilled">ยอด %1$s รอเรียกเก็บ: เมื่อต้นเดือนหน้าหากยอดอย่างน้อย %2$s หรือเรียกเก็บทันทีที่ %3$s</string>
+    <string name="ai_credits_keep_running">ให้ตัวกรองทำงานต่อ</string>
+    <string name="ai_credits_billing_rate">เมื่อใช้เครดิตเกินจำนวนที่รวมไว้ ตัวกรองจะยังทำงานต่อในอัตรา 1¢ ต่อ %1$s เครดิต</string>
+    <string name="ai_credits_billing_forecast">คาดว่าจะใช้ประมาณ %1$s ในเดือนนี้ตามอัตราการใช้งานปัจจุบัน</string>
+    <string name="ai_credits_turn_on_billing">เปิดการเรียกเก็บเงินตามการใช้งาน</string>
+    <string name="ai_credits_turn_on_rate">คิดเครดิตละ 1¢ สำหรับ %1$s เครดิตที่เกินจากแพ็กเกจของคุณ ประมาณ %2$s ในเดือนนี้</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ ต่อ %1$s เครดิต เมื่อใช้เกินจำนวนที่รวมไว้ในแพ็กเกจ</string>
+    <string name="ai_credits_or_wait">หรือรอจนถึง %1$s</string>
+    <string name="ai_credits_manage_billing">จัดการการเรียกเก็บเงิน</string>
+    <string name="ai_credits_change_limit">เปลี่ยนขีดจำกัด</string>
+    <string name="ai_credits_open">ดูเครดิต AI</string>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="other">แพ็กเกจของคุณมีเครดิต AI %1$s เครดิตต่อเดือน เครดิตหนึ่งรายการใช้กับบทความประมาณหนึ่งรายการผ่านตัวกรองข้อความ ส่วนตัวกรองรูปภาพใช้ประมาณ 10 เครดิตต่อบทความ เครดิตจะรีเซ็ตทุกวันที่ 1 และเครดิตที่ไม่ได้ใช้จะไม่ทบไปเดือนถัดไป</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="other">หากใช้อัตรานี้ เดือนนี้จะใช้เครดิตประมาณ %1$s จาก %2$s เครดิต</item>
+    </plurals>
+    <string name="ai_credits_unlimited">เซิร์ฟเวอร์นี้ไม่นับเครดิต AI ตัวกรอง AI จึงทำงานได้เสมอ</string>
+    <string name="ai_credits_load_failed">โหลดเครดิต AI ไม่สำเร็จ ปัดลงเพื่อลองอีกครั้ง</string>
+    <string name="usage_billing_title">การเรียกเก็บเงินตามการใช้งาน</string>
+    <string name="usage_billing_terms">ระบบจะเรียกเก็บเงินจากบัตรของคุณเมื่อต้นเดือนเมื่อยอดถึง %1$s หรือเรียกเก็บทันทีเมื่อยอดถึง %2$s ยอดที่ต่ำกว่านี้จะรอเรียกเก็บในเดือนถัดไป</string>
+    <string name="usage_billing_set_up">ตั้งค่าการเรียกเก็บเงินตามการใช้งาน</string>
+    <string name="usage_billing_manage">อัปเดตบัตรบน Stripe</string>
+    <string name="usage_billing_cancel">ปิดการเรียกเก็บเงินตามการใช้งาน</string>
+    <string name="usage_billing_cancel_confirm">ปิดการเรียกเก็บเงินตามการใช้งานหรือไม่? ระบบจะเรียกเก็บเครดิตที่เกินแพ็กเกจแล้วทันทีหากยอดถึง %1$s และตัวกรอง AI จะหยุดชั่วคราวเมื่อใช้เครดิตของเดือนนี้หมด</string>
+    <string name="usage_billing_cancel_keep">เปิดไว้ต่อ</string>
+    <string name="usage_billing_cancelled">ปิดการเรียกเก็บเงินตามการใช้งานแล้ว</string>
+    <string name="usage_billing_cancel_failed">ปิดการเรียกเก็บเงินตามการใช้งานไม่สำเร็จ โปรดลองอีกครั้ง</string>
+    <string name="usage_billing_limit_label">ขีดจำกัดรายเดือน</string>
     <string name="usage_billing_limit_hint">ไม่จำกัด</string>
-    <string name="usage_billing_limit_per_month">/เดือน</string>
-    <string name="usage_billing_limit_help">ไม่บังคับ ตัวจำแนกจะหยุดชั่วคราวเมื่อถึงวงเงิน และทำงานต่อในรอบการเรียกเก็บเงินถัดไป</string>
+    <string name="usage_billing_limit_help">ตัวกรองจะหยุดทำงานเมื่อการเรียกเก็บเงินตามการใช้งานถึงจำนวนนี้ เว้นว่างไว้หากไม่ต้องการจำกัด</string>
     <string name="usage_billing_limit_save">บันทึกขีดจำกัด</string>
-    <string name="usage_billing_limit_saved">บันทึกวงเงินใช้จ่ายแล้ว</string>
-    <string name="usage_billing_limit_cleared">นำวงเงินใช้จ่ายออกแล้ว</string>
-    <string name="usage_billing_limit_failed">บันทึกวงเงินใช้จ่ายไม่สำเร็จ โปรดลองอีกครั้ง</string>
+    <string name="usage_billing_limit_saved">บันทึกขีดจำกัดรายเดือนแล้ว</string>
+    <string name="usage_billing_limit_cleared">นำขีดจำกัดรายเดือนออกแล้ว</string>
+    <string name="usage_billing_limit_failed">บันทึกขีดจำกัดรายเดือนไม่สำเร็จ โปรดลองอีกครั้ง</string>
     <string name="usage_billing_limit_invalid">ป้อนขีดจำกัดเป็นดอลลาร์ เช่น %1$s</string>
+    <string name="usage_billing_limit_read_only">ขีดจำกัดรายเดือน: %1$s</string>
+    <string name="usage_billing_no_limit">ไม่จำกัดรายเดือน</string>
     <string name="usage_billing_history_title">ประวัติการเรียกเก็บเงินตามการใช้งาน</string>
-    <string name="usage_billing_none">ยังไม่ได้ตั้งค่าการเรียกเก็บเงินตามการใช้งาน</string>
     <string name="usage_billing_no_invoices">ยังไม่มีใบแจ้งหนี้การเรียกเก็บเงินตามการใช้งาน</string>
-    <string name="usage_billing_upcoming">(กำลังจะมาถึง)</string>
+    <string name="usage_billing_upcoming">ที่กำลังจะเรียกเก็บ</string>
     <string name="usage_billing_invoice">ใบแจ้งหนี้</string>
-    <string name="usage_billing_quantity">×%1$s</string>
-    <string name="usage_billing_load_failed">โหลดข้อมูลการเรียกเก็บเงินตามการใช้งานไม่สำเร็จ ดึงลงเพื่อ尝ลองอีกครั้ง</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="other">%1$s เครดิต</item>
+    </plurals>
     <string name="usage_billing_stripe_failed">ติดต่อ Stripe ไม่ได้ โปรดลองอีกครั้ง</string>
-    <string name="usage_billing_already_active">ตั้งค่าการเรียกเก็บเงินตามการใช้งานแล้ว</string>
-    <string name="usage_billing_activating">กำลังเปิดใช้การเรียกเก็บเงินตามการใช้งาน ขั้นตอนนี้ใช้เวลาไม่กี่วินาทีหลังจาก Stripe ยืนยันรายละเอียดการชำระเงิน</string>
+    <string name="usage_billing_already_active">ตั้งค่าการเรียกเก็บเงินตามการใช้งานไว้แล้ว</string>
+    <string name="usage_billing_activating">กำลังเปิดการเรียกเก็บเงินตามการใช้งาน เมื่อ Stripe ยืนยันรายละเอียดการชำระเงินแล้วจะใช้เวลาไม่กี่วินาที</string>
     <string name="usage_billing_activating_slow">Stripe ยังยืนยันการเรียกเก็บเงินของคุณอยู่ ดึงหน้าจอลงเพื่อตรวจสอบอีกครั้งในอีกสักครู่</string>
-    <string name="usage_billing_setup_complete">ตั้งค่าการเรียกเก็บเงินตามการใช้งานแล้ว ตัวกรอง AI จะเริ่มทำงานกับบทความใหม่</string>
-    <string name="usage_billing_no_browser">ติดตั้งเว็บเบราว์เซอร์เพื่อตั้งค่าการเรียกเก็บเงิน</string>
+    <string name="usage_billing_setup_complete">เปิดการเรียกเก็บเงินตามการใช้งานแล้ว ตัวกรอง AI จะทำงานต่อแม้ใช้เครดิตเกิน</string>
+    <string name="usage_billing_no_browser">ติดตั้งเว็บเบราว์เซอร์เพื่อตั้งค่าการเรียกเก็บเงินตามการใช้งาน</string>
     <string name="listen_story_button">ฟัง</string>
     <string name="listen_resume">เล่นต่อ</string>
     <string name="listen_pause">หยุดชั่วคราว</string>

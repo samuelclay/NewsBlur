@@ -360,11 +360,17 @@ msgstr "1.024 sites, busca em texto completo, Fluxo de notícias, tags de artigo
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1.024 sites, busca, visualização em texto e fluxo de notícias"
 
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10.000 créditos de IA por mês para filtros de IA"
+
 msgid "100 feeds"
 msgstr "100 feeds"
 
 msgid "100 sources, 3 feeds"
 msgstr "100 fontes, 3 feeds"
+
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100.000 créditos de IA por mês para filtros de IA"
 
 msgid "12 sites"
 msgstr "12 sites"
@@ -629,12 +635,21 @@ msgstr "Recursos de IA"
 msgid "AI built into every story"
 msgstr "IA integrada a todos os artigos"
 
+msgid "AI credits"
+msgstr "Créditos de IA"
+
+msgid "AI filters aren't available on this server"
+msgstr "Os filtros de IA não estão disponíveis neste servidor"
+
 msgctxt "notification email classifier match"
 msgid "AI image filter"
 msgstr "Filtro de imagens com IA"
 
 msgid "AI skill"
 msgstr "Skill de IA"
+
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Filtros de texto e imagem com IA, com 1.000 créditos de IA por mês"
 
 msgctxt "notification email classifier match"
 msgid "AI text filter"
@@ -1037,6 +1052,44 @@ msgstr "Pergunte ao Assistente de arquivo"
 
 msgid "Ask the community or try NewsBlur for yourself."
 msgstr "Pergunte à comunidade ou experimente o NewsBlur você mesmo."
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(credits_text)s credit. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about $%(forecast_overage)s this month. You "
+"can set a monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(credits_text)s credits. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about $%(forecast_overage)s this month. You "
+"can set a monthly limit so it never costs more than you want."
+msgstr[0] ""
+"No ritmo atual, o uso deste mês deve ser de cerca de %(credits_text)s crédito. Com a cobrança por uso, os "
+"créditos que excederem seu plano custam 1 centavo a cada 1.000, o que dá cerca de $%(forecast_overage)s "
+"neste mês. Você pode definir um limite mensal para não pagar mais do que deseja."
+msgstr[1] ""
+"No ritmo atual, o uso deste mês deve ser de cerca de %(credits_text)s créditos. Com a cobrança por uso, os "
+"créditos que excederem seu plano custam 1 centavo a cada 1.000, o que dá cerca de $%(forecast_overage)s "
+"neste mês. Você pode definir um limite mensal para não pagar mais do que deseja."
+
+#, python-format
+msgid ""
+"At the pace they've been running, this month would use about %(credits_text)s credit. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about <b>$%(forecast_overage)s</b> this "
+"month. You can set a monthly limit so it never costs more than you want."
+msgid_plural ""
+"At the pace they've been running, this month would use about %(credits_text)s credits. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about <b>$%(forecast_overage)s</b> this "
+"month. You can set a monthly limit so it never costs more than you want."
+msgstr[0] ""
+"No ritmo atual, o uso deste mês deve ser de cerca de %(credits_text)s crédito. Com a cobrança por uso, os "
+"créditos que excederem seu plano custam 1 centavo a cada 1.000, o que dá cerca de "
+"<b>$%(forecast_overage)s</b> neste mês. Você pode definir um limite mensal para não pagar mais do que "
+"deseja."
+msgstr[1] ""
+"No ritmo atual, o uso deste mês deve ser de cerca de %(credits_text)s créditos. Com a cobrança por uso, os "
+"créditos que excederem seu plano custam 1 centavo a cada 1.000, o que dá cerca de "
+"<b>$%(forecast_overage)s</b> neste mês. Você pode definir um limite mensal para não pagar mais do que "
+"deseja."
 
 msgid "Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically."
 msgstr "A autenticação usa OAuth 2.0 &mdash; seu cliente cuidará do fluxo automaticamente."
@@ -1552,6 +1605,9 @@ msgstr "Não foi possível salvar o artigo: não encontrado"
 msgid "Could not unsave story, not found"
 msgstr "Não foi possível remover o artigo dos salvos; ele não foi encontrado"
 
+msgid "Couldn't reach Stripe to charge what's due. Please try again."
+msgstr "Não foi possível conectar ao Stripe para cobrar o valor devido. Tente novamente."
+
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "Não foi possível acessar o Stripe. Tente novamente."
 
@@ -1698,6 +1754,18 @@ msgstr "Padrão"
 
 msgid "Delete"
 msgstr "Excluir"
+
+msgid ""
+"Describe what to focus on or hide in plain language, for a story's text or its images. AI filters score "
+"stories just like the intelligence trainer. A credit is about one story through a text filter, and an image"
+" filter uses about 10 credits a story. Usage billing keeps filters running past your credits at 1 cent per "
+"1,000 credits."
+msgstr ""
+"Descreva em linguagem simples o que focar ou ocultar no texto ou nas imagens de um artigo. Os filtros de IA"
+" pontuam os artigos como o Treinador de inteligência. Um crédito corresponde a aproximadamente um artigo "
+"processado por um filtro de texto, e um filtro de imagens usa cerca de 10 créditos por artigo. A cobrança "
+"por uso mantém os filtros funcionando mesmo após o fim dos seus créditos, por 1 centavo a cada 1.000 "
+"créditos."
 
 msgid "Description"
 msgstr "Descrição"
@@ -3581,9 +3649,6 @@ msgstr "Aplicativos nativos para iOS e Android"
 msgid "Native on Android"
 msgstr "Nativo no Android"
 
-msgid "Natural language text and image classifiers"
-msgstr "Classificadores de texto e imagem em linguagem natural"
-
 msgid "Navigate everything without touching the mouse"
 msgstr "Navegue por tudo sem tocar no mouse"
 
@@ -4782,6 +4847,9 @@ msgstr "Leitor RSS com treinamento inteligente"
 msgid "RSS/Atom only"
 msgstr "Somente RSS/Atom"
 
+msgid "Raise or remove the limit"
+msgstr "Aumentar ou remover o limite"
+
 msgid "Re-analyzing page"
 msgstr "Reanalisando a página"
 
@@ -5665,6 +5733,11 @@ msgstr ""
 "Artigos enviados assim que são publicados, com notificações em tempo real. Usuários Pro recebem "
 "atualizações de todos os feeds a cada 5 a 15 minutos para acompanhar notícias de última hora."
 
+msgid "Stories your filters already scored keep their scores, and the rest of your training keeps working."
+msgstr ""
+"Os artigos que seus filtros já pontuaram mantêm suas pontuações, e o restante do seu treinamento continua "
+"funcionando."
+
 msgid "Story"
 msgstr "Artigo"
 
@@ -6338,6 +6411,12 @@ msgstr "Experimente grátis"
 msgid "Try out NewsBlur"
 msgstr "Experimente o NewsBlur"
 
+msgid "Turn on usage billing"
+msgstr "Ativar cobrança por uso"
+
+msgid "Turn on usage billing:"
+msgstr "Ativar cobrança por uso:"
+
 msgid ""
 "Two different philosophies: NewsBlur is a dedicated RSS reader with intelligence training. Readwise Reader "
 "combines RSS, read-later, and highlights in one app."
@@ -6453,12 +6532,6 @@ msgstr "Faça upgrade para uma assinatura Premium para enviar mais de um artigo 
 
 msgid "Upgrade to premium archive"
 msgstr "Faça upgrade para o Premium Archive"
-
-msgid "Usage billing not enabled"
-msgstr "Cobrança por uso não ativada"
-
-msgid "Usage billing required for AI classifiers"
-msgstr "Cobrança por uso necessária para classificadores de IA"
 
 msgid "Usage-based billing isn't available right now."
 msgstr "A cobrança por uso não está disponível no momento."
@@ -6833,13 +6906,6 @@ msgid "Works with social media profiles, job boards, product pages, and more"
 msgstr "Funciona com perfis de redes sociais, sites de emprego, páginas de produtos e muito mais"
 
 msgid ""
-"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
-"stories just like the intelligence trainer, with usage-based billing."
-msgstr ""
-"Escreva instruções em linguagem natural para filtrar artigos por conteúdo ou imagens. Os classificadores em"
-" linguagem natural avaliam os artigos como o treinador de inteligência, com cobrança baseada no uso."
-
-msgid ""
 "Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
 "professionals."
 msgstr ""
@@ -7049,6 +7115,9 @@ msgid "You can only send %(count)s story per day by email."
 msgid_plural "You can only send %(count)s stories per day by email."
 msgstr[0] "Você só pode enviar %(count)s artigo por dia por e-mail."
 msgstr[1] "Você só pode enviar %(count)s artigos por dia por e-mail."
+
+msgid "You can raise or remove the limit in your account:"
+msgstr "Você pode aumentar ou remover o limite na sua conta:"
 
 msgid "You can re-upload the attached file to NewsBlur and get all of your sites back."
 msgstr "Você pode enviar novamente o arquivo anexado para o NewsBlur e recuperar todos os seus sites."
@@ -7398,6 +7467,34 @@ msgstr ""
 "Você esteve recentemente no NewsBlur, então talvez não quisesse voltar para a conta gratuita? Talvez só "
 "precise renovar sua conta Premium. Vamos ajudar você a fazer isso."
 
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight, and your AI credits reset on the "
+"1st."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight, and your AI credits reset on "
+"the 1st."
+msgstr[0] ""
+"Você usou o teste gratuito de filtro de IA de hoje (%(count)s). Ele será renovado à meia-noite, e seus "
+"créditos de IA serão renovados no dia 1º."
+msgstr[1] ""
+"Você usou os %(count)s testes gratuitos de filtro de IA de hoje. Eles serão renovados à meia-noite, e seus "
+"créditos de IA serão renovados no dia 1º."
+
+#, python-format
+msgid ""
+"You've used today's %(count)s free AI filter test. It resets at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgid_plural ""
+"You've used today's %(count)s free AI filter tests. They reset at midnight. Premium includes monthly AI "
+"credits that run your filters on every new story."
+msgstr[0] ""
+"Você usou o teste gratuito de filtro de IA de hoje (%(count)s). Ele será redefinido à meia-noite. O Premium"
+" inclui créditos mensais de IA para executar seus filtros em cada novo artigo."
+msgstr[1] ""
+"Você usou os testes gratuitos de filtro de IA de hoje (%(count)s). Eles serão redefinidos à meia-noite. O "
+"Premium inclui créditos mensais de IA para executar seus filtros em cada novo artigo."
+
 msgid "YouTube search request failed."
 msgstr "A solicitação de pesquisa do YouTube falhou."
 
@@ -7430,6 +7527,56 @@ msgid "Your <b>30-day trial premium subscription</b> has started. You now have f
 msgstr ""
 "Seu <b>período de avaliação de 30 dias da assinatura Premium</b> começou. Agora você tem acesso completo a "
 "todos os recursos Premium:"
+
+#, python-format
+msgid ""
+"Your AI filters reached the $%(monthly_limit)s monthly limit you set for usage billing, so they've stopped "
+"scoring new stories. They start again on %(date)s."
+msgstr ""
+"Seus filtros de IA atingiram o limite mensal de $%(monthly_limit)s definido para a cobrança por uso, então "
+"pararam de pontuar novos artigos. Eles voltarão a funcionar em %(date)s."
+
+#, python-format
+msgid ""
+"Your AI filters reached the <b>$%(monthly_limit)s</b> monthly limit you set for usage billing, so they've "
+"stopped scoring new stories. They start again on <b>%(date)s</b>."
+msgstr ""
+"Seus filtros de IA atingiram o limite mensal de <b>$%(monthly_limit)s</b> definido para a cobrança por uso,"
+" então pararam de pontuar novos artigos. Eles voltarão a funcionar em <b>%(date)s</b>."
+
+msgid "Your AI filters reached your monthly limit"
+msgstr "Seus filtros de IA atingiram o limite mensal"
+
+#, python-format
+msgid ""
+"Your AI filters used this month's %(included_text)s AI credit, so they've stopped scoring new stories. They"
+" start again on %(date)s, when your credits reset."
+msgid_plural ""
+"Your AI filters used all %(included_text)s of this month's AI credits, so they've stopped scoring new "
+"stories. They start again on %(date)s, when your credits reset."
+msgstr[0] ""
+"Seus filtros de IA usaram o crédito de IA deste mês (%(included_text)s), então pararam de avaliar novos "
+"artigos. Eles voltarão a funcionar em %(date)s, quando seus créditos forem renovados."
+msgstr[1] ""
+"Seus filtros de IA usaram todos os %(included_text)s créditos de IA deste mês, então pararam de avaliar "
+"novos artigos. Eles voltarão a funcionar em %(date)s, quando seus créditos forem renovados."
+
+#, python-format
+msgid ""
+"Your AI filters used this month's <b>%(included_text)s</b> AI credit, so they've stopped scoring new "
+"stories. They start again on <b>%(date)s</b>, when your credits reset."
+msgid_plural ""
+"Your AI filters used all <b>%(included_text)s</b> of this month's AI credits, so they've stopped scoring "
+"new stories. They start again on <b>%(date)s</b>, when your credits reset."
+msgstr[0] ""
+"Seus filtros de IA usaram o crédito de IA de <b>%(included_text)s</b> deste mês, então pararam de avaliar "
+"novos artigos. Eles voltarão a funcionar em <b>%(date)s</b>, quando seus créditos forem renovados."
+msgstr[1] ""
+"Seus filtros de IA usaram todos os <b>%(included_text)s</b> créditos de IA deste mês, então pararam de "
+"avaliar novos artigos. Eles voltarão a funcionar em <b>%(date)s</b>, quando seus créditos forem renovados."
+
+msgid "Your AI filters used this month's credits"
+msgstr "Seus filtros de IA usaram os créditos deste mês"
 
 msgid "Your Blurblog also has an RSS feed:"
 msgstr "Seu Blurblog também tem um feed RSS:"

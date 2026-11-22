@@ -23,6 +23,44 @@ def EmailNewUser(user_id):
     user_profile.send_new_user_email()
 
 
+@app.task(name="email-ai-credits-paused")
+def EmailAICreditsPaused(user_id, reason):
+    """tasks.py: Queued by apps/analyzer/ai_credits.py when a reader's AI filters pause."""
+    try:
+        user_profile = Profile.objects.get(user__pk=user_id)
+    except Profile.DoesNotExist:
+        return
+    user_profile.send_ai_credits_paused_email(reason)
+
+
+@app.task(name="charge-ai-credit-overage")
+def ChargeAICreditOverage(user_id, minimum_credits):
+    """tasks.py: Charges a reader's unbilled AI credits once they reach minimum_credits, queued by
+    apps/analyzer/ai_credits.py when they reach the immediate charge."""
+    from apps.analyzer import ai_credits
+
+    try:
+        profile = Profile.objects.get(user__pk=user_id)
+    except Profile.DoesNotExist:
+        return
+    if ai_credits.has_usage_billing(profile):
+        ai_credits.charge_unbilled(profile, minimum_credits)
+
+
+@app.task(name="charge-monthly-ai-credit-overage")
+def ChargeMonthlyAICreditOverage():
+    """tasks.py: Daily, charges each reader with usage billing for last month's AI credits past
+    their plan's, once a month and only when it's at least $1 (apps/analyzer/ai_credits.py)."""
+    from apps.analyzer import ai_credits
+
+    if not ai_credits.is_billing_available():
+        return
+    for profile in (
+        Profile.objects.filter(is_usage_billing=True).exclude(stripe_id=None).exclude(stripe_id="")
+    ):
+        ai_credits.charge_last_month(profile)
+
+
 @app.task(name="email-new-premium")
 def EmailNewPremium(user_id):
     user_profile = Profile.objects.get(user__pk=user_id)

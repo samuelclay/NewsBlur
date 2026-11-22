@@ -115,7 +115,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         ]),
                         $.make('li', { className: 'NB-10 NB-feature-classifiers' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Natural language text and image classifiers')
+                            gettext('AI text and image filters, with 1,000 AI credits a month')
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -148,6 +148,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-14 NB-feature-ask-ai' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Ask AI questions about stories')
+                        ]),
+                        $.make('li', { className: 'NB-20 NB-feature-classifiers' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('10,000 AI credits a month for AI filters')
                         ]),
                         $.make('li', { className: 'NB-16 NB-feature-training-scope' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
@@ -240,6 +244,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-5 NB-feature-listen' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Listen to 10 hours of stories read aloud a week')
+                        ]),
+                        $.make('li', { className: 'NB-7 NB-feature-classifiers' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('100,000 AI credits a month for AI filters')
                         ]),
                         $.make('li', { className: 'NB-4' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),

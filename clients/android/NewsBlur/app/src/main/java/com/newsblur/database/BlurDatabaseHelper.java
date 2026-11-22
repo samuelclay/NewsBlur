@@ -480,19 +480,6 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
-    /** Each feed's stories_last_month, for the trainer's AI cost estimates in AiClassifierSections.kt. */
-    @NonNull
-    public Map<String, Integer> getStoriesLastMonthByFeed() {
-        Map<String, Integer> stories = new HashMap<>();
-        Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE,
-                new String[]{DatabaseConstants.FEED_ID, DatabaseConstants.FEED_STORIES_LAST_MONTH}, null, null, null, null, null);
-        while (c.moveToNext()) {
-            stories.put(c.getString(0), c.getInt(1));
-        }
-        c.close();
-        return stories;
-    }
-
     @NonNull
     public Set<String> getAllStoryThumbnails() {
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_THUMBNAIL_URL}, null, null, null, null, null);

@@ -489,7 +489,7 @@ open class SyncService :
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
             prefsRepo.setArchive(feedResponse.isArchive, feedResponse.premiumExpire)
             prefsRepo.setPro(feedResponse.isPro, feedResponse.premiumExpire)
-            feedResponse.usageBillingState?.let(prefsRepo::setUsageBillingState)
+            feedResponse.aiCredits?.let(prefsRepo::setAiCredits)
             prefsRepo.setIsStaff(feedResponse.isStaff)
             prefsRepo.setExtToken(feedResponse.shareExtToken)
             feedResponse.storyClustering?.let {

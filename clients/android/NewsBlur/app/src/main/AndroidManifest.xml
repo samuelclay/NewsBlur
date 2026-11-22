@@ -842,13 +842,13 @@
 
         <activity android:name=".activity.SubscriptionActivity" />
 
-        <!-- UsageBillingActivity.kt: Stripe returns the Custom Tab to <socialCallbackScheme>://usage-billing,
-             and singleTask closes the tab and hands the result to the open billing screen. While
-             util/UsageBillingFeature.kt holds billing, the activity stays registered but closes at once. -->
+        <!-- AiCreditsActivity.kt: Stripe returns the Custom Tab to <socialCallbackScheme>://usage-billing, and
+             singleTask closes the tab and hands the result to the open AI credits screen. While util/UsageBillingFeature.kt
+             holds usage billing, the link only shows the credits and never starts a Stripe session. -->
         <activity
-            android:name=".activity.UsageBillingActivity"
+            android:name=".activity.AiCreditsActivity"
             android:exported="true"
-            android:label="@string/usage_billing_title"
+            android:label="@string/ai_credits_title"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

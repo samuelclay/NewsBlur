@@ -4,10 +4,13 @@ Handles saving classifier rules (by title, author, tag, feed, and AI prompt)
 and populating the trainer modal with current classifier state.
 """
 
+import datetime
+from types import SimpleNamespace
+
 import redis
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import gettext
+from django.utils.translation import gettext, ngettext
 from django.views.decorators.http import require_POST
 from mongoengine.queryset import NotUniqueError, Q
 
@@ -31,7 +34,9 @@ from apps.social.models import MSocialSubscription
 from apps.statistics.rtrending import RTrendingStory
 from utils import json_functions as json
 from utils import log as logging
+from utils.ratelimit import ratelimit
 from utils.user_functions import ajax_login_required, get_user
+from vendor.timezones.utilities import localtime_for_timezone
 
 
 def index(request):
@@ -417,149 +422,161 @@ def save_prompt_classifier(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "feed:%s" % feed_id)
 
-    from apps.analyzer.vlm_usage import AIClassifierCostEstimator
-
-    cost_estimate = {}
-    if request.user.profile.can_use_ai_classifiers:
-        estimator = AIClassifierCostEstimator(request.user)
-        cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
-
     return {
         "code": 0,
         "message": "OK",
         "prompt_classifiers": prompt_list,
-        "cost_estimate": cost_estimate,
     }
+
+
+# views.py: How many of a story's images "Test on this story" judges. Each one is downloaded
+# before Jev sees it, and the whole test has to finish inside one web request: five images
+# download in one round (jev.IMAGE_FETCH_WORKERS) and go to Jev in one round of parallel
+# requests (jev.IMAGE_REQUEST_WORKERS).
+TEST_PROMPT_MAX_IMAGES = 5
+
+# views.py: Readers whose filters aren't running can try AI filters this many times a day, to
+# see whether a filter matches: free accounts, and plans whose monthly AI credits are used up
+# (apps/analyzer/ai_credits.py). Otherwise tests spend credits like the filters do.
+TEST_PROMPT_DAILY_LIMIT = 10
+
+
+def _test_prompt_count_key(user):
+    """Redis key counting today's prompt tests, where today is the reader's own day."""
+    today = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone).date()
+    return "AIT:%s:%s" % (user.pk, today.isoformat())
 
 
 @require_POST
 @ajax_login_required
+@ratelimit(minutes=1, requests=20, use_path=True)
 @json.json_view
 def test_prompt_classifier(request):
-    """Test a prompt against a story using AI. Supports text-only or image (VLM) modes."""
-    import zlib
+    """Test an AI filter against one story with Jev, by its text or by each of its images.
 
-    from apps.rss_feeds.models import MStory
-    from utils.ai_functions import (
-        classify_stories_with_ai,
-        classify_stories_with_vision,
-    )
-
-    if not request.user.profile.can_use_ai_classifiers:
-        return {"code": -1, "message": gettext("Usage billing required for AI classifiers")}
+    views.py: Open to every account. Anyone can write AI filters and see how they judge a
+    story; they only score stories while the reader has AI credits, which the trainer shows
+    next to them. Readers whose filters aren't running get TEST_PROMPT_DAILY_LIMIT tests a
+    day. A test reserves its slot before Jev is called, so simultaneous tests can't all slip
+    under the limit, and gives it back when it fails, so a failed request doesn't use one up.
+    """
+    from apps.analyzer import ai_credits, jev
 
     post = request.POST
     prompt_text = post.get("prompt", "").strip()
     story_hash = post.get("story_hash", "")
     include_images = post.get("include_images", "false") == "true"
+    # Test the direction the reader is editing, so a hidden filter is described and
+    # judged the way it will run.
+    classifier_type = "hidden" if post.get("classifier_type") == "hidden" else "focus"
 
     if not prompt_text:
         return {"code": -1, "message": gettext("Missing prompt")}
+    if len(prompt_text) > 500:
+        return {"code": -1, "message": gettext("Prompt too long (max 500 characters)")}
     if not story_hash:
         return {"code": -1, "message": gettext("Missing story_hash")}
+    if not jev.is_configured():
+        return {"code": -1, "message": gettext("AI filters aren't available on this server")}
 
     try:
         story_db = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:
         return {"code": -1, "message": gettext("Story not found")}
 
-    # Build a temporary prompt-like object for the classifier
-    class TempPrompt:
-        pass
+    image_urls = (story_db.image_urls or [])[:TEST_PROMPT_MAX_IMAGES]
+    if include_images and not image_urls:
+        return {"code": -1, "message": gettext("Story has no images")}
 
-    temp_prompt = TempPrompt()
-    temp_prompt.prompt = prompt_text
-    # Preview the direction the user is actually editing, so a hidden classifier
-    # is previewed with the same instructions it will run with.
-    temp_prompt.classifier_type = "hidden" if post.get("classifier_type") == "hidden" else "focus"
+    counted = not ai_credits.can_run(request.user.profile)
+    if counted:
+        count_key = _test_prompt_count_key(request.user)
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        reserved = r.incr(count_key)
+        r.expire(count_key, 2 * 24 * 60 * 60)
+        if reserved > TEST_PROMPT_DAILY_LIMIT:
+            r.decr(count_key)
+            logging.user(request, "~FRAI filter test limit reached")
+            if request.user.profile.can_use_ai_classifiers:
+                message = ngettext(
+                    "You've used today's %(count)s free AI filter test. It resets at midnight, "
+                    "and your AI credits reset on the 1st.",
+                    "You've used today's %(count)s free AI filter tests. They reset at midnight, "
+                    "and your AI credits reset on the 1st.",
+                    TEST_PROMPT_DAILY_LIMIT,
+                )
+            else:
+                message = ngettext(
+                    "You've used today's %(count)s free AI filter test. It resets at midnight. "
+                    "Premium includes monthly AI credits that run your filters on every new story.",
+                    "You've used today's %(count)s free AI filter tests. They reset at midnight. "
+                    "Premium includes monthly AI credits that run your filters on every new story.",
+                    TEST_PROMPT_DAILY_LIMIT,
+                )
+            return {
+                "code": -1,
+                "test_limit_reached": True,
+                "message": message % {"count": TEST_PROMPT_DAILY_LIMIT},
+            }
 
-    if include_images:
-        # VLM mode: classify each image individually so the frontend
-        # can show per-image match/no-match labels.
-        image_urls = story_db.image_urls or []
-        if not image_urls:
-            return {"code": -1, "message": gettext("Story has no images")}
+    test_filter = SimpleNamespace(
+        key="test", prompt=prompt_text, classifier_type=classifier_type, include_images=include_images
+    )
+    succeeded = False
+    try:
+        response = _run_prompt_test(request, test_filter, story_db, image_urls if include_images else None)
+        succeeded = response["code"] == 0
+    finally:
+        if counted and not succeeded:
+            r.decr(count_key)
+    return response
 
-        # Send each image as its own "story" so VLM returns per-image results
-        image_stories = []
-        for i, url in enumerate(image_urls):
-            image_stories.append(
-                {
-                    "story_id": "img_%d" % i,
-                    "story_title": "",
-                    "story_content": "",
-                    "image_urls": [url],
-                }
-            )
-        results = classify_stories_with_vision(temp_prompt, image_stories, user_id=request.user.pk)
-        if results is None:
+
+def _run_prompt_test(request, test_filter, story_db, image_urls):
+    """Judge one story's text, or each of its images when image_urls is given, with Jev."""
+    from apps.analyzer import jev
+
+    if image_urls:
+        # Each image is judged as its own story, so the trainer can label every image.
+        image_stories = [
+            {"story_hash": "img_%d" % i, "image_urls": [url]} for i, url in enumerate(image_urls)
+        ]
+        scores = jev.classify_stories([test_filter], image_stories, user_id=request.user.pk).get("test", {})
+        if len(scores) < len(image_stories):
             return {"code": -1, "message": gettext("Classification failed, please try again")}
-
-        # Build per-image results list (ordered by image index)
-        image_results = []
-        for i in range(len(image_urls)):
-            cls = results.get("img_%d" % i, 0)
-            image_results.append(1 if cls != 0 else 0)
-
-        classification = 1 if any(r == 1 for r in image_results) else 0
+        image_results = [1 if scores["img_%d" % i] else 0 for i in range(len(image_stories))]
+        classification = 1 if any(image_results) else 0
     else:
-        # Text-only mode: classify based on title and content
-        story_content = story_db.story_content or ""
-        if story_db.story_content_z:
-            story_content = zlib.decompress(story_db.story_content_z).decode("utf-8")
-
         story_dict = {
-            "story_id": story_hash,
+            "story_hash": story_db.story_hash,
             "story_title": story_db.story_title or "",
-            "story_content": story_content,
+            "story_content": story_db.story_content_str or "",
         }
-        results = classify_stories_with_ai(temp_prompt, [story_dict], user_id=request.user.pk)
-        if results is None:
+        scores = jev.classify_stories([test_filter], [story_dict], user_id=request.user.pk).get("test", {})
+        if story_db.story_hash not in scores:
             return {"code": -1, "message": gettext("Classification failed, please try again")}
-
-    if not include_images:
-        classification = results.get(story_hash, 0)
-        classification = 1 if classification != 0 else 0
-
-    mode = "vision" if include_images else "text"
-
-    # Include cost estimate so frontend can show per-run cost
-    cost_estimate = {}
-    if request.user.profile.can_use_ai_classifiers:
-        from apps.analyzer.vlm_usage import AIClassifierCostEstimator
-
-        estimator = AIClassifierCostEstimator(request.user)
-        cost_estimate = estimator.get_cost_estimate(feed_id=int(request.POST.get("feed_id", 0)))
+        classification = 1 if scores[story_db.story_hash] else 0
 
     logging.user(
         request,
-        "~FBTested %s prompt: ~SB%s~SN → %s ~FW%s" % (mode, story_hash, classification, prompt_text[:50]),
+        "~FBTested %s prompt: ~SB%s~SN → %s ~FW%s"
+        % ("image" if image_urls else "text", story_db.story_hash, classification, test_filter.prompt[:50]),
     )
 
-    resp = {"code": 0, "classification": classification, "cost_estimate": cost_estimate}
-    if include_images:
-        resp["image_results"] = image_results
-    return resp
-
-
-@ajax_login_required
-@json.json_view
-def get_ai_classifier_usage(request):
-    from apps.analyzer.vlm_usage import AIClassifierCostEstimator
-
-    if not request.user.profile.can_use_ai_classifiers:
-        return {"code": 0, "can_use_ai": False}
-
-    feed_id = int(request.GET.get("feed_id", 0) or request.POST.get("feed_id", 0))
-    estimator = AIClassifierCostEstimator(request.user)
-    cost_estimate = estimator.get_cost_estimate(feed_id=feed_id)
-
-    current_spend, limit, is_limit_reached = request.user.profile.get_usage_billing_spend()
-    cost_estimate["current_cycle_spend"] = round(current_spend, 2)
-    cost_estimate["usage_billing_limit"] = float(limit) if limit else None
-    cost_estimate["is_limit_reached"] = is_limit_reached
-
-    return {"code": 0, "can_use_ai": True, **cost_estimate}
+    response = {
+        "code": 0,
+        "classification": classification,
+        # The topic the filter was understood as, e.g. "sports" for "Hide anything about sports".
+        "description": jev.describe_filter(
+            test_filter.prompt,
+            test_filter.classifier_type,
+            include_images=test_filter.include_images,
+            user_id=request.user.pk,
+        ),
+    }
+    if image_urls:
+        response["image_results"] = image_results
+    return response
 
 
 @json.json_view
@@ -856,3 +873,37 @@ def popularity_query(request):
     )
 
     return response
+
+
+@ajax_login_required
+@json.json_view
+def get_ai_classifier_usage(request):
+    """This month's AI credits, and about how many a month AI filters on a site spend.
+
+    views.py: The trainer shows the estimate next to each AI filter section. avg_cost_per_text,
+    avg_cost_per_image, current_cycle_spend, usage_billing_limit and is_limit_reached are
+    for iOS and Android builds from before AI credits, which still read them.
+    """
+    from apps.analyzer import ai_credits
+
+    profile = request.user.profile
+    credits = ai_credits.state(profile)
+    feed_id = int(request.GET.get("feed_id", 0) or request.POST.get("feed_id", 0) or 0)
+    stories_per_month = 0
+    if feed_id:
+        feed = Feed.get_by_id(feed_id)
+        stories_per_month = (feed and feed.stories_last_month) or 0
+
+    return {
+        "code": 0,
+        "can_use_ai": profile.can_use_ai_classifiers,
+        "ai_credits": credits,
+        "stories_per_month": stories_per_month,
+        "text_credits_per_month": ai_credits.estimate_monthly_credits(stories_per_month, False),
+        "image_credits_per_month": ai_credits.estimate_monthly_credits(stories_per_month, True),
+        "avg_cost_per_text": ai_credits.TEXT_STORY_CREDITS * ai_credits.CREDIT_USD,
+        "avg_cost_per_image": ai_credits.IMAGE_STORY_CREDITS * ai_credits.CREDIT_USD,
+        "current_cycle_spend": credits["overage_usd"],
+        "usage_billing_limit": credits["monthly_limit"],
+        "is_limit_reached": credits["pause_reason"] == "limit",
+    }

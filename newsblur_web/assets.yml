@@ -140,6 +140,7 @@ stylesheets:
   common:
     - css/reader/reader.css
     - css/reader/growth_prompts.css
+    - css/reader/ai_credits.css
     - css/controls/*.css
     - css/pages/*.css
     - css/reader/modals.css

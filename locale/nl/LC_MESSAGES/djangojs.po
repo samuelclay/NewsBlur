@@ -163,10 +163,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s en %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/artikel"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s byte"
@@ -195,12 +191,6 @@ msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s reactie"
 msgstr[1] "%(count)s reacties"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s inhoudsfilter"
-msgstr[1] "%(count)s inhoudsfilters"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -263,12 +253,6 @@ msgstr[0] "%(count)s uur geleden"
 msgstr[1] "%(count)s uur geleden"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s afbeeldingsfilter"
-msgstr[1] "%(count)s afbeeldingsfilters"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s keer leuk"
@@ -321,18 +305,6 @@ msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s van %(limit)s site"
 msgstr[1] "%(count)s van %(limit)s sites"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s op alle sites (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s in map (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s op deze site (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -435,12 +407,6 @@ msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s artikel wordt verwijderd"
 msgstr[1] "%(count)s artikelen worden verwijderd"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s artikel/mnd"
-msgstr[1] "%(count)s artikelen/mnd"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -605,10 +571,6 @@ msgstr[0] "%(start)s tot %(end)s minuut"
 msgstr[1] "%(start)s tot %(end)s minuten"
 
 #, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
-
-#, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
 msgstr "%(submit_button)s of %(cancel_link)s"
 
@@ -643,6 +605,26 @@ msgstr "Sites over %(topic)s"
 #, python-format
 msgid "%(topic)s Subreddits"
 msgstr "Subreddits over %(topic)s"
+
+#, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr ""
+"%(unbilled)s wacht op betaling: aan het begin van volgende maand als het bedrag minstens %(minimum)s is, of"
+" meteen op %(immediate)s."
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "%(used)s AI-tegoed gebruikt, %(over)s boven de %(included)s van je abonnement"
+msgstr[1] "%(used)s AI-tegoed gebruikt, %(over)s boven de %(included)s van je abonnement"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "%(used)s van %(included)s AI-tegoed gebruikt"
+msgstr[1] "%(used)s van %(included)s AI-tegoed gebruikt"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -957,20 +939,11 @@ msgstr "(GMT-11:00) Midwayeilanden, Samoa"
 msgid "(no title)"
 msgstr "(geen titel)"
 
-msgid "(upcoming)"
-msgstr "(binnenkort)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s extra site"
 msgstr[1] "+ %(value_1)s extra sites"
-
-msgid "/day"
-msgstr "/dag"
-
-msgid "/mo"
-msgstr "/mnd"
 
 msgid "/month"
 msgstr "/maand"
@@ -983,6 +956,19 @@ msgstr "1 maand"
 
 msgid "1 year"
 msgstr "1 jaar"
+
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10.000 AI-credits per maand voor AI-filters"
+
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100.000 AI-credits per maand voor AI-filters"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1¢ per 1.000 credits boven je abonnementslimiet; deze maand ongeveer %(cost)s."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ per 1.000 credits boven je abonnementslimiet."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Er zijn 28 tools beschikbaar voor lezen, acties, training en ontdekken."
@@ -1040,6 +1026,11 @@ msgstr "Een blurblog met gedeelde artikelen"
 msgid "A clearer, closer sound"
 msgstr "Een helderder, warmer geluid"
 
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr ""
+"Eén credit staat ongeveer gelijk aan één artikel dat door een tekstfilter gaat. Een afbeeldingsfilter "
+"gebruikt ongeveer 10 credits per artikel."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Een map met feeds die als één stroom worden gelezen"
 
@@ -1059,18 +1050,46 @@ msgstr "Eén like weegt zwaarder dan een willekeurig aantal dislikes"
 msgid "A story diff with additions and deletions"
 msgstr "Een vergelijking van een artikel met toevoegingen en verwijderingen"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "Een tekstfilter op deze site verbruikt ongeveer %(count)s tegoed per maand."
+msgstr[1] "Een tekstfilter op deze site verbruikt ongeveer %(count)s tegoeden per maand."
+
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Een tekstfilter op deze site gebruikt minder dan één credit per maand."
+
 msgid "AI Filter"
 msgstr "AI-filter"
 
 msgid "AI Model"
 msgstr "AI-model"
 
+msgid "AI credits"
+msgstr "AI-tegoeden"
+
+msgid "AI filters"
+msgstr "AI-filters"
+
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "AI-filters zijn opgeslagen, maar worden pas uitgevoerd wanneer je %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "AI-filters worden opgeslagen, maar worden alleen uitgevoerd op %(tier_link)s."
+
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
+msgstr ""
+"AI-filters worden opgeslagen, maar werken alleen met Premium. Premium bevat 1.000 AI-credits per maand, "
+"Archive 10.000 en Pro 100.000."
+
+msgid "AI filters run without credits on this server."
+msgstr "AI-filters gebruiken op deze server geen tegoed."
 
 msgid "AI finds the stories"
 msgstr "AI vindt de artikelen"
+
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "AI-tekst- en afbeeldingsfilters, met 1.000 AI-tegoed per maand"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Door AI samengestelde samenvatting van je topartikelen"
@@ -1081,6 +1100,10 @@ msgstr "AI-gestuurde analyse van artikelen en gepersonaliseerde dagelijkse samen
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "ALLE CATEGORIEËN (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "Bij je huidige tempo komt dat deze maand neer op ongeveer %(cost)s."
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Zeker. Open de trainer en verwijder eventuele duimpjes omhoog of omlaag om deze opnieuw in te stellen."
@@ -1330,6 +1353,15 @@ msgstr "Er is een fout opgetreden."
 msgid "An error occurred. Please try again."
 msgstr "Er is een fout opgetreden. Probeer het opnieuw."
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "Een afbeeldingsfilter op deze site verbruikt ongeveer %(count)s tegoed per maand."
+msgstr[1] "Een afbeeldingsfilter op deze site verbruikt ongeveer %(count)s tegoeden per maand."
+
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Een afbeeldingsfilter op deze site gebruikt minder dan één credit per maand."
+
 msgid "Analysis timed out. Please try again."
 msgstr "Time-out bij de analyse. Probeer het opnieuw."
 
@@ -1481,6 +1513,20 @@ msgstr ""
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "Stel vragen, vraag om samenvattingen of vraag naar de belangrijkste punten"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "In dit tempo gebruik je deze maand ongeveer %(count)s tegoed."
+msgstr[1] "In dit tempo gebruik je deze maand ongeveer %(count)s tegoeden."
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "In dit tempo is je tegoed rond %(date)s op."
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "In dit tempo komt deze maand uit op ongeveer %(cost)s."
 
 msgid "Audio"
 msgstr "Audio"
@@ -1807,6 +1853,9 @@ msgstr "Factureringsgegevens wijzigen"
 msgid "Change folders"
 msgstr "Mappen wijzigen"
 
+msgid "Change limit"
+msgstr "Limiet wijzigen"
+
 msgid "Change password"
 msgstr "Wachtwoord wijzigen"
 
@@ -1821,6 +1870,11 @@ msgstr "Je creditcard wijzigen"
 
 msgid "Change your profile above"
 msgstr "Wijzig hierboven je profiel"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr ""
+"Aan het einde van de maand in rekening gebracht, zodra het bedrag $1 bereikt. Kleinere bedragen worden "
+"doorgeschoven naar een volgende maand."
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "Kom later terug om populaire sites te bekijken die door NewsBlur-gebruikers zijn toegevoegd."
@@ -2118,6 +2172,9 @@ msgstr "Veelgestelde vragen konden niet worden geladen. Probeer het opnieuw."
 msgid "Couldn't load audio for this story."
 msgstr "Audio voor dit artikel laden is niet gelukt."
 
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "Betalen op basis van gebruik uitschakelen is niet gelukt. Probeer het opnieuw."
+
 msgid "Counting is difficult"
 msgstr "Tellen is lastig"
 
@@ -2329,16 +2386,8 @@ msgstr "Bezorging"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Beschrijf een artikel dat je zoekt, dan analyseren we de pagina opnieuw om het te vinden."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"Beschrijf een onderwerp en AI beoordeelt elk artikel aan de hand van je prompt, zodat je overeenkomsten "
-"kunt uitlichten of verbergen."
-
 msgid "Describe what to focus or hide"
 msgstr "Beschrijf wat je wilt uitlichten of verbergen"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Beschrijf waarnaar je wilt zoeken en AI analyseert de afbeeldingen van elk artikel op basis van je prompt."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3005,6 +3054,11 @@ msgstr "Filters hebben geen artikelen gevonden in %(context)s."
 msgid "Filters found no stories in this view."
 msgstr "Filters hebben in deze weergave geen artikelen gevonden."
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr ""
+"Filters worden gepauzeerd zodra betalen op basis van gebruik deze limiet bereikt. Laat leeg voor geen "
+"limiet."
+
 msgid "Finance"
 msgstr "Financiën"
 
@@ -3571,6 +3625,9 @@ msgstr "IFTTT en Zapier"
 msgid "Identify key people and relationships"
 msgstr "Belangrijke personen en relaties herkennen"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "Als het bedrag binnen een maand $10 bereikt, wordt het meteen in rekening gebracht."
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "Als er geen RSS-feed wordt gevonden, biedt NewsBlur aan een webfeed te maken"
 
@@ -3606,6 +3663,9 @@ msgstr "Afbeeldingsvoorbeeld"
 
 msgid "Image prompt"
 msgstr "Afbeeldingsprompt"
+
+msgid "Images"
+msgstr "Afbeeldingen"
 
 msgid "Immediately"
 msgstr "Onmiddellijk"
@@ -3661,9 +3721,6 @@ msgstr "In dit venster"
 
 msgid "Include read"
 msgstr "Gelezen opnemen"
-
-msgid "Increase or remove your limit"
-msgstr "Verhoog of verwijder je limiet"
 
 msgid "Independent"
 msgstr "Onafhankelijk"
@@ -3768,6 +3825,9 @@ msgstr "Alleen de koppen, geen commentaar"
 
 msgid "Keep fades, without movement."
 msgstr "Overgangen met vervagen behouden, zonder beweging."
+
+msgid "Keep filters running"
+msgstr "Filters actief houden"
 
 msgid "Keep others unread"
 msgstr "Andere artikelen ongelezen laten"
@@ -3981,12 +4041,6 @@ msgstr "NewsBlur beheren"
 msgid "Manage Training"
 msgstr "Training beheren"
 
-msgid "Manage billing and limits"
-msgstr "Facturering en limieten beheren"
-
-msgid "Manage billing on Stripe"
-msgstr "Facturering beheren via Stripe"
-
 msgid "Manage email settings"
 msgstr "E-mailinstellingen beheren"
 
@@ -4185,11 +4239,8 @@ msgstr "ma"
 msgid "Monday"
 msgstr "maandag"
 
-msgid "Monthly spending limit"
-msgstr "Maandelijkse uitgavenlimiet"
-
-msgid "Monthly spending limit reached. "
-msgstr "Maandelijkse bestedingslimiet bereikt. "
+msgid "Monthly limit"
+msgstr "Maandlimiet"
 
 msgid "Months Earned"
 msgstr "Verdiende maanden"
@@ -4302,24 +4353,6 @@ msgstr "Native apps"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Natuurlijk"
-
-msgid "Natural Language Image Classifier"
-msgstr "Beeldclassifier voor natuurlijke taal"
-
-msgid "Natural Language Text Classifier"
-msgstr "Tekstclassifier in natuurlijke taal"
-
-msgid "Natural language classifier billing"
-msgstr "Facturering van de classifier voor natuurlijke taal"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "Classifiers in natuurlijke taal zijn gepauzeerd tot de volgende factureringscyclus. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "Classifiers in natuurlijke taal gebruiken de API-sleutels van je instantie."
-
-msgid "Natural language text and image classifiers"
-msgstr "Classifiers in natuurlijke taal voor tekst en afbeeldingen"
 
 msgid "Nature"
 msgstr "Natuur"
@@ -4632,11 +4665,8 @@ msgstr "Geen artikelpatronen gevonden op deze pagina."
 msgid "No trending sites available"
 msgstr "Geen trending sites beschikbaar"
 
-msgid "No usage billing invoices yet."
-msgstr "Er zijn nog geen gebruiksfacturen."
-
-msgid "No usage billing set up."
-msgstr "Er is geen facturering op basis van gebruik ingesteld."
+msgid "No usage billing charges yet."
+msgstr "Nog geen kosten voor facturering op basis van gebruik."
 
 msgid "No valid merge groups to apply"
 msgstr "Geen geldige samenvoeggroepen om toe te passen"
@@ -4966,11 +4996,6 @@ msgstr "Optie 3:"
 msgid "Option 4:"
 msgstr "Optie 4:"
 
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr ""
-"Optioneel. Classifiers worden gepauzeerd zodra de limiet is bereikt en hervat in de volgende "
-"factureringscyclus."
-
 msgid "Options"
 msgstr "Opties"
 
@@ -5025,6 +5050,16 @@ msgstr "Bezig met verwerken..."
 
 msgid "Part of a story URL"
 msgstr "Deel van een artikel-URL"
+
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Als je je tegoed hebt verbruikt, blijven filters actief voor 1¢ per 1.000 tegoed."
+
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
+msgstr ""
+"Als je je tegoed van je abonnement hebt verbruikt, worden filters gepauzeerd tot de 1e. Met betalen naar "
+"gebruik blijven ze actief voor 1¢ per 1.000 tegoed."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Plak een URL en NewsBlur maakt een feed van de pagina, ook zonder RSS."
@@ -5219,6 +5254,9 @@ msgstr "Premiumdetails"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Premiumlettertypen vereisen een %(link_start)spremiumaccount%(link_end)s"
+
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium bevat 1.000 AI-credits per maand, Archive 10.000 en Pro 100.000."
 
 msgid "Premium renewal"
 msgstr "Verlenging van Premium"
@@ -5666,6 +5704,10 @@ msgid "Reset to original favicon"
 msgstr "Terugzetten naar het oorspronkelijke favicon"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "Wordt gereset op %(date)s"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "Wordt opnieuw ingesteld %(day)s"
 
@@ -5787,6 +5829,9 @@ msgstr "Sla elk artikel met één klik of de s-toets op"
 msgid "Save comments"
 msgstr "Reacties opslaan"
 
+msgid "Save limit"
+msgstr "Limiet opslaan"
+
 msgid "Save my profile"
 msgstr "Mijn profiel opslaan"
 
@@ -5835,6 +5880,13 @@ msgstr "Opgeslagen artikelen, georganiseerd met aangepaste tags"
 
 msgid "Saved!"
 msgstr "Opgeslagen!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "Opgeslagen. Filters worden gepauzeerd bij %(limit)s per maand."
+
+msgid "Saved. No monthly limit."
+msgstr "Opgeslagen. Geen maandlimiet."
 
 msgid "Saved:"
 msgstr "Opgeslagen:"
@@ -6078,8 +6130,8 @@ msgstr "Serverfout"
 msgid "Server error: %(status)s"
 msgstr "Serverfout: %(status)s"
 
-msgid "Set up billing"
-msgstr "Facturering instellen"
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "Stel een maandlimiet in of schakel facturering op basis van gebruik op elk moment uit."
 
 msgid "Set up newsletters"
 msgstr "Nieuwsbrieven instellen"
@@ -6087,8 +6139,8 @@ msgstr "Nieuwsbrieven instellen"
 msgid "Set up notifications"
 msgstr "Meldingen instellen"
 
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "Stel gebruiksgebaseerde facturering in om filters voor natuurlijke taal en afbeeldingen te gebruiken."
+msgid "Set up usage billing"
+msgstr "Facturering op basis van gebruik instellen"
 
 msgid "Set up your blurblog"
 msgstr "Stel je blurblog in"
@@ -6422,9 +6474,6 @@ msgstr "Speciale mappen"
 msgid "Speed"
 msgstr "Snelheid"
 
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Bestedingslimiet bereikt. Classifiers gepauzeerd tot de volgende cyclus."
-
 msgid "Split"
 msgstr "Splitsen"
 
@@ -6684,6 +6733,9 @@ msgstr "Stream onderbroken. 10 seconden lang geen antwoord ontvangen."
 
 msgid "Stripe Id:"
 msgstr "Stripe-ID:"
+
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Stripe heeft je kaartgegevens. Betalen op basis van gebruik wordt zo ingeschakeld."
 
 msgid "Style"
 msgstr "Stijl"
@@ -7124,6 +7176,15 @@ msgstr ""
 "Dit komt overeen met de volledige titel en geldt alleen voor dit exacte artikel. Selecteer in plaats "
 "daarvan een deel van de titel."
 
+msgid "This month"
+msgstr "Deze maand"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "Je hebt het %(count)s AI-tegoedpunt van deze maand gebruikt."
+msgstr[1] "Je hebt de %(count)s AI-tegoedpunten van deze maand gebruikt."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Deze lijst met gelezen artikelen is een %(link_start)spremiumfunctie%(link_end)s."
@@ -7410,14 +7471,23 @@ msgstr "dinsdag"
 msgid "Turn off automatic briefing generation"
 msgstr "Automatische briefinggeneratie uitschakelen"
 
+msgid "Turn off usage billing"
+msgstr "Betalen op basis van gebruik uitschakelen"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "Schakel deze %(count)s site in"
 msgstr[1] "Schakel deze %(count)s sites in"
 
+msgid "Turn on usage billing"
+msgstr "Betalen op basis van gebruik inschakelen"
+
 msgid "Turning any page into a feed"
 msgstr "Van elke pagina een feed maken"
+
+msgid "Turning off..."
+msgstr "Uitschakelen..."
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7460,6 +7530,10 @@ msgstr "Deze site weer inschakelen"
 
 msgid "Uncategorized"
 msgstr "Zonder categorie"
+
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "Begrepen als: %(description)s"
 
 msgid "Unfavorited"
 msgstr "Niet meer favoriet"
@@ -7536,11 +7610,14 @@ msgstr "Naamloos"
 msgid "Up Next"
 msgstr "Hierna"
 
-msgid "Upcoming charge: "
-msgstr "Aankomende afschrijving: "
+msgid "Upcoming"
+msgstr "Aankomend"
 
 msgid "Update History"
 msgstr "Updategeschiedenis"
+
+msgid "Update card on Stripe"
+msgstr "Kaart bijwerken op Stripe"
 
 msgid "Updated"
 msgstr "Bijgewerkt"
@@ -7652,11 +7729,21 @@ msgstr "Uploaden mislukt. Probeer het opnieuw."
 msgid "Uploaded!"
 msgstr "Geüpload!"
 
-msgid "Usage billing history"
-msgstr "Facturatiegeschiedenis"
+msgid "Usage billing"
+msgstr "Facturering op basis van gebruik"
 
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "Facturering op basis van gebruik is ingeschakeld voor classifiers voor natuurlijke taal."
+msgid "Usage billing charges"
+msgstr "Kosten voor betalen op basis van gebruik"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] ""
+"Betalen naar gebruik is ingeschakeld. Tegoed boven je %(count)s kost 1¢ per 1.000: tot nu toe deze maand "
+"%(cost)s."
+msgstr[1] ""
+"Betalen naar gebruik is ingeschakeld. Tegoed boven je %(count)s kost 1¢ per 1.000: tot nu toe deze maand "
+"%(cost)s."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8126,6 +8213,9 @@ msgstr "Je moet ingelogd zijn om op een reactie te antwoorden."
 msgid "You need to be logged in to share a story."
 msgstr "Je moet ingelogd zijn om een artikel te delen."
 
+msgid "You only pay for credits past your plan's."
+msgstr "Je betaalt alleen voor tegoeden boven het aantal van je abonnement."
+
 msgid "You will be emailed within a minute or three."
 msgstr "Je ontvangt binnen een minuut of drie een e-mail."
 
@@ -8134,6 +8224,10 @@ msgstr "Je ziet een aantal tags en auteurs."
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "Je hebt de limiet bereikt.<br> Probeer het binnenkort opnieuw, maar niet te snel."
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "Je zit dicht bij je maandelijkse limiet van %(limit)s."
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "Je krijgt meerdere opties voor artikelpatronen om uit te kiezen."
@@ -8158,6 +8252,12 @@ msgstr ""
 "Je hebt je limiet van %(value_1)s sites bereikt. Demp enkele sites of upgrade je account om er meer toe te "
 "voegen."
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "Je hebt deze maand %(used)s van je %(included)s AI-tegoed gebruikt."
+msgstr[1] "Je hebt deze maand %(used)s van je %(included)s AI-tegoeden gebruikt."
+
 msgid "You:"
 msgstr "Jij:"
 
@@ -8174,6 +8274,14 @@ msgstr "Je %(value_1)s-abonnement omvat alles hierboven"
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "Je %(value_1)s-abonnement is actief"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "Je AI-filters zijn gepauzeerd tot %(date)s."
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "Je AI-filters hebben je maandelijkse limiet van %(limit)s bereikt en zijn gepauzeerd tot %(date)s."
 
 msgid "Your Archived Domains"
 msgstr "Je gearchiveerde domeinen"
@@ -8426,9 +8534,6 @@ msgstr "recht op reparatie"
 
 msgid "separate multiple addresses with commas"
 msgstr "scheid meerdere adressen met komma’s"
-
-msgid "set up usage-based billing"
-msgstr "facturering op basis van verbruik instellen"
 
 msgid "show hidden stories"
 msgstr "verborgen artikelen tonen"

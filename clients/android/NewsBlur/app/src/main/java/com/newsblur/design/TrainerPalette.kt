@@ -4,7 +4,7 @@ import com.newsblur.util.PrefConstants.ThemeValue
 
 /**
  * Colors for the intelligence trainers (fragment/IntelTrainerSections.kt, view/TrainerCapsuleView.kt
- * and the AI sections in fragment/AiClassifierSections.kt), one set per theme. The values follow
+ * and the AI filter card in fragment/AiClassifierSections.kt), one set per theme. The values follow
  * clients/ios/Classes/TrainerView.swift, TrainerCapsule.swift, TrainerWord.swift and
  * TrainerRegexInput.swift: Light and Sepia match iOS, Dark matches iOS Medium and Black matches
  * iOS Dark on a true black sheet. A new theme only needs a new branch in colors().

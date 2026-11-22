@@ -2,41 +2,16 @@ package com.newsblur.util
 
 import android.net.Uri
 import com.newsblur.BuildConfig
+import com.newsblur.network.domain.AiCredits
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
+import java.util.Currency
 import java.util.Locale
 
-/**
- * Natural language classifier billing flags from /reader/feeds user_profile
- * (apps/profile/models.py), the same values the web reads from NEWSBLUR.Globals.
- */
-data class UsageBillingState(
-    val isUsageBilling: Boolean = false,
-    // UsageBilling.kt: a self-hosted server pays for AI with its own API keys, so there is no billing.
-    val isSelfHostedAi: Boolean = false,
-    val canUseAiClassifiers: Boolean = false,
-    val usageBillingLimit: Double? = null,
-) {
-    /**
-     * apps/profile/models.py can_use_ai_classifiers is usage billing or self-hosted AI, so an
-     * account that can use AI without self-hosting has billing set up, even when the server or a
-     * stale sync hasn't sent is_usage_billing.
-     */
-    val hasUsageBilling: Boolean
-        get() = isUsageBilling || (canUseAiClassifiers && !isSelfHostedAi)
-
-    /** The action the billing buttons offer, following media/js/newsblur/reader/reader_account.js. */
-    val action: UsageBillingAction
-        get() =
-            when {
-                hasUsageBilling -> UsageBillingAction.MANAGE
-                isSelfHostedAi -> UsageBillingAction.NONE
-                else -> UsageBillingAction.SET_UP
-            }
-}
-
+/** What the AI credits screen's usage billing button does, following media/js/newsblur/reader/reader_account.js. */
 enum class UsageBillingAction {
     SET_UP,
     MANAGE,
@@ -52,6 +27,11 @@ enum class UsageBillingReturn(
     PORTAL_RETURN("portal_return"),
 }
 
+/**
+ * Usage billing keeps AI filters running past the plan's monthly AI credits, at 1 cent per 1,000
+ * credits, charged by Stripe (apps/analyzer/ai_credits.py). Setting it up and managing it open Stripe in a
+ * Custom Tab that returns to activity/AiCreditsActivity.kt.
+ */
 object UsageBilling {
     const val CALLBACK_HOST = "usage-billing"
 
@@ -59,6 +39,19 @@ object UsageBilling {
     // the server, which can land a few seconds after the browser returns setup_complete.
     @JvmField
     val ACTIVATION_BACKOFF_MS = longArrayOf(1_000, 2_000, 4_000)
+
+    /**
+     * The usage billing button for these credits: Manage once usage billing is on, Set up while the
+     * server offers it, and nothing on a self-hosted server that counts no credits.
+     */
+    @JvmStatic
+    fun action(credits: AiCredits?): UsageBillingAction =
+        when {
+            credits == null || credits.isUnlimited -> UsageBillingAction.NONE
+            credits.isUsageBilling -> UsageBillingAction.MANAGE
+            credits.isBillingAvailable -> UsageBillingAction.SET_UP
+            else -> UsageBillingAction.NONE
+        }
 
     /**
      * Checks [isActive] right away and again after each backoff delay, returning true as soon as
@@ -100,29 +93,25 @@ object UsageBilling {
     }
 
     @JvmStatic
-    fun parseReturn(uri: Uri?): UsageBillingReturn? =
-        uri?.let { parseReturn(it.scheme, it.host, it.getQueryParameter("status")) }
+    fun parseReturn(uri: Uri?): UsageBillingReturn? = uri?.let { parseReturn(it.scheme, it.host, it.getQueryParameter("status")) }
 
-    /**
-     * Formats an amount like media/js/newsblur/reader/reader_classifier.js _format_cost, with
-     * more decimals for fractions of a cent.
-     */
+    /** A US dollar amount in the reader's language, such as $0.62 or 0,62 $. Usage billing always charges dollars. */
     @JvmStatic
-    fun formatCost(amount: Double): String =
-        when {
-            amount == 0.0 -> "$0.00"
-            amount < 0.005 -> "$" + String.format(java.util.Locale.US, "%.4f", amount)
-            amount < 0.10 -> "$" + String.format(java.util.Locale.US, "%.3f", amount)
-            else -> formatDollars(amount)
-        }
-
-    @JvmStatic
-    fun formatDollars(amount: Double): String = "$" + String.format(java.util.Locale.US, "%.2f", amount)
+    fun formatDollars(
+        amount: Double,
+        locale: Locale,
+    ): String {
+        val format = NumberFormat.getCurrencyInstance(locale)
+        format.currency = Currency.getInstance("USD")
+        format.minimumFractionDigits = 2
+        format.maximumFractionDigits = 2
+        return format.format(amount)
+    }
 
     private val LIMIT_PATTERN = Regex("""(\d*)(?:[.,](\d{0,2}))?""")
 
     /**
-     * The spending limit field's text the way apps/profile/views.py save_usage_billing_limit
+     * The monthly limit field's text the way apps/profile/views.py save_usage_billing_limit
      * parses it with Python's Decimal: "10.50", or "" to clear the limit. A comma-decimal locale
      * types "10,50", so either separator works, with at most two digits after it. Text with both
      * drops the [locale]'s grouping separator, as in German "1.000,50". Null means it isn't an
@@ -148,7 +137,7 @@ object UsageBilling {
     }
 
     /**
-     * A saved limit for the spending limit field, like "25" or "10,50" in German. It keeps ASCII
+     * A saved limit for the monthly limit field, like "25" or "10,50" in German. It keeps ASCII
      * digits and no grouping so [normalizeLimit] reads it back, and falls back to "." for a
      * locale whose separator the field can't type.
      */

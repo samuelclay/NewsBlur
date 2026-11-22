@@ -175,6 +175,12 @@
                 if (NEWSBLUR.growth_prompts) {
                     NEWSBLUR.growth_prompts.check_on_load();
                 }
+                // reader.js: Tell a reader once a month when AI credits run low or out
+                // (reader_ai_credits.js).
+                if (NEWSBLUR.AICredits && !this.flags['ai_credits_notice_checked']) {
+                    this.flags['ai_credits_notice_checked'] = true;
+                    _.delay(function () { NEWSBLUR.AICredits.maybe_show_notice(); }, 1500);
+                }
             }, this));
 
             NEWSBLUR.assets.feeds.bind('loaded_from_server', function () {

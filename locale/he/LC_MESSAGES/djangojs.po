@@ -161,10 +161,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s ו־%(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/כתבה"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s בייט"
@@ -193,12 +189,6 @@ msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s תגובה"
 msgstr[1] "%(count)s תגובות"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s מסנן תוכן"
-msgstr[1] "%(count)s מסנני תוכן"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -261,12 +251,6 @@ msgstr[0] "לפני %(count)s שעה"
 msgstr[1] "לפני %(count)s שעות"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s מסנן תמונות"
-msgstr[1] "%(count)s מסנני תמונות"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s סימון אהבתי"
@@ -319,18 +303,6 @@ msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s אתר מתוך %(limit)s"
 msgstr[1] "%(count)s מתוך %(limit)s אתרים"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s בכל האתרים (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s בתיקייה (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s באתר הזה (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -433,12 +405,6 @@ msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s כתבה תימחק"
 msgstr[1] "%(count)s כתבות יימחקו"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s כתבה/חודש"
-msgstr[1] "%(count)s כתבות לחודש"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -603,10 +569,6 @@ msgstr[0] "%(start)s עד %(end)s דקה"
 msgstr[1] "%(start)s עד %(end)s דקות"
 
 #, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
-
-#, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
 msgstr "%(submit_button)s או %(cancel_link)s"
 
@@ -641,6 +603,26 @@ msgstr "אתרים בנושא %(topic)s"
 #, python-format
 msgid "%(topic)s Subreddits"
 msgstr "תת־פורומים של Reddit בנושא %(topic)s"
+
+#, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr ""
+"%(unbilled)s ממתין לחיוב: בתחילת החודש הבא אם הסכום הוא לפחות %(minimum)s, או מיד כשהוא יגיע "
+"ל־%(immediate)s."
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "נעשה שימוש ב־%(used)s נקודות זכות לבינה מלאכותית; %(over)s מעבר ל־%(included)s של התוכנית שלך"
+msgstr[1] "נעשה שימוש ב־%(used)s נקודות זכות לבינה מלאכותית; %(over)s מעבר ל־%(included)s של התוכנית שלך"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "נעשה שימוש ב־%(used)s מתוך %(included)s נקודת זכות לבינה מלאכותית"
+msgstr[1] "נעשה שימוש ב־%(used)s מתוך %(included)s נקודות זכות לבינה מלאכותית"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -955,20 +937,11 @@ msgstr "(GMT-11:00) האי מידוויי, סמואה"
 msgid "(no title)"
 msgstr "(ללא כותרת)"
 
-msgid "(upcoming)"
-msgstr "(בקרוב)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ עוד %(value_1)s אתר"
 msgstr[1] "+ עוד %(value_1)s אתרים"
-
-msgid "/day"
-msgstr "ליום"
-
-msgid "/mo"
-msgstr "/חודש"
 
 msgid "/month"
 msgstr "לחודש"
@@ -981,6 +954,19 @@ msgstr "חודש אחד"
 
 msgid "1 year"
 msgstr "שנה אחת"
+
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10,000 קרדיטי AI בחודש למסנני AI"
+
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100,000 קרדיטי AI בחודש למסנני AI"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1¢ לכל 1,000 קרדיטים מעבר למכסה בתוכנית שלך, בערך %(cost)s החודש."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ לכל 1,000 קרדיטים מעבר למכסה בתוכנית שלך."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "28 כלים זמינים לקריאה, לפעולות, לאימון ולגילוי."
@@ -1038,6 +1024,9 @@ msgstr "בלוג שיתופים של כתבות"
 msgid "A clearer, closer sound"
 msgstr "צליל ברור וקרוב יותר"
 
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr "קרדיט אחד מספיק בערך לסינון כתבה אחת באמצעות מסנן טקסט. מסנן תמונות צורך בערך 10 קרדיטים לכתבה."
+
 msgid "A folder of feeds read as one stream"
 msgstr "תיקיית פידים שנקראת כזרם אחד"
 
@@ -1057,18 +1046,46 @@ msgstr "לייק אחד גובר על כל מספר של סימוני לא אה�
 msgid "A story diff with additions and deletions"
 msgstr "השוואת כתבה עם תוספות ומחיקות"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "מסנן טקסט באתר הזה משתמש בכ־%(count)s קרדיט בחודש."
+msgstr[1] "מסנן טקסט באתר הזה משתמש בכ־%(count)s קרדיטים בחודש."
+
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "מסנן טקסט באתר הזה צורך פחות מקרדיט אחד בחודש."
+
 msgid "AI Filter"
 msgstr "מסנן AI"
 
 msgid "AI Model"
 msgstr "מודל בינה מלאכותית"
 
+msgid "AI credits"
+msgstr "קרדיטי AI"
+
+msgid "AI filters"
+msgstr "מסנני AI"
+
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "מסנני AI נשמרו, אך לא יפעלו עד %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "מסנני בינה מלאכותית נשמרים, אך פועלים רק ב־%(tier_link)s."
+
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
+msgstr ""
+"מסנני AI נשמרים, אך פועלים רק עם Premium. תוכנית Premium כוללת 1,000 קרדיטי AI בחודש, Archive כוללת 10,000 "
+"ו־Pro כוללת 100,000."
+
+msgid "AI filters run without credits on this server."
+msgstr "בשרת הזה מסנני בינה מלאכותית פועלים ללא נקודות זכות."
 
 msgid "AI finds the stories"
 msgstr "AI מאתר את הכתבות"
+
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "מסנני טקסט ותמונות מבוססי AI, עם 1,000 נקודות זכות AI בחודש"
 
 msgid "AI-curated summary of your top stories"
 msgstr "סיכום של הכתבות המובילות שלך שנבחר באמצעות AI"
@@ -1079,6 +1096,10 @@ msgstr "ניתוח כתבות בעזרת בינה מלאכותית וסיכומ�
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "כל הקטגוריות (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "בערך %(cost)s החודש בקצב הנוכחי."
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "בהחלט. פתחו את כלי האימון והסירו כל סימון של אגודל למעלה או למטה כדי לאפס אותו."
@@ -1328,6 +1349,15 @@ msgstr "אירעה שגיאה."
 msgid "An error occurred. Please try again."
 msgstr "אירעה שגיאה. נסו שוב."
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "מסנן תמונות באתר הזה משתמש בכ־%(count)s קרדיט בחודש."
+msgstr[1] "מסנן תמונות באתר הזה משתמש בכ־%(count)s קרדיטים בחודש."
+
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "מסנן תמונות באתר הזה צורך פחות מקרדיט אחד בחודש."
+
 msgid "Analysis timed out. Please try again."
 msgstr "הזמן שהוקצב לניתוח הסתיים. נא לנסות שוב."
 
@@ -1477,6 +1507,20 @@ msgstr "שאלו שאלות על כל מה שקראתם. אוכל לחפש בה�
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "שאלו שאלות, קבלו סיכומים או בקשו נקודות עיקריות"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "בקצב הזה תשתמש החודש בערך בנקודת זכות אחת (%(count)s)."
+msgstr[1] "בקצב הזה תשתמש החודש בערך ב־%(count)s נקודות זכות."
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "בקצב הזה נקודות הזכות שלך ייגמרו בערך ב־%(date)s."
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "בקצב הנוכחי, העלות החודשית תהיה בערך %(cost)s."
 
 msgid "Audio"
 msgstr "שמע"
@@ -1803,6 +1847,9 @@ msgstr "שינוי פרטי החיוב"
 msgid "Change folders"
 msgstr "שינוי תיקיות"
 
+msgid "Change limit"
+msgstr "שינוי המגבלה"
+
 msgid "Change password"
 msgstr "שינוי סיסמה"
 
@@ -1817,6 +1864,9 @@ msgstr "החלפת כרטיס האשראי שלך"
 
 msgid "Change your profile above"
 msgstr "שנה את הפרופיל שלך למעלה"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "החיוב מתבצע בסוף החודש, כשהסכום מגיע ל־$1. סכומים נמוכים יותר ימתינו לחודש הבא."
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "כדאי לבדוק שוב בהמשך אילו אתרים פופולריים הוסיפו משתמשי NewsBlur."
@@ -2110,6 +2160,9 @@ msgstr "טעינת השאלות הנפוצות נכשלה. נסו שוב."
 msgid "Couldn't load audio for this story."
 msgstr "לא ניתן לטעון את השמע של הכתבה הזו."
 
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "לא ניתן לכבות את החיוב לפי שימוש. כדאי לנסות שוב."
+
 msgid "Counting is difficult"
 msgstr "קשה לספור"
 
@@ -2320,14 +2373,8 @@ msgstr "הקראה"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "תארו את הכתבה שאתם מחפשים, וננתח מחדש את הדף כדי למצוא אותה."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "תארו נושא, והבינה המלאכותית תדרג כל כתבה לפי ההנחיה שלכם כדי למקד את התוצאות או להסתיר התאמות."
-
 msgid "Describe what to focus or hide"
 msgstr "תארו במה להתמקד או מה להסתיר"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "תאר מה לחפש, וה-AI ינתח את התמונות בכל כתבה בהתאם להנחיה שלך."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2988,6 +3035,9 @@ msgstr "המסננים לא מצאו כתבות ב-%(context)s."
 msgid "Filters found no stories in this view."
 msgstr "המסננים לא מצאו כתבות בתצוגה הזו."
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr "המסננים מושהים כשהחיוב לפי שימוש מגיע למכסה. השאר ריק כדי להגדיר מכסה בלתי מוגבלת."
+
 msgid "Finance"
 msgstr "פיננסים"
 
@@ -3554,6 +3604,9 @@ msgstr "IFTTT ו־Zapier"
 msgid "Identify key people and relationships"
 msgstr "זיהוי אנשים מרכזיים והקשרים ביניהם"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "אם הסכום יגיע ל־$10 במהלך חודש, החיוב יתבצע מיד."
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "אם לא נמצא פיד RSS, NewsBlur מציע ליצור פיד אינטרנט"
 
@@ -3587,6 +3640,9 @@ msgstr "תצוגה מקדימה של תמונה"
 
 msgid "Image prompt"
 msgstr "הנחיה לתמונה"
+
+msgid "Images"
+msgstr "תמונות"
 
 msgid "Immediately"
 msgstr "מיידית"
@@ -3644,9 +3700,6 @@ msgstr "בחלון הזה"
 
 msgid "Include read"
 msgstr "לכלול פריטים שנקראו"
-
-msgid "Increase or remove your limit"
-msgstr "להגדיל או להסיר את המגבלה שלך"
 
 msgid "Independent"
 msgstr "עצמאי"
@@ -3751,6 +3804,9 @@ msgstr "רק כותרות, בלי פרשנות"
 
 msgid "Keep fades, without movement."
 msgstr "שמירה על מעברי עמעום ללא תנועה."
+
+msgid "Keep filters running"
+msgstr "המשך הפעלת המסננים"
 
 msgid "Keep others unread"
 msgstr "השאר אחרים כלא נקראו"
@@ -3964,12 +4020,6 @@ msgstr "ניהול NewsBlur"
 msgid "Manage Training"
 msgstr "ניהול אימון"
 
-msgid "Manage billing and limits"
-msgstr "ניהול חיוב ומגבלות"
-
-msgid "Manage billing on Stripe"
-msgstr "נהל את החיוב ב-Stripe"
-
 msgid "Manage email settings"
 msgstr "ניהול הגדרות דוא״ל"
 
@@ -4166,11 +4216,8 @@ msgstr "ב׳"
 msgid "Monday"
 msgstr "יום שני"
 
-msgid "Monthly spending limit"
-msgstr "מגבלת הוצאות חודשית"
-
-msgid "Monthly spending limit reached. "
-msgstr "הגעת למגבלת ההוצאה החודשית. "
+msgid "Monthly limit"
+msgstr "מכסה חודשית"
 
 msgid "Months Earned"
 msgstr "חודשי חברות שנצברו"
@@ -4283,24 +4330,6 @@ msgstr "אפליקציות מקוריות"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "טבעי"
-
-msgid "Natural Language Image Classifier"
-msgstr "מסווג תמונות בשפה טבעית"
-
-msgid "Natural Language Text Classifier"
-msgstr "מסווג טקסט בשפה טבעית"
-
-msgid "Natural language classifier billing"
-msgstr "חיוב על מסווג שפה טבעית"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "המסווגים בשפה טבעית מושהים עד למחזור החיוב הבא. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "מסווגי שפה טבעית משתמשים במפתחות ה־API של המופע שלך."
-
-msgid "Natural language text and image classifiers"
-msgstr "מסווגי טקסט ותמונות בשפה טבעית"
 
 msgid "Nature"
 msgstr "טבע"
@@ -4611,11 +4640,8 @@ msgstr "לא נמצאו דפוסי כתבות בעמוד הזה."
 msgid "No trending sites available"
 msgstr "אין כרגע אתרים במגמת עלייה"
 
-msgid "No usage billing invoices yet."
-msgstr "עדיין אין חשבוניות חיוב לפי שימוש."
-
-msgid "No usage billing set up."
-msgstr "לא הוגדר חיוב לפי שימוש."
+msgid "No usage billing charges yet."
+msgstr "עדיין לא חויבת על שימוש."
 
 msgid "No valid merge groups to apply"
 msgstr "אין קבוצות מיזוג תקינות להחלה"
@@ -4939,9 +4965,6 @@ msgstr "אפשרות 3:"
 msgid "Option 4:"
 msgstr "אפשרות 4:"
 
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "אופציונלי. המסווגים נעצרים כשמגיעים למכסה ומתחדשים במחזור החיוב הבא."
-
 msgid "Options"
 msgstr "אפשרויות"
 
@@ -4996,6 +5019,16 @@ msgstr "מנתח..."
 
 msgid "Part of a story URL"
 msgstr "חלק מכתובת ה-URL של הכתבה"
+
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "לאחר מיצוי הקרדיטים שלך, המסננים ימשיכו לפעול בעלות של 1¢ לכל 1,000 קרדיטים."
+
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
+msgstr ""
+"לאחר מיצוי הקרדיטים הכלולים במינוי שלך, המסננים יושהו עד ל־1 בחודש. חיוב לפי שימוש ישאיר אותם פעילים בעלות "
+"של 1¢ לכל 1,000 קרדיטים."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "הדביקו כתובת URL כלשהי ו־NewsBlur ייצור מהעמוד פיד, גם ללא RSS."
@@ -5188,6 +5221,9 @@ msgstr "פרטי Premium"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "גופני Premium דורשים %(link_start)sחשבון Premium%(link_end)s"
+
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "תוכנית Premium כוללת 1,000 קרדיטי AI בחודש, Archive כוללת 10,000 ו־Pro כוללת 100,000."
 
 msgid "Premium renewal"
 msgstr "חידוש Premium"
@@ -5627,6 +5663,10 @@ msgid "Reset to original favicon"
 msgstr "איפוס לסמל האתר המקורי"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "מאפס את %(date)s"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "מתאפס ב־%(day)s"
 
@@ -5748,6 +5788,9 @@ msgstr "שמרו כל כתבה בלחיצה אחת או באמצעות המקש 
 msgid "Save comments"
 msgstr "שמור תגובות"
 
+msgid "Save limit"
+msgstr "שמירת המכסה"
+
 msgid "Save my profile"
 msgstr "שמירת הפרופיל שלי"
 
@@ -5796,6 +5839,13 @@ msgstr "כתבות שמורות מאורגנות באמצעות תגים מות�
 
 msgid "Saved!"
 msgstr "נשמר!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "נשמר. המסננים מושהים בעלות של %(limit)s בחודש."
+
+msgid "Saved. No monthly limit."
+msgstr "נשמר. אין מכסה חודשית."
 
 msgid "Saved:"
 msgstr "נשמר:"
@@ -6037,8 +6087,8 @@ msgstr "שגיאת שרת"
 msgid "Server error: %(status)s"
 msgstr "שגיאת שרת: %(status)s"
 
-msgid "Set up billing"
-msgstr "הגדרת חיוב"
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "הגדרת מגבלה חודשית, או כיבוי החיוב לפי שימוש בכל עת."
 
 msgid "Set up newsletters"
 msgstr "הגדרת ניוזלטרים"
@@ -6046,8 +6096,8 @@ msgstr "הגדרת ניוזלטרים"
 msgid "Set up notifications"
 msgstr "הגדרת התראות"
 
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "הגדירו חיוב לפי שימוש כדי להשתמש במסנני תוכן ותמונות בשפה טבעית."
+msgid "Set up usage billing"
+msgstr "הגדרת חיוב לפי שימוש"
 
 msgid "Set up your blurblog"
 msgstr "הגדרת הבלוג שלכם"
@@ -6379,9 +6429,6 @@ msgstr "תיקיות מיוחדות"
 msgid "Speed"
 msgstr "מהירות"
 
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "הגעת למגבלת ההוצאות. המסווגים הושהו עד למחזור הבא."
-
 msgid "Split"
 msgstr "פיצול"
 
@@ -6639,6 +6686,9 @@ msgstr "הזרם נקטע. לא התקבלה תגובה במשך 10 שניות."
 
 msgid "Stripe Id:"
 msgstr "מזהה Stripe:"
+
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "הכרטיס שלך שמור ב-Stripe. החיוב לפי שימוש יופעל בעוד רגע."
 
 msgid "Style"
 msgstr "סגנון"
@@ -7065,6 +7115,15 @@ msgstr "ההתאמה כוללת את כל טקסט הכתבה ותתאים רק 
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "ההתאמה כוללת את כל הכותרת ותתאים רק לכתבה המדויקת הזו. במקום זאת, בחרו חלק מהכותרת."
 
+msgid "This month"
+msgstr "החודש"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "נקודת זכות אחת לבינה מלאכותית מתוך %(count)s לחודש הזה נוצלה."
+msgstr[1] "%(count)s נקודות זכות לבינה מלאכותית לחודש הזה נוצלו."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "רשימת הכתבות שנקראו היא %(link_start)sתכונת Premium%(link_end)s."
@@ -7342,14 +7401,23 @@ msgstr "יום שלישי"
 msgid "Turn off automatic briefing generation"
 msgstr "כיבוי היצירה האוטומטית של תדריכים"
 
+msgid "Turn off usage billing"
+msgstr "כיבוי החיוב לפי שימוש"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "נא להפעיל את האתר הזה: %(count)s"
 msgstr[1] "יש להפעיל את %(count)s האתרים האלה"
 
+msgid "Turn on usage billing"
+msgstr "הפעלת חיוב לפי שימוש"
+
 msgid "Turning any page into a feed"
 msgstr "הפיכת כל עמוד לפיד"
+
+msgid "Turning off..."
+msgstr "מכבה..."
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7392,6 +7460,10 @@ msgstr "בטל השתקה של האתר הזה"
 
 msgid "Uncategorized"
 msgstr "ללא קטגוריה"
+
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "הובן כך: %(description)s"
 
 msgid "Unfavorited"
 msgstr "הוסר מהמועדפים"
@@ -7468,11 +7540,14 @@ msgstr "ללא כותרת"
 msgid "Up Next"
 msgstr "הבא בתור"
 
-msgid "Upcoming charge: "
-msgstr "החיוב הבא: "
+msgid "Upcoming"
+msgstr "בקרוב"
 
 msgid "Update History"
 msgstr "היסטוריית עדכונים"
+
+msgid "Update card on Stripe"
+msgstr "עדכון הכרטיס ב-Stripe"
 
 msgid "Updated"
 msgstr "עודכן"
@@ -7584,11 +7659,17 @@ msgstr "ההעלאה נכשלה. נא לנסות שוב."
 msgid "Uploaded!"
 msgstr "הועלה!"
 
-msgid "Usage billing history"
-msgstr "היסטוריית חיובים לפי שימוש"
+msgid "Usage billing"
+msgstr "חיוב לפי שימוש"
 
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "חיוב לפי שימוש מופעל עבור מסווגי שפה טבעית."
+msgid "Usage billing charges"
+msgstr "חיובים לפי שימוש"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] "חיוב לפי שימוש מופעל. נקודות זכות מעבר ל־%(count)s עולות 1¢ לכל 1,000: %(cost)s עד כה החודש."
+msgstr[1] "חיוב לפי שימוש מופעל. נקודות זכות מעבר ל־%(count)s עולות 1¢ לכל 1,000: %(cost)s עד כה החודש."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8044,6 +8125,9 @@ msgstr "כדי להשיב לתגובה צריך להתחבר."
 msgid "You need to be logged in to share a story."
 msgstr "צריך להתחבר כדי לשתף כתבה."
 
+msgid "You only pay for credits past your plan's."
+msgstr "משלמים רק על קרדיטים מעבר למכסה שבתוכנית שלך."
+
 msgid "You will be emailed within a minute or three."
 msgstr "תקבלו הודעה באימייל בתוך דקה או שלוש."
 
@@ -8052,6 +8136,10 @@ msgstr "יופיעו כאן תגיות ומחברים רבים."
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "הוגבלת בקצב הבקשות.<br> כדאי לנסות שוב בקרוב, אבל לא מוקדם מדי."
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "אתה קרוב למגבלה החודשית שלך, %(limit)s."
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "מוצגות לך כמה אפשרויות לתבנית כתבה לבחירה."
@@ -8074,6 +8162,12 @@ msgstr "קיבלת במתנה %(value_1)s של %(value_2)s!"
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
 msgstr "הגעת למגבלה של %(value_1)s אתרים. השתק כמה אתרים או שדרג את החשבון כדי להוסיף עוד."
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "השתמשת החודש ב־%(used)s מתוך נקודת הזכות %(included)s לבינה מלאכותית שלך."
+msgstr[1] "השתמשת החודש ב־%(used)s מתוך %(included)s נקודות הזכות לבינה מלאכותית שלך."
+
 msgid "You:"
 msgstr "את/ה:"
 
@@ -8090,6 +8184,14 @@ msgstr "המינוי שלכם ל-%(value_1)s כולל את כל מה שמופי�
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "המינוי שלך ל־%(value_1)s פעיל"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "מסנני הבינה המלאכותית שלך מושהים עד %(date)s."
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "מסנני הבינה המלאכותית שלך הגיעו למגבלה החודשית שלך של %(limit)s והושהו עד %(date)s."
 
 msgid "Your Archived Domains"
 msgstr "הדומיינים שלך בארכיון"
@@ -8342,9 +8444,6 @@ msgstr "הזכות לתקן"
 
 msgid "separate multiple addresses with commas"
 msgstr "יש להפריד בין כתובות מרובות באמצעות פסיקים"
-
-msgid "set up usage-based billing"
-msgstr "הגדרת חיוב לפי שימוש"
 
 msgid "show hidden stories"
 msgstr "הצגת כתבות מוסתרות"

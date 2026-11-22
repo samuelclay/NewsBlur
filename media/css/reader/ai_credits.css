@@ -1,0 +1,480 @@
+/* ============== */
+/* = AI credits = */
+/* ============== */
+
+/* ai_credits.css: The month bar, the trainer strip, the account dialog's AI credits tab and the
+   notice when credits run low (media/js/newsblur/reader/reader_ai_credits.js). The bar's tones
+   reuse the intelligence colors over a light gray track: focus green, the trainer's amber and
+   hidden red. */
+
+.NB-ai-credits-strip,
+.NB-ai-credits-notice,
+.NB-ai-credits-settings {
+    --ai-credits-ok: #34912E;
+    --ai-credits-warn: #C98A0B;
+    --ai-credits-out: #A90103;
+    --ai-credits-track: #E6E7E2;
+    --ai-credits-ink: #3F4446;
+    --ai-credits-muted: #8E8F88;
+    --ai-credits-alert-wash: #FBF3F1;
+    --ai-credits-warn-wash: #FBF6EA;
+}
+
+.NB-dark .NB-ai-credits-strip,
+.NB-dark .NB-ai-credits-notice,
+.NB-dark .NB-ai-credits-settings {
+    --ai-credits-ok: #4CAF46;
+    --ai-credits-warn: #E0A33A;
+    --ai-credits-out: #E0605C;
+    --ai-credits-track: #3A3E40;
+    --ai-credits-ink: #D9DADB;
+    --ai-credits-muted: #8F9293;
+    --ai-credits-alert-wash: #33272A;
+    --ai-credits-warn-wash: #322D22;
+}
+
+.NB-ai-credits-tone-ok { --ai-credits-tone: var(--ai-credits-ok); }
+.NB-ai-credits-tone-warn { --ai-credits-tone: var(--ai-credits-warn); }
+.NB-ai-credits-tone-out { --ai-credits-tone: var(--ai-credits-out); }
+
+/* The month bar */
+
+.NB-ai-credits-bar {
+    position: relative;
+    height: 8px;
+    margin: 6px 0 8px;
+    border-radius: 4px;
+    background: var(--ai-credits-track);
+}
+
+.NB-ai-credits-bar-large {
+    height: 12px;
+    border-radius: 6px;
+    margin: 8px 0 12px;
+}
+
+.NB-ai-credits-bar-used,
+.NB-ai-credits-bar-forecast {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: inherit;
+}
+
+.NB-ai-credits-bar-used {
+    background: var(--ai-credits-tone);
+    transition: width 0.4s ease-out;
+}
+
+/* Where this pace ends the month: striped, so it reads as a projection, not a fact. */
+.NB-ai-credits-bar-forecast {
+    background: repeating-linear-gradient(
+        -45deg,
+        var(--ai-credits-tone) 0 2px,
+        transparent 2px 5px
+    );
+    opacity: 0.45;
+}
+
+/* The plan's credits end here. */
+.NB-ai-credits-bar-notch {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--ai-credits-ink);
+    border-radius: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-ai-credits-bar-used {
+        transition: none;
+    }
+}
+
+/* Text shared by the strip, the notice and the tab */
+
+.NB-ai-credits-strip-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.NB-ai-credits-summary {
+    font-weight: 600;
+    color: var(--ai-credits-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-ai-credits-resets {
+    color: var(--ai-credits-muted);
+    white-space: nowrap;
+}
+
+.NB-ai-credits-title {
+    font-weight: 600;
+    color: var(--ai-credits-tone);
+    margin: 2px 0 2px;
+}
+
+.NB-ai-credits-line {
+    color: var(--ai-credits-ink);
+    line-height: 1.45;
+    margin: 2px 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-ai-credits-action {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-top: 10px;
+}
+
+.NB-ai-credits-action .NB-modal-submit-button {
+    margin: 0;
+    display: inline-block;
+}
+
+/* Secondary actions (Change limit, Save limit, Update card) sit quieter than the green one. */
+.NB-ai-credits-strip a.NB-ai-credits-button-secondary,
+.NB-ai-credits-notice a.NB-ai-credits-button-secondary,
+.NB-ai-credits-settings a.NB-ai-credits-button-secondary {
+    background: var(--ai-credits-track);
+    background-image: none;
+    color: var(--ai-credits-ink);
+    font-weight: 600;
+    text-shadow: none;
+    border: 1px solid transparent;
+}
+
+.NB-ai-credits-strip a.NB-ai-credits-button-secondary:hover,
+.NB-ai-credits-notice a.NB-ai-credits-button-secondary:hover,
+.NB-ai-credits-settings a.NB-ai-credits-button-secondary:hover {
+    border-color: var(--ai-credits-muted);
+}
+
+.NB-ai-credits-action-note {
+    color: var(--ai-credits-muted);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* The trainer: one AI filter card (reader_classifier.js make_ai_filter_card). The text and
+   image sections keep their own markup and wiring, but their boxes step aside (display:
+   contents) so the card lays their parts out as one column: the selected mode's compose area,
+   then both saved lists, then the credits row. */
+
+.NB-classifier-ai-filter-card .NB-ai-filter-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-ai-filter-card-body > .NB-classifier-content-filter-section,
+.NB-ai-filter-card-body > .NB-classifier-image-filter-section,
+.NB-ai-filter-card-body > div > .NB-fieldset-fields,
+.NB-ai-filter-card-body .NB-classifier-content-classifiers {
+    display: contents;
+}
+
+.NB-ai-filter-card-body .NB-ai-filter-compose {
+    order: 1;
+}
+
+.NB-ai-filter-card-body .NB-content-filter-saved-list,
+.NB-ai-filter-card-body .NB-image-filter-saved-list {
+    order: 2;
+}
+
+.NB-ai-filter-card-body .NB-ai-credits-trainer {
+    order: 3;
+}
+
+.NB-classifier-ai-filter-card[data-mode="text"] .NB-classifier-image-filter-section .NB-ai-filter-compose,
+.NB-classifier-ai-filter-card[data-mode="image"] .NB-classifier-content-filter-section .NB-ai-filter-compose {
+    display: none !important;
+}
+
+.NB-ai-filter-card-body .NB-content-filter-saved-list:empty,
+.NB-ai-filter-card-body .NB-image-filter-saved-list:empty,
+.NB-ai-filter-card-body .NB-content-filter-test-status:empty,
+.NB-ai-filter-card-body .NB-image-filter-test-status:empty {
+    display: none;
+}
+
+/* The Text / Images switch in the card's header */
+.NB-classifier-ai-filter-card .NB-ai-filter-modes {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.06);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.NB-classifier-ai-filter-card .NB-ai-filter-mode {
+    padding: 3px 12px;
+    border-radius: 5px;
+    color: #707070;
+    text-decoration: none;
+}
+
+.NB-classifier-ai-filter-card .NB-ai-filter-mode:hover {
+    color: #404040;
+}
+
+.NB-classifier-ai-filter-card .NB-ai-filter-mode.NB-active {
+    background: #fff;
+    color: #303030;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.NB-dark .NB-classifier-ai-filter-card .NB-ai-filter-modes {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-classifier-ai-filter-card .NB-ai-filter-mode {
+    color: #9A9C9D;
+}
+
+.NB-dark .NB-classifier-ai-filter-card .NB-ai-filter-mode.NB-active {
+    background: #45494B;
+    color: #E6E6E6;
+    box-shadow: none;
+}
+
+/* The credits row at the bottom of the card: a line, a bar, and at most one colored line. */
+.NB-ai-credits-trainer {
+    display: none;
+}
+
+.NB-ai-credits-strip {
+    font-size: 12px;
+    padding: 10px 0 0;
+    border-top: 1px solid var(--ai-credits-track);
+}
+
+.NB-ai-credits-strip .NB-ai-credits-strip-heading {
+    text-decoration: none;
+    color: inherit;
+}
+
+.NB-ai-credits-chevron {
+    color: var(--ai-credits-muted);
+    font-size: 16px;
+    line-height: 1;
+}
+
+.NB-ai-credits-strip .NB-ai-credits-strip-heading:hover .NB-ai-credits-chevron {
+    color: var(--ai-credits-ink);
+}
+
+.NB-ai-credits-strip .NB-ai-credits-action {
+    margin-top: 6px;
+}
+
+.NB-ai-filter-estimate {
+    font-size: 11px;
+    line-height: 1.4;
+    color: #8E8F88;
+    margin-top: 6px;
+}
+
+.NB-dark .NB-ai-filter-estimate {
+    color: #8F9293;
+}
+
+/* The account dialog's AI credits tab */
+
+.NB-ai-credits-settings {
+    font-size: 13px;
+}
+
+.NB-ai-credits-settings .NB-preference-options {
+    max-width: 460px;
+}
+
+.NB-ai-credits-terms {
+    margin: 8px 0 4px;
+    padding: 0 0 0 18px;
+    color: var(--ai-credits-ink);
+    line-height: 1.5;
+    list-style: disc;
+}
+
+.NB-ai-credits-forecast-cost {
+    font-weight: 600;
+}
+
+.NB-ai-credits-limit {
+    margin: 14px 0 12px;
+}
+
+.NB-ai-credits-limit-label,
+.NB-modal-preferences .NB-preference .NB-preference-options label.NB-ai-credits-limit-label {
+    display: block;
+    float: none;
+    padding: 0;
+    font-weight: 600;
+    color: var(--ai-credits-ink);
+    margin: 0 0 4px;
+}
+
+.NB-ai-credits-limit-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-ai-credits-limit-dollar {
+    color: var(--ai-credits-muted);
+}
+
+.NB-ai-credits-limit-input {
+    width: 90px;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-ai-credits-limit-row .NB-modal-submit-button {
+    margin: 0;
+}
+
+.NB-ai-credits-limit-help,
+.NB-ai-credits-limit-status {
+    font-size: 11px;
+    color: var(--ai-credits-muted);
+    margin-top: 4px;
+}
+
+.NB-ai-credits-limit-status.NB-error {
+    color: var(--ai-credits-out);
+}
+
+.NB-ai-credits-setup,
+.NB-ai-credits-manage {
+    display: inline-block;
+    margin: 4px 0 0;
+}
+
+/* The modal button style floats left; at the top of the section it sits on its own line. */
+.NB-ai-credits-billing .NB-preference-options .NB-ai-credits-setup {
+    float: none;
+    display: table;
+    margin: 0 0 12px;
+}
+
+.NB-ai-credits-billing-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 4px;
+}
+
+.NB-ai-credits-billing-actions .NB-modal-submit-button {
+    margin: 0;
+}
+
+.NB-ai-credits-cancel {
+    color: var(--ai-credits-muted);
+    font-size: 12px;
+}
+
+.NB-ai-credits-cancel:hover {
+    color: var(--ai-credits-out);
+}
+
+.NB-ai-credits-cancel-status {
+    font-size: 11px;
+    color: var(--ai-credits-muted);
+    margin-top: 6px;
+}
+
+.NB-ai-credits-cancel-status.NB-error {
+    color: var(--ai-credits-out);
+}
+
+.NB-ai-credits-setup-pending {
+    margin: 0 0 12px;
+    padding: 8px 12px;
+    border-left: 3px solid #4A90D9;
+    background: rgba(74, 144, 217, 0.08);
+    font-size: 12px;
+}
+
+/* The notice when credits run low or out */
+
+.NB-ai-credits-notice {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    /* Under dialogs (simplemodal starts at 1000), so the trainer or account dialog covers it. */
+    z-index: 900;
+    width: 340px;
+    max-width: calc(100vw - 32px);
+    box-sizing: border-box;
+    padding: 14px 16px 14px;
+    font-size: 12px;
+    background: #fff;
+    border-left: 3px solid var(--ai-credits-tone);
+    border-radius: 0 6px 6px 0;
+    box-shadow: 0 8px 24px rgba(30, 34, 36, 0.18), 0 0 0 1px rgba(30, 34, 36, 0.06);
+    animation: NB-ai-credits-notice-in 0.25s ease-out;
+}
+
+.NB-dark .NB-ai-credits-notice {
+    background: #26292B;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.NB-ai-credits-notice-title {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--ai-credits-ink);
+    padding-right: 20px;
+}
+
+.NB-ai-credits-notice-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--ai-credits-muted);
+    cursor: pointer;
+}
+
+.NB-ai-credits-notice-close:hover {
+    color: var(--ai-credits-ink);
+}
+
+.NB-ai-credits-notice-closing {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+@keyframes NB-ai-credits-notice-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-ai-credits-notice {
+        animation: none;
+    }
+    .NB-ai-credits-notice-closing {
+        transition: none;
+    }
+}

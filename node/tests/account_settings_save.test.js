@@ -13,7 +13,7 @@ function account_fixture() {
     const context = {
         NEWSBLUR: {
             Modal: function () {}, log() {},
-            Globals: { can_use_ai_classifiers: true },
+            Globals: {},
             Preferences: { send_emails: true, notify_before_renewal: false, invoice_text: 'Old' },
         },
         _: { extend: Object.assign, bind: (fn, self) => fn.bind(self) },
@@ -25,7 +25,6 @@ function account_fixture() {
     account.serialize_preferences = () => ({ send_emails: false, notify_before_renewal: true, invoice_text: 'New' });
     account.model = {
         preference() { requests.push('preference'); },
-        save_usage_billing_limit() { requests.push('usage'); },
         save_account_settings(form, done) { requests.push('account'); callback = done; },
     };
     account.close = () => {};
@@ -34,20 +33,20 @@ function account_fixture() {
     return { account, requests, preferences: context.NEWSBLUR.Preferences, respond: data => callback(data) };
 }
 
-test('account preferences save in one request before usage billing can write the profile', () => {
+test('account preferences save in one request and update the cache after it succeeds', () => {
     const fixture = account_fixture();
     fixture.account.save_account_settings();
     assert.deepEqual(fixture.requests, ['account']);
     assert.equal(fixture.preferences.invoice_text, 'Old');
     assert.equal(fixture.preferences.send_emails, true);
     fixture.respond({ code: 1, payload: { username: 'owner', email: 'owner@example.com', invoice_text: 'New', send_emails: false, notify_before_renewal: true } });
-    assert.deepEqual(fixture.requests, ['account', 'usage']);
+    assert.deepEqual(fixture.requests, ['account']);
     assert.equal(fixture.preferences.invoice_text, 'New');
     assert.equal(fixture.preferences.send_emails, false);
     assert.equal(fixture.preferences.notify_before_renewal, true);
 });
 
-test('rejected account settings leave cached preferences and usage billing unchanged', () => {
+test('rejected account settings leave cached preferences unchanged', () => {
     const fixture = account_fixture();
     fixture.account.save_account_settings();
     fixture.respond({ code: -4, message: 'Invalid invoice text' });

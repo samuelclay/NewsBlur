@@ -1686,7 +1686,7 @@ class ReadingItemFragment :
             chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text))
             chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_red)
         }
-        // Like the tag chips above, tapping opens the trainer, whose AI sections hold this prompt.
+        // Like the tag chips above, tapping opens the trainer, whose AI filter card holds this prompt.
         if (!(fs!!.isAllSaved || fs!!.singleSavedTag != null)) {
             v.setOnClickListener {
                 if (story!!.feedId == "0") return@setOnClickListener // cannot train on feedless stories

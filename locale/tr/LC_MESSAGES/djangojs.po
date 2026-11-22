@@ -159,10 +159,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s ve %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/haber"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s bayt"
@@ -186,11 +182,6 @@ msgstr[0] "%(count)s sınıflandırıcı silinecek"
 msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s yorum"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s içerik filtresi"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -243,11 +234,6 @@ msgid_plural "%(count)s hours ago"
 msgstr[0] "%(count)s saat önce"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s görsel filtresi"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s beğeni"
@@ -291,18 +277,6 @@ msgstr[0] "%(count)s bülten"
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(limit)s siteden %(count)s tanesi"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "Tüm sitelerde %(count)s (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "Klasörde %(count)s (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "Bu sitede %(count)s (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -388,11 +362,6 @@ msgstr[0] "Ayda %(count)s haber"
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s haber silinecek"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "Ayda %(count)s haber"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -542,10 +511,6 @@ msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s ila %(end)s dakika"
 
 #, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
-
-#, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
 msgstr "%(submit_button)s veya %(cancel_link)s"
 
@@ -580,6 +545,24 @@ msgstr "%(topic)s siteleri"
 #, python-format
 msgid "%(topic)s Subreddits"
 msgstr "%(topic)s subreddit'leri"
+
+#, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr ""
+"%(unbilled)s için ücret bekleniyor: gelecek ayın başında, tutar en az %(minimum)s olursa; ya da tutar "
+"%(immediate)s olduğunda hemen."
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "%(used)s yapay zekâ kredisi kullanıldı; planınızın %(included)s sınırını %(over)s aşıyor"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "%(included)s yapay zekâ kredisinin %(used)s kadarı kullanıldı"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -893,19 +876,10 @@ msgstr "(GMT-11:00) Midway Adaları, Samoa"
 msgid "(no title)"
 msgstr "(başlık yok)"
 
-msgid "(upcoming)"
-msgstr "(yaklaşan)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s site daha"
-
-msgid "/day"
-msgstr "/gün"
-
-msgid "/mo"
-msgstr "/ay"
 
 msgid "/month"
 msgstr "/ay"
@@ -918,6 +892,19 @@ msgstr "1 ay"
 
 msgid "1 year"
 msgstr "1 yıl"
+
+msgid "10,000 AI credits a month for AI filters"
+msgstr "Yapay zekâ filtreleri için ayda 10.000 yapay zekâ kredisi"
+
+msgid "100,000 AI credits a month for AI filters"
+msgstr "Yapay zekâ filtreleri için ayda 100.000 yapay zekâ kredisi"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "Planınızdaki kredileri aştıktan sonra her 1.000 kredi için 1¢; bu ay yaklaşık %(cost)s."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "Planınızdaki kredileri aştıktan sonra her 1.000 kredi için 1¢."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Okuma, işlemler, eğitim ve keşif için 28 araç kullanılabilir."
@@ -972,6 +959,11 @@ msgstr "Paylaşılan haberlerden oluşan bir blurblog"
 msgid "A clearer, closer sound"
 msgstr "Daha net ve yakın bir ses"
 
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr ""
+"Metin filtresinden geçirilen yaklaşık bir haber için 1 kredi kullanılır. Görsel filtresinden geçirilen her "
+"haber için yaklaşık 10 kredi kullanılır."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Tek bir haber akışı olarak okunan bir klasör"
 
@@ -991,18 +983,45 @@ msgstr "Tek bir beğeni, istenen sayıda beğenmemeyi geçersiz kılar"
 msgid "A story diff with additions and deletions"
 msgstr "Eklemeleri ve silmeleri gösteren bir haber farkı"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "Bu sitedeki bir metin filtresi ayda yaklaşık %(count)s kredi kullanır."
+
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Bu sitedeki bir metin filtresi ayda bir krediden az kullanır."
+
 msgid "AI Filter"
 msgstr "Yapay zekâ filtresi"
 
 msgid "AI Model"
 msgstr "Yapay zekâ modeli"
 
+msgid "AI credits"
+msgstr "Yapay zekâ kredileri"
+
+msgid "AI filters"
+msgstr "Yapay zekâ filtreleri"
+
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "Yapay zekâ filtreleri kaydedildi ancak çalışmaları için %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "Yapay zekâ filtreleri kaydedilir ancak yalnızca %(tier_link)s üzerinde çalışır."
+
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
+msgstr ""
+"Yapay zekâ filtreleri kaydedilir ancak yalnızca Premium'da çalışır. Premium ayda 1.000, Archive 10.000 ve "
+"Pro 100.000 yapay zekâ kredisi içerir."
+
+msgid "AI filters run without credits on this server."
+msgstr "Bu sunucuda yapay zekâ filtreleri kredi kullanmadan çalışır."
 
 msgid "AI finds the stories"
 msgstr "Haberleri yapay zekâ bulur"
+
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Ayda 1.000 yapay zekâ kredisiyle yapay zekâ metin ve görsel filtreleri"
 
 msgid "AI-curated summary of your top stories"
 msgstr "En önemli haberlerinizin yapay zekâ tarafından derlenmiş özeti"
@@ -1013,6 +1032,10 @@ msgstr "Haber akışlarınızdaki içeriklerin yapay zekâ destekli analizi ve s
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "TÜM KATEGORİLER (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "Bu ay, mevcut hızınızla yaklaşık %(cost)s."
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Elbette. Eğiticiyi açın ve sıfırlamak için beğeni ya da beğenmeme işaretlerini kaldırın."
@@ -1257,6 +1280,14 @@ msgstr "Bir hata oluştu."
 msgid "An error occurred. Please try again."
 msgstr "Bir hata oluştu. Lütfen tekrar deneyin."
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "Bu sitedeki bir görsel filtresi ayda yaklaşık %(count)s kredi kullanır."
+
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Bu sitedeki bir görsel filtresi ayda bir krediden az kullanır."
+
 msgid "Analysis timed out. Please try again."
 msgstr "Analiz zaman aşımına uğradı. Lütfen tekrar deneyin."
 
@@ -1405,6 +1436,19 @@ msgstr "Okuduğunuz her şey hakkında soru sorun. Tarama geçmişinizde arama y
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "Soru sorun, özet alın veya önemli noktaları isteyin"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "Bu hızla bu ay yaklaşık %(count)s kredi kullanırsınız."
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "Bu hızla kredileriniz yaklaşık %(date)s tarihinde tükenir."
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "Mevcut kullanım hızınızla ay sonu tutarı yaklaşık %(cost)s olur."
 
 msgid "Audio"
 msgstr "Ses"
@@ -1729,6 +1773,9 @@ msgstr "Fatura bilgilerini değiştir"
 msgid "Change folders"
 msgstr "Klasörleri değiştir"
 
+msgid "Change limit"
+msgstr "Sınırı değiştir"
+
 msgid "Change password"
 msgstr "Şifreyi değiştir"
 
@@ -1743,6 +1790,9 @@ msgstr "Kredi kartınızı değiştirin"
 
 msgid "Change your profile above"
 msgstr "Profilinizi yukarıdan değiştirin"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "Tutar 1 $'a ulaştığında ay sonunda tahsil edilir. Daha düşük tutarlar sonraki aya aktarılır."
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "NewsBlur kullanıcılarının eklediği popüler siteleri görmek için daha sonra tekrar kontrol edin."
@@ -2041,6 +2091,9 @@ msgstr "SSS yüklenemedi. Lütfen tekrar deneyin."
 msgid "Couldn't load audio for this story."
 msgstr "Bu haberin sesi yüklenemedi."
 
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "Kullanıma dayalı faturalandırma kapatılamadı. Lütfen yeniden deneyin."
+
 msgid "Counting is difficult"
 msgstr "Saymak zor"
 
@@ -2250,14 +2303,8 @@ msgstr "Sunum"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Aradığınız haberi açıklayın; bulmak için sayfayı yeniden analiz edelim."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "Bir konu açıklayın; yapay zekâ, odaklanmanız veya gizlemeniz için her haberi isteminize göre puanlasın."
-
 msgid "Describe what to focus or hide"
 msgstr "Neye odaklanılacağını veya neyin gizleneceğini açıklayın"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Neye bakılacağını açıklayın; yapay zekâ her haberin görsellerini isteminize göre analiz etsin."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2931,6 +2978,9 @@ msgstr "Filtreler %(context)s içinde haber bulamadı."
 msgid "Filters found no stories in this view."
 msgstr "Bu görünümde filtrelerle eşleşen haber yok."
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr "Kullanıma dayalı faturalandırma sınıra ulaştığında filtreler duraklatılır. Sınır koymamak için boş bırakın."
+
 msgid "Finance"
 msgstr "Finans"
 
@@ -3497,6 +3547,9 @@ msgstr "IFTTT ve Zapier"
 msgid "Identify key people and relationships"
 msgstr "Önemli kişileri ve ilişkileri belirle"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "Bir ay içinde 10 $'a ulaşırsa ücret hemen tahsil edilir."
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "RSS akışı bulunamazsa NewsBlur bir web akışı oluşturmayı önerir"
 
@@ -3530,6 +3583,9 @@ msgstr "Görsel önizlemesi"
 
 msgid "Image prompt"
 msgstr "Görsel istemi"
+
+msgid "Images"
+msgstr "Görseller"
 
 msgid "Immediately"
 msgstr "Hemen"
@@ -3586,9 +3642,6 @@ msgstr "Bu pencerede"
 
 msgid "Include read"
 msgstr "Okunanları dahil et"
-
-msgid "Increase or remove your limit"
-msgstr "Sınırınızı artırın veya kaldırın"
 
 msgid "Independent"
 msgstr "Bağımsız"
@@ -3693,6 +3746,9 @@ msgstr "Yalnızca başlıklar, yorum yok"
 
 msgid "Keep fades, without movement."
 msgstr "Solma geçişlerini koru, hareketi kaldır."
+
+msgid "Keep filters running"
+msgstr "Filtreleri çalışır durumda tut"
 
 msgid "Keep others unread"
 msgstr "Diğerlerini okunmamış bırak"
@@ -3906,12 +3962,6 @@ msgstr "NewsBlur'ı yönet"
 msgid "Manage Training"
 msgstr "Eğitimi yönet"
 
-msgid "Manage billing and limits"
-msgstr "Faturalandırmayı ve limitleri yönet"
-
-msgid "Manage billing on Stripe"
-msgstr "Stripe'ta faturalandırmayı yönet"
-
 msgid "Manage email settings"
 msgstr "E-posta ayarlarını yönet"
 
@@ -4104,11 +4154,8 @@ msgstr "Pzt"
 msgid "Monday"
 msgstr "Pazartesi"
 
-msgid "Monthly spending limit"
-msgstr "Aylık harcama limiti"
-
-msgid "Monthly spending limit reached. "
-msgstr "Aylık harcama sınırına ulaşıldı. "
+msgid "Monthly limit"
+msgstr "Aylık sınır"
 
 msgid "Months Earned"
 msgstr "Kazanılan Aylar"
@@ -4219,24 +4266,6 @@ msgstr "Yerel Uygulamalar"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Doğal"
-
-msgid "Natural Language Image Classifier"
-msgstr "Doğal Dil Görsel Sınıflandırıcısı"
-
-msgid "Natural Language Text Classifier"
-msgstr "Doğal Dil Metin Sınıflandırıcısı"
-
-msgid "Natural language classifier billing"
-msgstr "Doğal dil sınıflandırıcısı faturalandırması"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "Doğal dil sınıflandırıcıları bir sonraki fatura dönemine kadar duraklatıldı. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "Doğal dil sınıflandırıcıları, örneğinizin API anahtarlarını kullanıyor."
-
-msgid "Natural language text and image classifiers"
-msgstr "Doğal dil metin ve görsel sınıflandırıcıları"
 
 msgid "Nature"
 msgstr "Doğa"
@@ -4546,11 +4575,8 @@ msgstr "Bu sayfada haber kalıbı bulunamadı."
 msgid "No trending sites available"
 msgstr "Şu anda popüler site yok"
 
-msgid "No usage billing invoices yet."
-msgstr "Henüz kullanım faturası yok."
-
-msgid "No usage billing set up."
-msgstr "Kullanım ücretlendirmesi ayarlanmamış."
+msgid "No usage billing charges yet."
+msgstr "Henüz kullanıma dayalı faturalandırma ücreti yok."
 
 msgid "No valid merge groups to apply"
 msgstr "Uygulanacak geçerli birleştirme grubu yok"
@@ -4873,11 +4899,6 @@ msgstr "Seçenek 3:"
 msgid "Option 4:"
 msgstr "Seçenek 4:"
 
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr ""
-"İsteğe bağlı. Sınıflandırıcılar sınıra ulaşıldığında duraklatılır ve sonraki faturalandırma döneminde devam"
-" eder."
-
 msgid "Options"
 msgstr "Seçenekler"
 
@@ -4934,6 +4955,16 @@ msgstr "Ayrıştırılıyor..."
 
 msgid "Part of a story URL"
 msgstr "Haber URL'sinin bir bölümü"
+
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Kredileriniz tükendikten sonra da filtreler her 1.000 kredi için 1¢ karşılığında çalışmaya devam eder."
+
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
+msgstr ""
+"Planınızdaki kredileri aştığınızda filtreler ayın 1'ine kadar duraklar. Kullanım bazlı ücretlendirme, 1.000"
+" kredi başına 1¢ karşılığında çalışmaya devam etmelerini sağlar."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Herhangi bir URL yapıştırın; RSS olmasa bile NewsBlur sayfadan bir akış oluşturur."
@@ -5127,6 +5158,9 @@ msgstr "Premium ayrıntıları"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Premium yazı tipleri için %(link_start)spremium hesap%(link_end)s gerekir"
+
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium ayda 1.000, Archive 10.000 ve Pro 100.000 yapay zekâ kredisi içerir."
 
 msgid "Premium renewal"
 msgstr "Premium yenileme"
@@ -5564,6 +5598,10 @@ msgid "Reset to original favicon"
 msgstr "Orijinal site simgesine dön"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "%(date)s sıfırlanıyor"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "%(day)s tarihinde sıfırlanır"
 
@@ -5683,6 +5721,9 @@ msgstr "Herhangi bir haberi tek tıkla veya s tuşuyla kaydedin"
 msgid "Save comments"
 msgstr "Yorumları kaydet"
 
+msgid "Save limit"
+msgstr "Sınırı kaydet"
+
 msgid "Save my profile"
 msgstr "Profilimi kaydet"
 
@@ -5731,6 +5772,13 @@ msgstr "Özel etiketlerle düzenlenmiş kaydedilen haberler"
 
 msgid "Saved!"
 msgstr "Kaydedildi!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "Kaydedildi. Filtreler ayda %(limit)s sınırına ulaştığında duraklatılır."
+
+msgid "Saved. No monthly limit."
+msgstr "Kaydedildi. Aylık sınır yok."
 
 msgid "Saved:"
 msgstr "Kaydedildi:"
@@ -5974,8 +6022,8 @@ msgstr "Sunucu hatası"
 msgid "Server error: %(status)s"
 msgstr "Sunucu hatası: %(status)s"
 
-msgid "Set up billing"
-msgstr "Faturalandırmayı ayarla"
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "Aylık bir sınır belirleyin veya kullanıma dayalı faturalandırmayı istediğiniz zaman kapatın."
 
 msgid "Set up newsletters"
 msgstr "Bültenleri ayarla"
@@ -5983,8 +6031,8 @@ msgstr "Bültenleri ayarla"
 msgid "Set up notifications"
 msgstr "Bildirimleri ayarlayın"
 
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "Doğal dil içerik ve görsel filtrelerini kullanmak için kullanıma dayalı faturalandırmayı ayarlayın."
+msgid "Set up usage billing"
+msgstr "Kullanım ücretlendirmesini ayarlayın"
 
 msgid "Set up your blurblog"
 msgstr "Blurblog'unuzu ayarlayın"
@@ -6319,9 +6367,6 @@ msgstr "Özel Klasörler"
 msgid "Speed"
 msgstr "Hız"
 
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Harcama sınırına ulaşıldı. Sınıflandırıcılar bir sonraki döneme kadar duraklatıldı."
-
 msgid "Split"
 msgstr "Böl"
 
@@ -6577,6 +6622,9 @@ msgstr "Akış kesildi. 10 saniyedir yanıt alınamadı."
 
 msgid "Stripe Id:"
 msgstr "Stripe Kimliği:"
+
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Kartınız Stripe'ta kayıtlı. Kullanıma dayalı faturalandırma birazdan etkinleşecek."
 
 msgid "Style"
 msgstr "Tarz"
@@ -7013,6 +7061,14 @@ msgstr ""
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "Bu, başlığın tamamıyla eşleşir ve yalnızca bu haberle eşleşir. Bunun yerine başlığın bir bölümünü seçin."
 
+msgid "This month"
+msgstr "Bu ay"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "Bu ayın %(count)s yapay zekâ kredisi kullanıldı."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Okunmuş haberler listesi bir %(link_start)sPremium özelliktir%(link_end)s."
@@ -7295,13 +7351,22 @@ msgstr "Salı"
 msgid "Turn off automatic briefing generation"
 msgstr "Otomatik özet oluşturmayı kapat"
 
+msgid "Turn off usage billing"
+msgstr "Kullanıma dayalı faturalandırmayı kapat"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "Lütfen bu %(count)s siteyi etkinleştirin"
 
+msgid "Turn on usage billing"
+msgstr "Kullanım ücretlendirmesini aç"
+
 msgid "Turning any page into a feed"
 msgstr "Herhangi bir sayfayı akışa dönüştürme"
+
+msgid "Turning off..."
+msgstr "Kapatılıyor..."
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7344,6 +7409,10 @@ msgstr "Bu sitenin sesini aç"
 
 msgid "Uncategorized"
 msgstr "Kategorize edilmemiş"
+
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "Şöyle anlaşıldı: %(description)s"
 
 msgid "Unfavorited"
 msgstr "Favorilerden çıkarıldı"
@@ -7420,11 +7489,14 @@ msgstr "Başlıksız"
 msgid "Up Next"
 msgstr "Sıradaki"
 
-msgid "Upcoming charge: "
-msgstr "Yaklaşan ödeme: "
+msgid "Upcoming"
+msgstr "Yaklaşan"
 
 msgid "Update History"
 msgstr "Güncelleme Geçmişi"
+
+msgid "Update card on Stripe"
+msgstr "Stripe'taki kartı güncelleyin"
 
 msgid "Updated"
 msgstr "Son güncelleme"
@@ -7534,11 +7606,16 @@ msgstr "Yükleme başarısız. Lütfen tekrar deneyin."
 msgid "Uploaded!"
 msgstr "Yüklendi!"
 
-msgid "Usage billing history"
-msgstr "Kullanım faturalandırma geçmişi"
+msgid "Usage billing"
+msgstr "Kullanıma dayalı faturalandırma"
 
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "Doğal dil sınıflandırıcıları için kullanıma dayalı faturalandırma etkin."
+msgid "Usage billing charges"
+msgstr "Kullanım ücretlendirmesi"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] "Kullanım ücretlendirmesi açık. %(count)s sınırını aşan her 1.000 kredi 1¢: bu ay şimdiye kadar %(cost)s."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8001,6 +8078,9 @@ msgstr "Bir yoruma yanıt vermek için giriş yapmalısınız."
 msgid "You need to be logged in to share a story."
 msgstr "Bir haberi paylaşmak için giriş yapmalısınız."
 
+msgid "You only pay for credits past your plan's."
+msgstr "Yalnızca planınızdaki kredi sınırını aşan krediler için ödeme yaparsınız."
+
 msgid "You will be emailed within a minute or three."
 msgstr "Bir iki dakika içinde e-postayla bilgilendirileceksiniz."
 
@@ -8009,6 +8089,10 @@ msgstr "Bir sürü etiket ve yazar göreceksiniz."
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "İstek hızınız sınırlandırıldı.<br> Yakında tekrar deneyin, ama hemen değil."
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "%(limit)s aylık sınırınıza yaklaştınız."
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "Aralarından seçim yapabileceğiniz birden fazla haber kalıbı seçeneği sunuluyor."
@@ -8033,6 +8117,11 @@ msgstr ""
 "%(value_1)s site sınırınıza ulaştınız. Daha fazla site eklemek için bazılarını sessize alın veya hesabınızı"
 " yükseltin."
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "Bu ay %(included)s yapay zekâ kredisinin %(used)s kadarını kullandınız."
+
 msgid "You:"
 msgstr "Siz:"
 
@@ -8049,6 +8138,14 @@ msgstr "%(value_1)s aboneliğiniz yukarıdakilerin tümünü içerir"
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "%(value_1)s aboneliğiniz etkin"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "Yapay zekâ filtreleriniz %(date)s tarihine kadar duraklatıldı."
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "Yapay zekâ filtreleriniz %(limit)s aylık sınırınıza ulaştı ve %(date)s tarihine kadar duraklatıldı."
 
 msgid "Your Archived Domains"
 msgstr "Arşivlenmiş alan adlarınız"
@@ -8300,9 +8397,6 @@ msgstr "tamir hakkı"
 
 msgid "separate multiple addresses with commas"
 msgstr "birden fazla adresi virgülle ayırın"
-
-msgid "set up usage-based billing"
-msgstr "kullanıma dayalı faturalandırmayı ayarlayın"
 
 msgid "show hidden stories"
 msgstr "gizli haberleri göster"

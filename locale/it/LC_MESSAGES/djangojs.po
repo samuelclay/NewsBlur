@@ -163,10 +163,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s e %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s/articolo"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s byte"
@@ -195,12 +191,6 @@ msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s commento"
 msgstr[1] "%(count)s commenti"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s filtro dei contenuti"
-msgstr[1] "%(count)s filtri dei contenuti"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -263,12 +253,6 @@ msgstr[0] "%(count)s ora fa"
 msgstr[1] "%(count)s ore fa"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s filtro immagini"
-msgstr[1] "%(count)s filtri immagini"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s mi piace"
@@ -321,18 +305,6 @@ msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s di %(limit)s sito"
 msgstr[1] "%(count)s di %(limit)s siti"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "%(count)s su tutti i siti (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "%(count)s nella cartella (%(stories)s)"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "%(count)s su questo sito (%(stories)s)"
 
 #, python-format
 msgid "%(count)s open"
@@ -435,12 +407,6 @@ msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s articolo verrà eliminato"
 msgstr[1] "%(count)s articoli verranno eliminati"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s articolo/mese"
-msgstr[1] "%(count)s articoli/mese"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -605,10 +571,6 @@ msgstr[0] "Da %(start)s a %(end)s minuto"
 msgstr[1] "Da %(start)s a %(end)s minuti"
 
 #, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
-
-#, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
 msgstr "%(submit_button)s o %(cancel_link)s"
 
@@ -643,6 +605,26 @@ msgstr "Siti di %(topic)s"
 #, python-format
 msgid "%(topic)s Subreddits"
 msgstr "Subreddit di %(topic)s"
+
+#, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr ""
+"%(unbilled)s è in attesa di addebito: all'inizio del prossimo mese se raggiunge almeno %(minimum)s, oppure "
+"subito a %(immediate)s."
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "%(used)s crediti AI usati, %(over)s oltre i %(included)s inclusi nel tuo piano"
+msgstr[1] "%(used)s crediti AI usati, %(over)s oltre i %(included)s inclusi nel tuo piano"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "%(used)s di %(included)s credito AI usato"
+msgstr[1] "%(used)s di %(included)s crediti AI usati"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -957,20 +939,11 @@ msgstr "(GMT-11:00) Isola di Midway, Samoa"
 msgid "(no title)"
 msgstr "(senza titolo)"
 
-msgid "(upcoming)"
-msgstr "(in arrivo)"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s altro sito"
 msgstr[1] "+ %(value_1)s altri siti"
-
-msgid "/day"
-msgstr "/giorno"
-
-msgid "/mo"
-msgstr "/mese"
 
 msgid "/month"
 msgstr "/mese"
@@ -983,6 +956,19 @@ msgstr "1 mese"
 
 msgid "1 year"
 msgstr "1 anno"
+
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10.000 crediti AI al mese per i filtri AI"
+
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100.000 crediti AI al mese per i filtri AI"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1¢ ogni 1.000 crediti oltre quelli inclusi nel tuo piano, circa %(cost)s questo mese."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ ogni 1.000 crediti oltre quelli inclusi nel tuo piano."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Sono disponibili 28 strumenti per leggere, eseguire azioni, addestrare e scoprire contenuti."
@@ -1042,6 +1028,11 @@ msgstr "Un blurblog di articoli condivisi"
 msgid "A clearer, closer sound"
 msgstr "Un suono più nitido e ravvicinato"
 
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr ""
+"Un credito equivale circa a un articolo elaborato da un filtro di testo. Un filtro per immagini usa circa "
+"10 crediti per articolo."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Una cartella di feed letti come un unico flusso"
 
@@ -1061,18 +1052,46 @@ msgstr "Un solo Mi piace prevale su un numero qualsiasi di Non mi piace"
 msgid "A story diff with additions and deletions"
 msgstr "Confronto di un articolo con aggiunte e rimozioni"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "Un filtro di testo su questo sito usa circa %(count)s credito al mese."
+msgstr[1] "Un filtro di testo su questo sito usa circa %(count)s crediti al mese."
+
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Un filtro di testo su questo sito usa meno di un credito al mese."
+
 msgid "AI Filter"
 msgstr "Filtro IA"
 
 msgid "AI Model"
 msgstr "Modello di IA"
 
+msgid "AI credits"
+msgstr "Crediti IA"
+
+msgid "AI filters"
+msgstr "Filtri AI"
+
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "I filtri IA sono salvati, ma non verranno applicati finché non %(billing_link)s."
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "I filtri AI vengono salvati, ma vengono eseguiti solo su %(tier_link)s."
+
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
+msgstr ""
+"I filtri AI vengono salvati, ma funzionano solo con Premium. Premium include 1.000 crediti AI al mese, "
+"Archive 10.000 e Pro 100.000."
+
+msgid "AI filters run without credits on this server."
+msgstr "Su questo server i filtri AI funzionano senza crediti."
 
 msgid "AI finds the stories"
 msgstr "L'IA trova gli articoli"
+
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Filtri AI di testo e immagini, con 1.000 crediti AI al mese"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Riepilogo curato dall'IA dei tuoi articoli principali"
@@ -1083,6 +1102,10 @@ msgstr "Analisi degli articoli basata sull’IA e riepiloghi giornalieri persona
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "TUTTE LE CATEGORIE (%(value_1)s)"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "Al ritmo attuale, questo mese saranno circa %(cost)s."
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Certo. Apri lo strumento di addestramento e rimuovi qualsiasi pollice in su o in giù per azzerarlo."
@@ -1334,6 +1357,15 @@ msgstr "Si è verificato un errore."
 msgid "An error occurred. Please try again."
 msgstr "Si è verificato un errore. Riprova."
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "Un filtro per immagini su questo sito usa circa %(count)s credito al mese."
+msgstr[1] "Un filtro per immagini su questo sito usa circa %(count)s crediti al mese."
+
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Un filtro per immagini su questo sito usa meno di un credito al mese."
+
 msgid "Analysis timed out. Please try again."
 msgstr "Analisi scaduta. Riprova."
 
@@ -1485,6 +1517,20 @@ msgstr ""
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "Fai domande, ottieni riepiloghi o chiedi i punti chiave"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "A questo ritmo, questo mese userai circa %(count)s credito."
+msgstr[1] "A questo ritmo, questo mese userai circa %(count)s crediti."
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "A questo ritmo, i tuoi crediti finiranno intorno al %(date)s."
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "Al tuo ritmo, questo mese il costo sarà di circa %(cost)s."
 
 msgid "Audio"
 msgstr "Audio"
@@ -1811,6 +1857,9 @@ msgstr "Modifica i dati di fatturazione"
 msgid "Change folders"
 msgstr "Cambia cartelle"
 
+msgid "Change limit"
+msgstr "Modifica limite"
+
 msgid "Change password"
 msgstr "Cambia password"
 
@@ -1825,6 +1874,11 @@ msgstr "Modifica la tua carta di credito"
 
 msgid "Change your profile above"
 msgstr "Modifica il tuo profilo qui sopra"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr ""
+"L'addebito avviene a fine mese, al raggiungimento di 1 $. Gli importi inferiori restano in sospeso fino a "
+"un mese successivo."
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "Torna più tardi per vedere i siti popolari aggiunti dagli utenti di NewsBlur."
@@ -2122,6 +2176,9 @@ msgstr "Impossibile caricare le FAQ. Riprova."
 msgid "Couldn't load audio for this story."
 msgstr "Impossibile caricare l'audio di questo articolo."
 
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "Impossibile disattivare la fatturazione a consumo. Riprova."
+
 msgid "Counting is difficult"
 msgstr "Contare è difficile"
 
@@ -2333,16 +2390,8 @@ msgstr "Pronuncia"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Descrivi l’articolo che cerchi e analizzeremo di nuovo la pagina per trovarlo."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"Descrivi un argomento e l’IA valuterà ogni articolo in base alla tua richiesta, per mettere in evidenza o "
-"nascondere le corrispondenze."
-
 msgid "Describe what to focus or hide"
 msgstr "Descrivi cosa mettere in evidenza o nascondere"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Descrivi cosa cercare e l’IA analizzerà le immagini di ogni articolo in base alla tua richiesta."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3011,6 +3060,11 @@ msgstr "I filtri non hanno trovato articoli in %(context)s."
 msgid "Filters found no stories in this view."
 msgstr "I filtri non hanno trovato articoli in questa vista."
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr ""
+"I filtri si mettono in pausa quando la fatturazione a consumo raggiunge il limite. Lascia vuoto per non "
+"impostare limiti."
+
 msgid "Finance"
 msgstr "Finanza"
 
@@ -3581,6 +3635,9 @@ msgstr "IFTTT e Zapier"
 msgid "Identify key people and relationships"
 msgstr "Individua le persone chiave e le relazioni"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "Se raggiunge i 10 $ entro un mese, ti verrà addebitato subito."
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "Se non viene trovato alcun feed RSS, NewsBlur propone di crearne uno web"
 
@@ -3616,6 +3673,9 @@ msgstr "Anteprima immagine"
 
 msgid "Image prompt"
 msgstr "Prompt per l'immagine"
+
+msgid "Images"
+msgstr "Immagini"
 
 msgid "Immediately"
 msgstr "Subito"
@@ -3673,9 +3733,6 @@ msgstr "In questa finestra"
 
 msgid "Include read"
 msgstr "Includi letti"
-
-msgid "Increase or remove your limit"
-msgstr "Aumenta o rimuovi il limite"
 
 msgid "Independent"
 msgstr "Indipendente"
@@ -3780,6 +3837,9 @@ msgstr "Solo titoli, senza commenti"
 
 msgid "Keep fades, without movement."
 msgstr "Mantieni le dissolvenze, senza movimento."
+
+msgid "Keep filters running"
+msgstr "Continua a far funzionare i filtri"
 
 msgid "Keep others unread"
 msgstr "Mantieni non letti gli altri"
@@ -3993,12 +4053,6 @@ msgstr "Gestisci NewsBlur"
 msgid "Manage Training"
 msgstr "Gestisci addestramento"
 
-msgid "Manage billing and limits"
-msgstr "Gestisci fatturazione e limiti"
-
-msgid "Manage billing on Stripe"
-msgstr "Gestisci la fatturazione su Stripe"
-
 msgid "Manage email settings"
 msgstr "Gestisci le impostazioni email"
 
@@ -4197,11 +4251,8 @@ msgstr "Lun"
 msgid "Monday"
 msgstr "Lunedì"
 
-msgid "Monthly spending limit"
-msgstr "Limite di spesa mensile"
-
-msgid "Monthly spending limit reached. "
-msgstr "Limite di spesa mensile raggiunto. "
+msgid "Monthly limit"
+msgstr "Limite mensile"
 
 msgid "Months Earned"
 msgstr "Mesi guadagnati"
@@ -4314,24 +4365,6 @@ msgstr "App native"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Naturale"
-
-msgid "Natural Language Image Classifier"
-msgstr "Classificatore di immagini in linguaggio naturale"
-
-msgid "Natural Language Text Classifier"
-msgstr "Classificatore di testo in linguaggio naturale"
-
-msgid "Natural language classifier billing"
-msgstr "Fatturazione del classificatore in linguaggio naturale"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "I classificatori in linguaggio naturale sono in pausa fino al prossimo ciclo di fatturazione. "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "I classificatori in linguaggio naturale utilizzano le chiavi API della tua istanza."
-
-msgid "Natural language text and image classifiers"
-msgstr "Classificatori di testo e immagini in linguaggio naturale"
 
 msgid "Nature"
 msgstr "Natura"
@@ -4644,11 +4677,8 @@ msgstr "Nessuno schema di articoli trovato in questa pagina."
 msgid "No trending sites available"
 msgstr "Nessun sito di tendenza disponibile"
 
-msgid "No usage billing invoices yet."
-msgstr "Non ci sono ancora fatture per l'utilizzo."
-
-msgid "No usage billing set up."
-msgstr "Nessuna fatturazione a consumo configurata."
+msgid "No usage billing charges yet."
+msgstr "Non hai ancora addebiti per la fatturazione a consumo."
 
 msgid "No valid merge groups to apply"
 msgstr "Nessun gruppo di unione valido da applicare"
@@ -4980,11 +5010,6 @@ msgstr "Opzione 3:"
 msgid "Option 4:"
 msgstr "Opzione 4:"
 
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr ""
-"Facoltativo. I classificatori vengono sospesi al raggiungimento del limite e riprendono nel ciclo di "
-"fatturazione successivo."
-
 msgid "Options"
 msgstr "Opzioni"
 
@@ -5041,6 +5066,16 @@ msgstr "Analisi in corso..."
 
 msgid "Part of a story URL"
 msgstr "Parte dell'URL di un articolo"
+
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Esauriti i tuoi crediti, i filtri continuano a funzionare al costo di 1¢ ogni 1.000 crediti."
+
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
+msgstr ""
+"Esauriti i crediti del tuo piano, i filtri si mettono in pausa fino al giorno 1. Con la fatturazione a "
+"consumo continuano a funzionare al costo di 1¢ ogni 1.000 crediti."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Incolla un URL qualsiasi e NewsBlur creerà un feed dalla pagina, anche senza RSS."
@@ -5233,6 +5268,9 @@ msgstr "Dettagli Premium"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "I caratteri Premium richiedono un %(link_start)saccount Premium%(link_end)s"
+
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium include 1.000 crediti AI al mese, Archive 10.000 e Pro 100.000."
 
 msgid "Premium renewal"
 msgstr "Rinnovo Premium"
@@ -5682,6 +5720,10 @@ msgid "Reset to original favicon"
 msgstr "Ripristina la favicon originale"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "Reimposta %(date)s"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "Si azzera %(day)s"
 
@@ -5803,6 +5845,9 @@ msgstr "Salva qualsiasi articolo con un clic o premendo il tasto s"
 msgid "Save comments"
 msgstr "Salva i commenti"
 
+msgid "Save limit"
+msgstr "Salva il limite"
+
 msgid "Save my profile"
 msgstr "Salva il mio profilo"
 
@@ -5851,6 +5896,13 @@ msgstr "Articoli salvati organizzati con tag personalizzati"
 
 msgid "Saved!"
 msgstr "Salvato!"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "Salvato. I filtri si sospendono a %(limit)s al mese."
+
+msgid "Saved. No monthly limit."
+msgstr "Salvato. Nessun limite mensile."
 
 msgid "Saved:"
 msgstr "Salvato:"
@@ -6094,8 +6146,8 @@ msgstr "Errore del server"
 msgid "Server error: %(status)s"
 msgstr "Errore del server: %(status)s"
 
-msgid "Set up billing"
-msgstr "Configura la fatturazione"
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "Imposta un limite mensile oppure disattiva la fatturazione a consumo quando vuoi."
 
 msgid "Set up newsletters"
 msgstr "Configura le newsletter"
@@ -6103,8 +6155,8 @@ msgstr "Configura le newsletter"
 msgid "Set up notifications"
 msgstr "Configura le notifiche"
 
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "Configura la fatturazione a consumo per usare filtri dei contenuti e delle immagini in linguaggio naturale."
+msgid "Set up usage billing"
+msgstr "Configura la fatturazione a consumo"
 
 msgid "Set up your blurblog"
 msgstr "Configura il tuo blurblog"
@@ -6444,9 +6496,6 @@ msgstr "Cartelle speciali"
 msgid "Speed"
 msgstr "Velocità"
 
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Limite di spesa raggiunto. I classificatori sono in pausa fino al prossimo ciclo."
-
 msgid "Split"
 msgstr "Dividi"
 
@@ -6708,6 +6757,9 @@ msgstr "Flusso interrotto. Nessuna risposta ricevuta per 10 secondi."
 
 msgid "Stripe Id:"
 msgstr "ID Stripe:"
+
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Stripe ha i dati della tua carta. La fatturazione a consumo sarà attiva tra poco."
 
 msgid "Style"
 msgstr "Stile"
@@ -7146,6 +7198,15 @@ msgstr ""
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "Corrisponde all'intero titolo e troverà solo questo articolo. Seleziona una parte del titolo."
 
+msgid "This month"
+msgstr "Questo mese"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "Questo mese è stato usato %(count)s credito AI."
+msgstr[1] "Questo mese sono stati usati %(count)s crediti AI."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "L'elenco degli articoli letti è una funzionalità %(link_start)sPremium%(link_end)s."
@@ -7429,14 +7490,23 @@ msgstr "Martedì"
 msgid "Turn off automatic briefing generation"
 msgstr "Disattiva la generazione automatica dei briefing"
 
+msgid "Turn off usage billing"
+msgstr "Disattiva la fatturazione a consumo"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "Attiva questo %(count)s sito, per favore"
 msgstr[1] "Attiva questi %(count)s siti, per favore"
 
+msgid "Turn on usage billing"
+msgstr "Attiva la fatturazione a consumo"
+
 msgid "Turning any page into a feed"
 msgstr "Trasformare qualsiasi pagina in un feed"
+
+msgid "Turning off..."
+msgstr "Disattivazione in corso..."
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7480,6 +7550,10 @@ msgstr "Riattiva questo sito"
 
 msgid "Uncategorized"
 msgstr "Senza categoria"
+
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "Interpretato come: %(description)s"
 
 msgid "Unfavorited"
 msgstr "Rimosso dai preferiti"
@@ -7556,11 +7630,14 @@ msgstr "Senza titolo"
 msgid "Up Next"
 msgstr "A seguire"
 
-msgid "Upcoming charge: "
-msgstr "Prossimo addebito: "
+msgid "Upcoming"
+msgstr "In arrivo"
 
 msgid "Update History"
 msgstr "Cronologia degli aggiornamenti"
+
+msgid "Update card on Stripe"
+msgstr "Aggiorna la carta su Stripe"
 
 msgid "Updated"
 msgstr "Aggiornato"
@@ -7674,11 +7751,21 @@ msgstr "Caricamento non riuscito. Riprova."
 msgid "Uploaded!"
 msgstr "Caricato!"
 
-msgid "Usage billing history"
-msgstr "Cronologia di fatturazione dell’utilizzo"
+msgid "Usage billing"
+msgstr "Fatturazione a consumo"
 
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "La fatturazione a consumo è attiva per i classificatori del linguaggio naturale."
+msgid "Usage billing charges"
+msgstr "Addebiti per l'uso"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] ""
+"La fatturazione a consumo è attiva. I crediti oltre i tuoi %(count)s costano 1¢ ogni 1.000: finora questo "
+"mese hai speso %(cost)s."
+msgstr[1] ""
+"La fatturazione a consumo è attiva. I crediti oltre i tuoi %(count)s costano 1¢ ogni 1.000: finora questo "
+"mese hai speso %(cost)s."
 
 #, python-format
 msgid "Use %(language)s"
@@ -8146,6 +8233,9 @@ msgstr "Devi aver effettuato l’accesso per rispondere a un commento."
 msgid "You need to be logged in to share a story."
 msgstr "Devi aver effettuato l’accesso per condividere un articolo."
 
+msgid "You only pay for credits past your plan's."
+msgstr "Paghi solo i crediti che superano quelli inclusi nel tuo piano."
+
 msgid "You will be emailed within a minute or three."
 msgstr "Riceverai un'email entro un minuto o tre."
 
@@ -8154,6 +8244,10 @@ msgstr "Vedrai un sacco di tag e autori."
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "Hai raggiunto il limite di richieste.<br> Riprova tra poco, ma non troppo presto."
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "Sei vicino al limite mensile di %(limit)s."
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "Ti vengono proposti diversi schemi di articoli tra cui scegliere."
@@ -8178,6 +8272,12 @@ msgstr ""
 "Hai raggiunto il limite di %(value_1)s siti. Silenzia alcuni siti o passa a un piano superiore per "
 "aggiungerne altri."
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "Questo mese hai usato %(used)s del tuo %(included)s credito AI."
+msgstr[1] "Questo mese hai usato %(used)s dei tuoi %(included)s crediti AI."
+
 msgid "You:"
 msgstr "Tu:"
 
@@ -8194,6 +8294,14 @@ msgstr "Il tuo abbonamento %(value_1)s include tutto quanto sopra"
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "Il tuo abbonamento %(value_1)s è attivo"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "I tuoi filtri AI sono in pausa fino al %(date)s."
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "I tuoi filtri AI hanno raggiunto il limite mensile di %(limit)s e sono in pausa fino al %(date)s."
 
 msgid "Your Archived Domains"
 msgstr "I tuoi domini archiviati"
@@ -8446,9 +8554,6 @@ msgstr "diritto alla riparazione"
 
 msgid "separate multiple addresses with commas"
 msgstr "separa gli indirizzi con virgole"
-
-msgid "set up usage-based billing"
-msgstr "configurare la fatturazione basata sull'utilizzo"
 
 msgid "show hidden stories"
 msgstr "mostra articoli nascosti"

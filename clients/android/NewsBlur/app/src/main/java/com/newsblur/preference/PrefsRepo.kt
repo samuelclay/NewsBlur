@@ -13,6 +13,8 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
+import com.google.gson.Gson
+import com.google.gson.JsonParseException
 import com.newsblur.BuildConfig
 import com.newsblur.NbApplication
 import com.newsblur.activity.LoginActivity
@@ -20,6 +22,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
 import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
+import com.newsblur.network.domain.AiCredits
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.service.SyncService
 import com.newsblur.service.SyncServiceState
@@ -49,7 +52,6 @@ import com.newsblur.util.StoryOrder
 import com.newsblur.util.ThemeAppearance
 import com.newsblur.util.ThemeMode
 import com.newsblur.util.ThumbnailStyle
-import com.newsblur.util.UsageBillingState
 import com.newsblur.util.VolumeKeyNavigation
 import com.newsblur.util.WidgetBackground
 import com.newsblur.widget.WidgetUtils.disableWidgetUpdate
@@ -1080,23 +1082,20 @@ class PrefsRepo(
 
     fun getIsPro() = prefs.getBoolean(PrefConstants.IS_PRO, false)
 
-    fun setUsageBillingState(state: UsageBillingState) {
-        prefs.edit {
-            putBoolean(PrefConstants.IS_USAGE_BILLING, state.isUsageBilling)
-            putBoolean(PrefConstants.IS_SELF_HOSTED_AI, state.isSelfHostedAi)
-            putBoolean(PrefConstants.CAN_USE_AI_CLASSIFIERS, state.canUseAiClassifiers)
-            // PrefsRepo.kt stores the limit as a string so a cleared limit stays distinct from $0.
-            putString(PrefConstants.USAGE_BILLING_LIMIT, state.usageBillingLimit?.toString())
-        }
+    /** This month's AI credits, saved whenever /reader/feeds or an AI credit endpoint sends them. */
+    fun setAiCredits(credits: AiCredits) {
+        prefs.edit { putString(PrefConstants.AI_CREDITS, Gson().toJson(credits)) }
     }
 
-    fun getUsageBillingState(): UsageBillingState =
-        UsageBillingState(
-            isUsageBilling = prefs.getBoolean(PrefConstants.IS_USAGE_BILLING, false),
-            isSelfHostedAi = prefs.getBoolean(PrefConstants.IS_SELF_HOSTED_AI, false),
-            canUseAiClassifiers = prefs.getBoolean(PrefConstants.CAN_USE_AI_CLASSIFIERS, false),
-            usageBillingLimit = prefs.getString(PrefConstants.USAGE_BILLING_LIMIT, null)?.toDoubleOrNull(),
-        )
+    fun getAiCredits(): AiCredits? {
+        val json = prefs.getString(PrefConstants.AI_CREDITS, null) ?: return null
+        // PrefsRepo.kt: a value saved in a shape this build can't read counts as not synced yet.
+        return try {
+            Gson().fromJson(json, AiCredits::class.java)
+        } catch (_: JsonParseException) {
+            null
+        }
+    }
 
     fun setIsStaff(isStaff: Boolean) {
         prefs.edit {

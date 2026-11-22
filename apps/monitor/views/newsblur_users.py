@@ -71,6 +71,8 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec_short,
             ),
+            # newsblur_users.py: Readers with usage billing for AI credits past their plan's
+            # (apps/analyzer/ai_credits.py), the Usage Billing Users tile in Grafana.
             "usage_billing": MStatistics.get(
                 "munin:users_usage_billing",
                 lambda: Profile.objects.filter(is_usage_billing=True).count(),

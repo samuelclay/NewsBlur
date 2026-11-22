@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.test import TestCase, TransactionTestCase
@@ -28,10 +28,10 @@ from apps.analyzer.models import (
     get_classifiers_for_user,
     load_folder_feed_ids,
 )
+from apps.analyzer.test_jev import fake_jev
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed
 from utils import json_functions as json
-from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
 
 
 class Test_Classifiers(TransactionTestCase):
@@ -2159,14 +2159,11 @@ class Test_ScopedClassifiersParity(TransactionTestCase):
             self.assertEqual(flat_score, indexed_score, msg=f"mismatch for feed={story['story_feed_id']}")
 
 
-class Test_AIPromptClassifierDirection(TransactionTestCase):
-    """Regression tests for the direction of AI prompt classifiers.
+class Test_AIPromptClassifierCache(TransactionTestCase):
+    """apps/analyzer/tests.py: Cached AI prompt verdicts are removed exactly when a prompt changes.
 
-    apps/analyzer/tests.py: A `hidden` classifier whose prompt is a bare topic
-    ("sports") used to be sent to the model with no indication of direction, so
-    the model read the topic as the user's interests and returned +1 (focus).
-    apps/reader/views.py only honors -1 for a hidden classifier, so every match
-    was discarded and nothing was ever hidden.
+    The direction and failure handling of the classification itself are tested in
+    apps/analyzer/test_jev.py.
     """
 
     fixtures = [
@@ -2206,98 +2203,6 @@ class Test_AIPromptClassifierDirection(TransactionTestCase):
     def tearDown(self):
         MClassifierPrompt.objects(user_id=self.user.pk).delete()
 
-    def _run(self, classify_fn, prompt, classification=0, raises=None):
-        """Call a classifier against a mocked Anthropic client.
-
-        Returns (result, create_kwargs) so tests can assert on both the value
-        returned and the request that was actually sent to the model.
-        """
-        block = MagicMock()
-        block.type = "tool_use"
-        block.name = "classify_stories"
-        block.input = {"classifications": [{"id": "guid-1", "classification": classification}]}
-        response = MagicMock()
-        response.content = [block]
-        response.usage = None
-
-        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
-            "utils.ai_functions.anthropic.Anthropic"
-        ) as MockAnthropic:
-            client = MockAnthropic.return_value
-            if raises:
-                client.messages.create.side_effect = raises
-            else:
-                client.messages.create.return_value = response
-            result = classify_fn(prompt, self.stories, user_id=None)
-            kwargs = client.messages.create.call_args.kwargs if client.messages.create.call_args else {}
-        return result, kwargs
-
-    def _allowed_scores(self, kwargs):
-        """Pull the enum of classification values the tool schema permits."""
-        tool = kwargs["tools"][0]
-        schema = tool["input_schema"]["properties"]["classifications"]["items"]
-        return schema["properties"]["classification"]["enum"]
-
-    def test_hidden_prompt_only_permits_neutral_or_hide(self):
-        """A hidden classifier must never be able to return +1 (focus)."""
-        _result, kwargs = self._run(classify_stories_with_ai, self.hidden_prompt)
-        allowed = self._allowed_scores(kwargs)
-        self.assertNotIn(1, allowed, "A hidden classifier must not be allowed to return +1 (focus)")
-        self.assertIn(-1, allowed)
-        self.assertIn(0, allowed)
-
-    def test_focus_prompt_only_permits_neutral_or_focus(self):
-        """A focus classifier must never be able to return -1 (hidden)."""
-        _result, kwargs = self._run(classify_stories_with_ai, self.focus_prompt)
-        allowed = self._allowed_scores(kwargs)
-        self.assertNotIn(-1, allowed, "A focus classifier must not be allowed to return -1 (hidden)")
-        self.assertIn(1, allowed)
-        self.assertIn(0, allowed)
-
-    def test_system_message_states_the_direction(self):
-        """The bare prompt text ("sports") cannot convey direction, so the
-        system message has to state it. The same text is used by both a hidden
-        and a focus classifier in production, so the two messages must differ."""
-        _r1, hidden_kwargs = self._run(classify_stories_with_ai, self.hidden_prompt)
-        _r2, focus_kwargs = self._run(classify_stories_with_ai, self.focus_prompt)
-        hidden_system = hidden_kwargs["system"]
-        focus_system = focus_kwargs["system"]
-
-        self.assertNotEqual(
-            hidden_system,
-            focus_system,
-            "Hidden and focus classifiers with identical prompt text must send different instructions",
-        )
-        self.assertIn("hide", hidden_system.lower())
-        self.assertIn("sports", hidden_system)
-
-    def test_hidden_match_survives_the_reader_filter(self):
-        """End-to-end sign check: what the model returns for a match must be
-        the value apps/reader/views.py honors for that classifier type."""
-        result, _kwargs = self._run(classify_stories_with_ai, self.hidden_prompt, classification=-1)
-        self.assertEqual(result["guid-1"], -1)
-
-        # Mirror of the filter in apps/reader/views.py:get_prompt_scores_or_queue
-        effective = -1 if (self.hidden_prompt.classifier_type == "hidden" and result["guid-1"] == -1) else 0
-        self.assertEqual(effective, -1, "A matched sports story must end up hidden, not discarded")
-
-    def test_vision_hidden_prompt_only_permits_neutral_or_hide(self):
-        """The VLM classifier had the same bug: it always returned +1 for a
-        match, so hidden image classifiers never hid anything."""
-        _result, kwargs = self._run(classify_stories_with_vision, self.hidden_prompt)
-        allowed = self._allowed_scores(kwargs)
-        self.assertNotIn(1, allowed, "A hidden image classifier must not be allowed to return +1")
-        self.assertIn(-1, allowed)
-
-    def test_api_failure_returns_none_instead_of_neutral_scores(self):
-        """An exception used to yield {story_id: 0} for every story, which
-        _run_classifier then cached for 30 days, permanently marking those
-        stories neutral. Failure must be distinguishable from "all neutral"."""
-        result, _kwargs = self._run(
-            classify_stories_with_ai, self.hidden_prompt, raises=Exception("API is down")
-        )
-        self.assertIsNone(result, "A failed classification must not look like a successful all-neutral one")
-
     def test_invalidate_cache_deletes_without_scanning(self):
         """invalidate_cache used to SCAN with MATCH. This Redis holds millions of
         keys and SCAN walks the whole keyspace regardless of how few can match, so
@@ -2335,24 +2240,6 @@ class Test_AIPromptClassifierDirection(TransactionTestCase):
             {},
         )
 
-    def test_failed_classification_is_not_cached(self):
-        """A transient API failure must leave the Redis cache untouched."""
-        prompt_id = str(self.hidden_prompt.id)
-        MClassifierPrompt.invalidate_cache(self.user.pk, prompt_id)
-
-        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
-            "utils.ai_functions.anthropic.Anthropic"
-        ) as MockAnthropic:
-            MockAnthropic.return_value.messages.create.side_effect = Exception("API is down")
-            MClassifierPrompt._run_classifier(
-                self.hidden_prompt, self.stories, user_id=self.user.pk, feed_id=self.feed.pk
-            )
-
-        cached = MClassifierPrompt.get_cached_scores(
-            self.user.pk, prompt_id, self.feed.pk, [s["story_hash"] for s in self.stories]
-        )
-        self.assertEqual(cached, {}, "A failed classification must not write neutral scores to the cache")
-
 
 class Test_AIPromptClassifierCoverage(TransactionTestCase):
     """Regression tests for which stories get classified at feed-fetch time.
@@ -2372,6 +2259,9 @@ class Test_AIPromptClassifierCoverage(TransactionTestCase):
         self.user = User.objects.create_user(
             username="coverageuser", password="testpass", email="coverage@test.com"
         )
+        # AI filters only run on Premium Archive.
+        self.user.profile.is_archive = True
+        self.user.profile.save()
         self.feed = Feed.objects.get(pk=1)
         UserSubscription.objects.create(user=self.user, feed=self.feed, is_trained=True, active=True)
         self.prompt = MClassifierPrompt.objects.create(
@@ -2476,11 +2366,11 @@ class Test_AIPromptClassifierCoverage(TransactionTestCase):
 
 
 class Test_AIPromptClassifierSubscribers(TransactionTestCase):
-    """AI prompts only run and bill on feeds the user actively subscribes to.
+    """AI prompts only run on feeds the user actively subscribes to.
 
     apps/analyzer/tests.py: MClassifierPrompt.feed_has_prompt_subscribers returned every
     user with a feed_id=0 (global or folder) prompt for every feed, so each fetch anywhere
-    on NewsBlur ran and billed their prompts against feeds they don't subscribe to.
+    on NewsBlur ran their prompts against feeds they don't subscribe to.
     """
 
     fixtures = [
@@ -2492,7 +2382,7 @@ class Test_AIPromptClassifierSubscribers(TransactionTestCase):
         self.user = User.objects.create_user(
             username="promptsubscriber", password="testpass", email="promptsubscriber@test.com"
         )
-        self.user.profile.is_usage_billing = True
+        self.user.profile.is_archive = True
         self.user.profile.save()
         self.subscribed_feed = Feed.objects.get(pk=1)
         self.unsubscribed_feed = Feed.objects.get(pk=4)
@@ -2513,7 +2403,7 @@ class Test_AIPromptClassifierSubscribers(TransactionTestCase):
 
     def fetch(self, feed):
         """Classify one new story through classify_stories_for_subscribers in
-        utils/feed_fetcher.py. Returns (LLM calls, billing records)."""
+        utils/feed_fetcher.py. Returns how many Jev requests it made."""
         from utils.feed_fetcher import FeedFetcherWorker
 
         worker = FeedFetcherWorker.__new__(FeedFetcherWorker)
@@ -2525,37 +2415,30 @@ class Test_AIPromptClassifierSubscribers(TransactionTestCase):
             "story_content": "A story about a programming language.",
             "image_urls": [],
         }
-        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
-            "utils.ai_functions.anthropic.Anthropic"
-        ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
-            block = MagicMock()
-            block.type = "tool_use"
-            block.name = "classify_stories"
-            block.input = {"classifications": [{"id": story["story_hash"], "classification": 1}]}
-            MockAnthropic.return_value.messages.create.return_value.content = [block]
+        with fake_jev() as api:
             worker.classify_stories_for_subscribers(
                 feed, [story], new_story_count=1, new_story_hashes=[story["story_hash"]]
             )
-            return MockAnthropic.return_value.messages.create.call_count, record_usage.call_count
+        return len(api.requests)
 
-    def test_global_prompt_runs_and_bills_on_a_subscribed_feed(self):
-        self.assertEqual(self.fetch(self.subscribed_feed), (1, 1))
+    def test_global_prompt_runs_on_a_subscribed_feed(self):
+        self.assertEqual(self.fetch(self.subscribed_feed), 1)
 
-    def test_global_prompt_neither_runs_nor_bills_on_an_unsubscribed_feed(self):
-        self.assertEqual(self.fetch(self.unsubscribed_feed), (0, 0))
+    def test_global_prompt_doesnt_run_on_an_unsubscribed_feed(self):
+        self.assertEqual(self.fetch(self.unsubscribed_feed), 0)
 
-    def test_global_prompt_neither_runs_nor_bills_on_a_muted_feed(self):
-        self.assertEqual(self.fetch(self.muted_feed), (0, 0))
+    def test_global_prompt_doesnt_run_on_a_muted_feed(self):
+        self.assertEqual(self.fetch(self.muted_feed), 0)
 
 
 class Test_AIPromptClassifierFolderScope(TransactionTestCase):
-    """Folder-scoped AI prompts only run, bill and score on the sites in their folder.
+    """Folder-scoped AI prompts only run and score on the sites in their folder.
 
     apps/analyzer/tests.py: Android and iOS save a folder prompt with feed_id=0 and the
     folder's path in folder_id. MClassifierPrompt.get_prompts_for_user lumped every
     feed_id=0 prompt in with the global ones, and the feed fetcher passed no folder
-    membership, so a prompt scoped to one folder was classified and billed against every
-    feed the user reads, and its verdicts colored stories outside the folder.
+    membership, so a prompt scoped to one folder was classified against every feed the
+    user reads, and its verdicts colored stories outside the folder.
     """
 
     fixtures = [
@@ -2567,7 +2450,7 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
         self.user = User.objects.create_user(
             username="folderprompt", password="testpass", email="folderprompt@test.com"
         )
-        self.user.profile.is_usage_billing = True
+        self.user.profile.is_archive = True
         self.user.profile.save()
         self.tech_feed = Feed.objects.get(pk=1)
         self.swift_feed = Feed.objects.get(pk=2)
@@ -2607,28 +2490,13 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
         }
 
     def classify(self, stories, feed_ids=None):
-        """Run classify_stories against a mocked Anthropic client that matches every story.
+        """Run classify_stories against a fake Jev that matches every story.
 
-        Returns (classifications, prompts the LLM was asked about, billing records).
+        Returns (classifications, every question Jev was asked).
         """
-        block = MagicMock()
-        block.type = "tool_use"
-        block.name = "classify_stories"
-        block.input = {"classifications": [{"id": s["story_hash"], "classification": 1} for s in stories]}
-        response = MagicMock()
-        response.content = [block]
-        response.usage.input_tokens = 120
-        response.usage.output_tokens = 30
-
-        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
-            "utils.ai_functions.anthropic.Anthropic"
-        ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
-            create = MockAnthropic.return_value.messages.create
-            create.return_value = response
+        with fake_jev(probability=0.95) as api:
             result = MClassifierPrompt.classify_stories(self.user.pk, stories, feed_ids=feed_ids)
-            asked = [call.kwargs["system"] for call in create.call_args_list]
-            billed = [call.kwargs for call in record_usage.call_args_list]
-        return result, asked, billed
+        return result, api.instructions
 
     def cached_score(self, prompt, feed):
         story_hash = self.story(feed)["story_hash"]
@@ -2636,52 +2504,42 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
             story_hash
         )
 
-    def test_folder_prompt_runs_and_bills_for_a_feed_in_its_folder(self):
+    def test_folder_prompt_runs_for_a_feed_in_its_folder(self):
         story = self.story(self.tech_feed)
 
-        result, asked, billed = self.classify([story], feed_ids=[self.tech_feed.pk])
+        result, asked = self.classify([story], feed_ids=[self.tech_feed.pk])
 
         self.assertEqual(result, {story["story_hash"]: 1})
         self.assertEqual(len(asked), 1)
         self.assertIn("programming languages", asked[0])
-        self.assertEqual(len(billed), 1)
-        self.assertEqual(billed[0]["user_id"], self.user.pk)
         self.assertEqual(self.cached_score(self.folder_prompt, self.tech_feed), 1)
 
-    def test_folder_prompt_neither_runs_nor_bills_for_a_feed_outside_its_folder(self):
+    def test_folder_prompt_doesnt_run_for_a_feed_outside_its_folder(self):
         story = self.story(self.other_feed)
 
-        result, asked, billed = self.classify([story], feed_ids=[self.other_feed.pk])
+        result, asked = self.classify([story], feed_ids=[self.other_feed.pk])
 
         self.assertEqual(result, {story["story_hash"]: 0})
-        self.assertEqual(asked, [], "A Tech prompt must not be sent to the LLM for a site outside Tech")
-        self.assertEqual(billed, [], "A Tech prompt must not bill for a site outside Tech")
+        self.assertEqual(asked, [], "A Tech prompt must not be sent to Jev for a site outside Tech")
         self.assertIsNone(self.cached_score(self.folder_prompt, self.other_feed))
 
     def fetch(self, feed):
         """Classify one new story through the fetch-time path, classify_stories_for_subscribers
-        in utils/feed_fetcher.py. Returns (LLM calls, billing records)."""
+        in utils/feed_fetcher.py. Returns how many Jev requests it made."""
         from utils.feed_fetcher import FeedFetcherWorker
 
         worker = FeedFetcherWorker.__new__(FeedFetcherWorker)
         worker.options = {"verbose": 0}
         story = self.story(feed)
-        with patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True), patch(
-            "utils.ai_functions.anthropic.Anthropic"
-        ) as MockAnthropic, patch("utils.ai_functions.LLMCostTracker.record_usage") as record_usage:
-            block = MagicMock()
-            block.type = "tool_use"
-            block.name = "classify_stories"
-            block.input = {"classifications": [{"id": story["story_hash"], "classification": 1}]}
-            MockAnthropic.return_value.messages.create.return_value.content = [block]
+        with fake_jev() as api:
             worker.classify_stories_for_subscribers(
                 feed, [story], new_story_count=1, new_story_hashes=[story["story_hash"]]
             )
-            return MockAnthropic.return_value.messages.create.call_count, record_usage.call_count
+        return len(api.requests)
 
     def test_feed_fetcher_skips_a_folder_prompt_for_a_feed_outside_its_folder(self):
-        self.assertEqual(self.fetch(self.other_feed), (0, 0))
-        self.assertEqual(self.fetch(self.tech_feed), (1, 1))
+        self.assertEqual(self.fetch(self.other_feed), 0)
+        self.assertEqual(self.fetch(self.tech_feed), 1)
 
     def test_folder_prompt_covers_the_same_sites_as_a_folder_title_classifier(self):
         """A folder covers only the sites filed directly in it, exactly like the folder-scoped
@@ -2705,7 +2563,7 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
                     "%s on feed %s" % (prompt.folder_id, feed.pk),
                 )
 
-        result, asked, _billed = self.classify([self.story(self.swift_feed)], feed_ids=[self.swift_feed.pk])
+        result, asked = self.classify([self.story(self.swift_feed)], feed_ids=[self.swift_feed.pk])
         self.assertEqual(len(asked), 1)
         self.assertIn("swift concurrency", asked[0])
 
@@ -2717,9 +2575,9 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
 
         for feed in self.feeds:
             story = self.story(feed)
-            result, asked, billed = self.classify([story], feed_ids=[feed.pk])
+            result, asked = self.classify([story], feed_ids=[feed.pk])
             self.assertEqual(result, {story["story_hash"]: 1}, "feed %s" % feed.pk)
-            self.assertEqual((len(asked), len(billed)), (1, 1), "feed %s" % feed.pk)
+            self.assertEqual(len(asked), 1, "feed %s" % feed.pk)
 
     def test_feed_prompt_only_runs_on_its_own_feed(self):
         self.folder_prompt.delete()
@@ -2730,11 +2588,11 @@ class Test_AIPromptClassifierFolderScope(TransactionTestCase):
             classifier_type="focus",
         )
 
-        _result, asked, billed = self.classify([self.story(self.other_feed)], feed_ids=[self.other_feed.pk])
-        self.assertEqual((len(asked), len(billed)), (1, 1))
+        _result, asked = self.classify([self.story(self.other_feed)], feed_ids=[self.other_feed.pk])
+        self.assertEqual(len(asked), 1)
 
-        _result, asked, billed = self.classify([self.story(self.tech_feed)], feed_ids=[self.tech_feed.pk])
-        self.assertEqual((asked, billed), ([], []))
+        _result, asked = self.classify([self.story(self.tech_feed)], feed_ids=[self.tech_feed.pk])
+        self.assertEqual(asked, [])
 
     def test_folders_load_once_and_only_for_users_with_folder_prompts(self):
         """The fetcher classifies for every prompt subscriber of a feed, so the folder lookup

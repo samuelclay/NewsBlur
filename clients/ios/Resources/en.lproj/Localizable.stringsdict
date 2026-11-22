@@ -866,5 +866,117 @@
 			<string>Forward %@ seconds</string>
 		</dict>
 	</dict>
+	<key>%2$@ of %3$@ AI credits used</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_used@</string>
+		<key>ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%2$@ of %3$@ AI credit used</string>
+			<key>other</key>
+			<string>%2$@ of %3$@ AI credits used</string>
+		</dict>
+	</dict>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_past_plan@</string>
+		<key>ai_credits_past_plan</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%2$@ AI credits used, %3$@ past your plan's %4$@</string>
+			<key>other</key>
+			<string>%2$@ AI credits used, %3$@ past your plan's %4$@</string>
+		</dict>
+	</dict>
+	<key>This month's %@ AI credits are used.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@monthly_ai_credits_used@</string>
+		<key>monthly_ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>This month's %@ AI credit is used.</string>
+			<key>other</key>
+			<string>This month's %@ AI credits are used.</string>
+		</dict>
+	</dict>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@usage_billing_included_credits@</string>
+		<key>usage_billing_included_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</string>
+			<key>other</key>
+			<string>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</string>
+		</dict>
+	</dict>
+	<key>A text filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text_filter_monthly_credits@</string>
+		<key>text_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>A text filter on this site uses about %2$@ credit a month</string>
+			<key>other</key>
+			<string>A text filter on this site uses about %2$@ credits a month</string>
+		</dict>
+	</dict>
+	<key>An image filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_monthly_credits@</string>
+		<key>image_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>An image filter on this site uses about %2$@ credit a month</string>
+			<key>other</key>
+			<string>An image filter on this site uses about %2$@ credits a month</string>
+		</dict>
+	</dict>
+	<key>At this pace, this month will use about %2$@ AI credits.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@forecast_monthly_credits@</string>
+		<key>forecast_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>At this pace, this month will use about %2$@ AI credit.</string>
+			<key>other</key>
+			<string>At this pace, this month will use about %2$@ AI credits.</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

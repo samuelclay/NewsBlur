@@ -103,6 +103,9 @@ MODEL_PRICING = {
     "grok-4-1-fast-reasoning": {"input": 0.20, "output": 0.50},
     "grok-4": {"input": 3.00, "output": 15.00},
     "grok-3-beta": {"input": 3.00, "output": 15.00},
+    # TypeSafe Jev decision model on OpenRouter: input tokens only, output is free
+    # (https://openrouter.ai/typesafe/jev-1.14)
+    "typesafe/jev-1.14": {"input": 0.042, "output": 0.0},
     # ElevenLabs text to speech, charged per 1K characters (https://elevenlabs.io/pricing/api)
     "eleven_v4_turbo": {"per_1k_characters": 0.04},
     "eleven_v4": {"per_1k_characters": 0.08},
@@ -136,6 +139,7 @@ MODEL_PROVIDERS = {
     "gpt-4o-mini": "openai",
     "gpt-3.5-turbo": "openai",
     "whisper-1": "openai",
+    "typesafe/jev-1.14": "openrouter",
     "text-embedding-3-small": "openai",
     "text-embedding-3-large": "openai",
     "text-embedding-ada-002": "openai",
@@ -258,18 +262,6 @@ class LLMCostTracker:
         cost_usd = cls.calculate_cost(model, input_tokens, output_tokens, duration_minutes, characters)
         total_tokens = input_tokens + output_tokens
 
-        # Check billing status for classifier features (reused for Redis and Stripe)
-        is_billing_user = False
-        profile = None
-        if feature in ("story_classification", "vision_classification") and user_id:
-            try:
-                from apps.profile.models import Profile
-
-                profile = Profile.objects.get(user_id=user_id)
-                is_billing_user = bool(profile.is_usage_billing and profile.stripe_id)
-            except Exception:
-                pass
-
         # Record to Redis for fast Prometheus metrics
         try:
             RLLMCosts.record(
@@ -280,10 +272,17 @@ class LLMCostTracker:
                 output_tokens=output_tokens,
                 cost_usd=cost_usd,
                 user_id=user_id,
-                is_billing_user=is_billing_user,
             )
         except Exception as e:
             logging.error(f"Failed to record LLM cost to Redis: {e}")
+
+        # AI filter requests spend the reader's monthly AI credits (apps/analyzer/ai_credits.py).
+        try:
+            from apps.analyzer import ai_credits
+
+            ai_credits.spend(user_id, feature, cost_usd)
+        except Exception as e:
+            logging.error(f"Failed to spend AI credits: {e}")
 
         # Record to MongoDB for detailed historical analysis
         try:
@@ -306,61 +305,11 @@ class LLMCostTracker:
                 f"{input_tokens}+{output_tokens} tokens = ${cost_usd:.6f}"
             )
 
-            # Report to Stripe meter for usage-based billing
-            if is_billing_user:
-                cls._report_stripe_meter_event(feature, user_id, profile=profile)
-                cls._invalidate_limit_cache(user_id)
-
             return cost_record
 
         except Exception as e:
             logging.error(f"Failed to record LLM cost to MongoDB: {e}")
             return None
-
-    @classmethod
-    def _report_stripe_meter_event(cls, feature, user_id, profile=None):
-        """Report a meter event to Stripe for usage-based billing."""
-        try:
-            import stripe
-            from django.conf import settings
-
-            if profile is None:
-                from apps.profile.models import Profile
-
-                profile = Profile.objects.get(user_id=user_id)
-            if not profile.is_usage_billing or not profile.stripe_id:
-                return
-
-            meter_event_map = {
-                "story_classification": "nb_ai_text_classification",
-                "vision_classification": "nb_ai_image_classification",
-            }
-            event_name = meter_event_map.get(feature)
-            if not event_name:
-                return
-
-            stripe.api_key = settings.STRIPE_SECRET
-            stripe.billing.MeterEvent.create(
-                event_name=event_name,
-                payload={
-                    "stripe_customer_id": profile.stripe_id,
-                    "value": "1",
-                },
-            )
-        except Exception as e:
-            logging.error(f"Failed to report Stripe meter event: {e}")
-
-    @classmethod
-    def _invalidate_limit_cache(cls, user_id):
-        """Invalidate the Redis spending limit cache for a user."""
-        try:
-            import redis as redis_lib
-            from django.conf import settings
-
-            r = redis_lib.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-            r.delete(f"usage_limit:{user_id}")
-        except Exception:
-            pass
 
     @classmethod
     def record_transcription(cls, duration_seconds, user_id=None, request_id=None, metadata=None):

@@ -2,8 +2,8 @@ import XCTest
 
 @testable import NewsBlur
 
-/// AIClassifierTests.swift answers every AI classifier and usage billing request with fixtures, so no test can
-/// run a paid prompt test, change a limit or open Stripe against a real account.
+/// AIClassifierTests.swift answers every AI classifier, credit and usage billing request with fixtures, so no test
+/// can run a prompt test, change a limit or open Stripe against a real account.
 @MainActor private final class RecordingAITransport: AIClassifierTransport {
     struct Request {
         let method: String
@@ -59,6 +59,52 @@ import XCTest
         return true
     }
 }
+
+/// apps/analyzer/ai_credits.py state() for an Archive month, which each test bends into the state it needs.
+private func creditsJSON(_ changes: [String: Any] = [:]) -> [String: Any] {
+    var json: [String: Any] = [
+        "included": 10_000, "used": 2_340, "remaining": 7_660, "month": "2026-11", "resets_on": "2026-12-01",
+        "is_unlimited": false, "is_billing_available": true, "is_usage_billing": false, "monthly_limit": NSNull(),
+        "overage_credits": 0, "overage_usd": 0.0, "unbilled_usd": 0.0, "minimum_charge_usd": 1.0,
+        "immediate_charge_usd": 10.0, "is_paused": false, "pause_reason": NSNull(), "is_warning": false,
+        "credit_usd": 0.00001, "forecast": NSNull(),
+    ]
+    json.merge(changes) { $1 }
+    return json
+}
+
+private func credits(_ changes: [String: Any] = [:]) -> AICredits {
+    AICredits(json: creditsJSON(changes))!
+}
+
+/// A free plan: filters save and test, but don't score stories.
+private let freeCredits: [String: Any] = [
+    "included": 0, "used": 0.0, "remaining": 0.0, "is_paused": true, "pause_reason": "plan",
+]
+
+/// Running low on the 20th, at a pace that runs out on the 27th and would cost 62 cents past the plan's credits.
+private let warningCredits: [String: Any] = [
+    "used": 8_300, "remaining": 1_700, "is_warning": true,
+    "forecast": ["credits": 72_000, "credits_per_day": 3_100, "runs_out_on": "2026-11-27", "overage_usd": 0.62],
+]
+
+/// The month's credits used up, at the same pace.
+private let pausedCredits: [String: Any] = [
+    "used": 10_000, "remaining": 0, "is_paused": true, "pause_reason": "credits", "is_warning": true,
+    "forecast": ["credits": 72_000, "credits_per_day": 3_100, "runs_out_on": NSNull(), "overage_usd": 0.62],
+]
+
+/// Usage billing past the plan's credits, with $0.37 waiting for the $1 minimum charge.
+private let billingCredits: [String: Any] = [
+    "used": 47_000, "remaining": 0, "is_usage_billing": true, "overage_credits": 37_000, "overage_usd": 0.37,
+    "unbilled_usd": 0.37, "is_warning": true,
+]
+
+/// Usage billing stopped at the reader's $5 monthly limit.
+private let limitCredits: [String: Any] = [
+    "used": 510_000, "remaining": 0, "is_usage_billing": true, "monthly_limit": 5.0, "overage_credits": 500_000,
+    "overage_usd": 5.0, "is_paused": true, "pause_reason": "limit", "is_warning": true,
+]
 
 private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
     var savedParameters: [[String: Any]] = []
@@ -348,11 +394,9 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     func test_textPromptTestPostsDraftAndShowsMatch() throws {
         try withEnglishInterface {
             let transport = RecordingAITransport()
-            transport.responses["/classifier/test_prompt"] = [
-                "code": 0, "classification": 1,
-                "cost_estimate": ["avg_cost_per_text": 0.0004, "avg_cost_per_image": 0.002],
-            ]
-            let model = makeModel(transport: transport, canUseAI: false)
+            transport.responses["/classifier/test_prompt"] = ["code": 0, "classification": 1, "description": "apple"]
+            // Testing a prompt isn't gated: a free account, whose saved filters don't run, still tests one.
+            let model = makeModel(transport: transport, profile: Self.freeProfile)
             model.prepare(feedId: "42", storyHash: "42:abc")
             model.setDraft("  Non-apple related news ", for: .content)
             model.toggleDraftDirection(.content)
@@ -360,14 +404,12 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             model.runTest(.content, storyHash: "42:abc", feedId: "42")
 
             let request = try XCTUnwrap(transport.requests(to: "/classifier/test_prompt").first)
-            XCTAssertEqual(request.method, "POST")
             XCTAssertEqual(request.parameters as NSDictionary, [
                 "prompt": "Non-apple related news", "story_hash": "42:abc", "include_images": "false",
                 "classifier_type": "hidden", "feed_id": "42",
             ])
             XCTAssertEqual(model.test(.content), .finished(.classified(matches: true, imageMatches: [])))
             XCTAssertEqual(model.testStatus(.content, imageCount: 0)?.text, "✓ Story matches this filter")
-            XCTAssertEqual(model.estimate, AIClassifierCostEstimate(averageCostPerText: 0.0004, averageCostPerImage: 0.002))
 
             model.setDraft("Non-apple related news!", for: .content)
             XCTAssertEqual(model.test(.content), .idle, "Editing the prompt clears the old result")
@@ -378,7 +420,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         withEnglishInterface {
             let transport = RecordingAITransport()
             transport.responses["/classifier/test_prompt"] = ["code": 0, "classification": 1, "image_results": [1, 0, 1]]
-            let model = makeModel(transport: transport, canUseAI: true)
+            let model = makeModel(transport: transport, profile: Self.archiveProfile)
             model.setDraft("Charts and graphs", for: .image)
 
             model.runTest(.image, storyHash: "42:abc", feedId: "42")
@@ -400,15 +442,15 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     func test_promptTestFailureShowsServerMessage() {
         let transport = RecordingAITransport()
-        transport.responses["/classifier/test_prompt"] = ["code": -1, "message": "Usage billing required for AI classifiers"]
-        let model = makeModel(transport: transport, canUseAI: false)
+        transport.responses["/classifier/test_prompt"] = ["code": -1, "message": "Story not found"]
+        let model = makeModel(transport: transport, profile: Self.freeProfile)
         model.setDraft("Non-apple related news", for: .content)
 
         model.runTest(.content, storyHash: "42:abc", feedId: "social:9")
 
         XCTAssertEqual(transport.requests.first?.parameters["feed_id"] as? String, "0", "The server parses feed_id as an integer")
         let status = model.testStatus(.content, imageCount: 0)
-        XCTAssertEqual(status?.text, "Usage billing required for AI classifiers")
+        XCTAssertEqual(status?.text, "Story not found")
         XCTAssertEqual(status?.isError, true)
     }
 
@@ -416,7 +458,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         let transport = RecordingAITransport()
         transport.responses["/classifier/test_prompt"] = ["code": 0, "classification": 1]
         transport.holdsResponses = true
-        let model = makeModel(transport: transport, canUseAI: true)
+        let model = makeModel(transport: transport, profile: Self.archiveProfile)
         model.setDraft("Non-apple related news", for: .content)
 
         model.runTest(.content, storyHash: "42:abc", feedId: "42")
@@ -441,70 +483,57 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
     func test_promptTestNeedsAPromptAndAStory() {
         let transport = RecordingAITransport()
-        let model = makeModel(transport: transport, canUseAI: true)
+        let model = makeModel(transport: transport, profile: Self.archiveProfile)
         model.runTest(.content, storyHash: "42:abc", feedId: "42")
         model.setDraft("Non-apple related news", for: .content)
         model.runTest(.content, storyHash: nil, feedId: "42")
         XCTAssertTrue(transport.requests(to: "/classifier/test_prompt").isEmpty)
     }
 
-    func test_costEstimatesOnlyLoadForBillingUsers() {
+    /// Rule: every time the trainer opens it asks for this moment's credits and this site's estimates, so the meter
+    /// never shows what the profile held when the feed list last loaded, and it hands them to the profile for the
+    /// AI credits screen and the settings menu.
+    func test_reopeningTheTrainerLoadsCreditsAgainAndKeepsTheDraft() throws {
         let transport = RecordingAITransport()
-        transport.responses["/classifier/ai_classifier_usage"] = [
-            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0004, "avg_cost_per_image": 0.002, "is_limit_reached": true,
-        ]
-
-        let freeModel = makeModel(transport: transport, canUseAI: false)
-        freeModel.prepare(feedId: "42", storyHash: nil)
-        XCTAssertTrue(transport.requests.isEmpty)
-
-        let billingModel = makeModel(transport: transport, canUseAI: true)
-        billingModel.prepare(feedId: "42", storyHash: nil)
-        XCTAssertEqual(transport.requests.map(\.path), ["/classifier/ai_classifier_usage"])
-        XCTAssertEqual(transport.requests.first?.parameters["feed_id"] as? String, "42")
-        XCTAssertEqual(billingModel.estimate?.averageCostPerImage, 0.002)
-        XCTAssertTrue(billingModel.isLimitReached)
-    }
-
-    func test_reopeningTheTrainerLoadsCostsAgainAndKeepsTheDraft() {
-        let transport = RecordingAITransport()
-        transport.responses["/classifier/ai_classifier_usage"] = [
-            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0004, "avg_cost_per_image": 0.002, "is_limit_reached": true,
+        transport.responses["/analyzer/ai_classifier_usage"] = [
+            "code": 0, "ai_credits": creditsJSON(["used": 4_000]), "text_credits_per_month": 420, "image_credits_per_month": 3_000,
         ]
         transport.holdsResponses = true
-        let model = makeModel(transport: transport, canUseAI: true)
+        var stored: [[String: Any]] = []
+        let model = makeModel(transport: transport, profile: Self.archiveProfile, storeCredits: { stored.append($0) })
 
         // TrainerViewController.swift and TrainerView.swift both prepare the model as the trainer opens.
         model.prepare(feedId: "42", storyHash: "42:abc")
         model.prepare(feedId: "42", storyHash: "42:abc")
-        XCTAssertEqual(transport.requests(to: "/classifier/ai_classifier_usage").count, 1, "One open shares one fetch")
+        let fetches = transport.requests(to: "/analyzer/ai_classifier_usage")
+        XCTAssertEqual(fetches.count, 1, "One open shares one fetch")
+        XCTAssertEqual(fetches.first?.method, "GET")
+        XCTAssertEqual(fetches.first?.parameters["feed_id"] as? String, "42")
+        XCTAssertEqual(model.credits?.used, 2_340, "The profile's credits show until the server answers")
         transport.releaseHeldResponses()
-        XCTAssertTrue(model.isLimitReached)
+        XCTAssertEqual(model.credits?.used, 4_000)
+        XCTAssertEqual(stored.count, 1)
+        XCTAssertEqual(AICredits(json: try XCTUnwrap(stored.first))?.used, 4_000)
         model.setDraft("Apple earnings coverage", for: .content)
 
-        // The reader raises their limit on the web, then opens the trainer on the same story again.
-        transport.responses["/classifier/ai_classifier_usage"] = [
-            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0005, "avg_cost_per_image": 0.003, "is_limit_reached": false,
+        // The reader's filters spend more, then the trainer opens on the same story again.
+        transport.responses["/analyzer/ai_classifier_usage"] = [
+            "code": 0, "ai_credits": creditsJSON(pausedCredits), "text_credits_per_month": 420, "image_credits_per_month": 3_000,
         ]
         model.prepare(feedId: "42", storyHash: "42:abc")
-        XCTAssertEqual(transport.requests(to: "/classifier/ai_classifier_usage").count, 2, "Reopening asks again")
+        XCTAssertEqual(transport.requests(to: "/analyzer/ai_classifier_usage").count, 2, "Reopening asks again")
         transport.releaseHeldResponses()
-        XCTAssertFalse(model.isLimitReached, "The limit banner doesn't stay as the last visit left it")
-        XCTAssertEqual(model.estimate, AIClassifierCostEstimate(averageCostPerText: 0.0005, averageCostPerImage: 0.003))
+        XCTAssertEqual(model.credits?.status, .pausedForCredits, "The meter doesn't stay as the last visit left it")
         XCTAssertEqual(model.draft(.content), "Apple earnings coverage", "The same story keeps its draft")
+        model.prepare(feedId: "42", storyHash: "42:def")
+        XCTAssertEqual(model.draft(.content), "", "Another story starts its own")
     }
 
     func test_anotherAccountsTrainerForTheSameSiteStartsEmpty() {
         var account = (username: "samuel", host: "https://www.newsblur.com")
         let transport = RecordingAITransport()
-        transport.responses["/classifier/test_prompt"] = [
-            "code": 0, "classification": 1,
-            "cost_estimate": ["avg_cost_per_text": 0.0004, "avg_cost_per_image": 0.002],
-        ]
-        transport.responses["/classifier/ai_classifier_usage"] = [
-            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0009, "avg_cost_per_image": 0.009, "is_limit_reached": true,
-        ]
-        let model = makeModel(transport: transport, canUseAI: true, signedInAccount: { account })
+        transport.responses["/classifier/test_prompt"] = ["code": 0, "classification": 1]
+        let model = makeModel(transport: transport, profile: Self.archiveProfile, signedInAccount: { account })
         let trainer = TrainerViewController()
         trainer.aiPrompts = model
         let saved = PromptClassifier(prompt: "Sponsored posts", kind: .content, score: -1, scope: .feed, folderName: "")
@@ -516,6 +545,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         model.scopeBinding(for: saved, currentFolderName: "Apple").wrappedValue = .global
         // A second test and a usage fetch are still out when the reader signs in to another account.
         transport.holdsResponses = true
+        transport.responses["/analyzer/ai_classifier_usage"] = ["code": 0, "ai_credits": creditsJSON(pausedCredits)]
         model.setDraft("Apple earnings coverage", for: .image)
         model.runTest(.image, storyHash: "42:abc", feedId: "42")
         model.prepare(feedId: "42", storyHash: "42:abc")
@@ -528,88 +558,220 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(model.draft(.image), "")
         XCTAssertEqual(model.test(.content), .idle, "The last account's test result is gone")
         XCTAssertEqual(model.test(.image), .idle, "Its test answered after the switch never lands")
-        XCTAssertNil(model.estimate, "Nor does its usage")
-        XCTAssertFalse(model.isLimitReached)
+        XCTAssertNil(model.usage, "Nor do its credits")
         XCTAssertEqual(model.scope(for: saved), .feed, "Its scope choice is gone")
 
-        transport.responses["/classifier/ai_classifier_usage"] = [
-            "code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0007, "avg_cost_per_image": 0.007, "is_limit_reached": false,
-        ]
-        model.prepare(feedId: "42", storyHash: "42:abc")
-        XCTAssertEqual(model.estimate, AIClassifierCostEstimate(averageCostPerText: 0.0007, averageCostPerImage: 0.007),
-                       "This account's own usage loads")
-        XCTAssertEqual(model.draft(.content), "")
-
         // Even without the reset, the same site on another server is another trainer.
+        model.prepare(feedId: "42", storyHash: "42:abc")
         model.setDraft("Charts", for: .image)
         account = (username: "family", host: "https://newsblur.example.com")
         model.prepare(feedId: "42", storyHash: "42:abc")
         XCTAssertEqual(model.draft(.image), "")
     }
 
-    func test_sectionCostFollowsWebFormula() {
-        withEnglishInterface {
-            XCTAssertEqual(AIClassifierCostFormatter.format(0), "$0.00")
-            XCTAssertEqual(AIClassifierCostFormatter.format(0.0004), "$0.0004")
-            XCTAssertEqual(AIClassifierCostFormatter.format(0.012), "$0.012")
-            XCTAssertEqual(AIClassifierCostFormatter.format(1.234), "$1.23")
+    /// Rule: a plan without credits is told so, with a way to upgrade, once it has an AI filter of either kind saved
+    /// or is writing one, whichever mode the card shows. A paid plan never sees that notice, and a plan without
+    /// credits has no credits row.
+    func test_aPlanWithoutCreditsIsToldOnceItHasAnAIFilter() throws {
+        let saved = [PromptClassifier(prompt: "Charts", kind: .image, score: 1, scope: .feed, folderName: "")]
+        let removed = [PromptClassifier(prompt: "Charts", kind: .image, score: 0, scope: .feed, folderName: "")]
+        var upgrades = 0
 
-            let none = AIClassifierCostFormatter.sectionCost(kind: .content, costPerRun: 0.0004, feedStoriesPerMonth: 300, filters: [])
-            XCTAssertEqual(none, AIClassifierSectionCost(monthly: "$0.00", daily: "$0.00",
-                                                         breakdown: "300 stories/mo × 0 content filters × $0.0004/story"))
-
-            let feedOnly = AIClassifierCostFormatter.sectionCost(
-                kind: .image, costPerRun: 0.002, feedStoriesPerMonth: 300,
-                filters: [AIClassifierCostFilter(scope: .feed, storiesPerMonth: 300), AIClassifierCostFilter(scope: .feed, storiesPerMonth: 300)])
-            XCTAssertEqual(feedOnly, AIClassifierSectionCost(monthly: "$1.20", daily: "$0.040",
-                                                             breakdown: "300 stories/mo × 2 image filters × $0.0020/story"))
-
-            let mixed = AIClassifierCostFormatter.sectionCost(
-                kind: .content, costPerRun: 0.0004, feedStoriesPerMonth: 300,
-                filters: [AIClassifierCostFilter(scope: .feed, storiesPerMonth: 300), AIClassifierCostFilter(scope: .global, storiesPerMonth: 1)])
-            XCTAssertEqual(mixed?.breakdown, "1 on this site (300 stories/mo) + 1 on all sites (1 story/mo) × $0.0004/story")
-            XCTAssertEqual(mixed?.monthly, "$0.12")
-
-            XCTAssertNil(AIClassifierCostFormatter.sectionCost(kind: .content, costPerRun: 0.0004, feedStoriesPerMonth: 0, filters: []))
-        }
-    }
-
-    func test_modelCountsSavedAndDraftPromptsAcrossScopes() {
-        let model = makeModel(transport: RecordingAITransport(), canUseAI: true)
-        model.storyVolumes = {
-            AIClassifierStoryVolumes(storiesForFeed: { $0 == "42" ? 100 : 0 },
-                                     storiesForFolder: { $0 == "Apple" ? 1_000 : 0 },
-                                     storiesForAllSites: { 5_000 })
-        }
-        let transport = model.api.transport as! RecordingAITransport
-        transport.responses["/classifier/ai_classifier_usage"] = ["code": 0, "can_use_ai": true, "avg_cost_per_text": 0.001, "avg_cost_per_image": 0.01]
-        model.prepare(feedId: "42", storyHash: nil)
-        let saved = [
-            PromptClassifier(prompt: "Apple", kind: .content, score: 1, scope: .folder, folderName: "Apple"),
-            PromptClassifier(prompt: "Removed", kind: .content, score: 0, scope: .feed, folderName: ""),
-        ]
-
-        XCTAssertEqual(model.sectionCost(.content, saved: saved, feedId: "42", currentFolderName: "Apple")?.monthly, "$1.00")
-        model.setDraft("Sponsored", for: .content)
-        XCTAssertEqual(model.sectionCost(.content, saved: saved, feedId: "42", currentFolderName: "Apple")?.monthly, "$1.10",
-                       "The prompt being written counts on this site")
-    }
-
-    func test_billingBannerAppearsForPromptsThatWontRun() {
-        let saved = [PromptClassifier(prompt: "Apple", kind: .content, score: 1, scope: .feed, folderName: "")]
-        let free = makeModel(transport: RecordingAITransport(), canUseAI: false)
-        XCTAssertTrue(free.showsBillingBanner(.content, saved: saved))
-        XCTAssertFalse(free.showsBillingBanner(.image, saved: []))
+        let free = makeModel(transport: RecordingAITransport(), profile: Self.freeProfile, openUpgrade: { upgrades += 1 })
+        let notice = try XCTUnwrap(free.freeNotice(saved: saved), "A saved image filter counts while the card shows Text")
+        XCTAssertEqual(notice.tone, .upgrade)
+        XCTAssertNil(free.creditsNotice)
+        XCTAssertNil(free.freeNotice(saved: []), "Without filters there's nothing to warn about")
+        XCTAssertNil(free.freeNotice(saved: removed), "A removed filter the trainer still lists doesn't count")
         free.setDraft("Charts", for: .image)
-        XCTAssertTrue(free.showsBillingBanner(.image, saved: []))
+        XCTAssertNotNil(free.freeNotice(saved: []), "Writing a filter shows it before it's saved")
+        free.perform(try XCTUnwrap(notice.button).action)
+        XCTAssertEqual(upgrades, 1, "Upgrade opens the Premium screen")
 
-        let billing = makeModel(transport: RecordingAITransport(), canUseAI: true)
-        XCTAssertFalse(billing.showsBillingBanner(.content, saved: saved))
+        let archive = makeModel(transport: RecordingAITransport(), profile: Self.archiveProfile)
+        XCTAssertNil(archive.freeNotice(saved: saved))
+    }
+
+    /// Rule: the card's credits row shows the month for every plan with credits, before any filter exists, and opens
+    /// the AI credits screen; the estimate line names the kind of filter being written, but only while filters run.
+    func test_theCreditsRowShowsTheMonthAndEachModeEstimatesItsKind() throws {
+        try withEnglishInterface {
+            let transport = RecordingAITransport()
+            transport.responses["/analyzer/ai_classifier_usage"] = [
+                "code": 0, "ai_credits": creditsJSON(), "text_credits_per_month": 1_428, "image_credits_per_month": 0,
+            ]
+            var opened: [Bool] = []
+            let model = makeModel(transport: transport, profile: Self.archiveProfile, openCredits: { opened.append($0) })
+            model.prepare(feedId: "42", storyHash: nil)
+
+            let notice = try XCTUnwrap(model.creditsNotice)
+            XCTAssertEqual(notice.tone, .normal)
+            XCTAssertEqual(notice.meter?.usedText, "2,340 of 10,000 AI credits used")
+            XCTAssertEqual(try XCTUnwrap(notice.meter?.fraction), 0.234, accuracy: 0.0001)
+            XCTAssertEqual(model.estimateText(.content), "A text filter on this site uses about 1,428 credits a month")
+            XCTAssertEqual(model.estimateText(.image), "An image filter on this site uses less than one credit a month",
+                           "A site that published nothing last month still says what a filter would cost")
+            model.perform(.openCredits)
+            XCTAssertEqual(opened, [false], "The credits row opens the AI credits screen")
+
+            transport.responses["/analyzer/ai_classifier_usage"] = [
+                "code": 0, "ai_credits": creditsJSON(pausedCredits), "text_credits_per_month": 420, "image_credits_per_month": 3_000,
+            ]
+            model.prepare(feedId: "42", storyHash: nil)
+            XCTAssertEqual(model.creditsNotice?.tone, .paused)
+            XCTAssertNil(model.estimateText(.content), "Paused filters spend nothing, so there's no estimate to give")
+        }
+    }
+
+    /// Rule: the Text / Images switch keeps a draft for each mode, so a filter saves as the kind it was typed in,
+    /// whichever mode is showing when it's added; another site or story starts in Text.
+    func test_eachModeKeepsItsDraftAndSavesAsTheKindItWasTypedIn() {
+        var saves: [(String, PromptClassifierKind)] = []
+        let model = makeModel(transport: RecordingAITransport(), profile: Self.archiveProfile)
+        model.savePrompt = { prompt, kind, _, _, _, _ in saves.append((prompt, kind)) }
+        model.prepare(feedId: "42", storyHash: "42:abc")
+
+        model.setDraft("Apple earnings", for: model.mode)
+        model.mode = .image
+        model.setDraft("Charts", for: model.mode)
+        model.mode = .content
+        XCTAssertEqual(model.draft(.content), "Apple earnings", "Switching modes doesn't move or clear a draft")
+        model.addDraft(.image, feedId: "42")
+        model.addDraft(.content, feedId: "42")
+        XCTAssertEqual(saves.map(\.0), ["Charts", "Apple earnings"])
+        XCTAssertEqual(saves.map(\.1), [.image, .content])
+
+        model.mode = .image
+        model.prepare(feedId: "42", storyHash: "42:def")
+        XCTAssertEqual(model.mode, .content)
+    }
+
+    /// Rule: every credit number shows as a whole credit rounded to the nearest, even from a server that still sends
+    /// decimals, and the amount past the plan compares the rounded numbers.
+    func test_creditNumbersRoundToTheNearestWholeCredit() {
+        withEnglishInterface {
+            XCTAssertEqual(credits(["used": 2_340.6]).usedText, "2,341 of 10,000 AI credits used")
+            XCTAssertEqual(credits(["used": 10_012.6]).usedText, "10,013 AI credits used, 13 past your plan's 10,000")
+            XCTAssertEqual(credits(["used": 10_000.4]).usedText, "10,000 of 10,000 AI credits used")
+            XCTAssertEqual(credits(["forecast": ["credits": 16_268.7, "runs_out_on": NSNull(), "overage_usd": 0.0]]).forecastText,
+                           "At this pace, this month will use about 16,269 AI credits.")
+            XCTAssertEqual(AIClassifierUsage.estimateText(1_427.5, kind: .content),
+                           "A text filter on this site uses about 1,428 credits a month")
+            XCTAssertEqual(AIClassifierUsage.estimateText(0.6, kind: .image),
+                           "An image filter on this site uses about 1 credit a month")
+            XCTAssertEqual(AIClassifierUsage.estimateText(0.4, kind: .content),
+                           "A text filter on this site uses less than one credit a month")
+        }
+    }
+
+    /// Rule: running low warns with the day credits run out at this pace. While the app may open Stripe it offers to
+    /// keep filters running and says what that would cost this month, leaving the cost out when the pace costs
+    /// nothing; with UsageBillingFeature.swift off it offers nothing to pay.
+    func test_runningLowWarnsWhenCreditsRunOutAndOffersBillingWithTheMonthsCost() throws {
+        try withEnglishInterface {
+            UsageBillingFeature.isEnabled = true
+            defer { UsageBillingFeature.isEnabled = false }
+            let warning = try XCTUnwrap(AICreditsNotice.make(credits(warningCredits), offersBilling: true))
+            XCTAssertEqual(warning.tone, .warning)
+            XCTAssertEqual(warning.messages, ["At this pace your credits run out around Nov 27."])
+            XCTAssertEqual(warning.button, AICreditsNotice.ActionButton(
+                title: "Keep filters running",
+                detail: "Past your credits, filters keep running at 1¢ per 1,000 credits. About $0.62 this month at your pace.",
+                action: .setUpBilling))
+
+            var noCost = warningCredits
+            noCost["forecast"] = ["credits": 49.0, "credits_per_day": 1.0, "runs_out_on": NSNull(), "overage_usd": 0.0]
+            let calm = try XCTUnwrap(AICreditsNotice.make(credits(noCost), offersBilling: true))
+            XCTAssertEqual(calm.messages, [], "No run-out day when the pace lasts the month")
+            XCTAssertEqual(calm.button?.detail, "Past your credits, filters keep running at 1¢ per 1,000 credits.")
+
+            var unavailable = warningCredits
+            unavailable["is_billing_available"] = false
+            XCTAssertNil(AICreditsNotice.make(credits(unavailable), offersBilling: true)?.button,
+                         "A server without usage billing has nothing to set up")
+
+            var opened: [Bool] = []
+            let model = makeModel(transport: RecordingAITransport(), profile: ["ai_credits": creditsJSON(warningCredits)],
+                                  openCredits: { opened.append($0) })
+            model.perform(try XCTUnwrap(model.creditsNotice?.button).action)
+            XCTAssertEqual(opened, [true], "Keep filters running goes straight on to setting up usage billing")
+        }
+    }
+
+    /// Rule: paused filters say when they run again and that the month's credits are used. While the app may open
+    /// Stripe they also offer usage billing, with this month's cost, or waiting for the 1st. Test_UsageBillingHold
+    /// covers the release, where they offer nothing.
+    func test_pausedFiltersSayWhenTheyRunAgainAndOfferBillingOnlyWhileTheAppMay() throws {
+        try withEnglishInterface {
+            let paused = try XCTUnwrap(AICreditsNotice.make(credits(pausedCredits), offersBilling: true))
+            XCTAssertEqual(paused.tone, .paused)
+            XCTAssertEqual(paused.meter?.fraction, 1)
+            XCTAssertEqual(paused.meter?.usedText, "10,000 of 10,000 AI credits used")
+            var overshot = pausedCredits
+            overshot["used"] = 10_012
+            let pastPlan = try XCTUnwrap(AICreditsNotice.make(credits(overshot), offersBilling: true)?.meter)
+            XCTAssertEqual(pastPlan.usedText, "10,012 AI credits used, 12 past your plan's 10,000",
+                           "The last request can run a little past the plan's credits")
+            overshot["used"] = 10_000.4
+            XCTAssertEqual(AICreditsNotice.make(credits(overshot), offersBilling: true)?.meter?.usedText,
+                           "10,000 of 10,000 AI credits used", "Never \"0 past your plan's 10,000\"")
+            XCTAssertEqual(paused.messages, ["Your AI filters are paused until Dec 1.", "This month's 10,000 AI credits are used."])
+            XCTAssertEqual(paused.button, AICreditsNotice.ActionButton(
+                title: "Turn on usage billing", detail: "1¢ per 1,000 credits past your plan's, about $0.62 this month",
+                action: .setUpBilling))
+            XCTAssertEqual(paused.footnote, "or wait until Dec 1")
+        }
+    }
+
+    /// Rule: with usage billing on, the meter says how many credits went past the plan's and stays calm (only nearing
+    /// the monthly limit warns), the trainer shows what that has cost this month and what's waiting to be charged,
+    /// and a reached limit names the limit and the day filters run again. Managing either opens the AI credits screen.
+    func test_usageBillingShowsTheMonthsCostAndAReachedLimit() throws {
+        try withEnglishInterface {
+            let billing = try XCTUnwrap(AICreditsNotice.make(credits(billingCredits), offersBilling: true))
+            XCTAssertEqual(billing.meter?.usedText, "47,000 AI credits used, 37,000 past your plan's 10,000")
+            XCTAssertEqual(billing.tone, .normal, "Going past the plan is what usage billing is for, so nothing warns")
+            var nearLimit = billingCredits
+            nearLimit["monthly_limit"] = 0.4
+            XCTAssertEqual(AICreditsNotice.make(credits(nearLimit), offersBilling: true)?.tone, .warning,
+                           "$0.37 of a $0.40 limit is running low")
+            XCTAssertEqual(billing.messages, [
+                "Usage billing is on. Credits past your 10,000 cost 1¢ per 1,000: $0.37 so far this month.",
+                "$0.37 is waiting to be charged: at the start of next month if it's at least $1, or right away at $10.",
+            ])
+            XCTAssertEqual(billing.button?.action, .manageBilling)
+
+            var charged = billingCredits
+            charged["unbilled_usd"] = 0.0
+            XCTAssertEqual(AICreditsNotice.make(credits(charged), offersBilling: true)?.messages.count, 1,
+                           "Nothing waiting, nothing to explain")
+
+            let limit = try XCTUnwrap(AICreditsNotice.make(credits(limitCredits), offersBilling: true))
+            XCTAssertEqual(limit.tone, .paused)
+            XCTAssertEqual(limit.messages, ["Your AI filters reached your $5.00 monthly limit and are paused until Dec 1."])
+            XCTAssertEqual(limit.button?.title, "Change limit")
+
+            var opened: [Bool] = []
+            let model = makeModel(transport: RecordingAITransport(), profile: Self.archiveProfile, openCredits: { opened.append($0) })
+            model.perform(.manageBilling)
+            XCTAssertEqual(opened, [false])
+        }
+    }
+
+    /// Rule: a server that counts no credits, like a self-hosted NewsBlur, shows nothing about them and isn't asked.
+    func test_aServerThatCountsNoCreditsShowsNothingAboutThem() {
+        let transport = RecordingAITransport()
+        let model = makeModel(transport: transport, profile: ["ai_credits": creditsJSON(["is_unlimited": true])])
+        model.prepare(feedId: "42", storyHash: nil)
+        XCTAssertTrue(transport.requests.isEmpty)
+        XCTAssertNil(model.creditsNotice)
+        XCTAssertNil(model.freeNotice(saved: []))
+        XCTAssertNil(model.estimateText(.content))
     }
 
     func test_addingDraftSavesItInTheChosenDirection() {
         var saves: [(String, PromptClassifierKind, String, Int)] = []
-        let model = makeModel(transport: RecordingAITransport(), canUseAI: true)
+        let model = makeModel(transport: RecordingAITransport(), profile: Self.archiveProfile)
         model.savePrompt = { prompt, kind, feedId, score, _, _ in saves.append((prompt, kind, feedId, score)) }
         model.setDraft(" Charts ", for: .image)
         model.toggleDraftDirection(.image)
@@ -628,7 +790,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     func test_topLevelSiteNeverScopesAPromptToAMissingFolder() {
         var moves: [String] = []
         var saves: [String] = []
-        let model = makeModel(transport: RecordingAITransport(), canUseAI: true)
+        let model = makeModel(transport: RecordingAITransport(), profile: Self.archiveProfile)
         model.changeScope = { _, _, _, _, oldScope, oldFolderName, scope, folderName in
             moves.append("\(oldScope.rawValue):\(oldFolderName) -> \(scope.rawValue):\(folderName)")
         }
@@ -656,7 +818,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(moves.last, "feed: -> folder:Apple", "A site in a folder scopes to it")
     }
 
-    func test_nestedFolderPromptFromTheAPICostsItsFolderAndSavesItsFullPath() {
+    func test_nestedFolderPromptFromTheAPISavesItsFullPath() {
         let app = makeNestedFolderApp()
         // apps/analyzer/models.py names a folder scope by its flatten_folders path.
         let classifiers: AnyDictionary = [
@@ -671,23 +833,8 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(ClassifierFolderPath.serverPath(forFeed: "2", appDelegate: app), "Tech")
         XCTAssertEqual(ClassifierFolderPath.serverPath(forFeed: "1", appDelegate: app), "", "A site outside any folder has no folder")
 
-        let volumes = AIClassifierStoryVolumes.live(appDelegate: app)
-        XCTAssertEqual(volumes.stories(scope: .folder, folderName: "Tech - Swift", feedId: "3"), 300,
-                       "Only the subfolder's sites count, not the top-level folder that is also called Swift")
-        XCTAssertEqual(volumes.stories(scope: .folder, folderName: "Tech", feedId: "2"), 320, "A folder covers its subfolders")
-        XCTAssertEqual(volumes.stories(scope: .folder, folderName: "Swift", feedId: "4"), 4_000)
-
-        let transport = RecordingAITransport()
-        transport.responses["/classifier/ai_classifier_usage"] = ["code": 0, "can_use_ai": true, "avg_cost_per_text": 0.001, "avg_cost_per_image": 0.01]
-        let model = makeModel(transport: transport, canUseAI: true)
-        model.storyVolumes = { volumes }
+        let model = makeModel(transport: RecordingAITransport(), profile: Self.archiveProfile)
         model.prepare(feedId: "3", storyHash: nil)
-        withEnglishInterface {
-            XCTAssertEqual(model.sectionCost(.content, saved: saved, feedId: "3", currentFolderName: currentFolder),
-                           AIClassifierSectionCost(monthly: "$0.30", daily: "$0.010",
-                                                   breakdown: "1 on folder (300 stories/mo) × $0.0010/story"))
-        }
-
         model.savePrompt = { prompt, kind, feedId, score, scope, folderName in
             app.savePromptClassifier(prompt, feedId: feedId, score: score, includeImages: kind.includesImages,
                                      scope: scope.rawValue, folderName: folderName)
@@ -715,22 +862,31 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         app.storiesCollection = StoriesCollection()
         app.dictFolders = ["everything": [1], "Swift": [4], "Tech": [2, 3], "Tech ▸ Swift": [3], "saved_stories": [] as [Any]]
         app.dictFoldersArray = NSMutableArray(array: ["everything", "Swift", "Tech", "Tech ▸ Swift", "saved_stories"])
-        app.dictFeeds = NSMutableDictionary(dictionary: [
-            "1": ["stories_last_month": 1], "2": ["stories_last_month": 20],
-            "3": ["stories_last_month": 300], "4": ["stories_last_month": 4_000],
-        ])
         return app
     }
 
-    private func makeModel(transport: RecordingAITransport, canUseAI: Bool,
+    /// The user_profile /reader/feeds sends: every paid plan runs AI filters on its monthly AI credits.
+    private static let freeProfile: [AnyHashable: Any] = [
+        "is_premium": false, "is_archive": false, "is_pro": false, "can_use_ai_classifiers": false,
+        "ai_credits": creditsJSON(freeCredits),
+    ]
+
+    private static let archiveProfile: [AnyHashable: Any] = [
+        "is_premium": true, "is_archive": true, "is_pro": false, "can_use_ai_classifiers": true,
+        "ai_credits": creditsJSON(),
+    ]
+
+    private func makeModel(transport: RecordingAITransport, profile: [AnyHashable: Any],
+                           storeCredits: @escaping ([String: Any]) -> Void = { _ in },
+                           openUpgrade: @escaping () -> Void = {},
+                           openCredits: @escaping (Bool) -> Void = { _ in },
                            signedInAccount: @escaping () -> (username: String, host: String) = { ("samuel", "https://www.newsblur.com") })
         -> TrainerAIPromptModel {
         TrainerAIPromptModel(api: AIClassifierAPI(transport: transport),
-                             billingStatus: { UsageBillingStatus(isUsageBilling: canUseAI, isSelfHostedAI: false,
-                                                                 canUseAIClassifiers: canUseAI, usageBillingLimit: nil) },
-                             storyVolumes: { AIClassifierStoryVolumes(storiesForFeed: { _ in 300 }, storiesForFolder: { _ in 0 },
-                                                                      storiesForAllSites: { 0 }) },
-                             openBilling: {},
+                             userProfile: { profile },
+                             storeCredits: storeCredits,
+                             openUpgrade: openUpgrade,
+                             openCredits: openCredits,
                              signedInAccount: signedInAccount)
     }
 
@@ -1725,11 +1881,11 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     }
 }
 
-// MARK: - Usage billing
+// MARK: - AI credits screen
 
-/// AIClassifierTests.swift tests the billing screen with UsageBillingFeature.swift turned on, as it will be once the
-/// release hold lifts. Test_UsageBillingHold covers the release with it off.
-@MainActor final class Test_UsageBilling: XCTestCase {
+/// AIClassifierTests.swift tests the AI credits screen's Stripe paths with UsageBillingFeature.swift turned on, as it
+/// will be once the release hold lifts. Test_UsageBillingHold covers the release with it off.
+@MainActor final class Test_AICreditsScreen: XCTestCase {
     override func setUp() {
         super.setUp()
         UsageBillingFeature.isEnabled = true
@@ -1740,94 +1896,76 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         super.tearDown()
     }
 
-    func test_statusReadsProfileFlags() {
-        withEnglishInterface {
-            let billing = UsageBillingStatus(profile: ["is_usage_billing": true, "is_self_hosted_ai": false,
-                                                       "can_use_ai_classifiers": true, "usage_billing_limit": 25.5])
-            XCTAssertEqual(billing, UsageBillingStatus(isUsageBilling: true, isSelfHostedAI: false,
-                                                       canUseAIClassifiers: true, usageBillingLimit: 25.5))
-            XCTAssertEqual(billing.statusText, "Usage-based billing is enabled for natural language classifiers.")
-
-            let selfHosted = UsageBillingStatus(profile: ["is_self_hosted_ai": 1, "usage_billing_limit": NSNull()])
-            XCTAssertTrue(selfHosted.canUseAIClassifiers, "Older servers without can_use_ai_classifiers still work")
-            XCTAssertNil(selfHosted.usageBillingLimit)
-            XCTAssertEqual(selfHosted.statusText, "Natural language classifiers are using your instance's API keys.")
-
-            let free = UsageBillingStatus(profile: nil)
-            XCTAssertFalse(free.canUseAIClassifiers)
-            XCTAssertEqual(free.statusText, "Set up usage-based billing to use natural language content and image filters.")
-        }
-    }
-
-    func test_historyParsesSpendLimitAndInvoices() throws {
-        let history = UsageBillingHistory(json: [
-            "current_cycle_spend": 8.5, "usage_billing_limit": 10.0, "is_limit_reached": false,
-            "cycle_start": "2026-10-01", "cycle_end": "2026-10-31",
-            "upcoming_invoice": ["date": "2026-11-01", "amount": 8.5, "status": "upcoming",
-                                 "line_items": [["description": "Natural language text classifier", "quantity": 4200, "amount": 1.68]]],
-            "invoices": [["date": "2026-10-01", "amount": 3.0, "amount_paid": 2.75, "status": "paid",
-                          "hosted_invoice_url": "https://invoice.stripe.com/i/acct/test", "line_items": []]],
-        ])
-
-        XCTAssertEqual(history.currentCycleSpend, 8.5)
-        XCTAssertEqual(try XCTUnwrap(history.limitProgress), 0.85, accuracy: 0.0001)
-        XCTAssertTrue(history.isNearLimit)
-        XCTAssertFalse(history.isLimitReached)
-        XCTAssertEqual(history.cycleStart, UsageBillingHistory.day("2026-10-01"))
-        XCTAssertEqual(history.upcomingInvoice?.amount, 8.5)
-        XCTAssertEqual(history.upcomingInvoice?.lineItems,
-                       [UsageBillingHistory.LineItem(description: "Natural language text classifier", quantity: 4200, amount: 1.68)])
-        XCTAssertEqual(history.invoices.first?.amount, 2.75, "Paid invoices show what was charged")
-        XCTAssertEqual(history.invoices.first?.hostedInvoiceURL?.absoluteString, "https://invoice.stripe.com/i/acct/test")
-        XCTAssertTrue(history.hasInvoices)
-
-        let empty = UsageBillingHistory(json: ["invoices": [], "upcoming_invoice": NSNull()])
-        XCTAssertFalse(empty.hasInvoices)
-        XCTAssertNil(empty.limitProgress)
-    }
-
-    func test_loadFetchesHistoryOnlyWhenBillingIsActive() {
+    /// Rule: the screen shows the profile's credits at once, then this moment's from the server, which it hands to the
+    /// profile; invoices load only for a reader with usage billing, since nobody else has any.
+    func test_loadShowsTheProfilesCreditsThenTheServersAndInvoicesOnlyWithBilling() throws {
         let transport = RecordingAITransport()
-        transport.responses["/profile/usage_billing_history"] = ["invoices": [], "current_cycle_spend": 1.25, "usage_billing_limit": 20.0]
+        transport.responses["/analyzer/ai_classifier_usage"] = ["code": 0, "ai_credits": creditsJSON(["used": 6_000])]
+        transport.holdsResponses = true
+        var stored: [[String: Any]] = []
+        let model = makeModel(transport: transport, credits: credits(), storeCredits: { stored.append($0) })
 
-        let free = makeModel(transport: transport, status: .init(isUsageBilling: false, isSelfHostedAI: false,
-                                                                 canUseAIClassifiers: false, usageBillingLimit: nil))
-        free.load()
-        XCTAssertEqual(free.historyState, .notSetUp)
-        XCTAssertTrue(transport.requests.isEmpty)
+        model.load()
+        XCTAssertEqual(model.credits?.used, 2_340)
+        XCTAssertEqual(transport.requests.map(\.path), ["/analyzer/ai_classifier_usage"], "No invoices without usage billing")
+        XCTAssertEqual(transport.requests.first?.parameters["feed_id"] as? String, "0")
+        transport.releaseHeldResponses()
+        XCTAssertEqual(model.credits?.used, 6_000)
+        XCTAssertEqual(AICredits(json: try XCTUnwrap(stored.first))?.used, 6_000)
+        XCTAssertEqual(model.historyState, .notSetUp)
 
-        let billing = makeModel(transport: transport, status: activeStatus)
+        transport.holdsResponses = false
+        transport.responses["/analyzer/ai_classifier_usage"] = ["code": 0, "ai_credits": creditsJSON(billingCredits)]
+        transport.responses["/profile/usage_billing_history"] = [
+            "code": 0, "ai_credits": creditsJSON(billingCredits), "upcoming_invoice": NSNull(),
+            "invoices": [["date": "2026-11-01", "amount": 3.0, "amount_paid": 2.75, "status": "paid",
+                          "hosted_invoice_url": "https://invoice.stripe.com/i/acct/test",
+                          "line_items": [["description": "AI credits", "quantity": 275, "amount": 2.75]]]],
+        ]
+        let billing = makeModel(transport: transport, credits: credits(billingCredits))
         billing.load()
-        XCTAssertEqual(transport.requests.map(\.path), ["/profile/usage_billing_history"])
-        guard case .loaded(let history) = billing.historyState else { return XCTFail("History should load") }
-        XCTAssertEqual(history.currentCycleSpend, 1.25)
-        XCTAssertEqual(billing.limitText, "20")
+        guard case .loaded(let history) = billing.historyState else { return XCTFail("Invoices should load") }
+        XCTAssertEqual(history.invoices.first?.amount, 2.75, "Paid invoices show what was charged")
+        XCTAssertEqual(history.invoices.first?.lineItems,
+                       [UsageBillingHistory.LineItem(description: "AI credits", quantity: 275, amount: 2.75)])
+        XCTAssertEqual(history.invoices.first?.hostedInvoiceURL?.absoluteString, "https://invoice.stripe.com/i/acct/test")
+        XCTAssertNil(history.upcomingInvoice)
+
+        transport.responses["/analyzer/ai_classifier_usage"] = nil
+        let offline = makeModel(transport: transport, credits: nil)
+        offline.load()
+        XCTAssertTrue(offline.loadFailed, "Without credits from anywhere the screen says it couldn't load them")
     }
 
     func test_savingLimitSendsItAndBlankClearsIt() {
         withEnglishInterface {
             let transport = RecordingAITransport()
-            transport.responses["/profile/save_usage_billing_limit"] = ["code": 1, "limit": 25.5]
-            let model = makeModel(transport: transport, status: activeStatus)
+            transport.responses["/profile/save_usage_billing_limit"] = [
+                "code": 1, "limit": 25.5, "ai_credits": creditsJSON(billingCredits.merging(["monthly_limit": 25.5]) { $1 }),
+            ]
+            var stored: [[String: Any]] = []
+            let model = makeModel(transport: transport, credits: credits(billingCredits), storeCredits: { stored.append($0) })
 
             model.editLimit("$25.50/month")
             XCTAssertEqual(model.limitText, "25.50")
             model.saveLimit()
             XCTAssertEqual(transport.requests(to: "/profile/save_usage_billing_limit").last?.parameters as NSDictionary?, ["limit": "25.50"])
             XCTAssertEqual(model.limitText, "25.5")
-            XCTAssertEqual(model.limitMessage, UsageBillingModel.Message(text: "Saved", isError: false))
+            XCTAssertEqual(model.credits?.monthlyLimit, 25.5)
+            XCTAssertEqual(stored.count, 1, "The trainer sees the new limit too")
+            XCTAssertEqual(model.limitMessage, AICreditsModel.Message(text: "Saved", isError: false))
 
-            transport.responses["/profile/save_usage_billing_limit"] = ["code": 1, "limit": NSNull()]
+            transport.responses["/profile/save_usage_billing_limit"] = ["code": 1, "limit": NSNull(), "ai_credits": creditsJSON(billingCredits)]
             model.editLimit("")
             model.saveLimit()
             XCTAssertEqual(transport.requests(to: "/profile/save_usage_billing_limit").last?.parameters as NSDictionary?, ["limit": ""])
             XCTAssertEqual(model.limitText, "")
-            XCTAssertNil(model.status.usageBillingLimit)
+            XCTAssertNil(model.credits?.monthlyLimit)
 
             transport.responses["/profile/save_usage_billing_limit"] = ["code": -1, "message": "Limit cannot exceed $10,000"]
             model.editLimit("20000")
             model.saveLimit()
-            XCTAssertEqual(model.limitMessage, UsageBillingModel.Message(text: "Limit cannot exceed $10,000", isError: true))
+            XCTAssertEqual(model.limitMessage, AICreditsModel.Message(text: "Limit cannot exceed $10,000", isError: true))
             XCTAssertEqual(model.limitText, "20000", "A rejected limit stays for editing")
         }
     }
@@ -1835,7 +1973,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     func test_limitKeepsTheRegionsDecimalSeparatorAndSavesAPlainDecimal() {
         let transport = RecordingAITransport()
         transport.responses["/profile/save_usage_billing_limit"] = ["code": 1, "limit": 10.5]
-        let german = makeModel(transport: transport, status: activeStatus, locale: Locale(identifier: "de_DE"))
+        let german = makeModel(transport: transport, credits: credits(billingCredits), locale: Locale(identifier: "de_DE"))
 
         german.editLimit("10,50")
         XCTAssertEqual(german.limitText, "10,50")
@@ -1851,37 +1989,30 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         german.editLimit("12,50,")
         XCTAssertEqual(german.limitText, "12,50", "A second separator is dropped")
         german.editLimit(",5")
-        XCTAssertEqual(UsageBillingModel.serverLimit(german.limitText, locale: german.locale), "0.5")
+        XCTAssertEqual(AICreditsModel.serverLimit(german.limitText, locale: german.locale), "0.5")
         german.editLimit(",")
-        XCTAssertEqual(UsageBillingModel.serverLimit(german.limitText, locale: german.locale), "0",
+        XCTAssertEqual(AICreditsModel.serverLimit(german.limitText, locale: german.locale), "0",
                        "A lone separator is rejected by the server instead of clearing the limit")
 
-        transport.responses["/profile/save_usage_billing_limit"] = ["code": 1, "limit": NSNull()]
-        german.editLimit("")
-        german.saveLimit()
-        XCTAssertEqual(transport.requests(to: "/profile/save_usage_billing_limit").last?.parameters as NSDictionary?, ["limit": ""])
-        XCTAssertEqual(german.limitText, "")
-
-        let american = makeModel(transport: transport, status: activeStatus, locale: Locale(identifier: "en_US"))
-        american.editLimit("10.50")
-        XCTAssertEqual(american.limitText, "10.50")
-        XCTAssertEqual(UsageBillingModel.serverLimit(american.limitText, locale: american.locale), "10.50")
+        let american = makeModel(transport: transport, credits: credits(billingCredits), locale: Locale(identifier: "en_US"))
         american.editLimit("1,050")
         XCTAssertEqual(american.limitText, "1050", "A comma is only a grouping separator in English")
 
-        let arabic = makeModel(transport: transport, status: activeStatus, locale: Locale(identifier: "ar_SA"))
+        let arabic = makeModel(transport: transport, credits: credits(billingCredits), locale: Locale(identifier: "ar_SA"))
         arabic.editLimit("١٠\(arabic.locale.decimalSeparator ?? ".")٥٠")
-        XCTAssertEqual(UsageBillingModel.serverLimit(arabic.limitText, locale: arabic.locale), "10.50",
+        XCTAssertEqual(AICreditsModel.serverLimit(arabic.limitText, locale: arabic.locale), "10.50",
                        "Arabic-Indic digits and the region's separator save as a plain decimal")
     }
 
-    func test_setupOpensStripeAndRefreshesWhenItReturns() throws {
+    /// Rule: Set up opens Stripe checkout from the app, and once Stripe returns the screen shows usage billing on and
+    /// reloads the profile and credits.
+    func test_setupOpensStripeAndRefreshesWhenItReturns() {
         let transport = RecordingAITransport()
         transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "url": "https://checkout.stripe.com/c/pay/cs_test_app"]
-        transport.responses["/profile/usage_billing_history"] = ["invoices": [], "current_cycle_spend": 0]
         let browser = RecordingBillingBrowser()
         var profileRefreshes = 0
-        let model = makeModel(transport: transport, status: freeStatus, browser: browser) { profileRefreshes += 1 }
+        let model = makeModel(transport: transport, credits: credits(pausedCredits), browser: browser) { profileRefreshes += 1 }
+        XCTAssertEqual(model.stripeAction, .setup)
 
         model.openStripe()
 
@@ -1894,48 +2025,51 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
         XCTAssertFalse(model.isOpeningStripe)
         XCTAssertEqual(profileRefreshes, 1)
-        XCTAssertTrue(model.status.isUsageBilling)
+        XCTAssertEqual(model.credits?.status, .usageBilling, "Paused filters show as running on usage billing")
         XCTAssertEqual(model.stripeAction, .manage)
-        XCTAssertEqual(transport.requests(to: "/profile/usage_billing_history").count, 1)
+        XCTAssertEqual(transport.requests(to: "/analyzer/ai_classifier_usage").count, 1)
     }
 
-    func test_setupKeepsBillingActiveUntilTheWebhookReachesTheProfile() {
+    /// Rule: Stripe's webhook can land after checkout returns, so the screen keeps billing on until the profile agrees.
+    func test_setupKeepsBillingOnUntilTheWebhookReachesTheProfile() {
         let transport = RecordingAITransport()
         transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "url": "https://checkout.stripe.com/c/pay/cs_test_app"]
+        transport.responses["/analyzer/ai_classifier_usage"] = ["code": 0, "ai_credits": creditsJSON(pausedCredits)]
         let browser = RecordingBillingBrowser()
-        var profile = freeStatus
+        var profile = credits(pausedCredits)
         var profileRefreshes = 0
         var scheduled: [() -> Void] = []
-        let model = UsageBillingModel(api: AIClassifierAPI(transport: transport), browser: browser,
-                                      readStatus: { profile }, refreshProfile: { profileRefreshes += 1 })
+        let model = AICreditsModel(api: AIClassifierAPI(transport: transport), browser: browser,
+                                   readCredits: { profile }, storeCredits: { _ in }, refreshProfile: { profileRefreshes += 1 })
         model.scheduleActivationCheck = { _, check in scheduled.append(check) }
 
         model.openStripe()
         browser.completion?(URL(string: "newsblur-auth://usage-billing?status=setup_complete"), nil)
         XCTAssertEqual(profileRefreshes, 1)
+        XCTAssertTrue(model.credits?.isUsageBilling == true, "Credits from before the webhook don't undo the checkout")
 
         model.profileDidRefresh()
-        XCTAssertTrue(model.status.isUsageBilling, "A profile from before the webhook doesn't undo the checkout")
+        XCTAssertTrue(model.credits?.isUsageBilling == true, "Nor does a profile from before it")
         XCTAssertEqual(scheduled.count, 1)
         scheduled.removeFirst()()
         XCTAssertEqual(profileRefreshes, 2)
 
-        profile = activeStatus
+        profile = credits(billingCredits)
         model.profileDidRefresh()
-        XCTAssertTrue(model.status.isUsageBilling)
+        XCTAssertTrue(model.credits?.isUsageBilling == true)
         XCTAssertTrue(scheduled.isEmpty, "Checks stop once the profile agrees")
 
-        profile = freeStatus
+        profile = credits(pausedCredits)
         model.profileDidRefresh()
-        XCTAssertFalse(model.status.isUsageBilling, "Later profile changes apply normally")
+        XCTAssertEqual(model.credits?.status, .pausedForCredits, "Later profile changes apply normally")
     }
 
-    func test_billingUsersManageOnStripeAndRefreshAfterThePortal() {
+    func test_billingReadersUpdateTheirCardOnStripeAndRefreshAfterThePortal() {
         let transport = RecordingAITransport()
         transport.responses["/profile/manage_usage_billing/"] = ["code": 0, "url": "https://billing.stripe.com/p/session/test_app"]
         let browser = RecordingBillingBrowser()
         var profileRefreshes = 0
-        let model = makeModel(transport: transport, status: activeStatus, browser: browser) { profileRefreshes += 1 }
+        let model = makeModel(transport: transport, credits: credits(billingCredits), browser: browser) { profileRefreshes += 1 }
 
         model.openStripe()
         XCTAssertEqual(transport.requests(to: "/profile/manage_usage_billing/").count, 1)
@@ -1950,18 +2084,18 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         let transport = RecordingAITransport()
         let browser = RecordingBillingBrowser()
         var profileRefreshes = 0
-        let model = makeModel(transport: transport, status: freeStatus, browser: browser) { profileRefreshes += 1 }
+        let model = makeModel(transport: transport, credits: credits(), browser: browser) { profileRefreshes += 1 }
 
         transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "already_active": true]
         model.openStripe()
         XCTAssertNil(browser.openedURL)
         XCTAssertEqual(profileRefreshes, 1)
-        XCTAssertEqual(model.stripeMessage?.isError, false)
+        XCTAssertNil(model.stripeMessage)
 
         transport.responses["/profile/setup_usage_billing/"] = ["code": -1, "message": "Stripe is unavailable"]
         model.openStripe()
         XCTAssertNil(browser.openedURL)
-        XCTAssertEqual(model.stripeMessage, UsageBillingModel.Message(text: "Stripe is unavailable", isError: true))
+        XCTAssertEqual(model.stripeMessage, AICreditsModel.Message(text: "Stripe is unavailable", isError: true))
         XCTAssertFalse(model.isOpeningStripe)
     }
 
@@ -1969,20 +2103,60 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         let transport = RecordingAITransport()
         transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "url": "https://checkout.stripe.com/c/pay/cs_test_app"]
         let browser = RecordingBillingBrowser()
-        let model = makeModel(transport: transport, status: freeStatus, browser: browser) {}
+        let model = makeModel(transport: transport, credits: credits(pausedCredits), browser: browser) {}
 
         model.openStripe()
         browser.completion?(URL(string: "newsblur-auth://usage-billing?status=cancelled"), nil)
 
-        XCTAssertFalse(model.status.isUsageBilling)
+        XCTAssertEqual(model.credits?.status, .pausedForCredits)
         XCTAssertEqual(model.stripeAction, .setup)
         XCTAssertNil(model.stripeMessage)
     }
 
-    func test_selfHostedAIHasNoStripeButton() {
-        let model = makeModel(transport: RecordingAITransport(),
-                              status: .init(isUsageBilling: false, isSelfHostedAI: true, canUseAIClassifiers: true, usageBillingLimit: nil))
-        XCTAssertNil(model.stripeAction)
+    /// Rule: turning usage billing off shows the credits the server answers with, and a failure says so and changes
+    /// nothing.
+    func test_turningBillingOffShowsTheCreditsItLeaves() {
+        withEnglishInterface {
+            let transport = RecordingAITransport()
+            let model = makeModel(transport: transport, credits: credits(billingCredits))
+
+            model.turnOffUsageBilling()
+            XCTAssertEqual(model.stripeMessage, AICreditsModel.Message(text: "Couldn't turn off usage billing. Please try again.", isError: true))
+            XCTAssertEqual(model.credits?.status, .usageBilling)
+
+            transport.responses["/profile/cancel_usage_billing"] = ["code": 0, "ai_credits": creditsJSON(pausedCredits)]
+            model.turnOffUsageBilling()
+            XCTAssertEqual(transport.requests(to: "/profile/cancel_usage_billing").last?.method, "POST")
+            XCTAssertEqual(model.credits?.status, .pausedForCredits)
+            XCTAssertFalse(model.canTurnOffBilling)
+            XCTAssertEqual(model.historyState, .notSetUp)
+        }
+    }
+
+    /// Rule: a plan without credits is pointed at upgrading, not usage billing, and a server that counts no credits
+    /// has nothing to bill.
+    func test_aPlanWithoutCreditsOrAServerThatCountsNoneOpensNoStripe() {
+        XCTAssertNil(makeModel(transport: RecordingAITransport(), credits: credits(freeCredits)).stripeAction)
+        XCTAssertNil(makeModel(transport: RecordingAITransport(), credits: credits(["is_unlimited": true])).stripeAction)
+        XCTAssertNil(makeModel(transport: RecordingAITransport(), credits: credits(["is_billing_available": false])).stripeAction)
+    }
+
+    /// Rule: the trainer's Keep filters running and Turn on usage billing open the screen straight into checkout, once.
+    func test_openingTheScreenToSetUpGoesStraightToCheckoutOnce() {
+        let transport = RecordingAITransport()
+        transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "url": "https://checkout.stripe.com/c/pay/cs_test_app"]
+        let browser = RecordingBillingBrowser()
+        let controller = AICreditsViewController(model: makeModel(transport: transport, credits: credits(warningCredits), browser: browser),
+                                                 startingSetup: true)
+        controller.viewDidAppear(false)
+        controller.viewDidAppear(false)
+        XCTAssertEqual(transport.requests(to: "/profile/setup_usage_billing/").count, 1)
+        XCTAssertNotNil(browser.openedURL)
+
+        let plain = RecordingAITransport()
+        AICreditsViewController(model: makeModel(transport: plain, credits: credits(warningCredits)), startingSetup: false)
+            .viewDidAppear(false)
+        XCTAssertTrue(plain.requests(to: "/profile/setup_usage_billing/").isEmpty, "Opening from the meter just shows the screen")
     }
 
     func test_callbackAndStripeResponseParsing() {
@@ -2000,28 +2174,21 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(UsageBillingStripeResponse(json: ["code": 0, "already_active": true]), .alreadyActive)
     }
 
-    private var activeStatus: UsageBillingStatus {
-        UsageBillingStatus(isUsageBilling: true, isSelfHostedAI: false, canUseAIClassifiers: true, usageBillingLimit: nil)
-    }
-
-    private var freeStatus: UsageBillingStatus {
-        UsageBillingStatus(isUsageBilling: false, isSelfHostedAI: false, canUseAIClassifiers: false, usageBillingLimit: nil)
-    }
-
     /// Pins the region to English unless a test asks for another, since the limit field follows its decimal separator.
-    private func makeModel(transport: RecordingAITransport, status: UsageBillingStatus,
+    private func makeModel(transport: RecordingAITransport, credits: AICredits?,
                            browser: UsageBillingBrowser? = nil, locale: Locale = Locale(identifier: "en_US"),
-                           refreshProfile: (() -> Void)? = nil) -> UsageBillingModel {
-        UsageBillingModel(api: AIClassifierAPI(transport: transport), browser: browser,
-                          readStatus: { status }, refreshProfile: refreshProfile ?? {}, locale: locale)
+                           storeCredits: @escaping ([String: Any]) -> Void = { _ in },
+                           refreshProfile: (() -> Void)? = nil) -> AICreditsModel {
+        AICreditsModel(api: AIClassifierAPI(transport: transport), browser: browser, readCredits: { credits },
+                       storeCredits: storeCredits, refreshProfile: refreshProfile ?? {}, openUpgrade: {}, locale: locale)
     }
 }
 
 // MARK: - Usage billing held out of the release
 
-/// AIClassifierTests.swift checks that with UsageBillingFeature.swift off, as it ships in this release, no way into
-/// usage billing shows and nothing opens Stripe, while readers still see their costs and why filters aren't running.
-/// Each test turns the switch on once too, to show it finds the entry point it then checks is gone.
+/// AIClassifierTests.swift checks that with UsageBillingFeature.swift off, as it ships in this release, readers still
+/// see their credits, the forecast and why filters are paused, but nothing opens Stripe or points them anywhere to pay.
+/// Each test turns the switch on once too, to show it finds the way to pay it then checks is gone.
 @MainActor final class Test_UsageBillingHold: XCTestCase {
     override func tearDown() {
         UsageBillingFeature.isEnabled = false
@@ -2032,95 +2199,91 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertFalse(UsageBillingFeature.isEnabled)
     }
 
-    func test_theSettingsMenuOffersUsageBillingOnlyWhileTheSwitchIsOn() throws {
+    /// Rule: the settings menu lists AI Credits for plans that include them and readers with usage billing, whatever
+    /// the switch says, since the screen reads fully without Stripe.
+    func test_theSettingsMenuListsAICreditsForPlansThatIncludeThem() throws {
         try withEnglishInterface {
-            UsageBillingFeature.isEnabled = false
-            XCTAssertFalse(try settingsMenuTitles().contains("Usage Billing"))
-            XCTAssertTrue(try settingsMenuTitles().contains("Support Forum"), "The rest of the menu is still there")
-
-            UsageBillingFeature.isEnabled = true
-            XCTAssertTrue(try settingsMenuTitles().contains("Usage Billing"))
+            XCTAssertTrue(try settingsMenuTitles(credits: creditsJSON()).contains("AI Credits"))
+            XCTAssertTrue(try settingsMenuTitles(credits: creditsJSON(freeCredits.merging(["is_usage_billing": true,
+                                                                                         "pause_reason": NSNull()]) { $1 }))
+                .contains("AI Credits"), "A free account billed for its filters sees what they cost")
+            XCTAssertFalse(try settingsMenuTitles(credits: creditsJSON(freeCredits)).contains("AI Credits"))
+            XCTAssertFalse(try settingsMenuTitles(credits: creditsJSON(["is_unlimited": true])).contains("AI Credits"),
+                           "A server that counts no credits has nothing to list")
+            XCTAssertTrue(try settingsMenuTitles(credits: creditsJSON(freeCredits)).contains("Support Forum"),
+                          "The rest of the menu is still there")
         }
     }
 
-    func test_nothingOpensTheBillingScreenOrStripeWhileTheSwitchIsOff() {
-        let app = NewsBlurAppDelegate()
-        let split = BillingPresentationSplitController()
-        app.splitViewController = split
-        defer { app.splitViewController = nil }
-        app.showUsageBillingDialog()
-        XCTAssertNil(split.requestedPresentation, "The Premium screen and the trainer's banners open billing this way")
+    /// Rule: with the switch off the trainer tells every credit state, but its only button is Upgrade, the App Store
+    /// purchase; nothing offers usage billing, its card or its limit, or waiting as the alternative to paying.
+    func test_theTrainerTellsEveryCreditStateWithoutAWayToPay() throws {
+        try withEnglishInterface {
+            let states = [warningCredits, pausedCredits, billingCredits, limitCredits]
+            for state in states {
+                let notice = try XCTUnwrap(trainerNotice(state))
+                XCTAssertNil(notice.button, "\(notice.messages)")
+                XCTAssertNil(notice.footnote)
+            }
+            XCTAssertEqual(try trainerNotice(pausedCredits)?.messages,
+                           ["Your AI filters are paused until Dec 1.", "This month's 10,000 AI credits are used."])
+            XCTAssertEqual(try trainerNotice(warningCredits)?.messages, ["At this pace your credits run out around Nov 27."])
+            var billingWithLimit = billingCredits
+            billingWithLimit["monthly_limit"] = 5.0
+            XCTAssertEqual(try trainerNotice(billingWithLimit)?.messages.last, "Monthly limit: $5.00",
+                           "Usage billing turned on elsewhere shows its limit as text")
+            XCTAssertEqual(try trainerNotice(freeCredits, kind: .content, draft: "Charts")?.button?.action, .upgrade)
 
+            UsageBillingFeature.isEnabled = true
+            for state in states {
+                XCTAssertNotNil(try trainerNotice(state)?.button)
+            }
+            XCTAssertNotEqual(try trainerNotice(billingWithLimit)?.messages.last, "Monthly limit: $5.00",
+                              "The limit is edited on the AI credits screen instead")
+        }
+    }
+
+    /// Rule: with the switch off the AI credits screen opens nothing on Stripe, doesn't edit the limit, and keeps
+    /// usage billing on.
+    func test_theCreditsScreenOpensNoStripeWhileTheSwitchIsOff() {
         let transport = RecordingAITransport()
         transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "url": "https://checkout.stripe.com/c/pay/cs_test_app"]
         transport.responses["/profile/manage_usage_billing/"] = ["code": 0, "url": "https://billing.stripe.com/p/session/test_app"]
+        transport.responses["/profile/cancel_usage_billing"] = ["code": 0, "ai_credits": creditsJSON(pausedCredits)]
         let browser = RecordingBillingBrowser()
-        for status in [freeStatus, activeStatus] {
-            let model = UsageBillingModel(api: AIClassifierAPI(transport: transport), browser: browser,
-                                          readStatus: { status }, refreshProfile: {})
-            XCTAssertNil(model.stripeAction, "The billing screen shows no Stripe button")
+        var models: [AICreditsModel] = []
+        for state in [pausedCredits, billingCredits] {
+            let current = credits(state)
+            let model = AICreditsModel(api: AIClassifierAPI(transport: transport), browser: browser, readCredits: { current },
+                                       storeCredits: { _ in }, refreshProfile: {}, openUpgrade: {})
+            XCTAssertNil(model.stripeAction, "The screen shows no Stripe button")
+            XCTAssertFalse(model.canEditLimit)
+            XCTAssertFalse(model.canTurnOffBilling)
             model.openStripe()
+            model.editLimit("5")
+            model.saveLimit()
+            model.turnOffUsageBilling()
+            models.append(model)
         }
         XCTAssertTrue(transport.requests.isEmpty)
         XCTAssertNil(browser.openedURL)
 
         UsageBillingFeature.isEnabled = true
-        app.showUsageBillingDialog()
-        XCTAssertNotNil(split.requestedPresentation)
+        XCTAssertEqual(models.map(\.stripeAction), [.setup, .manage])
     }
 
-    func test_theTrainerShowsCostsAndWhyFiltersDontRunButNoWayToPay() {
-        withEnglishInterface {
-            let transport = RecordingAITransport()
-            transport.responses["/classifier/ai_classifier_usage"] = ["code": 0, "can_use_ai": true, "avg_cost_per_text": 0.0004,
-                                                                      "avg_cost_per_image": 0.002]
-            let billing = makeModel(transport: transport, status: activeStatus)
-            billing.prepare(feedId: "42", storyHash: nil)
-            let saved = [PromptClassifier(prompt: "Non-apple related news", kind: .content, score: 1, scope: .feed, folderName: "")]
-            XCTAssertEqual(billing.sectionCost(.content, saved: saved, feedId: "42", currentFolderName: "")?.monthly, "$0.12",
-                           "A reader with billing still sees what their filters cost")
-            XCTAssertNil(billing.billingButtonTitle)
-            let free = makeModel(transport: RecordingAITransport(), status: freeStatus)
-            XCTAssertNil(free.billingButtonTitle)
-            XCTAssertTrue(free.showsBillingBanner(.content, saved: saved), "A reader without billing still learns why")
-
-            let banner = section(free)
-            XCTAssertEqual(String(banner.billingBannerText.characters), "Natural language filters aren't active on this account.")
-            XCTAssertEqual(banner.billingBannerText.runs.count, 1, "No phrase in it is styled as a link")
-            XCTAssertEqual(String(section(billing).limitReachedText.characters),
-                           "Monthly spending limit reached. Natural language classifiers are paused until next billing cycle. ")
-
-            UsageBillingFeature.isEnabled = true
-            XCTAssertEqual(billing.billingButtonTitle, "Manage billing and limits")
-            XCTAssertEqual(free.billingButtonTitle, "Set up billing")
-            XCTAssertEqual(String(section(free).billingBannerText.characters),
-                           "AI filters are saved but won't run until you set up usage-based billing.")
-            XCTAssertTrue(String(section(billing).limitReachedText.characters).hasSuffix("Increase or remove your limit"))
-        }
+    private func trainerNotice(_ state: [String: Any], kind: PromptClassifierKind = .content,
+                               draft: String = "") throws -> AICreditsNotice? {
+        let profile: [AnyHashable: Any] = ["ai_credits": creditsJSON(state)]
+        let model = TrainerAIPromptModel(api: AIClassifierAPI(transport: RecordingAITransport()), userProfile: { profile })
+        model.setDraft(draft, for: kind)
+        return model.freeNotice(saved: []) ?? model.creditsNotice
     }
 
-    private var activeStatus: UsageBillingStatus {
-        UsageBillingStatus(isUsageBilling: true, isSelfHostedAI: false, canUseAIClassifiers: true, usageBillingLimit: nil)
-    }
-
-    private var freeStatus: UsageBillingStatus {
-        UsageBillingStatus(isUsageBilling: false, isSelfHostedAI: false, canUseAIClassifiers: false, usageBillingLimit: nil)
-    }
-
-    private func makeModel(transport: RecordingAITransport, status: UsageBillingStatus) -> TrainerAIPromptModel {
-        TrainerAIPromptModel(api: AIClassifierAPI(transport: transport), billingStatus: { status },
-                             storyVolumes: { AIClassifierStoryVolumes(storiesForFeed: { _ in 300 }, storiesForFolder: { _ in 0 },
-                                                                      storiesForAllSites: { 0 }) })
-    }
-
-    private func section(_ model: TrainerAIPromptModel) -> TrainerAIPromptSection {
-        TrainerAIPromptSection(kind: .content, model: model, feed: nil, story: nil, isPremiumArchive: true,
-                               currentFolderName: "", fontBuilder: { _, size in .system(size: size) })
-    }
-
-    /// The titles FeedsObjCViewController.m puts in the feed list's settings menu.
-    private func settingsMenuTitles() throws -> [String] {
+    /// The titles FeedsObjCViewController.m puts in the feed list's settings menu for an account with these credits.
+    private func settingsMenuTitles(credits: [String: Any]) throws -> [String] {
         let app = NewsBlurAppDelegate()
+        app.dictUserProfile = ["is_premium": 1, "ai_credits": credits]
         let feeds = BillingMenuFeedsController()
         feeds.appDelegate = app
         let navigation = BillingMenuNavigationController(rootViewController: feeds)
@@ -2130,16 +2293,6 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         let menu = try XCTUnwrap(presented.viewControllers.first as? MenuViewController)
         let items = try XCTUnwrap(menu.value(forKey: "items") as? [[String: Any]])
         return items.compactMap { $0["title"] as? String }
-    }
-}
-
-/// AIClassifierTests.swift records what NewsBlurAppDelegate.m presents instead of showing it.
-@MainActor private final class BillingPresentationSplitController: SplitViewController {
-    var requestedPresentation: UIViewController?
-    override func dismiss(animated: Bool, completion: (() -> Void)? = nil) { completion?() }
-    override func present(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
-        requestedPresentation = viewControllerToPresent
-        completion?()
     }
 }
 

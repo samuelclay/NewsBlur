@@ -708,6 +708,6 @@ private final class RetainedInlineClassifierAppDelegate: NewsBlurAppDelegate {
 
 @MainActor private final class DetachedTrainerContextInteraction: TrainerInteraction {
     var isStoryTrainer = false
-    let aiPrompts = TrainerAIPromptModel(billingStatus: { UsageBillingStatus(profile: nil) })
+    let aiPrompts = TrainerAIPromptModel(userProfile: { nil })
     func reloadTrainerContext() {}
 }

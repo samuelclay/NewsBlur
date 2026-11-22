@@ -15,9 +15,9 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-// Test_AiPromptTester.kt: a trainer's prompt test result is only shown for the prompt text and
-// focus or hidden direction it was sent with, even when the draft changes while the slow,
-// billed apps/analyzer/views.py test_prompt request is still running.
+// Test_AiPromptTester.kt: a trainer's prompt test result is only shown for the prompt text,
+// focus or hidden direction and Text or Images mode it was sent with, even when the draft changes
+// while the slow apps/analyzer/views.py test_prompt request is still running.
 class Test_AiPromptTester {
     /** Holds every test response until the test releases it, like a slow AI request. */
     private class DelayedClassifierApi : ClassifierApi {
@@ -83,6 +83,19 @@ class Test_AiPromptTester {
             runCurrent()
 
             assertEquals(matched to false, finished)
+        }
+
+    @Test
+    fun test_switching_to_images_during_a_text_test_drops_its_result() =
+        runTest {
+            startTest()
+
+            // AiClassifierSections.kt's Text | Images switch keeps the typed prompt, so only the mode changes.
+            draft = draft.copy(imagePrompt = true)
+            api.response.complete(matched)
+            runCurrent()
+
+            assertEquals("A text match isn't shown as an image match", matched to false, finished)
         }
 
     @Test

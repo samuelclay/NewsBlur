@@ -2045,14 +2045,14 @@ static BOOL NBBoolPreferenceValue(id value) {
         }];
     }
 
-    // FeedsObjCViewController.m offers natural language classifier billing beside the subscription (UsageBillingView.swift),
-    // unless UsageBillingFeature.swift holds it out of this release.
-    if (UsageBillingFeature.isEnabled) {
-        [viewController addFeedListTitle:[NBLocalization text:@"Usage Billing"] iconName:@"icons8-prompt-100" selectionShouldDismiss:YES handler:^{
-            [self.appDelegate showUsageBillingDialog];
+    // FeedsObjCViewController.m lists the month's AI credits (AICreditsView.swift) beside the subscription for plans
+    // that include them and for readers with usage billing.
+    if ([AICreditsViewController showsMenuItemWithUserProfile:self.appDelegate.dictUserProfile]) {
+        [viewController addFeedListTitle:[NBLocalization text:@"AI Credits"] iconName:@"icons8-prompt-100" selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showAICreditsDialogStartingSetup:NO];
         }];
     }
-    
+
     [viewController addFeedListTitle:[NBLocalization text:@"Support Forum"] iconName:@"feed-menu-feedback" selectionShouldDismiss:YES handler:^{
         NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];

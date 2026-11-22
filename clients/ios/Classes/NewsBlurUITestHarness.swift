@@ -83,7 +83,7 @@ final class NewsBlurUITestHarness {
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
-        case "preferences", "usage-billing":
+        case "preferences":
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
@@ -155,9 +155,6 @@ final class NewsBlurUITestHarness {
         case "preferences":
             didScheduleScenario = true
             configurePreferences(on: appDelegate, remainingRetries: 20)
-        case "usage-billing":
-            didScheduleScenario = true
-            configureUsageBilling(on: appDelegate, remainingRetries: 200)
         case let screen? where readerScenario(for: screen) != nil:
             didScheduleScenario = true
             configureReader(
@@ -364,22 +361,6 @@ final class NewsBlurUITestHarness {
         DispatchQueue.main.async {
             appDelegate.showPreferences()
         }
-    }
-
-    /// NewsBlurUITestHarness.swift opens UsageBillingView.swift over the fixture account once its profile has loaded.
-    private static func configureUsageBilling(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
-        guard remainingRetries > 0 else { return }
-        loadFixtureFeedList(on: appDelegate)
-        guard didFinishReaderFeedLoad, appDelegate.splitViewController?.viewIfLoaded?.window != nil else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                configureUsageBilling(on: appDelegate, remainingRetries: remainingRetries - 1)
-            }
-            return
-        }
-        appDelegate.feedsViewController.loadWorkItem?.cancel()
-        // UsageBillingFeature.swift holds billing out of the release; this scenario exists to show the billing screen.
-        UsageBillingFeature.isEnabled = true
-        appDelegate.showUsageBillingDialog()
     }
 
     /// NewsBlurUITestHarness.swift opens the story trainer once the AI classifier fixture story is on screen.
@@ -666,7 +647,8 @@ private enum ReaderUITestFixtures {
     static let swiftClusterRelatedStoryHash = "ui-story-swift-cluster-related"
     private static let bulkReadEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-bulk-read")
     // NewsBlurUITestHarness.swift's natural language classifier fixtures (AIClassifiers.swift): saved prompts on Swift
-    // Weekly, matched prompts on its first story, and a usage billing account unless -newsblur-ui-test-ai-unbilled.
+    // Weekly and matched prompts on its first story. They run on the Archive account's AI credits unless
+    // -newsblur-ui-test-free-account.
     private static let aiClassifiersEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-classifiers")
     // NewsBlurUITestHarness.swift's podcast fixture (Listen/ListenMediaPlayer.swift): Swift Weekly's first story
     // carries an episode, and /media_player answers with that episode paused at 23:41 on another device and two
@@ -675,8 +657,8 @@ private enum ReaderUITestFixtures {
     static let podcastEpisodeURL = FileManager.default.temporaryDirectory.appendingPathComponent("ui-test-episode-42.wav")
     private static let podcastNextEpisodeURL = FileManager.default.temporaryDirectory.appendingPathComponent("ui-test-episode-41.wav")
     private static let podcastDuration = 2820
-    private static let aiUnbilled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-unbilled")
-    private static let aiLimitReached = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-limit-reached")
+    /// Signs in a free account, whose plan has no AI credits, so its saved AI filters don't score stories.
+    private static let freeAccount = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-free-account")
     /// Moves Swift Weekly out of Tech ▸ Swift to the top level, where the trainer has no folder scope.
     private static let swiftFeedAtTopLevel = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-top-level-site")
     private static let cachedImagePaging = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-cached-image-paging")
@@ -828,18 +810,17 @@ private enum ReaderUITestFixtures {
             "social_profile": ["id": "social:1", "user_id": 1, "username": username, "shared_stories_count": 0],
             "social_services": [:],
             "user_profile": [
-                "is_premium": 1,
-                "is_archive": 1,
+                "is_premium": freeAccount ? 0 : 1,
+                "is_archive": freeAccount ? 0 : 1,
                 "is_pro": 0,
                 "premium_expire": NSNull(),
                 "preferences": [
                     "story_clustering": true,
                     "cluster_mode": "related",
                 ],
-                "is_usage_billing": aiClassifiersEnabled && !aiUnbilled,
-                "is_self_hosted_ai": false,
-                "can_use_ai_classifiers": aiClassifiersEnabled && !aiUnbilled,
-                "usage_billing_limit": aiClassifiersEnabled && !aiUnbilled ? 10.0 : NSNull(),
+                // apps/profile/models.py runs AI filters on every paid plan's monthly AI credits.
+                "can_use_ai_classifiers": !freeAccount,
+                "ai_credits": aiCredits,
             ],
             "activities": [],
             "dashboard_rivers": [],
@@ -1192,35 +1173,29 @@ private enum ReaderUITestFixtures {
         return matched
     }
 
+    /// apps/analyzer/ai_credits.py state() for the fixture account: an Archive month a quarter used, or a free plan.
+    private static var aiCredits: [String: Any] {
+        [
+            "included": freeAccount ? 0 : 10_000, "used": freeAccount ? 0 : 2_340, "remaining": freeAccount ? 0 : 7_660,
+            "month": "2026-11", "resets_on": "2026-12-01", "is_unlimited": false, "is_billing_available": true,
+            "is_usage_billing": false, "monthly_limit": NSNull(), "overage_credits": 0, "overage_usd": 0.0,
+            "unbilled_usd": 0.0, "minimum_charge_usd": 1.0, "immediate_charge_usd": 10.0,
+            "is_paused": freeAccount, "pause_reason": freeAccount ? "plan" : NSNull(), "is_warning": false,
+            "credit_usd": 0.00001,
+            "forecast": freeAccount ? NSNull() : ["credits": 6_240, "credits_per_day": 220, "runs_out_on": NSNull(), "overage_usd": 0.0],
+        ]
+    }
+
     private static func aiClassifierResponse(for path: String) -> [String: Any]? {
         switch path {
-        case "/classifier/ai_classifier_usage":
-            if aiUnbilled { return ["code": 0, "can_use_ai": false] }
-            return ["code": 0, "can_use_ai": true, "avg_cost_per_text": 0.00042, "avg_cost_per_image": 0.0021,
-                    "is_limit_reached": aiLimitReached, "current_cycle_spend": aiLimitReached ? 10.0 : 3.42,
-                    "usage_billing_limit": 10.0]
-        case "/profile/usage_billing_history":
-            if aiUnbilled { return ["invoices": [], "upcoming_invoice": NSNull()] }
-            return [
-                "current_cycle_spend": aiLimitReached ? 10.0 : 8.42, "usage_billing_limit": 10.0, "is_limit_reached": aiLimitReached,
-                "cycle_start": "2026-10-01", "cycle_end": "2026-10-31",
-                "upcoming_invoice": [
-                    "date": "2026-11-01", "amount": 8.42, "status": "upcoming",
-                    "line_items": [
-                        ["description": "Natural language text classifier", "quantity": 14_820, "amount": 6.23],
-                        ["description": "Natural language image classifier", "quantity": 1_043, "amount": 2.19],
-                    ],
-                ],
-                "invoices": [
-                    ["date": "2026-10-01", "amount": 5.17, "amount_paid": 5.17, "status": "paid",
-                     "hosted_invoice_url": "https://ui-test.newsblur.example/invoice/1",
-                     "line_items": [["description": "Natural language text classifier", "quantity": 12_310, "amount": 5.17]]],
-                ],
-            ]
-        case "/classifier/save", "/profile/save_usage_billing_limit":
-            return ["code": 1, "limit": 10.0]
+        case "/analyzer/ai_classifier_usage":
+            return ["code": 0, "can_use_ai": !freeAccount, "ai_credits": aiCredits, "stories_per_month": 300,
+                    "text_credits_per_month": 420, "image_credits_per_month": 3_000]
+        case "/classifier/save":
+            return ["code": 1]
         case "/classifier/test_prompt":
-            return ["code": 0, "classification": 1, "image_results": [1, 0]]
+            // apps/analyzer/views.py answers every account's prompt test, Archive or not.
+            return ["code": 0, "classification": 1, "image_results": [1, 0], "description": "earnings coverage"]
         default:
             return nil
         }

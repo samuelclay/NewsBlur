@@ -18,6 +18,38 @@
 			<string>%1$@ फ़ीड को %2$@ में नहीं जोड़ा जा सका।</string>
 		</dict>
 	</dict>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_past_plan@</string>
+		<key>ai_credits_past_plan</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%2$@ AI क्रेडिट इस्तेमाल हुआ, आपकी योजना के %4$@ से %3$@ अधिक</string>
+			<key>other</key>
+			<string>%2$@ AI क्रेडिट इस्तेमाल किए गए, %3$@ आपकी योजना के %4$@ से ज़्यादा</string>
+		</dict>
+	</dict>
+	<key>%2$@ of %3$@ AI credits used</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_used@</string>
+		<key>ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%3$@ में से %2$@ AI क्रेडिट इस्तेमाल हुआ</string>
+			<key>other</key>
+			<string>%2$@ में से %3$@ AI क्रेडिट इस्तेमाल किए गए</string>
+		</dict>
+	</dict>
 	<key>%@ Widget Sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -482,6 +514,22 @@
 			<string>+ %@ और साइटें</string>
 		</dict>
 	</dict>
+	<key>A text filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text_filter_monthly_credits@</string>
+		<key>text_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>इस साइट का टेक्स्ट फ़िल्टर हर महीने लगभग %2$@ क्रेडिट इस्तेमाल करता है</string>
+			<key>other</key>
+			<string>इस साइट का टेक्स्ट फ़िल्टर हर महीने लगभग %2$@ क्रेडिट इस्तेमाल करता है</string>
+		</dict>
+	</dict>
 	<key>Add %1$@ feeds to “%2$@” folder</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -544,6 +592,38 @@
 			<string>%@ साइट ने भी प्रकाशित किया</string>
 			<key>other</key>
 			<string>%@ अन्य साइटों पर भी प्रकाशित</string>
+		</dict>
+	</dict>
+	<key>An image filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_monthly_credits@</string>
+		<key>image_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>इस साइट पर एक इमेज फ़िल्टर हर महीने लगभग %2$@ क्रेडिट इस्तेमाल करता है</string>
+			<key>other</key>
+			<string>इस साइट का इमेज फ़िल्टर हर महीने लगभग %2$@ क्रेडिट इस्तेमाल करता है</string>
+		</dict>
+	</dict>
+	<key>At this pace, this month will use about %2$@ AI credits.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@forecast_monthly_credits@</string>
+		<key>forecast_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>इसी रफ़्तार से, इस महीने लगभग %2$@ AI क्रेडिट इस्तेमाल होंगे।</string>
+			<key>other</key>
+			<string>इसी रफ़्तार से, इस महीने लगभग %2$@ AI क्रेडिट इस्तेमाल होंगे।</string>
 		</dict>
 	</dict>
 	<key>Back %@ seconds</key>
@@ -786,6 +866,22 @@
 			<string>%@ घंटे पहले का टेक्स्ट</string>
 		</dict>
 	</dict>
+	<key>This month's %@ AI credits are used.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@monthly_ai_credits_used@</string>
+		<key>monthly_ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>इस महीने के %@ AI क्रेडिट इस्तेमाल हो चुके हैं।</string>
+			<key>other</key>
+			<string>इस महीने के %@ AI क्रेडिट इस्तेमाल हो चुके हैं।</string>
+		</dict>
+	</dict>
 	<key>Updated %@ days ago</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -832,6 +928,22 @@
 			<string>%@ सप्ताह पहले अपडेट किया गया</string>
 			<key>other</key>
 			<string>%@ सप्ताह पहले अपडेट किया गया</string>
+		</dict>
+	</dict>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@usage_billing_included_credits@</string>
+		<key>usage_billing_included_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>उपयोग के आधार पर बिलिंग चालू है। आपके %2$@ से अधिक क्रेडिट की कीमत हर 1,000 पर 1¢ है: इस महीने अब तक %3$@।</string>
+			<key>other</key>
+			<string>इस्तेमाल के आधार पर बिलिंग चालू है। आपके %2$@ में शामिल क्रेडिट से ज़्यादा इस्तेमाल पर हर 1,000 क्रेडिट के लिए 1¢ लगता है: इस महीने अब तक %3$@।</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

@@ -157,10 +157,6 @@ msgid "%(comments)s and %(replies)s"
 msgstr "%(comments)s と %(replies)s"
 
 #, python-format
-msgid "%(cost)s/story"
-msgstr "%(cost)s / 記事"
-
-#, python-format
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s バイト"
@@ -184,11 +180,6 @@ msgstr[0] "%(count)s件の分類器が削除されます"
 msgid "%(count)s comment"
 msgid_plural "%(count)s comments"
 msgstr[0] "%(count)s件のコメント"
-
-#, python-format
-msgid "%(count)s content filter"
-msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s件のコンテンツフィルター"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -241,11 +232,6 @@ msgid_plural "%(count)s hours ago"
 msgstr[0] "%(count)s時間前"
 
 #, python-format
-msgid "%(count)s image filter"
-msgid_plural "%(count)s image filters"
-msgstr[0] "%(count)s個の画像フィルター"
-
-#, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s件の「いいね」"
@@ -289,18 +275,6 @@ msgstr[0] "%(count)s 件のニュースレター"
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
 msgstr[0] "%(count)s / %(limit)sサイト"
-
-#, python-format
-msgid "%(count)s on all sites (%(stories)s)"
-msgstr "すべてのサイトで%(count)s（%(stories)s）"
-
-#, python-format
-msgid "%(count)s on folder (%(stories)s)"
-msgstr "フォルダーの%(count)s（%(stories)s）"
-
-#, python-format
-msgid "%(count)s on this site (%(stories)s)"
-msgstr "このサイトの%(count)s（%(stories)s）"
 
 #, python-format
 msgid "%(count)s open"
@@ -386,11 +360,6 @@ msgstr[0] "月あたり%(count)s件の記事"
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
 msgstr[0] "%(count)s件の記事が削除されます"
-
-#, python-format
-msgid "%(count)s story/mo"
-msgid_plural "%(count)s stories/mo"
-msgstr[0] "月あたり %(count)s 件"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -538,10 +507,6 @@ msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s～%(end)s分"
 
 #, python-format
-msgid "%(start)s – %(end)s"
-msgstr "%(start)s – %(end)s"
-
-#, python-format
 msgid "%(submit_button)s or %(cancel_link)s"
 msgstr "%(submit_button)sまたは%(cancel_link)s"
 
@@ -576,6 +541,22 @@ msgstr "%(topic)sのサイト"
 #, python-format
 msgid "%(topic)s Subreddits"
 msgstr "%(topic)sのサブレディット"
+
+#, python-format
+msgid ""
+"%(unbilled)s is waiting to be charged: at the start of next month if it's at least %(minimum)s, or right "
+"away at %(immediate)s."
+msgstr "%(unbilled)sは請求待ちです。%(minimum)s以上の場合は来月初めに、または%(immediate)sに達した時点ですぐに請求されます。"
+
+#, python-format
+msgid "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgid_plural "%(used)s AI credits used, %(over)s past your plan's %(included)s"
+msgstr[0] "AIクレジットを%(used)s使用、プランの%(included)sを%(over)s超過"
+
+#, python-format
+msgid "%(used)s of %(included)s AI credit used"
+msgid_plural "%(used)s of %(included)s AI credits used"
+msgstr[0] "AIクレジット%(included)sのうち%(used)sを使用"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -889,19 +870,10 @@ msgstr "(GMT-11:00) ミッドウェー島、サモア"
 msgid "(no title)"
 msgstr "（タイトルなし）"
 
-msgid "(upcoming)"
-msgstr "（予定）"
-
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ ほか%(value_1)sサイト"
-
-msgid "/day"
-msgstr "/日"
-
-msgid "/mo"
-msgstr "/月"
 
 msgid "/month"
 msgstr "/月"
@@ -914,6 +886,19 @@ msgstr "1か月"
 
 msgid "1 year"
 msgstr "1年"
+
+msgid "10,000 AI credits a month for AI filters"
+msgstr "AIフィルター用のAIクレジットを毎月10,000付与"
+
+msgid "100,000 AI credits a month for AI filters"
+msgstr "AIフィルター用のAIクレジットを毎月100,000付与"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "プランのクレジットを超過した分は1,000クレジットあたり1¢、今月は約%(cost)sです。"
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "プランのクレジット超過分は1,000クレジットあたり1¢です。"
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "記事の閲覧、操作、学習、検索などに使える28個のツールがあります。"
@@ -968,6 +953,9 @@ msgstr "共有した記事のBlurblog"
 msgid "A clearer, closer sound"
 msgstr "より明瞭で近くに感じる音声"
 
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr "テキストフィルターでは記事1件につき約1クレジット、画像フィルターでは記事1件につき約10クレジットを使います。"
+
 msgid "A folder of feeds read as one stream"
 msgstr "複数のフィードを1つのストリームとして読むフォルダー"
 
@@ -987,18 +975,43 @@ msgstr "「いいね」が1つあれば、「低評価」がいくつあって�
 msgid "A story diff with additions and deletions"
 msgstr "追加・削除箇所を表示する記事の差分"
 
+#, python-format
+msgid "A text filter on this site uses about %(count)s credit a month."
+msgid_plural "A text filter on this site uses about %(count)s credits a month."
+msgstr[0] "このサイトのテキストフィルターは、月に約%(count)sクレジットを使用します。"
+
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "このサイトのテキストフィルターは、月に1クレジット未満しか使いません。"
+
 msgid "AI Filter"
 msgstr "AIフィルター"
 
 msgid "AI Model"
 msgstr "AIモデル"
 
+msgid "AI credits"
+msgstr "AIクレジット"
+
+msgid "AI filters"
+msgstr "AIフィルター"
+
 #, python-format
-msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "AIフィルターは保存されていますが、%(billing_link)sまで適用されません。"
+msgid "AI filters are saved but only run on %(tier_link)s."
+msgstr "AIフィルターは保存されますが、%(tier_link)sでのみ実行されます。"
+
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
+msgstr "AIフィルターは保存されますが、プレミアムでのみ実行されます。プレミアムには毎月1,000、アーカイブには10,000、Proには100,000のAIクレジットが含まれます。"
+
+msgid "AI filters run without credits on this server."
+msgstr "このサーバーでは、AIフィルターはクレジットを消費せずに実行されます。"
 
 msgid "AI finds the stories"
 msgstr "AIが記事を見つけます"
+
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "月間1,000 AIクレジット付きのAIテキスト・画像フィルター"
 
 msgid "AI-curated summary of your top stories"
 msgstr "注目記事をAIが選んで要約"
@@ -1009,6 +1022,10 @@ msgstr "ニュースフィードの記事をAIで分析し、あなたに合わ�
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "すべてのカテゴリ（%(value_1)s）"
+
+#, python-format
+msgid "About %(cost)s this month at your pace."
+msgstr "現在のペースでは、今月は約%(cost)sです。"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "もちろんです。トレーナーを開いて、付けた高評価や低評価を外せばリセットできます。"
@@ -1245,6 +1262,14 @@ msgstr "エラーが発生しました。"
 msgid "An error occurred. Please try again."
 msgstr "エラーが発生しました。もう一度お試しください。"
 
+#, python-format
+msgid "An image filter on this site uses about %(count)s credit a month."
+msgid_plural "An image filter on this site uses about %(count)s credits a month."
+msgstr[0] "このサイトの画像フィルターは、月に約%(count)sクレジットを使用します。"
+
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "このサイトの画像フィルターは、月に1クレジット未満しか使いません。"
+
 msgid "Analysis timed out. Please try again."
 msgstr "分析がタイムアウトしました。もう一度お試しください。"
 
@@ -1389,6 +1414,19 @@ msgstr "読んだ内容について何でも質問できます。閲覧履歴を
 
 msgid "Ask questions, get summaries, or request key points"
 msgstr "質問したり、要約や要点をリクエストしたりできます"
+
+#, python-format
+msgid "At this pace you'll use about %(count)s credit this month."
+msgid_plural "At this pace you'll use about %(count)s credits this month."
+msgstr[0] "現在のペースでは、今月は約%(count)sクレジットを使う見込みです。"
+
+#, python-format
+msgid "At this pace your credits run out around %(date)s."
+msgstr "現在のペースでは、クレジットは%(date)s頃になくなる見込みです。"
+
+#, python-format
+msgid "At your pace, the month comes to about %(cost)s."
+msgstr "現在のペースでは、今月は約%(cost)sになります。"
 
 msgid "Audio"
 msgstr "音声"
@@ -1711,6 +1749,9 @@ msgstr "請求先情報を変更"
 msgid "Change folders"
 msgstr "フォルダーを変更"
 
+msgid "Change limit"
+msgstr "上限を変更"
+
 msgid "Change password"
 msgstr "パスワードを変更"
 
@@ -1725,6 +1766,9 @@ msgstr "クレジットカードを変更"
 
 msgid "Change your profile above"
 msgstr "上記でプロフィールを変更"
+
+msgid "Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month."
+msgstr "月末に1ドルに達した時点で請求されます。少額の場合は翌月以降に繰り越されます。"
 
 msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "NewsBlurユーザーが追加する人気サイトを、後でもう一度確認してください。"
@@ -2011,6 +2055,9 @@ msgstr "FAQを読み込めませんでした。もう一度お試しください
 msgid "Couldn't load audio for this story."
 msgstr "この記事の音声を読み込めませんでした。"
 
+msgid "Couldn't turn off usage billing. Please try again."
+msgstr "従量課金をオフにできませんでした。もう一度お試しください。"
+
 msgid "Counting is difficult"
 msgstr "数えるのは難しい"
 
@@ -2218,14 +2265,8 @@ msgstr "話し方"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "探している記事の内容を説明してください。ページを再解析して見つけます。"
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "トピックを説明すると、AIが各記事をプロンプトに照らして評価し、一致する記事を優先表示または非表示にします。"
-
 msgid "Describe what to focus or hide"
 msgstr "注目する内容、または非表示にする内容を説明してください"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "探したい内容を入力すると、AIがプロンプトに基づいて各記事の画像を分析します。"
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2883,6 +2924,9 @@ msgstr "%(context)sでフィルターに一致する記事はありませんで�
 msgid "Filters found no stories in this view."
 msgstr "このビューにはフィルターに一致する記事がありません。"
 
+msgid "Filters pause when usage billing reaches it. Leave empty for no limit."
+msgstr "従量課金はここに達するとフィルターを一時停止します。上限を設けない場合は空欄にしてください。"
+
 msgid "Finance"
 msgstr "金融"
 
@@ -3441,6 +3485,9 @@ msgstr "IFTTTとZapier"
 msgid "Identify key people and relationships"
 msgstr "重要な人物と人間関係を特定する"
 
+msgid "If it reaches $10 within a month, it's charged right away."
+msgstr "1か月以内に10ドルに達した場合、すぐに請求されます。"
+
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "RSSフィードが見つからない場合、NewsBlurはウェブフィードの作成を提案します"
 
@@ -3474,6 +3521,9 @@ msgstr "画像プレビュー"
 
 msgid "Image prompt"
 msgstr "画像プロンプト"
+
+msgid "Images"
+msgstr "画像"
 
 msgid "Immediately"
 msgstr "すぐに"
@@ -3524,9 +3574,6 @@ msgstr "このウィンドウ内"
 
 msgid "Include read"
 msgstr "既読を含める"
-
-msgid "Increase or remove your limit"
-msgstr "上限を引き上げるか、解除する"
 
 msgid "Independent"
 msgstr "独立系"
@@ -3629,6 +3676,9 @@ msgstr "解説なしの見出しのみ"
 
 msgid "Keep fades, without movement."
 msgstr "動きをなくし、フェードは維持します。"
+
+msgid "Keep filters running"
+msgstr "フィルターを実行し続ける"
 
 msgid "Keep others unread"
 msgstr "他の記事を未読のままにする"
@@ -3840,12 +3890,6 @@ msgstr "NewsBlurを管理"
 msgid "Manage Training"
 msgstr "学習を管理"
 
-msgid "Manage billing and limits"
-msgstr "請求と利用上限を管理"
-
-msgid "Manage billing on Stripe"
-msgstr "Stripeで請求を管理"
-
 msgid "Manage email settings"
 msgstr "メール設定を管理"
 
@@ -4034,11 +4078,8 @@ msgstr "月"
 msgid "Monday"
 msgstr "月曜日"
 
-msgid "Monthly spending limit"
-msgstr "月間支出上限"
-
-msgid "Monthly spending limit reached. "
-msgstr "月間利用上限に達しました。 "
+msgid "Monthly limit"
+msgstr "月間上限"
 
 msgid "Months Earned"
 msgstr "獲得した月数"
@@ -4149,24 +4190,6 @@ msgstr "ネイティブアプリ"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "自然"
-
-msgid "Natural Language Image Classifier"
-msgstr "自然言語画像分類器"
-
-msgid "Natural Language Text Classifier"
-msgstr "自然言語テキスト分類器"
-
-msgid "Natural language classifier billing"
-msgstr "自然言語分類の請求"
-
-msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "自然言語分類器は次の請求サイクルまで一時停止されています。 "
-
-msgid "Natural language classifiers are using your instance's API keys."
-msgstr "自然言語分類器は、このインスタンスのAPIキーを使用しています。"
-
-msgid "Natural language text and image classifiers"
-msgstr "自然言語テキスト・画像分類器"
 
 msgid "Nature"
 msgstr "自然"
@@ -4474,11 +4497,8 @@ msgstr "このページに記事のパターンは見つかりませんでした
 msgid "No trending sites available"
 msgstr "トレンドサイトはありません"
 
-msgid "No usage billing invoices yet."
-msgstr "利用料金の請求書はまだありません。"
-
-msgid "No usage billing set up."
-msgstr "従量課金が設定されていません。"
+msgid "No usage billing charges yet."
+msgstr "従量課金の請求はまだありません。"
 
 msgid "No valid merge groups to apply"
 msgstr "適用できる有効な統合グループがありません"
@@ -4793,9 +4813,6 @@ msgstr "オプション3："
 msgid "Option 4:"
 msgstr "オプション4："
 
-msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
-msgstr "任意。上限に達すると分類器は一時停止し、次の請求サイクルに再開します。"
-
 msgid "Options"
 msgstr "オプション"
 
@@ -4848,6 +4865,14 @@ msgstr "解析中…"
 
 msgid "Part of a story URL"
 msgstr "記事URLの一部"
+
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "クレジットを超過した後も、フィルターは1,000クレジットあたり1¢で引き続き実行されます。"
+
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
+msgstr "プランのクレジットを超過すると、毎月1日までフィルターは一時停止します。従量課金を有効にすると、1,000クレジットあたり1¢で引き続き実行されます。"
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "任意のURLを貼り付けると、NewsBlurがRSSのないページからもフィードを作成します。"
@@ -5039,6 +5064,9 @@ msgstr "プレミアムの詳細"
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "プレミアムフォントを使用するには、%(link_start)sプレミアムアカウント%(link_end)sが必要です"
+
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "プレミアムには毎月1,000、アーカイブには10,000、Proには100,000のAIクレジットが含まれます。"
 
 msgid "Premium renewal"
 msgstr "プレミアムの更新"
@@ -5472,6 +5500,10 @@ msgid "Reset to original favicon"
 msgstr "元のファビコンに戻す"
 
 #, python-format
+msgid "Resets %(date)s"
+msgstr "%(date)sにリセット"
+
+#, python-format
 msgid "Resets %(day)s"
 msgstr "%(day)sにリセット"
 
@@ -5589,6 +5621,9 @@ msgstr "ワンクリックまたはsキーで記事を保存"
 msgid "Save comments"
 msgstr "コメントを保存"
 
+msgid "Save limit"
+msgstr "上限を保存"
+
 msgid "Save my profile"
 msgstr "プロフィールを保存"
 
@@ -5635,6 +5670,13 @@ msgstr "保存した記事をカスタムタグで整理"
 
 msgid "Saved!"
 msgstr "保存しました！"
+
+#, python-format
+msgid "Saved. Filters pause at %(limit)s a month."
+msgstr "保存しました。フィルターは月に%(limit)sで一時停止します。"
+
+msgid "Saved. No monthly limit."
+msgstr "保存しました。月間上限はありません。"
 
 msgid "Saved:"
 msgstr "保存済み："
@@ -5872,8 +5914,8 @@ msgstr "サーバーエラー"
 msgid "Server error: %(status)s"
 msgstr "サーバーエラー：%(status)s"
 
-msgid "Set up billing"
-msgstr "お支払いを設定"
+msgid "Set a monthly limit, or turn usage billing off any time."
+msgstr "月間上限を設定するか、いつでも従量課金をオフにできます。"
 
 msgid "Set up newsletters"
 msgstr "ニュースレターを設定"
@@ -5881,8 +5923,8 @@ msgstr "ニュースレターを設定"
 msgid "Set up notifications"
 msgstr "通知を設定"
 
-msgid "Set up usage-based billing to use natural language content and image filters."
-msgstr "自然言語によるコンテンツフィルターと画像フィルターを利用するには、使用量ベースの課金を設定してください。"
+msgid "Set up usage billing"
+msgstr "従量課金を設定"
 
 msgid "Set up your blurblog"
 msgstr "Blurblogを設定"
@@ -6213,9 +6255,6 @@ msgstr "特別フォルダー"
 msgid "Speed"
 msgstr "速度"
 
-msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "利用上限に達しました。次のサイクルまで分類器は一時停止されます。"
-
 msgid "Split"
 msgstr "分割"
 
@@ -6469,6 +6508,9 @@ msgstr "ストリームが中断されました。10秒間応答がありませ�
 
 msgid "Stripe Id:"
 msgstr "Stripe ID："
+
+msgid "Stripe has your card. Usage billing turns on in a moment."
+msgstr "Stripeにカード情報が登録されました。まもなく従量課金が有効になります。"
 
 msgid "Style"
 msgstr "スタイル"
@@ -6884,6 +6926,14 @@ msgstr "これは記事全文に一致するため、この完全一致する記
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "これはタイトル全体に一致するため、この記事だけに一致します。タイトルの一部を選択してください。"
 
+msgid "This month"
+msgstr "今月"
+
+#, python-format
+msgid "This month's %(count)s AI credit is used."
+msgid_plural "This month's %(count)s AI credits are used."
+msgstr[0] "今月のAIクレジット%(count)sを使い切りました。"
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "この既読記事リストは%(link_start)sプレミアム機能%(link_end)sです。"
@@ -7156,13 +7206,22 @@ msgstr "火曜日"
 msgid "Turn off automatic briefing generation"
 msgstr "自動ブリーフィング生成をオフにする"
 
+msgid "Turn off usage billing"
+msgstr "従量課金をオフにする"
+
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "これらのサイト%(count)s件を有効にしてください"
 
+msgid "Turn on usage billing"
+msgstr "従量課金を有効にする"
+
 msgid "Turning any page into a feed"
 msgstr "あらゆるページをフィードに変換"
+
+msgid "Turning off..."
+msgstr "オフにしています…"
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7203,6 +7262,10 @@ msgstr "このサイトのミュートを解除"
 
 msgid "Uncategorized"
 msgstr "未分類"
+
+#, python-format
+msgid "Understood as: %(description)s"
+msgstr "次のように理解しました：%(description)s"
 
 msgid "Unfavorited"
 msgstr "お気に入り解除"
@@ -7279,11 +7342,14 @@ msgstr "無題"
 msgid "Up Next"
 msgstr "次に再生"
 
-msgid "Upcoming charge: "
-msgstr "次回の請求額："
+msgid "Upcoming"
+msgstr "今後の予定"
 
 msgid "Update History"
 msgstr "更新履歴"
+
+msgid "Update card on Stripe"
+msgstr "Stripeのカード情報を更新"
 
 msgid "Updated"
 msgstr "更新日"
@@ -7391,11 +7457,16 @@ msgstr "アップロードに失敗しました。もう一度お試しくださ
 msgid "Uploaded!"
 msgstr "アップロードしました！"
 
-msgid "Usage billing history"
-msgstr "利用料金の請求履歴"
+msgid "Usage billing"
+msgstr "従量課金"
 
-msgid "Usage-based billing is enabled for natural language classifiers."
-msgstr "自然言語分類器では使用量に応じた課金が有効です。"
+msgid "Usage billing charges"
+msgstr "従量課金の請求"
+
+#, python-format
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] "従量課金は有効です。%(count)sクレジットを超える分は1,000クレジットあたり1¢です。今月の利用額：%(cost)s。"
 
 #, python-format
 msgid "Use %(language)s"
@@ -7840,6 +7911,9 @@ msgstr "コメントに返信するにはログインが必要です。"
 msgid "You need to be logged in to share a story."
 msgstr "記事を共有するにはログインが必要です。"
 
+msgid "You only pay for credits past your plan's."
+msgstr "プランのクレジットを超えた分のみお支払いいただきます。"
+
 msgid "You will be emailed within a minute or three."
 msgstr "1〜3分以内にメールが届きます。"
 
@@ -7848,6 +7922,10 @@ msgstr "タグや著者が多数表示されます。"
 
 msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "リクエストが制限されています。<br>少し時間をおいて、再度お試しください。"
+
+#, python-format
+msgid "You're close to your %(limit)s monthly limit."
+msgstr "月間上限%(limit)sに近づいています。"
 
 msgid "You're presented with multiple story pattern options to choose from."
 msgstr "複数の記事パターン候補が表示されます。そこから選択してください。"
@@ -7868,6 +7946,11 @@ msgstr "%(value_2)sを%(value_1)s分プレゼントされました！"
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
 msgstr "サイト数の上限%(value_1)s件に達しました。サイトをミュートするか、アカウントをアップグレードして追加してください。"
 
+#, python-format
+msgid "You've used %(used)s of your %(included)s AI credit this month."
+msgid_plural "You've used %(used)s of your %(included)s AI credits this month."
+msgstr[0] "今月はAIクレジット%(included)sのうち%(used)sを使用しました。"
+
 msgid "You:"
 msgstr "あなた："
 
@@ -7884,6 +7967,14 @@ msgstr "%(value_1)s の購読には上記のすべてが含まれます"
 #, python-format
 msgid "Your %(value_1)s subscription is active"
 msgstr "%(value_1)sのサブスクリプションは有効です"
+
+#, python-format
+msgid "Your AI filters are paused until %(date)s."
+msgstr "AIフィルターは%(date)sまで一時停止しています。"
+
+#, python-format
+msgid "Your AI filters reached your %(limit)s monthly limit and are paused until %(date)s."
+msgstr "AIフィルターは%(limit)sの月間上限に達したため、%(date)sまで一時停止しています。"
 
 msgid "Your Archived Domains"
 msgstr "アーカイブ済みドメイン"
@@ -8135,9 +8226,6 @@ msgstr "修理する権利"
 
 msgid "separate multiple addresses with commas"
 msgstr "複数のアドレスはカンマで区切ってください"
-
-msgid "set up usage-based billing"
-msgstr "使用量に応じた請求を設定"
 
 msgid "show hidden stories"
 msgstr "非表示の記事を表示"

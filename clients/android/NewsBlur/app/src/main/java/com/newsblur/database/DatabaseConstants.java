@@ -52,7 +52,8 @@ public class DatabaseConstants {
     public static final String FEED_NOTIFICATION_TYPES = "notification_types";
     public static final String FEED_NOTIFICATION_FILTER = "notification_filter";
     public static final String FEED_FETCH_PENDING = "fetch_pending";
-    // Feed.java stories_last_month drives the AI classifier cost estimates, added in BlurDatabase.java version 12.
+    // BlurDatabase.java version 12 added stories_last_month for the trainer's AI cost estimates. Those are
+    // gone and nothing fills it now, but the column stays so existing databases need no migration.
     public static final String FEED_STORIES_LAST_MONTH = "stories_last_month";
 
 	public static final String SOCIALFEED_TABLE = "social_feeds";
