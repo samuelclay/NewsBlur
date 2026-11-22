@@ -361,6 +361,13 @@
     margin: 4px 0 0;
 }
 
+/* The modal button style floats left; at the top of the section it sits on its own line. */
+.NB-ai-credits-billing .NB-preference-options .NB-ai-credits-setup {
+    float: none;
+    display: table;
+    margin: 0 0 12px;
+}
+
 .NB-ai-credits-billing-actions {
     display: flex;
     align-items: center;

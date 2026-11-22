@@ -352,7 +352,10 @@ NEWSBLUR.AICredits = {
                 $.make('div', { className: 'NB-ai-credits-cancel-status', role: 'status' })
             ]);
         } else {
+            // The button leads the section: a reader who arrives from the trainer or the notice
+            // came to set it up. A monthly limit typed below it is still saved first.
             $options = $.make('div', { className: 'NB-preference-options' }, [
+                $.make('a', { href: '#', className: 'NB-ai-credits-setup NB-modal-submit-button NB-modal-submit-green' }, gettext("Set up usage billing")),
                 $.make('div', { className: 'NB-ai-credits-line' },
                     gettext("Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 credits.")),
                 $.make('ul', { className: 'NB-ai-credits-terms' }, [
@@ -362,8 +365,7 @@ NEWSBLUR.AICredits = {
                     $.make('li', gettext("Set a monthly limit, or turn usage billing off any time."))
                 ]),
                 (cost_line && $.make('div', { className: 'NB-ai-credits-line NB-ai-credits-forecast-cost' }).text(cost_line)),
-                this.make_limit_field(state),
-                $.make('a', { href: '#', className: 'NB-ai-credits-setup NB-modal-submit-button NB-modal-submit-green' }, gettext("Set up usage billing"))
+                this.make_limit_field(state)
             ]);
         }
         return $.make('div', { className: 'NB-preference NB-ai-credits-billing' }, [
