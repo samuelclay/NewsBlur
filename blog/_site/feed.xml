@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-11-21T14:18:27-05:00</updated>
+  <updated>2026-11-22T15:09:28-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,82 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Everything moves into place</title>
+    <link href="https://blog.newsblur.com/2026/11/22/newsblur-17-motion/" rel="alternate" type="text/html" title="Everything moves into place" />
+    <published>2026-11-22T15:08:54-05:00</published>
+    <updated>2026-11-22T15:08:54-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/22/newsblur-17-motion</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/22/newsblur-17-motion/">
+      <![CDATA[<p>NewsBlur 17 is out for iPhone, iPad, Mac, and Android, and the same work is live on the web. Feeds, folders, and stories now move into place as they load, in the order you read them.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/motion-folder-and-story.webp" aria-label="Tapping the Cooking folder: the screen slides over and the folder&#39;s stories fade in from the top, one row after the next. Then tapping the first story: its site, title, byline, tags, photo, and story buttons arrive in order">
+        <source src="/assets/motion-folder-and-story.mp4" type="video/mp4" />
+        <img src="/assets/motion-folder-and-story.webp" alt="Tapping the Cooking folder: the screen slides over and the folder&#39;s stories fade in from the top, one row after the next. Then tapping the first story: its site, title, byline, tags, photo, and story buttons arrive in order" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="one-row-after-the-next">One row after the next</h3>
+
+<p>Open a folder and its stories come in from the top, one after the next. Open a story and its site, title, byline, tags, and text arrive in order, followed by the story buttons. The list you’re leaving fades out as it looked, and menus, dialogs, and theme changes get the same treatment.</p>
+
+<p>It stays out of your way. Each row fades in quickly, scrolling finishes anything still animating, and things already on screen don’t move again.</p>
+
+<h3 id="reduce-motion">Reduce motion</h3>
+
+<p>If you’d rather have less of it, turn on <strong>Reduce motion</strong> under Appearance in Preferences, on the web, iOS, Mac, and Android. Nothing slides, but things still fade in. NewsBlur also follows your device’s own Reduce Motion setting.</p>
+
+<p><img src="/assets/reduce-motion.webp" alt="The Reduce motion setting under Appearance in Preferences on the web, on iOS, and on Android, each described as Keep fades, without movement" style="width: 90%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-new-frame-for-the-mac">A new frame for the Mac</h3>
+
+<p>The Mac app now has one translucent sidebar and toolbar around a rounded reading area, and new windows open with all three panes.</p>
+
+<p><img src="/assets/mac-17-reader-frame.webp" alt="The NewsBlur Mac app with a translucent sidebar and toolbar around the story list and the reader, showing the Cooking folder" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-few-fixes">A few fixes</h3>
+
+<ul>
+  <li>On iPhone, marking stories older than a number of days now updates the list on screen.</li>
+  <li>On iPad, the Ask AI and sharing composers stay above the keyboard in landscape.</li>
+  <li>On iPhone and Android phones, the Grid and List switch in Discover sits next to search, so the category tags get the whole row.</li>
+  <li>On iOS, stories load more smoothly in the Gray theme.</li>
+  <li>On Android, read titles are lighter so they’re easier to tell apart from unread ones, and article headlines wrap in balanced lines.</li>
+  <li>On Android, stories that arrive after you mark a folder as read no longer show up already read.</li>
+  <li>On Android tablets, settings dialogs keep what you’d chosen when you rotate the screen.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>NewsBlur 17 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> and <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. If something moves in a way that bothers you, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    <category term="macos" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur 17 is out for iPhone, iPad, Mac, and Android, and the same work is live on the web. Feeds, folders, and stories now move into place as they load, in the order you read them.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Reddit feeds are back on NewsBlur</title>
@@ -2108,81 +2184,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Story clustering: automatically group duplicate stories across your feeds</title>
-    <link href="https://blog.newsblur.com/2026/03/18/story-clustering/" rel="alternate" type="text/html" title="Story clustering: automatically group duplicate stories across your feeds" />
-    <published>2026-03-18T00:00:00-04:00</published>
-    <updated>2026-03-18T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/18/story-clustering</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/18/story-clustering/">
-      <![CDATA[<p>If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.</p>
-
-<p>Story clustering solves this. When NewsBlur detects that multiple feeds are covering the same story, it groups them together and shows you the highest-scoring version. The duplicates don’t disappear – they fold neatly underneath, so you can still see who else reported it and jump to their version if you want a different perspective.</p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>In the story titles list, clustered stories show their sources directly below the representative story. Each source shows the feed’s favicon, feed name, story title, and how long ago it was published. Click any source to read that version instead.</p>
-
-<!-- SCREENSHOT: Story titles view showing a clustered story with 2-3 sources listed underneath it -->
-<p><img src="/assets/story-clustering-titles.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>When you open a clustered story, the detail view shows rich cards for each alternative source at the bottom. These cards include the feed icon, story title, a content preview, the article’s thumbnail image, author, and date. Click any card to jump to that version of the story.</p>
-
-<!-- SCREENSHOT: Story detail view showing the cluster cards section at the bottom with "Also reported by N sources" header and rich cards -->
-<p><img src="/assets/story-clustering-detail.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="two-layers-of-detection">Two layers of detection</h3>
-
-<p>Clustering uses two complementary approaches to catch duplicates:</p>
-
-<p><strong>Title matching</strong> is the fast, obvious check. NewsBlur normalizes story titles (lowercasing, stripping punctuation) and groups exact matches. But it also does fuzzy matching using significant-word overlap – so “Apple Announces New iPhone” and “Apple Reveals the New iPhone at WWDC” will still cluster together, even though the titles aren’t identical.</p>
-
-<p><strong>Semantic matching</strong> goes deeper. NewsBlur sends each story’s title to Elasticsearch’s more_like_this query, searching across all your subscribed feeds for articles covering the same topic. This catches stories that are about the same event but written with completely different headlines. The two layers are merged, so title matches and semantic matches combine into a single cluster.</p>
-
-<p>Clustering runs automatically in the background every time a feed updates. Results are cached for 14 days, so clusters are ready instantly when you load your river.</p>
-
-<h3 id="mark-duplicates-as-read">Mark duplicates as read</h3>
-
-<p>When you read a clustered story, you can optionally have NewsBlur mark all the duplicates as read too. This is off by default – enable it in the feed options popover under “Story Clustering” or in Manage &gt; Preferences &gt; Stories.</p>
-
-<!-- SCREENSHOT: Feed options popover showing the Story Clustering section with the "Cluster related stories" / "Keep stories separate" toggle and the mark-read option -->
-<p><img src="/assets/story-clustering-popover.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>There are two controls:</p>
-
-<ul>
-  <li><strong>Cluster related stories / Keep stories separate</strong> – Toggles clustering on or off. When enabled, duplicate stories are grouped in your river view. When disabled, every story appears individually as before.</li>
-  <li><strong>Mark all as read / Keep others unread</strong> – When you read the representative story, this controls whether the other stories in the cluster are automatically marked as read.</li>
-</ul>
-
-<p>The same options are available in the global Preferences dialog under the Stories tab.</p>
-
-<!-- SCREENSHOT: Preferences modal, Stories tab, showing the story clustering radio buttons and mark-read checkbox -->
-<p><img src="/assets/story-clustering-preferences.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="availability">Availability</h3>
-
-<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed. Clustering is now enabled by default for all users, and can be toggled off or back on in your account Preferences.</p>
-
-<p><strong>Premium Archive subscribers</strong> get full control over clustering: choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story.</p>
-
-<p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with...]]>
     </summary>
     
   </entry>

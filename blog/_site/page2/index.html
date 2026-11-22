@@ -85,6 +85,84 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Oct 11, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/10/11/new-first-time-experience-ios-android/">
+              A new first-time experience on iOS and Android: find your first feeds
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.</p>
+
+<p>I’ve rebuilt the first-time experience on iOS and Android around exploring interests, previewing feeds, and choosing what goes into your reader. You can put together a few folders of things you care about, or bring your existing collection from another app with an OPML import.</p>
+
+<h3 id="explore-your-interests-on-ios">Explore your interests on iOS</h3>
+
+<p>After creating your account, the iPhone and iPad apps open a setup screen with <strong>Explore interests</strong>. Browse categories such as science, books, cooking, and technology, or search for a topic. <strong>A little of everything</strong> gives you a starting point if you’d rather sample a mix.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/ios-ftux-interests.png" alt="The iOS first-time setup screen with OPML import and interest-based feed bundles" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>Each category opens a bundle of feeds. You can see what the sites actually publish through recent story previews, rather than choosing from names alone. Deselect feeds you don’t want, give the folder a name, and add the ones you like.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/ios-ftux-bundle.png" alt="The Science bundle on iOS showing a folder name, feed details, and recent story previews" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>You can keep exploring and add another bundle before heading into the reader. The idea is to make those first subscriptions your own, with enough context to decide whether a feed belongs in your daily reading.</p>
+
+<h3 id="build-your-first-folders-on-android">Build your first folders on Android</h3>
+
+<p>Android gets the same interest-based setup. Browse or search the catalog, open a bundle, and look through its feeds before subscribing. The import option is right at the top if you’re coming from another reader.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-ftux-interests.png" alt="Android&#39;s first-time setup with OPML import and a catalog of interest bundles" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>Feed cards show recent stories, how often a site publishes, and when it last updated. Choose the feeds you want and name the folder they’ll go into. A science folder, a cooking folder, and a handful of personal blogs can give you plenty to read without having to assemble every subscription one at a time.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-ftux-bundle.png" alt="The Science bundle on Android with a folder name, feed details, and story previews" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>The final setup step shows what you’ve added. Tap <strong>Start reading</strong> to head into your reader with your folders ready.</p>
+
+<h3 id="bring-your-feeds-or-come-back-for-more">Bring your feeds, or come back for more</h3>
+
+<p>On both platforms, <strong>Import OPML</strong> brings your feeds and folders from another reader. Export an OPML file from your old app, save it somewhere your phone can access, and select it during setup.</p>
+
+<p>You don’t need a new account to use the bundles. Existing readers can open <strong>Import or upload sites</strong> from the iOS menu or <strong>Import and feed bundles</strong> from the Android menu. It’s a way to explore a new interest whenever you want to add something to your reading.</p>
+
+<p>The new setup experience is coming in the next iOS and Android updates, alongside <a href="/2026/10/11/sign-in-with-apple-and-google/">Sign in with Apple and Google</a>. I’d love to hear how the first few minutes feel, whether you’re starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Oct 3, 2026</span>
           <h3>
             <a class="post-link" href="/2026/10/03/newsblur-15-for-ios/">
@@ -711,175 +789,6 @@
 <p>Natural language text and image classifiers are available now on the web for Premium subscribers with usage-based billing enabled. Enable it from <strong>Manage &gt; Account</strong> to get started.</p>
 
 <p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Apr 1, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/04/01/mcp-server-and-cli/">
-              The NewsBlur CLI Tool, AI Skill, and MCP Server
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>NewsBlur has always had an API. Every feature in the web app, the iOS app, and the Android app runs through it. But APIs are for developers. Today I’m shipping three new ways to interact with your NewsBlur: a command-line tool that puts your entire NewsBlur in your terminal, an AI skill that teaches your agent every CLI command without eating your context window, and an MCP server that connects any MCP-compatible agent directly to your account.</p>
-
-<h3 id="quickstart">Quickstart</h3>
-
-<p><strong>CLI tool</strong> — install and log in:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uv pip <span class="nb">install </span>newsblur-cli
-newsblur auth login
-</code></pre></div></div>
-
-<p><strong>AI skill</strong> — install into Claude Code, Cursor, Windsurf, or any Skills-compatible tool:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx skills add samuelclay/newsblur-cli-skill
-</code></pre></div></div>
-
-<p><strong>MCP server</strong> — connect from Claude Code, Claude Desktop, Codex, or any MCP client:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http newsblur https://newsblur.com/mcp/
-</code></pre></div></div>
-
-<p>All three require a <a href="https://newsblur.com/?next=premium">Premium Archive</a> or Premium Pro subscription. On first use, a browser window opens for OAuth authorization. Your token is stored locally and you can revoke access at any time.</p>
-
-<hr />
-
-<h3 id="cli-tool">CLI tool</h3>
-
-<p>Everything you do in NewsBlur, from your terminal. Full documentation is on the <a href="https://newsblur.com/features/cli">CLI feature page</a>.</p>
-
-<p><strong>Read stories</strong> from feeds, folders, or everything at once:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur stories list                          <span class="c"># unread stories</span>
-newsblur stories list <span class="nt">--folder</span> Tech <span class="nt">--limit</span> 5  <span class="c"># filter by folder</span>
-newsblur stories search <span class="s2">"machine learning"</span>     <span class="c"># full-text search</span>
-newsblur stories saved <span class="nt">--tag</span> research          <span class="c"># saved stories by tag</span>
-newsblur stories infrequent                    <span class="c"># rarely-publishing feeds</span>
-newsblur stories original 123:abc456           <span class="c"># fetch full article text</span>
-</code></pre></div></div>
-
-<p><strong>Get your daily briefing</strong> with AI-curated summaries:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur briefing                              <span class="c"># today's briefing</span>
-newsblur briefing <span class="nt">--limit</span> 1                    <span class="c"># just the latest</span>
-newsblur briefing <span class="nt">--json</span>                       <span class="c"># structured output</span>
-</code></pre></div></div>
-
-<p><strong>Manage feeds and folders:</strong></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur feeds list                            <span class="c"># all subscriptions</span>
-newsblur feeds folders                         <span class="c"># folder tree with counts</span>
-newsblur feeds add https://example.com         <span class="c"># subscribe</span>
-newsblur feeds add https://blog.com <span class="nt">-f</span> Tech    <span class="c"># subscribe into a folder</span>
-newsblur feeds remove 42                       <span class="c"># unsubscribe</span>
-newsblur feeds organize move_feed <span class="nt">--feed-id</span> 42 <span class="nt">--from</span> News <span class="nt">--to</span> Tech
-</code></pre></div></div>
-
-<p><strong>Take actions on stories:</strong></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur save 123:abc <span class="nt">--tag</span> ai <span class="nt">--tag</span> research  <span class="c"># save with tags</span>
-newsblur unsave 123:abc                        <span class="c"># remove from saved</span>
-newsblur <span class="nb">read</span> <span class="nt">--feed</span> 42                        <span class="c"># mark feed as read</span>
-newsblur share 123:abc <span class="nt">--comment</span> <span class="s2">"Worth reading"</span>
-</code></pre></div></div>
-
-<p><strong>Train your intelligence classifiers:</strong></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur train show <span class="nt">--feed</span> 42                  <span class="c"># view current training</span>
-newsblur train like <span class="nt">--feed</span> 42 <span class="nt">--author</span> <span class="s2">"Name"</span>  <span class="c"># train a like</span>
-newsblur train dislike <span class="nt">--feed</span> 42 <span class="nt">--tag</span> sponsor <span class="c"># train a dislike</span>
-</code></pre></div></div>
-
-<p><strong>Discover new feeds:</strong></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur discover search <span class="s2">"machine learning"</span>    <span class="c"># search by topic</span>
-newsblur discover similar <span class="nt">--feed</span> 42            <span class="c"># find similar feeds</span>
-newsblur discover trending                     <span class="c"># trending feeds</span>
-</code></pre></div></div>
-
-<p>Every command supports <code class="language-plaintext highlighter-rouge">--json</code> for structured output you can pipe to jq or use in scripts, and <code class="language-plaintext highlighter-rouge">--raw</code> for unformatted text. There’s also a global <code class="language-plaintext highlighter-rouge">--server</code> flag for self-hosted NewsBlur instances:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur <span class="nt">--server</span> https://my-newsblur.example.com auth login
-newsblur briefing <span class="nt">--json</span> | jq <span class="s1">'.items[0].section_summaries'</span>
-</code></pre></div></div>
-
-<p><img src="/assets/mcp-cli.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="ai-skill">AI skill</h3>
-
-<p>The CLI is great on its own, but it’s even better when your AI agent knows every command. The NewsBlur CLI skill teaches your agent the full command reference: every subcommand, every flag, every output format. Install it with one command and your agent can read feeds, search stories, train classifiers, and manage subscriptions on your behalf.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx skills add samuelclay/newsblur-cli-skill
-</code></pre></div></div>
-
-<p>The <code class="language-plaintext highlighter-rouge">npx skills add</code> command works with any tool that supports the Skills standard: Claude Code, Cursor, Windsurf, and dozens more.</p>
-
-<p><img src="/assets/mcp-skill-top.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;" />
-<img src="/assets/mcp-skill-output.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto 24px;display: block;" /></p>
-
-<p>The skill has a major advantage over the MCP server for agents that support it: context efficiency. The MCP server returns raw JSON that lands in your agent’s context window. Ask for your saved ESP32 stories and you’ll burn through nearly 40,000 tokens on a single response. The skill runs the CLI instead, which returns clean, formatted text. Same query, same results, about a third of the tokens. In testing, the MCP server used 39,553 tokens for a saved stories query. The same query through the skill used 11,735.</p>
-
-<p>If your tool supports skills, use the skill. If it only supports MCP, use the MCP server. If you just want to script your NewsBlur from the terminal, use the CLI directly.</p>
-
-<h3 id="mcp-server">MCP server</h3>
-
-<p>MCP (Model Context Protocol) is an open standard that lets AI agents connect to external tools and data. With the NewsBlur MCP server, Claude, Codex, Cursor, Windsurf, and any other MCP-compatible agent can read your feeds, manage your stories, train your classifiers, and organize your subscriptions.</p>
-
-<p><img src="/assets/mcp-stories-query.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;" />
-<img src="/assets/mcp-stories-output.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 0 auto 24px;display: block;" /></p>
-
-<p>The server exposes 22 tools that cover everything you do in NewsBlur:</p>
-
-<p><strong>Reading</strong> — List feeds and folders with unread counts. Load stories from any feed, folder, or all subscriptions at once. Filter by unread, focus, or starred. Search across your entire archive with full-text search. Pull the original article text from the source. Get your AI daily briefing. Browse stories from your rarely-publishing infrequent feeds.</p>
-
-<p><strong>Actions</strong> — Mark stories as read by hash, by feed, or by folder. Save stories with tags, notes, and highlights. Subscribe and unsubscribe. Move feeds between folders. Rename feeds and folders. Share stories to your Blurblog.</p>
-
-<p><strong>Intelligence</strong> — View your trained classifiers across all feeds. Train new likes and dislikes by author, tag, title, or text content. The full range of training levels is available, including the new super dislike that overrides all other positive scores.</p>
-
-<p><strong>Discovery</strong> — Search for new feeds by topic. Find feeds similar to ones you already follow. Browse trending feeds.</p>
-
-<p>For Claude Code:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http newsblur https://newsblur.com/mcp/
-</code></pre></div></div>
-
-<p>For Claude Desktop, add this to your <code class="language-plaintext highlighter-rouge">claude_desktop_config.json</code>:</p>
-
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"newsblur"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://newsblur.com/mcp/"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<p>Codex, Cursor, and Windsurf each have their own config format. Setup instructions for all of them are on the <a href="https://newsblur.com/features/mcp">MCP Server feature page</a>.</p>
-
-<h3 id="readonly-mode">Readonly mode</h3>
-
-<p>Giving an AI agent access to your NewsBlur is powerful, but maybe you want to start with guardrails. The CLI has a readonly mode that blocks all write operations: no saving, no sharing, no training, no subscribing, no marking as read. Your agent can read your feeds and search your stories, but it cannot change anything.</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur auth <span class="nb">readonly</span> <span class="nt">--on</span>
-</code></pre></div></div>
-
-<p>With readonly on, any write command returns an error instead of executing. The agent sees your data but cannot touch it.</p>
-
-<p>The important part is what happens when you turn it off. Disabling readonly mode logs you out and requires you to re-authenticate in the browser:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>newsblur auth <span class="nb">readonly</span> <span class="nt">--off</span>
-<span class="c"># "You have been logged out and must re-authenticate."</span>
-newsblur auth login
-</code></pre></div></div>
-
-<p>This is deliberate. An AI agent cannot silently toggle readonly off and start making changes. Only a human sitting at a browser can re-authorize write access. If you hand the CLI to an agent and want to be sure it stays read-only, it will.</p>
-
-<h3 id="availability">Availability</h3>
-
-<p>The CLI, AI skill, and MCP server are available now for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. See the <a href="https://newsblur.com/features/mcp">MCP Server</a> and <a href="https://newsblur.com/features/cli">CLI Tool</a> feature pages for full documentation.</p>
-
-<p>If you have ideas for new tools, workflows, or improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
       </li></ul>
