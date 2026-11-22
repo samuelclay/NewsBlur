@@ -1,6 +1,8 @@
 package com.newsblur.domain
 
 import com.google.gson.Gson
+import com.newsblur.fragment.AiFilterAccess
+import com.newsblur.fragment.AiPromptDraft
 import com.newsblur.fragment.TrainerPhrase
 import com.newsblur.fragment.TrainerScores
 import com.newsblur.fragment.TrainerScores.TapStyle
@@ -246,6 +248,18 @@ class Test_TrainerSaveParams {
             listOf("dislike_prompt=Non-apple+related+news", "remove_dislike_prompt=Sports", "remove_like_prompt=Crypto"),
             fieldsOf(prompts),
         )
+    }
+
+    @Test
+    fun test_each_typed_prompt_saves_as_the_kind_its_mode_was_when_typed() {
+        val classifier = Gson().fromJson("{}", Classifier::class.java)
+        val original = classifier.snapshot()
+        // fragment/AiClassifierSections.kt: one prompt box, whose Text | Images switch decides the kind.
+        AiFilterAccess.addDraft(classifier, AiPromptDraft("Sunsets", hidden = false, imagePrompt = true), ClassifierScope.FEED_SCOPE)
+        AiFilterAccess.addDraft(classifier, AiPromptDraft("Crypto", hidden = true, imagePrompt = false), ClassifierScope.FEED_SCOPE)
+        classifier.recordChanges(original)
+
+        assertEquals(listOf("dislike_prompt=Crypto", "like_image_prompt=Sunsets"), fieldsOf(classifier))
     }
 
     /** The feed save's fields for changes already recorded, sorted, since ValueMultimap.java keeps no order. */

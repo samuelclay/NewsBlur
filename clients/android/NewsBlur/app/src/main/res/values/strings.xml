@@ -1502,14 +1502,13 @@ people together to talk about the world.</string>
     <string name="ai_filter_image_label">Image Filter</string>
     <!-- ReadingItemFragment.kt: %1$s is Content Filter or Image Filter, %2$s is the reader's own prompt. -->
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <!-- AiClassifierSections.kt: the trainer's natural language classifier sections, from media/js/newsblur/reader/reader_classifier.js. -->
-    <string name="ai_text_classifier_header">Natural Language Text Classifier</string>
-    <string name="ai_image_classifier_header">Natural Language Image Classifier</string>
-    <string name="ai_text_classifier_explainer">Describe a topic and AI will score each story against your prompt to focus or hide matches.</string>
-    <string name="ai_image_classifier_explainer">Describe what to look for and AI will analyze each story’s images against your prompt.</string>
+    <!-- AiClassifierSections.kt: the trainer's AI filter card, from media/js/newsblur/reader/reader_classifier.js. -->
+    <string name="ai_filters_title">AI filters</string>
+    <!-- AiClassifierSections.kt: the card's switch between a filter that reads a story's text and one that looks at its images. -->
+    <string name="ai_filter_mode_text">Text</string>
+    <string name="ai_filter_mode_images">Images</string>
     <string name="ai_text_prompt_hint">e.g., “AI and machine learning” or “local politics”</string>
     <string name="ai_image_prompt_hint">e.g., “food photography” or “charts and graphs”</string>
-    <string name="ai_prompt_placeholder">Describe what to focus or hide</string>
     <string name="ai_prompt_type_content">Content</string>
     <string name="ai_prompt_type_image">Image</string>
     <string name="ai_prompt_focus">Focus stories that match</string>

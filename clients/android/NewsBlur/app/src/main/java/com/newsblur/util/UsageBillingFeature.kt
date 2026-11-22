@@ -12,7 +12,7 @@ import com.newsblur.network.domain.AiCredits
  * - activity/AiCreditsActivity.kt shows the credit meter and forecast, but no Set up, Update card
  *   or Turn off button, and a reader who turned usage billing on elsewhere sees it on, with this month's
  *   charges and the monthly limit as read-only text and invoices without links,
- * - the trainer's AI sections (fragment/AiClassifierSections.kt) show every credit state's
+ * - the trainer's AI filter card (fragment/AiClassifierSections.kt) shows every credit state's
  *   statement, with no action that leads to Stripe and no cost of usage billing,
  * - AiCreditsActivity.kt never starts a Stripe session, from a button, the trainer or its
  *   <socialCallbackScheme>://usage-billing deep link.

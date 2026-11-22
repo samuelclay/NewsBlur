@@ -9,9 +9,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 // Test_AiFilterAccess.kt: AI filters run on a paid plan's monthly AI credits. The trainer's AI
-// sections (AiClassifierSections.kt) only tell a free account about plans once it has a filter
-// saved or typed, always show a paid account its credits, show nothing on a server that counts
-// none, and test a prompt the same way on every account.
+// filter card (AiClassifierSections.kt) only tells a free account about plans once it has a
+// filter saved or typed, always shows a paid account its credits, shows nothing on a server that
+// counts none, and tests a prompt the same way on every account.
 class Test_AiFilterAccess {
     private val free = AiCredits(included = 0, isPaused = true, pauseReason = "plan")
     private val premium = AiCredits(included = 1_000, used = 200.0)
@@ -72,16 +72,9 @@ class Test_AiFilterAccess {
     }
 
     @Test
-    fun test_the_account_s_meter_and_notice_show_once_but_each_section_keeps_its_estimate() {
-        val paused = premium.copy(used = 1_000.0, isPaused = true, pauseReason = "credits")
-
-        assertTrue(status(credits = paused, imagePrompt = false).showsCreditsSummary)
-        val image = status(credits = paused, imagePrompt = true, imageCount = 1)
-        assertFalse("The image section doesn't repeat the pause", image.showsCreditsSummary)
-        assertEquals("but still has its credit box for its own estimate", AiCreditsStage.PAUSED_CREDITS, image.creditsStage)
-        assertTrue(
-            "A free account hears about plans in whichever section has a filter",
-            status(typedPrompt = "Charts", imagePrompt = true, imageCount = 1).showsCreditsSummary,
-        )
+    fun test_images_mode_tests_only_a_story_with_images() {
+        assertTrue(status(typedPrompt = "Charts", imagePrompt = true, imageCount = 1).showsTestButton)
+        assertFalse(status(typedPrompt = "Charts", imagePrompt = true, imageCount = 0).showsTestButton)
+        assertTrue("Text mode tests any story", status(typedPrompt = "Charts", imagePrompt = false, imageCount = 0).showsTestButton)
     }
 }

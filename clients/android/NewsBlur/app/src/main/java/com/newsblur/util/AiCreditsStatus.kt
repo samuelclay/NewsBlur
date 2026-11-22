@@ -40,7 +40,7 @@ enum class AiCreditsAction {
     // The Premium upgrade screen, through Google Play.
     UPGRADE,
 
-    // AiCreditsActivity.kt, straight into Stripe Checkout.
+    // AiCreditsActivity.kt's usage billing card, with its cost and Set up button.
     SET_UP_BILLING,
 
     // AiCreditsActivity.kt's usage billing section: the card on Stripe, the monthly limit, turning it off.
@@ -51,7 +51,7 @@ enum class AiCreditsAction {
 }
 
 /**
- * AiCreditsStatus.kt: reads apps/analyzer/ai_credits.py state() into what the trainer's AI sections
+ * AiCreditsStatus.kt: reads apps/analyzer/ai_credits.py state() into what the trainer's AI filter card
  * (fragment/AiClassifierSections.kt), the AI credits screen (activity/AiCreditsActivity.kt) and the
  * Premium screen show, so every screen agrees on the state and its wording stays in one place.
  */

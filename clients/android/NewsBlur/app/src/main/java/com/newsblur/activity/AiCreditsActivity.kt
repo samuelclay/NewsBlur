@@ -56,7 +56,7 @@ import kotlin.math.roundToInt
  * usage_billing_app_return). util/UsageBillingFeature.kt holds every Stripe path for this release.
  *
  * The trainer (fragment/AiClassifierSections.kt) opens this screen with an [AiCreditsAction] to go
- * straight on to Stripe Checkout, the billing portal or the monthly limit.
+ * straight to the usage billing card or the monthly limit.
  */
 @AndroidEntryPoint
 class AiCreditsActivity : NbActivity() {
@@ -196,9 +196,10 @@ class AiCreditsActivity : NbActivity() {
         val action = pendingAction ?: return
         pendingAction = null
         when (action) {
-            AiCreditsAction.SET_UP_BILLING ->
-                if (UsageBillingFeature.action(credits) == UsageBillingAction.SET_UP) startStripeSession(setup = true)
-            AiCreditsAction.MANAGE_BILLING -> binding.container.post { binding.container.smoothScrollTo(0, binding.billingCard.top) }
+            // The trainer's compact state line leaves out what usage billing costs, so both land on
+            // the usage billing card, which says it next to its button.
+            AiCreditsAction.SET_UP_BILLING, AiCreditsAction.MANAGE_BILLING ->
+                binding.container.post { binding.container.smoothScrollTo(0, binding.billingCard.top) }
             AiCreditsAction.CHANGE_LIMIT -> if (binding.limitSection.isVisible) focusLimit()
             AiCreditsAction.UPGRADE -> UIUtils.startSubscriptionActivity(this)
         }

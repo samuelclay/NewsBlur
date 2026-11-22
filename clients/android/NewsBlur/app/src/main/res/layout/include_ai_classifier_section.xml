@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- include_ai_classifier_section.xml: a Natural Language Text or Image Classifier section of the trainer, a header
-     above a card like clients/ios/Classes/TrainerAIPromptSection.swift. fragment/AiClassifierSections.kt fills it
-     in the way media/js/newsblur/reader/reader_classifier.js builds it, and fragment/IntelTrainerSections.kt sizes
-     the header and card like the other trainer sections.
+<!-- include_ai_classifier_section.xml: the trainer's one AI filter card, a header with a Text | Images switch above a card
+     like the trainer's other sections. fragment/AiClassifierSections.kt fills it the way media/js/newsblur/reader/reader_classifier.js
+     builds its AI filter card, and fragment/IntelTrainerSections.kt sizes the header and card like the other sections.
 
-     The section is inflated twice, for text and for images, so both copies share every id here. A view that saves
-     state would have the image copy's state restored into both when the activity is recreated (process death, a
-     theme, locale or font size change), putting the image prompt's draft into the text box. Every view with an id
-     that isn't a plain layout or image sets saveEnabled false, and the sheet rebuilds itself from the database. -->
+     The Text | Images switch isn't saved with the activity, so a restored draft would come back in Text mode: an image prompt's
+     draft would turn into a text prompt. Every view with an id that isn't a plain layout or image sets saveEnabled false, and the
+     sheet rebuilds itself from the database. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ai_section_root"
@@ -35,7 +33,42 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:saveEnabled="false"
+            android:text="@string/ai_filters_title"
             android:textSize="17sp" />
+
+        <!-- The Text | Images switch: what the filter being written reads. -->
+        <LinearLayout
+            android:id="@+id/ai_mode_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/ai_mode_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minHeight="32dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:saveEnabled="false"
+                android:text="@string/ai_filter_mode_text"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/ai_mode_images"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:minHeight="32dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:saveEnabled="false"
+                android:text="@string/ai_filter_mode_images"
+                android:textSize="13sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -45,19 +78,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/ai_section_explainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:saveEnabled="false"
-            android:textSize="13sp" />
-
+        <!-- Images mode only: the story's images, which carry each image's test result. -->
         <HorizontalScrollView
             android:id="@+id/ai_image_grid_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:saveEnabled="false"
             android:scrollbars="none"
             android:visibility="gone">
@@ -73,7 +99,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -124,23 +149,69 @@
             android:textSize="13sp"
             android:visibility="gone" />
 
-        <!-- The draft prompt's capsule, a view/TrainerCapsuleView.kt that AiClassifierSections.kt adds. -->
+        <!-- The typed prompt's capsule, a view/TrainerCapsuleView.kt that AiClassifierSections.kt adds once there's text. -->
         <FrameLayout
             android:id="@+id/ai_preview_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
 
+        <!-- What a filter of the selected kind uses on this site. -->
+        <TextView
+            android:id="@+id/ai_credits_estimate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:saveEnabled="false"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <!-- A free account with an AI filter: which plans run it, in place of the estimate. -->
+        <LinearLayout
+            android:id="@+id/ai_upgrade_notice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/ai_upgrade_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:saveEnabled="false"
+                android:textSize="13sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ai_upgrade_action"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0"
+                android:paddingHorizontal="14dp"
+                android:saveEnabled="false"
+                android:text="@string/ai_credits_upgrade"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                app:cornerRadius="6dp" />
+
+        </LinearLayout>
+
+        <!-- Every AI filter on this site, text and image together, whichever mode is selected. -->
         <LinearLayout
             android:id="@+id/ai_saved_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
 
-        <!-- The account's AI credits this month (util/AiCreditsStatus.kt): a meter that opens activity/AiCreditsActivity.kt,
-             what a filter on this site spends, and a notice for a free account, low credits, usage billing or a pause. -->
+        <!-- The account's AI credits this month (util/AiCreditsStatus.kt): one line that opens activity/AiCreditsActivity.kt,
+             the bar, and at most one state line. -->
         <LinearLayout
-            android:id="@+id/ai_credits_box"
+            android:id="@+id/ai_credits_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -151,105 +222,58 @@
                 android:id="@+id/ai_credits_meter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="40dp"
                 android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp">
+                android:minHeight="36dp"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/ai_credits_used"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:saveEnabled="false"
+                    android:textSize="13sp" />
 
-                    <TextView
-                        android:id="@+id/ai_credits_used"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:saveEnabled="false"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/ai_credits_resets"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:drawablePadding="2dp"
-                        android:saveEnabled="false"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <com.newsblur.view.AiCreditsBarView
-                    android:id="@+id/ai_credits_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="6dp"
-                    android:layout_marginTop="6dp"
-                    android:saveEnabled="false" />
+                <ImageView
+                    android:id="@+id/ai_credits_chevron"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right" />
 
             </LinearLayout>
 
+            <com.newsblur.view.AiCreditsBarView
+                android:id="@+id/ai_credits_bar"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="2dp"
+                android:saveEnabled="false" />
+
             <TextView
-                android:id="@+id/ai_credits_estimate"
+                android:id="@+id/ai_credits_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:saveEnabled="false"
                 android:textSize="12sp"
                 android:visibility="gone" />
 
-            <LinearLayout
-                android:id="@+id/ai_credits_notice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical"
-                android:padding="12dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/ai_credits_message"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:saveEnabled="false"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/ai_credits_detail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:saveEnabled="false"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/ai_credits_action"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:letterSpacing="0"
-                    android:paddingHorizontal="14dp"
-                    android:saveEnabled="false"
-                    android:textAllCaps="false"
-                    android:textSize="13sp"
-                    android:visibility="gone"
-                    app:cornerRadius="6dp" />
-
-                <TextView
-                    android:id="@+id/ai_credits_secondary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:saveEnabled="false"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
-
-            </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ai_credits_action"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginTop="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0"
+                android:paddingHorizontal="12dp"
+                android:saveEnabled="false"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:cornerRadius="6dp" />
 
         </LinearLayout>
 
