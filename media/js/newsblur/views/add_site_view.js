@@ -4236,7 +4236,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var limit = this.get_stories_limit();
         if (!stories.length || limit === 0) return null;
 
-        var collection = new NEWSBLUR.Collections.Stories(stories.slice(0, limit));
+        var collection = new NEWSBLUR.Collections.Stories(_.map(stories.slice(0, limit), this.safe_card_story));
         // add_site_view.js: these are all the stories the card has, so story_titles_view.js fill_out never
         // tries to page in more.
         collection.no_more_stories = true;
@@ -4259,11 +4259,29 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }, [story_titles_view.render().el]);
     },
 
+    // add_site_view.js: the story row template (story_title_view.js) writes the first image URL into a quoted
+    // CSS url() and links the permalink. Describe's web finds come from sites NewsBlur has never fetched, so a
+    // card keeps only plain http(s) URLs, which can't close those quotes. apps/describe/models.py filters them
+    // too; this keeps any card safe whatever its source.
+    safe_card_story: function (story) {
+        var safe_url = function (url) {
+            return _.isString(url) && /^https?:\/\/[^\s"'()<>\\]+$/i.test(url);
+        };
+        return _.extend({}, story, {
+            image_urls: _.filter(story.image_urls || [], safe_url),
+            story_permalink: safe_url(story.story_permalink) ? story.story_permalink : ''
+        });
+    },
+
     // add_site_view.js: a story row opens its story in the feed: in the feed itself when you subscribe to it,
     // otherwise in Try. NewsBlur story hashes start with their feed's id; a row without one (a site NewsBlur
     // hasn't saved, or a Describe search stored before its stories kept their hashes) does what the card's
     // Try or Open button does.
     open_card_story: function (story, feed, $card) {
+        // add_site_view.js: both clicks of a double click land here; the story opens once.
+        var now = new Date().getTime();
+        if (this.card_story_opened_at && now - this.card_story_opened_at < 600) return;
+        this.card_story_opened_at = now;
         var story_feed_id = story.get('story_feed_id');
         var story_hash = String(story.get('story_hash') || '');
         if (!(story_feed_id > 0) || !_.string.startsWith(story_hash, story_feed_id + ':')) {
@@ -4281,7 +4299,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         NEWSBLUR.reader.load_feed_in_tryfeed_view(story_feed_id, {
             'feed': new NEWSBLUR.Models.Feed(_.extend({}, feed, { id: story_feed_id })),
             'select_story_in_feed': story_hash,
-            'story_title': story.get('story_title')
+            'story_title': story.get('story_title'),
+            'discover_origin': this.get_discover_origin()
         });
     },
 

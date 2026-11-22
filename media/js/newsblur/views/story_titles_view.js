@@ -558,7 +558,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     fill_out: function (options) {
         this.snap_back_scroll_position();
-        if (this.collection.no_more_stories ||
+        // story_titles_view.js: an Add Site preview (add_site_view.js) shows a few stories of a feed the reader
+        // hasn't opened, so it never pages in more of the reader's own.
+        if (this.options.in_add_site_view ||
+            this.collection.no_more_stories ||
             !this.collection.length ||
             NEWSBLUR.reader.flags.story_titles_closed) {
             return;
@@ -847,7 +850,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $story_titles = this.$story_titles;
         var scroll_y = $story_titles.scrollTop();
 
-        if (this.options.on_discover_feed || this.options.on_discover_story) {
+        if (this.options.on_discover_feed || this.options.on_discover_story || this.options.in_add_site_view) {
             return;
         }
 

@@ -1086,6 +1086,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     open_story_in_story_view: function (e) {
         e.preventDefault();
         e.stopPropagation();
+        // story_title_view.js: an Add Site card row (add_site_view.js open_card_story) already opened its story
+        // on the first click of the double click.
+        if (this.options.on_story_click) return false;
         if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story) {
             return this.select_story(e);
         }
