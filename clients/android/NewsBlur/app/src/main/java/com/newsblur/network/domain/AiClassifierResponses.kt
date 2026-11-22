@@ -44,11 +44,11 @@ data class AiCreditsForecast(
 
 /**
  * This month's AI credits, from apps/analyzer/ai_credits.py state(). It comes with user_profile in
- * /reader/feeds and with every AI credit endpoint below. A credit is one US cent of what AI
- * filters cost to run.
+ * /reader/feeds and with every AI credit endpoint below. A credit is about one story through a
+ * text filter; an image story is about 10.
  */
 data class AiCredits(
-    // Credits the plan includes each month: 0 free, 5 Premium, 50 Archive, 500 Pro.
+    // Credits the plan includes each month: 0 free, 1,000 Premium, 10,000 Archive, 100,000 Pro.
     @SerializedName("included")
     val included: Int = 0,
     @SerializedName("used")
@@ -90,8 +90,9 @@ data class AiCredits(
     // 80% of the credits are used, or 80% of the monthly limit.
     @SerializedName("is_warning")
     val isWarning: Boolean = false,
+    // What one credit costs: $0.00001, so a cent buys 1,000.
     @SerializedName("credit_usd")
-    val creditUsd: Double = 0.01,
+    val creditUsd: Double = 0.00001,
     @SerializedName("forecast")
     val forecast: AiCreditsForecast? = null,
 )

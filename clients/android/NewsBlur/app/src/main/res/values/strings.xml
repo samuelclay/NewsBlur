@@ -451,12 +451,12 @@ people together to talk about the world.</string>
     <string name="premium_custom_rss">Custom RSS feeds for saved stories</string>
     <string name="premium_text_view">Text view conveniently extracts the story</string>
     <string name="premium_discover_related">Discover related stories and sites</string>
-    <!-- SubscriptionActivity.kt: Premium's AI filter line. %1$s is the monthly AI credits Premium includes, 5. -->
+    <!-- SubscriptionActivity.kt: Premium's AI filter line. %1$s is the monthly AI credits Premium includes, 1,000. -->
     <plurals name="premium_ai_credits">
         <item quantity="one">AI text and image filters, with %1$s AI credit a month</item>
         <item quantity="other">AI text and image filters, with %1$s AI credits a month</item>
     </plurals>
-    <!-- SubscriptionActivity.kt: Premium Archive's and Premium Pro's AI filter line. %1$s is the monthly AI credits the plan includes, 50 or 500. -->
+    <!-- SubscriptionActivity.kt: Premium Archive's and Premium Pro's AI filter line. %1$s is the monthly AI credits the plan includes, 10,000 or 100,000. -->
     <plurals name="plan_ai_credits">
         <item quantity="one">%1$s AI credit a month for AI filters</item>
         <item quantity="other">%1$s AI credits a month for AI filters</item>
@@ -1541,68 +1541,77 @@ people together to talk about the world.</string>
     <string name="ai_scope_requires_archive">Requires Premium Archive</string>
 
     <!-- util/AiCreditsText.kt: AI credits, which every paid plan includes each month to run AI text and image filters
-         (apps/analyzer/ai_credits.py). A credit is one US cent of what the filters cost to run. Credit amounts show
-         with up to one decimal place, dates as a short month and day such as Dec 1, and dollar amounts such as $0.62. -->
+         (apps/analyzer/ai_credits.py). A credit is about one story through a text filter, and a cent buys 1,000 of them.
+         Credit amounts are whole numbers such as 12,340, dates a short month and day such as Dec 1, and dollar amounts
+         such as $0.62. -->
     <string name="ai_credits_title">AI credits</string>
-    <!-- AiCreditsText.kt: the credit meter. %1$s is the credits used this month, such as 12.3, and %2$s the credits the plan includes, such as 50. The plural follows %2$s. -->
+    <!-- AiCreditsText.kt: the credit meter. %1$s is the credits used this month, such as 7,340, and %2$s the credits the plan includes, such as 10,000. The plural follows %2$s. -->
     <plurals name="ai_credits_meter">
         <item quantity="one">%1$s of %2$s AI credit used</item>
         <item quantity="other">%1$s of %2$s AI credits used</item>
     </plurals>
-    <!-- AiCreditsText.kt: the credit meter once more credits are used than the plan includes. %1$s is the credits used this month, such as 87.4, %2$s how many of those are past the plan's, such as 37.4, and %3$s the credits the plan includes, such as 50. The plural follows %3$s. -->
+    <!-- AiCreditsText.kt: the credit meter once more credits are used than the plan includes. %1$s is the credits used this month, such as 12,340, %2$s how many of those are past the plan's, such as 2,340, and %3$s the credits the plan includes, such as 10,000. The plural follows %3$s. -->
     <plurals name="ai_credits_meter_past">
         <item quantity="one">%1$s AI credits used, %2$s past your plan’s %3$s</item>
         <item quantity="other">%1$s AI credits used, %2$s past your plan’s %3$s</item>
     </plurals>
     <!-- AiCreditsText.kt: beside the credit meter. %1$s is the 1st of next month, such as Dec 1. -->
     <string name="ai_credits_resets">Resets %1$s</string>
-    <!-- AiCreditsText.kt: a free account that has or is typing an AI filter. %1$s, %2$s and %3$s are the monthly credits of Premium, Premium Archive and Premium Pro: 5, 50 and 500. -->
+    <!-- AiCreditsText.kt: a free account that has or is typing an AI filter. %1$s, %2$s and %3$s are the monthly credits of Premium, Premium Archive and Premium Pro: 1,000, 10,000 and 100,000. -->
     <string name="ai_credits_free">AI filters are saved but only run on Premium. Premium includes %1$s AI credits a month, Archive %2$s and Pro %3$s.</string>
     <string name="ai_credits_upgrade">Upgrade</string>
-    <!-- AiCreditsText.kt: %1$s is about how many credits one filter on this site uses a month, such as 0.4, from the stories it published last month. -->
-    <string name="ai_credits_estimate_text">A text filter on this site uses about %1$s credits a month</string>
-    <string name="ai_credits_estimate_image">An image filter on this site uses about %1$s credits a month</string>
-    <!-- AiCreditsText.kt: like ai_credits_estimate_text for a site that uses almost nothing. %1$s is 0.1. -->
-    <string name="ai_credits_estimate_text_small">A text filter on this site uses less than %1$s credits a month</string>
-    <string name="ai_credits_estimate_image_small">An image filter on this site uses less than %1$s credits a month</string>
+    <!-- AiCreditsText.kt: %1$s is about how many credits one filter on this site uses a month, such as 1,400, from the stories it published last month. The plural follows %1$s. -->
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="one">A text filter on this site uses about %1$s credit a month</item>
+        <item quantity="other">A text filter on this site uses about %1$s credits a month</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="one">An image filter on this site uses about %1$s credit a month</item>
+        <item quantity="other">An image filter on this site uses about %1$s credits a month</item>
+    </plurals>
+    <!-- AiCreditsText.kt: like ai_credits_text_estimate for a site that published almost nothing last month. -->
+    <string name="ai_credits_text_estimate_under_one">A text filter on this site uses less than one credit a month</string>
+    <string name="ai_credits_image_estimate_under_one">An image filter on this site uses less than one credit a month</string>
     <!-- AiCreditsText.kt: most of the month's credits are used. %1$s is the day they run out at the last week's pace, such as Nov 27. -->
     <string name="ai_credits_runs_out">At this pace your credits run out around %1$s.</string>
-    <!-- AiCreditsText.kt: %1$s is the 1st of next month, such as Dec 1, and %2$s the credits the plan includes, such as 50. The plural follows %2$s. -->
+    <!-- AiCreditsText.kt: %1$s is the 1st of next month, such as Dec 1, and %2$s the credits the plan includes, such as 10,000. The plural follows %2$s. -->
     <plurals name="ai_credits_paused">
         <item quantity="one">Your AI filters are paused until %1$s. This month’s %2$s AI credit is used.</item>
         <item quantity="other">Your AI filters are paused until %1$s. This month’s %2$s AI credits are used.</item>
     </plurals>
     <!-- AiCreditsText.kt: %1$s is the reader's monthly limit, such as $5.00, and %2$s the 1st of next month, such as Dec 1. -->
     <string name="ai_credits_paused_limit">Your AI filters reached your %1$s monthly limit and are paused until %2$s.</string>
-    <!-- AiCreditsText.kt: %1$s is the credits the plan includes, such as 50, and %2$s what credits past them cost so far this month, such as $0.37. The plural follows %1$s. -->
-    <plurals name="ai_credits_billing_on">
-        <item quantity="one">Usage billing is on. Credits past your %1$s cost 1¢ each: %2$s so far this month.</item>
-        <item quantity="other">Usage billing is on. Credits past your %1$s cost 1¢ each: %2$s so far this month.</item>
+    <!-- AiCreditsText.kt: %1$s is the credits the plan includes, such as 10,000, %2$s how many credits a cent buys, 1,000, and %3$s what credits past the plan's cost so far this month, such as $0.37. The plural follows %1$s. -->
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="one">Usage billing is on. Credits past your %1$s cost 1¢ per %2$s: %3$s so far this month.</item>
+        <item quantity="other">Usage billing is on. Credits past your %1$s cost 1¢ per %2$s: %3$s so far this month.</item>
     </plurals>
-    <!-- AiCreditsText.kt: usage billing on a plan without credits. %1$s is what credits cost so far this month, such as $0.37. -->
-    <string name="ai_credits_billing_on_no_plan">Usage billing is on. AI credits cost 1¢ each: %1$s so far this month.</string>
+    <!-- AiCreditsText.kt: usage billing on a plan without credits. %1$s is how many credits a cent buys, 1,000, and %2$s what credits cost so far this month, such as $0.37. -->
+    <string name="ai_credits_billing_on_rate_no_plan">Usage billing is on. AI credits cost 1¢ per %1$s: %2$s so far this month.</string>
     <!-- AiCreditsText.kt: %1$s is what usage billing hasn't charged yet, such as $0.37, %2$s the smallest charge, $1.00, and %3$s the amount charged right away, $10.00. -->
     <string name="ai_credits_unbilled">%1$s is waiting to be charged: at the start of next month if it’s at least %2$s, or right away at %3$s.</string>
     <string name="ai_credits_keep_running">Keep filters running</string>
-    <string name="ai_credits_billing_explainer">Past your credits, filters keep running at 1¢ per credit.</string>
+    <!-- AiCreditsText.kt: %1$s is how many credits a cent buys, 1,000. -->
+    <string name="ai_credits_billing_rate">Past your credits, filters keep running at 1¢ per %1$s credits.</string>
     <!-- AiCreditsText.kt: %1$s is what usage billing would cost this month at the reader's pace, such as $0.62. -->
     <string name="ai_credits_billing_forecast">About %1$s this month at your pace.</string>
     <string name="ai_credits_turn_on_billing">Turn on usage billing</string>
-    <!-- AiCreditsText.kt: describes ai_credits_turn_on_billing. %1$s is what it would cost this month at the reader's pace, such as $0.62. -->
-    <string name="ai_credits_turn_on_detail">1¢ per credit past your plan’s, about %1$s this month</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1¢ per credit past your plan’s</string>
+    <!-- AiCreditsText.kt: describes ai_credits_turn_on_billing. %1$s is how many credits a cent buys, 1,000, and %2$s what it would cost this month at the reader's pace, such as $0.62. -->
+    <string name="ai_credits_turn_on_rate">1¢ per %1$s credits past your plan’s, about %2$s this month</string>
+    <!-- AiCreditsText.kt: %1$s is how many credits a cent buys, 1,000. -->
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ per %1$s credits past your plan’s</string>
     <!-- AiCreditsText.kt: under ai_credits_turn_on_billing. %1$s is the 1st of next month, such as Dec 1. -->
     <string name="ai_credits_or_wait">or wait until %1$s</string>
     <string name="ai_credits_manage_billing">Manage billing</string>
     <string name="ai_credits_change_limit">Change limit</string>
     <!-- AiClassifierSections.kt and SubscriptionActivity.kt: opens AiCreditsActivity.kt. -->
     <string name="ai_credits_open">See AI credits</string>
-    <!-- AiCreditsActivity.kt: %1$s is the credits the plan includes, such as 50. The plural follows %1$s. -->
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="one">Your plan includes %1$s AI credit a month for AI text and image filters. Credits reset on the 1st, and unused ones don’t carry over.</item>
-        <item quantity="other">Your plan includes %1$s AI credits a month for AI text and image filters. Credits reset on the 1st, and unused ones don’t carry over.</item>
+    <!-- AiCreditsActivity.kt: %1$s is the credits the plan includes, such as 10,000. The plural follows %1$s. -->
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="one">Your plan includes %1$s AI credit a month. A credit is about one story through a text filter; an image filter uses about 10 credits a story. Credits reset on the 1st, and unused ones don’t carry over.</item>
+        <item quantity="other">Your plan includes %1$s AI credits a month. A credit is about one story through a text filter; an image filter uses about 10 credits a story. Credits reset on the 1st, and unused ones don’t carry over.</item>
     </plurals>
-    <!-- AiCreditsActivity.kt: %1$s is the credits used by the end of the month at the last week's pace, such as 41.2, and %2$s the credits the plan includes, such as 50. The plural follows %2$s. -->
+    <!-- AiCreditsActivity.kt: %1$s is the credits used by the end of the month at the last week's pace, such as 8,200, and %2$s the credits the plan includes, such as 10,000. The plural follows %2$s. -->
     <plurals name="ai_credits_forecast_month">
         <item quantity="one">At this pace you’ll use about %1$s of your %2$s credit this month.</item>
         <item quantity="other">At this pace you’ll use about %1$s of your %2$s credits this month.</item>

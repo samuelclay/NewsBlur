@@ -13,13 +13,13 @@ import java.util.Locale
 // state's trainer button goes where the AI credits spec says, and none leads to Stripe while
 // UsageBillingFeature.kt holds usage billing.
 class Test_AiCreditsStatus {
-    private val forecast = AiCreditsForecast(credits = 61.0, creditsPerDay = 2.0, runsOutOn = "2026-11-27", overageUsd = 0.11)
+    private val forecast = AiCreditsForecast(credits = 12_100.0, creditsPerDay = 400.0, runsOutOn = "2026-11-27", overageUsd = 0.11)
     private val free = AiCredits(included = 0, isPaused = true, pauseReason = "plan", isBillingAvailable = true)
-    private val running = AiCredits(included = 50, used = 12.34, isBillingAvailable = true)
-    private val warning = running.copy(used = 42.0, isWarning = true, forecast = forecast)
-    private val pausedCredits = running.copy(used = 50.0, isWarning = true, isPaused = true, pauseReason = "credits", forecast = forecast)
-    private val billing = running.copy(used = 87.0, isUsageBilling = true, overageCredits = 37, overageUsd = 0.37, forecast = forecast)
-    private val pausedLimit = billing.copy(monthlyLimit = 5.0, isPaused = true, pauseReason = "limit")
+    private val running = AiCredits(included = 10_000, used = 2_468.0, isBillingAvailable = true)
+    private val warning = running.copy(used = 8_400.0, isWarning = true, forecast = forecast)
+    private val pausedCredits = running.copy(used = 10_000.0, isWarning = true, isPaused = true, pauseReason = "credits", forecast = forecast)
+    private val billing = running.copy(used = 17_400.0, isUsageBilling = true, overageCredits = 7_400, overageUsd = 0.07, forecast = forecast)
+    private val pausedLimit = billing.copy(monthlyLimit = 0.05, isPaused = true, pauseReason = "limit")
     private val unlimited = AiCredits(isUnlimited = true)
 
     @Test
@@ -82,20 +82,20 @@ class Test_AiCreditsStatus {
 
     @Test
     fun test_the_meter_reads_past_the_plan_only_when_the_shown_numbers_are() {
-        assertTrue(AiCreditsStatus.isPastPlan(billing.copy(used = 87.37)))
-        assertEquals(37.4, AiCreditsStatus.pastPlanCredits(billing.copy(used = 87.37)), 0.0)
-        assertFalse("50.04 shows as 50 of 50", AiCreditsStatus.isPastPlan(running.copy(used = 50.04)))
-        assertEquals(0.0, AiCreditsStatus.pastPlanCredits(running.copy(used = 50.04)), 0.0)
-        assertTrue("50.06 shows as 50.1", AiCreditsStatus.isPastPlan(running.copy(used = 50.06)))
+        assertTrue(AiCreditsStatus.isPastPlan(billing.copy(used = 12_340.0)))
+        assertEquals(2_340.0, AiCreditsStatus.pastPlanCredits(billing.copy(used = 12_340.0)), 0.0)
+        assertFalse("10,000.4 shows as 10,000 of 10,000", AiCreditsStatus.isPastPlan(running.copy(used = 10_000.4)))
+        assertEquals(0.0, AiCreditsStatus.pastPlanCredits(running.copy(used = 10_000.4)), 0.0)
+        assertTrue("10,000.6 shows as 10,001", AiCreditsStatus.isPastPlan(running.copy(used = 10_000.6)))
         assertFalse("A free plan has no credits to be past", AiCreditsStatus.isPastPlan(billing.copy(included = 0)))
     }
 
     @Test
     fun test_only_usage_billing_past_the_plan_splits_the_bar() {
-        assertEquals("The plan's 50 of 87 used", 50 / 87f, AiCreditsStatus.planShare(billing)!!, 0.0001f)
-        assertEquals("Paused at the limit still splits", 50 / 87f, AiCreditsStatus.planShare(pausedLimit)!!, 0.0001f)
-        assertNull("Paused for credits has nothing billed", AiCreditsStatus.planShare(pausedCredits.copy(used = 50.5)))
-        assertNull("Usage billing within the plan is one color", AiCreditsStatus.planShare(billing.copy(used = 20.0)))
+        assertEquals("The plan's 10,000 of 17,400 used", 10_000 / 17_400f, AiCreditsStatus.planShare(billing)!!, 0.0001f)
+        assertEquals("Paused at the limit still splits", 10_000 / 17_400f, AiCreditsStatus.planShare(pausedLimit)!!, 0.0001f)
+        assertNull("Paused for credits has nothing billed", AiCreditsStatus.planShare(pausedCredits.copy(used = 10_050.0)))
+        assertNull("Usage billing within the plan is one color", AiCreditsStatus.planShare(billing.copy(used = 4_000.0)))
     }
 
     @Test
@@ -121,18 +121,24 @@ class Test_AiCreditsStatus {
     }
 
     @Test
-    fun test_credits_show_up_to_one_decimal_in_the_reader_s_language() {
-        assertEquals("12.3", AiCreditsStatus.formatCredits(12.34, Locale.US))
-        assertEquals("12", AiCreditsStatus.formatCredits(12.0, Locale.US))
-        assertEquals("12,3", AiCreditsStatus.formatCredits(12.34, Locale.GERMANY))
+    fun test_credits_are_whole_numbers_grouped_in_the_reader_s_language() {
+        assertEquals("12,340", AiCreditsStatus.formatCredits(12_340.4, Locale.US))
+        assertEquals("12.340", AiCreditsStatus.formatCredits(12_340.0, Locale.GERMANY))
+        assertEquals("100,000", AiCreditsStatus.formatPlanCredits(AiCreditsStatus.PRO_CREDITS, Locale.US))
     }
 
     @Test
-    fun test_a_site_estimate_always_reads_as_an_amount() {
-        assertEquals("0.4", AiCreditsStatus.formatEstimate(0.42, Locale.US))
-        assertEquals("A whole estimate keeps its decimal so it reads as credits, not one credit", "1.0", AiCreditsStatus.formatEstimate(1.0, Locale.US))
-        assertEquals("A tiny estimate doesn't round to nothing", "0.1", AiCreditsStatus.formatEstimate(0.004, Locale.US))
-        assertEquals("120", AiCreditsStatus.formatEstimate(120.0, Locale.US))
-        assertNull("No stories last month, no estimate", AiCreditsStatus.formatEstimate(0.0, Locale.US))
+    fun test_the_billing_rate_follows_the_server_s_credit_price() {
+        assertEquals(1_000, AiCreditsStatus.creditsPerCent(running.copy(creditUsd = 0.00001)))
+        assertEquals("A price change reaches the wording without an app update", 500, AiCreditsStatus.creditsPerCent(running.copy(creditUsd = 0.00002)))
+    }
+
+    @Test
+    fun test_a_site_estimate_is_whole_credits_or_less_than_one() {
+        assertEquals(1_372, AiCreditsStatus.estimateCredits(1_371.6))
+        assertTrue(AiCreditsStatus.isUnderOneCredit(0.6))
+        assertFalse("A credit and a half is at least one", AiCreditsStatus.isUnderOneCredit(1.5))
+        assertFalse(AiCreditsStatus.isUnderOneCredit(0.0))
+        assertNull("No stories last month, no estimate", AiCreditsStatus.estimateCredits(0.0))
     }
 }

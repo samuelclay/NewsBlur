@@ -407,7 +407,7 @@ class AiCreditsActivity : NbActivity() {
                 activation == Activation.ACTIVATING -> getString(R.string.usage_billing_activating)
                 activation == Activation.DELAYED -> getString(R.string.usage_billing_activating_slow)
                 on -> text.billingOn(credits)
-                else -> getString(R.string.ai_credits_billing_explainer)
+                else -> text.billingExplainer(credits)
             }
 
         // What the month comes to at this pace, the number a reader decides on.

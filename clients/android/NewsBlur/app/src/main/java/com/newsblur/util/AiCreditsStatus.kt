@@ -5,6 +5,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.util.Locale
+import kotlin.math.roundToInt
 
 /** Which of the AI credit states in the AI credits spec a reader is in this month. */
 enum class AiCreditsStage {
@@ -60,10 +61,11 @@ object AiCreditsStatus {
     const val PAUSE_LIMIT = "limit"
 
     // The credits each paid plan includes a month (apps/analyzer/ai_credits.py MONTHLY_CREDITS_*),
-    // for the plan lists and the free account's explanation, which name every plan's.
-    const val PREMIUM_CREDITS = 5
-    const val ARCHIVE_CREDITS = 50
-    const val PRO_CREDITS = 500
+    // for the plan lists and the free account's explanation, which name every plan's. A credit is
+    // about one story through a text filter.
+    const val PREMIUM_CREDITS = 1_000
+    const val ARCHIVE_CREDITS = 10_000
+    const val PRO_CREDITS = 100_000
 
     @JvmStatic
     fun stage(credits: AiCredits?): AiCreditsStage =
@@ -100,21 +102,28 @@ object AiCreditsStatus {
         return (credits.used / credits.included).toFloat().coerceIn(0f, 1f)
     }
 
-    // AiCreditsStatus.kt: credits rounded to one decimal place, as formatCredits shows them
-    // (DecimalFormat rounds a double's exact value half-even).
-    private fun displayed(value: Double): BigDecimal = BigDecimal(value).setScale(1, RoundingMode.HALF_EVEN)
+    // AiCreditsStatus.kt: credits as whole numbers, as formatCredits shows them (DecimalFormat
+    // rounds a double's exact value half-even).
+    private fun displayed(value: Double): BigDecimal = BigDecimal(value).setScale(0, RoundingMode.HALF_EVEN)
 
     /**
      * Whether the meter reads as past the plan's credits, comparing the numbers as they show, so
-     * 50.04 used of 50 still reads "50 of 50".
+     * 10,000.4 used of 10,000 still reads "10,000 of 10,000".
      */
     @JvmStatic
     fun isPastPlan(credits: AiCredits): Boolean = credits.included > 0 && displayed(credits.used) > BigDecimal(credits.included)
 
-    /** The credits past the plan's, as the meter shows them, such as 37.4. */
+    /** The credits past the plan's, as the meter shows them, such as 2,340. */
     @JvmStatic
     fun pastPlanCredits(credits: AiCredits): Double =
         if (isPastPlan(credits)) displayed(credits.used).subtract(BigDecimal(credits.included)).toDouble() else 0.0
+
+    /**
+     * How many credits a cent buys, from the server's credit_usd, for "1¢ per 1,000 credits"
+     * (apps/analyzer/ai_credits.py CREDIT_USD).
+     */
+    @JvmStatic
+    fun creditsPerCent(credits: AiCredits): Int = (0.01 / credits.creditUsd).roundToInt().coerceAtLeast(1)
 
     /**
      * With usage billing past the plan's credits, the share of the bar the plan's own credits
@@ -169,41 +178,25 @@ object AiCreditsStatus {
         }
     }
 
-    /** Credits with up to one decimal place in the reader's language, such as 12.3 or 12,3. */
+    /** Whole credits, grouped in the reader's language, such as 12,340 or 12.340. */
     @JvmStatic
     fun formatCredits(
         value: Double,
         locale: Locale,
-    ): String {
-        val format = NumberFormat.getNumberInstance(locale)
-        format.minimumFractionDigits = 0
-        format.maximumFractionDigits = 1
-        return format.format(value)
-    }
+    ): String = NumberFormat.getIntegerInstance(locale).format(displayed(value))
 
-    /** A plan's whole credits, grouped in the reader's language, such as 500. */
+    /** A plan's whole credits, grouped in the reader's language, such as 10,000. */
     @JvmStatic
     fun formatPlanCredits(
         value: Int,
         locale: Locale,
     ): String = NumberFormat.getIntegerInstance(locale).format(value)
 
-    // AiCreditsStatus.kt: below this a filter's monthly estimate shows as "less than 0.1".
-    const val SMALLEST_ESTIMATE = 0.1
-
-    /**
-     * A site's monthly estimate with one decimal place, so even a whole number reads as an amount
-     * ("1.0 credits"), or null when the site published nothing last month to estimate from.
-     */
+    /** Whether a site's monthly estimate is under one credit, and reads "less than one credit a month". */
     @JvmStatic
-    fun formatEstimate(
-        value: Double,
-        locale: Locale,
-    ): String? {
-        if (value <= 0) return null
-        val format = NumberFormat.getNumberInstance(locale)
-        format.minimumFractionDigits = if (value < 10) 1 else 0
-        format.maximumFractionDigits = 1
-        return format.format(maxOf(value, SMALLEST_ESTIMATE))
-    }
+    fun isUnderOneCredit(value: Double): Boolean = value > 0 && value < 1
+
+    /** A site's monthly estimate as a whole number of credits, or null when the site published nothing last month. */
+    @JvmStatic
+    fun estimateCredits(value: Double): Int? = if (value <= 0) null else displayed(value).toInt()
 }

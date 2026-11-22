@@ -63,7 +63,7 @@ class AiCreditsText(
         return SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, skeleton), locale).format(date)
     }
 
-    /** "12.3 of 50 AI credits used", or "87.4 AI credits used, 37.4 past your plan's 50". */
+    /** "12,340 of 10,000 AI credits used", or "12,340 AI credits used, 2,340 past your plan's 10,000". */
     fun meter(credits: AiCredits): String =
         if (AiCreditsStatus.isPastPlan(credits)) {
             resources.getQuantityString(
@@ -93,17 +93,20 @@ class AiCreditsText(
         creditsPerMonth: Double,
         imagePrompt: Boolean,
     ): String? {
-        val amount = AiCreditsStatus.formatEstimate(creditsPerMonth, locale) ?: return null
-        val small = creditsPerMonth < AiCreditsStatus.SMALLEST_ESTIMATE
-        val res =
-            when {
-                imagePrompt && small -> R.string.ai_credits_estimate_image_small
-                imagePrompt -> R.string.ai_credits_estimate_image
-                small -> R.string.ai_credits_estimate_text_small
-                else -> R.string.ai_credits_estimate_text
-            }
-        return context.getString(res, amount)
+        if (AiCreditsStatus.isUnderOneCredit(creditsPerMonth)) {
+            val underOne = if (imagePrompt) R.string.ai_credits_image_estimate_under_one else R.string.ai_credits_text_estimate_under_one
+            return context.getString(underOne)
+        }
+        val amount = AiCreditsStatus.estimateCredits(creditsPerMonth) ?: return null
+        val res = if (imagePrompt) R.plurals.ai_credits_image_estimate else R.plurals.ai_credits_text_estimate
+        return resources.getQuantityString(res, amount, planCredits(amount))
     }
+
+    /** "1,000", the credits a cent buys under usage billing. */
+    fun creditsPerCent(credits: AiCredits): String = planCredits(AiCreditsStatus.creditsPerCent(credits))
+
+    /** "Past your credits, filters keep running at 1¢ per 1,000 credits." */
+    fun billingExplainer(credits: AiCredits): String = context.getString(R.string.ai_credits_billing_rate, creditsPerCent(credits))
 
     /** "At this pace your credits run out around Nov 27." while that's still ahead. */
     fun runsOut(credits: AiCredits): String? =
@@ -123,18 +126,19 @@ class AiCreditsText(
     }
 
     fun planSummary(credits: AiCredits): String =
-        resources.getQuantityString(R.plurals.ai_credits_plan_summary, credits.included, planCredits(credits.included))
+        resources.getQuantityString(R.plurals.ai_credits_plan_includes, credits.included, planCredits(credits.included))
 
     fun billingOn(credits: AiCredits): String =
         if (credits.included > 0) {
             resources.getQuantityString(
-                R.plurals.ai_credits_billing_on,
+                R.plurals.ai_credits_billing_on_rate,
                 credits.included,
                 planCredits(credits.included),
+                creditsPerCent(credits),
                 dollars(credits.overageUsd),
             )
         } else {
-            context.getString(R.string.ai_credits_billing_on_no_plan, dollars(credits.overageUsd))
+            context.getString(R.string.ai_credits_billing_on_rate_no_plan, creditsPerCent(credits), dollars(credits.overageUsd))
         }
 
     /** "$0.37 is waiting to be charged: ...", while usage billing has overage it hasn't charged yet. */
@@ -185,7 +189,7 @@ class AiCreditsText(
                 if (action == null) return runsOut?.let { AiCreditsNotice(AiCreditsNoticeStyle.WARNING, it) }
                 val pitch =
                     listOfNotNull(
-                        context.getString(R.string.ai_credits_billing_explainer),
+                        billingExplainer(credits),
                         billingForecast(credits),
                     ).joinToString(" ")
                 AiCreditsNotice(
@@ -211,9 +215,9 @@ class AiCreditsText(
                     message = message,
                     detail =
                         if (forecast != null) {
-                            context.getString(R.string.ai_credits_turn_on_detail, dollars(forecast))
+                            context.getString(R.string.ai_credits_turn_on_rate, creditsPerCent(credits), dollars(forecast))
                         } else {
-                            context.getString(R.string.ai_credits_turn_on_detail_no_forecast)
+                            context.getString(R.string.ai_credits_turn_on_rate_no_forecast, creditsPerCent(credits))
                         },
                     action = action,
                     actionLabel = context.getString(R.string.ai_credits_turn_on_billing),

@@ -14,7 +14,7 @@ import org.junit.Test
 // none, and test a prompt the same way on every account.
 class Test_AiFilterAccess {
     private val free = AiCredits(included = 0, isPaused = true, pauseReason = "plan")
-    private val premium = AiCredits(included = 5, used = 1.0)
+    private val premium = AiCredits(included = 1_000, used = 200.0)
 
     private fun status(
         credits: AiCredits? = free,
@@ -49,7 +49,7 @@ class Test_AiFilterAccess {
     @Test
     fun test_a_paid_account_always_sees_its_credits() {
         assertEquals("Before any filter, to see what one would spend", AiCreditsStage.RUNNING, status(credits = premium).creditsStage)
-        val paused = premium.copy(used = 5.0, isPaused = true, pauseReason = "credits")
+        val paused = premium.copy(used = 1_000.0, isPaused = true, pauseReason = "credits")
         assertEquals(AiCreditsStage.PAUSED_CREDITS, status(credits = paused).creditsStage)
     }
 
@@ -73,7 +73,7 @@ class Test_AiFilterAccess {
 
     @Test
     fun test_the_account_s_meter_and_notice_show_once_but_each_section_keeps_its_estimate() {
-        val paused = premium.copy(used = 5.0, isPaused = true, pauseReason = "credits")
+        val paused = premium.copy(used = 1_000.0, isPaused = true, pauseReason = "credits")
 
         assertTrue(status(credits = paused, imagePrompt = false).showsCreditsSummary)
         val image = status(credits = paused, imagePrompt = true, imageCount = 1)

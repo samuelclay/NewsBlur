@@ -90,18 +90,18 @@ class Test_AiClassifierApis {
 
     // apps/analyzer/ai_credits.py state() for a Premium Archive reader running low.
     private val creditsJson =
-        """{"included": 50, "used": 42.5, "remaining": 7.5, "month": "2026-11", "resets_on": "2026-12-01",
+        """{"included": 10000, "used": 8420, "remaining": 1580, "month": "2026-11", "resets_on": "2026-12-01",
            "is_unlimited": false, "is_billing_available": true, "is_usage_billing": false, "monthly_limit": null,
            "overage_credits": 0, "overage_usd": 0.0, "unbilled_usd": 0.0, "minimum_charge_usd": 1.0,
-           "immediate_charge_usd": 10.0, "is_paused": false, "pause_reason": null, "is_warning": true, "credit_usd": 0.01,
-           "forecast": {"credits": 61.2, "credits_per_day": 2.1, "runs_out_on": "2026-11-25", "overage_usd": 0.12}}"""
+           "immediate_charge_usd": 10.0, "is_paused": false, "pause_reason": null, "is_warning": true, "credit_usd": 0.00001,
+           "forecast": {"credits": 12100, "credits_per_day": 420, "runs_out_on": "2026-11-25", "overage_usd": 0.12}}"""
 
     @Test
     fun test_ai_usage_reads_the_credits_and_the_site_estimates() =
         runTest {
             respond(
                 """{"code": 0, "can_use_ai": true, "ai_credits": $creditsJson, "stories_per_month": 300,
-                   "text_credits_per_month": 0.42, "image_credits_per_month": 3.0}""",
+                   "text_credits_per_month": 1400, "image_credits_per_month": 9800}""",
             )
 
             val usage = classifierApi.getAiClassifierUsage("42")
@@ -109,10 +109,10 @@ class Test_AiClassifierApis {
             assertEquals(APIConstants.buildUrl(APIConstants.PATH_AI_CLASSIFIER_USAGE), urls.single())
             assertEquals("feed_id=42", form(bodies.single()))
             assertTrue(usage.isSuccess)
-            assertEquals(0.42, usage.textCreditsPerMonth, 0.0)
-            assertEquals(3.0, usage.imageCreditsPerMonth, 0.0)
+            assertEquals(1400.0, usage.textCreditsPerMonth, 0.0)
+            assertEquals(9800.0, usage.imageCreditsPerMonth, 0.0)
             val credits = usage.aiCredits!!
-            assertEquals(50, credits.included)
+            assertEquals(10000, credits.included)
             assertTrue(credits.isWarning)
             assertNull(credits.pauseReason)
             assertEquals("2026-11-25", credits.forecast!!.runsOutOn)
@@ -134,7 +134,7 @@ class Test_AiClassifierApis {
 
         val credits = profile(""", "ai_credits": $creditsJson""").aiCredits!!
         assertEquals("2026-12-01", credits.resetsOn)
-        assertEquals(42.5, credits.used, 0.0)
+        assertEquals(8420.0, credits.used, 0.0)
         assertNull("A server from before credits sends none", profile("").aiCredits)
     }
 
@@ -180,7 +180,7 @@ class Test_AiClassifierApis {
             assertEquals("limit=25", form(bodies.single()))
             assertTrue(saved.isSaved)
             assertEquals(25.0, saved.limit!!, 0.0)
-            assertEquals(50, saved.aiCredits!!.included)
+            assertEquals(10000, saved.aiCredits!!.included)
 
             respond("""{"code": 1, "limit": null}""")
             val cleared = billingApi.saveLimit("")
