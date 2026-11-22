@@ -77,6 +77,14 @@ enum AIClassifierValue {
         default: return 0
         }
     }
+
+    static func double(_ value: Any?) -> Double? {
+        switch value {
+        case let number as NSNumber: return number.doubleValue
+        case let string as String: return Double(string)
+        default: return nil
+        }
+    }
 }
 
 // MARK: - Prompt classifiers
@@ -185,16 +193,554 @@ struct PromptTestResult: Equatable {
     }
 }
 
+// MARK: - AI credits
+
+/// A month of AI credits, from apps/analyzer/ai_credits.py state(). /reader/feeds sends it as user_profile.ai_credits,
+/// and /analyzer/ai_classifier_usage, /profile/usage_billing_history and /profile/save_usage_billing_limit answer with
+/// a fresh one. Every paid plan includes credits each month; usage billing keeps filters running past them.
+struct AICredits: Equatable {
+    /// Why filters aren't scoring stories: a plan without credits, a month's credits used, or the monthly limit hit.
+    enum PauseReason: String {
+        case plan
+        case credits
+        case limit
+    }
+
+    /// Where the month is headed at the last week's pace.
+    struct Forecast: Equatable {
+        var credits: Double
+        var runsOutOn: Date?
+        /// What the month would cost with usage billing, before any limit.
+        var overageUSD: Double
+    }
+
+    /// What the trainer and AICreditsView.swift tell the reader, checked in this order: a server that counts no
+    /// credits, a plan without them, a limit reached, credits used, usage billing, then running low or running.
+    enum Status: Equatable {
+        case unlimited
+        case free
+        case pausedAtLimit
+        case pausedForCredits
+        case usageBilling
+        case warning
+        case running
+    }
+
+    var included: Int
+    var used: Double
+    var resetsOn: Date?
+    var isUnlimited: Bool
+    var isBillingAvailable: Bool
+    var isUsageBilling: Bool
+    var monthlyLimit: Double?
+    var overageUSD: Double
+    var unbilledUSD: Double
+    var minimumChargeUSD: Double
+    var immediateChargeUSD: Double
+    var pauseReason: PauseReason?
+    var isWarning: Bool
+    var forecast: Forecast?
+
+    init?(json: Any?) {
+        guard let json = json as? [AnyHashable: Any], json["included"] != nil || json["is_unlimited"] != nil else { return nil }
+        included = AIClassifierValue.int(json["included"])
+        used = AIClassifierValue.double(json["used"]) ?? 0
+        resetsOn = AICreditsFormat.parseDay(json["resets_on"])
+        isUnlimited = AIClassifierValue.bool(json["is_unlimited"])
+        isBillingAvailable = AIClassifierValue.bool(json["is_billing_available"])
+        isUsageBilling = AIClassifierValue.bool(json["is_usage_billing"])
+        monthlyLimit = AIClassifierValue.double(json["monthly_limit"]).flatMap { $0 > 0 ? $0 : nil }
+        overageUSD = AIClassifierValue.double(json["overage_usd"]) ?? 0
+        unbilledUSD = AIClassifierValue.double(json["unbilled_usd"]) ?? 0
+        minimumChargeUSD = AIClassifierValue.double(json["minimum_charge_usd"]) ?? 1
+        immediateChargeUSD = AIClassifierValue.double(json["immediate_charge_usd"]) ?? 10
+        pauseReason = (json["pause_reason"] as? String).flatMap(PauseReason.init(rawValue:))
+        isWarning = AIClassifierValue.bool(json["is_warning"])
+        if let forecast = json["forecast"] as? [AnyHashable: Any] {
+            self.forecast = Forecast(credits: AIClassifierValue.double(forecast["credits"]) ?? 0,
+                                     runsOutOn: AICreditsFormat.parseDay(forecast["runs_out_on"]),
+                                     overageUSD: AIClassifierValue.double(forecast["overage_usd"]) ?? 0)
+        } else {
+            forecast = nil
+        }
+    }
+
+    init?(profile: [AnyHashable: Any]?) {
+        self.init(json: profile?["ai_credits"])
+    }
+
+    /// The signed in account's credits, as /reader/feeds or the last usage fetch left them (AICreditsStore).
+    @MainActor static var current: AICredits? {
+        AICredits(profile: NewsBlurAppDelegate.shared?.dictUserProfile as? [AnyHashable: Any])
+    }
+
+    var status: Status {
+        if isUnlimited { return .unlimited }
+        switch pauseReason {
+        case .plan: return .free
+        case .limit: return .pausedAtLimit
+        case .credits: return .pausedForCredits
+        case nil: break
+        }
+        if isUsageBilling { return .usageBilling }
+        return isWarning ? .warning : .running
+    }
+
+    var isPaused: Bool { pauseReason != nil }
+
+    /// The meter's fill: the share of the plan's credits used, full once they're gone.
+    var usedFraction: Double {
+        guard included > 0 else { return used > 0 ? 1 : 0 }
+        return min(1, max(0, used / Double(included)))
+    }
+
+    /// Usage billing past a monthly limit, from 0 to 1, or nil without a limit.
+    var limitFraction: Double? {
+        guard isUsageBilling, let monthlyLimit else { return nil }
+        return min(1, max(0, overageUSD / monthlyLimit))
+    }
+
+    // MARK: Wording
+
+    /// "12.3 of 50 AI credits used", or nil for usage billing without included credits.
+    var usedText: String? {
+        guard included > 0 else { return nil }
+        return NBLocalization.plural("%2$@ of %1$@ AI credits used", count: included, with: AICreditsFormat.credits(used))
+    }
+
+    var resetText: String? {
+        resetsOn.map { String(format: NBLocalization.text("Resets %@"), AICreditsFormat.day($0)) }
+    }
+
+    /// The day credits come back, for sentences that need one even if the server left it out.
+    private var resetDay: String {
+        resetsOn.map(AICreditsFormat.day) ?? ""
+    }
+
+    static var freeText: String {
+        NBLocalization.text("AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500.")
+    }
+
+    var runsOutText: String? {
+        guard let runsOutOn = forecast?.runsOutOn else { return nil }
+        return String(format: NBLocalization.text("At this pace your credits run out around %@."), AICreditsFormat.day(runsOutOn))
+    }
+
+    /// The forecast line on AICreditsView.swift: where the month is headed at the last week's pace.
+    var forecastText: String? {
+        guard let forecast, forecast.credits > 0 else { return nil }
+        return NBLocalization.plural("At this pace, this month will use about %2$@ AI credits.",
+                                     value: AICreditsFormat.shownCredits(forecast.credits),
+                                     display: AICreditsFormat.credits(forecast.credits))
+    }
+
+    var pausedText: [String] {
+        [String(format: NBLocalization.text("Your AI filters are paused until %@."), resetDay),
+         NBLocalization.plural("This month's %@ AI credits are used.", groupedCount: included)]
+    }
+
+    var limitReachedText: String {
+        String(format: NBLocalization.text("Your AI filters reached your %1$@ monthly limit and are paused until %2$@."),
+               AICreditsFormat.money(monthlyLimit ?? 0), resetDay)
+    }
+
+    /// What usage billing has cost so far this month, and when it's charged.
+    var billingText: [String] {
+        var lines: [String]
+        if included > 0 {
+            lines = [NBLocalization.plural("Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.",
+                                           count: included, with: AICreditsFormat.money(overageUSD))]
+        } else {
+            lines = [String(format: NBLocalization.text("Usage billing is on. Every credit costs 1¢: %@ so far this month."),
+                            AICreditsFormat.money(overageUSD))]
+        }
+        if unbilledUSD > 0 {
+            lines.append(String(format: NBLocalization.text("%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@."),
+                                AICreditsFormat.money(unbilledUSD), minimumChargeText, immediateChargeText))
+        }
+        return lines
+    }
+
+    /// apps/analyzer/ai_credits.py charges usage billing at the start of the month once it comes to this much.
+    var minimumChargeText: String { AICreditsFormat.money(minimumChargeUSD, dropsWholeCents: true) }
+
+    /// ...or right away once unbilled credits reach this much.
+    var immediateChargeText: String { AICreditsFormat.money(immediateChargeUSD, dropsWholeCents: true) }
+
+    /// How usage billing charges, for a reader deciding whether to set it up.
+    var chargeScheduleText: String {
+        String(format: NBLocalization.text("Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@."),
+               minimumChargeText, immediateChargeText)
+    }
+
+    /// The forecast's cost past the plan's credits, when there is one.
+    var forecastOverageText: String? {
+        guard let overage = forecast?.overageUSD, overage > 0 else { return nil }
+        return String(format: NBLocalization.text("About %@ this month at your pace."), AICreditsFormat.money(overage))
+    }
+
+    /// How usage billing works, offered while credits run low or are used up.
+    var billingOfferText: String {
+        ([NBLocalization.text("Past your credits, filters keep running at 1¢ per credit.")] + [forecastOverageText].compactMap { $0 })
+            .joined(separator: " ")
+    }
+
+    var turnOnBillingDetail: String {
+        guard let overage = forecast?.overageUSD, overage > 0 else { return NBLocalization.text("1¢ per credit past your plan's") }
+        return String(format: NBLocalization.text("1¢ per credit past your plan's, about %@ this month"), AICreditsFormat.money(overage))
+    }
+
+    var waitText: String {
+        String(format: NBLocalization.text("or wait until %@"), resetDay)
+    }
+
+    var limitSummaryText: String? {
+        guard let monthlyLimit else { return nil }
+        return String(format: NBLocalization.text("Monthly limit: %@"), AICreditsFormat.money(monthlyLimit))
+    }
+}
+
+/// AIClassifiers.swift formats credits, dollars and the server's calendar days in the interface language.
+enum AICreditsFormat {
+    /// Credits with up to one decimal place, like "12.3" or "50".
+    static func credits(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = NBLocalization.formattingLocale
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 1
+        return formatter.string(from: NSNumber(value: shownCredits(value))) ?? String(shownCredits(value))
+    }
+
+    /// The number credits(_:) shows, so a plural form agrees with it: 0.96 shows as "1 credit".
+    static func shownCredits(_ value: Double) -> Double {
+        (value * 10).rounded() / 10
+    }
+
+    /// Dollars as the web shows them. The minimum charge reads "$1" rather than "$1.00".
+    static func money(_ amount: Double, dropsWholeCents: Bool = false) -> String {
+        if dropsWholeCents, amount == amount.rounded() {
+            return String(format: "$%.0f", locale: Locale(identifier: "en_US_POSIX"), amount)
+        }
+        return String(format: "$%.2f", locale: Locale(identifier: "en_US_POSIX"), amount)
+    }
+
+    /// A short month and day, like "Dec 1".
+    static func day(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = NBLocalization.formattingLocale
+        formatter.calendar = Calendar(identifier: .gregorian)
+        // AIClassifiers.swift parses the server's YYYY-MM-DD days in UTC, so they print in UTC too.
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
+        return formatter.string(from: date)
+    }
+
+    /// An invoice date, like "Nov 1, 2026".
+    static func invoiceDay(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = NBLocalization.formattingLocale
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.setLocalizedDateFormatFromTemplate("MMMdyyyy")
+        return formatter.string(from: date)
+    }
+
+    /// The server sends days as YYYY-MM-DD, which AIClassifiers.swift keeps as that calendar day.
+    static func parseDay(_ value: Any?) -> Date? {
+        guard let string = value as? String else { return nil }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.date(from: string)
+    }
+}
+
+extension NBLocalization {
+    /// AIClassifiers.swift picks a plural form for a count with decimals, such as 0.4 credits, and shows the count
+    /// as %2$@, formatted by the caller. Foundation's plural rules read the fraction, so French says "0,4 crédit".
+    static func plural(_ source: String, value: Double, display: String) -> String {
+        String(format: text(source), locale: Locale(identifier: resolvedLanguage), arguments: [NSNumber(value: value), display])
+    }
+}
+
+/// What a trainer AI section says about the reader's credits (TrainerAIPromptSection.swift), for each Status.
+struct AICreditsNotice: Equatable {
+    enum Tone: Equatable {
+        case normal
+        case warning
+        case paused
+        case upgrade
+    }
+
+    enum Action: Equatable {
+        /// PremiumView.swift, through NewsBlurAppDelegate.m showPremiumDialog.
+        case upgrade
+        /// AICreditsView.swift, starting Stripe checkout for usage billing.
+        case setUpBilling
+        /// AICreditsView.swift, with the billing portal and the monthly limit.
+        case manageBilling
+        /// AICreditsView.swift, from the meter.
+        case openCredits
+    }
+
+    struct Meter: Equatable {
+        let fraction: Double
+        let usedText: String
+        let resetText: String?
+    }
+
+    struct ActionButton: Equatable {
+        let title: String
+        let detail: String?
+        let action: Action
+    }
+
+    let tone: Tone
+    let meter: Meter?
+    let messages: [String]
+    let button: ActionButton?
+    let footnote: String?
+
+    /// offersBilling is UsageBillingFeature.swift's switch. While it's off the notice never offers Stripe or points
+    /// anywhere to pay: a paused reader learns when filters run again and nothing more, and a reader who turned usage
+    /// billing on elsewhere sees what it has cost and their limit.
+    static func make(_ credits: AICredits, offersBilling: Bool) -> AICreditsNotice? {
+        let offersSetup = offersBilling && credits.isBillingAvailable && !credits.isUsageBilling
+        let meter = credits.usedText.map { Meter(fraction: credits.usedFraction, usedText: $0, resetText: credits.resetText) }
+        switch credits.status {
+        case .unlimited:
+            return nil
+        case .free:
+            return AICreditsNotice(tone: .upgrade, meter: nil, messages: [AICredits.freeText],
+                                   button: ActionButton(title: NBLocalization.text("Upgrade"), detail: nil, action: .upgrade),
+                                   footnote: nil)
+        case .running:
+            return AICreditsNotice(tone: .normal, meter: meter, messages: [], button: nil, footnote: nil)
+        case .warning:
+            let button = offersSetup
+                ? ActionButton(title: NBLocalization.text("Keep filters running"), detail: credits.billingOfferText, action: .setUpBilling)
+                : nil
+            return AICreditsNotice(tone: .warning, meter: meter, messages: [credits.runsOutText].compactMap { $0 },
+                                   button: button, footnote: nil)
+        case .pausedForCredits:
+            let button = offersSetup
+                ? ActionButton(title: NBLocalization.text("Turn on usage billing"), detail: credits.turnOnBillingDetail, action: .setUpBilling)
+                : nil
+            return AICreditsNotice(tone: .paused, meter: meter, messages: credits.pausedText, button: button,
+                                   footnote: offersSetup ? credits.waitText : nil)
+        case .usageBilling:
+            let messages = credits.billingText + (offersBilling ? [] : [credits.limitSummaryText].compactMap { $0 })
+            let button = offersBilling ? ActionButton(title: NBLocalization.text("Manage billing"), detail: nil, action: .manageBilling) : nil
+            return AICreditsNotice(tone: credits.isWarning ? .warning : .normal, meter: meter, messages: messages,
+                                   button: button, footnote: nil)
+        case .pausedAtLimit:
+            let button = offersBilling ? ActionButton(title: NBLocalization.text("Change limit"), detail: nil, action: .manageBilling) : nil
+            return AICreditsNotice(tone: .paused, meter: meter, messages: [credits.limitReachedText], button: button, footnote: nil)
+        }
+    }
+}
+
+/// /analyzer/ai_classifier_usage in apps/analyzer/views.py: this month's credits, and about how many a text or image
+/// filter on one site spends a month.
+struct AIClassifierUsage: Equatable {
+    let credits: AICredits?
+    /// The raw ai_credits, which AICreditsStore keeps in the profile.
+    let creditsJSON: [String: Any]?
+    let textCreditsPerMonth: Double
+    let imageCreditsPerMonth: Double
+
+    init(json: [String: Any]) {
+        creditsJSON = json["ai_credits"] as? [String: Any]
+        credits = AICredits(json: creditsJSON)
+        textCreditsPerMonth = AIClassifierValue.double(json["text_credits_per_month"]) ?? 0
+        imageCreditsPerMonth = AIClassifierValue.double(json["image_credits_per_month"]) ?? 0
+    }
+
+    func creditsPerMonth(for kind: PromptClassifierKind) -> Double {
+        kind == .image ? imageCreditsPerMonth : textCreditsPerMonth
+    }
+
+    static func == (lhs: AIClassifierUsage, rhs: AIClassifierUsage) -> Bool {
+        lhs.credits == rhs.credits && lhs.textCreditsPerMonth == rhs.textCreditsPerMonth
+            && lhs.imageCreditsPerMonth == rhs.imageCreditsPerMonth
+    }
+
+    /// "A text filter on this site uses about 0.4 credits a month". A site that published nothing last month, or a
+    /// river, has no estimate. Anything that rounds to nothing still reads "about 0.1".
+    static func estimateText(_ credits: Double, kind: PromptClassifierKind) -> String? {
+        guard credits > 0 else { return nil }
+        let shown = max(0.1, AICreditsFormat.shownCredits(credits))
+        let display = AICreditsFormat.credits(shown)
+        return kind == .image
+            ? NBLocalization.plural("An image filter on this site uses about %2$@ credits a month", value: shown, display: display)
+            : NBLocalization.plural("A text filter on this site uses about %2$@ credits a month", value: shown, display: display)
+    }
+}
+
+/// AIClassifiers.swift keeps the freshest ai_credits in NewsBlurAppDelegate.m's dictUserProfile, so the trainer, the
+/// AI credits screen and the settings menu agree between /reader/feeds reloads.
+enum AICreditsStore {
+    @MainActor static func save(_ json: [String: Any]) {
+        guard let appDelegate = NewsBlurAppDelegate.shared, let profile = appDelegate.dictUserProfile else { return }
+        var updated = profile
+        updated["ai_credits"] = json
+        appDelegate.dictUserProfile = updated
+    }
+}
+
+// MARK: - Usage billing
+
+/// /profile/usage_billing_history in apps/profile/views.py.
+struct UsageBillingHistory: Equatable {
+    struct LineItem: Equatable {
+        let description: String
+        let quantity: Int
+        let amount: Double
+    }
+
+    struct Invoice: Equatable {
+        let date: Date?
+        let amount: Double
+        let status: String
+        let hostedInvoiceURL: URL?
+        let lineItems: [LineItem]
+
+        var isUpcoming: Bool { status == "draft" || status == "upcoming" }
+    }
+
+    let invoices: [Invoice]
+    let upcomingInvoice: Invoice?
+    let credits: AICredits?
+    let creditsJSON: [String: Any]?
+
+    init(json: [String: Any]) {
+        invoices = (json["invoices"] as? [[String: Any]] ?? []).map { Self.invoice(from: $0, amountKey: "amount_paid") }
+        upcomingInvoice = (json["upcoming_invoice"] as? [String: Any]).map { Self.invoice(from: $0, amountKey: "amount") }
+        creditsJSON = json["ai_credits"] as? [String: Any]
+        credits = AICredits(json: creditsJSON)
+    }
+
+    var hasInvoices: Bool { !invoices.isEmpty || upcomingInvoice != nil }
+
+    static func == (lhs: UsageBillingHistory, rhs: UsageBillingHistory) -> Bool {
+        lhs.invoices == rhs.invoices && lhs.upcomingInvoice == rhs.upcomingInvoice && lhs.credits == rhs.credits
+    }
+
+    private static func invoice(from json: [String: Any], amountKey: String) -> Invoice {
+        Invoice(date: AICreditsFormat.parseDay(json["date"]),
+                amount: AIClassifierValue.double(json[amountKey]) ?? AIClassifierValue.double(json["amount"]) ?? 0,
+                status: json["status"] as? String ?? "",
+                hostedInvoiceURL: (json["hosted_invoice_url"] as? String).flatMap(URL.init(string:)),
+                lineItems: (json["line_items"] as? [[String: Any]] ?? []).map {
+                    LineItem(description: $0["description"] as? String ?? "",
+                             quantity: AIClassifierValue.int($0["quantity"]),
+                             amount: AIClassifierValue.double($0["amount"]) ?? 0)
+                })
+    }
+}
+
+/// The result of /profile/save_usage_billing_limit, which answers code 1 on success.
+enum UsageBillingLimitSaveResult: Equatable {
+    case saved(limit: Double?, creditsJSON: [String: Any]?)
+    case failed(message: String?)
+
+    init(json: [String: Any]) {
+        if AIClassifierValue.int(json["code"]) == 1 {
+            self = .saved(limit: AIClassifierValue.double(json["limit"]), creditsJSON: json["ai_credits"] as? [String: Any])
+        } else {
+            self = .failed(message: json["message"] as? String)
+        }
+    }
+
+    static func == (lhs: UsageBillingLimitSaveResult, rhs: UsageBillingLimitSaveResult) -> Bool {
+        switch (lhs, rhs) {
+        case let (.saved(left, leftCredits), .saved(right, rightCredits)):
+            return left == right && AICredits(json: leftCredits) == AICredits(json: rightCredits)
+        case let (.failed(left), .failed(right)):
+            return left == right
+        default:
+            return false
+        }
+    }
+}
+
+/// Opening Stripe from the app: /profile/setup_usage_billing/ and /profile/manage_usage_billing/ with
+/// platform=ios answer with a Stripe URL as JSON instead of redirecting (apps/profile/views.py).
+enum UsageBillingStripeAction: String {
+    case setup
+    case manage
+
+    var path: String { self == .setup ? "/profile/setup_usage_billing/" : "/profile/manage_usage_billing/" }
+}
+
+enum UsageBillingStripeResponse: Equatable {
+    case open(URL)
+    case alreadyActive
+    case failed(message: String?)
+
+    init(json: [String: Any]) {
+        if AIClassifierValue.int(json["code"]) == 0 {
+            if AIClassifierValue.bool(json["already_active"]) {
+                self = .alreadyActive
+            } else if let address = json["url"] as? String, let url = URL(string: address),
+                      let scheme = url.scheme?.lowercased(), scheme == "https" {
+                self = .open(url)
+            } else {
+                self = .failed(message: json["message"] as? String)
+            }
+        } else {
+            self = .failed(message: json["message"] as? String)
+        }
+    }
+}
+
+/// Stripe returns the in-app browser to newsblur-auth://usage-billing?status=... (apps/profile/views.py
+/// usage_billing_app_return).
+enum UsageBillingCallback: Equatable {
+    static let scheme = "newsblur-auth"
+
+    case setupComplete
+    case cancelled
+    case portalReturn
+
+    init?(url: URL) {
+        guard url.scheme?.lowercased() == Self.scheme, url.host?.lowercased() == "usage-billing" else { return nil }
+        let status = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?.first(where: { $0.name == "status" })?.value
+        switch status {
+        case "setup_complete": self = .setupComplete
+        case "cancelled": self = .cancelled
+        case "portal_return": self = .portalReturn
+        default: return nil
+        }
+    }
+}
+
 // MARK: - Networking
 
-/// AIClassifiers.swift sends AI classifier requests through this seam so tests can answer them without the
-/// network. Paths are relative to the account's NewsBlur host.
+/// AIClassifiers.swift sends AI classifier, credit and usage billing requests through this seam so tests can answer
+/// them without the network. Paths are relative to the account's NewsBlur host.
 @MainActor protocol AIClassifierTransport: AnyObject {
+    func get(_ path: String, parameters: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void)
     func post(_ path: String, parameters: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void)
 }
 
 /// The production transport, which uses NewsBlurAppDelegate's authenticated AFNetworking session.
 @MainActor final class AppDelegateAIClassifierTransport: AIClassifierTransport {
+    func get(_ path: String, parameters: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        guard let appDelegate = NewsBlurAppDelegate.shared, let host = appDelegate.url else {
+            completion(.failure(URLError(.notConnectedToInternet)))
+            return
+        }
+        appDelegate.get("\(host)\(path)", parameters: parameters, success: { _, response in
+            completion(.success(response as? [String: Any] ?? [:]))
+        }, failure: { _, error in
+            completion(.failure(error ?? URLError(.unknown)))
+        })
+    }
+
     func post(_ path: String, parameters: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void) {
         guard let appDelegate = NewsBlurAppDelegate.shared, let host = appDelegate.url else {
             completion(.failure(URLError(.notConnectedToInternet)))
@@ -208,7 +754,7 @@ struct PromptTestResult: Equatable {
     }
 }
 
-/// The AI classifier endpoints the trainer calls.
+/// The AI classifier, credit and usage billing endpoints the trainer and AICreditsView.swift call.
 @MainActor final class AIClassifierAPI {
     /// NewsBlurTests replace this to answer requests with fixtures.
     static var makeTransport: () -> AIClassifierTransport = { AppDelegateAIClassifierTransport() }
@@ -238,8 +784,55 @@ struct PromptTestResult: Equatable {
         }
     }
 
+    /// This month's credits, with estimates for a site's filters when feedId names one.
+    func fetchUsage(feedId: String?, completion: @escaping (AIClassifierUsage?) -> Void) {
+        transport.get("/analyzer/ai_classifier_usage", parameters: ["feed_id": Self.numericFeedId(feedId)]) { result in
+            if case .success(let json) = result { completion(AIClassifierUsage(json: json)) } else { completion(nil) }
+        }
+    }
+
+    func fetchUsageBillingHistory(completion: @escaping (UsageBillingHistory?) -> Void) {
+        transport.get("/profile/usage_billing_history", parameters: [:]) { result in
+            if case .success(let json) = result { completion(UsageBillingHistory(json: json)) } else { completion(nil) }
+        }
+    }
+
+    /// A blank limit clears it.
+    func saveUsageBillingLimit(_ limit: String, completion: @escaping (UsageBillingLimitSaveResult) -> Void) {
+        let trimmed = limit.trimmingCharacters(in: .whitespacesAndNewlines)
+        transport.post("/profile/save_usage_billing_limit", parameters: ["limit": trimmed]) { result in
+            switch result {
+            case .success(let json): completion(UsageBillingLimitSaveResult(json: json))
+            case .failure: completion(.failed(message: nil))
+            }
+        }
+    }
+
+    /// /profile/cancel_usage_billing turns usage billing off and answers with the credits that leaves, or nil when the
+    /// request fails.
+    func cancelUsageBilling(completion: @escaping ([String: Any]?) -> Void) {
+        transport.post("/profile/cancel_usage_billing", parameters: [:]) { result in
+            guard case .success(let json) = result, AIClassifierValue.int(json["code"]) == 0,
+                  let credits = json["ai_credits"] as? [String: Any] else {
+                completion(nil)
+                return
+            }
+            completion(credits)
+        }
+    }
+
+    func startStripe(_ action: UsageBillingStripeAction, completion: @escaping (UsageBillingStripeResponse) -> Void) {
+        transport.post(action.path, parameters: ["platform": "ios"]) { result in
+            switch result {
+            case .success(let json): completion(UsageBillingStripeResponse(json: json))
+            case .failure: completion(.failed(message: nil))
+            }
+        }
+    }
+
     /// apps/analyzer/views.py parses feed_id as an integer, so social and river ids become 0.
-    static func numericFeedId(_ feedId: String) -> String {
-        Int(feedId) != nil ? feedId : "0"
+    static func numericFeedId(_ feedId: String?) -> String {
+        guard let feedId, Int(feedId) != nil else { return "0" }
+        return feedId
     }
 }

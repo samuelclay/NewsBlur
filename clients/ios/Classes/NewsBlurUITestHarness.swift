@@ -647,7 +647,8 @@ private enum ReaderUITestFixtures {
     static let swiftClusterRelatedStoryHash = "ui-story-swift-cluster-related"
     private static let bulkReadEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-bulk-read")
     // NewsBlurUITestHarness.swift's natural language classifier fixtures (AIClassifiers.swift): saved prompts on Swift
-    // Weekly and matched prompts on its first story. They run on the Archive account unless -newsblur-ui-test-premium-only.
+    // Weekly and matched prompts on its first story. They run on the Archive account's AI credits unless
+    // -newsblur-ui-test-free-account.
     private static let aiClassifiersEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-classifiers")
     // NewsBlurUITestHarness.swift's podcast fixture (Listen/ListenMediaPlayer.swift): Swift Weekly's first story
     // carries an episode, and /media_player answers with that episode paused at 23:41 on another device and two
@@ -656,8 +657,8 @@ private enum ReaderUITestFixtures {
     static let podcastEpisodeURL = FileManager.default.temporaryDirectory.appendingPathComponent("ui-test-episode-42.wav")
     private static let podcastNextEpisodeURL = FileManager.default.temporaryDirectory.appendingPathComponent("ui-test-episode-41.wav")
     private static let podcastDuration = 2820
-    /// Signs in a Premium account without Archive, whose saved AI filters don't score stories.
-    private static let premiumWithoutArchive = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-premium-only")
+    /// Signs in a free account, whose plan has no AI credits, so its saved AI filters don't score stories.
+    private static let freeAccount = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-free-account")
     /// Moves Swift Weekly out of Tech ▸ Swift to the top level, where the trainer has no folder scope.
     private static let swiftFeedAtTopLevel = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-top-level-site")
     private static let cachedImagePaging = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-cached-image-paging")
@@ -809,16 +810,17 @@ private enum ReaderUITestFixtures {
             "social_profile": ["id": "social:1", "user_id": 1, "username": username, "shared_stories_count": 0],
             "social_services": [:],
             "user_profile": [
-                "is_premium": 1,
-                "is_archive": premiumWithoutArchive ? 0 : 1,
+                "is_premium": freeAccount ? 0 : 1,
+                "is_archive": freeAccount ? 0 : 1,
                 "is_pro": 0,
                 "premium_expire": NSNull(),
                 "preferences": [
                     "story_clustering": true,
                     "cluster_mode": "related",
                 ],
-                // apps/profile/models.py runs AI filters for Premium Archive and Pro.
-                "can_use_ai_classifiers": !premiumWithoutArchive,
+                // apps/profile/models.py runs AI filters on every paid plan's monthly AI credits.
+                "can_use_ai_classifiers": !freeAccount,
+                "ai_credits": aiCredits,
             ],
             "activities": [],
             "dashboard_rivers": [],
@@ -1171,8 +1173,24 @@ private enum ReaderUITestFixtures {
         return matched
     }
 
+    /// apps/analyzer/ai_credits.py state() for the fixture account: an Archive month a quarter used, or a free plan.
+    private static var aiCredits: [String: Any] {
+        [
+            "included": freeAccount ? 0 : 50, "used": freeAccount ? 0 : 12.34, "remaining": freeAccount ? 0 : 37.66,
+            "month": "2026-11", "resets_on": "2026-12-01", "is_unlimited": false, "is_billing_available": true,
+            "is_usage_billing": false, "monthly_limit": NSNull(), "overage_credits": 0, "overage_usd": 0.0,
+            "unbilled_usd": 0.0, "minimum_charge_usd": 1.0, "immediate_charge_usd": 10.0,
+            "is_paused": freeAccount, "pause_reason": freeAccount ? "plan" : NSNull(), "is_warning": false,
+            "credit_usd": 0.01,
+            "forecast": freeAccount ? NSNull() : ["credits": 31.2, "credits_per_day": 1.1, "runs_out_on": NSNull(), "overage_usd": 0.0],
+        ]
+    }
+
     private static func aiClassifierResponse(for path: String) -> [String: Any]? {
         switch path {
+        case "/analyzer/ai_classifier_usage":
+            return ["code": 0, "can_use_ai": !freeAccount, "ai_credits": aiCredits, "stories_per_month": 300,
+                    "text_credits_per_month": 0.42, "image_credits_per_month": 3.0]
         case "/classifier/save":
             return ["code": 1]
         case "/classifier/test_prompt":

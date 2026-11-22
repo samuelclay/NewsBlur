@@ -9,7 +9,7 @@
 import SwiftUI
 
 /// TrainerAIPromptSection.swift keeps the trainer's natural language classifier state: the prompt being written,
-/// prompt tests, and whether the account's saved filters score stories. TrainerViewController.swift owns one model
+/// prompt tests, and the reader's AI credits with estimates for this site. TrainerViewController.swift owns one model
 /// so the state survives the TrainerView reload that follows every classifier save.
 @MainActor final class TrainerAIPromptModel: ObservableObject {
     enum TestState: Equatable {
@@ -22,6 +22,8 @@ import SwiftUI
     @Published private(set) var draftScores: [PromptClassifierKind: Int] = [:]
     @Published private(set) var tests: [PromptClassifierKind: TestState] = [:]
     @Published var scopeOverrides: [String: ClassifierScope] = [:]
+    /// /analyzer/ai_classifier_usage for the site being trained, loaded every time the trainer opens.
+    @Published private(set) var usage: AIClassifierUsage?
 
     /// The site or story being trained, and the account and server it's trained on. Drafts, test results and scope
     /// overrides belong to one context, so another account's trainer for the same site never shows them.
@@ -33,13 +35,19 @@ import SwiftUI
     }
 
     private(set) var context: Context?
-    /// Moves on with every new context and every account change, so a prompt test answered for an earlier one is
-    /// dropped, even once the reader is back on the same site and story.
+    /// Moves on with every new context and every account change, so a usage fetch or prompt test answered for an
+    /// earlier one is dropped, even once the reader is back on the same site and story.
     private var contextGeneration = 0
+    /// The context generation a usage fetch is out for. Opening the trainer prepares it more than once, and those
+    /// calls share the fetch already out.
+    private var usageFetchGeneration: Int?
 
     let api: AIClassifierAPI
     /// The signed in account's user_profile from /reader/feeds.
     var userProfile: () -> [AnyHashable: Any]?
+    /// Keeps fresh credits in the profile (AIClassifiers.swift AICreditsStore), so the AI credits screen and the
+    /// settings menu agree with the trainer.
+    var storeCredits: ([String: Any]) -> Void
     /// The signed in account and the server it's on.
     var signedInAccount: () -> (username: String, host: String)
     /// Saves through NewsBlurAppDelegate.m savePromptClassifier, like every other trainer classifier.
@@ -48,22 +56,29 @@ import SwiftUI
     var changeScope: (_ prompt: String, _ kind: PromptClassifierKind, _ feedId: String, _ score: Int,
                       _ oldScope: ClassifierScope, _ oldFolderName: String,
                       _ scope: ClassifierScope, _ folderName: String) -> Void
-    /// Opens PremiumView.swift scrolled to Premium Archive, through NewsBlurAppDelegate.m showPremiumDialogForArchive.
-    var openArchiveUpgrade: () -> Void
+    /// Opens PremiumView.swift through NewsBlurAppDelegate.m showPremiumDialog.
+    var openUpgrade: () -> Void
+    /// Opens AICreditsView.swift through NewsBlurAppDelegate.m showAICreditsDialogStartingSetup, going straight on
+    /// to Stripe checkout when startingSetup is set.
+    var openCredits: (_ startingSetup: Bool) -> Void
 
     /// apps/analyzer/views.py ignores prompts longer than this.
     static let maximumPromptLength = 500
 
     init(api: AIClassifierAPI? = nil,
          userProfile: (() -> [AnyHashable: Any]?)? = nil,
-         openArchiveUpgrade: (() -> Void)? = nil,
+         storeCredits: (([String: Any]) -> Void)? = nil,
+         openUpgrade: (() -> Void)? = nil,
+         openCredits: ((Bool) -> Void)? = nil,
          signedInAccount: (() -> (username: String, host: String))? = nil) {
         self.api = api ?? AIClassifierAPI()
         self.userProfile = userProfile ?? { NewsBlurAppDelegate.shared?.dictUserProfile as? [AnyHashable: Any] }
+        self.storeCredits = storeCredits ?? { AICreditsStore.save($0) }
         self.signedInAccount = signedInAccount ?? {
             (NewsBlurAppDelegate.shared?.activeUsername ?? "", NewsBlurAppDelegate.shared?.url ?? "")
         }
-        self.openArchiveUpgrade = openArchiveUpgrade ?? { NewsBlurAppDelegate.shared?.showPremiumDialogForArchive() }
+        self.openUpgrade = openUpgrade ?? { NewsBlurAppDelegate.shared?.showPremiumDialog() }
+        self.openCredits = openCredits ?? { NewsBlurAppDelegate.shared?.showAICreditsDialogStartingSetup($0) }
         savePrompt = { prompt, kind, feedId, score, scope, folderName in
             NewsBlurAppDelegate.shared?.savePromptClassifier(prompt, feedId: feedId, score: score,
                                                              includeImages: kind.includesImages,
@@ -78,7 +93,8 @@ import SwiftUI
 
     // MARK: Context
 
-    /// Clears drafts and results when the trainer opens for another site or story, or for another account.
+    /// Clears drafts and results when the trainer opens for another site or story, or for another account, and loads
+    /// the reader's credits again every time, so the meter never stays as an earlier visit left it.
     func prepare(feedId: String?, storyHash: String?) {
         let account = signedInAccount()
         let context = Context(account: account.username, host: account.host, feedId: feedId ?? "",
@@ -86,6 +102,7 @@ import SwiftUI
         if context != self.context {
             start(context)
         }
+        fetchUsage(feedId: feedId)
     }
 
     /// TrainerViewController.swift clears the trainer when the reader signs in to another account.
@@ -96,10 +113,26 @@ import SwiftUI
     private func start(_ context: Context?) {
         self.context = context
         contextGeneration += 1
+        usageFetchGeneration = nil
         drafts = [:]
         draftScores = [:]
         tests = [:]
         scopeOverrides = [:]
+        usage = nil
+    }
+
+    private func fetchUsage(feedId: String?) {
+        // A server that counts no credits has nothing for the trainer to show.
+        guard credits?.isUnlimited != true, usageFetchGeneration != contextGeneration else { return }
+        let generation = contextGeneration
+        usageFetchGeneration = generation
+        api.fetchUsage(feedId: feedId) { [weak self] usage in
+            guard let self, self.contextGeneration == generation else { return }
+            self.usageFetchGeneration = nil
+            guard let usage else { return }
+            self.usage = usage
+            if let json = usage.creditsJSON, usage.credits != nil { self.storeCredits(json) }
+        }
     }
 
     // MARK: Drafts
@@ -264,19 +297,39 @@ import SwiftUI
         return imageMatches[index]
     }
 
-    // MARK: Premium Archive
+    // MARK: AI credits
 
-    /// apps/profile/models.py sets can_use_ai_classifiers for Premium Archive and Pro, the accounts whose AI filters
-    /// score stories. Every account can still write, save and test them.
-    var runsAIFilters: Bool {
-        AIClassifierValue.bool(userProfile()?["can_use_ai_classifiers"])
+    /// This moment's credits from the usage fetch, or the profile's until it answers.
+    var credits: AICredits? {
+        usage?.credits ?? AICredits(profile: userProfile())
     }
 
-    /// Reminds a reader whose account doesn't run AI filters that the ones they saved or are writing won't score
-    /// stories until they upgrade to Premium Archive.
-    func showsArchiveBanner(_ kind: PromptClassifierKind, saved: [PromptClassifier]) -> Bool {
-        guard !runsAIFilters else { return false }
-        return saved.contains { $0.score != 0 } || !trimmedDraft(kind).isEmpty
+    /// The credit notice under an AI section. The month's meter, running low, paused and usage billing are about every
+    /// AI filter, so only the first section shows them. A plan without credits is told so in each section that has a
+    /// filter saved or being written, since only those won't score stories. Every account can still write, save and
+    /// test filters.
+    func creditsNotice(_ kind: PromptClassifierKind, saved: [PromptClassifier]) -> AICreditsNotice? {
+        guard let credits else { return nil }
+        if credits.status == .free {
+            guard saved.contains(where: { $0.score != 0 }) || !trimmedDraft(kind).isEmpty else { return nil }
+        } else if kind != PromptClassifierKind.allCases.first {
+            return nil
+        }
+        return AICreditsNotice.make(credits, offersBilling: UsageBillingFeature.isEnabled)
+    }
+
+    /// About what a filter of this kind on this site spends a month, while the reader's filters run.
+    func estimateText(_ kind: PromptClassifierKind) -> String? {
+        guard let usage, let credits, [.running, .warning, .usageBilling].contains(credits.status) else { return nil }
+        return AIClassifierUsage.estimateText(usage.creditsPerMonth(for: kind), kind: kind)
+    }
+
+    func perform(_ action: AICreditsNotice.Action) {
+        switch action {
+        case .upgrade: openUpgrade()
+        case .setUpBilling: openCredits(true)
+        case .manageBilling, .openCredits: openCredits(false)
+        }
     }
 }
 
@@ -304,6 +357,20 @@ struct TrainerAIPromptSection: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 8)
 
+            if let estimate = model.estimateText(kind) {
+                HStack(alignment: .firstTextBaseline, spacing: 5) {
+                    Image(systemName: "gauge.with.needle")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(TrainerAIPalette.accent)
+                    Text(estimate)
+                        .font(fontBuilder("WhitneySSm-Medium", 11))
+                        .foregroundColor(TrainerAIPalette.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("trainer-ai-estimate-\(kind.rawValue)")
+            }
+
             if kind == .image, !imageURLs.isEmpty {
                 imageGrid
             }
@@ -324,8 +391,8 @@ struct TrainerAIPromptSection: View {
                 }
             }
 
-            if model.showsArchiveBanner(kind, saved: savedPrompts) {
-                archiveBanner
+            if let notice = model.creditsNotice(kind, saved: savedPrompts) {
+                TrainerAICreditsNoticeView(notice: notice, fontBuilder: fontBuilder, perform: model.perform)
             }
 
             Spacer().frame(height: 4)
@@ -504,28 +571,132 @@ struct TrainerAIPromptSection: View {
         }
         .buttonStyle(BorderlessButtonStyle())
     }
+}
 
-    // MARK: Banner
+// MARK: - Credit notice
 
-    /// Tells a reader whose account doesn't run AI filters that theirs are saved, and opens the Premium screen at
-    /// Premium Archive when tapped.
-    var archiveBanner: some View {
-        Button(action: model.openArchiveUpgrade) {
-            HStack(alignment: .center, spacing: 8) {
-                Text(NBLocalization.text("AI filters are saved but only run on Premium Archive."))
-                    .font(.system(size: 12, weight: .bold))
-                    .multilineTextAlignment(.leading)
+/// TrainerAIPromptSection.swift's AI credits card (AIClassifiers.swift AICreditsNotice): the month's meter, which opens
+/// the AI credits screen, then why filters are paused or running low, and what the reader can do about it.
+struct TrainerAICreditsNoticeView: View {
+    let notice: AICreditsNotice
+    let fontBuilder: (String, CGFloat) -> Font
+    let perform: (AICreditsNotice.Action) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let meter = notice.meter {
+                Button { perform(.openCredits) } label: { meterRow(meter) }
+                    .buttonStyle(BorderlessButtonStyle())
+                    .accessibilityIdentifier("trainer-ai-credits-meter")
+            }
+
+            ForEach(Array(notice.messages.enumerated()), id: \.offset) { index, message in
+                Text(message)
+                    .font(fontBuilder(index == 0 && notice.tone != .normal ? "WhitneySSm-Semibold" : "WhitneySSm-Medium", 12))
+                    .foregroundColor(textColor)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            if let button = notice.button {
+                actionButton(button)
+            }
+
+            if let footnote = notice.footnote {
+                Text(footnote)
+                    .font(fontBuilder("WhitneySSm-Medium", 11))
+                    .foregroundColor(TrainerAIPalette.secondaryText)
+            }
+        }
+        .padding(10)
+        .background(RoundedRectangle(cornerRadius: 8).fill(background))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(border, lineWidth: 1))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trainer-ai-credits")
+    }
+
+    func meterRow(_ meter: AICreditsNotice.Meter) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(meterFill)
+                (Text(meter.usedText).foregroundColor(TrainerAIPalette.text)
+                    + Text(meter.resetText.map { " \u{00B7} \($0)" } ?? "").foregroundColor(TrainerAIPalette.secondaryText))
+                    .font(fontBuilder("WhitneySSm-Medium", 12))
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "chevron.forward")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(TrainerAIPalette.secondaryText)
             }
-            .foregroundColor(TrainerAIPalette.bannerText)
-            .padding(10)
-            .background(RoundedRectangle(cornerRadius: 8).fill(TrainerAIPalette.bannerBackground))
+            AICreditsMeter(fraction: meter.fraction, fill: meterFill, height: 6)
+        }
+        .contentShape(Rectangle())
+    }
+
+    /// A button for the notice's action. One with a description is a full-width card so the cost reads before the
+    /// tap; a plain one, like Upgrade, sits at the start of the line.
+    @ViewBuilder
+    func actionButton(_ button: AICreditsNotice.ActionButton) -> some View {
+        let isPrimary = button.action == .upgrade || button.action == .setUpBilling
+        Button { perform(button.action) } label: {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(button.title)
+                        .font(fontBuilder("WhitneySSm-Semibold", 13))
+                    Image(systemName: "chevron.forward")
+                        .font(.system(size: 10, weight: .bold))
+                }
+                if let detail = button.detail {
+                    Text(detail)
+                        .font(fontBuilder("WhitneySSm-Medium", 11))
+                        .opacity(0.92)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .foregroundColor(isPrimary ? .white : TrainerAIPalette.link)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(maxWidth: button.detail == nil ? nil : .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: 7).fill(isPrimary ? TrainerAIPalette.green : TrainerAIPalette.fieldBackground))
+            .overlay(RoundedRectangle(cornerRadius: 7).stroke(isPrimary ? Color.clear : TrainerAIPalette.fieldBorder, lineWidth: 1))
         }
         .buttonStyle(BorderlessButtonStyle())
-        .accessibilityIdentifier("trainer-ai-archive-banner")
+        .accessibilityIdentifier("trainer-ai-credits-action")
+    }
+
+    var meterFill: Color {
+        switch notice.tone {
+        case .paused: return AICreditsPalette.red
+        case .warning: return AICreditsPalette.amber
+        case .normal, .upgrade: return notice.meter.map { $0.fraction >= 1 } == true ? AICreditsPalette.accent : AICreditsPalette.green
+        }
+    }
+
+    var textColor: Color {
+        switch notice.tone {
+        case .paused: return TrainerAIPalette.pausedText
+        case .warning, .upgrade: return TrainerAIPalette.bannerText
+        case .normal: return TrainerAIPalette.text
+        }
+    }
+
+    var background: Color {
+        switch notice.tone {
+        case .paused: return TrainerAIPalette.pausedBackground
+        case .warning, .upgrade: return TrainerAIPalette.bannerBackground
+        case .normal: return TrainerAIPalette.subtleBackground
+        }
+    }
+
+    var border: Color {
+        switch notice.tone {
+        case .paused: return TrainerAIPalette.pausedBorder
+        case .warning, .upgrade: return TrainerAIPalette.bannerBorder
+        case .normal: return Color.clear
+        }
     }
 }
 
@@ -677,4 +848,9 @@ enum TrainerAIPalette {
     static var errorBackground: Color { Color.themed([0xFFEBEE, 0xF8E1DA, 0x512D31, 0x3E2226]) }
     static var bannerText: Color { Color.themed([0x5D4A1F, 0x5D4A1F, 0xF0DDA8, 0xF0DDA8]) }
     static var bannerBackground: Color { Color.themed([0xFFF4D6, 0xF7E6C4, 0x4A3F22, 0x3A3119]) }
+    static var bannerBorder: Color { Color.themed([0xF0DFA8, 0xE6CFA0, 0x5E5230, 0x4C4124]) }
+    static var pausedText: Color { Color.themed([0x8A1F1F, 0x8A1F1F, 0xFFC2C2, 0xFFC2C2]) }
+    static var pausedBackground: Color { Color.themed([0xFDE7E7, 0xF6DCD3, 0x4F2A2A, 0x3D2020]) }
+    static var pausedBorder: Color { Color.themed([0xF5C6C6, 0xE9C3B6, 0x6A3838, 0x552B2B]) }
+    static var link: Color { Color.themed([0x2F6FB3, 0x8A5A1E, 0x8CC4FF, 0x8CC4FF]) }
 }

@@ -341,6 +341,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showPremiumDialog;
 - (void)showPremiumDialogForArchive;
 - (void)showPremiumDialogForPro;
+- (void)showAICreditsDialogStartingSetup:(BOOL)startingSetup;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;

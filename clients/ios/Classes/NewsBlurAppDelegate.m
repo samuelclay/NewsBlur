@@ -1057,6 +1057,15 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self.premiumViewController.view setNeedsLayout];
 }
 
+// NewsBlurAppDelegate.m opens the AI credits screen (AICreditsView.swift) from the settings menu and the trainer's AI
+// sections, replacing whatever sheet or popover is showing. startingSetup goes straight on to Stripe checkout for usage
+// billing, which AICreditsView.swift only does while UsageBillingFeature.swift lets the app open Stripe.
+- (void)showAICreditsDialogStartingSetup:(BOOL)startingSetup {
+    UIViewController *credits = [AICreditsViewController makePresentableWithStartingSetup:startingSetup];
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    [self.splitViewController presentViewController:credits animated:YES completion:nil];
+}
+
 - (void)updateSplitBehavior:(BOOL)refresh {
     if (self.detailViewController.isDuoFullscreenReader) {
         [self.detailViewController updateDuoFullscreenSplitBehavior];
