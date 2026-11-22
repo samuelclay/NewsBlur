@@ -40,7 +40,7 @@ class Test_AiCreditsStatus {
         val nearLimit = billing.copy(monthlyLimit = 1.0, isWarning = true)
 
         assertEquals(AiCreditsStage.USAGE_BILLING, AiCreditsStatus.stage(nearLimit))
-        assertEquals(AiCreditsMeterLevel.WARNING, AiCreditsStatus.meterLevel(nearLimit))
+        assertEquals("Filters keep running, so the bar stays green", AiCreditsMeterLevel.NORMAL, AiCreditsStatus.meterLevel(nearLimit))
         assertNull("Billed credits never run out", AiCreditsStatus.runsOutOn(nearLimit))
     }
 
@@ -78,6 +78,7 @@ class Test_AiCreditsStatus {
         assertEquals(AiCreditsMeterLevel.NORMAL, AiCreditsStatus.meterLevel(billing))
         assertEquals(AiCreditsMeterLevel.WARNING, AiCreditsStatus.meterLevel(warning))
         assertEquals(AiCreditsMeterLevel.PAUSED, AiCreditsStatus.meterLevel(pausedCredits))
+        assertEquals("Paused at the monthly limit is red, usage billing or not", AiCreditsMeterLevel.PAUSED, AiCreditsStatus.meterLevel(pausedLimit))
     }
 
     @Test
@@ -88,14 +89,6 @@ class Test_AiCreditsStatus {
         assertEquals(0.0, AiCreditsStatus.pastPlanCredits(running.copy(used = 10_000.4)), 0.0)
         assertTrue("10,000.6 shows as 10,001", AiCreditsStatus.isPastPlan(running.copy(used = 10_000.6)))
         assertFalse("A free plan has no credits to be past", AiCreditsStatus.isPastPlan(billing.copy(included = 0)))
-    }
-
-    @Test
-    fun test_only_usage_billing_past_the_plan_splits_the_bar() {
-        assertEquals("The plan's 10,000 of 17,400 used", 10_000 / 17_400f, AiCreditsStatus.planShare(billing)!!, 0.0001f)
-        assertEquals("Paused at the limit still splits", 10_000 / 17_400f, AiCreditsStatus.planShare(pausedLimit)!!, 0.0001f)
-        assertNull("Paused for credits has nothing billed", AiCreditsStatus.planShare(pausedCredits.copy(used = 10_050.0)))
-        assertNull("Usage billing within the plan is one color", AiCreditsStatus.planShare(billing.copy(used = 4_000.0)))
     }
 
     @Test

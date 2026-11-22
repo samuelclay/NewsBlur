@@ -87,10 +87,15 @@ object AiCreditsStatus {
         return stage != AiCreditsStage.HIDDEN && stage != AiCreditsStage.FREE && (credits?.included ?: 0) > 0
     }
 
+    /**
+     * The bar's tone: green while credits last, amber near their end, red when filters pause.
+     * Usage billing keeps filters running past the credits, so its bar stays green.
+     */
     @JvmStatic
     fun meterLevel(credits: AiCredits): AiCreditsMeterLevel =
         when {
             credits.isPaused -> AiCreditsMeterLevel.PAUSED
+            credits.isUsageBilling -> AiCreditsMeterLevel.NORMAL
             credits.isWarning -> AiCreditsMeterLevel.WARNING
             else -> AiCreditsMeterLevel.NORMAL
         }
@@ -124,14 +129,6 @@ object AiCreditsStatus {
      */
     @JvmStatic
     fun creditsPerCent(credits: AiCredits): Int = (0.01 / credits.creditUsd).roundToInt().coerceAtLeast(1)
-
-    /**
-     * With usage billing past the plan's credits, the share of the bar the plan's own credits
-     * fill, the rest being billed credits. Null for a bar in one color.
-     */
-    @JvmStatic
-    fun planShare(credits: AiCredits): Float? =
-        if (credits.isUsageBilling && isPastPlan(credits)) (credits.included / credits.used).toFloat().coerceIn(0f, 1f) else null
 
     /** Whether filters score stories this month, so a site's estimate is worth showing. */
     @JvmStatic
