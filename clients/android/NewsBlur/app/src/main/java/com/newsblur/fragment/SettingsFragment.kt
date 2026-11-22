@@ -37,6 +37,7 @@ import com.newsblur.network.UserApi
 import com.newsblur.preference.ClusterMarkReadPreference
 import com.newsblur.preference.ListenPrefKeys
 import com.newsblur.preference.ListenPreferences
+import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppIconAppearanceMode
@@ -66,6 +67,9 @@ class SettingsFragment : Fragment() {
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var realtimeUpdates: RealtimeUpdates
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -184,6 +188,8 @@ class SettingsFragment : Fragment() {
             return
         }
         prefsRepo.putBoolean(key, value)
+        // SettingsFragment.kt: turning the new stories pill off hides it and drops what it was holding.
+        if (key == PrefConstants.SHOW_NEW_STORIES) realtimeUpdates.newStoriesSettingChanged()
         refreshUiState()
     }
 

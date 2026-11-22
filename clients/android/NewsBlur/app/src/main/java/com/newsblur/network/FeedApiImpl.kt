@@ -13,6 +13,7 @@ import com.newsblur.network.domain.AddFeedResponse
 import com.newsblur.network.domain.DiscoverFeedsResponse
 import com.newsblur.network.domain.FeedFolderResponse
 import com.newsblur.network.domain.NewsBlurResponse
+import com.newsblur.network.domain.StarredCountsResponse
 import com.newsblur.network.domain.UnreadCountResponse
 import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedSet
@@ -86,6 +87,18 @@ class FeedApiImpl(
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FEED_UNREAD_COUNT)
         val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, UnreadCountResponse::class.java)
+    }
+
+    override suspend fun refreshFeedCounts(): UnreadCountResponse? {
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_REFRESH_FEEDS)
+        val response: APIResponse = networkClient.get(urlString)
+        return response.getResponse(gson, UnreadCountResponse::class.java)
+    }
+
+    override suspend fun getStarredCounts(): StarredCountsResponse? {
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_STARRED_COUNTS)
+        val response: APIResponse = networkClient.get(urlString)
+        return response.getResponse(gson, StarredCountsResponse::class.java)
     }
 
     /**

@@ -164,6 +164,7 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
+- (void)applyRealtimeUnreadCounts:(NSDictionary *)results;
 - (void)redrawFeedCounts:(id)feedId;
 
 - (void)resizePreviewSize;

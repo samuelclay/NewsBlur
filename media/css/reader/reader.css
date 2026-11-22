@@ -1711,6 +1711,143 @@ img.feed_favicon {
     margin-left: 220px;
 }
 
+/* reader.css: The "N new stories" pill (media/js/newsblur/views/new_stories_indicator_view.js). #story_titles
+   scrolls, so zero-height sticky anchors at its top and bottom hold the pill over the visible rows. */
+.NB-new-stories-indicator-anchor {
+    position: sticky;
+    z-index: 30;
+    height: 0;
+    overflow: visible;
+}
+
+.NB-new-stories-indicator-anchor.NB-top {
+    top: 0;
+}
+
+.NB-new-stories-indicator-anchor.NB-bottom {
+    bottom: 0;
+}
+
+.NB-new-stories-indicator {
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px 7px 12px;
+    background: #477DBF;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 999px;
+    box-shadow:
+        0 1px 2px rgba(15, 17, 20, 0.12),
+        0 6px 16px rgba(15, 17, 20, 0.16);
+    cursor: pointer;
+    user-select: none;
+    opacity: 0;
+    pointer-events: none;
+    /* reader.css: hidden, the pill waits above the list's top edge, which #story_titles clips, so it slides out from
+       beneath the toolbar above the list and back under it. */
+    transform: translate(-50%, calc(-100% - 14px));
+    transition:
+        opacity 240ms ease-out,
+        transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 120ms ease-out;
+}
+
+.NB-new-stories-indicator.NB-at-bottom {
+    top: auto;
+    bottom: 12px;
+    transform: translate(-50%, calc(100% + 16px));
+}
+
+.NB-new-stories-indicator.NB-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
+
+.NB-new-stories-indicator:hover {
+    background: #3F6EA8;
+}
+
+.NB-new-stories-indicator:focus-visible {
+    outline: 2px solid #5C89C9;
+    outline-offset: 2px;
+}
+
+.NB-new-stories-indicator-icon {
+    display: inline-flex;
+}
+
+.NB-new-stories-indicator-icon svg {
+    display: block;
+}
+
+.NB-new-stories-indicator.NB-at-bottom .NB-new-stories-indicator-icon svg {
+    transform: rotate(180deg);
+}
+
+.NB-new-stories-indicator-label {
+    font-variant-numeric: tabular-nums;
+}
+
+/* reader.css: the row new_stories_indicator_view.js puts at the top of the list (the end of an oldest-first one)
+   while scrolling keeps the pill away, laid out like a story title but plainly a button. */
+.NB-new-stories-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 16px;
+    background: #EAF1FA;
+    color: #3F6EA8;
+    border-bottom: 1px solid #D5E2F2;
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    user-select: none;
+    grid-column: 1 / -1;
+    transition: background-color 120ms ease-out;
+}
+
+.NB-new-stories-row.NB-at-bottom {
+    border-top: 1px solid #D5E2F2;
+    border-bottom: none;
+}
+
+.NB-new-stories-row:hover {
+    background: #DCE8F6;
+}
+
+.NB-new-stories-row:focus-visible {
+    outline: 2px solid #5C89C9;
+    outline-offset: -2px;
+}
+
+.NB-new-stories-row .NB-new-stories-indicator-icon svg {
+    display: block;
+}
+
+.NB-new-stories-row.NB-at-bottom .NB-new-stories-indicator-icon svg {
+    transform: rotate(180deg);
+}
+
+body.NB-reduce-motion .NB-new-stories-indicator {
+    transition: opacity 120ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-new-stories-indicator {
+        transition: opacity 120ms linear;
+    }
+}
+
 .NB-story-titles-header {
     font-weight: bold;
     font-size: 16px;

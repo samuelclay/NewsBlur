@@ -2063,6 +2063,72 @@ import XCTest
         XCTAssertEqual(fixture.app.requests.first?.url, firstURL)
     }
 
+    // NewStoriesNewestPage.swift: past the new stories pill's cap, a tap shows the newest stories and the river pages on
+    // below them. Widening the folder to every feed the pill took stories from changes the river's page URL, and the
+    // next page must still land rather than be dropped as the old first page's.
+    func test_riverKeepsPagingAfterATapPastTheNewStoriesCap() async throws {
+        let fixture = makeFixture()
+        fixture.app.dictFeeds = ["1": ["id": 1, "feed_title": "First feed", "active": 1],
+                                 "2": ["id": 2, "feed_title": "Second feed", "active": 1]]
+        fixture.app.riverFeeds = [1]
+        fixture.openRiver()
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: 0, with: response())
+        await settle()
+        fixture.app.requests.removeAll()
+
+        var newest = makeStories(0..<1)[0]
+        newest["story_hash"] = "2:newest"
+        newest["story_feed_id"] = 2
+        newest["story_timestamp"] = 1_900_000_000
+        let list = RealtimeStoryList(key: "river:everything", feedIds: ["1", "2"], oldestFirst: false, unreadOnly: false,
+                                     intelligence: 0, showHiddenStories: false, loadedLastPage: false)
+        fixture.controller.showNewestStories(fetched: [newest], unfetchedHashes: [], profiles: [], list: list)
+        let firstPage = try XCTUnwrap(fixture.app.requests.last?.url)
+        XCTAssertTrue(firstPage.contains("f=2"), firstPage)
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response())
+        await settle()
+        XCTAssertEqual(fixture.hashes.count, 13)
+
+        fixture.controller.fetchRiverPage(2, withCallback: nil)
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(12..<24)))
+        await settle()
+        XCTAssertEqual(fixture.hashes.count, 25, "the second page lands below the newest stories")
+        XCTAssertFalse(fixture.controller.pageFetching)
+    }
+
+    // The newest stories a tap past the pill's cap shows also sit in the list's next pages, which skip them. A page
+    // holding nothing but those must not end the list: a feed's six-story pages would otherwise stop at the twenty.
+    func test_pageOfOnlyTheNewestStoriesDoesNotEndTheList() async throws {
+        let fixture = makeFixture()
+        fixture.app.riverFeeds = [1]
+        fixture.openRiver()
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: 0, with: response())
+        await settle()
+        fixture.app.requests.removeAll()
+
+        let list = RealtimeStoryList(key: "river:everything", feedIds: ["1"], oldestFirst: false, unreadOnly: false,
+                                     intelligence: 0, showHiddenStories: false, loadedLastPage: false)
+        fixture.controller.showNewestStories(fetched: makeStories(0..<8), unfetchedHashes: [], profiles: [], list: list)
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(0..<4)))
+        await settle()
+        XCTAssertEqual(fixture.hashes.count, 8)
+
+        fixture.controller.fetchRiverPage(2, withCallback: nil)
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(4..<8)))
+        await settle()
+        XCTAssertTrue(fixture.app.requests.last?.url.contains("page=3") == true, "the list asks for the page after")
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: makeStories(8..<12)))
+        await settle()
+        XCTAssertEqual(fixture.hashes, makeStories(0..<12).compactMap { $0["story_hash"] as? String })
+        XCTAssertFalse(fixture.controller.pageFinished)
+    }
+
     func test_cancelledFirstPageRetriesPageOneWithoutLosingAnchorOrLocalEditsThenAllowsPageTwo() async throws {
         let fixture = makeFixture()
         try await prime(fixture)

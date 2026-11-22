@@ -395,7 +395,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var pane_anchor = this.options.pane_anchor;
             var story_layout = this.options.override_layout ||
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
-            var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function (story) {
+            // story_titles_view.js: stories.js insert_realtime_stories names the stories it placed inside the
+            // list; a page that loaded is the last stories in the collection.
+            var added_models = options.inserted || this.collection.models.slice(-1 * options.added);
+            var stories = _.compact(_.map(added_models, function (story) {
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
@@ -414,19 +417,47 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     in_add_site_view: in_add_site_view
                 }).render();
             }));
-            this.stories = this.stories.concat(stories);
             var $stories = _.map(stories, function (story) {
                 return story.el;
             });
-            this.$el.append($stories);
-            NEWSBLUR.motion.watch(this, stories, this.$story_titles[0], NEWSBLUR.reader.active_feed, { animate_on_scroll: false });
+            if (options.inserted) {
+                // story_titles_view.js: placed last to first, so the story after each one is already in place.
+                var placing = _.sortBy(stories, function (view) {
+                    return -collection.indexOf(view.model);
+                });
+                _.each(placing, function (view) {
+                    // story_titles_view.js: before the next story whose row is in this list, skipping any whose
+                    // title view lives elsewhere.
+                    var next_el = null;
+                    for (var i = collection.indexOf(view.model) + 1; i < collection.length && !next_el; i++) {
+                        var next_view = collection.at(i).story_title_view;
+                        if (next_view && next_view.el.parentNode === this.el) next_el = next_view.el;
+                    }
+                    if (next_el) {
+                        this.el.insertBefore(view.el, next_el);
+                    } else {
+                        this.$el.append(view.el);
+                    }
+                }, this);
+                this.stories = _.sortBy(this.stories.concat(stories), function (view) {
+                    return collection.indexOf(view.model);
+                });
+            } else {
+                this.stories = this.stories.concat(stories);
+                this.$el.append($stories);
+            }
+            // story_titles_view.js: stories from the new stories pill arrive with motion.js arrive instead of the
+            // entrance a page of titles gets.
+            if (!options.inserted) {
+                NEWSBLUR.motion.watch(this, stories, this.$story_titles[0], NEWSBLUR.reader.active_feed, { animate_on_scroll: false });
+            }
             if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story || this.options.on_trending_feed) {
                 var $extras = this.$el.find('.NB-story-title-container .NB-story-title:not(.NB-hidden)').slice(5);
                 $extras.addClass('NB-hidden');
             }
         }
         this.end_loading();
-        this.fill_out();
+        if (!options.inserted) this.fill_out();
     },
 
     depart: function () {
@@ -838,6 +869,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
 
     mark_read_stories_above_scroll: function (scroll_y) {
+        // story_titles_view.js: the new stories pill's own scroll and the arrival after it aren't reading
+        // (reader.js hold_mark_read_for_new_stories).
+        if (NEWSBLUR.reader.new_stories_arriving()) return;
         var $story_titles = this.$story_titles;
         var score = NEWSBLUR.reader.get_unread_view_score();
         var unread_stories = [];

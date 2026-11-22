@@ -23,7 +23,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.model.bind('change:starred', this.toggle_starred, this);
         this.model.bind('change:intelligence', this.toggle_intelligence, this);
         this.collection.bind('render:intelligence', this.render_intelligence, this);
-        this.model.story_title_view = this;
+        // story_title_view.js: an open story's cluster section (story_detail_view.js) draws stories the list
+        // already shows, and their rows in the list stay the ones the reader and the new stories pill act on.
+        if (!(this.options.is_cluster_detail && this.model.story_title_view)) this.model.story_title_view = this;
 
         // Listen for feed title changes to update grid/list/magazine views in real time
         this.story_feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
@@ -311,6 +313,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
 
     render_inline_story_detail: function (temporary_text) {
         // console.log(['render_inline_story_detail', this.model.get('story_title')]);
+        // story_title_view.js: a story can be drawn again while it's open (a feed saved to another story view
+        // redraws it from switch_story_view before toggle_selected does). The new drawing replaces the old one, and
+        // goes only into this row's own holder, never the holders of the cluster rows (story_detail_view.js) inside
+        // the story being replaced.
+        this.destroy_inline_story_detail();
+        var $holder = this.$el.children(".NB-story-detail");
         if (NEWSBLUR.reader.story_view == 'text' || temporary_text) {
             this.text_view = new NEWSBLUR.Views.TextTabView({
                 el: null,
@@ -318,7 +326,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 temporary: !!temporary_text
             });
             this.text_view.fetch_and_render(this.model, temporary_text);
-            this.$(".NB-story-detail").html(this.text_view.$el);
+            $holder.html(this.text_view.$el);
             this.text_view.story_detail.attach_handlers();
             this.text_view.setElement(this.text_view.$el);
             this.text_view.story_detail.setElement(this.text_view.story_detail.$el);
@@ -329,7 +337,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 tagName: 'div',
                 inline_story_title: true
             }).render();
-            this.$(".NB-story-detail").html(this.story_detail.$el);
+            $holder.html(this.story_detail.$el);
             this.story_detail.attach_handlers();
             this.story_detail.setElement(this.story_detail.$el);
         }
@@ -353,11 +361,15 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
 
     destroy_inline_story_detail: function () {
+        // story_title_view.js: each drawing is torn down once, so an old one can't unregister the open story's
+        // inline_story_detail_view (story_detail_view.js destroy) after a redraw.
         if (this.story_detail) {
             this.story_detail.destroy();
+            this.story_detail = null;
         }
         if (this.text_view) {
             this.text_view.destroy();
+            this.text_view = null;
         }
         // this.$(".NB-story-detail").empty();
     },

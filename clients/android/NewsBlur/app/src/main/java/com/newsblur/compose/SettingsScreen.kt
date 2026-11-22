@@ -49,6 +49,7 @@ import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.NewReleases
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.FilterList
@@ -175,6 +176,7 @@ data class SettingsUiState(
     val loadNextOnMarkRead: Boolean = false,
     val autoOpenFirstUnread: Boolean = false,
     val storyClusteringEnabled: Boolean = true,
+    val showNewStories: Boolean = true,
     val clusterMode: String = StoryClusterDisplayDecision.CLUSTER_MODE_RELATED,
     val isArchive: Boolean = false,
     val clusterMarkReadEnabled: Boolean = false,
@@ -257,6 +259,7 @@ fun buildSettingsUiState(
         loadNextOnMarkRead = prefsRepo.loadNextOnMarkRead(),
         autoOpenFirstUnread = prefsRepo.isAutoOpenFirstUnread(),
         storyClusteringEnabled = StoryClusterDisplayDecision.isStoryClusteringEnabled(prefsRepo),
+        showNewStories = prefsRepo.isNewStoriesPillEnabled(),
         clusterMode = StoryClusterDisplayDecision.clusterMode(prefsRepo),
         isArchive = prefsRepo.getIsArchive(),
         clusterMarkReadEnabled = prefsRepo.isClusterMarkReadEnabled(),
@@ -771,6 +774,16 @@ fun SettingsScreen(
                         options = markStoryReadOptions,
                         onSelect = { onStringChanged(PrefConstants.STORY_MARK_READ_BEHAVIOR, it) },
                     ),
+            )
+            RowDivider(palette)
+            ToggleSettingsRow(
+                title = stringResource(R.string.settings_show_new_stories),
+                icon = Icons.Rounded.NewReleases,
+                iconColor = NewsblurBlue,
+                checked = state.showNewStories,
+                subtitle = stringResource(R.string.settings_show_new_stories_summary),
+                palette = palette,
+                onCheckedChange = { onBooleanChanged(PrefConstants.SHOW_NEW_STORIES, it) },
             )
             RowDivider(palette)
             ToggleSettingsRow(

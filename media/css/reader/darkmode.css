@@ -2454,6 +2454,16 @@ border-bottom-color: #303739;
     animation: dark-end-line-animation 1.7s ease infinite;
 }
 
+.NB-dark .NB-new-stories-row {
+    background: #1F2A36;
+    color: #8FB3E0;
+    border-color: #2C3A4A;
+}
+
+.NB-dark .NB-new-stories-row:hover {
+    background: #263445;
+}
+
 .NB-dark .NB-feed-fetching-indicator {
     color: #808080;
 }
@@ -6771,4 +6781,17 @@ a.mention, a.mention-group {
 .NB-dark .NB-media-player-toast {
     color: #303030;
     background-color: rgba(230, 230, 230, 0.95);
+}
+
+/* darkmode.css: The new stories pill (media/js/newsblur/views/new_stories_indicator_view.js) keeps its accent
+   but drops to a deeper blue with a heavier shadow on the dark list. */
+.NB-dark .NB-new-stories-indicator {
+    background: #3F6EA8;
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.30),
+        0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.NB-dark .NB-new-stories-indicator:hover {
+    background: #4A7CB8;
 }

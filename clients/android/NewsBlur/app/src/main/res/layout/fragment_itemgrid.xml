@@ -58,4 +58,23 @@
         android:layout_marginBottom="22dp"
         android:visibility="gone" />
 
+    <!-- NewStoriesPill.kt themes and positions this; RealtimeUpdates.kt decides when it shows. -->
+    <TextView
+        android:id="@+id/new_stories_pill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:clickable="true"
+        android:elevation="3dp"
+        android:focusable="true"
+        android:gravity="center"
+        android:minHeight="36dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:singleLine="true"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
 </RelativeLayout>

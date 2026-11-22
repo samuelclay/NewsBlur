@@ -21,6 +21,7 @@ import com.newsblur.domain.UserDetails
 import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
 import com.newsblur.service.SubscriptionSyncService
+import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.service.SyncService
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
@@ -122,6 +123,7 @@ class PrefsRepo(
             putString(AppConstants.LAST_APP_VERSION, appVersion)
             // also make sure we auto-trigger an update, since all data are now gone
             putLong(AppConstants.LAST_SYNC_TIME, 0L)
+            putLong(AppConstants.LAST_UNREAD_SYNC_TIME, 0L)
         }
     }
 
@@ -212,6 +214,7 @@ class PrefsRepo(
     ) {
         // PrefsRepo.kt stops Listen first so the signed-out account's story stops playing and its notification goes.
         ListenManager.from(context).stopForAccountChange()
+        RealtimeUpdates.from(context).stopForAccountChange()
         SyncService.stop(context)
         syncServiceState.clearState()
 
@@ -233,6 +236,8 @@ class PrefsRepo(
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
+        // Only now may realtime subscribe again: nothing of the previous account is left to subscribe with.
+        RealtimeUpdates.from(context).accountChangeComplete()
 
         // disable widget
         disableWidgetUpdate(context)
@@ -252,6 +257,7 @@ class PrefsRepo(
     ) {
         // The previous account's story mustn't keep playing, or report its listening, as the new one.
         ListenManager.from(context).stopForAccountChange()
+        RealtimeUpdates.from(context).stopForAccountChange()
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
         val keys: MutableSet<String> = HashSet(prefs.all.keys)
@@ -266,6 +272,7 @@ class PrefsRepo(
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
+        RealtimeUpdates.from(context).accountChangeComplete()
     }
 
     /**
@@ -353,16 +360,33 @@ class PrefsRepo(
      * data to justify automatically syncing again.
      */
     fun isTimeToAutoSync(): Boolean {
-        val lastTime = prefs.getLong(AppConstants.LAST_SYNC_TIME, 1L)
+        val lastTime = getLastSyncTime()
         return ((lastTime + AppConstants.AUTO_SYNC_TIME_MILLIS) < (Date()).time)
     }
+
+    /** When SyncService.kt last loaded the feed list with counts. */
+    fun getLastSyncTime(): Long = prefs.getLong(AppConstants.LAST_SYNC_TIME, 1L)
 
     /**
      * Make note that a sync of the feed/folder list has been completed, so we can track
      * how long it has been until another is needed.
      */
     fun updateLastSyncTime() {
-        prefs.edit { putLong(AppConstants.LAST_SYNC_TIME, (Date()).time) }
+        prefs.edit {
+            putLong(AppConstants.LAST_SYNC_TIME, (Date()).time)
+            // A feed/folder list sync also starts the unread story download.
+            putLong(AppConstants.LAST_UNREAD_SYNC_TIME, (Date()).time)
+        }
+    }
+
+    /** Whether the unread story download for offline reading is due, on the same schedule as the feed list sync. */
+    fun isTimeToSyncUnreads(): Boolean {
+        val lastTime = prefs.getLong(AppConstants.LAST_UNREAD_SYNC_TIME, 1L)
+        return lastTime + AppConstants.AUTO_SYNC_TIME_MILLIS < Date().time
+    }
+
+    fun updateLastUnreadSyncTime() {
+        prefs.edit { putLong(AppConstants.LAST_UNREAD_SYNC_TIME, (Date()).time) }
     }
 
     private fun getLastVacuumTime(): Long = prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L)
@@ -820,6 +844,9 @@ class PrefsRepo(
     }
 
     fun isKeepOldStories() = prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, false)
+
+    /** Whether the open list offers stories that arrive while it's open, in NewStoriesPill.kt. On for every device by default. */
+    fun isNewStoriesPillEnabled() = prefs.getBoolean(PrefConstants.SHOW_NEW_STORIES, true)
 
     fun getMaxCachedAgeMillis(): Long {
         val `val` = prefs.getString(PrefConstants.CACHE_AGE_SELECT, PrefConstants.CACHE_AGE_SELECT_30D)!!

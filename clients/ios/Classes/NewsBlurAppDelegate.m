@@ -1619,6 +1619,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)showLogin {
     [self resetFeedSubscriptionForAccountChange];
+    // NewsBlurAppDelegate.m closes the realtime socket so the next account never hears this one's updates.
+    [RealtimeUpdates.shared stop];
     // NewsBlurAppDelegate.m stops a story being read aloud so it can't carry over to the next account.
     [ListenStoryBridge stopForAccountChange];
     [self.detailViewController resetDiscoveryForAccountChange];
@@ -2343,6 +2345,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)finishAuthentication {
     // NewsBlurAppDelegate.m starts a new browsing session only after authentication succeeds.
+    [RealtimeUpdates.shared stop];
     [self.detailViewController resetDiscoveryForAccountChange];
     [self.feedsViewController resetForAccountChange];
     [self cancelOfflineQueue];
@@ -4382,6 +4385,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.dictSavedStoryTags = savedStoryDict;
     
     return newCount;
+}
+
+// NewsBlurAppDelegate.m reloads the interactions list when RealtimeUpdates.swift hears of a new one while it's showing.
+- (void)refreshVisibleInteractions {
+    InteractionsModule *interactions = self.activitiesViewController.interactionsModule;
+    if (!interactions.window || interactions.hidden) return;
+    [interactions fetchInteractionsDetail:1];
 }
 
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results {
