@@ -452,7 +452,12 @@
     <string name="premium_custom_rss">已儲存文章的自訂 RSS 訂閱來源</string>
     <string name="premium_text_view">文字檢視會方便地擷取文章內容</string>
     <string name="premium_discover_related">探索相關文章與網站</string>
-    <string name="premium_natural_language_classifiers">自然語言文字和影像分類器</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="other">AI 文字與圖片篩選器，每月提供 %1$s 點 AI 點數</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="other">每月 %1$s 點 AI 篩選器點數</item>
+    </plurals>
     <string name="premium_shiloh">你可以餵飽 NewsBlur 的飢餓獵犬 Lyric 6 天</string>
     <string name="archive_everything_premium">當然包含進階訂閱的所有功能</string>
     <string name="archive_enable_sites">追蹤最多 4,096 個網站</string>
@@ -1284,8 +1289,80 @@
     <string name="ai_scope_global">所有網站</string>
     <string name="ai_scope_folder_named">%1$s 中的所有網站</string>
     <string name="ai_scope_requires_archive">需要 Premium Archive</string>
-    <string name="ai_filters_archive_only">AI 篩選器已儲存，但只會在 %1$s 上執行。</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+    <string name="ai_credits_title">AI 點數</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="other">已使用 %1$s／%2$s 點 AI 點數</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="other">已使用 %1$s 點 AI 點數，超出方案額度 %3$s 的部分為 %2$s</item>
+    </plurals>
+    <string name="ai_credits_resets">重設時間：%1$s</string>
+    <string name="ai_credits_free">AI 篩選器已儲存，但只有 Premium 才會執行。Premium 每月包含 %1$s 點 AI 點數，Archive 包含 %2$s 點，Pro 包含 %3$s 點。</string>
+    <string name="ai_credits_upgrade">升級</string>
+    <string name="ai_credits_estimate_text">此網站的文字篩選器每月大約會使用 %1$s 點數</string>
+    <string name="ai_credits_estimate_image">此網站的圖片篩選器每月約使用 %1$s 點數</string>
+    <string name="ai_credits_estimate_text_small">此網站的文字篩選器每月使用量少於 %1$s 點數</string>
+    <string name="ai_credits_estimate_image_small">此網站的圖片篩選器每月使用的點數不到 %1$s 點</string>
+    <string name="ai_credits_runs_out">依目前的使用速度，點數大約會在 %1$s 用完。</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="other">你的 AI 篩選器已暫停，直到 %1$s。本月的 %2$s 點 AI 點數已用完。</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">你的 AI 篩選器已達每月 %1$s 點的上限，並暫停至 %2$s。</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="other">用量計費已啟用。超過方案額度的點數每點 1¢：本月至今已使用 %2$s，方案額度為 %1$s。</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">用量計費已啟用。AI 點數每點 1¢：本月至今已使用 %1$s。</string>
+    <string name="ai_credits_unbilled">%1$s 尚待扣款：若金額至少達到 %2$s，會在下月初扣款；否則會在金額達到 %3$s 時立即扣款。</string>
+    <string name="ai_credits_keep_running">讓篩選器繼續運作</string>
+    <string name="ai_credits_billing_explainer">超過額度後，篩選器仍會繼續執行，每點 1¢。</string>
+    <string name="ai_credits_billing_forecast">依目前使用速度，本月約 %1$s。</string>
+    <string name="ai_credits_turn_on_billing">啟用依用量計費</string>
+    <string name="ai_credits_turn_on_detail">超過方案額度後，每點 1¢，本月約 %1$s</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">超過方案額度後，每點 1¢</string>
+    <string name="ai_credits_or_wait">或等到 %1$s</string>
+    <string name="ai_credits_manage_billing">管理帳單</string>
+    <string name="ai_credits_change_limit">變更上限</string>
+    <string name="ai_credits_open">查看 AI 點數</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="other">你的方案每月包含 %1$s 點 AI 點數，可用於 AI 文字與圖片篩選器。點數會在每月 1 日重設，未使用的點數不會累積。</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="other">依目前的使用速度，本月大約會用掉 %2$s 點中的 %1$s 點。</item>
+    </plurals>
+    <string name="ai_credits_unlimited">此伺服器不會計算 AI 點數，因此 AI 篩選器會一律執行。</string>
+    <string name="ai_credits_load_failed">無法載入 AI 點數。請向下拉動以重試。</string>
+    <string name="usage_billing_title">用量計費</string>
+    <string name="usage_billing_terms">每月初，當你的卡片應付金額達到至少 %1$s 時，就會扣款；或當金額達到 %2$s 時立即扣款。較小的金額會延至之後月份。</string>
+    <string name="usage_billing_set_up">設定依用量計費</string>
+    <string name="usage_billing_manage">在 Stripe 更新信用卡</string>
+    <string name="usage_billing_cancel">關閉依用量計費</string>
+    <string name="usage_billing_cancel_confirm">要關閉用量計費嗎？超過方案額度的費用若達到 %1$s，就會立即扣款；本月點數用完後，AI 篩選器也會暫停。</string>
+    <string name="usage_billing_cancel_keep">保持啟用</string>
+    <string name="usage_billing_cancelled">依用量計費已關閉。</string>
+    <string name="usage_billing_cancel_failed">無法關閉依用量計費。請再試一次。</string>
+    <string name="usage_billing_limit_label">每月上限</string>
+    <string name="usage_billing_limit_hint">不限</string>
+    <string name="usage_billing_limit_help">依用量計費達到此上限時，篩選器會暫停。留空表示不設上限。</string>
+    <string name="usage_billing_limit_save">儲存上限</string>
+    <string name="usage_billing_limit_saved">每月上限已儲存</string>
+    <string name="usage_billing_limit_cleared">每月上限已移除</string>
+    <string name="usage_billing_limit_failed">無法儲存每月上限。請再試一次。</string>
+    <string name="usage_billing_limit_invalid">請以美元輸入上限，例如 %1$s。</string>
+    <string name="usage_billing_limit_read_only">每月上限：%1$s</string>
+    <string name="usage_billing_no_limit">無每月上限</string>
+    <string name="usage_billing_history_title">用量計費記錄</string>
+    <string name="usage_billing_no_invoices">尚無用量帳單。</string>
+    <string name="usage_billing_upcoming">即將扣款</string>
+    <string name="usage_billing_invoice">帳單</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="other">%1$s 點數</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">無法連線至 Stripe。請再試一次。</string>
+    <string name="usage_billing_already_active">用量計費已設定。</string>
+    <string name="usage_billing_activating">正在啟用依用量計費。Stripe 確認你的付款資料後，還需要幾秒鐘。</string>
+    <string name="usage_billing_activating_slow">Stripe 仍在確認你的計費設定。請下拉，稍後再確認。</string>
+    <string name="usage_billing_setup_complete">用量計費已啟用。超過點數額度後，你的 AI 篩選器仍會繼續執行。</string>
+    <string name="usage_billing_no_browser">請安裝網頁瀏覽器以設定用量計費。</string>
     <string name="listen_story_button">聆聽</string>
     <string name="listen_resume">繼續播放</string>
     <string name="listen_pause">暫停</string>

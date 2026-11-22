@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "%1$@ folder, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ folder, collapsed, %2$@";
 "%1$@ followed %2$@." = "%1$@ followed %2$@.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@.";
 "%1$@ of %2$@ of listening left this week" = "%1$@ of %2$@ of listening left this week";
 "%1$@ of %2$@ sites indexed" = "%1$@ of %2$@ sites indexed";
 "%1$@ of %2$@ story previews used today" = "%1$@ of %2$@ story previews used today";
+"%1$@ of your %2$@ monthly limit" = "%1$@ of your %2$@ monthly limit";
 "%1$@ re-shared %2$@." = "%1$@ re-shared %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ re-shared %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ replied to %2$@: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ shared %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ shared %2$@:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "%2$@ AI credits used, %3$@ past your plan's %1$@";
+"%2$@ of %1$@ AI credits used" = "%2$@ of %1$@ AI credits used";
 "%@ Widget Sites" = "%@ Widget Sites";
 "%@ ago" = "%@ ago";
 "%@ categories to choose from" = "%@ categories to choose from";
@@ -66,6 +70,8 @@
 "100 stories" = "100 stories";
 "12 color flavors with light and dark variants." = "12 color flavors with light and dark variants.";
 "15 stories" = "15 stories";
+"1¢ per credit past your plan's" = "1¢ per credit past your plan's";
+"1¢ per credit past your plan's, about %@ this month" = "1¢ per credit past your plan's, about %@ this month";
 "2,000 stories" = "2,000 stories";
 "20 stories" = "20 stories";
 "2x daily" = "2x daily";
@@ -73,6 +79,8 @@
 "3x daily" = "3x daily";
 "5 stories" = "5 stories";
 "5,000 stories" = "5,000 stories";
+"50 AI credits a month for AI filters" = "50 AI credits a month for AI filters";
+"500 AI credits a month for AI filters" = "500 AI credits a month for AI filters";
 "500 stories" = "500 stories";
 "< 15/month" = "< 15/month";
 "< 30/month" = "< 30/month";
@@ -80,11 +88,16 @@
 "< 60/month" = "< 60/month";
 "< 90/month" = "< 90/month";
 "A clearer, closer sound" = "A clearer, closer sound";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "A credit covers about 700 stories through a text filter, or 100 through an image filter.";
 "A personal news reader bringing\npeople together to talk about the world." = "A personal news reader bringing\npeople together to talk about the world.";
-"AI filters are saved but only run on Premium Archive." = "AI filters are saved but only run on Premium Archive.";
+"A text filter on this site uses about %2$@ credits a month" = "A text filter on this site uses about %2$@ credits a month";
+"AI Credits" = "AI Credits";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500.";
 "AI finds the stories" = "AI finds the stories";
+"AI text and image filters, with 5 AI credits a month" = "AI text and image filters, with 5 AI credits a month";
 "ALL" = "ALL";
 "ALL NOTIFICATIONS" = "ALL NOTIFICATIONS";
+"About %@ this month at your pace." = "About %@ this month at your pace.";
 "About NewsBlur" = "About NewsBlur";
 "Accent [voice filter]" = "Accent";
 "Account" = "Account";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "Already have an account? Sign in";
 "Already have feeds?" = "Already have feeds?";
 "Also published by %@ sites" = "Also published by %@ sites";
+"An image filter on this site uses about %2$@ credits a month" = "An image filter on this site uses about %2$@ credits a month";
 "Analyze" = "Analyze";
 "Analyzing images..." = "Analyzing images...";
 "App Badge" = "App Badge";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "Ask AI questions about stories";
 "Ask AI…" = "Ask AI…";
 "Ask a question..." = "Ask a question...";
+"At this pace your credits run out around %@." = "At this pace your credits run out around %@.";
+"At this pace, this month will use about %2$@ AI credits." = "At this pace, this month will use about %2$@ AI credits.";
 "Atlantic Blue" = "Atlantic Blue";
 "Authenticating" = "Authenticating";
 "Auto" = "Auto";
@@ -197,6 +213,7 @@
 "Cancel" = "Cancel";
 "Cannot reply to this story" = "Cannot reply to this story";
 "Change Story List" = "Change Story List";
+"Change limit" = "Change limit";
 "Choose Icon" = "Choose Icon";
 "Choose Language…" = "Choose Language…";
 "Choose Story List" = "Choose Story List";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "Could not completely clear the cache. Please try again.";
 "Could not save your language. Please try again." = "Could not save your language. Please try again.";
 "Couldn't check story" = "Couldn't check story";
+"Couldn't load your AI credits." = "Couldn't load your AI credits.";
+"Couldn't load your usage invoices." = "Couldn't load your usage invoices.";
+"Couldn't open billing. Please try again." = "Couldn't open billing. Please try again.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Couldn't reach NewsBlur. Check your connection and try again.";
+"Couldn't save your monthly limit. Please try again." = "Couldn't save your monthly limit. Please try again.";
+"Couldn't turn off usage billing. Please try again." = "Couldn't turn off usage billing. Please try again.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Couldn’t load the full image. You can try opening it in your browser.";
 "Counting is difficult..." = "Counting is difficult...";
 "Create a feed from any web page" = "Create a feed from any web page";
 "Create a new account instead" = "Create a new account instead";
 "Create account" = "Create account";
 "Create an account" = "Create an account";
+"Credits reset on the 1st of each month and don't carry over." = "Credits reset on the 1st of each month and don't carry over.";
 "Custom" = "Custom";
 "Custom Domain" = "Custom Domain";
 "Custom RSS feeds for saved stories" = "Custom RSS feeds for saved stories";
@@ -378,6 +401,7 @@
 "Fetching text..." = "Fetching text...";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter stories by date range";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "Filters pause when usage billing reaches it. Leave empty for no limit.";
 "Find %@ in the voice list" = "Find %@ in the voice list";
 "Find Friends" = "Find Friends";
 "Find in Feed" = "Find in Feed";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "Hide toolbars when reading";
 "Hides the music settings" = "Hides the music settings";
 "Highlight the paragraph being read" = "Highlight the paragraph being read";
+"How credits work" = "How credits work";
 "How much emotion" = "How much emotion";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "If none of the options match, type a story title you see on the page and we'll re-analyze.";
 "Ignore system theme, use screen brightness instead" = "Ignore system theme, use screen brightness instead";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting.";
 "Interactions" = "Interactions";
 "Invalid: %@" = "Invalid: %@";
+"Invoice" = "Invoice";
 "Keep fades, without movement." = "Keep fades, without movement.";
+"Keep filters running" = "Keep filters running";
 "Keeps the dark icon no matter how your device is set." = "Keeps the dark icon no matter how your device is set.";
 "Keeps the light icon no matter how your device is set." = "Keeps the light icon no matter how your device is set.";
 "Keyboard Shortcuts" = "Keyboard Shortcuts";
@@ -553,6 +580,7 @@
 "Manage" = "Manage";
 "Manage Account on the Web" = "Manage Account on the Web";
 "Manage Subscription" = "Manage Subscription";
+"Manage billing" = "Manage billing";
 "Manage this folder…" = "Manage this folder…";
 "Manage this site…" = "Manage this site…";
 "Manual scroll" = "Manual scroll";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "Medium";
 "Model" = "Model";
 "Monday" = "Monday";
+"Monthly limit" = "Monthly limit";
+"Monthly limit: %@" = "Monthly limit: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "More stories take more disk space, but otherwise have no noticeable effect on performance.";
 "More voices" = "More voices";
 "Morning" = "Morning";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "Natural Language Image Classifier";
 "Natural Language Text Classifier" = "Natural Language Text Classifier";
 "Natural [listen delivery]" = "Natural";
-"Natural language text and image classifiers" = "Natural language text and image classifiers";
 "Nested" = "Nested";
 "Never" = "Never";
 "New Folder" = "New Folder";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "No feeds to show yet. Try another interest or search all sites.";
 "No friends to suggest." = "No friends to suggest.";
 "No interests or sites found. Try another search." = "No interests or sites found. Try another search.";
+"No limit" = "No limit";
 "No longer saved" = "No longer saved";
 "No match" = "No match";
 "No match in story" = "No match in story";
@@ -690,6 +720,7 @@
 "No stories yet" = "No stories yet";
 "No story selected" = "No story selected";
 "No unread stories" = "No unread stories";
+"No usage invoices yet." = "No usage invoices yet.";
 "No voices match these filters" = "No voices match these filters";
 "None" = "None";
 "Normal" = "Normal";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "Page down; next unread story at the bottom";
 "Page up; previous story at the top" = "Page up; previous story at the top";
 "Password" = "Password";
+"Past your credits, filters keep running at 1¢ per credit." = "Past your credits, filters keep running at 1¢ per credit.";
 "Paste a story title from the page" = "Paste a story title from the page";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Paste any URL and NewsBlur creates a feed from the page, even without RSS.";
 "Pause" = "Pause";
@@ -889,6 +921,7 @@
 "Saved on %@" = "Saved on %@";
 "Saving Daily Briefing settings…" = "Saving Daily Briefing settings…";
 "Saving search..." = "Saving search...";
+"Saving..." = "Saving...";
 "Schedule" = "Schedule";
 "Scroll horizontally" = "Scroll horizontally";
 "Scroll to Comments" = "Scroll to Comments";
@@ -921,6 +954,7 @@
 "Server URL" = "Server URL";
 "Set an exact speed under Voice" = "Set an exact speed under Voice";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Set up Daily Briefing to generate a summary of the stories that matter most to you.";
+"Set up usage billing" = "Set up usage billing";
 "Settings" = "Settings";
 "Share" = "Share";
 "Share This Story" = "Share This Story";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "This deletes the folder and unsubscribes from sites that are not in another folder.";
 "This feature requires iOS 15 or later." = "This feature requires iOS 15 or later.";
 "This might take a minute.\nFeel free to continue..." = "This might take a minute.\nFeel free to continue...";
+"This month" = "This month";
+"This month's %@ AI credits are used." = "This month's %@ AI credits are used.";
 "This removes the subscription from your feeds." = "This removes the subscription from your feeds.";
 "This setting only applies after the app is restarted." = "This setting only applies after the app is restarted.";
 "This site already has a feed" = "This site already has a feed";
@@ -1151,6 +1187,9 @@
 "Try search again" = "Try search again";
 "Trying Feed" = "Trying Feed";
 "Tuesday" = "Tuesday";
+"Turn off usage billing" = "Turn off usage billing";
+"Turn off usage billing?" = "Turn off usage billing?";
+"Turn on usage billing" = "Turn on usage billing";
 "Two" = "Two";
 "Two Columns" = "Two Columns";
 "Two Rows" = "Two Rows";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "Unsaved";
 "Untitled story" = "Untitled story";
 "Up Next" = "Up Next";
+"Upcoming" = "Upcoming";
+"Update card on Stripe" = "Update card on Stripe";
 "Updated %@ days ago" = "Updated %@ days ago";
 "Updated %@ months ago" = "Updated %@ months ago";
 "Updated %@ weeks ago" = "Updated %@ weeks ago";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "Upgrade to Premium";
 "Upgrade to Premium Archive" = "Upgrade to Premium Archive";
 "Upgrade to Premium Pro" = "Upgrade to Premium Pro";
+"Usage billing" = "Usage billing";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "Usage billing is on. Every credit costs 1¢: %@ so far this month.";
+"Usage invoices" = "Usage invoices";
 "Use %@" = "Use %@";
 "Use a custom server" = "Use a custom server";
 "Use another sign-in method" = "Use another sign-in method";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "You signed up for NewsBlur.";
 "You subscribed to %@." = "You subscribed to %@.";
 "You're presented with multiple story pattern options to choose from." = "You're presented with multiple story pattern options to choose from.";
+"Your AI filters are paused until %@." = "Your AI filters are paused until %@.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "Your AI filters reached your %1$@ monthly limit and are paused until %2$@.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Your chosen voice isn't available right now, so %@ is reading this story.";
 "Your identity is verified" = "Your identity is verified";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "Your premium pro subscription is active";
 "Your premium subscription is active" = "Your premium subscription is active";
 "Your reading list" = "Your reading list";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@.";
 "You’re all set up." = "You’re all set up.";
 "at %@" = "at %@";
 "by %@" = "by %@";
@@ -1279,6 +1328,7 @@
 "no site" = "no site";
 "no story" = "no story";
 "or" = "or";
+"or wait until %@" = "or wait until %@";
 "premium subscribers" = "premium subscribers";
 "your account" = "your account";
 "‹ Feeds" = "‹ Feeds";

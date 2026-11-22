@@ -458,7 +458,16 @@ le persone per parlare del mondo.</string>
     <string name="premium_custom_rss">Feed RSS personalizzati per gli articoli salvati</string>
     <string name="premium_text_view">La vista testo estrae comodamente l\'articolo</string>
     <string name="premium_discover_related">Scopri articoli e siti correlati</string>
-    <string name="premium_natural_language_classifiers">Classificatori di testo in linguaggio naturale e di immagini</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="many">Filtri AI per testo e immagini, con %1$s crediti AI al mese</item>
+        <item quantity="one">Filtri di testo e immagini AI, con %1$s credito AI al mese</item>
+        <item quantity="other">Filtri AI per testo e immagini, con %1$s crediti AI al mese</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="many">%1$s crediti AI al mese per i filtri AI</item>
+        <item quantity="one">%1$s credito AI al mese per i filtri AI</item>
+        <item quantity="other">%1$s crediti AI al mese per i filtri AI</item>
+    </plurals>
     <string name="premium_shiloh">Nutri Lyric, il vorace segugio di NewsBlur, per 6 giorni</string>
     <string name="archive_everything_premium">Ovviamente, tutto ciò che è incluso nell\'abbonamento Premium</string>
     <string name="archive_enable_sites">Segui fino a 4.096 siti</string>
@@ -1330,8 +1339,94 @@ le persone per parlare del mondo.</string>
     <string name="ai_scope_global">Tutti i siti</string>
     <string name="ai_scope_folder_named">Tutti i siti in %1$s</string>
     <string name="ai_scope_requires_archive">Richiede Premium Archive</string>
-    <string name="ai_filters_archive_only">I filtri AI vengono salvati, ma vengono eseguiti solo su %1$s.</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+    <string name="ai_credits_title">Crediti AI</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="many">%1$s di %2$s crediti AI utilizzati</item>
+        <item quantity="one">%1$s di %2$s credito AI utilizzato</item>
+        <item quantity="other">%1$s di %2$s crediti AI usati</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="many">Crediti AI usati: %1$s; %2$s oltre i %3$s inclusi nel tuo piano</item>
+        <item quantity="one">Usato %1$s credito AI, %2$s oltre i %3$s del tuo piano</item>
+        <item quantity="other">%1$s crediti AI utilizzati, oltre i %2$s previsti dal tuo piano di %3$s</item>
+    </plurals>
+    <string name="ai_credits_resets">Si azzera %1$s</string>
+    <string name="ai_credits_free">I filtri AI sono salvati, ma funzionano solo con Premium. Premium include %1$s crediti AI al mese, Archive %2$s e Pro %3$s.</string>
+    <string name="ai_credits_upgrade">Passa a un piano superiore</string>
+    <string name="ai_credits_estimate_text">Un filtro di testo su questo sito usa circa %1$s crediti al mese</string>
+    <string name="ai_credits_estimate_image">Un filtro immagini su questo sito usa circa %1$s crediti al mese</string>
+    <string name="ai_credits_estimate_text_small">Un filtro di testo su questo sito usa meno di %1$s crediti al mese</string>
+    <string name="ai_credits_estimate_image_small">Un filtro immagini su questo sito usa meno di %1$s crediti al mese</string>
+    <string name="ai_credits_runs_out">Di questo passo, i tuoi crediti finiranno intorno al %1$s.</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="many">I tuoi filtri AI sono in pausa fino al %1$s. Questo mese sono stati usati %2$s crediti AI.</item>
+        <item quantity="one">I tuoi filtri AI sono in pausa fino al %1$s. Questo mese è stato usato %2$s credito AI.</item>
+        <item quantity="other">I tuoi filtri AI sono in pausa fino a %1$s. Hai usato i %2$s crediti AI di questo mese.</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">I tuoi filtri AI hanno raggiunto il limite mensile di %1$s e sono in pausa fino al %2$s.</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="many">La fatturazione a consumo è attiva. I crediti oltre il tuo %1$s costano 1¢ ciascuno: %2$s finora questo mese.</item>
+        <item quantity="one">La fatturazione a consumo è attiva. I crediti oltre i %1$s costano 1¢ ciascuno: finora questo mese ne hai usati %2$s.</item>
+        <item quantity="other">La fatturazione a consumo è attiva. I crediti oltre i %1$s costano 1¢ ciascuno: finora questo mese ne hai usati %2$s.</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">La fatturazione a consumo è attiva. I crediti AI costano 1¢ ciascuno: questo mese finora %1$s.</string>
+    <string name="ai_credits_unbilled">%1$s è in attesa di addebito: all\'inizio del prossimo mese se raggiunge almeno %2$s, oppure subito se arriva a %3$s.</string>
+    <string name="ai_credits_keep_running">Mantieni attivi i filtri</string>
+    <string name="ai_credits_billing_explainer">Oltre i crediti inclusi, i filtri continuano a funzionare al costo di 1¢ per credito.</string>
+    <string name="ai_credits_billing_forecast">Al ritmo attuale, questo mese spenderai circa %1$s.</string>
+    <string name="ai_credits_turn_on_billing">Attiva la fatturazione a consumo</string>
+    <string name="ai_credits_turn_on_detail">1¢ per ogni credito oltre quelli inclusi nel tuo piano, circa %1$s questo mese</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">1¢ per ogni credito oltre la soglia del tuo piano</string>
+    <string name="ai_credits_or_wait">oppure aspetta fino al %1$s</string>
+    <string name="ai_credits_manage_billing">Gestisci la fatturazione</string>
+    <string name="ai_credits_change_limit">Modifica il limite</string>
+    <string name="ai_credits_open">Visualizza i crediti AI</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="many">Il tuo piano include %1$s crediti AI al mese per i filtri di testo e immagini AI. I crediti si azzerano il giorno 1 e quelli non utilizzati non vengono trasferiti al mese successivo.</item>
+        <item quantity="one">Il tuo piano include %1$s credito AI al mese per i filtri di testo e immagini AI. I crediti si azzerano il giorno 1 e quelli non utilizzati non vengono trasferiti al mese successivo.</item>
+        <item quantity="other">Il tuo piano include %1$s crediti AI al mese per i filtri di testo e immagini AI. I crediti si azzerano il giorno 1 e quelli non usati non vengono riportati al mese successivo.</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="many">A questo ritmo userai circa %1$s dei tuoi %2$s crediti questo mese.</item>
+        <item quantity="one">A questo ritmo userai circa %1$s del tuo credito di %2$s questo mese.</item>
+        <item quantity="other">A questo ritmo, questo mese userai circa %1$s dei tuoi %2$s crediti.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">Questo server non conteggia i crediti AI, quindi i filtri AI sono sempre attivi.</string>
+    <string name="ai_credits_load_failed">Impossibile caricare i tuoi crediti AI. Scorri verso il basso per riprovare.</string>
+    <string name="usage_billing_title">Fatturazione a consumo</string>
+    <string name="usage_billing_terms">L\'importo viene addebitato sulla tua carta all\'inizio di ogni mese quando raggiunge almeno %1$s, oppure subito quando raggiunge %2$s. Gli importi inferiori vengono addebitati nei mesi successivi.</string>
+    <string name="usage_billing_set_up">Configura la fatturazione a consumo</string>
+    <string name="usage_billing_manage">Aggiorna la carta su Stripe</string>
+    <string name="usage_billing_cancel">Disattiva la fatturazione a consumo</string>
+    <string name="usage_billing_cancel_confirm">Disattivare la fatturazione a consumo? Gli eventuali crediti già oltre quelli inclusi nel tuo piano ti saranno addebitati subito se raggiungono %1$s, e i filtri AI si metteranno in pausa una volta esauriti i crediti di questo mese.</string>
+    <string name="usage_billing_cancel_keep">Mantieni attiva</string>
+    <string name="usage_billing_cancelled">La fatturazione a consumo è disattivata.</string>
+    <string name="usage_billing_cancel_failed">Impossibile disattivare la fatturazione a consumo. Riprova.</string>
+    <string name="usage_billing_limit_label">Limite mensile</string>
+    <string name="usage_billing_limit_hint">Nessun limite</string>
+    <string name="usage_billing_limit_help">I filtri si mettono in pausa quando la fatturazione a consumo raggiunge questo limite. Lascia vuoto per non impostare un limite.</string>
+    <string name="usage_billing_limit_save">Salva limite</string>
+    <string name="usage_billing_limit_saved">Limite mensile salvato</string>
+    <string name="usage_billing_limit_cleared">Limite mensile rimosso</string>
+    <string name="usage_billing_limit_failed">Impossibile salvare il limite mensile. Riprova.</string>
+    <string name="usage_billing_limit_invalid">Inserisci il limite in dollari, ad esempio %1$s.</string>
+    <string name="usage_billing_limit_read_only">Limite mensile: %1$s</string>
+    <string name="usage_billing_no_limit">Nessun limite mensile</string>
+    <string name="usage_billing_history_title">Cronologia della fatturazione a consumo</string>
+    <string name="usage_billing_no_invoices">Non ci sono ancora fatture per la fatturazione a consumo.</string>
+    <string name="usage_billing_upcoming">In arrivo</string>
+    <string name="usage_billing_invoice">Fattura</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="many">%1$s crediti</item>
+        <item quantity="one">%1$s credito</item>
+        <item quantity="other">%1$s crediti</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">Impossibile raggiungere Stripe. Riprova.</string>
+    <string name="usage_billing_already_active">La fatturazione a consumo è già configurata.</string>
+    <string name="usage_billing_activating">Attivazione della fatturazione a consumo in corso. Ci vorranno alcuni secondi dopo che Stripe avrà confermato i tuoi dati di pagamento.</string>
+    <string name="usage_billing_activating_slow">Stripe sta ancora confermando il pagamento. Scorri verso il basso per controllare di nuovo tra poco.</string>
+    <string name="usage_billing_setup_complete">La fatturazione a consumo è attiva. I tuoi filtri AI continuano a funzionare anche quando esaurisci i crediti.</string>
+    <string name="usage_billing_no_browser">Installa un browser web per configurare la fatturazione a consumo.</string>
     <string name="listen_story_button">Ascolta</string>
     <string name="listen_resume">Riprendi</string>
     <string name="listen_pause">Pausa</string>

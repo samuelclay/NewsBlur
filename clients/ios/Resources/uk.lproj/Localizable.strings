@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "Папка %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Папка %1$@, згорнута, %2$@";
 "%1$@ followed %2$@." = "%1$@ тепер стежить за %2$@.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "До оплати очікує сума %1$@: на початку наступного місяця, якщо вона становитиме щонайменше %2$@, або одразу, коли сягне %3$@.";
 "%1$@ of %2$@ of listening left this week" = "Залишилося %1$@ із %2$@ прослуховування на цей тиждень";
 "%1$@ of %2$@ sites indexed" = "Проіндексовано сайтів: %1$@ із %2$@";
 "%1$@ of %2$@ story previews used today" = "Сьогодні використано попередніх прослуховувань статей: %1$@ із %2$@";
+"%1$@ of your %2$@ monthly limit" = "%1$@ із вашого місячного ліміту %2$@";
 "%1$@ re-shared %2$@." = "%1$@ повторно поширює %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ повторно поширює %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ відповідає користувачу %2$@: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ поширює %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ поширює %2$@:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "Використано %2$@ кредитів ШІ, на %3$@ більше за ліміт вашого плану %1$@";
+"%2$@ of %1$@ AI credits used" = "Використано %2$@ із %1$@ кредитів ШІ";
 "%@ Widget Sites" = "%@ сайти віджетів";
 "%@ ago" = "%@ тому";
 "%@ categories to choose from" = "На вибір %@ категорій";
@@ -66,6 +70,8 @@
 "100 stories" = "100 статей";
 "12 color flavors with light and dark variants." = "12 кольорових тем зі світлими й темними варіантами.";
 "15 stories" = "15 статей";
+"1¢ per credit past your plan's" = "1¢ за кожен кредит понад ліміт вашого плану";
+"1¢ per credit past your plan's, about %@ this month" = "1¢ за кожен кредит понад ліміт вашого плану, цього місяця — приблизно %@";
 "2,000 stories" = "2 000 статей";
 "20 stories" = "20 статей";
 "2x daily" = "Двічі на день";
@@ -73,6 +79,8 @@
 "3x daily" = "3 рази на день";
 "5 stories" = "5 статей";
 "5,000 stories" = "5 000 статей";
+"50 AI credits a month for AI filters" = "50 кредитів ШІ на місяць для фільтрів ШІ";
+"500 AI credits a month for AI filters" = "500 кредитів AI на місяць для фільтрів AI";
 "500 stories" = "500 статей";
 "< 15/month" = "< 15/місяць";
 "< 30/month" = "< 30/місяць";
@@ -80,11 +88,16 @@
 "< 60/month" = "< 60/місяць";
 "< 90/month" = "< 90/місяць";
 "A clearer, closer sound" = "Чіткіший і об’ємніший звук";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "Одного кредиту вистачає приблизно на 700 статей через текстовий фільтр або на 100 — через фільтр зображень.";
 "A personal news reader bringing\npeople together to talk about the world." = "Персональна програма для читання новин, що об’єднує\nлюдей для обговорення подій у світі.";
-"AI filters are saved but only run on Premium Archive." = "Фільтри ШІ зберігаються, але працюють лише на Premium Archive.";
+"A text filter on this site uses about %2$@ credits a month" = "Текстовий фільтр на цьому сайті використовує приблизно %2$@ кредитів на місяць";
+"AI Credits" = "Кредити ШІ";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "Фільтри ШІ збережено, але вони працюють лише з Premium. Premium включає 5 кредитів ШІ на місяць, Archive — 50, а Pro — 500.";
 "AI finds the stories" = "ШІ знаходить статті";
+"AI text and image filters, with 5 AI credits a month" = "Текстові й графічні фільтри ШІ, 5 кредитів ШІ на місяць";
 "ALL" = "УСІ";
 "ALL NOTIFICATIONS" = "УСІ СПОВІЩЕННЯ";
+"About %@ this month at your pace." = "За нинішнього темпу за цей місяць буде використано близько %@.";
 "About NewsBlur" = "Про NewsBlur";
 "Accent [voice filter]" = "Акцент";
 "Account" = "Обліковий запис";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "Уже маєте обліковий запис? Увійти";
 "Already have feeds?" = "Уже маєте стрічки?";
 "Also published by %@ sites" = "Також опубліковано на %@ сайтах";
+"An image filter on this site uses about %2$@ credits a month" = "Фільтр зображень на цьому сайті використовує близько %2$@ кредитів на місяць";
 "Analyze" = "Аналізувати";
 "Analyzing images..." = "Аналіз зображень...";
 "App Badge" = "Значок програми";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "Ставте ШІ запитання про статті";
 "Ask AI…" = "Запитати ШІ…";
 "Ask a question..." = "Поставте запитання...";
+"At this pace your credits run out around %@." = "За нинішнього темпу ваші кредити закінчаться приблизно %@.";
+"At this pace, this month will use about %2$@ AI credits." = "За нинішніх темпів цього місяця буде використано приблизно %2$@ кредитів ШІ.";
 "Atlantic Blue" = "Атлантичний синій";
 "Authenticating" = "Автентифікація";
 "Auto" = "Автоматично";
@@ -197,6 +213,7 @@
 "Cancel" = "Скасувати";
 "Cannot reply to this story" = "Не можна відповісти на цю статтю";
 "Change Story List" = "Змінити список статей";
+"Change limit" = "Змінити ліміт";
 "Choose Icon" = "Вибрати значок";
 "Choose Language…" = "Вибрати мову…";
 "Choose Story List" = "Вибрати список статей";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "Не вдалося повністю очистити кеш. Спробуйте ще раз.";
 "Could not save your language. Please try again." = "Не вдалося зберегти мову. Спробуйте ще раз.";
 "Couldn't check story" = "Не вдалося перевірити статтю";
+"Couldn't load your AI credits." = "Не вдалося завантажити ваші кредити ШІ.";
+"Couldn't load your usage invoices." = "Не вдалося завантажити рахунки за використання.";
+"Couldn't open billing. Please try again." = "Не вдалося відкрити розділ оплати. Спробуйте ще раз.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Не вдалося зв’язатися з NewsBlur. Перевірте підключення та спробуйте ще раз.";
+"Couldn't save your monthly limit. Please try again." = "Не вдалося зберегти ваш місячний ліміт. Спробуйте ще раз.";
+"Couldn't turn off usage billing. Please try again." = "Не вдалося вимкнути оплату за використання. Спробуйте ще раз.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Не вдалося завантажити зображення повністю. Спробуйте відкрити його у браузері.";
 "Counting is difficult..." = "Рахувати складно...";
 "Create a feed from any web page" = "Створити стрічку з будь-якої вебсторінки";
 "Create a new account instead" = "Натомість створити новий обліковий запис";
 "Create account" = "Створити обліковий запис";
 "Create an account" = "Створити обліковий запис";
+"Credits reset on the 1st of each month and don't carry over." = "Кредити поновлюються першого числа кожного місяця, а невикористані не переносяться на наступний місяць.";
 "Custom" = "Власний";
 "Custom Domain" = "Власний домен";
 "Custom RSS feeds for saved stories" = "Власні RSS-стрічки для збережених статей";
@@ -378,6 +401,7 @@
 "Fetching text..." = "Завантаження тексту...";
 "Filter" = "Фільтр";
 "Filter stories by date range" = "Фільтрувати статті за діапазоном дат";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "Фільтри призупиняться, коли оплата за використання досягне цього ліміту. Не заповнюйте поле, якщо ліміт не потрібен.";
 "Find %@ in the voice list" = "Знайти %@ у списку голосів";
 "Find Friends" = "Знайти друзів";
 "Find in Feed" = "Знайти у стрічці";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "Приховувати панелі інструментів під час читання";
 "Hides the music settings" = "Приховує налаштування музики";
 "Highlight the paragraph being read" = "Підсвічувати абзац, який читається";
+"How credits work" = "Як працюють кредити";
 "How much emotion" = "Інтенсивність емоцій";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Якщо жоден варіант не підходить, введіть заголовок статті, яку бачите на сторінці, і ми проаналізуємо її ще раз.";
 "Ignore system theme, use screen brightness instead" = "Ігнорувати тему системи та використовувати яскравість екрана";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Замість системного темного чи світлого режиму теми автоматично перемикаються залежно від яскравості екрана. Це зручно, щоб підлаштовувати тему до навколишнього освітлення.";
 "Interactions" = "Взаємодії";
 "Invalid: %@" = "Недійсне значення: %@";
+"Invoice" = "Рахунок";
 "Keep fades, without movement." = "Зберегти плавну появу та зникнення без руху.";
+"Keep filters running" = "Продовжити роботу фільтрів";
 "Keeps the dark icon no matter how your device is set." = "Завжди використовує темну іконку, незалежно від налаштувань пристрою.";
 "Keeps the light icon no matter how your device is set." = "Завжди використовує світлу іконку, незалежно від налаштувань вашого пристрою.";
 "Keyboard Shortcuts" = "Комбінації клавіш";
@@ -553,6 +580,7 @@
 "Manage" = "Керувати";
 "Manage Account on the Web" = "Керування обліковим записом у вебверсії";
 "Manage Subscription" = "Керувати підпискою";
+"Manage billing" = "Керувати оплатою";
 "Manage this folder…" = "Керувати цією папкою…";
 "Manage this site…" = "Керувати цим сайтом…";
 "Manual scroll" = "Прокручування вручну";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "Сіра";
 "Model" = "Модель";
 "Monday" = "Понеділок";
+"Monthly limit" = "Місячний ліміт";
+"Monthly limit: %@" = "Місячний ліміт: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Більша кількість статей займає більше місця на диску, але майже не впливає на продуктивність.";
 "More voices" = "Інші голоси";
 "Morning" = "Ранок";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "Класифікатор зображень природною мовою";
 "Natural Language Text Classifier" = "Текстовий класифікатор природною мовою";
 "Natural [listen delivery]" = "Природний";
-"Natural language text and image classifiers" = "Класифікатори тексту й зображень на основі природної мови";
 "Nested" = "Вкладений";
 "Never" = "Ніколи";
 "New Folder" = "Нова папка";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "Стрічок поки немає. Спробуйте вибрати інший інтерес або пошукати на всіх сайтах.";
 "No friends to suggest." = "Немає друзів, яких можна запропонувати.";
 "No interests or sites found. Try another search." = "Інтересів або сайтів не знайдено. Спробуйте інший пошуковий запит.";
+"No limit" = "Без обмежень";
 "No longer saved" = "Більше не збережено";
 "No match" = "Немає збігів";
 "No match in story" = "Збігів у статті немає";
@@ -690,6 +720,7 @@
 "No stories yet" = "Статей поки немає";
 "No story selected" = "Статтю не вибрано";
 "No unread stories" = "Немає непрочитаних статей";
+"No usage invoices yet." = "Рахунків за використання поки немає.";
 "No voices match these filters" = "Голосів, що відповідають цим фільтрам, немає";
 "None" = "Немає";
 "Normal" = "Звичайний";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "Page Down; наступна непрочитана стаття внизу";
 "Page up; previous story at the top" = "Page Up; попередня стаття вгорі";
 "Password" = "Пароль";
+"Past your credits, filters keep running at 1¢ per credit." = "Після вичерпання кредитів фільтри продовжать працювати — 1¢ за кредит.";
 "Paste a story title from the page" = "Вставте заголовок статті зі сторінки";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Вставте будь-яку URL-адресу, і NewsBlur створить стрічку зі сторінки, навіть без RSS.";
 "Pause" = "Призупинити";
@@ -889,6 +921,7 @@
 "Saved on %@" = "Збережено %@";
 "Saving Daily Briefing settings…" = "Збереження налаштувань щоденного огляду…";
 "Saving search..." = "Збереження пошуку...";
+"Saving..." = "Збереження…";
 "Schedule" = "Розклад";
 "Scroll horizontally" = "Прокручувати горизонтально";
 "Scroll to Comments" = "Перейти до коментарів";
@@ -921,6 +954,7 @@
 "Server URL" = "URL-адреса сервера";
 "Set an exact speed under Voice" = "Задайте точну швидкість у розділі «Голос»";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Налаштуйте щоденний огляд, щоб створювати підсумок найважливіших для вас статей.";
+"Set up usage billing" = "Налаштувати оплату за використання";
 "Settings" = "Налаштування";
 "Share" = "Поділитися";
 "Share This Story" = "Поділитися цією статтею";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Це видалить папку й скасує підписку на сайти, які не містяться в інших папках.";
 "This feature requires iOS 15 or later." = "Для цієї функції потрібна iOS 15 або новіша версія.";
 "This might take a minute.\nFeel free to continue..." = "Це може зайняти хвилину.\nМожете поки продовжити…";
+"This month" = "Цього місяця";
+"This month's %@ AI credits are used." = "Кредити ШІ на цей місяць (%@) використано.";
 "This removes the subscription from your feeds." = "Підписку буде вилучено з ваших стрічок.";
 "This setting only applies after the app is restarted." = "Це налаштування застосовується лише після перезапуску застосунку.";
 "This site already has a feed" = "Цей сайт уже має стрічку";
@@ -1151,6 +1187,9 @@
 "Try search again" = "Спробувати пошук ще раз";
 "Trying Feed" = "Спроба відкрити стрічку";
 "Tuesday" = "Вівторок";
+"Turn off usage billing" = "Вимкнути оплату за використання";
+"Turn off usage billing?" = "Вимкнути оплату за використання?";
+"Turn on usage billing" = "Увімкнути оплату за використання";
 "Two" = "Два";
 "Two Columns" = "Дві колонки";
 "Two Rows" = "Два рядки";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "Не збережено";
 "Untitled story" = "Стаття без назви";
 "Up Next" = "Далі";
+"Upcoming" = "Незабаром";
+"Update card on Stripe" = "Оновити картку в Stripe";
 "Updated %@ days ago" = "Оновлено %@ днів тому";
 "Updated %@ months ago" = "Оновлено %@ місяців тому";
 "Updated %@ weeks ago" = "Оновлено %@ тижнів тому";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "Перейдіть на Premium";
 "Upgrade to Premium Archive" = "Перейдіть на Premium Archive";
 "Upgrade to Premium Pro" = "Перейти на Premium Pro";
+"Usage billing" = "Оплата за використання";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "Оплату за використання ввімкнено. Кредити понад ваш ліміт %1$@ коштують 1¢ за кожен: цього місяця використано %2$@.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "Оплату за використання ввімкнено. Кожен кредит коштує 1¢: цього місяця використано %@.";
+"Usage invoices" = "Рахунки за використання";
 "Use %@" = "Використовувати мову: %@";
 "Use a custom server" = "Використовувати власний сервер";
 "Use another sign-in method" = "Скористатися іншим способом входу";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "Ви зареєструвалися в NewsBlur.";
 "You subscribed to %@." = "Ви підписалися на %@.";
 "You're presented with multiple story pattern options to choose from." = "Вам запропонують кілька варіантів шаблону статті на вибір.";
+"Your AI filters are paused until %@." = "Ваші фільтри ШІ призупинено до %@.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "Ваші фільтри ШІ призупиняться, коли буде використано кредити за цей місяць. Кредити понад ліміт вашого плану, нараховані раніше, буде списано зараз, якщо їхня сума становить щонайменше %@.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "Фільтри ШІ вичерпали місячний ліміт %1$@ і призупинені до %2$@.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Ваш обліковий запис NewsBlur видалено. Щоб завершити від’єднання, видаліть NewsBlur зі списку «Вхід через Apple» у налаштуваннях облікового запису Apple.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Вибраний вами голос зараз недоступний, тому цю статтю читає %@.";
 "Your identity is verified" = "Вашу особу підтверджено";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "Ваша підписка Premium Pro активна";
 "Your premium subscription is active" = "Ваша преміум-підписка активна";
 "Your reading list" = "Ваш список для читання";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "Збережені дані картки буде списано на початку місяця, якщо сума сягне %1$@, або одразу, коли сягне %2$@.";
 "You’re all set up." = "Усе готово.";
 "at %@" = "о %@";
 "by %@" = "від %@";
@@ -1279,6 +1328,7 @@
 "no site" = "немає сайту";
 "no story" = "немає статті";
 "or" = "або";
+"or wait until %@" = "або зачекайте до %@";
 "premium subscribers" = "передплатники Premium";
 "your account" = "ваш обліковий запис";
 "‹ Feeds" = "‹ Стрічки";

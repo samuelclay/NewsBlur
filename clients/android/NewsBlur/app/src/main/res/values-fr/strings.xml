@@ -458,7 +458,16 @@ les gens pour parler du monde.</string>
     <string name="premium_custom_rss">Flux RSS personnalisés pour les articles enregistrés</string>
     <string name="premium_text_view">L’affichage texte extrait facilement le contenu de l’article</string>
     <string name="premium_discover_related">Découvrez des articles et des sites similaires</string>
-    <string name="premium_natural_language_classifiers">Classificateurs de texte en langage naturel et d’images</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="many">Filtres de texte et d’image IA, avec %1$s crédits IA par mois</item>
+        <item quantity="one">Filtres de texte et d’image IA, avec %1$s crédit IA par mois</item>
+        <item quantity="other">Filtres de texte et d’images par IA, avec %1$s crédits IA par mois</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="many">%1$s crédits IA par mois pour les filtres IA</item>
+        <item quantity="one">%1$s crédit IA par mois pour les filtres IA</item>
+        <item quantity="other">%1$s crédits IA par mois pour les filtres IA</item>
+    </plurals>
     <string name="premium_shiloh">Vous nourrissez Lyric, le chien affamé de NewsBlur, pendant 6 jours</string>
     <string name="archive_everything_premium">Bien sûr, tout ce qui est inclus dans l’abonnement Premium</string>
     <string name="archive_enable_sites">Suivez jusqu’à 4 096 sites</string>
@@ -1330,8 +1339,94 @@ les gens pour parler du monde.</string>
     <string name="ai_scope_global">Tous les sites</string>
     <string name="ai_scope_folder_named">Tous les sites dans %1$s</string>
     <string name="ai_scope_requires_archive">Nécessite Premium Archive</string>
-    <string name="ai_filters_archive_only">Les filtres IA sont enregistrés, mais ne s’exécutent que sur %1$s.</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+    <string name="ai_credits_title">Crédits IA</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="many">%1$s crédits IA utilisés sur %2$s</item>
+        <item quantity="one">%1$s crédit IA utilisé sur %2$s</item>
+        <item quantity="other">%1$s crédits IA utilisés sur %2$s</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="many">%1$s crédits IA utilisés, %2$s au-delà de la limite de %3$s de votre offre</item>
+        <item quantity="one">%1$s crédit IA utilisé, %2$s au-delà de la limite de votre forfait (%3$s)</item>
+        <item quantity="other">%1$s crédits IA utilisés, %2$s au-delà de votre forfait %3$s</item>
+    </plurals>
+    <string name="ai_credits_resets">Réinitialisation : %1$s</string>
+    <string name="ai_credits_free">Les filtres IA sont enregistrés, mais ne fonctionnent qu’avec Premium. Premium comprend %1$s crédits IA par mois, Archive %2$s et Pro %3$s.</string>
+    <string name="ai_credits_upgrade">Mettre à niveau</string>
+    <string name="ai_credits_estimate_text">Un filtre de texte sur ce site utilise environ %1$s crédits par mois</string>
+    <string name="ai_credits_estimate_image">Un filtre d’image sur ce site utilise environ %1$s crédits par mois</string>
+    <string name="ai_credits_estimate_text_small">Un filtre de texte sur ce site utilise moins de %1$s crédit par mois</string>
+    <string name="ai_credits_estimate_image_small">Un filtre d’image sur ce site utilise moins de %1$s crédits par mois</string>
+    <string name="ai_credits_runs_out">À ce rythme, vos crédits seront épuisés vers le %1$s.</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="many">Vos filtres IA sont suspendus jusqu’au %1$s. Les %2$s crédits IA de ce mois-ci sont utilisés.</item>
+        <item quantity="one">Vos filtres IA sont suspendus jusqu’au %1$s. Le %2$s crédit IA de ce mois-ci est utilisé.</item>
+        <item quantity="other">Vos filtres IA sont en pause jusqu’au %1$s. Vos %2$s crédits IA de ce mois-ci sont épuisés.</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">Vos filtres IA ont atteint votre limite mensuelle de %1$s et sont suspendus jusqu’au %2$s.</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="many">La facturation à l’usage est activée. Les crédits au-delà de %1$s coûtent 1 ¢ chacun : %2$s utilisés jusqu’ici ce mois-ci.</item>
+        <item quantity="one">La facturation à l’usage est activée. Les crédits au-delà de votre limite de %1$s coûtent 1¢ chacun : %2$s jusqu’à présent ce mois-ci.</item>
+        <item quantity="other">La facturation à l’usage est activée. Les crédits au-delà de votre limite de %1$s coûtent 1¢ chacun : %2$s jusqu’à présent ce mois-ci.</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">La facturation à l’utilisation est activée. Les crédits IA coûtent 1¢ chacun : %1$s utilisés ce mois-ci.</string>
+    <string name="ai_credits_unbilled">%1$s est en attente de facturation : au début du mois prochain si le montant atteint au moins %2$s, ou immédiatement à %3$s.</string>
+    <string name="ai_credits_keep_running">Maintenir les filtres actifs</string>
+    <string name="ai_credits_billing_explainer">Une fois vos crédits épuisés, les filtres continuent de fonctionner au tarif de 1¢ par crédit.</string>
+    <string name="ai_credits_billing_forecast">À ce rythme, le montant sera d’environ %1$s ce mois-ci.</string>
+    <string name="ai_credits_turn_on_billing">Activer la facturation à l’usage</string>
+    <string name="ai_credits_turn_on_detail">1¢ par crédit au-delà de la limite de votre offre, soit environ %1$s ce mois-ci</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">1¢ par crédit au-delà de ceux inclus dans votre offre</string>
+    <string name="ai_credits_or_wait">ou attendez jusqu’au %1$s</string>
+    <string name="ai_credits_manage_billing">Gérer la facturation</string>
+    <string name="ai_credits_change_limit">Modifier la limite</string>
+    <string name="ai_credits_open">Voir les crédits IA</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="many">Votre offre inclut %1$s crédits IA par mois pour les filtres de texte et d’image IA. Les crédits sont réinitialisés le 1er du mois et ceux qui ne sont pas utilisés ne sont pas reportés.</item>
+        <item quantity="one">Votre offre inclut %1$s crédit IA par mois pour les filtres de texte et d’image IA. Les crédits sont réinitialisés le 1er du mois et ceux qui ne sont pas utilisés ne sont pas reportés.</item>
+        <item quantity="other">Votre offre comprend %1$s crédits IA par mois pour les filtres de texte et d’image IA. Les crédits sont réinitialisés le 1er du mois et ne sont pas reportés.</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="many">À ce rythme, vous utiliserez environ %1$s de vos %2$s crédits ce mois-ci.</item>
+        <item quantity="one">À ce rythme, vous utiliserez environ %1$s de votre crédit de %2$s ce mois-ci.</item>
+        <item quantity="other">À ce rythme, vous utiliserez environ %1$s de vos %2$s crédits ce mois-ci.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">Ce serveur ne comptabilise pas les crédits IA ; les filtres IA sont donc toujours exécutés.</string>
+    <string name="ai_credits_load_failed">Impossible de charger vos crédits IA. Faites glisser vers le bas pour réessayer.</string>
+    <string name="usage_billing_title">Facturation à l’usage</string>
+    <string name="usage_billing_terms">Votre carte est débitée au début de chaque mois dès que le montant atteint %1$s, ou immédiatement lorsqu’il atteint %2$s. Les montants inférieurs sont reportés aux mois suivants.</string>
+    <string name="usage_billing_set_up">Configurer la facturation à l’usage</string>
+    <string name="usage_billing_manage">Mettre à jour la carte sur Stripe</string>
+    <string name="usage_billing_cancel">Désactiver la facturation à l’utilisation</string>
+    <string name="usage_billing_cancel_confirm">Désactiver la facturation à l’usage ? Les crédits déjà utilisés au-delà de la limite de votre offre seront facturés dès qu’ils atteindront %1$s, et les filtres IA s’interrompront une fois les crédits de ce mois-ci épuisés.</string>
+    <string name="usage_billing_cancel_keep">La garder activée</string>
+    <string name="usage_billing_cancelled">La facturation à l’usage est désactivée.</string>
+    <string name="usage_billing_cancel_failed">Impossible de désactiver la facturation à l’utilisation. Veuillez réessayer.</string>
+    <string name="usage_billing_limit_label">Limite mensuelle</string>
+    <string name="usage_billing_limit_hint">Aucune limite</string>
+    <string name="usage_billing_limit_help">Les filtres sont suspendus lorsque la facturation à l’utilisation atteint cette limite. Laissez le champ vide pour ne pas définir de limite.</string>
+    <string name="usage_billing_limit_save">Enregistrer la limite</string>
+    <string name="usage_billing_limit_saved">Limite mensuelle enregistrée</string>
+    <string name="usage_billing_limit_cleared">Limite mensuelle supprimée</string>
+    <string name="usage_billing_limit_failed">Impossible d’enregistrer la limite mensuelle. Veuillez réessayer.</string>
+    <string name="usage_billing_limit_invalid">Saisissez la limite en dollars, par exemple %1$s.</string>
+    <string name="usage_billing_limit_read_only">Limite mensuelle : %1$s</string>
+    <string name="usage_billing_no_limit">Aucune limite mensuelle</string>
+    <string name="usage_billing_history_title">Historique de facturation à l’usage</string>
+    <string name="usage_billing_no_invoices">Aucune facture de facturation à l’usage pour le moment.</string>
+    <string name="usage_billing_upcoming">À venir</string>
+    <string name="usage_billing_invoice">Facture</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="many">%1$s crédits</item>
+        <item quantity="one">%1$s crédit</item>
+        <item quantity="other">%1$s crédits</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">Impossible de joindre Stripe. Veuillez réessayer.</string>
+    <string name="usage_billing_already_active">La facturation à l’usage est déjà configurée.</string>
+    <string name="usage_billing_activating">Activation de la facturation à l’usage. Cela prend quelques secondes, le temps que Stripe confirme vos informations de paiement.</string>
+    <string name="usage_billing_activating_slow">Stripe confirme encore votre facturation. Faites glisser vers le bas pour vérifier à nouveau dans un instant.</string>
+    <string name="usage_billing_setup_complete">La facturation à l’usage est activée. Vos filtres IA continuent de fonctionner au-delà de vos crédits.</string>
+    <string name="usage_billing_no_browser">Installez un navigateur web pour configurer la facturation à l’usage.</string>
     <string name="listen_story_button">Écouter</string>
     <string name="listen_resume">Reprendre</string>
     <string name="listen_pause">Mettre en pause</string>

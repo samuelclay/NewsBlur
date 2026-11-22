@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "Dossier %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Dossier %1$@, réduit, %2$@";
 "%1$@ followed %2$@." = "%1$@ a suivi %2$@.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "Le montant de %1$@ est en attente de facturation : au début du mois prochain s’il atteint au moins %2$@, ou immédiatement dès qu’il atteint %3$@.";
 "%1$@ of %2$@ of listening left this week" = "Il vous reste %1$@ sur %2$@ d’écoute cette semaine";
 "%1$@ of %2$@ sites indexed" = "%1$@ sites indexés sur %2$@";
 "%1$@ of %2$@ story previews used today" = "%1$@ aperçus d’articles sur %2$@ utilisés aujourd’hui";
+"%1$@ of your %2$@ monthly limit" = "%1$@ sur votre limite mensuelle de %2$@";
 "%1$@ re-shared %2$@." = "%1$@ a repartagé %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ a repartagé %2$@ :\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ a répondu à %2$@ : \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ a partagé %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ a partagé %2$@ :\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "%2$@ crédits IA utilisés, %3$@ au-delà de la limite de votre forfait (%1$@)";
+"%2$@ of %1$@ AI credits used" = "%2$@ crédit IA utilisé sur %1$@";
 "%@ Widget Sites" = "%@ sites du widget";
 "%@ ago" = "il y a %@";
 "%@ categories to choose from" = "%@ catégories au choix";
@@ -66,6 +70,8 @@
 "100 stories" = "100 articles";
 "12 color flavors with light and dark variants." = "12 palettes de couleurs, avec des variantes claires et sombres.";
 "15 stories" = "15 articles";
+"1¢ per credit past your plan's" = "1¢ par crédit au-delà de ceux inclus dans votre offre";
+"1¢ per credit past your plan's, about %@ this month" = "1 ¢ par crédit au-delà de la limite de votre forfait, environ %@ ce mois-ci";
 "2,000 stories" = "2 000 articles";
 "20 stories" = "20 articles";
 "2x daily" = "2 fois par jour";
@@ -73,6 +79,8 @@
 "3x daily" = "3 fois par jour";
 "5 stories" = "5 articles";
 "5,000 stories" = "5 000 articles";
+"50 AI credits a month for AI filters" = "50 crédits IA par mois pour les filtres IA";
+"500 AI credits a month for AI filters" = "500 crédits IA par mois pour les filtres IA";
 "500 stories" = "500 articles";
 "< 15/month" = "< 15/mois";
 "< 30/month" = "< 30/mois";
@@ -80,11 +88,16 @@
 "< 60/month" = "< 60/mois";
 "< 90/month" = "< 90/mois";
 "A clearer, closer sound" = "Un son plus clair et plus proche";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "Un crédit permet de filtrer environ 700 articles avec un filtre de texte, ou 100 avec un filtre d’image.";
 "A personal news reader bringing\npeople together to talk about the world." = "Un lecteur d’actualités personnel qui rassemble\nles gens pour parler du monde.";
-"AI filters are saved but only run on Premium Archive." = "Les filtres IA sont enregistrés, mais ne s’exécutent que sur Premium Archive.";
+"A text filter on this site uses about %2$@ credits a month" = "Un filtre de texte sur ce site utilise environ %2$@ crédits par mois";
+"AI Credits" = "Crédits IA";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "Les filtres IA sont enregistrés, mais ne fonctionnent qu’avec Premium. Premium inclut 5 crédits IA par mois, Archive 50 et Pro 500.";
 "AI finds the stories" = "L’IA trouve les articles";
+"AI text and image filters, with 5 AI credits a month" = "Filtres de texte et d’image IA, avec 5 crédits IA par mois";
 "ALL" = "TOUT";
 "ALL NOTIFICATIONS" = "TOUTES LES NOTIFICATIONS";
+"About %@ this month at your pace." = "Environ %@ ce mois-ci à ce rythme.";
 "About NewsBlur" = "À propos de NewsBlur";
 "Accent [voice filter]" = "Accent";
 "Account" = "Compte";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "Vous avez déjà un compte ? Connectez-vous";
 "Already have feeds?" = "Vous avez déjà des flux ?";
 "Also published by %@ sites" = "Également publié par %@ sites";
+"An image filter on this site uses about %2$@ credits a month" = "Un filtre d’image sur ce site utilise environ %2$@ crédits par mois";
 "Analyze" = "Analyser";
 "Analyzing images..." = "Analyse des images...";
 "App Badge" = "Badge de l’app";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "Posez des questions à l’IA sur les articles";
 "Ask AI…" = "Demander à l’IA…";
 "Ask a question..." = "Posez une question…";
+"At this pace your credits run out around %@." = "À ce rythme, vos crédits seront épuisés vers le %@.";
+"At this pace, this month will use about %2$@ AI credits." = "À ce rythme, vous utiliserez environ %2$@ crédits IA ce mois-ci.";
 "Atlantic Blue" = "Bleu Atlantique";
 "Authenticating" = "Authentification en cours";
 "Auto" = "Auto";
@@ -197,6 +213,7 @@
 "Cancel" = "Annuler";
 "Cannot reply to this story" = "Impossible de répondre à cet article";
 "Change Story List" = "Modifier la liste des articles";
+"Change limit" = "Modifier la limite";
 "Choose Icon" = "Choisir une icône";
 "Choose Language…" = "Choisir la langue…";
 "Choose Story List" = "Choisir la liste des articles";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "Impossible de vider complètement le cache. Veuillez réessayer.";
 "Could not save your language. Please try again." = "Impossible d’enregistrer votre langue. Veuillez réessayer.";
 "Couldn't check story" = "Impossible de vérifier l’article";
+"Couldn't load your AI credits." = "Impossible de charger vos crédits IA.";
+"Couldn't load your usage invoices." = "Impossible de charger vos factures d’utilisation.";
+"Couldn't open billing. Please try again." = "Impossible d’ouvrir la facturation. Veuillez réessayer.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Impossible de joindre NewsBlur. Vérifiez votre connexion et réessayez.";
+"Couldn't save your monthly limit. Please try again." = "Impossible d’enregistrer votre limite mensuelle. Veuillez réessayer.";
+"Couldn't turn off usage billing. Please try again." = "Impossible de désactiver la facturation à l’usage. Veuillez réessayer.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Impossible de charger l’image en entier. Vous pouvez essayer de l’ouvrir dans votre navigateur.";
 "Counting is difficult..." = "Compter, c’est difficile...";
 "Create a feed from any web page" = "Créer un flux à partir de n’importe quelle page Web";
 "Create a new account instead" = "Créer plutôt un nouveau compte";
 "Create account" = "Créer un compte";
 "Create an account" = "Créer un compte";
+"Credits reset on the 1st of each month and don't carry over." = "Les crédits sont réinitialisés le 1er de chaque mois et ne sont pas reportés.";
 "Custom" = "Personnalisé";
 "Custom Domain" = "Domaine personnalisé";
 "Custom RSS feeds for saved stories" = "Flux RSS personnalisés pour les articles enregistrés";
@@ -378,6 +401,7 @@
 "Fetching text..." = "Récupération du texte…";
 "Filter" = "Filtrer";
 "Filter stories by date range" = "Filtrer les articles par plage de dates";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "Les filtres sont suspendus lorsque la facturation à l’usage atteint cette limite. Laissez le champ vide pour ne définir aucune limite.";
 "Find %@ in the voice list" = "Trouver %@ dans la liste des voix";
 "Find Friends" = "Trouver des amis";
 "Find in Feed" = "Rechercher dans le flux";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "Masquer les barres d’outils pendant la lecture";
 "Hides the music settings" = "Masque les paramètres de musique";
 "Highlight the paragraph being read" = "Surligner le paragraphe en cours de lecture";
+"How credits work" = "Fonctionnement des crédits";
 "How much emotion" = "Niveau d’émotion";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Si aucune option ne convient, saisissez le titre d’un article visible sur la page et nous relancerons l’analyse.";
 "Ignore system theme, use screen brightness instead" = "Ignorer le thème du système et utiliser la luminosité de l’écran";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Au lieu de suivre le mode sombre ou clair du système, changez automatiquement de thème selon la luminosité de votre écran. Pratique pour adapter le thème à l’éclairage ambiant.";
 "Interactions" = "Interactions";
 "Invalid: %@" = "Invalide : %@";
+"Invoice" = "Facture";
 "Keep fades, without movement." = "Conserver les fondus, sans mouvement.";
+"Keep filters running" = "Continuer à exécuter les filtres";
 "Keeps the dark icon no matter how your device is set." = "Conserve l’icône sombre, quel que soit le réglage de votre appareil.";
 "Keeps the light icon no matter how your device is set." = "Conserve l’icône claire, quel que soit le réglage de votre appareil.";
 "Keyboard Shortcuts" = "Raccourcis clavier";
@@ -553,6 +580,7 @@
 "Manage" = "Gérer";
 "Manage Account on the Web" = "Gérer le compte sur le Web";
 "Manage Subscription" = "Gérer l’abonnement";
+"Manage billing" = "Gérer la facturation";
 "Manage this folder…" = "Gérer ce dossier…";
 "Manage this site…" = "Gérer ce site…";
 "Manual scroll" = "Défilement manuel";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "Gris";
 "Model" = "Modèle";
 "Monday" = "Lundi";
+"Monthly limit" = "Limite mensuelle";
+"Monthly limit: %@" = "Limite mensuelle : %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Afficher plus d’articles utilise davantage d’espace disque, sans effet notable sur les performances.";
 "More voices" = "Plus de voix";
 "Morning" = "Matin";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "Classificateur d’images en langage naturel";
 "Natural Language Text Classifier" = "Classificateur de texte en langage naturel";
 "Natural [listen delivery]" = "Naturelle";
-"Natural language text and image classifiers" = "Classificateurs de texte et d’images en langage naturel";
 "Nested" = "Imbriqué";
 "Never" = "Jamais";
 "New Folder" = "Nouveau dossier";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "Aucun flux à afficher pour le moment. Essayez un autre centre d’intérêt ou recherchez parmi tous les sites.";
 "No friends to suggest." = "Aucun ami à suggérer.";
 "No interests or sites found. Try another search." = "Aucun centre d’intérêt ni site trouvé. Essayez une autre recherche.";
+"No limit" = "Aucune limite";
 "No longer saved" = "N'est plus enregistré";
 "No match" = "Aucun résultat";
 "No match in story" = "Aucune correspondance dans l’article";
@@ -690,6 +720,7 @@
 "No stories yet" = "Aucun article pour le moment";
 "No story selected" = "Aucun article sélectionné";
 "No unread stories" = "Aucun article non lu";
+"No usage invoices yet." = "Aucune facture d’utilisation pour le moment.";
 "No voices match these filters" = "Aucune voix ne correspond à ces filtres";
 "None" = "Aucun";
 "Normal" = "Normal";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "Page suivante ; article non lu suivant en bas";
 "Page up; previous story at the top" = "Page précédente ; article précédent en haut";
 "Password" = "Mot de passe";
+"Past your credits, filters keep running at 1¢ per credit." = "Une fois vos crédits épuisés, les filtres continuent de fonctionner au tarif de 1¢ par crédit.";
 "Paste a story title from the page" = "Collez le titre d’un article de la page";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Collez n’importe quelle URL et NewsBlur créera un flux à partir de la page, même sans RSS.";
 "Pause" = "Mettre en pause";
@@ -889,6 +921,7 @@
 "Saved on %@" = "Enregistré le %@";
 "Saving Daily Briefing settings…" = "Enregistrement des paramètres du briefing quotidien…";
 "Saving search..." = "Enregistrement de la recherche...";
+"Saving..." = "Enregistrement…";
 "Schedule" = "Programmer";
 "Scroll horizontally" = "Faire défiler horizontalement";
 "Scroll to Comments" = "Aller aux commentaires";
@@ -921,6 +954,7 @@
 "Server URL" = "URL du serveur";
 "Set an exact speed under Voice" = "Réglez la vitesse exacte dans Voix";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Configurez le Briefing quotidien pour obtenir un résumé des articles qui comptent le plus pour vous.";
+"Set up usage billing" = "Configurer la facturation à l’usage";
 "Settings" = "Paramètres";
 "Share" = "Partager";
 "Share This Story" = "Partager cet article";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Cette action supprime le dossier et désabonne des sites qui ne se trouvent dans aucun autre dossier.";
 "This feature requires iOS 15 or later." = "Cette fonctionnalité nécessite iOS 15 ou une version ultérieure.";
 "This might take a minute.\nFeel free to continue..." = "Cela peut prendre une minute.\nVous pouvez continuer en attendant…";
+"This month" = "Ce mois-ci";
+"This month's %@ AI credits are used." = "Vos %@ crédits IA de ce mois-ci sont épuisés.";
 "This removes the subscription from your feeds." = "L’abonnement sera supprimé de vos flux.";
 "This setting only applies after the app is restarted." = "Ce réglage ne s’applique qu’après le redémarrage de l’application.";
 "This site already has a feed" = "Ce site possède déjà un flux";
@@ -1151,6 +1187,9 @@
 "Try search again" = "Relancer la recherche";
 "Trying Feed" = "Tentative avec le flux";
 "Tuesday" = "Mardi";
+"Turn off usage billing" = "Désactiver la facturation à l’usage";
+"Turn off usage billing?" = "Désactiver la facturation à l’utilisation ?";
+"Turn on usage billing" = "Activer la facturation à l’usage";
 "Two" = "Deux";
 "Two Columns" = "Deux colonnes";
 "Two Rows" = "Deux lignes";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "Non enregistré";
 "Untitled story" = "Article sans titre";
 "Up Next" = "À suivre";
+"Upcoming" = "À venir";
+"Update card on Stripe" = "Mettre à jour la carte sur Stripe";
 "Updated %@ days ago" = "Mis à jour il y a %@ jours";
 "Updated %@ months ago" = "Mis à jour il y a %@ mois";
 "Updated %@ weeks ago" = "Mis à jour il y a %@ semaines";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "Passer à Premium";
 "Upgrade to Premium Archive" = "Passer à Premium Archive";
 "Upgrade to Premium Pro" = "Passer à Premium Pro";
+"Usage billing" = "Facturation à l’utilisation";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "La facturation à l’usage est activée. Les crédits au-delà de votre limite de %1$@ coûtent 1¢ chacun : %2$@ jusqu’à présent ce mois-ci.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "La facturation à l’utilisation est activée. Chaque crédit coûte 1¢ : %@ utilisés ce mois-ci.";
+"Usage invoices" = "Factures d’utilisation";
 "Use %@" = "Utiliser %@";
 "Use a custom server" = "Utiliser un serveur personnalisé";
 "Use another sign-in method" = "Utiliser une autre méthode de connexion";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "Vous vous êtes inscrit à NewsBlur.";
 "You subscribed to %@." = "Vous êtes abonné à %@.";
 "You're presented with multiple story pattern options to choose from." = "Plusieurs modèles d’articles vous sont proposés.";
+"Your AI filters are paused until %@." = "Vos filtres IA sont suspendus jusqu’au %@.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "Vos filtres IA sont suspendus lorsque les crédits de ce mois sont épuisés. Les crédits déjà utilisés au-delà de votre forfait sont facturés dès qu’ils atteignent au moins %@.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "Vos filtres IA ont atteint votre limite mensuelle de %1$@ et sont suspendus jusqu’au %2$@.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Votre compte NewsBlur a été supprimé. Retirez NewsBlur de la liste « Se connecter avec Apple » dans les réglages de votre compte Apple pour terminer la déconnexion.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "La voix choisie n’est pas disponible pour le moment ; %@ lit donc cet article.";
 "Your identity is verified" = "Votre identité est vérifiée";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "Votre abonnement Premium Pro est actif";
 "Your premium subscription is active" = "Votre abonnement Premium est actif";
 "Your reading list" = "Votre liste de lecture";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "Votre carte enregistrée est débitée au début du mois dès que le montant atteint %1$@, ou immédiatement à hauteur de %2$@.";
 "You’re all set up." = "Tout est prêt.";
 "at %@" = "à %@";
 "by %@" = "par %@";
@@ -1279,6 +1328,7 @@
 "no site" = "aucun site";
 "no story" = "aucun article";
 "or" = "ou";
+"or wait until %@" = "ou attendre jusqu’au %@";
 "premium subscribers" = "abonnés premium";
 "your account" = "votre compte";
 "‹ Feeds" = "‹ Flux";

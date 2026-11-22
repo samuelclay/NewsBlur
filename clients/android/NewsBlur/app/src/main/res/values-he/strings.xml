@@ -458,7 +458,16 @@
     <string name="premium_custom_rss">פידי RSS מותאמים אישית לכתבות שמורות</string>
     <string name="premium_text_view">תצוגת טקסט מחלצת בנוחות את הכתבה</string>
     <string name="premium_discover_related">גילוי כתבות ואתרים קשורים</string>
-    <string name="premium_natural_language_classifiers">מסווגי טקסט ותמונות בשפה טבעית</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="one">מסנני טקסט ותמונות מבוססי AI, עם %1$s זיכוי AI בחודש</item>
+        <item quantity="other">מסנני טקסט ותמונות מבוססי בינה מלאכותית, עם %1$s קרדיטים לבינה מלאכותית בחודש</item>
+        <item quantity="two">מסנני טקסט ותמונות מבוססי בינה מלאכותית, עם %1$s קרדיטים לבינה מלאכותית בחודש</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="one">%1$s קרדיט AI בחודש למסנני AI</item>
+        <item quantity="other">%1$s קרדיטים לבינה מלאכותית בחודש למסננים מבוססי בינה מלאכותית</item>
+        <item quantity="two">%1$s נקודות קרדיט ל-AI בחודש עבור מסנני AI</item>
+    </plurals>
     <string name="premium_shiloh">אתם מאכילים את ליריק, כלב הציד הרעב של NewsBlur, במשך 6 ימים</string>
     <string name="archive_everything_premium">כמובן, כל מה שכלול במינוי Premium</string>
     <string name="archive_enable_sites">עקבו אחר עד 4,096 אתרים</string>
@@ -1330,8 +1339,94 @@
     <string name="ai_scope_global">כל האתרים</string>
     <string name="ai_scope_folder_named">כל האתרים בתיקייה %1$s</string>
     <string name="ai_scope_requires_archive">נדרש Premium Archive</string>
-    <string name="ai_filters_archive_only">מסנני בינה מלאכותית נשמרים, אך פועלים רק ב־%1$s.</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+    <string name="ai_credits_title">זיכויי AI</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="one">נעשה שימוש ב־%1$s מתוך %2$s קרדיט של AI</item>
+        <item quantity="other">נוצלו %1$s מתוך %2$s זיכויי AI</item>
+        <item quantity="two">נוצלו %1$s מתוך %2$s נקודות קרדיט ל-AI</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="one">נעשה שימוש ב־%1$s קרדיטים לבינה מלאכותית, %2$s מעבר ל־%3$s של התוכנית שלך</item>
+        <item quantity="other">נעשה שימוש ב־%1$s קרדיטים של AI, מעבר ל־%3$s של התוכנית שלך (%2$s)</item>
+        <item quantity="two">נעשה שימוש ב־%1$s קרדיטים לבינה מלאכותית, %2$s מעבר ל־%3$s של התוכנית שלך</item>
+    </plurals>
+    <string name="ai_credits_resets">האיפוס יתבצע %1$s</string>
+    <string name="ai_credits_free">מסנני AI נשמרים, אך פועלים רק עם Premium. מינוי Premium כולל %1$s זיכויי AI בחודש, %2$s של Archive ו־%3$s של Pro.</string>
+    <string name="ai_credits_upgrade">שדרוג</string>
+    <string name="ai_credits_estimate_text">מסנן טקסט באתר הזה משתמש בכ-%1$s נקודות קרדיט בחודש</string>
+    <string name="ai_credits_estimate_image">מסנן תמונות באתר הזה משתמש בכ־%1$s קרדיטים בחודש</string>
+    <string name="ai_credits_estimate_text_small">מסנן טקסט באתר הזה משתמש בפחות מ־%1$s קרדיטים בחודש</string>
+    <string name="ai_credits_estimate_image_small">מסנן תמונות באתר הזה משתמש בפחות מ-%1$s נקודות קרדיט בחודש</string>
+    <string name="ai_credits_runs_out">בקצב הזה, הקרדיטים שלך ייגמרו בסביבות %1$s.</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="one">המסננים מבוססי הבינה המלאכותית שלך הושהו עד %1$s. נוצל הקרדיט החודשי %2$s לבינה מלאכותית.</item>
+        <item quantity="other">מסנני ה-AI שלך מושהים עד %1$s. נוצלו כל %2$s נקודות הקרדיט החודשיות שלך ל-AI.</item>
+        <item quantity="two">מסנני ה-AI שלך מושהים עד %1$s. נוצלו %2$s קרדיטי ה-AI שלך לחודש הזה.</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">המסננים מבוססי הבינה המלאכותית שלך הגיעו למגבלה החודשית של %1$s והושהו עד %2$s.</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="one">חיוב לפי שימוש מופעל. על זיכויים מעבר ל־%1$s תחויבו בסנט אחד לכל זיכוי: %2$s עד כה החודש.</item>
+        <item quantity="other">חיוב לפי שימוש מופעל. על זיכויים מעבר ל־%1$s תחויבו בסנט אחד לכל זיכוי: %2$s עד כה החודש.</item>
+        <item quantity="two">חיוב לפי שימוש מופעל. על זיכויים מעבר ל־%1$s תחויבו בסנט אחד לכל זיכוי: %2$s עד כה החודש.</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">חיוב לפי שימוש פעיל. כל נקודת קרדיט ל-AI עולה 1¢: עד כה החודש %1$s.</string>
+    <string name="ai_credits_unbilled">%1$s ממתין לחיוב: בתחילת החודש הבא אם הסכום יגיע לפחות ל־%2$s, או מיד כשיגיע ל־%3$s.</string>
+    <string name="ai_credits_keep_running">השארת המסננים פעילים</string>
+    <string name="ai_credits_billing_explainer">לאחר ניצול הקרדיטים שלך, המסננים ימשיכו לפעול בעלות של 1¢ לכל קרדיט.</string>
+    <string name="ai_credits_billing_forecast">בקצב שלך, החודש צפויים לשמש בערך %1$s.</string>
+    <string name="ai_credits_turn_on_billing">הפעלת חיוב לפי שימוש</string>
+    <string name="ai_credits_turn_on_detail">1¢ לכל קרדיט מעבר לתוכנית שלך, בערך %1$s החודש</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">1¢ לכל נקודת קרדיט מעבר למכסה של התוכנית שלך</string>
+    <string name="ai_credits_or_wait">או להמתין עד %1$s</string>
+    <string name="ai_credits_manage_billing">ניהול חיובים</string>
+    <string name="ai_credits_change_limit">שינוי המגבלה</string>
+    <string name="ai_credits_open">צפייה בנקודות קרדיט ל-AI</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="one">התוכנית שלך כוללת %1$s נקודת קרדיט ל-AI בחודש עבור מסנני טקסט ותמונות. נקודות הקרדיט מתאפסות בראשון לחודש, ויתרה שלא נוצלה אינה עוברת לחודש הבא.</item>
+        <item quantity="other">התוכנית שלך כוללת %1$s קרדיטי AI בחודש למסנני טקסט ותמונות מבוססי AI. הקרדיטים מתאפסים ב־1 בכל חודש, וקרדיטים שלא נוצלו לא עוברים לחודש הבא.</item>
+        <item quantity="two">המינוי שלך כולל %1$s זיכויי AI בחודש למסנני טקסט ותמונות מבוססי AI. הזיכויים מתאפסים ב־1 בחודש, וזיכויים שלא נוצלו אינם מועברים לחודש הבא.</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="one">בקצב הזה ייעשה החודש שימוש בכ־%1$s מתוך קרדיט ה־%2$s שלך.</item>
+        <item quantity="other">בקצב הזה, החודש תנוצלנה בערך %1$s מתוך %2$s נקודות הקרדיט שלך.</item>
+        <item quantity="two">בקצב הזה, תשתמשו בכ־%1$s מתוך %2$s הקרדיטים שלכם החודש.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">השרת הזה לא סופר קרדיטים לבינה מלאכותית, לכן המסננים האלה תמיד פועלים.</string>
+    <string name="ai_credits_load_failed">לא ניתן לטעון את קרדיטי ה־AI שלך. משכו למטה כדי לנסות שוב.</string>
+    <string name="usage_billing_title">חיוב לפי שימוש</string>
+    <string name="usage_billing_terms">החיוב בכרטיס שלך מתבצע בתחילת כל חודש כשהסכום מגיע ל־%1$s לפחות, או מיד כשהוא מגיע ל־%2$s. סכומים קטנים יותר ימתינו לחודשים הבאים.</string>
+    <string name="usage_billing_set_up">הגדרת חיוב לפי שימוש</string>
+    <string name="usage_billing_manage">עדכון כרטיס ב-Stripe</string>
+    <string name="usage_billing_cancel">הפסקת החיוב לפי שימוש</string>
+    <string name="usage_billing_cancel_confirm">להשבית חיוב לפי שימוש? חיובים על זיכויים שכבר חרגו ממכסת המינוי שלך ייגבו כעת אם יגיעו ל־%1$s, ומסנני AI יושהו לאחר ניצול הזיכויים של החודש.</string>
+    <string name="usage_billing_cancel_keep">להשאיר פעיל</string>
+    <string name="usage_billing_cancelled">החיוב לפי שימוש כבוי.</string>
+    <string name="usage_billing_cancel_failed">לא ניתן להפסיק את החיוב לפי שימוש. נסו שוב.</string>
+    <string name="usage_billing_limit_label">מגבלה חודשית</string>
+    <string name="usage_billing_limit_hint">ללא הגבלה</string>
+    <string name="usage_billing_limit_help">המסננים יושהו כשהחיוב לפי שימוש יגיע למכסה. השארת השדה ריק פירושה ללא הגבלה.</string>
+    <string name="usage_billing_limit_save">שמירת המגבלה</string>
+    <string name="usage_billing_limit_saved">המגבלה החודשית נשמרה</string>
+    <string name="usage_billing_limit_cleared">המגבלה החודשית הוסרה</string>
+    <string name="usage_billing_limit_failed">לא ניתן לשמור את המגבלה החודשית. נסו שוב.</string>
+    <string name="usage_billing_limit_invalid">יש להזין את המגבלה בדולרים, למשל %1$s.</string>
+    <string name="usage_billing_limit_read_only">מגבלה חודשית: %1$s</string>
+    <string name="usage_billing_no_limit">ללא מגבלה חודשית</string>
+    <string name="usage_billing_history_title">היסטוריית חיוב לפי שימוש</string>
+    <string name="usage_billing_no_invoices">עדיין אין חשבוניות חיוב לפי שימוש.</string>
+    <string name="usage_billing_upcoming">בקרוב</string>
+    <string name="usage_billing_invoice">חשבונית</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="one">%1$s נקודת קרדיט</item>
+        <item quantity="other">%1$s נקודות קרדיט</item>
+        <item quantity="two">%1$s קרדיטים</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">לא ניתן להתחבר ל-Stripe. נסו שוב.</string>
+    <string name="usage_billing_already_active">החיוב לפי שימוש כבר מוגדר.</string>
+    <string name="usage_billing_activating">הפעלת החיוב לפי שימוש. לאחר ש-Stripe יאשר את פרטי התשלום שלך, התהליך יימשך כמה שניות.</string>
+    <string name="usage_billing_activating_slow">Stripe עדיין מאשרת את החיוב שלך. משכו למטה כדי לבדוק שוב בעוד רגע.</string>
+    <string name="usage_billing_setup_complete">חיוב לפי שימוש מופעל. מסנני ה-AI שלך ממשיכים לפעול גם לאחר ניצול הזיכויים.</string>
+    <string name="usage_billing_no_browser">יש להתקין דפדפן אינטרנט כדי להגדיר חיוב לפי שימוש.</string>
     <string name="listen_story_button">האזנה</string>
     <string name="listen_resume">המשך</string>
     <string name="listen_pause">השהיה</string>

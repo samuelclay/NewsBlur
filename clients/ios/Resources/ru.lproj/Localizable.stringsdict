@@ -22,6 +22,46 @@
 			<string>Не удалось добавить ленты (%1$@) в папку «%2$@».</string>
 		</dict>
 	</dict>
+	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_past_plan@</string>
+		<key>ai_credits_past_plan</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Использовано %2$@ кредитов ИИ, сверх лимита вашего плана (%1$@) — %3$@</string>
+			<key>many</key>
+			<string>Использовано %2$@ кредитов ИИ, сверх лимита по вашему плану (%1$@) — %3$@</string>
+			<key>one</key>
+			<string>Использован %2$@ кредит ИИ, сверх лимита вашего плана (%1$@) — %3$@</string>
+			<key>other</key>
+			<string>Использовано %2$@ AI-кредитов, на %3$@ больше включённых в ваш план %1$@</string>
+		</dict>
+	</dict>
+	<key>%2$@ of %1$@ AI credits used</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_used@</string>
+		<key>ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Использовано %2$@ из %1$@ кредитов ИИ</string>
+			<key>many</key>
+			<string>Использовано %2$@ из %1$@ кредитов ИИ</string>
+			<key>one</key>
+			<string>Использован %2$@ из %1$@ кредита ИИ</string>
+			<key>other</key>
+			<string>Использовано %2$@ из %1$@ кредитов ИИ</string>
+		</dict>
+	</dict>
 	<key>%@ Widget Sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -602,6 +642,26 @@
 			<string>+ ещё %@ сайтов</string>
 		</dict>
 	</dict>
+	<key>A text filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text_filter_monthly_credits@</string>
+		<key>text_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Текстовый фильтр на этом сайте расходует около %2$@ кредитов в месяц</string>
+			<key>many</key>
+			<string>Текстовый фильтр на этом сайте расходует около %2$@ кредитов в месяц</string>
+			<key>one</key>
+			<string>Текстовый фильтр на этом сайте расходует около %2$@ кредита в месяц</string>
+			<key>other</key>
+			<string>Текстовый фильтр на этом сайте расходует около %2$@ кредитов в месяц</string>
+		</dict>
+	</dict>
 	<key>Add %1$@ feeds to “%2$@” folder</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -680,6 +740,46 @@
 			<string>Также опубликовано на %@ сайте</string>
 			<key>other</key>
 			<string>Также опубликовано на %@ других сайтах</string>
+		</dict>
+	</dict>
+	<key>An image filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_monthly_credits@</string>
+		<key>image_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Графический фильтр на этом сайте использует около %2$@ кредитов в месяц</string>
+			<key>many</key>
+			<string>Фильтр изображений на этом сайте использует около %2$@ кредитов в месяц</string>
+			<key>one</key>
+			<string>Графический фильтр на этом сайте расходует около %2$@ кредита в месяц</string>
+			<key>other</key>
+			<string>Фильтр изображений на этом сайте расходует около %2$@ кредитов в месяц</string>
+		</dict>
+	</dict>
+	<key>At this pace, this month will use about %2$@ AI credits.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@forecast_monthly_credits@</string>
+		<key>forecast_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>При таком темпе за этот месяц будет использовано около %2$@ кредитов ИИ.</string>
+			<key>many</key>
+			<string>При таком темпе за этот месяц будет использовано около %2$@ кредитов ИИ.</string>
+			<key>one</key>
+			<string>При таком темпе в этом месяце будет использовано около %2$@ AI-кредита.</string>
+			<key>other</key>
+			<string>При таком темпе за этот месяц будет использовано около %2$@ кредитов ИИ.</string>
 		</dict>
 	</dict>
 	<key>Back %@ seconds</key>
@@ -982,6 +1082,26 @@
 			<string>Текст за последние %@ часов</string>
 		</dict>
 	</dict>
+	<key>This month's %@ AI credits are used.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@monthly_ai_credits_used@</string>
+		<key>monthly_ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Кредиты на этот месяц (%@) израсходованы.</string>
+			<key>many</key>
+			<string>Кредиты ИИ за этот месяц (%@) израсходованы.</string>
+			<key>one</key>
+			<string>AI-кредитов за этот месяц: использовано %@.</string>
+			<key>other</key>
+			<string>Кредиты ИИ на этот месяц (%@) израсходованы.</string>
+		</dict>
+	</dict>
 	<key>Updated %@ days ago</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1040,6 +1160,26 @@
 			<string>Обновлено %@ неделю назад</string>
 			<key>other</key>
 			<string>Обновлено %@ недель назад</string>
+		</dict>
+	</dict>
+	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@usage_billing_included_credits@</string>
+		<key>usage_billing_included_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Оплата за использование включена. Каждый кредит сверх лимита вашего плана (%1$@) стоит 1¢: за этот месяц использовано %2$@.</string>
+			<key>many</key>
+			<string>Оплата по факту использования включена. Кредиты сверх лимита %1$@ стоят 1¢ каждый. За этот месяц использовано %2$@.</string>
+			<key>one</key>
+			<string>Оплата по факту использования включена. Кредиты сверх включённых в ваш план %1$@ стоят по 1¢ за штуку: в этом месяце использовано %2$@.</string>
+			<key>other</key>
+			<string>Оплата за использование включена. Каждый кредит сверх лимита вашего плана (%1$@) стоит 1¢: за этот месяц использовано %2$@.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

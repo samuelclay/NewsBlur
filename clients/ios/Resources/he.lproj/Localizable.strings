@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "תיקיית %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "תיקיית %1$@, מכווצת, %2$@";
 "%1$@ followed %2$@." = "%1$@ התחיל/ה לעקוב אחרי %2$@.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "%1$@ ממתין לחיוב: בתחילת החודש הבא אם הסכום הוא לפחות %2$@, או מיד כשהוא מגיע ל-%3$@.";
 "%1$@ of %2$@ of listening left this week" = "נותרו %1$@ מתוך %2$@ להאזנה השבוע";
 "%1$@ of %2$@ sites indexed" = "אונדקסו %1$@ מתוך %2$@ אתרים";
 "%1$@ of %2$@ story previews used today" = "נעשה שימוש היום בתצוגות מקדימות של %1$@ מתוך %2$@ כתבות";
+"%1$@ of your %2$@ monthly limit" = "%1$@ מתוך המגבלה החודשית שלך, %2$@";
 "%1$@ re-shared %2$@." = "%1$@ שיתף/ה מחדש את %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ שיתף/ה מחדש את %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ השיב/ה ל־%2$@: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ שיתף/ה את %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ שיתף/ה את %2$@:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "נעשה שימוש ב־%2$@ קרדיטים לבינה מלאכותית, %3$@ מעבר ל־%1$@ של התוכנית שלך";
+"%2$@ of %1$@ AI credits used" = "נוצלו %2$@ מתוך %1$@ נקודות קרדיט ל-AI";
 "%@ Widget Sites" = "%@ אתרים לווידג'טים";
 "%@ ago" = "לפני %@";
 "%@ categories to choose from" = "%@ קטגוריות לבחירה";
@@ -66,6 +70,8 @@
 "100 stories" = "100 כתבות";
 "12 color flavors with light and dark variants." = "12 גוני צבע, עם גרסאות בהירות וכהות.";
 "15 stories" = "15 כתבות";
+"1¢ per credit past your plan's" = "1¢ לכל נקודת קרדיט מעבר למכסה של התוכנית שלך";
+"1¢ per credit past your plan's, about %@ this month" = "1¢ לכל קרדיט מעבר למכסה של התוכנית שלך, כ־%@ החודש";
 "2,000 stories" = "2,000 כתבות";
 "20 stories" = "20 כתבות";
 "2x daily" = "פעמיים ביום";
@@ -73,6 +79,8 @@
 "3x daily" = "3 פעמים ביום";
 "5 stories" = "5 כתבות";
 "5,000 stories" = "5,000 כתבות";
+"50 AI credits a month for AI filters" = "50 נקודות קרדיט ל-AI בחודש עבור מסנני AI";
+"500 AI credits a month for AI filters" = "500 זיכויי AI בחודש למסנני AI";
 "500 stories" = "500 כתבות";
 "< 15/month" = "פחות מ־15 לחודש";
 "< 30/month" = "פחות מ־30 לחודש";
@@ -80,11 +88,16 @@
 "< 60/month" = "פחות מ־60 לחודש";
 "< 90/month" = "פחות מ־90 לחודש";
 "A clearer, closer sound" = "צליל ברור וקרוב יותר";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "נקודת קרדיט אחת מספיקה לכ-700 כתבות במסנן טקסט, או ל-100 במסנן תמונות.";
 "A personal news reader bringing\npeople together to talk about the world." = "קורא חדשות אישי שמחבר בין\nאנשים כדי לדבר על העולם.";
-"AI filters are saved but only run on Premium Archive." = "מסנני בינה מלאכותית נשמרים, אך פועלים רק ב־Premium Archive.";
+"A text filter on this site uses about %2$@ credits a month" = "מסנן טקסט באתר הזה משתמש בכ־%2$@ קרדיטים בחודש";
+"AI Credits" = "קרדיטים לבינה מלאכותית";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "מסנני AI נשמרים, אך פועלים רק עם Premium. תוכנית Premium כוללת 5 נקודות קרדיט ל-AI בחודש, Archive כוללת 50 ו-Pro כוללת 500.";
 "AI finds the stories" = "הבינה המלאכותית מוצאת את הכתבות";
+"AI text and image filters, with 5 AI credits a month" = "מסנני טקסט ותמונות מבוססי AI, עם 5 נקודות קרדיט ל-AI בחודש";
 "ALL" = "הכול";
 "ALL NOTIFICATIONS" = "כל ההתראות";
+"About %@ this month at your pace." = "בקצב שלך, החודש צפויים לשמש בערך %@.";
 "About NewsBlur" = "על NewsBlur";
 "Accent [voice filter]" = "מבטא";
 "Account" = "חשבון";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "כבר יש לך חשבון? התחברות";
 "Already have feeds?" = "כבר יש לך פידים?";
 "Also published by %@ sites" = "פורסם גם ב־%@ אתרים";
+"An image filter on this site uses about %2$@ credits a month" = "מסנן תמונות באתר הזה משתמש בכ-%2$@ נקודות קרדיט בחודש";
 "Analyze" = "ניתוח";
 "Analyzing images..." = "מתבצע ניתוח של התמונות...";
 "App Badge" = "תג אפליקציה";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "שאלו את הבינה המלאכותית על כתבות";
 "Ask AI…" = "שאלו את ה-AI…";
 "Ask a question..." = "שאלו שאלה...";
+"At this pace your credits run out around %@." = "בקצב הזה, נקודות הקרדיט שלך יאזלו בערך ב-%@.";
+"At this pace, this month will use about %2$@ AI credits." = "בקצב הזה, השימוש החודש יגיע לכ־%2$@ קרדיטים לבינה מלאכותית.";
 "Atlantic Blue" = "כחול אטלנטי";
 "Authenticating" = "מתבצע אימות";
 "Auto" = "אוטומטי";
@@ -197,6 +213,7 @@
 "Cancel" = "ביטול";
 "Cannot reply to this story" = "אי אפשר להשיב לכתבה הזו";
 "Change Story List" = "שינוי רשימת הכתבות";
+"Change limit" = "שינוי המגבלה";
 "Choose Icon" = "בחירת סמל";
 "Choose Language…" = "בחירת שפה…";
 "Choose Story List" = "בחירת רשימת כתבות";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "לא ניתן היה לנקות את המטמון במלואו. נסה שוב.";
 "Could not save your language. Please try again." = "לא ניתן לשמור את השפה שלך. נסה שוב.";
 "Couldn't check story" = "לא ניתן לבדוק את הכתבה";
+"Couldn't load your AI credits." = "לא ניתן לטעון את קרדיטי ה־AI שלך.";
+"Couldn't load your usage invoices." = "לא ניתן לטעון את חשבוניות השימוש שלך.";
+"Couldn't open billing. Please try again." = "לא ניתן לפתוח את החיוב. נסו שוב.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "לא ניתן להתחבר אל NewsBlur. בדקו את החיבור ונסו שוב.";
+"Couldn't save your monthly limit. Please try again." = "לא ניתן לשמור את המגבלה החודשית שלך. נסו שוב.";
+"Couldn't turn off usage billing. Please try again." = "לא ניתן לכבות את החיוב לפי שימוש. נסו שוב.";
 "Couldn’t load the full image. You can try opening it in your browser." = "לא ניתן לטעון את התמונה המלאה. אפשר לנסות לפתוח אותה בדפדפן.";
 "Counting is difficult..." = "קשה לספור...";
 "Create a feed from any web page" = "יצירת פיד מכל דף אינטרנט";
 "Create a new account instead" = "במקום זאת, יצירת חשבון חדש";
 "Create account" = "יצירת חשבון";
 "Create an account" = "יצירת חשבון";
+"Credits reset on the 1st of each month and don't carry over." = "הזיכויים מתאפסים ב־1 בכל חודש ואינם מועברים לחודש הבא.";
 "Custom" = "מותאם אישית";
 "Custom Domain" = "דומיין מותאם אישית";
 "Custom RSS feeds for saved stories" = "פידי RSS מותאמים אישית לכתבות שמורות";
@@ -378,6 +401,7 @@
 "Fetching text..." = "טוען טקסט...";
 "Filter" = "סינון";
 "Filter stories by date range" = "סינון כתבות לפי טווח תאריכים";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "המסננים יושהו כשחיוב לפי שימוש יגיע למגבלה. השאירו ריק כדי לא להגדיר מגבלה.";
 "Find %@ in the voice list" = "איתור %@ ברשימת הקולות";
 "Find Friends" = "מציאת חברים";
 "Find in Feed" = "חיפוש בפיד";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "הסתרת סרגלי כלים בזמן הקריאה";
 "Hides the music settings" = "הסתרת הגדרות המוזיקה";
 "Highlight the paragraph being read" = "הדגשת הפסקה שמוקראת";
+"How credits work" = "איך הקרדיטים עובדים";
 "How much emotion" = "מידת הרגש";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "אם אף אחת מהאפשרויות לא מתאימה, הקלידו כותרת של כתבה שמופיעה בעמוד וננתח אותה מחדש.";
 "Ignore system theme, use screen brightness instead" = "התעלמות מעיצוב המערכת ושימוש בבהירות המסך במקום זאת";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "במקום להשתמש בערכת הנושא הכהה או הבהירה של המערכת, מעבר אוטומטי בין ערכות נושא בהתאם לרמת הבהירות של המסך. שימושי להתאמת ערכת הנושא לתאורת הסביבה.";
 "Interactions" = "אינטראקציות";
 "Invalid: %@" = "לא תקין: %@";
+"Invoice" = "חשבונית";
 "Keep fades, without movement." = "שמירה על מעברי עמעום ללא תנועה.";
+"Keep filters running" = "להשאיר את המסננים פעילים";
 "Keeps the dark icon no matter how your device is set." = "משאיר את הסמל הכהה ללא קשר להגדרות המכשיר שלך.";
 "Keeps the light icon no matter how your device is set." = "הסמל יישאר בהיר ללא קשר להגדרות המכשיר שלכם.";
 "Keyboard Shortcuts" = "קיצורי מקלדת";
@@ -553,6 +580,7 @@
 "Manage" = "ניהול";
 "Manage Account on the Web" = "ניהול החשבון באינטרנט";
 "Manage Subscription" = "ניהול המינוי";
+"Manage billing" = "ניהול חיובים";
 "Manage this folder…" = "ניהול התיקייה הזו…";
 "Manage this site…" = "ניהול האתר הזה…";
 "Manual scroll" = "גלילה ידנית";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "אפור";
 "Model" = "מודל";
 "Monday" = "יום שני";
+"Monthly limit" = "מגבלה חודשית";
+"Monthly limit: %@" = "מגבלה חודשית: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "יותר כתבות תופסות יותר מקום בדיסק, אך מלבד זאת אין להן השפעה מורגשת על הביצועים.";
 "More voices" = "קולות נוספים";
 "Morning" = "בוקר";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "מסווג תמונות בשפה טבעית";
 "Natural Language Text Classifier" = "מסווג טקסט בשפה טבעית";
 "Natural [listen delivery]" = "טבעי";
-"Natural language text and image classifiers" = "מסווגי טקסט ותמונות בשפה טבעית";
 "Nested" = "מקונן";
 "Never" = "אף פעם";
 "New Folder" = "תיקייה חדשה";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "אין עדיין פידים להצגה. נסו תחום עניין אחר או חפשו בכל האתרים.";
 "No friends to suggest." = "אין חברים להציע.";
 "No interests or sites found. Try another search." = "לא נמצאו תחומי עניין או אתרים. נסו חיפוש אחר.";
+"No limit" = "ללא הגבלה";
 "No longer saved" = "לא נשמר עוד";
 "No match" = "אין התאמה";
 "No match in story" = "לא נמצאה התאמה בכתבה";
@@ -690,6 +720,7 @@
 "No stories yet" = "עדיין אין כתבות";
 "No story selected" = "לא נבחרה כתבה";
 "No unread stories" = "אין כתבות שלא נקראו";
+"No usage invoices yet." = "עדיין אין חשבוניות על שימוש.";
 "No voices match these filters" = "אין קולות שתואמים למסננים האלה";
 "None" = "ללא";
 "Normal" = "רגיל";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "עמוד למטה; הכתבה הבאה שלא נקראה בתחתית";
 "Page up; previous story at the top" = "עמוד למעלה; הכתבה הקודמת בראש";
 "Password" = "סיסמה";
+"Past your credits, filters keep running at 1¢ per credit." = "מעבר למכסת הזיכויים שלך, המסננים ממשיכים לפעול בעלות של סנט אחד לזיכוי.";
 "Paste a story title from the page" = "הדביקו כותרת של כתבה מהעמוד";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "הדביקו כתובת URL כלשהי ו-NewsBlur ייצור פיד מהדף, גם ללא RSS.";
 "Pause" = "השהה";
@@ -889,6 +921,7 @@
 "Saved on %@" = "נשמר ב־%@";
 "Saving Daily Briefing settings…" = "שומר את הגדרות התדריך היומי…";
 "Saving search..." = "שומר את החיפוש...";
+"Saving..." = "שמירה...";
 "Schedule" = "לוח זמנים";
 "Scroll horizontally" = "גלילה אופקית";
 "Scroll to Comments" = "גלילה לתגובות";
@@ -921,6 +954,7 @@
 "Server URL" = "כתובת URL של השרת";
 "Set an exact speed under Voice" = "הגדרת מהירות מדויקת תחת קול";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "הגדירו את התדריך היומי כדי ליצור תקציר של הכתבות החשובות לכם ביותר.";
+"Set up usage billing" = "הגדרת חיוב לפי שימוש";
 "Settings" = "הגדרות";
 "Share" = "שיתוף";
 "Share This Story" = "שיתוף הכתבה";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "מחיקת התיקייה תבטל את המינוי לאתרים שאינם נמצאים בתיקייה אחרת.";
 "This feature requires iOS 15 or later." = "התכונה הזו דורשת iOS 15 ואילך.";
 "This might take a minute.\nFeel free to continue..." = "זה עשוי לקחת דקה.\nאפשר להמשיך בינתיים...";
+"This month" = "החודש";
+"This month's %@ AI credits are used." = "נוצלו כל %@ נקודות הקרדיט החודשיות ל-AI.";
 "This removes the subscription from your feeds." = "הפעולה תסיר את המינוי מהפידים שלך.";
 "This setting only applies after the app is restarted." = "ההגדרה תיכנס לתוקף רק לאחר הפעלה מחדש של האפליקציה.";
 "This site already has a feed" = "לאתר הזה כבר יש פיד";
@@ -1151,6 +1187,9 @@
 "Try search again" = "נסו לחפש שוב";
 "Trying Feed" = "מנסה את הפיד";
 "Tuesday" = "יום שלישי";
+"Turn off usage billing" = "השבתת חיוב לפי שימוש";
+"Turn off usage billing?" = "להפסיק את החיוב לפי שימוש?";
+"Turn on usage billing" = "הפעלת חיוב לפי שימוש";
 "Two" = "שתיים";
 "Two Columns" = "שתי עמודות";
 "Two Rows" = "שתי שורות";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "לא נשמר";
 "Untitled story" = "כתבה ללא כותרת";
 "Up Next" = "בתור הבא";
+"Upcoming" = "בקרוב";
+"Update card on Stripe" = "עדכון הכרטיס ב־Stripe";
 "Updated %@ days ago" = "עודכן לפני %@ ימים";
 "Updated %@ months ago" = "עודכן לפני %@ חודשים";
 "Updated %@ weeks ago" = "עודכן לפני %@ שבועות";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "שדרוג ל-Premium";
 "Upgrade to Premium Archive" = "שדרגו ל-Premium Archive";
 "Upgrade to Premium Pro" = "שדרוג ל־Premium Pro";
+"Usage billing" = "חיוב לפי שימוש";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "חיוב לפי שימוש מופעל. כל קרדיט מעבר ל־%1$@ עולה 1¢: עד כה החודש נוצלו %2$@.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "חיוב לפי שימוש פעיל. כל נקודת קרדיט עולה 1¢: עד כה החודש %@.";
+"Usage invoices" = "חשבוניות לפי שימוש";
 "Use %@" = "השתמשו ב־%@";
 "Use a custom server" = "שימוש בשרת מותאם אישית";
 "Use another sign-in method" = "שימוש בשיטת התחברות אחרת";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "נרשמת ל-NewsBlur.";
 "You subscribed to %@." = "נרשמת ל-%@.";
 "You're presented with multiple story pattern options to choose from." = "יוצגו בפניכם כמה אפשרויות לתבניות כתבה לבחירה.";
+"Your AI filters are paused until %@." = "מסנני ה־AI שלך מושהים עד %@.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "מסנני ה־AI שלך יושהו כשייגמרו הקרדיטים של החודש. חיובים על קרדיטים שכבר חרגו מהמכסה שבתוכנית שלך ייגבו עכשיו אם יגיעו לפחות ל־%@.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "מסנני ה-AI שלך הגיעו למכסה החודשית של %1$@ והושהו עד %2$@.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "חשבון NewsBlur שלך נמחק. כדי להשלים את הניתוק, הסר את NewsBlur מהאפשרות „התחברות באמצעות Apple” בהגדרות חשבון Apple שלך.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "הקול שבחרת אינו זמין כרגע, ולכן %@ מקריא את הכתבה.";
 "Your identity is verified" = "הזהות שלך אומתה";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "מינוי ה־Premium Pro שלך פעיל";
 "Your premium subscription is active" = "המינוי שלך ל-Premium פעיל";
 "Your reading list" = "רשימת הקריאה שלך";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "החיוב בכרטיס השמור שלך מתבצע בתחילת החודש כשהסכום מגיע ל־%1$@ לפחות, או מיד כשהוא מגיע ל־%2$@.";
 "You’re all set up." = "הכול מוכן.";
 "at %@" = "ב־%@";
 "by %@" = "מאת %@";
@@ -1279,6 +1328,7 @@
 "no site" = "אין אתר";
 "no story" = "אין כתבות";
 "or" = "או";
+"or wait until %@" = "או להמתין עד %@";
 "premium subscribers" = "מנויי Premium";
 "your account" = "החשבון שלך";
 "‹ Feeds" = "‹ פידים";

@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "%1$@-map, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@-map, ingeklapt, %2$@";
 "%1$@ followed %2$@." = "%1$@ is %2$@ gaan volgen.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "Over %1$@ wordt nog afgerekend: aan het begin van volgende maand als het bedrag minstens %2$@ is, of meteen bij %3$@.";
 "%1$@ of %2$@ of listening left this week" = "Je hebt deze week nog %1$@ van de %2$@ luistertijd over";
 "%1$@ of %2$@ sites indexed" = "%1$@ van %2$@ sites geïndexeerd";
 "%1$@ of %2$@ story previews used today" = "Vandaag %1$@ van de %2$@ artikelvoorbeelden gebruikt";
+"%1$@ of your %2$@ monthly limit" = "%1$@ van je maandlimiet van %2$@";
 "%1$@ re-shared %2$@." = "%1$@ heeft %2$@ opnieuw gedeeld.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ heeft %2$@ opnieuw gedeeld:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ heeft gereageerd op %2$@: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ heeft %2$@ gedeeld.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ heeft %2$@ gedeeld:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "%2$@ AI-tegoed verbruikt, %3$@ boven de %1$@ van je abonnement";
+"%2$@ of %1$@ AI credits used" = "%2$@ van %1$@ AI-credits gebruikt";
 "%@ Widget Sites" = "%@ widgetsites";
 "%@ ago" = "%@ geleden";
 "%@ categories to choose from" = "%@ categorieën om uit te kiezen";
@@ -66,6 +70,8 @@
 "100 stories" = "100 artikelen";
 "12 color flavors with light and dark variants." = "12 kleurthema's met een lichte en donkere variant.";
 "15 stories" = "15 artikelen";
+"1¢ per credit past your plan's" = "1¢ per credit boven je abonnement";
+"1¢ per credit past your plan's, about %@ this month" = "1¢ per tegoedeenheid boven je abonnement, deze maand ongeveer %@";
 "2,000 stories" = "2.000 artikelen";
 "20 stories" = "20 artikelen";
 "2x daily" = "2 keer per dag";
@@ -73,6 +79,8 @@
 "3x daily" = "3 keer per dag";
 "5 stories" = "5 artikelen";
 "5,000 stories" = "5.000 artikelen";
+"50 AI credits a month for AI filters" = "50 AI-credits per maand voor AI-filters";
+"500 AI credits a month for AI filters" = "500 AI-credits per maand voor AI-filters";
 "500 stories" = "500 artikelen";
 "< 15/month" = "< 15/maand";
 "< 30/month" = "< 30/maand";
@@ -80,11 +88,16 @@
 "< 60/month" = "< 60/maand";
 "< 90/month" = "< 90/maand";
 "A clearer, closer sound" = "Een helderder, voller geluid";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "Met één credit kun je ongeveer 700 artikelen verwerken met een tekstfilter, of 100 met een afbeeldingsfilter.";
 "A personal news reader bringing\npeople together to talk about the world." = "Een persoonlijke nieuwslezer die mensen samenbrengt\nom over de wereld te praten.";
-"AI filters are saved but only run on Premium Archive." = "AI-filters worden opgeslagen, maar worden alleen uitgevoerd op Premium Archive.";
+"A text filter on this site uses about %2$@ credits a month" = "Een tekstfilter op deze site verbruikt ongeveer %2$@ tegoed per maand";
+"AI Credits" = "AI-tegoed";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "AI-filters zijn opgeslagen, maar werken alleen met Premium. Premium omvat 5 AI-credits per maand, Archive 50 en Pro 500.";
 "AI finds the stories" = "AI vindt de artikelen";
+"AI text and image filters, with 5 AI credits a month" = "AI-tekst- en afbeeldingsfilters, met 5 AI-credits per maand";
 "ALL" = "ALLES";
 "ALL NOTIFICATIONS" = "ALLE MELDINGEN";
+"About %@ this month at your pace." = "In dit tempo ongeveer %@ deze maand.";
 "About NewsBlur" = "Over NewsBlur";
 "Accent [voice filter]" = "Accent";
 "Account" = "Account";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "Heb je al een account? Log in";
 "Already have feeds?" = "Heb je al feeds?";
 "Also published by %@ sites" = "Ook gepubliceerd op %@ sites";
+"An image filter on this site uses about %2$@ credits a month" = "Een afbeeldingsfilter op deze site gebruikt ongeveer %2$@ credits per maand";
 "Analyze" = "Analyseren";
 "Analyzing images..." = "Afbeeldingen analyseren...";
 "App Badge" = "Appbadge";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "Stel AI vragen over artikelen";
 "Ask AI…" = "Vraag AI…";
 "Ask a question..." = "Stel een vraag...";
+"At this pace your credits run out around %@." = "In dit tempo zijn je credits rond %@ op.";
+"At this pace, this month will use about %2$@ AI credits." = "Bij dit tempo verbruik je deze maand ongeveer %2$@ AI-tegoed.";
 "Atlantic Blue" = "Atlantisch blauw";
 "Authenticating" = "Authenticeren";
 "Auto" = "Automatisch";
@@ -197,6 +213,7 @@
 "Cancel" = "Annuleren";
 "Cannot reply to this story" = "Je kunt niet reageren op dit artikel";
 "Change Story List" = "Artikellijst wijzigen";
+"Change limit" = "Limiet wijzigen";
 "Choose Icon" = "Pictogram kiezen";
 "Choose Language…" = "Taal kiezen…";
 "Choose Story List" = "Artikellijst kiezen";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "De cache kon niet volledig worden gewist. Probeer het opnieuw.";
 "Could not save your language. Please try again." = "Je taal kon niet worden opgeslagen. Probeer het opnieuw.";
 "Couldn't check story" = "Artikel kon niet worden gecontroleerd";
+"Couldn't load your AI credits." = "Je AI-tegoed kon niet worden geladen.";
+"Couldn't load your usage invoices." = "Je gebruiksfacturen konden niet worden geladen.";
+"Couldn't open billing. Please try again." = "Facturering openen is niet gelukt. Probeer het opnieuw.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Kan NewsBlur niet bereiken. Controleer je verbinding en probeer het opnieuw.";
+"Couldn't save your monthly limit. Please try again." = "Je maandlimiet kon niet worden opgeslagen. Probeer het opnieuw.";
+"Couldn't turn off usage billing. Please try again." = "Betalen op basis van gebruik uitschakelen is niet gelukt. Probeer het opnieuw.";
 "Couldn’t load the full image. You can try opening it in your browser." = "De volledige afbeelding kon niet worden geladen. Je kunt proberen deze in je browser te openen.";
 "Counting is difficult..." = "Tellen is lastig...";
 "Create a feed from any web page" = "Maak een feed van elke webpagina";
 "Create a new account instead" = "In plaats daarvan een nieuw account aanmaken";
 "Create account" = "Account aanmaken";
 "Create an account" = "Account aanmaken";
+"Credits reset on the 1st of each month and don't carry over." = "Credits worden op de 1e van elke maand opnieuw ingesteld en worden niet meegenomen.";
 "Custom" = "Aangepast";
 "Custom Domain" = "Aangepast domein";
 "Custom RSS feeds for saved stories" = "Aangepaste RSS-feeds voor opgeslagen artikelen";
@@ -378,6 +401,7 @@
 "Fetching text..." = "Tekst ophalen...";
 "Filter" = "Filteren";
 "Filter stories by date range" = "Artikelen filteren op datumbereik";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "Filters worden gepauzeerd zodra de facturering op basis van verbruik deze limiet bereikt. Laat leeg voor geen limiet.";
 "Find %@ in the voice list" = "%@ zoeken in de stemmenlijst";
 "Find Friends" = "Vrienden zoeken";
 "Find in Feed" = "Zoeken in feed";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "Werkbalken verbergen tijdens het lezen";
 "Hides the music settings" = "Verbergt de muziekvoorkeuren";
 "Highlight the paragraph being read" = "Markeer de alinea die wordt voorgelezen";
+"How credits work" = "Zo werken credits";
 "How much emotion" = "Hoeveel emotie";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Als geen van de opties overeenkomt, typ dan een artikeltitel die je op de pagina ziet; dan analyseren we de pagina opnieuw.";
 "Ignore system theme, use screen brightness instead" = "Negeer het systeemthema en gebruik de schermhelderheid";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Schakel thema's automatisch op basis van de helderheid van je scherm, in plaats van de donkere of lichte systeemmodus te volgen. Handig om thema's aan te passen aan het omgevingslicht.";
 "Interactions" = "Interacties";
 "Invalid: %@" = "Ongeldig: %@";
+"Invoice" = "Factuur";
 "Keep fades, without movement." = "Overgangen met vervagen behouden, zonder beweging.";
+"Keep filters running" = "Filters ingeschakeld laten";
 "Keeps the dark icon no matter how your device is set." = "Behoudt het donkere pictogram, ongeacht de instelling van je apparaat.";
 "Keeps the light icon no matter how your device is set." = "Houdt het lichte pictogram aan, ongeacht de instelling van je apparaat.";
 "Keyboard Shortcuts" = "Sneltoetsen";
@@ -553,6 +580,7 @@
 "Manage" = "Beheren";
 "Manage Account on the Web" = "Account beheren op het web";
 "Manage Subscription" = "Abonnement beheren";
+"Manage billing" = "Facturering beheren";
 "Manage this folder…" = "Deze map beheren…";
 "Manage this site…" = "Deze site beheren…";
 "Manual scroll" = "Handmatig scrollen";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "Grijs";
 "Model" = "Model";
 "Monday" = "maandag";
+"Monthly limit" = "Maandlimiet";
+"Monthly limit: %@" = "Maandlimiet: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Meer artikelen nemen meer schijfruimte in beslag, maar hebben verder geen merkbare invloed op de prestaties.";
 "More voices" = "Meer stemmen";
 "Morning" = "Ochtend";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "Classifier voor natuurlijke taal voor afbeeldingen";
 "Natural Language Text Classifier" = "Classifier voor natuurlijke taal voor tekst";
 "Natural [listen delivery]" = "Natuurlijk";
-"Natural language text and image classifiers" = "Classifiers in natuurlijke taal voor tekst en afbeeldingen";
 "Nested" = "Genest";
 "Never" = "Nooit";
 "New Folder" = "Nieuwe map";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "Er zijn nog geen feeds om weer te geven. Probeer een andere interesse of zoek op alle sites.";
 "No friends to suggest." = "Geen vrienden om voor te stellen.";
 "No interests or sites found. Try another search." = "Geen interesses of sites gevonden. Probeer een andere zoekopdracht.";
+"No limit" = "Geen limiet";
 "No longer saved" = "Niet langer opgeslagen";
 "No match" = "Geen overeenkomst";
 "No match in story" = "Geen overeenkomst in artikel";
@@ -690,6 +720,7 @@
 "No stories yet" = "Nog geen artikelen";
 "No story selected" = "Geen artikel geselecteerd";
 "No unread stories" = "Geen ongelezen artikelen";
+"No usage invoices yet." = "Nog geen facturen voor gebruik.";
 "No voices match these filters" = "Geen stemmen komen overeen met deze filters";
 "None" = "Geen";
 "Normal" = "Normaal";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "Pagina omlaag; onderaan het volgende ongelezen artikel";
 "Page up; previous story at the top" = "Pagina omhoog; bovenaan het vorige artikel";
 "Password" = "Wachtwoord";
+"Past your credits, filters keep running at 1¢ per credit." = "Boven je inbegrepen credits blijven filters werken voor 1¢ per credit.";
 "Paste a story title from the page" = "Plak een artikeltitel van de pagina";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Plak een URL en NewsBlur maakt een feed van de pagina, zelfs zonder RSS.";
 "Pause" = "Pauzeren";
@@ -889,6 +921,7 @@
 "Saved on %@" = "Opgeslagen op %@";
 "Saving Daily Briefing settings…" = "Instellingen voor dagelijkse briefing opslaan…";
 "Saving search..." = "Zoekopdracht opslaan...";
+"Saving..." = "Opslaan...";
 "Schedule" = "Planning";
 "Scroll horizontally" = "Horizontaal scrollen";
 "Scroll to Comments" = "Scroll naar reacties";
@@ -921,6 +954,7 @@
 "Server URL" = "Server-URL";
 "Set an exact speed under Voice" = "Stel een exacte snelheid in bij Stem";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Stel de dagelijkse briefing in om een samenvatting te maken van de artikelen die voor jou het belangrijkst zijn.";
+"Set up usage billing" = "Facturering op basis van verbruik instellen";
 "Settings" = "Instellingen";
 "Share" = "Delen";
 "Share This Story" = "Dit artikel delen";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Hiermee verwijder je de map en zeg je het abonnement op van sites die niet in een andere map staan.";
 "This feature requires iOS 15 or later." = "Voor deze functie is iOS 15 of hoger vereist.";
 "This might take a minute.\nFeel free to continue..." = "Dit kan een minuut duren.\nGa gerust verder...";
+"This month" = "Deze maand";
+"This month's %@ AI credits are used." = "Je hebt de %@ AI-credits voor deze maand gebruikt.";
 "This removes the subscription from your feeds." = "Hiermee wordt het abonnement uit je feeds verwijderd.";
 "This setting only applies after the app is restarted." = "Deze instelling wordt pas toegepast nadat de app opnieuw is gestart.";
 "This site already has a feed" = "Deze site heeft al een feed";
@@ -1151,6 +1187,9 @@
 "Try search again" = "Zoek opnieuw";
 "Trying Feed" = "Feed wordt geprobeerd";
 "Tuesday" = "dinsdag";
+"Turn off usage billing" = "Facturering op basis van verbruik uitschakelen";
+"Turn off usage billing?" = "Betalen op basis van gebruik uitschakelen?";
+"Turn on usage billing" = "Betalen op basis van gebruik inschakelen";
 "Two" = "Twee";
 "Two Columns" = "Twee kolommen";
 "Two Rows" = "Twee rijen";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "Niet meer opgeslagen";
 "Untitled story" = "Artikel zonder titel";
 "Up Next" = "Hierna";
+"Upcoming" = "Binnenkort";
+"Update card on Stripe" = "Kaart bijwerken op Stripe";
 "Updated %@ days ago" = "%@ dagen geleden bijgewerkt";
 "Updated %@ months ago" = "%@ maanden geleden bijgewerkt";
 "Updated %@ weeks ago" = "%@ weken geleden bijgewerkt";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "Upgraden naar Premium";
 "Upgrade to Premium Archive" = "Upgraden naar Premium Archive";
 "Upgrade to Premium Pro" = "Upgraden naar Premium Pro";
+"Usage billing" = "Betalen op basis van gebruik";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "Betalen op basis van gebruik is ingeschakeld. Credits boven je %1$@ kosten 1¢ per stuk: deze maand tot nu toe %2$@.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "Betalen op basis van gebruik is ingeschakeld. Elke credit kost € 0,01: deze maand tot nu toe %@.";
+"Usage invoices" = "Facturen voor gebruik";
 "Use %@" = "Gebruik %@";
 "Use a custom server" = "Een aangepaste server gebruiken";
 "Use another sign-in method" = "Een andere inlogmethode gebruiken";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "Je hebt je aangemeld bij NewsBlur.";
 "You subscribed to %@." = "Je bent geabonneerd op %@.";
 "You're presented with multiple story pattern options to choose from." = "Je krijgt verschillende opties voor artikelpatronen waaruit je kunt kiezen.";
+"Your AI filters are paused until %@." = "Je AI-filters zijn gepauzeerd tot %@.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "Je AI-filters worden gepauzeerd zodra het tegoed van deze maand op is. Tegoed dat je al boven je abonnement hebt verbruikt, wordt nu in rekening gebracht als het bedrag minstens %@ is.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "Je AI-filters hebben de maandelijkse limiet van %1$@ bereikt en zijn gepauzeerd tot %2$@.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Je NewsBlur-account is verwijderd. Verwijder NewsBlur bij 'Log in met Apple' in de instellingen van je Apple-account om de koppeling volledig te verbreken.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Je gekozen stem is momenteel niet beschikbaar, dus %@ leest dit artikel voor.";
 "Your identity is verified" = "Je identiteit is geverifieerd";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "Je Premium Pro-abonnement is actief";
 "Your premium subscription is active" = "Je premiumabonnement is actief";
 "Your reading list" = "Je leeslijst";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "Je opgeslagen kaart wordt aan het begin van de maand belast zodra het bedrag minstens %1$@ is, of meteen bij %2$@.";
 "You’re all set up." = "Je bent helemaal klaar.";
 "at %@" = "om %@";
 "by %@" = "door %@";
@@ -1279,6 +1328,7 @@
 "no site" = "geen site";
 "no story" = "geen artikel";
 "or" = "of";
+"or wait until %@" = "of wacht tot %@";
 "premium subscribers" = "premiumabonnees";
 "your account" = "je account";
 "‹ Feeds" = "‹ Feeds";

@@ -452,7 +452,12 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="premium_custom_rss">Feed RSS khusus untuk artikel tersimpan</string>
     <string name="premium_text_view">Tampilan teks mengekstrak isi artikel dengan praktis</string>
     <string name="premium_discover_related">Temukan artikel dan situs terkait</string>
-    <string name="premium_natural_language_classifiers">Pengklasifikasi teks dan gambar bahasa alami</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="other">Filter teks dan gambar AI, dengan %1$s kredit AI per bulan</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="other">%1$s kredit AI per bulan untuk filter AI</item>
+    </plurals>
     <string name="premium_shiloh">Anda memberi makan Lyric, anjing pemburu NewsBlur yang lapar, selama 6 hari</string>
     <string name="archive_everything_premium">Tentu saja, semua yang ada dalam langganan premium</string>
     <string name="archive_enable_sites">Ikuti hingga 4.096 situs</string>
@@ -1284,8 +1289,80 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="ai_scope_global">Semua situs</string>
     <string name="ai_scope_folder_named">Semua situs di %1$s</string>
     <string name="ai_scope_requires_archive">Memerlukan Premium Archive</string>
-    <string name="ai_filters_archive_only">Filter AI disimpan, tetapi hanya dijalankan di %1$s.</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+    <string name="ai_credits_title">Kredit AI</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="other">%1$s dari %2$s kredit AI digunakan</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="other">%1$s kredit AI digunakan, %2$s di luar %3$s paket Anda</item>
+    </plurals>
+    <string name="ai_credits_resets">Diatur ulang %1$s</string>
+    <string name="ai_credits_free">Filter AI tersimpan, tetapi hanya berjalan di Premium. Premium mencakup %1$s kredit AI per bulan, Archive %2$s dan Pro %3$s.</string>
+    <string name="ai_credits_upgrade">Tingkatkan</string>
+    <string name="ai_credits_estimate_text">Filter teks di situs ini menggunakan sekitar %1$s kredit per bulan</string>
+    <string name="ai_credits_estimate_image">Filter gambar di situs ini menggunakan sekitar %1$s kredit per bulan</string>
+    <string name="ai_credits_estimate_text_small">Filter teks di situs ini menggunakan kurang dari %1$s kredit per bulan</string>
+    <string name="ai_credits_estimate_image_small">Filter gambar di situs ini menggunakan kurang dari %1$s kredit per bulan</string>
+    <string name="ai_credits_runs_out">Dengan laju ini, kredit Anda akan habis sekitar %1$s.</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="other">Filter AI Anda dijeda hingga %1$s. %2$s kredit AI bulan ini telah digunakan.</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">Filter AI Anda telah mencapai batas bulanan %1$s dan dijeda hingga %2$s.</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="other">Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi jatah %1$s dikenai biaya 1¢ per kredit: sejauh ini %2$s bulan ini.</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">Penagihan berdasarkan penggunaan aktif. Kredit AI dikenai biaya 1¢ per kredit: sejauh ini %1$s bulan ini.</string>
+    <string name="ai_credits_unbilled">%1$s menunggu untuk ditagihkan: pada awal bulan depan jika jumlahnya minimal %2$s, atau langsung saat mencapai %3$s.</string>
+    <string name="ai_credits_keep_running">Biarkan filter tetap berjalan</string>
+    <string name="ai_credits_billing_explainer">Setelah kredit Anda habis, filter tetap berjalan dengan biaya 1¢ per kredit.</string>
+    <string name="ai_credits_billing_forecast">Dengan laju penggunaan Anda, sekitar %1$s bulan ini.</string>
+    <string name="ai_credits_turn_on_billing">Aktifkan penagihan berdasarkan penggunaan</string>
+    <string name="ai_credits_turn_on_detail">1¢ per kredit setelah jatah paket Anda, sekitar %1$s bulan ini</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">1¢ per kredit setelah jatah paket Anda</string>
+    <string name="ai_credits_or_wait">atau tunggu hingga %1$s</string>
+    <string name="ai_credits_manage_billing">Kelola penagihan</string>
+    <string name="ai_credits_change_limit">Ubah batas</string>
+    <string name="ai_credits_open">Lihat kredit AI</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="other">Paket Anda mencakup %1$s kredit AI per bulan untuk filter teks dan gambar AI. Kredit direset setiap tanggal 1 dan yang tidak terpakai tidak dibawa ke bulan berikutnya.</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="other">Dengan laju ini, Anda akan menggunakan sekitar %1$s dari %2$s kredit bulan ini.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">Server ini tidak menghitung kredit AI, jadi filter AI selalu berjalan.</string>
+    <string name="ai_credits_load_failed">Kredit AI Anda tidak dapat dimuat. Tarik ke bawah untuk mencoba lagi.</string>
+    <string name="usage_billing_title">Penagihan berdasarkan penggunaan</string>
+    <string name="usage_billing_terms">Kartu Anda akan ditagih pada awal setiap bulan setelah jumlahnya mencapai %1$s, atau langsung setelah mencapai %2$s. Jumlah yang lebih kecil akan ditangguhkan hingga bulan berikutnya.</string>
+    <string name="usage_billing_set_up">Siapkan penagihan berdasarkan penggunaan</string>
+    <string name="usage_billing_manage">Perbarui kartu di Stripe</string>
+    <string name="usage_billing_cancel">Nonaktifkan penagihan berdasarkan penggunaan</string>
+    <string name="usage_billing_cancel_confirm">Nonaktifkan penagihan berdasarkan penggunaan? Biaya atas kredit yang sudah melebihi jatah paket Anda akan dikenakan sekarang jika jumlahnya mencapai %1$s, dan filter AI dijeda setelah kredit bulan ini habis.</string>
+    <string name="usage_billing_cancel_keep">Tetap aktif</string>
+    <string name="usage_billing_cancelled">Penagihan berdasarkan penggunaan dinonaktifkan.</string>
+    <string name="usage_billing_cancel_failed">Tidak dapat menonaktifkan penagihan berdasarkan penggunaan. Silakan coba lagi.</string>
+    <string name="usage_billing_limit_label">Batas bulanan</string>
+    <string name="usage_billing_limit_hint">Tanpa batas</string>
+    <string name="usage_billing_limit_help">Filter dijeda saat penagihan berdasarkan penggunaan mencapai batas ini. Kosongkan jika tidak ada batas.</string>
+    <string name="usage_billing_limit_save">Simpan batas</string>
+    <string name="usage_billing_limit_saved">Batas bulanan disimpan</string>
+    <string name="usage_billing_limit_cleared">Batas bulanan dihapus</string>
+    <string name="usage_billing_limit_failed">Batas bulanan tidak dapat disimpan. Silakan coba lagi.</string>
+    <string name="usage_billing_limit_invalid">Masukkan batas dalam dolar, seperti %1$s.</string>
+    <string name="usage_billing_limit_read_only">Batas bulanan: %1$s</string>
+    <string name="usage_billing_no_limit">Tanpa batas bulanan</string>
+    <string name="usage_billing_history_title">Riwayat penagihan penggunaan</string>
+    <string name="usage_billing_no_invoices">Belum ada faktur penagihan penggunaan.</string>
+    <string name="usage_billing_upcoming">Akan datang</string>
+    <string name="usage_billing_invoice">Faktur</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="other">%1$s kredit</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">Tidak dapat terhubung ke Stripe. Silakan coba lagi.</string>
+    <string name="usage_billing_already_active">Penagihan berdasarkan penggunaan sudah disiapkan.</string>
+    <string name="usage_billing_activating">Mengaktifkan penagihan berdasarkan penggunaan. Proses ini memerlukan beberapa detik setelah Stripe mengonfirmasi detail pembayaran Anda.</string>
+    <string name="usage_billing_activating_slow">Stripe masih mengonfirmasi penagihan Anda. Tarik ke bawah untuk memeriksa lagi sebentar lagi.</string>
+    <string name="usage_billing_setup_complete">Penagihan berdasarkan penggunaan aktif. Filter AI Anda tetap berjalan setelah kredit habis.</string>
+    <string name="usage_billing_no_browser">Pasang browser web untuk menyiapkan penagihan berdasarkan penggunaan.</string>
     <string name="listen_story_button">Dengarkan</string>
     <string name="listen_resume">Lanjutkan</string>
     <string name="listen_pause">Jeda</string>

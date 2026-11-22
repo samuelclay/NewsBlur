@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "Folder %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Folder %1$@, diciutkan, %2$@";
 "%1$@ followed %2$@." = "%1$@ mengikuti %2$@.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "%1$@ menunggu penagihan: pada awal bulan depan jika jumlahnya minimal %2$@, atau langsung saat mencapai %3$@.";
 "%1$@ of %2$@ of listening left this week" = "Sisa waktu mendengarkan minggu ini: %1$@ dari %2$@";
 "%1$@ of %2$@ sites indexed" = "%1$@ dari %2$@ situs telah diindeks";
 "%1$@ of %2$@ story previews used today" = "%1$@ dari %2$@ pratinjau artikel digunakan hari ini";
+"%1$@ of your %2$@ monthly limit" = "%1$@ dari batas bulanan %2$@ Anda";
 "%1$@ re-shared %2$@." = "%1$@ membagikan ulang %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ membagikan ulang %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ membalas %2$@: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ membagikan %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ membagikan %2$@:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "%2$@ kredit AI digunakan, %3$@ melebihi %1$@ paket Anda";
+"%2$@ of %1$@ AI credits used" = "%2$@ dari %1$@ kredit AI telah digunakan";
 "%@ Widget Sites" = "%@ Situs Widget";
 "%@ ago" = "%@ yang lalu";
 "%@ categories to choose from" = "%@ kategori yang bisa dipilih";
@@ -66,6 +70,8 @@
 "100 stories" = "100 artikel";
 "12 color flavors with light and dark variants." = "12 pilihan warna dengan varian terang dan gelap.";
 "15 stories" = "15 artikel";
+"1¢ per credit past your plan's" = "1¢ per kredit setelah jatah paket Anda";
+"1¢ per credit past your plan's, about %@ this month" = "1¢ per kredit di luar paket Anda, sekitar %@ bulan ini";
 "2,000 stories" = "2.000 artikel";
 "20 stories" = "20 artikel";
 "2x daily" = "2 kali sehari";
@@ -73,6 +79,8 @@
 "3x daily" = "3 kali sehari";
 "5 stories" = "5 artikel";
 "5,000 stories" = "5.000 artikel";
+"50 AI credits a month for AI filters" = "50 kredit AI per bulan untuk filter AI";
+"500 AI credits a month for AI filters" = "500 kredit AI per bulan untuk filter AI";
 "500 stories" = "500 artikel";
 "< 15/month" = "< 15/bulan";
 "< 30/month" = "< 30/bulan";
@@ -80,11 +88,16 @@
 "< 60/month" = "< 60/bulan";
 "< 90/month" = "< 90/bulan";
 "A clearer, closer sound" = "Suara yang lebih jernih dan dekat";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "Satu kredit mencakup sekitar 700 artikel melalui filter teks, atau 100 artikel melalui filter gambar.";
 "A personal news reader bringing\npeople together to talk about the world." = "Pembaca berita pribadi yang menyatukan\norang-orang untuk membicarakan dunia.";
-"AI filters are saved but only run on Premium Archive." = "Filter AI disimpan, tetapi hanya dijalankan di Premium Archive.";
+"A text filter on this site uses about %2$@ credits a month" = "Filter teks di situs ini menggunakan sekitar %2$@ kredit per bulan";
+"AI Credits" = "Kredit AI";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "Filter AI tersimpan, tetapi hanya berjalan di Premium. Premium mencakup 5 kredit AI per bulan, Archive 50, dan Pro 500.";
 "AI finds the stories" = "AI menemukan artikel";
+"AI text and image filters, with 5 AI credits a month" = "Filter teks dan gambar AI, dengan 5 kredit AI per bulan";
 "ALL" = "SEMUA";
 "ALL NOTIFICATIONS" = "SEMUA NOTIFIKASI";
+"About %@ this month at your pace." = "Sekitar %@ bulan ini dengan laju penggunaan Anda.";
 "About NewsBlur" = "Tentang NewsBlur";
 "Accent [voice filter]" = "Aksen";
 "Account" = "Akun";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "Sudah punya akun? Masuk";
 "Already have feeds?" = "Sudah punya feed?";
 "Also published by %@ sites" = "Juga diterbitkan oleh %@ situs";
+"An image filter on this site uses about %2$@ credits a month" = "Filter gambar di situs ini menggunakan sekitar %2$@ kredit per bulan";
 "Analyze" = "Analisis";
 "Analyzing images..." = "Menganalisis gambar...";
 "App Badge" = "Lencana Aplikasi";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "Ajukan pertanyaan tentang artikel kepada AI";
 "Ask AI…" = "Tanya AI…";
 "Ask a question..." = "Ajukan pertanyaan...";
+"At this pace your credits run out around %@." = "Dengan laju ini, kredit Anda akan habis sekitar %@.";
+"At this pace, this month will use about %2$@ AI credits." = "Dengan laju ini, penggunaan bulan ini diperkirakan sekitar %2$@ kredit AI.";
 "Atlantic Blue" = "Biru Atlantik";
 "Authenticating" = "Mengautentikasi";
 "Auto" = "Otomatis";
@@ -197,6 +213,7 @@
 "Cancel" = "Batal";
 "Cannot reply to this story" = "Tidak dapat membalas artikel ini";
 "Change Story List" = "Ubah Daftar Artikel";
+"Change limit" = "Ubah batas";
 "Choose Icon" = "Pilih Ikon";
 "Choose Language…" = "Pilih Bahasa…";
 "Choose Story List" = "Pilih Daftar Artikel";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "Tidak dapat mengosongkan cache sepenuhnya. Silakan coba lagi.";
 "Could not save your language. Please try again." = "Bahasa Anda tidak dapat disimpan. Silakan coba lagi.";
 "Couldn't check story" = "Tidak dapat memeriksa artikel";
+"Couldn't load your AI credits." = "Kredit AI Anda tidak dapat dimuat.";
+"Couldn't load your usage invoices." = "Tidak dapat memuat faktur penggunaan Anda.";
+"Couldn't open billing. Please try again." = "Tidak dapat membuka penagihan. Silakan coba lagi.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Tidak dapat terhubung ke NewsBlur. Periksa koneksi Anda dan coba lagi.";
+"Couldn't save your monthly limit. Please try again." = "Batas bulanan Anda tidak dapat disimpan. Silakan coba lagi.";
+"Couldn't turn off usage billing. Please try again." = "Tidak dapat menonaktifkan penagihan berdasarkan penggunaan. Silakan coba lagi.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Gambar penuh tidak dapat dimuat. Anda dapat mencoba membukanya di browser.";
 "Counting is difficult..." = "Menghitung itu sulit...";
 "Create a feed from any web page" = "Buat feed dari halaman web mana pun";
 "Create a new account instead" = "Buat akun baru saja";
 "Create account" = "Buat akun";
 "Create an account" = "Buat akun";
+"Credits reset on the 1st of each month and don't carry over." = "Kredit direset setiap tanggal 1 dan tidak dibawa ke bulan berikutnya.";
 "Custom" = "Kustom";
 "Custom Domain" = "Domain Khusus";
 "Custom RSS feeds for saved stories" = "Feed RSS khusus untuk artikel tersimpan";
@@ -378,6 +401,7 @@
 "Fetching text..." = "Mengambil teks...";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter artikel berdasarkan rentang tanggal";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "Filter akan dijeda saat penagihan berdasarkan penggunaan mencapai batas ini. Kosongkan untuk tanpa batas.";
 "Find %@ in the voice list" = "Temukan %@ dalam daftar suara";
 "Find Friends" = "Cari Teman";
 "Find in Feed" = "Cari di Feed";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "Sembunyikan bilah alat saat membaca";
 "Hides the music settings" = "Menyembunyikan pengaturan musik";
 "Highlight the paragraph being read" = "Sorot paragraf yang sedang dibacakan";
+"How credits work" = "Cara kerja kredit";
 "How much emotion" = "Seberapa banyak emosi";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Jika tidak ada opsi yang cocok, ketik judul artikel yang terlihat di halaman dan kami akan menganalisis ulang.";
 "Ignore system theme, use screen brightness instead" = "Abaikan tema sistem, gunakan kecerahan layar";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Alih-alih mengikuti mode gelap/terang sistem, tema akan berganti otomatis berdasarkan tingkat kecerahan layar Anda. Berguna untuk menyesuaikan tema dengan pencahayaan sekitar.";
 "Interactions" = "Interaksi";
 "Invalid: %@" = "Tidak valid: %@";
+"Invoice" = "Faktur";
 "Keep fades, without movement." = "Pertahankan efek pudar, tanpa gerakan.";
+"Keep filters running" = "Biarkan filter tetap berjalan";
 "Keeps the dark icon no matter how your device is set." = "Tetap menggunakan ikon gelap terlepas dari pengaturan perangkat Anda.";
 "Keeps the light icon no matter how your device is set." = "Ikon terang tetap digunakan, apa pun pengaturan perangkat Anda.";
 "Keyboard Shortcuts" = "Pintasan Keyboard";
@@ -553,6 +580,7 @@
 "Manage" = "Kelola";
 "Manage Account on the Web" = "Kelola Akun di Web";
 "Manage Subscription" = "Kelola Langganan";
+"Manage billing" = "Kelola penagihan";
 "Manage this folder…" = "Kelola folder ini…";
 "Manage this site…" = "Kelola situs ini…";
 "Manual scroll" = "Gulir manual";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "Abu-abu";
 "Model" = "Model";
 "Monday" = "Senin";
+"Monthly limit" = "Batas bulanan";
+"Monthly limit: %@" = "Batas bulanan: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Semakin banyak artikel, semakin besar ruang disk yang digunakan, tetapi selain itu tidak ada dampak nyata pada kinerja.";
 "More voices" = "Suara lainnya";
 "Morning" = "Pagi";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "Pengklasifikasi Gambar Bahasa Alami";
 "Natural Language Text Classifier" = "Pengklasifikasi Teks Bahasa Alami";
 "Natural [listen delivery]" = "Alami";
-"Natural language text and image classifiers" = "Pengklasifikasi teks dan gambar berbasis bahasa alami";
 "Nested" = "Bertingkat";
 "Never" = "Tidak pernah";
 "New Folder" = "Folder Baru";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "Belum ada feed untuk ditampilkan. Coba minat lain atau telusuri semua situs.";
 "No friends to suggest." = "Tidak ada teman untuk disarankan.";
 "No interests or sites found. Try another search." = "Minat atau situs tidak ditemukan. Coba penelusuran lain.";
+"No limit" = "Tanpa batas";
 "No longer saved" = "Tidak lagi disimpan";
 "No match" = "Tidak cocok";
 "No match in story" = "Tidak ada kecocokan di artikel";
@@ -690,6 +720,7 @@
 "No stories yet" = "Belum ada artikel";
 "No story selected" = "Tidak ada artikel yang dipilih";
 "No unread stories" = "Tidak ada artikel yang belum dibaca";
+"No usage invoices yet." = "Belum ada tagihan penggunaan.";
 "No voices match these filters" = "Tidak ada suara yang cocok dengan filter ini";
 "None" = "Tidak ada";
 "Normal" = "Normal";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "Page down; artikel belum dibaca berikutnya di bagian bawah";
 "Page up; previous story at the top" = "Page up; artikel sebelumnya di bagian atas";
 "Password" = "Kata sandi";
+"Past your credits, filters keep running at 1¢ per credit." = "Setelah kredit Anda habis, filter tetap berjalan dengan biaya 1¢ per kredit.";
 "Paste a story title from the page" = "Tempel judul artikel dari halaman";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Tempel URL apa pun dan NewsBlur akan membuat feed dari halaman tersebut, bahkan tanpa RSS.";
 "Pause" = "Jeda";
@@ -889,6 +921,7 @@
 "Saved on %@" = "Disimpan pada %@";
 "Saving Daily Briefing settings…" = "Menyimpan pengaturan Ringkasan Harian…";
 "Saving search..." = "Menyimpan pencarian...";
+"Saving..." = "Menyimpan...";
 "Schedule" = "Jadwal";
 "Scroll horizontally" = "Gulir horizontal";
 "Scroll to Comments" = "Gulir ke Komentar";
@@ -921,6 +954,7 @@
 "Server URL" = "URL server";
 "Set an exact speed under Voice" = "Atur kecepatan yang tepat di bagian Suara";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Siapkan Ringkasan Harian untuk membuat rangkuman artikel yang paling penting bagi Anda.";
+"Set up usage billing" = "Siapkan penagihan berdasarkan penggunaan";
 "Settings" = "Pengaturan";
 "Share" = "Bagikan";
 "Share This Story" = "Bagikan Artikel Ini";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Ini akan menghapus folder dan berhenti berlangganan dari situs yang tidak ada di folder lain.";
 "This feature requires iOS 15 or later." = "Fitur ini memerlukan iOS 15 atau lebih baru.";
 "This might take a minute.\nFeel free to continue..." = "Ini mungkin memerlukan waktu sebentar.\nSilakan lanjutkan...";
+"This month" = "Bulan ini";
+"This month's %@ AI credits are used." = "Kredit AI bulan ini sebanyak %@ telah digunakan.";
 "This removes the subscription from your feeds." = "Ini akan menghapus langganan dari feed Anda.";
 "This setting only applies after the app is restarted." = "Pengaturan ini hanya berlaku setelah aplikasi dimulai ulang.";
 "This site already has a feed" = "Situs ini sudah memiliki feed";
@@ -1151,6 +1187,9 @@
 "Try search again" = "Coba telusuri lagi";
 "Trying Feed" = "Mencoba Feed";
 "Tuesday" = "Selasa";
+"Turn off usage billing" = "Nonaktifkan penagihan berdasarkan penggunaan";
+"Turn off usage billing?" = "Nonaktifkan penagihan berdasarkan penggunaan?";
+"Turn on usage billing" = "Aktifkan penagihan berdasarkan penggunaan";
 "Two" = "Dua";
 "Two Columns" = "Dua Kolom";
 "Two Rows" = "Dua Baris";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "Batal disimpan";
 "Untitled story" = "Artikel tanpa judul";
 "Up Next" = "Berikutnya";
+"Upcoming" = "Mendatang";
+"Update card on Stripe" = "Perbarui kartu di Stripe";
 "Updated %@ days ago" = "Diperbarui %@ hari lalu";
 "Updated %@ months ago" = "Diperbarui %@ bulan lalu";
 "Updated %@ weeks ago" = "Diperbarui %@ minggu lalu";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "Tingkatkan ke Premium";
 "Upgrade to Premium Archive" = "Tingkatkan ke Premium Archive";
 "Upgrade to Premium Pro" = "Tingkatkan ke Premium Pro";
+"Usage billing" = "Penagihan berdasarkan penggunaan";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi jatah %1$@ dikenai biaya 1¢ per kredit: sejauh ini %2$@ bulan ini.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "Penagihan berdasarkan penggunaan aktif. Setiap kredit dikenai biaya 1¢: sejauh ini %@ bulan ini.";
+"Usage invoices" = "Faktur penggunaan";
 "Use %@" = "Gunakan %@";
 "Use a custom server" = "Gunakan server khusus";
 "Use another sign-in method" = "Gunakan metode masuk lain";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "Anda telah mendaftar ke NewsBlur.";
 "You subscribed to %@." = "Anda berlangganan %@.";
 "You're presented with multiple story pattern options to choose from." = "Anda akan disajikan beberapa opsi pola artikel untuk dipilih.";
+"Your AI filters are paused until %@." = "Filter AI Anda dijeda hingga %@.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "Filter AI Anda akan dijeda setelah kredit bulan ini habis. Kredit yang sudah melebihi jatah paket Anda akan ditagihkan sekarang jika jumlahnya mencapai setidaknya %@.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "Filter AI Anda mencapai batas bulanan %1$@ dan dijeda hingga %2$@.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Akun NewsBlur Anda telah dihapus. Hapus NewsBlur dari Masuk dengan Apple di pengaturan Akun Apple Anda untuk menyelesaikan pemutusan koneksi.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Suara yang Anda pilih sedang tidak tersedia, jadi %@ sedang membacakan artikel ini.";
 "Your identity is verified" = "Identitas Anda telah diverifikasi";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "Langganan Premium Pro Anda aktif";
 "Your premium subscription is active" = "Langganan premium Anda aktif";
 "Your reading list" = "Daftar bacaan Anda";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "Kartu tersimpan Anda ditagih pada awal bulan setelah jumlahnya mencapai %1$@, atau langsung saat mencapai %2$@.";
 "You’re all set up." = "Penyiapan selesai.";
 "at %@" = "pada %@";
 "by %@" = "oleh %@";
@@ -1279,6 +1328,7 @@
 "no site" = "tanpa situs";
 "no story" = "tidak ada artikel";
 "or" = "atau";
+"or wait until %@" = "atau tunggu hingga %@";
 "premium subscribers" = "pelanggan premium";
 "your account" = "akun Anda";
 "‹ Feeds" = "‹ Feed";

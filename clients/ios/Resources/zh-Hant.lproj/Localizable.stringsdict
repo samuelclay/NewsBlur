@@ -16,6 +16,34 @@
 			<string>無法將 %1$@ 個訂閱來源新增至 %2$@。</string>
 		</dict>
 	</dict>
+	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_past_plan@</string>
+		<key>ai_credits_past_plan</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>已使用 %2$@ 點 AI 點數，超出方案額度 %1$@ %3$@</string>
+		</dict>
+	</dict>
+	<key>%2$@ of %1$@ AI credits used</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_used@</string>
+		<key>ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>已使用 %2$@／%1$@ AI 點數</string>
+		</dict>
+	</dict>
 	<key>%@ Widget Sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -422,6 +450,20 @@
 			<string>+ 另有 %@ 個網站</string>
 		</dict>
 	</dict>
+	<key>A text filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text_filter_monthly_credits@</string>
+		<key>text_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>此網站的文字篩選器每月約使用 %2$@ 點數</string>
+		</dict>
+	</dict>
 	<key>Add %1$@ feeds to “%2$@” folder</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -476,6 +518,34 @@
 			<string>@</string>
 			<key>other</key>
 			<string>另有 %@ 個網站刊載</string>
+		</dict>
+	</dict>
+	<key>An image filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_monthly_credits@</string>
+		<key>image_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>此網站的圖片篩選器每月約使用 %2$@ 點數</string>
+		</dict>
+	</dict>
+	<key>At this pace, this month will use about %2$@ AI credits.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@forecast_monthly_credits@</string>
+		<key>forecast_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>依目前的使用速度，本月大約會用掉 %2$@ 點 AI 點數。</string>
 		</dict>
 	</dict>
 	<key>Back %@ seconds</key>
@@ -688,6 +758,20 @@
 			<string>%@ 小時前的文字</string>
 		</dict>
 	</dict>
+	<key>This month's %@ AI credits are used.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@monthly_ai_credits_used@</string>
+		<key>monthly_ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>本月的 %@ 點 AI 點數已用完。</string>
+		</dict>
+	</dict>
 	<key>Updated %@ days ago</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -728,6 +812,20 @@
 			<string>@</string>
 			<key>other</key>
 			<string>%@ 週前更新</string>
+		</dict>
+	</dict>
+	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@usage_billing_included_credits@</string>
+		<key>usage_billing_included_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>用量計費已啟用。超過方案額度的點數每點 1¢：本月至今已使用 %2$@，方案額度為 %1$@。</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

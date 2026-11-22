@@ -455,7 +455,14 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="premium_custom_rss">Benutzerdefinierte RSS-Feeds für gespeicherte Artikel</string>
     <string name="premium_text_view">Die Textansicht extrahiert den Artikel bequem</string>
     <string name="premium_discover_related">Entdecke verwandte Artikel und Websites</string>
-    <string name="premium_natural_language_classifiers">Klassifikatoren für natürliche Sprache und Bilder</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="one">KI-Text- und Bildfilter mit %1$s KI-Credit pro Monat</item>
+        <item quantity="other">KI-Text- und Bildfilter mit %1$s KI-Credits pro Monat</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="one">%1$s KI-Guthaben pro Monat für KI-Filter</item>
+        <item quantity="other">%1$s KI-Credits pro Monat für KI-Filter</item>
+    </plurals>
     <string name="premium_shiloh">Du fütterst Lyric, den hungrigen Hund von NewsBlur, 6 Tage lang</string>
     <string name="archive_everything_premium">Natürlich alles aus dem Premium-Abonnement</string>
     <string name="archive_enable_sites">Bis zu 4.096 Websites folgen</string>
@@ -1307,8 +1314,87 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="ai_scope_global">Alle Websites</string>
     <string name="ai_scope_folder_named">Alle Websites in %1$s</string>
     <string name="ai_scope_requires_archive">Erfordert Premium Archive</string>
-    <string name="ai_filters_archive_only">KI-Filter werden gespeichert, aber nur auf %1$s ausgeführt.</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+    <string name="ai_credits_title">KI-Credits</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="one">%1$s von %2$s KI-Credit verbraucht</item>
+        <item quantity="other">%1$s von %2$s KI-Credits verbraucht</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="one">%1$s KI-Credits verbraucht, %2$s über dem %3$s deines Tarifs</item>
+        <item quantity="other">%1$s KI-Credits verbraucht, %2$s über dem %3$s deines Tarifs</item>
+    </plurals>
+    <string name="ai_credits_resets">Wird am %1$s zurückgesetzt</string>
+    <string name="ai_credits_free">KI-Filter sind gespeichert, laufen aber nur mit Premium. Premium umfasst %1$s KI-Credits pro Monat, Archive %2$s und Pro %3$s.</string>
+    <string name="ai_credits_upgrade">Upgrade</string>
+    <string name="ai_credits_estimate_text">Ein Textfilter für diese Website verbraucht etwa %1$s Credits pro Monat</string>
+    <string name="ai_credits_estimate_image">Ein Bildfilter auf dieser Website verbraucht etwa %1$s Credits pro Monat</string>
+    <string name="ai_credits_estimate_text_small">Ein Textfilter auf dieser Website verbraucht weniger als %1$s Guthaben pro Monat</string>
+    <string name="ai_credits_estimate_image_small">Ein Bildfilter für diese Website verbraucht weniger als %1$s Credits pro Monat</string>
+    <string name="ai_credits_runs_out">Bei diesem Verbrauch sind deine Credits etwa am %1$s aufgebraucht.</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="one">Deine KI-Filter sind bis zum %1$s pausiert. Dieser Monat hat %2$s KI-Credit verbraucht.</item>
+        <item quantity="other">Deine KI-Filter sind bis %1$s pausiert. Deine %2$s KI-Credits für diesen Monat sind aufgebraucht.</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">Deine KI-Filter haben dein monatliches Limit von %1$s erreicht und sind bis %2$s pausiert.</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="one">Die nutzungsbasierte Abrechnung ist aktiviert. Credits über dein %1$s hinaus kosten je 1 ¢: diesen Monat bisher %2$s.</item>
+        <item quantity="other">Die nutzungsbasierte Abrechnung ist aktiviert. Credits über dein %1$s hinaus kosten je 1 ¢: diesen Monat bisher %2$s.</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">Die nutzungsabhängige Abrechnung ist aktiviert. KI-Credits kosten jeweils 1 ¢: diesen Monat bisher %1$s.</string>
+    <string name="ai_credits_unbilled">%1$s wird noch abgerechnet: zu Beginn des nächsten Monats, wenn der Betrag mindestens %2$s beträgt, oder sofort bei %3$s.</string>
+    <string name="ai_credits_keep_running">Filter weiterlaufen lassen</string>
+    <string name="ai_credits_billing_explainer">Sind deine Credits aufgebraucht, laufen die Filter für je 1 ¢ pro Credit weiter.</string>
+    <string name="ai_credits_billing_forecast">Bei diesem Tempo diesen Monat etwa %1$s.</string>
+    <string name="ai_credits_turn_on_billing">Nutzungsabhängige Abrechnung aktivieren</string>
+    <string name="ai_credits_turn_on_detail">Je 1 ¢ pro Credit über dein Tarifkontingent hinaus, diesen Monat etwa %1$s</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">1 ¢ pro Credit über dein Kontingent hinaus</string>
+    <string name="ai_credits_or_wait">oder bis zum %1$s warten</string>
+    <string name="ai_credits_manage_billing">Abrechnung verwalten</string>
+    <string name="ai_credits_change_limit">Limit ändern</string>
+    <string name="ai_credits_open">KI-Credits anzeigen</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="one">Dein Tarif umfasst %1$s KI-Credit pro Monat für KI-Text- und Bildfilter. Die Credits werden am 1. zurückgesetzt und nicht genutzte verfallen.</item>
+        <item quantity="other">Dein Tarif umfasst %1$s KI-Credits pro Monat für KI-Text- und Bildfilter. Die Credits werden am 1. zurückgesetzt und nicht genutzte verfallen.</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="one">Bei diesem Tempo verbrauchst du diesen Monat etwa %1$s deines Guthabens von %2$s.</item>
+        <item quantity="other">Bei diesem Tempo verbrauchst du diesen Monat voraussichtlich %1$s deiner %2$s Credits.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">Dieser Server zählt keine KI-Credits, daher laufen KI-Filter immer.</string>
+    <string name="ai_credits_load_failed">Deine KI-Credits konnten nicht geladen werden. Ziehe nach unten, um es erneut zu versuchen.</string>
+    <string name="usage_billing_title">Abrechnung nach Nutzung</string>
+    <string name="usage_billing_terms">Deine Karte wird zu Beginn jedes Monats belastet, sobald der Betrag mindestens %1$s erreicht, oder sofort, sobald er %2$s erreicht. Kleinere Beträge werden in den Folgemonaten abgerechnet.</string>
+    <string name="usage_billing_set_up">Nutzungsabhängige Abrechnung einrichten</string>
+    <string name="usage_billing_manage">Karte bei Stripe aktualisieren</string>
+    <string name="usage_billing_cancel">Nutzungsabhängige Abrechnung deaktivieren</string>
+    <string name="usage_billing_cancel_confirm">Nutzungsbasierte Abrechnung deaktivieren? Bereits über dein Tarifkontingent hinaus verbrauchte Credits werden jetzt abgerechnet, sobald sie %1$s erreichen. Die KI-Filter pausieren, sobald die Credits für diesen Monat aufgebraucht sind.</string>
+    <string name="usage_billing_cancel_keep">Aktiviert lassen</string>
+    <string name="usage_billing_cancelled">Abrechnungsbasierte Nutzung ist deaktiviert.</string>
+    <string name="usage_billing_cancel_failed">Die nutzungsabhängige Abrechnung konnte nicht deaktiviert werden. Bitte versuche es erneut.</string>
+    <string name="usage_billing_limit_label">Monatslimit</string>
+    <string name="usage_billing_limit_hint">Kein Limit</string>
+    <string name="usage_billing_limit_help">Filter werden pausiert, sobald die nutzungsabhängige Abrechnung dieses Limit erreicht. Lass das Feld leer, wenn es kein Limit geben soll.</string>
+    <string name="usage_billing_limit_save">Limit speichern</string>
+    <string name="usage_billing_limit_saved">Monatliches Limit gespeichert</string>
+    <string name="usage_billing_limit_cleared">Monatslimit entfernt</string>
+    <string name="usage_billing_limit_failed">Das Monatslimit konnte nicht gespeichert werden. Bitte versuche es erneut.</string>
+    <string name="usage_billing_limit_invalid">Gib das Limit in Dollar ein, zum Beispiel %1$s.</string>
+    <string name="usage_billing_limit_read_only">Monatslimit: %1$s</string>
+    <string name="usage_billing_no_limit">Kein Monatslimit</string>
+    <string name="usage_billing_history_title">Abrechnungsverlauf nach Nutzung</string>
+    <string name="usage_billing_no_invoices">Noch keine Rechnungen für die nutzungsbasierte Abrechnung.</string>
+    <string name="usage_billing_upcoming">Demnächst</string>
+    <string name="usage_billing_invoice">Rechnung</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="one">%1$s Credit</item>
+        <item quantity="other">%1$s Credits</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">Stripe konnte nicht erreicht werden. Bitte versuche es erneut.</string>
+    <string name="usage_billing_already_active">Die nutzungsbasierte Abrechnung ist bereits eingerichtet.</string>
+    <string name="usage_billing_activating">Nutzungsabhängige Abrechnung wird aktiviert. Sobald Stripe deine Zahlungsdaten bestätigt hat, dauert es nur wenige Sekunden.</string>
+    <string name="usage_billing_activating_slow">Stripe bestätigt deine Abrechnung noch. Zieh nach unten, um es gleich noch einmal zu prüfen.</string>
+    <string name="usage_billing_setup_complete">Die nutzungsbasierte Abrechnung ist aktiviert. Deine KI-Filter laufen auch nach Verbrauch deiner Credits weiter.</string>
+    <string name="usage_billing_no_browser">Installiere einen Webbrowser, um die Abrechnung nach Nutzung einzurichten.</string>
     <string name="listen_story_button">Anhören</string>
     <string name="listen_resume">Fortsetzen</string>
     <string name="listen_pause">Pausieren</string>

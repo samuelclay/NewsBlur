@@ -455,7 +455,14 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="premium_custom_rss">Kaydedilen haberler için özel RSS akışları</string>
     <string name="premium_text_view">Metin görünümü, haber içeriğini kullanışlı bir şekilde çıkarır</string>
     <string name="premium_discover_related">İlgili haberleri ve siteleri keşfedin</string>
-    <string name="premium_natural_language_classifiers">Doğal dil metni ve görsel sınıflandırıcıları</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="one">Ayda %1$s AI kredisiyle AI metin ve görsel filtreleri</item>
+        <item quantity="other">Ayda %1$s AI kredisi içeren yapay zekâ metin ve görsel filtreleri</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="one">AI filtreleri için ayda %1$s AI kredisi</item>
+        <item quantity="other">AI filtreleri için ayda %1$s AI kredisi</item>
+    </plurals>
     <string name="premium_shiloh">NewsBlur\'ın aç köpeği Lyric\'i 6 gün boyunca besliyorsunuz</string>
     <string name="archive_everything_premium">Elbette Premium aboneliğindeki her şey</string>
     <string name="archive_enable_sites">4.096 siteye kadar takip edin</string>
@@ -1307,8 +1314,87 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="ai_scope_global">Tüm siteler</string>
     <string name="ai_scope_folder_named">%1$s içindeki tüm siteler</string>
     <string name="ai_scope_requires_archive">Premium Archive gerektirir</string>
-    <string name="ai_filters_archive_only">Yapay zekâ filtreleri kaydedilir ancak yalnızca %1$s üzerinde çalışır.</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+    <string name="ai_credits_title">AI kredileri</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="one">%2$s AI kredisinin %1$s kadarı kullanıldı</item>
+        <item quantity="other">%2$s AI kredisinin %1$s kadarı kullanıldı</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="one">%1$s AI kredisi kullanıldı; planınızın %3$s sınırını %2$s aştınız</item>
+        <item quantity="other">%1$s AI kredisi kullanıldı; planınızın %3$s sınırını %2$s aştınız</item>
+    </plurals>
+    <string name="ai_credits_resets">%1$s tarihinde sıfırlanır</string>
+    <string name="ai_credits_free">AI filtreleri kaydedildi ancak yalnızca Premium\'da çalışır. Premium ayda %1$s AI kredisi, Archive %2$s ve Pro %3$s içerir.</string>
+    <string name="ai_credits_upgrade">Yükselt</string>
+    <string name="ai_credits_estimate_text">Bu sitedeki bir metin filtresi ayda yaklaşık %1$s kredi kullanır</string>
+    <string name="ai_credits_estimate_image">Bu sitedeki bir görsel filtresi ayda yaklaşık %1$s kredi kullanır</string>
+    <string name="ai_credits_estimate_text_small">Bu sitedeki bir metin filtresi ayda %1$s krediden az kullanır</string>
+    <string name="ai_credits_estimate_image_small">Bu sitedeki bir görsel filtresi ayda %1$s krediden az kullanır</string>
+    <string name="ai_credits_runs_out">Bu hızla kredileriniz yaklaşık %1$s tarihinde tükenir.</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="one">AI filtreleriniz %1$s tarihine kadar duraklatıldı. Bu ayki %2$s AI kredisi kullanıldı.</item>
+        <item quantity="other">AI filtreleriniz %1$s tarihine kadar duraklatıldı. Bu ayki %2$s AI kredisi kullanıldı.</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">Yapay zekâ filtreleriniz aylık %1$s sınırınıza ulaştı ve %2$s tarihine kadar duraklatıldı.</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="one">Kullanım ücretlendirmesi açık. %1$s planınızı aşan kredilerin her biri 1¢: bu ay şimdiye kadar %2$s.</item>
+        <item quantity="other">Kullanım ücretlendirmesi açık. %1$s planınızı aşan kredilerin her biri 1¢: bu ay şimdiye kadar %2$s.</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">Kullanım başına faturalandırma açık. Yapay zekâ kredilerinin her biri 1¢: Bu ay şimdiye kadar %1$s.</string>
+    <string name="ai_credits_unbilled">%1$s ücretlendirilmek üzere bekliyor: gelecek ayın başında %2$s veya üzerindeyse ya da hemen %3$s tutarında.</string>
+    <string name="ai_credits_keep_running">Filtreleri çalışır durumda tut</string>
+    <string name="ai_credits_billing_explainer">Kredilerinizi aştıktan sonra filtreler kredi başına 1¢ karşılığında çalışmaya devam eder.</string>
+    <string name="ai_credits_billing_forecast">Bu hızla bu ay yaklaşık %1$s tutarında kullanım olur.</string>
+    <string name="ai_credits_turn_on_billing">Kullanım başına faturalandırmayı aç</string>
+    <string name="ai_credits_turn_on_detail">Planınızdaki kredileri aşan her kredi 1¢; bu ay yaklaşık %1$s</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">Planınızdaki sınırı aşan her kredi için 1¢</string>
+    <string name="ai_credits_or_wait">veya %1$s tarihine kadar bekleyin</string>
+    <string name="ai_credits_manage_billing">Faturalandırmayı yönetin</string>
+    <string name="ai_credits_change_limit">Sınırı değiştir</string>
+    <string name="ai_credits_open">Yapay zekâ kredilerini görüntüle</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="one">Planınıza yapay zekâ metin ve görsel filtreleri için ayda %1$s yapay zekâ kredisi dahildir. Krediler her ayın 1\'inde yenilenir ve kullanılmayan krediler sonraki aya aktarılmaz.</item>
+        <item quantity="other">Planınız, yapay zekâ metin ve görsel filtreleri için ayda %1$s AI kredisi içerir. Krediler her ayın 1\'inde sıfırlanır ve kullanılmayan krediler sonraki aya aktarılmaz.</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="one">Bu hızla bu ay %2$s kredinizin yaklaşık %1$s kadarını kullanacaksınız.</item>
+        <item quantity="other">Bu hızla bu ay %2$s kredinizin yaklaşık %1$s kadarını kullanırsınız.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">Bu sunucu yapay zekâ kredilerini saymaz; bu nedenle yapay zekâ filtreleri her zaman çalışır.</string>
+    <string name="ai_credits_load_failed">AI kredileriniz yüklenemedi. Yeniden denemek için aşağı çekin.</string>
+    <string name="usage_billing_title">Kullanıma dayalı faturalandırma</string>
+    <string name="usage_billing_terms">Kartınızdan, tutar en az %1$s olduğunda her ayın başında veya %2$s tutarına ulaştığında hemen tahsil edilir. Daha küçük tutarlar sonraki aylara aktarılır.</string>
+    <string name="usage_billing_set_up">Kullanım başına faturalandırmayı ayarla</string>
+    <string name="usage_billing_manage">Stripe\'ta kartı güncelle</string>
+    <string name="usage_billing_cancel">Kullanım başına faturalandırmayı kapat</string>
+    <string name="usage_billing_cancel_confirm">Kullanım ücretlendirmesi kapatılsın mı? Planınızdaki sınırı aşan krediler %1$s tutarına ulaşırsa hemen ücretlendirilir. Bu ayki kredileriniz tükendiğinde AI filtreleri duraklatılır.</string>
+    <string name="usage_billing_cancel_keep">Açık kalsın</string>
+    <string name="usage_billing_cancelled">Kullanıma dayalı faturalandırma kapalı.</string>
+    <string name="usage_billing_cancel_failed">Kullanım başına faturalandırma kapatılamadı. Lütfen tekrar deneyin.</string>
+    <string name="usage_billing_limit_label">Aylık sınır</string>
+    <string name="usage_billing_limit_hint">Sınır yok</string>
+    <string name="usage_billing_limit_help">Kullanım başına faturalandırma bu sınıra ulaştığında filtreler duraklatılır. Sınırsız olması için boş bırakın.</string>
+    <string name="usage_billing_limit_save">Sınırı kaydet</string>
+    <string name="usage_billing_limit_saved">Aylık sınır kaydedildi</string>
+    <string name="usage_billing_limit_cleared">Aylık sınır kaldırıldı</string>
+    <string name="usage_billing_limit_failed">Aylık sınır kaydedilemedi. Lütfen tekrar deneyin.</string>
+    <string name="usage_billing_limit_invalid">Sınırı dolar cinsinden girin; örneğin %1$s.</string>
+    <string name="usage_billing_limit_read_only">Aylık sınır: %1$s</string>
+    <string name="usage_billing_no_limit">Aylık sınır yok</string>
+    <string name="usage_billing_history_title">Kullanım faturalandırma geçmişi</string>
+    <string name="usage_billing_no_invoices">Henüz kullanım faturalandırması faturası yok.</string>
+    <string name="usage_billing_upcoming">Yaklaşan</string>
+    <string name="usage_billing_invoice">Fatura</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="one">%1$s kredi</item>
+        <item quantity="other">%1$s kredi</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">Stripe\'a ulaşılamadı. Lütfen tekrar deneyin.</string>
+    <string name="usage_billing_already_active">Kullanım ücretlendirmesi zaten ayarlanmış.</string>
+    <string name="usage_billing_activating">Kullanım başına faturalandırma açılıyor. Stripe ödeme bilgilerinizi doğruladıktan sonra bu işlem birkaç saniye sürer.</string>
+    <string name="usage_billing_activating_slow">Stripe faturalandırmanızı hâlâ onaylıyor. Biraz sonra tekrar kontrol etmek için aşağı çekin.</string>
+    <string name="usage_billing_setup_complete">Kullanım ücretlendirmesi açık. AI filtreleriniz kredilerinizi aştıktan sonra da çalışmaya devam eder.</string>
+    <string name="usage_billing_no_browser">Kullanıma dayalı faturalandırmayı ayarlamak için bir web tarayıcısı yükleyin.</string>
     <string name="listen_story_button">Dinle</string>
     <string name="listen_resume">Devam et</string>
     <string name="listen_pause">Duraklat</string>

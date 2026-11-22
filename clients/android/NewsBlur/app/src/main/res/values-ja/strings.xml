@@ -452,7 +452,12 @@
     <string name="premium_custom_rss">保存した記事用のカスタムRSSフィード</string>
     <string name="premium_text_view">テキスト表示では記事の本文を手軽に抽出できます</string>
     <string name="premium_discover_related">関連する記事やサイトを見つける</string>
-    <string name="premium_natural_language_classifiers">自然言語テキスト・画像分類器</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="other">AIテキスト・画像フィルター（月%1$s AIクレジット付き）</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="other">AIフィルター用の月間%1$sAIクレジット</item>
+    </plurals>
     <string name="premium_shiloh">NewsBlurの食いしん坊な看板犬Lyricに、6日分のごはんをあげられます</string>
     <string name="archive_everything_premium">もちろん、プレミアム購読のすべての機能</string>
     <string name="archive_enable_sites">最大4,096サイトをフォロー</string>
@@ -1284,8 +1289,80 @@
     <string name="ai_scope_global">すべてのサイト</string>
     <string name="ai_scope_folder_named">%1$s内のすべてのサイト</string>
     <string name="ai_scope_requires_archive">プレミアムアーカイブが必要です</string>
-    <string name="ai_filters_archive_only">AIフィルターは保存されますが、%1$sでのみ実行されます。</string>
-    <string name="ai_filters_archive_link">プレミアムアーカイブ</string>
+    <string name="ai_credits_title">AIクレジット</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="other">AIクレジットを%2$s中%1$s使用</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="other">%1$sAIクレジットを使用、プランの%3$sを%2$s超過</item>
+    </plurals>
+    <string name="ai_credits_resets">%1$sにリセット</string>
+    <string name="ai_credits_free">AIフィルターは保存されていますが、実行できるのはプレミアムのみです。プレミアムには月%1$sのAIクレジットが含まれ、アーカイブは%2$s、Proは%3$sです。</string>
+    <string name="ai_credits_upgrade">アップグレード</string>
+    <string name="ai_credits_estimate_text">このサイトのテキストフィルターは、月に約%1$sクレジットを使用します</string>
+    <string name="ai_credits_estimate_image">このサイトの画像フィルターは、月に約%1$sクレジットを使用します</string>
+    <string name="ai_credits_estimate_text_small">このサイトのテキストフィルターは、月に%1$sクレジット未満を使用します</string>
+    <string name="ai_credits_estimate_image_small">このサイトの画像フィルターは、月に%1$sクレジット未満を使用します</string>
+    <string name="ai_credits_runs_out">このペースでは、%1$sごろにクレジットがなくなる見込みです。</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="other">AIフィルターは%1$sまで一時停止しています。今月のAIクレジット%2$sを使い切りました。</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">AIフィルターは月間上限の%1$sに達したため、%2$sまで一時停止しています。</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="other">従量課金が有効です。プランの%1$sを超えたクレジットは1件あたり1¢です。今月の利用額は%2$sです。</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">従量課金が有効です。AIクレジットは1件あたり1¢です。今月の利用額は%1$sです。</string>
+    <string name="ai_credits_unbilled">%1$sは請求待ちです。来月初めに%2$s以上であれば請求されるか、%3$sに達した時点ですぐに請求されます。</string>
+    <string name="ai_credits_keep_running">フィルターを実行し続ける</string>
+    <string name="ai_credits_billing_explainer">クレジットの上限を超えても、フィルターは1クレジットあたり1¢で引き続き実行されます。</string>
+    <string name="ai_credits_billing_forecast">現在のペースでは、今月は約%1$sになる見込みです。</string>
+    <string name="ai_credits_turn_on_billing">従量課金を有効にする</string>
+    <string name="ai_credits_turn_on_detail">プランの上限を超えたクレジットは1件あたり1¢。今月の見込み：約%1$s</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">プランの上限を超えたクレジットは1件あたり1¢</string>
+    <string name="ai_credits_or_wait">または%1$sまで待つ</string>
+    <string name="ai_credits_manage_billing">請求を管理</string>
+    <string name="ai_credits_change_limit">上限を変更</string>
+    <string name="ai_credits_open">AIクレジットを確認</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="other">プランには、AIテキスト・画像フィルター用のAIクレジットが月に%1$s含まれます。クレジットは毎月1日にリセットされ、未使用分は繰り越されません。</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="other">このペースでは、今月は%2$sクレジットのうち約%1$sを使用する見込みです。</item>
+    </plurals>
+    <string name="ai_credits_unlimited">このサーバーではAIクレジットがカウントされないため、AIフィルターは常に実行されます。</string>
+    <string name="ai_credits_load_failed">AIクレジットを読み込めませんでした。下に引いて再試行してください。</string>
+    <string name="usage_billing_title">従量課金</string>
+    <string name="usage_billing_terms">カードへの請求は、月初に請求額が%1$s以上になった時点で行われます。または、%2$sに達した時点で直ちに請求されます。それより少ない金額は翌月以降に繰り越されます。</string>
+    <string name="usage_billing_set_up">従量課金を設定</string>
+    <string name="usage_billing_manage">Stripeでカードを更新</string>
+    <string name="usage_billing_cancel">従量課金を停止</string>
+    <string name="usage_billing_cancel_confirm">従量課金をオフにしますか？プランの上限を超えた分が%1$sに達している場合、すぐに請求されます。今月のクレジットを使い切ると、AIフィルターは一時停止します。</string>
+    <string name="usage_billing_cancel_keep">有効のままにする</string>
+    <string name="usage_billing_cancelled">従量課金はオフです。</string>
+    <string name="usage_billing_cancel_failed">従量課金を停止できませんでした。もう一度お試しください。</string>
+    <string name="usage_billing_limit_label">月間上限</string>
+    <string name="usage_billing_limit_hint">上限なし</string>
+    <string name="usage_billing_limit_help">従量課金がこの上限に達すると、フィルターは一時停止します。上限なしにする場合は空欄にしてください。</string>
+    <string name="usage_billing_limit_save">上限を保存</string>
+    <string name="usage_billing_limit_saved">月間上限を保存しました</string>
+    <string name="usage_billing_limit_cleared">月間上限を削除しました</string>
+    <string name="usage_billing_limit_failed">月間上限を保存できませんでした。もう一度お試しください。</string>
+    <string name="usage_billing_limit_invalid">上限をドルで入力してください（例：%1$s）。</string>
+    <string name="usage_billing_limit_read_only">月間上限：%1$s</string>
+    <string name="usage_billing_no_limit">月間上限なし</string>
+    <string name="usage_billing_history_title">従量課金の履歴</string>
+    <string name="usage_billing_no_invoices">利用状況の請求書はまだありません。</string>
+    <string name="usage_billing_upcoming">今後の請求</string>
+    <string name="usage_billing_invoice">請求書</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="other">%1$sクレジット</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">Stripeに接続できませんでした。もう一度お試しください。</string>
+    <string name="usage_billing_already_active">従量課金はすでに設定されています。</string>
+    <string name="usage_billing_activating">従量課金を有効にしています。Stripeがお支払い情報を確認すると、数秒で完了します。</string>
+    <string name="usage_billing_activating_slow">Stripeで請求の確認中です。少し待ってから、下に引いて再確認してください。</string>
+    <string name="usage_billing_setup_complete">従量課金が有効です。AIフィルターはクレジットの上限を超えても引き続き実行されます。</string>
+    <string name="usage_billing_no_browser">従量課金を設定するには、ウェブブラウザーをインストールしてください。</string>
     <string name="listen_story_button">聴く</string>
     <string name="listen_resume">再開</string>
     <string name="listen_pause">一時停止</string>

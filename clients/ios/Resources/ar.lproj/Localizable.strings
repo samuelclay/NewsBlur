@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "مجلد %1$@، %2$@";
 "%1$@ folder, collapsed, %2$@" = "مجلد %1$@، مطوي، %2$@";
 "%1$@ followed %2$@." = "بدأ %1$@ بمتابعة %2$@.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "بانتظار تحصيل %1$@ منك: في بداية الشهر المقبل إذا بلغ %2$@ على الأقل، أو فورًا عند %3$@.";
 "%1$@ of %2$@ of listening left this week" = "تبقّى %1$@ من %2$@ من وقت الاستماع هذا الأسبوع";
 "%1$@ of %2$@ sites indexed" = "تمت فهرسة %1$@ من أصل %2$@ موقعًا";
 "%1$@ of %2$@ story previews used today" = "تم استخدام %1$@ من أصل %2$@ معاينة قصة اليوم";
+"%1$@ of your %2$@ monthly limit" = "%1$@ من حدك الشهري البالغ %2$@";
 "%1$@ re-shared %2$@." = "أعاد %1$@ مشاركة %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "أعاد %1$@ مشاركة %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "ردّ %1$@ على %2$@: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "شارك %1$@ %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "شارك %1$@ ‏%2$@:\n \n%3$@";
 "%1$@, %2$@" = "%1$@، %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "استهلكت %2$@ من أرصدة الذكاء الاصطناعي، وتجاوزت %3$@ حد خطتك البالغ %1$@";
+"%2$@ of %1$@ AI credits used" = "اُستخدم %2$@ من أصل %1$@ من أرصدة الذكاء الاصطناعي";
 "%@ Widget Sites" = "%@ مواقع الأدوات";
 "%@ ago" = "قبل %@";
 "%@ categories to choose from" = "فئات للاختيار من بينها: %@";
@@ -66,6 +70,8 @@
 "100 stories" = "100 قصة";
 "12 color flavors with light and dark variants." = "12 لونًا، لكل منها إصدار فاتح وآخر داكن.";
 "15 stories" = "15 قصة";
+"1¢ per credit past your plan's" = "سنت واحد لكل رصيد يتجاوز رصيد خطتك";
+"1¢ per credit past your plan's, about %@ this month" = "1¢ لكل رصيد يتجاوز حد خطتك، نحو %@ هذا الشهر";
 "2,000 stories" = "2,000 قصة";
 "20 stories" = "20 قصة";
 "2x daily" = "مرتان يوميًا";
@@ -73,6 +79,8 @@
 "3x daily" = "3 مرات يوميًا";
 "5 stories" = "5 قصص";
 "5,000 stories" = "5,000 قصة";
+"50 AI credits a month for AI filters" = "50 رصيدًا شهريًا لفلاتر الذكاء الاصطناعي";
+"500 AI credits a month for AI filters" = "500 رصيد ذكاء اصطناعي شهريًا لفلاتر الذكاء الاصطناعي";
 "500 stories" = "500 قصة";
 "< 15/month" = "أقل من 15 شهريًا";
 "< 30/month" = "أقل من 30 شهريًا";
@@ -80,11 +88,16 @@
 "< 60/month" = "أقل من 60 شهريًا";
 "< 90/month" = "أقل من 90 شهريًا";
 "A clearer, closer sound" = "صوت أوضح وأقرب";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "يغطي الرصيد الواحد نحو 700 قصة عبر فلتر نصي، أو 100 قصة عبر فلتر صور.";
 "A personal news reader bringing\npeople together to talk about the world." = "قارئ أخبار شخصي يجمع\nالناس للنقاش حول العالم.";
-"AI filters are saved but only run on Premium Archive." = "يتم حفظ فلاتر الذكاء الاصطناعي، لكنها لا تعمل إلا مع اشتراك Premium Archive.";
+"A text filter on this site uses about %2$@ credits a month" = "يستهلك فلتر النصوص على هذا الموقع نحو %2$@ من الرصيد شهريًا";
+"AI Credits" = "أرصدة الذكاء الاصطناعي";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "تم حفظ فلاتر الذكاء الاصطناعي، لكنها لا تعمل إلا مع Premium. يتضمن Premium ‏5 أرصدة ذكاء اصطناعي شهريًا، وArchive ‏50، وPro ‏500.";
 "AI finds the stories" = "الذكاء الاصطناعي يعثر على القصص";
+"AI text and image filters, with 5 AI credits a month" = "فلاتر نصوص وصور بالذكاء الاصطناعي، مع 5 أرصدة شهريًا";
 "ALL" = "الكل";
 "ALL NOTIFICATIONS" = "كل الإشعارات";
+"About %@ this month at your pace." = "حوالي %@ هذا الشهر حسب وتيرتك.";
 "About NewsBlur" = "حول NewsBlur";
 "Accent [voice filter]" = "اللهجة";
 "Account" = "الحساب";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "لديك حساب بالفعل؟ سجّل الدخول";
 "Already have feeds?" = "لديك خلاصات بالفعل؟";
 "Also published by %@ sites" = "نُشر أيضًا على %@ مواقع";
+"An image filter on this site uses about %2$@ credits a month" = "يستهلك فلتر الصور في هذا الموقع نحو %2$@ من الأرصدة شهريًا";
 "Analyze" = "تحليل";
 "Analyzing images..." = "جارٍ تحليل الصور...";
 "App Badge" = "شارة التطبيق";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "اطرح أسئلة على الذكاء الاصطناعي حول القصص";
 "Ask AI…" = "اسأل الذكاء الاصطناعي…";
 "Ask a question..." = "اطرح سؤالًا...";
+"At this pace your credits run out around %@." = "بهذا المعدل، ستنفد أرصدتك في حدود %@.";
+"At this pace, this month will use about %2$@ AI credits." = "بهذا المعدل، سيُستهلك نحو %2$@ من أرصدة الذكاء الاصطناعي هذا الشهر.";
 "Atlantic Blue" = "أزرق الأطلسي";
 "Authenticating" = "جارٍ التحقق من الهوية";
 "Auto" = "تلقائي";
@@ -197,6 +213,7 @@
 "Cancel" = "إلغاء";
 "Cannot reply to this story" = "لا يمكن الرد على هذه القصة";
 "Change Story List" = "تغيير قائمة القصص";
+"Change limit" = "تغيير الحد";
 "Choose Icon" = "اختيار أيقونة";
 "Choose Language…" = "اختيار اللغة…";
 "Choose Story List" = "اختر قائمة القصص";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "تعذّر مسح ذاكرة التخزين المؤقت بالكامل. يُرجى المحاولة مرة أخرى.";
 "Could not save your language. Please try again." = "تعذّر حفظ لغتك. يُرجى المحاولة مرة أخرى.";
 "Couldn't check story" = "تعذّر التحقق من القصة";
+"Couldn't load your AI credits." = "تعذّر تحميل اعتمادات الذكاء الاصطناعي.";
+"Couldn't load your usage invoices." = "تعذّر تحميل فواتير الاستخدام.";
+"Couldn't open billing. Please try again." = "تعذّر فتح صفحة الفوترة. يُرجى المحاولة مرة أخرى.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "تعذّر الاتصال بـ NewsBlur. تحقّق من اتصالك وحاول مجددًا.";
+"Couldn't save your monthly limit. Please try again." = "تعذّر حفظ الحد الشهري. يُرجى المحاولة مرة أخرى.";
+"Couldn't turn off usage billing. Please try again." = "تعذّر إيقاف الفوترة حسب الاستخدام. يُرجى المحاولة مرة أخرى.";
 "Couldn’t load the full image. You can try opening it in your browser." = "تعذّر تحميل الصورة كاملة. يمكنك محاولة فتحها في المتصفح.";
 "Counting is difficult..." = "العدّ صعب...";
 "Create a feed from any web page" = "أنشئ خلاصة من أي صفحة ويب";
 "Create a new account instead" = "إنشاء حساب جديد بدلاً من ذلك";
 "Create account" = "إنشاء حساب";
 "Create an account" = "إنشاء حساب";
+"Credits reset on the 1st of each month and don't carry over." = "تُعاد الأرصدة إلى رصيدها الأصلي في اليوم الأول من كل شهر، ولا تُرحّل إلى الشهر التالي.";
 "Custom" = "مخصص";
 "Custom Domain" = "نطاق مخصص";
 "Custom RSS feeds for saved stories" = "خلاصات RSS مخصصة للقصص المحفوظة";
@@ -378,6 +401,7 @@
 "Fetching text..." = "جارٍ جلب النص...";
 "Filter" = "تصفية";
 "Filter stories by date range" = "تصفية القصص حسب النطاق الزمني";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "تتوقف الفلاتر عند بلوغ الفوترة حسب الاستخدام هذا الحد. اتركه فارغًا لعدم وضع حد.";
 "Find %@ in the voice list" = "العثور على %@ في قائمة الأصوات";
 "Find Friends" = "اعثر على أصدقاء";
 "Find in Feed" = "البحث في الخلاصة";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "إخفاء أشرطة الأدوات أثناء القراءة";
 "Hides the music settings" = "إخفاء إعدادات الموسيقى";
 "Highlight the paragraph being read" = "تمييز الفقرة التي تقرؤها";
+"How credits work" = "كيف يعمل الرصيد";
 "How much emotion" = "مقدار العاطفة";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "إذا لم يطابق أي من الخيارات، فاكتب عنوان قصة ظاهرًا على الصفحة وسنعيد التحليل.";
 "Ignore system theme, use screen brightness instead" = "تجاهل سمة النظام واستخدم سطوع الشاشة بدلًا منها";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "بدلًا من اتباع الوضع الداكن أو الفاتح للنظام، بدّل السمات تلقائيًا حسب مستوى سطوع الشاشة. مفيد لتغيير السمات وفق الإضاءة المحيطة.";
 "Interactions" = "التفاعلات";
 "Invalid: %@" = "غير صالح: %@";
+"Invoice" = "فاتورة";
 "Keep fades, without movement." = "الاحتفاظ بالتلاشي دون حركة.";
+"Keep filters running" = "أبقِ الفلاتر قيد التشغيل";
 "Keeps the dark icon no matter how your device is set." = "يُبقي الأيقونة داكنة مهما كان إعداد جهازك.";
 "Keeps the light icon no matter how your device is set." = "يُبقي الأيقونة فاتحة مهما كانت إعدادات جهازك.";
 "Keyboard Shortcuts" = "اختصارات لوحة المفاتيح";
@@ -553,6 +580,7 @@
 "Manage" = "إدارة";
 "Manage Account on the Web" = "إدارة الحساب عبر الويب";
 "Manage Subscription" = "إدارة الاشتراك";
+"Manage billing" = "إدارة الفوترة";
 "Manage this folder…" = "إدارة هذا المجلد…";
 "Manage this site…" = "إدارة هذا الموقع…";
 "Manual scroll" = "تمرير يدوي";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "رمادي";
 "Model" = "النموذج";
 "Monday" = "الاثنين";
+"Monthly limit" = "الحد الشهري";
+"Monthly limit: %@" = "الحد الشهري: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "تستهلك القصص الإضافية مساحة أكبر على القرص، لكنها لا تؤثر بشكل ملحوظ في الأداء.";
 "More voices" = "المزيد من الأصوات";
 "Morning" = "الصباح";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "مصنّف الصور باللغة الطبيعية";
 "Natural Language Text Classifier" = "مصنّف النصوص باللغة الطبيعية";
 "Natural [listen delivery]" = "طبيعي";
-"Natural language text and image classifiers" = "مصنفات النصوص والصور باللغة الطبيعية";
 "Nested" = "متداخل";
 "Never" = "أبدًا";
 "New Folder" = "مجلد جديد";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "لا توجد خلاصات لعرضها بعد. جرّب اهتمامًا آخر أو ابحث في جميع المواقع.";
 "No friends to suggest." = "لا يوجد أصدقاء لاقتراحهم.";
 "No interests or sites found. Try another search." = "لم يُعثر على اهتمامات أو مواقع. جرّب بحثًا آخر.";
+"No limit" = "بلا حد";
 "No longer saved" = "لم يعد محفوظًا";
 "No match" = "لا يوجد تطابق";
 "No match in story" = "لا توجد مطابقة في القصة";
@@ -690,6 +720,7 @@
 "No stories yet" = "لا توجد قصص بعد";
 "No story selected" = "لم يتم تحديد أي قصة";
 "No unread stories" = "لا توجد قصص غير مقروءة";
+"No usage invoices yet." = "لا توجد فواتير استخدام بعد.";
 "No voices match these filters" = "لا توجد أصوات تطابق عوامل التصفية هذه";
 "None" = "لا شيء";
 "Normal" = "عادي";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "صفحة لأسفل؛ القصة التالية غير المقروءة عند الأسفل";
 "Page up; previous story at the top" = "صفحة لأعلى؛ القصة السابقة عند الأعلى";
 "Password" = "كلمة المرور";
+"Past your credits, filters keep running at 1¢ per credit." = "بعد نفاد أرصدتك، تواصل الفلاتر العمل بتكلفة سنت واحد لكل رصيد.";
 "Paste a story title from the page" = "الصق عنوان قصة من الصفحة";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "الصق أي رابط، وسيُنشئ NewsBlur خلاصة من الصفحة، حتى إن لم تتضمن RSS.";
 "Pause" = "إيقاف مؤقت";
@@ -889,6 +921,7 @@
 "Saved on %@" = "حُفظ في %@";
 "Saving Daily Briefing settings…" = "جارٍ حفظ إعدادات الموجز اليومي…";
 "Saving search..." = "جارٍ حفظ البحث...";
+"Saving..." = "جارٍ الحفظ...";
 "Schedule" = "جدولة";
 "Scroll horizontally" = "التمرير أفقيًا";
 "Scroll to Comments" = "انتقل إلى التعليقات";
@@ -921,6 +954,7 @@
 "Server URL" = "عنوان URL للخادم";
 "Set an exact speed under Voice" = "اضبط سرعة دقيقة ضمن إعدادات الصوت";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "أعِدّ الموجز اليومي لإنشاء ملخص للقصص الأهم بالنسبة إليك.";
+"Set up usage billing" = "إعداد الفوترة حسب الاستخدام";
 "Settings" = "الإعدادات";
 "Share" = "مشاركة";
 "Share This Story" = "مشاركة هذه القصة";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "سيؤدي هذا إلى حذف المجلد وإلغاء الاشتراك في المواقع غير الموجودة في مجلد آخر.";
 "This feature requires iOS 15 or later." = "تتطلب هذه الميزة iOS 15 أو أحدث.";
 "This might take a minute.\nFeel free to continue..." = "قد يستغرق هذا دقيقة.\nيمكنك المتابعة أثناء ذلك...";
+"This month" = "هذا الشهر";
+"This month's %@ AI credits are used." = "تم استخدام أرصدة الذكاء الاصطناعي لهذا الشهر وعددها %@.";
 "This removes the subscription from your feeds." = "سيؤدي هذا إلى إزالة الاشتراك من خلاصاتك.";
 "This setting only applies after the app is restarted." = "لا يُطبَّق هذا الإعداد إلا بعد إعادة تشغيل التطبيق.";
 "This site already has a feed" = "هذا الموقع لديه خلاصة بالفعل";
@@ -1151,6 +1187,9 @@
 "Try search again" = "جرّب البحث مجددًا";
 "Trying Feed" = "جارٍ تجربة الخلاصة";
 "Tuesday" = "الثلاثاء";
+"Turn off usage billing" = "إيقاف الفوترة حسب الاستخدام";
+"Turn off usage billing?" = "هل تريد إيقاف الفوترة حسب الاستخدام؟";
+"Turn on usage billing" = "تفعيل الفوترة حسب الاستخدام";
 "Two" = "اثنان";
 "Two Columns" = "عمودان";
 "Two Rows" = "صفّان";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "غير محفوظ";
 "Untitled story" = "قصة بلا عنوان";
 "Up Next" = "التالي";
+"Upcoming" = "القادم";
+"Update card on Stripe" = "تحديث البطاقة على Stripe";
 "Updated %@ days ago" = "حُدّث قبل %@ يومًا";
 "Updated %@ months ago" = "تم التحديث قبل %@ شهر";
 "Updated %@ weeks ago" = "تم التحديث قبل %@ أسبوع";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "الترقية إلى Premium";
 "Upgrade to Premium Archive" = "الترقية إلى Premium Archive";
 "Upgrade to Premium Pro" = "الترقية إلى Premium Pro";
+"Usage billing" = "فوترة الاستخدام";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "الفوترة حسب الاستخدام مفعّلة. تبلغ تكلفة كل رصيد يتجاوز %1$@ سنتًا واحدًا: استُخدم %2$@ حتى الآن هذا الشهر.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "الفوترة حسب الاستخدام مفعّلة. تبلغ تكلفة كل رصيد سنتًا واحدًا: وقد بلغت %@ حتى الآن هذا الشهر.";
+"Usage invoices" = "فواتير الاستخدام";
 "Use %@" = "استخدم %@";
 "Use a custom server" = "استخدام خادم مخصص";
 "Use another sign-in method" = "استخدم طريقة أخرى لتسجيل الدخول";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "لقد سجّلت في NewsBlur.";
 "You subscribed to %@." = "اشتركت في %@.";
 "You're presented with multiple story pattern options to choose from." = "تُعرض عليك أنماط متعددة للقصص لتختار منها.";
+"Your AI filters are paused until %@." = "فلاتر الذكاء الاصطناعي متوقفة مؤقتًا حتى %@.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "تتوقف فلاتر الذكاء الاصطناعي عند استهلاك اعتمادات هذا الشهر. تُحصّل الآن تكلفة الاعتمادات التي تجاوزت حد خطتك، إذا بلغت %@ على الأقل.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "بلغت فلاتر الذكاء الاصطناعي الحد الشهري %1$@، وهي متوقفة مؤقتًا حتى %2$@.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "تم حذف حسابك في NewsBlur. أزل NewsBlur من «تسجيل الدخول باستخدام Apple» في إعدادات حساب Apple لإكمال فصل الحساب.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "الصوت الذي اخترته غير متاح حاليًا، لذا يقرأ %@ هذه القصة.";
 "Your identity is verified" = "تم التحقق من هويتك";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "اشتراكك في Premium Pro نشط";
 "Your premium subscription is active" = "اشتراكك في Premium نشط";
 "Your reading list" = "قائمة القراءة";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "تُخصم الرسوم من بطاقتك المحفوظة في بداية الشهر عندما تبلغ على الأقل %1$@، أو فورًا عند بلوغ %2$@.";
 "You’re all set up." = "تم إعداد كل شيء.";
 "at %@" = "في %@";
 "by %@" = "بواسطة %@";
@@ -1279,6 +1328,7 @@
 "no site" = "لا يوجد موقع";
 "no story" = "لا توجد قصة";
 "or" = "أو";
+"or wait until %@" = "أو انتظر حتى %@";
 "premium subscribers" = "مشتركو Premium";
 "your account" = "حسابك";
 "‹ Feeds" = "‹ الخلاصات";

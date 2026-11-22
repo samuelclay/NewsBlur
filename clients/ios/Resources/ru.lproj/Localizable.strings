@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "Папка %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Папка %1$@, свёрнута, %2$@";
 "%1$@ followed %2$@." = "%1$@ подписывается на обновления %2$@.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "Списание %1$@ ожидает обработки: в начале следующего месяца, если сумма составит не менее %2$@, или сразу при достижении %3$@.";
 "%1$@ of %2$@ of listening left this week" = "На этой неделе осталось %1$@ из %2$@ прослушивания";
 "%1$@ of %2$@ sites indexed" = "Проиндексировано %1$@ из %2$@ сайтов";
 "%1$@ of %2$@ story previews used today" = "Сегодня использовано %1$@ из %2$@ предпрослушиваний статей";
+"%1$@ of your %2$@ monthly limit" = "%1$@ из вашего месячного лимита %2$@";
 "%1$@ re-shared %2$@." = "%1$@ повторно делится статьёй %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ повторно делится статьёй %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ отвечает пользователю %2$@: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ делится статьёй %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ делится статьёй %2$@:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "Использовано %2$@ кредитов ИИ, сверх лимита по вашему плану (%1$@) — %3$@";
+"%2$@ of %1$@ AI credits used" = "Использовано %2$@ из %1$@ кредитов ИИ";
 "%@ Widget Sites" = "%@ сайтов с виджетами";
 "%@ ago" = "%@ назад";
 "%@ categories to choose from" = "категорий на выбор: %@";
@@ -66,6 +70,8 @@
 "100 stories" = "100 статей";
 "12 color flavors with light and dark variants." = "12 цветовых вариантов в светлом и тёмном исполнении.";
 "15 stories" = "15 статей";
+"1¢ per credit past your plan's" = "1¢ за каждый кредит сверх лимита вашего плана";
+"1¢ per credit past your plan's, about %@ this month" = "1¢ за каждый кредит сверх лимита вашего плана, около %@ в этом месяце";
 "2,000 stories" = "2 000 статей";
 "20 stories" = "20 статей";
 "2x daily" = "2 раза в день";
@@ -73,6 +79,8 @@
 "3x daily" = "3 раза в день";
 "5 stories" = "5 статей";
 "5,000 stories" = "5 000 статей";
+"50 AI credits a month for AI filters" = "50 кредитов ИИ в месяц для фильтров ИИ";
+"500 AI credits a month for AI filters" = "500 AI-кредитов в месяц для AI-фильтров";
 "500 stories" = "500 статей";
 "< 15/month" = "< 15 в месяц";
 "< 30/month" = "< 30 в месяц";
@@ -80,11 +88,16 @@
 "< 60/month" = "< 60 в месяц";
 "< 90/month" = "< 90 в месяц";
 "A clearer, closer sound" = "Более чистый и близкий звук";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "Одного кредита хватает примерно на 700 статей через текстовый фильтр или на 100 статей через фильтр изображений.";
 "A personal news reader bringing\npeople together to talk about the world." = "Персональная программа для чтения новостей, которая объединяет людей,\nчтобы обсуждать происходящее в мире.";
-"AI filters are saved but only run on Premium Archive." = "Фильтры ИИ сохранены, но работают только на Premium Archive.";
+"A text filter on this site uses about %2$@ credits a month" = "Текстовый фильтр на этом сайте использует около %2$@ кредитов в месяц";
+"AI Credits" = "Кредиты ИИ";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "Фильтры ИИ сохранены, но работают только с Premium. В Premium входит 5 кредитов ИИ в месяц, в Archive — 50, а в Pro — 500.";
 "AI finds the stories" = "ИИ находит статьи";
+"AI text and image filters, with 5 AI credits a month" = "Текстовые и графические фильтры ИИ, 5 кредитов ИИ в месяц";
 "ALL" = "ВСЁ";
 "ALL NOTIFICATIONS" = "ВСЕ УВЕДОМЛЕНИЯ";
+"About %@ this month at your pace." = "При таком темпе за этот месяц будет использовано около %@.";
 "About NewsBlur" = "О NewsBlur";
 "Accent [voice filter]" = "Акцент";
 "Account" = "Аккаунт";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "Уже есть аккаунт? Войти";
 "Already have feeds?" = "У вас уже есть ленты?";
 "Also published by %@ sites" = "Также опубликовано на %@ сайтах";
+"An image filter on this site uses about %2$@ credits a month" = "Фильтр изображений на этом сайте использует около %2$@ кредитов в месяц";
 "Analyze" = "Анализировать";
 "Analyzing images..." = "Анализ изображений...";
 "App Badge" = "Значок приложения";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "Задавайте ИИ вопросы о статьях";
 "Ask AI…" = "Спросить ИИ…";
 "Ask a question..." = "Задайте вопрос...";
+"At this pace your credits run out around %@." = "При таком темпе кредиты закончатся примерно %@.";
+"At this pace, this month will use about %2$@ AI credits." = "При таком темпе за этот месяц будет использовано около %2$@ кредитов ИИ.";
 "Atlantic Blue" = "Атлантический синий";
 "Authenticating" = "Проверка подлинности";
 "Auto" = "Авто";
@@ -197,6 +213,7 @@
 "Cancel" = "Отмена";
 "Cannot reply to this story" = "На эту статью нельзя ответить";
 "Change Story List" = "Изменить список статей";
+"Change limit" = "Изменить лимит";
 "Choose Icon" = "Выбрать значок";
 "Choose Language…" = "Выбрать язык…";
 "Choose Story List" = "Выбрать список статей";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "Не удалось полностью очистить кэш. Повторите попытку.";
 "Could not save your language. Please try again." = "Не удалось сохранить язык. Попробуйте ещё раз.";
 "Couldn't check story" = "Не удалось проверить статью";
+"Couldn't load your AI credits." = "Не удалось загрузить данные о кредитах ИИ.";
+"Couldn't load your usage invoices." = "Не удалось загрузить счета за использование.";
+"Couldn't open billing. Please try again." = "Не удалось открыть раздел оплаты. Попробуйте ещё раз.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Не удалось подключиться к NewsBlur. Проверьте подключение и повторите попытку.";
+"Couldn't save your monthly limit. Please try again." = "Не удалось сохранить месячный лимит. Попробуйте ещё раз.";
+"Couldn't turn off usage billing. Please try again." = "Не удалось отключить оплату по факту использования. Попробуйте ещё раз.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Не удалось загрузить изображение полностью. Попробуйте открыть его в браузере.";
 "Counting is difficult..." = "Считать непросто...";
 "Create a feed from any web page" = "Создать ленту из любой веб-страницы";
 "Create a new account instead" = "Вместо этого создать новый аккаунт";
 "Create account" = "Создать аккаунт";
 "Create an account" = "Создать аккаунт";
+"Credits reset on the 1st of each month and don't carry over." = "Кредиты обновляются 1-го числа каждого месяца и не переносятся на следующий месяц.";
 "Custom" = "Настраиваемый";
 "Custom Domain" = "Собственный домен";
 "Custom RSS feeds for saved stories" = "Пользовательские RSS-ленты для сохранённых статей";
@@ -378,6 +401,7 @@
 "Fetching text..." = "Загрузка текста...";
 "Filter" = "Фильтр";
 "Filter stories by date range" = "Фильтровать статьи по диапазону дат";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "Фильтры приостанавливаются при достижении этого лимита оплаты по факту использования. Оставьте поле пустым, чтобы не устанавливать лимит.";
 "Find %@ in the voice list" = "Найти %@ в списке голосов";
 "Find Friends" = "Найти друзей";
 "Find in Feed" = "Найти в ленте";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "Скрывать панели инструментов при чтении";
 "Hides the music settings" = "Скрывает настройки музыки";
 "Highlight the paragraph being read" = "Подсвечивать читаемый абзац";
+"How credits work" = "Как работают кредиты";
 "How much emotion" = "Насколько эмоционально";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Если ни один вариант не подходит, введите заголовок статьи, который видите на странице, и мы проанализируем её ещё раз.";
 "Ignore system theme, use screen brightness instead" = "Игнорировать системную тему и использовать яркость экрана";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Вместо системной тёмной или светлой темы автоматически переключать оформление в зависимости от яркости экрана. Полезно для подстройки темы под окружающее освещение.";
 "Interactions" = "Взаимодействия";
 "Invalid: %@" = "Недопустимо: %@";
+"Invoice" = "Счёт";
 "Keep fades, without movement." = "Сохранить плавное появление и исчезновение без движения.";
+"Keep filters running" = "Продолжить работу фильтров";
 "Keeps the dark icon no matter how your device is set." = "Тёмный значок будет отображаться независимо от настроек устройства.";
 "Keeps the light icon no matter how your device is set." = "Всегда использует светлый значок независимо от настроек устройства.";
 "Keyboard Shortcuts" = "Сочетания клавиш";
@@ -553,6 +580,7 @@
 "Manage" = "Управление";
 "Manage Account on the Web" = "Управление аккаунтом в веб-версии";
 "Manage Subscription" = "Управление подпиской";
+"Manage billing" = "Управление оплатой";
 "Manage this folder…" = "Управление этой папкой…";
 "Manage this site…" = "Управление сайтом…";
 "Manual scroll" = "Прокрутка вручную";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "Серая";
 "Model" = "Модель";
 "Monday" = "Понедельник";
+"Monthly limit" = "Месячный лимит";
+"Monthly limit: %@" = "Месячный лимит: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Чем больше статей, тем больше места на диске, но заметно на производительности это не сказывается.";
 "More voices" = "Другие голоса";
 "Morning" = "Утро";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "Классификатор изображений на естественном языке";
 "Natural Language Text Classifier" = "Классификатор текста на естественном языке";
 "Natural [listen delivery]" = "Естественный";
-"Natural language text and image classifiers" = "Классификаторы текста на естественном языке и изображений";
 "Nested" = "Вложенный";
 "Never" = "Никогда";
 "New Folder" = "Новая папка";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "Пока нет лент для отображения. Выберите другой интерес или выполните поиск по всем сайтам.";
 "No friends to suggest." = "Некого предложить в друзья.";
 "No interests or sites found. Try another search." = "Интересы или сайты не найдены. Попробуйте другой запрос.";
+"No limit" = "Без ограничений";
 "No longer saved" = "Удалено из сохранённых";
 "No match" = "Нет совпадений";
 "No match in story" = "Совпадений в статье нет";
@@ -690,6 +720,7 @@
 "No stories yet" = "Пока нет статей";
 "No story selected" = "Статья не выбрана";
 "No unread stories" = "Нет непрочитанных статей";
+"No usage invoices yet." = "Счетов за использование пока нет.";
 "No voices match these filters" = "Нет голосов, подходящих под эти фильтры";
 "None" = "Нет";
 "Normal" = "Обычный";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "Прокрутка вниз; внизу — следующая непрочитанная статья";
 "Page up; previous story at the top" = "Прокрутка вверх; вверху — предыдущая статья";
 "Password" = "Пароль";
+"Past your credits, filters keep running at 1¢ per credit." = "После исчерпания включённых кредитов фильтры продолжат работать по цене 1¢ за кредит.";
 "Paste a story title from the page" = "Вставьте заголовок статьи со страницы";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Вставьте любой URL, и NewsBlur создаст ленту из этой страницы, даже если на ней нет RSS.";
 "Pause" = "Пауза";
@@ -889,6 +921,7 @@
 "Saved on %@" = "Сохранено %@";
 "Saving Daily Briefing settings…" = "Сохранение настроек ежедневной сводки…";
 "Saving search..." = "Сохранение поиска…";
+"Saving..." = "Сохранение…";
 "Schedule" = "Расписание";
 "Scroll horizontally" = "Прокручивать по горизонтали";
 "Scroll to Comments" = "Прокрутить до комментариев";
@@ -921,6 +954,7 @@
 "Server URL" = "URL сервера";
 "Set an exact speed under Voice" = "Задайте точную скорость в разделе «Голос»";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Настройте ежедневную сводку, чтобы получать обзор самых важных для вас статей.";
+"Set up usage billing" = "Настроить оплату по факту использования";
 "Settings" = "Настройки";
 "Share" = "Поделиться";
 "Share This Story" = "Поделиться этой статьёй";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "Папка будет удалена, а подписки на сайты, которые не входят в другие папки, будут отменены.";
 "This feature requires iOS 15 or later." = "Для этой функции требуется iOS 15 или новее.";
 "This might take a minute.\nFeel free to continue..." = "Это может занять минуту.\nМожете пока продолжить…";
+"This month" = "В этом месяце";
+"This month's %@ AI credits are used." = "Кредиты ИИ на этот месяц (%@) израсходованы.";
 "This removes the subscription from your feeds." = "Подписка будет удалена из ваших лент.";
 "This setting only applies after the app is restarted." = "Эта настройка применяется только после перезапуска приложения.";
 "This site already has a feed" = "У этого сайта уже есть лента";
@@ -1151,6 +1187,9 @@
 "Try search again" = "Повторить поиск";
 "Trying Feed" = "Пробная лента";
 "Tuesday" = "Вторник";
+"Turn off usage billing" = "Отключить оплату по факту использования";
+"Turn off usage billing?" = "Отключить оплату за использование?";
+"Turn on usage billing" = "Включить оплату по факту использования";
 "Two" = "Два";
 "Two Columns" = "Два столбца";
 "Two Rows" = "Два ряда";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "Удалено из сохранённых";
 "Untitled story" = "Статья без названия";
 "Up Next" = "Далее";
+"Upcoming" = "Предстоящие";
+"Update card on Stripe" = "Обновить карту в Stripe";
 "Updated %@ days ago" = "Обновлено %@ дней назад";
 "Updated %@ months ago" = "Обновлено %@ месяцев назад";
 "Updated %@ weeks ago" = "Обновлено %@ недель назад";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "Перейти на Premium";
 "Upgrade to Premium Archive" = "Перейти на Premium Archive";
 "Upgrade to Premium Pro" = "Перейти на Premium Pro";
+"Usage billing" = "Оплата за использование";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "Оплата по факту использования включена. Кредиты сверх включённых в ваш план %1$@ стоят по 1¢ за штуку: в этом месяце использовано %2$@.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "Оплата за использование включена. Каждый кредит стоит 1¢: за этот месяц использовано %@.";
+"Usage invoices" = "Счета за использование";
 "Use %@" = "Использовать язык: %@";
 "Use a custom server" = "Использовать пользовательский сервер";
 "Use another sign-in method" = "Использовать другой способ входа";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "Вы зарегистрировались в NewsBlur.";
 "You subscribed to %@." = "Вы подписались на %@.";
 "You're presented with multiple story pattern options to choose from." = "Вам предложат несколько вариантов шаблона статей на выбор.";
+"Your AI filters are paused until %@." = "Фильтры ИИ приостановлены до %@.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "Фильтры ИИ приостановятся, когда будут израсходованы кредиты за этот месяц. Стоимость кредитов сверх лимита вашего плана спишется сейчас, если она достигнет %@.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "Фильтры ИИ достигли месячного лимита (%1$@) и приостановлены до %2$@.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Ваш аккаунт NewsBlur удалён. Удалите NewsBlur из раздела «Вход с Apple» в настройках Аккаунта Apple, чтобы завершить отключение.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Выбранный вами голос сейчас недоступен, поэтому эту статью читает %@.";
 "Your identity is verified" = "Ваша личность подтверждена";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "Ваша подписка Premium Pro активна";
 "Your premium subscription is active" = "Ваша премиум-подписка активна";
 "Your reading list" = "Ваш список для чтения";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "С вашей сохранённой карты спишут средства в начале месяца, если сумма составит не менее %1$@, или сразу при достижении %2$@.";
 "You’re all set up." = "Всё готово.";
 "at %@" = "в %@";
 "by %@" = "автор: %@";
@@ -1279,6 +1328,7 @@
 "no site" = "нет сайта";
 "no story" = "нет статей";
 "or" = "или";
+"or wait until %@" = "или дождитесь %@";
 "premium subscribers" = "подписчики Premium";
 "your account" = "ваш аккаунт";
 "‹ Feeds" = "‹ Ленты";

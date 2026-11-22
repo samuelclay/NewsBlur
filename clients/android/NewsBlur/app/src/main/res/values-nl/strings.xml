@@ -455,7 +455,14 @@ om over de wereld te praten.</string>
     <string name="premium_custom_rss">Aangepaste RSS-feeds voor opgeslagen artikelen</string>
     <string name="premium_text_view">De tekstweergave haalt het artikel handig op</string>
     <string name="premium_discover_related">Ontdek verwante artikelen en sites</string>
-    <string name="premium_natural_language_classifiers">Classifiers in natuurlijke taal voor tekst en afbeeldingen</string>
+    <plurals name="premium_ai_credits">
+        <item quantity="one">AI-tekst- en afbeeldingsfilters, met %1$s AI-credit per maand</item>
+        <item quantity="other">AI-tekst- en afbeeldingsfilters, met %1$s AI-tegoed per maand</item>
+    </plurals>
+    <plurals name="plan_ai_credits">
+        <item quantity="one">%1$s AI-tegoed per maand voor AI-filters</item>
+        <item quantity="other">%1$s AI-tegoed per maand voor AI-filters</item>
+    </plurals>
     <string name="premium_shiloh">Je voedt Lyric, de hongerige hond van NewsBlur, gedurende 6 dagen</string>
     <string name="archive_everything_premium">Natuurlijk alles uit het Premium-abonnement</string>
     <string name="archive_enable_sites">Volg tot 4.096 sites</string>
@@ -1307,8 +1314,87 @@ om over de wereld te praten.</string>
     <string name="ai_scope_global">Alle sites</string>
     <string name="ai_scope_folder_named">Alle sites in %1$s</string>
     <string name="ai_scope_requires_archive">Vereist Premium Archive</string>
-    <string name="ai_filters_archive_only">AI-filters worden opgeslagen, maar worden alleen uitgevoerd op %1$s.</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+    <string name="ai_credits_title">AI-credits</string>
+    <plurals name="ai_credits_meter">
+        <item quantity="one">%1$s van het %2$s AI-tegoed verbruikt</item>
+        <item quantity="other">%1$s van de %2$s AI-credits gebruikt</item>
+    </plurals>
+    <plurals name="ai_credits_meter_past">
+        <item quantity="one">%1$s AI-tegoed verbruikt, %2$s boven de %3$s van je abonnement</item>
+        <item quantity="other">%1$s AI-tegoed verbruikt, %2$s boven de %3$s van je abonnement</item>
+    </plurals>
+    <string name="ai_credits_resets">Wordt opnieuw ingesteld op %1$s</string>
+    <string name="ai_credits_free">AI-filters zijn opgeslagen, maar werken alleen met Premium. Premium omvat %1$s AI-credits per maand, Archive %2$s en Pro %3$s.</string>
+    <string name="ai_credits_upgrade">Upgraden</string>
+    <string name="ai_credits_estimate_text">Een tekstfilter op deze site gebruikt ongeveer %1$s credits per maand</string>
+    <string name="ai_credits_estimate_image">Een afbeeldingsfilter op deze site gebruikt ongeveer %1$s credits per maand</string>
+    <string name="ai_credits_estimate_text_small">Een tekstfilter op deze site gebruikt minder dan %1$s tegoed per maand</string>
+    <string name="ai_credits_estimate_image_small">Een afbeeldingsfilter op deze site gebruikt minder dan %1$s credits per maand</string>
+    <string name="ai_credits_runs_out">Bij dit tempo is je tegoed rond %1$s op.</string>
+    <plurals name="ai_credits_paused">
+        <item quantity="one">Je AI-filters zijn gepauzeerd tot %1$s. Het %2$s AI-tegoed van deze maand is verbruikt.</item>
+        <item quantity="other">Je AI-filters zijn gepauzeerd tot %1$s. Je hebt deze maand je %2$s AI-credits opgebruikt.</item>
+    </plurals>
+    <string name="ai_credits_paused_limit">Je AI-filters hebben de maandelijkse limiet van %1$s bereikt en zijn gepauzeerd tot %2$s.</string>
+    <plurals name="ai_credits_billing_on">
+        <item quantity="one">Betalen op basis van gebruik is ingeschakeld. Credits boven je %1$s kosten 1¢ per stuk: deze maand tot nu toe %2$s.</item>
+        <item quantity="other">Betalen op basis van gebruik is ingeschakeld. Credits boven je %1$s kosten 1¢ per stuk: deze maand tot nu toe %2$s.</item>
+    </plurals>
+    <string name="ai_credits_billing_on_no_plan">Betalen op basis van gebruik is ingeschakeld. AI-credits kosten € 0,01 per stuk: deze maand tot nu toe %1$s.</string>
+    <string name="ai_credits_unbilled">Er staat %1$s klaar om in rekening te worden gebracht: aan het begin van volgende maand als het minstens %2$s is, of meteen bij %3$s.</string>
+    <string name="ai_credits_keep_running">Filters actief houden</string>
+    <string name="ai_credits_billing_explainer">Boven je inbegrepen credits blijven filters werken voor 1¢ per credit.</string>
+    <string name="ai_credits_billing_forecast">Bij dit tempo deze maand ongeveer %1$s.</string>
+    <string name="ai_credits_turn_on_billing">Betalen op basis van gebruik inschakelen</string>
+    <string name="ai_credits_turn_on_detail">1¢ per credit boven je abonnement, deze maand ongeveer %1$s</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">€ 0,01 per credit boven je abonnementslimiet</string>
+    <string name="ai_credits_or_wait">of wacht tot %1$s</string>
+    <string name="ai_credits_manage_billing">Facturering beheren</string>
+    <string name="ai_credits_change_limit">Limiet wijzigen</string>
+    <string name="ai_credits_open">AI-credits bekijken</string>
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="one">Je abonnement omvat %1$s AI-credit per maand voor AI-tekst- en afbeeldingsfilters. Credits worden op de 1e vernieuwd en ongebruikte credits worden niet meegenomen.</item>
+        <item quantity="other">Je abonnement omvat %1$s AI-credits per maand voor AI-tekst- en afbeeldingsfilters. Credits worden op de 1e opnieuw ingesteld; ongebruikte credits worden niet meegenomen.</item>
+    </plurals>
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="one">In dit tempo gebruik je deze maand ongeveer %1$s van je tegoed van %2$s.</item>
+        <item quantity="other">In dit tempo gebruik je deze maand ongeveer %1$s van je %2$s credits.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">Deze server houdt geen AI-credits bij, dus AI-filters worden altijd uitgevoerd.</string>
+    <string name="ai_credits_load_failed">Je AI-tegoed kon niet worden geladen. Trek omlaag om het opnieuw te proberen.</string>
+    <string name="usage_billing_title">Facturering op basis van verbruik</string>
+    <string name="usage_billing_terms">Je kaart wordt aan het begin van elke maand belast zodra het bedrag minstens %1$s is, of meteen zodra het %2$s bereikt. Kleinere bedragen worden meegenomen naar volgende maanden.</string>
+    <string name="usage_billing_set_up">Betalen op basis van gebruik instellen</string>
+    <string name="usage_billing_manage">Kaart bijwerken op Stripe</string>
+    <string name="usage_billing_cancel">Betalen op basis van gebruik uitschakelen</string>
+    <string name="usage_billing_cancel_confirm">Betalen op basis van gebruik uitschakelen? Kosten voor credits boven je abonnement worden nu in rekening gebracht zodra ze %1$s bereiken. AI-filters worden gepauzeerd zodra je credits voor deze maand op zijn.</string>
+    <string name="usage_billing_cancel_keep">Ingeschakeld laten</string>
+    <string name="usage_billing_cancelled">Facturering op basis van verbruik is uitgeschakeld.</string>
+    <string name="usage_billing_cancel_failed">Betalen op basis van gebruik uitschakelen is niet gelukt. Probeer het opnieuw.</string>
+    <string name="usage_billing_limit_label">Maandlimiet</string>
+    <string name="usage_billing_limit_hint">Geen limiet</string>
+    <string name="usage_billing_limit_help">Filters worden gepauzeerd zodra het gebruik deze limiet bereikt. Laat leeg voor geen limiet.</string>
+    <string name="usage_billing_limit_save">Limiet opslaan</string>
+    <string name="usage_billing_limit_saved">Maandlimiet opgeslagen</string>
+    <string name="usage_billing_limit_cleared">Maandlimiet verwijderd</string>
+    <string name="usage_billing_limit_failed">De maandlimiet kon niet worden opgeslagen. Probeer het opnieuw.</string>
+    <string name="usage_billing_limit_invalid">Voer de limiet in dollars in, bijvoorbeeld %1$s.</string>
+    <string name="usage_billing_limit_read_only">Maandlimiet: %1$s</string>
+    <string name="usage_billing_no_limit">Geen maandlimiet</string>
+    <string name="usage_billing_history_title">Overzicht van gebruikskosten</string>
+    <string name="usage_billing_no_invoices">Nog geen facturen voor gebruik.</string>
+    <string name="usage_billing_upcoming">Aankomend</string>
+    <string name="usage_billing_invoice">Factuur</string>
+    <plurals name="usage_billing_quantity">
+        <item quantity="one">%1$s credit</item>
+        <item quantity="other">%1$s credits</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">Stripe is niet bereikbaar. Probeer het opnieuw.</string>
+    <string name="usage_billing_already_active">Betalen op basis van gebruik is al ingesteld.</string>
+    <string name="usage_billing_activating">Betalen op basis van gebruik inschakelen. Dit duurt een paar seconden zodra Stripe je betaalgegevens heeft bevestigd.</string>
+    <string name="usage_billing_activating_slow">Stripe is je betaling nog aan het bevestigen. Trek over een moment omlaag om opnieuw te controleren.</string>
+    <string name="usage_billing_setup_complete">Betalen op basis van gebruik is ingeschakeld. Je AI-filters blijven werken als je credits op zijn.</string>
+    <string name="usage_billing_no_browser">Installeer een webbrowser om facturering op basis van verbruik in te stellen.</string>
     <string name="listen_story_button">Luisteren</string>
     <string name="listen_resume">Hervatten</string>
     <string name="listen_pause">Pauzeren</string>

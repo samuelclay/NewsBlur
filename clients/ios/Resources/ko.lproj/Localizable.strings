@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "%1$@ 폴더, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 폴더, 접힘, %2$@";
 "%1$@ followed %2$@." = "%1$@님이 %2$@님을 팔로우했습니다.";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "%1$@의 청구 예정 금액입니다. %2$@ 이상이면 다음 달 초에 청구되며, %3$@에 도달하면 즉시 청구됩니다.";
 "%1$@ of %2$@ of listening left this week" = "이번 주 청취 가능 시간 %1$@ 중 %2$@ 남음";
 "%1$@ of %2$@ sites indexed" = "%1$@ / %2$@개 사이트 색인 완료";
 "%1$@ of %2$@ story previews used today" = "오늘 사용한 스토리 미리보기 %1$@/%2$@회";
+"%1$@ of your %2$@ monthly limit" = "월간 한도 %2$@ 중 %1$@";
 "%1$@ re-shared %2$@." = "%1$@님이 %2$@을(를) 다시 공유했습니다.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@님이 %2$@을(를) 다시 공유했습니다:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@님이 %2$@님에게 답글을 남겼습니다: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@님이 %2$@을(를) 공유했습니다.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@님이 %2$@을(를) 공유했습니다:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "AI 크레딧 %2$@ 사용, 요금제 한도 %1$@보다 %3$@ 초과";
+"%2$@ of %1$@ AI credits used" = "AI 크레딧 %1$@ 중 %2$@ 사용";
 "%@ Widget Sites" = "%@ 위젯 사이트";
 "%@ ago" = "%@ 전";
 "%@ categories to choose from" = "선택 가능한 카테고리 %@개";
@@ -66,6 +70,8 @@
 "100 stories" = "스토리 100개";
 "12 color flavors with light and dark variants." = "밝은색과 어두운색 변형이 있는 12가지 색상 테마.";
 "15 stories" = "스토리 15개";
+"1¢ per credit past your plan's" = "요금제 크레딧 초과분은 크레딧당 1¢입니다";
+"1¢ per credit past your plan's, about %@ this month" = "요금제 초과분은 크레딧당 1¢이며, 이번 달에는 약 %@입니다";
 "2,000 stories" = "스토리 2,000개";
 "20 stories" = "스토리 20개";
 "2x daily" = "하루 2회";
@@ -73,6 +79,8 @@
 "3x daily" = "하루 3회";
 "5 stories" = "스토리 5개";
 "5,000 stories" = "스토리 5,000개";
+"50 AI credits a month for AI filters" = "AI 필터용 월 50 AI 크레딧";
+"500 AI credits a month for AI filters" = "AI 필터용 월간 AI 크레딧 500개";
 "500 stories" = "스토리 500개";
 "< 15/month" = "월 15개 미만";
 "< 30/month" = "월 30개 미만";
@@ -80,11 +88,16 @@
 "< 60/month" = "월 60개 미만";
 "< 90/month" = "월 90개 미만";
 "A clearer, closer sound" = "더 선명하고 가까운 소리";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "크레딧 1개로 텍스트 필터를 통해 스토리 약 700개, 이미지 필터를 통해 약 100개를 처리할 수 있습니다.";
 "A personal news reader bringing\npeople together to talk about the world." = "사람들이 세상에 대해 이야기하도록\n이어 주는 개인 뉴스 리더입니다.";
-"AI filters are saved but only run on Premium Archive." = "AI 필터는 저장되지만 프리미엄 아카이브에서만 실행됩니다.";
+"A text filter on this site uses about %2$@ credits a month" = "이 사이트에서 텍스트 필터를 사용하면 한 달에 크레딧이 약 %2$@ 소모됩니다";
+"AI Credits" = "AI 크레딧";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "AI 필터가 저장되었지만 프리미엄에서만 실행됩니다. 프리미엄에는 AI 크레딧이 월 5개, 아카이브 요금제에는 50개, 프로 요금제에는 500개 포함됩니다.";
 "AI finds the stories" = "AI가 스토리를 찾아냅니다";
+"AI text and image filters, with 5 AI credits a month" = "AI 텍스트 및 이미지 필터, 월 5 AI 크레딧 제공";
 "ALL" = "전체";
 "ALL NOTIFICATIONS" = "모든 알림";
+"About %@ this month at your pace." = "현재 속도라면 이번 달에 약 %@이(가) 청구됩니다.";
 "About NewsBlur" = "NewsBlur 소개";
 "Accent [voice filter]" = "억양";
 "Account" = "계정";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "이미 계정이 있으신가요? 로그인";
 "Already have feeds?" = "이미 피드가 있으신가요?";
 "Also published by %@ sites" = "%@개 사이트에도 게시됨";
+"An image filter on this site uses about %2$@ credits a month" = "이 사이트의 이미지 필터는 한 달에 약 %2$@크레딧을 사용합니다";
 "Analyze" = "분석";
 "Analyzing images..." = "이미지 분석 중...";
 "App Badge" = "앱 배지";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "스토리에 대해 AI에게 질문하기";
 "Ask AI…" = "AI에게 질문…";
 "Ask a question..." = "질문하기...";
+"At this pace your credits run out around %@." = "현재 속도라면 크레딧이 %@쯤 소진됩니다.";
+"At this pace, this month will use about %2$@ AI credits." = "현재 속도라면 이번 달에 AI 크레딧을 약 %2$@ 사용합니다.";
 "Atlantic Blue" = "애틀랜틱 블루";
 "Authenticating" = "인증 중";
 "Auto" = "자동";
@@ -197,6 +213,7 @@
 "Cancel" = "취소";
 "Cannot reply to this story" = "이 스토리에 답글을 달 수 없습니다";
 "Change Story List" = "스토리 목록 변경";
+"Change limit" = "한도 변경";
 "Choose Icon" = "아이콘 선택";
 "Choose Language…" = "언어 선택…";
 "Choose Story List" = "스토리 목록 선택";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "캐시를 완전히 비우지 못했습니다. 다시 시도해 주세요.";
 "Could not save your language. Please try again." = "언어를 저장하지 못했습니다. 다시 시도해 주세요.";
 "Couldn't check story" = "스토리를 확인할 수 없습니다";
+"Couldn't load your AI credits." = "AI 크레딧을 불러오지 못했습니다.";
+"Couldn't load your usage invoices." = "사용량 결제 청구서를 불러오지 못했습니다.";
+"Couldn't open billing. Please try again." = "결제 정보를 열 수 없습니다. 다시 시도하세요.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur에 연결할 수 없습니다. 연결 상태를 확인하고 다시 시도하세요.";
+"Couldn't save your monthly limit. Please try again." = "월간 한도를 저장하지 못했습니다. 다시 시도하세요.";
+"Couldn't turn off usage billing. Please try again." = "사용량 과금을 끄지 못했습니다. 다시 시도하세요.";
 "Couldn’t load the full image. You can try opening it in your browser." = "전체 이미지를 불러올 수 없습니다. 브라우저에서 열어 보세요.";
 "Counting is difficult..." = "세는 건 어렵네요...";
 "Create a feed from any web page" = "웹페이지에서 피드 만들기";
 "Create a new account instead" = "대신 새 계정 만들기";
 "Create account" = "계정 만들기";
 "Create an account" = "계정 만들기";
+"Credits reset on the 1st of each month and don't carry over." = "크레딧은 매월 1일에 초기화되며 이월되지 않습니다.";
 "Custom" = "사용자 지정";
 "Custom Domain" = "사용자 지정 도메인";
 "Custom RSS feeds for saved stories" = "저장한 스토리용 맞춤 RSS 피드";
@@ -378,6 +401,7 @@
 "Fetching text..." = "텍스트 가져오는 중...";
 "Filter" = "필터";
 "Filter stories by date range" = "날짜 범위로 스토리 필터링";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "사용량 결제가 한도에 도달하면 필터가 일시 중지됩니다. 한도를 설정하지 않으려면 비워 두세요.";
 "Find %@ in the voice list" = "음성 목록에서 %@ 찾기";
 "Find Friends" = "친구 찾기";
 "Find in Feed" = "피드에서 찾기";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "읽는 동안 도구 모음 숨기기";
 "Hides the music settings" = "음악 설정 숨기기";
 "Highlight the paragraph being read" = "읽는 단락 강조 표시";
+"How credits work" = "크레딧 사용 방식";
 "How much emotion" = "감정 표현 정도";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "해당하는 항목이 없으면 페이지에서 스토리 제목을 입력하세요. 다시 분석해 드립니다.";
 "Ignore system theme, use screen brightness instead" = "시스템 테마를 무시하고 화면 밝기 사용";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "시스템의 다크/라이트 모드를 따르는 대신, 화면 밝기에 따라 테마를 자동으로 전환합니다. 주변 조명에 맞춰 테마를 전환할 때 유용합니다.";
 "Interactions" = "상호작용";
 "Invalid: %@" = "유효하지 않음: %@";
+"Invoice" = "청구서";
 "Keep fades, without movement." = "움직임 없이 페이드 효과를 유지합니다.";
+"Keep filters running" = "필터 계속 실행";
 "Keeps the dark icon no matter how your device is set." = "기기 설정과 관계없이 어두운 아이콘을 유지합니다.";
 "Keeps the light icon no matter how your device is set." = "기기 설정과 관계없이 밝은 아이콘을 유지합니다.";
 "Keyboard Shortcuts" = "키보드 단축키";
@@ -553,6 +580,7 @@
 "Manage" = "관리";
 "Manage Account on the Web" = "웹에서 계정 관리";
 "Manage Subscription" = "구독 관리";
+"Manage billing" = "결제 관리";
 "Manage this folder…" = "이 폴더 관리…";
 "Manage this site…" = "이 사이트 관리…";
 "Manual scroll" = "수동 스크롤";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "미디엄";
 "Model" = "모델";
 "Monday" = "월요일";
+"Monthly limit" = "월간 한도";
+"Monthly limit: %@" = "월간 한도: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "스토리를 더 많이 저장하면 디스크 공간을 더 사용하지만, 그 외에는 성능에 눈에 띄는 영향이 없습니다.";
 "More voices" = "음성 더 보기";
 "Morning" = "아침";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "자연어 이미지 분류기";
 "Natural Language Text Classifier" = "자연어 텍스트 분류기";
 "Natural [listen delivery]" = "자연스러움";
-"Natural language text and image classifiers" = "자연어 텍스트 및 이미지 분류기";
 "Nested" = "중첩";
 "Never" = "안 함";
 "New Folder" = "새 폴더";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "표시할 피드가 아직 없습니다. 다른 관심사를 선택하거나 모든 사이트를 검색해 보세요.";
 "No friends to suggest." = "추천할 친구가 없습니다.";
 "No interests or sites found. Try another search." = "관심사나 사이트를 찾을 수 없습니다. 다른 검색어를 입력해 보세요.";
+"No limit" = "한도 없음";
 "No longer saved" = "더 이상 저장되지 않음";
 "No match" = "일치 항목 없음";
 "No match in story" = "스토리에 일치하는 항목이 없습니다";
@@ -690,6 +720,7 @@
 "No stories yet" = "아직 스토리가 없습니다";
 "No story selected" = "선택된 스토리가 없습니다";
 "No unread stories" = "읽지 않은 스토리가 없습니다";
+"No usage invoices yet." = "아직 사용량 청구서가 없습니다.";
 "No voices match these filters" = "이 필터와 일치하는 음성이 없습니다";
 "None" = "없음";
 "Normal" = "보통";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "페이지 아래로 이동; 아래쪽에서 다음 읽지 않은 스토리";
 "Page up; previous story at the top" = "페이지 위로 이동; 위쪽에서 이전 스토리";
 "Password" = "비밀번호";
+"Past your credits, filters keep running at 1¢ per credit." = "요금제 크레딧을 초과해도 필터는 계속 실행되며, 크레딧당 1¢가 청구됩니다.";
 "Paste a story title from the page" = "페이지에서 스토리 제목을 붙여넣으세요";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "URL을 붙여넣으면 RSS가 없어도 NewsBlur가 해당 페이지에서 피드를 만듭니다.";
 "Pause" = "일시 중지";
@@ -889,6 +921,7 @@
 "Saved on %@" = "%@에 저장됨";
 "Saving Daily Briefing settings…" = "데일리 브리핑 설정 저장 중…";
 "Saving search..." = "검색 저장 중...";
+"Saving..." = "저장 중...";
 "Schedule" = "일정";
 "Scroll horizontally" = "가로로 스크롤";
 "Scroll to Comments" = "댓글로 이동";
@@ -921,6 +954,7 @@
 "Server URL" = "서버 URL";
 "Set an exact speed under Voice" = "음성에서 정확한 속도를 설정하세요";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "가장 중요한 스토리를 요약하도록 데일리 브리핑을 설정하세요.";
+"Set up usage billing" = "사용량 결제 설정";
 "Settings" = "설정";
 "Share" = "공유";
 "Share This Story" = "이 스토리 공유";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "이 작업을 수행하면 폴더가 삭제되고 다른 폴더에 없는 사이트의 구독이 취소됩니다.";
 "This feature requires iOS 15 or later." = "이 기능을 사용하려면 iOS 15 이상이 필요합니다.";
 "This might take a minute.\nFeel free to continue..." = "1분 정도 걸릴 수 있습니다.\n계속 이용하셔도 됩니다...";
+"This month" = "이번 달";
+"This month's %@ AI credits are used." = "이번 달 AI 크레딧 %@을(를) 모두 사용했습니다.";
 "This removes the subscription from your feeds." = "이렇게 하면 피드에서 구독이 삭제됩니다.";
 "This setting only applies after the app is restarted." = "이 설정은 앱을 다시 시작한 후에만 적용됩니다.";
 "This site already has a feed" = "이 사이트에는 이미 피드가 있습니다";
@@ -1151,6 +1187,9 @@
 "Try search again" = "다시 검색";
 "Trying Feed" = "피드 시험 중";
 "Tuesday" = "화요일";
+"Turn off usage billing" = "사용량 결제 끄기";
+"Turn off usage billing?" = "사용량 과금을 끄시겠습니까?";
+"Turn on usage billing" = "사용량 결제 켜기";
 "Two" = "2열";
 "Two Columns" = "2단 레이아웃";
 "Two Rows" = "두 줄";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "저장되지 않음";
 "Untitled story" = "제목 없는 스토리";
 "Up Next" = "다음 재생";
+"Upcoming" = "예정";
+"Update card on Stripe" = "Stripe에서 카드 업데이트";
 "Updated %@ days ago" = "%@일 전에 업데이트됨";
 "Updated %@ months ago" = "%@개월 전에 업데이트됨";
 "Updated %@ weeks ago" = "%@주 전에 업데이트됨";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "프리미엄으로 업그레이드";
 "Upgrade to Premium Archive" = "프리미엄 아카이브로 업그레이드";
 "Upgrade to Premium Pro" = "프리미엄 프로로 업그레이드";
+"Usage billing" = "사용량 과금";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "사용량 결제가 켜져 있습니다. %1$@을(를) 초과한 크레딧은 개당 1¢입니다. 이번 달 현재까지 %2$@입니다.";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "사용량 결제가 켜져 있습니다. 모든 크레딧은 개당 1¢입니다. 이번 달 현재까지 %@입니다.";
+"Usage invoices" = "사용량 청구서";
 "Use %@" = "%@ 사용";
 "Use a custom server" = "사용자 지정 서버 사용";
 "Use another sign-in method" = "다른 로그인 방법 사용";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "NewsBlur에 가입했습니다.";
 "You subscribed to %@." = "%@을(를) 구독했습니다.";
 "You're presented with multiple story pattern options to choose from." = "선택할 수 있도록 여러 스토리 패턴 옵션이 표시됩니다.";
+"Your AI filters are paused until %@." = "AI 필터가 %@까지 일시 중지됩니다.";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "이번 달 크레딧을 모두 사용하면 AI 필터가 일시 중지됩니다. 요금제 초과분이 %@ 이상이면 지금 청구됩니다.";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "AI 필터가 월간 한도 %1$@에 도달하여 %2$@까지 일시 중지됩니다.";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "NewsBlur 계정이 삭제되었습니다. 연결을 완전히 해제하려면 Apple 계정 설정의 Apple로 로그인에서 NewsBlur를 제거하세요.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "선택한 음성을 지금 사용할 수 없어 %@이(가) 이 스토리를 읽고 있습니다.";
 "Your identity is verified" = "본인 확인이 완료되었습니다";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "프리미엄 프로 구독이 활성화되었습니다";
 "Your premium subscription is active" = "프리미엄 구독이 활성화되었습니다";
 "Your reading list" = "내 읽기 목록";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "저장된 카드로 %1$@ 이상이면 월초에 청구되고, %2$@에 도달하면 즉시 청구됩니다.";
 "You’re all set up." = "설정이 완료되었습니다.";
 "at %@" = "%@에";
 "by %@" = "%@ 작성";
@@ -1279,6 +1328,7 @@
 "no site" = "사이트 없음";
 "no story" = "스토리 없음";
 "or" = "또는";
+"or wait until %@" = "또는 %@까지 기다리기";
 "premium subscribers" = "프리미엄 구독자";
 "your account" = "내 계정";
 "‹ Feeds" = "‹ 피드";

@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "%1$@ फ़ोल्डर, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ फ़ोल्डर, समेटा हुआ, %2$@";
 "%1$@ followed %2$@." = "%1$@ ने %2$@ को फ़ॉलो किया।";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "%1$@ का शुल्क लिया जाना बाकी है: अगले महीने की शुरुआत में, अगर यह कम से कम %2$@ हो, या तुरंत, अगर यह %3$@ हो।";
 "%1$@ of %2$@ of listening left this week" = "इस सप्ताह सुनने के %2$@ में से %1$@ शेष";
 "%1$@ of %2$@ sites indexed" = "%2$@ में से %1$@ साइटें अनुक्रमित हुईं";
 "%1$@ of %2$@ story previews used today" = "आज %2$@ में से %1$@ लेख पूर्वावलोकन इस्तेमाल किए गए";
+"%1$@ of your %2$@ monthly limit" = "आपकी %2$@ मासिक सीमा में से %1$@";
 "%1$@ re-shared %2$@." = "%1$@ ने %2$@ फिर से साझा किया।";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ ने %2$@ फिर से साझा किया:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ ने %2$@ को जवाब दिया: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ ने %2$@ साझा किया।";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ ने %2$@ साझा किया:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "%2$@ AI क्रेडिट इस्तेमाल हुए, आपके प्लान की %1$@ से %3$@ ज़्यादा";
+"%2$@ of %1$@ AI credits used" = "%2$@ में से %1$@ AI क्रेडिट इस्तेमाल हुए";
 "%@ Widget Sites" = "%@ विजेट साइटें";
 "%@ ago" = "%@ पहले";
 "%@ categories to choose from" = "चुनने के लिए %@ श्रेणियाँ";
@@ -66,6 +70,8 @@
 "100 stories" = "100 लेख";
 "12 color flavors with light and dark variants." = "12 रंग विकल्प, हल्के और गहरे रूपों के साथ।";
 "15 stories" = "15 लेख";
+"1¢ per credit past your plan's" = "आपके प्लान में शामिल क्रेडिट से अधिक हर क्रेडिट के लिए 1¢";
+"1¢ per credit past your plan's, about %@ this month" = "आपके प्लान की सीमा से अधिक हर क्रेडिट पर 1¢, इस महीने लगभग %@";
 "2,000 stories" = "2,000 लेख";
 "20 stories" = "20 लेख";
 "2x daily" = "दिन में 2 बार";
@@ -73,6 +79,8 @@
 "3x daily" = "दिन में 3 बार";
 "5 stories" = "5 लेख";
 "5,000 stories" = "5,000 लेख";
+"50 AI credits a month for AI filters" = "AI फ़िल्टरों के लिए हर महीने 50 AI क्रेडिट";
+"500 AI credits a month for AI filters" = "AI फ़िल्टर के लिए हर महीने 500 AI क्रेडिट";
 "500 stories" = "500 लेख";
 "< 15/month" = "< 15/माह";
 "< 30/month" = "< 30/माह";
@@ -80,11 +88,16 @@
 "< 60/month" = "< 60/माह";
 "< 90/month" = "< 90/माह";
 "A clearer, closer sound" = "ज़्यादा साफ़ और करीब की आवाज़";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "एक क्रेडिट से टेक्स्ट फ़िल्टर के ज़रिए लगभग 700 लेख या इमेज फ़िल्टर के ज़रिए 100 लेख प्रोसेस किए जा सकते हैं।";
 "A personal news reader bringing\npeople together to talk about the world." = "एक व्यक्तिगत न्यूज़ रीडर, जो\nलोगों को दुनिया पर बात करने के लिए साथ लाता है।";
-"AI filters are saved but only run on Premium Archive." = "AI फ़िल्टर सहेजे जाते हैं, लेकिन केवल Premium Archive पर चलते हैं।";
+"A text filter on this site uses about %2$@ credits a month" = "इस साइट का टेक्स्ट फ़िल्टर हर महीने लगभग %2$@ क्रेडिट इस्तेमाल करता है";
+"AI Credits" = "AI क्रेडिट";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "AI फ़िल्टर सहेजे गए हैं, लेकिन केवल Premium पर चलते हैं। Premium में हर महीने 5 AI क्रेडिट शामिल हैं, Archive में 50 और Pro में 500।";
 "AI finds the stories" = "AI लेख ढूँढता है";
+"AI text and image filters, with 5 AI credits a month" = "AI टेक्स्ट और इमेज फ़िल्टर, हर महीने 5 AI क्रेडिट के साथ";
 "ALL" = "सभी";
 "ALL NOTIFICATIONS" = "सभी सूचनाएँ";
+"About %@ this month at your pace." = "इसी रफ़्तार से, इस महीने लगभग %@।";
 "About NewsBlur" = "NewsBlur के बारे में";
 "Accent [voice filter]" = "उच्चारण";
 "Account" = "खाता";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "क्या आपका खाता पहले से है? साइन इन करें";
 "Already have feeds?" = "क्या आपके पास पहले से फ़ीड हैं?";
 "Also published by %@ sites" = "%@ अन्य साइटों पर भी प्रकाशित";
+"An image filter on this site uses about %2$@ credits a month" = "इस साइट पर एक इमेज फ़िल्टर हर महीने लगभग %2$@ क्रेडिट इस्तेमाल करता है";
 "Analyze" = "विश्लेषण करें";
 "Analyzing images..." = "छवियों का विश्लेषण हो रहा है…";
 "App Badge" = "ऐप बैज";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "लेखों के बारे में AI से सवाल पूछें";
 "Ask AI…" = "AI से पूछें…";
 "Ask a question..." = "कोई प्रश्न पूछें...";
+"At this pace your credits run out around %@." = "इसी रफ़्तार से आपके क्रेडिट लगभग %@ तक खत्म हो जाएँगे।";
+"At this pace, this month will use about %2$@ AI credits." = "इसी रफ़्तार से इस महीने लगभग %2$@ AI क्रेडिट इस्तेमाल होंगे।";
 "Atlantic Blue" = "अटलांटिक नीला";
 "Authenticating" = "प्रमाणीकरण हो रहा है";
 "Auto" = "स्वचालित";
@@ -197,6 +213,7 @@
 "Cancel" = "रद्द करें";
 "Cannot reply to this story" = "इस लेख का जवाब नहीं दिया जा सकता";
 "Change Story List" = "लेख सूची बदलें";
+"Change limit" = "सीमा बदलें";
 "Choose Icon" = "आइकन चुनें";
 "Choose Language…" = "भाषा चुनें…";
 "Choose Story List" = "लेख सूची चुनें";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "कैश पूरी तरह साफ़ नहीं किया जा सका। कृपया फिर से कोशिश करें।";
 "Could not save your language. Please try again." = "आपकी भाषा सहेजी नहीं जा सकी। कृपया फिर कोशिश करें।";
 "Couldn't check story" = "लेख की जाँच नहीं हो सकी";
+"Couldn't load your AI credits." = "आपके AI क्रेडिट लोड नहीं हो सके।";
+"Couldn't load your usage invoices." = "आपके उपयोग के इनवॉइस लोड नहीं हो सके।";
+"Couldn't open billing. Please try again." = "बिलिंग नहीं खुल सकी। कृपया फिर से कोशिश करें।";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur तक नहीं पहुँच सके। अपना कनेक्शन जाँचें और फिर से कोशिश करें।";
+"Couldn't save your monthly limit. Please try again." = "आपकी मासिक सीमा सहेजी नहीं जा सकी। कृपया फिर से कोशिश करें।";
+"Couldn't turn off usage billing. Please try again." = "उपयोग-आधारित बिलिंग बंद नहीं हो सकी। कृपया फिर से कोशिश करें।";
 "Couldn’t load the full image. You can try opening it in your browser." = "पूरी इमेज लोड नहीं हो सकी। आप इसे अपने ब्राउज़र में खोलने की कोशिश कर सकते हैं।";
 "Counting is difficult..." = "गिनती करना मुश्किल है...";
 "Create a feed from any web page" = "किसी भी वेब पेज से फ़ीड बनाएँ";
 "Create a new account instead" = "इसके बजाय नया खाता बनाएँ";
 "Create account" = "खाता बनाएँ";
 "Create an account" = "खाता बनाएँ";
+"Credits reset on the 1st of each month and don't carry over." = "क्रेडिट हर महीने की 1 तारीख को रीसेट होते हैं और इस्तेमाल न किए गए क्रेडिट आगे नहीं जुड़ते।";
 "Custom" = "कस्टम";
 "Custom Domain" = "कस्टम डोमेन";
 "Custom RSS feeds for saved stories" = "सहेजे गए लेखों के लिए कस्टम RSS फ़ीड";
@@ -378,6 +401,7 @@
 "Fetching text..." = "टेक्स्ट फ़ेच हो रहा है...";
 "Filter" = "फ़िल्टर";
 "Filter stories by date range" = "तिथि सीमा के अनुसार लेख फ़िल्टर करें";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "इस्तेमाल के आधार पर बिलिंग की राशि इस सीमा तक पहुँचने पर फ़िल्टर रुक जाएँगे। कोई सीमा न रखने के लिए इसे खाली छोड़ें।";
 "Find %@ in the voice list" = "आवाज़ों की सूची में %@ खोजें";
 "Find Friends" = "मित्र खोजें";
 "Find in Feed" = "फ़ीड में खोजें";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "पढ़ते समय टूलबार छिपाएँ";
 "Hides the music settings" = "संगीत सेटिंग्स छिपाता है";
 "Highlight the paragraph being read" = "पढ़े जा रहे अनुच्छेद को हाइलाइट करें";
+"How credits work" = "क्रेडिट कैसे काम करते हैं";
 "How much emotion" = "भावना की मात्रा";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "अगर कोई विकल्प मेल न खाए, तो पेज पर दिखने वाले किसी लेख का शीर्षक लिखें और हम उसका फिर से विश्लेषण करेंगे।";
 "Ignore system theme, use screen brightness instead" = "सिस्टम थीम को अनदेखा करें, इसके बजाय स्क्रीन की चमक का उपयोग करें";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "सिस्टम के डार्क/लाइट मोड का अनुसरण करने के बजाय, स्क्रीन की चमक के आधार पर थीम अपने-आप बदलें। आसपास की रोशनी के अनुसार थीम बदलने में उपयोगी।";
 "Interactions" = "इंटरैक्शन";
 "Invalid: %@" = "अमान्य: %@";
+"Invoice" = "चालान";
 "Keep fades, without movement." = "बिना गति के फ़ेड प्रभाव बनाए रखें।";
+"Keep filters running" = "फ़िल्टर चलते रहने दें";
 "Keeps the dark icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, गहरा आइकन बनाए रखता है।";
 "Keeps the light icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, हल्का आइकन बनाए रखता है।";
 "Keyboard Shortcuts" = "कीबोर्ड शॉर्टकट";
@@ -553,6 +580,7 @@
 "Manage" = "प्रबंधित करें";
 "Manage Account on the Web" = "वेब पर खाता प्रबंधित करें";
 "Manage Subscription" = "सदस्यता प्रबंधित करें";
+"Manage billing" = "बिलिंग प्रबंधित करें";
 "Manage this folder…" = "यह फ़ोल्डर प्रबंधित करें…";
 "Manage this site…" = "इस साइट को प्रबंधित करें…";
 "Manual scroll" = "मैन्युअल स्क्रॉल";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "धूसर";
 "Model" = "मॉडल";
 "Monday" = "सोमवार";
+"Monthly limit" = "मासिक सीमा";
+"Monthly limit: %@" = "मासिक सीमा: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "ज़्यादा लेखों में डिस्क की जगह ज़्यादा लगती है, लेकिन इसके अलावा प्रदर्शन पर कोई ध्यान देने योग्य असर नहीं पड़ता।";
 "More voices" = "और आवाज़ें";
 "Morning" = "सुबह";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "प्राकृतिक भाषा छवि क्लासिफ़ायर";
 "Natural Language Text Classifier" = "प्राकृतिक भाषा टेक्स्ट क्लासिफ़ायर";
 "Natural [listen delivery]" = "स्वाभाविक";
-"Natural language text and image classifiers" = "प्राकृतिक भाषा के टेक्स्ट और छवि क्लासिफ़ायर";
 "Nested" = "नेस्टेड";
 "Never" = "कभी नहीं";
 "New Folder" = "नया फ़ोल्डर";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "अभी दिखाने के लिए कोई फ़ीड नहीं है। कोई दूसरी रुचि आज़माएँ या सभी साइटों में खोजें।";
 "No friends to suggest." = "सुझाने के लिए कोई मित्र नहीं।";
 "No interests or sites found. Try another search." = "कोई रुचि या साइट नहीं मिली। कोई और खोज आज़माएँ।";
+"No limit" = "कोई सीमा नहीं";
 "No longer saved" = "सहेजे गए से हटाया गया";
 "No match" = "कोई मेल नहीं";
 "No match in story" = "लेख में कोई मेल नहीं";
@@ -690,6 +720,7 @@
 "No stories yet" = "अभी तक कोई लेख नहीं";
 "No story selected" = "कोई लेख चयनित नहीं है";
 "No unread stories" = "कोई अपठित लेख नहीं";
+"No usage invoices yet." = "अभी तक उपयोग का कोई बिल नहीं है।";
 "No voices match these filters" = "इन फ़िल्टरों से मेल खाने वाली कोई आवाज़ नहीं है";
 "None" = "कोई नहीं";
 "Normal" = "सामान्य";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "Page down; नीचे पहुँचने पर अगला अपठित लेख";
 "Page up; previous story at the top" = "Page up; ऊपर पहुँचने पर पिछला लेख";
 "Password" = "पासवर्ड";
+"Past your credits, filters keep running at 1¢ per credit." = "आपके शामिल क्रेडिट से अधिक होने पर, फ़िल्टर 1¢ प्रति क्रेडिट की दर से चलते रहेंगे।";
 "Paste a story title from the page" = "पेज से किसी लेख का शीर्षक पेस्ट करें";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "कोई भी URL पेस्ट करें और NewsBlur उस पेज से फ़ीड बना देगा, भले ही उसमें RSS न हो।";
 "Pause" = "रोकें";
@@ -889,6 +921,7 @@
 "Saved on %@" = "%@ को सहेजा गया";
 "Saving Daily Briefing settings…" = "दैनिक ब्रीफ़िंग सेटिंग सहेजी जा रही हैं…";
 "Saving search..." = "खोज सहेजी जा रही है...";
+"Saving..." = "सहेजा जा रहा है...";
 "Schedule" = "शेड्यूल";
 "Scroll horizontally" = "क्षैतिज रूप से स्क्रॉल करें";
 "Scroll to Comments" = "टिप्पणियों तक स्क्रॉल करें";
@@ -921,6 +954,7 @@
 "Server URL" = "सर्वर URL";
 "Set an exact speed under Voice" = "Voice के अंतर्गत सटीक गति सेट करें";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "आपके लिए सबसे महत्वपूर्ण लेखों का सारांश बनाने के लिए दैनिक ब्रीफ़िंग सेट अप करें।";
+"Set up usage billing" = "इस्तेमाल के आधार पर बिलिंग सेट अप करें";
 "Settings" = "सेटिंग्स";
 "Share" = "साझा करें";
 "Share This Story" = "यह लेख साझा करें";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "इससे फ़ोल्डर हट जाएगा और उन साइटों की सदस्यता समाप्त हो जाएगी जो किसी अन्य फ़ोल्डर में नहीं हैं।";
 "This feature requires iOS 15 or later." = "इस फ़ीचर के लिए iOS 15 या उसके बाद का संस्करण आवश्यक है।";
 "This might take a minute.\nFeel free to continue..." = "इसमें एक मिनट लग सकता है।\nआप चाहें तो आगे काम जारी रख सकते हैं...";
+"This month" = "इस महीने";
+"This month's %@ AI credits are used." = "इस महीने के %@ AI क्रेडिट इस्तेमाल हो चुके हैं।";
 "This removes the subscription from your feeds." = "इससे आपकी फ़ीड से सदस्यता हट जाएगी।";
 "This setting only applies after the app is restarted." = "यह सेटिंग ऐप को दोबारा शुरू करने के बाद ही लागू होगी।";
 "This site already has a feed" = "इस साइट की फ़ीड पहले से मौजूद है";
@@ -1151,6 +1187,9 @@
 "Try search again" = "फिर से खोजें";
 "Trying Feed" = "फ़ीड आज़मा रहे हैं";
 "Tuesday" = "मंगलवार";
+"Turn off usage billing" = "इस्तेमाल के आधार पर बिलिंग बंद करें";
+"Turn off usage billing?" = "क्या उपयोग-आधारित बिलिंग बंद करें?";
+"Turn on usage billing" = "उपयोग के लिए बिलिंग चालू करें";
 "Two" = "दो";
 "Two Columns" = "दो कॉलम";
 "Two Rows" = "दो पंक्तियाँ";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "सहेजे गए से हटाया गया";
 "Untitled story" = "बिना शीर्षक का लेख";
 "Up Next" = "इसके बाद";
+"Upcoming" = "आने वाले";
+"Update card on Stripe" = "Stripe पर कार्ड अपडेट करें";
 "Updated %@ days ago" = "%@ दिन पहले अपडेट किया गया";
 "Updated %@ months ago" = "%@ महीने पहले अपडेट किया गया";
 "Updated %@ weeks ago" = "%@ सप्ताह पहले अपडेट किया गया";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "Premium में अपग्रेड करें";
 "Upgrade to Premium Archive" = "Premium Archive में अपग्रेड करें";
 "Upgrade to Premium Pro" = "Premium Pro में अपग्रेड करें";
+"Usage billing" = "उपयोग-आधारित बिलिंग";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "उपयोग के लिए बिलिंग चालू है। आपके %1$@ से अधिक क्रेडिट की कीमत हर एक के लिए 1¢ है: इस महीने अब तक %2$@।";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "उपयोग-आधारित बिलिंग चालू है। हर क्रेडिट की कीमत 1¢ है: इस महीने अब तक %@।";
+"Usage invoices" = "उपयोग के बिल";
 "Use %@" = "%@ का उपयोग करें";
 "Use a custom server" = "कस्टम सर्वर इस्तेमाल करें";
 "Use another sign-in method" = "साइन इन करने का कोई दूसरा तरीका इस्तेमाल करें";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "आपने NewsBlur पर साइन अप किया है।";
 "You subscribed to %@." = "आपने %@ की सदस्यता ली।";
 "You're presented with multiple story pattern options to choose from." = "आपको चुनने के लिए लेख पैटर्न के कई विकल्प दिखाए जाते हैं।";
+"Your AI filters are paused until %@." = "आपके AI फ़िल्टर %@ तक रुके हुए हैं।";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "इस महीने के क्रेडिट इस्तेमाल होने पर आपके AI फ़िल्टर रुक जाएँगे। आपके प्लान की सीमा से अधिक इस्तेमाल के लिए अभी शुल्क लिया जाएगा, यदि कुल राशि कम से कम %@ हो।";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "आपके AI फ़िल्टरों ने %1$@ की मासिक सीमा पूरी कर ली है और %2$@ तक रुके हुए हैं।";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "आपका NewsBlur खाता हटा दिया गया है। इसे डिस्कनेक्ट करना पूरा करने के लिए, अपने Apple Account की सेटिंग में Sign in with Apple से NewsBlur हटाएँ।";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "आपकी चुनी हुई आवाज़ अभी उपलब्ध नहीं है, इसलिए %@ यह लेख पढ़कर सुना रहा है।";
 "Your identity is verified" = "आपकी पहचान सत्यापित है";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "आपकी Premium Pro सदस्यता सक्रिय है";
 "Your premium subscription is active" = "आपकी प्रीमियम सदस्यता सक्रिय है";
 "Your reading list" = "आपकी पठन सूची";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "जब आपकी राशि कम से कम %1$@ हो जाएगी, तब महीने की शुरुआत में आपके सहेजे गए कार्ड से शुल्क लिया जाएगा, या %2$@ पर तुरंत।";
 "You’re all set up." = "आपका सेटअप पूरा हो गया है।";
 "at %@" = "%@ पर";
 "by %@" = "%@ द्वारा";
@@ -1279,6 +1328,7 @@
 "no site" = "कोई साइट नहीं";
 "no story" = "कोई लेख नहीं";
 "or" = "या";
+"or wait until %@" = "या %@ तक प्रतीक्षा करें";
 "premium subscribers" = "प्रीमियम ग्राहक";
 "your account" = "आपका खाता";
 "‹ Feeds" = "‹ फ़ीड";

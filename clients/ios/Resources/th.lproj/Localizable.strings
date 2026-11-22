@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "โฟลเดอร์ %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "โฟลเดอร์ %1$@ ยุบอยู่ %2$@";
 "%1$@ followed %2$@." = "%1$@ ติดตาม %2$@";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "ยอด %1$@ รอเรียกเก็บเงิน: ต้นเดือนหน้าหากยอดถึง %2$@ หรือเรียกเก็บทันทีเมื่อถึง %3$@";
 "%1$@ of %2$@ of listening left this week" = "สัปดาห์นี้เหลือเวลาฟัง %1$@ จาก %2$@";
 "%1$@ of %2$@ sites indexed" = "จัดทำดัชนีแล้ว %1$@ จาก %2$@ เว็บไซต์";
 "%1$@ of %2$@ story previews used today" = "ใช้ตัวอย่างบทความไปแล้ว %1$@ จาก %2$@ รายการในวันนี้";
+"%1$@ of your %2$@ monthly limit" = "ใช้ไป %1$@ จากขีดจำกัดรายเดือน %2$@";
 "%1$@ re-shared %2$@." = "%1$@ แชร์ต่อ %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ แชร์ต่อ %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ ตอบกลับ %2$@: \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ แชร์ %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ แชร์ %2$@:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "ใช้เครดิต AI ไปแล้ว %2$@ เกิน %1$@ ของแพ็กเกจอยู่ %3$@";
+"%2$@ of %1$@ AI credits used" = "ใช้เครดิต AI ไปแล้ว %2$@ จาก %1$@";
 "%@ Widget Sites" = "เว็บไซต์ในวิดเจ็ต %@ แห่ง";
 "%@ ago" = "%@ ที่แล้ว";
 "%@ categories to choose from" = "มีหมวดหมู่ให้เลือก %@ หมวด";
@@ -66,6 +70,8 @@
 "100 stories" = "100 เรื่อง";
 "12 color flavors with light and dark variants." = "สี 12 แบบ พร้อมรูปแบบสว่างและมืด";
 "15 stories" = "15 เรื่อง";
+"1¢ per credit past your plan's" = "เครดิตละ 1¢ เมื่อใช้เกินแพ็กเกจของคุณ";
+"1¢ per credit past your plan's, about %@ this month" = "เครดิตละ 1¢ สำหรับยอดที่เกินแพ็กเกจของคุณ ประมาณ %@ ในเดือนนี้";
 "2,000 stories" = "2,000 เรื่อง";
 "20 stories" = "20 เรื่อง";
 "2x daily" = "วันละ 2 ครั้ง";
@@ -73,6 +79,8 @@
 "3x daily" = "วันละ 3 ครั้ง";
 "5 stories" = "5 เรื่อง";
 "5,000 stories" = "5,000 เรื่อง";
+"50 AI credits a month for AI filters" = "เครดิต AI 50 เครดิตต่อเดือนสำหรับตัวกรอง AI";
+"500 AI credits a month for AI filters" = "เครดิต AI 500 เครดิตต่อเดือนสำหรับตัวกรอง AI";
 "500 stories" = "500 เรื่อง";
 "< 15/month" = "< 15/เดือน";
 "< 30/month" = "< 30/เดือน";
@@ -80,11 +88,16 @@
 "< 60/month" = "< 60/เดือน";
 "< 90/month" = "< 90/เดือน";
 "A clearer, closer sound" = "เสียงชัดใสและใกล้ชิดยิ่งขึ้น";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "เครดิต 1 หน่วยใช้กรองบทความได้ประมาณ 700 บทความด้วยตัวกรองข้อความ หรือ 100 บทความด้วยตัวกรองรูปภาพ";
 "A personal news reader bringing\npeople together to talk about the world." = "โปรแกรมอ่านข่าวส่วนตัวที่เชื่อมโยงผู้คน\nให้มาพูดคุยเกี่ยวกับโลกใบนี้";
-"AI filters are saved but only run on Premium Archive." = "ตัวกรอง AI บันทึกแล้ว แต่จะทำงานเฉพาะบน Premium Archive เท่านั้น";
+"A text filter on this site uses about %2$@ credits a month" = "ตัวกรองข้อความบนเว็บไซต์นี้ใช้เครดิตประมาณ %2$@ ต่อเดือน";
+"AI Credits" = "เครดิต AI";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "บันทึกตัวกรอง AI แล้ว แต่จะทำงานได้เฉพาะบน Premium เท่านั้น Premium มีเครดิต AI 5 เครดิตต่อเดือน, Archive 50 และ Pro 500";
 "AI finds the stories" = "AI ค้นหาบทความให้";
+"AI text and image filters, with 5 AI credits a month" = "ตัวกรองข้อความและรูปภาพด้วย AI พร้อมเครดิต AI 5 เครดิตต่อเดือน";
 "ALL" = "ทั้งหมด";
 "ALL NOTIFICATIONS" = "การแจ้งเตือนทั้งหมด";
+"About %@ this month at your pace." = "เดือนนี้จะใช้ประมาณ %@ หากใช้อัตรานี้";
 "About NewsBlur" = "เกี่ยวกับ NewsBlur";
 "Accent [voice filter]" = "สำเนียง";
 "Account" = "บัญชี";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "มีบัญชีอยู่แล้วใช่ไหม? เข้าสู่ระบบ";
 "Already have feeds?" = "มีฟีดอยู่แล้วใช่ไหม";
 "Also published by %@ sites" = "เผยแพร่โดยเว็บไซต์อื่นอีก %@ แห่ง";
+"An image filter on this site uses about %2$@ credits a month" = "ตัวกรองรูปภาพบนเว็บไซต์นี้ใช้ประมาณ %2$@ เครดิตต่อเดือน";
 "Analyze" = "วิเคราะห์";
 "Analyzing images..." = "กำลังวิเคราะห์รูปภาพ...";
 "App Badge" = "ป้ายแอป";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "ถาม AI เกี่ยวกับบทความ";
 "Ask AI…" = "ถาม AI…";
 "Ask a question..." = "ถามคำถาม...";
+"At this pace your credits run out around %@." = "หากใช้อัตรานี้ เครดิตจะหมดประมาณ %@";
+"At this pace, this month will use about %2$@ AI credits." = "หากใช้อัตรานี้ เดือนนี้จะใช้เครดิต AI ประมาณ %2$@";
 "Atlantic Blue" = "สีฟ้าแอตแลนติก";
 "Authenticating" = "กำลังตรวจสอบสิทธิ์";
 "Auto" = "อัตโนมัติ";
@@ -197,6 +213,7 @@
 "Cancel" = "ยกเลิก";
 "Cannot reply to this story" = "ไม่สามารถตอบกลับบทความนี้ได้";
 "Change Story List" = "เปลี่ยนรายการบทความ";
+"Change limit" = "เปลี่ยนขีดจำกัด";
 "Choose Icon" = "เลือกไอคอน";
 "Choose Language…" = "เลือกภาษา…";
 "Choose Story List" = "เลือกรายการบทความ";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "ล้างแคชได้ไม่หมด โปรดลองอีกครั้ง";
 "Could not save your language. Please try again." = "บันทึกภาษาของคุณไม่ได้ โปรดลองอีกครั้ง";
 "Couldn't check story" = "ตรวจสอบบทความไม่ได้";
+"Couldn't load your AI credits." = "โหลดเครดิต AI ไม่สำเร็จ";
+"Couldn't load your usage invoices." = "โหลดใบแจ้งหนี้ตามการใช้งานไม่สำเร็จ";
+"Couldn't open billing. Please try again." = "เปิดหน้าการเรียกเก็บเงินไม่ได้ โปรดลองอีกครั้ง";
 "Couldn't reach NewsBlur. Check your connection and try again." = "เชื่อมต่อ NewsBlur ไม่ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง";
+"Couldn't save your monthly limit. Please try again." = "บันทึกขีดจำกัดรายเดือนไม่สำเร็จ โปรดลองอีกครั้ง";
+"Couldn't turn off usage billing. Please try again." = "ปิดการเรียกเก็บเงินตามการใช้งานไม่สำเร็จ โปรดลองอีกครั้ง";
 "Couldn’t load the full image. You can try opening it in your browser." = "โหลดรูปภาพฉบับเต็มไม่สำเร็จ คุณลองเปิดในเบราว์เซอร์ได้";
 "Counting is difficult..." = "การนับเป็นเรื่องยาก...";
 "Create a feed from any web page" = "สร้างฟีดจากหน้าเว็บใดก็ได้";
 "Create a new account instead" = "สร้างบัญชีใหม่แทน";
 "Create account" = "สร้างบัญชี";
 "Create an account" = "สร้างบัญชี";
+"Credits reset on the 1st of each month and don't carry over." = "เครดิตจะรีเซ็ตทุกวันที่ 1 ของเดือนและไม่ยกยอด";
 "Custom" = "กำหนดเอง";
 "Custom Domain" = "โดเมนที่กำหนดเอง";
 "Custom RSS feeds for saved stories" = "ฟีด RSS แบบกำหนดเองสำหรับบทความที่บันทึกไว้";
@@ -378,6 +401,7 @@
 "Fetching text..." = "กำลังดึงข้อความ...";
 "Filter" = "ตัวกรอง";
 "Filter stories by date range" = "กรองบทความตามช่วงวันที่";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "ตัวกรองจะหยุดทำงานเมื่อการเรียกเก็บเงินตามการใช้งานถึงขีดจำกัด เว้นว่างไว้หากไม่ต้องการจำกัด";
 "Find %@ in the voice list" = "ค้นหา %@ ในรายการเสียง";
 "Find Friends" = "ค้นหาเพื่อน";
 "Find in Feed" = "ค้นหาในฟีด";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "ซ่อนแถบเครื่องมือขณะอ่าน";
 "Hides the music settings" = "ซ่อนการตั้งค่าเพลง";
 "Highlight the paragraph being read" = "ไฮไลต์ย่อหน้าที่กำลังอ่าน";
+"How credits work" = "เครดิตทำงานอย่างไร";
 "How much emotion" = "ระดับอารมณ์";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "หากไม่มีตัวเลือกใดตรงกัน ให้พิมพ์ชื่อบทความที่เห็นบนหน้า แล้วเราจะวิเคราะห์อีกครั้ง";
 "Ignore system theme, use screen brightness instead" = "ไม่ใช้ธีมของระบบ แต่ใช้ความสว่างหน้าจอแทน";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "แทนที่จะใช้โหมดมืด/สว่างของระบบ ให้สลับธีมโดยอัตโนมัติตามระดับความสว่างของหน้าจอ เหมาะสำหรับการสลับธีมตามแสงโดยรอบ";
 "Interactions" = "การโต้ตอบ";
 "Invalid: %@" = "ไม่ถูกต้อง: %@";
+"Invoice" = "ใบแจ้งหนี้";
 "Keep fades, without movement." = "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว";
+"Keep filters running" = "ให้ตัวกรองทำงานต่อ";
 "Keeps the dark icon no matter how your device is set." = "คงไอคอนสีเข้มไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keeps the light icon no matter how your device is set." = "คงไอคอนสว่างไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keyboard Shortcuts" = "แป้นพิมพ์ลัด";
@@ -553,6 +580,7 @@
 "Manage" = "จัดการ";
 "Manage Account on the Web" = "จัดการบัญชีบนเว็บ";
 "Manage Subscription" = "จัดการการสมัครสมาชิก";
+"Manage billing" = "จัดการการเรียกเก็บเงิน";
 "Manage this folder…" = "จัดการโฟลเดอร์นี้…";
 "Manage this site…" = "จัดการเว็บไซต์นี้…";
 "Manual scroll" = "เลื่อนด้วยตนเอง";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "สีเทา";
 "Model" = "โมเดล";
 "Monday" = "วันจันทร์";
+"Monthly limit" = "ขีดจำกัดรายเดือน";
+"Monthly limit: %@" = "ขีดจำกัดรายเดือน: %@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "บทความจำนวนมากขึ้นใช้พื้นที่ดิสก์มากขึ้น แต่ไม่มีผลต่อประสิทธิภาพอย่างเห็นได้ชัด";
 "More voices" = "เสียงเพิ่มเติม";
 "Morning" = "ช่วงเช้า";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "ตัวจำแนกรูปภาพด้วยภาษาธรรมชาติ";
 "Natural Language Text Classifier" = "ตัวจำแนกข้อความด้วยภาษาธรรมชาติ";
 "Natural [listen delivery]" = "เป็นธรรมชาติ";
-"Natural language text and image classifiers" = "ตัวจำแนกข้อความภาษาธรรมชาติและรูปภาพ";
 "Nested" = "ซ้อนกัน";
 "Never" = "ไม่เลย";
 "New Folder" = "โฟลเดอร์ใหม่";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "ยังไม่มีฟีดให้แสดง ลองเลือกความสนใจอื่นหรือค้นหาจากทุกเว็บไซต์";
 "No friends to suggest." = "ไม่มีเพื่อนให้แนะนำ";
 "No interests or sites found. Try another search." = "ไม่พบความสนใจหรือเว็บไซต์ ลองค้นหาอย่างอื่น";
+"No limit" = "ไม่จำกัด";
 "No longer saved" = "ไม่ได้บันทึกไว้อีกต่อไป";
 "No match" = "ไม่ตรงกัน";
 "No match in story" = "ไม่พบในบทความ";
@@ -690,6 +720,7 @@
 "No stories yet" = "ยังไม่มีบทความ";
 "No story selected" = "ยังไม่ได้เลือกบทความ";
 "No unread stories" = "ไม่มีบทความที่ยังไม่อ่าน";
+"No usage invoices yet." = "ยังไม่มีใบแจ้งหนี้จากการใช้งาน";
 "No voices match these filters" = "ไม่มีเสียงที่ตรงกับตัวกรองเหล่านี้";
 "None" = "ไม่มี";
 "Normal" = "ปกติ";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "เลื่อนหน้าลง; เปิดบทความถัดไปที่ยังไม่อ่านเมื่อถึงด้านล่าง";
 "Page up; previous story at the top" = "เลื่อนหน้าขึ้น; เปิดบทความก่อนหน้าเมื่อถึงด้านบน";
 "Password" = "รหัสผ่าน";
+"Past your credits, filters keep running at 1¢ per credit." = "เมื่อใช้เครดิตเกินแล้ว ตัวกรองจะยังทำงานต่อ โดยคิดเครดิตละ 1¢";
 "Paste a story title from the page" = "วางชื่อเรื่องจากหน้าเว็บ";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "วาง URL ใดก็ได้ แล้ว NewsBlur จะสร้างฟีดจากหน้าเว็บนั้น แม้ไม่มี RSS";
 "Pause" = "หยุดชั่วคราว";
@@ -889,6 +921,7 @@
 "Saved on %@" = "บันทึกเมื่อ %@";
 "Saving Daily Briefing settings…" = "กำลังบันทึกการตั้งค่าสรุปข่าวประจำวัน…";
 "Saving search..." = "กำลังบันทึกการค้นหา...";
+"Saving..." = "กำลังบันทึก…";
 "Schedule" = "กำหนดเวลา";
 "Scroll horizontally" = "เลื่อนแนวนอน";
 "Scroll to Comments" = "เลื่อนไปยังความคิดเห็น";
@@ -921,6 +954,7 @@
 "Server URL" = "URL เซิร์ฟเวอร์";
 "Set an exact speed under Voice" = "ตั้งค่าความเร็วที่ต้องการได้ในส่วนเสียง";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "ตั้งค่าสรุปข่าวประจำวันเพื่อสร้างสรุปบทความที่สำคัญกับคุณมากที่สุด";
+"Set up usage billing" = "ตั้งค่าการเรียกเก็บเงินตามการใช้งาน";
 "Settings" = "การตั้งค่า";
 "Share" = "แชร์";
 "Share This Story" = "แชร์บทความนี้";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "การดำเนินการนี้จะลบโฟลเดอร์และยกเลิกการติดตามเว็บไซต์ที่ไม่ได้อยู่ในโฟลเดอร์อื่น";
 "This feature requires iOS 15 or later." = "ฟีเจอร์นี้ต้องใช้ iOS 15 ขึ้นไป";
 "This might take a minute.\nFeel free to continue..." = "อาจใช้เวลาสักครู่\nทำอย่างอื่นต่อได้เลย...";
+"This month" = "เดือนนี้";
+"This month's %@ AI credits are used." = "ใช้เครดิต AI ประจำเดือนนี้ %@ แล้ว";
 "This removes the subscription from your feeds." = "การดำเนินการนี้จะนำการสมัครรับข้อมูลออกจากฟีดของคุณ";
 "This setting only applies after the app is restarted." = "การตั้งค่านี้จะมีผลหลังจากเริ่มแอปใหม่เท่านั้น";
 "This site already has a feed" = "เว็บไซต์นี้มีฟีดอยู่แล้ว";
@@ -1151,6 +1187,9 @@
 "Try search again" = "ลองค้นหาอีกครั้ง";
 "Trying Feed" = "กำลังลองฟีด";
 "Tuesday" = "วันอังคาร";
+"Turn off usage billing" = "ปิดการเรียกเก็บเงินตามการใช้งาน";
+"Turn off usage billing?" = "ปิดการเรียกเก็บเงินตามการใช้งานไหม";
+"Turn on usage billing" = "เปิดการเรียกเก็บเงินตามการใช้งาน";
 "Two" = "สอง";
 "Two Columns" = "สองคอลัมน์";
 "Two Rows" = "สองแถว";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "เลิกบันทึกแล้ว";
 "Untitled story" = "บทความไม่มีชื่อ";
 "Up Next" = "ถัดไป";
+"Upcoming" = "ที่กำลังจะมาถึง";
+"Update card on Stripe" = "อัปเดตบัตรบน Stripe";
 "Updated %@ days ago" = "อัปเดตเมื่อ %@ วันก่อน";
 "Updated %@ months ago" = "อัปเดตเมื่อ %@ เดือนก่อน";
 "Updated %@ weeks ago" = "อัปเดตเมื่อ %@ สัปดาห์ก่อน";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "อัปเกรดเป็น Premium";
 "Upgrade to Premium Archive" = "อัปเกรดเป็น Premium Archive";
 "Upgrade to Premium Pro" = "อัปเกรดเป็น Premium Pro";
+"Usage billing" = "การเรียกเก็บเงินตามการใช้งาน";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "เปิดการเรียกเก็บเงินตามการใช้งานแล้ว เครดิตที่เกิน %1$@ คิดเครดิตละ 1¢: ใช้ไปแล้ว %2$@ ในเดือนนี้";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "เปิดการเรียกเก็บเงินตามการใช้งานแล้ว เครดิตละ 1¢: ใช้ไปแล้ว %@ ในเดือนนี้";
+"Usage invoices" = "ใบแจ้งหนี้ตามการใช้งาน";
 "Use %@" = "ใช้ %@";
 "Use a custom server" = "ใช้เซิร์ฟเวอร์กำหนดเอง";
 "Use another sign-in method" = "ใช้วิธีลงชื่อเข้าใช้อื่น";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "คุณสมัครใช้งาน NewsBlur แล้ว";
 "You subscribed to %@." = "คุณสมัครรับ %@ แล้ว";
 "You're presented with multiple story pattern options to choose from." = "ระบบจะแสดงรูปแบบบทความหลายแบบให้คุณเลือก";
+"Your AI filters are paused until %@." = "ตัวกรอง AI จะหยุดทำงานจนถึง %@";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "ตัวกรอง AI จะหยุดทำงานเมื่อใช้เครดิตของเดือนนี้หมด เครดิตส่วนที่เกินแพ็กเกจของคุณซึ่งเกิดขึ้นแล้วจะถูกเรียกเก็บทันที หากมียอดถึง %@";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "ตัวกรอง AI ใช้เครดิตถึงขีดจำกัดรายเดือน %1$@ แล้ว และจะหยุดชั่วคราวจนถึง %2$@";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "บัญชี NewsBlur ของคุณถูกลบแล้ว นำ NewsBlur ออกจากการลงชื่อเข้าใช้ด้วย Apple ในการตั้งค่าบัญชี Apple เพื่อยกเลิกการเชื่อมต่อให้เสร็จสิ้น";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "เสียงที่เลือกยังไม่พร้อมใช้งานในขณะนี้ %@ จึงกำลังอ่านบทความนี้";
 "Your identity is verified" = "ยืนยันตัวตนของคุณแล้ว";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "การสมัครสมาชิก Premium Pro ของคุณใช้งานอยู่";
 "Your premium subscription is active" = "การสมัครสมาชิกพรีเมียมของคุณใช้งานอยู่";
 "Your reading list" = "รายการอ่านของคุณ";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "บัตรที่บันทึกไว้จะถูกเรียกเก็บเงินเมื่อต้นเดือนเมื่อยอดถึง %1$@ หรือเรียกเก็บทันทีเมื่อถึง %2$@";
 "You’re all set up." = "ตั้งค่าทุกอย่างเรียบร้อยแล้ว";
 "at %@" = "ที่ %@";
 "by %@" = "โดย %@";
@@ -1279,6 +1328,7 @@
 "no site" = "ไม่มีเว็บไซต์";
 "no story" = "ไม่มีบทความ";
 "or" = "หรือ";
+"or wait until %@" = "หรือรอจนถึง %@";
 "premium subscribers" = "สมาชิกพรีเมียม";
 "your account" = "บัญชีของคุณ";
 "‹ Feeds" = "‹ ฟีด";

@@ -20,6 +20,42 @@
 			<string>לא ניתן להוסיף %1$@ פידים אל %2$@.</string>
 		</dict>
 	</dict>
+	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_past_plan@</string>
+		<key>ai_credits_past_plan</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נוצלו %2$@ נקודות קרדיט ל-AI, %3$@ מעבר למכסה של התוכנית שלך: %1$@</string>
+			<key>other</key>
+			<string>נוצלו %2$@ קרדיטי AI, %3$@ מעבר ל־%1$@ שכלולים בתוכנית שלך</string>
+			<key>two</key>
+			<string>נוצלו %2$@ קרדיטי AI, %3$@ מעבר ל־%1$@ של התוכנית שלך</string>
+		</dict>
+	</dict>
+	<key>%2$@ of %1$@ AI credits used</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_used@</string>
+		<key>ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נוצלה %2$@ מתוך %1$@ נקודת קרדיט ל-AI</string>
+			<key>other</key>
+			<string>נעשה שימוש ב־%2$@ מתוך %1$@ קרדיטים לבינה מלאכותית</string>
+			<key>two</key>
+			<string>נעשה שימוש ב־%2$@ מתוך %1$@ קרדיטים של AI</string>
+		</dict>
+	</dict>
 	<key>%@ Widget Sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -542,6 +578,24 @@
 			<string>+ עוד %@ אתרים</string>
 		</dict>
 	</dict>
+	<key>A text filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text_filter_monthly_credits@</string>
+		<key>text_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>מסנן טקסט באתר הזה משתמש בכ־%2$@ קרדיט בחודש</string>
+			<key>other</key>
+			<string>מסנן טקסט באתר הזה משתמש בכ־%2$@ קרדיטים בחודש</string>
+			<key>two</key>
+			<string>מסנן טקסט באתר הזה משתמש בכ־%2$@ קרדיטים בחודש</string>
+		</dict>
+	</dict>
 	<key>Add %1$@ feeds to “%2$@” folder</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -612,6 +666,42 @@
 			<string>פורסם גם ב־%@ אתרים</string>
 			<key>two</key>
 			<string>פורסם גם ב־%@ אתרים</string>
+		</dict>
+	</dict>
+	<key>An image filter on this site uses about %2$@ credits a month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_monthly_credits@</string>
+		<key>image_filter_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>מסנן תמונות באתר הזה משתמש בכ־%2$@ קרדיט בחודש</string>
+			<key>other</key>
+			<string>מסנן תמונות באתר הזה משתמש בכ־%2$@ קרדיטים בחודש</string>
+			<key>two</key>
+			<string>מסנן תמונות באתר הזה משתמש בכ־%2$@ קרדיטים בחודש</string>
+		</dict>
+	</dict>
+	<key>At this pace, this month will use about %2$@ AI credits.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@forecast_monthly_credits@</string>
+		<key>forecast_monthly_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>בקצב הזה, החודש הזה ינצל בערך %2$@ קרדיט AI.</string>
+			<key>other</key>
+			<string>בקצב הזה, החודש צפויות להידרש כ-%2$@ נקודות קרדיט ל-AI.</string>
+			<key>two</key>
+			<string>בקצב הזה, החודש צפויות להידרש כ-%2$@ נקודות קרדיט ל-AI.</string>
 		</dict>
 	</dict>
 	<key>Back %@ seconds</key>
@@ -884,6 +974,24 @@
 			<string>טקסט מלפני %@ שעות</string>
 		</dict>
 	</dict>
+	<key>This month's %@ AI credits are used.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@monthly_ai_credits_used@</string>
+		<key>monthly_ai_credits_used</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>קרדיט ה-AI של החודש (%@) נוצל.</string>
+			<key>other</key>
+			<string>נוצלו כל %@ נקודות הקרדיט החודשיות ל-AI.</string>
+			<key>two</key>
+			<string>%@ קרדיטי ה-AI של החודש נוצלו.</string>
+		</dict>
+	</dict>
 	<key>Updated %@ days ago</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -936,6 +1044,24 @@
 			<string>עודכן לפני %@ שבועות</string>
 			<key>two</key>
 			<string>עודכן לפני %@ שבועות</string>
+		</dict>
+	</dict>
+	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@usage_billing_included_credits@</string>
+		<key>usage_billing_included_credits</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>חיוב לפי שימוש מופעל. על זיכויים מעבר ל־%1$@ תחויבו בסנט אחד לכל זיכוי: %2$@ עד כה החודש.</string>
+			<key>other</key>
+			<string>חיוב לפי שימוש פעיל. כל נקודת קרדיט מעבר ל-%1$@ עולה 1¢: עד כה החודש %2$@.</string>
+			<key>two</key>
+			<string>חיוב לפי שימוש פעיל. כל נקודת קרדיט מעבר ל-%1$@ עולה 1¢: עד כה החודש %2$@.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

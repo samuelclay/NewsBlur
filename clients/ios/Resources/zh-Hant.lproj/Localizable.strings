@@ -10,9 +10,11 @@
 "%1$@ folder, %2$@" = "%1$@ 資料夾，%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 資料夾，已收合，%2$@";
 "%1$@ followed %2$@." = "%1$@ 追蹤了 %2$@。";
+"%1$@ is waiting to be charged: at the start of next month if it's at least %2$@, or right away at %3$@." = "%1$@ 尚待扣款：若達到 %2$@，會在下個月初扣款；若達到 %3$@，則會立即扣款。";
 "%1$@ of %2$@ of listening left this week" = "本週聆聽時間剩餘 %1$@／共 %2$@";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 個網站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@／%2$@ 次文章預覽";
+"%1$@ of your %2$@ monthly limit" = "已使用 %2$@ 每月上限的 %1$@";
 "%1$@ re-shared %2$@." = "%1$@ 重新分享了 %2$@。";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ 重新分享了 %2$@：\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ 回覆了 %2$@： \n \n%3$@";
@@ -21,6 +23,8 @@
 "%1$@ shared %2$@." = "%1$@ 分享了 %2$@。";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ 分享了 %2$@：\n \n%3$@";
 "%1$@, %2$@" = "%1$@、%2$@";
+"%2$@ AI credits used, %3$@ past your plan's %1$@" = "已使用 %2$@ 點 AI 點數，超出方案的 %1$@ %3$@";
+"%2$@ of %1$@ AI credits used" = "已使用 %2$@／%1$@ AI 點數";
 "%@ Widget Sites" = "%@ 小工具網站";
 "%@ ago" = "%@前";
 "%@ categories to choose from" = "可選擇 %@ 個分類";
@@ -66,6 +70,8 @@
 "100 stories" = "100 篇文章";
 "12 color flavors with light and dark variants." = "12 種配色，皆提供淺色與深色版本。";
 "15 stories" = "15 篇文章";
+"1¢ per credit past your plan's" = "超過方案額度後，每點 1¢";
+"1¢ per credit past your plan's, about %@ this month" = "超出方案額度的部分每點 1¢，本月約 %@";
 "2,000 stories" = "2,000 篇文章";
 "20 stories" = "20 篇文章";
 "2x daily" = "每天 2 次";
@@ -73,6 +79,8 @@
 "3x daily" = "每天 3 次";
 "5 stories" = "5 篇文章";
 "5,000 stories" = "5,000 篇文章";
+"50 AI credits a month for AI filters" = "AI 篩選器每月提供 50 點 AI 點數";
+"500 AI credits a month for AI filters" = "AI 篩選器每月 500 點 AI 點數";
 "500 stories" = "500 篇文章";
 "< 15/month" = "每月少於 15 篇";
 "< 30/month" = "每月少於 30 篇";
@@ -80,11 +88,16 @@
 "< 60/month" = "每月少於 60 篇";
 "< 90/month" = "每月少於 90 篇";
 "A clearer, closer sound" = "聲音更清晰、更貼近";
+"A credit covers about 700 stories through a text filter, or 100 through an image filter." = "1 點數約可透過文字篩選器處理 700 篇文章，或透過圖片篩選器處理 100 篇文章。";
 "A personal news reader bringing\npeople together to talk about the world." = "一款個人新聞閱讀器，讓人們\n齊聚一堂，暢談世界。";
-"AI filters are saved but only run on Premium Archive." = "AI 篩選器已儲存，但只會在 Premium Archive 上執行。";
+"A text filter on this site uses about %2$@ credits a month" = "此網站的文字篩選器每月大約會使用 %2$@ 點數";
+"AI Credits" = "AI 點數";
+"AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500." = "AI 篩選器已儲存，但只有 Premium 才會執行。Premium 每月包含 5 點 AI 點數，Archive 包含 50 點，Pro 包含 500 點。";
 "AI finds the stories" = "由 AI 找出文章";
+"AI text and image filters, with 5 AI credits a month" = "AI 文字與圖片篩選器，每月提供 5 點 AI 點數";
 "ALL" = "全部";
 "ALL NOTIFICATIONS" = "所有通知";
+"About %@ this month at your pace." = "依目前的使用速度，本月大約會用掉 %@。";
 "About NewsBlur" = "關於 NewsBlur";
 "Accent [voice filter]" = "口音";
 "Account" = "帳戶";
@@ -155,6 +168,7 @@
 "Already have an account? Sign in" = "已有帳戶？登入";
 "Already have feeds?" = "已經有訂閱來源了嗎？";
 "Also published by %@ sites" = "另有 %@ 個網站刊載";
+"An image filter on this site uses about %2$@ credits a month" = "此網站的圖片篩選器每月約使用 %2$@ 點數";
 "Analyze" = "分析";
 "Analyzing images..." = "正在分析圖片…";
 "App Badge" = "App 圖示標記";
@@ -170,6 +184,8 @@
 "Ask AI questions about stories" = "向 AI 詢問文章相關問題";
 "Ask AI…" = "詢問 AI…";
 "Ask a question..." = "提出問題……";
+"At this pace your credits run out around %@." = "依目前的使用速度，點數大約會在 %@ 用完。";
+"At this pace, this month will use about %2$@ AI credits." = "依目前的使用速度，本月大約會用掉 %2$@ 點 AI 點數。";
 "Atlantic Blue" = "大西洋藍";
 "Authenticating" = "正在驗證";
 "Auto" = "自動";
@@ -197,6 +213,7 @@
 "Cancel" = "取消";
 "Cannot reply to this story" = "無法回覆這則文章";
 "Change Story List" = "變更文章清單";
+"Change limit" = "變更上限";
 "Choose Icon" = "選擇圖示";
 "Choose Language…" = "選擇語言…";
 "Choose Story List" = "選擇文章列表";
@@ -252,13 +269,19 @@
 "Could not completely clear the cache. Please try again." = "無法完全清除快取。請再試一次。";
 "Could not save your language. Please try again." = "無法儲存語言設定，請再試一次。";
 "Couldn't check story" = "無法檢查文章";
+"Couldn't load your AI credits." = "無法載入 AI 點數。";
+"Couldn't load your usage invoices." = "無法載入用量帳單。";
+"Couldn't open billing. Please try again." = "無法開啟帳單頁面。請再試一次。";
 "Couldn't reach NewsBlur. Check your connection and try again." = "無法連線至 NewsBlur。請檢查網路連線後再試一次。";
+"Couldn't save your monthly limit. Please try again." = "無法儲存每月上限。請再試一次。";
+"Couldn't turn off usage billing. Please try again." = "無法關閉依用量計費。請再試一次。";
 "Couldn’t load the full image. You can try opening it in your browser." = "無法載入完整圖片。你可以試著在瀏覽器中開啟。";
 "Counting is difficult..." = "計數真不容易……";
 "Create a feed from any web page" = "從任何網頁建立訂閱來源";
 "Create a new account instead" = "改為建立新帳戶";
 "Create account" = "建立帳戶";
 "Create an account" = "建立帳戶";
+"Credits reset on the 1st of each month and don't carry over." = "點數會在每月 1 日重設，未使用的點數不會累積。";
 "Custom" = "自訂";
 "Custom Domain" = "自訂網域";
 "Custom RSS feeds for saved stories" = "已儲存文章的自訂 RSS 訂閱來源";
@@ -378,6 +401,7 @@
 "Fetching text..." = "正在擷取文字…";
 "Filter" = "篩選";
 "Filter stories by date range" = "依日期範圍篩選文章";
+"Filters pause when usage billing reaches it. Leave empty for no limit." = "用量計費達到上限時，篩選器就會暫停。留空代表不限額。";
 "Find %@ in the voice list" = "在語音清單中尋找 %@";
 "Find Friends" = "尋找朋友";
 "Find in Feed" = "在訂閱來源中尋找";
@@ -457,6 +481,7 @@
 "Hide toolbars when reading" = "閱讀時隱藏工具列";
 "Hides the music settings" = "隱藏音樂設定";
 "Highlight the paragraph being read" = "醒目標示正在朗讀的段落";
+"How credits work" = "點數如何運作";
 "How much emotion" = "情感表現程度";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "如果這些選項都不符合，請輸入你在頁面上看到的文章標題，我們會重新分析。";
 "Ignore system theme, use screen brightness instead" = "忽略系統主題，改用螢幕亮度";
@@ -490,7 +515,9 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "不跟隨系統的深色／淺色模式，而是根據螢幕亮度自動切換佈景主題。適合依環境光線切換佈景主題。";
 "Interactions" = "互動";
 "Invalid: %@" = "無效：%@";
+"Invoice" = "發票";
 "Keep fades, without movement." = "保留淡入淡出，取消移動效果。";
+"Keep filters running" = "繼續執行篩選器";
 "Keeps the dark icon no matter how your device is set." = "無論裝置如何設定，都會維持深色圖示。";
 "Keeps the light icon no matter how your device is set." = "無論裝置設定為何，圖示都會保持淺色。";
 "Keyboard Shortcuts" = "鍵盤快速鍵";
@@ -553,6 +580,7 @@
 "Manage" = "管理";
 "Manage Account on the Web" = "在網頁上管理帳戶";
 "Manage Subscription" = "管理訂閱";
+"Manage billing" = "管理帳單";
 "Manage this folder…" = "管理此資料夾…";
 "Manage this site…" = "管理此網站…";
 "Manual scroll" = "手動捲動";
@@ -604,6 +632,8 @@
 "Medium [theme]" = "灰色";
 "Model" = "模型";
 "Monday" = "星期一";
+"Monthly limit" = "每月上限";
+"Monthly limit: %@" = "每月上限：%@";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "更多文章會占用更多磁碟空間，但除此之外，不會對效能造成明顯影響。";
 "More voices" = "更多語音";
 "Morning" = "早上";
@@ -645,7 +675,6 @@
 "Natural Language Image Classifier" = "自然語言影像分類器";
 "Natural Language Text Classifier" = "自然語言文字分類器";
 "Natural [listen delivery]" = "自然";
-"Natural language text and image classifiers" = "自然語言文字與影像分類器";
 "Nested" = "巢狀";
 "Never" = "永不";
 "New Folder" = "新增資料夾";
@@ -678,6 +707,7 @@
 "No feeds to show yet. Try another interest or search all sites." = "目前沒有可顯示的訂閱來源。請嘗試其他興趣，或搜尋所有網站。";
 "No friends to suggest." = "沒有可推薦的朋友。";
 "No interests or sites found. Try another search." = "找不到興趣或網站。請嘗試其他搜尋。";
+"No limit" = "不限";
 "No longer saved" = "已取消儲存";
 "No match" = "不符合";
 "No match in story" = "文章中沒有相符內容";
@@ -690,6 +720,7 @@
 "No stories yet" = "尚無文章";
 "No story selected" = "未選取文章";
 "No unread stories" = "沒有未讀文章";
+"No usage invoices yet." = "目前沒有依用量計費的帳單。";
 "No voices match these filters" = "沒有符合這些篩選條件的語音";
 "None" = "無";
 "Normal" = "一般";
@@ -746,6 +777,7 @@
 "Page down; next unread story at the bottom" = "Page Down；在底部開啟下一篇未讀文章";
 "Page up; previous story at the top" = "Page Up；在頂部開啟上一篇文章";
 "Password" = "密碼";
+"Past your credits, filters keep running at 1¢ per credit." = "超過額度後，篩選器仍會繼續執行，每點 1¢。";
 "Paste a story title from the page" = "貼上頁面中的文章標題";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "貼上任何網址，NewsBlur 就會從頁面建立訂閱來源，即使沒有 RSS 也可以。";
 "Pause" = "暫停";
@@ -889,6 +921,7 @@
 "Saved on %@" = "儲存於 %@";
 "Saving Daily Briefing settings…" = "正在儲存每日簡報設定…";
 "Saving search..." = "正在儲存搜尋…";
+"Saving..." = "正在儲存…";
 "Schedule" = "排程";
 "Scroll horizontally" = "水平捲動";
 "Scroll to Comments" = "捲動至留言";
@@ -921,6 +954,7 @@
 "Server URL" = "伺服器網址";
 "Set an exact speed under Voice" = "在「語音」中設定精確速度";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "設定每日簡報，為你整理最重要文章的摘要。";
+"Set up usage billing" = "設定用量計費";
 "Settings" = "設定";
 "Share" = "分享";
 "Share This Story" = "分享此文章";
@@ -1109,6 +1143,8 @@
 "This deletes the folder and unsubscribes from sites that are not in another folder." = "這會刪除此資料夾，並取消訂閱未放在其他資料夾中的網站。";
 "This feature requires iOS 15 or later." = "此功能需要 iOS 15 或更新版本。";
 "This might take a minute.\nFeel free to continue..." = "這可能需要一分鐘。\n請隨時繼續操作……";
+"This month" = "本月";
+"This month's %@ AI credits are used." = "本月的 %@ 點 AI 點數已用完。";
 "This removes the subscription from your feeds." = "這會從你的訂閱來源中移除此訂閱。";
 "This setting only applies after the app is restarted." = "這項設定會在重新啟動應用程式後才生效。";
 "This site already has a feed" = "此網站已有訂閱來源";
@@ -1151,6 +1187,9 @@
 "Try search again" = "再次嘗試搜尋";
 "Trying Feed" = "預覽訂閱來源";
 "Tuesday" = "星期二";
+"Turn off usage billing" = "關閉用量計費";
+"Turn off usage billing?" = "要關閉依用量計費嗎？";
+"Turn on usage billing" = "啟用用量計費";
 "Two" = "二";
 "Two Columns" = "雙欄";
 "Two Rows" = "兩列";
@@ -1188,6 +1227,8 @@
 "Unsaved" = "未儲存";
 "Untitled story" = "未命名文章";
 "Up Next" = "接下來";
+"Upcoming" = "即將推出";
+"Update card on Stripe" = "在 Stripe 更新信用卡";
 "Updated %@ days ago" = "%@ 天前更新";
 "Updated %@ months ago" = "%@ 個月前更新";
 "Updated %@ weeks ago" = "%@ 週前更新";
@@ -1201,6 +1242,10 @@
 "Upgrade to Premium" = "升級至 Premium";
 "Upgrade to Premium Archive" = "升級至 Premium Archive";
 "Upgrade to Premium Pro" = "升級至 Premium Pro";
+"Usage billing" = "依用量計費";
+"Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month." = "用量計費已啟用。超過方案額度的點數每點 1¢：本月至今已使用 %2$@，方案額度為 %1$@。";
+"Usage billing is on. Every credit costs 1¢: %@ so far this month." = "用量計費已啟用。每點 1¢：本月至今已使用 %@。";
+"Usage invoices" = "用量帳單";
 "Use %@" = "使用 %@";
 "Use a custom server" = "使用自訂伺服器";
 "Use another sign-in method" = "使用其他登入方式";
@@ -1257,6 +1302,9 @@
 "You signed up for NewsBlur." = "你已註冊 NewsBlur。";
 "You subscribed to %@." = "你已訂閱 %@。";
 "You're presented with multiple story pattern options to choose from." = "系統會提供多種文章模式選項供你選擇。";
+"Your AI filters are paused until %@." = "你的 AI 篩選器已暫停，直到 %@。";
+"Your AI filters pause once this month's credits are used. Credits already past your plan's are charged now if they come to at least %@." = "本月點數用完後，你的 AI 篩選器就會暫停。已超出方案額度的點數若達到至少 %@，現在就會扣款。";
+"Your AI filters reached your %1$@ monthly limit and are paused until %2$@." = "你的 AI 篩選器已達到每月上限 %1$@，並暫停至 %2$@。";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "你的 NewsBlur 帳戶已刪除。請在 Apple 帳戶設定中的「使用 Apple 登入」移除 NewsBlur，以完成解除連結。";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "你選擇的語音目前無法使用，因此由 %@ 為你朗讀這篇文章。";
 "Your identity is verified" = "你的身分已驗證";
@@ -1266,6 +1314,7 @@
 "Your premium pro subscription is active" = "你的 Premium Pro 訂閱已啟用";
 "Your premium subscription is active" = "你的 Premium 訂閱已啟用";
 "Your reading list" = "你的閱讀清單";
+"Your saved card is charged at the start of the month once it's at least %1$@, or right away at %2$@." = "儲存的信用卡會在月初扣款，若達到 %1$@ 則扣款；若達到 %2$@，則會立即扣款。";
 "You’re all set up." = "一切就緒。";
 "at %@" = "於 %@";
 "by %@" = "由 %@ 撰寫";
@@ -1279,6 +1328,7 @@
 "no site" = "沒有網站";
 "no story" = "沒有文章";
 "or" = "或";
+"or wait until %@" = "或等到 %@";
 "premium subscribers" = "付費訂閱者";
 "your account" = "你的帳戶";
 "‹ Feeds" = "‹ 訂閱來源";
